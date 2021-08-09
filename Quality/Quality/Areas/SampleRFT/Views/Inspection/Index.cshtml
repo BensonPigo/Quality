@@ -1,0 +1,1242 @@
+﻿@using DatabaseObject.ViewModel
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model Inspection_ViewModel
+<link href="~/ThirdParty/plugins/jquery-ui/jquery-ui.css" rel="stylesheet" />
+<style type="text/css">
+    .row {
+        --bs-gutter-x: 1.5rem;
+        --bs-gutter-y: 0;
+        display: flex;
+        flex-wrap: wrap;
+        width: 95vw;
+        margin-top: calc(var(--bs-gutter-y) * -1);
+        margin-right: calc(var(--bs-gutter-x)/ -2);
+        margin-left: calc(var(--bs-gutter-x)/ -2);
+    }
+
+        .row > * {
+            flex-shrink: 0;
+            width: 100%;
+            max-width: 100%;
+            padding-left: calc(var(--bs-gutter-x)/ 2);
+        }
+
+    .rowHeader {
+        font-size: 1.1vw;
+        font-weight: bold;
+    }
+
+    .col-auto {
+        width: auto;
+    }
+
+        .col-auto > p {
+            padding: 0
+        }
+
+    .InfoTitle {
+        color: #ffffff;
+    }
+
+    .table
+    {
+        font-size :1rem;
+    }
+
+    .table-striped > tbody > tr > td > input[type="text"] {
+        width: 11em;
+    }
+
+    .table-striped > tbody > tr:nth-of-type(even),
+    .table-striped > tbody > tr:nth-of-type(even) > td > input,
+    .table-top3 > thead > tr {
+        background: #F0F2F2;
+    }
+
+    .table-striped > tbody > tr:nth-of-type(odd),
+    .table-top3 > tbody > tr {
+        background: #ffffff;
+    }
+
+        .table-striped > tbody > tr > td,
+        .table-top3 > tbody > tr > td {
+            padding: 1px 5px;
+        }
+
+    .btn-blue {
+        background-color: #4fc1e9 !important;
+    }
+
+    #SelectItemBackground {
+        background-color: rgba(204, 204, 204, 0.5);
+        bottom: 0;
+        left: 0;
+        position: fixed;
+        right: 0;
+        top: 0;
+        z-index: 1041;
+    }
+
+    .SelectItem {
+        width: 15vw;
+        height: 45vh;
+        position: absolute;
+        left: 42vw;
+        top: 30vh;
+        z-index: 1043;
+        overflow-y: auto;
+    }
+
+    .FilterInput {
+        background-image: url('../../../../Image/searchicon.png'); /* Add a search icon to input */
+        background-position: 10px 12px; /* Position the search icon */
+        background-repeat: no-repeat; /* Do not repeat the icon image */
+        width: 100%; /* Full-width */
+        font-size: 1rem; /* Increase font-size */
+        padding: 12px 20px 12px 40px; /* Add some padding */
+        border: 1px solid #ddd; /* Add a grey border */
+    }
+
+    .FilterUL {
+        /* Remove default list styling */
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+        .FilterUL li a {
+            border: 1px solid #ddd; /* Add a border to all links */
+            margin-top: -1px; /* Prevent double borders */
+            background-color: #f6f6f6; /* Grey background color */
+            padding: 12px; /* Add some padding */
+            text-decoration: none; /* Remove default text underline */
+            font-size: 1rem; /* Increase the font-size */
+            color: black; /* Add a black text color */
+            display: block; /* Make it into a block element to fill the whole list */
+        }
+
+            .FilterUL li a:hover:not(.header) {
+                background-color: #eee; /* Add a hover effect to all links, except for headers */
+            }
+
+    .para {
+        background-color: #f6f6f6;
+        border: 1px solid #ddd;
+        font-size: 1rem;
+        padding: 11px;
+    }
+
+    .black {
+        color :black !important;
+    }
+
+    .font1rem {
+        font-size: 1rem;
+    }
+
+    .font2rem {
+        font-size: 2rem;
+    }
+
+    .middBtn {
+        margin: 0;
+        border: 0;
+        width: 9.6vw;
+        height: 8vh;
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+
+    .rightBtn {
+        margin: 0;
+        border: 0;
+        width: 7vw;
+        height: 8vh;
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+
+    #DefectType td:nth-child(1),
+    #DefectType td:nth-child(2) {
+        width: 3vw;
+        cursor: pointer;
+    }
+
+    #DefectType td {
+        vertical-align : middle;
+        text-align : center;
+    }
+
+    #Switch {
+        width: 21vw;
+        height: 25vh;
+        position: absolute;
+        left: 40vw;
+        top: 40vh;
+        z-index: 1043;
+        background-color: white;
+        border: solid 1px black;
+        vertical-align: middle;
+        text-align: center;
+        font-size: 1em;
+        font-weight: bold;
+    }
+
+    #AddDefect {
+        width: 71vw;
+        height: 82vh;
+        position: absolute;
+        left: 15vw;
+        top: 13vh;
+        z-index: 1043;
+        background-color: white;
+        border: solid 1px black;
+        vertical-align: middle;
+        text-align: center;
+        font-size: 1em;
+        font-weight: bold;
+    }
+    .DefectTable {
+        font-size: 1rem;
+        font-weight: bold;
+        border: solid 1px black;
+    }
+
+        .DefectTable > thead > tr {
+            background-color: gray;
+        }
+
+            .DefectTable > thead > tr > th {
+                padding: 1em 2em 1em 2em;
+            }
+
+        .DefectTable > tbody > tr > td {
+            border: solid 1px gray;
+            cursor: pointer;
+        }
+
+        .DefectTable .tdEmpty {
+            padding: 2em 1em 2em 1em;
+        }
+
+        .DefectTable .tdValue {
+            padding: 1em;
+        }
+
+    .selectDefect {
+        background-color: #4fc1e9;
+    }
+</style>
+
+<div class="main-content">
+    <header class="page-header">
+        <h3>
+            <i class="icon-users"></i><span>Inspection</span>
+        </h3>
+        <div class="breadcrumb" style="justify-content: flex-end;">
+            <input id="btnSwitch" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="Switch" value="Switch" />
+        </div>
+    </header>
+
+    <div class="main-area">
+        <div class="content-scroll">
+            <div class="inner-scroll">
+                <div class="row rowHeader">
+                    <div class="col-auto"><p class="InfoTitle">Factory</p></div>
+                    <div class="col-auto"><p class="darkblue">@Model.FactoryID</p></div>
+                    <div class="col-auto"><p class="InfoTitle">Line</p></div>
+                    <div class="col-auto"><p class="darkblue">@Model.Line</p></div>
+                    <div class="col-auto"><p class="InfoTitle">Inspection Date</p></div>
+                    <div class="col-auto"><p class="darkblue">@Model.InspectionDate.ToString("yyyy/MM/dd")</p></div>
+                    <div class="col-auto"><p class="InfoTitle">Inspector</p></div>
+                    <div class="col-auto"><p class="darkblue">@ViewBag.UserID</p></div>
+                    <div class="col-auto"><p class="InfoTitle">Brand</p></div>
+                    <div class="col-auto"><p class="darkblue">@Model.Brand</p></div>
+                </div>
+
+                <div style="width: 90vw; height: 92vh; background-color: white;">
+                    <div style="width:40vw; float:left;">
+                        <div style="width: 40vw;">
+                            <table style="width: 40vw;" class="table table-striped">
+                                <tbody>
+                                    <tr>
+                                        <td>Style#</td>
+                                        <td colspan="3" align="left">
+                                            <input id="txtStyle" type="text" />
+                                            <input id="btnStyleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="StyleSelectItem" value="..." />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>SP#</td>
+                                        <td colspan="3">
+                                            <input id="txtSP" type="text" />
+                                            <input id="btnSPSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="SPSelectItem" value="..." />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 6.8vw;">Article</td>
+                                        <td style="width: 12vw;">
+                                            <input id="txtArticle" type="text" style="width: 8em;" />
+                                            <input id="btnArticleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="ArticleSelectItem" value="..." />
+                                        </td>
+                                        <td style="width: 5.7vw;">Size</td>
+                                        <td style="width: 12vw;">
+                                            <input id="txtSize" type="text" style="width: 8em;"/>
+                                            <input id="btnSizeSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="SizeSelectItem" value="..." />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Production Type</td>
+                                        <td>
+                                            <input id="txtProductType" type="text" style="width: 8em;"/>
+                                            <input id="btnProductTypeSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="ProductTypeSelectItem" value="..." />
+                                        </td>
+                                        <td colspan="2"><input id="txtProductTypePMS" type="text" readonly="readonly" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Brand</td>
+                                        <td><input id="txtBrand" type="text" readonly="readonly"/></td>
+                                        <td>Season</td>
+                                        <td><input id="txtSeason" type="text" readonly="readonly"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Sample Stage</td>
+                                        <td><input id="txtSampleStage" type="text" readonly="readonly"/></td>
+                                        <td>Original Line</td>
+                                        <td><input id="txtOriginalLine" type="text" readonly="readonly"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Size Qty</td>
+                                        <td><input id="txtSizeQty" type="text" readonly="readonly"/></td>
+                                        <td>Balance Qty</td>
+                                        <td><input id="txtSizeBalanceQty" type="text" readonly="readonly"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Order Qty</td>
+                                        <td><input id="txtOrderQty" type="text" readonly="readonly"/></td>
+                                        <td>Balance Qty</td>
+                                        <td><input id="txtOrderBalanceQty" type="text" readonly="readonly"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4" height="30"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Pass</td>
+                                        <td><input id="txtPass" type="text" readonly="readonly"/></td>
+                                        <td>Reject</td>
+                                        <td><input id="txtReject" type="text" readonly="readonly"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="red">Hard</td>
+                                        <td><input id="txtHard" type="text" readonly="readonly"/></td>
+                                        <td class="darkblue">Quick</td>
+                                        <td><input id="txtQuick" type="text" readonly="readonly"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="red">Wash</td>
+                                        <td><input id="txtWash" type="text" readonly="readonly"/></td>
+                                        <td class="red">Repl.</td>
+                                        <td><input id="txtRepl" type="text" readonly="readonly"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="red">Print</td>
+                                        <td><input id="txtPrint" type="text" readonly="readonly"/></td>
+                                        <td class="red">Shade</td>
+                                        <td><input id="txtShade" type="text" readonly="readonly"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Dispose</td>
+                                        <td><input id="txtDispose" type="text" readonly="readonly"/></td>
+                                        <td colspan="2"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div style="padding: 10px 0px; background-color: rgb(87, 87, 87);">
+                            <table style="width: 40vw;">
+                                <tr>
+                                    <td align="right" style="padding-right: 10px;"><input id="btnRefresh" type="button" class="site-btn btn-gy" style="margin:0;border:0;" name="Refresh" value="Refresh" /></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div>
+                            <table style="width: 40vw;" class="table table-top3">
+                                <thead>
+                                    <tr>
+                                        <th>Top 3 Defects</th>
+                                        <th>Area</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td align="center" valign="middle" style="width: 20vw;"><input id="txtDefect1" type="text" readonly="readonly" /></td>
+                                        <td align="center" valign="middle" style="width: 20vw;"><input id="txtArea1" type="text" readonly="readonly" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td align="center" valign="middle"><input id="txtDefect2" type="text" readonly="readonly" /></td>
+                                        <td align="center" valign="middle"><input id="txtArea2" type="text" readonly="readonly" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td align="center" valign="middle"><input id="txtDefect3" type="text" readonly="readonly" /></td>
+                                        <td align="center" valign="middle"><input id="txtArea3" type="text" readonly="readonly" /></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div style="width: 10vw; height: 92vh; float: left; background-color: rgb(87, 87, 87); padding-left: 2px;">
+                        <input id="btnPass" type="button" class="site-btn btn-green middBtn font2rem" name="Pass" value="Pass" />
+                        <input id="btnReject" type="button" class="site-btn btn-red middBtn font2rem" name="Reject" value="Reject" />
+                        <input id="btnReworkList" type="button" class="site-btn btn-yellow black middBtn font1rem" style="margin-top: 5rem;" name="ReworkList" value='Rework List' />
+                        <input id="btnMeasurement" type="button" class="site-btn btn-gy black middBtn font1rem" name="Measurement" value="Measurement" />
+                        <input id="btnCFTComments" type="button" class="site-btn btn-gy black middBtn font1rem" name="CFTComments" value="CFT Comments" />
+                        <input id="btnPictures" type="button" class="site-btn btn-gy black middBtn font1rem" name="Pictures" value="Pictures" />
+                    </div>
+                    <div style="width:40vw; float:left;">
+                        <div>
+                            <table style="width: 40vw; margin-bottom:1em;">
+                                <tr>
+                                    <td align="right">
+                                        <input id="btnAddDefect" type="button" class="site-btn btn-red font1rem" style="margin:0;border:0;" name="AddDefect" value="Add Defect" />
+                                    </td>
+                                </tr>
+                            </table>                            
+                        </div>
+                        <div>
+                            <table id="DefectType" align="center" valign="middle" style="width: 40vw; margin-bottom:5em;" class="table table-top3">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th></th>
+                                        <th>Defect Type</th>
+                                        <th class="display-None">other</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <img src="~/Image/Icon/Picture.png" width="30" />
+                                        </td>
+                                        <td>
+                                            <img src="~/Image/Icon/Delete.png" width="30" class="deleteDefectType" />
+                                        </td>
+                                        <td>
+                                            <p>AAAAAAA</p>
+                                        </td>
+                                        <td class="display-None"><p>AAAAAAA</p></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div>
+                            <table style="width: 40vw;">
+                                <tr>
+                                    <td>
+                                        <input id="btnHard" type="button" class="site-btn btn-orange rightBtn font1rem" name="Hard" value="Hard" />
+                                    </td>
+                                    <td>
+                                        <input id="btnQuick" type="button" class="site-btn btn-darkblue rightBtn font1rem" name="Quick" value="Quick" />
+                                    </td>
+                                    <td style="width:10vw;">
+                                        
+                                    </td>
+                                    <td>
+                                        <input id="btnSave" type="button" class="site-btn btn-blue rightBtn font1rem" name="Save" value="Save" />
+                                    </td>
+                                    <td>
+                                        <input id="btnCancel" type="button" class="site-btn btn-blue rightBtn font1rem" name="Cancel" value="Cancel" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="SelectItemBackground" class="display-None"></div>
+    @{
+        Dictionary<string, string> keyValues = new Dictionary<string, string>();
+        Html.RenderPartial("SelectItem", new SelectItem_ViewModel()
+        {
+            IDX = "Style",
+            keyValues = keyValues,
+        });
+
+        keyValues.Add("Style#", "");
+        Html.RenderPartial("SelectItem", new SelectItem_ViewModel()
+        {
+            IDX = "SP",
+            keyValues = keyValues,
+        });
+
+        keyValues.Add("SP#", "");
+        Html.RenderPartial("SelectItem", new SelectItem_ViewModel()
+        {
+            IDX = "Article",
+            keyValues = keyValues,
+        });
+
+        keyValues.Add("Article", "");
+        Html.RenderPartial("SelectItem", new SelectItem_ViewModel()
+        {
+            IDX = "Size",
+            keyValues = keyValues,
+        });
+
+        keyValues.Clear();
+        Html.RenderPartial("SelectItem", new SelectItem_ViewModel()
+        {
+            IDX = "ProductType",
+            keyValues = keyValues,
+        });
+    }
+
+    <div id="Switch" class="display-None">
+        @using (Html.BeginForm("Index", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post))
+        {
+        <table class="table table-striped" style="width: 20vw;">
+            <tbody>
+                <tr>
+                    <td>Factory</td>
+                    <td>
+                        @Html.DropDownListFor(o => o.FactoryID, (List<SelectListItem>)ViewBag.FactoryList, null, new { @class = "form-control" })
+                    </td>
+                </tr>
+                <tr>
+                    <td>Line</td>
+                    <td>
+                        @Html.DropDownListFor(o => o.Line, (List<SelectListItem>)ViewBag.LineList, null, new { @class = "form-control" })
+                    </td>
+                </tr>
+                <tr>
+                    <td>Inspection Date</td>
+                    <td>
+                        @Html.TextBoxFor(o => o.InspectionDate, "{0:yyyy/MM/dd}", new { @class = "form-control date-picker" })
+                    </td>
+                </tr>
+                <tr>
+                    <td>Brand</td>
+                    <td>
+                        @Html.DropDownListFor(o => o.Brand, (List<SelectListItem>)ViewBag.BrandList, null, new { @class = "form-control" })
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding-top: 0.5em;">
+                        <button id="SaveFactory" type="submit" class="site-btn btn-blue" style="width: 7vw; height: 5vh;" onclick="return SwitchCheck();">Save</button>
+                    </td>
+                    <td><button id="CloseFactory" type="button" class="site-btn btn-gy" style="width: 7vw; height: 5vh;">Close</button></td>
+                </tr>
+            </tbody>            
+        </table>
+        }
+    </div>
+
+    <div id="AddDefect" class="display-None">
+        <div>
+            <table style="width: 69vw;">
+                <tbody>
+                    <tr>
+                        <td align="left" valign="middle" style="width: 20%;">
+                            <p style="padding-left: 1em; font-size: 1.5em; font-weight: bold;">Add Defect</p>
+                        </td>
+                        <td align="right" valign="middle">
+                            <input id="btnDefectSave" type="button" class="site-btn btn-blue font1rem" style="margin:0;border:0;padding: 7px 2em;" name="DefectSave" value="Save" />
+                            <input id="btnDefectCamera" type="button" class="site-btn btn-gy font1rem" style="margin:0;border:0;padding: 7px 2em;margin-left: 1em;" name="DefectCamera" value="Camera" />
+                            <input id="btnDefectPicture" type="button" class="site-btn btn-gy font1rem" style="margin:0;border:0;padding: 7px 2em;margin: 0 1em;" name="DefectPicture" value="Picture" />
+                            <input id="btnDefectExit" type="button" class="site-btn btn-gy font1rem" style="margin:0;border:0;padding: 7px 2em;" name="DefectExit" value="Exit" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>        
+        </div>
+        <div>
+            <div style="float:left; width:12vw; height:73vh; margin:0 1em 0 1.5em;">
+                <table class="DefectTable DefectCategory" style="width: 12vw;">
+                    <thead>
+                        <tr>
+                            <th>Defect Category</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="tdEmpty"></td></tr>
+                        <tr><td class="tdEmpty"></td></tr>
+                        <tr><td class="tdEmpty"></td></tr>
+                        <tr><td class="tdEmpty"></td></tr>
+                        <tr><td class="tdEmpty"></td></tr>
+                        <tr><td class="tdEmpty"></td></tr>
+                        <tr><td class="tdEmpty"></td></tr>
+                        <tr><td class="tdEmpty"></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div style="float:left; width:20vw; height:73vh; margin:0 1em; overflow-x: hidden; overflow-y: auto;">
+                <table class="DefectTable ADDDefectType" style="width: 20vw;">
+                    <thead>
+                        <tr>
+                            <th colspan="2">Defect Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="tdEmpty"></td><td class="tdEmpty"></td></tr>
+                        <tr><td class="tdEmpty"></td><td class="tdEmpty"></td></tr>
+                        <tr><td class="tdEmpty"></td><td class="tdEmpty"></td></tr>
+                        <tr><td class="tdEmpty"></td><td class="tdEmpty"></td></tr>
+                        <tr><td class="tdEmpty"></td><td class="tdEmpty"></td></tr>
+                        <tr><td class="tdEmpty"></td><td class="tdEmpty"></td></tr>
+                        <tr><td class="tdEmpty"></td><td class="tdEmpty"></td></tr>
+                        <tr><td class="tdEmpty"></td><td class="tdEmpty"></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div style="float:left; width:20vw; height:73vh; margin:0 1em;">
+                <div>
+                    <table class="DefectTable" style="width: 20vw;">
+                        <thead>
+                            <tr>
+                                <th colspan="2">Area-1</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="tdValue">Outside</td>
+                                <td class="tdValue">Inside</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="margin-top:1em;">
+                    <table class="DefectTable" style="width: 20vw;">
+                        <thead>
+                            <tr>
+                                <th colspan="2">Area-2</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="tdEmpty"></td><td class="tdEmpty"></td></tr>
+                            <tr><td class="tdEmpty"></td><td class="tdEmpty"></td></tr>
+                            <tr><td class="tdEmpty"></td><td class="tdEmpty"></td></tr>
+                            <tr><td class="tdEmpty"></td><td class="tdEmpty"></td></tr>
+                            <tr><td class="tdEmpty"></td><td class="tdEmpty"></td></tr>
+                            <tr><td class="tdEmpty"></td><td class="tdEmpty"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div style="float:left; width:12vw; height:73vh; margin:0 1em;">
+                <div>
+                    <table class="DefectTable" style="width: 12vw;">
+                        <thead>
+                            <tr>
+                                <th>Responsibility</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="tdEmpty"></td></tr>
+                            <tr><td class="tdEmpty"></td></tr>
+                            <tr><td class="tdEmpty"></td></tr>
+                            <tr><td class="tdEmpty"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="margin-top:1em;">
+                    <table class="DefectTable" style="width: 12vw;">
+                        <thead>
+                            <tr>
+                                <th style="padding: 1em;">BA Audit Criteria</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="tdEmpty"></td></tr>
+                            <tr><td class="tdEmpty"></td></tr>
+                            <tr><td class="tdEmpty"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var msg;
+    $(function () {
+        msg = new MessagerAlert();
+        LeftOnBindEvent();
+        MidOnBindEvent();
+        RightOnBindEvent();
+        SwitchBindEvent();
+        AddDefectBindEvent();
+        $('#SelectItemBackground').on('click', function () {
+            $("#SelectItemBackground, .SelectItem").addClass('display-None');
+        });
+
+        if (@ViewBag.ShowSwitch) {
+            $('.menu-trigger').click();
+            $('#btnSwitch').click();
+        }
+
+        PrveLoad();
+    });
+
+    function PrveLoad() {
+        StyleClick($("#txtSP").val());
+        SPClick($("#txtStyle").val());
+    }
+
+    function LeftOnBindEvent() {
+        $('#btnStyleSelectItem').on('click', function () {
+            $("#SelectItemBackground, .SelectItem[idx='Style']").removeClass('display-None');
+        });
+
+        $('#txtStyle').on("change", function () {
+            // $(this).parent().parent().nextAll().children().children("input[type='text']").val("");
+            $('#txtSP, #txtArticle, #txtSize, #txtProductType, #txtProductTypePMS, #txtBrand, #txtSeason, #txtSampleStage, #txtOriginalLine, #txtSizeQty, #txtSizeBalanceQty, #txtOrderQty, #txtOrderBalanceQty').val("");
+            $(".table-top3>tbody>tr>td>input[type='text']").val("");
+            $("#DefectType>tbody>tr").remove();
+            StyleCheck($(this).val());
+        });
+
+        $('#btnSPSelectItem').on('click', function () {
+            if ($("#txtStyle").val() != "") {
+                $(".para[idx='SP'][idi=1]").show();
+            }
+            else {
+                $(".para[idx='SP'][idi=1]").hide();
+            }
+
+            $(".para[idx='SP'][idi=1] > .Value").html($("#txtStyle").val());
+            $("#SelectItemBackground, .SelectItem[idx='SP']").removeClass('display-None');
+        });
+
+        $('#txtSP').on("change", function () {
+            // $(this).parent().parent().nextAll().children().children("input[type='text']").val("");
+            $('#txtArticle, #txtSize, #txtProductType, #txtProductTypePMS, #txtBrand, #txtSeason, #txtSampleStage, #txtOriginalLine, #txtSizeQty, #txtSizeBalanceQty, #txtOrderQty, #txtOrderBalanceQty').val("");
+            $(".table-top3>tbody>tr>td>input[type='text']").val("");
+            $("#DefectType>tbody>tr").remove();
+            SPCheck($('#txtStyle').val(), $(this).val());
+        });
+
+        $('#btnArticleSelectItem').on('click', function () {
+            if ($("#txtStyle").val() == "" || $("#txtSP").val() == "") {
+                msg.WithError("Please select SP# first.");
+                return;
+            }
+
+            $(".para[idx='Article'][idi=1] > .Value").html($("#txtStyle").val());
+            $(".para[idx='Article'][idi=2] > .Value").html($("#txtSP").val());
+            $(".para[idx='Article']").show();
+            $("#SelectItemBackground, .SelectItem[idx='Article']").removeClass('display-None');
+        });
+
+        $('#txtArticle').on("change", function () {
+            $('#txtSize, #txtProductType, #txtSizeQty, #txtSizeBalanceQty, #txtOrderQty, #txtOrderBalanceQty').val("");
+            $(".table-top3>tbody>tr>td>input[type='text']").val("");
+            $("#DefectType>tbody>tr").remove();
+            ArticleCheck($('#txtStyle').val(), $('#txtSP').val(), $(this).val());
+        });
+
+        $('#btnSizeSelectItem').on('click', function () {
+            if ($("#txtStyle").val() == "" || $("#txtSP").val() == "" || $("#txtArticle").val() == "") {
+                msg.WithError("Please select Article first.");
+                return;
+            }
+
+            $(".para[idx='Size'][idi=1] > .Value").html($("#txtStyle").val());
+            $(".para[idx='Size'][idi=2] > .Value").html($("#txtSP").val());
+            $(".para[idx='Size'][idi=3] > .Value").html($("#txtArticle").val());
+            $(".para[idx='Size']").show();
+            $("#SelectItemBackground, .SelectItem[idx='Size']").removeClass('display-None');
+        });
+
+        $('#txtSize').on("change", function () {
+            $('#txtProductType, #txtSizeQty, #txtSizeBalanceQty, #txtOrderQty, #txtOrderBalanceQty').val("");
+            $(".table-top3>tbody>tr>td>input[type='text']").val("");
+            $("#DefectType>tbody>tr").remove();
+            SizeCheck($('#txtStyle').val(), $('#txtSP').val(), $('#txtArticle').val(), $(this).val());
+        });
+
+        $('#btnProductTypeSelectItem').on('click', function () {
+            if ($("#txtStyle").val() == "" || $("#txtSP").val() == "" || $("#txtArticle").val() == "" || $("#txtSize").val() == "") {
+                msg.WithError("Please select Size first.");
+                return;
+            }
+
+            $("#SelectItemBackground, .SelectItem[idx='ProductType']").removeClass('display-None');
+        });
+
+        $('#txtProductType').on("change", function () {
+            $('#txtSizeBalanceQty, #txtOrderBalanceQty').val("");
+            $(".table-top3>tbody>tr>td>input[type='text']").val("");
+            $("#DefectType>tbody>tr").remove();
+            ProductTypeCheck($('#txtStyle').val(), $('#txtSP').val(), $('#txtArticle').val(), $('#txtSize').val(), $(this).val());
+        });
+
+        $('#btnRefresh').on('click', function () {
+            Refresh($("#txtStyle").val(), $("#txtSP").val(), $("#txtArticle").val(), $("#txtSize").val(), $("#txtProductType").val());
+        });
+    }
+
+    function MidOnBindEvent() {
+        $('#btnPass').on('click', function () {
+            if ($("#txtStyle").val() == "" || $("#txtSP").val() == "" || $("#txtArticle").val() == "" || $("#txtSize").val() == "" || $("#txtProductType").val() == "") {
+                return;
+            }
+
+            PassClick($("#txtStyle").val(), $("#txtSP").val(), $("#txtArticle").val(), $("#txtSize").val(), $("#txtProductType").val());
+        });
+
+        $('#btnReject').on('click', function () {
+            if ($("#txtStyle").val() == "" || $("#txtSP").val() == "" || $("#txtArticle").val() == "" || $("#txtSize").val() == "" || $("#txtProductType").val() == "") {
+                return;
+            }
+
+            alert('open other page');
+        });
+
+        $('#btnReworkList').on('click', function () {
+            alert('open other page');
+            $('#btnRefresh').click();
+        });
+
+        $('#btnMeasurement').on('click', function () {
+            alert('open other page');
+        });
+
+        $('#btnCFTComments').on('click', function () {
+            alert('open other page');
+        });
+
+        $('#btnPictures').on('click', function () {
+            alert('open other page');
+        });
+    }
+
+    function RightOnBindEvent() {
+        $('#btnAddDefect').on("click", function () {
+            GetDefectCategory();
+            $('#SelectItemBackground, #AddDefect').removeClass('display-None').unbind('click');
+
+            var tbody = $('#DefectType>tbody');
+            var content = "<tr>";
+            content += "<td><img src='/Image/Icon/Picture.png' width='30' /></td>";
+            content += "<td><img src='/Image/Icon/Delete.png' width='30' class='deleteDefectType' /></td>";
+            content += "<td><p>AAAAAAA</p></td>";
+            content += "<td class='display-None'><p>AAAAAAA</p></td></tr>";
+            tbody.append(content);
+
+            DynamicBindEvent();
+        });
+
+        $('#btnCancel').on("click", function () {
+            $("#DefectType>tbody>tr").remove();
+        });
+
+        $('#btnSwitch').on('click', function () {
+            $("#SelectItemBackground, #Switch").removeClass('display-None').unbind('click');
+        });
+
+        DynamicBindEvent();
+    }
+
+    function DynamicBindEvent() {
+        $('.deleteDefectType').on("click", function () {
+            $(this).parent().parent().remove();
+        });
+    }
+
+    function SwitchBindEvent() {
+        $('#CloseFactory').on('click', function () {
+            $('#Switch').addClass('display-None');
+
+            $("#SelectItemBackground").addClass('display-None');
+
+            $('#SelectItemBackground').on('click', function () {
+                $("#SelectItemBackground").addClass('display-None');
+            });
+        });
+    }
+
+    function AddDefectBindEvent() {
+        $('#btnDefectExit').on('click', function () {
+            $('#AddDefect').addClass('display-None');
+
+            $("#SelectItemBackground").addClass('display-None');
+
+            $('#SelectItemBackground').on('click', function () {
+                $("#SelectItemBackground").addClass('display-None');
+            });
+        });
+    }
+
+    function SwitchCheck() {
+        if ($('#InspectionDate').val() == "") {
+            msg.WithError("Inspection Date cannot be empty");
+            return false;
+        }
+    }
+
+    function StyleClick(OrderID) {
+        $.ajax({
+            url: "@Url.Action("GetStyle", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ OrderID: OrderID }),
+            async: true,
+            success: function (data) {
+                $(".FilterUL[idx='Style']").html(data);
+                SelectItemClickBind();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function StyleCheck(StyleID) {
+        $.ajax({
+            url: "@Url.Action("CheckStyle", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ StyleID: StyleID }),
+            async: true,
+            success: function (data) {
+                if (data.Result == 0) {
+                    $('#txtStyle').val("");
+                    msg.WithError("Style not found.");
+                }
+
+                SPClick($("#txtStyle").val());
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function SPClick(StyleID) {
+        $.ajax({
+            url: "@Url.Action("GetSP", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ StyleID: StyleID }),
+            async: true,
+            success: function (data) {
+                $(".FilterUL[idx='SP']").html(data);
+                SelectItemClickBind();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function SPCheck(StyleID, OrderID) {
+        $.ajax({
+            url: "@Url.Action("CheckSP", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ StyleID: StyleID, OrderID: OrderID }),
+            async: true,
+            success: function (data) {
+                if (data.Result == 0) {
+                    $('#txtSP').val("");
+                    msg.WithError("SP# not found.");
+                }
+                else {
+                    $('#txtStyle').val(data.StyleID);
+                    $('#txtBrand').val(data.Brand);
+                    $('#txtSeason').val(data.Season);
+                    $('#txtProductTypePMS').val(data.ProductTypePMS);
+                    $('#txtSampleStage').val(data.SampleStage);
+                    $('#txtOriginalLine').val(data.OriginalLine);
+                    $('#txtOrderQty').val(data.OrderQty);
+
+                    if (data.Article) {
+                        $('#txtArticle').val(data.Article);
+                        $('#txtSize').val(data.Size);
+                        $('#txtProductType').val(data.ProductType);
+                        $('#txtSizeQty').val(data.SizeQty);
+                        $('#txtSizeBalanceQty').val(data.SizeBalanceQty);
+                        $('#txtOrderBalanceQty').val(data.OrderBalanceQty);
+                    }
+                }
+
+                SPClick($("#txtStyle").val());
+                ArticleClick($("#txtStyle").val(), $('#txtSP').val());
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function ArticleClick(StyleID, OrderID) {
+        $.ajax({
+            url: "@Url.Action("GetArticle", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ StyleID: StyleID, OrderID: OrderID }),
+            async: true,
+            success: function (data) {
+                $(".FilterUL[idx='Article']").html(data);
+                SelectItemClickBind();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function ArticleCheck(StyleID, OrderID, Article) {
+        $.ajax({
+            url: "@Url.Action("CheckArticle", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ StyleID: StyleID, OrderID: OrderID, Article: Article }),
+            async: true,
+            success: function (data) {
+                if (data.Result == 0) {
+                    $('#txtArticle').val("");
+                    msg.WithError("Article not found.");
+                }
+                else {
+                    if (data.Size) {
+                        $('#txtSize').val(data.Size);
+                        $('#txtProductType').val(data.ProductType);
+                        $('#txtSizeQty').val(data.SizeQty);
+                        $('#txtSizeBalanceQty').val(data.SizeBalanceQty);
+                        $('#txtOrderQty').val(data.OrderQty);
+                        $('#txtOrderBalanceQty').val(data.OrderBalanceQty);
+                    }
+                }
+
+                ArticleClick($("#txtStyle").val(), $("#txtSP").val());
+                SizeClick($("#txtStyle").val(), $("#txtSP").val(), $("#txtArticle").val());
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function SizeClick(StyleID, OrderID, Article) {
+        $.ajax({
+            url: "@Url.Action("GetSize", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ StyleID: StyleID, OrderID: OrderID, Article: Article }),
+            async: true,
+            success: function (data) {
+                $(".FilterUL[idx='Size']").html(data);
+                SelectItemClickBind();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function SizeCheck(StyleID, OrderID, Article, Size) {
+        $.ajax({
+            url: "@Url.Action("CheckSize", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ StyleID: StyleID, OrderID: OrderID, Article: Article, Size: Size }),
+            async: true,
+            success: function (data) {
+                if (data.Result == 0) {
+                    $('#txtSize').val("");
+                    msg.WithError("Size not found.");
+                }
+                else {
+                    $('#txtSizeQty').val(data.SizeQty);
+                    $('#txtOrderQty').val(data.OrderQty);
+                    if (data.ProductType) {
+                        $('#txtProductType').val(data.ProductType);
+                        $('#txtSizeBalanceQty').val(data.SizeBalanceQty);
+                        $('#txtOrderBalanceQty').val(data.OrderBalanceQty);
+                    }
+                }
+
+                SizeClick($("#txtStyle").val(), $("#txtSP").val(), $("#txtArticle").val());
+                ProductTypeClick($("#txtStyle").val(), $("#txtSP").val(), $("#txtArticle").val(), $("#txtSize").val());
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function ProductTypeClick(StyleID, OrderID, Article, Size) {
+        $.ajax({
+            url: "@Url.Action("GetProductType", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ StyleID: StyleID, OrderID: OrderID, Article: Article, Size: Size }),
+            async: true,
+            success: function (data) {
+                $(".FilterUL[idx='ProductType']").html(data);
+                SelectItemClickBind();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function ProductTypeCheck(StyleID, OrderID, Article, Size, ProductType) {
+        $.ajax({
+            url: "@Url.Action("CheckProductType", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ StyleID: StyleID, OrderID: OrderID, Article: Article, Size: Size, ProductType: ProductType }),
+            async: true,
+            success: function (data) {
+                if (data.Result == 0) {
+                    $('#txtProductType').val("");
+                    msg.WithError("ProductType not found.");
+                }
+                else {
+                    $('#txtSizeBalanceQty').val(data.SizeBalanceQty);
+                    $('#txtOrderBalanceQty').val(data.OrderBalanceQty);
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function Refresh(StyleID, OrderID, Article, Size, ProductType) {
+        $.ajax({
+            url: "@Url.Action("RefreshQty", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ StyleID: StyleID, OrderID: OrderID, Article: Article, Size: Size, ProductType: ProductType }),
+            async: true,
+            success: function (data) {
+                $('#txtPass').val(data.Pass);
+                $('#txtReject').val(data.Reject);
+                $('#txtHard').val(data.Hard);
+                $('#txtQuick').val(data.Quick);
+                $('#txtWash').val(data.Wash);
+                $('#txtRepl').val(data.Repl);
+                $('#txtPrint').val(data.Print);
+                $('#txtShade').val(data.Shade);
+                $('#txtDispose').val(data.Dispose);
+                $.each(data.top3, function (index, value) {
+                    $("#txtDefect" + (index + 1)).val(value.Defect);
+                    $("#txtArea" + (index + 1)).val(value.Area);
+                });
+
+                if (data.Result) {
+                    $('#txtSizeQty').val(data.SizeQty);
+                    $('#txtSizeBalanceQty').val(data.SizeBalanceQty);
+                    $('#txtOrderQty').val(data.OrderQty);
+                    $('#txtOrderBalanceQty').val(data.OrderBalanceQty);
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function PassClick(StyleID, OrderID, Article, Size, ProductType) {
+        $.ajax({
+            url: "@Url.Action("Pass", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ StyleID: StyleID, OrderID: OrderID, Article: Article, Size: Size, ProductType: ProductType }),
+            async: true,
+            success: function (data) {
+                if (data.Result) {
+                    msg.WithSuccess("You pass 1 garment.");
+                    $('#btnRefresh').click();
+                }
+                else {
+                    msg.WithError(data.ErrMsg);
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function GetDefectCategory() {
+        $.ajax({
+            url: "@Url.Action("GetDefectType", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({  }),
+            async: true,
+            success: function (data) {
+                $(".DefectCategory>tbody").html(data);
+
+                $('.DefectCategoryTD').on('click', function () {
+                    $('.DefectCategoryTD').removeClass("selectDefect");
+                    $(this).addClass("selectDefect");
+                    GetADDDefectType($(this).attr("idx"));
+                });
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function GetADDDefectType(DefectTypeID) {
+        $.ajax({
+            url: "@Url.Action("GetDefectCode", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ DefectTypeID: DefectTypeID }),
+            async: true,
+            success: function (data) {
+                $(".ADDDefectType>tbody").html(data);
+
+                $('.DefectTypeID').on('click', function () {
+                    $('.DefectTypeID').removeClass("selectDefect");
+                    $(this).addClass("selectDefect");
+                });
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function SelectItemClickBind() {
+        $('.SelectItem>ul>li>a').on('click', function () {
+            var idx = $(this).parent().parent().parent().attr('idx');
+            $("#txt" + idx).val($(this).html()).trigger("change");
+            $('#SelectItemBackground, .SelectItem').addClass('display-None');
+        });
+    }
+
+    function FilterFunction(idx) {
+        // Declare variables
+        var filter, li, a, i, txtValue;
+        filter = $(".FilterInput[idx='" + idx + "']").val().toUpperCase();
+        li = $(".FilterUL[idx='" + idx + "'] li");
+
+        // Loop through all list items, and hide those who don't match the search query
+        for (i = 0; i < li.length; i++) {
+            a = li[i].getElementsByTagName("a")[0];
+            txtValue = a.textContent || a.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                li[i].style.display = "";
+            } else {
+                li[i].style.display = "none";
+            }
+        }
+    }
+</script>
