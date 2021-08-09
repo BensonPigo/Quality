@@ -1,0 +1,22 @@
+﻿
+@using DatabaseObject.ViewModel
+
+@model SelectItem_ViewModel
+
+<div idx="@Model.IDX" class="SelectItem display-None">
+    @{
+        int i = 1;
+        foreach (var keyValue in Model.keyValues.Where(x => !x.Key.IsEmpty()))
+        {
+            string show = keyValue.Value.IsEmpty() ? "none" : "block";
+            <div idx="@Model.IDX" idi="@i" class="para" style="display:@show">
+                <span class="Key">@keyValue.Key</span>
+                <span class="Value blue" style="padding-left:5px;">@keyValue.Value</span>
+            </div>
+            i++;
+        }
+    }
+    <input type="text" class="FilterInput" idx="@Model.IDX" onkeyup="FilterFunction('@Model.IDX')" placeholder="Search ....">
+    <ul class="FilterUL" idx="@Model.IDX">
+    </ul>
+</div>

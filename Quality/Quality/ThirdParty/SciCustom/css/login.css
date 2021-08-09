@@ -1,0 +1,109 @@
+﻿@charset "UTF-8";
+
+/*login*/
+.login-box {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+.login-box-header {
+    background-color: #e71a0f;
+    -webkit-border-top-left-radius: 5px;
+    -webkit-border-bottom-left-radius: 5px;
+    -moz-border-radius-topleft: 5px;
+    -moz-border-radius-bottomleft: 5px;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    padding: 80px 65px;
+    width: 300px;
+    -webkit-animation-name: openslide; /* Safari 4.0 - 8.0 */
+    -webkit-animation-duration: 2s; /* Safari 4.0 - 8.0 */
+    animation-name: openslide;
+    animation-duration: 2s;
+    position: relative;
+    /*-webkit-animation-delay: 1s; /* Safari 4.0 - 8.0 */
+    animation-delay: 1s;
+    animation-iteration-count: 1;
+    */
+}
+
+@-webkit-keyframes openslide {
+    from {
+        left: 40%;
+    }
+
+    to {
+        left: 0;
+    }
+}
+
+@keyframes openslide {
+    from {
+        left: 40%;
+    }
+
+    to {
+        left: 0;
+    }
+}
+
+.login-box-area {
+    position: relative;
+    z-index: 9;
+    width: 380px;
+    padding: 25px 40px 50px;
+    background: rgb(43,44,62);
+    background: -moz-linear-gradient(top, rgba(43,44,62,1) 0%, rgba(24,23,28,1) 100%);
+    background: -webkit-linear-gradient(top, rgba(43,44,62,1) 0%,rgba(24,23,28,1) 100%);
+    background: linear-gradient(to bottom, rgba(43,44,62,1) 0%,rgba(24,23,28,1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2b2c3e', endColorstr='#18171c',GradientType=0 );
+}
+
+    .login-box-area:before, .login-box-area:after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 100%;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 0 0 30px 20px;
+        border-color: transparent transparent #000000 transparent;
+    }
+
+    .login-box-area:after {
+        top: auto;
+        bottom: 0;
+        border-width: 0 20px 30px 0;
+        border-color: transparent #000000 transparent transparent;
+    }
+
+.login-form {
+    padding: 20px 20px 0;
+}
+
+    .login-form .form-item {
+        border-bottom: 1px solid #e71a0f;
+        margin-bottom: 10px;
+    }
+
+        .login-form .form-item label {
+            font-size: 0;
+        }
+
+    .login-form input {
+        background: none;
+        border: 0;
+        color: #fff;
+        padding: 5px;
+        font-size: 15px;
+    }
+
+    .login-form .form-item label i {
+        font-size: 30px;
+    }
+
+    .login-form .btn-login {
+        margin-top: 50px;
+    }
