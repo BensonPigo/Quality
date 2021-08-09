@@ -1,0 +1,17 @@
+Quality/ADOHelper/bin/
+Quality/ADOHelper/obj/
+Quality/BusinessLogicLayer/obj/
+Quality/DatabaseObject/bin/
+Quality/DatabaseObject/obj/
+Quality/Library/obj/
+Quality/ManufacturingExecutionDataAccessLayer/bin/
+Quality/ManufacturingExecutionDataAccessLayer/obj/
+Quality/ProductionDataAccessLayer/bin/
+Quality/ProductionDataAccessLayer/obj/
+Quality/Quality/obj/
+Quality/ToolKit/obj/
+Quality/ToolKit/bin/
+Quality/Quality/bin/
+Quality/Library/bin/
+Quality/BusinessLogicLayer/bin/Debug/BusinessLogicLayer.pdb
+Quality/BusinessLogicLayer/bin/

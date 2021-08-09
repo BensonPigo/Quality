@@ -1,0 +1,29 @@
+﻿@charset "UTF-8";
+
+/*dashboard*/
+.welcome-user{margin-top: 80px;width: 480px;}
+.user-info{padding-left: 80px; text-shadow: rgba(0,0,0,.6) 2px 2px 1px;line-height: 1.5;margin-bottom: 10px;background-image: url('../img/header-hi.png');background-repeat: no-repeat;background-position: left center;background-size: contain;}
+.instruction-desc h3{border-bottom: 1px solid #e71a0f;padding-bottom: 10px;}
+.function-list{  display: flex;margin: 50px 0 0 150px;}
+.function-list .function-list-column{width: 120px;line-height: 0;position: relative;}
+.function-list .function-list-column:nth-child(2){top: 70px;}
+.function-list .function-list-column:nth-child(4),.function-list .function-list-column:nth-child(6),.function-list .function-list-column:nth-child(8){top: -70px;}
+.function-list .function-list-column:nth-child(5),.function-list .function-list-column:nth-child(7){top: -140px;}
+.function-list .function-item-svg,.function-item-wrapper{width: 150px;height: 140px; position: relative;}
+.function-item-content{position: absolute;width: 100%;height: 100%;text-align: center;z-index: 9;line-height: 1.5;padding-top: 18px;}
+.function-item-content h4{text-shadow: rgba(0,0,0,.6) 2px 0 1px;color: #fff;letter-spacing: 0.01em;padding-top: 58%;font-size: 12px;}
+.function-list .function-item{stroke:#fff; stroke-width:2.8 ;box-shadow: inset 4px 0 13px rgba(0,0,0,.5);}
+.function-list .function-item-wrapper a:hover +.function-item-svg > .function-item{stroke:#e71a0f; }
+.function-list .function-item-wrapper a:hover +.function-item-svg{filter: drop-shadow(rgba(0,0,0,.75) 4px 0px 13px);}
+.function-list .function-item-green {fill: url(#item-green) #fff;}
+.function-list .function-item-gray {fill: url(#item-gray) #fff;}
+.function-list .function-item-yellow {fill: url(#item-yellow) #fff;}
+.function-list .function-item-blue {fill: url(#item-blue) #fff;}
+.function-list .function-item-orange {fill: url(#item-orange) #fff;}
+.function-list .function-item-dblue {fill: url(#item-dblue) #fff;}
+#item-green {--color-stop: #B1E829;--color-bot: #5B7F00;}
+#item-gray{--color-bot: #afafaf;--color-stop: #dddddd;}
+#item-yellow{--color-bot: #efbc3e;--color-stop: #f7e0a8;}
+#item-blue{--color-bot: #16a6b6;--color-stop: #8ceffa;}
+#item-orange{--color-bot: #ee6557;--color-stop: #ed9e38;}
+#item-dblue{--color-bot: #34495e;--color-stop: #7599be

@@ -1,0 +1,216 @@
+﻿@using System.Configuration
+@using DatabaseObject.ManufacturingExecutionDB;
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="~/ThirdParty/SciCustom/css/style.css" rel="stylesheet" />
+    <link href="~/ThirdParty/SciCustom/css/icon.css" rel="stylesheet" />
+    <link href="~/ThirdParty/SciCustom/css/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/ThirdParty/SciCustom/css/page.css" rel="stylesheet" />
+    <link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+
+    <script src="~/ThirdParty/SciCustom/js/jquery-3.4.1.min.js"></script>
+
+    <title>Quality Web</title>
+
+    @{
+        string WebPortalURL = ConfigurationManager.AppSettings["WebPortalURL"].ToString();
+        string WebPortalURL_HomePage = ConfigurationManager.AppSettings["WebPortalURL_HomePage"].ToString();
+
+        string FactoryID = string.Empty;
+        string UserName = string.Empty;
+        string SelectedMenu = string.Empty;
+        List<Quality_Menu> menus = new List<Quality_Menu>();
+        if (Session.Keys.Count <= 4)
+        {
+            Response.Write("Please login again。</br></br>");
+            Response.Write($@"<a href=""{WebPortalURL}"">Login</a>");
+
+            Response.End();
+        }
+        else
+        {
+            UserName = HttpContext.Current.Session["UserName"].ToString();
+            menus = (List<Quality_Menu>)HttpContext.Current.Session["MenuList"];
+        }
+
+        //是否有被選擇的功能要展開細項
+        if (ViewData["SelectedMenu"] != null)
+        {
+            SelectedMenu = ViewData["SelectedMenu"].ToString();
+        }
+    }
+
+    <style type="text/css">
+        #loaderBackground {
+            background-color: gray;
+            bottom: 0;
+            left: 0;
+            position: fixed;
+            right: 0;
+            top: 0;
+            z-index: 1041;
+        }
+
+        #page_loader {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 150px;
+            height: 150px;
+            margin: -75px 0 0 -75px;
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid #3498db;
+            width: 120px;
+            height: 120px;
+            -webkit-animation: spin 2s linear infinite;
+            animation: spin 2s linear infinite;
+            z-index: 1042;
+        }
+
+        #page_loader_gif {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            z-index: 1043;
+        }
+
+        .display-None {
+            display: none;
+        }
+
+        .display-Block {
+            display: block;
+        }
+
+        .pointer {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="site-bg">
+    <!--上方橫向的區域-->
+    <header class="site-header">
+        <!--LOGO-->
+        <h1 class="page-logo">
+            <img src="~/ThirdParty/SciCustom/img/page-logo.png" />
+        </h1>
+
+        <!--三條槓-->
+        <div class="menu-trigger">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+
+        <!--登入者資訊、Home按鈕、放大鏡搜尋按鈕、登出鈕-->
+        <nav class="header-nav">
+            <ul class="header-info light">
+                <li class="header-info-user">
+                    <i class="icon-user"></i>
+                    <span>@UserName</span>
+                </li>
+                <li class="header-info-date">
+                    <i class="icon-calendar"></i>
+                    <span>@DateTime.Now.ToShortDateString()</span>
+                </li>
+            </ul>
+
+            <ul class="header-menu light">
+                <li>
+                    <a href="@WebPortalURL_HomePage">
+                        <i class="icon-pol"></i>
+                        <span>Home</span>
+                    </a>
+                </li>
+
+            </ul>
+
+            <ul class="side-nav">
+                <li class="logout">
+                    <a href="@Url.Action("Logout", "Home", new { Area = "" })">
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <!--左側選單 start-->
+    <div class="sidebar">
+        <nav style="overflow-y: auto;max-height: 90%;">
+                @if (menus.Count > 0)
+                {
+                    foreach (string moduleName in menus.OrderBy(x => x.ModuleSeq).GroupBy(x => x.ModuleName).Select(x => x.Key))
+                    {
+                        string IsOpen = moduleName == SelectedMenu ? "current" : "";
+                        var subFunction = menus.Where(x => x.ModuleName.Equals(moduleName)).OrderBy(x => x.FunctionSeq);
+                        <ul class="sidebar-nav pointer">
+                            <li class="RootLi @Html.Raw(IsOpen)">
+                                <h6><i class="icon-box"></i><span>@moduleName</span></h6>
+                                <ul class="sidebar-menu">
+                                    @foreach (Quality_Menu r in subFunction)
+                                    {
+                                        <li>
+                                            <h6><a href="@r.Url"><span>@r.FunctionName</span></a></h6>
+                                        </li>
+                                    }
+                                </ul>
+                            </li>
+                        </ul>
+                    }
+                }
+        </nav>
+    </div>
+    <!--左側選單 end-->
+
+    <div id="loaderBackground"></div>
+    <div id="page_loader_gif"><img src="~/Image/tenor.gif" /></div>
+
+    @RenderBody()
+
+    <script src="~/ThirdParty/plugins/sweetalert2/promise.min.js"></script>
+    <script src="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <script src="~/ThirdParty/CustomScripts/common-1.0.0.js"></script>
+    <script src="~/ThirdParty/CustomScripts/Message-1.0.0.js"></script>
+    <script src="~/ThirdParty/CustomScripts/basic.js"></script>
+    <script src="~/ThirdParty/plugins/jquery-datepicker/Datepicker.js"></script>
+    <script src="~/ThirdParty/SciCustom/js/jquery-ui.min.js"></script>
+    <script src="~/ThirdParty/SciCustom/js/main.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            $('.date-picker').datepicker({ changeYear: true, changeMonth: true, currentText: "Now" });
+            $('#loaderBackground, #page_loader_gif').addClass('display-None');
+
+            // F1 開啟Online Help
+            document.onkeydown = function (evt) {
+
+                if (navigator.userAgent.indexOf("Chrome") == -1) {
+                    evt = evt || window.event;
+                }
+
+                if (evt.keyCode == 112) {
+
+                    var now = new Date();
+                    var NoeDate = now.getFullYear() + "/" + (now.getMonth() + 1) + "/" + now.getDate();
+
+                    evt.preventDefault();
+                }
+            };
+
+            $(".RootLi").on('click', function (event) {
+                $(this).parent().toggleClass('current');
+            });
+        });
+    </script>
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>

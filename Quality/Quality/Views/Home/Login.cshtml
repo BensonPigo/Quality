@@ -1,0 +1,114 @@
+﻿@using DatabaseObject.RequestModel
+
+@{
+    ViewBag.Title = "Login";
+    Layout = null;
+}
+
+@model LogIn_Request
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link href="~/ThirdParty/SciCustom/css/style.css" rel="stylesheet" />
+    <link href="~/ThirdParty/SciCustom/css/login.css" rel="stylesheet" />
+    <link href="~/ThirdParty/SciCustom/css/icon.css" rel="stylesheet" />
+    <link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+
+    <script src="~/ThirdParty/plugins/jquery/jquery-3.2.1.min.js"></script>
+    @*@Styles.Render("~/Scripts/Plugins/SCI_Custom_CSS")*@
+
+
+    <title>
+        SCI FactoryEDI System
+    </title>
+
+
+    @{
+        if (@ViewData["Msg"] == null)
+        {
+
+        }
+    }
+</head>
+
+<body class="site-bg site-bg-w-halo">
+
+    <maim>
+
+        <div class="login-box al-m">
+            <div class="login-box-header">
+                <img src="~/ThirdParty/SciCustom/img/header-login.png" />
+            </div>
+            <div class="login-box-area">
+                <h2 class="red">LOG IN</h2>
+                <p class="f-xs nr">Please enter your User ID and Password, then click LOGIN button.</p>
+                @using (Html.BeginForm("Login", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post, new { @class = "login-form", @name = "MyForm", @id = "MyForm", @onsubmit = "validateMyForm();" }))
+                {
+                    <div class="form-item">
+                        <label><i class="icon-user red"></i>Name</label>
+                        @Html.TextBoxFor(o => o.UserID, new { @class = "form-control center-block", @placeholder = "User ID", @data_rule_required = "true" })
+                    </div>
+
+                    <div class="form-item">
+                        <label><i class="icon-lock red"></i>Password</label>
+                        @Html.TextBoxFor(o => o.Password, new { @class = "form-control center-block", @placeholder = "Password", @type = "password", @data_rule_required = "true" })
+                    </div>
+                    <button class="site-btn btn-red btn-lg margin-c btn-login">LOGIN</button>
+
+                }
+
+                @Html.Hidden("Msg", ViewData["Msg"]);
+
+            </div>
+        </div>
+    </maim>
+    <script src="~/ThirdParty/plugins/jquery-validation/jquery.validate.js"></script>
+    <script src="~/ThirdParty/plugins/sweetalert2/promise.min.js"></script>
+    <script src="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <script src="~/ThirdParty/CustomScripts/common-1.0.0.js"></script>
+    <script src="~/ThirdParty/CustomScripts/Message-1.0.0.js"></script>
+    <script src="~/ThirdParty/CustomScripts/basic.js"></script>
+    @*@Scripts.Render("~/Scripts/Plugins/SCI_Custom_JS")*@
+    <script type="text/javascript">
+
+        var getExplorer = (function () {
+            var explorer = window.navigator.userAgent,
+                compare = function (s) { return (explorer.indexOf(s) >= 0); },
+                ie11 = (function () { return ("ActiveXObject" in window) })();
+            if (compare("MSIE") || ie11) { return 'ie'; }
+            else if (compare("Firefox") && !ie11) { return 'Firefox'; }
+            else if (compare("Chrome") && !ie11) { return 'Chrome'; }
+            else if (compare("Opera") && !ie11) { return 'Opera'; }
+            else if (compare("Safari") && !ie11) { return 'Safari'; }
+        })();
+
+        $(function () {
+            $("form").validate();
+            var msg = new MessagerAlert();
+
+            if ($("#Msg").val() != '') {                
+                msg.WithError($("#Msg").val());
+                $("#Msg").val('');
+            }
+            if (getExplorer == 'ie') {
+                alert("Internet Explorer is not supported, please use Chrome or FireFox.");
+
+            }
+
+        });
+
+        function validateMyForm() {
+            if (getExplorer == 'ie') {
+                event.preventDefault();
+            }
+        }
+    </script>
+
+</body>
+</html>
+
+
