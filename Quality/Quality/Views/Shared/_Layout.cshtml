@@ -233,6 +233,10 @@
                 $(this).parent().toggleClass('current');
             });
 
+            ZoomGlleryBind();
+        });
+
+        function ZoomGlleryBind() {
             $('.zoom-gallery').magnificPopup({
                 delegate: 'a',
                 type: 'image',
@@ -256,7 +260,7 @@
                     }
                 }
             });
-        });
+        }
     </script>
 
     @RenderSection("scripts", required: false)

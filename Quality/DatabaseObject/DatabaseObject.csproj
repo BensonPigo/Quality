@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="ManufacturingExecutionDB\Area.cs" />
     <Compile Include="ManufacturingExecutionDB\DQSReason.cs" />
+    <Compile Include="ManufacturingExecutionDB\MailTo.cs" />
     <Compile Include="ManufacturingExecutionDB\Measurement.cs" />
     <Compile Include="ManufacturingExecutionDB\Pass1.cs" />
     <Compile Include="ManufacturingExecutionDB\Quality_Menu.cs" />
@@ -51,6 +52,7 @@
     <Compile Include="ManufacturingExecutionDB\Quality_Pass2.cs" />
     <Compile Include="ManufacturingExecutionDB\Quality_Position.cs" />
     <Compile Include="ManufacturingExecutionDB\ReworkCard.cs" />
+    <Compile Include="ManufacturingExecutionDB\ReworkList.cs" />
     <Compile Include="ManufacturingExecutionDB\RFT_Inspection.cs" />
     <Compile Include="ManufacturingExecutionDB\RFT_Inspection_Detail.cs" />
     <Compile Include="ManufacturingExecutionDB\RFT_Inspection_Measurement.cs" />
@@ -75,6 +77,7 @@
     <Compile Include="ResultModel\LogIn_Result.cs" />
     <Compile Include="ViewModel\InspectionSave_ViewModel.cs" />
     <Compile Include="ViewModel\Inspection_ViewModel.cs" />
+    <Compile Include="ViewModel\ReworkList_ViewModel.cs" />
     <Compile Include="ViewModel\SelectItem_ViewModel.cs" />
   </ItemGroup>
   <ItemGroup />

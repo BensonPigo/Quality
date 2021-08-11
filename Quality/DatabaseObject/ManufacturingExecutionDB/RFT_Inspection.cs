@@ -42,6 +42,11 @@ namespace DatabaseObject.ManufacturingExecutionDB
         [Required]
         [Display(Name = "款式")]
         public Int64 StyleUkey { get; set; }
+
+        /// <summary>款式名稱</summary>
+        [Required]
+        [Display(Name = "款式名稱")]
+        public string Style { get; set; }
         /// <summary>返修狀態 (Hard, Quick, Print, Quick, Repl., Shade, Wash)</summary>
         [Required]
         [StringLength(5)]

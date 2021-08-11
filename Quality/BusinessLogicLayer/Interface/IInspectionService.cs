@@ -16,6 +16,8 @@ namespace BusinessLogicLayer.Interface
 
         IList<GarmentDefectType> GetGarmentDefectType();
 
+        IList<MailTo> GetMailTo(MailTo mailTo);
+
         IList<GarmentDefectCode> GetGarmentDefectCode(GarmentDefectCode defectCode);
 
         IList<Area> GetArea(Area area);

@@ -44,6 +44,7 @@
     <Compile Include="Interface\IAreaProvider.cs" />
     <Compile Include="Interface\IDQSReasonProvider.cs" />
     <Compile Include="Interface\IInspectionProvider.cs" />
+    <Compile Include="Interface\IMailToProvider.cs" />
     <Compile Include="Interface\IMeasurementProvider.cs" />
     <Compile Include="Interface\IPass1Provider.cs" />
     <Compile Include="Interface\IQualityMenuProvider.cs" />
@@ -51,6 +52,7 @@
     <Compile Include="Interface\IQualityPass2Provider.cs" />
     <Compile Include="Interface\IQualityPositionProvider.cs" />
     <Compile Include="Interface\IReworkCardProvider.cs" />
+    <Compile Include="Interface\IReworkListProvider.cs" />
     <Compile Include="Interface\IRFTInspectionDetailProvider.cs" />
     <Compile Include="Interface\IRFTInspectionMeasurementProvider.cs" />
     <Compile Include="Interface\IRFTInspectionProvider.cs" />
@@ -60,6 +62,7 @@
     <Compile Include="Provider\MSSQL\AreaProvider.cs" />
     <Compile Include="Provider\MSSQL\DQSReasonProvider.cs" />
     <Compile Include="Provider\MSSQL\InspectionProvider.cs" />
+    <Compile Include="Provider\MSSQL\MailToProvider.cs" />
     <Compile Include="Provider\MSSQL\MeasurementProvider.cs" />
     <Compile Include="Provider\MSSQL\Pass1Provider.cs" />
     <Compile Include="Provider\MSSQL\QualityMenuProvider.cs" />
@@ -67,6 +70,7 @@
     <Compile Include="Provider\MSSQL\QualityPass2Provider.cs" />
     <Compile Include="Provider\MSSQL\QualityPositionProvider.cs" />
     <Compile Include="Provider\MSSQL\ReworkCardProvider.cs" />
+    <Compile Include="Provider\MSSQL\ReworkListProvider.cs" />
     <Compile Include="Provider\MSSQL\RFTInspectionDetailProvider.cs" />
     <Compile Include="Provider\MSSQL\RFTInspectionMeasurementProvider.cs" />
     <Compile Include="Provider\MSSQL\RFTInspectionProvider.cs" />

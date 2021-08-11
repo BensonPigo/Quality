@@ -80,8 +80,6 @@ inner join RFT_Inspection_Detail rd on r.ID = rd.ID and rd.Junk = 0" + Environme
             SbSql.Append("        ,AddDate"+ Environment.NewLine);
             SbSql.Append("FROM [RFT_Inspection_Detail]"+ Environment.NewLine);
 
-
-
             return ExecuteList<RFT_Inspection_Detail>(CommandType.Text, SbSql.ToString(), objParameter);
         }
 		/*建立(Create) 詳細敘述如下*/
@@ -103,7 +101,6 @@ inner join RFT_Inspection_Detail rd on r.ID = rd.ID and rd.Junk = 0" + Environme
             SbSql.Append("INSERT INTO [RFT_Inspection_Detail]"+ Environment.NewLine);
             SbSql.Append("(" + Environment.NewLine);
             SbSql.Append("         ID"+ Environment.NewLine);
-            SbSql.Append("        ,Ukey"+ Environment.NewLine);
             SbSql.Append("        ,DefectCode"+ Environment.NewLine);
             SbSql.Append("        ,AreaCode"+ Environment.NewLine);
             SbSql.Append("        ,Junk"+ Environment.NewLine);
@@ -117,7 +114,6 @@ inner join RFT_Inspection_Detail rd on r.ID = rd.ID and rd.Junk = 0" + Environme
             SbSql.Append("VALUES"+ Environment.NewLine);
             SbSql.Append("(" + Environment.NewLine);
             SbSql.Append("         @ID"); objParameter.Add("@ID", DbType.String, Item.ID);
-            SbSql.Append("        ,@Ukey"); objParameter.Add("@Ukey", DbType.String, Item.Ukey);
             SbSql.Append("        ,@DefectCode"); objParameter.Add("@DefectCode", DbType.String, Item.DefectCode);
             SbSql.Append("        ,@AreaCode"); objParameter.Add("@AreaCode", DbType.String, Item.AreaCode);
             SbSql.Append("        ,@Junk"); objParameter.Add("@Junk", DbType.String, Item.Junk);
@@ -128,9 +124,6 @@ inner join RFT_Inspection_Detail rd on r.ID = rd.ID and rd.Junk = 0" + Environme
             SbSql.Append("        ,@DefectPicture"); objParameter.Add("@DefectPicture", DbType.String, Item.DefectPicture);
             SbSql.Append("        ,@AddDate"); objParameter.Add("@AddDate", DbType.DateTime, Item.AddDate);
             SbSql.Append(")"+ Environment.NewLine);
-
-
-
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
@@ -185,14 +178,86 @@ inner join RFT_Inspection_Detail rd on r.ID = rd.ID and rd.Junk = 0" + Environme
         public int Delete(RFT_Inspection_Detail Item)
         {
             StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.String, Item.ID } ,
+            };
             SbSql.Append("DELETE FROM [RFT_Inspection_Detail]"+ Environment.NewLine);
-
-
-
+            SbSql.Append("where 1=1" + Environment.NewLine);
+            SbSql.Append("and id = @ID" + Environment.NewLine);
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
-	#endregion
+
+        public int Create_Master_Detail(RFT_Inspection Master, List<RFT_Inspection_Detail> Detail)
+        {
+            string sqlcmd = $@"
+INSERT INTO [RFT_Inspection](
+       [OrderID]
+      ,[Article]
+      ,[Location]
+      ,[Size]
+      ,[Line]
+      ,[FactoryID]
+      ,[StyleUkey]
+      ,[FixType]
+      ,[ReworkCardNo]
+      ,[Status]
+      ,[AddDate]
+      ,[AddName]
+      ,[ReworkCardType]
+      ,[InspectionDate])
+values(
+     '{Master.OrderID}'
+    ,'{Master.Article}'
+    ,'{Master.Location}'
+    ,'{Master.Size}'
+    ,'{Master.Line}'
+    ,'{Master.FactoryID}'
+    ,'{Master.StyleUkey}'
+    ,'{Master.FixType}'
+    ,'{Master.ReworkCardNo}'
+    ,'{Master.Status}'
+    , GetDate()
+    ,'{Master.AddName}'
+    ,'{Master.ReworkCardType}'
+    ,'{Convert.ToDateTime(Master.InspectionDate).ToString("yyyy/MM/dd")}'
+)
+
+select @@IDENTITY as ID
+";
+
+            foreach (var item in Detail)
+            {
+                sqlcmd += $@"
+INSERT INTO [RFT_Inspection_Detail](
+     [ID]
+    ,[DefectCode]
+    ,[AreaCode]
+    ,[Junk]
+    ,[PMS_RFTBACriteriaID]
+    ,[PMS_RFTRespID]
+    ,[GarmentDefectTypeID]
+    ,[GarmentDefectCodeID]
+    ,[DefectPicture]
+    ,[AddDate])
+values(
+    @@IDENTITY
+,'{item.DefectCode}'
+,'{item.AreaCode}'
+, 0
+,'{item.PMS_RFTBACriteriaID}'
+,'{item.PMS_RFTRespID}'
+,'{item.GarmentDefectTypeID}'
+,'{item.GarmentDefectCodeID}'
+,'{item.DefectPicture}'
+, GetDate()
+)
+";
+            }
+
+            return ExecuteNonQuery(CommandType.Text, sqlcmd);
+        }
+        #endregion
     }
 }

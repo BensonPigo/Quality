@@ -408,20 +408,6 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             List<ReworkCard> reworks = _InspectionService.GetReworkCards(rework).ToList();
 
-            #region
-            for (int i =1; i<= 25; i++)
-            {
-                ReworkCard reworkSample = new ReworkCard()
-                {
-                    No = ("00" + i.ToString()).Right(2),
-                    Status = i % 4 == 0 ? "Rework" : "Fixed",
-                };
-
-                reworks.Add(reworkSample);
-            }
-
-            #endregion
-
             var result = reworks.Select(x => new { No = x.No, Status = x.Status }).ToList();
             return Json(result);
         }

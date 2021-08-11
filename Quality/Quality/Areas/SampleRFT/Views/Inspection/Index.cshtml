@@ -938,7 +938,7 @@
                 return;
             }
 
-            $('.FixType').html("PASS");
+            $('.FixType').html("Hard");
             $('#btnHard').addClass("btn-orange").removeClass("btn-gy");
             $('#btnQuick').removeClass("btn-darkblue").addClass("btn-gy");
         });
@@ -991,6 +991,8 @@
         $('.deleteDefectType').on("click", function () {
             $(this).parent().parent().remove();
         });
+
+        ZoomGlleryBind();
     }
 
     function SwitchBindEvent() {
@@ -1032,10 +1034,8 @@
                 $("#SelectItemBackground, .SelectItem").addClass('display-None');
             });
 
-            var aID = document.querySelector("#aDefect");
-            var pic = document.querySelector("#imgDefect");
-            aID.href = "";
-            pic.src = "";
+            var aID = document.querySelector("#aDefect").removeAttribute('href');
+            var pic = document.querySelector("#imgDefect").removeAttribute('src');
 
             DynamicBindEvent();
             IsEditModeButtonChange();
@@ -1078,7 +1078,7 @@
             var rowCount = $('#DefectType tr').length;
             var content = "<tr>";
             if (pic != "") {
-                content += "<td><div class='zoom-gallery'> ";
+                content += "<td><div id='pic" + rowCount+ "' class='zoom-gallery'> ";
                 content += "<a href='" + pic + "' data-source='' title='Defect Picture' style='width:640px;height:480px;'> ";
                 content += "<img src='" + pic + "' width='30' />";
                 content += "</a></div></td>";
