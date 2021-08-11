@@ -47,7 +47,6 @@ namespace DatabaseObject.ManufacturingExecutionDB
         [Display(Name = "瑕疵代號")]
         public string GarmentDefectCodeID { get; set; }
         /// <summary>瑕疵圖片</summary>
-        [StringLength(-1)]
         [Display(Name = "瑕疵圖片")]
         public Byte[] DefectPicture { get; set; }
         /// <summary>新增時間</summary>

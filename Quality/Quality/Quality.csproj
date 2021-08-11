@@ -204,6 +204,7 @@
     <Content Include="Areas\SampleRFT\Views\Inspection\Index.cshtml" />
     <Content Include="Areas\SampleRFT\Views\Inspection\SelectItem.cshtml" />
     <Content Include="Image\Icon\FactoryEDI.mkl" />
+    <Content Include="Areas\SampleRFT\Views\Shared\ScreenShot.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -289,6 +290,9 @@
     <Content Include="ThirdParty\plugins\jquery-blockUI\jquery.blockUI.js" />
     <Content Include="ThirdParty\plugins\jquery-datepicker\Datepicker.js" />
     <Content Include="ThirdParty\plugins\jquery-datepicker\JQueryDatePickerTW.js" />
+    <Content Include="ThirdParty\plugins\jquery-magnific-popup\jquery.magnific-popup.js" />
+    <Content Include="ThirdParty\plugins\jquery-magnific-popup\jquery.magnific-popup.min.js" />
+    <Content Include="ThirdParty\plugins\jquery-magnific-popup\magnific-popup.css" />
     <Content Include="ThirdParty\plugins\jquery-ui\images\arrow.png" />
     <Content Include="ThirdParty\plugins\jquery-ui\images\arrow_m.png" />
     <Content Include="ThirdParty\plugins\jquery-ui\images\arrow_marquee.jpg" />

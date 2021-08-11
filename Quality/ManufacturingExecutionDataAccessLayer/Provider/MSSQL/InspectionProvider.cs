@@ -28,6 +28,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
                 { "@Article", DbType.String, inspection_ViewModel.Article } ,
                 { "@SizeCode", DbType.String, inspection_ViewModel.Size } ,
                 { "@Location", DbType.String, inspection_ViewModel.ProductType } ,
+                { "@BrandID", DbType.String, inspection_ViewModel.Brand } ,
             };
 
             SbSql.Append(
@@ -61,6 +62,7 @@ and o.PulloutComplete = 1 " + Environment.NewLine);
             if (!string.IsNullOrEmpty(inspection_ViewModel.Article)) { SbSql.Append("and oq.Article = @Article" + Environment.NewLine); }
             if (!string.IsNullOrEmpty(inspection_ViewModel.Size)) { SbSql.Append("and oq.SizeCode = @SizeCode" + Environment.NewLine); }
             if (!string.IsNullOrEmpty(inspection_ViewModel.ProductType)) { SbSql.Append("and ol.Location = @Location" + Environment.NewLine); }
+            if (!string.IsNullOrEmpty(inspection_ViewModel.Brand)) { SbSql.Append("and o.BrandID = @BrandID" + Environment.NewLine); }
 
             return ExecuteList<Inspection_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
         }

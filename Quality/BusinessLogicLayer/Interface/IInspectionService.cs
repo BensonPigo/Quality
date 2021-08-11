@@ -21,5 +21,9 @@ namespace BusinessLogicLayer.Interface
         IList<Area> GetArea(Area area);
 
         IList<DropDownList> GetDropDownList(DropDownList downList);
+
+        InspectionSave_ViewModel SaveRFTInspection(InspectionSave_ViewModel inspections);
+
+        IList<ReworkCard> GetReworkCards(ReworkCard rework);
     }
 }

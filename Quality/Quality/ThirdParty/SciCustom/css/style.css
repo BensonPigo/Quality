@@ -480,6 +480,7 @@ input, select {
     padding: 5px 10px;
     border-radius: 3px;
     border: 2px solid transparent;
+    font-size: 1em;
 }
 
 textarea {

@@ -56,6 +56,7 @@
     <Compile Include="ManufacturingExecutionDB\RFT_Inspection_Measurement.cs" />
     <Compile Include="ManufacturingExecutionDB\RFT_OrderComments.cs" />
     <Compile Include="ManufacturingExecutionDB\RFT_PicDuringDummyFitting.cs" />
+    <Compile Include="ProductionDB\Brand.cs" />
     <Compile Include="ProductionDB\DropDownList.cs" />
     <Compile Include="ProductionDB\Factory.cs" />
     <Compile Include="ProductionDB\GarmentDefectCode.cs" />
@@ -72,6 +73,7 @@
     <Compile Include="RequestModel\LogIn_Request.cs" />
     <Compile Include="ResultModelBase.cs" />
     <Compile Include="ResultModel\LogIn_Result.cs" />
+    <Compile Include="ViewModel\InspectionSave_ViewModel.cs" />
     <Compile Include="ViewModel\Inspection_ViewModel.cs" />
     <Compile Include="ViewModel\SelectItem_ViewModel.cs" />
   </ItemGroup>

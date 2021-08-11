@@ -192,3 +192,18 @@ $ (document).ready(function(){
     }
 
   } );
+
+
+
+function padLeft(str, lenght) {
+    if (str.length >= lenght)
+        return str;
+    else
+        return padLeft("0" + str, lenght);
+}
+
+function parseIntEX(x, base = 10) {
+    const parsed = parseInt(x, base);
+    if (isNaN(parsed)) { return 0; }
+    return parsed;
+}

@@ -191,5 +191,15 @@ namespace BusinessLogicLayer.Service
             List<DropDownList> dropDowns = _DropDownListProvider.Get(downList).ToList();
             return dropDowns;
         }
+
+        public InspectionSave_ViewModel SaveRFTInspection(InspectionSave_ViewModel inspections)
+        {
+            return new InspectionSave_ViewModel() { Result = true };
+        }
+
+        public IList<ReworkCard> GetReworkCards(ReworkCard rework)
+        {
+            return new List<ReworkCard>();
+        }
     }
 }
