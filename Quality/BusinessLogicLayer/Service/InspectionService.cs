@@ -21,8 +21,15 @@ namespace BusinessLogicLayer.Service
         private IRFTInspectionDetailProvider _RFTInspectionDetailProvider;
         private IGarmentDefectTypeProvider _GarmentDefectTypeProvider;
         private IGarmentDefectCodeProvider _GarmentDefectCodeProvider;
+        private IMailToProvider _IMailToProvider;
         private IAreaProvider _AreaProvider;
         private IDropDownListProvider _DropDownListProvider;
+        private IReworkCardProvider _IReworkCardProvider;
+        private IReworkListProvider _IReworkListProvider;
+
+        // Production
+        private IOrdersProvider _IOrdersProvider;
+
         public enum SelectType
         {
             OrderID ,
@@ -190,6 +197,122 @@ namespace BusinessLogicLayer.Service
             _DropDownListProvider = new DropDownListProvider(Common.ProductionDataAccessLayer);
             List<DropDownList> dropDowns = _DropDownListProvider.Get(downList).ToList();
             return dropDowns;
+        }
+
+        public IList<MailTo> GetMailTo(MailTo item)
+        {
+            _IMailToProvider = new MailToProvider(Common.ManufacturingExecutionDataAccessLayer);
+            List<MailTo> mailTos = _IMailToProvider.Get(
+               new MailTo()
+               {
+                   ID = item.ID,
+               }).ToList();
+
+            return mailTos;
+        }
+
+        public InspectionSave_ViewModel SaveRFTInspection(InspectionSave_ViewModel inspections)
+        {
+            inspections.Result = true;
+            inspections.ErrMsg = string.Empty;
+
+            if (inspections.rft_Inspection == null)
+            {
+                inspections.Result = false;
+                inspections.ErrMsg = "InspectionSave_ViewModel is null";
+                return inspections;
+            }
+
+            _IOrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
+
+            string OrderID = inspections.rft_Inspection.OrderID;
+            IList<Orders> orders = _IOrdersProvider.Get(new Orders() { ID = OrderID });
+            if (orders.Count > 0)
+            {
+                string StyleUkey = orders[0].StyleUkey.ToString();
+                inspections.rft_Inspection.StyleUkey = long.Parse(StyleUkey);
+            }
+
+            #region update/insert [RFT_Inspection] and [RFT_Inspection_Detail]
+
+            _RFTInspectionProvider = new RFTInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+            _RFTInspectionDetailProvider = new RFTInspectionDetailProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+            int createCnt = _RFTInspectionDetailProvider.Create_Master_Detail(inspections.rft_Inspection, inspections.fT_Inspection_Details);
+
+            if (createCnt == 0)
+            {
+                inspections.Result = false;
+                inspections.ErrMsg = "Save RFTInspection row count = 0";
+                return inspections;
+            }
+
+            #endregion
+
+            return inspections;
+        }
+
+        public IList<ReworkCard> GetReworkCards(ReworkCard rework)
+        {
+            _IReworkCardProvider = new ReworkCardProvider(Common.ManufacturingExecutionDataAccessLayer);
+            List<ReworkCard> reworkCards = _IReworkCardProvider.Get(
+                new ReworkCard()
+                {
+                    FactoryID = rework.FactoryID,
+                    Line = rework.Line,
+                    Type = rework.Type,
+                }).ToList();
+
+            return reworkCards;
+        }
+
+        public ReworkList_ViewModel GetReworkListFilter(ReworkList_ViewModel reworkList, SelectType type)
+        {
+            _RFTInspectionProvider = new RFTInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+            _IReworkListProvider = new ReworkListProvider(Common.ManufacturingExecutionDataAccessLayer);
+            List<ReworkList_ViewModel> reworkList_Views = _IReworkListProvider.GetReworkListFilter(
+                new ReworkList_ViewModel()
+                {
+                    FactoryID = reworkList.FactoryID,
+                    Line = reworkList.Line,
+                    Status = reworkList.Status,
+                }, type.ToString()).ToList();
+
+
+            // reworkList.SP = _RFTInspections.;
+
+            //List<string> spList = new List<string>();
+            //List<string> StyleList = new List<string>();
+            //List<string> ArticleList = new List<string>();
+            //List<string> SizeList = new List<string>();
+
+            //foreach (var item in _RFTInspections)
+            //{
+            //    spList.Add(item.SP);
+            //    StyleList.Add(item.Style);
+            //    ArticleList.Add(item.Article);
+            //    SizeList.Add(item.Size);
+            //}
+
+            //reworkList.SPList = spList;
+            //reworkList.StyleList = StyleList;
+            //reworkList.ArticleList = ArticleList;
+            //reworkList.SizeList = SizeList;
+
+            //_IReworkListProvider = new ReworkListProvider(Common.ManufacturingExecutionDataAccessLayer);
+            //List<ReworkList> reworkLists = _IReworkListProvider.Get(
+            //    new ReworkList()
+            //    {
+            //        FactoryID = reworkList.rft_Inspection.FactoryID,
+            //        Line = reworkList.rft_Inspection.Line,
+            //        Status = reworkList.rft_Inspection.Status,
+            //    }).ToList();
+            //reworkList.ReworkList = reworkLists;
+
+
+            return reworkList;
         }
     }
 }

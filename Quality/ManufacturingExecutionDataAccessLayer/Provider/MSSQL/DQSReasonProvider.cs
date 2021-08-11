@@ -32,7 +32,13 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
         public IList<DQSReason> Get(DQSReason Item)
         {
             StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
+            SQLParameterCollection objParameter = new SQLParameterCollection()
+            {
+                { "@Type", DbType.String, Item.Type},
+                { "@ID", DbType.String, Item.ID},
+                { "@Description", DbType.String, Item.Description},
+                { "@LocalDescription", DbType.String, Item.LocalDescription},
+            };
             SbSql.Append("SELECT"+ Environment.NewLine);
             SbSql.Append("         Type"+ Environment.NewLine);
             SbSql.Append("        ,ID"+ Environment.NewLine);
@@ -44,6 +50,12 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,EditName"+ Environment.NewLine);
             SbSql.Append("        ,EditDate"+ Environment.NewLine);
             SbSql.Append("FROM [DQSReason]"+ Environment.NewLine);
+            SbSql.Append("where 1=1" + Environment.NewLine);
+            SbSql.Append("and Junk = 0" + Environment.NewLine);
+            if (Item.Type != null) { SbSql.Append(" and Type=@Type" + Environment.NewLine); }
+            if (Item.ID != null) { SbSql.Append(" and ID=@ID" + Environment.NewLine); }
+            if (Item.Description != null) { SbSql.Append("and Description=@Description" + Environment.NewLine); }
+            if (Item.LocalDescription != null) { SbSql.Append("and LocalDescription=@LocalDescription" + Environment.NewLine); }
 
 
 

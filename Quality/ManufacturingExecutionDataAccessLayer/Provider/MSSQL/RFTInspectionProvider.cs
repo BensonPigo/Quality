@@ -6,6 +6,7 @@ using ManufacturingExecutionDataAccessLayer.Interface;
 using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
 using DatabaseObject.ManufacturingExecutionDB;
+using DatabaseObject.ViewModel;
 
 namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 {
@@ -26,6 +27,9 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
                 { "@FactoryID", DbType.String, Item.FactoryID } ,
                 { "@Line", DbType.String, Item.Line } ,
                 { "@InspectionDate", DbType.DateTime, Item.InspectionDate } ,
+                { "@ID", DbType.String, Item.ID },
+                { "@OrderID", DbType.String, Item.OrderID },
+                { "@StyleUkey", DbType.String, Item.StyleUkey },
             };
 
             SbSql.Append("SELECT"+ Environment.NewLine);
@@ -48,14 +52,19 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,InspectionDate"+ Environment.NewLine);
             SbSql.Append("        ,DisposeReason"+ Environment.NewLine);
             SbSql.Append("FROM [RFT_Inspection] r"+ Environment.NewLine);
-            SbSql.Append("Where r.FactoryID = @FactoryID" + Environment.NewLine);
+            SbSql.Append("Where 1 = 1" + Environment.NewLine);
 
-            if (string.IsNullOrEmpty(Item.Line)) { SbSql.Append("And r.Line = @Line" + Environment.NewLine); }
+            if (!string.IsNullOrEmpty(Item.FactoryID.ToString())) { SbSql.Append("And r.FactoryID = @FactoryID" + Environment.NewLine); }
 
-            if (Item.InspectionDate.HasValue) { 
+            if (!string.IsNullOrEmpty(Item.Line)) { SbSql.Append("And r.Line = @Line" + Environment.NewLine); }
+
+            if (!Item.InspectionDate.HasValue) { 
                 SbSql.Append("And ((r.AddDate >= @InspectionDate and r.AddDate <= DATEADD(SECOND, -1, DATEADD(day, 1,@InspectionDate))) " + Environment.NewLine);
                 SbSql.Append("  or (r.EditDate >= @InspectionDate and r.EditDate <= DATEADD(SECOND, -1, DATEADD(day, 1,@InspectionDate)))) " + Environment.NewLine);
             }
+
+            if (!string.IsNullOrEmpty(Item.OrderID.ToString())) { SbSql.Append("And r.OrderID = @OrderID" + Environment.NewLine); }
+            if (!string.IsNullOrEmpty(Item.StyleUkey.ToString())) { SbSql.Append("And r.StyleUkey = @StyleUkey" + Environment.NewLine); }
 
             return ExecuteList<RFT_Inspection>(CommandType.Text, SbSql.ToString(), objParameter);
         }
@@ -138,32 +147,65 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
         public int Update(RFT_Inspection Item)
         {
             StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
+            SQLParameterCollection objParameter = new SQLParameterCollection()
+            {
+                { "@ID", DbType.String, Item.ID } ,
+                { "@OrderID", DbType.String, Item.OrderID } ,
+                { "@Article", DbType.String, Item.Article } ,
+                { "@Location", DbType.String, Item.Location },
+                { "@Size", DbType.String, Item.Size },
+                { "@Line", DbType.String, Item.Line },
+
+                { "@FactoryID", DbType.String, Item.FactoryID} ,
+                { "@StyleUkey", DbType.String, Item.StyleUkey } ,
+                { "@FixType", DbType.String, Item.FixType } ,
+                { "@ReworkCardNo", DbType.String, Item.ReworkCardNo },
+                { "@Status", DbType.String, Item.Status },
+
+                { "@AddDate", DbType.DateTime, Item.AddDate },
+                { "@AddName", DbType.String, Item.AddName } ,
+                { "@EditDate", DbType.DateTime, Item.EditDate } ,
+                { "@EditName", DbType.String, Item.EditName } ,
+                { "@ReworkCardType", DbType.String, Item.ReworkCardType },
+                { "@InspectionDate", DbType.DateTime, Item.InspectionDate },
+                { "@DisposeReason", DbType.String, Item.DisposeReason },
+            };
+
+
             SbSql.Append("UPDATE [RFT_Inspection]"+ Environment.NewLine);
             SbSql.Append("SET"+ Environment.NewLine);
-            if (Item.ID != null) { SbSql.Append("ID=@ID"+ Environment.NewLine); objParameter.Add("@ID", DbType.String, Item.ID);}
-            if (Item.OrderID != null) { SbSql.Append(",OrderID=@OrderID"+ Environment.NewLine); objParameter.Add("@OrderID", DbType.String, Item.OrderID);}
-            if (Item.Article != null) { SbSql.Append(",Article=@Article"+ Environment.NewLine); objParameter.Add("@Article", DbType.String, Item.Article);}
-            if (Item.Location != null) { SbSql.Append(",Location=@Location"+ Environment.NewLine); objParameter.Add("@Location", DbType.String, Item.Location);}
-            if (Item.Size != null) { SbSql.Append(",Size=@Size"+ Environment.NewLine); objParameter.Add("@Size", DbType.String, Item.Size);}
-            if (Item.Line != null) { SbSql.Append(",Line=@Line"+ Environment.NewLine); objParameter.Add("@Line", DbType.String, Item.Line);}
-            if (Item.FactoryID != null) { SbSql.Append(",FactoryID=@FactoryID"+ Environment.NewLine); objParameter.Add("@FactoryID", DbType.String, Item.FactoryID);}
-            if (Item.StyleUkey != null) { SbSql.Append(",StyleUkey=@StyleUkey"+ Environment.NewLine); objParameter.Add("@StyleUkey", DbType.String, Item.StyleUkey);}
-            if (Item.FixType != null) { SbSql.Append(",FixType=@FixType"+ Environment.NewLine); objParameter.Add("@FixType", DbType.String, Item.FixType);}
-            if (Item.ReworkCardNo != null) { SbSql.Append(",ReworkCardNo=@ReworkCardNo"+ Environment.NewLine); objParameter.Add("@ReworkCardNo", DbType.String, Item.ReworkCardNo);}
-            if (Item.Status != null) { SbSql.Append(",Status=@Status"+ Environment.NewLine); objParameter.Add("@Status", DbType.String, Item.Status);}
-            if (Item.AddDate != null) { SbSql.Append(",AddDate=@AddDate"+ Environment.NewLine); objParameter.Add("@AddDate", DbType.DateTime, Item.AddDate);}
-            if (Item.AddName != null) { SbSql.Append(",AddName=@AddName"+ Environment.NewLine); objParameter.Add("@AddName", DbType.String, Item.AddName);}
-            if (Item.EditDate != null) { SbSql.Append(",EditDate=@EditDate"+ Environment.NewLine); objParameter.Add("@EditDate", DbType.DateTime, Item.EditDate);}
-            if (Item.EditName != null) { SbSql.Append(",EditName=@EditName"+ Environment.NewLine); objParameter.Add("@EditName", DbType.String, Item.EditName);}
-            if (Item.ReworkCardType != null) { SbSql.Append(",ReworkCardType=@ReworkCardType"+ Environment.NewLine); objParameter.Add("@ReworkCardType", DbType.String, Item.ReworkCardType);}
-            if (Item.InspectionDate != null) { SbSql.Append(",InspectionDate=@InspectionDate"+ Environment.NewLine); objParameter.Add("@InspectionDate", DbType.DateTime, Item.InspectionDate);}
-            if (Item.DisposeReason != null) { SbSql.Append(",DisposeReason=@DisposeReason"+ Environment.NewLine); objParameter.Add("@DisposeReason", DbType.String, Item.DisposeReason);}
+            { SbSql.Append("ID=ID" + Environment.NewLine); }
+            if (!string.IsNullOrEmpty(Item.OrderID)) { SbSql.Append(",OrderID=@OrderID"+ Environment.NewLine);}
+            if (!string.IsNullOrEmpty(Item.Article)) { SbSql.Append(",Article=@Article"+ Environment.NewLine);}
+            if (!string.IsNullOrEmpty(Item.Location)) { SbSql.Append(",Location=@Location"+ Environment.NewLine);}
+            if (!string.IsNullOrEmpty(Item.Size)) { SbSql.Append(",Size=@Size" + Environment.NewLine); }
+            if (!string.IsNullOrEmpty(Item.Line)) { SbSql.Append(",Line=@Line"+ Environment.NewLine);}
+            if (!string.IsNullOrEmpty(Item.FactoryID)) { SbSql.Append(",FactoryID=@FactoryID"+ Environment.NewLine);}
+            if (!string.IsNullOrEmpty(Item.StyleUkey.ToString())) { SbSql.Append(",StyleUkey=@StyleUkey"+ Environment.NewLine);}
+            if (!string.IsNullOrEmpty(Item.FixType)) { SbSql.Append(",FixType=@FixType"+ Environment.NewLine);}
+            if (!string.IsNullOrEmpty(Item.ReworkCardNo)) { SbSql.Append(",ReworkCardNo=@ReworkCardNo"+ Environment.NewLine);}
+            if (!string.IsNullOrEmpty(Item.Status)) { SbSql.Append(",Status=@Status"+ Environment.NewLine);}
+            if (Item.AddDate != null) { SbSql.Append(",AddDate=@AddDate"+ Environment.NewLine);}
+            if (!string.IsNullOrEmpty(Item.AddName)) { SbSql.Append(",AddName=@AddName"+ Environment.NewLine);}
+            if (Item.EditDate != null) { SbSql.Append(",EditDate=@EditDate"+ Environment.NewLine); }
+            if (!string.IsNullOrEmpty(Item.EditName)) { SbSql.Append(",EditName=@EditName"+ Environment.NewLine); }
+            if (!string.IsNullOrEmpty(Item.ReworkCardType)) { SbSql.Append(",ReworkCardType=@ReworkCardType"+ Environment.NewLine);}
+            if (Item.InspectionDate != null) { SbSql.Append(",InspectionDate=@InspectionDate"+ Environment.NewLine);}
+            if (!string.IsNullOrEmpty(Item.DisposeReason)) { SbSql.Append(",DisposeReason=@DisposeReason"+ Environment.NewLine);}
+
             SbSql.Append("WHERE 1 = 1" + Environment.NewLine);
-
-
-
-
+            if (!string.IsNullOrEmpty(Item.ID.ToString())) { SbSql.Append(" and ID=@ID" + Environment.NewLine); }
+            if (!string.IsNullOrEmpty(Item.OrderID)) { SbSql.Append(" and OrderID=@OrderID" + Environment.NewLine); }
+            if (!string.IsNullOrEmpty(Item.Article)) { SbSql.Append(" and Article=@Article" + Environment.NewLine); }
+            if (!string.IsNullOrEmpty(Item.Location)) { SbSql.Append(" and Location=@Location" + Environment.NewLine); }
+            if (!string.IsNullOrEmpty(Item.Size)) { SbSql.Append(" and Size=@Size" + Environment.NewLine); }
+            if (!string.IsNullOrEmpty(Item.Line)) { SbSql.Append(" and Line=@Line" + Environment.NewLine); }
+            if (!string.IsNullOrEmpty(Item.FactoryID)) { SbSql.Append(" and FactoryID=@FactoryID" + Environment.NewLine); }
+            if (!string.IsNullOrEmpty(Item.StyleUkey.ToString())) { SbSql.Append(" and StyleUkey=@StyleUkey" + Environment.NewLine); }
+            if (!string.IsNullOrEmpty(Item.FixType)) { SbSql.Append(" and FixType=@FixType" + Environment.NewLine); }
+            if (!string.IsNullOrEmpty(Item.ReworkCardNo)) { SbSql.Append(" and ReworkCardNo=@ReworkCardNo" + Environment.NewLine); }
+            if (!string.IsNullOrEmpty(Item.Status)) { SbSql.Append(" and Status=@Status" + Environment.NewLine); }
+            
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
 		/*刪除(Delete) 詳細敘述如下*/
@@ -181,14 +223,23 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
         public int Delete(RFT_Inspection Item)
         {
             StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append("DELETE FROM [RFT_Inspection]"+ Environment.NewLine);
-
-
-
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.String, Item.ID } ,
+            };
+            SbSql.Append("DELETE FROM [RFT_Inspection]" + Environment.NewLine);
+            SbSql.Append("where 1=1" + Environment.NewLine);
+            SbSql.Append("and id = @ID" + Environment.NewLine);
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
-	#endregion
+
+        /// <summary>
+        /// Get Rework List comboBox Filters
+        /// </summary>
+        /// <param name="Item">RFT_Inspection</param>
+        /// <param name="key">顯示 & distinct 什麼資料</param>
+        /// <returns></returns>
+        #endregion
     }
 }

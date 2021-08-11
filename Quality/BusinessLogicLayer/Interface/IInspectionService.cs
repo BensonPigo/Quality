@@ -16,10 +16,20 @@ namespace BusinessLogicLayer.Interface
 
         IList<GarmentDefectType> GetGarmentDefectType();
 
+        IList<MailTo> GetMailTo(MailTo mailTo);
+
         IList<GarmentDefectCode> GetGarmentDefectCode(GarmentDefectCode defectCode);
 
         IList<Area> GetArea(Area area);
 
         IList<DropDownList> GetDropDownList(DropDownList downList);
+
+        InspectionSave_ViewModel SaveRFTInspection(InspectionSave_ViewModel inspections);
+
+        IList<ReworkCard> GetReworkCards(ReworkCard rework);
+
+        //ReworkList_ViewModel GetReworkList(ReworkList_ViewModel reworkList, string key = "");
+
+        //IList<ReworkList_ViewModel> GetReworkListFilter(ReworkList_ViewModel reworkList, SelectType type);
     }
 }
