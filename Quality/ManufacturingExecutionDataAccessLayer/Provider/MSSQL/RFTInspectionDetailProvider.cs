@@ -221,16 +221,17 @@ values(
 select @@IDENTITY as ID
 ";
 
+            int detailcnt = 1;
             foreach (var item in Detail)
             {
 
-                objParameter.Add("@DefectCode", string.IsNullOrEmpty(item.DefectCode) ? "" : item.DefectCode);
-                objParameter.Add("@AreaCode", string.IsNullOrEmpty(item.AreaCode) ? "" : item.AreaCode);
-                objParameter.Add("@PMS_RFTBACriteriaID", string.IsNullOrEmpty(item.PMS_RFTBACriteriaID) ? "" : item.PMS_RFTBACriteriaID);
-                objParameter.Add("@PMS_RFTRespID", string.IsNullOrEmpty(item.PMS_RFTRespID) ? "" : item.PMS_RFTRespID);
-                objParameter.Add("@GarmentDefectTypeID", string.IsNullOrEmpty(item.GarmentDefectTypeID) ? "" : item.GarmentDefectTypeID);
-                objParameter.Add("@GarmentDefectCodeID", string.IsNullOrEmpty(item.GarmentDefectCodeID) ? "" : item.GarmentDefectCodeID);
-                objParameter.Add("@DefectPicture", item.DefectPicture);
+                objParameter.Add($"@DefectCode{detailcnt}", string.IsNullOrEmpty(item.DefectCode) ? "" : item.DefectCode);
+                objParameter.Add($"@AreaCode{detailcnt}", string.IsNullOrEmpty(item.AreaCode) ? "" : item.AreaCode);
+                objParameter.Add($"@PMS_RFTBACriteriaID{detailcnt}", string.IsNullOrEmpty(item.PMS_RFTBACriteriaID) ? "" : item.PMS_RFTBACriteriaID);
+                objParameter.Add($"@PMS_RFTRespID{detailcnt}", string.IsNullOrEmpty(item.PMS_RFTRespID) ? "" : item.PMS_RFTRespID);
+                objParameter.Add($"@GarmentDefectTypeID{detailcnt}", string.IsNullOrEmpty(item.GarmentDefectTypeID) ? "" : item.GarmentDefectTypeID);
+                objParameter.Add($"@GarmentDefectCodeID{detailcnt}", string.IsNullOrEmpty(item.GarmentDefectCodeID) ? "" : item.GarmentDefectCodeID);
+                objParameter.Add($"@DefectPicture{detailcnt}", item.DefectPicture);
 
                 sqlcmd += $@"
 INSERT INTO [RFT_Inspection_Detail](
@@ -245,11 +246,12 @@ INSERT INTO [RFT_Inspection_Detail](
     ,[DefectPicture]
     ,[AddDate])
 values(
-    @@IDENTITY,@DefectCode,@AreaCode, 0,@PMS_RFTBACriteriaID,@PMS_RFTRespID,@GarmentDefectTypeID
-,@GarmentDefectCodeID
-,@DefectPicture
+    @@IDENTITY,@DefectCode{detailcnt},@AreaCode{detailcnt}, 0, @PMS_RFTBACriteriaID{detailcnt},@PMS_RFTRespID{detailcnt},@GarmentDefectTypeID{detailcnt}
+,@GarmentDefectCodeID{detailcnt}
+,@DefectPicture{detailcnt}
 , GetDate())
 ";
+                detailcnt++;
             }
 
             return ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter);

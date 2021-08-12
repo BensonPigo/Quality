@@ -32,14 +32,19 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
         public IList<RFT_OrderComments> Get(RFT_OrderComments Item)
         {
             StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@OrderID", DbType.String, Item.OrderID } ,
+            };
             SbSql.Append("SELECT"+ Environment.NewLine);
-            SbSql.Append("         OrderID"+ Environment.NewLine);
-            SbSql.Append("        ,PMS_RFTCommentsID"+ Environment.NewLine);
-            SbSql.Append("        ,Comnments"+ Environment.NewLine);
-            SbSql.Append("FROM [RFT_OrderComments]"+ Environment.NewLine);
-
-
+            SbSql.Append("         oc.OrderID"+ Environment.NewLine);
+            SbSql.Append("        ,oc.PMS_RFTCommentsID"+ Environment.NewLine);
+            SbSql.Append("        ,oc.Comnments"+ Environment.NewLine);
+            SbSql.Append("        ,[CommentsCategory] = dd.Description" + Environment.NewLine);
+            SbSql.Append("FROM [RFT_OrderComments] oc"+ Environment.NewLine);
+            SbSql.Append("left join Production..DropdownList dd on dd.ID = oc.PMS_RFTCommentsID" + Environment.NewLine);
+            SbSql.Append("where dd.Type='PMS_RFTComments'" + Environment.NewLine);
+            SbSql.Append("where oc.OrderID = @OrderID" + Environment.NewLine);
 
             return ExecuteList<RFT_OrderComments>(CommandType.Text, SbSql.ToString(), objParameter);
         }

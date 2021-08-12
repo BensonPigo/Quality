@@ -26,6 +26,7 @@ namespace BusinessLogicLayer.Service
         private IDropDownListProvider _DropDownListProvider;
         private IReworkCardProvider _IReworkCardProvider;
         private IReworkListProvider _IReworkListProvider;
+        private IRFTOrderCommentsProvider _IRFTOrderCommentsProvider;
 
         // Production
         private IOrdersProvider _IOrdersProvider;
@@ -252,10 +253,6 @@ namespace BusinessLogicLayer.Service
                 Exception exception = ex;
                 throw exception;
             }
-           
-
-
-
 
             return inspections;
         }
@@ -324,8 +321,15 @@ namespace BusinessLogicLayer.Service
 
         public List<RFT_OrderComments_ViewModel> RFT_OrderCommentsGet(RFT_OrderComments rFT_OrderComments)
         {
+            _IRFTOrderCommentsProvider = new RFTOrderCommentsProvider(Common.ManufacturingExecutionDataAccessLayer);
+            List<RFT_OrderComments> orderComments = _IRFTOrderCommentsProvider.Get(
+                new RFT_OrderComments()
+                {
+                    OrderID = rFT_OrderComments.OrderID,
+                }).ToList();
+
             List<RFT_OrderComments_ViewModel> rFT_OrderComments_ViewModels = new List<RFT_OrderComments_ViewModel>()
-            {
+            {   
                 new RFT_OrderComments_ViewModel()
                 {
                     OrderID = "aaaa",
@@ -383,6 +387,27 @@ namespace BusinessLogicLayer.Service
                     Comnments = "CCCCCCCCCCCCCCCCCCCCCCCCCC",
                 },
             };
+
+            //List<RFT_OrderComments_ViewModel> rFT_OrderComments_ViewModel = new List<RFT_OrderComments_ViewModel>();
+            //rFT_OrderComments_ViewModel.
+
+
+
+            //foreach (var item in orderComments)
+            //{
+            //    rFT_OrderComments_ViewModel.Add(item);
+            //}
+            //rFT_OrderComments_ViewModel.Add
+
+            //try
+            //{
+            //    rFT_OrderComments_ViewModels.PMS_RFTCommentsDescription
+            //}
+            //catch (Exception)
+            //{
+
+            //    throw;
+            //}
 
             return rFT_OrderComments_ViewModels;
         }

@@ -48,6 +48,8 @@ namespace Quality.Areas.SampleRFT.Controllers
             ViewBag.UserID = this.UserID;
             ViewBag.ShowSwitch = 1;
             return View(setting);
+
+          
         }
 
         [HttpPost]
@@ -66,6 +68,18 @@ namespace Quality.Areas.SampleRFT.Controllers
             ViewBag.UserID = this.UserID;
             ViewBag.ShowSwitch = 0;
             return View(request);
+
+            #region Test #2
+            // test Rework Card
+            //ReworkCard rework = new ReworkCard()
+            //{
+            //    FactoryID = "ES2",
+            //    Line = "01",
+            //    Type = "Hard",
+            //};
+
+            //var _rework = _InspectionService.GetReworkCards(rework).ToList();
+            #endregion
         }
 
         [HttpPost]

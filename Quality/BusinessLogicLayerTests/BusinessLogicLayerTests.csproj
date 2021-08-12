@@ -61,11 +61,30 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <Content Include="app.config" />
+    <Content Include="Web.Debug.config">
+      <DependentUpon>app.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>app.config</DependentUpon>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BusinessLogicLayer\BusinessLogicLayer.csproj">
       <Project>{74A8F2A1-735F-45CC-9BCC-E93AF1BAAE87}</Project>
       <Name>BusinessLogicLayer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DatabaseObject\DatabaseObject.csproj">
+      <Project>{95d12adf-a503-4a80-b2c9-71e21f2a3aa6}</Project>
+      <Name>DatabaseObject</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ManufacturingExecutionDataAccessLayer\ManufacturingExecutionDataAccessLayer.csproj">
+      <Project>{642aebc1-02d9-4716-bb21-61621c62a67f}</Project>
+      <Name>ManufacturingExecutionDataAccessLayer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ProductionDataAccessLayer\ProductionDataAccessLayer.csproj">
+      <Project>{c2e1c298-46bf-4bdb-82a8-102777fa89ea}</Project>
+      <Name>ProductionDataAccessLayer</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>
