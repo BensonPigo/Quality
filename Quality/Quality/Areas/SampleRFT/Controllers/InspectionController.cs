@@ -437,6 +437,26 @@ namespace Quality.Areas.SampleRFT.Controllers
             return Json(viewModel);
         }
 
+        public JsonResult GetReworkList()
+        {
+            List<ReworkList_ViewModel> reworkList_View = _InspectionService.GetReworkList(new ReworkList_ViewModel() 
+            { 
+                FactoryID = this.FactoryID, 
+                Line = this.Line, 
+            });
+
+            //ReworkList_ViewModel reworkList = new ReworkList_ViewModel();
+            //foreach (ReworkList_ViewModel item in reworkList_View)
+            //{
+            //    reworkList.OrderIDs += "<option value=" + item.OrderID + ">" + item.OrderID + "</option>";
+            //    reworkList.Styles += "<option value=" + item.Style + ">" + item.Style + "</option>";
+            //    reworkList.Articles += "<option value=" + item.Article + ">" + item.Article + "</option>";
+            //    reworkList.Sizes += "<option value=" + item.Size + ">" + item.Size + "</option>";
+            //}
+             
+            return Json(reworkList_View);
+        }
+
         public ActionResult GetCFTComments(string OrderID, string StyleID, string Season, string SampleStage)
         {
             List<RFT_OrderComments_ViewModel> viewModel = new List<RFT_OrderComments_ViewModel>();

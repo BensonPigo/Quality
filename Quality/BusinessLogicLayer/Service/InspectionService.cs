@@ -266,54 +266,19 @@ namespace BusinessLogicLayer.Service
             return reworkCards;
         }
 
-        public ReworkList_ViewModel GetReworkListFilter(ReworkList_ViewModel reworkList, SelectType type)
+        public List<ReworkList_ViewModel> GetReworkList(ReworkList_ViewModel reworkList)
         {
-            _RFTInspectionProvider = new RFTInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
-
             _IReworkListProvider = new ReworkListProvider(Common.ManufacturingExecutionDataAccessLayer);
-            List<ReworkList_ViewModel> reworkList_Views = _IReworkListProvider.GetReworkListFilter(
+            List<ReworkList_ViewModel> reworkList_Views = _IReworkListProvider.Get(
                 new ReworkList_ViewModel()
                 {
                     FactoryID = reworkList.FactoryID,
                     Line = reworkList.Line,
-                    Status = reworkList.Status,
-                }, type.ToString()).ToList();
+                }).ToList();
 
-
-            // reworkList.SP = _RFTInspections.;
-
-            //List<string> spList = new List<string>();
-            //List<string> StyleList = new List<string>();
-            //List<string> ArticleList = new List<string>();
-            //List<string> SizeList = new List<string>();
-
-            //foreach (var item in _RFTInspections)
-            //{
-            //    spList.Add(item.SP);
-            //    StyleList.Add(item.Style);
-            //    ArticleList.Add(item.Article);
-            //    SizeList.Add(item.Size);
-            //}
-
-            //reworkList.SPList = spList;
-            //reworkList.StyleList = StyleList;
-            //reworkList.ArticleList = ArticleList;
-            //reworkList.SizeList = SizeList;
-
-            //_IReworkListProvider = new ReworkListProvider(Common.ManufacturingExecutionDataAccessLayer);
-            //List<ReworkList> reworkLists = _IReworkListProvider.Get(
-            //    new ReworkList()
-            //    {
-            //        FactoryID = reworkList.rft_Inspection.FactoryID,
-            //        Line = reworkList.rft_Inspection.Line,
-            //        Status = reworkList.rft_Inspection.Status,
-            //    }).ToList();
-            //reworkList.ReworkList = reworkLists;
-
-
-            return reworkList;
+            return reworkList_Views;
         }
-
+         
         public List<RFT_OrderComments_ViewModel> RFT_OrderCommentsGet(RFT_OrderComments rFT_OrderComments)
         {
             List<RFT_OrderComments_ViewModel> rFT_OrderComments_ViewModels = new List<RFT_OrderComments_ViewModel>()

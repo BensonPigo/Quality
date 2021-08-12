@@ -18,25 +18,23 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
         #endregion
 
         #region CRUD Base
-        public IList<ReworkList> Get(ReworkList Item)
+        public IList<ReworkList_ViewModel> Get(ReworkList_ViewModel Item)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();
             string sqlcmd = $@"
 select distinct 
-[ReworkNo] = ins.ReworkCardNo+'/'+ins.FixType
-,[SPNo] = ins.OrderId
-,[PONo] = o.CustPONo
-,o.StyleID
-,ins.Size
-,ins.Article
-,[Defect] =  defect.code
-, Reworked = 'Pass'
-,[AddDefect] = 'Reject'
-,Status='Action'
-,ins.ReworkCardNo
-,ins.ReworkCardType
-,ins.FactoryID
-,ins.Line
+    [ReworkNo] = ins.ReworkCardNo+'/'+ins.FixType
+    ,ins.OrderID
+    ,[POID] = o.CustPONo
+    ,[Style] = o.StyleID
+    ,ins.Size
+    ,ins.Article
+    ,[Defect] =  defect.code
+    ,ins.ID
+    ,ins.ReworkCardNo
+    ,ins.ReworkCardType
+    ,ins.FactoryID
+    ,ins.Line
 from RFT_Inspection ins with(nolock) 
 left join [dbo].[SciProduction_Orders] o with(nolock) 
 on ins.OrderId=o.ID
@@ -60,59 +58,31 @@ and ins.FactoryID = '{Item.FactoryID}'
 order by ReworkCardType desc, ins.AddDate
 ";
 
-            return ExecuteList<ReworkList>(CommandType.Text, sqlcmd, objParameter);
+            return ExecuteList<ReworkList_ViewModel>(CommandType.Text, sqlcmd, objParameter);
         }
 
-        public IList<ReworkList_ViewModel> GetReworkListFilter(ReworkList_ViewModel Item, string key)
+        public IList<ReworkList_ViewModel> GetReworkListFilter(ReworkList_ViewModel Item)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
                 { "@FactoryID", DbType.String, Item.FactoryID } ,
                 { "@Line", DbType.String, Item.Line } ,
-                { "@Status", DbType.DateTime, Item.Status } ,
-            };
+                { "@Status", DbType.String, Item.Status } ,
+            }; 
 
-            switch (key)
-            {
-                case "OrderID":
-                    SbSql.Append("select SP = 'All'" + Environment.NewLine);
-                    SbSql.Append("union all" + Environment.NewLine);
-
-                    SbSql.Append("SELECT distinct" + Environment.NewLine);
-                    SbSql.Append(" SP = r.OrderID" + Environment.NewLine);
-                    break;
-                case "StyleID":
-                    SbSql.Append("select Style = 'All'" + Environment.NewLine);
-                    SbSql.Append("union all" + Environment.NewLine);
-                    SbSql.Append("SELECT distinct" + Environment.NewLine);
-                    SbSql.Append(" Style = s.ID" + Environment.NewLine);
-                    break;
-                case "Article":
-                    SbSql.Append("select Article = 'All'" + Environment.NewLine);
-                    SbSql.Append("union all" + Environment.NewLine);
-                    SbSql.Append("SELECT distinct" + Environment.NewLine);
-                    SbSql.Append(" r.Article" + Environment.NewLine);
-                    break;
-                case "Size":
-                    SbSql.Append("select Size = 'All'" + Environment.NewLine);
-                    SbSql.Append("union all" + Environment.NewLine);
-                    SbSql.Append("SELECT distinct" + Environment.NewLine);
-                    SbSql.Append(" r.Size" + Environment.NewLine);
-                    break;
-                default:
-                    break;
-            }
-
+            SbSql.Append("SELECT OrderID = 'All', Style = 'All', Article = 'All', Size = 'All'" + Environment.NewLine);
+            SbSql.Append("union all" + Environment.NewLine);
+            SbSql.Append("SELECT distinct r.OrderID, Style = s.ID, r.Article, r.Size" + Environment.NewLine);
             SbSql.Append("FROM [RFT_Inspection] r" + Environment.NewLine);
             SbSql.Append("left join Production.dbo.[Style] s on r.StyleUkey = s.Ukey" + Environment.NewLine);
             SbSql.Append("Where 1 = 1" + Environment.NewLine);
 
-            if (!string.IsNullOrEmpty(Item.rft_Inspection.FactoryID.ToString())) { SbSql.Append("And r.FactoryID = @FactoryID" + Environment.NewLine); }
+            if (!string.IsNullOrEmpty(Item.FactoryID)) { SbSql.Append("And r.FactoryID = @FactoryID" + Environment.NewLine); }
 
-            if (!string.IsNullOrEmpty(Item.rft_Inspection.Line)) { SbSql.Append("And r.Line = @Line" + Environment.NewLine); }
+            if (!string.IsNullOrEmpty(Item.Line)) { SbSql.Append("And r.Line = @Line" + Environment.NewLine); }
 
-            if (!string.IsNullOrEmpty(Item.rft_Inspection.Status.ToString())) { SbSql.Append("And r.Status = @Status" + Environment.NewLine); }
+            if (!string.IsNullOrEmpty(Item.Status)) { SbSql.Append("And r.Status = @Status" + Environment.NewLine); }
 
             return ExecuteList<ReworkList_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
         }
