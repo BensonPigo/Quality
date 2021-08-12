@@ -194,18 +194,18 @@ inner join RFT_Inspection_Detail rd on r.ID = rd.ID and rd.Junk = 0" + Environme
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
-                { "@OrderID", DbType.String, Master.OrderID } ,
-                { "@Article", DbType.String, Master.Article } ,
-                { "@Location", DbType.String, Master.Location } ,
-                { "@Size", DbType.String, Master.Size } ,
-                { "@Line", DbType.String, Master.Line } ,
-                { "@FactoryID", DbType.String, Master.FactoryID } ,
+                { "@OrderID", DbType.String, string.IsNullOrEmpty(Master.OrderID)?"" : Master.OrderID } ,
+                { "@Article", DbType.String, string.IsNullOrEmpty(Master.Article)?"" : Master.Article } ,
+                { "@Location", DbType.String, string.IsNullOrEmpty(Master.Location)?"" : Master.Location } ,
+                { "@Size", DbType.String, string.IsNullOrEmpty(Master.Size)?"" : Master.Size } ,
+                { "@Line", DbType.String, string.IsNullOrEmpty(Master.Line)?"" : Master.Line } ,
+                { "@FactoryID", DbType.String, string.IsNullOrEmpty(Master.FactoryID)?"" : Master.FactoryID } ,
                 { "@StyleUkey", DbType.String, Master.StyleUkey } ,
-                { "@FixType", DbType.String, Master.FixType } ,
-                { "@ReworkCardNo", DbType.String, Master.ReworkCardNo } ,
-                { "@Status", DbType.String, Master.Status } ,
-                { "@AddName", DbType.String, Master.AddName } ,
-                { "@ReworkCardType", DbType.String, Master.ReworkCardType } ,
+                { "@FixType", DbType.String, string.IsNullOrEmpty(Master.FixType)?"" : Master.FixType } ,
+                { "@ReworkCardNo", DbType.String,  string.IsNullOrEmpty(Master.ReworkCardNo)?"" : Master.ReworkCardNo } ,
+                { "@Status", DbType.String, string.IsNullOrEmpty(Master.Status)?"" : Master.Status } ,
+                { "@AddName", DbType.String, string.IsNullOrEmpty(Master.AddName)?"" : Master.AddName } ,
+                { "@ReworkCardType", DbType.String, string.IsNullOrEmpty(Master.ReworkCardType)?"" : Master.ReworkCardType } ,
                 { "@InspectionDate", DbType.DateTime, Master.InspectionDate } ,
             };
 
@@ -224,12 +224,12 @@ select @@IDENTITY as ID
             foreach (var item in Detail)
             {
 
-                objParameter.Add("@DefectCode", item.DefectCode);
-                objParameter.Add("@AreaCode", item.AreaCode);
-                objParameter.Add("@PMS_RFTBACriteriaID", item.PMS_RFTBACriteriaID);
-                objParameter.Add("@PMS_RFTRespID", item.PMS_RFTRespID);
-                objParameter.Add("@GarmentDefectTypeID", item.GarmentDefectTypeID);
-                objParameter.Add("@GarmentDefectCodeID", item.GarmentDefectCodeID);
+                objParameter.Add("@DefectCode", string.IsNullOrEmpty(item.DefectCode) ? "" : item.DefectCode);
+                objParameter.Add("@AreaCode", string.IsNullOrEmpty(item.AreaCode) ? "" : item.AreaCode);
+                objParameter.Add("@PMS_RFTBACriteriaID", string.IsNullOrEmpty(item.PMS_RFTBACriteriaID) ? "" : item.PMS_RFTBACriteriaID);
+                objParameter.Add("@PMS_RFTRespID", string.IsNullOrEmpty(item.PMS_RFTRespID) ? "" : item.PMS_RFTRespID);
+                objParameter.Add("@GarmentDefectTypeID", string.IsNullOrEmpty(item.GarmentDefectTypeID) ? "" : item.GarmentDefectTypeID);
+                objParameter.Add("@GarmentDefectCodeID", string.IsNullOrEmpty(item.GarmentDefectCodeID) ? "" : item.GarmentDefectCodeID);
                 objParameter.Add("@DefectPicture", item.DefectPicture);
 
                 sqlcmd += $@"
@@ -246,7 +246,9 @@ INSERT INTO [RFT_Inspection_Detail](
     ,[AddDate])
 values(
     @@IDENTITY,@DefectCode,@AreaCode, 0,@PMS_RFTBACriteriaID,@PMS_RFTRespID,@GarmentDefectTypeID
-,@GarmentDefectCodeID,@DefectPicture, GetDate())
+,@GarmentDefectCodeID
+,@DefectPicture
+, GetDate())
 ";
             }
 

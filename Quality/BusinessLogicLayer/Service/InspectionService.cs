@@ -212,42 +212,50 @@ namespace BusinessLogicLayer.Service
 
         public InspectionSave_ViewModel SaveRFTInspection(InspectionSave_ViewModel inspections)
         {
+            _RFTInspectionProvider = new RFTInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+            _RFTInspectionDetailProvider = new RFTInspectionDetailProvider(Common.ManufacturingExecutionDataAccessLayer);
+            _IOrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
             inspections.Result = true;
             inspections.ErrMsg = string.Empty;
-
-            if (inspections.rft_Inspection == null)
+            try
             {
-                inspections.Result = false;
-                inspections.ErrMsg = "InspectionSave_ViewModel is null";
-                return inspections;
+                if (inspections.rft_Inspection == null)
+                {
+                    inspections.Result = false;
+                    inspections.ErrMsg = "InspectionSave_ViewModel is null";
+                    return inspections;
+                }
+
+                string OrderID = inspections.rft_Inspection.OrderID;
+                IList<Orders> orders = _IOrdersProvider.Get(new Orders() { ID = OrderID });
+                if (orders.Count > 0)
+                {
+                    string StyleUkey = orders[0].StyleUkey.ToString();
+                    inspections.rft_Inspection.StyleUkey = long.Parse(StyleUkey);
+                }
+
+                #region update/insert [RFT_Inspection] and [RFT_Inspection_Detail]
+
+                int createCnt = _RFTInspectionDetailProvider.Create_Master_Detail(inspections.rft_Inspection, inspections.fT_Inspection_Details);
+
+                if (createCnt == 0)
+                {
+                    inspections.Result = false;
+                    inspections.ErrMsg = "Save RFTInspection row count = 0";
+                    return inspections;
+                }
+
+                #endregion
             }
-
-            _IOrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
-
-            string OrderID = inspections.rft_Inspection.OrderID;
-            IList<Orders> orders = _IOrdersProvider.Get(new Orders() { ID = OrderID });
-            if (orders.Count > 0)
+            catch (Exception ex)
             {
-                string StyleUkey = orders[0].StyleUkey.ToString();
-                inspections.rft_Inspection.StyleUkey = long.Parse(StyleUkey);
+                Exception exception = ex;
+                throw exception;
             }
+           
 
-            #region update/insert [RFT_Inspection] and [RFT_Inspection_Detail]
 
-            _RFTInspectionProvider = new RFTInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
 
-            _RFTInspectionDetailProvider = new RFTInspectionDetailProvider(Common.ManufacturingExecutionDataAccessLayer);
-
-            int createCnt = _RFTInspectionDetailProvider.Create_Master_Detail(inspections.rft_Inspection, inspections.fT_Inspection_Details);
-
-            if (createCnt == 0)
-            {
-                inspections.Result = false;
-                inspections.ErrMsg = "Save RFTInspection row count = 0";
-                return inspections;
-            }
-
-            #endregion
 
             return inspections;
         }
