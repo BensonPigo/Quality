@@ -6,7 +6,9 @@
 }
 
 @model Inspection_ViewModel
+<link href="~/ThirdParty/plugins/jquery-magnific-popup/magnific-popup.css" rel="stylesheet" />
 <link href="~/ThirdParty/plugins/jquery-ui/jquery-ui.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/jquery-magnific-popup/jquery.magnific-popup.js"></script>
 <style type="text/css">
     .row {
         --bs-gutter-x: 1.5rem;
@@ -43,9 +45,8 @@
         color: #ffffff;
     }
 
-    .table
-    {
-        font-size :1rem;
+    .table {
+        font-size: 1rem;
     }
 
     .table-striped > tbody > tr > td > input[type="text"] {
@@ -79,7 +80,7 @@
         position: fixed;
         right: 0;
         top: 0;
-        z-index: 1041;
+        z-index: 1040;
     }
 
     .SelectItem {
@@ -88,7 +89,7 @@
         position: absolute;
         left: 42vw;
         top: 30vh;
-        z-index: 1043;
+        z-index: 1041;
         overflow-y: auto;
     }
 
@@ -132,7 +133,7 @@
     }
 
     .black {
-        color :black !important;
+        color: black !important;
     }
 
     .font1rem {
@@ -168,8 +169,8 @@
     }
 
     #DefectType td {
-        vertical-align : middle;
-        text-align : center;
+        vertical-align: middle;
+        text-align: center;
     }
 
     #Switch {
@@ -178,7 +179,21 @@
         position: absolute;
         left: 40vw;
         top: 40vh;
-        z-index: 1043;
+        z-index: 1041;
+        background-color: white;
+        vertical-align: middle;
+        text-align: center;
+        font-size: 1em;
+        font-weight: bold;
+    }
+
+    #AddDefect {
+        width: 72vw;
+        height: 82vh;
+        position: absolute;
+        left: 15vw;
+        top: 13vh;
+        z-index: 1041;
         background-color: white;
         border: solid 1px black;
         vertical-align: middle;
@@ -187,20 +202,37 @@
         font-weight: bold;
     }
 
-    #AddDefect {
-        width: 71vw;
-        height: 82vh;
+    #ReworkCardNoSelect {
+        width: 52vw;
+        height: 84vh;
         position: absolute;
-        left: 15vw;
-        top: 13vh;
-        z-index: 1043;
+        left: 20vw;
+        top: 10vh;
+        z-index: 1041;
         background-color: white;
         border: solid 1px black;
-        vertical-align: middle;
-        text-align: center;
         font-size: 1em;
         font-weight: bold;
+        padding: 1em;
     }
+
+        #ReworkCardNoSelect .ReworkCardNoOuter {
+            width: 50vw;
+            height: 71vh;
+            overflow: auto;
+            margin-top: 7px;
+        }
+
+            #ReworkCardNoSelect .ReworkCardNoOuter .ReworkCardNoInside {
+                vertical-align: middle;
+            }
+
+                #ReworkCardNoSelect .ReworkCardNoOuter .ReworkCardNoInside > input {
+                    padding: 4em 4em;
+                    border: 0;
+                    margin: 1em;
+                }
+
     .DefectTable {
         font-size: 1rem;
         font-weight: bold;
@@ -231,6 +263,102 @@
     .selectDefect {
         background-color: #4fc1e9;
     }
+
+    .ReworkCardNo[idx='Fixed'] {
+        background-color: cadetblue;
+    }
+
+    .ReworkCardNo[idx='Rework'] {
+        background-color: #a4a9ae;
+    }
+
+    .selectReworkCard {
+        background-color: brown !important;
+    }
+
+    .SelectItemV2 {
+        width: 11em;
+        position: fixed;
+        z-index: 9;
+    }
+
+    #CFTComments {
+        width: 73vw;
+        height: 84vh;
+        position: absolute;
+        left: 15vw;
+        top: 10vh;
+        z-index: 1041;
+        background-color: white;
+        border: solid 1px black;
+        font-size: 1em;
+        font-weight: bold;
+        padding: 1em;
+    }
+
+    .CFTCommentsRowHeader {
+        color: black;
+        font-size: 1.1vw;
+        font-weight: bold;
+    }
+
+    .CFTCommentsTable {
+        width: 69vw;
+    }
+
+        .CFTCommentsTable > thead > tr > th {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .CFTCommentsTable > tbody > tr > td {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+            .CFTCommentsTable > tbody > tr > td > textarea {
+                min-height: 14vh;
+            }
+
+    #PictureDuringDummyFitting {
+        width: 73vw;
+        height: 84vh;
+        position: absolute;
+        left: 15vw;
+        top: 10vh;
+        z-index: 1041;
+        background-color: white;
+        border: solid 1px black;
+        font-size: 1em;
+        font-weight: bold;
+        padding: 1em;
+    }
+
+    .PictureDuringDummyFittingRowHeader {
+        color: black;
+        font-size: 1.1vw;
+        font-weight: bold;
+    }
+
+    .PictureDuringDummyFittingTable {
+        width: 71vw;
+        height: 70vh;
+    }
+
+        .PictureDuringDummyFittingTable > thead > tr > th {
+            width: 23vw;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .PictureDuringDummyFittingTable > thead > tr > th img{
+           cursor: pointer;
+        }
+
+        .PictureDuringDummyFittingTable > tbody > tr > td {
+            text-align: center;
+            vertical-align: middle;
+        }
 </style>
 
 <div class="main-content">
@@ -286,72 +414,72 @@
                                         </td>
                                         <td style="width: 5.7vw;">Size</td>
                                         <td style="width: 12vw;">
-                                            <input id="txtSize" type="text" style="width: 8em;"/>
+                                            <input id="txtSize" type="text" style="width: 8em;" />
                                             <input id="btnSizeSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="SizeSelectItem" value="..." />
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Production Type</td>
                                         <td>
-                                            <input id="txtProductType" type="text" style="width: 8em;"/>
+                                            <input id="txtProductType" type="text" style="width: 8em;" />
                                             <input id="btnProductTypeSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="ProductTypeSelectItem" value="..." />
                                         </td>
                                         <td colspan="2"><input id="txtProductTypePMS" type="text" readonly="readonly" /></td>
                                     </tr>
                                     <tr>
                                         <td>Brand</td>
-                                        <td><input id="txtBrand" type="text" readonly="readonly"/></td>
+                                        <td><input id="txtBrand" type="text" readonly="readonly" /></td>
                                         <td>Season</td>
-                                        <td><input id="txtSeason" type="text" readonly="readonly"/></td>
+                                        <td><input id="txtSeason" type="text" readonly="readonly" /></td>
                                     </tr>
                                     <tr>
                                         <td>Sample Stage</td>
-                                        <td><input id="txtSampleStage" type="text" readonly="readonly"/></td>
+                                        <td><input id="txtSampleStage" type="text" readonly="readonly" /></td>
                                         <td>Original Line</td>
-                                        <td><input id="txtOriginalLine" type="text" readonly="readonly"/></td>
+                                        <td><input id="txtOriginalLine" type="text" readonly="readonly" /></td>
                                     </tr>
                                     <tr>
                                         <td>Size Qty</td>
-                                        <td><input id="txtSizeQty" type="text" readonly="readonly"/></td>
+                                        <td><input id="txtSizeQty" type="text" readonly="readonly" /></td>
                                         <td>Balance Qty</td>
-                                        <td><input id="txtSizeBalanceQty" type="text" readonly="readonly"/></td>
+                                        <td><input id="txtSizeBalanceQty" type="text" readonly="readonly" /></td>
                                     </tr>
                                     <tr>
                                         <td>Order Qty</td>
-                                        <td><input id="txtOrderQty" type="text" readonly="readonly"/></td>
+                                        <td><input id="txtOrderQty" type="text" readonly="readonly" /></td>
                                         <td>Balance Qty</td>
-                                        <td><input id="txtOrderBalanceQty" type="text" readonly="readonly"/></td>
+                                        <td><input id="txtOrderBalanceQty" type="text" readonly="readonly" /></td>
                                     </tr>
                                     <tr>
                                         <td colspan="4" height="30"></td>
                                     </tr>
                                     <tr>
                                         <td>Pass</td>
-                                        <td><input id="txtPass" type="text" readonly="readonly"/></td>
+                                        <td><input id="txtPass" type="text" readonly="readonly" /></td>
                                         <td>Reject</td>
-                                        <td><input id="txtReject" type="text" readonly="readonly"/></td>
+                                        <td><input id="txtReject" type="text" readonly="readonly" /></td>
                                     </tr>
                                     <tr>
                                         <td class="red">Hard</td>
-                                        <td><input id="txtHard" type="text" readonly="readonly"/></td>
+                                        <td><input id="txtHard" type="text" readonly="readonly" /></td>
                                         <td class="darkblue">Quick</td>
-                                        <td><input id="txtQuick" type="text" readonly="readonly"/></td>
+                                        <td><input id="txtQuick" type="text" readonly="readonly" /></td>
                                     </tr>
                                     <tr>
                                         <td class="red">Wash</td>
-                                        <td><input id="txtWash" type="text" readonly="readonly"/></td>
+                                        <td><input id="txtWash" type="text" readonly="readonly" /></td>
                                         <td class="red">Repl.</td>
-                                        <td><input id="txtRepl" type="text" readonly="readonly"/></td>
+                                        <td><input id="txtRepl" type="text" readonly="readonly" /></td>
                                     </tr>
                                     <tr>
                                         <td class="red">Print</td>
-                                        <td><input id="txtPrint" type="text" readonly="readonly"/></td>
+                                        <td><input id="txtPrint" type="text" readonly="readonly" /></td>
                                         <td class="red">Shade</td>
-                                        <td><input id="txtShade" type="text" readonly="readonly"/></td>
+                                        <td><input id="txtShade" type="text" readonly="readonly" /></td>
                                     </tr>
                                     <tr>
                                         <td>Dispose</td>
-                                        <td><input id="txtDispose" type="text" readonly="readonly"/></td>
+                                        <td><input id="txtDispose" type="text" readonly="readonly" /></td>
                                         <td colspan="2"></td>
                                     </tr>
                                 </tbody>
@@ -402,10 +530,10 @@
                             <table style="width: 40vw; margin-bottom:1em;">
                                 <tr>
                                     <td align="right">
-                                        <input id="btnAddDefect" type="button" class="site-btn btn-red font1rem" style="margin:0;border:0;" name="AddDefect" value="Add Defect" />
+                                        <input id="btnAddDefect" type="button" class="site-btn btn-red font1rem" style="margin:0;border:0;padding: 1rem; font-weight:bold;" name="AddDefect" value="Add Defect" />
                                     </td>
                                 </tr>
-                            </table>                            
+                            </table>
                         </div>
                         <div>
                             <table id="DefectType" align="center" valign="middle" style="width: 40vw; margin-bottom:5em;" class="table table-top3">
@@ -418,18 +546,6 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>
-                                            <img src="~/Image/Icon/Picture.png" width="30" />
-                                        </td>
-                                        <td>
-                                            <img src="~/Image/Icon/Delete.png" width="30" class="deleteDefectType" />
-                                        </td>
-                                        <td>
-                                            <p>AAAAAAA</p>
-                                        </td>
-                                        <td class="display-None"><p>AAAAAAA</p></td>
-                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -443,7 +559,7 @@
                                         <input id="btnQuick" type="button" class="site-btn btn-darkblue rightBtn font1rem" name="Quick" value="Quick" />
                                     </td>
                                     <td style="width:10vw;">
-                                        
+                                        <p class="FixType display-None" idx="FixType"></p>
                                     </td>
                                     <td>
                                         <input id="btnSave" type="button" class="site-btn btn-blue rightBtn font1rem" name="Save" value="Save" />
@@ -501,40 +617,46 @@
     <div id="Switch" class="display-None">
         @using (Html.BeginForm("Index", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post))
         {
-        <table class="table table-striped" style="width: 20vw;">
-            <tbody>
-                <tr>
-                    <td>Factory</td>
-                    <td>
-                        @Html.DropDownListFor(o => o.FactoryID, (List<SelectListItem>)ViewBag.FactoryList, null, new { @class = "form-control" })
-                    </td>
-                </tr>
-                <tr>
-                    <td>Line</td>
-                    <td>
-                        @Html.DropDownListFor(o => o.Line, (List<SelectListItem>)ViewBag.LineList, null, new { @class = "form-control" })
-                    </td>
-                </tr>
-                <tr>
-                    <td>Inspection Date</td>
-                    <td>
-                        @Html.TextBoxFor(o => o.InspectionDate, "{0:yyyy/MM/dd}", new { @class = "form-control date-picker" })
-                    </td>
-                </tr>
-                <tr>
-                    <td>Brand</td>
-                    <td>
-                        @Html.DropDownListFor(o => o.Brand, (List<SelectListItem>)ViewBag.BrandList, null, new { @class = "form-control" })
-                    </td>
-                </tr>
-                <tr>
-                    <td style="padding-top: 0.5em;">
-                        <button id="SaveFactory" type="submit" class="site-btn btn-blue" style="width: 7vw; height: 5vh;" onclick="return SwitchCheck();">Save</button>
-                    </td>
-                    <td><button id="CloseFactory" type="button" class="site-btn btn-gy" style="width: 7vw; height: 5vh;">Close</button></td>
-                </tr>
-            </tbody>            
-        </table>
+            <table class="table table-striped" style="width: 20vw; border: solid 1px black;">
+                <tbody>
+                    <tr>
+                        <td>Factory</td>
+                        <td>
+                            @Html.DropDownListFor(o => o.FactoryID, (List<SelectListItem>)ViewBag.FactoryList, null, new { @class = "form-control" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Line</td>
+                        <td>
+                            @Html.DropDownListFor(o => o.Line, (List<SelectListItem>)ViewBag.LineList, null, new { @class = "form-control" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Inspection Date</td>
+                        <td>
+                            @Html.TextBoxFor(o => o.InspectionDate, "{0:yyyy/MM/dd}", new { @class = "form-control date-picker" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Brand</td>
+                        <td>
+                            <input id="Brand" name="Brand" type="text" class="FilterInput" idx="Brand" onkeyup="FilterFunction('Brand'); $('.SelectItemV2').removeClass('display-None');" value="@Model.Brand" placeholder="Search ....">
+                            <ul class="FilterUL SelectItemV2 display-None" idx="Brand">
+                                @foreach (string brand in (List<string>)ViewBag.BrandList)
+                                {
+                                    <li><a href="#">@brand</a></li>
+                                }
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-top: 0.5em;">
+                            <button id="SaveFactory" type="submit" class="site-btn btn-blue" style="width: 7vw; height: 5vh;" onclick="return SwitchCheck();">Save</button>
+                        </td>
+                        <td><button id="CloseFactory" type="button" class="site-btn btn-gy" style="width: 7vw; height: 5vh;">Close</button></td>
+                    </tr>
+                </tbody>
+            </table>
         }
     </div>
 
@@ -550,11 +672,16 @@
                             <input id="btnDefectSave" type="button" class="site-btn btn-blue font1rem" style="margin:0;border:0;padding: 7px 2em;" name="DefectSave" value="Save" />
                             <input id="btnDefectCamera" type="button" class="site-btn btn-gy font1rem" style="margin:0;border:0;padding: 7px 2em;margin-left: 1em;" name="DefectCamera" value="Camera" />
                             <input id="btnDefectPicture" type="button" class="site-btn btn-gy font1rem" style="margin:0;border:0;padding: 7px 2em;margin: 0 1em;" name="DefectPicture" value="Picture" />
+                            <div class="zoom-gallery display-None DefectPicture">
+                                <a id="aimgDefect" href="" data-source="" title="Defect Picture" style="width:640px;height:480px;">
+                                    <img id="imgDefect" width="30" />
+                                </a>
+                            </div>
                             <input id="btnDefectExit" type="button" class="site-btn btn-gy font1rem" style="margin:0;border:0;padding: 7px 2em;" name="DefectExit" value="Exit" />
                         </td>
                     </tr>
                 </tbody>
-            </table>        
+            </table>
         </div>
         <div>
             <div style="float:left; width:12vw; height:73vh; margin:0 1em 0 1.5em;">
@@ -597,7 +724,7 @@
             </div>
             <div style="float:left; width:20vw; height:73vh; margin:0 1em;">
                 <div>
-                    <table class="DefectTable" style="width: 20vw;">
+                    <table class="DefectTable Area1" style="width: 20vw;">
                         <thead>
                             <tr>
                                 <th colspan="2">Area-1</th>
@@ -605,74 +732,233 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td class="tdValue">Outside</td>
-                                <td class="tdValue">Inside</td>
+                                <td class="tdValue Area1ID" idx="Outside">Outside</td>
+                                <td class="tdValue Area1ID" idx="Inside">Inside</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
-                <div style="margin-top:1em;">
-                    <table class="DefectTable" style="width: 20vw;">
+                <div style="margin-top:1em; overflow-x: hidden; overflow-y: auto; height: 57vh;">
+                    <table class="DefectTable Area2" style="width: 20vw;">
                         <thead>
                             <tr>
                                 <th colspan="2">Area-2</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr><td class="tdEmpty"></td><td class="tdEmpty"></td></tr>
-                            <tr><td class="tdEmpty"></td><td class="tdEmpty"></td></tr>
-                            <tr><td class="tdEmpty"></td><td class="tdEmpty"></td></tr>
-                            <tr><td class="tdEmpty"></td><td class="tdEmpty"></td></tr>
-                            <tr><td class="tdEmpty"></td><td class="tdEmpty"></td></tr>
-                            <tr><td class="tdEmpty"></td><td class="tdEmpty"></td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
             <div style="float:left; width:12vw; height:73vh; margin:0 1em;">
                 <div>
-                    <table class="DefectTable" style="width: 12vw;">
+                    <table class="DefectTable Responsibility" style="width: 12vw;">
                         <thead>
                             <tr>
                                 <th>Responsibility</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr><td class="tdEmpty"></td></tr>
-                            <tr><td class="tdEmpty"></td></tr>
-                            <tr><td class="tdEmpty"></td></tr>
-                            <tr><td class="tdEmpty"></td></tr>
                         </tbody>
                     </table>
                 </div>
                 <div style="margin-top:1em;">
-                    <table class="DefectTable" style="width: 12vw;">
+                    <table class="DefectTable BAAuditCriteria" style="width: 12vw;">
                         <thead>
                             <tr>
                                 <th style="padding: 1em;">BA Audit Criteria</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr><td class="tdEmpty"></td></tr>
-                            <tr><td class="tdEmpty"></td></tr>
-                            <tr><td class="tdEmpty"></td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
+
+    @{
+        Html.RenderPartial("ScreenShot");
+    }
+
+    <div id="ReworkCardNoSelect" class="display-None">
+        <h3>Select Rework Card no</h3>
+        <div class="ReworkCardNoOuter">
+            <div class="ReworkCardNoInside">
+            </div>
+        </div>
+        <div style="vertical-align:middle; text-align:center; margin-top:1em; ">
+            <input id="btnReworkCardNoSave" type="button" class="site-btn btn-blue font1rem" style="margin:0;border:0;padding: 7px 2em;" name="ReworkCardNoSave" value="Save" />
+            <input id="btnReworkCardNoExit" type="button" class="site-btn btn-gy font1rem" style="margin:0;border:0;padding: 7px 2em;" name="ReworkCardNoExit" value="Exit" />
+            <p class="ReworkCardNoSelectValue display-None"></p>
+        </div>
+    </div>
+
+    <div id="ReworkList">
+
+    </div>
+
+    <div id="CFTComments" class="display-None">
+        <div>
+            <table style="width: 69vw;">
+                <tbody>
+                    <tr>
+                        <td align="left" valign="middle" style="width: 30%;">
+                            <p style="padding-left: 1em; font-size: 1.5em; font-weight: bold;">CFT Comment</p>
+                        </td>
+                        <td align="right" valign="middle">
+                            <input id="btnCFTCommentsSendMail" type="button" class="site-btn btn-gy font1rem" style="margin:0;border:0;padding: 7px 2em;" name="CFTCommentsSendMail" value="Send to MR" />
+                            <input id="btnCFTCommentsSave" type="button" class="site-btn btn-blue font1rem" style="margin:0;border:0;padding: 7px 2em;" name="CFTCommentsave" value="Save" />
+                            <input id="btnCFTCommentsExit" type="button" class="site-btn btn-gy font1rem" style="margin:0;border:0;padding: 7px 2em;" name="CFTCommentsExit" value="Exit" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="row CFTCommentsRowHeader">
+            <div class="col-auto"><p>SP no.</p></div>
+            <div class="col-auto"><p class="darkblue SP"></p></div>
+            <div class="col-auto"><p>Style#</p></div>
+            <div class="col-auto"><p class="darkblue Style"></p></div>
+            <div class="col-auto"><p>Season</p></div>
+            <div class="col-auto"><p class="darkblue Season"></p></div>
+            <div class="col-auto"><p>Sample Stage</p></div>
+            <div class="col-auto"><p class="darkblue SampleStage"></p></div>
+        </div>
+        <div style=" width: 71vw; height: 70vh; overflow-y: auto;">
+            <table class="CFTCommentsTable DefectTable">
+                <thead>
+                    <tr>
+                        <th style="width:17vw;">
+                            <p>Comments Category</p>
+                        </th>
+                        <th>
+                            <p>Comments</p>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="PictureDuringDummyFitting" class="display-None">
+        <div>
+            <table style="width: 69vw;">
+                <tbody>
+                    <tr>
+                        <td align="left" valign="middle" style="width: 30%;">
+                            <p style="padding-left: 1em; font-size: 1.5em; font-weight: bold;">Picture During Dummy Fitting</p>
+                        </td>
+                        <td align="right" valign="middle">
+                            <input id="btnPictureDuringDummyFittingSave" type="button" class="site-btn btn-blue font1rem" style="margin:0;border:0;padding: 7px 2em;" name="PictureDuringDummyFittingSave" value="Save" />
+                            <input id="btnPictureDuringDummyFittingExit" type="button" class="site-btn btn-gy font1rem" style="margin:0;border:0;padding: 7px 2em;" name="PictureDuringDummyFittingExit" value="Exit" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="row PictureDuringDummyFittingRowHeader">
+            <div class="col-auto"><p>SP no.</p></div>
+            <div class="col-auto"><p class="darkblue SP"></p></div>
+            <div class="col-auto"><p>Style#</p></div>
+            <div class="col-auto"><p class="darkblue Style"></p></div>
+            <div class="col-auto"><p>Article</p></div>
+            <div class="col-auto"><p class="darkblue Article"></p></div>
+            <div class="col-auto"><p>Size</p></div>
+            <div class="col-auto"><p class="darkblue Size"></p></div> 
+        </div>
+        <div>
+            <table class="PictureDuringDummyFittingTable DefectTable">
+                <thead>
+                    <tr>
+                        <th>
+                            <table style="width:100%">
+                                <tr>
+                                    <td style="width: 80%; vertical-align: middle;text-align: center;">
+                                        <h3>Front view</h3>
+                                    </td>
+                                    <td style="width: 20%; vertical-align: middle;text-align: center;">
+                                        <img src='/Image/Icon/Camera.png' width='30' idx="1" class='PictureDuringDummyFittingCamera' />
+                                        <img src='/Image/Icon/Delete.png' width='30' idx="1" class='PictureDuringDummyFittingDefectType' />
+                                    </td>
+                                </tr>
+                            </table>
+                        </th>
+                        <th>
+                            <table style="width:100%">
+                                <tr>
+                                    <td style="width: 80%; vertical-align: middle;text-align: center;">
+                                        <h3>Side view</h3>
+                                    </td>
+                                    <td style="width: 20%; vertical-align: middle;text-align: center;">
+                                        <img src='/Image/Icon/Camera.png' width='30' idx="2" class='PictureDuringDummyFittingCamera' />
+                                        <img src='/Image/Icon/Delete.png' width='30' idx="2" class='PictureDuringDummyFittingDefectType' />
+                                    </td>
+                                </tr>
+                            </table>
+                        </th>
+                        <th>
+                            <table style="width:100%">
+                                <tr>
+                                    <td style="width: 80%; vertical-align: middle;text-align: center;">
+                                        <h3>Back view</h3>
+                                    </td>
+                                    <td style="width: 20%; vertical-align: middle;text-align: center;">
+                                        <img src='/Image/Icon/Camera.png' width='30' idx="3" class='PictureDuringDummyFittingCamera' />
+                                        <img src='/Image/Icon/Delete.png' width='30' idx="3" class='PictureDuringDummyFittingDefectType' />
+                                    </td>
+                                </tr>
+                            </table>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="zoom-gallery">
+                                <a id="aPictureFront" href="" data-source="" title="Picture Front" style="width:640px;height:480px;">
+                                    <img id="PictureFront" style="width:20vw;" />
+                                </a>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="zoom-gallery">
+                                <a id="aPictureSide" href="" data-source="" title="Picture Side" style="width:640px;height:480px;">
+                                    <img id="PictureSide" style="width:20vw;" />
+                                </a>
+                            </div>                           
+                        </td>
+                        <td>
+                            <div class="zoom-gallery">
+                                <a id="aPictureBack" href="" data-source="" title="Picture Back" style="width:640px;height:480px;">
+                                    <img id="PictureBack" style="width:20vw;" />
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 <script type="text/javascript">
     var msg;
+    var EditMode;
     $(function () {
         msg = new MessagerAlert();
+        EditMode = false;
+        SelectItemV2ClickBind();
         LeftOnBindEvent();
         MidOnBindEvent();
         RightOnBindEvent();
         SwitchBindEvent();
         AddDefectBindEvent();
+        ReworkCardBindEvent();
+        CFTCommentsBindEvent();
+        PictureDuringDummyFittingBindEvent();
         $('#SelectItemBackground').on('click', function () {
             $("#SelectItemBackground, .SelectItem").addClass('display-None');
         });
@@ -683,7 +969,51 @@
         }
 
         PrveLoad();
+        IsEditModeButtonChange();
+
+        // Screenshot Exit
+        $('#btnScreenshotExit').on('click', function () {
+            StopScreen();
+            $('#Screenshot').addClass("display-None");
+        });
     });
+
+    function IsEditModeButtonChange() {
+        if ($("#txtStyle").val() == "" ||
+            $("#txtSP").val() == "" ||
+            $("#txtArticle").val() == "" ||
+            $("#txtSize").val() == "" ||
+            $("#txtProductType").val() == "" ||
+            parseIntEX($('#txtSizeBalanceQty').val()) >= parseIntEX($('#txtSizeQty').val())) {
+
+            EditMode = false;
+        }
+        else {
+            EditMode = true;
+        }
+
+        $('#btnHard').removeClass("btn-orange").addClass("btn-gy");
+        $('#btnQuick').removeClass("btn-darkblue").addClass("btn-gy");
+        $('#btnAddDefect').removeClass("btn-red").addClass("btn-gy");
+        $('#btnSave').removeClass("btn-blue").addClass("btn-gy");
+        if (EditMode) {
+            $('#btnPass').addClass("btn-green").removeClass("btn-gy");
+            $('#btnReject').addClass("btn-red").removeClass("btn-gy");
+            $('#btnCancel').addClass("btn-blue").removeClass("btn-gy");
+            var rowCount = $('#DefectType tr').length;
+            if (rowCount > 1) {
+                $('#btnAddDefect').addClass("btn-red").removeClass("btn-gy");
+                $('#btnHard').addClass("btn-orange").removeClass("btn-gy");
+                $('#btnQuick').addClass("btn-darkblue").removeClass("btn-gy");
+                $('#btnSave').addClass("btn-blue").removeClass("btn-gy");
+            }
+        }
+        else {
+            $('#btnPass').removeClass("btn-green").addClass("btn-gy");
+            $('#btnReject').removeClass("btn-red").addClass("btn-gy");
+            $('#btnCancel').removeClass("btn-blue").addClass("btn-gy");
+        }
+    }
 
     function PrveLoad() {
         StyleClick($("#txtSP").val());
@@ -785,7 +1115,8 @@
 
     function MidOnBindEvent() {
         $('#btnPass').on('click', function () {
-            if ($("#txtStyle").val() == "" || $("#txtSP").val() == "" || $("#txtArticle").val() == "" || $("#txtSize").val() == "" || $("#txtProductType").val() == "") {
+            IsEditModeButtonChange();
+            if (!EditMode) {
                 return;
             }
 
@@ -793,11 +1124,12 @@
         });
 
         $('#btnReject').on('click', function () {
-            if ($("#txtStyle").val() == "" || $("#txtSP").val() == "" || $("#txtArticle").val() == "" || $("#txtSize").val() == "" || $("#txtProductType").val() == "") {
+            IsEditModeButtonChange();
+            if (!EditMode) {
                 return;
             }
-
-            alert('open other page');
+            GetDefectCategory();
+            $('#SelectItemBackground, #AddDefect').removeClass('display-None').unbind('click');
         });
 
         $('#btnReworkList').on('click', function () {
@@ -810,36 +1142,99 @@
         });
 
         $('#btnCFTComments').on('click', function () {
-            alert('open other page');
+            if ($('#txtSP').val() == "" || $('#txtStyle').val() == "" || $('#txtSeason').val() == "" || $('#txtSampleStage').val() == "") {
+                return;
+            }
+
+            $('.CFTCommentsRowHeader .SP').html($('#txtSP').val());
+            $('.CFTCommentsRowHeader .Style').html($('#txtStyle').val());
+            $('.CFTCommentsRowHeader .Season').html($('#txtSeason').val());
+            $('.CFTCommentsRowHeader .SampleStage').html($('#txtSampleStage').val());
+            CFTCommentsClick($('#txtSP').val(), $('#txtStyle').val(), $('#txtSeason').val(), $('#txtSampleStage').val());
+            $('#CFTComments').removeClass("display-None");
         });
 
         $('#btnPictures').on('click', function () {
-            alert('open other page');
+            if ($('#txtSP').val() == "" || $('#txtArticle').val() == "" || $('#txtSize').val() == "" || $('#txtStyle').val() == "") {
+                return;
+            }
+
+            $('.PictureDuringDummyFittingRowHeader .SP').html($('#txtSP').val());
+            $('.PictureDuringDummyFittingRowHeader .Style').html($('#txtStyle').val());
+            $('.PictureDuringDummyFittingRowHeader .Article').html($('#txtArticle').val());
+            $('.PictureDuringDummyFittingRowHeader .Size').html($('#txtSize').val());
+            PicturesClick($('#txtSP').val(), $('#txtStyle').val(), $('#txtArticle').val(), $('#txtSize').val());
+            $('#PictureDuringDummyFitting').removeClass("display-None");
         });
     }
 
     function RightOnBindEvent() {
-        $('#btnAddDefect').on("click", function () {
-            GetDefectCategory();
-            $('#SelectItemBackground, #AddDefect').removeClass('display-None').unbind('click');
+        $('#btnCancel').on("click", function () {
+            if (!EditMode) {
+                return;
+            }
 
-            var tbody = $('#DefectType>tbody');
-            var content = "<tr>";
-            content += "<td><img src='/Image/Icon/Picture.png' width='30' /></td>";
-            content += "<td><img src='/Image/Icon/Delete.png' width='30' class='deleteDefectType' /></td>";
-            content += "<td><p>AAAAAAA</p></td>";
-            content += "<td class='display-None'><p>AAAAAAA</p></td></tr>";
-            tbody.append(content);
-
-            DynamicBindEvent();
+            $('#txtStyle, #txtSP, #txtArticle, #txtSize, #txtProductType, #txtProductTypePMS, #txtBrand, #txtSeason, #txtSampleStage, #txtOriginalLine, #txtSizeQty, #txtSizeBalanceQty, #txtOrderQty, #txtOrderBalanceQty').val("");
+            $(".table-top3>tbody>tr>td>input[type='text']").val("");
+            $("#DefectType>tbody>tr").remove();
+            IsEditModeButtonChange();
         });
 
-        $('#btnCancel').on("click", function () {
-            $("#DefectType>tbody>tr").remove();
+        $('#btnHard').on("click", function () {
+            IsEditModeButtonChange();
+            if (!EditMode) {
+                return;
+            }
+
+            var rowCount = $('#DefectType tr').length;
+            if (rowCount <= 1) {
+                return;
+            }
+
+            $('.FixType').html("Hard");
+            $('#btnHard').addClass("btn-orange").removeClass("btn-gy");
+            $('#btnQuick').removeClass("btn-darkblue").addClass("btn-gy");
+        });
+
+        $('#btnQuick').on("click", function () {
+            IsEditModeButtonChange();
+            if (!EditMode) {
+                return;
+            }
+
+            var rowCount = $('#DefectType tr').length;
+            if (rowCount <= 1) {
+                return;
+            }
+
+            $('.FixType').html("Quick");
+            $('#btnHard').removeClass("btn-orange").addClass("btn-gy");
+            $('#btnQuick').addClass("btn-darkblue").removeClass("btn-gy");
         });
 
         $('#btnSwitch').on('click', function () {
             $("#SelectItemBackground, #Switch").removeClass('display-None').unbind('click');
+        });
+
+        $('#btnSave').on('click', function () {
+            IsEditModeButtonChange();
+            if (!EditMode) {
+                return;
+            }
+
+            var rowCount = $('#DefectType tr').length;
+            if (rowCount <= 1) {
+                msg.WithError("Selected Defety Type cannot be empty.");
+                return;
+            }
+
+            if ($('.FixType').html() == "") {
+                msg.WithError("Please select Fix Type (Hard/Quick) first.");
+                return;
+            }
+
+            GetReworkCard($('.FixType').html());
+            $("#SelectItemBackground, #ReworkCardNoSelect").removeClass('display-None').unbind('click');
         });
 
         DynamicBindEvent();
@@ -849,6 +1244,8 @@
         $('.deleteDefectType').on("click", function () {
             $(this).parent().parent().remove();
         });
+
+        ZoomGlleryBind();
     }
 
     function SwitchBindEvent() {
@@ -858,21 +1255,257 @@
             $("#SelectItemBackground").addClass('display-None');
 
             $('#SelectItemBackground').on('click', function () {
-                $("#SelectItemBackground").addClass('display-None');
+                $("#SelectItemBackground, .SelectItem").addClass('display-None');
             });
         });
     }
 
     function AddDefectBindEvent() {
+        GetDefectCategory();
+
+        $('#btnAddDefect').on("click", function () {
+            IsEditModeButtonChange();
+            if (!EditMode) {
+                return;
+            }
+
+            var rowCount = $('#DefectType tr').length;
+            if (rowCount <= 1) {
+                return;
+            }
+
+            GetDefectCategory();
+            $('#SelectItemBackground, #AddDefect').removeClass('display-None').unbind('click');
+        });
+
         $('#btnDefectExit').on('click', function () {
             $('#AddDefect').addClass('display-None');
 
             $("#SelectItemBackground").addClass('display-None');
 
             $('#SelectItemBackground').on('click', function () {
-                $("#SelectItemBackground").addClass('display-None');
+                $("#SelectItemBackground, .SelectItem").addClass('display-None');
             });
+
+            document.querySelector("#aimgDefect").removeAttribute('href');
+            document.querySelector("#imgDefect").removeAttribute('src');
+
+            DynamicBindEvent();
+            IsEditModeButtonChange();
         });
+
+        $('#btnDefectSave').on('click', function () {
+            var defectCategoryID = $('.DefectCategory .selectDefect').attr('idx');
+            var defectCategory = $('.DefectCategory .selectDefect>p').html();
+            var defectTypeID = $('.ADDDefectType .selectDefect').attr('idx');
+            var defectType = $('.ADDDefectType .selectDefect>p').html();
+            var area1 = $('.Area1 .selectDefect').attr('idx');
+            var area2 = $('.Area2 .selectDefect').attr('idx');
+            var responsibilityID = $('.Responsibility .selectDefect').attr('idx');
+            var responsibility = $('.Responsibility .selectDefect>p').html();
+            var bAAuditCriteriaID = $('.BAAuditCriteria .selectDefect').attr('idx');
+            var bAAuditCriteria = $('.BAAuditCriteria .selectDefect>p').html();
+            var pic = document.querySelector("#imgDefect").src;
+
+            if (defectCategoryID == null) {
+                msg.WithError("Please choose Defect Category before save.");
+                return;
+            }
+
+            if (defectTypeID == null) {
+                msg.WithError("Please choose Defect Type before save.");
+                return;
+            }
+
+            if (area1 == null || area2 == null) {
+                msg.WithError("Please choose Area-1, Area-2 before save.");
+                return;
+            }
+
+            if (responsibilityID == null ) {
+                msg.WithError("Please choose Responsibility before save.");
+                return;
+            }
+
+            var tbody = $('#DefectType>tbody');
+            var rowCount = $('#DefectType tr').length;
+            var content = "<tr>";
+            if (pic != "") {
+                content += "<td><div id='pic" + rowCount+ "' class='zoom-gallery'> ";
+                content += "<a href='" + pic + "' data-source='' title='Defect Picture' style='width:640px;height:480px;'> ";
+                content += "<img src='" + pic + "' width='30' />";
+                content += "</a></div></td>";
+            }
+            else {
+                content += "<td></td>";
+            }
+
+            content += "<td><img src='/Image/Icon/Delete.png' width='30' class='deleteDefectType' /></td>";
+            content += "<td><p>" + area2 + '-' + defectTypeID + '-' + responsibility + '-' + bAAuditCriteriaID  + "</p></td>";
+            content += "<td class='display-None DefectValue' idi='" + rowCount + "'>";
+            content += "<p idx='DefectCategory' idv='" + defectCategoryID + "'>" + defectCategory + "</p>";
+            content += "<p idx='ADDDefectType' idv='" + defectTypeID + "'>" + defectType + "</p>";
+            content += "<p idx='Area1' idv='" + area1 + "'>" + area1 + "</p>";
+            content += "<p idx='Area2' idv='" + area2 + "'>" + area2 + "</p>";
+            content += "<p idx='Responsibility' idv='" + responsibilityID + "'>" + responsibility + "</p>";
+            content += "<p idx='BAAuditCriteria' idv='" + bAAuditCriteriaID + "'>" + bAAuditCriteria + "</p>";
+            content += "<p idx='pic' idv='pic'>" + pic + "</p>";
+            content += "</td></tr>";
+            tbody.append(content);
+
+            $('#btnDefectExit').click();
+        });
+
+        $('#btnDefectCamera').on('click', function () {
+            $('#Screenshot').removeClass("display-None");
+            Screenshot('imgDefect');
+        });
+
+        $('#btnDefectPicture').on('click', function () {
+            $('.DefectPicture>a').click();
+        });
+    }
+
+    function ReworkCardBindEvent() {
+        $('#btnReworkCardNoExit').on('click', function () {
+            $("#SelectItemBackground, #ReworkCardNoSelect").addClass('display-None');
+            $('#SelectItemBackground').on('click', function () {
+                $("#SelectItemBackground, .SelectItem").addClass('display-None');
+            });
+
+            $('#btnRefresh').click();
+        });
+
+        $('#btnReworkCardNoSave').on('click', function () {
+            if ($('.ReworkCardNoSelectValue').html() == "") {
+                msg.WithError("Please select a Rework Card.");
+                return;
+            }
+
+            ReworkCardSave();
+        });
+
+    }
+
+    function CFTCommentsBindEvent() {
+        $('#btnCFTCommentsExit').on('click', function () {
+            $('#CFTComments').addClass("display-None");
+        });
+
+        $('#btnCFTCommentsSave').on('click', function () {
+            CFTCommentsSave(0);
+        });
+
+        $('#btnCFTCommentsSendMail').on('click', function () {
+            CFTCommentsSave(1);
+        });
+    }
+
+    function PictureDuringDummyFittingBindEvent() {
+        $('.PictureDuringDummyFittingCamera').on('click', function () {
+            var idx = $(this).attr('idx');
+            var sentID = "PictureFront";
+            switch (idx) {
+                case "1":
+                    sentID = "PictureFront";
+                    break;
+                case "2":
+                    sentID = "PictureSide";
+                    break;
+                case "3":
+                    sentID = "PictureBack";
+                    break;
+            }
+
+            $('#Screenshot').removeClass("display-None");
+            Screenshot(sentID);
+        });
+
+        $('.PictureDuringDummyFittingDefectType').on('click', function () {
+            var idx = $(this).attr('idx');
+            var sentID = "PictureFront";
+            switch (idx) {
+                case "1":
+                    sentID = "PictureFront";
+                    break;
+                case "2":
+                    sentID = "PictureSide";
+                    break;
+                case "3":
+                    sentID = "PictureBack";
+                    break;
+            }
+
+            document.querySelector("#a" + sentID).removeAttribute('href');
+            document.querySelector("#" + sentID).removeAttribute('src');
+        });
+
+        $('#btnPictureDuringDummyFittingExit').on('click', function () {
+            $('.PictureDuringDummyFittingDefectType').click();
+            $('#PictureDuringDummyFitting').addClass("display-None");
+        });
+    }
+
+    function InitDefect(type) {
+        var DefectTypeBody, Area2Body, ResponsibilityBody, BAAuditCriteriaBody;
+        DefectTypeBody += "<tr><td class='tdEmpty'></td><td class='tdEmpty'></td></tr>";
+        DefectTypeBody += "<tr><td class='tdEmpty'></td><td class='tdEmpty'></td></tr>";
+        DefectTypeBody += "<tr><td class='tdEmpty'></td><td class='tdEmpty'></td></tr>";
+        DefectTypeBody += "<tr><td class='tdEmpty'></td><td class='tdEmpty'></td></tr>";
+        DefectTypeBody += "<tr><td class='tdEmpty'></td><td class='tdEmpty'></td></tr>";
+        DefectTypeBody += "<tr><td class='tdEmpty'></td><td class='tdEmpty'></td></tr>";
+        DefectTypeBody += "<tr><td class='tdEmpty'></td><td class='tdEmpty'></td></tr>";
+        DefectTypeBody += "<tr><td class='tdEmpty'></td><td class='tdEmpty'></td></tr>";
+
+        Area2Body += " <tr><td class='tdEmpty'></td><td class='tdEmpty'></td></tr>";
+        Area2Body += " <tr><td class='tdEmpty'></td><td class='tdEmpty'></td></tr>";
+        Area2Body += " <tr><td class='tdEmpty'></td><td class='tdEmpty'></td></tr>";
+        Area2Body += " <tr><td class='tdEmpty'></td><td class='tdEmpty'></td></tr>";
+        Area2Body += " <tr><td class='tdEmpty'></td><td class='tdEmpty'></td></tr>";
+        Area2Body += " <tr><td class='tdEmpty'></td><td class='tdEmpty'></td></tr>";
+
+        ResponsibilityBody += "<tr><td class='tdEmpty'></td></tr>";
+        ResponsibilityBody += "<tr><td class='tdEmpty'></td></tr>";
+        ResponsibilityBody += "<tr><td class='tdEmpty'></td></tr>";
+        ResponsibilityBody += "<tr><td class='tdEmpty'></td></tr>";
+
+        BAAuditCriteriaBody += "<tr><td class='tdEmpty'></td></tr>";
+        BAAuditCriteriaBody += "<tr><td class='tdEmpty'></td></tr>";
+        BAAuditCriteriaBody += "<tr><td class='tdEmpty'></td></tr>";
+
+        switch (type) {
+            case 'ALL':
+                $('.ADDDefectType>tbody').html(DefectTypeBody);
+                $('.Area1ID').removeClass("selectDefect").unbind('click');
+                $('.Area2>tbody').html(Area2Body);
+                $('.Responsibility>tbody').html(ResponsibilityBody);
+                $('.BAAuditCriteria>tbody').html(BAAuditCriteriaBody);
+                break;
+            case 'DefectType':
+                $('.Area1ID').removeClass("selectDefect")
+                $('.Area2>tbody').html(Area2Body);
+                $('.Responsibility>tbody').html(ResponsibilityBody);
+                $('.BAAuditCriteria>tbody').html(BAAuditCriteriaBody);
+            case 'Area1':
+                $('.Area2>tbody').html(Area2Body);
+                $('.Responsibility>tbody').html(ResponsibilityBody);
+                $('.BAAuditCriteria>tbody').html(BAAuditCriteriaBody);
+                break;
+            case 'Area2':
+                $('.Responsibility>tbody').html(ResponsibilityBody);
+                $('.BAAuditCriteria>tbody').html(BAAuditCriteriaBody);
+                break;
+            case 'Responsibility':
+                $('.BAAuditCriteria>tbody').html(BAAuditCriteriaBody);
+                break;
+            default:
+                $('.ADDDefectType>tbody').html(DefectTypeBody);
+                $('.Area1ID').removeClass("selectDefect").unbind('click');
+                $('.Area2>tbody').html(Area2Body);
+                $('.Responsibility>tbody').html(ResponsibilityBody);
+                $('.BAAuditCriteria>tbody').html(BAAuditCriteriaBody);
+                break;
+        }
     }
 
     function SwitchCheck() {
@@ -880,6 +1513,22 @@
             msg.WithError("Inspection Date cannot be empty");
             return false;
         }
+    }
+
+    function BrandCheck(Brand) {
+        $.ajax({
+            url: "@Url.Action("CheckBrand", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ Brand: Brand }),
+            async: true,
+            success: function (data) {
+                $('#Brand').val(data.Brand);
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
     }
 
     function StyleClick(OrderID) {
@@ -913,6 +1562,7 @@
                 }
 
                 SPClick($("#txtStyle").val());
+                IsEditModeButtonChange();
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 console.log(xhr.responseText);
@@ -966,10 +1616,12 @@
                         $('#txtSizeBalanceQty').val(data.SizeBalanceQty);
                         $('#txtOrderBalanceQty').val(data.OrderBalanceQty);
                     }
+                    $('#btnRefresh').click();
                 }
 
                 SPClick($("#txtStyle").val());
                 ArticleClick($("#txtStyle").val(), $('#txtSP').val());
+                IsEditModeButtonChange();
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 console.log(xhr.responseText);
@@ -1014,11 +1666,13 @@
                         $('#txtSizeBalanceQty').val(data.SizeBalanceQty);
                         $('#txtOrderQty').val(data.OrderQty);
                         $('#txtOrderBalanceQty').val(data.OrderBalanceQty);
+                        $('#btnRefresh').click();
                     }
                 }
 
                 ArticleClick($("#txtStyle").val(), $("#txtSP").val());
                 SizeClick($("#txtStyle").val(), $("#txtSP").val(), $("#txtArticle").val());
+                IsEditModeButtonChange();
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 console.log(xhr.responseText);
@@ -1062,11 +1716,13 @@
                         $('#txtProductType').val(data.ProductType);
                         $('#txtSizeBalanceQty').val(data.SizeBalanceQty);
                         $('#txtOrderBalanceQty').val(data.OrderBalanceQty);
+                        $('#btnRefresh').click();
                     }
                 }
 
                 SizeClick($("#txtStyle").val(), $("#txtSP").val(), $("#txtArticle").val());
                 ProductTypeClick($("#txtStyle").val(), $("#txtSP").val(), $("#txtArticle").val(), $("#txtSize").val());
+                IsEditModeButtonChange();
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 console.log(xhr.responseText);
@@ -1104,9 +1760,13 @@
                     msg.WithError("ProductType not found.");
                 }
                 else {
+                    $('#txtSizeQty').val(data.SizeQty);
+                    $('#txtOrderQty').val(data.OrderQty);
                     $('#txtSizeBalanceQty').val(data.SizeBalanceQty);
                     $('#txtOrderBalanceQty').val(data.OrderBalanceQty);
+                    $('#btnRefresh').click();
                 }
+                IsEditModeButtonChange();
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 console.log(xhr.responseText);
@@ -1155,7 +1815,7 @@
             type: 'POST',
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({ StyleID: StyleID, OrderID: OrderID, Article: Article, Size: Size, ProductType: ProductType }),
-            async: true,
+            async: false,
             success: function (data) {
                 if (data.Result) {
                     msg.WithSuccess("You pass 1 garment.");
@@ -1180,10 +1840,12 @@
             async: true,
             success: function (data) {
                 $(".DefectCategory>tbody").html(data);
+                InitDefect('ALL');
 
                 $('.DefectCategoryTD').on('click', function () {
                     $('.DefectCategoryTD').removeClass("selectDefect");
                     $(this).addClass("selectDefect");
+                    InitDefect("ALL");
                     GetADDDefectType($(this).attr("idx"));
                 });
             },
@@ -1206,7 +1868,365 @@
                 $('.DefectTypeID').on('click', function () {
                     $('.DefectTypeID').removeClass("selectDefect");
                     $(this).addClass("selectDefect");
+                    InitDefect('DefectType');
+
+                    $('.Area1ID').on('click', function () {
+                        $('.Area1ID').removeClass("selectDefect");
+                        $(this).addClass("selectDefect");
+                        InitDefect('Area1');
+                        GetArea2($(this).attr("idx"), $('#txtProductType').val());
+                    });
                 });
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function GetArea2(Area1, Location) {
+        $.ajax({
+            url: "@Url.Action("GetArea", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ Type: Area1, Location: Location}),
+            async: true,
+            success: function (data) {
+                $(".Area2>tbody").html(data);
+
+                $('.Area2ID').on('click', function () {
+                    $('.Area2ID').removeClass("selectDefect");
+                    $(this).addClass("selectDefect");
+                    InitDefect('Area2');
+                    GetResponsibility("PMS_RFTResp", "Responsibility");
+                    GetBAAuditCriteria("PMS_BACriteria", "BAAuditCriteria");
+                });
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function GetResponsibility(Type, defectType) {
+        $.ajax({
+            url: "@Url.Action("GetDropDownList", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ Type: Type, defectType: defectType}),
+            async: true,
+            success: function (data) {
+                $(".Responsibility>tbody").html(data);
+
+                $('.ResponsibilityID').on('click', function () {
+                    $('.ResponsibilityID').removeClass("selectDefect");
+                    $(this).addClass("selectDefect");
+                });
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function GetBAAuditCriteria(Type, defectType) {
+        $.ajax({
+            url: "@Url.Action("GetDropDownList", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ Type: Type, defectType: defectType}),
+            async: true,
+            success: function (data) {
+                $(".BAAuditCriteria>tbody").html(data);
+
+                $('.BAAuditCriteriaID').on('click', function () {
+                    $('.BAAuditCriteriaID').removeClass("selectDefect");
+                    $(this).addClass("selectDefect");
+                });
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function GetReworkCard(FixType) {
+        $.ajax({
+            url: "@Url.Action("GetReworkCard", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ fixType: FixType}),
+            async: true,
+            success: function (data) {
+                var rCount = Object.keys(data).length;
+                var content = "";
+
+                $.each(data, function (index, value) {
+                    content += "<input id='ReworkCardNo" + padLeft(value.No.toString(), 2) + "' idx='" + value.Status + "' type='button' class='site-btn ReworkCardNo font1rem' name='ReworkCardNo' value='" + padLeft(value.No.toString(), 2) + "' />";
+                });
+
+                if (rCount > 12) {
+                    var width = 64;
+                    var displacement = Math.floor((rCount - 12) / 3);
+                    if (((rCount - 12) % 3) == 0) {
+                        displacement--;
+                    }
+
+                    width = width + (displacement * 13);
+                    $('.ReworkCardNoInside').css("width", width + "vw");
+                }
+
+                $('.ReworkCardNoInside').html(content);
+                $('.ReworkCardNoInside>input').on('click', function () {
+                    if ($(this).attr("idx") == "Rework") {
+                        return;
+                    }
+
+                    $('.ReworkCardNoInside>input').removeClass("selectReworkCard");
+                    $(this).addClass("selectReworkCard");
+                    $('.ReworkCardNoSelectValue').html($(this).val());
+                });
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function ReworkCardSave() {
+        var style = $('#txtStyle').val();
+        var datas =
+            {
+                OrderID: $('#txtSP').val(),
+                Article: $('#txtArticle').val(),
+                Location: $('#txtProductType').val(),
+                Size: $('#txtSize').val(),
+                FixType: $('.FixType').html(),
+            };
+
+        var datasDetail = [];
+
+        $("#DefectType>tbody>tr>.DefectValue").each(function (index, value) {
+            var GarmentDefectTypeID = "";
+            var GarmentDefectCodeID = "";
+            var DefectCode = "";
+            var AreaCode = "";
+            var PMS_RFTBACriteriaID = "";
+            var PMS_RFTRespID = "";
+            var DefectPicture = "";
+
+            $(this).children("p").each(function (index, value) {
+                var idx = $(this).attr('idx');
+                var idv = $(this).attr('idv');
+                var h = $(this).html();
+
+                switch (idx) {
+                    case "DefectCategory":
+                        GarmentDefectTypeID = idv;
+                        break;
+                    case "ADDDefectType":
+                        GarmentDefectCodeID = idv;
+                        DefectCode = h;
+                        break;
+                    case "Area2":
+                        AreaCode = idv;
+                        break;
+                    case "Responsibility":
+                        PMS_RFTRespID = idv;
+                        break;
+                    case "BAAuditCriteria":
+                        PMS_RFTBACriteriaID = idv;
+                        break;
+                    case "pic":
+                        DefectPicture = h.replace("data:image/webp;base64,", "");
+                        break;
+                }
+            });
+
+            datasDetail.push({
+                GarmentDefectTypeID: GarmentDefectTypeID,
+                GarmentDefectCodeID: GarmentDefectCodeID,
+                DefectCode: DefectCode,
+                AreaCode: AreaCode,
+                PMS_RFTRespID: PMS_RFTRespID,
+                PMS_RFTBACriteriaID: PMS_RFTBACriteriaID,
+                DefectPicture: DefectPicture,
+            });
+        });
+
+        var saveView = {
+            StyleID: style,
+            rft_Inspection: datas,
+            fT_Inspection_Details: datasDetail
+        };
+
+        $.ajax({
+            url: "@Url.Action("ReworkCardSave", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ saveView }),
+            async: false,
+            success: function (data) {
+                if (data.Result) {
+                    $("#DefectType>tbody>tr").remove();
+                    $('#btnReworkCardNoExit').click();
+                    $('#btnRefresh').click();
+                    IsEditModeButtonChange();
+                }
+                else {
+                    msg.WithError(data.ErrMsg);
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function CFTCommentsClick(OrderID, StyleID, Season, SampleStage) {
+        $.ajax({
+            url: "@Url.Action("GetCFTComments", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ OrderID: OrderID, StyleID: StyleID, Season: Season, SampleStage: SampleStage }),
+            async: true,
+            success: function (data) {
+                $(".CFTCommentsTable>tbody").html(data);
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function CFTCommentsSave(SendMail) {
+        var SP = $('#txtSP').val();
+        var datasDetail = [];
+
+        $(".CFTCommentsTable>tbody>tr>td").each(function (index, value) {
+
+            $(this).children("textarea").each(function (index, value) {
+                var idx = $(this).attr('idx');
+                var h = $(this).html();
+
+                datasDetail.push({
+                    OrderID: SP,
+                    PMS_RFTCommentsID: idx,
+                    Comnments: h,
+                });
+            });
+        });
+
+        $.ajax({
+            url: "@Url.Action("CFTCommentsSave", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ duringDummyFitting : datasDetail }),
+            async: false,
+            success: function (data) {
+                if (data.Result) {
+                    if (SendMail) {
+                        CFTCommentsSendMail(SP);
+                    }
+                    else {
+                        $(".CFTCommentsTable>tbody>tr").remove();
+                        $('#btnCFTCommentsExit').click();
+                    }
+                }
+                else {
+                    msg.WithError(data.ErrMsg);
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function CFTCommentsSendMail(OrderID) {
+          $.ajax({
+            url: "@Url.Action("CFTCommentsSend", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+              data: JSON.stringify({ OrderID: OrderID }),
+            async: false,
+            success: function (data) {
+                if (data.Result) {
+                    msg.WithSuccess("Send Mail");
+                }
+                else {
+                    msg.WithError(data.ErrMsg);
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function PicturesClick(OrderID, StyleID, Article, Size) {
+        $.ajax({
+            url: "@Url.Action("GetPictures", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ OrderID: OrderID, StyleID: StyleID, Article: Article, Size: Size }),
+            async: true,
+            success: function (data) {
+                const PictureFront = document.querySelector("#PictureFront");
+                const aPictureFront = document.querySelector("#aPictureFront");
+                const PictureSide = document.querySelector("#PictureSide");
+                const aPictureSide = document.querySelector("#aPictureSide");
+                const PictureBack = document.querySelector("#PictureBack");
+                const aPictureBack = document.querySelector("#aPictureBack");
+                if (data.Font != null) {
+                    PictureFront.src = "data:image/webp;base64," + ByteArrayToBase64(data.Font);
+                    aPictureFront.href = PictureFront.src;
+                }
+                if (data.Side != null) {
+                    PictureSide.src = "data:image/webp;base64," + ByteArrayToBase64(data.Side);
+                    aPictureSide.href = PictureSide.src;
+                }
+                if (data.Back != null) {
+                    PictureBack.src = "data:image/webp;base64," + ByteArrayToBase64(data.Back);
+                    aPictureBack.href = PictureBack.src;
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function PicturesSave() {
+        const PictureFront = document.querySelector("#PictureFront").src.replace("data:image/webp;base64,", "");
+        const PictureSide = document.querySelector("#PictureSide").src.replace("data:image/webp;base64,", "");
+        const PictureBack = document.querySelector("#PictureBack").src.replace("data:image/webp;base64,", "");
+
+        var datas =
+        {
+            OrderID: $('#txtSP').val(),
+            Article: $('#txtArticle').val(),
+            Size: $('#txtSize').val(),
+            Front: PictureFront,
+            Side: PictureSide,
+            Back: PictureBack,
+        };
+
+        $.ajax({
+            url: "@Url.Action("PicturesSave", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ duringDummyFitting: datas }),
+            async: true,
+            success: function (data) {
+                if (data.Result) {
+                    $('#btnPictureDuringDummyFittingExit').click();
+                    $('#btnRefresh').click();
+                    IsEditModeButtonChange();
+                }
+                else {
+                    msg.WithError(data.ErrMsg);
+                }
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 console.log(xhr.responseText);
@@ -1219,6 +2239,18 @@
             var idx = $(this).parent().parent().parent().attr('idx');
             $("#txt" + idx).val($(this).html()).trigger("change");
             $('#SelectItemBackground, .SelectItem').addClass('display-None');
+        });
+    }
+
+    function SelectItemV2ClickBind() {
+        $(".SelectItemV2>li>a").on('click', function () {
+            var idx = $(this).parent().parent().attr('idx');
+            $("#" + idx).val($(this).html()).trigger("change");
+            $('.SelectItemV2').addClass('display-None');
+        });
+
+        $("#Brand").on("change", function () {
+            BrandCheck($(this).val());
         });
     }
 
@@ -1240,3 +2272,4 @@
         }
     }
 </script>
+

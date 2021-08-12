@@ -50,6 +50,7 @@
     <Compile Include="ManufacturingExecutionDB\FinalInspection_NonBACriteria.cs" />
     <Compile Include="ManufacturingExecutionDB\FinalInspection_Order.cs" />
     <Compile Include="ManufacturingExecutionDB\FinalInspection_OrderCarton.cs" />
+    <Compile Include="ManufacturingExecutionDB\MailTo.cs" />
     <Compile Include="ManufacturingExecutionDB\Measurement.cs" />
     <Compile Include="ManufacturingExecutionDB\Pass1.cs" />
     <Compile Include="ManufacturingExecutionDB\Quality_Menu.cs" />
@@ -57,12 +58,14 @@
     <Compile Include="ManufacturingExecutionDB\Quality_Pass2.cs" />
     <Compile Include="ManufacturingExecutionDB\Quality_Position.cs" />
     <Compile Include="ManufacturingExecutionDB\ReworkCard.cs" />
+    <Compile Include="ManufacturingExecutionDB\ReworkList.cs" />
     <Compile Include="ManufacturingExecutionDB\RFT_Inspection.cs" />
     <Compile Include="ManufacturingExecutionDB\RFT_Inspection_Detail.cs" />
     <Compile Include="ManufacturingExecutionDB\RFT_Inspection_Measurement.cs" />
     <Compile Include="ManufacturingExecutionDB\RFT_OrderComments.cs" />
     <Compile Include="ManufacturingExecutionDB\RFT_PicDuringDummyFitting.cs" />
     <Compile Include="ProductionDB\AcceptableQualityLevels.cs" />
+    <Compile Include="ProductionDB\Brand.cs" />
     <Compile Include="ProductionDB\DropDownList.cs" />
     <Compile Include="ProductionDB\Factory.cs" />
     <Compile Include="ProductionDB\GarmentDefectCode.cs" />
@@ -79,7 +82,11 @@
     <Compile Include="RequestModel\LogIn_Request.cs" />
     <Compile Include="ResultModelBase.cs" />
     <Compile Include="ResultModel\LogIn_Result.cs" />
+    <Compile Include="ViewModel\InspectionSave_ViewModel.cs" />
     <Compile Include="ViewModel\Inspection_ViewModel.cs" />
+    <Compile Include="ViewModel\ReworkList_ViewModel.cs" />
+    <Compile Include="ViewModel\RFT_OrderComments_ViewModel.cs" />
+    <Compile Include="ViewModel\RFT_PicDuringDummyFitting_ViewModel.cs" />
     <Compile Include="ViewModel\SelectItem_ViewModel.cs" />
   </ItemGroup>
   <ItemGroup />

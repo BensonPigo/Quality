@@ -17,6 +17,7 @@ namespace BusinessLogicLayer.Service
         private IPass1Provider MESPass1Provider;
         private ProductionDataAccessLayer.Interface.IFactoryProvider FactoryProvider;
         private ProductionDataAccessLayer.Interface.ISewingLineProvider SewingLineProvider;
+        private ProductionDataAccessLayer.Interface.IBrandProvider BrandProvider;
         private ProductionDataAccessLayer.Interface.IPass1Provider PMSPass1Provider;
         public LogIn_Result LoginValidate(LogIn_Request logIn_Request)
         {
@@ -26,6 +27,7 @@ namespace BusinessLogicLayer.Service
             FactoryProvider = new ProductionDataAccessLayer.Provider.MSSQL.FactoryProvider(Common.ProductionDataAccessLayer);
             SewingLineProvider = new ProductionDataAccessLayer.Provider.MSSQL.SewingLineProvider(Common.ProductionDataAccessLayer);
             PMSPass1Provider = new ProductionDataAccessLayer.Provider.MSSQL.Pass1Provider(Common.ProductionDataAccessLayer);
+            BrandProvider = new ProductionDataAccessLayer.Provider.MSSQL.BrandProvider(Common.ProductionDataAccessLayer);
             LogIn_Result result = new LogIn_Result();
 
             try
@@ -57,6 +59,7 @@ namespace BusinessLogicLayer.Service
                 result.Menus = QualityMenuProvider.Get(result.pass1.Position).ToList();
                 result.Factorys = FactoryProvider.GetFtyGroup().GroupBy(x => x.FTYGroup).Select(x => x.Key).ToList();
                 result.Lines = SewingLineProvider.GetSewinglineID().GroupBy(x => x.ID).Select(x => x.Key).ToList();
+                result.Brands = BrandProvider.Get().GroupBy(x => x.ID).Select(x => x.Key).ToList();
                 result.Result = true;
             }
             catch(Exception ex)

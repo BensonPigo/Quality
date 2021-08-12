@@ -3,8 +3,8 @@ using System.Collections.Generic;
 
 namespace ProductionDataAccessLayer.Interface
 {
-    public interface IOrdersProvider
+    public interface IBrandProvider
     {
-        IList<Orders> Get(Orders Item);
+        IList<Brand> Get();
     }
 }

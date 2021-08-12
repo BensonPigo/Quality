@@ -16,5 +16,7 @@ namespace DatabaseObject.ResultModel
         public List<string> Factorys { get; set; }
 
         public List<string> Lines { get; set; }
+
+        public List<string> Brands { get; set; }
     }
 }

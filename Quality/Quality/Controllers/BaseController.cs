@@ -70,6 +70,15 @@ namespace Quality.Controllers
             }
             set { System.Web.HttpContext.Current.Session["Line"] = value; }
         }
+        public string Brand
+        {
+            get
+            {
+                if (System.Web.HttpContext.Current.Session["Brand"] == null) { return ""; }
+                else { return System.Web.HttpContext.Current.Session["Brand"].ToString(); }
+            }
+            set { System.Web.HttpContext.Current.Session["Brand"] = value; }
+        }
 
         public DateTime WorkDate
         {
@@ -129,6 +138,15 @@ namespace Quality.Controllers
                 else { return (List<string>)System.Web.HttpContext.Current.Session["Lines"]; }
             }
             set { System.Web.HttpContext.Current.Session["Lines"] = value; }
+        }
+        public List<string> Brands
+        {
+            get
+            {
+                if (System.Web.HttpContext.Current.Session["Brands"] == null) { return new List<string>(); }
+                else { return (List<string>)System.Web.HttpContext.Current.Session["Brands"]; }
+            }
+            set { System.Web.HttpContext.Current.Session["Brands"] = value; }
         }
 
         public List<Inspection_ViewModel> SelectItemData

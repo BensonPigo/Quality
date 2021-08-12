@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using ToolKit;
 
 namespace Quality.Areas.SampleRFT.Controllers
 {
@@ -20,7 +21,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         {
             _InspectionService = new InspectionService();
             if (this.SelectItemData == null || this.SelectItemData.Count() == 0)
-                this.SelectItemData = _InspectionService.GetSelectItemData(new Inspection_ViewModel() { FactoryID = this.FactoryID }).ToList();
+                this.SelectItemData = _InspectionService.GetSelectItemData(new Inspection_ViewModel() { FactoryID = this.FactoryID, Brand = this.Brand }).ToList();
 
             this.SelectedMenu = "Sample RFT";
             ViewBag.OnlineHelp = this.OnlineHelp + "SampleRFT.Inspection,,";
@@ -35,15 +36,15 @@ namespace Quality.Areas.SampleRFT.Controllers
                 FactoryID = this.FactoryID,
                 Line = this.Line,
                 InspectionDate = this.WorkDate,
+                Brand = this.Brand,
             };
 
             List<SelectListItem> FactoryitemList = new SetListItem().ItemListBinding(this.Factorys);
-            List<SelectListItem> LineList = new SetListItem().ItemListBinding(this.Lines);
-            List<SelectListItem> BrandList = new SetListItem().ItemListBinding(this.Factorys);
+            List<SelectListItem> LineList = new SetListItem().ItemListBinding(this.Lines); 
 
             ViewBag.FactoryList = FactoryitemList;
             ViewBag.LineList = LineList;
-            ViewBag.BrandList = BrandList;
+            ViewBag.BrandList = this.Brands;
             ViewBag.UserID = this.UserID;
             ViewBag.ShowSwitch = 1;
             return View(setting);
@@ -55,17 +56,35 @@ namespace Quality.Areas.SampleRFT.Controllers
             this.FactoryID = request.FactoryID;
             this.Line = request.Line;            
             this.WorkDate = request.InspectionDate = CheckWorkDate.Check(request.InspectionDate);
-            this.SelectItemData = _InspectionService.GetSelectItemData(new Inspection_ViewModel() { FactoryID = this.FactoryID }).ToList();
+            this.SelectItemData = _InspectionService.GetSelectItemData(new Inspection_ViewModel() { FactoryID = this.FactoryID, Brand = this.Brand }).ToList();
             List<SelectListItem> FactoryitemList = new SetListItem().ItemListBinding(this.Factorys);
             List<SelectListItem> LineList = new SetListItem().ItemListBinding(this.Lines);
-            List<SelectListItem> BrandList = new SetListItem().ItemListBinding(this.Factorys);
 
             ViewBag.FactoryList = FactoryitemList;
             ViewBag.LineList = LineList;
-            ViewBag.BrandList = BrandList;
+            ViewBag.BrandList = this.Brands;
             ViewBag.UserID = this.UserID;
             ViewBag.ShowSwitch = 0;
             return View(request);
+        }
+
+        [HttpPost]
+        public JsonResult CheckBrand(string Brand)
+        {
+            Inspection_ViewModel viewModel = new Inspection_ViewModel();
+
+            if (string.IsNullOrEmpty(Brand))
+            {
+                viewModel.Result = false;
+                viewModel.Brand = this.Brand;
+                return Json(viewModel);
+            }
+
+            var query = this.Brands.Where(x => x.Equals(HttpUtility.HtmlDecode(Brand))).ToList();
+
+            viewModel.Result = query.Any();
+            viewModel.Brand = query.Any() ? query.FirstOrDefault() : this.Brand;
+            return Json(viewModel);
         }
 
         [HttpPost]
@@ -268,7 +287,31 @@ namespace Quality.Areas.SampleRFT.Controllers
         public JsonResult Pass(string StyleID, string OrderID, string Article, string Size, string ProductType)
         {
             Inspection_ViewModel viewModel = new Inspection_ViewModel();
-            viewModel.Result = true; 
+            InspectionSave_ViewModel inspectionSave_View = new InspectionSave_ViewModel()
+            {
+                rft_Inspection = new RFT_Inspection(),
+                fT_Inspection_Details = new List<RFT_Inspection_Detail>(),
+            };
+
+            RFT_Inspection rFT_Inspection = new RFT_Inspection()
+            { 
+                OrderID = OrderID,
+                Article = Article,
+                Location = ProductType,
+                Size = Size,
+                Line = this.Line,
+                FactoryID = this.FactoryID,
+                Status = "Pass",
+                AddDate = DateTime.Now,
+                AddName = this.UserID,
+                InspectionDate = this.WorkDate,
+            };
+
+            inspectionSave_View.StyleID = StyleID;
+            inspectionSave_View.rft_Inspection = rFT_Inspection;
+            InspectionSave_ViewModel save_ViewModel = _InspectionService.SaveRFTInspection(inspectionSave_View);
+
+            viewModel.Result = save_ViewModel.Result; 
             return Json(viewModel);
         }
 
@@ -299,7 +342,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             {
                 html += "<tr>";
                 if (i <= garmentDefectCodes.Count() - 1) html += "<td idx='" + garmentDefectCodes[i].ID + "' class='DefectTypeID' style='height: 8vh; text-align: center; vertical-align: middle;'><p style='width: 9vw; word-wrap: break-word; padding: 0;'>" + garmentDefectCodes[i].Description + "</p></td>";
-                if (i + 1 <= garmentDefectCodes.Count() - 1) html += "<td idx='" + garmentDefectCodes[i + 1].ID + "' class='DefectTypeTD' style='height: 8vh; text-align: center; vertical-align: middle;'><p style='width: 9vw; word-wrap: break-word; padding: 0;'>" + garmentDefectCodes[i + 1].Description + "</p></td>";
+                if (i + 1 <= garmentDefectCodes.Count() - 1) html += "<td idx='" + garmentDefectCodes[i + 1].ID + "' class='DefectTypeID' style='height: 8vh; text-align: center; vertical-align: middle;'><p style='width: 9vw; word-wrap: break-word; padding: 0;'>" + garmentDefectCodes[i + 1].Description + "</p></td>";
                 html += "</tr>";
 
             }
@@ -308,7 +351,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
-        public JsonResult GetArea(string Type, string Location)
+        public ActionResult GetArea(string Type, string Location)
         {            
             List<Area> areas = _InspectionService.GetArea(new Area() 
                                 { 
@@ -319,22 +362,141 @@ namespace Quality.Areas.SampleRFT.Controllers
                                     O = Location.Equals("O") ,
                                 })
                                 .ToList();
-            var result = areas.OrderBy(x => x.Seq).Select(x => new { x.Code }).ToList();
+
+            string html = "";
+
+            for (int i = 0; i <= areas.Count() - 1; i += 2)
+            {
+                html += "<tr>";
+                if (i <= areas.Count() - 1) html += "<td idx='" + areas[i].Code + "' class='Area2ID' style='height: 8vh; text-align: center; vertical-align: middle;'><p style='width: 9vw; word-wrap: break-word; padding: 0;'>" + areas[i].Code + "</p></td>";
+                if (i + 1 <= areas.Count() - 1) html += "<td idx='" + areas[i + 1].Code + "' class='Area2ID' style='height: 8vh; text-align: center; vertical-align: middle;'><p style='width: 9vw; word-wrap: break-word; padding: 0;'>" + areas[i + 1].Code + "</p></td>";
+                html += "</tr>";
+
+            }
+
+            return Content(html); 
+        }
+
+        [HttpPost]
+        public ActionResult GetDropDownList(string Type, string defectType)
+        {
+            List<DropDownList> downLists = _InspectionService.GetDropDownList(new DropDownList() { Type = Type, }).ToList();
+
+
+            string html = "";
+
+            for (int i = 0; i <= downLists.Count() - 1; i += 2)
+            {
+                string text = defectType.Equals(InspectionService.DefectType.BAAuditCriteria) ? downLists[i].ID + " " + downLists[i].Description : downLists[i].Description ;
+                html += "<tr>";
+                html += "<td idx='" + downLists[i].ID + "' class='" + defectType + "ID' style='height: 8vh; text-align: center; vertical-align: middle;'><p style='width: 9vw; word-wrap: break-word; padding: 0;'>" + text + "</p></td>";
+                html += "</tr>";
+            }
+
+            return Content(html);
+        }
+
+        [HttpPost]
+        public ActionResult GetReworkCard(string fixType)
+        {
+            ReworkCard rework = new ReworkCard()
+            {
+                FactoryID = this.FactoryID,
+                Line = this.Line,
+                Type = fixType,
+            };
+
+            List<ReworkCard> reworks = _InspectionService.GetReworkCards(rework).ToList();
+
+            var result = reworks.Select(x => new { No = x.No, Status = x.Status }).ToList();
             return Json(result);
         }
 
         [HttpPost]
-        public JsonResult GetDropDownList(string Type, string defectType)
+        public JsonResult ReworkCardSave(InspectionSave_ViewModel saveView)
         {
-            List<DropDownList> downLists = _InspectionService.GetDropDownList(new DropDownList() { Type = Type, }).ToList();
+            Inspection_ViewModel viewModel = new Inspection_ViewModel();
+            InspectionSave_ViewModel inspectionSave_View = new InspectionSave_ViewModel()
+            {
+                rft_Inspection = new RFT_Inspection(),
+                fT_Inspection_Details = new List<RFT_Inspection_Detail>(),
+            };
 
-            var result = downLists.OrderBy(x => x.Seq)
-                    .Select(x => new 
-                    { 
-                        Description = defectType.Equals(InspectionService.DefectType.BAAuditCriteria) ? x.ID + " " + x.Description : x.Description 
-                    })
-                    .ToList();
+            inspectionSave_View.rft_Inspection = saveView.rft_Inspection;
+            inspectionSave_View.rft_Inspection.ReworkCardType = saveView.rft_Inspection.FixType;
+            inspectionSave_View.rft_Inspection.Line = this.Line;
+            inspectionSave_View.rft_Inspection.FactoryID = this.FactoryID;
+            inspectionSave_View.rft_Inspection.Status = "Reject";
+            inspectionSave_View.rft_Inspection.AddName = this.UserID;
+            inspectionSave_View.rft_Inspection.InspectionDate = this.WorkDate;
+            inspectionSave_View.StyleID = saveView.StyleID;
+            inspectionSave_View.fT_Inspection_Details = saveView.fT_Inspection_Details;
+
+            InspectionSave_ViewModel save_ViewModel = _InspectionService.SaveRFTInspection(inspectionSave_View);
+            viewModel.Result = save_ViewModel.Result;
+            return Json(viewModel);
+        }
+
+        public ActionResult GetCFTComments(string OrderID, string StyleID, string Season, string SampleStage)
+        {
+            List<RFT_OrderComments_ViewModel> viewModel = new List<RFT_OrderComments_ViewModel>();
+            if (string.IsNullOrEmpty(OrderID))
+            {
+                return Json(viewModel);
+            }
+
+            viewModel = _InspectionService.RFT_OrderCommentsGet(new RFT_OrderComments()
+                                        {
+                                            OrderID = OrderID,
+                                        });
+
+            string html = "";
+            foreach (RFT_OrderComments_ViewModel item in viewModel)
+            {
+                html += "<tr>";
+                html += "<td><p>" + item.PMS_RFTCommentsDescription  + "</p></td>";
+                html += "<td><textarea id='" + item.PMS_RFTCommentsDescription + item.PMS_RFTCommentsID + "' idx='" + item.PMS_RFTCommentsID  + "' cols='85'> " + item.Comnments + " </textarea></td>";
+                html += "</tr>";
+            }
+
+            return Content(html);
+        }
+
+        public JsonResult CFTCommentsSave(List<RFT_OrderComments> duringDummyFitting)
+        {
+            RFT_OrderComments_ViewModel rFT_PicDuringDummyFitting_ViewModel = _InspectionService.RFT_OrderCommentsSave(duringDummyFitting);
+
+            return Json(rFT_PicDuringDummyFitting_ViewModel);
+        }
+
+        public JsonResult CFTCommentsSend(string OrderID)
+        {
+            RFT_OrderComments_ViewModel rFT_PicDuringDummyFitting_ViewModel = _InspectionService.RFT_OrderCommentsSendMail(new RFT_OrderComments { OrderID = OrderID });
+            return Json(rFT_PicDuringDummyFitting_ViewModel);
+        }
+
+        public JsonResult GetPictures(string OrderID, string StyleID, string Article, string Size)
+        {
+            Inspection_ViewModel viewModel = new Inspection_ViewModel();
+            if (string.IsNullOrEmpty(OrderID))
+            {
+                return Json(viewModel);
+            }
+
+            RFT_PicDuringDummyFitting result = _InspectionService.RFT_PicDuringDummyFittingGet(new RFT_PicDuringDummyFitting() 
+                                                { 
+                                                    OrderID = OrderID, 
+                                                    Article = Article, 
+                                                    Size = Size 
+                                                });
             return Json(result);
+        }
+
+        public JsonResult PicturesSave(RFT_PicDuringDummyFitting duringDummyFitting)
+        {
+            RFT_PicDuringDummyFitting_ViewModel rFT_PicDuringDummyFitting_ViewModel = _InspectionService.RFT_PicDuringDummyFittingSave(duringDummyFitting);
+
+            return Json(rFT_PicDuringDummyFitting_ViewModel);
         }
     }
 }

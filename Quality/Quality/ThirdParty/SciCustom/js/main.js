@@ -192,3 +192,26 @@ $ (document).ready(function(){
     }
 
   } );
+
+
+function padLeft(str, lenght) {
+    if (str.length >= lenght)
+        return str;
+    else
+        return padLeft("0" + str, lenght);
+}
+
+function parseIntEX(x, base = 10) {
+    const parsed = parseInt(x, base);
+    if (isNaN(parsed)) { return 0; }
+    return parsed;
+}
+
+function ByteArrayToBase64(d, a, e, b, c, f) {
+    c = "";
+    for (a = e = b = 0; a < 4 * d.length / 3; f = b >> 2 * (++a & 3) & 63, c += String.fromCharCode(f + 71 - (f < 26 ? 6 : f < 52 ? 0 : f < 62 ? 75 : f ^ 63 ? 90 : 87)) + (75 == (a - 1) % 76 ? "\r\n" : ""))
+        a & 3 ^ 3 && (b = b << 8 ^ d[e++]);
+    for (; a++ & 3;)
+        c += "=";
+    return c
+};

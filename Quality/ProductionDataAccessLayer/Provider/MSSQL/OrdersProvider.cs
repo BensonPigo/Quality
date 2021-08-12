@@ -32,7 +32,10 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         public IList<Orders> Get(Orders Item)
         {
             StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
+            SQLParameterCollection objParameter = new SQLParameterCollection()
+            {
+                { "@ID", DbType.String, Item.ID },
+            };
             SbSql.Append("SELECT"+ Environment.NewLine);
             SbSql.Append("         ID"+ Environment.NewLine);
             SbSql.Append("        ,BrandID"+ Environment.NewLine);
@@ -216,7 +219,8 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,CDCodeNew"+ Environment.NewLine);
             SbSql.Append("        ,SizeUnitWeight"+ Environment.NewLine);
             SbSql.Append("FROM [Orders]"+ Environment.NewLine);
-
+            SbSql.Append("Where 1 = 1" + Environment.NewLine);
+            if (!string.IsNullOrEmpty(Item.ID.ToString())) { SbSql.Append("And ID = @ID" + Environment.NewLine); }
 
 
             return ExecuteList<Orders>(CommandType.Text, SbSql.ToString(), objParameter);

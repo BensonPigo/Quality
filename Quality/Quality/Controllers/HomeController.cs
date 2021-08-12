@@ -66,7 +66,8 @@ namespace Quality.Controllers
                 this.FactoryID = this.Factorys.FirstOrDefault();
                 this.Lines = result.Lines;
                 this.Line = this.Lines.FirstOrDefault();
-
+                this.Brands = result.Brands;
+                this.Brand = this.Brands.Where(x => x.Equals("ADIDAS")).Select(x => x).FirstOrDefault();
                 return RedirectToAction("Index");
             }
             else

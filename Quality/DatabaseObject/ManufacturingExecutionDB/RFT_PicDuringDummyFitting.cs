@@ -20,15 +20,12 @@ namespace DatabaseObject.ManufacturingExecutionDB
         [Display(Name = "尺寸")]
         public string Size { get; set; }
         /// <summary>前</summary>
-        [StringLength(-1)]
         [Display(Name = "前")]
         public Byte[] Front { get; set; }
         /// <summary>側</summary>
-        [StringLength(-1)]
         [Display(Name = "側")]
         public Byte[] Side { get; set; }
         /// <summary>後</summary>
-        [StringLength(-1)]
         [Display(Name = "後")]
         public Byte[] Back { get; set; }
 
