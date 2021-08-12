@@ -15,6 +15,13 @@ Quality/Quality/bin/
 Quality/Library/bin/
 Quality/BusinessLogicLayer/bin/Debug/BusinessLogicLayer.pdb
 Quality/BusinessLogicLayer/bin/
+Quality/.vs/Quality/v16/Server/sqlite3/db.lock
+Quality/.vs/Quality/v16/Server/sqlite3/storage.ide
+Quality/.vs/Quality/v16/Server/sqlite3/storage.ide-shm
+Quality/.vs/Quality/v16/Server/sqlite3/storage.ide-wal
 Quality/.vs/Quality/
 Quality/Quality/Quality.csproj.user
 Quality/.vs/
+Quality/BusinessLogicLayerTests/bin/
+Quality/BusinessLogicLayerTests/obj/
+Quality/packages/

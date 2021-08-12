@@ -191,37 +191,31 @@ inner join RFT_Inspection_Detail rd on r.ID = rd.ID and rd.Junk = 0" + Environme
 
         public int Create_Master_Detail(RFT_Inspection Master, List<RFT_Inspection_Detail> Detail)
         {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@OrderID", DbType.String, Master.OrderID } ,
+                { "@Article", DbType.String, Master.Article } ,
+                { "@Location", DbType.String, Master.Location } ,
+                { "@Size", DbType.String, Master.Size } ,
+                { "@Line", DbType.String, Master.Line } ,
+                { "@FactoryID", DbType.String, Master.FactoryID } ,
+                { "@StyleUkey", DbType.String, Master.StyleUkey } ,
+                { "@FixType", DbType.String, Master.FixType } ,
+                { "@ReworkCardNo", DbType.String, Master.ReworkCardNo } ,
+                { "@Status", DbType.String, Master.Status } ,
+                { "@AddName", DbType.String, Master.AddName } ,
+                { "@ReworkCardType", DbType.String, Master.ReworkCardType } ,
+                { "@InspectionDate", DbType.DateTime, Master.InspectionDate } ,
+            };
+
             string sqlcmd = $@"
 INSERT INTO [RFT_Inspection](
-       [OrderID]
-      ,[Article]
-      ,[Location]
-      ,[Size]
-      ,[Line]
-      ,[FactoryID]
-      ,[StyleUkey]
-      ,[FixType]
-      ,[ReworkCardNo]
-      ,[Status]
-      ,[AddDate]
-      ,[AddName]
-      ,[ReworkCardType]
-      ,[InspectionDate])
+       [OrderID] ,[Article] ,[Location] ,[Size] ,[Line] ,[FactoryID] ,[StyleUkey] ,[FixType]
+      ,[ReworkCardNo] ,[Status] ,[AddDate] ,[AddName] ,[ReworkCardType] ,[InspectionDate])
 values(
-     '{Master.OrderID}'
-    ,'{Master.Article}'
-    ,'{Master.Location}'
-    ,'{Master.Size}'
-    ,'{Master.Line}'
-    ,'{Master.FactoryID}'
-    ,'{Master.StyleUkey}'
-    ,'{Master.FixType}'
-    ,'{Master.ReworkCardNo}'
-    ,'{Master.Status}'
-    , GetDate()
-    ,'{Master.AddName}'
-    ,'{Master.ReworkCardType}'
-    ,'{Convert.ToDateTime(Master.InspectionDate).ToString("yyyy/MM/dd")}'
+     @OrderID, @Article,@Location,@Size,@Line,@FactoryID,@StyleUkey
+    ,@FixType,@ReworkCardNo,@Status, GetDate(),@AddName,@ReworkCardType,@InspectionDate
 )
 
 select @@IDENTITY as ID
@@ -229,6 +223,15 @@ select @@IDENTITY as ID
 
             foreach (var item in Detail)
             {
+
+                objParameter.Add("@DefectCode", item.DefectCode);
+                objParameter.Add("@AreaCode", item.AreaCode);
+                objParameter.Add("@PMS_RFTBACriteriaID", item.PMS_RFTBACriteriaID);
+                objParameter.Add("@PMS_RFTRespID", item.PMS_RFTRespID);
+                objParameter.Add("@GarmentDefectTypeID", item.GarmentDefectTypeID);
+                objParameter.Add("@GarmentDefectCodeID", item.GarmentDefectCodeID);
+                objParameter.Add("@DefectPicture", item.DefectPicture);
+
                 sqlcmd += $@"
 INSERT INTO [RFT_Inspection_Detail](
      [ID]
@@ -242,21 +245,12 @@ INSERT INTO [RFT_Inspection_Detail](
     ,[DefectPicture]
     ,[AddDate])
 values(
-    @@IDENTITY
-,'{item.DefectCode}'
-,'{item.AreaCode}'
-, 0
-,'{item.PMS_RFTBACriteriaID}'
-,'{item.PMS_RFTRespID}'
-,'{item.GarmentDefectTypeID}'
-,'{item.GarmentDefectCodeID}'
-,'{item.DefectPicture}'
-, GetDate()
-)
+    @@IDENTITY,@DefectCode,@AreaCode, 0,@PMS_RFTBACriteriaID,@PMS_RFTRespID,@GarmentDefectTypeID
+,@GarmentDefectCodeID,@DefectPicture, GetDate())
 ";
             }
 
-            return ExecuteNonQuery(CommandType.Text, sqlcmd);
+            return ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter);
         }
         #endregion
     }
