@@ -78,6 +78,8 @@
     <Compile Include="ViewModel\InspectionSave_ViewModel.cs" />
     <Compile Include="ViewModel\Inspection_ViewModel.cs" />
     <Compile Include="ViewModel\ReworkList_ViewModel.cs" />
+    <Compile Include="ViewModel\RFT_OrderComments_ViewModel.cs" />
+    <Compile Include="ViewModel\RFT_PicDuringDummyFitting_ViewModel.cs" />
     <Compile Include="ViewModel\SelectItem_ViewModel.cs" />
   </ItemGroup>
   <ItemGroup />

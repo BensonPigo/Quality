@@ -436,5 +436,67 @@ namespace Quality.Areas.SampleRFT.Controllers
             viewModel.Result = save_ViewModel.Result;
             return Json(viewModel);
         }
+
+        public ActionResult GetCFTComments(string OrderID, string StyleID, string Season, string SampleStage)
+        {
+            List<RFT_OrderComments_ViewModel> viewModel = new List<RFT_OrderComments_ViewModel>();
+            if (string.IsNullOrEmpty(OrderID))
+            {
+                return Json(viewModel);
+            }
+
+            viewModel = _InspectionService.RFT_OrderCommentsGet(new RFT_OrderComments()
+                                        {
+                                            OrderID = OrderID,
+                                        });
+
+            string html = "";
+            foreach (RFT_OrderComments_ViewModel item in viewModel)
+            {
+                html += "<tr>";
+                html += "<td><p>" + item.PMS_RFTCommentsDescription  + "</p></td>";
+                html += "<td><textarea id='" + item.PMS_RFTCommentsDescription + item.PMS_RFTCommentsID + "' idx='" + item.PMS_RFTCommentsID  + "' cols='85'> " + item.Comnments + " </textarea></td>";
+                html += "</tr>";
+            }
+
+            return Content(html);
+        }
+
+        public JsonResult CFTCommentsSave(List<RFT_OrderComments> duringDummyFitting)
+        {
+            RFT_OrderComments_ViewModel rFT_PicDuringDummyFitting_ViewModel = _InspectionService.RFT_OrderCommentsSave(duringDummyFitting);
+
+            return Json(rFT_PicDuringDummyFitting_ViewModel);
+        }
+
+        public JsonResult CFTCommentsSend(string OrderID)
+        {
+            RFT_OrderComments_ViewModel rFT_PicDuringDummyFitting_ViewModel = _InspectionService.RFT_OrderCommentsSendMail(new RFT_OrderComments { OrderID = OrderID });
+            return Json(rFT_PicDuringDummyFitting_ViewModel);
+        }
+
+        public JsonResult GetPictures(string OrderID, string StyleID, string Article, string Size)
+        {
+            Inspection_ViewModel viewModel = new Inspection_ViewModel();
+            if (string.IsNullOrEmpty(OrderID))
+            {
+                return Json(viewModel);
+            }
+
+            RFT_PicDuringDummyFitting result = _InspectionService.RFT_PicDuringDummyFittingGet(new RFT_PicDuringDummyFitting() 
+                                                { 
+                                                    OrderID = OrderID, 
+                                                    Article = Article, 
+                                                    Size = Size 
+                                                });
+            return Json(result);
+        }
+
+        public JsonResult PicturesSave(RFT_PicDuringDummyFitting duringDummyFitting)
+        {
+            RFT_PicDuringDummyFitting_ViewModel rFT_PicDuringDummyFitting_ViewModel = _InspectionService.RFT_PicDuringDummyFittingSave(duringDummyFitting);
+
+            return Json(rFT_PicDuringDummyFitting_ViewModel);
+        }
     }
 }

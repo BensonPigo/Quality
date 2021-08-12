@@ -313,5 +313,90 @@ namespace BusinessLogicLayer.Service
 
             return reworkList;
         }
+
+        public List<RFT_OrderComments_ViewModel> RFT_OrderCommentsGet(RFT_OrderComments rFT_OrderComments)
+        {
+            List<RFT_OrderComments_ViewModel> rFT_OrderComments_ViewModels = new List<RFT_OrderComments_ViewModel>()
+            {
+                new RFT_OrderComments_ViewModel()
+                {
+                    OrderID = "aaaa",
+                    PMS_RFTCommentsID = "1",
+                    PMS_RFTCommentsDescription = "Sample measurement",
+                    Comnments = "AAAAAAAAAAAAAAAAAAAAA",
+                },
+                new RFT_OrderComments_ViewModel()
+                {
+                    OrderID = "aaaa",
+                    PMS_RFTCommentsID = "2",
+                    PMS_RFTCommentsDescription = "Sample fitting",
+                    Comnments = "BBBBBBBBBBBBBBBBBBBBBBBBB",
+                },
+                new RFT_OrderComments_ViewModel()
+                {
+                    OrderID = "aaaa",
+                    PMS_RFTCommentsID = "3",
+                    PMS_RFTCommentsDescription = "Material",
+                    Comnments = "ccccccccc",
+                },
+                new RFT_OrderComments_ViewModel()
+                {
+                    OrderID = "aaaa",
+                    PMS_RFTCommentsID = "4",
+                    PMS_RFTCommentsDescription = "Accessory",
+                    Comnments = "CCCCCCCCCCCCCCCCCCCCCCCCCC",
+                },
+                new RFT_OrderComments_ViewModel()
+                {
+                    OrderID = "aaaa",
+                    PMS_RFTCommentsID = "5",
+                    PMS_RFTCommentsDescription = "Material",
+                    Comnments = "ccccccccc",
+                },
+                new RFT_OrderComments_ViewModel()
+                {
+                    OrderID = "aaaa",
+                    PMS_RFTCommentsID = "6",
+                    PMS_RFTCommentsDescription = "Accessory",
+                    Comnments = "CCCCCCCCCCCCCCCCCCCCCCCCCC",
+                },
+                new RFT_OrderComments_ViewModel()
+                {
+                    OrderID = "aaaa",
+                    PMS_RFTCommentsID = "7",
+                    PMS_RFTCommentsDescription = "Material",
+                    Comnments = "ccccccccc",
+                },
+                new RFT_OrderComments_ViewModel()
+                {
+                    OrderID = "aaaa",
+                    PMS_RFTCommentsID = "8",
+                    PMS_RFTCommentsDescription = "Accessory",
+                    Comnments = "CCCCCCCCCCCCCCCCCCCCCCCCCC",
+                },
+            };
+
+            return rFT_OrderComments_ViewModels;
+        }
+
+        public RFT_OrderComments_ViewModel RFT_OrderCommentsSave(List<RFT_OrderComments> rFT_OrderComments)
+        {
+            return new RFT_OrderComments_ViewModel() { Result = true };
+        }
+
+        public RFT_OrderComments_ViewModel RFT_OrderCommentsSendMail(RFT_OrderComments rFT_OrderComments)
+        {
+            return new RFT_OrderComments_ViewModel() { Result = true };
+        }
+
+        public RFT_PicDuringDummyFitting RFT_PicDuringDummyFittingGet(RFT_PicDuringDummyFitting picDuringDummyFitting)
+        {
+            return new RFT_PicDuringDummyFitting();
+        }
+
+        public RFT_PicDuringDummyFitting_ViewModel RFT_PicDuringDummyFittingSave(RFT_PicDuringDummyFitting picDuringDummyFitting)
+        {
+            return new RFT_PicDuringDummyFitting_ViewModel() { Result = true };
+        }
     }
 }

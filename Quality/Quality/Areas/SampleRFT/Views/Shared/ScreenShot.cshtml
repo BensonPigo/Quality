@@ -30,13 +30,12 @@
 </div>
 
 <script type="text/javascript">
-
-
-    function Screenshot() {
+    function Screenshot(ImgID) {
         const videoElement = document.querySelector('video');
         const videoSelect = document.querySelector('select#videoSource');
         const screenshotButton = document.querySelector("#screenshot-button");
         const img = document.querySelector("#screenshot-img");
+        const imgSet = document.querySelector("#" + ImgID);
         const canvas = document.createElement("canvas");
 
         videoSelect.innerHTML = '';
@@ -48,7 +47,12 @@
             canvas.height = videoElement.videoHeight;
             canvas.getContext("2d").drawImage(videoElement, 0, 0);
             // Other browsers will fall back to image/png
-            img.src = canvas.toDataURL("image/webp");
+            var src = canvas.toDataURL("image/webp");
+            if (src.length > 6) {
+                img.src = src;
+                imgSet.src = src;
+                OtherSetting(ImgID, 'a' + ImgID);
+            }
         };
 
         function getDevices() {
@@ -101,13 +105,17 @@
         }
     }
 
-    function SetScreenImg(ImgID) {
+    function StopScreen() {
+        const videoSelect = document.querySelector('select#videoSource').innerHTML;
         const img = document.querySelector("#screenshot-img");
-        const imgSet = document.querySelector("#" + ImgID);
         const videoElement = document.querySelector('video');
+        if (videoSelect == "") {
+            return;
+        }
+
         const stream = videoElement.srcObject;
         const tracks = stream.getTracks();
-        imgSet.src = img.src;
+
         img.src = "";
 
         tracks.forEach(function (track) {

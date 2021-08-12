@@ -281,6 +281,84 @@
         position: fixed;
         z-index: 9;
     }
+
+    #CFTComments {
+        width: 73vw;
+        height: 84vh;
+        position: absolute;
+        left: 15vw;
+        top: 10vh;
+        z-index: 1041;
+        background-color: white;
+        border: solid 1px black;
+        font-size: 1em;
+        font-weight: bold;
+        padding: 1em;
+    }
+
+    .CFTCommentsRowHeader {
+        color: black;
+        font-size: 1.1vw;
+        font-weight: bold;
+    }
+
+    .CFTCommentsTable {
+        width: 69vw;
+    }
+
+        .CFTCommentsTable > thead > tr > th {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .CFTCommentsTable > tbody > tr > td {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+            .CFTCommentsTable > tbody > tr > td > textarea {
+                min-height: 14vh;
+            }
+
+    #PictureDuringDummyFitting {
+        width: 73vw;
+        height: 84vh;
+        position: absolute;
+        left: 15vw;
+        top: 10vh;
+        z-index: 1041;
+        background-color: white;
+        border: solid 1px black;
+        font-size: 1em;
+        font-weight: bold;
+        padding: 1em;
+    }
+
+    .PictureDuringDummyFittingRowHeader {
+        color: black;
+        font-size: 1.1vw;
+        font-weight: bold;
+    }
+
+    .PictureDuringDummyFittingTable {
+        width: 71vw;
+        height: 70vh;
+    }
+
+        .PictureDuringDummyFittingTable > thead > tr > th {
+            width: 23vw;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .PictureDuringDummyFittingTable > thead > tr > th img{
+           cursor: pointer;
+        }
+
+        .PictureDuringDummyFittingTable > tbody > tr > td {
+            text-align: center;
+            vertical-align: middle;
+        }
 </style>
 
 <div class="main-content">
@@ -595,7 +673,7 @@
                             <input id="btnDefectCamera" type="button" class="site-btn btn-gy font1rem" style="margin:0;border:0;padding: 7px 2em;margin-left: 1em;" name="DefectCamera" value="Camera" />
                             <input id="btnDefectPicture" type="button" class="site-btn btn-gy font1rem" style="margin:0;border:0;padding: 7px 2em;margin: 0 1em;" name="DefectPicture" value="Picture" />
                             <div class="zoom-gallery display-None DefectPicture">
-                                <a id="aDefect" href="" data-source="" title="Defect Picture" style="width:640px;height:480px;">
+                                <a id="aimgDefect" href="" data-source="" title="Defect Picture" style="width:640px;height:480px;">
                                     <img id="imgDefect" width="30" />
                                 </a>
                             </div>
@@ -715,6 +793,155 @@
             <p class="ReworkCardNoSelectValue display-None"></p>
         </div>
     </div>
+
+    <div id="ReworkList">
+
+    </div>
+
+    <div id="CFTComments" class="display-None">
+        <div>
+            <table style="width: 69vw;">
+                <tbody>
+                    <tr>
+                        <td align="left" valign="middle" style="width: 30%;">
+                            <p style="padding-left: 1em; font-size: 1.5em; font-weight: bold;">CFT Comment</p>
+                        </td>
+                        <td align="right" valign="middle">
+                            <input id="btnCFTCommentsSendMail" type="button" class="site-btn btn-gy font1rem" style="margin:0;border:0;padding: 7px 2em;" name="CFTCommentsSendMail" value="Send to MR" />
+                            <input id="btnCFTCommentsSave" type="button" class="site-btn btn-blue font1rem" style="margin:0;border:0;padding: 7px 2em;" name="CFTCommentsave" value="Save" />
+                            <input id="btnCFTCommentsExit" type="button" class="site-btn btn-gy font1rem" style="margin:0;border:0;padding: 7px 2em;" name="CFTCommentsExit" value="Exit" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="row CFTCommentsRowHeader">
+            <div class="col-auto"><p>SP no.</p></div>
+            <div class="col-auto"><p class="darkblue SP"></p></div>
+            <div class="col-auto"><p>Style#</p></div>
+            <div class="col-auto"><p class="darkblue Style"></p></div>
+            <div class="col-auto"><p>Season</p></div>
+            <div class="col-auto"><p class="darkblue Season"></p></div>
+            <div class="col-auto"><p>Sample Stage</p></div>
+            <div class="col-auto"><p class="darkblue SampleStage"></p></div>
+        </div>
+        <div style=" width: 71vw; height: 70vh; overflow-y: auto;">
+            <table class="CFTCommentsTable DefectTable">
+                <thead>
+                    <tr>
+                        <th style="width:17vw;">
+                            <p>Comments Category</p>
+                        </th>
+                        <th>
+                            <p>Comments</p>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="PictureDuringDummyFitting" class="display-None">
+        <div>
+            <table style="width: 69vw;">
+                <tbody>
+                    <tr>
+                        <td align="left" valign="middle" style="width: 30%;">
+                            <p style="padding-left: 1em; font-size: 1.5em; font-weight: bold;">Picture During Dummy Fitting</p>
+                        </td>
+                        <td align="right" valign="middle">
+                            <input id="btnPictureDuringDummyFittingSave" type="button" class="site-btn btn-blue font1rem" style="margin:0;border:0;padding: 7px 2em;" name="PictureDuringDummyFittingSave" value="Save" />
+                            <input id="btnPictureDuringDummyFittingExit" type="button" class="site-btn btn-gy font1rem" style="margin:0;border:0;padding: 7px 2em;" name="PictureDuringDummyFittingExit" value="Exit" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="row PictureDuringDummyFittingRowHeader">
+            <div class="col-auto"><p>SP no.</p></div>
+            <div class="col-auto"><p class="darkblue SP"></p></div>
+            <div class="col-auto"><p>Style#</p></div>
+            <div class="col-auto"><p class="darkblue Style"></p></div>
+            <div class="col-auto"><p>Article</p></div>
+            <div class="col-auto"><p class="darkblue Article"></p></div>
+            <div class="col-auto"><p>Size</p></div>
+            <div class="col-auto"><p class="darkblue Size"></p></div> 
+        </div>
+        <div>
+            <table class="PictureDuringDummyFittingTable DefectTable">
+                <thead>
+                    <tr>
+                        <th>
+                            <table style="width:100%">
+                                <tr>
+                                    <td style="width: 80%; vertical-align: middle;text-align: center;">
+                                        <h3>Front view</h3>
+                                    </td>
+                                    <td style="width: 20%; vertical-align: middle;text-align: center;">
+                                        <img src='/Image/Icon/Camera.png' width='30' idx="1" class='PictureDuringDummyFittingCamera' />
+                                        <img src='/Image/Icon/Delete.png' width='30' idx="1" class='PictureDuringDummyFittingDefectType' />
+                                    </td>
+                                </tr>
+                            </table>
+                        </th>
+                        <th>
+                            <table style="width:100%">
+                                <tr>
+                                    <td style="width: 80%; vertical-align: middle;text-align: center;">
+                                        <h3>Side view</h3>
+                                    </td>
+                                    <td style="width: 20%; vertical-align: middle;text-align: center;">
+                                        <img src='/Image/Icon/Camera.png' width='30' idx="2" class='PictureDuringDummyFittingCamera' />
+                                        <img src='/Image/Icon/Delete.png' width='30' idx="2" class='PictureDuringDummyFittingDefectType' />
+                                    </td>
+                                </tr>
+                            </table>
+                        </th>
+                        <th>
+                            <table style="width:100%">
+                                <tr>
+                                    <td style="width: 80%; vertical-align: middle;text-align: center;">
+                                        <h3>Back view</h3>
+                                    </td>
+                                    <td style="width: 20%; vertical-align: middle;text-align: center;">
+                                        <img src='/Image/Icon/Camera.png' width='30' idx="3" class='PictureDuringDummyFittingCamera' />
+                                        <img src='/Image/Icon/Delete.png' width='30' idx="3" class='PictureDuringDummyFittingDefectType' />
+                                    </td>
+                                </tr>
+                            </table>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="zoom-gallery">
+                                <a id="aPictureFront" href="" data-source="" title="Picture Front" style="width:640px;height:480px;">
+                                    <img id="PictureFront" style="width:20vw;" />
+                                </a>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="zoom-gallery">
+                                <a id="aPictureSide" href="" data-source="" title="Picture Side" style="width:640px;height:480px;">
+                                    <img id="PictureSide" style="width:20vw;" />
+                                </a>
+                            </div>                           
+                        </td>
+                        <td>
+                            <div class="zoom-gallery">
+                                <a id="aPictureBack" href="" data-source="" title="Picture Back" style="width:640px;height:480px;">
+                                    <img id="PictureBack" style="width:20vw;" />
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 <script type="text/javascript">
@@ -730,6 +957,8 @@
         SwitchBindEvent();
         AddDefectBindEvent();
         ReworkCardBindEvent();
+        CFTCommentsBindEvent();
+        PictureDuringDummyFittingBindEvent();
         $('#SelectItemBackground').on('click', function () {
             $("#SelectItemBackground, .SelectItem").addClass('display-None');
         });
@@ -741,6 +970,12 @@
 
         PrveLoad();
         IsEditModeButtonChange();
+
+        // Screenshot Exit
+        $('#btnScreenshotExit').on('click', function () {
+            StopScreen();
+            $('#Screenshot').addClass("display-None");
+        });
     });
 
     function IsEditModeButtonChange() {
@@ -907,11 +1142,29 @@
         });
 
         $('#btnCFTComments').on('click', function () {
-            alert('open other page');
+            if ($('#txtSP').val() == "" || $('#txtStyle').val() == "" || $('#txtSeason').val() == "" || $('#txtSampleStage').val() == "") {
+                return;
+            }
+
+            $('.CFTCommentsRowHeader .SP').html($('#txtSP').val());
+            $('.CFTCommentsRowHeader .Style').html($('#txtStyle').val());
+            $('.CFTCommentsRowHeader .Season').html($('#txtSeason').val());
+            $('.CFTCommentsRowHeader .SampleStage').html($('#txtSampleStage').val());
+            CFTCommentsClick($('#txtSP').val(), $('#txtStyle').val(), $('#txtSeason').val(), $('#txtSampleStage').val());
+            $('#CFTComments').removeClass("display-None");
         });
 
         $('#btnPictures').on('click', function () {
-            alert('open other page');
+            if ($('#txtSP').val() == "" || $('#txtArticle').val() == "" || $('#txtSize').val() == "" || $('#txtStyle').val() == "") {
+                return;
+            }
+
+            $('.PictureDuringDummyFittingRowHeader .SP').html($('#txtSP').val());
+            $('.PictureDuringDummyFittingRowHeader .Style').html($('#txtStyle').val());
+            $('.PictureDuringDummyFittingRowHeader .Article').html($('#txtArticle').val());
+            $('.PictureDuringDummyFittingRowHeader .Size').html($('#txtSize').val());
+            PicturesClick($('#txtSP').val(), $('#txtStyle').val(), $('#txtArticle').val(), $('#txtSize').val());
+            $('#PictureDuringDummyFitting').removeClass("display-None");
         });
     }
 
@@ -1034,8 +1287,8 @@
                 $("#SelectItemBackground, .SelectItem").addClass('display-None');
             });
 
-            var aID = document.querySelector("#aDefect").removeAttribute('href');
-            var pic = document.querySelector("#imgDefect").removeAttribute('src');
+            document.querySelector("#aimgDefect").removeAttribute('href');
+            document.querySelector("#imgDefect").removeAttribute('src');
 
             DynamicBindEvent();
             IsEditModeButtonChange();
@@ -1105,13 +1358,7 @@
 
         $('#btnDefectCamera').on('click', function () {
             $('#Screenshot').removeClass("display-None");
-            Screenshot();
-        });
-
-        $('#btnScreenshotExit').on('click', function () {
-            SetScreenImg('imgDefect');
-            OtherSetting('imgDefect', 'aDefect');
-            $('#Screenshot').addClass("display-None");
+            Screenshot('imgDefect');
         });
 
         $('#btnDefectPicture').on('click', function () {
@@ -1138,6 +1385,65 @@
             ReworkCardSave();
         });
 
+    }
+
+    function CFTCommentsBindEvent() {
+        $('#btnCFTCommentsExit').on('click', function () {
+            $('#CFTComments').addClass("display-None");
+        });
+
+        $('#btnCFTCommentsSave').on('click', function () {
+            CFTCommentsSave(0);
+        });
+
+        $('#btnCFTCommentsSendMail').on('click', function () {
+            CFTCommentsSave(1);
+        });
+    }
+
+    function PictureDuringDummyFittingBindEvent() {
+        $('.PictureDuringDummyFittingCamera').on('click', function () {
+            var idx = $(this).attr('idx');
+            var sentID = "PictureFront";
+            switch (idx) {
+                case "1":
+                    sentID = "PictureFront";
+                    break;
+                case "2":
+                    sentID = "PictureSide";
+                    break;
+                case "3":
+                    sentID = "PictureBack";
+                    break;
+            }
+
+            $('#Screenshot').removeClass("display-None");
+            Screenshot(sentID);
+        });
+
+        $('.PictureDuringDummyFittingDefectType').on('click', function () {
+            var idx = $(this).attr('idx');
+            var sentID = "PictureFront";
+            switch (idx) {
+                case "1":
+                    sentID = "PictureFront";
+                    break;
+                case "2":
+                    sentID = "PictureSide";
+                    break;
+                case "3":
+                    sentID = "PictureBack";
+                    break;
+            }
+
+            document.querySelector("#a" + sentID).removeAttribute('href');
+            document.querySelector("#" + sentID).removeAttribute('src');
+        });
+
+        $('#btnPictureDuringDummyFittingExit').on('click', function () {
+            $('.PictureDuringDummyFittingDefectType').click();
+            $('#PictureDuringDummyFitting').addClass("display-None");
+        });
     }
 
     function InitDefect(type) {
@@ -1764,6 +2070,157 @@
                 if (data.Result) {
                     $("#DefectType>tbody>tr").remove();
                     $('#btnReworkCardNoExit').click();
+                    $('#btnRefresh').click();
+                    IsEditModeButtonChange();
+                }
+                else {
+                    msg.WithError(data.ErrMsg);
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function CFTCommentsClick(OrderID, StyleID, Season, SampleStage) {
+        $.ajax({
+            url: "@Url.Action("GetCFTComments", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ OrderID: OrderID, StyleID: StyleID, Season: Season, SampleStage: SampleStage }),
+            async: true,
+            success: function (data) {
+                $(".CFTCommentsTable>tbody").html(data);
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function CFTCommentsSave(SendMail) {
+        var SP = $('#txtSP').val();
+        var datasDetail = [];
+
+        $(".CFTCommentsTable>tbody>tr>td").each(function (index, value) {
+
+            $(this).children("textarea").each(function (index, value) {
+                var idx = $(this).attr('idx');
+                var h = $(this).html();
+
+                datasDetail.push({
+                    OrderID: SP,
+                    PMS_RFTCommentsID: idx,
+                    Comnments: h,
+                });
+            });
+        });
+
+        $.ajax({
+            url: "@Url.Action("CFTCommentsSave", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ duringDummyFitting : datasDetail }),
+            async: false,
+            success: function (data) {
+                if (data.Result) {
+                    if (SendMail) {
+                        CFTCommentsSendMail(SP);
+                    }
+                    else {
+                        $(".CFTCommentsTable>tbody>tr").remove();
+                        $('#btnCFTCommentsExit').click();
+                    }
+                }
+                else {
+                    msg.WithError(data.ErrMsg);
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function CFTCommentsSendMail(OrderID) {
+          $.ajax({
+            url: "@Url.Action("CFTCommentsSend", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+              data: JSON.stringify({ OrderID: OrderID }),
+            async: false,
+            success: function (data) {
+                if (data.Result) {
+                    msg.WithSuccess("Send Mail");
+                }
+                else {
+                    msg.WithError(data.ErrMsg);
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function PicturesClick(OrderID, StyleID, Article, Size) {
+        $.ajax({
+            url: "@Url.Action("GetPictures", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ OrderID: OrderID, StyleID: StyleID, Article: Article, Size: Size }),
+            async: true,
+            success: function (data) {
+                const PictureFront = document.querySelector("#PictureFront");
+                const aPictureFront = document.querySelector("#aPictureFront");
+                const PictureSide = document.querySelector("#PictureSide");
+                const aPictureSide = document.querySelector("#aPictureSide");
+                const PictureBack = document.querySelector("#PictureBack");
+                const aPictureBack = document.querySelector("#aPictureBack");
+                if (data.Font != null) {
+                    PictureFront.src = "data:image/webp;base64," + ByteArrayToBase64(data.Font);
+                    aPictureFront.href = PictureFront.src;
+                }
+                if (data.Side != null) {
+                    PictureSide.src = "data:image/webp;base64," + ByteArrayToBase64(data.Side);
+                    aPictureSide.href = PictureSide.src;
+                }
+                if (data.Back != null) {
+                    PictureBack.src = "data:image/webp;base64," + ByteArrayToBase64(data.Back);
+                    aPictureBack.href = PictureBack.src;
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function PicturesSave() {
+        const PictureFront = document.querySelector("#PictureFront").src.replace("data:image/webp;base64,", "");
+        const PictureSide = document.querySelector("#PictureSide").src.replace("data:image/webp;base64,", "");
+        const PictureBack = document.querySelector("#PictureBack").src.replace("data:image/webp;base64,", "");
+
+        var datas =
+        {
+            OrderID: $('#txtSP').val(),
+            Article: $('#txtArticle').val(),
+            Size: $('#txtSize').val(),
+            Front: PictureFront,
+            Side: PictureSide,
+            Back: PictureBack,
+        };
+
+        $.ajax({
+            url: "@Url.Action("PicturesSave", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ duringDummyFitting: datas }),
+            async: true,
+            success: function (data) {
+                if (data.Result) {
+                    $('#btnPictureDuringDummyFittingExit').click();
                     $('#btnRefresh').click();
                     IsEditModeButtonChange();
                 }
