@@ -121,6 +121,8 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\Authority\AuthorityAreaRegistration.cs" />
+    <Compile Include="Areas\FinalInspection\Controllers\InspectionController.cs" />
+    <Compile Include="Areas\FinalInspection\FinalInspectionAreaRegistration.cs" />
     <Compile Include="Areas\SampleRFT\Controllers\InspectionController.cs" />
     <Compile Include="Areas\SampleRFT\SampleRFTAreaRegistration.cs" />
     <Compile Include="Controllers\BaseController.cs" />
@@ -133,6 +135,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Areas\FinalInspection\CSS\Inspection.css" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -204,6 +207,10 @@
     <Content Include="Areas\SampleRFT\Views\Inspection\Index.cshtml" />
     <Content Include="Areas\SampleRFT\Views\Inspection\SelectItem.cshtml" />
     <Content Include="Image\Icon\FactoryEDI.mkl" />
+    <Content Include="Areas\FinalInspection\Views\web.config" />
+    <Content Include="Areas\FinalInspection\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Inspection\Index.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -551,6 +558,7 @@
     <Folder Include="Areas\Authority\Controllers\" />
     <Folder Include="Areas\Authority\Data\" />
     <Folder Include="Areas\Authority\Views\Shared\" />
+    <Folder Include="Areas\FinalInspection\Models\" />
     <Folder Include="Areas\SampleRFT\Data\" />
     <Folder Include="Models\" />
     <Folder Include="ThirdParty\plugins\bootstrap-fileinput\fonts\" />

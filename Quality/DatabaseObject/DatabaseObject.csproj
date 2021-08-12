@@ -44,6 +44,12 @@
   <ItemGroup>
     <Compile Include="ManufacturingExecutionDB\Area.cs" />
     <Compile Include="ManufacturingExecutionDB\DQSReason.cs" />
+    <Compile Include="ManufacturingExecutionDB\FinalInspection.cs" />
+    <Compile Include="ManufacturingExecutionDB\FinalInspection_Detail.cs" />
+    <Compile Include="ManufacturingExecutionDB\FinalInspection_Measurement.cs" />
+    <Compile Include="ManufacturingExecutionDB\FinalInspection_NonBACriteria.cs" />
+    <Compile Include="ManufacturingExecutionDB\FinalInspection_Order.cs" />
+    <Compile Include="ManufacturingExecutionDB\FinalInspection_OrderCarton.cs" />
     <Compile Include="ManufacturingExecutionDB\Measurement.cs" />
     <Compile Include="ManufacturingExecutionDB\Pass1.cs" />
     <Compile Include="ManufacturingExecutionDB\Quality_Menu.cs" />
@@ -56,6 +62,7 @@
     <Compile Include="ManufacturingExecutionDB\RFT_Inspection_Measurement.cs" />
     <Compile Include="ManufacturingExecutionDB\RFT_OrderComments.cs" />
     <Compile Include="ManufacturingExecutionDB\RFT_PicDuringDummyFitting.cs" />
+    <Compile Include="ProductionDB\AcceptableQualityLevels.cs" />
     <Compile Include="ProductionDB\DropDownList.cs" />
     <Compile Include="ProductionDB\Factory.cs" />
     <Compile Include="ProductionDB\GarmentDefectCode.cs" />
