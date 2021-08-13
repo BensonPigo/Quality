@@ -6,5 +6,7 @@ namespace ProductionDataAccessLayer.Interface
     public interface IOrdersProvider
     {
         IList<Orders> Get(Orders Item);
+
+        IList<Orders> Get(Orders Item);
     }
 }

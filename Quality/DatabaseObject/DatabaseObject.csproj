@@ -79,10 +79,14 @@
     <Compile Include="ProductionDB\Style.cs" />
     <Compile Include="ProductionDB\TPEPass1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RequestModel\FinalInspection_Request.cs" />
     <Compile Include="RequestModel\LogIn_Request.cs" />
     <Compile Include="ResultModelBase.cs" />
     <Compile Include="ResultModel\LogIn_Result.cs" />
     <Compile Include="ResultModel\Quality_MailGroup_ResultModel.cs" />
+    <Compile Include="ViewModel\FinalInspection\Others.cs" />
+    <Compile Include="ViewModel\FinalInspection\BeautifulProductAudit.cs" />
+    <Compile Include="ViewModel\FinalInspection\Setting.cs" />
     <Compile Include="ViewModel\InspectionSave_ViewModel.cs" />
     <Compile Include="ViewModel\Inspection_ViewModel.cs" />
     <Compile Include="ViewModel\ReworkList_ViewModel.cs" />
