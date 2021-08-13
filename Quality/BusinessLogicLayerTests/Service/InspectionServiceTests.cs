@@ -34,5 +34,27 @@ namespace BusinessLogicLayer.Service.Tests
                 Assert.Fail(ex.ToString());
             }
         }
+
+        [TestMethod()]
+        public void RFT_OrderCommentsGetTest()
+        {
+            try
+            {
+                RFT_OrderComments rework = new RFT_OrderComments()
+                {
+                    OrderID = "21061052UC",
+                    PMS_RFTCommentsID = "1",
+                    Comnments = "test 2021",
+                };
+
+                IInspectionService _InspectionService = new InspectionService();
+                var _rework = _InspectionService.RFT_OrderCommentsGet(rework).ToList();
+                Assert.IsTrue(_rework.Count > 0);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.ToString());
+            }
+        }
     }
 }
