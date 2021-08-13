@@ -324,9 +324,12 @@
     .ReworkListTable {
 
     }
-
         .ReworkListTable > thead > tr > th {
             padding: 0.5em;
+        }
+
+        .ReworkListTable > tbody > tr > td {
+            padding: 1em;
         }
 
         .ReworkListTable > tbody > tr > td > input[type='checkbox'] {
@@ -335,15 +338,19 @@
             vertical-align: middle;
         }
 
-    .ReworkListButton > div {
-        width: 10em;
-        float: left;
+    .ReworkListButton {
+        padding: 1em;
     }
 
-    .ReworkListButton input[type="button"] {
-        cursor: pointer;
-        font-weight: bolder;
-    }
+        .ReworkListButton > div {
+            width: 10em;
+            float: left;
+        }
+
+        .ReworkListButton input[type="button"] {
+            cursor: pointer;
+            font-weight: bolder;
+        }
 
     .ReworkListButtonAction {
         width: 11vw;
@@ -364,6 +371,17 @@
     }
 
         .ReworkListButtonDispose > input[type="button"] {
+            width: 100%;
+            cursor: pointer;
+        }
+
+    .ReworkListTableAction {
+        width: 11vw;
+        position: absolute;
+        border: solid 1px lightgray;
+        z-index: 2;
+    }
+        .ReworkListTableAction > input[type="button"] {
             width: 100%;
         }
 
@@ -940,7 +958,7 @@
         <div class="ReworkListButton">
             <div>
                 <input id="btnReworkListAction" type="button" class="btn-yellow font1rem" style="margin: 0; border: 0; padding: 7px 2em; " name="ReworkListAction" value="Action">
-                <div class="ReworkListButtonAction">
+                <div class="ReworkListButtonAction display-None">
                     <input idx="Wash" type="button" value="Send To Washing">
                     <input idx="Print" type="button" value="Printing Repair">
                     <input idx="Repl." type="button" value="Need Replacement">
@@ -952,7 +970,7 @@
             </div>
             <div>
                 <input id="btnReworkListDispose" type="button" class="btn-yellow font1rem" style="margin: 0; border: 0; padding: 7px 2em; " name="ReworkListDispose" value="Dispose">
-                <div class="ReworkListButtonDispose">
+                <div class="ReworkListButtonDispose display-None">
                 </div>
             </div>
         </div>
@@ -1566,6 +1584,14 @@
 
         $('#btnCFTCommentsExit').on('click', function () {
             $('#ReworkList').addClass("display-None");
+        });
+
+        $('#btnReworkListAction').on('click', function () {
+            $('.ReworkListButtonAction').slideToggle(800);
+        });
+
+        $('#btnReworkListDispose').on('click', function () {
+            $('.ReworkListButtonDispose').slideToggle(800);
         });
     }
 
@@ -2313,8 +2339,9 @@
             success: function (data) {
                 var tableContent = "";
                 var spOption = "", styleOption = "", articleOption = "", sizeOption = "";
-
+                var spArrList = [];
                 $.each(data, function (index, value) {
+                    spArrList.push(value.OrderID);
                     spOption += "<option value=" + value.OrderID + ">" + value.OrderID + "</option>";
                     styleOption += "<option value=" + value.Style + ">" + value.Style + "</option>";
                     articleOption += "<option value=" + value.Article + ">" + value.Article + "</option>";
@@ -2331,14 +2358,27 @@
                     tableContent += "<td><input id='txtReworkListDefect" + value.ID + "' type='text' readonly='readonly' value='" + value.Defect + "'/></td>";
                     tableContent += "<td><input id='btnReworkListPass" + value.ID + "' type='button' class='site-btn btn-green font1rem btnReworkListPass' style='margin: 0; border: 0; padding: 7px 2em; ' name='ReworkListPass' value='Pass' /></td>";
                     tableContent += "<td><input id='btnReworkListReject" + value.ID + "' type='button' class='site-btn btn-red font1rem btnReworkListReject' style='margin:0;border:0;padding: 7px 2em;' name='ReworkListReject' value='Reject' /></td>";
-                    tableContent += "<td><input id='btnReworkListAction" + value.ID + "' type='button' class='site-btn btn-blue font1rem btnReworkListAction' style='margin:0;border:0;padding: 7px 2em;' name='ReworkListAction' value='Action' /></td>";
+                    tableContent += "<td>";
+                    tableContent += "<input id='btnReworkListAction" + value.ID + "' type='button' class='site-btn btn-blue font1rem btnReworkListAction' style='margin:0;border:0;padding: 7px 2em;' name='ReworkListAction' value='Action' />";
+                    tableContent += "<div style='position: relative;'><div class='ReworkListTableAction display-None'>";
+                    tableContent += "<input idx='Wash' type='button' value='Send To Washing'>";
+                    tableContent += "<input idx='Print' type='button' value='Printing Repair'>";
+                    tableContent += "<input idx='Repl.' type='button' value='Need Replacement'>";
+                    tableContent += "<input idx='Shade' type='button' value='Shading Defect'>";
+                    tableContent += "</div></div>";
+                    tableContent += "</td>";
                     tableContent += "</tr>";
                 });
+                console.log(spArrList);
                 $('.ReworkListTable>tbody').html(tableContent);
                 $("#ReworkListSP").html(spOption);
                 $("#ReworkListStyle").html(styleOption);
                 $("#ReworkListArticle").html(articleOption);
                 $("#ReworkListSize").html(sizeOption);
+
+                $(".ReworkListTable>tbody>tr>td>input[name='ReworkListAction']").on('click', function () {
+                    $(this).siblings('div').children('div').slideToggle(100);
+                });
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 console.log(xhr.responseText);
