@@ -47,7 +47,25 @@ namespace Quality.Areas.SampleRFT.Controllers
             ViewBag.BrandList = this.Brands;
             ViewBag.UserID = this.UserID;
             ViewBag.ShowSwitch = 1;
+
+            #region Test #2
+            // test Rework Card
+            //ReworkCard rework = new ReworkCard()
+            //{
+            //    FactoryID = "ES2",
+            //    Line = "01",
+            //    Type = "Hard",
+            //};
+
+            //var _rework = _InspectionService.GetReworkCards(rework).ToList();
+
+            var _sentMail = _InspectionService.RFT_OrderCommentsSendMail(new RFT_OrderComments { OrderID = "21061052UC" });
+
+            #endregion
+
             return View(setting);
+
+          
         }
 
         [HttpPost]
@@ -65,7 +83,11 @@ namespace Quality.Areas.SampleRFT.Controllers
             ViewBag.BrandList = this.Brands;
             ViewBag.UserID = this.UserID;
             ViewBag.ShowSwitch = 0;
+           
+
             return View(request);
+
+       
         }
 
         [HttpPost]
@@ -437,6 +459,32 @@ namespace Quality.Areas.SampleRFT.Controllers
             return Json(viewModel);
         }
 
+        [HttpPost]
+        public JsonResult GetReworkList()
+        {
+            List<ReworkList_ViewModel> reworkList_View = _InspectionService.GetReworkList(new ReworkList_ViewModel() 
+            { 
+                FactoryID = this.FactoryID, 
+                Line = this.Line, 
+            });
+             
+            return Json(reworkList_View);
+        }
+
+        [HttpPost]
+        public ActionResult GetDQSReason()
+        {
+            List<DQSReason> dQSReasons = _InspectionService.GetDQSReason(new DQSReason() { Type = "DP", Junk = false }) ;
+            string html = "";
+            foreach (DQSReason reason in dQSReasons)
+            {
+                html += "<input idx='" + reason.ID + "' type='button' value='" + reason.Description + "'>";
+            }
+
+            return Content(html);
+        }
+
+        [HttpPost]
         public ActionResult GetCFTComments(string OrderID, string StyleID, string Season, string SampleStage)
         {
             List<RFT_OrderComments_ViewModel> viewModel = new List<RFT_OrderComments_ViewModel>();
@@ -462,6 +510,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             return Content(html);
         }
 
+        [HttpPost]
         public JsonResult CFTCommentsSave(List<RFT_OrderComments> duringDummyFitting)
         {
             RFT_OrderComments_ViewModel rFT_PicDuringDummyFitting_ViewModel = _InspectionService.RFT_OrderCommentsSave(duringDummyFitting);
@@ -469,12 +518,14 @@ namespace Quality.Areas.SampleRFT.Controllers
             return Json(rFT_PicDuringDummyFitting_ViewModel);
         }
 
+        [HttpPost]
         public JsonResult CFTCommentsSend(string OrderID)
         {
             RFT_OrderComments_ViewModel rFT_PicDuringDummyFitting_ViewModel = _InspectionService.RFT_OrderCommentsSendMail(new RFT_OrderComments { OrderID = OrderID });
             return Json(rFT_PicDuringDummyFitting_ViewModel);
         }
 
+        [HttpPost]
         public JsonResult GetPictures(string OrderID, string StyleID, string Article, string Size)
         {
             Inspection_ViewModel viewModel = new Inspection_ViewModel();
@@ -492,6 +543,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             return Json(result);
         }
 
+        [HttpPost]
         public JsonResult PicturesSave(RFT_PicDuringDummyFitting duringDummyFitting)
         {
             RFT_PicDuringDummyFitting_ViewModel rFT_PicDuringDummyFitting_ViewModel = _InspectionService.RFT_PicDuringDummyFittingSave(duringDummyFitting);

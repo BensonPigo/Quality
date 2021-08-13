@@ -10,8 +10,8 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
 {
     public interface IReworkListProvider
     {
-        IList<ReworkList> Get(ReworkList Item);
+        IList<ReworkList_ViewModel> Get(ReworkList_ViewModel Item);
 
-        IList<ReworkList_ViewModel> GetReworkListFilter(ReworkList_ViewModel inspection, string key);
+        IList<ReworkList_ViewModel> GetReworkListFilter(ReworkList_ViewModel inspection);
     }
 }

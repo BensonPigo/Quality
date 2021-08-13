@@ -41,5 +41,39 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 
             return ExecuteList<MailTo>(CommandType.Text, SbSql.ToString(), objParameter);
         }
+
+        public IList<MailTo> GetCFTComments_ToAddress(RFT_OrderComments Item)
+        {   
+            SQLParameterCollection objParameter = new SQLParameterCollection()
+            {
+                { "@OrderID", DbType.String, Item.OrderID }
+            };
+
+            string sqlcmd = @"
+select 
+ToAddress = STUFF((
+select concat(';',ToAddress)
+	from (
+		select ToAddress =  p.EMail
+		from Production.dbo.Orders o 
+		inner join Production.dbo.TPEPass1 p on o.SMR = p.ID
+		where o.ID=@OrderID
+
+		union all
+
+		select ToAddress = p.EMail
+		from Production.dbo.Orders o 
+		inner join Production.dbo.TPEPass1 p on o.MRHandle = p.ID
+		where o.ID=@OrderID
+
+		union all
+
+		select ToAddress from MailTo where id='201'
+	) a
+	for xml path('')
+), 1, 1, '')
+";
+            return ExecuteList<MailTo>(CommandType.Text, sqlcmd, objParameter);
+        }
     }
 }

@@ -56,9 +56,9 @@
     <Compile Include="ManufacturingExecutionDB\Quality_Menu.cs" />
     <Compile Include="ManufacturingExecutionDB\Quality_Pass1.cs" />
     <Compile Include="ManufacturingExecutionDB\Quality_Pass2.cs" />
+    <Compile Include="ManufacturingExecutionDB\Quality_MailGroup.cs" />
     <Compile Include="ManufacturingExecutionDB\Quality_Position.cs" />
     <Compile Include="ManufacturingExecutionDB\ReworkCard.cs" />
-    <Compile Include="ManufacturingExecutionDB\ReworkList.cs" />
     <Compile Include="ManufacturingExecutionDB\RFT_Inspection.cs" />
     <Compile Include="ManufacturingExecutionDB\RFT_Inspection_Detail.cs" />
     <Compile Include="ManufacturingExecutionDB\RFT_Inspection_Measurement.cs" />
@@ -82,9 +82,11 @@
     <Compile Include="RequestModel\LogIn_Request.cs" />
     <Compile Include="ResultModelBase.cs" />
     <Compile Include="ResultModel\LogIn_Result.cs" />
+    <Compile Include="ResultModel\Quality_MailGroup_ResultModel.cs" />
     <Compile Include="ViewModel\InspectionSave_ViewModel.cs" />
     <Compile Include="ViewModel\Inspection_ViewModel.cs" />
     <Compile Include="ViewModel\ReworkList_ViewModel.cs" />
+    <Compile Include="ViewModel\RFTPerLine_ViewModel.cs" />
     <Compile Include="ViewModel\RFT_OrderComments_ViewModel.cs" />
     <Compile Include="ViewModel\RFT_PicDuringDummyFitting_ViewModel.cs" />
     <Compile Include="ViewModel\SelectItem_ViewModel.cs" />

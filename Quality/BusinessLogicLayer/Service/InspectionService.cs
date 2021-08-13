@@ -1,4 +1,5 @@
-﻿using BusinessLogicLayer.Interface;
+﻿using ADOHelper.Utility;
+using BusinessLogicLayer.Interface;
 using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.ViewModel;
@@ -26,6 +27,7 @@ namespace BusinessLogicLayer.Service
         private IDropDownListProvider _DropDownListProvider;
         private IReworkCardProvider _IReworkCardProvider;
         private IReworkListProvider _IReworkListProvider;
+        private IRFTOrderCommentsProvider _IRFTOrderCommentsProvider;
 
         // Production
         private IOrdersProvider _IOrdersProvider;
@@ -212,42 +214,42 @@ namespace BusinessLogicLayer.Service
 
         public InspectionSave_ViewModel SaveRFTInspection(InspectionSave_ViewModel inspections)
         {
+            _RFTInspectionProvider = new RFTInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+            _RFTInspectionDetailProvider = new RFTInspectionDetailProvider(Common.ManufacturingExecutionDataAccessLayer);
+            _IOrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
             inspections.Result = true;
             inspections.ErrMsg = string.Empty;
+            try
+            {
+                if (inspections.rft_Inspection == null)
+                {
+                    inspections.Result = false;
+                    inspections.ErrMsg = "InspectionSave_ViewModel is null";
+                    return inspections;
+                }
 
-            if (inspections.rft_Inspection == null)
+                string OrderID = inspections.rft_Inspection.OrderID;
+                IList<Orders> orders = _IOrdersProvider.Get(new Orders() { ID = OrderID });
+                if (orders.Count > 0)
+                {
+                    string StyleUkey = orders[0].StyleUkey.ToString();
+                    inspections.rft_Inspection.StyleUkey = long.Parse(StyleUkey);
+                }
+
+                #region update/insert [RFT_Inspection] and [RFT_Inspection_Detail]
+
+                int createCnt = _RFTInspectionDetailProvider.Create_Master_Detail(inspections.rft_Inspection, inspections.fT_Inspection_Details);
+
+                inspections.Result = true;
+                inspections.ErrMsg = $"Save RFTInspection row count is {createCnt}";
+
+                #endregion
+            }
+            catch (Exception ex)
             {
                 inspections.Result = false;
-                inspections.ErrMsg = "InspectionSave_ViewModel is null";
-                return inspections;
+                inspections.ErrMsg = ex.ToString();
             }
-
-            _IOrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
-
-            string OrderID = inspections.rft_Inspection.OrderID;
-            IList<Orders> orders = _IOrdersProvider.Get(new Orders() { ID = OrderID });
-            if (orders.Count > 0)
-            {
-                string StyleUkey = orders[0].StyleUkey.ToString();
-                inspections.rft_Inspection.StyleUkey = long.Parse(StyleUkey);
-            }
-
-            #region update/insert [RFT_Inspection] and [RFT_Inspection_Detail]
-
-            _RFTInspectionProvider = new RFTInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
-
-            _RFTInspectionDetailProvider = new RFTInspectionDetailProvider(Common.ManufacturingExecutionDataAccessLayer);
-
-            int createCnt = _RFTInspectionDetailProvider.Create_Master_Detail(inspections.rft_Inspection, inspections.fT_Inspection_Details);
-
-            if (createCnt == 0)
-            {
-                inspections.Result = false;
-                inspections.ErrMsg = "Save RFTInspection row count = 0";
-                return inspections;
-            }
-
-            #endregion
 
             return inspections;
         }
@@ -266,127 +268,201 @@ namespace BusinessLogicLayer.Service
             return reworkCards;
         }
 
-        public ReworkList_ViewModel GetReworkListFilter(ReworkList_ViewModel reworkList, SelectType type)
+        public List<ReworkList_ViewModel> GetReworkList(ReworkList_ViewModel reworkList)
         {
-            _RFTInspectionProvider = new RFTInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
-
             _IReworkListProvider = new ReworkListProvider(Common.ManufacturingExecutionDataAccessLayer);
-            List<ReworkList_ViewModel> reworkList_Views = _IReworkListProvider.GetReworkListFilter(
+            List<ReworkList_ViewModel> reworkList_Views = _IReworkListProvider.Get(
                 new ReworkList_ViewModel()
                 {
                     FactoryID = reworkList.FactoryID,
                     Line = reworkList.Line,
-                    Status = reworkList.Status,
-                }, type.ToString()).ToList();
+                }).ToList();
 
+            return reworkList_Views;
+        }
 
-            // reworkList.SP = _RFTInspections.;
+        public List<DQSReason> GetDQSReason(DQSReason dQSReason)
+        {
+            // 傳入 Type = 'DP', Junk = 0
+            List<DQSReason> dQSReasons = new List<DQSReason>() 
+            { 
+                new DQSReason { ID = "00001", Description = "Un-Fixed Garment" },
+                new DQSReason { ID = "00002", Description = "Exceed Quantity" },
+                new DQSReason { ID = "00003", Description = "Reject By QMS" },
+            };
 
-            //List<string> spList = new List<string>();
-            //List<string> StyleList = new List<string>();
-            //List<string> ArticleList = new List<string>();
-            //List<string> SizeList = new List<string>();
-
-            //foreach (var item in _RFTInspections)
-            //{
-            //    spList.Add(item.SP);
-            //    StyleList.Add(item.Style);
-            //    ArticleList.Add(item.Article);
-            //    SizeList.Add(item.Size);
-            //}
-
-            //reworkList.SPList = spList;
-            //reworkList.StyleList = StyleList;
-            //reworkList.ArticleList = ArticleList;
-            //reworkList.SizeList = SizeList;
-
-            //_IReworkListProvider = new ReworkListProvider(Common.ManufacturingExecutionDataAccessLayer);
-            //List<ReworkList> reworkLists = _IReworkListProvider.Get(
-            //    new ReworkList()
-            //    {
-            //        FactoryID = reworkList.rft_Inspection.FactoryID,
-            //        Line = reworkList.rft_Inspection.Line,
-            //        Status = reworkList.rft_Inspection.Status,
-            //    }).ToList();
-            //reworkList.ReworkList = reworkLists;
-
-
-            return reworkList;
+            return dQSReasons;
         }
 
         public List<RFT_OrderComments_ViewModel> RFT_OrderCommentsGet(RFT_OrderComments rFT_OrderComments)
         {
-            List<RFT_OrderComments_ViewModel> rFT_OrderComments_ViewModels = new List<RFT_OrderComments_ViewModel>()
-            {
-                new RFT_OrderComments_ViewModel()
-                {
-                    OrderID = "aaaa",
-                    PMS_RFTCommentsID = "1",
-                    PMS_RFTCommentsDescription = "Sample measurement",
-                    Comnments = "AAAAAAAAAAAAAAAAAAAAA",
-                },
-                new RFT_OrderComments_ViewModel()
-                {
-                    OrderID = "aaaa",
-                    PMS_RFTCommentsID = "2",
-                    PMS_RFTCommentsDescription = "Sample fitting",
-                    Comnments = "BBBBBBBBBBBBBBBBBBBBBBBBB",
-                },
-                new RFT_OrderComments_ViewModel()
-                {
-                    OrderID = "aaaa",
-                    PMS_RFTCommentsID = "3",
-                    PMS_RFTCommentsDescription = "Material",
-                    Comnments = "ccccccccc",
-                },
-                new RFT_OrderComments_ViewModel()
-                {
-                    OrderID = "aaaa",
-                    PMS_RFTCommentsID = "4",
-                    PMS_RFTCommentsDescription = "Accessory",
-                    Comnments = "CCCCCCCCCCCCCCCCCCCCCCCCCC",
-                },
-                new RFT_OrderComments_ViewModel()
-                {
-                    OrderID = "aaaa",
-                    PMS_RFTCommentsID = "5",
-                    PMS_RFTCommentsDescription = "Material",
-                    Comnments = "ccccccccc",
-                },
-                new RFT_OrderComments_ViewModel()
-                {
-                    OrderID = "aaaa",
-                    PMS_RFTCommentsID = "6",
-                    PMS_RFTCommentsDescription = "Accessory",
-                    Comnments = "CCCCCCCCCCCCCCCCCCCCCCCCCC",
-                },
-                new RFT_OrderComments_ViewModel()
-                {
-                    OrderID = "aaaa",
-                    PMS_RFTCommentsID = "7",
-                    PMS_RFTCommentsDescription = "Material",
-                    Comnments = "ccccccccc",
-                },
-                new RFT_OrderComments_ViewModel()
-                {
-                    OrderID = "aaaa",
-                    PMS_RFTCommentsID = "8",
-                    PMS_RFTCommentsDescription = "Accessory",
-                    Comnments = "CCCCCCCCCCCCCCCCCCCCCCCCCC",
-                },
-            };
+            _IRFTOrderCommentsProvider = new RFTOrderCommentsProvider(Common.ManufacturingExecutionDataAccessLayer);
+            List<RFT_OrderComments_ViewModel> rFT_OrderComments_ViewModel = new List<RFT_OrderComments_ViewModel>();
 
-            return rFT_OrderComments_ViewModels;
+            rFT_OrderComments_ViewModel = _IRFTOrderCommentsProvider.Get(
+            new RFT_OrderComments()
+            {
+                OrderID = rFT_OrderComments.OrderID,
+            }).ToList();
+
+            return rFT_OrderComments_ViewModel;
         }
 
         public RFT_OrderComments_ViewModel RFT_OrderCommentsSave(List<RFT_OrderComments> rFT_OrderComments)
         {
-            return new RFT_OrderComments_ViewModel() { Result = true };
+            _IRFTOrderCommentsProvider = new RFTOrderCommentsProvider(Common.ManufacturingExecutionDataAccessLayer);
+            RFT_OrderComments_ViewModel rFT_OrderComments_ViewModel = new RFT_OrderComments_ViewModel();
+            try
+            {
+                int updateCnt = _IRFTOrderCommentsProvider.Save_upd_ins(rFT_OrderComments);
+                rFT_OrderComments_ViewModel.Result = true;
+                rFT_OrderComments_ViewModel.ErrMsg = $"RFT_OrderComments Save row count is {updateCnt}";
+            }
+            catch (Exception ex)
+            {
+                rFT_OrderComments_ViewModel.Result = false;
+                rFT_OrderComments_ViewModel.ErrMsg = ex.ToString();
+            }
+            
+            return rFT_OrderComments_ViewModel;
         }
 
         public RFT_OrderComments_ViewModel RFT_OrderCommentsSendMail(RFT_OrderComments rFT_OrderComments)
         {
-            return new RFT_OrderComments_ViewModel() { Result = true };
+            _IRFTOrderCommentsProvider = new RFTOrderCommentsProvider(Common.ManufacturingExecutionDataAccessLayer);
+            _IMailToProvider = new MailToProvider(Common.ManufacturingExecutionDataAccessLayer);
+            RFT_OrderComments_ViewModel rFT_OrderComments_ViewModel = new RFT_OrderComments_ViewModel();
+            try
+            {
+                // 撈資料
+                List<RFT_OrderComments_ViewModel> queryData = RFT_OrderCommentsGet(rFT_OrderComments);
+
+                #region 寄信
+                // 取得 mail to address
+                List<MailTo> mailToAddress = _IMailToProvider.GetCFTComments_ToAddress(
+                  new RFT_OrderComments()
+                  {
+                      OrderID = rFT_OrderComments.OrderID,
+                  }).ToList();
+
+
+                _IMailToProvider = new MailToProvider(Common.ManufacturingExecutionDataAccessLayer);
+                List<MailTo> mailToSubject = _IMailToProvider.Get(
+                   new MailTo()
+                   {
+                       ID = "201",
+                   }).ToList();
+
+                if (queryData.Count == 0)
+                {
+                    string errorMsg = MailTools.MailToHtml(
+                      mailToAddress[0].ToAddress
+                      , $"mail address is empty! SP#: {rFT_OrderComments.OrderID}"
+                      , string.Empty
+                      , $"Result MSG: mail address is empty! SP#: {rFT_OrderComments.OrderID}"
+                      );
+
+                    if (!string.IsNullOrEmpty(errorMsg))
+                    {
+                        rFT_OrderComments_ViewModel.ErrMsg = errorMsg;
+                        rFT_OrderComments_ViewModel.Result = false;
+                    }
+                    else
+                    {
+                        rFT_OrderComments_ViewModel.ErrMsg = $"Result MSG: mail address is empty! SP#: {rFT_OrderComments.OrderID}";
+                        rFT_OrderComments_ViewModel.Result = false;
+                    }
+                    
+                    return rFT_OrderComments_ViewModel;
+                }
+
+                string html = @"
+<style>
+.CFTCommentsTable {
+width: 69vw;
+}
+
+.CFTCommentsTable > thead > tr > th {
+text-align: center;
+vertical-align: middle;
+}
+
+.CFTCommentsTable > tbody > tr > td {
+text-align: center;
+vertical-align: middle;
+}
+
+.CFTCommentsTable > tbody > tr > td > textarea {
+    min-height: 14vh;
+}
+
+ .DefectTable {
+        font-size: 1rem;
+        font-weight: bold;
+        border: solid 1px black;
+    }
+
+        .DefectTable > thead > tr {
+            background-color: gray;
+        }
+
+            .DefectTable > thead > tr > th {
+                padding: 1em 2em 1em 2em;
+            }
+
+        .DefectTable > tbody > tr > td {
+            border: solid 1px gray;
+            cursor: pointer;
+        }
+
+        .DefectTable .tdEmpty {
+            padding: 2em 1em 2em 1em;
+        }
+
+        .DefectTable .tdValue {
+            padding: 1em;
+        }
+</style>
+
+
+<table class='CFTCommentsTable DefectTable'>
+<thead>
+<tr>
+<th style = 'width:17vw;'> 
+    <p> Comments Category </p>    
+</th>    
+<th>    
+    <p> Comments </p>    
+</th>    
+</tr>    
+</thead>    
+<tbody>
+    ";
+                foreach (RFT_OrderComments_ViewModel item in queryData)
+                {
+                    html += "<tr>";
+                    html += "<td><p>" + item.PMS_RFTCommentsDescription + "</p></td>";
+                    html += "<td><textarea id='" + item.PMS_RFTCommentsDescription + item.PMS_RFTCommentsID + "' idx='" + item.PMS_RFTCommentsID + "' cols='85'> " + item.Comnments + " </textarea></td>";
+                    html += "</tr>";
+                }
+
+                html += "   </tbody> </table>";
+
+                MailTools.MailToHtml(
+                     mailToAddress[0].ToAddress
+                     , mailToSubject[0].Subject + $" SP#: {rFT_OrderComments.OrderID}"
+                     , string.Empty
+                     , html
+                );
+
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                rFT_OrderComments_ViewModel.Result = false;
+                rFT_OrderComments_ViewModel.ErrMsg = ex.ToString();
+            }
+            return rFT_OrderComments_ViewModel;
         }
 
         public RFT_PicDuringDummyFitting RFT_PicDuringDummyFittingGet(RFT_PicDuringDummyFitting picDuringDummyFitting)
@@ -398,5 +474,6 @@ namespace BusinessLogicLayer.Service
         {
             return new RFT_PicDuringDummyFitting_ViewModel() { Result = true };
         }
+
     }
 }
