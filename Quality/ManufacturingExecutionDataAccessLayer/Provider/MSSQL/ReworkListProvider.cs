@@ -22,7 +22,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();
             string sqlcmd = $@"
-select distinct 
+select  
     [ReworkNo] = ins.ReworkCardNo+'/'+ins.FixType
     ,ins.OrderID
     ,[POID] = o.CustPONo
@@ -35,6 +35,7 @@ select distinct
     ,ins.ReworkCardType
     ,ins.FactoryID
     ,ins.Line
+    ,ins.FixType
 from RFT_Inspection ins with(nolock) 
 left join [dbo].[SciProduction_Orders] o with(nolock) 
 on ins.OrderId=o.ID

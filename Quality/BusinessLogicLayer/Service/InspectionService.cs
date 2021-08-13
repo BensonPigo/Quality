@@ -280,7 +280,20 @@ namespace BusinessLogicLayer.Service
 
             return reworkList_Views;
         }
-         
+
+        public List<DQSReason> GetDQSReason(DQSReason dQSReason)
+        {
+            // 傳入 Type = 'DP', Junk = 0
+            List<DQSReason> dQSReasons = new List<DQSReason>() 
+            { 
+                new DQSReason { ID = "00001", Description = "Un-Fixed Garment" },
+                new DQSReason { ID = "00002", Description = "Exceed Quantity" },
+                new DQSReason { ID = "00003", Description = "Reject By QMS" },
+            };
+
+            return dQSReasons;
+        }
+
         public List<RFT_OrderComments_ViewModel> RFT_OrderCommentsGet(RFT_OrderComments rFT_OrderComments)
         {
             _IRFTOrderCommentsProvider = new RFTOrderCommentsProvider(Common.ManufacturingExecutionDataAccessLayer);
@@ -461,5 +474,6 @@ vertical-align: middle;
         {
             return new RFT_PicDuringDummyFitting_ViewModel() { Result = true };
         }
+
     }
 }
