@@ -6,5 +6,7 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
     public interface IMailToProvider
     {
         IList<MailTo> Get(MailTo Item);
+
+        IList<MailTo> GetCFTComments_ToAddress(RFT_OrderComments Item);
     }
 }
