@@ -224,6 +224,8 @@ select @@IDENTITY as ID
             int detailcnt = 1;
             foreach (var item in Detail)
             {
+                string picColumn = string.Empty;
+                string picValue = string.Empty;
 
                 objParameter.Add($"@DefectCode{detailcnt}", string.IsNullOrEmpty(item.DefectCode) ? "" : item.DefectCode);
                 objParameter.Add($"@AreaCode{detailcnt}", string.IsNullOrEmpty(item.AreaCode) ? "" : item.AreaCode);
@@ -232,6 +234,12 @@ select @@IDENTITY as ID
                 objParameter.Add($"@GarmentDefectTypeID{detailcnt}", string.IsNullOrEmpty(item.GarmentDefectTypeID) ? "" : item.GarmentDefectTypeID);
                 objParameter.Add($"@GarmentDefectCodeID{detailcnt}", string.IsNullOrEmpty(item.GarmentDefectCodeID) ? "" : item.GarmentDefectCodeID);
                 objParameter.Add($"@DefectPicture{detailcnt}", item.DefectPicture);
+
+                if (item.DefectPicture != null)
+                {
+                    picColumn = ",[DefectPicture]";
+                    picValue = $",@DefectPicture{detailcnt}";
+                }
 
                 sqlcmd += $@"
 INSERT INTO [RFT_Inspection_Detail](
@@ -243,13 +251,19 @@ INSERT INTO [RFT_Inspection_Detail](
     ,[PMS_RFTRespID]
     ,[GarmentDefectTypeID]
     ,[GarmentDefectCodeID]
-    ,[DefectPicture]
+    {picColumn}
     ,[AddDate])
 values(
-    @@IDENTITY,@DefectCode{detailcnt},@AreaCode{detailcnt}, 0, @PMS_RFTBACriteriaID{detailcnt},@PMS_RFTRespID{detailcnt},@GarmentDefectTypeID{detailcnt}
-,@GarmentDefectCodeID{detailcnt}
-,@DefectPicture{detailcnt}
-, GetDate())
+    @@IDENTITY
+    ,@DefectCode{detailcnt}
+    ,@AreaCode{detailcnt}
+    ,0
+    ,@PMS_RFTBACriteriaID{detailcnt}
+    ,@PMS_RFTRespID{detailcnt}
+    ,@GarmentDefectTypeID{detailcnt}
+    ,@GarmentDefectCodeID{detailcnt}
+    {picValue}
+    ,GetDate())
 ";
                 detailcnt++;
             }
