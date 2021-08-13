@@ -122,6 +122,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\Authority\AuthorityAreaRegistration.cs" />
     <Compile Include="Areas\FinalInspection\Controllers\InspectionController.cs" />
+    <Compile Include="Areas\FinalInspection\Controllers\QueryController.cs" />
     <Compile Include="Areas\FinalInspection\FinalInspectionAreaRegistration.cs" />
     <Compile Include="Areas\Bulk FGT\Controllers\GarmentTestController.cs" />
     <Compile Include="Areas\SampleRFT\Controllers\InspectionController.cs" />
@@ -213,6 +214,15 @@
     <Content Include="Areas\FinalInspection\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\FinalInspection\Views\Inspection\Index.cshtml" />
     <Content Include="Areas\SampleRFT\Views\Shared\ScreenShot.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Inspection\General.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Inspection\CheckList.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Inspection\AddDefect.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Inspection\BeautifulProductAudit.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Inspection\Moisture.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Inspection\Measurement.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Inspection\Others.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Query\Index.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Query\Detail.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
