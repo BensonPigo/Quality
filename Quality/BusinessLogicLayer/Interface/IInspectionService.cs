@@ -28,6 +28,10 @@ namespace BusinessLogicLayer.Interface
 
         IList<ReworkCard> GetReworkCards(ReworkCard rework);
 
+        List<ReworkList_ViewModel> GetReworkList(ReworkList_ViewModel reworkList);
+
+        List<DQSReason> GetDQSReason(DQSReason dQSReason);
+
         List<RFT_OrderComments_ViewModel> RFT_OrderCommentsGet(RFT_OrderComments rFT_OrderComments);
 
         RFT_OrderComments_ViewModel RFT_OrderCommentsSave(List<RFT_OrderComments> rFT_OrderComments);

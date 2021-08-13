@@ -282,6 +282,91 @@
         z-index: 9;
     }
 
+    #ReworkList {
+        width: 73vw;
+        height: 84vh;
+        position: absolute;
+        left: 15vw;
+        top: 10vh;
+        z-index: 1041;
+        background-color: white;
+        border: solid 1px black;
+        font-size: 1em;
+        font-weight: bold;
+        padding: 1em;
+    }
+
+    .ReworkListRowHeader {
+        color: black;
+        font-size: 1.1vw;
+        font-weight: bold;
+    }
+
+    .ReworkListTag {
+        width: 6vw;
+        float: left;
+    }
+
+        .ReworkListTag > div {
+            border: solid 1px black;
+            text-align: center;
+            background-color: lightgray;
+            cursor: pointer;
+        }
+            .ReworkListTag > div:hover {
+                background-color: gray;
+            }
+
+            .ReworkListTag > div.selectTag {
+                background-color: white;
+            }
+
+    .ReworkListTable {
+
+    }
+
+        .ReworkListTable > thead > tr > th {
+            padding: 0.5em;
+        }
+
+        .ReworkListTable > tbody > tr > td > input[type='checkbox'] {
+            width: 3em;
+            height: 2em;
+            vertical-align: middle;
+        }
+
+    .ReworkListButton > div {
+        width: 10em;
+        float: left;
+    }
+
+    .ReworkListButton input[type="button"] {
+        cursor: pointer;
+        font-weight: bolder;
+    }
+
+    .ReworkListButtonAction {
+        width: 11vw;
+        position: relative;
+        top: -15em;
+        border: solid 1px lightgray;
+    }
+
+        .ReworkListButtonAction > input[type="button"] {
+            width: 100%;
+        }
+
+    .ReworkListButtonDispose {
+        width: 11vw;
+        position: relative;
+        top: -12em;
+        border: solid 1px lightgray;
+    }
+
+        .ReworkListButtonDispose > input[type="button"] {
+            width: 100%;
+        }
+
     #CFTComments {
         width: 73vw;
         height: 84vh;
@@ -395,33 +480,33 @@
                                     <tr>
                                         <td>Style#</td>
                                         <td colspan="3" align="left">
-                                            <input id="txtStyle" type="text" />
+                                            <input id="txtStyle" type="text" readonly="readonly" />
                                             <input id="btnStyleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="StyleSelectItem" value="..." />
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>SP#</td>
                                         <td colspan="3">
-                                            <input id="txtSP" type="text" />
+                                            <input id="txtSP" type="text" readonly="readonly"/>
                                             <input id="btnSPSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="SPSelectItem" value="..." />
                                         </td>
                                     </tr>
                                     <tr>
                                         <td style="width: 6.8vw;">Article</td>
                                         <td style="width: 12vw;">
-                                            <input id="txtArticle" type="text" style="width: 8em;" />
+                                            <input id="txtArticle" type="text" style="width: 8em;" readonly="readonly"/>
                                             <input id="btnArticleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="ArticleSelectItem" value="..." />
                                         </td>
                                         <td style="width: 5.7vw;">Size</td>
                                         <td style="width: 12vw;">
-                                            <input id="txtSize" type="text" style="width: 8em;" />
+                                            <input id="txtSize" type="text" style="width: 8em;" readonly="readonly"/>
                                             <input id="btnSizeSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="SizeSelectItem" value="..." />
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Production Type</td>
                                         <td>
-                                            <input id="txtProductType" type="text" style="width: 8em;" />
+                                            <input id="txtProductType" type="text" style="width: 8em;" readonly="readonly"/>
                                             <input id="btnProductTypeSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="ProductTypeSelectItem" value="..." />
                                         </td>
                                         <td colspan="2"><input id="txtProductTypePMS" type="text" readonly="readonly" /></td>
@@ -794,8 +879,83 @@
         </div>
     </div>
 
-    <div id="ReworkList">
-
+    <div id="ReworkList" class="display-None">
+        <div>
+            <table style="width: 69vw;">
+                <tbody>
+                    <tr>
+                        <td align="left" valign="middle" style="width: 30%;">
+                            <p style="padding-left: 1em; font-size: 1.5em; font-weight: bold;">Rework List</p>
+                        </td>
+                        <td align="right" valign="middle">
+                            <input id="btnCFTCommentsExit" type="button" class="site-btn btn-gy font1rem" style="margin:0;border:0;padding: 7px 2em;" name="CFTCommentsExit" value="Exit" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="row ReworkListRowHeader">
+            <div class="col-auto"><p>SP no.</p></div>
+            <div class="col-auto"><select class="form-control" id="ReworkListSP" name="ReworkListSP"></select></div>
+            <div class="col-auto"><p>Style#</p></div>
+            <div class="col-auto"><select class="form-control" id="ReworkListStyle" name="ReworkListStyle"></select></div>
+            <div class="col-auto"><p>Article</p></div>
+            <div class="col-auto"><select class="form-control" id="ReworkListArticle" name="ReworkListArticle"></select></div>
+            <div class="col-auto"><p>Size</p></div>
+            <div class="col-auto"><select class="form-control" id="ReworkListSize" name="ReworkListSize"></select></div>
+        </div>
+        <div style="width: 70vw; height: 59vh; overflow: auto;">
+            <div class="ReworkListTag">
+                <div class="selectTag"><p>All</p></div>
+                <div><p>Quick</p></div>
+                <div><p>Hard</p></div>
+                <div><p>Wash</p></div>
+                <div><p>Relp.</p></div>
+                <div><p>Print</p></div>
+                <div><p>Shade</p></div>
+            </div>
+            <div style="float: left; width: 60vw; ">
+                <table class="ReworkListTable DefectTable">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Rework No</th>
+                            <th>SP#</th>
+                            <th>PO#</th>
+                            <th>Style#</th>
+                            <th>Size</th>
+                            <th>Article</th>
+                            <th>Defect</th>
+                            <th>Reworked</th>
+                            <th>Add Defect</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="ReworkListButton">
+            <div>
+                <input id="btnReworkListAction" type="button" class="btn-yellow font1rem" style="margin: 0; border: 0; padding: 7px 2em; " name="ReworkListAction" value="Action">
+                <div class="ReworkListButtonAction">
+                    <input idx="Wash" type="button" value="Send To Washing">
+                    <input idx="Print" type="button" value="Printing Repair">
+                    <input idx="Repl." type="button" value="Need Replacement">
+                    <input idx="Shade" type="button" value="Shading Defect">
+                </div>
+            </div>
+            <div style="width: 15em;">
+                <input id="btnReworkListDelete" type="button" class="btn-yellow font1rem" style="margin: 0; border: 0; padding: 7px 2em; " name="ReworkListDelete" value="Delete Defect">
+            </div>
+            <div>
+                <input id="btnReworkListDispose" type="button" class="btn-yellow font1rem" style="margin: 0; border: 0; padding: 7px 2em; " name="ReworkListDispose" value="Dispose">
+                <div class="ReworkListButtonDispose">
+                </div>
+            </div>
+        </div>
     </div>
 
     <div id="CFTComments" class="display-None">
@@ -867,7 +1027,7 @@
             <div class="col-auto"><p>Article</p></div>
             <div class="col-auto"><p class="darkblue Article"></p></div>
             <div class="col-auto"><p>Size</p></div>
-            <div class="col-auto"><p class="darkblue Size"></p></div> 
+            <div class="col-auto"><p class="darkblue Size"></p></div>
         </div>
         <div>
             <table class="PictureDuringDummyFittingTable DefectTable">
@@ -928,7 +1088,7 @@
                                 <a id="aPictureSide" href="" data-source="" title="Picture Side" style="width:640px;height:480px;">
                                     <img id="PictureSide" style="width:20vw;" />
                                 </a>
-                            </div>                           
+                            </div>
                         </td>
                         <td>
                             <div class="zoom-gallery">
@@ -957,6 +1117,7 @@
         SwitchBindEvent();
         AddDefectBindEvent();
         ReworkCardBindEvent();
+        ReworkListBindEvent();
         CFTCommentsBindEvent();
         PictureDuringDummyFittingBindEvent();
         $('#SelectItemBackground').on('click', function () {
@@ -1026,7 +1187,6 @@
         });
 
         $('#txtStyle').on("change", function () {
-            // $(this).parent().parent().nextAll().children().children("input[type='text']").val("");
             $('#txtSP, #txtArticle, #txtSize, #txtProductType, #txtProductTypePMS, #txtBrand, #txtSeason, #txtSampleStage, #txtOriginalLine, #txtSizeQty, #txtSizeBalanceQty, #txtOrderQty, #txtOrderBalanceQty').val("");
             $(".table-top3>tbody>tr>td>input[type='text']").val("");
             $("#DefectType>tbody>tr").remove();
@@ -1046,7 +1206,6 @@
         });
 
         $('#txtSP').on("change", function () {
-            // $(this).parent().parent().nextAll().children().children("input[type='text']").val("");
             $('#txtArticle, #txtSize, #txtProductType, #txtProductTypePMS, #txtBrand, #txtSeason, #txtSampleStage, #txtOriginalLine, #txtSizeQty, #txtSizeBalanceQty, #txtOrderQty, #txtOrderBalanceQty').val("");
             $(".table-top3>tbody>tr>td>input[type='text']").val("");
             $("#DefectType>tbody>tr").remove();
@@ -1133,7 +1292,8 @@
         });
 
         $('#btnReworkList').on('click', function () {
-            alert('open other page');
+            ReworkListGet();
+            $('#ReworkList').removeClass("display-None");
             $('#btnRefresh').click();
         });
 
@@ -1387,6 +1547,28 @@
 
     }
 
+    function ReworkListBindEvent() {
+        GetReworkListButtonDispose();
+
+        $('.ReworkListTag>div').on('click', function () {
+            $('.ReworkListTag>div').removeClass("selectTag");
+            $(this).addClass("selectTag");
+
+            var idx = $(this).children('p').html();
+            if (idx == 'All') {
+                $(".ReworkListTable>tbody>tr").removeClass("display-None");
+            }
+            else {
+                $(".ReworkListTable>tbody>tr").addClass("display-None");
+                $(".ReworkListTable>tbody>tr[idx='" + idx + "']").removeClass("display-None");
+            }
+        });
+
+        $('#btnCFTCommentsExit').on('click', function () {
+            $('#ReworkList').addClass("display-None");
+        });
+    }
+
     function CFTCommentsBindEvent() {
         $('#btnCFTCommentsExit').on('click', function () {
             $('#CFTComments').addClass("display-None");
@@ -1549,6 +1731,10 @@
     }
 
     function StyleCheck(StyleID) {
+        if (StyleID == null || StyleID == "") {
+            return;
+        }
+
         $.ajax({
             url: "@Url.Action("CheckStyle", "Inspection", new { Area = "SampleRFT" })",
             type: 'POST',
@@ -1588,6 +1774,10 @@
     }
 
     function SPCheck(StyleID, OrderID) {
+        if (OrderID == null || OrderID == "") {
+            return;
+        }
+
         $.ajax({
             url: "@Url.Action("CheckSP", "Inspection", new { Area = "SampleRFT" })",
             type: 'POST',
@@ -1647,6 +1837,10 @@
     }
 
     function ArticleCheck(StyleID, OrderID, Article) {
+        if (Article == null || Article == "") {
+            return;
+        }
+
         $.ajax({
             url: "@Url.Action("CheckArticle", "Inspection", new { Area = "SampleRFT" })",
             type: 'POST',
@@ -1698,6 +1892,10 @@
     }
 
     function SizeCheck(StyleID, OrderID, Article, Size) {
+        if (Size == null || Size == "") {
+            return;
+        }
+
         $.ajax({
             url: "@Url.Action("CheckSize", "Inspection", new { Area = "SampleRFT" })",
             type: 'POST',
@@ -1748,6 +1946,10 @@
     }
 
     function ProductTypeCheck(StyleID, OrderID, Article, Size, ProductType) {
+        if (ProductType == null || ProductType == "") {
+            return;
+        }
+
         $.ajax({
             url: "@Url.Action("CheckProductType", "Inspection", new { Area = "SampleRFT" })",
             type: 'POST',
@@ -1993,6 +2195,22 @@
         });
     }
 
+    function GetReworkListButtonDispose() {
+            $.ajax({
+            url: "@Url.Action("GetDQSReason", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ }),
+            async: true,
+            success: function (data) { 
+                $('.ReworkListButtonDispose').html(data);
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
     function ReworkCardSave() {
         var style = $('#txtStyle').val();
         var datas =
@@ -2002,6 +2220,7 @@
                 Location: $('#txtProductType').val(),
                 Size: $('#txtSize').val(),
                 FixType: $('.FixType').html(),
+                ReworkCardNo: $('.ReworkCardNoSelectValue').html(),
             };
 
         var datasDetail = [];
@@ -2072,10 +2291,54 @@
                     $('#btnReworkCardNoExit').click();
                     $('#btnRefresh').click();
                     IsEditModeButtonChange();
+                    msg.WithSuccess("Success");
                 }
                 else {
                     msg.WithError(data.ErrMsg);
                 }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function ReworkListGet() {
+        $.ajax({
+            url: "@Url.Action("GetReworkList", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ }),
+            async: true,
+            success: function (data) {
+                var tableContent = "";
+                var spOption = "", styleOption = "", articleOption = "", sizeOption = "";
+
+                $.each(data, function (index, value) {
+                    spOption += "<option value=" + value.OrderID + ">" + value.OrderID + "</option>";
+                    styleOption += "<option value=" + value.Style + ">" + value.Style + "</option>";
+                    articleOption += "<option value=" + value.Article + ">" + value.Article + "</option>";
+                    sizeOption += "<option value=" + value.Size + ">" + value.Size + "</option>";
+
+                    tableContent += "<tr idx='" + value.FixType + "'>";
+                    tableContent += "<td><input type='checkbox' idx='" + value.ID + "' class='ReworkListCheckBox'></td>";
+                    tableContent += "<td><input id='txtReworkListReworkNo" + value.ID + "' type='text' readonly='readonly' value='" + value.ReworkNo + "' /></td>";
+                    tableContent += "<td><input id='txtReworkListOrderID" + value.ID + "' type='text' readonly='readonly' value='" + value.OrderID + "' /></td>";
+                    tableContent += "<td><input id='txtReworkListPOID" + value.ID + "' type='text' readonly='readonly' value='" + value.POID + "'/></td>";
+                    tableContent += "<td><input id='txtReworkListStyle" + value.ID + "' type='text' readonly='readonly' value='" + value.Style + "'/></td>";
+                    tableContent += "<td><input id='txtReworkListSize" + value.ID + "' type='text' readonly='readonly' value='" + value.Size + "'/></td>";
+                    tableContent += "<td><input id='txtReworkListArticle" + value.ID + "' type='text' readonly='readonly' value='" + value.Article + "'/></td>";
+                    tableContent += "<td><input id='txtReworkListDefect" + value.ID + "' type='text' readonly='readonly' value='" + value.Defect + "'/></td>";
+                    tableContent += "<td><input id='btnReworkListPass" + value.ID + "' type='button' class='site-btn btn-green font1rem btnReworkListPass' style='margin: 0; border: 0; padding: 7px 2em; ' name='ReworkListPass' value='Pass' /></td>";
+                    tableContent += "<td><input id='btnReworkListReject" + value.ID + "' type='button' class='site-btn btn-red font1rem btnReworkListReject' style='margin:0;border:0;padding: 7px 2em;' name='ReworkListReject' value='Reject' /></td>";
+                    tableContent += "<td><input id='btnReworkListAction" + value.ID + "' type='button' class='site-btn btn-blue font1rem btnReworkListAction' style='margin:0;border:0;padding: 7px 2em;' name='ReworkListAction' value='Action' /></td>";
+                    tableContent += "</tr>";
+                });
+                $('.ReworkListTable>tbody').html(tableContent);
+                $("#ReworkListSP").html(spOption);
+                $("#ReworkListStyle").html(styleOption);
+                $("#ReworkListArticle").html(articleOption);
+                $("#ReworkListSize").html(sizeOption);
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 console.log(xhr.responseText);
@@ -2235,7 +2498,7 @@
     }
 
     function SelectItemClickBind() {
-        $('.SelectItem>ul>li>a').on('click', function () {
+        $('.SelectItem>ul>li>a').unbind('click').on('click', function () {
             var idx = $(this).parent().parent().parent().attr('idx');
             $("#txt" + idx).val($(this).html()).trigger("change");
             $('#SelectItemBackground, .SelectItem').addClass('display-None');
@@ -2245,7 +2508,8 @@
     function SelectItemV2ClickBind() {
         $(".SelectItemV2>li>a").on('click', function () {
             var idx = $(this).parent().parent().attr('idx');
-            $("#" + idx).val($(this).html()).trigger("change");
+            // $("#" + idx).val($(this).html()).trigger("change");
+            $("#" + idx).val($(this).html())
             $('.SelectItemV2').addClass('display-None');
         });
 
