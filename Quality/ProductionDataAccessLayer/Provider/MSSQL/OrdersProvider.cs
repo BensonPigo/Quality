@@ -6,6 +6,8 @@ using ProductionDataAccessLayer.Interface;
 using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
 using DatabaseObject.ProductionDB;
+using DatabaseObject.RequestModel;
+using System.Data.SqlClient;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL 
 { 
@@ -844,6 +846,34 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
-	#endregion
+        #endregion
+
+        public IList<Orders> GetForFinalInspection(FinalInspection_Request requestItem)
+        {
+            string sqlGetData = string.Empty;
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@Ftygroup", requestItem.FactoryID);
+            listPar.Add("@SP", requestItem.SP);
+            listPar.Add("@POID", requestItem.POID);
+            listPar.Add("@StyleID", requestItem.StyleID);
+
+            sqlGetData = @"
+select o.id 
+     , o.poid 
+     , o.Qty  
+     , o.StyleID  
+     , o.SeasonID 
+     , o.BrandID 
+  from orders o
+where 1=1
+   and o.ftygroup = @Ftygroup
+   and o.id = @SP
+   and o.POID = @POID
+   and o.StyleID = @StyleID
+   and o.PulloutComplete = 0
+";
+
+            return ExecuteList<Orders>(CommandType.Text, sqlGetData, listPar);
+        }
     }
 }

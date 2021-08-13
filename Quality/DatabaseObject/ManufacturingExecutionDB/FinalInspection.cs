@@ -163,38 +163,6 @@ namespace DatabaseObject.ManufacturingExecutionDB
         [Display(Name = "beautiful product audit的完美數量")]
         public int? BAQty { get; set; }
 
-        /// <summary>濕度檢驗-檢測儀器</summary>
-        [StringLength(10)]
-        [Display(Name = "濕度檢驗-檢測儀器")]
-        public string MoistureInstrument { get; set; }
-
-        /// <summary>濕度檢驗-布的成份組成</summary>
-        [StringLength(20)]
-        [Display(Name = "濕度檢驗-布的成份組成")]
-        public string MoistureFabrication { get; set; }
-
-        /// <summary>濕度檢驗-按壓前濕度</summary>
-        [Display(Name = "濕度檢驗-按壓前濕度")]
-        public string MoistureBeforePress { get; set; }
-
-        /// <summary>濕度檢驗-按壓後濕度</summary>
-        [Display(Name = "濕度檢驗-按壓後濕度")]
-        public string MoistureAfterPress { get; set; }
-
-        /// <summary>濕度檢驗-檢驗時間</summary>
-        [Display(Name = "濕度檢驗-檢驗時間")]
-        public string MoistureTime { get; set; }
-
-        /// <summary>濕度檢驗-檢驗結果(Y/N)</summary>
-        [StringLength(1)]
-        [Display(Name = "濕度檢驗-檢驗結果(Y/N)")]
-        public string MoistureResult { get; set; }
-
-        /// <summary>濕度檢驗-備註</summary>
-        [StringLength(-1)]
-        [Display(Name = "濕度檢驗-備註")]
-        public string MoistureRemark { get; set; }
-
         /// <summary>檢驗人員</summary>
         [StringLength(10)]
         [Display(Name = "檢驗人員")]
