@@ -26,3 +26,5 @@ Quality/BusinessLogicLayerTests/bin/
 Quality/BusinessLogicLayerTests/obj/
 Quality/packages/
 Quality/BusinessLogicLayerTests/BusinessLogicLayerTests.csproj.user
+Quality/QualityTests/bin/
+Quality/QualityTests/obj/Debug/
