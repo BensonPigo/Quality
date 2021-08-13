@@ -7,6 +7,6 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
     {
         IList<MailTo> Get(MailTo Item);
 
-        IList<MailTo> GetCFTComments_ToAddress(RFT_OrderComments Item);
+        IList<MailTo> GetMR_SMR_MailAddress(RFT_OrderComments Item, string MailID);
     }
 }

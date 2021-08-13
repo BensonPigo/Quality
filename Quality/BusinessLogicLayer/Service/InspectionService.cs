@@ -217,6 +217,7 @@ namespace BusinessLogicLayer.Service
             _RFTInspectionProvider = new RFTInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
             _RFTInspectionDetailProvider = new RFTInspectionDetailProvider(Common.ManufacturingExecutionDataAccessLayer);
             _IOrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
+            _IMailToProvider = new MailToProvider(Common.ManufacturingExecutionDataAccessLayer);
             inspections.Result = true;
             inspections.ErrMsg = string.Empty;
             try
@@ -239,6 +240,37 @@ namespace BusinessLogicLayer.Service
                 #region update/insert [RFT_Inspection] and [RFT_Inspection_Detail]
 
                 int createCnt = _RFTInspectionDetailProvider.Create_Master_Detail(inspections.rft_Inspection, inspections.fT_Inspection_Details);
+
+                // 寄信
+                if (createCnt > 0)
+                {
+                    _IMailToProvider = new MailToProvider(Common.ManufacturingExecutionDataAccessLayer);
+                    List<MailTo> mailToSubject = _IMailToProvider.Get(
+                       new MailTo()
+                       {
+                           ID = "200",
+                       }).ToList();
+
+                    // 取得 MR,SMR mail address
+                    List<MailTo> mailToAddress = _IMailToProvider.GetMR_SMR_MailAddress(
+                      new RFT_OrderComments()
+                      {
+                          OrderID = OrderID,
+                      }, "200").ToList();
+
+                    string errorMsg = MailTools.MailToHtml(
+                      mailToAddress[0].ToAddress
+                      , mailToSubject[0].Subject.ToString().Replace("{0}",OrderID)
+                      , string.Empty
+                      , mailToSubject[0].Content
+                      );
+
+                    if (!string.IsNullOrEmpty(errorMsg))
+                    {
+                        inspections.ErrMsg = errorMsg;
+                        inspections.Result = false;
+                    }
+                }
 
                 inspections.Result = true;
                 inspections.ErrMsg = $"Save RFTInspection row count is {createCnt}";
@@ -361,11 +393,11 @@ namespace BusinessLogicLayer.Service
 
                 #region 寄信
                 // 取得 mail to address
-                List<MailTo> mailToAddress = _IMailToProvider.GetCFTComments_ToAddress(
+                List<MailTo> mailToAddress = _IMailToProvider.GetMR_SMR_MailAddress(
                   new RFT_OrderComments()
                   {
                       OrderID = rFT_OrderComments.OrderID,
-                  }).ToList();
+                  }, "201").ToList();
 
 
                 _IMailToProvider = new MailToProvider(Common.ManufacturingExecutionDataAccessLayer);
@@ -472,7 +504,7 @@ vertical-align: middle;
 
                 MailTools.MailToHtml(
                      mailToAddress[0].ToAddress
-                     , mailToSubject[0].Subject + $" SP#: {rFT_OrderComments.OrderID}"
+                     , mailToSubject[0].Subject.ToString().Replace("{0}", rFT_OrderComments.OrderID)
                      , string.Empty
                      , html
                 );

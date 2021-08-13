@@ -204,7 +204,7 @@ inner join RFT_Inspection_Detail rd on r.ID = rd.ID and rd.Junk = 0" + Environme
                 { "@FixType", DbType.String, string.IsNullOrEmpty(Master.FixType)?"" : Master.FixType } ,
                 { "@ReworkCardNo", DbType.String,  string.IsNullOrEmpty(Master.ReworkCardNo)?"" : Master.ReworkCardNo } ,
                 { "@Status", DbType.String, string.IsNullOrEmpty(Master.Status)?"" : Master.Status } ,
-                { "@AddName", DbType.String, string.IsNullOrEmpty(Master.AddName)?"" : Master.AddName } ,
+                { "@UserName", DbType.String, string.IsNullOrEmpty(Master.AddName)?"" : Master.AddName } ,
                 { "@ReworkCardType", DbType.String, string.IsNullOrEmpty(Master.ReworkCardType)?"" : Master.ReworkCardType } ,
                 { "@InspectionDate", DbType.DateTime, Master.InspectionDate } ,
             };
@@ -215,7 +215,7 @@ INSERT INTO [RFT_Inspection](
       ,[ReworkCardNo] ,[Status] ,[AddDate] ,[AddName] ,[ReworkCardType] ,[InspectionDate])
 values(
      @OrderID, @Article,@Location,@Size,@Line,@FactoryID,@StyleUkey
-    ,@FixType,@ReworkCardNo,@Status, GetDate(),@AddName,@ReworkCardType,@InspectionDate
+    ,@FixType,@ReworkCardNo,@Status, GetDate(),@UserName,@ReworkCardType,@InspectionDate
 )
 
 select @@IDENTITY as ID
@@ -267,6 +267,18 @@ values(
 ";
                 detailcnt++;
             }
+
+            // update Rework Card Sataus = 'Rework'（代表 Using 使用中）
+            sqlcmd += @"
+update ReworkCard 
+set Status = 'Rework'
+,EditName = @UserName
+,EditDate = GETDATE()
+where  No = @ReworkCardNo 
+and  Type = @FixType
+and  Line = @Line
+and  FactoryID = @FactoryID
+";
 
             return ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter);
         }
