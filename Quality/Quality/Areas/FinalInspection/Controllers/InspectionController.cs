@@ -8,10 +8,45 @@ namespace Quality.Areas.FinalInspection.Controllers
 {
     public class InspectionController : Controller
     {
-        // GET: FinalInspection/Inspection
+        // Setting
         public ActionResult Index()
         {
             return View();
         }
+
+        public ActionResult General()
+        {
+            return View();
+        }
+
+        public ActionResult CheckList()
+        {
+            return View();
+        }
+
+        public ActionResult AddDefect()
+        {
+            return View();
+        }
+        public ActionResult BeautifulProductAudit()
+        {
+            return View();
+        }
+
+        public ActionResult Moisture()
+        {
+            return View();
+        }
+
+        public ActionResult Measurement()
+        {
+            return View();
+        }
+
+        public ActionResult Others()
+        {
+            return View();
+        }
+        
     }
 }
