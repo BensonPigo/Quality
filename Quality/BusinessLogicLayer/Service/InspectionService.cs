@@ -28,17 +28,18 @@ namespace BusinessLogicLayer.Service
         private IReworkCardProvider _IReworkCardProvider;
         private IReworkListProvider _IReworkListProvider;
         private IRFTOrderCommentsProvider _IRFTOrderCommentsProvider;
+        private IRFTPicDuringDummyFittingProvider _IRFTPicDuringDummyFittingProvider;
 
         // Production
         private IOrdersProvider _IOrdersProvider;
 
         public enum SelectType
         {
-            OrderID ,
-            StyleID ,
+            OrderID,
+            StyleID,
             Article,
-            Size ,
-            ProductType ,
+            Size,
+            ProductType,
         }
 
         public enum DefectType
@@ -58,23 +59,23 @@ namespace BusinessLogicLayer.Service
         {
             _InspectionProvider = new InspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
             List<Inspection_ViewModel> result = _InspectionProvider.CheckSelectItemData(inspection_ViewModel).ToList();
-            
+
             if (result.Count() > 1)
             {
-                switch(type)
+                switch (type)
                 {
                     case SelectType.OrderID:
                         result = result.GroupBy(x => new { x.StyleID, x.OrderID, x.ProductTypePMS, x.Brand, x.Season, x.SampleStage, x.OriginalLine, x.OrderQty })
-                                    .Select(x => new Inspection_ViewModel() 
+                                    .Select(x => new Inspection_ViewModel()
                                     {
-                                       StyleID = x.Key.StyleID,
-                                       OrderID = x.Key.OrderID,
-                                       ProductTypePMS = x.Key.ProductTypePMS,
-                                       Brand = x.Key.Brand,
-                                       Season=  x.Key.Season,
-                                       SampleStage = x.Key.SampleStage,
-                                       OriginalLine = x.Key.OriginalLine,
-                                       OrderQty = x.Key.OrderQty
+                                        StyleID = x.Key.StyleID,
+                                        OrderID = x.Key.OrderID,
+                                        ProductTypePMS = x.Key.ProductTypePMS,
+                                        Brand = x.Key.Brand,
+                                        Season = x.Key.Season,
+                                        SampleStage = x.Key.SampleStage,
+                                        OriginalLine = x.Key.OriginalLine,
+                                        OrderQty = x.Key.OrderQty
                                     }).ToList();
                         break;
                     case SelectType.Article:
@@ -114,19 +115,19 @@ namespace BusinessLogicLayer.Service
             _RFTInspectionDetailProvider = new RFTInspectionDetailProvider(Common.ManufacturingExecutionDataAccessLayer);
 
             Inspection_ViewModel result = new Inspection_ViewModel();
-            List<RFT_Inspection> inspections = _RFTInspectionProvider.Get(new RFT_Inspection() 
-                                                { 
-                                                    FactoryID = inspection_ViewModel.FactoryID ,
-                                                    Line = inspection_ViewModel.Line,
-                                                    InspectionDate = inspection_ViewModel.InspectionDate,
-                                                })
+            List<RFT_Inspection> inspections = _RFTInspectionProvider.Get(new RFT_Inspection()
+            {
+                FactoryID = inspection_ViewModel.FactoryID,
+                Line = inspection_ViewModel.Line,
+                InspectionDate = inspection_ViewModel.InspectionDate,
+            })
                                                 .ToList();
             List<RFT_Inspection_Detail> inspection_details = _RFTInspectionDetailProvider.Top3Defects(new RFT_Inspection()
-                                                {
-                                                    FactoryID = inspection_ViewModel.FactoryID,
-                                                    Line = inspection_ViewModel.Line,
-                                                    InspectionDate = inspection_ViewModel.InspectionDate,
-                                                })
+            {
+                FactoryID = inspection_ViewModel.FactoryID,
+                Line = inspection_ViewModel.Line,
+                InspectionDate = inspection_ViewModel.InspectionDate,
+            })
                                                 .ToList();
 
             result.Pass = inspections.Where(x => x.Status.Equals("Pass") || x.Status.Equals("Fixed")).Count().ToString();
@@ -217,6 +218,7 @@ namespace BusinessLogicLayer.Service
             _RFTInspectionProvider = new RFTInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
             _RFTInspectionDetailProvider = new RFTInspectionDetailProvider(Common.ManufacturingExecutionDataAccessLayer);
             _IOrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
+            _IMailToProvider = new MailToProvider(Common.ManufacturingExecutionDataAccessLayer);
             inspections.Result = true;
             inspections.ErrMsg = string.Empty;
             try
@@ -239,6 +241,37 @@ namespace BusinessLogicLayer.Service
                 #region update/insert [RFT_Inspection] and [RFT_Inspection_Detail]
 
                 int createCnt = _RFTInspectionDetailProvider.Create_Master_Detail(inspections.rft_Inspection, inspections.fT_Inspection_Details);
+
+                // 寄信
+                if (createCnt > 0)
+                {
+                    _IMailToProvider = new MailToProvider(Common.ManufacturingExecutionDataAccessLayer);
+                    List<MailTo> mailToSubject = _IMailToProvider.Get(
+                       new MailTo()
+                       {
+                           ID = "200",
+                       }).ToList();
+
+                    // 取得 MR,SMR mail address
+                    List<MailTo> mailToAddress = _IMailToProvider.GetMR_SMR_MailAddress(
+                      new RFT_OrderComments()
+                      {
+                          OrderID = OrderID,
+                      }, "200").ToList();
+
+                    string errorMsg = MailTools.MailToHtml(
+                      mailToAddress[0].ToAddress
+                      , mailToSubject[0].Subject.ToString().Replace("{0}", OrderID)
+                      , string.Empty
+                      , mailToSubject[0].Content
+                      );
+
+                    if (!string.IsNullOrEmpty(errorMsg))
+                    {
+                        inspections.ErrMsg = errorMsg;
+                        inspections.Result = false;
+                    }
+                }
 
                 inspections.Result = true;
                 inspections.ErrMsg = $"Save RFTInspection row count is {createCnt}";
@@ -284,8 +317,8 @@ namespace BusinessLogicLayer.Service
         public List<DQSReason> GetDQSReason(DQSReason dQSReason)
         {
             // 傳入 Type = 'DP', Junk = 0
-            List<DQSReason> dQSReasons = new List<DQSReason>() 
-            { 
+            List<DQSReason> dQSReasons = new List<DQSReason>()
+            {
                 new DQSReason { ID = "00001", Description = "Un-Fixed Garment" },
                 new DQSReason { ID = "00002", Description = "Exceed Quantity" },
                 new DQSReason { ID = "00003", Description = "Reject By QMS" },
@@ -323,7 +356,7 @@ namespace BusinessLogicLayer.Service
                 rFT_OrderComments_ViewModel.Result = false;
                 rFT_OrderComments_ViewModel.ErrMsg = ex.ToString();
             }
-            
+
             return rFT_OrderComments_ViewModel;
         }
 
@@ -339,11 +372,11 @@ namespace BusinessLogicLayer.Service
 
                 #region 寄信
                 // 取得 mail to address
-                List<MailTo> mailToAddress = _IMailToProvider.GetCFTComments_ToAddress(
+                List<MailTo> mailToAddress = _IMailToProvider.GetMR_SMR_MailAddress(
                   new RFT_OrderComments()
                   {
                       OrderID = rFT_OrderComments.OrderID,
-                  }).ToList();
+                  }, "201").ToList();
 
 
                 _IMailToProvider = new MailToProvider(Common.ManufacturingExecutionDataAccessLayer);
@@ -372,7 +405,7 @@ namespace BusinessLogicLayer.Service
                         rFT_OrderComments_ViewModel.ErrMsg = $"Result MSG: mail address is empty! SP#: {rFT_OrderComments.OrderID}";
                         rFT_OrderComments_ViewModel.Result = false;
                     }
-                    
+
                     return rFT_OrderComments_ViewModel;
                 }
 
@@ -450,7 +483,7 @@ vertical-align: middle;
 
                 MailTools.MailToHtml(
                      mailToAddress[0].ToAddress
-                     , mailToSubject[0].Subject + $" SP#: {rFT_OrderComments.OrderID}"
+                     , mailToSubject[0].Subject.ToString().Replace("{0}", rFT_OrderComments.OrderID)
                      , string.Empty
                      , html
                 );
@@ -467,12 +500,35 @@ vertical-align: middle;
 
         public RFT_PicDuringDummyFitting RFT_PicDuringDummyFittingGet(RFT_PicDuringDummyFitting picDuringDummyFitting)
         {
-            return new RFT_PicDuringDummyFitting();
+            _IRFTPicDuringDummyFittingProvider = new RFTPicDuringDummyFittingProvider(Common.ManufacturingExecutionDataAccessLayer);
+            List<RFT_PicDuringDummyFitting> PicDuringDummyFitting = _IRFTPicDuringDummyFittingProvider.Get(
+           new RFT_PicDuringDummyFitting()
+           {
+               OrderID = picDuringDummyFitting.OrderID,
+               Article = picDuringDummyFitting.Article,
+               Size = picDuringDummyFitting.Size
+           }).ToList();
+
+            return PicDuringDummyFitting[0];
         }
 
         public RFT_PicDuringDummyFitting_ViewModel RFT_PicDuringDummyFittingSave(RFT_PicDuringDummyFitting picDuringDummyFitting)
         {
-            return new RFT_PicDuringDummyFitting_ViewModel() { Result = true };
+            _IRFTPicDuringDummyFittingProvider = new RFTPicDuringDummyFittingProvider(Common.ManufacturingExecutionDataAccessLayer);
+            RFT_PicDuringDummyFitting_ViewModel rFT_OrderComments_ViewModel = new RFT_PicDuringDummyFitting_ViewModel();
+            try
+            {
+                int updateCnt = _IRFTPicDuringDummyFittingProvider.Save_Upd_Ins(picDuringDummyFitting);
+                rFT_OrderComments_ViewModel.Result = true;
+                rFT_OrderComments_ViewModel.ErrMsg = $"RFT_OrderComments Save row count is {updateCnt}";
+            }
+            catch (Exception ex)
+            {
+                rFT_OrderComments_ViewModel.Result = false;
+                rFT_OrderComments_ViewModel.ErrMsg = ex.ToString();
+            }
+
+            return rFT_OrderComments_ViewModel;
         }
 
     }

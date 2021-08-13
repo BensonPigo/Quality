@@ -32,7 +32,13 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
         public IList<RFT_PicDuringDummyFitting> Get(RFT_PicDuringDummyFitting Item)
         {
             StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
+            SQLParameterCollection objParameter = new SQLParameterCollection()
+            {
+                { "@OrderID", DbType.String, Item.OrderID},
+                { "@Article", DbType.String, Item.Article},
+                { "@Size", DbType.String, Item.Size} ,
+            };
+
             SbSql.Append("SELECT"+ Environment.NewLine);
             SbSql.Append("         OrderID"+ Environment.NewLine);
             SbSql.Append("        ,Article"+ Environment.NewLine);
@@ -41,8 +47,10 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,Side"+ Environment.NewLine);
             SbSql.Append("        ,Back"+ Environment.NewLine);
             SbSql.Append("FROM [RFT_PicDuringDummyFitting]"+ Environment.NewLine);
-
-
+            SbSql.Append("where 1 = 1" + Environment.NewLine);
+            if (!string.IsNullOrEmpty(Item.OrderID)) { SbSql.Append(" and OrderID = @OrderID" + Environment.NewLine); }
+            if (!string.IsNullOrEmpty(Item.Article)) { SbSql.Append(" and Article = @Article" + Environment.NewLine); }
+            if (!string.IsNullOrEmpty(Item.Size)) { SbSql.Append(" and Size = @Size" + Environment.NewLine); }
 
             return ExecuteList<RFT_PicDuringDummyFitting>(CommandType.Text, SbSql.ToString(), objParameter);
         }
@@ -139,6 +147,45 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
+        }
+
+        public int Save_Upd_Ins(RFT_PicDuringDummyFitting Item)
+        {
+            string sqlcmd = string.Empty;
+            SQLParameterCollection objParameter = new SQLParameterCollection()
+            {
+                { "@OrderID", DbType.String, Item.OrderID},
+                { "@Article", DbType.String, Item.Article},
+                { "@Size", DbType.String, Item.Size} ,
+            };
+
+            if (Item.Front != null){objParameter.Add("@Front", Item.Front);}
+            else{objParameter.Add("@Front", System.Data.SqlTypes.SqlBinary.Null);}
+
+            if (Item.Side != null){objParameter.Add("@Side", Item.Side);}
+            else{objParameter.Add("@Side", System.Data.SqlTypes.SqlBinary.Null);}
+
+            if (Item.Back != null){objParameter.Add("@Back", Item.Back);}
+            else{objParameter.Add("@Back", System.Data.SqlTypes.SqlBinary.Null);}
+
+            sqlcmd += $@"
+if exists(select 1 from RFT_PicDuringDummyFitting where OrderID = @OrderID and Article = @Article and Size = @Size)
+begin
+	UPDATE [RFT_PicDuringDummyFitting]
+	set Front = @Front
+    ,Side = @Side
+    ,Back = @Back
+	where OrderID = @OrderID and Article = @Article and Size = @Size
+end
+else
+begin
+	insert into RFT_PicDuringDummyFitting(OrderID,Article,Size,Front,Side,Back)
+	values(@OrderID, @Article,@Size,@Front,@Side,@Back)
+end
+";
+
+
+            return ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter);
         }
 	#endregion
     }

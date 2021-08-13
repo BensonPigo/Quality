@@ -42,33 +42,36 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             return ExecuteList<MailTo>(CommandType.Text, SbSql.ToString(), objParameter);
         }
 
-        public IList<MailTo> GetCFTComments_ToAddress(RFT_OrderComments Item)
+        public IList<MailTo> GetMR_SMR_MailAddress(RFT_OrderComments Item, string MailID)
         {   
             SQLParameterCollection objParameter = new SQLParameterCollection()
             {
-                { "@OrderID", DbType.String, Item.OrderID }
+                { "@OrderID", DbType.String, Item.OrderID },
+                { "@MailID", DbType.String, MailID }
             };
 
-            string sqlcmd = @"
+            string testEmail = "willy.wei@sportscity.com.tw; jack.hsu@sportscity.com.tw;";
+
+            string sqlcmd = $@"
 select 
 ToAddress = STUFF((
 select concat(';',ToAddress)
 	from (
-		select ToAddress =  p.EMail
+		select ToAddress =  '{testEmail}'--p.EMail
 		from Production.dbo.Orders o 
 		inner join Production.dbo.TPEPass1 p on o.SMR = p.ID
 		where o.ID=@OrderID
 
 		union all
 
-		select ToAddress = p.EMail
+		select ToAddress = '{testEmail}'--p.EMail
 		from Production.dbo.Orders o 
 		inner join Production.dbo.TPEPass1 p on o.MRHandle = p.ID
 		where o.ID=@OrderID
 
 		union all
 
-		select ToAddress from MailTo where id='201'
+		select ToAddress from MailTo where id=@MailID
 	) a
 	for xml path('')
 ), 1, 1, '')

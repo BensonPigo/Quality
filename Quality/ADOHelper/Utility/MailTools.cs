@@ -34,7 +34,7 @@ namespace ADOHelper.Utility
 
             if (message.To.Count == 0)
             {
-                return result = "Mail Address is empty";
+                return "Mail Address is empty";
             }
 
             message.Body = desc;

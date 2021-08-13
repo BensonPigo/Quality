@@ -44,8 +44,9 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,[PMS_RFTCommentsDescription] = dd.Description" + Environment.NewLine);
             SbSql.Append("from Production..DropdownList dd" + Environment.NewLine);
             SbSql.Append("left join RFT_OrderComments oc on dd.ID = oc.PMS_RFTCommentsID" + Environment.NewLine);
-            SbSql.Append("where dd.Type='PMS_RFTComments'" + Environment.NewLine);
             SbSql.Append("and oc.OrderID = @OrderID" + Environment.NewLine);
+            SbSql.Append("where dd.Type='PMS_RFTComments'" + Environment.NewLine);
+            
 
             return ExecuteList<RFT_OrderComments_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
         }
