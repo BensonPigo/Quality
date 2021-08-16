@@ -2,6 +2,7 @@
 using BusinessLogicLayer.Interface;
 using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ProductionDB;
+using DatabaseObject.RequestModel;
 using DatabaseObject.ViewModel;
 using ManufacturingExecutionDataAccessLayer.Interface;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
@@ -46,6 +47,16 @@ namespace BusinessLogicLayer.Service
         {
             Responsibility,
             BAAuditCriteria,
+        }
+
+        public enum ReworkListType
+        {
+            Pass,
+            Wash,
+            Repl,
+            Print,
+            Shade,
+            Dispose,
         }
 
         public IList<Inspection_ViewModel> GetSelectItemData(Inspection_ViewModel inspection_ViewModel)
@@ -314,6 +325,42 @@ namespace BusinessLogicLayer.Service
             return reworkList_Views;
         }
 
+        public InspectionSave_ViewModel SaveReworkListAction(List<RFT_Inspection> rFT_Inspections, ReworkListType reworkListType)
+        {
+            // 傳入 ID、 Status, EditName
+            // Pass - 多傳入InspectionDate
+            // 自動抓取 ReworkCareNO 且更新。
+
+            InspectionSave_ViewModel reworkList_View = new InspectionSave_ViewModel()
+            {
+                Result = true,
+            };
+            return reworkList_View;
+        }
+
+        public InspectionSave_ViewModel SaveReworkListAddReject(RFT_Inspection_Detail detail)
+        {
+            // 新增一筆RFT_Inspection_Detail,  ID 會傳入。
+            InspectionSave_ViewModel reworkList_View = new InspectionSave_ViewModel()
+            {
+                Result = true,
+            };
+            return reworkList_View;
+        }
+
+        public InspectionSave_ViewModel SaveReworkListDelet(LogIn_Request logIn_Request, RFT_Inspection rFT_Inspection)
+        {
+            // 驗證 LogIn_Request
+
+            // 成功 依RFT_Inspection.ID EditName  更新ReworkCard、 刪除RFT_Inspection、RFT_Inspection_Detail
+
+            InspectionSave_ViewModel reworkList_View = new InspectionSave_ViewModel()
+            {
+                Result = true,
+            };
+            return reworkList_View;
+        }
+
         public List<DQSReason> GetDQSReason(DQSReason dQSReason)
         {
             // 傳入 Type = 'DP', Junk = 0
@@ -327,7 +374,7 @@ namespace BusinessLogicLayer.Service
             return dQSReasons;
         }
 
-        public List<RFT_OrderComments_ViewModel> RFT_OrderCommentsGet(RFT_OrderComments rFT_OrderComments)
+        public List<RFT_OrderComments_ViewModel> GetRFT_OrderComments(RFT_OrderComments rFT_OrderComments)
         {
             _IRFTOrderCommentsProvider = new RFTOrderCommentsProvider(Common.ManufacturingExecutionDataAccessLayer);
             List<RFT_OrderComments_ViewModel> rFT_OrderComments_ViewModel = new List<RFT_OrderComments_ViewModel>();
@@ -341,7 +388,7 @@ namespace BusinessLogicLayer.Service
             return rFT_OrderComments_ViewModel;
         }
 
-        public RFT_OrderComments_ViewModel RFT_OrderCommentsSave(List<RFT_OrderComments> rFT_OrderComments)
+        public RFT_OrderComments_ViewModel SaveRFT_OrderComments(List<RFT_OrderComments> rFT_OrderComments)
         {
             _IRFTOrderCommentsProvider = new RFTOrderCommentsProvider(Common.ManufacturingExecutionDataAccessLayer);
             RFT_OrderComments_ViewModel rFT_OrderComments_ViewModel = new RFT_OrderComments_ViewModel();
@@ -360,7 +407,7 @@ namespace BusinessLogicLayer.Service
             return rFT_OrderComments_ViewModel;
         }
 
-        public RFT_OrderComments_ViewModel RFT_OrderCommentsSendMail(RFT_OrderComments rFT_OrderComments)
+        public RFT_OrderComments_ViewModel SendMailRFT_OrderComments(RFT_OrderComments rFT_OrderComments)
         {
             _IRFTOrderCommentsProvider = new RFTOrderCommentsProvider(Common.ManufacturingExecutionDataAccessLayer);
             _IMailToProvider = new MailToProvider(Common.ManufacturingExecutionDataAccessLayer);
@@ -368,7 +415,7 @@ namespace BusinessLogicLayer.Service
             try
             {
                 // 撈資料
-                List<RFT_OrderComments_ViewModel> queryData = RFT_OrderCommentsGet(rFT_OrderComments);
+                List<RFT_OrderComments_ViewModel> queryData = GetRFT_OrderComments(rFT_OrderComments);
 
                 #region 寄信
                 // 取得 mail to address
@@ -498,7 +545,7 @@ vertical-align: middle;
             return rFT_OrderComments_ViewModel;
         }
 
-        public RFT_PicDuringDummyFitting RFT_PicDuringDummyFittingGet(RFT_PicDuringDummyFitting picDuringDummyFitting)
+        public RFT_PicDuringDummyFitting GetRFT_PicDuringDummyFitting(RFT_PicDuringDummyFitting picDuringDummyFitting)
         {
             _IRFTPicDuringDummyFittingProvider = new RFTPicDuringDummyFittingProvider(Common.ManufacturingExecutionDataAccessLayer);
             List<RFT_PicDuringDummyFitting> PicDuringDummyFitting = _IRFTPicDuringDummyFittingProvider.Get(
@@ -512,7 +559,7 @@ vertical-align: middle;
             return PicDuringDummyFitting[0];
         }
 
-        public RFT_PicDuringDummyFitting_ViewModel RFT_PicDuringDummyFittingSave(RFT_PicDuringDummyFitting picDuringDummyFitting)
+        public RFT_PicDuringDummyFitting_ViewModel SaveRFT_PicDuringDummyFitting(RFT_PicDuringDummyFitting picDuringDummyFitting)
         {
             _IRFTPicDuringDummyFittingProvider = new RFTPicDuringDummyFittingProvider(Common.ManufacturingExecutionDataAccessLayer);
             RFT_PicDuringDummyFitting_ViewModel rFT_OrderComments_ViewModel = new RFT_PicDuringDummyFitting_ViewModel();

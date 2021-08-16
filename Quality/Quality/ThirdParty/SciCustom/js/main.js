@@ -215,3 +215,7 @@ function ByteArrayToBase64(d, a, e, b, c, f) {
         c += "=";
     return c
 };
+
+function onlyUnique(value, index, self) {
+    return self.indexOf(value) === index;
+}
