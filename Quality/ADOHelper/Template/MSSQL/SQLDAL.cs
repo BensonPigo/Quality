@@ -146,17 +146,20 @@ namespace ADOHelper.Template.MSSQL
 			return dataSet;
 		}
 
-		public DataTable ExecuteDataTable(CommandType cmdType, string cmdText, SQLParameterCollection cmdParameter)
+		public static DataTable ExecuteDataTable(CommandType cmdType, string cmdText, SQLParameterCollection cmdParameter)
 		{
 			DataTable dataTable;
 			try
 			{
 				DataTable dataTable1 = new DataTable();
 				string str = cmdText;
-				for (int i = 0; i < cmdParameter.Count; i++)
+                SqlDataAdapter adapter = new SqlDataAdapter();
+                SqlConnection cn = new SqlConnection(ConfigurationManager.ConnectionStrings[_ConnectionString].ConnectionString);
+                adapter = new SqlDataAdapter(string.Empty, cn);
+                for (int i = 0; i < cmdParameter.Count; i++)
 				{
 					object objectValue = RuntimeHelpers.GetObjectValue(cmdParameter[i].Value);
-					DataAccessHelper.AddParamTOSQLCmd(this.adapter, cmdParameter[i].ParameterName, objectValue, cmdParameter[i].DbType);
+					DataAccessHelper.AddParamTOSQLCmd(adapter, cmdParameter[i].ParameterName, objectValue, cmdParameter[i].DbType);
 					if (ADOHelper.Template.MSSQL.SQLDAL.IsSaveSqlLog)
 					{
 						string parameterName = cmdParameter[i].ParameterName;
@@ -164,9 +167,9 @@ namespace ADOHelper.Template.MSSQL
 						//LogHelpe.MergerSQLParam(ref str, parameterName, dbType.ToString(), objectValue);
 					}
 				}
-				this.adapter.SelectCommand.CommandText = cmdText;
-				this.adapter.SelectCommand.CommandType = cmdType;
-				this.adapter.Fill(dataTable1);
+				adapter.SelectCommand.CommandText = cmdText;
+				adapter.SelectCommand.CommandType = cmdType;
+				adapter.Fill(dataTable1);
 				if (ADOHelper.Template.MSSQL.SQLDAL.IsSaveSqlLog)
 				{
 					//LogHelpe.WriteSQL(cmdText);

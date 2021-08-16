@@ -314,6 +314,19 @@ namespace BusinessLogicLayer.Service
             return reworkList_Views;
         }
 
+        public List<ReworkList_ViewModel> GetReworkList(ReworkList_ViewModel reworkList)
+        {
+            _IReworkListProvider = new ReworkListProvider(Common.ManufacturingExecutionDataAccessLayer);
+            List<ReworkList_ViewModel> reworkList_Views = _IReworkListProvider.Get(
+                new ReworkList_ViewModel()
+                {
+                    FactoryID = reworkList.FactoryID,
+                    Line = reworkList.Line,
+                }).ToList();
+
+            return reworkList_Views;
+        }
+
         public List<DQSReason> GetDQSReason(DQSReason dQSReason)
         {
             // 傳入 Type = 'DP', Junk = 0
@@ -386,25 +399,26 @@ namespace BusinessLogicLayer.Service
                        ID = "201",
                    }).ToList();
 
+                if (mailToAddress.Count == 0)
+                {
+                    rFT_OrderComments_ViewModel.ErrMsg = $"Result MSG: mail address is empty! SP#: {rFT_OrderComments.OrderID}";
+                    rFT_OrderComments_ViewModel.Result = false;
+
+                    return rFT_OrderComments_ViewModel;
+                }
+
+                if (mailToSubject.Count == 0)
+                {
+                    rFT_OrderComments_ViewModel.ErrMsg = $"Result message: subject is empty! SP#: {rFT_OrderComments.OrderID}";
+                    rFT_OrderComments_ViewModel.Result = false;
+
+                    return rFT_OrderComments_ViewModel;
+                }
+
                 if (queryData.Count == 0)
                 {
-                    string errorMsg = MailTools.MailToHtml(
-                      mailToAddress[0].ToAddress
-                      , $"mail address is empty! SP#: {rFT_OrderComments.OrderID}"
-                      , string.Empty
-                      , $"Result MSG: mail address is empty! SP#: {rFT_OrderComments.OrderID}"
-                      );
-
-                    if (!string.IsNullOrEmpty(errorMsg))
-                    {
-                        rFT_OrderComments_ViewModel.ErrMsg = errorMsg;
-                        rFT_OrderComments_ViewModel.Result = false;
-                    }
-                    else
-                    {
-                        rFT_OrderComments_ViewModel.ErrMsg = $"Result MSG: mail address is empty! SP#: {rFT_OrderComments.OrderID}";
-                        rFT_OrderComments_ViewModel.Result = false;
-                    }
+                    rFT_OrderComments_ViewModel.ErrMsg = $"Result message: Comments data is empty! SP#: {rFT_OrderComments.OrderID}";
+                    rFT_OrderComments_ViewModel.Result = false;
 
                     return rFT_OrderComments_ViewModel;
                 }

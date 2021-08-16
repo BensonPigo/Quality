@@ -29,7 +29,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         /// ===  ==========  ====  ==========  ==========
         /// 01.  2021/08/12  1.00    Admin        Create
         /// </history>
-        public IList<DatabaseObject.ProductionDB.System> Get(DatabaseObject.ProductionDB.System Item)
+        public IList<DatabaseObject.ProductionDB.System> Get()
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
