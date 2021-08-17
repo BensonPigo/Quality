@@ -44,31 +44,25 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 
 exec CopyStyle_ToMeasurement @UserID,@StyleUkey;
 
-select * 
-into #tmp
-from (
-    SELECT [MeasurementUkey] = a.ukey
-		,a.StyleUkey
-		,a.Code
-		,a.SizeCode 
-		,a.SizeSpec
-		,[Description] = a.Description	
-		,a.Tol1
-		,a.Tol2
-        ,[IsPatternMeas] = IIF(a.Description like '%pattern measn%',convert(bit,1), convert(bit,0))
-        ,[SizeUnit] = s.SizeUnit
-    FROM [ManufacturingExecution].[dbo].[Measurement] a with(nolock)
-    LEFT JOIN [ManufacturingExecution].[dbo].[MeasurementTranslate] b ON  a.MeasurementTranslateUkey = b.UKey
-	LEFT JOIN Production.dbo.Style s on s.Ukey = a.StyleUkey
-    where a.junk=0 
-	and StyleUkey = @StyleUkey 
-	and SizeCode = @SizeCode
-)a
-PIVOT(max(sizespec) FOR sizecode IN ([@SizeCode])) AS pt
 
-select *,SizeSpec='' from #tmp order by Code
+SELECT [MeasurementUkey] = a.ukey
+	,a.StyleUkey
+	,a.Code
+	,a.SizeCode 
+	,a.SizeSpec
+	,[Description] = a.Description	
+	,a.Tol1
+	,a.Tol2
+    ,[IsPatternMeas] = IIF(a.Description like '%pattern measn%',convert(bit,1), convert(bit,0))
+    ,[SizeUnit] = s.SizeUnit
+FROM [ManufacturingExecution].[dbo].[Measurement] a with(nolock)
+LEFT JOIN [ManufacturingExecution].[dbo].[MeasurementTranslate] b ON  a.MeasurementTranslateUkey = b.UKey
+LEFT JOIN Production.dbo.Style s on s.Ukey = a.StyleUkey
+where a.junk=0 
+and StyleUkey = @StyleUkey 
+and SizeCode = @SizeCode
+
 ";
-            
 
             return ExecuteList<RFT_Inspection_Measurement_ViewModel>(CommandType.Text, sqlcmd, objParameter);
         }

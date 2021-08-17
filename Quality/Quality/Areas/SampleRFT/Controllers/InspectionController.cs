@@ -48,6 +48,12 @@ namespace Quality.Areas.SampleRFT.Controllers
             ViewBag.BrandList = this.Brands;
             ViewBag.UserID = this.UserID;
             ViewBag.ShowSwitch = 1;
+
+            #region test
+
+            var measu = _InspectionService.MeasurementGet("20050243IC007", "12", "SCIMIS");
+            #endregion
+
             return View(setting);
         }
 
@@ -66,11 +72,8 @@ namespace Quality.Areas.SampleRFT.Controllers
             ViewBag.BrandList = this.Brands;
             ViewBag.UserID = this.UserID;
             ViewBag.ShowSwitch = 0;
-           
 
             return View(request);
-
-       
         }
 
         [HttpPost]
