@@ -1,8 +1,874 @@
 ﻿
-@{ 
+@using DatabaseObject.ResultModel
+@using BusinessLogicLayer.Service;
+@{
 
     Layout = "~/Areas/FinalInspection/Views/Shared/_Inspection_Layout.cshtml";
+
+    List<SelectListItem> PositionList = new List<SelectListItem>();
+
+    string strPositionList = string.Join(",", PositionList.Select(o => o.Value));
 }
 
 
-INDEX~~~~
+
+@model UserList
+
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+
+
+<style type="text/css">
+    .dataTables_wrapper {
+        position: static;
+    }
+
+    label, #myTable_info {
+        color: white
+    }
+
+    #myTable_previous, #myTable_next {
+        color: white !important;
+    }
+
+    #moduleTable_previous, #moduleTable_next {
+        color: white !important;
+    }
+
+    #UsersTable_previous, #UsersTable_next {
+        color: white !important;
+    }
+
+    select {
+        color: wheat
+    }
+
+    .btnmargin {
+        margin-left: 10px;
+        margin-top: 10px;
+    }
+
+    tfoot input {
+        width: 100%;
+        padding: 3px;
+        box-sizing: border-box;
+    }
+
+    .input_Head {
+        /*height: 3vh;*/
+        height: 89%;
+        width: 95%;
+        font-weight: 300 !important;
+        color: #656565;
+        font-size: 0.5em !important;
+    }
+
+    .detail_Head {
+        width: 95%;
+    }
+</style>
+
+
+<div class="main-content">
+
+    <header class="page-header">
+        <h3>
+            <i class=""></i><span>User List</span>
+        </h3>
+        <div class="breadcrumb">
+            <div>Home</div>
+            <div class="current">User List</div>
+            <input id="btnImport" onclick="Import_Click()" class="site-btn btn-gy btn-sm" style="height:50%;left:85%;" type="button" name="name" value="Import" />
+        </div>
+    </header>
+
+
+    <div class="main-area">
+
+        <div class="content-scroll">
+            <div class="inner-scroll" style="float:left">
+
+                <div>
+
+                    <table id="myTable" class="table table-striped display">
+                        <thead>
+                            <tr class="row-name">
+                                <th>UserID</th>
+                                <th>Name</th>
+                                <th>Position</th>
+                                <th>   </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="row-content">
+                                <td>
+                                    111
+                                </td>
+                                <td>
+                                    222
+                                </td>
+                                <td>
+                                    333
+                                </td>
+                                <td>
+                                    444
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>UserID</th>
+                                <th>Name</th>
+                                <th>Position</th>
+                                <th>   </th>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--Detail彈跳視窗-->
+<div class="detail-dialog to-edit-detail" title="Detail">
+    <div class="detail-dialog-content dialog-content-w-icon" style="height:75vh">
+        <form class="page-display-form nr-form" style="width:80%;padding:0;">
+            <div class="form-item" style="height: 100%;">
+                <table style="border: 1px solid gray;font-size: 1vw;width: 100%;height: 10vh;text-align: center;background-color: transparent;color: white;">
+                    <tr>
+                        <td style="width:10vw;border: 1px solid gray;height: 5vh;font-size: 2vh;background-color:#696868;vertical-align: middle;">
+                            <label>User ID</label>
+                        </td>
+                        <td style="border: 1px solid gray;font-size: 2vh;vertical-align: middle;width: 15vw;">
+                            <div @*class="detail_Head"*@ id="UserID"></div>
+                            @*<input class="input_Head" tpye="text" id="input_UserID" value=""/>*@
+                        </td>
+                        <td style="width:10vw;border: 1px solid gray;font-size: 2vh;background-color:#696868;vertical-align: middle;">
+                            <label>Name</label>
+                        </td>
+                        <td style=" border: 1px solid gray;font-size: 2vh;vertical-align: middle;">
+                            <span @*class="detail_Head"*@ id="Name"></span>
+                            @*<input class="input_Head" tpye="text" id="input_Name" value="" />*@
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width:10vw;border: 1px solid gray;height: 5vh;font-size: 2vh;background-color:#696868;vertical-align: middle;">
+                            <label>Password</label>
+                        </td>
+                        <td style=" border: 1px solid gray;font-size: 2vh;vertical-align: middle;">
+                            <span @*class="detail_Head"*@ id="Password"></span>
+                            @*<input class="input_Head" tpye="text" id="input_Password" value="" />*@
+                        </td>
+                        <td style="width:10vw;border: 1px solid gray;font-size: 2vh;background-color:#696868;vertical-align: middle;">
+                            <label>Email</label>
+                        </td>
+                        <td style=" border: 1px solid gray;font-size: 2vh;vertical-align: middle;">
+                            <span @*class="detail_Head"*@ id="Email"></span>
+                            @*<input class="input_Head" tpye="text" id="input_Email" value="" />*@
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width:10vw;border: 1px solid gray;height: 5vh;font-size: 2vh;background-color:#696868;vertical-align: middle;">
+                            <label>Position</label>
+                        </td>
+                        <td style=" border: 1px solid gray;font-size: 2vh;vertical-align: middle;">
+                            @*<span class="detail_Head" id="Position"></span>*@
+                            @*<input class="input_Head" tpye="text" id="input_Position" value="" />*@
+
+                            @Html.DropDownList("Position", PositionList, new { @class = "", @style = "width:100%", @disabled = "disabled" })
+                        </td>
+                        <td style=" border: 1px solid gray;font-size: 2vh;"></td>
+                        <td style=" border: 1px solid gray;font-size: 2vh;"></td>
+                    </tr>
+                </table>
+                <br />
+                <div style="overflow:auto;height:84%;">
+                    <table id="moduleTable" class="cell-border" style="width:100%;">
+
+                        <thead style="background-color:black">
+                            <tr>
+                                <th>ID</th>
+                                <th>Module</th>
+                                <th>Function</th>
+                                <th>Used</th>
+                            </tr>
+                        </thead>
+                        <tfoot style="background-color:black">
+                            <tr>
+                                <th>ID</th>
+                                <th>Module</th>
+                                <th>Function</th>
+                                <th>Used</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<!--Import彈跳視窗-->
+<div class="import-dialog to-Import-detail" title="Import">
+    <div class="import-dialog-content dialog-content-w-icon" style="height:83vh">
+        <form class="page-display-form nr-form" style="width:80%;padding:0;">
+            <div class="form-item" style="height: 100%;">
+                <table id="UsersTable" class="cell-border" style="width:100%;">
+
+                    <thead style="background-color:black">
+                        <tr>
+                            <th>Select</th>
+                            <th>UserID</th>
+                            <th>Name</th>
+                            <th>Position</th>
+                        </tr>
+                    </thead>
+                    <tfoot style="background-color:black">
+                        <tr>
+                            <th>Select</th>
+                            <th>UserID</th>
+                            <th>Name</th>
+                            <th>Position</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    var msg = new MessagerAlert();
+
+    var testData = [
+        ["111", "System Architect", "false",],
+        ["222", "System MOA Architect", "true",],
+        ["333", "System YUI Architect", "false",],
+        ["111", "System SSSS", "false",]
+    ];
+    var EditMode = false;
+
+    $(function () {
+
+        $('#myTable tfoot th').each(function () {
+            var title = $(this).text();
+
+            if (title == '   ') {
+                $(this).html('<input type="text" style="display:none;" placeholder="Search ' + title + '" />');
+            }
+            else {
+                $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+            }
+        });
+
+        $('#myTable').DataTable({
+            "pageLength": 20,
+            initComplete: function () {
+                // Apply the search
+                this.api().columns().every(function () {
+                    var that = this;
+
+                    $('input', this.footer()).on('keyup change clear', function () {
+                        if (that.search() !== this.value) {
+                            that
+                                .search(this.value)
+                                .draw();
+                        }
+                    });
+                });
+            }
+        });
+
+        $(".detail-dialog").dialog({
+            autoOpen: false,
+            modal: true,
+            closeText: ' ',
+            width: 500,
+            minHeight: 400,
+            position: {
+                my: "center top",
+                at: "center top",
+                of: window
+            },
+            dialogClass: "site-box",
+            open: function (event, ui) {
+                $('.ui-widget-overlay').bind('click', function () {
+                    //location.reload();//強制Refresh頁面 Benson
+                    $(".ui-dialog-content").dialog('close');
+                });
+                $(this).parent().siblings().find(".ui-dialog-content").dialog('close');
+
+            },
+            close: function () {
+            },
+        });
+
+        $(".import-dialog").dialog({
+            autoOpen: false,
+            modal: true,
+            closeText: ' ',
+            width: 500,
+            minHeight: 400,
+            position: {
+                my: "center top",
+                at: "center top",
+                of: window
+            },
+            dialogClass: "site-box",
+            open: function (event, ui) {
+                $('.ui-widget-overlay').bind('click', function () {
+                    //location.reload();//強制Refresh頁面 Benson
+                    $(".ui-dialog-content").dialog('close');
+                });
+                $(this).parent().siblings().find(".ui-dialog-content").dialog('close');
+
+            },
+            close: function () {
+            },
+        });
+
+        $("#Position").change(ReInitDetailDataTable);
+    });
+
+    function HeadToggle() {
+
+        if (EditMode) {
+            $(".detail_Head").hide();
+            $(".input_Head").show();
+
+            $("#Position").removeAttr("disabled");
+        }
+        else {
+            $(".detail_Head").show();
+            $(".input_Head").hide();
+            $("#Position").attr("disabled", "disabled");
+        }
+    }
+
+    function InputToggle() {
+
+        if (EditMode) {
+            //編輯模式觸發時機：按下Save
+            //將文字方塊的值推給純文字標籤
+            $("#UserID").text($("#input_" + "UserID").val());
+            $("#Name").text($("#input_" + "Name").val());
+            $("#Password").text($("#input_" + "Password").val());
+            $("#Email").text($("#input_" + "Email").val());
+            //$("#Position").text($("#input_" + "Position").val());
+
+        }
+        else {
+            //非編輯模式觸發時機：剛開啟視窗、按下Edit
+            //將純文字標籤的值推給文字方塊
+            $("#input_" + "UserID").val($("#UserID").text());
+            $("#input_" + "Name").val($("#Name").text());
+            $("#input_" + "Password").val($("#Password").text());
+            $("#input_" + "Email").val($("#Email").text());
+            //$("#input_" + "Position").val($("#Position").text());
+        }
+    }
+
+    function Edit_Pic_Click(UserID) {
+        HeadToggle();
+
+        $.ajax({
+            url: '@Url.Action("GetDetail")',
+            data: { UserID: UserID },
+            type: 'POST',
+            dataType: "json",
+            async: false,
+            success: function (res) {
+                if (res.Result) {
+                    // 表頭塞值
+                    $("#UserID").text(res.UserID);
+                    $("#Name").text(res.Name);
+                    $("#Password").text(res.Password);
+                    $("#Email").text(res.Email);
+                    $("#Position").val(res.Position);
+                    InputToggle();
+
+                    InitDetailDataTable(res);
+                }
+                else {
+                    msg.WithErrorCheck(res.ErrorMessage, function () {
+                        location.reload();
+                    });
+                }
+
+            }
+        });
+
+        $(".to-edit-detail").dialog({
+            width: "70%",
+            dialogClass: "add-contact-box",
+            buttons: {
+                "1": {
+                    text: 'Cancel',
+                    click: function () {
+                        EditMode = false;
+                        $("#moduleTable tbody").remove();
+
+                        Edit_Pic_Click(UserID);
+                    }
+                    , "class": "site-btn btn-gy btn-lg"
+                },
+                "2": {
+                    text: 'Edit',
+                    click: function (btn, obj) {
+
+                        if ($('#dialogEdit').text() == 'Edit') {
+                            //按下Edit
+                            Dialog_Edit_Click();
+                        }
+                        else {
+                            //按下Save
+                            Dialog_Save_Click();
+                        }
+                    },
+                    "class": "site-btn btn-red btn-lg",
+                    "ID": "dialogEdit"
+                },
+                "3": {
+                    text: 'Exit',
+                    click: function () {
+                        $(this).dialog("close");
+                    }
+                    , "class": "site-btn btn-gy btn-lg"
+                },
+            },
+        });
+        $(".to-edit-detail").dialog("open");
+        $(".to-edit-detail").on("dialogclose", function (event, ui) {
+            EditMode = false;
+
+            //對話窗關閉，Table的內容要清除
+            $("#moduleTable tbody").remove();
+        });
+
+    }
+
+    //初始化Detail的表格
+    function InitDetailDataTable(res) {
+
+        var adata = [];
+
+        // 將AJAX取得的資料整理成DataTbles可以消化的格式
+        for (var i = 0; i <= res.DataList.length - 1; i++) {
+            adata.push(Object.values(res.DataList[i]));
+        }
+
+        // Detail視窗的表格
+        var table = $('#moduleTable').DataTable({
+            data: adata,
+            autoWidth: false,
+            destroy: true, // 設定這個才能重新初始化Datatables
+            columnDefs: [
+                { targets: 0, orderable: false, visible: false, },
+                { targets: 1, orderable: false },
+                { width: '60%', targets: 2, orderable: false },
+                { width: '2%', targets: 3, orderable: false },
+            ],
+            columns: [
+                { },
+                { },
+                { },
+                {   // Used欄位換成Check box
+                    render: function (data, type, full, meta) {
+
+                        if (data) {
+                            var rtn = '<input type="checkbox" checked class="detail_Chk" name="checkbox-' + meta.row + '" id="checkbox-' + meta.row + '" style="font-size: 0.2vw;">';
+                            return rtn;
+                        }
+                        else {
+                            var rtn = '<input type="checkbox" class="detail_Chk" name="checkbox-' + meta.row + '" id="checkbox-' + meta.row + '" style="font-size: 0.2vw;">';
+                            return rtn;
+                        }
+                    },
+                },
+            ],
+            drawCallback: function (settings) {
+                /* 在這裡只能唯讀，因此註解
+                if (EditMode) {
+                    $(".detail_Chk").removeAttr("disabled");
+                }
+                else {
+                    $(".detail_Chk").attr("disabled","disabled");
+                }
+                */
+                $(".detail_Chk").attr("disabled", "disabled");
+            },
+            dom: 'p',//隱藏Search文字方塊，但保留搜尋過濾功能
+            "paging": true,
+            //"filter": false,
+            "order": false,
+            "pageLength": 10,
+            "createdRow": function (row, data, index) { // 參考 https://datatables.net/examples/advanced_init/row_callback.html
+                $('td', row).css('color', 'black');
+            },
+            initComplete: function () {
+                this.api().columns().every(function () {
+                    // 只有第一個欄位要有選單
+                    if (this.data().length > 0 && this.index() == 1) {
+
+                        var column = this;
+                        var select = $('<select><option value="">All Module</option></select>')
+                            .appendTo($(column.footer()).empty())
+                            .on('change', function () {
+                                var val = $.fn.dataTable.util.escapeRegex(
+                                    $(this).val()
+                                );
+
+                                column
+                                    .search(val ? '^' + val + '$' : '', true, false)
+                                    .draw();
+                            });
+
+                        column.data().unique().sort().each(function (d, j) {
+                            select.append('<option value="' + d + '">' + d + '</option>')
+                        });
+                    }
+                });
+            }
+        });
+
+        $('#moduleTable tbody').on('click', 'td', function () {
+
+            // Index = 3 為Used欄位
+            if (EditMode && table.cell(this).index().column == 3) {
+                var boolean = !table.cell(this).data();
+                var rowIndex = table.cell(this).index().row;
+
+                // 修改Datasource
+                table.cell(this).data(boolean);
+            }
+        });
+
+    }
+
+    //重新設定Detail的表格
+    function ReInitDetailDataTable() {
+
+        var Position = $(this).val();
+        $.ajax({
+            url: '@Url.Action("Get_Default_Detail")',
+            data: { Position: Position },
+            type: 'POST',
+            dataType: "json",
+            async: false,
+            success: function (res) {
+                if (res.Result) {
+                    InitDetailDataTable(res);
+                }
+                else {
+                    msg.WithErrorCheck(res.ErrorMessage, function () {
+                        location.reload();
+                    });
+                }
+            }
+        });
+    }
+
+    //初始化Import User的表格
+    function InitUserDataTable(res) {
+
+        var adata = [];
+
+
+        var strPos = '@strPositionList';
+        var strPosArray = strPos.split(',');
+
+        // 將AJAX取得的資料整理成DataTbles可以消化的格式
+        for (var i = 0; i <= res.DataList.length - 1; i++) {
+            var tmp = [];
+            tmp.push(res.DataList[i].Select);
+            tmp.push(res.DataList[i].UserID);
+            tmp.push(res.DataList[i].Name);
+            tmp.push(res.DataList[i].Position);
+            adata.push(tmp);
+        }
+
+        // Detail視窗的表格
+        var table = $('#UsersTable').DataTable({
+            data: adata,
+            autoWidth: false,
+            destroy: true, // 設定這個才能重新初始化Datatables
+            columnDefs: [
+                { targets: 0, width: '2%',orderable: false },
+                { targets: 1, width: '10%', orderable: false },
+                { targets: 2, orderable: false },
+                { targets: 3, orderable: false, searchable: false, }, //下拉選單的值不需要被搜尋，要搭配searchable = false的設定
+            ],
+            columns: [
+                {   // 欄位換成Check box
+                    render: function (data, type, full, meta) {
+                        var rtn = '<input type="checkbox" class="User_Chk" name="checkbox-' + meta.row + '" id="Usercheckbox-' + meta.row + '" style="font-size: 0.2vw;">';
+                        return rtn;
+                    },
+                },
+                { },
+                { },
+                {
+                    // 欄位換成下拉選單
+                    render: function (data, type, full, meta) {
+
+
+                        var $select = $('<select id="position-' + meta.row + '"></select>', {
+                        });
+                        $.each(strPosArray, function (k, v) {
+
+                            var $option = $("<option></option>", {
+                                "text": v,
+                                "value": v
+                            });
+                            if (data == v) {
+                                $option.attr("selected", "selected")
+                            }
+                            $select.append($option);
+                        });
+                        return $select.prop("outerHTML");
+                    },
+                },
+            ],
+            "paging": true,
+            "order": false,
+            "pageLength": 10,
+            "createdRow": function (row, data, index) { // 參考 https://datatables.net/examples/advanced_init/row_callback.html
+                $('td', row).css('color', 'black');
+            },
+            initComplete: function () {
+                this.api().columns().every(function () {
+
+                    // 只有第一個欄位要有選單
+                    if (this.data().length > 0 && this.index() == 1) {
+
+                        var column = this;
+                        var select = $('<select><option value="">All UserID</option></select>')
+                            .appendTo($(column.footer()).empty())
+                            .on('change', function () {
+                                var val = $.fn.dataTable.util.escapeRegex(
+                                    $(this).val()
+                                );
+
+                                column
+                                    .search(val ? '^' + val + '$' : '', true, false)
+                                    .draw();
+                            });
+
+                        column.data().unique().sort().each(function (d, j) {
+                            select.append('<option value="' + d + '">' + d + '</option>')
+                        });
+                    }
+                });
+            }
+        });
+
+        $('#UsersTable tbody').on('click', 'td', function () {
+
+            // Index = 0 為Select欄位
+            if (table.cell(this).index().column == 0) {
+
+                var boolean = !table.cell(this).data();
+                var rowIndex = table.cell(this).index().row;
+
+                // 修改Datasource
+                table.cell(this).data(boolean);
+                if (boolean) {
+                    $("#Usercheckbox-" + rowIndex).attr('checked', 'checked');
+                }
+                else {
+                    $("#Usercheckbox-" + rowIndex).removeAttr('checked');
+                }
+
+
+            }
+        });
+
+    }
+
+    function Dialog_Edit_Click () {
+        //按下Edit
+        $('#dialogEdit').text('Save');
+
+        //列表只能唯讀，因此註解
+        //$(".detail_Chk").removeAttr("disabled");
+
+        InputToggle();
+        EditMode = true;
+        HeadToggle();
+    }
+
+    function Import_Click() {
+
+        var response;
+        $.ajax({
+            url: '@Url.Action("GetUserList")',
+            //data: { UserID: UserID },
+            type: 'POST',
+            dataType: "json",
+            async: false,
+            success: function (res) {
+                response = res;
+                /*注意!!! Loading畫面要這樣用  */
+                /*由於InitUserDataTable的動作會異步執行，因此用以ajax then強迫先開啟Loading畫面*/
+            }
+        }).then(function () {
+            ShowLoading();
+        }).then(function () {
+            if (response.Result) {
+                InitUserDataTable(response);
+            }
+            else {
+                msg.WithErrorCheck(response.ErrorMessage, function () {
+                    location.reload();
+                });
+            }
+        }).then(function () {
+            NonLoading();
+        });
+
+        $(".to-Import-detail").dialog({
+            width: "70%",
+            dialogClass: "add-contact-box",
+            buttons: {
+                "1": {
+                    text: 'Import',
+                    click: function (btn, obj) {
+                        Dialog_Import_Click();
+                    },
+                    "class": "site-btn btn-red btn-lg",
+                    "ID": "dialogImport"
+                },
+                "2": {
+                    text: 'Exit',
+                    click: function () {
+                        $(this).dialog("close");
+                    }
+                    , "class": "site-btn btn-gy btn-lg"
+                },
+            },
+        });
+        $(".to-Import-detail").dialog("open");
+        $(".to-Import-detail").on("dialogclose", function (event, ui) {
+            //對話窗關閉，Table的內容要清除
+            $("#UsersTable tbody").remove();
+        });
+
+    }
+
+    // User Detail 修改
+    function Dialog_Save_Click() {
+
+        $('#dialogEdit').text('Edit');
+        $(".detail_Chk").attr("disabled","disabled");
+        InputToggle();
+        EditMode = false;
+        HeadToggle();
+        /*--------------------*/
+
+
+        var detailCount = $('#moduleTable').DataTable().data().length;
+
+        var DataList = [];
+
+        for (var i = 0; i <= detailCount - 1; i++) {
+
+            var data = {
+                MenuID: $('#moduleTable').DataTable().data()[i][0],
+                ModuleName: $('#moduleTable').DataTable().data()[i][1],
+                FunctionName: $('#moduleTable').DataTable().data()[i][2],
+                Used: $('#moduleTable').DataTable().data()[i][3],
+            };
+            DataList.push(data);
+        }
+
+        var Req = {
+            UserID: $("#UserID").text(),
+            Name: $("#Name").text(),
+            Password: $("#Password").text(),
+            Email: $("#Email").text(),
+            Position: $("#Position").val(),
+            DataList: DataList
+        };
+
+        $.ajax({
+            url: '@Url.Action("UpdateDetail")',
+            data: { Req: Req },
+            type: 'POST',
+            dataType: "json",
+            async: false,
+            success: function (res) {
+                if (res.Result) {
+                    msg.WithSuccesCheck("Success!", function () {
+                        location.reload();
+                    });
+                }
+                else {
+                    msg.WithErrorCheck(res.ErrorMessage, function () {
+                    });
+                }
+
+            }
+        });
+    }
+
+    function Dialog_Import_Click() {
+
+        ShowLoading();
+        var table = $('#UsersTable').DataTable().data();
+
+        var detailCount = table.length;
+
+        var DataList = [];
+
+        for (var i = 0; i <= detailCount - 1; i++) {
+
+            if (table[i][0]) {
+
+                var pos = $("#position-" + i).val();
+                var data = {
+                    UserID: table[i][1],
+                    Position: pos,
+                };
+                DataList.push(data);
+            }
+        }
+
+        if (DataList.length == 0) {
+            NonLoading();
+            msg.WithInfo("Please choose user ID first.");
+
+            return;
+        }
+
+
+        $.ajax({
+            url: '@Url.Action("ImportUsers")',
+            data: { DataList: DataList },
+            type: 'POST',
+            dataType: "json",
+            async: false,
+            success: function (res) {
+                if (res.Result) {
+                    msg.WithSuccesCheck("Success!", function () {
+                        location.reload();
+                    });
+                }
+                else {
+                    msg.WithErrorCheck(res.ErrorMessage, function () {
+                    });
+                }
+            }
+        }).then(function () {
+            NonLoading();
+        });
+    }
+</script>
