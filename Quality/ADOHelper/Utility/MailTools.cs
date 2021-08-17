@@ -1,5 +1,7 @@
-﻿using System;
+﻿using ADOHelper.Template.MSSQL;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
@@ -12,6 +14,7 @@ namespace ADOHelper.Utility
     {
         public static string MailToHtml(string mailTO, string subject, string attach, string desc)
         {
+            bool boolTest = true;
             string mailFrom = "foxpro@sportscity.com.tw";
             string mailServer = "Mail.sportscity.com.tw";
             string eMailID = "foxpro";
@@ -19,6 +22,21 @@ namespace ADOHelper.Utility
 
             string result = string.Empty;
             //寄件者 & 收件者
+
+            if (!boolTest)
+            {
+                //ExecuteDataTable()
+                SQLParameterCollection objParameter = new SQLParameterCollection();
+                
+                DataTable dt = SQLDAL.ExecuteDataTable(CommandType.Text, "select * from Production.dbo.System", objParameter);
+                if (dt != null || dt.Rows.Count > 0)
+                {
+                    mailFrom = dt.Rows[0]["Sendfrom"].ToString();
+                    mailServer = dt.Rows[0]["mailServer"].ToString();
+                    eMailID = dt.Rows[0]["eMailID"].ToString();
+                    eMailPwd = dt.Rows[0]["eMailPwd"].ToString();
+                }
+            }
             // MailAddress from = new MailAddress(mailFrom);
             // MailAddress to = new MailAddress(mailTo);
             // MailAddress cc = new MailAddress(mailCC);

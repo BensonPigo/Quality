@@ -48,7 +48,7 @@ namespace BusinessLogicLayer.Service.Tests
                 };
 
                 IInspectionService _InspectionService = new InspectionService();
-                var _rework = _InspectionService.RFT_OrderCommentsGet(rework).ToList();
+                var _rework = _InspectionService.GetRFT_OrderComments(rework).ToList();
                 Assert.IsTrue(_rework.Count > 0);
             }
             catch (Exception ex)

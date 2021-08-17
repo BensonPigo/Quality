@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace ProductionDataAccessLayer.Interface
 {
     /*系統參數檔(SystemProvider) 詳細敘述如下*/
@@ -12,5 +14,6 @@ namespace ProductionDataAccessLayer.Interface
     /// </history>
     public interface ISystemProvider
     {
+        IList<DatabaseObject.ProductionDB.System> Get();
     }
 }

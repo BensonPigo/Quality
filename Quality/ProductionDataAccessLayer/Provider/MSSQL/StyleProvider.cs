@@ -16,14 +16,31 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         public StyleProvider(SQLDataTransaction tra) : base(tra) { }
         #endregion
 
-		#region CRUD Base
-		/*回傳款式資料基本檔(Get) 詳細敘述如下*/
+        #region CRUD Base
+        public IList<Style> GetSizeUnit(Int64 ukey)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection()
+            {
+                 { "@ukey", DbType.Int64, ukey } ,
+            };
+
+            string sqlcmd = @"
+select SizeUnit from Style 
+where 1=1
+and ukey = @ukey
+";
+
+            return ExecuteList<Style>(CommandType.Text, sqlcmd, objParameter);
+        }
+
+
+        /*回傳款式資料基本檔(Get) 詳細敘述如下*/
         /// <summary>
         /// 回傳款式資料基本檔
         /// </summary>
         /// <param name="Item">款式資料基本檔成員</param>
         /// <returns>回傳款式資料基本檔</returns>
-		/// <info>Author: Admin; Date: 2021/08/05  </info>
+        /// <info>Author: Admin; Date: 2021/08/05  </info>
         /// <history>
         /// xx.  YYYY/MM/DD   Ver   Author      Comments
         /// ===  ==========  ====  ==========  ==========
@@ -32,7 +49,10 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         public IList<Style> Get(Style Item)
         {
             StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
+            SQLParameterCollection objParameter = new SQLParameterCollection()
+            {
+                 { "@ukey", DbType.Int64, Item.Ukey } ,
+            };
             SbSql.Append("SELECT"+ Environment.NewLine);
             SbSql.Append("         ID"+ Environment.NewLine);
             SbSql.Append("        ,Ukey"+ Environment.NewLine);
@@ -113,7 +133,11 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,GearLine"+ Environment.NewLine);
             SbSql.Append("        ,ThreadVersion"+ Environment.NewLine);
             SbSql.Append("FROM [Style]"+ Environment.NewLine);
-
+            SbSql.Append("where 1 = 1" + Environment.NewLine);
+            if (Item.Ukey != 0)
+            {
+                SbSql.Append("and ukey = @Ukey" + Environment.NewLine);
+            }
 
 
             return ExecuteList<Style>(CommandType.Text, SbSql.ToString(), objParameter);
