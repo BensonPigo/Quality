@@ -51,6 +51,7 @@
     <Compile Include="Interface\FinalInspection\IFinalInspectionService.cs" />
     <Compile Include="Interface\IInspectionService.cs" />
     <Compile Include="Interface\ILoginService.cs" />
+    <Compile Include="Interface\ICFTCommentsService.cs" />
     <Compile Include="Interface\IRFTPerLineService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\AuthorityService.cs" />
@@ -58,6 +59,7 @@
     <Compile Include="Service\FinalInspection\FinalInspectionService.cs" />
     <Compile Include="Service\InspectionService.cs" />
     <Compile Include="Service\LoginService.cs" />
+    <Compile Include="Service\CFTCommentsService.cs" />
     <Compile Include="Service\RFTPerLineService.cs" />
   </ItemGroup>
   <ItemGroup>
