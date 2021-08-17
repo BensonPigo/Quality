@@ -111,6 +111,7 @@
     <Compile Include="ResultModel\LogIn_Result.cs" />
     <Compile Include="ResultModel\Quality_MailGroup_ResultModel.cs" />
     <Compile Include="ViewModel\FinalInspection\AddDefect.cs" />
+    <Compile Include="ViewModel\FinalInspection\Measurement.cs" />
     <Compile Include="ViewModel\FinalInspection\Moisture.cs" />
     <Compile Include="ViewModel\FinalInspection\Others.cs" />
     <Compile Include="ViewModel\FinalInspection\BeautifulProductAudit.cs" />
