@@ -12,7 +12,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         // Setting
         public ActionResult Index()
         {
-            return View(new UserList());
+            return View();
         }
 
         public ActionResult Setting()

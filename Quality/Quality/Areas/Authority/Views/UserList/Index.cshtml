@@ -17,10 +17,10 @@
 }
 
 @model UserList
+
 <link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
 <link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
 <link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
-<link href="~/ThirdParty/SciCustom/css/style.css" rel="stylesheet" />
 
 <script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
 
@@ -96,7 +96,6 @@
             <div class="inner-scroll" style="float:left">
 
                 <div>
-
                     <table id="myTable" class="table table-striped display">
                         <thead>
                             <tr class="row-name">
@@ -107,20 +106,6 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="row-content">
-                                <td>
-                                    111
-                                </td>
-                                <td>
-                                    222
-                                </td>
-                                <td>
-                                    333
-                                </td>
-                                <td>
-                                    444
-                                </td>
-                            </tr>
                             @foreach (var item in Model.DataList)
                             {
                                 <tr class="row-content">
@@ -148,7 +133,6 @@
                             </tr>
                         </tfoot>
                     </table>
-
                 </div>
             </div>
         </div>
