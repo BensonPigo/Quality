@@ -503,8 +503,6 @@ namespace BusinessLogicLayer.Service
             _IOrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
             _IStyleProvider = new StyleProvider(Common.ProductionDataAccessLayer);
             List<RFT_Inspection_Measurement_ViewModel> _Inspection_Measurement_ViewModels = new List<RFT_Inspection_Measurement_ViewModel>();
-            List<RFT_Inspection_Measurement> rFTs = new List<RFT_Inspection_Measurement>();
-
             try
             {
                 IList<Orders> ordersList = _IOrdersProvider.Get(new Orders() { ID = OrderID });
@@ -521,12 +519,28 @@ namespace BusinessLogicLayer.Service
                 _Inspection_Measurement_ViewModels = _IRFTInspectionMeasurementProvider.Get(Convert.ToInt64(longStyleUkey), SizeCode, UserID).ToList();
                     
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
             
             return _Inspection_Measurement_ViewModels;
+        }
+
+        public bool SaveMeasurement(List<RFT_Inspection_Measurement_ViewModel> Measurement)
+        {
+            _IRFTInspectionMeasurementProvider = new RFTInspectionMeasurementProvider(Common.ManufacturingExecutionDataAccessLayer);
+            try
+            {
+                int updateCnt = _IRFTInspectionMeasurementProvider.SaveReworkListAction(Measurement);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+            return true;
         }
 
         public List<RFT_OrderComments_ViewModel> GetRFT_OrderComments(RFT_OrderComments rFT_OrderComments)
