@@ -35,7 +35,7 @@ namespace BusinessLogicLayer.Interface
 
         InspectionSave_ViewModel SaveReworkListAddReject(RFT_Inspection_Detail detail);
 
-        InspectionSave_ViewModel SaveReworkListDelet(LogIn_Request logIn_Request, RFT_Inspection rFT_Inspection);
+        InspectionSave_ViewModel SaveReworkListDelete(LogIn_Request logIn_Request, List<RFT_Inspection> rFT_Inspection);
 
         List<DQSReason> GetDQSReason(DQSReason dQSReason);
 

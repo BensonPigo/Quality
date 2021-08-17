@@ -348,7 +348,7 @@ namespace BusinessLogicLayer.Service
             return reworkList_View;
         }
 
-        public InspectionSave_ViewModel SaveReworkListDelet(LogIn_Request logIn_Request, RFT_Inspection rFT_Inspection)
+        public InspectionSave_ViewModel SaveReworkListDelete(LogIn_Request logIn_Request, List<RFT_Inspection> rFT_Inspection)
         {
             // 驗證 LogIn_Request
 
@@ -372,6 +372,39 @@ namespace BusinessLogicLayer.Service
             };
 
             return dQSReasons;
+        }
+
+        public List<RFT_Inspection_Measurement_ViewModel> MeasurementGet(string OrderID, string SizeCode)
+        {
+            // 傳入OrderID、SizeCode
+            // 依OrderID 撈取 [StyleUkey] = Style.Ukey,  Style.SizeUnit(要回傳)
+            // 執行 SP CopyStyle_ToMeasurement
+            // SQL 
+            /*
+             * select * 
+into #tmp
+from (
+    SELECT [MeasurementUkey] = a.ukey
+		,a.StyleUkey
+		,a.Code
+		,a.SizeCode 
+		,a.SizeSpec
+		,[Description] = a.Description	
+		,a.Tol1
+		,a.Tol2
+    FROM [ManufacturingExecution].[dbo].[Measurement] a with(nolock)
+    LEFT JOIN [ManufacturingExecution].[dbo].[MeasurementTranslate] b ON  a.MeasurementTranslateUkey = b.UKey
+    where a.junk=0 
+	and StyleUkey = @StyleUkey 
+	and SizeCode = @SizeCode
+)a
+PIVOT(max(sizespec) FOR sizecode IN ([@SizeCode])) AS pt
+
+select *,SizeSpec='' from #tmp order by Code
+             */
+
+            List<RFT_Inspection_Measurement_ViewModel> rFT_Inspection_Measurement_Views = new List<RFT_Inspection_Measurement_ViewModel>();
+            return rFT_Inspection_Measurement_Views;
         }
 
         public List<RFT_OrderComments_ViewModel> GetRFT_OrderComments(RFT_OrderComments rFT_OrderComments)
@@ -549,14 +582,14 @@ vertical-align: middle;
         {
             _IRFTPicDuringDummyFittingProvider = new RFTPicDuringDummyFittingProvider(Common.ManufacturingExecutionDataAccessLayer);
             List<RFT_PicDuringDummyFitting> PicDuringDummyFitting = _IRFTPicDuringDummyFittingProvider.Get(
-           new RFT_PicDuringDummyFitting()
-           {
-               OrderID = picDuringDummyFitting.OrderID,
-               Article = picDuringDummyFitting.Article,
-               Size = picDuringDummyFitting.Size
-           }).ToList();
+            new RFT_PicDuringDummyFitting()
+            {
+                OrderID = picDuringDummyFitting.OrderID,
+                Article = picDuringDummyFitting.Article,
+                Size = picDuringDummyFitting.Size
+            }).ToList();
 
-            return PicDuringDummyFitting[0];
+            return PicDuringDummyFitting.FirstOrDefault();
         }
 
         public RFT_PicDuringDummyFitting_ViewModel SaveRFT_PicDuringDummyFitting(RFT_PicDuringDummyFitting picDuringDummyFitting)

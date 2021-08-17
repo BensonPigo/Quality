@@ -2,6 +2,7 @@
 using BusinessLogicLayer.Service;
 using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ProductionDB;
+using DatabaseObject.RequestModel;
 using DatabaseObject.ViewModel;
 using FactoryDashBoardWeb.Helper;
 using Quality.Controllers;
@@ -59,7 +60,7 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             //var _rework = _InspectionService.GetReworkCards(rework).ToList();
 
-            var _sentMail = _InspectionService.RFT_OrderCommentsSendMail(new RFT_OrderComments { OrderID = "21061052UC" });
+            var _sentMail = _InspectionService.SendMailRFT_OrderComments(new RFT_OrderComments { OrderID = "21061052UC" });
 
             #endregion
 
@@ -472,7 +473,35 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
-        public ActionResult GetDQSReason()
+        public ActionResult ReworkListSaveAction(List<RFT_Inspection> reworkLists, InspectionService.ReworkListType type)
+        {
+            foreach (RFT_Inspection item in reworkLists)
+            {
+                item.Status = "Fixed";
+                item.EditName = this.UserID;
+                item.InspectionDate = type.Equals(InspectionService.ReworkListType.Pass) ? this.WorkDate : (DateTime?)null;
+            }
+
+            InspectionSave_ViewModel result = _InspectionService.SaveReworkListAction(reworkLists, type);
+            return Json(new { Result = result.Result, ErrMsg = result.ErrMsg });
+        }
+
+        [HttpPost]
+        public ActionResult ReworkListAddReject(RFT_Inspection_Detail detail)
+        {
+            InspectionSave_ViewModel result = _InspectionService.SaveReworkListAddReject(detail);
+            return Json(new { Result = result.Result, ErrMsg = result.ErrMsg });
+        }
+
+        [HttpPost]
+        public ActionResult SaveReworkListDelete(LogIn_Request logIn, List<RFT_Inspection> datas)
+        {
+            InspectionSave_ViewModel result = _InspectionService.SaveReworkListDelete(logIn, datas);
+            return Json(new { Result = result.Result, ErrMsg = result.ErrMsg });
+        }
+
+        [HttpPost]
+        public ActionResult DQSReasonGet()
         {
             List<DQSReason> dQSReasons = _InspectionService.GetDQSReason(new DQSReason() { Type = "DP", Junk = false }) ;
             string html = "";
@@ -485,7 +514,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
-        public ActionResult GetCFTComments(string OrderID, string StyleID, string Season, string SampleStage)
+        public ActionResult CFTCommentsGet(string OrderID, string StyleID, string Season, string SampleStage)
         {
             List<RFT_OrderComments_ViewModel> viewModel = new List<RFT_OrderComments_ViewModel>();
             if (string.IsNullOrEmpty(OrderID))
@@ -493,7 +522,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                 return Json(viewModel);
             }
 
-            viewModel = _InspectionService.RFT_OrderCommentsGet(new RFT_OrderComments()
+            viewModel = _InspectionService.GetRFT_OrderComments(new RFT_OrderComments()
                                         {
                                             OrderID = OrderID,
                                         });
@@ -513,7 +542,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public JsonResult CFTCommentsSave(List<RFT_OrderComments> duringDummyFitting)
         {
-            RFT_OrderComments_ViewModel rFT_PicDuringDummyFitting_ViewModel = _InspectionService.RFT_OrderCommentsSave(duringDummyFitting);
+            RFT_OrderComments_ViewModel rFT_PicDuringDummyFitting_ViewModel = _InspectionService.SaveRFT_OrderComments(duringDummyFitting);
 
             return Json(rFT_PicDuringDummyFitting_ViewModel);
         }
@@ -521,12 +550,12 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public JsonResult CFTCommentsSend(string OrderID)
         {
-            RFT_OrderComments_ViewModel rFT_PicDuringDummyFitting_ViewModel = _InspectionService.RFT_OrderCommentsSendMail(new RFT_OrderComments { OrderID = OrderID });
+            RFT_OrderComments_ViewModel rFT_PicDuringDummyFitting_ViewModel = _InspectionService.SendMailRFT_OrderComments(new RFT_OrderComments { OrderID = OrderID });
             return Json(rFT_PicDuringDummyFitting_ViewModel);
         }
 
         [HttpPost]
-        public JsonResult GetPictures(string OrderID, string StyleID, string Article, string Size)
+        public JsonResult PicturesGet(string OrderID, string StyleID, string Article, string Size)
         {
             Inspection_ViewModel viewModel = new Inspection_ViewModel();
             if (string.IsNullOrEmpty(OrderID))
@@ -534,7 +563,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                 return Json(viewModel);
             }
 
-            RFT_PicDuringDummyFitting result = _InspectionService.RFT_PicDuringDummyFittingGet(new RFT_PicDuringDummyFitting() 
+            RFT_PicDuringDummyFitting result = _InspectionService.GetRFT_PicDuringDummyFitting(new RFT_PicDuringDummyFitting() 
                                                 { 
                                                     OrderID = OrderID, 
                                                     Article = Article, 
@@ -546,7 +575,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public JsonResult PicturesSave(RFT_PicDuringDummyFitting duringDummyFitting)
         {
-            RFT_PicDuringDummyFitting_ViewModel rFT_PicDuringDummyFitting_ViewModel = _InspectionService.RFT_PicDuringDummyFittingSave(duringDummyFitting);
+            RFT_PicDuringDummyFitting_ViewModel rFT_PicDuringDummyFitting_ViewModel = _InspectionService.SaveRFT_PicDuringDummyFitting(duringDummyFitting);
 
             return Json(rFT_PicDuringDummyFitting_ViewModel);
         }
