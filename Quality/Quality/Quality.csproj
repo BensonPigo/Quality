@@ -211,7 +211,7 @@
     <Content Include="Image\Icon\FactoryEDI.mkl" />
     <Content Include="Areas\FinalInspection\Views\web.config" />
     <Content Include="Areas\FinalInspection\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\FinalInspection\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Shared\_Inspection_Layout.cshtml" />
     <Content Include="Areas\FinalInspection\Views\Inspection\Index.cshtml" />
     <Content Include="Areas\SampleRFT\Views\Shared\ScreenShot.cshtml" />
     <Content Include="Areas\FinalInspection\Views\Inspection\General.cshtml" />
