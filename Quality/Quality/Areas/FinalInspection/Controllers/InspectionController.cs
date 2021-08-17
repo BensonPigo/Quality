@@ -14,6 +14,11 @@ namespace Quality.Areas.FinalInspection.Controllers
             return View();
         }
 
+        public ActionResult Setting()
+        {
+            return View();
+        }
+
         public ActionResult General()
         {
             return View();
@@ -28,6 +33,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         {
             return View();
         }
+
         public ActionResult BeautifulProductAudit()
         {
             return View();
