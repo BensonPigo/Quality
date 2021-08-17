@@ -9,7 +9,7 @@ using ADOHelper.Utility;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
-    public class SystemProvider : SQLDAL, IStyleProvider
+    public class SystemProvider : SQLDAL, ISystemProvider
     {
         #region 底層連線
         public SystemProvider(string ConString) : base(ConString) { }
