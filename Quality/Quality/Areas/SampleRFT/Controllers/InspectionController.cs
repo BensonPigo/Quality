@@ -51,7 +51,7 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             #region test
 
-            var measu = _InspectionService.MeasurementGet("20050243IC007", "12", "SCIMIS");
+            //var measu = _InspectionService.MeasurementGet("20050243IC007", "12", "SCIMIS");
             #endregion
 
             return View(setting);
