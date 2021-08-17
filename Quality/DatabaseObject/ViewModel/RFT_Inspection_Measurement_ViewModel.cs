@@ -17,5 +17,6 @@ namespace DatabaseObject.ViewModel
 
         public string Tol2 { get; set; }
 
+        public bool IsPatternMeas { get; set; }
     }
 }

@@ -6,6 +6,7 @@ using ManufacturingExecutionDataAccessLayer.Interface;
 using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
 using DatabaseObject.ManufacturingExecutionDB;
+using DatabaseObject.ViewModel;
 
 namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 {
@@ -29,28 +30,47 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
         /// ===  ==========  ====  ==========  ==========
         /// 01.  2021/08/05  1.00    Admin        Create
         /// </history>
-        public IList<RFT_Inspection_Measurement> Get(RFT_Inspection_Measurement Item)
+        public IList<RFT_Inspection_Measurement_ViewModel> Get( Int64 StyleUkey, string SizeCode, string UserID)
         {
-            StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append("SELECT"+ Environment.NewLine);
-            SbSql.Append("         Ukey"+ Environment.NewLine);
-            SbSql.Append("        ,MeasurementUkey"+ Environment.NewLine);
-            SbSql.Append("        ,StyleUkey"+ Environment.NewLine);
-            SbSql.Append("        ,No"+ Environment.NewLine);
-            SbSql.Append("        ,Code"+ Environment.NewLine);
-            SbSql.Append("        ,SizeCode"+ Environment.NewLine);
-            SbSql.Append("        ,SizeSpec"+ Environment.NewLine);
-            SbSql.Append("        ,OrderID"+ Environment.NewLine);
-            SbSql.Append("        ,Article"+ Environment.NewLine);
-            SbSql.Append("        ,Location"+ Environment.NewLine);
-            SbSql.Append("        ,Line"+ Environment.NewLine);
-            SbSql.Append("        ,FactoryID"+ Environment.NewLine);
-            SbSql.Append("FROM [RFT_Inspection_Measurement]"+ Environment.NewLine);
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@StyleUkey", DbType.Int64, StyleUkey } ,
+                { "@SizeCode", DbType.String, SizeCode } ,
+                { "@UserID", DbType.String, UserID } ,
+            };
 
 
+            string sqlcmd = @"
 
-            return ExecuteList<RFT_Inspection_Measurement>(CommandType.Text, SbSql.ToString(), objParameter);
+exec CopyStyle_ToMeasurement @UserID,@StyleUkey;
+
+select * 
+into #tmp
+from (
+    SELECT [MeasurementUkey] = a.ukey
+		,a.StyleUkey
+		,a.Code
+		,a.SizeCode 
+		,a.SizeSpec
+		,[Description] = a.Description	
+		,a.Tol1
+		,a.Tol2
+        ,[IsPatternMeas] = IIF(a.Description like '%pattern measn%',convert(bit,1), convert(bit,0))
+        ,[SizeUnit] = s.SizeUnit
+    FROM [ManufacturingExecution].[dbo].[Measurement] a with(nolock)
+    LEFT JOIN [ManufacturingExecution].[dbo].[MeasurementTranslate] b ON  a.MeasurementTranslateUkey = b.UKey
+	LEFT JOIN Production.dbo.Style s on s.Ukey = a.StyleUkey
+    where a.junk=0 
+	and StyleUkey = @StyleUkey 
+	and SizeCode = @SizeCode
+)a
+PIVOT(max(sizespec) FOR sizecode IN ([@SizeCode])) AS pt
+
+select *,SizeSpec='' from #tmp order by Code
+";
+            
+
+            return ExecuteList<RFT_Inspection_Measurement_ViewModel>(CommandType.Text, sqlcmd, objParameter);
         }
 		/*建立(Create) 詳細敘述如下*/
         /// <summary>
