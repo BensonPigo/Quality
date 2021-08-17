@@ -31,9 +31,11 @@ namespace BusinessLogicLayer.Service
         private IReworkListProvider _IReworkListProvider;
         private IRFTOrderCommentsProvider _IRFTOrderCommentsProvider;
         private IRFTPicDuringDummyFittingProvider _IRFTPicDuringDummyFittingProvider;
+        private IRFTInspectionMeasurementProvider _IRFTInspectionMeasurementProvider;
 
         // Production
         private IOrdersProvider _IOrdersProvider;
+        private IStyleProvider _IStyleProvider;
 
         public enum SelectType
         {
@@ -493,6 +495,40 @@ namespace BusinessLogicLayer.Service
             return dQSReasons;
         }
 
+        public List<RFT_Inspection_Measurement_ViewModel> MeasurementGet(string OrderID, string SizeCode, string UserID)
+        {
+            // 傳入OrderID、SizeCode
+            // 依OrderID 撈取 [StyleUkey] = Style.Ukey,  Style.SizeUnit(要回傳)
+            _IRFTInspectionMeasurementProvider = new RFTInspectionMeasurementProvider(Common.ManufacturingExecutionDataAccessLayer);
+            _IOrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
+            _IStyleProvider = new StyleProvider(Common.ProductionDataAccessLayer);
+            List<RFT_Inspection_Measurement_ViewModel> _Inspection_Measurement_ViewModels = new List<RFT_Inspection_Measurement_ViewModel>();
+            List<RFT_Inspection_Measurement> rFTs = new List<RFT_Inspection_Measurement>();
+
+            try
+            {
+                IList<Orders> ordersList = _IOrdersProvider.Get(new Orders() { ID = OrderID });
+                string strSizeUnit = string.Empty;
+                string longStyleUkey = string.Empty;
+                if (ordersList.Count > 0)
+                {
+                    longStyleUkey = ordersList[0].StyleUkey.ToString();
+                    IList<Style> StyleList = _IStyleProvider.GetSizeUnit(Convert.ToInt64(longStyleUkey));
+
+                    strSizeUnit = StyleList[0].SizeUnit;
+                }
+
+                _Inspection_Measurement_ViewModels = _IRFTInspectionMeasurementProvider.Get(Convert.ToInt64(longStyleUkey), SizeCode, UserID).ToList();
+                    
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            
+            return _Inspection_Measurement_ViewModels;
+        }
+
         public List<RFT_OrderComments_ViewModel> GetRFT_OrderComments(RFT_OrderComments rFT_OrderComments)
         {
             _IRFTOrderCommentsProvider = new RFTOrderCommentsProvider(Common.ManufacturingExecutionDataAccessLayer);
@@ -678,14 +714,14 @@ vertical-align: middle;
         {
             _IRFTPicDuringDummyFittingProvider = new RFTPicDuringDummyFittingProvider(Common.ManufacturingExecutionDataAccessLayer);
             List<RFT_PicDuringDummyFitting> PicDuringDummyFitting = _IRFTPicDuringDummyFittingProvider.Get(
-           new RFT_PicDuringDummyFitting()
-           {
-               OrderID = picDuringDummyFitting.OrderID,
-               Article = picDuringDummyFitting.Article,
-               Size = picDuringDummyFitting.Size
-           }).ToList();
+            new RFT_PicDuringDummyFitting()
+            {
+                OrderID = picDuringDummyFitting.OrderID,
+                Article = picDuringDummyFitting.Article,
+                Size = picDuringDummyFitting.Size
+            }).ToList();
 
-            return PicDuringDummyFitting[0];
+            return PicDuringDummyFitting.FirstOrDefault();
         }
 
         public RFT_PicDuringDummyFitting_ViewModel SaveRFT_PicDuringDummyFitting(RFT_PicDuringDummyFitting picDuringDummyFitting)

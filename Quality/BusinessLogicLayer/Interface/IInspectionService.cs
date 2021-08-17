@@ -39,6 +39,8 @@ namespace BusinessLogicLayer.Interface
 
         List<DQSReason> GetDQSReason(DQSReason dQSReason);
 
+        List<RFT_Inspection_Measurement_ViewModel> MeasurementGet(string OrderID, string SizeCode, string UserID);
+
         List<RFT_OrderComments_ViewModel> GetRFT_OrderComments(RFT_OrderComments rFT_OrderComments);
 
         RFT_OrderComments_ViewModel SaveRFT_OrderComments(List<RFT_OrderComments> rFT_OrderComments);
