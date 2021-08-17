@@ -49,24 +49,12 @@ namespace Quality.Areas.SampleRFT.Controllers
             ViewBag.UserID = this.UserID;
             ViewBag.ShowSwitch = 1;
 
-            #region Test #2
-            // test Rework Card
-            //ReworkCard rework = new ReworkCard()
-            //{
-            //    FactoryID = "ES2",
-            //    Line = "01",
-            //    Type = "Hard",
-            //};
+            #region test
 
-            //var _rework = _InspectionService.GetReworkCards(rework).ToList();
-
-            var _sentMail = _InspectionService.SendMailRFT_OrderComments(new RFT_OrderComments { OrderID = "21061052UC" });
-
+            //var measu = _InspectionService.MeasurementGet("20050243IC007", "12", "SCIMIS");
             #endregion
 
             return View(setting);
-
-          
         }
 
         [HttpPost]
@@ -84,11 +72,8 @@ namespace Quality.Areas.SampleRFT.Controllers
             ViewBag.BrandList = this.Brands;
             ViewBag.UserID = this.UserID;
             ViewBag.ShowSwitch = 0;
-           
 
             return View(request);
-
-       
         }
 
         [HttpPost]
