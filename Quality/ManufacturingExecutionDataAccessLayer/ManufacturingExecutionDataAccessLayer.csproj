@@ -33,6 +33,9 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web.Mvc">
+      <HintPath>..\Quality\Bin\System.Web.Mvc.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -42,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Interface\IAreaProvider.cs" />
+    <Compile Include="Interface\IAuthorityProvider.cs" />
     <Compile Include="Interface\IDQSReasonProvider.cs" />
     <Compile Include="Interface\IInspectionProvider.cs" />
     <Compile Include="Interface\IMailToProvider.cs" />
@@ -57,9 +61,11 @@
     <Compile Include="Interface\IRFTInspectionMeasurementProvider.cs" />
     <Compile Include="Interface\IRFTInspectionProvider.cs" />
     <Compile Include="Interface\IRFTOrderCommentsProvider.cs" />
+    <Compile Include="Interface\IRFTPerLineProvider.cs" />
     <Compile Include="Interface\IRFTPicDuringDummyFittingProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Provider\MSSQL\AreaProvider.cs" />
+    <Compile Include="Provider\MSSQL\AuthorityProvider.cs" />
     <Compile Include="Provider\MSSQL\DQSReasonProvider.cs" />
     <Compile Include="Provider\MSSQL\InspectionProvider.cs" />
     <Compile Include="Provider\MSSQL\MailToProvider.cs" />
@@ -75,6 +81,7 @@
     <Compile Include="Provider\MSSQL\RFTInspectionMeasurementProvider.cs" />
     <Compile Include="Provider\MSSQL\RFTInspectionProvider.cs" />
     <Compile Include="Provider\MSSQL\RFTOrderCommentsProvider.cs" />
+    <Compile Include="Provider\MSSQL\RFTPerLineProvider.cs" />
     <Compile Include="Provider\MSSQL\RFTPicDuringDummyFittingProvider.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -121,6 +121,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\Authority\AuthorityAreaRegistration.cs" />
+    <Compile Include="Areas\Authority\Controllers\UserListController.cs" />
     <Compile Include="Areas\FinalInspection\Controllers\InspectionController.cs" />
     <Compile Include="Areas\FinalInspection\Controllers\QueryController.cs" />
     <Compile Include="Areas\FinalInspection\FinalInspectionAreaRegistration.cs" />
@@ -137,7 +138,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Areas\FinalInspection\CSS\Inspection.css" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -211,7 +211,7 @@
     <Content Include="Image\Icon\FactoryEDI.mkl" />
     <Content Include="Areas\FinalInspection\Views\web.config" />
     <Content Include="Areas\FinalInspection\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\FinalInspection\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Shared\_Inspection_Layout.cshtml" />
     <Content Include="Areas\FinalInspection\Views\Inspection\Index.cshtml" />
     <Content Include="Areas\SampleRFT\Views\Shared\ScreenShot.cshtml" />
     <Content Include="Areas\FinalInspection\Views\Inspection\General.cshtml" />
@@ -223,6 +223,11 @@
     <Content Include="Areas\FinalInspection\Views\Inspection\Others.cshtml" />
     <Content Include="Areas\FinalInspection\Views\Query\Index.cshtml" />
     <Content Include="Areas\FinalInspection\Views\Query\Detail.cshtml" />
+    <Content Include="Areas\Authority\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Authority\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\Authority\Views\UserList\Index.cshtml" />
+    <Content Include="fonts\OpenSans.woff2" />
+    <Content Include="Areas\FinalInspection\Views\Inspection\Setting.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -304,6 +309,51 @@
     <Content Include="ThirdParty\plugins\bootstrap\bootstrap.js" />
     <Content Include="ThirdParty\plugins\bootstrap\bootstrap.min.css" />
     <Content Include="ThirdParty\plugins\bootstrap\bootstrap.min.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.bootstrap.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.bootstrap.min.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.bootstrap4.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.bootstrap4.min.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.bootstrap5.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.bootstrap5.min.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.bulma.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.bulma.min.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.dataTables.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.dataTables.min.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.foundation.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.foundation.min.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.jqueryui.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.jqueryui.min.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.semanticui.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.semanticui.min.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\jquery.dataTables.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\jquery.dataTables.min.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\images\sort_asc.png" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\images\sort_asc_disabled.png" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\images\sort_both.png" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\images\sort_desc.png" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\images\sort_desc_disabled.png" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\dataTables.bootstrap.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\dataTables.bootstrap.min.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\dataTables.bootstrap4.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\dataTables.bootstrap4.min.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\dataTables.bootstrap5.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\dataTables.bootstrap5.min.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\dataTables.bulma.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\dataTables.bulma.min.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\dataTables.dataTables.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\dataTables.dataTables.min.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\dataTables.foundation.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\dataTables.foundation.min.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\dataTables.jqueryui.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\dataTables.jqueryui.min.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\dataTables.semanticui.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\dataTables.semanticui.min.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\jquery.dataTables.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\jquery.dataTables.min.js" />
+    <Content Include="ThirdParty\plugins\DataTables\datatables.css" />
+    <Content Include="ThirdParty\plugins\DataTables\datatables.js" />
+    <Content Include="ThirdParty\plugins\DataTables\datatables.min.css" />
+    <Content Include="ThirdParty\plugins\DataTables\datatables.min.js" />
     <Content Include="ThirdParty\plugins\filesaver\FileSaver.min.js" />
     <Content Include="ThirdParty\plugins\jquery-blockUI\jquery.blockUI.js" />
     <Content Include="ThirdParty\plugins\jquery-datepicker\Datepicker.js" />
@@ -495,9 +545,15 @@
     <Content Include="ThirdParty\plugins\jquery-validation\localization\methods_pt.min.js" />
     <Content Include="ThirdParty\plugins\jquery\jquery-3.2.1.js" />
     <Content Include="ThirdParty\plugins\jquery\jquery-3.2.1.min.js" />
+    <Content Include="ThirdParty\plugins\JsBarcode\JsBarcode.all.min.js" />
+    <Content Include="ThirdParty\plugins\QuaggaJS\live_w_locator.js" />
+    <Content Include="ThirdParty\plugins\QuaggaJS\quagga.js" />
+    <Content Include="ThirdParty\plugins\QuaggaJS\styles.css" />
     <Content Include="ThirdParty\plugins\sweetalert2\promise.min.js" />
     <Content Include="ThirdParty\plugins\sweetalert2\sweetalert2.min.css" />
     <Content Include="ThirdParty\plugins\sweetalert2\sweetalert2.min.js" />
+    <Content Include="ThirdParty\plugins\Tabs\nicepage.css" />
+    <Content Include="ThirdParty\plugins\Tabs\nicepage.js" />
     <Content Include="ThirdParty\SciCustom\css\dashboard.css" />
     <Content Include="ThirdParty\SciCustom\css\icon.css" />
     <Content Include="ThirdParty\SciCustom\css\images\ui-icons_444444_256x240.png" />
@@ -510,6 +566,7 @@
     <Content Include="ThirdParty\SciCustom\css\login.css" />
     <Content Include="ThirdParty\SciCustom\css\page.css" />
     <Content Include="ThirdParty\SciCustom\css\style.css" />
+    <Content Include="ThirdParty\SciCustom\css\TableStyle.css" />
     <Content Include="ThirdParty\SciCustom\img\header-hi.png" />
     <Content Include="ThirdParty\SciCustom\img\header-login.png" />
     <Content Include="ThirdParty\SciCustom\img\icon-chart.png" />
@@ -570,9 +627,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Areas\Authority\Controllers\" />
     <Folder Include="Areas\Authority\Data\" />
-    <Folder Include="Areas\Authority\Views\Shared\" />
+    <Folder Include="Areas\FinalInspection\CSS\" />
     <Folder Include="Areas\FinalInspection\Models\" />
     <Folder Include="Areas\SampleRFT\Data\" />
     <Folder Include="Models\" />
