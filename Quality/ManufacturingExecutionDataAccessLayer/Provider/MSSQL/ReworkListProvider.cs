@@ -87,6 +87,7 @@ order by ReworkCardType desc, ins.AddDate
 
             return ExecuteList<ReworkList_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
         }
+        
         #endregion
     }
 }

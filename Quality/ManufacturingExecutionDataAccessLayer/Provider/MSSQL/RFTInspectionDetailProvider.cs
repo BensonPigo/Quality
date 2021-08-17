@@ -66,74 +66,42 @@ inner join RFT_Inspection_Detail rd on r.ID = rd.ID and rd.Junk = 0" + Environme
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append("SELECT"+ Environment.NewLine);
-            SbSql.Append("         ID"+ Environment.NewLine);
-            SbSql.Append("        ,Ukey"+ Environment.NewLine);
-            SbSql.Append("        ,DefectCode"+ Environment.NewLine);
-            SbSql.Append("        ,AreaCode"+ Environment.NewLine);
-            SbSql.Append("        ,Junk"+ Environment.NewLine);
-            SbSql.Append("        ,PMS_RFTBACriteriaID"+ Environment.NewLine);
-            SbSql.Append("        ,PMS_RFTRespID"+ Environment.NewLine);
-            SbSql.Append("        ,GarmentDefectTypeID"+ Environment.NewLine);
-            SbSql.Append("        ,GarmentDefectCodeID"+ Environment.NewLine);
-            SbSql.Append("        ,DefectPicture"+ Environment.NewLine);
-            SbSql.Append("        ,AddDate"+ Environment.NewLine);
-            SbSql.Append("FROM [RFT_Inspection_Detail]"+ Environment.NewLine);
+            SbSql.Append("SELECT" + Environment.NewLine);
+            SbSql.Append("         ID" + Environment.NewLine);
+            SbSql.Append("        ,Ukey" + Environment.NewLine);
+            SbSql.Append("        ,DefectCode" + Environment.NewLine);
+            SbSql.Append("        ,AreaCode" + Environment.NewLine);
+            SbSql.Append("        ,Junk" + Environment.NewLine);
+            SbSql.Append("        ,PMS_RFTBACriteriaID" + Environment.NewLine);
+            SbSql.Append("        ,PMS_RFTRespID" + Environment.NewLine);
+            SbSql.Append("        ,GarmentDefectTypeID" + Environment.NewLine);
+            SbSql.Append("        ,GarmentDefectCodeID" + Environment.NewLine);
+            SbSql.Append("        ,DefectPicture" + Environment.NewLine);
+            SbSql.Append("        ,AddDate" + Environment.NewLine);
+            SbSql.Append("FROM [RFT_Inspection_Detail]" + Environment.NewLine);
 
             return ExecuteList<RFT_Inspection_Detail>(CommandType.Text, SbSql.ToString(), objParameter);
         }
-		/*建立(Create) 詳細敘述如下*/
+        /*建立(Create) 詳細敘述如下*/
         /// <summary>
         /// 建立
         /// </summary>
         /// <param name="Item">成員</param>
         /// <returns>回傳異動筆數</returns>
-		/// <info>Author: Admin; Date: 2021/08/05  </info>
+        /// <info>Author: Admin; Date: 2021/08/05  </info>
         /// <history>
         /// xx.  YYYY/MM/DD   Ver   Author      Comments
         /// ===  ==========  ====  ==========  ==========
         /// 01.  2021/08/05  1.00    Admin        Create
         /// </history>
-        public int Create(RFT_Inspection_Detail Item)
-        {
-            StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append("INSERT INTO [RFT_Inspection_Detail]"+ Environment.NewLine);
-            SbSql.Append("(" + Environment.NewLine);
-            SbSql.Append("         ID"+ Environment.NewLine);
-            SbSql.Append("        ,DefectCode"+ Environment.NewLine);
-            SbSql.Append("        ,AreaCode"+ Environment.NewLine);
-            SbSql.Append("        ,Junk"+ Environment.NewLine);
-            SbSql.Append("        ,PMS_RFTBACriteriaID"+ Environment.NewLine);
-            SbSql.Append("        ,PMS_RFTRespID"+ Environment.NewLine);
-            SbSql.Append("        ,GarmentDefectTypeID"+ Environment.NewLine);
-            SbSql.Append("        ,GarmentDefectCodeID"+ Environment.NewLine);
-            SbSql.Append("        ,DefectPicture"+ Environment.NewLine);
-            SbSql.Append("        ,AddDate"+ Environment.NewLine);
-            SbSql.Append(")"+ Environment.NewLine);
-            SbSql.Append("VALUES"+ Environment.NewLine);
-            SbSql.Append("(" + Environment.NewLine);
-            SbSql.Append("         @ID"); objParameter.Add("@ID", DbType.String, Item.ID);
-            SbSql.Append("        ,@DefectCode"); objParameter.Add("@DefectCode", DbType.String, Item.DefectCode);
-            SbSql.Append("        ,@AreaCode"); objParameter.Add("@AreaCode", DbType.String, Item.AreaCode);
-            SbSql.Append("        ,@Junk"); objParameter.Add("@Junk", DbType.String, Item.Junk);
-            SbSql.Append("        ,@PMS_RFTBACriteriaID"); objParameter.Add("@PMS_RFTBACriteriaID", DbType.String, Item.PMS_RFTBACriteriaID);
-            SbSql.Append("        ,@PMS_RFTRespID"); objParameter.Add("@PMS_RFTRespID", DbType.String, Item.PMS_RFTRespID);
-            SbSql.Append("        ,@GarmentDefectTypeID"); objParameter.Add("@GarmentDefectTypeID", DbType.String, Item.GarmentDefectTypeID);
-            SbSql.Append("        ,@GarmentDefectCodeID"); objParameter.Add("@GarmentDefectCodeID", DbType.String, Item.GarmentDefectCodeID);
-            SbSql.Append("        ,@DefectPicture"); objParameter.Add("@DefectPicture", DbType.String, Item.DefectPicture);
-            SbSql.Append("        ,@AddDate"); objParameter.Add("@AddDate", DbType.DateTime, Item.AddDate);
-            SbSql.Append(")"+ Environment.NewLine);
 
-            return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
-        }
-		/*更新(Update) 詳細敘述如下*/
+        /*更新(Update) 詳細敘述如下*/
         /// <summary>
         /// 更新
         /// </summary>
         /// <param name="Item">成員</param>
         /// <returns>回傳異動筆數</returns>
-		/// <info>Author: Admin; Date: 2021/08/05  </info>
+        /// <info>Author: Admin; Date: 2021/08/05  </info>
         /// <history>
         /// xx.  YYYY/MM/DD   Ver   Author      Comments
         /// ===  ==========  ====  ==========  ==========
@@ -143,19 +111,19 @@ inner join RFT_Inspection_Detail rd on r.ID = rd.ID and rd.Junk = 0" + Environme
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append("UPDATE [RFT_Inspection_Detail]"+ Environment.NewLine);
-            SbSql.Append("SET"+ Environment.NewLine);
-            if (Item.ID != null) { SbSql.Append("ID=@ID"+ Environment.NewLine); objParameter.Add("@ID", DbType.String, Item.ID);}
-            if (Item.Ukey != null) { SbSql.Append(",Ukey=@Ukey"+ Environment.NewLine); objParameter.Add("@Ukey", DbType.String, Item.Ukey);}
-            if (Item.DefectCode != null) { SbSql.Append(",DefectCode=@DefectCode"+ Environment.NewLine); objParameter.Add("@DefectCode", DbType.String, Item.DefectCode);}
-            if (Item.AreaCode != null) { SbSql.Append(",AreaCode=@AreaCode"+ Environment.NewLine); objParameter.Add("@AreaCode", DbType.String, Item.AreaCode);}
-            if (Item.Junk != null) { SbSql.Append(",Junk=@Junk"+ Environment.NewLine); objParameter.Add("@Junk", DbType.String, Item.Junk);}
-            if (Item.PMS_RFTBACriteriaID != null) { SbSql.Append(",PMS_RFTBACriteriaID=@PMS_RFTBACriteriaID"+ Environment.NewLine); objParameter.Add("@PMS_RFTBACriteriaID", DbType.String, Item.PMS_RFTBACriteriaID);}
-            if (Item.PMS_RFTRespID != null) { SbSql.Append(",PMS_RFTRespID=@PMS_RFTRespID"+ Environment.NewLine); objParameter.Add("@PMS_RFTRespID", DbType.String, Item.PMS_RFTRespID);}
-            if (Item.GarmentDefectTypeID != null) { SbSql.Append(",GarmentDefectTypeID=@GarmentDefectTypeID"+ Environment.NewLine); objParameter.Add("@GarmentDefectTypeID", DbType.String, Item.GarmentDefectTypeID);}
-            if (Item.GarmentDefectCodeID != null) { SbSql.Append(",GarmentDefectCodeID=@GarmentDefectCodeID"+ Environment.NewLine); objParameter.Add("@GarmentDefectCodeID", DbType.String, Item.GarmentDefectCodeID);}
-            if (Item.DefectPicture != null) { SbSql.Append(",DefectPicture=@DefectPicture"+ Environment.NewLine); objParameter.Add("@DefectPicture", DbType.String, Item.DefectPicture);}
-            if (Item.AddDate != null) { SbSql.Append(",AddDate=@AddDate"+ Environment.NewLine); objParameter.Add("@AddDate", DbType.DateTime, Item.AddDate);}
+            SbSql.Append("UPDATE [RFT_Inspection_Detail]" + Environment.NewLine);
+            SbSql.Append("SET" + Environment.NewLine);
+            if (Item.ID != null) { SbSql.Append("ID=@ID" + Environment.NewLine); objParameter.Add("@ID", DbType.String, Item.ID); }
+            if (Item.Ukey != null) { SbSql.Append(",Ukey=@Ukey" + Environment.NewLine); objParameter.Add("@Ukey", DbType.String, Item.Ukey); }
+            if (Item.DefectCode != null) { SbSql.Append(",DefectCode=@DefectCode" + Environment.NewLine); objParameter.Add("@DefectCode", DbType.String, Item.DefectCode); }
+            if (Item.AreaCode != null) { SbSql.Append(",AreaCode=@AreaCode" + Environment.NewLine); objParameter.Add("@AreaCode", DbType.String, Item.AreaCode); }
+            if (Item.Junk != null) { SbSql.Append(",Junk=@Junk" + Environment.NewLine); objParameter.Add("@Junk", DbType.String, Item.Junk); }
+            if (Item.PMS_RFTBACriteriaID != null) { SbSql.Append(",PMS_RFTBACriteriaID=@PMS_RFTBACriteriaID" + Environment.NewLine); objParameter.Add("@PMS_RFTBACriteriaID", DbType.String, Item.PMS_RFTBACriteriaID); }
+            if (Item.PMS_RFTRespID != null) { SbSql.Append(",PMS_RFTRespID=@PMS_RFTRespID" + Environment.NewLine); objParameter.Add("@PMS_RFTRespID", DbType.String, Item.PMS_RFTRespID); }
+            if (Item.GarmentDefectTypeID != null) { SbSql.Append(",GarmentDefectTypeID=@GarmentDefectTypeID" + Environment.NewLine); objParameter.Add("@GarmentDefectTypeID", DbType.String, Item.GarmentDefectTypeID); }
+            if (Item.GarmentDefectCodeID != null) { SbSql.Append(",GarmentDefectCodeID=@GarmentDefectCodeID" + Environment.NewLine); objParameter.Add("@GarmentDefectCodeID", DbType.String, Item.GarmentDefectCodeID); }
+            if (Item.DefectPicture != null) { SbSql.Append(",DefectPicture=@DefectPicture" + Environment.NewLine); objParameter.Add("@DefectPicture", DbType.String, Item.DefectPicture); }
+            if (Item.AddDate != null) { SbSql.Append(",AddDate=@AddDate" + Environment.NewLine); objParameter.Add("@AddDate", DbType.DateTime, Item.AddDate); }
             SbSql.Append("WHERE 1 = 1" + Environment.NewLine);
 
 
@@ -163,13 +131,13 @@ inner join RFT_Inspection_Detail rd on r.ID = rd.ID and rd.Junk = 0" + Environme
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
-		/*刪除(Delete) 詳細敘述如下*/
+        /*刪除(Delete) 詳細敘述如下*/
         /// <summary>
         /// 刪除
         /// </summary>
         /// <param name="Item">成員</param>
         /// <returns>回傳異動筆數</returns>
-		/// <info>Author: Admin; Date: 2021/08/05  </info>
+        /// <info>Author: Admin; Date: 2021/08/05  </info>
         /// <history>
         /// xx.  YYYY/MM/DD   Ver   Author      Comments
         /// ===  ==========  ====  ==========  ==========
@@ -182,7 +150,7 @@ inner join RFT_Inspection_Detail rd on r.ID = rd.ID and rd.Junk = 0" + Environme
             {
                 { "@ID", DbType.String, Item.ID } ,
             };
-            SbSql.Append("DELETE FROM [RFT_Inspection_Detail]"+ Environment.NewLine);
+            SbSql.Append("DELETE FROM [RFT_Inspection_Detail]" + Environment.NewLine);
             SbSql.Append("where 1=1" + Environment.NewLine);
             SbSql.Append("and id = @ID" + Environment.NewLine);
 
@@ -282,6 +250,53 @@ and  FactoryID = @FactoryID
 
             return ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter);
         }
+
+        public int Create_Detail(RFT_Inspection_Detail Detail)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            objParameter.Add($"@ID", string.IsNullOrEmpty(Detail.ID.ToString()) ? "" : Detail.ID.ToString());
+            objParameter.Add($"@DefectCode", string.IsNullOrEmpty(Detail.DefectCode) ? "" : Detail.DefectCode);
+            objParameter.Add($"@AreaCode", string.IsNullOrEmpty(Detail.AreaCode) ? "" : Detail.AreaCode);
+            objParameter.Add($"@PMS_RFTBACriteriaID", string.IsNullOrEmpty(Detail.PMS_RFTBACriteriaID) ? "" : Detail.PMS_RFTBACriteriaID);
+            objParameter.Add($"@Junk", Detail.Junk);
+            objParameter.Add($"@PMS_RFTRespID", string.IsNullOrEmpty(Detail.PMS_RFTRespID) ? "" : Detail.PMS_RFTRespID);
+            objParameter.Add($"@GarmentDefectTypeID", string.IsNullOrEmpty(Detail.GarmentDefectTypeID) ? "" : Detail.GarmentDefectTypeID);
+            objParameter.Add($"@GarmentDefectCodeID", string.IsNullOrEmpty(Detail.GarmentDefectCodeID) ? "" : Detail.GarmentDefectCodeID);
+            objParameter.Add($"@DefectPicture", Detail.DefectPicture);
+
+            string sqlcmd = string.Empty;
+
+            if (Detail.DefectPicture != null) { objParameter.Add("@DefectPicture", Detail.DefectPicture); }
+            else { objParameter.Add("@DefectPicture", System.Data.SqlTypes.SqlBinary.Null); }
+
+            sqlcmd += $@"
+INSERT INTO [RFT_Inspection_Detail](
+     [ID]
+    ,[DefectCode]
+    ,[AreaCode]
+    ,[Junk]
+    ,[PMS_RFTBACriteriaID]
+    ,[PMS_RFTRespID]
+    ,[GarmentDefectTypeID]
+    ,[GarmentDefectCodeID]
+    ,DefectPicture
+    ,[AddDate])
+values(
+     @ID
+    ,@DefectCode
+    ,@AreaCode
+    ,@Junk
+    ,@PMS_RFTBACriteriaID
+    ,@PMS_RFTRespID
+    ,@GarmentDefectTypeID
+    ,@GarmentDefectCodeID
+    ,@DefectPicture
+    ,GetDate())
+";
+           
+            return ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter);
+        }
+
         #endregion
     }
 }

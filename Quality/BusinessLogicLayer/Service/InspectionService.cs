@@ -3,6 +3,7 @@ using BusinessLogicLayer.Interface;
 using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
+using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel;
 using ManufacturingExecutionDataAccessLayer.Interface;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
@@ -30,9 +31,11 @@ namespace BusinessLogicLayer.Service
         private IReworkListProvider _IReworkListProvider;
         private IRFTOrderCommentsProvider _IRFTOrderCommentsProvider;
         private IRFTPicDuringDummyFittingProvider _IRFTPicDuringDummyFittingProvider;
+        private IRFTInspectionMeasurementProvider _IRFTInspectionMeasurementProvider;
 
         // Production
         private IOrdersProvider _IOrdersProvider;
+        private IStyleProvider _IStyleProvider;
 
         public enum SelectType
         {
@@ -285,7 +288,6 @@ namespace BusinessLogicLayer.Service
                 }
 
                 inspections.Result = true;
-                inspections.ErrMsg = $"Save RFTInspection row count is {createCnt}";
 
                 #endregion
             }
@@ -324,41 +326,160 @@ namespace BusinessLogicLayer.Service
 
             return reworkList_Views;
         }
-
         public InspectionSave_ViewModel SaveReworkListAction(List<RFT_Inspection> rFT_Inspections, ReworkListType reworkListType)
         {
             // 傳入 ID、 Status, EditName
             // Pass - 多傳入InspectionDate
             // 自動抓取 ReworkCareNO 且更新。
 
-            InspectionSave_ViewModel reworkList_View = new InspectionSave_ViewModel()
+            _RFTInspectionProvider = new RFTInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+            InspectionSave_ViewModel reworkList_SaveView = new InspectionSave_ViewModel()
             {
                 Result = true,
             };
-            return reworkList_View;
+
+            try
+            {
+                int updateCnt = _RFTInspectionProvider.SaveReworkListAction(rFT_Inspections);
+                if (updateCnt == 0)
+                {
+                    reworkList_SaveView.Result = false;
+                    reworkList_SaveView.ErrMsg = "Rework List Action update row count = 0";
+                }
+                else
+                {
+                    reworkList_SaveView.Result = true;
+                    reworkList_SaveView.ErrMsg = string.Empty;
+                }
+            }
+            catch (Exception ex)
+            {
+                reworkList_SaveView.Result = false;
+                reworkList_SaveView.ErrMsg = ex.ToString();
+            }
+          
+            return reworkList_SaveView;
         }
 
         public InspectionSave_ViewModel SaveReworkListAddReject(RFT_Inspection_Detail detail)
         {
-            // 新增一筆RFT_Inspection_Detail,  ID 會傳入。
-            InspectionSave_ViewModel reworkList_View = new InspectionSave_ViewModel()
+            _RFTInspectionDetailProvider = new RFTInspectionDetailProvider(Common.ManufacturingExecutionDataAccessLayer);
+            _RFTInspectionProvider = new RFTInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+            Inspection_ViewModel result = new Inspection_ViewModel();
+            InspectionSave_ViewModel reworkList_SaveView = new InspectionSave_ViewModel()
             {
                 Result = true,
             };
-            return reworkList_View;
+
+            try
+            {
+                // 確認ID是否存在於表頭               
+                List<RFT_Inspection> inspections = _RFTInspectionProvider.Get(new RFT_Inspection()
+                {
+                    ID = detail.ID,
+                }).ToList();
+
+                if (inspections.Count == 0)
+                {
+                    reworkList_SaveView.Result = false;
+                    reworkList_SaveView.ErrMsg = "ReworkList Reject save is failed";
+                    return reworkList_SaveView;
+                }
+
+                // 新增一筆RFT_Inspection_Detail,  ID 會傳入。
+                int updateCnt = _RFTInspectionDetailProvider.Create_Detail(detail);
+                if (updateCnt == 0 && detail.ID == 0)
+                {
+                    reworkList_SaveView.Result = false;
+                    reworkList_SaveView.ErrMsg = "ReworkList Reject save is failed";
+                }
+                else
+                {
+                    reworkList_SaveView.Result = true;
+                    reworkList_SaveView.ErrMsg = string.Empty;
+                }
+            }
+            catch (Exception ex)
+            {
+                reworkList_SaveView.Result = false;
+                reworkList_SaveView.ErrMsg = ex.ToString();
+            }
+
+            return reworkList_SaveView;
         }
 
         public InspectionSave_ViewModel SaveReworkListDelete(LogIn_Request logIn_Request, List<RFT_Inspection> rFT_Inspection)
         {
-            // 驗證 LogIn_Request
-
-            // 成功 依RFT_Inspection.ID EditName  更新ReworkCard、 刪除RFT_Inspection、RFT_Inspection_Detail
-
-            InspectionSave_ViewModel reworkList_View = new InspectionSave_ViewModel()
+            IQualityPass1Provider QualityPass1Provider = QualityPass1Provider = new QualityPass1Provider(Common.ManufacturingExecutionDataAccessLayer);
+            ProductionDataAccessLayer.Interface.IPass1Provider PMSPass1Provider = PMSPass1Provider = new ProductionDataAccessLayer.Provider.MSSQL.Pass1Provider(Common.ProductionDataAccessLayer);
+            ManufacturingExecutionDataAccessLayer.Interface.IPass1Provider MESPass1Provider = MESPass1Provider = new ManufacturingExecutionDataAccessLayer.Provider.MSSQL.Pass1Provider(Common.ManufacturingExecutionDataAccessLayer);
+            _RFTInspectionProvider = new RFTInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+            InspectionSave_ViewModel reworkList_SaveView = new InspectionSave_ViewModel()
             {
                 Result = true,
             };
-            return reworkList_View;
+            LogIn_Result result = new LogIn_Result();
+
+            // 驗證 LogIn_Request
+            try
+            {
+                List<Quality_Pass1> quality_Pass1s = QualityPass1Provider.Get(new Quality_Pass1() { ID = logIn_Request.UserID }).ToList();
+                if (quality_Pass1s.Count == 0)
+                {
+                    throw new Exception("User ID not exist.");
+                }
+
+                // 先判斷ID，在判斷密碼。
+                // ID 不存在改抓MES PASS1
+                List<DatabaseObject.ProductionDB.Pass1> pmsPass1 = PMSPass1Provider.Get(new DatabaseObject.ProductionDB.Pass1() { ID = logIn_Request.UserID }).ToList();
+                if (pmsPass1.Count == 0)
+                {
+                    // 改抓MES PASS1
+                    List<DatabaseObject.ManufacturingExecutionDB.Pass1> mesPass1 = MESPass1Provider.Get(new DatabaseObject.ManufacturingExecutionDB.Pass1() { ID = logIn_Request.UserID, Password = logIn_Request.Password.ToUpper() }).ToList();
+                    if (mesPass1.Count == 0)
+                    {
+                        throw new Exception("Incorrect password.");
+                    }
+                }
+                else if (!pmsPass1.Where(x => x.Password.ToUpper().Equals(logIn_Request.Password.ToUpper())).Any())
+                {
+                    throw new Exception("Incorrect Password.");
+                }
+
+                result.Result = true;
+            }
+            catch (Exception ex)
+            {
+                reworkList_SaveView.Result = false;
+                reworkList_SaveView.ErrMsg = ex.Message.ToString();
+                result.Result = false;
+            }
+
+            // 成功 依RFT_Inspection.ID EditName  更新ReworkCard、 刪除RFT_Inspection、RFT_Inspection_Detail
+            if (result.Result == true)
+            {
+                try
+                {
+                    int updateCnt = _RFTInspectionProvider.SaveReworkListDelete(rFT_Inspection);
+                    if (updateCnt == 0)
+                    {
+                        reworkList_SaveView.Result = false;
+                        reworkList_SaveView.ErrMsg = "Rework List Delete row count = 0";
+                    }
+                    else
+                    {
+                        reworkList_SaveView.Result = true;
+                        reworkList_SaveView.ErrMsg = string.Empty;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    reworkList_SaveView.Result = false;
+                    reworkList_SaveView.ErrMsg = ex.ToString();
+                }
+            }
+
+            return reworkList_SaveView;
         }
 
         public List<DQSReason> GetDQSReason(DQSReason dQSReason)
@@ -374,37 +495,38 @@ namespace BusinessLogicLayer.Service
             return dQSReasons;
         }
 
-        public List<RFT_Inspection_Measurement_ViewModel> MeasurementGet(string OrderID, string SizeCode)
+        public List<RFT_Inspection_Measurement_ViewModel> MeasurementGet(string OrderID, string SizeCode, string UserID)
         {
             // 傳入OrderID、SizeCode
             // 依OrderID 撈取 [StyleUkey] = Style.Ukey,  Style.SizeUnit(要回傳)
-            // 執行 SP CopyStyle_ToMeasurement
-            // SQL 
-            /*
-             * select * 
-into #tmp
-from (
-    SELECT [MeasurementUkey] = a.ukey
-		,a.StyleUkey
-		,a.Code
-		,a.SizeCode 
-		,a.SizeSpec
-		,[Description] = a.Description	
-		,a.Tol1
-		,a.Tol2
-    FROM [ManufacturingExecution].[dbo].[Measurement] a with(nolock)
-    LEFT JOIN [ManufacturingExecution].[dbo].[MeasurementTranslate] b ON  a.MeasurementTranslateUkey = b.UKey
-    where a.junk=0 
-	and StyleUkey = @StyleUkey 
-	and SizeCode = @SizeCode
-)a
-PIVOT(max(sizespec) FOR sizecode IN ([@SizeCode])) AS pt
+            _IRFTInspectionMeasurementProvider = new RFTInspectionMeasurementProvider(Common.ManufacturingExecutionDataAccessLayer);
+            _IOrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
+            _IStyleProvider = new StyleProvider(Common.ProductionDataAccessLayer);
+            List<RFT_Inspection_Measurement_ViewModel> _Inspection_Measurement_ViewModels = new List<RFT_Inspection_Measurement_ViewModel>();
+            List<RFT_Inspection_Measurement> rFTs = new List<RFT_Inspection_Measurement>();
 
-select *,SizeSpec='' from #tmp order by Code
-             */
+            try
+            {
+                IList<Orders> ordersList = _IOrdersProvider.Get(new Orders() { ID = OrderID });
+                string strSizeUnit = string.Empty;
+                string longStyleUkey = string.Empty;
+                if (ordersList.Count > 0)
+                {
+                    longStyleUkey = ordersList[0].StyleUkey.ToString();
+                    IList<Style> StyleList = _IStyleProvider.GetSizeUnit(Convert.ToInt64(longStyleUkey));
 
-            List<RFT_Inspection_Measurement_ViewModel> rFT_Inspection_Measurement_Views = new List<RFT_Inspection_Measurement_ViewModel>();
-            return rFT_Inspection_Measurement_Views;
+                    strSizeUnit = StyleList[0].SizeUnit;
+                }
+
+                _Inspection_Measurement_ViewModels = _IRFTInspectionMeasurementProvider.Get(Convert.ToInt64(longStyleUkey), SizeCode, UserID).ToList();
+                    
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            
+            return _Inspection_Measurement_ViewModels;
         }
 
         public List<RFT_OrderComments_ViewModel> GetRFT_OrderComments(RFT_OrderComments rFT_OrderComments)
@@ -428,8 +550,17 @@ select *,SizeSpec='' from #tmp order by Code
             try
             {
                 int updateCnt = _IRFTOrderCommentsProvider.Save_upd_ins(rFT_OrderComments);
-                rFT_OrderComments_ViewModel.Result = true;
-                rFT_OrderComments_ViewModel.ErrMsg = $"RFT_OrderComments Save row count is {updateCnt}";
+
+                if (updateCnt == 0)
+                {
+                    rFT_OrderComments_ViewModel.Result = false;
+                    rFT_OrderComments_ViewModel.ErrMsg = "Save RFT_OrderComments row count = 0";
+                }
+                else
+                {
+                    rFT_OrderComments_ViewModel.Result = true;
+                    rFT_OrderComments_ViewModel.ErrMsg = string.Empty;
+                }
             }
             catch (Exception ex)
             {
@@ -466,25 +597,26 @@ select *,SizeSpec='' from #tmp order by Code
                        ID = "201",
                    }).ToList();
 
+                if (mailToAddress.Count == 0)
+                {
+                    rFT_OrderComments_ViewModel.ErrMsg = $"Result MSG: mail address is empty! SP#: {rFT_OrderComments.OrderID}";
+                    rFT_OrderComments_ViewModel.Result = false;
+
+                    return rFT_OrderComments_ViewModel;
+                }
+
+                if (mailToSubject.Count == 0)
+                {
+                    rFT_OrderComments_ViewModel.ErrMsg = $"Result message: subject is empty! SP#: {rFT_OrderComments.OrderID}";
+                    rFT_OrderComments_ViewModel.Result = false;
+
+                    return rFT_OrderComments_ViewModel;
+                }
+
                 if (queryData.Count == 0)
                 {
-                    string errorMsg = MailTools.MailToHtml(
-                      mailToAddress[0].ToAddress
-                      , $"mail address is empty! SP#: {rFT_OrderComments.OrderID}"
-                      , string.Empty
-                      , $"Result MSG: mail address is empty! SP#: {rFT_OrderComments.OrderID}"
-                      );
-
-                    if (!string.IsNullOrEmpty(errorMsg))
-                    {
-                        rFT_OrderComments_ViewModel.ErrMsg = errorMsg;
-                        rFT_OrderComments_ViewModel.Result = false;
-                    }
-                    else
-                    {
-                        rFT_OrderComments_ViewModel.ErrMsg = $"Result MSG: mail address is empty! SP#: {rFT_OrderComments.OrderID}";
-                        rFT_OrderComments_ViewModel.Result = false;
-                    }
+                    rFT_OrderComments_ViewModel.ErrMsg = $"Result message: Comments data is empty! SP#: {rFT_OrderComments.OrderID}";
+                    rFT_OrderComments_ViewModel.Result = false;
 
                     return rFT_OrderComments_ViewModel;
                 }
@@ -600,7 +732,6 @@ vertical-align: middle;
             {
                 int updateCnt = _IRFTPicDuringDummyFittingProvider.Save_Upd_Ins(picDuringDummyFitting);
                 rFT_OrderComments_ViewModel.Result = true;
-                rFT_OrderComments_ViewModel.ErrMsg = $"RFT_OrderComments Save row count is {updateCnt}";
             }
             catch (Exception ex)
             {
