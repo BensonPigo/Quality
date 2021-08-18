@@ -239,8 +239,19 @@ namespace BusinessLogicLayer.Service
 
         public List<SelectListItem> GetPositionList(string FactoryID)
         {
-            _AuthorityProvider = new AuthorityProvider(Common.ManufacturingExecutionDataAccessLayer);
-            return _AuthorityProvider.GetPositionList(FactoryID).ToList();
+            List<SelectListItem> result = new List<SelectListItem>();
+
+            try
+            {
+                _AuthorityProvider = new AuthorityProvider(Common.ManufacturingExecutionDataAccessLayer);
+                result = _AuthorityProvider.GetPositionList(FactoryID).ToList();
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return result;
         }
     }
 }
