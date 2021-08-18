@@ -231,12 +231,10 @@ namespace BusinessLogicLayer.Service
 
         public InspectionSave_ViewModel SaveRFTInspection(InspectionSave_ViewModel inspections)
         {
-            _RFTInspectionProvider = new RFTInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
             _RFTInspectionDetailProvider = new RFTInspectionDetailProvider(Common.ManufacturingExecutionDataAccessLayer);
             _IOrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
             _IMailToProvider = new MailToProvider(Common.ManufacturingExecutionDataAccessLayer);
-            inspections.Result = true;
-            inspections.ErrMsg = string.Empty;
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ManufacturingExecutionDataAccessLayer);
             try
             {
                 if (inspections.rft_Inspection == null)
@@ -256,8 +254,9 @@ namespace BusinessLogicLayer.Service
 
                 #region update/insert [RFT_Inspection] and [RFT_Inspection_Detail]
 
+                _RFTInspectionDetailProvider = new RFTInspectionDetailProvider(_ISQLDataTransaction);
                 int createCnt = _RFTInspectionDetailProvider.Create_Master_Detail(inspections.rft_Inspection, inspections.fT_Inspection_Details);
-
+                _ISQLDataTransaction.Commit();
                 // 寄信
                 if (createCnt > 0)
                 {
@@ -287,17 +286,27 @@ namespace BusinessLogicLayer.Service
                         inspections.ErrMsg = errorMsg;
                         inspections.Result = false;
                     }
+                    else
+                    {
+                        inspections.Result = true;
+                        inspections.ErrMsg = string.Empty;
+                    }
                 }
-
-                inspections.Result = true;
+                else
+                {
+                    inspections.Result = false;
+                    inspections.ErrMsg = "Inspection update row count = 0";
+                }
 
                 #endregion
             }
             catch (Exception ex)
             {
+                _ISQLDataTransaction.RollBack();
                 inspections.Result = false;
                 inspections.ErrMsg = ex.ToString();
             }
+            finally { _ISQLDataTransaction.CloseConnection(); }
 
             return inspections;
         }
@@ -305,13 +314,22 @@ namespace BusinessLogicLayer.Service
         public IList<ReworkCard> GetReworkCards(ReworkCard rework)
         {
             _IReworkCardProvider = new ReworkCardProvider(Common.ManufacturingExecutionDataAccessLayer);
-            List<ReworkCard> reworkCards = _IReworkCardProvider.Get(
-                new ReworkCard()
-                {
-                    FactoryID = rework.FactoryID,
-                    Line = rework.Line,
-                    Type = rework.Type,
-                }).ToList();
+
+            List<ReworkCard> reworkCards = new List<ReworkCard>();
+            try
+            {
+                reworkCards = _IReworkCardProvider.Get(
+                  new ReworkCard()
+                  {
+                      FactoryID = rework.FactoryID,
+                      Line = rework.Line,
+                      Type = rework.Type,
+                  }).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
 
             return reworkCards;
         }
@@ -319,12 +337,20 @@ namespace BusinessLogicLayer.Service
         public List<ReworkList_ViewModel> GetReworkList(ReworkList_ViewModel reworkList)
         {
             _IReworkListProvider = new ReworkListProvider(Common.ManufacturingExecutionDataAccessLayer);
-            List<ReworkList_ViewModel> reworkList_Views = _IReworkListProvider.Get(
-                new ReworkList_ViewModel()
-                {
-                    FactoryID = reworkList.FactoryID,
-                    Line = reworkList.Line,
-                }).ToList();
+            List<ReworkList_ViewModel> reworkList_Views = new List<ReworkList_ViewModel>();
+            try
+            {
+                reworkList_Views = _IReworkListProvider.Get(
+               new ReworkList_ViewModel()
+               {
+                   FactoryID = reworkList.FactoryID,
+                   Line = reworkList.Line,
+               }).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
 
             return reworkList_Views;
         }
@@ -352,10 +378,12 @@ namespace BusinessLogicLayer.Service
             }
             catch (Exception ex)
             {
+                _ISQLDataTransaction.RollBack();
                 reworkList_SaveView.Result = false;
                 reworkList_SaveView.ErrMsg = ex.ToString();
             }
-          
+            finally { _ISQLDataTransaction.CloseConnection(); }
+
             return reworkList_SaveView;
         }
 
@@ -363,10 +391,11 @@ namespace BusinessLogicLayer.Service
         {
             _RFTInspectionDetailProvider = new RFTInspectionDetailProvider(Common.ManufacturingExecutionDataAccessLayer);
             _RFTInspectionProvider = new RFTInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
-            Inspection_ViewModel result = new Inspection_ViewModel();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ManufacturingExecutionDataAccessLayer);
             InspectionSave_ViewModel reworkList_SaveView = new InspectionSave_ViewModel()
             {
                 Result = true,
+                ErrMsg = string.Empty,
             };
 
             try
@@ -385,7 +414,9 @@ namespace BusinessLogicLayer.Service
                 }
 
                 // 新增一筆RFT_Inspection_Detail,  ID 會傳入。
+                _RFTInspectionDetailProvider = new RFTInspectionDetailProvider(_ISQLDataTransaction);
                 int updateCnt = _RFTInspectionDetailProvider.Create_Detail(detail);
+                _ISQLDataTransaction.Commit();
                 if (updateCnt == 0 && detail.ID == 0)
                 {
                     reworkList_SaveView.Result = false;
@@ -399,9 +430,11 @@ namespace BusinessLogicLayer.Service
             }
             catch (Exception ex)
             {
+                _ISQLDataTransaction.RollBack();
                 reworkList_SaveView.Result = false;
                 reworkList_SaveView.ErrMsg = ex.ToString();
             }
+            finally { _ISQLDataTransaction.CloseConnection(); }
 
             return reworkList_SaveView;
         }
@@ -412,6 +445,7 @@ namespace BusinessLogicLayer.Service
             ProductionDataAccessLayer.Interface.IPass1Provider PMSPass1Provider = PMSPass1Provider = new ProductionDataAccessLayer.Provider.MSSQL.Pass1Provider(Common.ProductionDataAccessLayer);
             ManufacturingExecutionDataAccessLayer.Interface.IPass1Provider MESPass1Provider = MESPass1Provider = new ManufacturingExecutionDataAccessLayer.Provider.MSSQL.Pass1Provider(Common.ManufacturingExecutionDataAccessLayer);
             _RFTInspectionProvider = new RFTInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ManufacturingExecutionDataAccessLayer);
             InspectionSave_ViewModel reworkList_SaveView = new InspectionSave_ViewModel()
             {
                 Result = true,
@@ -458,7 +492,9 @@ namespace BusinessLogicLayer.Service
             {
                 try
                 {
+                    _RFTInspectionProvider = new RFTInspectionProvider(_ISQLDataTransaction);
                     int updateCnt = _RFTInspectionProvider.SaveReworkListDelete(rFT_Inspection);
+                    _ISQLDataTransaction.Commit();
                     if (updateCnt == 0)
                     {
                         reworkList_SaveView.Result = false;
@@ -472,9 +508,11 @@ namespace BusinessLogicLayer.Service
                 }
                 catch (Exception ex)
                 {
+                    _ISQLDataTransaction.RollBack();
                     reworkList_SaveView.Result = false;
                     reworkList_SaveView.ErrMsg = ex.ToString();
                 }
+                finally { _ISQLDataTransaction.CloseConnection(); }
             }
 
             return reworkList_SaveView;
@@ -482,13 +520,6 @@ namespace BusinessLogicLayer.Service
 
         public List<DQSReason> GetDQSReason(DQSReason dQSReason)
         {
-            // 傳入 Type = 'DP', Junk = 0
-            //List<DQSReason> dQSReasons = new List<DQSReason>()
-            //{
-            //    new DQSReason { ID = "00001", Description = "Un-Fixed Garment" },
-            //    new DQSReason { ID = "00002", Description = "Exceed Quantity" },
-            //    new DQSReason { ID = "00003", Description = "Reject By QMS" },
-            //};
             _IDQSReasonProvider = new DQSReasonProvider(Common.ManufacturingExecutionDataAccessLayer);
             List<DQSReason> reasons = new List<DQSReason>();
             try
@@ -499,10 +530,9 @@ namespace BusinessLogicLayer.Service
                       Type = dQSReason.Type.ToString(),
                   }).ToList();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                throw ex;
             }
 
             return reasons;
@@ -510,8 +540,6 @@ namespace BusinessLogicLayer.Service
 
         public List<RFT_Inspection_Measurement_ViewModel> GetMeasurement(string OrderID, string SizeCode, string UserID)
         {
-            // 傳入OrderID、SizeCode
-            // 依OrderID 撈取 [StyleUkey] = Style.Ukey,  Style.SizeUnit(要回傳)
             _IRFTInspectionMeasurementProvider = new RFTInspectionMeasurementProvider(Common.ManufacturingExecutionDataAccessLayer);
             _IOrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
             _IStyleProvider = new StyleProvider(Common.ProductionDataAccessLayer);
@@ -532,9 +560,9 @@ namespace BusinessLogicLayer.Service
                 _Inspection_Measurement_ViewModels = _IRFTInspectionMeasurementProvider.Get(Convert.ToInt64(longStyleUkey), SizeCode, UserID).ToList();
                     
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                throw ex;
             }
             
             return _Inspection_Measurement_ViewModels;
@@ -544,9 +572,12 @@ namespace BusinessLogicLayer.Service
         {
             _IRFTInspectionMeasurementProvider = new RFTInspectionMeasurementProvider(Common.ManufacturingExecutionDataAccessLayer);
             RFT_Inspection_Measurement_ViewModel _Measurement_ViewModel = new RFT_Inspection_Measurement_ViewModel();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ManufacturingExecutionDataAccessLayer);
             try
             {
+                _IRFTInspectionMeasurementProvider = new RFTInspectionMeasurementProvider(_ISQLDataTransaction);
                 int updateCnt = _IRFTInspectionMeasurementProvider.Save(Measurement);
+                _ISQLDataTransaction.Commit();
                 if (updateCnt == 0)
                 {
                     throw new Exception("Save Fail");
@@ -556,9 +587,11 @@ namespace BusinessLogicLayer.Service
             }
             catch (Exception ex)
             {
+                _ISQLDataTransaction.RollBack();
                 _Measurement_ViewModel.Result = false;
                 _Measurement_ViewModel.ErrMsg = ex.Message.ToString();
             }
+            finally { _ISQLDataTransaction.CloseConnection(); }
 
             return _Measurement_ViewModel;
         }
@@ -567,12 +600,18 @@ namespace BusinessLogicLayer.Service
         {
             _IRFTOrderCommentsProvider = new RFTOrderCommentsProvider(Common.ManufacturingExecutionDataAccessLayer);
             List<RFT_OrderComments_ViewModel> rFT_OrderComments_ViewModel = new List<RFT_OrderComments_ViewModel>();
-
-            rFT_OrderComments_ViewModel = _IRFTOrderCommentsProvider.Get(
-            new RFT_OrderComments()
+            try
             {
-                OrderID = rFT_OrderComments.OrderID,
-            }).ToList();
+                rFT_OrderComments_ViewModel = _IRFTOrderCommentsProvider.Get(
+                new RFT_OrderComments()
+                {
+                    OrderID = rFT_OrderComments.OrderID,
+                }).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
 
             return rFT_OrderComments_ViewModel;
         }
@@ -580,11 +619,13 @@ namespace BusinessLogicLayer.Service
         public RFT_OrderComments_ViewModel SaveRFT_OrderComments(List<RFT_OrderComments> rFT_OrderComments)
         {
             _IRFTOrderCommentsProvider = new RFTOrderCommentsProvider(Common.ManufacturingExecutionDataAccessLayer);
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ManufacturingExecutionDataAccessLayer);
             RFT_OrderComments_ViewModel rFT_OrderComments_ViewModel = new RFT_OrderComments_ViewModel();
             try
             {
+                _IRFTOrderCommentsProvider = new RFTOrderCommentsProvider(_ISQLDataTransaction);
                 int updateCnt = _IRFTOrderCommentsProvider.Save_upd_ins(rFT_OrderComments);
-
+                _ISQLDataTransaction.Commit();
                 if (updateCnt == 0)
                 {
                     rFT_OrderComments_ViewModel.Result = false;
@@ -598,9 +639,11 @@ namespace BusinessLogicLayer.Service
             }
             catch (Exception ex)
             {
+                _ISQLDataTransaction.RollBack();
                 rFT_OrderComments_ViewModel.Result = false;
                 rFT_OrderComments_ViewModel.ErrMsg = ex.ToString();
             }
+            finally { _ISQLDataTransaction.CloseConnection(); }
 
             return rFT_OrderComments_ViewModel;
         }
@@ -749,13 +792,21 @@ vertical-align: middle;
         public RFT_PicDuringDummyFitting GetRFT_PicDuringDummyFitting(RFT_PicDuringDummyFitting picDuringDummyFitting)
         {
             _IRFTPicDuringDummyFittingProvider = new RFTPicDuringDummyFittingProvider(Common.ManufacturingExecutionDataAccessLayer);
-            List<RFT_PicDuringDummyFitting> PicDuringDummyFitting = _IRFTPicDuringDummyFittingProvider.Get(
-            new RFT_PicDuringDummyFitting()
+            List<RFT_PicDuringDummyFitting> PicDuringDummyFitting = new List<RFT_PicDuringDummyFitting>();
+            try
             {
-                OrderID = picDuringDummyFitting.OrderID,
-                Article = picDuringDummyFitting.Article,
-                Size = picDuringDummyFitting.Size
-            }).ToList();
+                PicDuringDummyFitting = _IRFTPicDuringDummyFittingProvider.Get(
+                new RFT_PicDuringDummyFitting()
+                {
+                    OrderID = picDuringDummyFitting.OrderID,
+                    Article = picDuringDummyFitting.Article,
+                    Size = picDuringDummyFitting.Size
+                }).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
 
             return PicDuringDummyFitting.FirstOrDefault();
         }
@@ -763,17 +814,22 @@ vertical-align: middle;
         public RFT_PicDuringDummyFitting_ViewModel SaveRFT_PicDuringDummyFitting(RFT_PicDuringDummyFitting picDuringDummyFitting)
         {
             _IRFTPicDuringDummyFittingProvider = new RFTPicDuringDummyFittingProvider(Common.ManufacturingExecutionDataAccessLayer);
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ManufacturingExecutionDataAccessLayer);
             RFT_PicDuringDummyFitting_ViewModel rFT_OrderComments_ViewModel = new RFT_PicDuringDummyFitting_ViewModel();
             try
             {
+                _IRFTPicDuringDummyFittingProvider = new RFTPicDuringDummyFittingProvider(_ISQLDataTransaction);
                 int updateCnt = _IRFTPicDuringDummyFittingProvider.Save_Upd_Ins(picDuringDummyFitting);
+                _ISQLDataTransaction.Commit();
                 rFT_OrderComments_ViewModel.Result = true;
             }
             catch (Exception ex)
             {
+                _ISQLDataTransaction.RollBack();
                 rFT_OrderComments_ViewModel.Result = false;
                 rFT_OrderComments_ViewModel.ErrMsg = ex.ToString();
             }
+            finally { _ISQLDataTransaction.CloseConnection(); }
 
             return rFT_OrderComments_ViewModel;
         }
