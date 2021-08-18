@@ -50,21 +50,21 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
                 { "@MailID", DbType.String, MailID }
             };
 
-            //string testEmail = "willy.wei@sportscity.com.tw; jack.hsu@sportscity.com.tw;";
+            string testEmail = "willy.wei@sportscity.com.tw; jack.hsu@sportscity.com.tw;";
 
             string sqlcmd = $@"
 select 
 ToAddress = STUFF((
 select concat(';',ToAddress)
 	from (
-		select ToAddress =  p.EMail
+		select ToAddress =  '{testEmail}'--p.EMail
 		from Production.dbo.Orders o 
 		inner join Production.dbo.TPEPass1 p on o.SMR = p.ID
 		where o.ID=@OrderID
 
 		union all
 
-		select ToAddress = p.EMail
+		select ToAddress = '{testEmail}'--p.EMail
 		from Production.dbo.Orders o 
 		inner join Production.dbo.TPEPass1 p on o.MRHandle = p.ID
 		where o.ID=@OrderID
