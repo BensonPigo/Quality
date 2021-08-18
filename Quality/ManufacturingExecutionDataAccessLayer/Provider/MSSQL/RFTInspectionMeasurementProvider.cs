@@ -57,17 +57,19 @@ SELECT [MeasurementUkey] = a.ukey
 			  when  isnull(a.Tol1,0) = '0' then convert(bit,0)
 			  when  isnull(a.Tol2,0) = '0' then convert(bit,0)
 			  when  isnull(a.SizeCode,'') = '' then convert(bit,0)
-			  when  SizeSpec like '[A-Z]%' then convert(bit,0)
-			  when  (UPPER(s.SizeUnit) = 'INCH' and  SizeSpec like '%.%') then convert(bit,0)
-			  when  (UPPER(s.SizeUnit) = 'CM' and  SizeSpec like '%/%') then convert(bit,0)
+			  when  a.SizeSpec like '[A-Z]%' then convert(bit,0)
+			  when  (UPPER(s.SizeUnit) = 'INCH' and  a.SizeSpec like '%.%') then convert(bit,0)
+			  when  (UPPER(s.SizeUnit) = 'CM' and  a.SizeSpec like '%/%') then convert(bit,0)
 			  else  convert(bit,1) end
     ,[SizeUnit] = s.SizeUnit
+	,OrderID = '', Article = '', Location = '',Line = '',FactoryID = ''
 FROM [ManufacturingExecution].[dbo].[Measurement] a with(nolock)
 LEFT JOIN [ManufacturingExecution].[dbo].[MeasurementTranslate] b ON  a.MeasurementTranslateUkey = b.UKey
 LEFT JOIN Production.dbo.Style s on s.Ukey = a.StyleUkey
+--LEFT JOIN [ManufacturingExecution].[dbo].Inspection_Measurement inspm on inspm.MeasurementUkey = a.Ukey
 where a.junk=0 
-and StyleUkey = @StyleUkey 
-and SizeCode = @SizeCode
+and a.StyleUkey = @StyleUkey 
+and a.SizeCode = @SizeCode
 
 ";
 
@@ -180,9 +182,6 @@ and SizeCode = @SizeCode
             SQLParameterCollection objParameter = new SQLParameterCollection();
             SbSql.Append("DELETE FROM [RFT_Inspection_Measurement]"+ Environment.NewLine);
 
-
-
-
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
 
@@ -193,7 +192,7 @@ and SizeCode = @SizeCode
             string strNo = string.Empty;
 
             DataTable dt = ExecuteDataTable(CommandType.Text, $@"
-select no = isnull(max(no),0)+1 from Inspection_Measurement  WITH (NOLOCK) where styleukey = {Measurement[0].StyleUkey}", objParameter);
+select no = isnull(max(no),0)+1 from  ManufacturingExecution.dbo.Inspection_Measurement  WITH (NOLOCK) where styleukey = {Measurement[0].StyleUkey}", objParameter);
             if (dt != null || dt.Rows.Count > 0)
             {
                 strNo = dt.Rows[0]["no"].ToString();

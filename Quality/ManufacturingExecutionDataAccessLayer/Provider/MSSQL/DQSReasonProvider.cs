@@ -35,9 +35,6 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             SQLParameterCollection objParameter = new SQLParameterCollection()
             {
                 { "@Type", DbType.String, Item.Type},
-                { "@ID", DbType.String, Item.ID},
-                { "@Description", DbType.String, Item.Description},
-                { "@LocalDescription", DbType.String, Item.LocalDescription},
             };
             SbSql.Append("SELECT"+ Environment.NewLine);
             SbSql.Append("         Type"+ Environment.NewLine);
@@ -53,11 +50,6 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             SbSql.Append("where 1=1" + Environment.NewLine);
             SbSql.Append("and Junk = 0" + Environment.NewLine);
             if (Item.Type != null) { SbSql.Append(" and Type=@Type" + Environment.NewLine); }
-            if (Item.ID != null) { SbSql.Append(" and ID=@ID" + Environment.NewLine); }
-            if (Item.Description != null) { SbSql.Append("and Description=@Description" + Environment.NewLine); }
-            if (Item.LocalDescription != null) { SbSql.Append("and LocalDescription=@LocalDescription" + Environment.NewLine); }
-
-
 
             return ExecuteList<DQSReason>(CommandType.Text, SbSql.ToString(), objParameter);
         }
