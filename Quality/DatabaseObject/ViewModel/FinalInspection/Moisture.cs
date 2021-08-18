@@ -1,0 +1,54 @@
+﻿using DatabaseObject.ManufacturingExecutionDB;
+using DatabaseObject.ProductionDB;
+using System;
+using System.Collections.Generic;
+using System.Web.Mvc;
+
+namespace DatabaseObject.ViewModel.FinalInspection
+{
+    public class Measurement
+    {
+        public string FinalInspectionID { get; set; }
+
+        public List<SelectListItem> ListArticle { get; set; }
+
+        public List<SelectListItem> ListSize { get; set; }
+
+        public List<SelectListItem> ListProductType { get; set; }
+
+        public string SizeUnit { get; set; }
+
+        public List<MeasurementItem> ListMeasurementItem { get; set; }
+
+    }
+
+    public class MeasurementItem
+    {
+        public string Description { get; set; }
+        public string SizeSpec { get; set; }
+        public string Tol1 { get; set; }
+        public string Tol2 { get; set; }
+        public string Size { get; set; }
+        public string ResultSizeSpec { get; set; }
+        public string Code { get; set; }
+        public bool CanEdit { get; set; }
+    }
+
+    //public class MeasurementView
+    //{
+    //    public List<SelectListItem> ListArticle { get; set; }
+
+    //    public List<SelectListItem> ListSize { get; set; }
+
+    //    public List<SelectListItem> ListProductType { get; set; }
+    //    public List<MeasurementViewItem> ListMeasurementViewItem { get; set; }
+    //}
+
+    public class MeasurementViewItem
+    {
+        public string Article { get; set; }
+        public string Size { get; set; }
+        public string ProductType { get; set; }
+        public string MeasurementDataByJson { get; set; }
+    }
+}
