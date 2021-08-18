@@ -72,7 +72,7 @@ and a.SizeCode = @SizeCode
 
 ";
 
-            return ExecuteList<RFT_Inspection_Measurement_ViewModel>(CommandType.Text, sqlcmd, objParameter);
+            return ExecuteList<RFT_Inspection_Measurement_ViewModel>(CommandType.Text, sqlcmd, objParameter, 60);
         }
 		/*建立(Create) 詳細敘述如下*/
         /// <summary>
@@ -184,7 +184,7 @@ and a.SizeCode = @SizeCode
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
 
-        public int Save(List<RFT_Inspection_Measurement_ViewModel> Measurement)
+        public int Save(List<RFT_Inspection_Measurement> Measurement)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();
 

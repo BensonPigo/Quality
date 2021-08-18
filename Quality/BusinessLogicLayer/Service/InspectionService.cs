@@ -512,7 +512,7 @@ namespace BusinessLogicLayer.Service
             return reasons;
         }
 
-        public List<RFT_Inspection_Measurement_ViewModel> MeasurementGet(string OrderID, string SizeCode, string UserID)
+        public List<RFT_Inspection_Measurement_ViewModel> GetMeasurement(string OrderID, string SizeCode, string UserID)
         {
             // 傳入OrderID、SizeCode
             // 依OrderID 撈取 [StyleUkey] = Style.Ukey,  Style.SizeUnit(要回傳)
@@ -544,24 +544,27 @@ namespace BusinessLogicLayer.Service
             return _Inspection_Measurement_ViewModels;
         }
 
-        public bool SaveMeasurement(List<RFT_Inspection_Measurement_ViewModel> Measurement)
+        public RFT_Inspection_Measurement_ViewModel SaveMeasurement(List<RFT_Inspection_Measurement> Measurement)
         {
             _IRFTInspectionMeasurementProvider = new RFTInspectionMeasurementProvider(Common.ManufacturingExecutionDataAccessLayer);
+            RFT_Inspection_Measurement_ViewModel _Measurement_ViewModel = new RFT_Inspection_Measurement_ViewModel();
             try
             {
                 int updateCnt = _IRFTInspectionMeasurementProvider.Save(Measurement);
                 if (updateCnt == 0)
                 {
-                    return false;
+                    throw new Exception("Save Fail");
                 }
 
+                _Measurement_ViewModel.Result = true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return false;
+                _Measurement_ViewModel.Result = false;
+                _Measurement_ViewModel.ErrMsg = ex.Message.ToString();
             }
 
-            return true;
+            return _Measurement_ViewModel;
         }
 
         public List<RFT_OrderComments_ViewModel> GetRFT_OrderComments(RFT_OrderComments rFT_OrderComments)
@@ -736,6 +739,8 @@ vertical-align: middle;
                 );
 
                 #endregion
+
+                rFT_OrderComments_ViewModel.Result = true;
             }
             catch (Exception ex)
             {

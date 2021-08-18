@@ -1473,7 +1473,7 @@
 
             $('.MeasurementRowHeader .SP').html($('#txtSP').val());
             $('.MeasurementRowHeader .Style').html($('#txtStyle').val());
-            $('.MeasurementRowHeader .Article').html($('#txtArticle').val());            
+            $('.MeasurementRowHeader .Article').html($('#txtArticle').val());
 
             MeasurementGet($('#txtSP').val(), $('#txtSize').val());
             $('#SelectItemBackground, #Measurement').removeClass('display-None').unbind('click');
@@ -1830,7 +1830,7 @@
         });
 
         $('#btnMeasurementSave').on('click', function () {
-
+            MeasurementSave();
         });
     }
 
@@ -2940,6 +2940,48 @@
         });
     }
 
+    function MeasurementSave() {
+        var datasDetail = [];
+        $.each($('.MeasurementTable>tbody>tr>td>input'), function (index, value) {
+            if ($(this).val() == "") {
+                return;
+            }
+
+            var tr = $(this).parent().parent();
+
+            datasDetail.push({                 
+                 MeasurementUkey: parseInt(tr.attr('idv')),
+                 StyleUkey: parseInt(tr.attr('idx')),
+                 Code: tr.attr('idi'),
+                 SizeCode: tr.find("p[idx='Code']").html(),
+                 SizeSpec: $(this).val(),
+                 OrderID: $('#txtSP').val(),
+                 Article: $('#txtArticle').val(),
+                 Location: $('#txtProductType').val(),
+            });
+        });
+
+        $.ajax({
+            url: "@Url.Action("MeasurementSave", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ measurement: datasDetail }),
+            async: false,
+            success: function (data) {
+                if (!data.Result) {
+                    msg.WithError(data.ErrMsg);
+                }
+                else {
+                    msg.WithSuccess("Success");
+                    $('#btnMeasurementExit').click();                    
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
     function CFTCommentsClick(OrderID, StyleID, Season, SampleStage) {
         $.ajax({
             url: "@Url.Action("CFTCommentsGet", "Inspection", new { Area = "SampleRFT" })",
@@ -2964,7 +3006,7 @@
 
             $(this).children("textarea").each(function (index, value) {
                 var idx = $(this).attr('idx');
-                var h = $(this).html();
+                var h = $(this).val();
 
                 datasDetail.push({
                     OrderID: SP,
