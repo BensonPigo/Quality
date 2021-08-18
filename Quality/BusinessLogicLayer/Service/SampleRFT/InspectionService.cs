@@ -330,19 +330,15 @@ namespace BusinessLogicLayer.Service
         }
         public InspectionSave_ViewModel SaveReworkListAction(List<RFT_Inspection> rFT_Inspections, ReworkListType reworkListType)
         {
-            // 傳入 ID、 Status, EditName
-            // Pass - 多傳入InspectionDate
-            // 自動抓取 ReworkCareNO 且更新。
-
             _RFTInspectionProvider = new RFTInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
-            InspectionSave_ViewModel reworkList_SaveView = new InspectionSave_ViewModel()
-            {
-                Result = true,
-            };
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ManufacturingExecutionDataAccessLayer);
+            InspectionSave_ViewModel reworkList_SaveView = new InspectionSave_ViewModel();
 
             try
             {
+                _RFTInspectionProvider = new RFTInspectionProvider(_ISQLDataTransaction);
                 int updateCnt = _RFTInspectionProvider.SaveReworkListAction(rFT_Inspections);
+                _ISQLDataTransaction.Commit();
                 if (updateCnt == 0)
                 {
                     reworkList_SaveView.Result = false;
