@@ -6,49 +6,60 @@ using System.Web.Mvc;
 
 namespace DatabaseObject.ViewModel.FinalInspection
 {
-    public class Measurement
+    public class Moisture
     {
         public string FinalInspectionID { get; set; }
-
-        public List<SelectListItem> ListArticle { get; set; }
-
-        public List<SelectListItem> ListSize { get; set; }
-
-        public List<SelectListItem> ListProductType { get; set; }
-
-        public string SizeUnit { get; set; }
-
-        public List<MeasurementItem> ListMeasurementItem { get; set; }
-
+        public decimal? FinalInspection_CTNMoisureStandard { get; set; }
+        public List<string> ListArticle { get; set; }
+        public List<CartonItem> ListCartonItem { get; set; }
+        public List<EndlineMoisture> ListEndlineMoisture { get; set; }
+        public List<SelectListItem> ActionSelectListItem { get; set; }
     }
 
-    public class MeasurementItem
+    public class CartonItem
     {
-        public string Description { get; set; }
-        public string SizeSpec { get; set; }
-        public string Tol1 { get; set; }
-        public string Tol2 { get; set; }
-        public string Size { get; set; }
-        public string ResultSizeSpec { get; set; }
-        public string Code { get; set; }
-        public bool CanEdit { get; set; }
+        public long FinalInspection_OrderCartonUkey { get; set; }
+        public string OrderID { get; set; }
+        public string PackinglistID { get; set; }
+        public string CTNNo { get; set; }
     }
 
-    //public class MeasurementView
-    //{
-    //    public List<SelectListItem> ListArticle { get; set; }
-
-    //    public List<SelectListItem> ListSize { get; set; }
-
-    //    public List<SelectListItem> ListProductType { get; set; }
-    //    public List<MeasurementViewItem> ListMeasurementViewItem { get; set; }
-    //}
-
-    public class MeasurementViewItem
+    public class MoistureResult
     {
+        public string FinalInspectionID { get; set; }
         public string Article { get; set; }
-        public string Size { get; set; }
-        public string ProductType { get; set; }
-        public string MeasurementDataByJson { get; set; }
+        public long FinalInspection_OrderCartonUkey { get; set; }
+        public string Instrument { get; set; }
+        public string Fabrication { get; set; }
+        public decimal? GarmentTop { get; set; }
+        public decimal? GarmentMiddle { get; set; }
+        public decimal? GarmentBottom { get; set; }
+        public decimal? CTNInside { get; set; }
+        public decimal? CTNOutside { get; set; }
+        public string Action { get; set; }
+        public string Result { get; set; }
+        public string Remark { get; set; }
+        public string AddName { get; set; }
+
+    }
+
+    public class ViewMoistureResult
+    {
+        public long Ukey { get; set; }
+        public string Article { get; set; }
+        public string CTNNo { get; set; }
+        public string Instrument { get; set; }
+        public string Fabrication { get; set; }
+        public decimal? GarmentStandard { get; set; }
+        public decimal? GarmentTop { get; set; }
+        public decimal? GarmentMiddle { get; set; }
+        public decimal? GarmentBottom { get; set; }
+        public decimal? CTNStandard { get; set; }
+        public decimal? CTNInside { get; set; }
+        public decimal? CTNOutside { get; set; }
+        public string Result { get; set; }
+        public string Action { get; set; }
+        public string Remark { get; set; }
+
     }
 }
