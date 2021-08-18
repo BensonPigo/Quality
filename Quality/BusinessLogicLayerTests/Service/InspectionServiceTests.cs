@@ -86,7 +86,18 @@ namespace BusinessLogicLayer.Service.Tests
 
                 _Inspection_Measurement_ViewModels = _IRFTInspectionMeasurementProvider.Get(Convert.ToInt64(longStyleUkey), "6", "SCIMIS").ToList();
 
-                int updateCnt = _IRFTInspectionMeasurementProvider.Save(_Inspection_Measurement_ViewModels);
+
+               List<RFT_Inspection_Measurement> measurement = _Inspection_Measurement_ViewModels.Select(x => new RFT_Inspection_Measurement
+                {
+                   MeasurementUkey = x.MeasurementUkey,
+                   StyleUkey = x.StyleUkey,
+                    Code = x.Code,
+                   SizeCode =x.SizeCode,
+                   SizeSpec = x.SizeSpec,
+                   OrderID = x.OrderID,
+               }).ToList();
+
+                int updateCnt = _IRFTInspectionMeasurementProvider.Save(measurement);
                 Assert.IsTrue(updateCnt > 0);
             }
             catch (Exception ex)
