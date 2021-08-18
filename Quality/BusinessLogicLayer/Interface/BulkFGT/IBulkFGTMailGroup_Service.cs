@@ -12,6 +12,6 @@ namespace BusinessLogicLayer.Interface
     {
         List<Quality_MailGroup> MailGroupGet(Quality_MailGroup quality_Mail);
 
-        Quality_MailGroup_ResultModel MailGroupSave(Quality_MailGroup quality_Mail, int type);
+        Quality_MailGroup_ResultModel MailGroupSave(Quality_MailGroup quality_Mail, Service.BulkFGTMailGroup_Service.SaveType type);
     }
 }
