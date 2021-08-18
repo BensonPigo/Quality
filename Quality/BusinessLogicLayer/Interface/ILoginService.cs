@@ -11,5 +11,9 @@ namespace BusinessLogicLayer.Interface
     public interface ILoginService
     {
         LogIn_Result LoginValidate(LogIn_Request logIn_Request);
+
+        LogIn_Result Update_Pass1(Quality_Pass1_Request Req);
+
+        List<string> GetFactory();
     }
 }

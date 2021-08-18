@@ -19,9 +19,9 @@
         }
     })();
 
-$( ".menu-trigger" ).click(function() {
-	  $( "body" ).toggleClass( "sidebar-collapse" );
-	});
+$(".menu-trigger").click(function() {
+  $("body").toggleClass("sidebar-collapse");
+});
 
 
 //
@@ -38,6 +38,13 @@ $( ".expend , .btn-detail-edit , .btn-detail-save " ).click(function() {
 	  $(this).parent().parent().parent().toggleClass( "plus" );
 	});
 
+$(".RootLi").on('click', function (event) {
+    $(".RootLi").removeClass("current");
+    $(this).addClass("current");
+    if ($("body").hasClass("sidebar-collapse")) {
+        $(".menu-trigger").click();
+    } 
+});
 
 //新增區塊
         window.onload = function(){

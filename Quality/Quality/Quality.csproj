@@ -636,6 +636,7 @@
     <Content Include="ThirdParty\SciCustom\css\fonts\sci.woff" />
     <Content Include="ThirdParty\SciCustom\css\_DS_Store" />
     <Content Include="ThirdParty\SciCustom\img\_DS_Store" />
+    <Content Include="Views\Home\Setting.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -41,10 +41,11 @@ namespace BusinessLogicLayer.Service
                 // 先判斷ID，在判斷密碼。
                 // ID 不存在改抓MES PASS1
                 List<DatabaseObject.ProductionDB.Pass1> pmsPass1 = PMSPass1Provider.Get(new DatabaseObject.ProductionDB.Pass1() { ID = logIn_Request.UserID }).ToList();
+                List<Pass1> mesPass1 = new List<Pass1>();
                 if (pmsPass1.Count == 0)
                 {
                     // 改抓MES PASS1
-                    List<Pass1> mesPass1 = MESPass1Provider.Get(new Pass1() { ID = logIn_Request.UserID, Password = logIn_Request.Password.ToUpper() }).ToList();
+                    mesPass1 = MESPass1Provider.Get(new Pass1() { ID = logIn_Request.UserID, Password = logIn_Request.Password.ToUpper() }).ToList();
                     if (mesPass1.Count == 0)
                     {
                         throw new Exception("Incorrect password.");
@@ -57,7 +58,10 @@ namespace BusinessLogicLayer.Service
 
                 result.pass1 = quality_Pass1s.FirstOrDefault();
                 result.Menus = QualityMenuProvider.Get(result.pass1.Position).ToList();
-                result.Factorys = FactoryProvider.GetFtyGroup().GroupBy(x => x.FTYGroup).Select(x => x.Key).ToList();
+                result.Factorys = pmsPass1.Count == 0 ? 
+                        mesPass1.FirstOrDefault().Factory.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList() :
+                        pmsPass1.FirstOrDefault().Factory.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                result.FactoryID = result.Factorys.Where(x => x.Equals(logIn_Request.FactoryID)).Any() ? logIn_Request.FactoryID : result.Factorys.FirstOrDefault();
                 result.Lines = SewingLineProvider.GetSewinglineID().GroupBy(x => x.ID).Select(x => x.Key).ToList();
                 result.Brands = BrandProvider.Get().GroupBy(x => x.ID).Select(x => x.Key).ToList();
                 result.Result = true;
@@ -70,6 +74,32 @@ namespace BusinessLogicLayer.Service
             }
 
             return result;
+        }
+
+        public LogIn_Result Update_Pass1(Quality_Pass1_Request Req)
+        {
+            QualityPass1Provider = new QualityPass1Provider(Common.ManufacturingExecutionDataAccessLayer);
+            LogIn_Result result = new LogIn_Result();
+            try
+            {
+                QualityPass1Provider.Update_Brand(new Quality_Pass1() { ID = Req.ID, BulkFGT_Brand = Req.SampleTesting_Brand });
+                result.Result = true;
+            }
+            catch (Exception ex)
+            {
+                result.Result = false;
+                result.ErrorMessage = ex.Message.ToString();
+                result.Exception = ex;
+            }
+
+            return result;
+        }
+
+        public List<string> GetFactory()
+        {
+            FactoryProvider = new ProductionDataAccessLayer.Provider.MSSQL.FactoryProvider(Common.ProductionDataAccessLayer);
+            List<string> factorys = FactoryProvider.GetFtyGroup().GroupBy(x => x.FTYGroup).Select(x => x.Key).ToList();
+            return factorys;
         }
     }
 }

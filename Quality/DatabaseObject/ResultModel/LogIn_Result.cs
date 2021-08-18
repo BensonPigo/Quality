@@ -18,5 +18,7 @@ namespace DatabaseObject.ResultModel
         public List<string> Lines { get; set; }
 
         public List<string> Brands { get; set; }
+
+        public string FactoryID { get; set; }
     }
 }
