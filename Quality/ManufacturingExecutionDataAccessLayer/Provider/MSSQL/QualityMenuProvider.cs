@@ -100,9 +100,6 @@ order by ModuleSeq, FunctionSeq" + Environment.NewLine);
             SbSql.Append("        ,@Junk"); objParameter.Add("@Junk", DbType.String, Item.Junk);
             SbSql.Append(")"+ Environment.NewLine);
 
-
-
-
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
 		/*更新(Update) 詳細敘述如下*/
@@ -132,8 +129,6 @@ order by ModuleSeq, FunctionSeq" + Environment.NewLine);
             SbSql.Append("WHERE 1 = 1" + Environment.NewLine);
 
 
-
-
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
 		/*刪除(Delete) 詳細敘述如下*/
@@ -153,9 +148,6 @@ order by ModuleSeq, FunctionSeq" + Environment.NewLine);
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
             SbSql.Append("DELETE FROM [Quality_Menu]"+ Environment.NewLine);
-
-
-
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
