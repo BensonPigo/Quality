@@ -16,5 +16,7 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
     public interface IQualityPass1Provider
     {
         IList<Quality_Pass1> Get(Quality_Pass1 Item);
+
+        int Update_Brand(Quality_Pass1 Item);
     }
 }

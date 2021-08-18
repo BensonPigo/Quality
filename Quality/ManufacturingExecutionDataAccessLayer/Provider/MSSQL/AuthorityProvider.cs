@@ -19,39 +19,38 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
         public AuthorityProvider(string ConString) : base(ConString) { }
         public AuthorityProvider(SQLDataTransaction tra) : base(tra) { }
         #endregion
-
-        /*Willy*/
+        
         public IList<UserList_Browse> Get_User_List_Browse()
         {
             StringBuilder SbSql = new StringBuilder();
 
             SbSql.Append($@"
 select   UserID = p.ID
-		,ip.Name
+		,[Name] = IIF(isnull(pp1.Name,'') = '', mp1.name,pp1.name) 
 		,p.Position
 from Quality_Pass1 p
-left join [TradeDB].InternalWeb.dbo.Pass1 ip ON p.ID=ip.ID
+left join ManufacturingExecution.dbo.Pass1 mp1 ON p.ID= mp1.ID
+left join Production.dbo.Pass1 pp1 on p.ID = pp1.id
 WHERE p.ID != 'SCIMIS'
 
 ");
 
             return ExecuteList<UserList_Browse>(CommandType.Text, SbSql.ToString(), new SQLParameterCollection());
         }
-
-
-        /*Willy*/
+       
         public IList<UserList_Authority> Get_User_List_Head(string UserID)
         {
             StringBuilder SbSql = new StringBuilder();
 
             SbSql.Append($@"
 select TOp 1 UserID = p.ID
-		,Name = p1.Name
-		,p1.Password
-		,p1.Email
+		,[Name] = IIF(isnull(pp1.Name,'') = '', mp1.name,pp1.name)
+		,[Password] = IIF(isnull(pp1.Password,'') = '', mp1.Password, pp1.Password)
+		,[Email] = IIF(isnull(pp1.Email,'')='', mp1.Email, pp1.Email)
 		,p.Position
 from Quality_Pass1 p
-inner join [TradeDB].InternalWeb.dbo.Pass1 p1 on p.ID=p1.ID
+left join ManufacturingExecution.dbo.Pass1 mp1 ON p.ID= mp1.ID
+left join Production.dbo.Pass1 pp1 on p.ID = pp1.id
 inner join Quality_Position pos on pos.ID=p.Position
 where p.ID='{UserID}'
 
@@ -60,8 +59,7 @@ where p.ID='{UserID}'
 
             return ExecuteList<UserList_Authority>(CommandType.Text, SbSql.ToString(), new SQLParameterCollection());
         }
-
-        /*Willy*/
+       
         public IList<Module_Detail> Get_User_List_Detail(string UserID)
         {
             StringBuilder SbSql = new StringBuilder();
@@ -72,9 +70,9 @@ select   MenuID = m.ID
 		,m.FunctionName
 		,p2.Used
 from Quality_Pass1 p
-inner join [TradeDB].InternalWeb.dbo.Pass1 p1 on p.ID=p1.ID
-inner join Quality_Position pos on pos.ID=p.Position
-inner join Quality_Pass2 p2 on p2.PositionID=pos.ID AND p2.FactoryID=pos.FactoryID
+left join ManufacturingExecution.dbo.Pass1 mp1 ON p.ID= mp1.ID
+left join Production.dbo.Pass1 pp1 on p.ID = pp1.idinner join Quality_Position pos on pos.ID=p.Position
+inner join Quality_Pass2 p2 on p2.PositionID=pos.ID
 inner join Quality_Menu m on p2.MenuID=m.id
 where p.ID='{UserID}'
 order by m.ModuleSeq, m.FunctionSeq
@@ -115,7 +113,6 @@ AND p2.MenuID = {data.MenuID}
             bool result = Convert.ToInt32(ExecuteNonQuery(CommandType.Text, SbSql.ToString(), new SQLParameterCollection())) > 0;
             return result;
         }
-
 
         public IList<Quality_Position> Get_Position_Head(string Position)
         {
@@ -176,7 +173,6 @@ order by m.ModuleSeq, m.FunctionSeq
             return ExecuteList<Module_Detail>(CommandType.Text, SbSql.ToString(), objParameter);
         }
 
-        /*Willy*/
         public bool Update_Position_Detail(Quality_Position_Request Req)
         {
             StringBuilder SbSql = new StringBuilder();
@@ -201,7 +197,7 @@ WHERE ID=@ID
 UPDATE p2
 SET p2.Used='{(data.Used ? "1" : "0")}'
 from Quality_Pass2 p2
-inner join Quality_Position p on p.ID=p2.PositionID ANd p.Factory = p2.FactoryID
+inner join Quality_Position p on p.ID=p2.PositionID 
 inner join Quality_Menu m ON p2.MenuID = m.id
 where p.ID=@ID AND m.ID='{data.MenuID}'
 ;
@@ -210,32 +206,27 @@ where p.ID=@ID AND m.ID='{data.MenuID}'
             bool result = Convert.ToInt32(ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter)) > 0;
             return result;
         }
-
-
-        /*Willy*/
+       
         public int Check_Position_Exists(Quality_Position_Request Req)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
             objParameter.Add("@ID", DbType.String, Req.Position);
-            objParameter.Add("@Factory", DbType.String, Req.Factory);
 
             SbSql.Append($@"
         SELECT COUNT(1)
         FROM Quality_Position
-        WHERE ID = @ID AND Factory=@Factory
+        WHERE ID = @ID
         ");
 
             return Convert.ToInt32(ExecuteScalar(CommandType.Text, SbSql.ToString(), objParameter));
         }
-
-        /*Willy*/
+        
         public bool Create_Position_Detail(Quality_Position_Request Req)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
             objParameter.Add("@ID", DbType.String, Req.Position);
-            objParameter.Add("@Factory", DbType.String, Req.Factory);
             objParameter.Add("@Description", DbType.String, Req.Description);
             objParameter.Add("@IsAdmin", DbType.Boolean, Req.IsAdmin);
             objParameter.Add("@Junk", DbType.Boolean, Req.Junk);
@@ -243,13 +234,11 @@ where p.ID=@ID AND m.ID='{data.MenuID}'
             SbSql.Append($@"
         INSERT INTO dbo.Quality_Position
                    (ID
-                   ,Factory
                    ,Description
                    ,IsAdmin
                    ,Junk)
              VALUES
                    (@ID
-                   ,@Factory
                    ,@Description
                    ,@IsAdmin
                    ,@Junk)
@@ -261,12 +250,10 @@ where p.ID=@ID AND m.ID='{data.MenuID}'
                 SbSql.Append($@"
         INSERT INTO dbo.Quality_Pass2
                    (PositionID
-                   ,FactoryID
                    ,MenuID
                    ,Used)
              VALUES
                    (@ID
-                   ,@Factory
                    ,{data.MenuID}
                    ,{(data.Used ? "1" : "0")})
         ;
@@ -275,8 +262,7 @@ where p.ID=@ID AND m.ID='{data.MenuID}'
             bool result = Convert.ToInt32(ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter)) > 0;
             return result;
         }
-
-        /*Willy*/
+        
         public IList<UserList_Browse> GetAllUser(string FactoryID)
         {
             StringBuilder SbSql = new StringBuilder();
@@ -287,7 +273,7 @@ select DISTINCT
 , UserID = p.ID
 ,p.Name
 ,Position = ''--po.ID
-from [TradeDB].InternalWeb.dbo.Pass1 p 
+from Production.dbo.Pass1 p 
 left join Quality_Pass1 p1 ON p.ID=p1.ID 
 WHERE 1=1
 {(string.IsNullOrEmpty(FactoryID) ? "" : $"AND p.Factory='{FactoryID}' ")}
@@ -301,9 +287,7 @@ AND NOT EXISTS
 
             return ExecuteList<UserList_Browse>(CommandType.Text, SbSql.ToString(), new SQLParameterCollection());
         }
-
-
-        /*Willy*/
+       
         public bool ImportUsers(List<UserList_Browse> DataList)
         {
             StringBuilder SbSql = new StringBuilder();
@@ -325,10 +309,7 @@ INSERT INTO dbo.Quality_Pass1
             bool result = Convert.ToInt32(ExecuteNonQuery(CommandType.Text, SbSql.ToString(), new SQLParameterCollection())) > 0;
             return result;
         }
-
-
-
-        /*Willy*/
+        
         public IList<SelectListItem> GetPositionList(string FactoryID)
         {
             StringBuilder SbSql = new StringBuilder();
@@ -346,8 +327,7 @@ WHERE FactoryID='{FactoryID}'
 
             return ExecuteList<SelectListItem>(CommandType.Text, SbSql.ToString(), objParameter);
         }
-
-        /*Willy*/
+       
         public IList<Quality_Position> Get_Position_Browse(string FactoryID)
         {
             StringBuilder SbSql = new StringBuilder();
@@ -359,8 +339,6 @@ select Position = ID
 	,Junk
 from Quality_Position 
 where 1=1
-{(string.IsNullOrEmpty(FactoryID) ? "" : $"AND Factory='{FactoryID}'")}
-
 ");
 
             return ExecuteList<Quality_Position>(CommandType.Text, SbSql.ToString(), new SQLParameterCollection());

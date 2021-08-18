@@ -15,6 +15,8 @@ namespace BusinessLogicLayer.Service
 {
     public class AuthorityService : IAuthorityService
     {
+        private IQualityPass1Provider _IQualityPass1Provider;
+
         public IAuthorityProvider _AuthorityProvider { get; set; }
 
         public UserList Get_User_List_Browse()
@@ -234,7 +236,6 @@ namespace BusinessLogicLayer.Service
 
             return result;
         }
-
 
 
         public List<SelectListItem> GetPositionList(string FactoryID)

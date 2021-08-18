@@ -102,21 +102,21 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
         /// ===  ==========  ====  ==========  ==========
         /// 01.  2021/07/30  1.00    Admin        Create
         /// </history>
-        public int Update(Quality_Pass1 Item)
-        {
-            StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append("UPDATE [Quality_Pass1]"+ Environment.NewLine);
-            SbSql.Append("SET"+ Environment.NewLine);
-            if (Item.ID != null) { SbSql.Append("ID=@ID"+ Environment.NewLine); objParameter.Add("@ID", DbType.String, Item.ID);}
-            if (Item.Position != null) { SbSql.Append(",Position=@Position"+ Environment.NewLine); objParameter.Add("@Position", DbType.String, Item.Position);}
-            if (Item.BulkFGT_Brand != null) { SbSql.Append(",BulkFGT_Brand=@BulkFGT_Brand" + Environment.NewLine); objParameter.Add("@BulkFGT_Brand", DbType.String, Item.BulkFGT_Brand);}
-            SbSql.Append("WHERE 1 = 1" + Environment.NewLine);
+        public int Update_Brand(Quality_Pass1 Item)
+        {   
+            SQLParameterCollection objParameter = new SQLParameterCollection()
+            {
+                { "@ID", DbType.String, Item.ID},
+                { "@BulkFGT_Brand", DbType.String, Item.BulkFGT_Brand},
+            };
 
+            string sqlcmd = @"
+UPDATE [Quality_Pass1]
+set BulkFGT_Brand = @BulkFGT_Brand
+where id = @ID
+";
 
-
-
-            return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
+            return ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter);
         }
 		/*刪除(Delete) 詳細敘述如下*/
         /// <summary>

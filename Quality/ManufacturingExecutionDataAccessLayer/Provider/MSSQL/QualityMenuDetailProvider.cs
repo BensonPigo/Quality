@@ -87,18 +87,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
-		/*更新(Update) 詳細敘述如下*/
-        /// <summary>
-        /// 更新
-        /// </summary>
-        /// <param name="Item">成員</param>
-        /// <returns>回傳異動筆數</returns>
-		/// <info>Author: Admin; Date: 2021/08/18  </info>
-        /// <history>
-        /// xx.  YYYY/MM/DD   Ver   Author      Comments
-        /// ===  ==========  ====  ==========  ==========
-        /// 01.  2021/08/18  1.00    Admin        Create
-        /// </history>
+
         public int Update(Quality_Menu_Detail Item)
         {
             StringBuilder SbSql = new StringBuilder();
