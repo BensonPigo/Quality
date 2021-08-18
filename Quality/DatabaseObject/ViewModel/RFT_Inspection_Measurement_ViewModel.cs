@@ -9,6 +9,10 @@ namespace DatabaseObject.ViewModel
 {
     public class RFT_Inspection_Measurement_ViewModel : RFT_Inspection_Measurement
     {
+        public bool Result { get; set; }
+
+        public string ErrMsg { get; set; }
+
         public string SizeUnit { get; set; }
 
         public string Description { get; set; }

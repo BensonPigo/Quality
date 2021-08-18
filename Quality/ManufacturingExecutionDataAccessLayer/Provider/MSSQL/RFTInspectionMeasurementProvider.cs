@@ -72,7 +72,7 @@ and a.SizeCode = @SizeCode
 
 ";
 
-            return ExecuteList<RFT_Inspection_Measurement_ViewModel>(CommandType.Text, sqlcmd, objParameter);
+            return ExecuteList<RFT_Inspection_Measurement_ViewModel>(CommandType.Text, sqlcmd, objParameter, 60);
         }
 		/*建立(Create) 詳細敘述如下*/
         /// <summary>
@@ -184,7 +184,7 @@ and a.SizeCode = @SizeCode
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
 
-        public int Save(List<RFT_Inspection_Measurement_ViewModel> Measurement)
+        public int Save(List<RFT_Inspection_Measurement> Measurement)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();
 
@@ -201,23 +201,26 @@ select no = isnull(max(no),0)+1 from  ManufacturingExecution.dbo.Inspection_Meas
             string sqlcmd = string.Empty;
             foreach (var item in Measurement)
             {
-                objParameter.Add($"@MeasurementUkey{rowSeq}", item.MeasurementUkey);
-                objParameter.Add($"@StyleUkey{rowSeq}", item.StyleUkey);
-                objParameter.Add($"@No", strNo);
-                objParameter.Add($"@Code{rowSeq}", item.Code);
-                objParameter.Add($"@SizeCode{rowSeq}", item.SizeCode);
-                objParameter.Add($"@SizeSpec{rowSeq}", item.SizeSpec);
-                objParameter.Add($"@OrderID{rowSeq}", item.OrderID);
-                objParameter.Add($"@Article{rowSeq}", item.Article);
-                objParameter.Add($"@Location{rowSeq}", item.Location);
-                objParameter.Add($"@Line{rowSeq}", item.Line);
-                objParameter.Add($"@FactoryID{rowSeq}", item.FactoryID);
+                if (!string.IsNullOrEmpty(item.SizeSpec))
+                {
+                    objParameter.Add($"@MeasurementUkey{rowSeq}", item.MeasurementUkey);
+                    objParameter.Add($"@StyleUkey{rowSeq}", item.StyleUkey);
+                    objParameter.Add($"@No", strNo);
+                    objParameter.Add($"@Code{rowSeq}", item.Code);
+                    objParameter.Add($"@SizeCode{rowSeq}", item.SizeCode);
+                    objParameter.Add($"@SizeSpec{rowSeq}", item.SizeSpec);
+                    objParameter.Add($"@OrderID{rowSeq}", item.OrderID);
+                    objParameter.Add($"@Article{rowSeq}", item.Article);
+                    objParameter.Add($"@Location{rowSeq}", item.Location);
+                    objParameter.Add($"@Line{rowSeq}", item.Line);
+                    objParameter.Add($"@FactoryID{rowSeq}", item.FactoryID);
 
-                sqlcmd += $@"
+                    sqlcmd += $@"
 insert into RFT_Inspection_Measurement(MeasurementUkey,StyleUkey,No,Code,SizeCode,SizeSpec,OrderID,Article,Location,Line,FactoryID)
 values(@MeasurementUkey{rowSeq},@StyleUkey{rowSeq},@No,@Code{rowSeq},@SizeCode{rowSeq},@SizeSpec{rowSeq},@OrderID{rowSeq},@Article{rowSeq},@Location{rowSeq},@Line{rowSeq},@FactoryID{rowSeq})
 ";
-                rowSeq++;
+                    rowSeq++;
+                }
             }
 
             return ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter);

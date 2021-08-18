@@ -123,7 +123,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             return Json(viewModel);
         }
 
-       [HttpPost]
+        [HttpPost]
         public ActionResult GetSP(string StyleID)
         {
             List<string> orderIDs = SelectItemData.Where(x => string.IsNullOrEmpty(StyleID) || x.StyleID.Equals(StyleID))
@@ -496,8 +496,21 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public JsonResult MeasurementGet(string OrderID, string SizeCode)
         {
-            List<RFT_Inspection_Measurement_ViewModel> rFT_Inspection_Measurements = _InspectionService.MeasurementGet(OrderID, SizeCode, this.UserID);
+            List<RFT_Inspection_Measurement_ViewModel> rFT_Inspection_Measurements = _InspectionService.GetMeasurement(OrderID, SizeCode, this.UserID);
             return Json(rFT_Inspection_Measurements);
+        }
+
+        [HttpPost]
+        public JsonResult MeasurementSave(List<RFT_Inspection_Measurement> measurement)
+        {
+            foreach (RFT_Inspection_Measurement item in measurement)
+            {
+                item.FactoryID = this.FactoryID;
+                item.Line = this.Line;
+            }
+
+            RFT_Inspection_Measurement_ViewModel viewModel =  _InspectionService.SaveMeasurement(measurement);
+            return Json(new { viewModel.Result, viewModel.ErrMsg });
         }
 
         [HttpPost]

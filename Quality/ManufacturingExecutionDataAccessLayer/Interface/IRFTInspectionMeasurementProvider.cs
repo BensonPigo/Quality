@@ -9,6 +9,6 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
     {
         IList<RFT_Inspection_Measurement_ViewModel> Get(Int64 StyleUkey, string SizeCode, string UserID);
 
-        int Save(List<RFT_Inspection_Measurement_ViewModel> Measurement);
+        int Save(List<RFT_Inspection_Measurement> Measurement);
     }
 }

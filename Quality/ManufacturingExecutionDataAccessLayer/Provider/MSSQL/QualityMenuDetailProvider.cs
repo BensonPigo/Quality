@@ -9,21 +9,21 @@ using DatabaseObject.ManufacturingExecutionDB;
 
 namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 {
-    /*(QualityPass1Provider) 詳細敘述如下*/
+    /*(QualityMenuDetailProvider) 詳細敘述如下*/
     /// <summary>
     /// 
     /// </summary>
-    /// <info>Author: Admin; Date: 2021/07/30  </info>
+    /// <info>Author: Admin; Date: 2021/08/18  </info>
     /// <history>
     /// xx.  YYYY/MM/DD   Ver   Author      Comments
     /// ===  ==========  ====  ==========  ==========
-    /// 01.  2021/07/30  1.00    Admin        Create
+    /// 01.  2021/08/18  1.00    Admin        Create
     /// </history>
-    public class QualityPass1Provider : SQLDAL, IQualityPass1Provider
+    public class QualityMenuDetailProvider : SQLDAL, IQualityMenuDetailProvider
     {
         #region 底層連線
-        public QualityPass1Provider(string conString) : base(conString) { }
-        public QualityPass1Provider(SQLDataTransaction tra) : base(tra) { }
+        public QualityMenuDetailProvider(string conString) : base(conString) { }
+        public QualityMenuDetailProvider(SQLDataTransaction tra) : base(tra) { }
         #endregion
 
 		#region CRUD Base
@@ -33,28 +33,25 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
         /// </summary>
         /// <param name="Item">成員</param>
         /// <returns>回傳</returns>
-		/// <info>Author: Admin; Date: 2021/07/30  </info>
+		/// <info>Author: Admin; Date: 2021/08/18  </info>
         /// <history>
         /// xx.  YYYY/MM/DD   Ver   Author      Comments
         /// ===  ==========  ====  ==========  ==========
-        /// 01.  2021/07/30  1.00    Admin        Create
+        /// 01.  2021/08/18  1.00    Admin        Create
         /// </history>
-        public IList<Quality_Pass1> Get(Quality_Pass1 Item)
+        public IList<Quality_Menu_Detail> Get(Quality_Menu_Detail Item)
         {
             StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection
-            {
-                { "@ID", DbType.String, Item.ID } ,
-            };
-
+            SQLParameterCollection objParameter = new SQLParameterCollection();
             SbSql.Append("SELECT"+ Environment.NewLine);
             SbSql.Append("         ID"+ Environment.NewLine);
-            SbSql.Append("        ,Position"+ Environment.NewLine);
-            SbSql.Append("        ,BulkFGT_Brand" + Environment.NewLine);
-            SbSql.Append("FROM [Quality_Pass1]"+ Environment.NewLine);
-            SbSql.Append("Where ID=@ID" + Environment.NewLine);
+            SbSql.Append("        ,Type"+ Environment.NewLine);
+            SbSql.Append("        ,FunctionName"+ Environment.NewLine);
+            SbSql.Append("FROM [Quality_Menu_Detail]"+ Environment.NewLine);
 
-            return ExecuteList<Quality_Pass1>(CommandType.Text, SbSql.ToString(), objParameter);
+
+
+            return ExecuteList<Quality_Menu_Detail>(CommandType.Text, SbSql.ToString(), objParameter);
         }
 		/*建立(Create) 詳細敘述如下*/
         /// <summary>
@@ -62,27 +59,27 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
         /// </summary>
         /// <param name="Item">成員</param>
         /// <returns>回傳異動筆數</returns>
-		/// <info>Author: Admin; Date: 2021/07/30  </info>
+		/// <info>Author: Admin; Date: 2021/08/18  </info>
         /// <history>
         /// xx.  YYYY/MM/DD   Ver   Author      Comments
         /// ===  ==========  ====  ==========  ==========
-        /// 01.  2021/07/30  1.00    Admin        Create
+        /// 01.  2021/08/18  1.00    Admin        Create
         /// </history>
-        public int Create(Quality_Pass1 Item)
+        public int Create(Quality_Menu_Detail Item)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append("INSERT INTO [Quality_Pass1]"+ Environment.NewLine);
+            SbSql.Append("INSERT INTO [Quality_Menu_Detail]"+ Environment.NewLine);
             SbSql.Append("(" + Environment.NewLine);
             SbSql.Append("         ID"+ Environment.NewLine);
-            SbSql.Append("        ,Position"+ Environment.NewLine);
-            SbSql.Append("        ,BulkFGT_Brand" + Environment.NewLine);
+            SbSql.Append("        ,Type"+ Environment.NewLine);
+            SbSql.Append("        ,FunctionName"+ Environment.NewLine);
             SbSql.Append(")"+ Environment.NewLine);
             SbSql.Append("VALUES"+ Environment.NewLine);
             SbSql.Append("(" + Environment.NewLine);
             SbSql.Append("         @ID"); objParameter.Add("@ID", DbType.String, Item.ID);
-            SbSql.Append("        ,@Position"); objParameter.Add("@Position", DbType.String, Item.Position);
-            SbSql.Append("        ,@BulkFGT_Brand"); objParameter.Add("@BulkFGT_Brand", DbType.String, Item.BulkFGT_Brand);
+            SbSql.Append("        ,@Type"); objParameter.Add("@Type", DbType.String, Item.Type);
+            SbSql.Append("        ,@FunctionName"); objParameter.Add("@FunctionName", DbType.String, Item.FunctionName);
             SbSql.Append(")"+ Environment.NewLine);
 
 
@@ -90,21 +87,22 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
-        public int Update_Brand(Quality_Pass1 Item)
-        {   
-            SQLParameterCollection objParameter = new SQLParameterCollection()
-            {
-                { "@ID", DbType.String, Item.ID},
-                { "@BulkFGT_Brand", DbType.String, Item.BulkFGT_Brand},
-            };
 
-            string sqlcmd = @"
-UPDATE [Quality_Pass1]
-set BulkFGT_Brand = @BulkFGT_Brand
-where id = @ID
-";
+        public int Update(Quality_Menu_Detail Item)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            SbSql.Append("UPDATE [Quality_Menu_Detail]"+ Environment.NewLine);
+            SbSql.Append("SET"+ Environment.NewLine);
+            if (Item.ID != null) { SbSql.Append("ID=@ID"+ Environment.NewLine); objParameter.Add("@ID", DbType.String, Item.ID);}
+            if (Item.Type != null) { SbSql.Append(",Type=@Type"+ Environment.NewLine); objParameter.Add("@Type", DbType.String, Item.Type);}
+            if (Item.FunctionName != null) { SbSql.Append(",FunctionName=@FunctionName"+ Environment.NewLine); objParameter.Add("@FunctionName", DbType.String, Item.FunctionName);}
+            SbSql.Append("WHERE 1 = 1" + Environment.NewLine);
 
-            return ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter);
+
+
+
+            return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
 		/*刪除(Delete) 詳細敘述如下*/
         /// <summary>
@@ -112,19 +110,17 @@ where id = @ID
         /// </summary>
         /// <param name="Item">成員</param>
         /// <returns>回傳異動筆數</returns>
-		/// <info>Author: Admin; Date: 2021/07/30  </info>
+		/// <info>Author: Admin; Date: 2021/08/18  </info>
         /// <history>
         /// xx.  YYYY/MM/DD   Ver   Author      Comments
         /// ===  ==========  ====  ==========  ==========
-        /// 01.  2021/07/30  1.00    Admin        Create
+        /// 01.  2021/08/18  1.00    Admin        Create
         /// </history>
-        public int Delete(Quality_Pass1 Item)
+        public int Delete(Quality_Menu_Detail Item)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append("DELETE FROM [Quality_Pass1]"+ Environment.NewLine);
-
-
+            SbSql.Append("DELETE FROM [Quality_Menu_Detail]"+ Environment.NewLine);
 
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);

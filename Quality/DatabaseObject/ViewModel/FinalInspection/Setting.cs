@@ -31,9 +31,9 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string StyleID { get; set; }
         public string SeasonID { get; set; }
         public string BrandID { get; set; }
-        public string Qty { get; set; }
+        public int Qty { get; set; }
         public string Cartons { get; set; }
-        public string AvailableQty { get; set; }
+        public int AvailableQty { get; set; }
     }
 
     public class SelectCarton

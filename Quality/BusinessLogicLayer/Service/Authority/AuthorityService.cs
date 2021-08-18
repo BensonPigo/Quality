@@ -1,5 +1,6 @@
 ﻿using ADOHelper.Utility;
 using BusinessLogicLayer.Interface;
+using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using ManufacturingExecutionDataAccessLayer.Interface;
@@ -15,6 +16,8 @@ namespace BusinessLogicLayer.Service
 {
     public class AuthorityService : IAuthorityService
     {
+        private IQualityPass1Provider _IQualityPass1Provider;
+
         public IAuthorityProvider _AuthorityProvider { get; set; }
 
         public UserList Get_User_List_Browse()
@@ -95,7 +98,7 @@ namespace BusinessLogicLayer.Service
             {
                 _AuthorityProvider = new AuthorityProvider(Common.ManufacturingExecutionDataAccessLayer);
 
-                List<Quality_Position> list = _AuthorityProvider.Get_Position_Browse(FactoryID).ToList();
+                List<DatabaseObject.ResultModel.Quality_Position> list = _AuthorityProvider.Get_Position_Browse(FactoryID).ToList();
                 result.DataList = list;
                 result.Result = true;
             }
@@ -109,9 +112,9 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public Quality_Position Get_Position_Detail(string Position)
+        public DatabaseObject.ResultModel.Quality_Position Get_Position_Detail(string Position)
         {
-            Quality_Position result = new Quality_Position();
+            DatabaseObject.ResultModel.Quality_Position result = new DatabaseObject.ResultModel.Quality_Position();
 
             try
             {
@@ -137,9 +140,9 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public Quality_Position Update_Position_Detail(Quality_Position_Request Req)
+        public DatabaseObject.ResultModel.Quality_Position Update_Position_Detail(Quality_Position_Request Req)
         {
-            Quality_Position result = new Quality_Position();
+            DatabaseObject.ResultModel.Quality_Position result = new DatabaseObject.ResultModel.Quality_Position();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ManufacturingExecutionDataAccessLayer);
 
             try
@@ -160,9 +163,9 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public Quality_Position Create_Position_Detail(Quality_Position_Request Req)
+        public DatabaseObject.ResultModel.Quality_Position Create_Position_Detail(Quality_Position_Request Req)
         {
-            Quality_Position result = new Quality_Position();
+            DatabaseObject.ResultModel.Quality_Position result = new DatabaseObject.ResultModel.Quality_Position();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ManufacturingExecutionDataAccessLayer);
 
             try
@@ -235,7 +238,10 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-
+        //public Quality_Pass1 SaveBulkFGT_Pass1(Quality_Pass1 quality_Pass1)
+        //{
+        //    //return quality_Pass1
+        //}
 
         public List<SelectListItem> GetPositionList(string FactoryID)
         {
