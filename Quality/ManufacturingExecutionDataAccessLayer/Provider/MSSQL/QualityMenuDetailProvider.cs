@@ -9,21 +9,21 @@ using DatabaseObject.ManufacturingExecutionDB;
 
 namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 {
-    /*(QualityMenuProvider) 詳細敘述如下*/
+    /*(QualityMenuDetailProvider) 詳細敘述如下*/
     /// <summary>
     /// 
     /// </summary>
-    /// <info>Author: Admin; Date: 2021/07/30  </info>
+    /// <info>Author: Admin; Date: 2021/08/18  </info>
     /// <history>
     /// xx.  YYYY/MM/DD   Ver   Author      Comments
     /// ===  ==========  ====  ==========  ==========
-    /// 01.  2021/07/30  1.00    Admin        Create
+    /// 01.  2021/08/18  1.00    Admin        Create
     /// </history>
-    public class QualityMenuProvider : SQLDAL, IQualityMenuProvider
+    public class QualityMenuDetailProvider : SQLDAL, IQualityMenuDetailProvider
     {
         #region 底層連線
-        public QualityMenuProvider(string conString) : base(conString) { }
-        public QualityMenuProvider(SQLDataTransaction tra) : base(tra) { }
+        public QualityMenuDetailProvider(string conString) : base(conString) { }
+        public QualityMenuDetailProvider(SQLDataTransaction tra) : base(tra) { }
         #endregion
 
 		#region CRUD Base
@@ -33,37 +33,25 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
         /// </summary>
         /// <param name="Item">成員</param>
         /// <returns>回傳</returns>
-		/// <info>Author: Admin; Date: 2021/07/30  </info>
+		/// <info>Author: Admin; Date: 2021/08/18  </info>
         /// <history>
         /// xx.  YYYY/MM/DD   Ver   Author      Comments
         /// ===  ==========  ====  ==========  ==========
-        /// 01.  2021/07/30  1.00    Admin        Create
+        /// 01.  2021/08/18  1.00    Admin        Create
         /// </history>
-        public IList<Quality_Menu> Get(string PositionID)
+        public IList<Quality_Menu_Detail> Get(Quality_Menu_Detail Item)
         {
             StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection
-            {
-                { "@PositionID", DbType.String, PositionID} ,
-            };
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            SbSql.Append("SELECT"+ Environment.NewLine);
+            SbSql.Append("         ID"+ Environment.NewLine);
+            SbSql.Append("        ,Type"+ Environment.NewLine);
+            SbSql.Append("        ,FunctionName"+ Environment.NewLine);
+            SbSql.Append("FROM [Quality_Menu_Detail]"+ Environment.NewLine);
 
-            SbSql.Append(@"
-select m.[ID]
-	, m.[ModuleName]
-	, m.[ModuleSeq]
-	, m.[FunctionName]
-	, m.[FunctionSeq]
-	, m.[Junk]
-	, m.[Url]
-from Quality_Position p
-inner join Quality_Pass2 p2 on p.ID = PositionID
-inner join Quality_Menu m on m.ID = p2.MenuID
-where p.ID = @PositionID
-and p2.Used = iif(p.IsAdmin = 1, p2.Used, 1)
-and m.Junk = 0
-order by ModuleSeq, FunctionSeq" + Environment.NewLine);
 
-            return ExecuteList<Quality_Menu>(CommandType.Text, SbSql.ToString(), objParameter);
+
+            return ExecuteList<Quality_Menu_Detail>(CommandType.Text, SbSql.ToString(), objParameter);
         }
 		/*建立(Create) 詳細敘述如下*/
         /// <summary>
@@ -71,34 +59,31 @@ order by ModuleSeq, FunctionSeq" + Environment.NewLine);
         /// </summary>
         /// <param name="Item">成員</param>
         /// <returns>回傳異動筆數</returns>
-		/// <info>Author: Admin; Date: 2021/07/30  </info>
+		/// <info>Author: Admin; Date: 2021/08/18  </info>
         /// <history>
         /// xx.  YYYY/MM/DD   Ver   Author      Comments
         /// ===  ==========  ====  ==========  ==========
-        /// 01.  2021/07/30  1.00    Admin        Create
+        /// 01.  2021/08/18  1.00    Admin        Create
         /// </history>
-        public int Create(Quality_Menu Item)
+        public int Create(Quality_Menu_Detail Item)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append("INSERT INTO [Quality_Menu]"+ Environment.NewLine);
+            SbSql.Append("INSERT INTO [Quality_Menu_Detail]"+ Environment.NewLine);
             SbSql.Append("(" + Environment.NewLine);
             SbSql.Append("         ID"+ Environment.NewLine);
-            SbSql.Append("        ,ModuleName"+ Environment.NewLine);
-            SbSql.Append("        ,ModuleSeq"+ Environment.NewLine);
+            SbSql.Append("        ,Type"+ Environment.NewLine);
             SbSql.Append("        ,FunctionName"+ Environment.NewLine);
-            SbSql.Append("        ,FunctionSeq"+ Environment.NewLine);
-            SbSql.Append("        ,Junk"+ Environment.NewLine);
             SbSql.Append(")"+ Environment.NewLine);
             SbSql.Append("VALUES"+ Environment.NewLine);
             SbSql.Append("(" + Environment.NewLine);
             SbSql.Append("         @ID"); objParameter.Add("@ID", DbType.String, Item.ID);
-            SbSql.Append("        ,@ModuleName"); objParameter.Add("@ModuleName", DbType.String, Item.ModuleName);
-            SbSql.Append("        ,@ModuleSeq"); objParameter.Add("@ModuleSeq", DbType.Int32, Item.ModuleSeq);
+            SbSql.Append("        ,@Type"); objParameter.Add("@Type", DbType.String, Item.Type);
             SbSql.Append("        ,@FunctionName"); objParameter.Add("@FunctionName", DbType.String, Item.FunctionName);
-            SbSql.Append("        ,@FunctionSeq"); objParameter.Add("@FunctionSeq", DbType.Int32, Item.FunctionSeq);
-            SbSql.Append("        ,@Junk"); objParameter.Add("@Junk", DbType.String, Item.Junk);
             SbSql.Append(")"+ Environment.NewLine);
+
+
+
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
@@ -108,25 +93,24 @@ order by ModuleSeq, FunctionSeq" + Environment.NewLine);
         /// </summary>
         /// <param name="Item">成員</param>
         /// <returns>回傳異動筆數</returns>
-		/// <info>Author: Admin; Date: 2021/07/30  </info>
+		/// <info>Author: Admin; Date: 2021/08/18  </info>
         /// <history>
         /// xx.  YYYY/MM/DD   Ver   Author      Comments
         /// ===  ==========  ====  ==========  ==========
-        /// 01.  2021/07/30  1.00    Admin        Create
+        /// 01.  2021/08/18  1.00    Admin        Create
         /// </history>
-        public int Update(Quality_Menu Item)
+        public int Update(Quality_Menu_Detail Item)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append("UPDATE [Quality_Menu]"+ Environment.NewLine);
+            SbSql.Append("UPDATE [Quality_Menu_Detail]"+ Environment.NewLine);
             SbSql.Append("SET"+ Environment.NewLine);
-            if (Item.ID > 0) { SbSql.Append("ID=@ID"+ Environment.NewLine); objParameter.Add("@ID", DbType.String, Item.ID);}
-            if (Item.ModuleName != null) { SbSql.Append(",ModuleName=@ModuleName"+ Environment.NewLine); objParameter.Add("@ModuleName", DbType.String, Item.ModuleName);}
-            if (Item.ModuleSeq != null) { SbSql.Append(",ModuleSeq=@ModuleSeq"+ Environment.NewLine); objParameter.Add("@ModuleSeq", DbType.Int32, Item.ModuleSeq);}
+            if (Item.ID != null) { SbSql.Append("ID=@ID"+ Environment.NewLine); objParameter.Add("@ID", DbType.String, Item.ID);}
+            if (Item.Type != null) { SbSql.Append(",Type=@Type"+ Environment.NewLine); objParameter.Add("@Type", DbType.String, Item.Type);}
             if (Item.FunctionName != null) { SbSql.Append(",FunctionName=@FunctionName"+ Environment.NewLine); objParameter.Add("@FunctionName", DbType.String, Item.FunctionName);}
-            if (Item.FunctionSeq != null) { SbSql.Append(",FunctionSeq=@FunctionSeq"+ Environment.NewLine); objParameter.Add("@FunctionSeq", DbType.Int32, Item.FunctionSeq);}
-            if (Item.Junk) { SbSql.Append(",Junk=@Junk"+ Environment.NewLine); objParameter.Add("@Junk", DbType.String, Item.Junk);}
             SbSql.Append("WHERE 1 = 1" + Environment.NewLine);
+
+
 
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
@@ -137,17 +121,18 @@ order by ModuleSeq, FunctionSeq" + Environment.NewLine);
         /// </summary>
         /// <param name="Item">成員</param>
         /// <returns>回傳異動筆數</returns>
-		/// <info>Author: Admin; Date: 2021/07/30  </info>
+		/// <info>Author: Admin; Date: 2021/08/18  </info>
         /// <history>
         /// xx.  YYYY/MM/DD   Ver   Author      Comments
         /// ===  ==========  ====  ==========  ==========
-        /// 01.  2021/07/30  1.00    Admin        Create
+        /// 01.  2021/08/18  1.00    Admin        Create
         /// </history>
-        public int Delete(Quality_Menu Item)
+        public int Delete(Quality_Menu_Detail Item)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append("DELETE FROM [Quality_Menu]"+ Environment.NewLine);
+            SbSql.Append("DELETE FROM [Quality_Menu_Detail]"+ Environment.NewLine);
+
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
