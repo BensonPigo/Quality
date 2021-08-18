@@ -261,6 +261,8 @@
                 }
             });
         }
+
+        function ShowLoading() {            // 開啟Loading物件，避免亂按            $('#loaderBackground, #page_loader_gif').removeClass('display-None');        }        function NonLoading() {            // 關閉物件            $('#loaderBackground, #page_loader_gif').addClass('display-None');        }
     </script>
 
     @RenderSection("scripts", required: false)

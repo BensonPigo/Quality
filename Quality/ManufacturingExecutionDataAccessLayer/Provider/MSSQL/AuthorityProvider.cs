@@ -70,8 +70,7 @@ select   MenuID = m.ID
 		,m.FunctionName
 		,p2.Used
 from Quality_Pass1 p
-left join ManufacturingExecution.dbo.Pass1 mp1 ON p.ID= mp1.ID
-left join Production.dbo.Pass1 pp1 on p.ID = pp1.idinner join Quality_Position pos on pos.ID=p.Position
+inner join Quality_Position pos on pos.ID=p.Position
 inner join Quality_Pass2 p2 on p2.PositionID=pos.ID
 inner join Quality_Menu m on p2.MenuID=m.id
 where p.ID='{UserID}'
@@ -321,7 +320,6 @@ INSERT INTO dbo.Quality_Pass1
 
 SELECT [Text] = ID, [Value]= ID
 FROM Quality_Position
-WHERE FactoryID='{FactoryID}'
 ");
 
 
