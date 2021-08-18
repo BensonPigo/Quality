@@ -6,10 +6,15 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
-
-
 @model AuthoritybyPosition
+
+
+
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
 
 <style type="text/css">
     .dataTables_wrapper {
@@ -122,7 +127,7 @@
                                         }
                                     </td>
                                     <td>
-                                        <img onclick="Edit_Pic_Click('@item.Position')" style="width:1.2vw;cursor:pointer;" src="~/ThirdParty/SciCustom/icon/Edit.png" />
+                                        <img onclick="Edit_Pic_Click('@item.Position')" style="width:1.2vw;cursor:pointer;" src="~/Image/Icon/Edit.png" />
                                     </td>
                                 </tr>
                             }

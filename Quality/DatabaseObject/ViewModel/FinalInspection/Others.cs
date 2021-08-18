@@ -7,6 +7,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
 {
     public class Others
     {
+        public string FinalInspectionID { get; set; }
         public string CFA { get; set; }
         public string ProductionStatus { get; set; }
         public string InspectionResult { get; set; }
