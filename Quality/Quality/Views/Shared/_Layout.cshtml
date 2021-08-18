@@ -23,7 +23,6 @@
     <script src="~/ThirdParty/CustomScripts/basic.js"></script>
     <script src="~/ThirdParty/plugins/jquery-datepicker/Datepicker.js"></script>
     <script src="~/ThirdParty/SciCustom/js/jquery-ui.min.js"></script>
-    <script src="~/ThirdParty/SciCustom/js/main.js"></script>
     <script src="~/ThirdParty/plugins/jquery-magnific-popup/jquery.magnific-popup.min.js"></script>
 
     @RenderSection("head", required: false)
@@ -35,7 +34,6 @@
         string WebPortalURL_HomePage = ConfigurationManager.AppSettings["WebPortalURL_HomePage"].ToString();
 
         string FactoryID = string.Empty;
-        string UserName = string.Empty;
         string SelectedMenu = string.Empty;
         List<Quality_Menu> menus = new List<Quality_Menu>();
         if (Session.Keys.Count <= 4)
@@ -47,7 +45,6 @@
         }
         else
         {
-            UserName = HttpContext.Current.Session["UserName"].ToString();
             menus = (List<Quality_Menu>)HttpContext.Current.Session["MenuList"];
         }
 
@@ -150,7 +147,6 @@
             <ul class="header-info light">
                 <li class="header-info-user">
                     <i class="icon-user"></i>
-                    <span>@UserName</span>
                 </li>
                 <li class="header-info-date">
                     <i class="icon-calendar"></i>
@@ -181,27 +177,27 @@
     <!--左側選單 start-->
     <div class="sidebar">
         <nav style="overflow-y: auto;max-height: 90%;">
-                @if (menus.Count > 0)
+            @if (menus.Count > 0)
+            {
+                foreach (string moduleName in menus.OrderBy(x => x.ModuleSeq).GroupBy(x => x.ModuleName).Select(x => x.Key))
                 {
-                    foreach (string moduleName in menus.OrderBy(x => x.ModuleSeq).GroupBy(x => x.ModuleName).Select(x => x.Key))
-                    {
-                        string IsOpen = moduleName == SelectedMenu ? "current" : "";
-                        var subFunction = menus.Where(x => x.ModuleName.Equals(moduleName)).OrderBy(x => x.FunctionSeq);
-                        <ul class="sidebar-nav pointer">
-                            <li class="RootLi @Html.Raw(IsOpen)">
-                                <h6><i class="icon-box"></i><span>@moduleName</span></h6>
-                                <ul class="sidebar-menu">
-                                    @foreach (Quality_Menu r in subFunction)
-                                    {
-                                        <li>
-                                            <h6><a href="@r.Url"><span>@r.FunctionName</span></a></h6>
-                                        </li>
-                                    }
-                                </ul>
-                            </li>
-                        </ul>
-                    }
+                    string IsOpen = moduleName == SelectedMenu ? "current" : "";
+                    var subFunction = menus.Where(x => x.ModuleName.Equals(moduleName)).OrderBy(x => x.FunctionSeq);
+                    <ul class="sidebar-nav pointer">
+                        <li class="RootLi @Html.Raw(IsOpen)">
+                            <h6><i class="icon-box"></i><span>@moduleName</span></h6>
+                            <ul class="sidebar-menu">
+                                @foreach (Quality_Menu r in subFunction)
+                                {
+                                    <li>
+                                        <h6><a href="@r.Url"><span>@r.FunctionName</span></a></h6>
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                    </ul>
                 }
+            }
         </nav>
     </div>
     <!--左側選單 end-->
@@ -211,7 +207,7 @@
 
     @RenderBody()
 
-
+    <script src="~/ThirdParty/SciCustom/js/main.js"></script>
     <script type="text/javascript">
         $(function () {
             $('.date-picker').datepicker({ changeYear: true, changeMonth: true, currentText: "Now" });

@@ -288,7 +288,7 @@
         position: absolute;
         left: 15vw;
         top: 10vh;
-        z-index: 1041;
+        z-index: 1040;
         background-color: white;
         border: solid 1px black;
         font-size: 1em;
@@ -313,6 +313,7 @@
             background-color: lightgray;
             cursor: pointer;
         }
+
             .ReworkListTag > div:hover {
                 background-color: gray;
             }
@@ -384,6 +385,64 @@
         .ReworkListTableAction > input[type="button"] {
             width: 100%;
         }
+
+    #ReworkListValidate {
+        width: 29vw;
+        height: 32vh;
+        position: absolute;
+        left: 39vw;
+        top: 34vh;
+        z-index: 1042;
+        background-color: #c8eac8;
+        border: solid 1px black;
+        font-size: 1em;
+        font-weight: bold;
+    }
+
+    .ReworkListValidateHeader {
+        background-color: yellowgreen;
+        text-align: center;
+        vertical-align: middle;
+        padding: 1em;
+    }
+
+    .ReworkListValidateTable > tbody > tr > td {
+         padding:1em;
+    }
+
+        .ReworkListValidateTable > tbody > tr > td > input[type="text"] {
+            width: 100%;
+        }
+
+    #Measurement {
+        width: 85vw;
+        height: 84vh;
+        position: absolute;
+        left: 8vw;
+        top: 10vh;
+        z-index: 1040;
+        background-color: white;
+        border: solid 1px black;
+        font-size: 1em;
+        font-weight: bold;
+        padding: 1em;
+    }
+
+    .MeasurementRowHeader {
+        color: black;
+        font-size: 1.1vw;
+        font-weight: bold;
+    }
+
+    .MeasurementTable {
+        width: 100%;
+        vertical-align:middle;
+        text-align:center;
+    }
+
+    .MeasurementTable > tbody > tr > td {
+        vertical-align: middle;
+    }
 
     #CFTComments {
         width: 73vw;
@@ -770,6 +829,7 @@
                     <tr>
                         <td align="left" valign="middle" style="width: 20%;">
                             <p style="padding-left: 1em; font-size: 1.5em; font-weight: bold;">Add Defect</p>
+                            <p class="RewoekListSetting display-None" idx="F"></p>
                         </td>
                         <td align="right" valign="middle">
                             <input id="btnDefectSave" type="button" class="site-btn btn-blue font1rem" style="margin:0;border:0;padding: 7px 2em;" name="DefectSave" value="Save" />
@@ -806,7 +866,7 @@
                     </tbody>
                 </table>
             </div>
-            <div style="float:left; width:20vw; height:73vh; margin:0 1em; overflow-x: hidden; overflow-y: auto;">
+            <div style="float:left; width:20vw; height: 73vh; margin:0 1em; overflow-x: hidden; overflow-y: auto;">
                 <table class="DefectTable ADDDefectType" style="width: 20vw;">
                     <thead>
                         <tr>
@@ -865,7 +925,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div style="margin-top:1em;">
+                <div style="margin-top:1em; height: 37vh; overflow-y: auto; overflow-x: hidden;">
                     <table class="DefectTable BAAuditCriteria" style="width: 12vw;">
                         <thead>
                             <tr>
@@ -906,7 +966,7 @@
                             <p style="padding-left: 1em; font-size: 1.5em; font-weight: bold;">Rework List</p>
                         </td>
                         <td align="right" valign="middle">
-                            <input id="btnCFTCommentsExit" type="button" class="site-btn btn-gy font1rem" style="margin:0;border:0;padding: 7px 2em;" name="CFTCommentsExit" value="Exit" />
+                            <input id="btnReworkListExit" type="button" class="site-btn btn-gy font1rem" style="margin:0;border:0;padding: 7px 2em;" name="ReworkListExit" value="Exit" />
                         </td>
                     </tr>
                 </tbody>
@@ -961,7 +1021,7 @@
                 <div class="ReworkListButtonAction display-None">
                     <input idx="Wash" type="button" value="Send To Washing">
                     <input idx="Print" type="button" value="Printing Repair">
-                    <input idx="Repl." type="button" value="Need Replacement">
+                    <input idx="Repl" type="button" value="Need Replacement">
                     <input idx="Shade" type="button" value="Shading Defect">
                 </div>
             </div>
@@ -973,6 +1033,96 @@
                 <div class="ReworkListButtonDispose display-None">
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div id="ReworkListValidate" class="display-None">
+        <div class="ReworkListValidateHeader">
+            <h2>Verify Password</h2>
+        </div>
+        <div style="padding: 1em;background-color: #c8eac8;">
+            <table class="ReworkListValidateTable" style=" width: 26vw; text-align: center; padding: 1em;">
+                <tbody>
+                    <tr>
+                        <td style="width:8vw;"><h3>Account</h3></td>
+                        <td><input id="ReworkListValidateAccount" type="text" /></td>
+                    </tr>
+                    <tr>
+                        <td><h3>Password</h3></td>
+                        <td><input id="ReworkListValidatePassword" type="text" /></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <input id="btnReworkListValidateVerify" type="button" class="site-btn btn-orange font1rem" style="margin:0;border:0;padding: 7px 2em;" name="ReworkListValidateVerify" value="Verify" />
+                            <input id="btnReworkListValidateExit" type="button" class="site-btn btn-orange font1rem" style="margin:0;border:0;padding: 7px 2em;" name="ReworkListValidateExit" value="Exit" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="Measurement" class="display-None">
+        <div>
+            <table style="width: 83vw;">
+                <tbody>
+                    <tr>
+                        <td align="left" valign="middle" style="width: 30%;">
+                            <p style="padding-left: 1em; font-size: 1.5em; font-weight: bold;">Measurement</p>
+                        </td>
+                        <td align="right" valign="middle">                            
+                            <input id="btnMeasurementSave" type="button" class="site-btn btn-blue font1rem" style="margin:0;border:0;padding: 7px 2em;" name="MeasurementSave" value="Save" />
+                            <input id="btnMeasurementExit" type="button" class="site-btn btn-gy font1rem" style="margin:0;border:0;padding: 7px 2em;" name="MeasurementExit" value="Exit" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="row MeasurementRowHeader">
+            <div class="col-auto"><p>SP no.</p></div>
+            <div class="col-auto"><p class="darkblue SP"></p></div>
+            <div class="col-auto"><p>Style#</p></div>
+            <div class="col-auto"><p class="darkblue Style"></p></div>
+            <div class="col-auto"><p>Article</p></div>
+            <div class="col-auto"><p class="darkblue Article"></p></div>
+            <div class="col-auto"><p>Unit</p></div>
+            <div class="col-auto"><p class="darkblue Unit"></p></div>
+        </div>
+        <div style=" width: 83vw; height: 70vh; overflow-y: auto;">
+            <table class="MeasurementTable DefectTable">
+                <thead>
+                    <tr>
+                        <th>
+                            <p>Coding</p>
+                        </th>
+                        <th>
+                            <p>Description</p>
+                        </th>
+                        <th>
+                            <p>Tol(+)</p>
+                        </th>
+                        <th>
+                            <p>Tol(-)</p>
+                        </th>
+                        <th>
+                            <p idx="SizeCode"></p>
+                        </th>
+                        <th>
+                            <p></p>
+                        </th>
+                        <th>
+                            <p>Diff</p>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="7" style="height: 8vh;vertical-align: middle;" valign="middle" align="center">
+                            <h3>Data Loading.......</h3>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -1136,6 +1286,7 @@
         AddDefectBindEvent();
         ReworkCardBindEvent();
         ReworkListBindEvent();
+        MeasurementBindEvent()
         CFTCommentsBindEvent();
         PictureDuringDummyFittingBindEvent();
         $('#SelectItemBackground').on('click', function () {
@@ -1305,18 +1456,27 @@
             if (!EditMode) {
                 return;
             }
+            $('.RewoekListSetting').attr("idx", "F").html('');
             GetDefectCategory();
             $('#SelectItemBackground, #AddDefect').removeClass('display-None').unbind('click');
         });
 
         $('#btnReworkList').on('click', function () {
             ReworkListGet();
-            $('#ReworkList').removeClass("display-None");
-            $('#btnRefresh').click();
+            $('#SelectItemBackground, #ReworkList').removeClass('display-None').unbind('click');
         });
 
         $('#btnMeasurement').on('click', function () {
-            alert('open other page');
+            if ($('#txtSP').val() == "" || $('#txtSize').val() == "") {
+                return;
+            }
+
+            $('.MeasurementRowHeader .SP').html($('#txtSP').val());
+            $('.MeasurementRowHeader .Style').html($('#txtStyle').val());
+            $('.MeasurementRowHeader .Article').html($('#txtArticle').val());            
+
+            MeasurementGet($('#txtSP').val(), $('#txtSize').val());
+            $('#SelectItemBackground, #Measurement').removeClass('display-None').unbind('click');
         });
 
         $('#btnCFTComments').on('click', function () {
@@ -1329,7 +1489,7 @@
             $('.CFTCommentsRowHeader .Season').html($('#txtSeason').val());
             $('.CFTCommentsRowHeader .SampleStage').html($('#txtSampleStage').val());
             CFTCommentsClick($('#txtSP').val(), $('#txtStyle').val(), $('#txtSeason').val(), $('#txtSampleStage').val());
-            $('#CFTComments').removeClass("display-None");
+            $('#SelectItemBackground, #CFTComments').removeClass('display-None').unbind('click');
         });
 
         $('#btnPictures').on('click', function () {
@@ -1342,7 +1502,7 @@
             $('.PictureDuringDummyFittingRowHeader .Article').html($('#txtArticle').val());
             $('.PictureDuringDummyFittingRowHeader .Size').html($('#txtSize').val());
             PicturesClick($('#txtSP').val(), $('#txtStyle').val(), $('#txtArticle').val(), $('#txtSize').val());
-            $('#PictureDuringDummyFitting').removeClass("display-None");
+            $('#SelectItemBackground, #PictureDuringDummyFitting').removeClass('display-None').unbind('click');
         });
     }
 
@@ -1452,6 +1612,7 @@
                 return;
             }
 
+            $('.RewoekListSetting').attr("idx", "F").html('');
             GetDefectCategory();
             $('#SelectItemBackground, #AddDefect').removeClass('display-None').unbind('click');
         });
@@ -1484,6 +1645,7 @@
             var bAAuditCriteriaID = $('.BAAuditCriteria .selectDefect').attr('idx');
             var bAAuditCriteria = $('.BAAuditCriteria .selectDefect>p').html();
             var pic = document.querySelector("#imgDefect").src;
+            var rewoekListSetting = $(".RewoekListSetting").attr('idx');
 
             if (defectCategoryID == null) {
                 msg.WithError("Please choose Defect Category before save.");
@@ -1500,36 +1662,54 @@
                 return;
             }
 
-            if (responsibilityID == null ) {
+            if (responsibilityID == null) {
                 msg.WithError("Please choose Responsibility before save.");
                 return;
             }
 
-            var tbody = $('#DefectType>tbody');
-            var rowCount = $('#DefectType tr').length;
-            var content = "<tr>";
-            if (pic != "") {
-                content += "<td><div id='pic" + rowCount+ "' class='zoom-gallery'> ";
-                content += "<a href='" + pic + "' data-source='' title='Defect Picture' style='width:640px;height:480px;'> ";
-                content += "<img src='" + pic + "' width='30' />";
-                content += "</a></div></td>";
+            if (rewoekListSetting == "F") {
+                var tbody = $('#DefectType>tbody');
+                var rowCount = $('#DefectType tr').length;
+                var content = "<tr>";
+                if (pic != "") {
+                    content += "<td><div id='pic" + rowCount + "' class='zoom-gallery'> ";
+                    content += "<a href='" + pic + "' data-source='' title='Defect Picture' style='width:640px;height:480px;'> ";
+                    content += "<img src='" + pic + "' width='30' />";
+                    content += "</a></div></td>";
+                }
+                else {
+                    content += "<td></td>";
+                }
+
+                content += "<td><img src='/Image/Icon/Delete.png' width='30' class='deleteDefectType' /></td>";
+                content += "<td><p>" + area2 + '-' + defectTypeID + '-' + responsibility + '-' + bAAuditCriteriaID + "</p></td>";
+                content += "<td class='display-None DefectValue' idi='" + rowCount + "'>";
+                content += "<p idx='DefectCategory' idv='" + defectCategoryID + "'>" + defectCategory + "</p>";
+                content += "<p idx='ADDDefectType' idv='" + defectTypeID + "'>" + defectType + "</p>";
+                content += "<p idx='Area1' idv='" + area1 + "'>" + area1 + "</p>";
+                content += "<p idx='Area2' idv='" + area2 + "'>" + area2 + "</p>";
+                content += "<p idx='Responsibility' idv='" + responsibilityID + "'>" + responsibility + "</p>";
+                content += "<p idx='BAAuditCriteria' idv='" + bAAuditCriteriaID + "'>" + bAAuditCriteria + "</p>";
+                content += "<p idx='pic' idv='pic'>" + pic + "</p>";
+                content += "</td></tr>";
+                tbody.append(content);
             }
             else {
-                content += "<td></td>";
-            }
+                var datasDetail = {
+                    ID: $('.RewoekListSetting').html(),
+                    GarmentDefectTypeID: defectCategoryID,
+                    GarmentDefectCodeID: defectTypeID,
+                    DefectCode: defectType,
+                    AreaCode: area2,
+                    PMS_RFTRespID: responsibilityID,
+                    PMS_RFTBACriteriaID: bAAuditCriteriaID,
+                    DefectPicture: pic.replace("data:image/webp;base64,", ""),
+                };
 
-            content += "<td><img src='/Image/Icon/Delete.png' width='30' class='deleteDefectType' /></td>";
-            content += "<td><p>" + area2 + '-' + defectTypeID + '-' + responsibility + '-' + bAAuditCriteriaID  + "</p></td>";
-            content += "<td class='display-None DefectValue' idi='" + rowCount + "'>";
-            content += "<p idx='DefectCategory' idv='" + defectCategoryID + "'>" + defectCategory + "</p>";
-            content += "<p idx='ADDDefectType' idv='" + defectTypeID + "'>" + defectType + "</p>";
-            content += "<p idx='Area1' idv='" + area1 + "'>" + area1 + "</p>";
-            content += "<p idx='Area2' idv='" + area2 + "'>" + area2 + "</p>";
-            content += "<p idx='Responsibility' idv='" + responsibilityID + "'>" + responsibility + "</p>";
-            content += "<p idx='BAAuditCriteria' idv='" + bAAuditCriteriaID + "'>" + bAAuditCriteria + "</p>";
-            content += "<p idx='pic' idv='pic'>" + pic + "</p>";
-            content += "</td></tr>";
-            tbody.append(content);
+                console.log(datasDetail);
+
+                ReworkListAddReject(datasDetail);
+            }
 
             $('#btnDefectExit').click();
         });
@@ -1572,32 +1752,95 @@
             $('.ReworkListTag>div').removeClass("selectTag");
             $(this).addClass("selectTag");
 
-            var idx = $(this).children('p').html();
-            if (idx == 'All') {
-                $(".ReworkListTable>tbody>tr").removeClass("display-None");
-            }
-            else {
-                $(".ReworkListTable>tbody>tr").addClass("display-None");
-                $(".ReworkListTable>tbody>tr[idx='" + idx + "']").removeClass("display-None");
-            }
+            FilterReworkListTable();
         });
 
-        $('#btnCFTCommentsExit').on('click', function () {
-            $('#ReworkList').addClass("display-None");
+        $('#btnReworkListExit').on('click', function () {
+            $("#SelectItemBackground, #ReworkList").addClass('display-None');
+            $('#SelectItemBackground').on('click', function () {
+                $("#SelectItemBackground, .SelectItem").addClass('display-None');
+            });
+
+            $('#btnRefresh').click();
         });
 
         $('#btnReworkListAction').on('click', function () {
-            $('.ReworkListButtonAction').slideToggle(800);
+            $('.ReworkListButtonAction').slideToggle(100);
+        });
+
+        $('#btnReworkListDelete').on('click', function () {
+            $('#ReworkListValidate').removeClass('display-None');
+            $('#SelectItemBackground').css("z-index", "1041");
         });
 
         $('#btnReworkListDispose').on('click', function () {
-            $('.ReworkListButtonDispose').slideToggle(800);
+            $('.ReworkListButtonDispose').slideToggle(100);
+        });
+
+        $(".ReworkListButtonAction>input[type='button']").on('click', function () {
+            var check = $(".ReworkListTable > tbody input[type='checkbox']:checked");
+            var checkLen = check.length;
+            if (checkLen == 0) {
+                msg.WithError("Please select data before click.");
+                return;
+            }
+
+            var isGO = 1;
+            $.each(check, function (data, value) {
+                if ($(this).attr('idx') != "Hard") {
+                    msg.WithError("[Rework No] should be [Hard].");
+                }
+
+                isGO = 0;
+                return;
+            });
+
+            if (!isGO) {
+                return;
+            }
+
+            ReworkListSaveAction($(this).attr('idx'), '');
+        });
+
+        $('#btnReworkListValidateVerify').on('click', function () {
+            if ($('#ReworkListValidateAccount').val() == "" || $('#ReworkListValidatePassword').val() == "") {
+                return;
+            }
+
+            ReworkListDelete();
+        });
+
+        $('#btnReworkListValidateExit').on('click', function () {
+            $('#ReworkListValidate').addClass('display-None');
+            $('#SelectItemBackground').css("z-index", "1040");
+        });
+
+    }
+
+    function MeasurementBindEvent() {
+        $('#btnMeasurementExit').on('click', function () {
+            $('#SelectItemBackground, #Measurement').addClass("display-None");
+
+            $('#SelectItemBackground').on('click', function () {
+                $("#SelectItemBackground, .SelectItem").addClass('display-None');
+            });
+
+            var tbody = "<tr><td colspan='7' style='height: 8vh; vertical-align: middle;' valign='middle' align='center'><h3>Data Loading.......</h3></td></tr>";
+            $('.MeasurementTable>tbody').html(tbody);
+        });
+
+        $('#btnMeasurementSave').on('click', function () {
+
         });
     }
 
     function CFTCommentsBindEvent() {
         $('#btnCFTCommentsExit').on('click', function () {
-            $('#CFTComments').addClass("display-None");
+            $('#SelectItemBackground, #CFTComments').addClass("display-None");
+
+            $('#SelectItemBackground').on('click', function () {
+                $("#SelectItemBackground, .SelectItem").addClass('display-None');
+            });
         });
 
         $('#btnCFTCommentsSave').on('click', function () {
@@ -1648,9 +1891,17 @@
             document.querySelector("#" + sentID).removeAttribute('src');
         });
 
+        $('#btnPictureDuringDummyFittingSave').on('click', function () {
+            PicturesSave();
+        });
+
         $('#btnPictureDuringDummyFittingExit').on('click', function () {
             $('.PictureDuringDummyFittingDefectType').click();
-            $('#PictureDuringDummyFitting').addClass("display-None");
+            $('#SelectItemBackground, #PictureDuringDummyFitting').addClass("display-None");
+
+            $('#SelectItemBackground').on('click', function () {
+                $("#SelectItemBackground, .SelectItem").addClass('display-None');
+            });
         });
     }
 
@@ -2222,14 +2473,24 @@
     }
 
     function GetReworkListButtonDispose() {
-            $.ajax({
-            url: "@Url.Action("GetDQSReason", "Inspection", new { Area = "SampleRFT" })",
+        $.ajax({
+            url: "@Url.Action("DQSReasonGet", "Inspection", new { Area = "SampleRFT" })",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({ }),
             async: true,
-            success: function (data) { 
+            success: function (data) {
                 $('.ReworkListButtonDispose').html(data);
+
+                $(".ReworkListButtonDispose>input[type='button']").on('click', function () {
+                    var checkLen = $(".ReworkListTable>tbody input[type='checkbox']:checked").length;
+                    if (checkLen == 0) {
+                        msg.WithError("Please select data before click.");
+                        return;
+                    }
+
+                    ReworkListSaveAction('Dispose', $(this).attr('idx'));
+                });
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 console.log(xhr.responseText);
@@ -2339,15 +2600,14 @@
             success: function (data) {
                 var tableContent = "";
                 var spOption = "", styleOption = "", articleOption = "", sizeOption = "";
-                var spArrList = [];
+                var spArrList = ['All'], styleArrList = ['All'], articleArrList = ['All'], sizeArrList = ['All'];
                 $.each(data, function (index, value) {
                     spArrList.push(value.OrderID);
-                    spOption += "<option value=" + value.OrderID + ">" + value.OrderID + "</option>";
-                    styleOption += "<option value=" + value.Style + ">" + value.Style + "</option>";
-                    articleOption += "<option value=" + value.Article + ">" + value.Article + "</option>";
-                    sizeOption += "<option value=" + value.Size + ">" + value.Size + "</option>";
+                    styleArrList.push(value.Style);
+                    articleArrList.push(value.Article);
+                    sizeArrList.push(value.Size);
 
-                    tableContent += "<tr idx='" + value.FixType + "'>";
+                    tableContent += "<tr idx='" + value.FixType + "' idsp='" + value.OrderID + "' idstyle='" + value.Style + "' idarticle='" + value.Article + "' idsize='" + value.Size + "'>";
                     tableContent += "<td><input type='checkbox' idx='" + value.ID + "' class='ReworkListCheckBox'></td>";
                     tableContent += "<td><input id='txtReworkListReworkNo" + value.ID + "' type='text' readonly='readonly' value='" + value.ReworkNo + "' /></td>";
                     tableContent += "<td><input id='txtReworkListOrderID" + value.ID + "' type='text' readonly='readonly' value='" + value.OrderID + "' /></td>";
@@ -2359,25 +2619,319 @@
                     tableContent += "<td><input id='btnReworkListPass" + value.ID + "' type='button' class='site-btn btn-green font1rem btnReworkListPass' style='margin: 0; border: 0; padding: 7px 2em; ' name='ReworkListPass' value='Pass' /></td>";
                     tableContent += "<td><input id='btnReworkListReject" + value.ID + "' type='button' class='site-btn btn-red font1rem btnReworkListReject' style='margin:0;border:0;padding: 7px 2em;' name='ReworkListReject' value='Reject' /></td>";
                     tableContent += "<td>";
-                    tableContent += "<input id='btnReworkListAction" + value.ID + "' type='button' class='site-btn btn-blue font1rem btnReworkListAction' style='margin:0;border:0;padding: 7px 2em;' name='ReworkListAction' value='Action' />";
-                    tableContent += "<div style='position: relative;'><div class='ReworkListTableAction display-None'>";
-                    tableContent += "<input idx='Wash' type='button' value='Send To Washing'>";
-                    tableContent += "<input idx='Print' type='button' value='Printing Repair'>";
-                    tableContent += "<input idx='Repl.' type='button' value='Need Replacement'>";
-                    tableContent += "<input idx='Shade' type='button' value='Shading Defect'>";
-                    tableContent += "</div></div>";
+                    if (value.FixType == "Hard") {
+                        tableContent += "<input id='btnReworkListAction" + value.ID + "' type='button' class='site-btn btn-blue font1rem btnReworkListAction' style='margin:0;border:0;padding: 7px 2em;' name='ReworkListAction' value='Action' />";
+                        tableContent += "<div style='position: relative;'><div class='ReworkListTableAction display-None'>";
+                        tableContent += "<input idx='Wash' type='button' value='Send To Washing'>";
+                        tableContent += "<input idx='Print' type='button' value='Printing Repair'>";
+                        tableContent += "<input idx='Repl' type='button' value='Need Replacement'>";
+                        tableContent += "<input idx='Shade' type='button' value='Shading Defect'>";
+                        tableContent += "</div></div>";
+                    }
                     tableContent += "</td>";
                     tableContent += "</tr>";
                 });
-                console.log(spArrList);
+
+                $.each(spArrList.filter(onlyUnique), function (index, value) {
+                    spOption += "<option value=" + value + ">" + value + "</option>";
+                });
+
+                $.each(styleArrList.filter(onlyUnique), function (index, value) {
+                    styleOption += "<option value=" + value + ">" + value + "</option>";
+                });
+
+                $.each(articleArrList.filter(onlyUnique), function (index, value) {
+                    articleOption += "<option value=" + value + ">" + value + "</option>";
+                });
+
+                $.each(sizeArrList.filter(onlyUnique), function (index, value) {
+                    sizeOption += "<option value=" + value + ">" + value + "</option>";
+                });
+
                 $('.ReworkListTable>tbody').html(tableContent);
                 $("#ReworkListSP").html(spOption);
                 $("#ReworkListStyle").html(styleOption);
                 $("#ReworkListArticle").html(articleOption);
                 $("#ReworkListSize").html(sizeOption);
 
+                $('#ReworkListSP, #ReworkListStyle, #ReworkListArticle, #ReworkListSize').on('change', function (e) {
+                    FilterReworkListTable();
+                });
+
                 $(".ReworkListTable>tbody>tr>td>input[name='ReworkListAction']").on('click', function () {
                     $(this).siblings('div').children('div').slideToggle(100);
+                });
+
+                $('.btnReworkListPass').on('click', function () {
+                    $(this).parent().parent().find("input[type='checkbox']").prop("checked", true);
+                    ReworkListSaveAction('Pass', '');
+                });
+
+                $('.btnReworkListReject').on('click', function () {
+                    $('.RewoekListSetting').attr("idx", "T").html($(this).parent().parent().find("input[type='checkbox']").attr('idx'));
+                    GetDefectCategory();
+                    $('#SelectItemBackground, #AddDefect').removeClass('display-None').unbind('click');
+                });
+
+                $(".ReworkListTableAction>input[type='button']").on('click', function () {
+                    $(this).parent().parent().parent().parent().find("input[type='checkbox']").prop("checked", true);
+                    ReworkListSaveAction($(this).attr('idx'), '');
+                });
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function ReworkListSaveAction(type, reason) {
+        var datas = [];
+        $.each($(".ReworkListTable > tbody input[type='checkbox']:checked"), function () {
+            if (type == "Dispose") {
+                datas.push({
+                    ID: $(this).attr('idx'),
+                    DisposeReason: reason,
+                });
+            }
+            else {
+                datas.push({
+                    ID: $(this).attr('idx')
+                });
+            }
+        });
+
+        $.ajax({
+            url: "@Url.Action("ReworkListSaveAction", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ reworkLists: datas, type: type }),
+            async: true,
+            success: function (data) {
+                if (!data.Result) {
+                    msg.WithError(data.ErrMsg);
+                }
+                else {
+                    msg.WithSuccess("Success");
+                    ReworkListGet();
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function ReworkListAddReject(datas) {
+        $.ajax({
+            url: "@Url.Action("ReworkListAddReject", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ detail: datas }),
+            async: true,
+            success: function (data) {
+                if (!data.Result) {
+                    msg.WithError(data.ErrMsg);
+                }
+                else {
+                    msg.WithSuccess("Success");
+                    ReworkListGet();
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function ReworkListDelete() {
+        var logIn = {
+            UserID: $('#ReworkListValidateAccount').val(),
+            Password: $('#ReworkListValidatePassword').val(),
+        };
+        var datas = [];
+
+        $.each($(".ReworkListTable > tbody input[type='checkbox']:checked"), function () {
+            datas.push({
+                ID: $(this).attr('idx')
+            });
+        });
+
+        $.ajax({
+            url: "@Url.Action("SaveReworkListDelete", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ logIn: logIn, datas: datas }),
+            async: true,
+            success: function (data) {
+                if (!data.Result) {
+                    msg.WithError(data.ErrMsg);
+                }
+                else {
+                    msg.WithSuccess("Success");
+                    $('#btnReworkListValidateExit').click();
+                    ReworkListGet();
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function FilterReworkListTable() {
+        var idx = $(".ReworkListTag>div[class='selectTag']>p").html();
+        var idsp = $('#ReworkListSP').val();
+        var idstyle = $('#ReworkListStyle').val();
+        var idarticle = $('#ReworkListArticle').val();
+        var idsize = $('#ReworkListSize').val();
+
+        var filterTag = "";
+        if (idx != 'All') {
+            filterTag += "[idx='" + idx + "']";
+        }
+
+        if (idsp != 'All') {
+            filterTag += "[idsp='" + idsp + "']";
+        }
+
+        if (idstyle != 'All') {
+            filterTag += "[idstyle='" + idstyle + "']";
+        }
+
+        if (idarticle != 'All') {
+            filterTag += "[idarticle='" + idarticle + "']";
+        }
+
+        if (idsize != 'All') {
+            filterTag += "[idsize='" + idsize + "']";
+        }
+
+
+        if (filterTag == '') {
+            $(".ReworkListTable>tbody>tr").removeClass("display-None");
+        }
+        else {
+            $(".ReworkListTable>tbody>tr").addClass("display-None");
+            $(".ReworkListTable>tbody>tr" + filterTag).removeClass("display-None");
+        }
+    }
+
+    function MeasurementGet(orderID, size) {
+        $.ajax({
+            url: "@Url.Action("MeasurementGet", "Inspection", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ OrderID: orderID, SizeCode: size }),
+            async: true,
+            success: function (data) {
+                var thead = "";
+                var SizeUnit = "";
+                var tbody = "";
+                $.each(data, function (index, value) {
+                    if (thead == "") {
+                        thead += "<tr>";
+                        thead += "<th><p>Coding</p></th>";
+                        thead += "<th><p>Description</p></th>";
+                        thead += "<th><p>Tol(+)</p></th>";
+                        thead += "<th><p>Tol(-)</p></th>";
+                        thead += "<th><p idx='SizeCode'>" + value.SizeCode + "</p></th>";
+                        thead += "<th><p>" + value.SizeCode + "</p></th>";
+                        thead += "<th><p>Diff</p></th>";
+                        thead += "</tr>";
+
+                        SizeUnit = value.SizeUnit;
+                    }
+
+                    var readonly = "";
+                    var bgColor = "bg-lightyellow";
+                    if (value.IsPatternMeas) {
+                        bgColor = "bg-lightgray";
+                        readonly = "readonly";
+                    }
+
+                    tbody += "<tr idx='" + value.StyleUkey + "' idv='" + value.MeasurementUkey + "' idi='" + value.SizeCode + "'>";
+                    tbody += "<td class='bg-lightblue'><p idx='Code'>" + value.Code + "</p></td>";
+                    tbody += "<td class='bg-lightblue'><p>" + value.Description + "</p></td>";
+                    tbody += "<td class='bg-lightblue'><p idx='Tol+'>" + value.Tol1 + "</p></td>";
+                    tbody += "<td class='bg-lightblue'><p idx='Tol-'>" + value.Tol2 + "</p></td>";
+                    tbody += "<td class='bg-lightgray'><p idx='standard'>" + value.SizeSpec + "</p></td>";
+
+                    if (value.SizeCode == "INCH") {
+                        tbody += "<td class='" + bgColor + "'><input type='text' idx='SizeSpec' placeholder= '__ __/__' class='" + bgColor + "' " + readonly + "></td>";
+                    }
+                    else {
+                        tbody += "<td class='" + bgColor + "'><input type='number' idx='SizeSpec' class='" + bgColor + "' " + readonly + "></td>";
+                    }
+
+                    tbody += "<td><p class='Diff'></p></td>";
+                    tbody += "</tr>";
+                });
+
+                $('.MeasurementRowHeader .Unit').html(SizeUnit);
+                $('.MeasurementTable>thead').html(thead);
+                $('.MeasurementTable>tbody').html(tbody);
+
+                $(".MeasurementTable>tbody>tr>td>input[idx='SizeSpec']").on('change', function () {
+                    var unit = $(".MeasurementRowHeader .Unit").html();
+                    const rules = /^(((([0-9]{1,3}[ ])|(^))\d{1,2}[/]\d{1,2})|([0-9]{1,3}))$/;
+                    var bol = rules.test($(this).val());
+                    var val = $(this).val();
+                    var standard = $(this).parent().parent().children().find("p[idx='standard']").html();
+                    var tolh = $(this).parent().parent().children().find("p[idx='Tol+']").html();
+                    var toll = $(this).parent().parent().children().find("p[idx='Tol-']").html();
+
+                    if (val == "" || val <= 0) {
+                        $(this).val("");
+                        $(this).parent().parent().children().find("p[class='Diff']").html('');
+                        $(this).parent().parent().children().find("p[class='Diff']").parent().removeClass("bg-lightred");
+                        return;
+                    }
+
+                    if (unit == "INCH" && !bol) {
+                        msg.WithError("Format incorrect");
+                        $(this).val("");
+                        return;
+                    }
+
+                    // 計算Diff
+                    if (unit == "INCH") {
+                        if (standard.indexOf('.') > -1) {
+                            return;
+                        }
+
+                        var finval = FractionDiff(standard, val);
+                        $(this).parent().parent().children().find("p[class='Diff']").html(finval);
+
+                        var sTolh = FractionAdd(standard, tolh);
+                        var sToll = FractionDiff(standard, toll);
+
+                        var diffTolh = String(FractionDiff(sTolh, val));
+                        var diffToll = String(FractionDiff(val, sToll));
+                        if (diffTolh.indexOf('-') > -1 || diffToll.indexOf('-') > -1) {
+                            $(this).parent().parent().children().find("p[class='Diff']").parent().addClass("bg-lightred");
+                        }
+                        else {
+                            $(this).parent().parent().children().find("p[class='Diff']").parent().removeClass("bg-lightred");
+                        }
+                    }
+                    else {
+                        if (standard.indexOf('/') > -1) {
+                            return;
+                        }
+
+                        var finval = accSubtr(standard, val);
+                        $(this).parent().parent().children().find("p[class='Diff']").html(finval);
+
+                        val = parseInt(val);
+                        var sTolh = parseInt(accAdd(standard, tolh));
+                        var sToll = parseInt(accSubtr(standard, toll));
+                        if (sTolh >= val && val >= sToll) {
+                            $(this).parent().parent().children().find("p[class='Diff']").parent().removeClass("bg-lightred");
+                        }
+                        else {
+                            $(this).parent().parent().children().find("p[class='Diff']").parent().addClass("bg-lightred");
+                        }
+                    }
                 });
             },
             error: function (xhr, ajaxOptions, thrownError) {
@@ -2388,7 +2942,7 @@
 
     function CFTCommentsClick(OrderID, StyleID, Season, SampleStage) {
         $.ajax({
-            url: "@Url.Action("GetCFTComments", "Inspection", new { Area = "SampleRFT" })",
+            url: "@Url.Action("CFTCommentsGet", "Inspection", new { Area = "SampleRFT" })",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({ OrderID: OrderID, StyleID: StyleID, Season: Season, SampleStage: SampleStage }),
@@ -2469,7 +3023,7 @@
 
     function PicturesClick(OrderID, StyleID, Article, Size) {
         $.ajax({
-            url: "@Url.Action("GetPictures", "Inspection", new { Area = "SampleRFT" })",
+            url: "@Url.Action("PicturesGet", "Inspection", new { Area = "SampleRFT" })",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({ OrderID: OrderID, StyleID: StyleID, Article: Article, Size: Size }),
@@ -2481,8 +3035,8 @@
                 const aPictureSide = document.querySelector("#aPictureSide");
                 const PictureBack = document.querySelector("#PictureBack");
                 const aPictureBack = document.querySelector("#aPictureBack");
-                if (data.Font != null) {
-                    PictureFront.src = "data:image/webp;base64," + ByteArrayToBase64(data.Font);
+                if (data.Front != null) {
+                    PictureFront.src = "data:image/webp;base64," + ByteArrayToBase64(data.Front);
                     aPictureFront.href = PictureFront.src;
                 }
                 if (data.Side != null) {
@@ -2501,9 +3055,9 @@
     }
 
     function PicturesSave() {
-        const PictureFront = document.querySelector("#PictureFront").src.replace("data:image/webp;base64,", "");
-        const PictureSide = document.querySelector("#PictureSide").src.replace("data:image/webp;base64,", "");
-        const PictureBack = document.querySelector("#PictureBack").src.replace("data:image/webp;base64,", "");
+        var PictureFront = document.querySelector("#PictureFront").src.replace("data:image/webp;base64,", "");
+        var PictureSide = document.querySelector("#PictureSide").src.replace("data:image/webp;base64,", "");
+        var PictureBack = document.querySelector("#PictureBack").src.replace("data:image/webp;base64,", "");
 
         var datas =
         {
@@ -2523,6 +3077,7 @@
             async: true,
             success: function (data) {
                 if (data.Result) {
+                    msg.WithSuccess("Success");
                     $('#btnPictureDuringDummyFittingExit').click();
                     $('#btnRefresh').click();
                     IsEditModeButtonChange();

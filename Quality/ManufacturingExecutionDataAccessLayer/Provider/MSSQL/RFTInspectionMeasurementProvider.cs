@@ -53,14 +53,13 @@ SELECT [MeasurementUkey] = a.ukey
 	,a.Tol1
 	,a.Tol2
     , [IsPatternMeas] = 
-		 case when a.Description like '%pattern measn%'  then convert(bit,0)
-			  when  isnull(a.Tol1,0) = '0' then convert(bit,0)
-			  when  isnull(a.Tol2,0) = '0' then convert(bit,0)
-			  when  isnull(a.SizeCode,'') = '' then convert(bit,0)
-			  when  a.SizeSpec like '[A-Z]%' then convert(bit,0)
-			  when  (UPPER(s.SizeUnit) = 'INCH' and  a.SizeSpec like '%.%') then convert(bit,0)
-			  when  (UPPER(s.SizeUnit) = 'CM' and  a.SizeSpec like '%/%') then convert(bit,0)
-			  else  convert(bit,1) end
+		 case when a.Description like '%pattern measn%'  then convert(bit, 1)
+			  when  isnull(a.Tol1, '0') = '0' and isnull(a.Tol2, '0') = '0' and isnull(a.SizeSpec, '0') = '0' then convert(bit, 1)
+			  when  isnull(a.SizeCode,'') = '' then convert(bit, 1)
+			  when  a.SizeSpec like '%[a-zA-Z]%' then convert(bit, 1)
+			  when  (UPPER(s.SizeUnit) = 'INCH' and  a.SizeSpec like '%.%') then convert(bit, 1)
+			  when  (UPPER(s.SizeUnit) = 'CM' and  a.SizeSpec like '%/%') then convert(bit, 1)
+			  else  convert(bit, 0) end
     ,[SizeUnit] = s.SizeUnit
 	,OrderID = '', Article = '', Location = '',Line = '',FactoryID = ''
 FROM [ManufacturingExecution].[dbo].[Measurement] a with(nolock)

@@ -49,11 +49,8 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 
             SbSql.Append("SELECT"+ Environment.NewLine);
             SbSql.Append("         ID"+ Environment.NewLine);
-            SbSql.Append("        ,ImportFrom"+ Environment.NewLine);
-            SbSql.Append("        ,Name"+ Environment.NewLine);
-            SbSql.Append("        -- ,Password"+ Environment.NewLine);
             SbSql.Append("        ,Position"+ Environment.NewLine);
-            SbSql.Append("        ,Email"+ Environment.NewLine);
+            SbSql.Append("        ,BulkFGT_Brand" + Environment.NewLine);
             SbSql.Append("FROM [Quality_Pass1]"+ Environment.NewLine);
             SbSql.Append("Where ID=@ID" + Environment.NewLine);
 
@@ -78,16 +75,14 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             SbSql.Append("INSERT INTO [Quality_Pass1]"+ Environment.NewLine);
             SbSql.Append("(" + Environment.NewLine);
             SbSql.Append("         ID"+ Environment.NewLine);
-            SbSql.Append("        ,ImportFrom"+ Environment.NewLine);
-            SbSql.Append("        ,Name"+ Environment.NewLine);
-            SbSql.Append("        ,Password"+ Environment.NewLine);
             SbSql.Append("        ,Position"+ Environment.NewLine);
-            SbSql.Append("        ,Email"+ Environment.NewLine);
+            SbSql.Append("        ,BulkFGT_Brand" + Environment.NewLine);
             SbSql.Append(")"+ Environment.NewLine);
             SbSql.Append("VALUES"+ Environment.NewLine);
             SbSql.Append("(" + Environment.NewLine);
             SbSql.Append("         @ID"); objParameter.Add("@ID", DbType.String, Item.ID);
             SbSql.Append("        ,@Position"); objParameter.Add("@Position", DbType.String, Item.Position);
+            SbSql.Append("        ,@BulkFGT_Brand"); objParameter.Add("@BulkFGT_Brand", DbType.String, Item.BulkFGT_Brand);
             SbSql.Append(")"+ Environment.NewLine);
 
 
@@ -115,6 +110,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             SbSql.Append("SET"+ Environment.NewLine);
             if (Item.ID != null) { SbSql.Append("ID=@ID"+ Environment.NewLine); objParameter.Add("@ID", DbType.String, Item.ID);}
             if (Item.Position != null) { SbSql.Append(",Position=@Position"+ Environment.NewLine); objParameter.Add("@Position", DbType.String, Item.Position);}
+            if (Item.BulkFGT_Brand != null) { SbSql.Append(",BulkFGT_Brand=@BulkFGT_Brand" + Environment.NewLine); objParameter.Add("@BulkFGT_Brand", DbType.String, Item.BulkFGT_Brand);}
             SbSql.Append("WHERE 1 = 1" + Environment.NewLine);
 
 

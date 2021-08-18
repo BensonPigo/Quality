@@ -219,3 +219,232 @@ function ByteArrayToBase64(d, a, e, b, c, f) {
 function onlyUnique(value, index, self) {
     return self.indexOf(value) === index;
 }
+
+function gcd(a, b) {
+    if (b == 0) {
+        return a;
+    }
+    else {
+        return gcd(b, a % b);
+    }
+}
+
+
+function FractionDiff(standard, val) {
+    var si = 0, i = 0
+    var sm, m
+    var sd, d
+    var finVal = "";
+    if (standard.indexOf(' ') > -1) {
+        si = standard.substr(0, standard.indexOf(' '));
+    }
+    else if (standard.indexOf(" ") < 0 && standard.indexOf('/') < 0) {
+        si = standard;
+    }
+
+    if (val.indexOf(" ") > -1) {
+        i = val.substr(0, val.indexOf(' '));
+    }
+    else if (val.indexOf(" ") < 0 && val.indexOf('/') < 0) {
+        i = val;
+    }
+
+    if (standard.indexOf('/') > -1) {
+        sd = standard.substr(standard.indexOf(' ') + 1, standard.indexOf('/') - 1 - standard.indexOf(' '));
+        sm = standard.substr(standard.indexOf('/') + 1, standard.length - 1 - standard.indexOf('/'));
+    }
+    else {
+        sd = 1;
+        sm = 1;
+        si = si - 1;
+    }
+
+    if (val.indexOf('/') > -1) {
+        d = val.substr(val.indexOf(' ') + 1, val.indexOf('/') - 1 - val.indexOf(' '));
+        m = val.substr(val.indexOf('/') + 1, val.length - 1 - val.indexOf('/'));
+    }
+    else {
+        d = 1;
+        m = 1;
+        i = i - 1;
+    }
+
+    var fi = si - i;
+    if (fi <= 0) {
+        var fm = sm * m;
+        var sd1 = sd * m;
+        var d1 = d * sm + Math.abs(fi) * m * sm;
+        var fd = sd1 - d1;
+        var divisor = gcd(Math.abs(fd), fm);
+        fi = 0;
+        fm = fm / divisor;
+        fd = fd / divisor;
+
+        if (Math.abs(fd) >= fm) {
+            fi = Math.floor(Math.abs(fd) / fm);
+            if (fd < 0) fi = fi * -1;
+            fd = Math.abs(fd) - (Math.abs(fi) * fm);
+
+            if (fd == 0) {
+                finVal = fi;
+            }
+            else {
+                finVal = fi + ' ' + fd + '/' + fm;
+            }
+        }
+        else {
+            if (fd == 0) {
+                finVal = 0;
+            }
+            else {
+                finVal = fd + '/' + fm;
+            }
+        }
+
+        return finVal;
+    }
+    else {
+        var fm = sm * m;
+        var sd1 = sd * m;
+        var d1 = d * sm;
+        var fd = sd1 - d1;
+        if (fd < 0) {
+            fd = fd + fm;
+            fi = fi - 1;
+        }
+        var divisor = gcd(Math.abs(fd), fm);
+        fm = fm / divisor;
+        fd = fd / divisor;
+
+        if (fi <= 0) {
+            if (fd == 0) {
+                finVal = 0;
+            }
+            else {
+                finVal = fd + '/' + fm;
+            }
+        }
+        else {
+            if (fd == 0) {
+                finVal = fi;
+            }
+            else {
+                finVal = fi + ' ' + fd + '/' + fm;
+            }
+        }
+
+        return finVal;
+    }
+}
+
+function FractionAdd(standard, val) {
+    var si = 0, i = 0
+    var sm, m
+    var sd, d
+    var finVal = "";
+    if (standard.indexOf(' ') > -1) {
+        si = standard.substr(0, standard.indexOf(' '));
+    }
+    else if (standard.indexOf(" ") < 0 && standard.indexOf('/') < 0) {
+        si = standard;
+    }
+
+    if (val.indexOf(" ") > -1) {
+        i = val.substr(0, val.indexOf(' '));
+    }
+    else if (val.indexOf(" ") < 0 && val.indexOf('/') < 0) {
+        i = val;
+    }
+
+    if (standard.indexOf('/') > -1) {
+        sd = standard.substr(standard.indexOf(' ') + 1, standard.indexOf('/') - 1 - standard.indexOf(' '));
+        sm = standard.substr(standard.indexOf('/') + 1, standard.length - 1 - standard.indexOf('/'));
+    }
+    else {
+        sd = 1;
+        sm = 1;
+        si = si - 1;
+    }
+
+    if (val.indexOf('/') > -1) {
+        d = val.substr(val.indexOf(' ') + 1, val.indexOf('/') - 1 - val.indexOf(' '));
+        m = val.substr(val.indexOf('/') + 1, val.length - 1 - val.indexOf('/'));
+    }
+    else {
+        d = 1;
+        m = 1;
+        i = i - 1;
+    }
+
+    var fi = accAdd(si, i);
+    var fm = accMul(sm, m);
+    var sd1 = accMul(sd, m);
+    var d1 = accMul(d, sm);
+    fd = accAdd(sd1, d1);
+
+    if (Math.abs(fd) >= fm) {
+        fi = accAdd(fi, Math.floor(Math.abs(fd) / fm));
+        if (fd < 0) fi = accMul(fi, -1);
+        fd = accSubtr(Math.abs(fd), accMul(Math.floor(Math.abs(fd) / fm), fm));
+    }
+
+    if (fd == 0) {
+        finVal = fi;
+    }
+    else {
+        finVal = fi + ' ' + fd + '/' + fm;
+    }
+
+    return finVal;
+}
+
+//除法
+function accDiv(arg1, arg2) {
+    var t1 = 0, t2 = 0, r1, r2;
+    try {
+        t1 = arg1.toString().split(".")[1].length;
+    } catch (e) { }
+    try {
+        t2 = arg2.toString().split(".")[1].length;
+    } catch (e) { }
+    with (Math) {
+        r1 = Number(arg1.toString().replace(".", ""));
+        r2 = Number(arg2.toString().replace(".", ""));
+        return (r1 / r2) * pow(10, t2 - t1);
+    }
+}
+
+//乘法
+function accMul(arg1, arg2) {
+    var m = 0, s1 = arg1.toString(), s2 = arg2.toString();
+    try {
+        m += s1.split(".")[1].length;
+    } catch (e) { }
+    try {
+        m += s2.split(".")[1].length;
+    } catch (e) { }
+    return Number(s1.replace(".", "")) * Number(s2.replace(".", "")) / Math.pow(10, m);
+}
+
+//加法
+function accAdd(arg1, arg2) {
+    var r1, r2, m;
+    try { r1 = arg1.toString().split(".")[1].length } catch (e) { r1 = 0 }
+    try { r2 = arg2.toString().split(".")[1].length } catch (e) { r2 = 0 }
+    m = Math.pow(10, Math.max(r1, r2));
+    return (arg1 * m + arg2 * m) / m;
+}
+
+//減法
+function accSubtr(arg1, arg2) {
+    var r1, r2, m, n;
+    try {
+        r1 = arg1.toString().split(".")[1].length;
+    } catch (e) { r1 = 0 }
+    try {
+        r2 = arg2.toString().split(".")[1].length;
+    } catch (e) { r2 = 0 }
+    m = Math.pow(10, Math.max(r1, r2));
+    n = (r1 >= r2) ? r1 : r2;
+    return ((arg1 * m - arg2 * m) / m).toFixed(n);
+}
