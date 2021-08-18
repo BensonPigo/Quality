@@ -1,6 +1,8 @@
 ﻿using ADOHelper.Utility;
 using BusinessLogicLayer.Interface;
+using DatabaseObject;
 using DatabaseObject.ManufacturingExecutionDB;
+using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using ManufacturingExecutionDataAccessLayer.Interface;
@@ -238,10 +240,28 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        //public Quality_Pass1 SaveBulkFGT_Pass1(Quality_Pass1 quality_Pass1)
-        //{
-        //    //return quality_Pass1
-        //}
+        public ResultModelBase<Module_Detail> SaveBulkFGT_Pass1(Quality_Pass1 quality_Pass1)
+        {
+            DatabaseObject.ResultModel.Quality_Position result = new DatabaseObject.ResultModel.Quality_Position();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ManufacturingExecutionDataAccessLayer);
+
+            try
+            {
+                _AuthorityProvider = new AuthorityProvider(_ISQLDataTransaction);
+
+                result.Result = _AuthorityProvider.Update_Brand(quality_Pass1);
+                _ISQLDataTransaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                _ISQLDataTransaction.RollBack();
+                result.Result = false;
+                result.ErrorMessage = ex.Message;
+            }
+            finally { _ISQLDataTransaction.CloseConnection(); }
+
+            return result;
+        }
 
         public List<SelectListItem> GetPositionList(string FactoryID)
         {
@@ -254,10 +274,42 @@ namespace BusinessLogicLayer.Service
             }
             catch (Exception ex)
             {
-
+                throw ex;
             }
 
             return result;
+        }
+
+        public IList<Brand> GetBrand()
+        {
+            _AuthorityProvider = new AuthorityProvider(Common.ProductionDataAccessLayer);
+            List<Brand> brands = new List<Brand>();
+            try
+            {
+                brands = _AuthorityProvider.GetBrands().ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return brands;
+        }
+
+        public IList<Quality_Menu_Detail> GetFunctionName(string BulkFGT_Brand)
+        {
+            _AuthorityProvider = new AuthorityProvider(Common.ManufacturingExecutionDataAccessLayer);
+            List<Quality_Menu_Detail> _Quality_Menu_Detail = new List<Quality_Menu_Detail>();
+            try
+            {
+                _Quality_Menu_Detail = _AuthorityProvider.GetFunctionName(BulkFGT_Brand).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return _Quality_Menu_Detail;
         }
     }
 }
