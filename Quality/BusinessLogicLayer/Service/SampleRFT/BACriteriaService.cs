@@ -1,5 +1,4 @@
 ﻿using ADOHelper.Template.MSSQL;
-using BusinessLogicLayer.Interface;
 using DatabaseObject.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -11,8 +10,9 @@ using DatabaseObject.ManufacturingExecutionDB;
 using System.Linq;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using DatabaseObject.ResultModel;
+using BusinessLogicLayer.SampleRFT.Interface;
 
-namespace BusinessLogicLayer.Service
+namespace BusinessLogicLayer.SampleRFT.Service
 {
     public class BACriteriaService : IBACriteriaService
     {

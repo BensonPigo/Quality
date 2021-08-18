@@ -6,6 +6,7 @@ using ManufacturingExecutionDataAccessLayer.Interface;
 using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
 using DatabaseObject.ManufacturingExecutionDB;
+using DatabaseObject.ViewModel;
 
 namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 {
@@ -187,6 +188,50 @@ end
 
             return ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter);
         }
-	#endregion
+        #endregion
+
+
+        public IList<RFT_PicDuringDummyFitting_ViewModel> Get(RFT_PicDuringDummyFitting_ViewModel Req)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+
+            SbSql.Append($@"
+SELECT p.Article
+	,p.Size
+	,p.Front
+	,p.Side
+	,p.Back
+from SciProduction_Orders o
+inner join RFT_PicDuringDummyFitting p ON o.ID = p.OrderID
+where o.Junk=0
+and o.Category='S'
+and o.OnSiteSample!=1
+
+");
+            if (!string.IsNullOrEmpty(Req.OrderID))
+            {
+                SbSql.Append(" AND o.ID=@OrderID" + Environment.NewLine);
+                objParameter.Add("@OrderID", DbType.String, Req.OrderID);
+            }
+
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                SbSql.Append(" AND o.StyleID=@StyleID" + Environment.NewLine);
+                objParameter.Add("@StyleID", DbType.String, Req.StyleID);
+            }
+            if (!string.IsNullOrEmpty(Req.OrderTypeID))
+            {
+                SbSql.Append(" AND o.OrderTypeID=@OrderTypeID" + Environment.NewLine);
+                objParameter.Add("@OrderTypeID", DbType.String, Req.OrderTypeID);
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                SbSql.Append(" AND o.SeasonID=@SeasonID" + Environment.NewLine);
+                objParameter.Add("@SeasonID", DbType.String, Req.SeasonID);
+            }
+
+            return ExecuteList<RFT_PicDuringDummyFitting_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
+        }
     }
 }

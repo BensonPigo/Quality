@@ -1,5 +1,5 @@
-﻿using BusinessLogicLayer.Interface;
-using BusinessLogicLayer.Service;
+﻿using BusinessLogicLayer.SampleRFT.Interface;
+using BusinessLogicLayer.SampleRFT.Service;
 using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
