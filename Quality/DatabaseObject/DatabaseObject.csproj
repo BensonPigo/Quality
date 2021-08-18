@@ -80,6 +80,7 @@
     <Compile Include="ManufacturingExecutionDB\Measurement.cs" />
     <Compile Include="ManufacturingExecutionDB\Pass1.cs" />
     <Compile Include="ManufacturingExecutionDB\Quality_Menu.cs" />
+    <Compile Include="ManufacturingExecutionDB\Quality_Menu_Detail.cs" />
     <Compile Include="ManufacturingExecutionDB\Quality_Pass1.cs" />
     <Compile Include="ManufacturingExecutionDB\Quality_Pass2.cs" />
     <Compile Include="ManufacturingExecutionDB\Quality_MailGroup.cs" />

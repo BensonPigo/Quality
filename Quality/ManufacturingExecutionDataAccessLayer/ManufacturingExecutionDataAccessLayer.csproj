@@ -51,6 +51,7 @@
     <Compile Include="Interface\IMailToProvider.cs" />
     <Compile Include="Interface\IMeasurementProvider.cs" />
     <Compile Include="Interface\IPass1Provider.cs" />
+    <Compile Include="Interface\IQualityMenuDetailProvider.cs" />
     <Compile Include="Interface\IQualityMenuProvider.cs" />
     <Compile Include="Interface\IQualityPass1Provider.cs" />
     <Compile Include="Interface\IQualityPass2Provider.cs" />
