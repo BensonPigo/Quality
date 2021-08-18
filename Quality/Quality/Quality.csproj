@@ -146,6 +146,7 @@
     <Compile Include="Areas\SampleRFT\Controllers\BACriteriaController.cs" />
     <Compile Include="Areas\SampleRFT\Controllers\InspectionController.cs" />
     <Compile Include="Areas\SampleRFT\Controllers\PFTperLineController.cs" />
+    <Compile Include="Areas\SampleRFT\Controllers\PicturesDummyController.cs" />
     <Compile Include="Areas\SampleRFT\SampleRFTAreaRegistration.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -255,6 +256,7 @@
     <Content Include="Areas\BulkFGT\Views\_ViewStart.cshtml" />
     <Content Include="Areas\BulkFGT\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\BulkFGT\Views\BulkFGTMailGroup\Index.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\PicturesDummy\Index.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />

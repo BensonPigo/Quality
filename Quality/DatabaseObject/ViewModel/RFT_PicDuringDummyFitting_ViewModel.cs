@@ -11,5 +11,11 @@ namespace DatabaseObject.ViewModel
     {
         public bool Result { get; set; }
         public string ErrMsg { get; set; }
+
+        // for SampleRFT.PicturesDummy 頁面使用
+        public string StyleID { get; set; }
+        public string OrderTypeID { get; set; }
+        public string SeasonID { get; set; }
+        public List<RFT_PicDuringDummyFitting> DataList { get; set; }
     }
 }
