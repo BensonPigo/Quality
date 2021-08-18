@@ -1,0 +1,32 @@
+﻿using DatabaseObject.ManufacturingExecutionDB;
+using DatabaseObject.ProductionDB;
+using System;
+using System.Collections.Generic;
+
+namespace DatabaseObject.ViewModel.FinalInspection
+{
+    public class AddDefect
+    {
+        public string FinalInspectionID { get; set; }
+        public int? RejectQty { get; set; }
+
+        public List<FinalInspectionDefectItem> ListFinalInspectionDefectItem { get; set; }
+
+    }
+
+    public class FinalInspectionDefectItem
+    {
+        public long Ukey { get; set; }
+        public string DefectType { get; set; }
+
+        public string DefectCode { get; set; }
+
+        public string DefectTypeDesc { get; set; }
+
+        public string DefectCodeDesc { get; set; }
+
+        public int Qty { get; set; }
+
+        public List<byte[]> ListFinalInspectionDefectImage { get; set; }
+    }
+}

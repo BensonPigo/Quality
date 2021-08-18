@@ -58,7 +58,9 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\InspectionServiceTests.cs" />
+    <Compile Include="Service\CFTCommentsTests.cs" />
     <Compile Include="Service\RFTPerLineServiceTests.cs" />
+    <Compile Include="Service\BulkFGTMailGroupTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -71,6 +73,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ADOHelper\ADOHelper.csproj">
+      <Project>{eddc9b9a-b751-4520-a783-40c5588a8883}</Project>
+      <Name>ADOHelper</Name>
+    </ProjectReference>
     <ProjectReference Include="..\BusinessLogicLayer\BusinessLogicLayer.csproj">
       <Project>{74A8F2A1-735F-45CC-9BCC-E93AF1BAAE87}</Project>
       <Name>BusinessLogicLayer</Name>

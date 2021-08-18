@@ -228,6 +228,7 @@
     <Content Include="Areas\Authority\Views\UserList\Index.cshtml" />
     <Content Include="fonts\OpenSans.woff2" />
     <Content Include="Areas\FinalInspection\Views\Inspection\Setting.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Shared\_ForAll_Layout.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />

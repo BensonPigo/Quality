@@ -32,6 +32,7 @@ namespace BusinessLogicLayer.Service
         private IRFTOrderCommentsProvider _IRFTOrderCommentsProvider;
         private IRFTPicDuringDummyFittingProvider _IRFTPicDuringDummyFittingProvider;
         private IRFTInspectionMeasurementProvider _IRFTInspectionMeasurementProvider;
+        private IDQSReasonProvider _IDQSReasonProvider;
 
         // Production
         private IOrdersProvider _IOrdersProvider;
@@ -215,6 +216,7 @@ namespace BusinessLogicLayer.Service
             List<DropDownList> dropDowns = _DropDownListProvider.Get(downList).ToList();
             return dropDowns;
         }
+
         public IList<MailTo> GetMailTo(MailTo item)
         {
             _IMailToProvider = new MailToProvider(Common.ManufacturingExecutionDataAccessLayer);
@@ -485,14 +487,29 @@ namespace BusinessLogicLayer.Service
         public List<DQSReason> GetDQSReason(DQSReason dQSReason)
         {
             // 傳入 Type = 'DP', Junk = 0
-            List<DQSReason> dQSReasons = new List<DQSReason>()
+            //List<DQSReason> dQSReasons = new List<DQSReason>()
+            //{
+            //    new DQSReason { ID = "00001", Description = "Un-Fixed Garment" },
+            //    new DQSReason { ID = "00002", Description = "Exceed Quantity" },
+            //    new DQSReason { ID = "00003", Description = "Reject By QMS" },
+            //};
+            _IDQSReasonProvider = new DQSReasonProvider(Common.ManufacturingExecutionDataAccessLayer);
+            List<DQSReason> reasons = new List<DQSReason>();
+            try
             {
-                new DQSReason { ID = "00001", Description = "Un-Fixed Garment" },
-                new DQSReason { ID = "00002", Description = "Exceed Quantity" },
-                new DQSReason { ID = "00003", Description = "Reject By QMS" },
-            };
+                reasons = _IDQSReasonProvider.Get(
+                  new DQSReason()
+                  {
+                      Type = dQSReason.Type.ToString(),
+                  }).ToList();
+            }
+            catch (Exception)
+            {
 
-            return dQSReasons;
+                throw;
+            }
+
+            return reasons;
         }
 
         public List<RFT_Inspection_Measurement_ViewModel> MeasurementGet(string OrderID, string SizeCode, string UserID)
@@ -503,8 +520,6 @@ namespace BusinessLogicLayer.Service
             _IOrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
             _IStyleProvider = new StyleProvider(Common.ProductionDataAccessLayer);
             List<RFT_Inspection_Measurement_ViewModel> _Inspection_Measurement_ViewModels = new List<RFT_Inspection_Measurement_ViewModel>();
-            List<RFT_Inspection_Measurement> rFTs = new List<RFT_Inspection_Measurement>();
-
             try
             {
                 IList<Orders> ordersList = _IOrdersProvider.Get(new Orders() { ID = OrderID });
@@ -521,12 +536,32 @@ namespace BusinessLogicLayer.Service
                 _Inspection_Measurement_ViewModels = _IRFTInspectionMeasurementProvider.Get(Convert.ToInt64(longStyleUkey), SizeCode, UserID).ToList();
                     
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
             
             return _Inspection_Measurement_ViewModels;
+        }
+
+        public bool SaveMeasurement(List<RFT_Inspection_Measurement_ViewModel> Measurement)
+        {
+            _IRFTInspectionMeasurementProvider = new RFTInspectionMeasurementProvider(Common.ManufacturingExecutionDataAccessLayer);
+            try
+            {
+                int updateCnt = _IRFTInspectionMeasurementProvider.Save(Measurement);
+                if (updateCnt == 0)
+                {
+                    return false;
+                }
+
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public List<RFT_OrderComments_ViewModel> GetRFT_OrderComments(RFT_OrderComments rFT_OrderComments)

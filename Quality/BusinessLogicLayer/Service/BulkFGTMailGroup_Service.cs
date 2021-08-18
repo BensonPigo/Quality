@@ -6,20 +6,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ManufacturingExecutionDataAccessLayer.Interface;
+using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 
 namespace BusinessLogicLayer.Service
 {
     public class BulkFGTMailGroup_Service : IBulkFGTMailGroup_Service
     {
+        private IBulkFGTMailGroupProvider _BulkFGTMailGroupProvider;
         public List<Quality_MailGroup> MailGroupGet(Quality_MailGroup quality_Mail)
         {
-            List<Quality_MailGroup> mailGroups = new List<Quality_MailGroup>()
+            List<Quality_MailGroup> mailGroups = new List<Quality_MailGroup>();
+            _BulkFGTMailGroupProvider = new BulkFGTMailGroupProvider(Common.ManufacturingExecutionDataAccessLayer);
+            foreach (var item in _BulkFGTMailGroupProvider.MailGroupGet(quality_Mail))
             {
-                new Quality_MailGroup { FactoryID = "ESP", GroupName = "aGroup", ToAddress = "aaa@aa.aa.aa", CcAddress = "bbb@bb.bb.bb" },
-                new Quality_MailGroup { FactoryID = "ESP", GroupName = "aGroup", ToAddress = "aaa@aa.aa.aa", CcAddress = "bbb@bb.bb.bb" },
-                new Quality_MailGroup { FactoryID = "ESP", GroupName = "bGroup", ToAddress = "aaa@aa.aa.aa", CcAddress = "bbb@bb.bb.bb" },
-                new Quality_MailGroup { FactoryID = "ESP", GroupName = "cGroup", ToAddress = "aaa@aa.aa.aa", CcAddress = "bbb@bb.bb.bb" },
-            };
+                mailGroups.Add(item);
+            }
 
             if (!string.IsNullOrEmpty(quality_Mail.GroupName))
             {
@@ -29,10 +31,22 @@ namespace BusinessLogicLayer.Service
             return mailGroups;
         }
 
-        public Quality_MailGroup_ResultModel MailGroupSave(Quality_MailGroup quality_Mail)
+        public Quality_MailGroup_ResultModel MailGroupSave(Quality_MailGroup quality_Mail, int type)
         {
             Quality_MailGroup_ResultModel quality_MailGroup_Result = new Quality_MailGroup_ResultModel();
-            quality_MailGroup_Result.Result = true;
+            _BulkFGTMailGroupProvider = new BulkFGTMailGroupProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+            try
+            {
+                _BulkFGTMailGroupProvider.MailGroupSave(quality_Mail, type);
+                quality_MailGroup_Result.Result = true;
+            }
+            catch (Exception ex)
+            {
+                quality_MailGroup_Result.Result = false;
+                quality_MailGroup_Result.ErrMsg = ex.ToString();
+            }
+
             return quality_MailGroup_Result;
         }
     }

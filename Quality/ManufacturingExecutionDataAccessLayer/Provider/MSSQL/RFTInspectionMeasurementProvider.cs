@@ -44,7 +44,6 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 
 exec CopyStyle_ToMeasurement @UserID,@StyleUkey;
 
-
 SELECT [MeasurementUkey] = a.ukey
 	,a.StyleUkey
 	,a.Code
@@ -53,14 +52,24 @@ SELECT [MeasurementUkey] = a.ukey
 	,[Description] = a.Description	
 	,a.Tol1
 	,a.Tol2
-    ,[IsPatternMeas] = IIF(a.Description like '%pattern measn%',convert(bit,1), convert(bit,0))
+    , [IsPatternMeas] = 
+		 case when a.Description like '%pattern measn%'  then convert(bit,0)
+			  when  isnull(a.Tol1,0) = '0' then convert(bit,0)
+			  when  isnull(a.Tol2,0) = '0' then convert(bit,0)
+			  when  isnull(a.SizeCode,'') = '' then convert(bit,0)
+			  when  a.SizeSpec like '[A-Z]%' then convert(bit,0)
+			  when  (UPPER(s.SizeUnit) = 'INCH' and  a.SizeSpec like '%.%') then convert(bit,0)
+			  when  (UPPER(s.SizeUnit) = 'CM' and  a.SizeSpec like '%/%') then convert(bit,0)
+			  else  convert(bit,1) end
     ,[SizeUnit] = s.SizeUnit
+	,OrderID = '', Article = '', Location = '',Line = '',FactoryID = ''
 FROM [ManufacturingExecution].[dbo].[Measurement] a with(nolock)
 LEFT JOIN [ManufacturingExecution].[dbo].[MeasurementTranslate] b ON  a.MeasurementTranslateUkey = b.UKey
 LEFT JOIN Production.dbo.Style s on s.Ukey = a.StyleUkey
+--LEFT JOIN [ManufacturingExecution].[dbo].Inspection_Measurement inspm on inspm.MeasurementUkey = a.Ukey
 where a.junk=0 
-and StyleUkey = @StyleUkey 
-and SizeCode = @SizeCode
+and a.StyleUkey = @StyleUkey 
+and a.SizeCode = @SizeCode
 
 ";
 
@@ -173,11 +182,47 @@ and SizeCode = @SizeCode
             SQLParameterCollection objParameter = new SQLParameterCollection();
             SbSql.Append("DELETE FROM [RFT_Inspection_Measurement]"+ Environment.NewLine);
 
-
-
-
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
-	#endregion
+
+        public int Save(List<RFT_Inspection_Measurement_ViewModel> Measurement)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+
+            string strNo = string.Empty;
+
+            DataTable dt = ExecuteDataTable(CommandType.Text, $@"
+select no = isnull(max(no),0)+1 from  ManufacturingExecution.dbo.Inspection_Measurement  WITH (NOLOCK) where styleukey = {Measurement[0].StyleUkey}", objParameter);
+            if (dt != null || dt.Rows.Count > 0)
+            {
+                strNo = dt.Rows[0]["no"].ToString();
+            }
+
+            int rowSeq = 1;
+            string sqlcmd = string.Empty;
+            foreach (var item in Measurement)
+            {
+                objParameter.Add($"@MeasurementUkey{rowSeq}", item.MeasurementUkey);
+                objParameter.Add($"@StyleUkey{rowSeq}", item.StyleUkey);
+                objParameter.Add($"@No", strNo);
+                objParameter.Add($"@Code{rowSeq}", item.Code);
+                objParameter.Add($"@SizeCode{rowSeq}", item.SizeCode);
+                objParameter.Add($"@SizeSpec{rowSeq}", item.SizeSpec);
+                objParameter.Add($"@OrderID{rowSeq}", item.OrderID);
+                objParameter.Add($"@Article{rowSeq}", item.Article);
+                objParameter.Add($"@Location{rowSeq}", item.Location);
+                objParameter.Add($"@Line{rowSeq}", item.Line);
+                objParameter.Add($"@FactoryID{rowSeq}", item.FactoryID);
+
+                sqlcmd += $@"
+insert into RFT_Inspection_Measurement(MeasurementUkey,StyleUkey,No,Code,SizeCode,SizeSpec,OrderID,Article,Location,Line,FactoryID)
+values(@MeasurementUkey{rowSeq},@StyleUkey{rowSeq},@No,@Code{rowSeq},@SizeCode{rowSeq},@SizeSpec{rowSeq},@OrderID{rowSeq},@Article{rowSeq},@Location{rowSeq},@Line{rowSeq},@FactoryID{rowSeq})
+";
+                rowSeq++;
+            }
+
+            return ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter);
+        }
+    #endregion
     }
 }
