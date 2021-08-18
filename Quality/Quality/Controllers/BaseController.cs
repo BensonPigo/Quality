@@ -21,34 +21,14 @@ namespace Quality.Controllers
             set { System.Web.HttpContext.Current.Session["UserID"] = value; }
         }
 
-        public string UserName
+        public string BulkFGT_Brand
         {
             get
             {
-                if (System.Web.HttpContext.Current.Session["UserName"] == null) { return ""; }
-                else { return System.Web.HttpContext.Current.Session["UserName"].ToString(); }
+                if (System.Web.HttpContext.Current.Session["BulkFGT_Brand"] == null) { return ""; }
+                else { return System.Web.HttpContext.Current.Session["BulkFGT_Brand"].ToString(); }
             }
-            set { System.Web.HttpContext.Current.Session["UserName"] = value; }
-        }
-
-        public string Email
-        {
-            get
-            {
-                if (System.Web.HttpContext.Current.Session["Email"] == null) { return ""; }
-                else { return System.Web.HttpContext.Current.Session["Email"].ToString(); }
-            }
-            set { System.Web.HttpContext.Current.Session["Email"] = value; }
-        }
-
-        public string ImportFrom
-        {
-            get
-            {
-                if (System.Web.HttpContext.Current.Session["ImportFrom"] == null) { return ""; }
-                else { return System.Web.HttpContext.Current.Session["ImportFrom"].ToString(); }
-            }
-            set { System.Web.HttpContext.Current.Session["ImportFrom"] = value; }
+            set { System.Web.HttpContext.Current.Session["BulkFGT_Brand"] = value; }
         }
 
         public string FactoryID

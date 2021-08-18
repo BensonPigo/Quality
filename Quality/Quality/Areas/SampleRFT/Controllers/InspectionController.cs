@@ -494,6 +494,13 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        public JsonResult MeasurementGet(string OrderID, string SizeCode)
+        {
+            List<RFT_Inspection_Measurement_ViewModel> rFT_Inspection_Measurements = _InspectionService.MeasurementGet(OrderID, SizeCode, this.UserID);
+            return Json(rFT_Inspection_Measurements);
+        }
+
+        [HttpPost]
         public ActionResult CFTCommentsGet(string OrderID, string StyleID, string Season, string SampleStage)
         {
             List<RFT_OrderComments_ViewModel> viewModel = new List<RFT_OrderComments_ViewModel>();

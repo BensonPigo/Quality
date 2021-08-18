@@ -45,19 +45,14 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
                 { "@ID", DbType.String, Item.ID } ,
-                { "@Password", DbType.String, Item.Password } ,
             };
 
             SbSql.Append("SELECT"+ Environment.NewLine);
             SbSql.Append("         ID"+ Environment.NewLine);
-            SbSql.Append("        ,ImportFrom"+ Environment.NewLine);
-            SbSql.Append("        ,Name"+ Environment.NewLine);
-            SbSql.Append("        -- ,Password"+ Environment.NewLine);
             SbSql.Append("        ,Position"+ Environment.NewLine);
-            SbSql.Append("        ,Email"+ Environment.NewLine);
+            SbSql.Append("        ,BulkFGT_Brand" + Environment.NewLine);
             SbSql.Append("FROM [Quality_Pass1]"+ Environment.NewLine);
             SbSql.Append("Where ID=@ID" + Environment.NewLine);
-            if (Item.Password != null) { SbSql.Append("and Password = @Password" + Environment.NewLine); }
 
             return ExecuteList<Quality_Pass1>(CommandType.Text, SbSql.ToString(), objParameter);
         }
@@ -80,20 +75,14 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             SbSql.Append("INSERT INTO [Quality_Pass1]"+ Environment.NewLine);
             SbSql.Append("(" + Environment.NewLine);
             SbSql.Append("         ID"+ Environment.NewLine);
-            SbSql.Append("        ,ImportFrom"+ Environment.NewLine);
-            SbSql.Append("        ,Name"+ Environment.NewLine);
-            SbSql.Append("        ,Password"+ Environment.NewLine);
             SbSql.Append("        ,Position"+ Environment.NewLine);
-            SbSql.Append("        ,Email"+ Environment.NewLine);
+            SbSql.Append("        ,BulkFGT_Brand" + Environment.NewLine);
             SbSql.Append(")"+ Environment.NewLine);
             SbSql.Append("VALUES"+ Environment.NewLine);
             SbSql.Append("(" + Environment.NewLine);
             SbSql.Append("         @ID"); objParameter.Add("@ID", DbType.String, Item.ID);
-            SbSql.Append("        ,@ImportFrom"); objParameter.Add("@ImportFrom", DbType.String, Item.ImportFrom);
-            SbSql.Append("        ,@Name"); objParameter.Add("@Name", DbType.String, Item.Name);
-            SbSql.Append("        ,@Password"); objParameter.Add("@Password", DbType.String, Item.Password);
             SbSql.Append("        ,@Position"); objParameter.Add("@Position", DbType.String, Item.Position);
-            SbSql.Append("        ,@Email"); objParameter.Add("@Email", DbType.String, Item.Email);
+            SbSql.Append("        ,@BulkFGT_Brand"); objParameter.Add("@BulkFGT_Brand", DbType.String, Item.BulkFGT_Brand);
             SbSql.Append(")"+ Environment.NewLine);
 
 
@@ -120,11 +109,8 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             SbSql.Append("UPDATE [Quality_Pass1]"+ Environment.NewLine);
             SbSql.Append("SET"+ Environment.NewLine);
             if (Item.ID != null) { SbSql.Append("ID=@ID"+ Environment.NewLine); objParameter.Add("@ID", DbType.String, Item.ID);}
-            if (Item.ImportFrom != null) { SbSql.Append(",ImportFrom=@ImportFrom"+ Environment.NewLine); objParameter.Add("@ImportFrom", DbType.String, Item.ImportFrom);}
-            if (Item.Name != null) { SbSql.Append(",Name=@Name"+ Environment.NewLine); objParameter.Add("@Name", DbType.String, Item.Name);}
-            if (Item.Password != null) { SbSql.Append(",Password=@Password"+ Environment.NewLine); objParameter.Add("@Password", DbType.String, Item.Password);}
             if (Item.Position != null) { SbSql.Append(",Position=@Position"+ Environment.NewLine); objParameter.Add("@Position", DbType.String, Item.Position);}
-            if (Item.Email != null) { SbSql.Append(",Email=@Email"+ Environment.NewLine); objParameter.Add("@Email", DbType.String, Item.Email);}
+            if (Item.BulkFGT_Brand != null) { SbSql.Append(",BulkFGT_Brand=@BulkFGT_Brand" + Environment.NewLine); objParameter.Add("@BulkFGT_Brand", DbType.String, Item.BulkFGT_Brand);}
             SbSql.Append("WHERE 1 = 1" + Environment.NewLine);
 
 

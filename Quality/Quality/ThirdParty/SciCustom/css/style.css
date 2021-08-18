@@ -657,6 +657,26 @@ input:focus, textarea:focus {
         opacity: 1;
     }
 
+.bg-lightred {
+    background-color: #f1b0b0;
+}
+
+.bg-lightblue {
+    background-color: #deeef3;
+}
+
+.bg-lightgray {
+    background-color: lightgray;
+}
+
+.bg-gy {
+    background-color: gray;
+}
+
+.bg-lightyellow {
+    background-color: #eaea71;
+}
+
 @media screen and (max-width: 1500px) {
     body {
         overflow-x: scroll;
