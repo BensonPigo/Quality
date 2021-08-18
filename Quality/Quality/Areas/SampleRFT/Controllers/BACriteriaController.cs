@@ -37,6 +37,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             this.CheckSession();
             BACriteria_ViewModel model = new BACriteria_ViewModel();
             model.DataList = new List<DatabaseObject.ResultModel.BACriteria_Result>();
+            TempData["Model"] = null;
             return View(model);
         }
 
@@ -46,11 +47,12 @@ namespace Quality.Areas.SampleRFT.Controllers
             this.CheckSession();
 
 
-            if (Req == null || (!string.IsNullOrEmpty(Req.OrderID) && !string.IsNullOrEmpty(Req.StyleID)))
+            if (Req == null || (string.IsNullOrEmpty(Req.OrderID) && string.IsNullOrEmpty(Req.StyleID)))
             {
                 BACriteria_ViewModel e = new BACriteria_ViewModel()
                 {
-                    ErrorMessage = "Style# and SP# cannot all be empty"
+                    ErrorMessage = "Style# and SP# cannot all be empty",
+                    DataList = new List<DatabaseObject.ResultModel.BACriteria_Result>()
                 };
                 return View("Index", e);
             }
@@ -60,7 +62,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             if (!model.Result)
             {
                 model.ErrorMessage = $@"
-msg.WithError('{model.ErrorMessage}');
+msg.WithInfo('{model.ErrorMessage}');
 ";
             }
 
@@ -68,15 +70,16 @@ msg.WithError('{model.ErrorMessage}');
             return View("Index", model);
         }
 
-        public FileResult ExcelExport()
+        public ActionResult ExcelExport()
         {
             if (TempData["Model"] == null)
             {
-                return null;
+                return RedirectToAction("Index");
             }
 
             BACriteria_ViewModel model = (BACriteria_ViewModel)TempData["Model"];
             List<DatabaseObject.ResultModel.BACriteria_Result> dataList = model.DataList;
+            TempData["Model"] = model;
 
             XSSFWorkbook book;
             using (FileStream file = new FileStream(AppDomain.CurrentDomain.BaseDirectory + "XLT\\BACriteria.xlsx", FileMode.Open, FileAccess.Read))
@@ -84,21 +87,40 @@ msg.WithError('{model.ErrorMessage}');
                 book = new XSSFWorkbook(file);
                 var sheet = book.GetSheetAt(0);
 
+                int RowCount = dataList.Count;
+                // 根據Data數量，複製Row
+                for (int i = 0; i <= RowCount; i++)
+                {
+                    var firstRow = sheet.GetRow(1);
+                    firstRow.CopyRowTo(i + 2);
+                }
 
                 IDataFormat dataFormatCustom = book.CreateDataFormat();
                 ICellStyle cellStyleR = book.CreateCellStyle();
 
-                int RowIndex = 2;
+                int RowIndex = 1;
                 foreach (var data in dataList)
                 {
                     var row = sheet.GetRow(RowIndex);
 
-                    row.GetCell(0).SetCellValue(data.OrderID);
-                    row.GetCell(1).SetCellValue(data.OrderTypeID);
-                    row.GetCell(2).SetCellValue(data.Qty);
-                    row.GetCell(3).SetCellValue(data.InspectedQty);
-                    row.GetCell(4).SetCellValue(data.BAProduct);
-                    row.GetCell(5).SetCellValue(data.BACriteria);
+
+                    var cell0 = row.GetCell(0);
+                    cell0.SetCellValue(data.OrderID);
+
+                    var cell1 = row.GetCell(1);
+                    cell1.SetCellValue(data.OrderTypeID);
+
+                    var cell2 = row.GetCell(2);
+                    cell2.SetCellValue(data.Qty);
+
+                    var cell3 = row.GetCell(3);
+                    cell3.SetCellValue(data.InspectedQty);
+
+                    var cell4 = row.GetCell(4);
+                    cell4.SetCellValue(data.BAProduct);
+
+                    var cell5 = row.GetCell(5);
+                    cell5.SetCellValue(data.BACriteria);
 
                     RowIndex++;
                 }

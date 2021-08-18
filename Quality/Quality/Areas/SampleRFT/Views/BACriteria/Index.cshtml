@@ -85,7 +85,7 @@
             <div class="inner-scroll" style="float:left">
 
                 <div>
-                    @using (Html.BeginForm("Query", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post, new { @class = "", @name = "SearchFrom", @id = "SearchFrom" }))
+                    @using (Html.BeginForm("Query", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { @class = "", @name = "SearchFrom",@onsubmit="return checkForm(this);", @id = "SearchFrom" }))
                     {
                         <div>
                             <label class="QueryLab">SP#</label>
@@ -111,7 +111,7 @@
                 <br />
                 <div>
 
-                    <table id="myTable" class="table table-striped display">
+                    <table id="myTable" class="table table-striped display" style="text-align:center">
                         <thead>
                             <tr class="row-name">
                                 <th>SP#</th>
@@ -172,6 +172,8 @@
 
     $(function () {
 
+        
+        @Html.Raw(Model.ErrorMessage);   
 
         $('#myTable').DataTable({
             "pageLength": 20,
@@ -184,6 +186,11 @@
         });
     });
 
-
+    function checkForm(obj) {
+        if ($("#txtOrderID").val() == "" & $("#txtStyle").val() == "") {
+            msg.WithError("Style# and SP# cannot all be empty");
+            return false;
+        }
+    }
 
 </script>
