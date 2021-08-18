@@ -1,0 +1,665 @@
+﻿@using DatabaseObject.ResultModel
+@using BusinessLogicLayer.Service;
+
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+
+@model AuthoritybyPosition
+
+<style type="text/css">
+    .dataTables_wrapper {
+        position: static;
+    }
+
+    label, #myTable_info {
+        color: white
+    }
+
+    #myTable_previous, #myTable_next {
+        color: white !important;
+    }
+
+    #moduleTable_previous, #moduleTable_next {
+        color: white !important;
+    }
+
+    #UsersTable_previous, #UsersTable_next {
+        color: white !important;
+    }
+
+    select {
+        color: wheat
+    }
+
+    .btnmargin {
+        margin-left: 10px;
+        margin-top: 10px;
+    }
+
+    tfoot input {
+        width: 100%;
+        padding: 3px;
+        box-sizing: border-box;
+    }
+
+    .input_Head {
+        /*height: 3vh;*/
+        height: 89%;
+        width: 95%;
+        font-weight: 300 !important;
+        color: #656565;
+        font-size: 0.5em !important;
+    }
+
+    .detail_Head {
+        width: 95%;
+    }
+</style>
+
+<div class="main-content">
+
+    <header class="page-header">
+        <h3>
+            <i class=""></i><span>Authority by Position</span>
+        </h3>
+        <div class="breadcrumb">
+            <div>Home</div>
+            <div class="current">Authority by Position</div>
+            <input id="btnNew" onclick="New_Click('', 'New')" class="site-btn btn-gy btn-sm" style="height:50%;left:80%;" type="button" name="name" value="New" />
+        </div>
+    </header>
+
+
+    <div class="main-area">
+
+        <div class="content-scroll">
+            <div class="inner-scroll" style="float:left">
+
+                <div>
+                    <table id="myTable" class="table table-striped display">
+                        <thead>
+                            <tr class="row-name">
+                                <th>Position</th>
+                                <th>Admin</th>
+                                <th>Description</th>
+                                <th>Junk</th>
+                                <th>   </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.DataList)
+                            {
+                                <tr class="row-content">
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Position)
+                                    </td>
+                                    <td>
+                                        @if (item.IsAdmin)
+                                        {
+                                            <input type="checkbox" checked disabled>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" disabled>
+                                        }
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Description)
+                                    </td>
+                                    <td>
+                                        @if (item.Junk)
+                                        {
+                                            <input type="checkbox" checked disabled>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" disabled>
+                                        }
+                                    </td>
+                                    <td>
+                                        <img onclick="Edit_Pic_Click('@item.Position')" style="width:1.2vw;cursor:pointer;" src="~/ThirdParty/SciCustom/icon/Edit.png" />
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>Position</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th>   </th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<!--Detail彈跳視窗-->
+<div class="detail-dialog to-edit-detail" title="Detail">
+    <div class="detail-dialog-content dialog-content-w-icon" style="height:75vh">
+        <form class="page-display-form nr-form" style="width:80%;padding:0;">
+            <div class="form-item" style="height: 100%;">
+                <table style="border: 1px solid gray;font-size: 1vw;width: 100%;height: 10vh;text-align: center;background-color: transparent;color: white;">
+                    <tr>
+                        <td style="width:10vw;border: 1px solid gray;height: 5vh;font-size: 2vh;background-color:#696868;vertical-align: middle;">
+                            <label>Position</label>
+                        </td>
+                        <td style="border: 1px solid gray;font-size: 2vh;vertical-align: middle;width: 15vw;">
+                            <div class="detail_Head" id="Position"></div>
+                            <input class="input_Head" tpye="text" id="input_Position" value="" />
+                        </td>
+                        <td style="width:10vw;border: 1px solid gray;font-size: 2vh;background-color:#696868;vertical-align: middle;">
+                            <label>Description</label>
+                        </td>
+                        <td style=" border: 1px solid gray;font-size: 2vh;vertical-align: middle;">
+                            <span class="detail_Head" id="Description"></span>
+                            <input class="input_Head" tpye="text" id="input_Description" value="" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width:10vw;border: 1px solid gray;height: 5vh;font-size: 2vh;background-color:#696868;vertical-align: middle;">
+                            <label>Admin</label>
+                        </td>
+                        <td style=" border: 1px solid gray;font-size: 2vh;vertical-align: middle;">
+                            <input type="checkbox" id="IsAdmin" disabled value="" />
+                        </td>
+                        <td style="width:10vw;border: 1px solid gray;font-size: 2vh;background-color:#696868;vertical-align: middle;">
+                            <label>Junk</label>
+                        </td>
+                        <td style=" border: 1px solid gray;font-size: 2vh;vertical-align: middle;">
+                            <input type="checkbox" id="Junk" disabled value="" />
+                        </td>
+                    </tr>
+                </table>
+                <br />
+                <div style="overflow:auto;height:84%;">
+                    <table id="moduleTable" class="cell-border" style="width:100%;">
+
+                        <thead style="background-color:black">
+                            <tr>
+                                <th>ID</th>
+                                <th>Module</th>
+                                <th>Function</th>
+                                <th>Used</th>
+                            </tr>
+                        </thead>
+                        <tfoot style="background-color:black">
+                            <tr>
+                                <th>ID</th>
+                                <th>Module</th>
+                                <th>Function</th>
+                                <th>Used</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var msg = new MessagerAlert();
+
+    var EditMode = false;
+
+    $(function () {
+
+        $('#myTable tfoot th').each(function () {
+            var title = $(this).text();
+
+            if (title == 'Position') {
+                $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+            }
+        });
+
+        $('#myTable').DataTable({
+            "pageLength": 20,
+            columnDefs: [
+                { width: '15%', targets: 0 },
+                { width: '5%', targets: 1, orderable: false },
+                { targets: 2 },
+                { width: '5%', targets: 3, orderable: false },
+                { width: '5%', targets: 4, orderable: false },
+            ],
+            columns: [
+                {},
+                {   /*// Used欄位換成Check box
+                    render: function (data, type, full, meta) {
+
+                        if (data) {
+                            var rtn = '<input type="checkbox" checked name="checkbox-' + meta.row + '" style="font-size: 0.2vw;" disabled >';
+                            return rtn;
+                        }
+                        else {
+                            var rtn = '<input type="checkbox" name="checkbox-' + meta.row + '" style="font-size: 0.2vw;" disabled >';
+                            return rtn;
+                        }
+                    },*/
+                },
+                {},
+                {  /* // Used欄位換成Check box
+                    render: function (data, type, full, meta) {
+
+                        if (data) {
+                            var rtn = '<input type="checkbox" checked name="checkbox-' + meta.row + '" style="font-size: 0.2vw;" disabled >';
+                            return rtn;
+                        }
+                        else {
+                            var rtn = '<input type="checkbox" name="checkbox-' + meta.row + '" style="font-size: 0.2vw;" disabled >';
+                            return rtn;
+                        }
+                    },*/
+                },
+                {},
+            ],
+            initComplete: function () {
+                // Apply the search
+                this.api().columns().every(function () {
+
+                    var that = this;
+                    $('input', this.footer()).on('keyup change clear', function () {
+                        if (that.search() !== this.value) {
+                            that
+                                .search(this.value)
+                                .draw();
+                        }
+                    });
+
+                });
+            }
+        });
+
+        $(".detail-dialog").dialog({
+            autoOpen: false,
+            modal: true,
+            closeText: ' ',
+            width: 500,
+            minHeight: 400,
+            position: {
+                my: "center top",
+                at: "center top",
+                of: window
+            },
+            dialogClass: "site-box",
+            open: function (event, ui) {
+                $('.ui-widget-overlay').bind('click', function () {
+                    //location.reload();//強制Refresh頁面 Benson
+                    $(".ui-dialog-content").dialog('close');
+                });
+                $(this).parent().siblings().find(".ui-dialog-content").dialog('close');
+
+            },
+            close: function () {
+            },
+        });
+    });
+
+    function Edit_Pic_Click(Position) {
+        HeadToggle('Update');
+
+        $.ajax({
+            url: '@Url.Action("GetDetail")',
+            data: { Position: Position },
+            type: 'POST',
+            dataType: "json",
+            async: false,
+            success: function (res) {
+                if (res.Result) {
+                    InitDetailDataTable(res);
+                }
+                else {
+                    msg.WithErrorCheck(res.ErrorMessage, function () {
+                        location.reload();
+                    });
+                }
+
+            }
+        });
+
+        $(".to-edit-detail").dialog({
+            width: "70%",
+            dialogClass: "add-contact-box",
+            buttons: {
+                "1": {
+                    text: 'Cancel',
+                    click: function () {
+                        EditMode = false;
+                        $("#moduleTable tbody").remove();
+                        Edit_Pic_Click(Position)
+                    }
+                    , "class": "site-btn btn-gy btn-lg"
+                },
+                "2": {
+                    text: 'Edit',
+                    click: function (btn, obj) {
+
+                        if ($('#dialogEdit').text() == 'Edit') {
+                            //按下Edit
+                            Dialog_Edit_Click();
+                        }
+                        else {
+                            //按下Save
+                            Dialog_Save_Click('Update');
+                        }
+                    },
+                    "class": "site-btn btn-red btn-lg",
+                    "ID": "dialogEdit"
+                },
+                "3": {
+                    text: 'Exit',
+                    click: function () {
+                        $(this).dialog("close");
+                    }
+                    , "class": "site-btn btn-gy btn-lg"
+                },
+            },
+        });
+        $(".to-edit-detail").dialog("open");
+        $(".to-edit-detail").on("dialogclose", function (event, ui) {
+            EditMode = false;
+
+            //對話窗關閉，Table的內容要清除
+            $("#moduleTable tbody").remove();
+        });
+
+    }
+
+    function New_Click() {
+
+        //產生預設資料
+        $.ajax({
+            url: '@Url.Action("GetDetail")',
+            data: { Position: '' },
+            type: 'POST',
+            dataType: "json",
+            async: false,
+            success: function (res) {
+                if (res.Result) {
+                    InitDetailDataTable(res);
+                }
+                else {
+                    msg.WithErrorCheck(res.ErrorMessage, function () {
+                        location.reload();
+                    });
+                }
+
+            }
+        });
+
+        $(".to-edit-detail").dialog({
+            width: "70%",
+            dialogClass: "add-contact-box",
+            buttons: {
+                "1": {
+                    text: 'Save',
+                    click: function (btn, obj) {
+
+                        //按下Save
+                        Dialog_Save_Click("Create");
+                    },
+                    "class": "site-btn btn-red btn-lg",
+                    "ID": "dialogEdit"
+                },
+                "2": {
+                    text: 'Exit',
+                    click: function () {
+                        $(this).dialog("close");
+                    }
+                    , "class": "site-btn btn-gy btn-lg"
+                },
+            },
+        });
+        $(".to-edit-detail").dialog("open");
+        $(".to-edit-detail").on("dialogclose", function (event, ui) {
+            EditMode = false;
+
+            //對話窗關閉，Table的內容要清除
+            $("#moduleTable tbody").remove();
+        });
+
+        EditMode = true;
+        HeadToggle('Create');
+        $(".detail_Chk").removeAttr("disabled");
+    }
+
+    function HeadToggle(Action) {
+
+        if (EditMode) {
+            $(".detail_Head").hide();
+            $(".input_Head").show();
+
+            $("#IsAdmin").removeAttr("disabled");
+            $("#Junk").removeAttr("disabled");
+        }
+        else {
+            $(".detail_Head").show();
+            $(".input_Head").hide();
+
+            $("#IsAdmin").attr("disabled", "disabled");
+            $("#Junk").attr("disabled", "disabled");
+        }
+
+        if (Action == 'Update') {
+            $("#Position").show();
+            $("#input_Position").hide();
+        }
+    }
+
+
+    function InputToggle() {
+
+        if (EditMode) {
+            //編輯模式觸發時機：按下Save
+            //將文字方塊的值推給純文字標籤
+            $("#Position").text($("#input_" + "Position").val());
+            $("#Description").text($("#input_" + "Description").val());
+
+        }
+        else {
+            //非編輯模式觸發時機：剛開啟視窗、按下Edit
+            //將純文字標籤的值推給文字方塊
+            $("#input_" + "Position").val($("#Position").text());
+            $("#input_" + "Description").val($("#Description").text());
+        }
+    }
+
+    //初始化Detail的表格
+    function InitDetailDataTable(res) {
+        var adata = [];
+        $("#Position").text(res.Position);
+        $("#Description").text(res.Description);
+
+        if (res.IsAdmin) {
+            $("#IsAdmin").prop('checked', true);
+        }
+        else {
+            $("#IsAdmin").prop('checked', false);
+        }
+        if (res.Junk) {
+            $("#Junk").prop('checked', true);
+        }
+        else {
+            $("#Junk").prop('checked', false);
+        }
+
+        InputToggle();
+
+        // 將AJAX取得的資料整理成DataTbles可以消化的格式
+        for (var i = 0; i <= res.DataList.length - 1; i++) {
+            adata.push(Object.values(res.DataList[i]));
+        }
+
+        // Detail視窗的表格
+        var table = $('#moduleTable').DataTable({
+            data: adata,
+            autoWidth: false,
+            destroy: true, // 設定這個才能重新初始化Datatables
+            columnDefs: [
+                { targets: 0, orderable: false, visible: false, },
+                { targets: 1, orderable: false },
+                { width: '60%', targets: 2, orderable: false },
+                { width: '2%', targets: 3, orderable: false },
+            ],
+            columns: [
+                {},
+                {},
+                {},
+                {   // Used欄位換成Check box
+                    render: function (data, type, full, meta) {
+
+                        if (data) {
+                            var rtn = '<input type="checkbox" checked class="detail_Chk" name="checkbox-' + meta.row + '" id="checkbox-' + meta.row + '" style="font-size: 0.2vw;">';
+                            return rtn;
+                        }
+                        else {
+                            var rtn = '<input type="checkbox" class="detail_Chk" name="checkbox-' + meta.row + '" id="checkbox-' + meta.row + '" style="font-size: 0.2vw;">';
+                            return rtn;
+                        }
+                    },
+                },
+            ],
+            drawCallback: function (settings) {
+                if (EditMode) {
+
+                    $(".detail_Chk").removeAttr("disabled");
+                }
+                else {
+                    $(".detail_Chk").attr("disabled", "disabled");
+                }
+            },
+            dom: 'p',//隱藏Search文字方塊，但保留搜尋過濾功能
+            "paging": true,
+            //"filter": false,
+            "order": false,
+            "pageLength": 10,
+            "createdRow": function (row, data, index) { // 參考 https://datatables.net/examples/advanced_init/row_callback.html
+                $('td', row).css('color', 'black');
+            },
+            initComplete: function () {
+                this.api().columns().every(function () {
+                    // 只有第一個欄位要有選單
+                    if (this.data().length > 0 && this.index() == 1) {
+
+                        var column = this;
+                        var select = $('<select><option value="">All Module</option></select>')
+                            .appendTo($(column.footer()).empty())
+                            .on('change', function () {
+                                var val = $.fn.dataTable.util.escapeRegex(
+                                    $(this).val()
+                                );
+
+                                column
+                                    .search(val ? '^' + val + '$' : '', true, false)
+                                    .draw();
+                            });
+
+                        column.data().unique().sort().each(function (d, j) {
+                            select.append('<option value="' + d + '">' + d + '</option>')
+                        });
+                    }
+                });
+            }
+        });
+
+        $('#moduleTable tbody').on('click', 'td', function () {
+
+            // Index = 3 為Used欄位
+            if (EditMode && table.cell(this).index().column == 3) {
+                var boolean = !table.cell(this).data();
+                var rowIndex = table.cell(this).index().row;
+
+                // 修改Datasource
+                table.cell(this).data(boolean);
+            }
+        });
+
+    }
+
+
+    function Dialog_Edit_Click() {
+
+        //按下Edit
+        $('#dialogEdit').text('Save');
+        $(".detail_Chk").removeAttr("disabled");
+        InputToggle();
+        EditMode = true;
+        HeadToggle('Update');
+    }
+
+    // User Detail 修改
+    function Dialog_Save_Click(Action) {
+
+        InputToggle();
+        if (Action == 'Edit') {
+            $('#dialogEdit').text('Edit');
+            $(".detail_Chk").attr("disabled", "disabled");
+            EditMode = false;
+            HeadToggle('Update');
+        }
+        /*--------------------*/
+
+
+        var detailCount = $('#moduleTable').DataTable().data().length;
+
+        var DataList = [];
+
+        for (var i = 0; i <= detailCount - 1; i++) {
+
+            var data = {
+                MenuID: $('#moduleTable').DataTable().data()[i][0],
+                ModuleName: $('#moduleTable').DataTable().data()[i][1],
+                FunctionName: $('#moduleTable').DataTable().data()[i][2],
+                Used: $('#moduleTable').DataTable().data()[i][3],
+            };
+            DataList.push(data);
+        }
+
+        var Req = {
+            Position: $("#Position").text(),
+            Description: $("#Description").text(),
+            IsAdmin: $("#IsAdmin").prop("checked"),
+            Junk: $("#Junk").prop("checked"),
+            DataList: DataList
+        };
+        var AjaxURL = "";
+        if (Action=="Create") {
+            AjaxURL = '@Url.Action("CreateDetail")';
+        }
+        else if (Action == "Update") {
+            AjaxURL = '@Url.Action("UpdateDetail")';
+        }
+
+        $.ajax({
+            url: AjaxURL,
+            data: { Req: Req},
+            type: 'POST',
+            dataType: "json",
+            async: false,
+            success: function (res) {
+                if (res.Result) {
+                    msg.WithSuccesCheck("Success!", function () {
+                        location.reload();
+                    });
+                }
+                else {
+                    msg.WithErrorCheck(res.ErrorMessage, function () {
+                    });
+                }
+
+            }
+        });
+    }
+</script>

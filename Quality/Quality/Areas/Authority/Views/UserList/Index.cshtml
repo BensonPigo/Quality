@@ -4,14 +4,9 @@
 @{
     ViewBag.Title = "User List";
 
-    /*
+
     AuthorityService service = new AuthorityService();
     List<SelectListItem> PositionList = service.GetPositionList(HttpContext.Current.Session["FactoryID"].ToString());
-
-    string strPositionList = string.Join(",", PositionList.Select(o => o.Value));
-    */
-    //假資料
-    List<SelectListItem> PositionList = new List<SelectListItem>();
 
     string strPositionList = string.Join(",", PositionList.Select(o => o.Value));
 }
@@ -75,7 +70,6 @@
     }
 </style>
 
-
 <div class="main-content">
 
     <header class="page-header">
@@ -138,7 +132,6 @@
         </div>
     </div>
 </div>
-
 
 <!--Detail彈跳視窗-->
 <div class="detail-dialog to-edit-detail" title="Detail">
@@ -218,7 +211,6 @@
         </form>
     </div>
 </div>
-
 
 <!--Import彈跳視窗-->
 <div class="import-dialog to-Import-detail" title="Import">

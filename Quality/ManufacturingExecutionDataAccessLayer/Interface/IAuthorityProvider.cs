@@ -1,4 +1,5 @@
-﻿using DatabaseObject.ResultModel;
+﻿using DatabaseObject.RequestModel;
+using DatabaseObject.ResultModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,16 +12,16 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
     public interface IAuthorityProvider
     {
         IList<UserList_Browse> Get_User_List_Browse();
-        //IList<UserList_Authority> Get_User_List_Head(string UserID);
+        IList<UserList_Authority> Get_User_List_Head(string UserID);
         IList<Module_Detail> Get_User_List_Detail(string UserID);
-        //bool Update_User_List_Detail(UserList_Authority_Request Req);
+        bool Update_User_List_Detail(UserList_Authority_Request Req);
 
-        //IList<Quality_Position> Get_Position_Browse(string FactoryID);
-        //IList<Quality_Position> Get_Position_Head(string Position);
+        IList<Quality_Position> Get_Position_Browse(string FactoryID);
+        IList<Quality_Position> Get_Position_Head(string Position);
         IList<Module_Detail> Get_Position_Detail(string Position);
-        //bool Update_Position_Detail(Quality_Position_Request Req);
-        //int Check_Position_Exists(Quality_Position_Request Req);
-        //bool Create_Position_Detail(Quality_Position_Request Req);
+        bool Update_Position_Detail(Quality_Position_Request Req);
+        int Check_Position_Exists(Quality_Position_Request Req);
+        bool Create_Position_Detail(Quality_Position_Request Req);
 
 
         bool ImportUsers(List<UserList_Browse> DataList);

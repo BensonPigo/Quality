@@ -1,4 +1,6 @@
-﻿using BusinessLogicLayer.Interface;
+﻿using ADOHelper.Utility;
+using BusinessLogicLayer.Interface;
+using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using ManufacturingExecutionDataAccessLayer.Interface;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
@@ -37,179 +39,179 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        //public UserList_Authority Get_User_List_Detail(string UserID)
-        //{
-        //    UserList_Authority result = new UserList_Authority();
+        public UserList_Authority Get_User_List_Detail(string UserID)
+        {
+            UserList_Authority result = new UserList_Authority();
 
-        //    try
-        //    {
-        //        _AuthorityProvider = new AuthorityProvider(Common.QualityDataAccessLayer);
+            try
+            {
+                _AuthorityProvider = new AuthorityProvider(Common.ManufacturingExecutionDataAccessLayer);
 
-        //        result = _AuthorityProvider.Get_User_List_Head(UserID).ToList().FirstOrDefault();
-        //        List<Module_Detail> list = _AuthorityProvider.Get_User_List_Detail(UserID).ToList();
+                result = _AuthorityProvider.Get_User_List_Head(UserID).ToList().FirstOrDefault();
+                List<Module_Detail> list = _AuthorityProvider.Get_User_List_Detail(UserID).ToList();
 
-        //        result.DataList = list;
-        //        result.Result = true;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        result.Result = false;
-        //        result.ErrorMessage = ex.Message;
-        //    }
-
-
-        //    return result;
-        //}
-
-        //public UserList_Authority Update_User_List_Detail(UserList_Authority_Request Req)
-        //{
-        //    UserList_Authority result = new UserList_Authority();
-        //    SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.QualityDataAccessLayer);
-
-        //    try
-        //    {
-        //        _AuthorityProvider = new AuthorityProvider(_ISQLDataTransaction);
-
-        //        result.Result = _AuthorityProvider.Update_User_List_Detail(Req);
-        //        _ISQLDataTransaction.Commit();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _ISQLDataTransaction.RollBack();
-        //        result.Result = false;
-        //        result.ErrorMessage = ex.Message;
-        //    }
-        //    finally { _ISQLDataTransaction.CloseConnection(); }
-
-        //    return result;
-        //}
+                result.DataList = list;
+                result.Result = true;
+            }
+            catch (Exception ex)
+            {
+                result.Result = false;
+                result.ErrorMessage = ex.Message;
+            }
 
 
-        //public AuthoritybyPosition Get_Position_Browse(string FactoryID)
-        //{
-        //    AuthoritybyPosition result = new AuthoritybyPosition();
+            return result;
+        }
 
-        //    try
-        //    {
-        //        _AuthorityProvider = new AuthorityProvider(Common.QualityDataAccessLayer);
+        public UserList_Authority Update_User_List_Detail(UserList_Authority_Request Req)
+        {
+            UserList_Authority result = new UserList_Authority();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ManufacturingExecutionDataAccessLayer);
 
-        //        List<Quality_Position> list = _AuthorityProvider.Get_Position_Browse(FactoryID).ToList();
-        //        result.DataList = list;
-        //        result.Result = true;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        result.Result = false;
-        //        result.ErrorMessage = ex.Message;
-        //    }
+            try
+            {
+                _AuthorityProvider = new AuthorityProvider(_ISQLDataTransaction);
 
+                result.Result = _AuthorityProvider.Update_User_List_Detail(Req);
+                _ISQLDataTransaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                _ISQLDataTransaction.RollBack();
+                result.Result = false;
+                result.ErrorMessage = ex.Message;
+            }
+            finally { _ISQLDataTransaction.CloseConnection(); }
 
-        //    return result;
-        //}
-
-        //public Quality_Position Get_Position_Detail(string Position)
-        //{
-        //    Quality_Position result = new Quality_Position();
-
-        //    try
-        //    {
-        //        _AuthorityProvider = new AuthorityProvider(Common.QualityDataAccessLayer);
-
-        //        var tmp = _AuthorityProvider.Get_Position_Head(Position).ToList().FirstOrDefault();
-        //        if (tmp != null)
-        //        {
-        //            result = tmp;
-        //        }
-        //        List<Module_Detail> list = _AuthorityProvider.Get_Position_Detail(Position).ToList();
-
-        //        result.DataList = list;
-        //        result.Result = true;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        result.Result = false;
-        //        result.ErrorMessage = ex.Message;
-        //    }
+            return result;
+        }
 
 
-        //    return result;
-        //}
+        public AuthoritybyPosition Get_Position_Browse(string FactoryID)
+        {
+            AuthoritybyPosition result = new AuthoritybyPosition();
 
-        //public Quality_Position Update_Position_Detail(Quality_Position_Request Req)
-        //{
-        //    Quality_Position result = new Quality_Position();
-        //    SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.QualityDataAccessLayer);
+            try
+            {
+                _AuthorityProvider = new AuthorityProvider(Common.ManufacturingExecutionDataAccessLayer);
 
-        //    try
-        //    {
-        //        _AuthorityProvider = new AuthorityProvider(_ISQLDataTransaction);
+                List<Quality_Position> list = _AuthorityProvider.Get_Position_Browse(FactoryID).ToList();
+                result.DataList = list;
+                result.Result = true;
+            }
+            catch (Exception ex)
+            {
+                result.Result = false;
+                result.ErrorMessage = ex.Message;
+            }
 
-        //        result.Result = _AuthorityProvider.Update_Position_Detail(Req);
-        //        _ISQLDataTransaction.Commit();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _ISQLDataTransaction.RollBack();
-        //        result.Result = false;
-        //        result.ErrorMessage = ex.Message;
-        //    }
-        //    finally { _ISQLDataTransaction.CloseConnection(); }
 
-        //    return result;
-        //}
+            return result;
+        }
 
-        //public Quality_Position Create_Position_Detail(Quality_Position_Request Req)
-        //{
-        //    Quality_Position result = new Quality_Position();
-        //    SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.QualityDataAccessLayer);
+        public Quality_Position Get_Position_Detail(string Position)
+        {
+            Quality_Position result = new Quality_Position();
 
-        //    try
-        //    {
-        //        _AuthorityProvider = new AuthorityProvider(_ISQLDataTransaction);
+            try
+            {
+                _AuthorityProvider = new AuthorityProvider(Common.ManufacturingExecutionDataAccessLayer);
 
-        //        // 檢查重複
-        //        int existsCount = _AuthorityProvider.Check_Position_Exists(Req);
-        //        if (existsCount > 0)
-        //        {
-        //            throw new Exception($"<{Req.Position}, {Req.Factory}> Position Data exists.");
-        //        }
+                var tmp = _AuthorityProvider.Get_Position_Head(Position).ToList().FirstOrDefault();
+                if (tmp != null)
+                {
+                    result = tmp;
+                }
+                List<Module_Detail> list = _AuthorityProvider.Get_Position_Detail(Position).ToList();
 
-        //        result.Result = _AuthorityProvider.Create_Position_Detail(Req);
-        //        _ISQLDataTransaction.Commit();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _ISQLDataTransaction.RollBack();
-        //        result.Result = false;
-        //        result.ErrorMessage = ex.Message;
-        //    }
-        //    finally { _ISQLDataTransaction.CloseConnection(); }
+                result.DataList = list;
+                result.Result = true;
+            }
+            catch (Exception ex)
+            {
+                result.Result = false;
+                result.ErrorMessage = ex.Message;
+            }
 
-        //    return result;
-        //}
 
-        //public UserList_Authority ImportUsers(List<UserList_Browse> DataList)
-        //{
-        //    UserList_Authority result = new UserList_Authority();
-        //    SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.QualityDataAccessLayer);
+            return result;
+        }
 
-        //    try
-        //    {
-        //        _AuthorityProvider = new AuthorityProvider(_ISQLDataTransaction);
+        public Quality_Position Update_Position_Detail(Quality_Position_Request Req)
+        {
+            Quality_Position result = new Quality_Position();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ManufacturingExecutionDataAccessLayer);
 
-        //        result.Result = _AuthorityProvider.ImportUsers(DataList);
-        //        _ISQLDataTransaction.Commit();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _ISQLDataTransaction.RollBack();
-        //        result.Result = false;
-        //        result.ErrorMessage = ex.Message;
-        //    }
-        //    finally { _ISQLDataTransaction.CloseConnection(); }
+            try
+            {
+                _AuthorityProvider = new AuthorityProvider(_ISQLDataTransaction);
 
-        //    return result;
-        //}
+                result.Result = _AuthorityProvider.Update_Position_Detail(Req);
+                _ISQLDataTransaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                _ISQLDataTransaction.RollBack();
+                result.Result = false;
+                result.ErrorMessage = ex.Message;
+            }
+            finally { _ISQLDataTransaction.CloseConnection(); }
+
+            return result;
+        }
+
+        public Quality_Position Create_Position_Detail(Quality_Position_Request Req)
+        {
+            Quality_Position result = new Quality_Position();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ManufacturingExecutionDataAccessLayer);
+
+            try
+            {
+                _AuthorityProvider = new AuthorityProvider(_ISQLDataTransaction);
+
+                // 檢查重複
+                int existsCount = _AuthorityProvider.Check_Position_Exists(Req);
+                if (existsCount > 0)
+                {
+                    throw new Exception($"<{Req.Position}, {Req.Factory}> Position Data exists.");
+                }
+
+                result.Result = _AuthorityProvider.Create_Position_Detail(Req);
+                _ISQLDataTransaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                _ISQLDataTransaction.RollBack();
+                result.Result = false;
+                result.ErrorMessage = ex.Message;
+            }
+            finally { _ISQLDataTransaction.CloseConnection(); }
+
+            return result;
+        }
+
+        public UserList_Authority ImportUsers(List<UserList_Browse> DataList)
+        {
+            UserList_Authority result = new UserList_Authority();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ManufacturingExecutionDataAccessLayer);
+
+            try
+            {
+                _AuthorityProvider = new AuthorityProvider(_ISQLDataTransaction);
+
+                result.Result = _AuthorityProvider.ImportUsers(DataList);
+                _ISQLDataTransaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                _ISQLDataTransaction.RollBack();
+                result.Result = false;
+                result.ErrorMessage = ex.Message;
+            }
+            finally { _ISQLDataTransaction.CloseConnection(); }
+
+            return result;
+        }
 
         public UserList GetAlUser(string FactoryID)
         {

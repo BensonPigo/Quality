@@ -108,12 +108,17 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequestModel\FinalInspection_Request.cs" />
     <Compile Include="RequestModel\LogIn_Request.cs" />
+    <Compile Include="RequestModel\Quality_Pass1_Request.cs" />
+    <Compile Include="RequestModel\Quality_Position_Request.cs" />
     <Compile Include="RequestModel\UserList_Authority_Request.cs" />
     <Compile Include="ResultModelBase.cs" />
+    <Compile Include="ResultModel\AuthoritybyPosition.cs" />
     <Compile Include="ResultModel\LogIn_Result.cs" />
     <Compile Include="ResultModel\Module_Detail.cs" />
     <Compile Include="ResultModel\Quality_MailGroup_ResultModel.cs" />
+    <Compile Include="ResultModel\Quality_Position.cs" />
     <Compile Include="ResultModel\UserList.cs" />
+    <Compile Include="ResultModel\UserList_Authority.cs" />
     <Compile Include="ResultModel\UserList_Browse.cs" />
     <Compile Include="ViewModel\FinalInspection\AddDefect.cs" />
     <Compile Include="ViewModel\FinalInspection\Measurement.cs" />

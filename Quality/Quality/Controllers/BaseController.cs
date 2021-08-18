@@ -159,5 +159,19 @@ namespace Quality.Controllers
             set { System.Web.HttpContext.Current.Session["SelectItemData"] = value; }
         }
         #endregion
+
+        // 檢查是否登入
+        public bool CheckSession()
+        {
+            if (Session == null || Session.Keys.Count < 1)
+            {
+                Response.Write("Please login again。</br></br>");
+                //Response.Write($@"<a href=""{WebPortalURL}"">Login</a>");
+
+                Response.End();
+                return false;
+            }
+            return true;
+        }
     }
 }

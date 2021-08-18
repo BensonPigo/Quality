@@ -121,11 +121,13 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\Authority\AuthorityAreaRegistration.cs" />
+    <Compile Include="Areas\Authority\Controllers\AuthoritybyPositionController.cs" />
     <Compile Include="Areas\Authority\Controllers\UserListController.cs" />
     <Compile Include="Areas\FinalInspection\Controllers\InspectionController.cs" />
     <Compile Include="Areas\FinalInspection\Controllers\QueryController.cs" />
     <Compile Include="Areas\FinalInspection\FinalInspectionAreaRegistration.cs" />
     <Compile Include="Areas\Bulk FGT\Controllers\GarmentTestController.cs" />
+    <Compile Include="Areas\SampleRFT\Controllers\BACriteriaController.cs" />
     <Compile Include="Areas\SampleRFT\Controllers\InspectionController.cs" />
     <Compile Include="Areas\SampleRFT\SampleRFTAreaRegistration.cs" />
     <Compile Include="Controllers\BaseController.cs" />
@@ -229,6 +231,8 @@
     <Content Include="fonts\OpenSans.woff2" />
     <Content Include="Areas\FinalInspection\Views\Inspection\Setting.cshtml" />
     <Content Include="Areas\FinalInspection\Views\Shared\_ForAll_Layout.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\BACriteria\Index.cshtml" />
+    <Content Include="Areas\Authority\Views\AuthoritybyPosition\Index.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />

@@ -1,5 +1,6 @@
 ﻿using BusinessLogicLayer.Interface;
 using BusinessLogicLayer.Service;
+using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using Quality.Controllers;
 using System;
@@ -21,7 +22,7 @@ namespace Quality.Areas.Authority.Controllers
 
         public ActionResult Index()
         {
-            //this.CheckSession();
+            this.CheckSession();
 
             UserList model = _AuthorityService.Get_User_List_Browse();
             return View(model);
@@ -30,13 +31,11 @@ namespace Quality.Areas.Authority.Controllers
         [HttpPost]
         public ActionResult GetDetail(string UserID)
         {
-            //this.CheckSession();
+            this.CheckSession();
 
-            //UserList_Authority model = _AuthorityService.Get_User_List_Detail(UserID);
+            UserList_Authority model = _AuthorityService.Get_User_List_Detail(UserID);
 
-            //return Json(model);
-
-            return Json("");
+            return Json(model);
         }
 
 
@@ -44,19 +43,18 @@ namespace Quality.Areas.Authority.Controllers
         [HttpPost]
         public ActionResult Get_Default_Detail(string Position)
         {
-            //this.CheckSession();
+            this.CheckSession();
 
-            //Quality_Position model = _AuthorityService.Get_Position_Detail(Position);
+            Quality_Position model = _AuthorityService.Get_Position_Detail(Position);
 
-            //return Json(model);
+            return Json(model);
 
-            return Json("");
         }
 
         [HttpPost]
         public ActionResult GetUserList()
         {
-            //this.CheckSession();
+            this.CheckSession();
 
             UserList model = new UserList();
 
@@ -72,33 +70,33 @@ namespace Quality.Areas.Authority.Controllers
         }
 
 
-        //[HttpPost]
-        //public ActionResult UpdateDetail(UserList_Authority_Request Req)
-        //{
-        //    //this.CheckSession();
+        [HttpPost]
+        public ActionResult UpdateDetail(UserList_Authority_Request Req)
+        {
+            this.CheckSession();
 
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return Json(new UserList_Authority()
-        //        {
-        //            Result = false,
-        //            ErrorMessage = "Data valid false."
-        //        });
-        //    }
+            if (!ModelState.IsValid)
+            {
+                return Json(new UserList_Authority()
+                {
+                    Result = false,
+                    ErrorMessage = "Data valid false."
+                });
+            }
 
-        //    UserList_Authority model = _AuthorityService.Update_User_List_Detail(Req);
+            UserList_Authority model = _AuthorityService.Update_User_List_Detail(Req);
 
-        //    return Json(model);
-        //}
+            return Json(model);
+        }
 
-        //[HttpPost]
-        //public ActionResult ImportUsers(List<UserList_Browse> DataList)
-        //{
-        //    //this.CheckSession();
+        [HttpPost]
+        public ActionResult ImportUsers(List<UserList_Browse> DataList)
+        {
+            this.CheckSession();
 
-        //    UserList_Authority model = _AuthorityService.ImportUsers(DataList);
+            UserList_Authority model = _AuthorityService.ImportUsers(DataList);
 
-        //    return Json(model);
-        //}
+            return Json(model);
+        }
     }
 }
