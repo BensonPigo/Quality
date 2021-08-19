@@ -143,7 +143,7 @@ namespace Quality.Controllers
         // 檢查是否登入
         public bool CheckSession()
         {
-            if (Session == null || Session.Keys.Count < 1)
+            if (Session == null || Session.Keys.Count == 1)
             {
                 Response.Write("Please login again。</br></br>");
                 //Response.Write($@"<a href=""{WebPortalURL}"">Login</a>");

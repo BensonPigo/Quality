@@ -24,9 +24,9 @@ namespace Quality.Controllers
         }
 
         public ActionResult Index()
-        {            
+        {
             //Seession失效導向Login頁
-            if (Session.Keys.Count == 0)
+            if (Session.Keys.Count == 1)
             {
                 return RedirectToAction("Login");
             }
