@@ -203,7 +203,7 @@ SELECT p.Article
 	,p.Side
 	,p.Back
 from SciProduction_Orders o
-inner join RFT_PicDuringDummyFitting p ON o.ID = p.OrderID
+left join RFT_PicDuringDummyFitting p ON o.ID = p.OrderID
 where o.Junk=0
 and o.Category='S'
 and o.OnSiteSample!=1
