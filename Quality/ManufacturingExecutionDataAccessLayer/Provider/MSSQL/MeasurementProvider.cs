@@ -6,6 +6,10 @@ using ManufacturingExecutionDataAccessLayer.Interface;
 using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
 using DatabaseObject.ManufacturingExecutionDB;
+using System.Windows.Documents;
+using DatabaseObject.RequestModel;
+using DatabaseObject.ProductionDB;
+using System.Linq;
 
 namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 {
@@ -168,6 +172,36 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
-	#endregion
+
+        public IList<Order_Qty> GetAtricle(string OrderID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@OrderID", DbType.String, OrderID } ,
+            };
+            string sqlcmd = @"
+Select distinct Article
+From Production.dbo.Order_Qty
+where ID = @OrderID
+";
+             return ExecuteList<Order_Qty>(CommandType.Text, sqlcmd, objParameter);
+        }
+
+        public Measurement_Request Get_OrdersPara(string OrderID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@OrderID", DbType.String, OrderID } ,
+            };
+            string sqlcmd = @"
+select o.OrderTypeID,[OrderID] = o.ID,o.StyleID,o.SeasonID
+,[Unit] = IIF(isnull(o.sizeUnit,'') = '',s.SizeUnit,o.SizeUnit)
+from Production.dbo.Orders o
+left join Production.dbo.Style s on o.StyleUkey = s.Ukey
+where o.ID = @OrderID
+";
+            return ExecuteList<Measurement_Request>(CommandType.Text, sqlcmd, objParameter).FirstOrDefault();
+        }
+        #endregion
     }
 }
