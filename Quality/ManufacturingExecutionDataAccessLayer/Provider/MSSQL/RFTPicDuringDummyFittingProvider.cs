@@ -191,7 +191,7 @@ end
         #endregion
 
 
-        public IList<RFT_PicDuringDummyFitting_ViewModel> Get(RFT_PicDuringDummyFitting_ViewModel Req)
+        public IList<RFT_PicDuringDummyFitting> Get_PicDuringDummy_Result(RFT_PicDuringDummyFitting_ViewModel Req)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
@@ -203,7 +203,7 @@ SELECT p.Article
 	,p.Side
 	,p.Back
 from SciProduction_Orders o
-inner join RFT_PicDuringDummyFitting p ON o.ID = p.OrderID
+left join RFT_PicDuringDummyFitting p ON o.ID = p.OrderID
 where o.Junk=0
 and o.Category='S'
 and o.OnSiteSample!=1
@@ -230,6 +230,24 @@ and o.OnSiteSample!=1
                 SbSql.Append(" AND o.SeasonID=@SeasonID" + Environment.NewLine);
                 objParameter.Add("@SeasonID", DbType.String, Req.SeasonID);
             }
+
+            return ExecuteList<RFT_PicDuringDummyFitting>(CommandType.Text, SbSql.ToString(), objParameter);
+        }
+
+        public IList<RFT_PicDuringDummyFitting_ViewModel> Check_OrderID_Exists(string OrderID)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            objParameter.Add("@OrderID", DbType.String, OrderID);
+
+            SbSql.Append($@"
+SELECT OrderID = ID, StyleID ,OrderTypeID ,SeasonID
+FROM SciProduction_Orders o
+where o.Junk=0
+and o.Category='S'
+and o.OnSiteSample!=1
+and o.ID = @OrderID
+");
 
             return ExecuteList<RFT_PicDuringDummyFitting_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
         }

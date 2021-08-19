@@ -18,7 +18,6 @@ namespace BusinessLogicLayer.SampleRFT.Service
     {
         public IBACriteriaProvider _BACriteriaProvider { get; set; }
 
-
         public BACriteria_ViewModel Get_BACriteria_Result(BACriteria_ViewModel Req)
         {
             BACriteria_ViewModel result = new BACriteria_ViewModel();

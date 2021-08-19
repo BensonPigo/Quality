@@ -1,5 +1,7 @@
-﻿using BusinessLogicLayer.Interface;
+﻿
+using BusinessLogicLayer.Interface.SampleRFT;
 using BusinessLogicLayer.Service;
+using BusinessLogicLayer.Service.SampleRFT;
 using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
@@ -18,15 +20,68 @@ namespace Quality.Areas.SampleRFT.Controllers
 {
     public class PicturesDummyController : BaseController
     {
+        private IPicturesDummyService _PicturesDummyService;
+
+        public PicturesDummyController()
+        {
+            _PicturesDummyService = new PicturesDummyService();
+            this.SelectedMenu = "Sample RFT";
+
+        }
 
         // GET: SampleRFT/PicturesDummy
         public ActionResult Index()
         {
             this.CheckSession();
             RFT_PicDuringDummyFitting_ViewModel model = new RFT_PicDuringDummyFitting_ViewModel();
-
-            TempData["Model"] = null;
+            model.DataList = new List<RFT_PicDuringDummyFitting>();
             return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult Query(RFT_PicDuringDummyFitting_ViewModel Req)
+        {
+            this.CheckSession();
+
+
+            if (Req == null || string.IsNullOrEmpty(Req.OrderID))
+            {
+                RFT_PicDuringDummyFitting_ViewModel e = new RFT_PicDuringDummyFitting_ViewModel()
+                {
+                    ErrorMessage = "SP# cannot be empty",
+                    DataList = new List<RFT_PicDuringDummyFitting>()
+                };
+                return View("Index", e);
+            }
+
+            RFT_PicDuringDummyFitting_ViewModel model = _PicturesDummyService.Get_PicturesDummy_Result(Req);
+
+            if (!model.Result)
+            {
+                model.ErrorMessage = $@"
+msg.WithInfo('{model.ErrorMessage}');
+";
+            }
+
+            return View("Index", model);
+        }
+
+
+        [HttpPost]
+        public ActionResult CheckOrder(string OrderID)
+        {
+            this.CheckSession();
+
+            try
+            {
+                RFT_PicDuringDummyFitting_ViewModel model = _PicturesDummyService.Check_OrderID_Exists(OrderID);
+
+                return Json(model);
+            }
+            catch (Exception ex)
+            {
+                return Json(ex.Message);
+            }
         }
     }
 }
