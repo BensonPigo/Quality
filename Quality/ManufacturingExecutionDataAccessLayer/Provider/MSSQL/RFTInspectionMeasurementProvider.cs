@@ -198,7 +198,7 @@ select no = isnull(max(no),0)+1 from  ManufacturingExecution.dbo.Inspection_Meas
             }
 
             int rowSeq = 1;
-            string sqlcmd = string.Empty;
+            string sqlcmd = " declare @AddDate datetime = GetDate()";
             foreach (var item in Measurement)
             {
                 if (!string.IsNullOrEmpty(item.SizeSpec))
@@ -216,8 +216,8 @@ select no = isnull(max(no),0)+1 from  ManufacturingExecution.dbo.Inspection_Meas
                     objParameter.Add($"@FactoryID{rowSeq}", item.FactoryID);
 
                     sqlcmd += $@"
-insert into RFT_Inspection_Measurement(MeasurementUkey,StyleUkey,No,Code,SizeCode,SizeSpec,OrderID,Article,Location,Line,FactoryID)
-values(@MeasurementUkey{rowSeq},@StyleUkey{rowSeq},@No,@Code{rowSeq},@SizeCode{rowSeq},@SizeSpec{rowSeq},@OrderID{rowSeq},@Article{rowSeq},@Location{rowSeq},@Line{rowSeq},@FactoryID{rowSeq})
+insert into RFT_Inspection_Measurement(MeasurementUkey,StyleUkey,No,Code,SizeCode,SizeSpec,OrderID,Article,Location,Line,FactoryID,AddDate)
+values(@MeasurementUkey{rowSeq},@StyleUkey{rowSeq},@No,@Code{rowSeq},@SizeCode{rowSeq},@SizeSpec{rowSeq},@OrderID{rowSeq},@Article{rowSeq},@Location{rowSeq},@Line{rowSeq},@FactoryID{rowSeq},@AddDate)
 ";
                     rowSeq++;
                 }

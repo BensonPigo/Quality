@@ -202,6 +202,170 @@ where o.ID = @OrderID
 ";
             return ExecuteList<Measurement_Request>(CommandType.Text, sqlcmd, objParameter).FirstOrDefault();
         }
+
+        public int Get_Total_Measured_Qty()
+        {
+            int rtQty = 0;
+            string sqlcmd = @"
+select cnt = count(*) from RFT_Inspection_Measurement
+";
+            DataTable dt = ExecuteDataTable(CommandType.Text, sqlcmd, new SQLParameterCollection());
+            if (dt != null)
+            {
+                rtQty = Convert.ToInt32(dt.Rows[0]["cnt"]);
+            }
+
+            return rtQty;
+        }
+
+        public int Get_Measured_Qty(Measurement_Request measurement)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@OrderID", DbType.String, measurement.OrderID } ,
+                { "@Article", DbType.String, measurement.Article } ,
+            };
+
+            int rtQty = 0;
+            string sqlcmd = @"
+select cnt = count(*) 
+from RFT_Inspection_Measurement 
+where OrderID = @OrderID 
+and Article = @Article
+";
+            DataTable dt = ExecuteDataTable(CommandType.Text, sqlcmd, objParameter);
+            if (dt != null)
+            {
+                rtQty = Convert.ToInt32(dt.Rows[0]["cnt"]);
+            }
+
+            return rtQty;
+        }
+
+        public DataTable Get_Measured_Detail(Measurement_Request measurement)
+        {
+            string styleUkey = string.Empty;
+            DataTable dtStyle = ExecuteDataTable(CommandType.Text, $@"Select StyleUkey from Production.dbo.Orders where id = '{measurement.OrderID}'", new SQLParameterCollection());
+            if (dtStyle.Rows.Count > 0)
+            {
+                styleUkey = dtStyle.Rows[0]["StyleUkey"].ToString();
+            }
+
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@_OrderID", DbType.String, measurement.OrderID } ,
+                { "@_StyleUkey", DbType.String, styleUkey } ,
+                //{ "@Team", DbType.String, measurement.Team } ,
+                //{ "@Line", DbType.String, measurement.Line } ,
+                { "@_Factory", DbType.String, measurement.Factory } ,
+                { "@_TypeUnit", DbType.String, measurement.Unit } ,
+            };
+
+
+            string sqlcmd = @"
+
+declare @styleukey nvarchar(10) = @_StyleUkey 
+--declare @team nvarchar(1) = @Team
+--declare @line nvarchar(3) = @Line
+declare @factory nvarchar(3) = @_Factory
+declare @typeUnit nvarchar(5)= @_TypeUnit
+declare @ex nvarchar(max)=''
+declare @ex2 nvarchar(max)=''
+declare @col nvarchar(max)=''
+declare @size nvarchar(max)
+declare @SizeCode nvarchar(8)
+declare @OldSizeCode nvarchar(8)=''
+declare @no nvarchar(66)
+declare @time nvarchar(5)
+declare @diffno int='1'
+declare @orderid nvarchar(16) = @_OrderID
+declare @MDivision nvarchar(5) = (select MDivisionID from Production.dbo.Factory where id = @Factory)
+declare @shiftTabele table(MDivision varchar(8),Shift varchar(5),StartDate date,BeginTime time,EndTime time,ActualBeginTime datetime,ActualEndTime datetime)
+declare @workStartDatetime datetime
+declare @workEndDatetime datetime
+
+--
+INSERT INTO @shiftTabele
+SELECT * FROM [dbo].[GetWorkShiftTable](@MDivision,GETDATE(),@factory)
+
+SELECT  @workStartDatetime=ActualBeginTime,@workEndDatetime=ActualEndTime
+FROM @shiftTabele
+
+
+select *
+into #tmp_Inspection_Measurement
+from RFT_Inspection_Measurement im
+where im.StyleUkey = @styleukey 
+and (@workStartDatetime <= im.AddDate AND im.AddDate <= @workEndDatetime)
+--and im.Team = @team
+--and im.Line = @line
+and im.FactoryID = @factory 
+and im.OrderID = @orderid 
+
+
+select m.Ukey
+	,Description= iif(isnull(b.DescEN,'') = '',m.Description,b.DescEN)
+	,m.Tol1
+	,m.Tol2
+	,m.Code
+	,m.SizeCode 
+	,[MeasurementSizeSpec] = m.SizeSpec 
+	,[InspectionMeasurementSizeSpec] = im.SizeSpec
+	,[diff]= max(dbo.calculateSizeSpec(m.SizeSpec,im.SizeSpec, @typeUnit))
+	,im.AddDate
+	,[HeadSizeCode] = CONVERT(TIME(0),im.AddDate)
+into #tmp 
+from Measurement m with(nolock)
+inner join (select distinct StyleUkey, SizeCode from #tmp_Inspection_Measurement) t on m.StyleUkey = t.StyleUkey and m.SizeCode = t.SizeCode
+left join #tmp_Inspection_Measurement im on im.MeasurementUkey = m.Ukey 
+LEFT JOIN [ManufacturingExecution].[dbo].[MeasurementTranslate] b ON  m.MeasurementTranslateUkey = b.UKey
+where m.junk = 0
+group by m.Ukey,iif(isnull(b.DescEN,'') = '',m.Description,b.DescEN),m.Tol1,m.Tol2,m.Code,m.SizeCode,m.SizeSpec,im.SizeSpec,im.AddDate
+
+drop table #tmp_Inspection_Measurement
+
+declare @HeadSizeCode as varchar(20),@mSizeCode as varchar(10),@r_id as varchar(10)
+declare @sql varchar(max) = ''
+DECLARE CURSOR_ CURSOR FOR
+Select t.HeadSizeCode, t.SizeCode, ROW_NUMBER() over( order by t.HeadSizeCode) r_id
+from #tmp t
+where t.HeadSizeCode is not null
+group by t.HeadSizeCode, t.SizeCode
+
+OPEN CURSOR_
+FETCH NEXT FROM CURSOR_ INTO @HeadSizeCode,@mSizeCode,@r_id
+While @@FETCH_STATUS = 0
+Begin
+	
+	set @sql = @sql + '
+		,Max(case when SizeCode ='''+@mSizeCode+''' then MeasurementSizeSpec end) as ['+@mSizeCode+'_aa]
+		,Max(case when HeadSizeCode ='''+@HeadSizeCode+''' and SizeCode ='''+@mSizeCode+''' then InspectionMeasurementSizeSpec end) as ['+@HeadSizeCode+']
+		,Max(case when HeadSizeCode ='''+@HeadSizeCode+''' and SizeCode ='''+@mSizeCode+''' then diff end) as diff'+@r_id+''
+FETCH NEXT FROM CURSOR_ INTO @HeadSizeCode,@mSizeCode,@r_id
+End
+CLOSE CURSOR_
+DEALLOCATE CURSOR_ 
+
+set @sql = '
+	select t.Code,t.Description
+		,[Tol(+)] = t.Tol2 
+		,[Tol(-)] = t.Tol1 
+		' + @sql + '
+	from #tmp t 
+	group by t.Description,t.Tol1,t.Tol2,t.code
+    order by t.Code
+'
+
+exec (@sql)
+
+
+drop table #tmp
+
+";
+
+            DataTable dt = ExecuteDataTable(CommandType.Text, sqlcmd, objParameter);
+            return dt;
+        }
         #endregion
     }
 }

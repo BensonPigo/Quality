@@ -5,9 +5,11 @@ using ManufacturingExecutionDataAccessLayer.Interface;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace BusinessLogicLayer.Service.SampleRFT
 {
@@ -17,7 +19,25 @@ namespace BusinessLogicLayer.Service.SampleRFT
         public Measurement_ResultModel MeasurementGet(Measurement_Request measurement)
         {
             _IMeasurementProvider = new MeasurementProvider(Common.ManufacturingExecutionDataAccessLayer);
-            throw new NotImplementedException();
+            Measurement_ResultModel measurement_Result = new Measurement_ResultModel() { Result = true };
+            try
+            {
+                measurement_Result.TotalQty = _IMeasurementProvider.Get_Total_Measured_Qty();
+                measurement_Result.MeasuredQty = _IMeasurementProvider.Get_Measured_Qty(measurement);
+
+                DataTable dt = _IMeasurementProvider.Get_Measured_Detail(measurement);
+
+                string jsonBody = JsonConvert.SerializeObject(dt);
+                measurement_Result.JsonBody = jsonBody;
+            }
+            catch (Exception ex)
+            {
+                measurement_Result.Result = false;
+                measurement_Result.ErrMsg = ex.ToString();
+                throw ex;
+            }
+
+            return measurement_Result;
         }
 
         public Measurement_Request MeasurementGetPara(string OrderID)
