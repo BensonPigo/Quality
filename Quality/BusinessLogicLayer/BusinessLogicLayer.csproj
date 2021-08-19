@@ -71,6 +71,7 @@
     <Compile Include="Interface\SampleRFT\IInspectionService.cs" />
     <Compile Include="Interface\ILoginService.cs" />
     <Compile Include="Interface\ICFTCommentsService.cs" />
+    <Compile Include="Interface\SampleRFT\IPicturesDummyService.cs" />
     <Compile Include="Interface\SampleRFT\IRFTPerLineService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\Authority\AuthorityService.cs" />

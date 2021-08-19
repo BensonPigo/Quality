@@ -827,7 +827,7 @@ vertical-align: middle;
             {
                 _ISQLDataTransaction.RollBack();
                 rFT_OrderComments_ViewModel.Result = false;
-                rFT_OrderComments_ViewModel.ErrMsg = ex.ToString();
+                rFT_OrderComments_ViewModel.ErrorMessage = ex.ToString();
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
 
