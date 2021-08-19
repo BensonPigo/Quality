@@ -31,8 +31,7 @@ namespace BusinessLogicLayer.Service.Tests
             {
                 IRFTPerLineService _RFTPerLineService = new RFTPerLineService();
                 var data = _RFTPerLineService.RFTPerLineQuery("es2", "2021", "8");
-                Assert.IsTrue(data.monthlyRFTs[0].RFT == (decimal)0.07 &&
-                    data.dailyRFTs.Where(w=>w.Line == "01"&& w.Date ==16).Select(s=>s.RFT).FirstOrDefault() == (decimal)0.08);
+                Assert.IsTrue(data.dailyRFTs[0].Month == "August" && data.monthlyRFTs[0].Month == "August");
             }
             catch (Exception ex)
             {

@@ -33,10 +33,10 @@ into #tmpRft
 from RFT_Inspection rft
 where rft.FactoryID = @FactoryID
 and Year(rft.AddDate) = @Year
-and MONTH(rft.AddDate) = @Month
+and Month(rft.AddDate) = @Month
 
 select
-	MONTH = DateName(month, DateAdd(month, @Month, -1)),
+	Month = DateName(Month, DateAdd(Month, @Month, -1)),
 	Line = s.ID,
 	RFT = cast(iif(isnull(ttl.ct, 0) = 0, 0, round(isnull(pass.ct, 0) * 1.0 / ttl.ct, 2)) as decimal(5,2))
 from SciProduction_SewingLine s
@@ -60,7 +60,7 @@ drop table #tmpRft
             SbSql.Append(@"
 DECLARE @date DATETIME = concat(@Year,'/',@Month,'/','1')
 DECLARE @d1 int = 1
-DECLARE @d2 int =(SELECT day(DATEADD(month, ((YEAR(@date) - 1900) * 12) + MONTH(@date), -1)))
+DECLARE @d2 int =(SELECT day(DATEADD(Month, ((YEAR(@date) - 1900) * 12) + Month(@date), -1)))
 
 ;WITH cte AS (
     SELECT [date] = @d1
@@ -79,11 +79,11 @@ into #tmpRft
 from RFT_Inspection rft
 where rft.FactoryID = @FactoryID
 and Year(rft.AddDate) = @Year
-and MONTH(rft.AddDate) = @Month
+and Month(rft.AddDate) = @Month
 
 select
 	Date = d.date,
-	MONTH = DateName(month, DateAdd(month, @Month, -1)),
+	Month = DateName(Month, DateAdd(Month, @Month, -1)),
 	Line = s.ID,
 	RFT = cast(iif(isnull(ttl.ct, 0) = 0, 0, round(isnull(pass.ct, 0) * 1.0 / ttl.ct, 2)) as decimal(5,2))
 from SciProduction_SewingLine s
