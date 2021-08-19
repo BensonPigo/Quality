@@ -71,6 +71,7 @@
     <Compile Include="Interface\SampleRFT\IInspectionService.cs" />
     <Compile Include="Interface\ILoginService.cs" />
     <Compile Include="Interface\ICFTCommentsService.cs" />
+    <Compile Include="Interface\SampleRFT\IMeasurementService.cs" />
     <Compile Include="Interface\SampleRFT\IRFTPerLineService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\Authority\AuthorityService.cs" />
@@ -81,6 +82,7 @@
     <Compile Include="Service\LoginService.cs" />
     <Compile Include="Service\CFTCommentsService.cs" />
     <Compile Include="Service\SampleRFT\PicturesDummyService.cs" />
+    <Compile Include="Service\SampleRFT\MeasurementService.cs" />
     <Compile Include="Service\SampleRFT\RFTPerLineService.cs" />
   </ItemGroup>
   <ItemGroup>

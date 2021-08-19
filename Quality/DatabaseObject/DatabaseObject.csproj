@@ -110,6 +110,7 @@
     <Compile Include="RequestModel\FinalInspection_Query.cs" />
     <Compile Include="RequestModel\FinalInspection_Request.cs" />
     <Compile Include="RequestModel\LogIn_Request.cs" />
+    <Compile Include="RequestModel\Measurement_Request.cs" />
     <Compile Include="RequestModel\Quality_Pass1_Request.cs" />
     <Compile Include="RequestModel\Quality_Position_Request.cs" />
     <Compile Include="RequestModel\UserList_Authority_Request.cs" />
@@ -117,6 +118,7 @@
     <Compile Include="ResultModel\AuthoritybyPosition.cs" />
     <Compile Include="ResultModel\BACriteria_Result.cs" />
     <Compile Include="ResultModel\LogIn_Result.cs" />
+    <Compile Include="ResultModel\Measurement_ResultModel.cs" />
     <Compile Include="ResultModel\Module_Detail.cs" />
     <Compile Include="ResultModel\Quality_MailGroup_ResultModel.cs" />
     <Compile Include="ResultModel\Quality_Position.cs" />

@@ -39,25 +39,27 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
         /// ===  ==========  ====  ==========  ==========
         /// 01.  2021/07/30  1.00    Admin        Create
         /// </history>
-        public IList<Quality_Menu> Get(string PositionID)
+        public IList<Quality_Menu> Get(Quality_Pass1 pass1)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
-                { "@PositionID", DbType.String, PositionID} ,
+                { "@PositionID", DbType.String, pass1.Position} ,
+                { "@Brand", DbType.String, pass1.BulkFGT_Brand} ,
             };
 
             SbSql.Append(@"
 select m.[ID]
 	, m.[ModuleName]
 	, m.[ModuleSeq]
-	, m.[FunctionName]
+	, [FunctionName] = isnull(md.[FunctionName] ,m.[FunctionName])
 	, m.[FunctionSeq]
 	, m.[Junk]
 	, m.[Url]
 from Quality_Position p
 inner join Quality_Pass2 p2 on p.ID = PositionID
 inner join Quality_Menu m on m.ID = p2.MenuID
+left join Quality_Menu_Detail md on md.ID = m.ID and md.Type = @Brand
 where p.ID = @PositionID
 and p2.Used = iif(p.IsAdmin = 1, p2.Used, 1)
 and m.Junk = 0

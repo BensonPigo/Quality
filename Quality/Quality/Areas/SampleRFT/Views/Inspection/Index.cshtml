@@ -1294,7 +1294,9 @@
         });
 
         if (@ViewBag.ShowSwitch) {
-            $('.menu-trigger').click();
+            if ($("body").hasClass("sidebar-collapse")) {
+                $(".menu-trigger").click();
+            }
             $('#btnSwitch').click();
         }
 
