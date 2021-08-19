@@ -10,8 +10,6 @@ namespace DatabaseObject.ResultModel
 {
     public class Measurement_ResultModel : Measurement_Request
     {
-        public bool Result { get; set; }
-        public string ErrMsg { get; set; }
         public int TotalQty { get; set; }
         public int MeasuredQty { get; set; }
         public int OOTQty { get; set; }

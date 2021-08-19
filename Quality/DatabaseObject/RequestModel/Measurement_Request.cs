@@ -15,5 +15,7 @@ namespace DatabaseObject.RequestModel
         public string Unit { get; set; }
         public string Article { get; set; }
         public List<string> Articles { get; set; }
+        public bool Result { get; set; }
+        public string ErrMsg { get; set; }
     }
 }
