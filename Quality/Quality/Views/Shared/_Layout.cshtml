@@ -161,7 +161,12 @@
                         <span>Home</span>
                     </a>
                 </li>
-
+                <li>
+                    <a href="@Url.Action("Setting","Home", new { Area = "" })">
+                        <i class="icon-vcard"></i>
+                        <span>Setting</span>
+                    </a>
+                </li>
             </ul>
 
             <ul class="side-nav">
@@ -228,10 +233,6 @@
                     evt.preventDefault();
                 }
             };
-
-            $(".RootLi").on('click', function (event) {
-                $(this).parent().toggleClass('current');
-            });
 
             ZoomGlleryBind();
         });

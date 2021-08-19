@@ -90,6 +90,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
+
         public int Update_Brand(Quality_Pass1 Item)
         {   
             SQLParameterCollection objParameter = new SQLParameterCollection()

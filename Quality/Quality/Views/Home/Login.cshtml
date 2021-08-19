@@ -57,11 +57,17 @@
                         <label><i class="icon-lock red"></i>Password</label>
                         @Html.TextBoxFor(o => o.Password, new { @class = "form-control center-block", @placeholder = "Password", @type = "password", @data_rule_required = "true" })
                     </div>
-                    <button class="site-btn btn-red btn-lg margin-c btn-login">LOGIN</button>
 
-                }
+                    <div class="form-item">
+                        <label><i class="icon-lock red"></i>Password</label>
+                        @Html.DropDownList("FactoryID", (List<SelectListItem>)ViewData["Factorys"], null, new { @class = "", @style = "width: 13VW; background: rgb(43, 44, 62); color: white; ", })                        
+                                    </div>
+                
+                                    <button class="site-btn btn-red btn-lg margin-c btn-login">LOGIN</button>
 
-                @Html.Hidden("Msg", ViewData["Msg"]);
+                        }
+
+                        @Html.Hidden("Msg", ViewData["Msg"]);
 
             </div>
         </div>

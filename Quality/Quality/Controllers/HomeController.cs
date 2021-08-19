@@ -4,6 +4,7 @@ using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -13,9 +14,13 @@ namespace Quality.Controllers
     public class HomeController : BaseController
     {
         private readonly ILoginService _LoginService;
+        private string WebPortalURL = ConfigurationManager.AppSettings["WebPortalURL"];
+
         public HomeController()
         {
             _LoginService = new LoginService();
+            if (this.Factorys == null || this.Factorys.Count() == 0)
+                this.Factorys = _LoginService.GetFactory();
         }
 
         public ActionResult Index()
@@ -39,6 +44,10 @@ namespace Quality.Controllers
                 ClearUsersInfo();
                 return View("Login");
             }
+
+            List<SelectListItem> FactoryList = new FactoryDashBoardWeb.Helper.SetListItem().ItemListBinding(this.Factorys);
+            ViewData["Factorys"] = FactoryList;
+
             return View();
         }
 
@@ -61,7 +70,7 @@ namespace Quality.Controllers
                 this.BulkFGT_Brand = result.pass1.BulkFGT_Brand;
                 this.MenuList = result.Menus;
                 this.Factorys = result.Factorys;
-                this.FactoryID = this.Factorys.FirstOrDefault();
+                this.FactoryID = result.FactoryID;
                 this.Lines = result.Lines;
                 this.Line = this.Lines.FirstOrDefault();
                 this.Brands = result.Brands;
@@ -106,6 +115,44 @@ namespace Quality.Controllers
                 httpCookie.Values.Clear();
 
                 Response.Cookies.Set(httpCookie);
+            }
+        }
+
+
+        public ActionResult Setting()
+        {
+            List<SelectListItem> BrandList = new FactoryDashBoardWeb.Helper.SetListItem().ItemListBinding(this.Brands);
+
+            ViewData["Brand"] = this.BulkFGT_Brand;
+            ViewData["Brands"] = BrandList;
+            ViewData["Msg"] = null;
+
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Setting(string BrandID)
+        {
+            Quality_Pass1_Request Req = new Quality_Pass1_Request()
+            {
+                ID = this.UserID,
+                SampleTesting_Brand = BrandID
+            };
+
+            LogIn_Result info = _LoginService.Update_Pass1(Req);
+            if (info.Result)
+            {
+                List<SelectListItem> BrandList = new FactoryDashBoardWeb.Helper.SetListItem().ItemListBinding(this.Brands);
+                this.BulkFGT_Brand = BrandID;
+                ViewData["Brand"] = this.BulkFGT_Brand;
+                ViewData["Brands"] = BrandList;
+                ViewData["Msg"] = "Success!";
+                return View();
+            }
+            else
+            {
+                ViewData["Msg"] = info.ErrorMessage;
+                return View("Login");
             }
         }
     }
