@@ -56,12 +56,18 @@ namespace BusinessLogicLayer.Service
                     throw new Exception("Incorrect Password.");
                 }
 
+                result.Factorys = pmsPass1.Count == 0 ? 
+                        mesPass1.FirstOrDefault().Factory.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList() :
+                        pmsPass1.FirstOrDefault().Factory.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList();
+
+                if (!result.Factorys.Where(x => x.Equals(logIn_Request.FactoryID)).Any())
+                {
+                    throw new Exception(string.Format("Not have permission of {0}.", logIn_Request.FactoryID));
+                }
+
                 result.pass1 = quality_Pass1s.FirstOrDefault();
                 result.Menus = QualityMenuProvider.Get(result.pass1).ToList();
-                result.Factorys = pmsPass1.Count == 0 ? 
-                        mesPass1.FirstOrDefault().Factory.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList() :
-                        pmsPass1.FirstOrDefault().Factory.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList();
-                result.FactoryID = result.Factorys.Where(x => x.Equals(logIn_Request.FactoryID)).Any() ? logIn_Request.FactoryID : result.Factorys.FirstOrDefault();
+                result.FactoryID = result.Factorys.Where(x => x.Equals(logIn_Request.FactoryID)).Any() ? logIn_Request.FactoryID.Trim() : result.Factorys.FirstOrDefault().Trim();
                 result.Lines = SewingLineProvider.GetSewinglineID().GroupBy(x => x.ID).Select(x => x.Key).ToList();
                 result.Brands = BrandProvider.Get().GroupBy(x => x.ID).Select(x => x.Key).ToList();
                 result.Result = true;

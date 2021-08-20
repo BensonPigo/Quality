@@ -9,7 +9,7 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
     {
         IList<Order_Qty> GetAtricle(string OrderID);
 
-        Measurement_Request Get_OrdersPara(string OrderID);
+        IList<Measurement_Request> Get_OrdersPara(string OrderID, string FactoryID);
 
         int Get_Total_Measured_Qty();
 

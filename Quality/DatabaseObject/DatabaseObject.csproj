@@ -97,13 +97,17 @@
     <Compile Include="ProductionDB\Factory.cs" />
     <Compile Include="ProductionDB\GarmentDefectCode.cs" />
     <Compile Include="ProductionDB\GarmentDefectType.cs" />
+    <Compile Include="ProductionDB\MockupCrocking.cs" />
+    <Compile Include="ProductionDB\MockupCrocking_Detail.cs" />
     <Compile Include="ProductionDB\NewCDCode.cs" />
     <Compile Include="ProductionDB\Orders.cs" />
     <Compile Include="ProductionDB\Order_Location.cs" />
     <Compile Include="ProductionDB\Order_Qty.cs" />
     <Compile Include="ProductionDB\Pass1.cs" />
+    <Compile Include="ProductionDB\Season.cs" />
     <Compile Include="ProductionDB\SewingLine.cs" />
     <Compile Include="ProductionDB\Style.cs" />
+    <Compile Include="ProductionDB\Style_Article.cs" />
     <Compile Include="ProductionDB\System.cs" />
     <Compile Include="ProductionDB\TPEPass1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -138,6 +142,7 @@
     <Compile Include="ViewModel\Inspection_ViewModel.cs" />
     <Compile Include="ViewModel\ReworkList_ViewModel.cs" />
     <Compile Include="ViewModel\CFTComments_ViewModel.cs" />
+    <Compile Include="ViewModel\MockupCrocking_ViewModel.cs" />
     <Compile Include="ViewModel\RFTPerLine_ViewModel.cs" />
     <Compile Include="ViewModel\RFT_Inspection_Measurement_ViewModel.cs" />
     <Compile Include="ViewModel\RFT_OrderComments_ViewModel.cs" />

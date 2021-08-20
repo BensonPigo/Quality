@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace BusinessLogicLayer.Service.SampleRFT
 {
@@ -19,19 +20,20 @@ namespace BusinessLogicLayer.Service.SampleRFT
         public Measurement_ResultModel MeasurementGet(Measurement_Request measurement)
         {
             _IMeasurementProvider = new MeasurementProvider(Common.ManufacturingExecutionDataAccessLayer);
-            Measurement_ResultModel measurement_Result = new Measurement_ResultModel() { Result = true };
+            Measurement_ResultModel measurement_Result = new Measurement_ResultModel();
             try
             {
+
                 measurement_Result.TotalQty = _IMeasurementProvider.Get_Total_Measured_Qty();
                 measurement_Result.MeasuredQty = _IMeasurementProvider.Get_Measured_Qty(measurement);
 
                 DataTable dt = _IMeasurementProvider.Get_Measured_Detail(measurement);
                 #region 處理OOT Qty
 
+                List<string> columnListsp = new List<string>(); // 用來記錄幾筆有問題
                 if (dt != null && dt.Rows.Count > 0)
                 {
                     bool bolCal;
-                    List<string> columnListsp = new List<string>(); // 用來記錄幾筆有問題
 
                     List<string> diffArry = new List<string>();
                     foreach (var itemCol in dt.Columns)
@@ -48,6 +50,11 @@ namespace BusinessLogicLayer.Service.SampleRFT
                         {
                             if (measurement.Unit.ToString().ToUpper() == "INCH")
                             {
+                                if (dr[item.ToString()] == DBNull.Value)
+                                {
+                                    continue;
+                                }
+
                                 string num;
                                 if (dr[item.ToString()].ToString().Contains("-"))
                                 {
@@ -64,6 +71,10 @@ namespace BusinessLogicLayer.Service.SampleRFT
                             }
                             else
                             {
+                                if (dr[item.ToString()] == DBNull.Value)
+                                {
+                                    continue;
+                                }
                                 double d = Convert.ToDouble(dr[item.ToString()]);
                                 double num;
                                 if (d < 0)
@@ -87,41 +98,59 @@ namespace BusinessLogicLayer.Service.SampleRFT
                             }
                         }
                     }
-
-                    measurement_Result.OOTQty = columnListsp.Count;
                 }
                 #endregion
 
-                string jsonBody = JsonConvert.SerializeObject(dt);
-                measurement_Result.JsonBody = jsonBody;
+                Measurement_Request measurement_Request = MeasurementGetPara(measurement.OrderID, measurement.Factory);
+                measurement_Result = new Measurement_ResultModel() 
+                { 
+                    Result = true,
+                    Factory = measurement_Request.Factory,
+                    OrderID = measurement_Request.OrderID,
+                    OrderTypeID = measurement_Request.OrderTypeID,
+                    StyleID = measurement_Request.StyleID,
+                    SeasonID = measurement_Request.SeasonID,
+                    Unit = measurement_Request.Unit,
+                    Article = measurement_Request.Article,
+                    Articles = measurement_Request.Articles,
+                    TotalQty = _IMeasurementProvider.Get_Total_Measured_Qty(),
+                    MeasuredQty = _IMeasurementProvider.Get_Measured_Qty(measurement_Request),
+                    OOTQty = columnListsp.Count,
+                    JsonBody = JsonConvert.SerializeObject(_IMeasurementProvider.Get_Measured_Detail(measurement_Request)),
+                };
+
             }
             catch (Exception ex)
             {
                 measurement_Result.Result = false;
-                measurement_Result.ErrMsg = ex.ToString();
-                throw ex;
+                measurement_Result.ErrMsg = ex.Message.ToString();
             }
 
             return measurement_Result;
         }
 
-        public Measurement_Request MeasurementGetPara(string OrderID)
+        public Measurement_Request MeasurementGetPara(string OrderID, string FactoryID)
         {
             _IMeasurementProvider = new MeasurementProvider(Common.ManufacturingExecutionDataAccessLayer);
             Measurement_Request measurement_Request = new Measurement_Request() { Result = true, ErrMsg = string.Empty};
             try
             {
-                measurement_Request = _IMeasurementProvider.Get_OrdersPara(OrderID);
+                var query = _IMeasurementProvider.Get_OrdersPara(OrderID, FactoryID);
+                if (!query.Any() || query.Count() == 0)
+                {
+                    throw new Exception("no data found");
+                }
+
+                measurement_Request = query.FirstOrDefault();
                 measurement_Request.Articles = _IMeasurementProvider.GetAtricle(OrderID).Select(x => x.Article).ToList();
-                measurement_Request.Article = _IMeasurementProvider.GetAtricle(OrderID).Select(x => x.Article).FirstOrDefault();
+                measurement_Request.Article = measurement_Request.Articles.FirstOrDefault();
                 measurement_Request.Result = true;
                 measurement_Request.ErrMsg = string.Empty;
             }
             catch (Exception ex)
             {
-                measurement_Request.ErrMsg = ex.ToString();
+                measurement_Request.ErrMsg = ex.Message.ToString();
                 measurement_Request.Result = false;
-                throw ex;
             }
 
             return measurement_Request;

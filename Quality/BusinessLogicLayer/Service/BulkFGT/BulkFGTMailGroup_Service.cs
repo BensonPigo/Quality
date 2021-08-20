@@ -52,7 +52,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 quality_MailGroup_Result.Result = false;
-                quality_MailGroup_Result.ErrMsg = ex.ToString();
+                quality_MailGroup_Result.ErrMsg = ex.Message.ToString();
             }
 
             return quality_MailGroup_Result;

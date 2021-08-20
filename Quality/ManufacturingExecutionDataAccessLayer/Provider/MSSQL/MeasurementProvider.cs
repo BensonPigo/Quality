@@ -187,20 +187,23 @@ where ID = @OrderID
              return ExecuteList<Order_Qty>(CommandType.Text, sqlcmd, objParameter);
         }
 
-        public Measurement_Request Get_OrdersPara(string OrderID)
+        public IList<Measurement_Request> Get_OrdersPara(string OrderID, string FactoryID)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
                 { "@OrderID", DbType.String, OrderID } ,
+                { "@FactoryID", DbType.String, FactoryID } ,
             };
             string sqlcmd = @"
 select o.OrderTypeID,[OrderID] = o.ID,o.StyleID,o.SeasonID
 ,[Unit] = IIF(isnull(o.sizeUnit,'') = '',s.SizeUnit,o.SizeUnit)
+,[Factory] = o.FactoryID
 from Production.dbo.Orders o
 left join Production.dbo.Style s on o.StyleUkey = s.Ukey
 where o.ID = @OrderID
+and o.FactoryID = @FactoryID
 ";
-            return ExecuteList<Measurement_Request>(CommandType.Text, sqlcmd, objParameter).FirstOrDefault();
+            return ExecuteList<Measurement_Request>(CommandType.Text, sqlcmd, objParameter);
         }
 
         public int Get_Total_Measured_Qty()
@@ -295,23 +298,23 @@ declare @time nvarchar(5)
 declare @diffno int='1'
 declare @orderid nvarchar(16) = @_OrderID
 declare @MDivision nvarchar(5) = (select MDivisionID from Production.dbo.Factory where id = @Factory)
-declare @shiftTabele table(MDivision varchar(8),Shift varchar(5),StartDate date,BeginTime time,EndTime time,ActualBeginTime datetime,ActualEndTime datetime)
-declare @workStartDatetime datetime
-declare @workEndDatetime datetime
+--declare @shiftTabele table(MDivision varchar(8),Shift varchar(5),StartDate date,BeginTime time,EndTime time,ActualBeginTime datetime,ActualEndTime datetime)
+--declare @workStartDatetime datetime
+--declare @workEndDatetime datetime
 
 --
-INSERT INTO @shiftTabele
-SELECT * FROM [dbo].[GetWorkShiftTable](@MDivision,GETDATE(),@factory)
+--INSERT INTO @shiftTabele
+--SELECT * FROM [dbo].[GetWorkShiftTable](@MDivision,GETDATE(),@factory)
 
-SELECT  @workStartDatetime=ActualBeginTime,@workEndDatetime=ActualEndTime
-FROM @shiftTabele
+--SELECT  @workStartDatetime=ActualBeginTime,@workEndDatetime=ActualEndTime
+--FROM @shiftTabele
 
 
 select *
 into #tmp_Inspection_Measurement
 from RFT_Inspection_Measurement im
 where im.StyleUkey = @styleukey 
-and (@workStartDatetime <= im.AddDate AND im.AddDate <= @workEndDatetime)
+--and (@workStartDatetime <= im.AddDate AND im.AddDate <= @workEndDatetime)
 --and im.Team = @team
 --and im.Line = @line
 and im.FactoryID = @factory 
@@ -328,7 +331,7 @@ select m.Ukey
 	,[InspectionMeasurementSizeSpec] = im.SizeSpec
 	,[diff]= max(dbo.calculateSizeSpec(m.SizeSpec,im.SizeSpec, @typeUnit))
 	,im.AddDate
-	,[HeadSizeCode] = CONVERT(TIME(0),im.AddDate)
+	,[HeadSizeCode] = FORMAT(im.AddDate,'yyyy/MM/dd HH:mm:ss')
 into #tmp 
 from Measurement m with(nolock)
 inner join (select distinct StyleUkey, SizeCode from #tmp_Inspection_Measurement) t on m.StyleUkey = t.StyleUkey and m.SizeCode = t.SizeCode

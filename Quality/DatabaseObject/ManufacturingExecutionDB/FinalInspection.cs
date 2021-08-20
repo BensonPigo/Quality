@@ -12,7 +12,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
     /// ===  ==========  ====  ==========  ==========
     /// 01.  2021/08/10   1.00    Admin        Create
     /// </history>
-    public class FinalInspection
+    public class FinalInspection : ResultModelBase<FinalInspection>
     {
         /// <summary>單號</summary>
         [Required]

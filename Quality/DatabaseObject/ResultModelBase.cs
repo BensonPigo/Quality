@@ -6,12 +6,20 @@ using System.Threading.Tasks;
 
 namespace DatabaseObject
 {
-    public class ResultModelBase<T> where T : class, new()
+    public class BaseResult
     {
-        public List<T> DataList { get; set; }
-        public bool Result{ get; set; }
+        public bool Result { get; set; }
         public string ErrorMessage { get; set; }
         public Exception Exception { get; set; }
 
+        public static implicit operator bool(BaseResult dualResult)
+        {
+            return dualResult.Result;
+        }
+    }
+
+    public class ResultModelBase<T> : BaseResult where T : class, new() 
+    {
+        public List<T> DataList { get; set; }
     }
 }

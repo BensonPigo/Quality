@@ -34,6 +34,10 @@
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\_Dll\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -63,6 +67,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interface\IFinalInspectionProvider.cs" />
     <Compile Include="Interface\IAreaProvider.cs" />
     <Compile Include="Interface\IAuthorityProvider.cs" />
     <Compile Include="Interface\IBACriteriaProvider.cs" />
@@ -87,6 +92,7 @@
     <Compile Include="Interface\IRFTPerLineProvider.cs" />
     <Compile Include="Interface\IRFTPicDuringDummyFittingProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Provider\MSSQL\FinalInspectionProvider.cs" />
     <Compile Include="Provider\MSSQL\AreaProvider.cs" />
     <Compile Include="Provider\MSSQL\AuthorityProvider.cs" />
     <Compile Include="Provider\MSSQL\BACriteriaProvider.cs" />
