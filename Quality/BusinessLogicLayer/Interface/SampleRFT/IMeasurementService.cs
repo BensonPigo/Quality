@@ -10,7 +10,7 @@ namespace BusinessLogicLayer.Interface.SampleRFT
 {
     public interface IMeasurementService
     {
-        Measurement_Request MeasurementGetPara(string OrderID);
+        Measurement_Request MeasurementGetPara(string OrderID, string FactoryID);
 
         Measurement_ResultModel MeasurementGet(Measurement_Request measurement);
 

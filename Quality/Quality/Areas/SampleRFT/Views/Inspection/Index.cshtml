@@ -2924,9 +2924,9 @@
                         var finval = accSubtr(standard, val);
                         $(this).parent().parent().children().find("p[class='Diff']").html(finval);
 
-                        val = parseInt(val);
-                        var sTolh = parseInt(accAdd(standard, tolh));
-                        var sToll = parseInt(accSubtr(standard, toll));
+                        val = parseFloat(val);
+                        var sTolh = parseFloat(accAdd(standard, tolh));
+                        var sToll = parseFloat(accSubtr(standard, toll));
                         if (sTolh >= val && val >= sToll) {
                             $(this).parent().parent().children().find("p[class='Diff']").parent().removeClass("bg-lightred");
                         }
@@ -2954,8 +2954,8 @@
             datasDetail.push({                 
                  MeasurementUkey: parseInt(tr.attr('idv')),
                  StyleUkey: parseInt(tr.attr('idx')),
-                 Code: tr.attr('idi'),
-                 SizeCode: tr.find("p[idx='Code']").html(),
+                 Code: tr.find("p[idx='Code']").html(),
+                 SizeCode: tr.attr('idi'),
                  SizeSpec: $(this).val(),
                  OrderID: $('#txtSP').val(),
                  Article: $('#txtArticle').val(),

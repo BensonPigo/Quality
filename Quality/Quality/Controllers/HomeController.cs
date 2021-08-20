@@ -26,7 +26,7 @@ namespace Quality.Controllers
         public ActionResult Index()
         {
             //Seession失效導向Login頁
-            if (Session.Keys.Count == 1)
+            if (Session.Keys.Count <= 1)
             {
                 return RedirectToAction("Login");
             }
@@ -79,6 +79,8 @@ namespace Quality.Controllers
             }
             else
             {
+                List<SelectListItem> FactoryList = new FactoryDashBoardWeb.Helper.SetListItem().ItemListBinding(this.Factorys);
+                ViewData["Factorys"] = FactoryList;
                 ViewData["Msg"] = result.ErrorMessage;
                 return View("Login");
             }
@@ -90,7 +92,8 @@ namespace Quality.Controllers
         /// <returns></returns>
         public ActionResult Logout()
         {
-            ClearUsersInfo();
+            ClearUsersInfo();            
+            ViewData["Factorys"] = new FactoryDashBoardWeb.Helper.SetListItem().ItemListBinding(this.Factorys);
             return View("Login");
 
         }

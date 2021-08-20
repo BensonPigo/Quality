@@ -77,7 +77,7 @@ namespace ADOHelper.Utility
             }
             catch (Exception ex)
             {
-                result = ex.ToString();
+                result = ex.Message.ToString();
             }
 
             return result;
