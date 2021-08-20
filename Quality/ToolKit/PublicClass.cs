@@ -106,5 +106,21 @@ namespace ToolKit
                 }
             }
         }
+
+        public static string JoinToString(this IEnumerable<string> source, string joinString)
+        {
+            if (source.Count() == 0)
+            {
+                return string.Empty;
+            }
+
+            string result = string.Empty;
+            foreach (string item in source)
+            {
+                result += $"{joinString}{item}";
+            }
+
+            return result.TrimStart(joinString.ToCharArray());
+        }
     }
 }

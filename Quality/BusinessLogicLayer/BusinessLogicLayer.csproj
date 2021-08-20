@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common.cs" />
+    <Compile Include="Interface\FinalInspection\IFinalInspectionSettingService.cs" />
     <Compile Include="Interface\IAuthorityService.cs" />
     <Compile Include="Interface\IBACriteriaService.cs" />
     <Compile Include="Interface\IBulkFGTMailGroup_Service.cs" />
@@ -76,6 +77,7 @@
     <Compile Include="Service\AuthorityService.cs" />
     <Compile Include="Service\BACriteriaService.cs" />
     <Compile Include="Service\BulkFGTMailGroup_Service.cs" />
+    <Compile Include="Service\FinalInspection\FinalInspectionSettingService.cs" />
     <Compile Include="Service\FinalInspection\FinalInspectionService.cs" />
     <Compile Include="Service\InspectionService.cs" />
     <Compile Include="Service\LoginService.cs" />

@@ -5,15 +5,15 @@ using System.Collections.Generic;
 
 namespace DatabaseObject.ViewModel.FinalInspection
 {
-    public class Setting
+    public class Setting : BaseResult
     {
-        public string FinalInspectionID { get; set; }
-        public string InspectionStage { get; set; }
-        public DateTime? AuditDate { get; set; }
-        public string SewingLineID { get; set; }
-        public string InspectionTimes { get; set; }
-       
-        public string AcceptableQualityLevelsUkey { get; set; }
+        public string FinalInspectionID { get; set; } = string.Empty;
+        public string InspectionStage { get; set; } = string.Empty;
+        public DateTime? AuditDate { get; set; } 
+        public string SewingLineID { get; set; } = string.Empty;
+        public string InspectionTimes { get; set; } = string.Empty;
+
+        public string AcceptableQualityLevelsUkey { get; set; } = string.Empty;
         public int? SampleSize { get; set; }
         public int? AcceptQty { get; set; }
 
@@ -22,6 +22,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public List<SelectCarton> SelectCarton { get; set; }
 
         public List<AcceptableQualityLevels> AcceptableQualityLevels { get; set; }
+        public List<string> ListSewingLine { get; set; }
     }
 
     public class SelectedPO
