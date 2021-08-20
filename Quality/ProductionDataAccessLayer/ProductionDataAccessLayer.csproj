@@ -51,6 +51,7 @@
     <Compile Include="Interface\INewCDCodeProvider.cs" />
     <Compile Include="Interface\IOrderLocationProvider.cs" />
     <Compile Include="Interface\IOrderQtyProvider.cs" />
+    <Compile Include="Interface\IFinalInspFromPMSProvider.cs" />
     <Compile Include="Interface\IOrdersProvider.cs" />
     <Compile Include="Interface\IPass1Provider.cs" />
     <Compile Include="Interface\ISeasonProvider.cs" />
@@ -70,6 +71,7 @@
     <Compile Include="Provider\MSSQL\NewCDCodeProvider.cs" />
     <Compile Include="Provider\MSSQL\OrderLocationProvider.cs" />
     <Compile Include="Provider\MSSQL\OrderQtyProvider.cs" />
+    <Compile Include="Provider\MSSQL\FinalInspFromPMSProvider.cs" />
     <Compile Include="Provider\MSSQL\OrdersProvider.cs" />
     <Compile Include="Provider\MSSQL\Pass1Provider.cs" />
     <Compile Include="Provider\MSSQL\SeasonProvider.cs" />

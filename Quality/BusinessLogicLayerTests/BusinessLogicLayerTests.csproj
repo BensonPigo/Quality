@@ -58,6 +58,8 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\MockupCrockingTests.cs" />
+    <Compile Include="Service\FinalInspection\FinalInspectionServiceTests.cs" />
+    <Compile Include="Service\FinalInspection\FinalInspectionSettingServiceTests.cs" />
     <Compile Include="Service\InspectionServiceTests.cs" />
     <Compile Include="Service\CFTCommentsTests.cs" />
     <Compile Include="Service\RFTPerLineServiceTests.cs" />

@@ -68,6 +68,10 @@
     <Compile Include="Interface\IMockupCrockingService.cs" />
     <Compile Include="Interface\SampleRFT\IBACriteriaService.cs" />
     <Compile Include="Interface\BulkFGT\IBulkFGTMailGroup_Service.cs" />
+    <Compile Include="Interface\FinalInspection\IFinalInspectionSettingService.cs" />
+    <Compile Include="Interface\IAuthorityService.cs" />
+    <Compile Include="Interface\IBACriteriaService.cs" />
+    <Compile Include="Interface\IBulkFGTMailGroup_Service.cs" />
     <Compile Include="Interface\FinalInspection\IFinalInspectionService.cs" />
     <Compile Include="Interface\SampleRFT\IInspectionService.cs" />
     <Compile Include="Interface\ILoginService.cs" />
@@ -81,6 +85,10 @@
     <Compile Include="Service\MockupCrockingService.cs" />
     <Compile Include="Service\SampleRFT\BACriteriaService.cs" />
     <Compile Include="Service\BulkFGT\BulkFGTMailGroup_Service.cs" />
+    <Compile Include="Service\AuthorityService.cs" />
+    <Compile Include="Service\BACriteriaService.cs" />
+    <Compile Include="Service\BulkFGTMailGroup_Service.cs" />
+    <Compile Include="Service\FinalInspection\FinalInspectionSettingService.cs" />
     <Compile Include="Service\FinalInspection\FinalInspectionService.cs" />
     <Compile Include="Service\SampleRFT\InspectionService.cs" />
     <Compile Include="Service\LoginService.cs" />
