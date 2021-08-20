@@ -19,7 +19,7 @@ namespace BusinessLogicLayer.Service.SampleRFT.Tests
             try
             {
                 IMeasurementService service = new MeasurementService();
-                var result = service.MeasurementGetPara("20091188GGS");
+                var result = service.MeasurementGetPara("20091188GGS", "ESP");
                 Assert.IsTrue(result.Articles.Count > 0);
             }
             catch (Exception ex)
@@ -35,7 +35,7 @@ namespace BusinessLogicLayer.Service.SampleRFT.Tests
             try
             {
                 IMeasurementService service = new MeasurementService();
-                Measurement_Request _Measurement_Request = service.MeasurementGetPara("20091188GGS");
+                Measurement_Request _Measurement_Request = service.MeasurementGetPara("20091188GGS", "ESP");
                 _Measurement_Request.Factory = "ESP";
 
                 var result = service.MeasurementGet(_Measurement_Request);

@@ -13,8 +13,6 @@ namespace DatabaseObject.ResultModel
         public int TotalQty { get; set; }
         public int MeasuredQty { get; set; }
         public int OOTQty { get; set; }
-        public List<RFT_Inspection_Measurement> rFT_Inspection_Measurements { get; set; }
-
         public string JsonBody { get; set; }
     }
 }

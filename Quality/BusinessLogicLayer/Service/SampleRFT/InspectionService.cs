@@ -304,7 +304,7 @@ namespace BusinessLogicLayer.Service
             {
                 _ISQLDataTransaction.RollBack();
                 inspections.Result = false;
-                inspections.ErrMsg = ex.ToString();
+                inspections.ErrMsg = ex.Message.ToString();
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
 
@@ -380,7 +380,7 @@ namespace BusinessLogicLayer.Service
             {
                 _ISQLDataTransaction.RollBack();
                 reworkList_SaveView.Result = false;
-                reworkList_SaveView.ErrMsg = ex.ToString();
+                reworkList_SaveView.ErrMsg = ex.Message.ToString();
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
 
@@ -432,7 +432,7 @@ namespace BusinessLogicLayer.Service
             {
                 _ISQLDataTransaction.RollBack();
                 reworkList_SaveView.Result = false;
-                reworkList_SaveView.ErrMsg = ex.ToString();
+                reworkList_SaveView.ErrMsg = ex.Message.ToString();
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
 
@@ -510,7 +510,7 @@ namespace BusinessLogicLayer.Service
                 {
                     _ISQLDataTransaction.RollBack();
                     reworkList_SaveView.Result = false;
-                    reworkList_SaveView.ErrMsg = ex.ToString();
+                    reworkList_SaveView.ErrMsg = ex.Message.ToString();
                 }
                 finally { _ISQLDataTransaction.CloseConnection(); }
             }
@@ -784,7 +784,7 @@ vertical-align: middle;
             catch (Exception ex)
             {
                 rFT_OrderComments_ViewModel.Result = false;
-                rFT_OrderComments_ViewModel.ErrMsg = ex.ToString();
+                rFT_OrderComments_ViewModel.ErrMsg = ex.Message.ToString();
             }
             return rFT_OrderComments_ViewModel;
         }
@@ -827,7 +827,7 @@ vertical-align: middle;
             {
                 _ISQLDataTransaction.RollBack();
                 rFT_OrderComments_ViewModel.Result = false;
-                rFT_OrderComments_ViewModel.ErrMsg = ex.ToString();
+                rFT_OrderComments_ViewModel.ErrMsg = ex.Message.ToString();
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
 

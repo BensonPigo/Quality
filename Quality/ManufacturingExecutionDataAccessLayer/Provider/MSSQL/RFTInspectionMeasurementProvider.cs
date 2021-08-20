@@ -225,6 +225,7 @@ values(@MeasurementUkey{rowSeq},@StyleUkey{rowSeq},@No,@Code{rowSeq},@SizeCode{r
 
             return ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter);
         }
-    #endregion
+
+        #endregion
     }
 }

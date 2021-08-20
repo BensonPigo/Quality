@@ -1,0 +1,227 @@
+﻿@using DatabaseObject.ResultModel;
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model Measurement_ResultModel
+
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+
+<style type="text/css">
+    .table-mainArea {
+        width: 100%;
+        background-color: #575757;
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .table-striped {
+        background-color: white;
+        vertical-align: middle;
+        text-align: center;
+    }
+
+        .table-striped > tbody > tr:nth-of-type(even) {
+            background-color: #F0F2F2;
+        }
+
+        .table-striped > tbody > tr:nth-of-type(odd) {
+            background-color: #ffffff;
+        }
+
+        .table-striped > thead > tr > th {
+            background-color: gray;
+            padding: 1em;
+            font-weight: bold;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .table-striped > tbody > tr > td {
+            padding: 1em;
+        }
+
+            .table-striped > tbody > tr > td > input {
+                font-size: 1.2em;
+                width: 9em;
+            }
+
+            .table-striped > tbody > tr > td > input[type="text"]:disabled {
+                background-color: transparent;
+            }
+
+    #Content {
+        overflow: auto;
+        margin-top: 1em;
+    }
+
+        #Content > table {
+            width: 100%;
+            font-size: 1.2em;
+        }
+
+            #Content > table > tbody > tr > td:nth-child(3) {
+                width: 1em;
+            }
+</style>
+
+<div class="main-content">
+    <header class="page-header">
+        <h3>
+            <i class="icon-users"></i><span>Measurement</span>
+        </h3>
+    </header>
+
+    <div class="main-area">
+        <div class="content-scroll">
+            <div class="inner-scroll">
+                @using (Html.BeginForm("Index", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post))
+                {
+                    <table class="table-mainArea">
+                        <tbody>
+                            <tr>
+                                <td style="vertical-align:middle;">
+                                    <table class="table-striped">
+                                        <tbody>
+                                            <tr>
+                                                <td><h4>SP#</h4></td>
+                                                <td>
+                                                    @Html.TextBoxFor(o => o.OrderID, "", new { @class = "form-control" })
+                                                </td>
+                                                <td><h4>Sample Stage</h4></td>
+                                                <td>
+                                                    @Html.TextBoxFor(o => o.OrderTypeID, "", new { @class = "form-control", @disabled = "disabled" })
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><h4>Style#</h4></td>
+                                                <td>
+                                                    @Html.TextBoxFor(o => o.StyleID, "", new { @class = "form-control", @disabled = "disabled" })
+                                                </td>
+                                                <td><h4>Season</h4></td>
+                                                <td>
+                                                    @Html.TextBoxFor(o => o.SeasonID, "", new { @class = "form-control", @disabled = "disabled" })
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><h4>Unit</h4></td>
+                                                <td>
+                                                    @Html.TextBoxFor(o => o.Unit, "", new { @class = "form-control", @disabled = "disabled" })
+                                                </td>
+                                                <td><h4>Article</h4></td>
+                                                <td style="text-align: left;">
+                                                    @Html.DropDownListFor(o => o.Article, (List<SelectListItem>)ViewBag.Articles, null, new { @class = "form-control" })
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                                <td>
+                                    <table>
+                                        <tbody>
+                                            <tr>
+                                                <td style="padding-bottom: 1em;">
+                                                    <button id="Find" type="submit" class="btn btn-gy" style="width: 7vw; height: 5vh; color:black; font-weight:bold;">Find</button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><button id="ToExcel" type="button" class="btn btn-gy" style="width: 7vw; height: 5vh; color:black; font-weight:bold;">To Excel</button></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                                <td style="vertical-align:middle;">
+                                    <table class="table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th style="height: 13vh;"><h3>Total measured qty</h3></th>
+                                                <th><h3>Measured qty label</h3></th>
+                                                <th><h3>OOT qty</h3></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    @Html.TextBoxFor(o => o.TotalQty, "", new { @class = "form-control", @disabled = "disabled" })
+                                                </td>
+                                                <td>
+                                                    @Html.TextBoxFor(o => o.MeasuredQty, "", new { @class = "form-control", @disabled = "disabled" })
+                                                </td>
+                                                <td>
+                                                    @Html.TextBoxFor(o => o.OOTQty, "", new { @class = "form-control", @disabled = "disabled" })
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <textarea id="JsonBody" class="display-None">@Model.JsonBody</textarea>
+                }
+
+                <div id="Content">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var msg;
+    $(function () {
+        msg = new MessagerAlert();
+
+        $('#OrderID').on('change', function () {
+            var val = $(this).val();
+            if (val.trim() == "") {
+                return;
+            }
+            $.ajax({
+                url: "@Url.Action("SpCheck", "Measurement", new { Area = "SampleRFT" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ SP: val }),
+                async: true,
+                success: function (data) {
+                    if (data.Result) {
+                        $(this).val(data.OrderID);
+                        $('#OrderTypeID').val(data.OrderTypeID);
+                        $('#StyleID').val(data.StyleID);
+                        $('#SeasonID').val(data.SeasonID);
+                        $('#Unit').val(data.Unit);
+                        var option = "";
+                        $.each(data.Articles, function (index, value) {
+                            option += "<option value=" + value + ">" + value + "</option>";
+                        });
+                        $("#Article").html(option);
+                    }
+                    else {
+                        msg.WithError(data.ErrMsg);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $("#ToExcel").click(function () {
+            location.href = '@Url.Action("ExcelExport")';
+        });
+
+        if ($('#JsonBody').val() != "") {
+            var datas = JSON.parse($('#JsonBody').val());
+            $('#Content').html(generateTable(datas));
+            $('#Content').children("table").addClass("table-striped");
+        }
+    });
+</script>
+
+
+
