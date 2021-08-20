@@ -151,6 +151,7 @@
     <Compile Include="Areas\SampleRFT\SampleRFTAreaRegistration.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\PublicWondowController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -662,6 +663,12 @@
     <Content Include="XLT\Measurement.xlsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Views\PublicWondow\BrandList.cshtml" />
+    <Content Include="Views\PublicWondow\ArticleList.cshtml" />
+    <Content Include="Views\PublicWondow\SeasonList.cshtml" />
+    <Content Include="Views\PublicWondow\SizeList.cshtml" />
+    <Content Include="Views\PublicWondow\StyleList.cshtml" />
+    <Content Include="Views\PublicWondow\TechnicianList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

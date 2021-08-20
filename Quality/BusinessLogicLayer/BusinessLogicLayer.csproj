@@ -85,6 +85,7 @@
     <Compile Include="Service\Authority\AuthorityService.cs" />
     <Compile Include="Service\FinalInspection\QueryService.cs" />
     <Compile Include="Service\MockupCrockingService.cs" />
+    <Compile Include="Service\PublicWindowService.cs" />
     <Compile Include="Service\SampleRFT\BACriteriaService.cs" />
     <Compile Include="Service\BulkFGT\BulkFGTMailGroup_Service.cs" />
     <Compile Include="Service\FinalInspection\FinalInspectionSettingService.cs" />
