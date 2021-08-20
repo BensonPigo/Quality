@@ -19,6 +19,7 @@ namespace DatabaseObject.ViewModel
         public string Article { get; set; }
         public string Size { get; set; }
         public string ProductType { get; set; }
+        public string ApparelType { get; set; }
         public string ProductTypePMS { get; set; }
         public string Brand { get; set; }
         public string Season { get; set; }

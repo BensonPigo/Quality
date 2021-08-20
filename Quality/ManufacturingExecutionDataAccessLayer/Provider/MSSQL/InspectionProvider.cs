@@ -38,6 +38,7 @@ select  [OrderID] = o.ID
 	, oq.Article
 	, [Size] = oq.SizeCode
 	, [ProductType] = ol.Location
+    , [ApparelType] = ApparelType.Name
 from [Production].[dbo].Orders o with(nolock)
 inner join [Production].[dbo].Order_Qty oq with(nolock) on o.ID = oq.ID
 inner join [Production].[dbo].Order_Location ol with(nolock) on o.ID = ol.OrderId
@@ -50,6 +51,13 @@ outer apply (
 	and r.Location = ol.Location
 	and Status <> 'Dispose'
 )r
+outer apply(
+	select r.Name 
+	from [Production].[dbo].Style s with(nolock)
+	inner join [Production].[dbo].Reason r with(nolock) on r.ID = s.ApparelType 
+        and r.ReasonTypeID = 'Style_Apparel_Type'	
+	where s.Ukey = o.StyleUkey
+)ApparelType
 where r.InspectionQty < oq.Qty
 and o.Category = 'S'
 and o.OnSiteSample != 1
