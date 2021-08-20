@@ -91,11 +91,11 @@ namespace DatabaseObject.ProductionDB
         /// <summary>測試前拍照</summary>
         [StringLength(-1)]
         [Display(Name = "測試前拍照")]
-        public byte[] TestBeforePicture { get; set; }
+        public Byte[] TestBeforePicture { get; set; }
         /// <summary>測試後拍照</summary>
         [StringLength(-1)]
         [Display(Name = "測試後拍照")]
-        public byte[] TestAfterPicture { get; set; }
+        public Byte[] TestAfterPicture { get; set; }
         /// <summary>新增日期</summary>
         [Display(Name = "新增日期")]
         public DateTime? AddDate { get; set; }
