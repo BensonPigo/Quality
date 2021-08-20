@@ -458,6 +458,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             foreach (RFT_Inspection item in reworkLists)
             {
                 item.Status = "Fixed";
+                item.FixType = type.ToString();
                 item.EditName = this.UserID;
                 item.InspectionDate = type.Equals(InspectionService.ReworkListType.Pass) ? this.WorkDate : (DateTime?)null;
             }
