@@ -10,6 +10,6 @@ namespace BusinessLogicLayer.Interface
     {
         IList<Orders> GetOrderForInspection(FinalInspection_Request request);
 
-        DatabaseObject.ManufacturingExecutionDB.FinalInspection GetFinalInspection(string FinalInspectionID);
+       FinalInspection GetFinalInspection(string FinalInspectionID);
     }
 }

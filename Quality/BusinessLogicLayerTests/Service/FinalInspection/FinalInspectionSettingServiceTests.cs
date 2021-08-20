@@ -13,6 +13,16 @@ namespace BusinessLogicLayer.Service.Tests
     [TestClass()]
     public class FinalInspectionSettingServiceTests
     {
+        private List<string> listOrders = new List<string>()
+                {
+                    "21010007IR",
+                    "21010007IR001"
+                };
+
+        private string POID = "21010007IR";
+
+        private string factory = "ESP";
+
         [TestMethod()]
         public void GetSettingForInspectionTest()
         {
@@ -20,13 +30,9 @@ namespace BusinessLogicLayer.Service.Tests
             {
                 IFinalInspectionSettingService finalInspectionSettingService = new FinalInspectionSettingService();
 
-                List<string> listOrders = new List<string>()
-                {
-                    "21010007IR",
-                    "21010007IR001"
-                };
+                
 
-                Setting result = finalInspectionSettingService.GetSettingForInspection("21010007IR", listOrders, "ESP");
+                Setting result = finalInspectionSettingService.GetSettingForInspection(this.POID, this.listOrders, factory);
 
                 if (!result)
                 {
@@ -70,14 +76,7 @@ namespace BusinessLogicLayer.Service.Tests
             {
                 IFinalInspectionSettingService finalInspectionSettingService = new FinalInspectionSettingService();
 
-                Setting setting = new Setting()
-                { 
-                    FinalInspectionID = string.Empty,
-                    InspectionStage = "",
-                    AuditDate = DateTime.Now,
-                    SewingLineID = "05",
-                    
-                };
+                Setting setting = finalInspectionSettingService.GetSettingForInspection(this.POID, this.listOrders, factory);
 
                 //finalInspectionSettingService.UpdateFinalInspection("21010007IR");
 

@@ -22,7 +22,7 @@ namespace BusinessLogicLayer.Service
         public Setting GetSettingForInspection(string finalInspectionID)
         {
             Setting result = new Setting();
-            FinalInspection finalInspection = new FinalInspection();
+            DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection = new DatabaseObject.ManufacturingExecutionDB.FinalInspection();
             try
             {
                 _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);

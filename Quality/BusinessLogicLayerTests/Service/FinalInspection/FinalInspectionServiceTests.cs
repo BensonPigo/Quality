@@ -23,7 +23,7 @@ namespace BusinessLogicLayer.Service.Tests
             {
                 FinalInspectionService finalInspectionService = new FinalInspectionService();
 
-                FinalInspection result = finalInspectionService.GetFinalInspection("123");
+                DatabaseObject.ManufacturingExecutionDB.FinalInspection result = finalInspectionService.GetFinalInspection("123");
 
                 if (!result.Result)
                 {

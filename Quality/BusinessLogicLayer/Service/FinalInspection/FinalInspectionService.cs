@@ -16,9 +16,9 @@ namespace BusinessLogicLayer.Service
         public IFinalInspectionProvider _FinalInspectionProvider { get; set; }
         public IOrdersProvider _OrdersProvider { get; set; }
 
-        public FinalInspection GetFinalInspection(string finalInspectionID)
+        public DatabaseObject.ManufacturingExecutionDB.FinalInspection GetFinalInspection(string finalInspectionID)
         {
-            FinalInspection result = new FinalInspection();
+            DatabaseObject.ManufacturingExecutionDB.FinalInspection result = new DatabaseObject.ManufacturingExecutionDB.FinalInspection();
 
             try
             {
