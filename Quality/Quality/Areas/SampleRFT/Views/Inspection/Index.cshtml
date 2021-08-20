@@ -1294,7 +1294,7 @@
         });
 
         if (@ViewBag.ShowSwitch) {
-            if ($("body").hasClass("sidebar-collapse")) {
+            if (!$("body").hasClass("sidebar-collapse")) {
                 $(".menu-trigger").click();
             }
             $('#btnSwitch').click();
@@ -1450,6 +1450,11 @@
                 return;
             }
 
+            var rowCount = $('#DefectType tr').length;
+            if (rowCount > 1) {
+                return;
+            }
+
             PassClick($("#txtStyle").val(), $("#txtSP").val(), $("#txtArticle").val(), $("#txtSize").val(), $("#txtProductType").val());
         });
 
@@ -1458,6 +1463,12 @@
             if (!EditMode) {
                 return;
             }
+
+            var rowCount = $('#DefectType tr').length;
+            if (rowCount > 1) {
+                return;
+            }
+
             $('.RewoekListSetting').attr("idx", "F").html('');
             GetDefectCategory();
             $('#SelectItemBackground, #AddDefect').removeClass('display-None').unbind('click');
@@ -1514,7 +1525,7 @@
                 return;
             }
 
-            $('#txtStyle, #txtSP, #txtArticle, #txtSize, #txtProductType, #txtProductTypePMS, #txtBrand, #txtSeason, #txtSampleStage, #txtOriginalLine, #txtSizeQty, #txtSizeBalanceQty, #txtOrderQty, #txtOrderBalanceQty').val("");
+            $('.FixType').html('');
             $(".table-top3>tbody>tr>td>input[type='text']").val("");
             $("#DefectType>tbody>tr").remove();
             IsEditModeButtonChange();
@@ -1669,6 +1680,11 @@
                 return;
             }
 
+            if (bAAuditCriteriaID == null) {
+                bAAuditCriteriaID = ""; 
+                bAAuditCriteria = "";
+            }
+
             if (rewoekListSetting == "F") {
                 var tbody = $('#DefectType>tbody');
                 var rowCount = $('#DefectType tr').length;
@@ -1732,7 +1748,7 @@
             $('#SelectItemBackground').on('click', function () {
                 $("#SelectItemBackground, .SelectItem").addClass('display-None');
             });
-
+            $('.FixType').html('');
             $('#btnRefresh').click();
         });
 
@@ -1789,12 +1805,11 @@
 
             var isGO = 1;
             $.each(check, function (data, value) {
-                if ($(this).attr('idx') != "Hard") {
+                if ($(this).parent().parent().attr('idx') != "Hard") {
                     msg.WithError("[Rework No] should be [Hard].");
+                    isGO = 0;
+                    return;
                 }
-
-                isGO = 0;
-                return;
             });
 
             if (!isGO) {
@@ -2679,6 +2694,8 @@
                     $(this).parent().parent().parent().parent().find("input[type='checkbox']").prop("checked", true);
                     ReworkListSaveAction($(this).attr('idx'), '');
                 });
+
+                FilterReworkListTable();
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 console.log(xhr.responseText);
