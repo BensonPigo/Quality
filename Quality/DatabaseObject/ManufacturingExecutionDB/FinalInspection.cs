@@ -35,7 +35,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
         /// <summary>檢驗次數</summary>
         [Required]
         [Display(Name = "檢驗次數")]
-        public string InspectionTimes { get; set; }
+        public int InspectionTimes { get; set; }
 
         /// <summary>廠別</summary>
         [Required]
@@ -61,7 +61,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
 
         /// <summary>AcceptableQualityLevelsUkey</summary>
         [Display(Name = "AcceptableQualityLevelsUkey")]
-        public string AcceptableQualityLevelsUkey { get; set; }
+        public long AcceptableQualityLevelsUkey { get; set; }
 
         /// <summary>樣本數量</summary>
         [Display(Name = "樣本數量")]
@@ -73,83 +73,83 @@ namespace DatabaseObject.ManufacturingExecutionDB
 
         /// <summary>是否收到Fabric Approval文件</summary>
         [Display(Name = "是否收到Fabric Approval文件")]
-        public string FabricApprovalDoc { get; set; }
+        public bool FabricApprovalDoc { get; set; }
 
         /// <summary>是否收到Sealing Sample文件</summary>
         [Display(Name = "是否收到Sealing Sample文件")]
-        public string SealingSampleDoc { get; set; }
+        public bool SealingSampleDoc { get; set; }
 
         /// <summary>是否收到Metal Detection文件</summary>
         [Display(Name = "是否收到Metal Detection文件")]
-        public string MetalDetectionDoc { get; set; }
+        public bool MetalDetectionDoc { get; set; }
 
         /// <summary>是否收到Garment Washing文件</summary>
         [Display(Name = "是否收到Garment Washing文件")]
-        public string GarmentWashingDoc { get; set; }
+        public bool GarmentWashingDoc { get; set; }
 
         /// <summary>是否收到Close/ Shade</summary>
         [Display(Name = "是否收到Close/ Shade")]
-        public string CheckCloseShade { get; set; }
+        public bool CheckCloseShade { get; set; }
 
         /// <summary>是否收到Handfeel</summary>
         [Display(Name = "是否收到Handfeel")]
-        public string CheckHandfeel { get; set; }
+        public bool CheckHandfeel { get; set; }
 
         /// <summary>是否收到Appearance</summary>
         [Display(Name = "是否收到Appearance")]
-        public string CheckAppearance { get; set; }
+        public bool CheckAppearance { get; set; }
 
         /// <summary>是否收到Print/ Emb Decorations</summary>
         [Display(Name = "是否收到Print/ Emb Decorations")]
-        public string CheckPrintEmbDecorations { get; set; }
+        public bool CheckPrintEmbDecorations { get; set; }
 
         /// <summary>是否收到Fiber Content</summary>
         [Display(Name = "是否收到Fiber Content")]
-        public string CheckFiberContent { get; set; }
+        public bool CheckFiberContent { get; set; }
 
         /// <summary>是否收到Care Instructions</summary>
         [Display(Name = "是否收到Care Instructions")]
-        public string CheckCareInstructions { get; set; }
+        public bool CheckCareInstructions { get; set; }
 
         /// <summary>是否收到Decorative Label</summary>
         [Display(Name = "是否收到Decorative Label")]
-        public string CheckDecorativeLabel { get; set; }
+        public bool CheckDecorativeLabel { get; set; }
 
         /// <summary>是否收到Adicom Label</summary>
         [Display(Name = "是否收到Adicom Label")]
-        public string CheckAdicomLabel { get; set; }
+        public bool CheckAdicomLabel { get; set; }
 
         /// <summary>是否收到Country of Origion</summary>
         [Display(Name = "是否收到Country of Origion")]
-        public string CheckCountryofOrigion { get; set; }
+        public bool CheckCountryofOrigion { get; set; }
 
         /// <summary>是否收到Size Key</summary>
         [Display(Name = "是否收到Size Key")]
-        public string CheckSizeKey { get; set; }
+        public bool CheckSizeKey { get; set; }
 
         /// <summary>是否收到8-Flag Label</summary>
         [Display(Name = "是否收到8-Flag Label")]
-        public string Check8FlagLabel { get; set; }
+        public bool Check8FlagLabel { get; set; }
 
         /// <summary>是否收到Additional Label</summary>
         [Display(Name = "是否收到Additional Label")]
-        public string CheckAdditionalLabel { get; set; }
+        public bool CheckAdditionalLabel { get; set; }
 
         /// <summary>是否收到Shipping Mark</summary>
         [Display(Name = "是否收到Shipping Mark")]
-        public string CheckShippingMark { get; set; }
+        public bool CheckShippingMark { get; set; }
 
         /// <summary>是否收到Polytag/ Marketing</summary>
         [Display(Name = "是否收到Polytag/ Marketing")]
-        public string CheckPolytagMarketing { get; set; }
+        public bool CheckPolytagMarketing { get; set; }
 
         /// <summary>是否收到Color/ Size/ Qty</summary>
         [Display(Name = "是否收到Color/ Size/ Qty")]
-        public string CheckColorSizeQty { get; set; }
+        public bool CheckColorSizeQty { get; set; }
 
         /// <summary>是否收到Hangtag</summary>
         [Display(Name = "是否收到Hangtag")]
-        public string CheckHangtag { get; set; }
+        public bool CheckHangtag { get; set; }
 
         /// <summary>檢驗成功數量</summary>
         [Display(Name = "檢驗成功數量")]
@@ -170,7 +170,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
 
         /// <summary>完成比例</summary>
         [Display(Name = "完成比例")]
-        public string ProductionStatus { get; set; }
+        public decimal ProductionStatus { get; set; }
 
         /// <summary>Pass/ Fail/ On-going</summary>
         [StringLength(8)]

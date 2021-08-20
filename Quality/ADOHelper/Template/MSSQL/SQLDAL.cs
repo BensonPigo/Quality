@@ -102,7 +102,48 @@ namespace ADOHelper.Template.MSSQL
 			return this.ExecuteList<T>(CommandType.Text, cmdText, cmdParameter);
 		}
 
-		public DataSet ExecuteDataSet(CommandType cmdType, string cmdText, SQLParameterCollection cmdParameter, int commTimeout = 30)
+        public DataTable ExecuteDataTableByServiceConn(CommandType cmdType, string cmdText, SQLParameterCollection cmdParameter, int commTimeout = 30)
+        {
+            DataTable dataTable = new DataTable();
+            try
+            {
+                string str = cmdText;
+                for (int i = 0; i < cmdParameter.Count; i++)
+                {
+                    object objectValue = RuntimeHelpers.GetObjectValue(cmdParameter[i].Value);
+                    DataAccessHelper.AddParamTOSQLCmd(this.adapter, cmdParameter[i].ParameterName, objectValue, cmdParameter[i].DbType);
+                    if (ADOHelper.Template.MSSQL.SQLDAL.IsSaveSqlLog)
+                    {
+                        string parameterName = cmdParameter[i].ParameterName;
+                        DbType dbType = cmdParameter[i].DbType;
+                        //LogHelpe.MergerSQLParam(ref str, parameterName, dbType.ToString(), objectValue);
+                    }
+                }
+                this.adapter.SelectCommand.CommandText = cmdText;
+                this.adapter.SelectCommand.CommandType = cmdType;
+                if (commTimeout > 30)
+                {
+                    this.adapter.SelectCommand.CommandTimeout = commTimeout;
+                }
+                this.adapter.Fill(dataTable);
+                if (ADOHelper.Template.MSSQL.SQLDAL.IsSaveSqlLog)
+                {
+                    //LogHelpe.WriteSQL(cmdText);
+                }
+            }
+            catch (Exception exception1)
+            {
+                Exception exception = exception1;
+                if (ADOHelper.Template.MSSQL.SQLDAL.IsSaveErrorLog)
+                {
+                    //LogHelpe.WriteError(exception.ToString());
+                }
+                throw exception;
+            }
+            return dataTable;
+        }
+
+        public DataSet ExecuteDataSet(CommandType cmdType, string cmdText, SQLParameterCollection cmdParameter, int commTimeout = 30)
 		{
 			DataSet dataSet;
 			try

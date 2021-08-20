@@ -34,15 +34,15 @@ namespace DatabaseObject.ProductionDB
         /// <summary>Ukey</summary>
         [Required]
         [Display(Name = "Ukey")]
-        public string Ukey { get; set; }
+        public long Ukey { get; set; }
         /// <summary>Junk</summary>
         [Required]
         [Display(Name = "Junk")]
-        public string Junk { get; set; }
+        public bool Junk { get; set; }
         /// <summary>AQL類型</summary>
         [Required]
         [Display(Name = "AQL類型")]
-        public string AQLType { get; set; }
+        public decimal AQLType { get; set; }
         /// <summary>可容忍檢驗失敗數量</summary>
         [Display(Name = "可容忍檢驗失敗數量")]
         public int? AcceptedQty { get; set; }

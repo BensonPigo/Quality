@@ -41,8 +41,8 @@ namespace BusinessLogicLayer.Service
                 result.InspectionStage = finalInspection.InspectionStage;
                 result.AuditDate = finalInspection.AuditDate;
                 result.SewingLineID = finalInspection.SewingLineID;
-                result.InspectionTimes = finalInspection.InspectionTimes;
-                result.AcceptableQualityLevelsUkey = finalInspection.AcceptableQualityLevelsUkey;
+                result.InspectionTimes = finalInspection.InspectionTimes.ToString();
+                result.AcceptableQualityLevelsUkey = finalInspection.AcceptableQualityLevelsUkey.ToString();
                 result.SampleSize = finalInspection.SampleSize;
                 result.AcceptQty = finalInspection.AcceptQty;
 
@@ -95,22 +95,14 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public BaseResult UpdateFinalInspection(Setting setting, string UserID, string factoryID, string MDivisionid)
+        public string UpdateFinalInspection(Setting setting, string UserID, string factoryID, string MDivisionid)
         {
-            BaseResult result = new BaseResult();
-            try
-            {
-                _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+            _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
 
-                _FinalInspectionProvider.UpdateFinalInspection(setting, UserID, factoryID, MDivisionid);
-            }
-            catch (Exception ex)
-            {
-                result.Result = false;
-                result.ErrorMessage = ex.ToString();
-            }
+            var selecedCarton = setting.SelectCarton.Where(s => s.Selected);
+            setting.SelectCarton = selecedCarton.Any() ? selecedCarton.ToList() : new List<SelectCarton>();
 
-            return result;
+            return _FinalInspectionProvider.UpdateFinalInspection(setting, UserID, factoryID, MDivisionid);
         }
     }
 }

@@ -26,6 +26,14 @@ namespace BusinessLogicLayer.Interface
         /// <returns>Setting</returns>
         Setting GetSettingForInspection(string POID, List<string> listOrderID, string FactoryID);
 
-        BaseResult UpdateFinalInspection(Setting setting, string UserID, string factoryID, string MDivisionid);
+        /// <summary>
+        /// UpdateFinalInspection
+        /// </summary>
+        /// <param name="setting">setting</param>
+        /// <param name="UserID">UserID</param>
+        /// <param name="factoryID">factoryID</param>
+        /// <param name="MDivisionid">MDivisionid</param>
+        /// <returns>回傳新增或異動的FinalInspectionID</returns>
+        string UpdateFinalInspection(Setting setting, string UserID, string factoryID, string MDivisionid);
     }
 }

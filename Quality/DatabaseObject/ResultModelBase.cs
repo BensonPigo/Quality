@@ -8,9 +8,10 @@ namespace DatabaseObject
 {
     public class BaseResult
     {
-        public bool Result { get; set; }
+        public bool Result { get; set; } = true;
         public string ErrorMessage { get; set; }
         public Exception Exception { get; set; }
+        public object ResultObject { get; set; }
 
         public static implicit operator bool(BaseResult dualResult)
         {

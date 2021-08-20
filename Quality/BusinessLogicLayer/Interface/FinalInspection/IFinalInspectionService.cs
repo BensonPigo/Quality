@@ -1,4 +1,5 @@
-﻿using DatabaseObject.ManufacturingExecutionDB;
+﻿using DatabaseObject;
+using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
@@ -10,6 +11,6 @@ namespace BusinessLogicLayer.Interface
     {
         IList<Orders> GetOrderForInspection(FinalInspection_Request request);
 
-       FinalInspection GetFinalInspection(string FinalInspectionID);
+        FinalInspection GetFinalInspection(string FinalInspectionID);
     }
 }

@@ -71,12 +71,13 @@ inner join  #FinalInspection_Order fo on fo.OrderID = o.ID
             SQLParameterCollection listPar = new SQLParameterCollection();
             string whereOrderID = listOrderID.Select(s => $"'{s}'").JoinToString(",");
             string sqlGetData = $@"
-select  [Selected] = 0,
+select  [Selected] = Cast(0 as bit),
         pld.OrderID,
         [PackingListID] = pld.id, 
         [CTNNo] = CTNStartNo
  from PackingList_Detail pld
- where pld.OrderID in ({whereOrderID})
+ where  pld.OrderID in ({whereOrderID}) and
+        CTNQty = 1
 ";
             return ExecuteList<SelectCarton>(CommandType.Text, sqlGetData, listPar);
         }
@@ -100,7 +101,7 @@ into    #FinalInspection_Order
 from    [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order with (nolock)
 where   ID  =   @finalInspectionID
 
-select  [Selected] = isnull(fc.Selected, 0),
+select  [Selected] = cast(isnull(fc.Selected, 0) as bit),
         pld.OrderID,
         [PackingListID] = pld.id, 
         [CTNNo] = CTNStartNo
@@ -108,7 +109,8 @@ from PackingList_Detail pld
 left join   #FinalInspection_OrderCarton fc on  fc.OrderID = pld.OrderID and 
                                                 fc.PackinglistID = pld.ID and 
                                                 fc.CTNNo = pld.CTNStartNo
-where   pld.OrderID in (select OrderID from #FinalInspection_Order)
+where   pld.OrderID in (select OrderID from #FinalInspection_Order) and
+        pld.CTNQty = 1
 
 ";
             return ExecuteList<SelectCarton>(CommandType.Text, sqlGetData, listPar);
@@ -146,7 +148,7 @@ where   FactoryID = @FactoryID
 order by ID
 ";
             
-            DataTable dtResult = ExecuteDataTable(CommandType.Text, sqlGetData, listPar);
+            DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, listPar);
 
             if (dtResult.Rows.Count > 0)
             {

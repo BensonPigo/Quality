@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BusinessLogicLayer.Interface;
 using DatabaseObject.ViewModel.FinalInspection;
+using DatabaseObject;
 
 namespace BusinessLogicLayer.Service.Tests
 {
@@ -23,14 +24,14 @@ namespace BusinessLogicLayer.Service.Tests
 
         private string factory = "ESP";
 
+        private string Mdivision = "VM2";
+
         [TestMethod()]
         public void GetSettingForInspectionTest()
         {
             try
             {
                 IFinalInspectionSettingService finalInspectionSettingService = new FinalInspectionSettingService();
-
-                
 
                 Setting result = finalInspectionSettingService.GetSettingForInspection(this.POID, this.listOrders, factory);
 
@@ -54,7 +55,7 @@ namespace BusinessLogicLayer.Service.Tests
             {
                 IFinalInspectionSettingService finalInspectionSettingService = new FinalInspectionSettingService();
 
-                Setting result = finalInspectionSettingService.GetSettingForInspection("21010007IR");
+                Setting result = finalInspectionSettingService.GetSettingForInspection("ESPCH21080001");
 
                 if (!result)
                 {
@@ -77,8 +78,21 @@ namespace BusinessLogicLayer.Service.Tests
                 IFinalInspectionSettingService finalInspectionSettingService = new FinalInspectionSettingService();
 
                 Setting setting = finalInspectionSettingService.GetSettingForInspection(this.POID, this.listOrders, factory);
+                setting.AcceptQty = 995;
+                setting.AcceptableQualityLevelsUkey = "50";
+                setting.AuditDate = DateTime.Now;
+                setting.InspectionStage = "Final";
+                setting.SampleSize = 6;
+                setting.SewingLineID = "05";
+                setting.SelectCarton[0].Selected = true;
+                setting.SelectCarton[1].Selected = true;
+                string result = finalInspectionSettingService.UpdateFinalInspection(setting, "SCIMIS", this.factory, this.Mdivision);
 
-                //finalInspectionSettingService.UpdateFinalInspection("21010007IR");
+                setting = finalInspectionSettingService.GetSettingForInspection("ESPCH21080001");
+                setting.SampleSize = 9527;
+                setting.SelectCarton[0].Selected = false;
+                setting.SelectCarton[2].Selected = true;
+                result = finalInspectionSettingService.UpdateFinalInspection(setting, "SCIMIS", this.factory, this.Mdivision);
 
                 Assert.IsTrue(true);
             }

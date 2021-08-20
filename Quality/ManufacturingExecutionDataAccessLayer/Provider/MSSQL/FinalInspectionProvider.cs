@@ -9,6 +9,7 @@ using DatabaseObject.ManufacturingExecutionDB;
 using Newtonsoft.Json;
 using DatabaseObject;
 using DatabaseObject.ViewModel.FinalInspection;
+using System.Transactions;
 
 namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 {
@@ -100,17 +101,17 @@ where   ID = @ID
             };
 
             string sqlGetData = @"
-select isnull(max(InspectionTimes), 0) + 1
+select [InspectionTimes] = isnull(max(InspectionTimes), 0) + 1
     from FinalInspection
     where   POID = @POID
 ";
             
-            return ExecuteList<int>(CommandType.Text, sqlGetData, objParameter)[0].ToString();
+            return ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, objParameter).Rows[0]["InspectionTimes"].ToString();
         }
 
         private string GetNewFinalInspectionID(string factoryID)
         {
-            string idHead = $"{factoryID}CH{DateTime.Now.ToString("YYMM")}";
+            string idHead = $"{factoryID}CH{DateTime.Now.ToString("yyMM")}";
 
             string sqlGetCurMaxID = $@"
 select  [MaxSerID] =  cast(Replace(isnull(MAX(ID), '0'), '{idHead}', '') as int)
@@ -118,11 +119,11 @@ from    FinalInspection with (nolock)
 where   ID like '{idHead}%'
 ";
             int newSer = (int)ExecuteDataTable(CommandType.Text, sqlGetCurMaxID, new SQLParameterCollection()).Rows[0]["MaxSerID"] + 1;
-            string newID = idHead + newSer.ToString().PadLeft(6, '0');
+            string newID = idHead + newSer.ToString().PadLeft(4, '0');
             return newID;
         }
 
-        public void UpdateFinalInspection(Setting setting, string userID, string factoryID, string MDivisionid)
+        public string UpdateFinalInspection(Setting setting, string userID, string factoryID, string MDivisionid)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();
             string sqlUpdCmd = string.Empty;
@@ -200,7 +201,7 @@ delete  FinalInspection_OrderCarton where ID = @FinalInspectionID
             objParameter.Add("@AcceptableQualityLevelsUkey", setting.AcceptableQualityLevelsUkey);
             objParameter.Add("@SampleSize", setting.SampleSize);
             objParameter.Add("@AcceptQty", setting.AcceptQty);
-            objParameter.Add("@UserID", setting.FinalInspectionID);
+            objParameter.Add("@UserID", userID);
 
             foreach (SelectedPO selectedPOItem in setting.SelectedPO)
             {
@@ -217,8 +218,13 @@ insert into FinalInspection_OrderCarton(ID, OrderID, PackingListID, CTNNo)
             values(@FinalInspectionID, '{selectCartonItem.OrderID}', '{selectCartonItem.PackingListID}', '{selectCartonItem.CTNNo}')
 ";
             }
+            using (TransactionScope transaction = new TransactionScope())
+            {
+                ExecuteNonQuery(CommandType.Text, sqlUpdCmd, objParameter);
+                transaction.Complete();
+            }
 
-            ExecuteNonQuery(CommandType.Text, sqlUpdCmd, objParameter);
+            return setting.FinalInspectionID;
         }
 
         #endregion
