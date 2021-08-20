@@ -217,7 +217,7 @@
 
         if ($('#JsonBody').val() != "") {
             var datas = JSON.parse($('#JsonBody').val());
-            $('#Content').html(generateTable(datas));
+            $('#Content').html(generateTable(datas, "Measurement"));
             $('#Content').children("table").addClass("table-striped");
         }
     });

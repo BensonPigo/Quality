@@ -82,29 +82,47 @@ namespace Quality.Areas.SampleRFT.Controllers
                 foreach (DataColumn dc in dt.Columns)
                 {
                     var headRow = sheet.GetRow(RowIndex);
-                    var detail = sheet.GetRow(RowIndex + 1);
+                    // var detail = sheet.GetRow(RowIndex + 1);
                     headRow.CreateCell(ColumnIndex, CellType.String);
-                    detail.CreateCell(ColumnIndex, CellType.String);
+                    // detail.CreateCell(ColumnIndex, CellType.String);
                     var cell = headRow.GetCell(ColumnIndex);
-                    cell.SetCellValue(dc.ColumnName);
-                    // cell.CellStyle = cellStyleR;
+                    string column = dc.ColumnName;
+                    if (dc.ColumnName.IndexOf("_aa") > -1)
+                    {
+                        column = dc.ColumnName.Replace(dc.ColumnName.Substring(dc.ColumnName.IndexOf("_aa"), dc.ColumnName.Length - dc.ColumnName.IndexOf("_aa")), "");
+                    }
+
+                    if (dc.ColumnName.IndexOf("diff") > -1)
+                    {
+                        var index = dc.ColumnName.Replace("diff", "");
+                        column = dc.ColumnName.Replace(index, "");
+                    }
+
+                    cell.SetCellValue(column);
                     ColumnIndex++;
                 }
 
-                RowIndex++;
+                // RowIndex++;
                 int RowCount = dt.Rows.Count;
                 // 根據Data數量，複製Row
+                for (int i = 0; i <= RowCount; i++)
+                {
+                    var firstRow = sheet.GetRow(1);
+                    firstRow.CopyRowTo(i + 2);
+                }
+
                 for (int i = 0; i <= RowCount - 1; i++)
                 {
-                    var row = sheet.CopyRow(RowIndex, i + 2);
+                    var row = sheet.GetRow(i + 1);
                     for (int j = 0; j <= dt.Columns.Count - 1; j++)
                     {
+                        row.CreateCell(j, CellType.String);
                         var cell = row.GetCell(j);
                         cell.SetCellValue(dt.Rows[i][j].ToString());
                     }
                 }
 
-                sheet.RemoveRow(sheet.GetRow(RowIndex));
+                // sheet.RemoveRow(sheet.GetRow(RowIndex));
 
 
                 for (int i = 0; i <= ColumnIndex - 1; i++)

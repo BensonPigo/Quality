@@ -457,7 +457,7 @@ function accSubtr(arg1, arg2) {
 }
 
 // Json To HtmlTable
-function generateTable(jArray) {
+function generateTable(jArray, type) {
     let tbody = document.createElement('tbody');
     let thead = document.createElement('thead');
     let table = document.createElement('table');
@@ -481,7 +481,17 @@ function generateTable(jArray) {
 
     Object.keys(jArray[0]).forEach(header => {
         let th = document.createElement('th')
-        th.textContent = header
+        var newheader = header;
+        if (header.indexOf("_aa") > -1 && type == "Measurement") {
+            newheader = header.replace(header.substr(header.indexOf("_aa"), header.length - header.indexOf("_aa")), "");
+        }
+
+        if (header.indexOf("diff") > -1 && type == "Measurement" ) {
+            var index = header.replace("diff", "");
+            newheader = header.replace(index, "") ;
+        }
+
+        th.textContent = newheader
 
         headerTr.appendChild(th)
     });
