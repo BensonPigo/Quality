@@ -10,6 +10,9 @@ using DatabaseObject.ManufacturingExecutionDB;
 using ProductionDataAccessLayer.Provider.MSSQL;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
+using BusinessLogicLayer.Interface;
+using DatabaseObject.ViewModel.FinalInspection;
+using DatabaseObject;
 
 namespace BusinessLogicLayer.Service.Tests
 {
@@ -45,7 +48,7 @@ namespace BusinessLogicLayer.Service.Tests
                 FinalInspectionService finalInspectionService = new FinalInspectionService();
 
                 FinalInspection_Request inspection_Request = new FinalInspection_Request()
-                { 
+                {
                     FactoryID = "ESP",
                     StyleID = "LW6BM7S",
                     SP = "21040034IC002",
@@ -53,6 +56,33 @@ namespace BusinessLogicLayer.Service.Tests
                 };
 
                 IList<Orders> result = finalInspectionService.GetOrderForInspection(inspection_Request);
+
+                Assert.IsTrue(true);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.ToString());
+            }
+        }
+
+        [TestMethod()]
+        public void UpdateFinalInspectionByStepTest()
+        {
+            try
+            {
+                IFinalInspectionService finalInspectionService = new FinalInspectionService();
+
+                DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection = finalInspectionService.GetFinalInspection("ESPCH21080001");
+
+                finalInspection.FabricApprovalDoc = true;
+                finalInspection.GarmentWashingDoc = true;
+                finalInspection.InspectionStep = "Insp-General";
+                BaseResult result = finalInspectionService.UpdateFinalInspectionByStep(finalInspection, "Insp-General", "SCIMIS");
+
+                if (!result)
+                {
+                    Assert.Fail(result.ErrorMessage);
+                }
 
                 Assert.IsTrue(true);
             }

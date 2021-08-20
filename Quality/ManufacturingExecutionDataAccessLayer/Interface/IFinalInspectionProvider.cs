@@ -12,5 +12,7 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         string GetInspectionTimes(string POID);
 
         string UpdateFinalInspection(Setting setting, string userID, string factoryID, string MDivisionid);
+
+        void UpdateFinalInspectionByStep(FinalInspection finalInspection, string currentStep, string userID);
     }
 }

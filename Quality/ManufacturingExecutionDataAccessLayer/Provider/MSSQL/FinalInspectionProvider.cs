@@ -227,6 +227,101 @@ insert into FinalInspection_OrderCarton(ID, OrderID, PackingListID, CTNNo)
             return setting.FinalInspectionID;
         }
 
+        public void UpdateFinalInspectionByStep(FinalInspection finalInspection, string currentStep, string userID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            string sqlUpdCmd = string.Empty;
+
+            switch (currentStep)
+            {
+                case "Setting":
+                    break;
+                case "Insp-General":
+                    sqlUpdCmd += $@"
+update FinalInspection
+ set    FabricApprovalDoc = @FabricApprovalDoc  ,
+        SealingSampleDoc= @SealingSampleDoc    ,
+        MetalDetectionDoc= @MetalDetectionDoc   ,
+        GarmentWashingDoc= @GarmentWashingDoc   ,
+        InspectionStep = @InspectionStep,
+        EditName= @userID,
+        EditDate= getdate()
+where   ID = @FinalInspectionID
+";
+                    objParameter.Add("@FinalInspectionID", finalInspection.ID);
+                    objParameter.Add("@userID", userID);
+                    objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
+                    objParameter.Add("@GarmentWashingDoc", finalInspection.GarmentWashingDoc);
+                    objParameter.Add("@MetalDetectionDoc", finalInspection.MetalDetectionDoc);
+                    objParameter.Add("@SealingSampleDoc", finalInspection.SealingSampleDoc);
+                    objParameter.Add("@FabricApprovalDoc", finalInspection.FabricApprovalDoc);
+                    break;
+                case "Insp-CheckList":
+                    sqlUpdCmd += $@"
+update FinalInspection
+ set    CheckCloseShade = @CheckCloseShade  ,
+        CheckHandfeel = @CheckHandfeel  ,
+        CheckAppearance = @CheckAppearance  ,
+        CheckPrintEmbDecorations = @CheckPrintEmbDecorations  ,
+        CheckFiberContent = @CheckFiberContent  ,
+        CheckCareInstructions = @CheckCareInstructions  ,
+        CheckDecorativeLabel = @CheckDecorativeLabel  ,
+        CheckAdicomLabel = @CheckAdicomLabel  ,
+        CheckCountryofOrigion = @CheckCountryofOrigion  ,
+        CheckSizeKey = @CheckSizeKey  ,
+        Check8FlagLabel = @Check8FlagLabel  ,
+        CheckAdditionalLabel = @CheckAdditionalLabel  ,
+        CheckShippingMark = @CheckShippingMark  ,
+        CheckPolytagMarketing = @CheckPolytagMarketing  ,
+        CheckColorSizeQty = @CheckColorSizeQty  ,
+        CheckHangtag = @CheckHangtag  ,
+        InspectionStep = @InspectionStep,
+        EditName= @userID,
+        EditDate= getdate()
+where   ID = @FinalInspectionID
+";
+
+                    objParameter.Add("@FinalInspectionID", finalInspection.ID);
+                    objParameter.Add("@userID", userID);
+                    objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
+                    objParameter.Add("@CheckCloseShade", finalInspection.CheckCloseShade);
+                    objParameter.Add("@CheckHandfeel", finalInspection.CheckHandfeel);
+                    objParameter.Add("@CheckAppearance", finalInspection.CheckAppearance);
+                    objParameter.Add("@CheckPrintEmbDecorations", finalInspection.CheckPrintEmbDecorations);
+                    objParameter.Add("@CheckFiberContent", finalInspection.CheckFiberContent);
+                    objParameter.Add("@CheckCareInstructions", finalInspection.CheckCareInstructions);
+                    objParameter.Add("@CheckDecorativeLabel", finalInspection.CheckDecorativeLabel);
+                    objParameter.Add("@CheckAdicomLabel", finalInspection.CheckAdicomLabel);
+                    objParameter.Add("@CheckCountryofOrigion", finalInspection.CheckCountryofOrigion);
+                    objParameter.Add("@CheckSizeKey", finalInspection.CheckSizeKey);
+                    objParameter.Add("@Check8FlagLabel", finalInspection.Check8FlagLabel);
+                    objParameter.Add("@CheckAdditionalLabel", finalInspection.CheckAdditionalLabel);
+                    objParameter.Add("@CheckShippingMark", finalInspection.CheckShippingMark);
+                    objParameter.Add("@CheckPolytagMarketing", finalInspection.CheckPolytagMarketing);
+                    objParameter.Add("@CheckColorSizeQty", finalInspection.CheckColorSizeQty);
+                    objParameter.Add("@CheckHangtag", finalInspection.CheckHangtag);
+                    break;
+                case "Insp-AddDefect":
+                    break;
+                case "Insp-BA":
+                    break;
+                case "Insp-Moisture":
+                    break;
+                case "Insp-Measurement":
+                    break;
+                case "Insp-Others":
+                    break;
+                default:
+                    break;
+            }
+
+            using (TransactionScope transaction = new TransactionScope())
+            {
+                ExecuteNonQuery(CommandType.Text, sqlUpdCmd, objParameter);
+                transaction.Complete();
+            }
+        }
+
         #endregion
     }
 }
