@@ -14,8 +14,10 @@ namespace DatabaseObject.RequestModel
         public string SeasonID { get; set; }
         public string Unit { get; set; }
         public string Article { get; set; }
-        public List<string> Articles { get; set; }
+        public List<string> Articles { get; set; } = new List<string>();
         public bool Result { get; set; }
         public string ErrMsg { get; set; }
+        public string Factory { get; set; }
+        
     }
 }

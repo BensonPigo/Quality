@@ -455,3 +455,57 @@ function accSubtr(arg1, arg2) {
     n = (r1 >= r2) ? r1 : r2;
     return ((arg1 * m - arg2 * m) / m).toFixed(n);
 }
+
+// Json To HtmlTable
+function generateTable(jArray, type) {
+    let tbody = document.createElement('tbody');
+    let thead = document.createElement('thead');
+    let table = document.createElement('table');
+
+    // 將所有資料列的資料轉成tbody
+    jArray.forEach(row => {
+        let tr = document.createElement('tr');
+
+        Object.keys(row).forEach(tdName => {
+            let td = document.createElement('td');
+            td.textContent = row[tdName];
+
+            tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+
+    // 將所有資料列的欄位轉成thead
+    let headerTr = document.createElement('tr')
+
+    Object.keys(jArray[0]).forEach(header => {
+        let th = document.createElement('th')
+        var newheader = header;
+        if (header.indexOf("_aa") > -1 && type == "Measurement") {
+            newheader = header.replace(header.substr(header.indexOf("_aa"), header.length - header.indexOf("_aa")), "");
+        }
+
+        if (header.indexOf("diff") > -1 && type == "Measurement" ) {
+            var index = header.replace("diff", "");
+            newheader = header.replace(index, "") ;
+        }
+
+        th.textContent = newheader
+
+        headerTr.appendChild(th)
+    });
+
+    // 新增thead到table上
+    thead.appendChild(headerTr);
+    table.appendChild(thead);
+
+    return table;
+}
+
+
+function decodeHtml(html) {
+    var txt = document.createElement("textarea");
+    txt.innerHTML = html;
+    return txt.value;
+}

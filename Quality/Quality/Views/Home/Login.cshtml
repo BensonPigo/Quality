@@ -59,16 +59,14 @@
                     </div>
 
                     <div class="form-item">
-                        <label><i class="icon-lock red"></i>Password</label>
-                        @Html.DropDownList("FactoryID", (List<SelectListItem>)ViewData["Factorys"], null, new { @class = "", @style = "width: 13VW; background: rgb(43, 44, 62); color: white; ", })                        
-                                    </div>
-                
-                                    <button class="site-btn btn-red btn-lg margin-c btn-login">LOGIN</button>
+                        <label><i class="icon-vcard red"></i>Factory</label>
+                        @Html.DropDownList("FactoryID", (List<SelectListItem>)ViewData["Factorys"], null, new { @class = "", @style = "width: 13VW; background: rgb(32, 32, 43); color: white; ", })                        
+                    </div>
 
-                        }
+                    <button class="site-btn btn-red btn-lg margin-c btn-login">LOGIN</button>
 
-                        @Html.Hidden("Msg", ViewData["Msg"]);
-
+                 }
+                 @Html.Hidden("Msg", ViewData["Msg"]);
             </div>
         </div>
     </maim>
