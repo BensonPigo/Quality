@@ -16,5 +16,7 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         int Get_Measured_Qty(Measurement_Request measurement);
 
         DataTable Get_Measured_Detail(Measurement_Request measurement);
+
+        DataTable Get_CalculateSizeSpec(string diffValue, string Tol);
     }
 }

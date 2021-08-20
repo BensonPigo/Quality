@@ -26,6 +26,71 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 measurement_Result.MeasuredQty = _IMeasurementProvider.Get_Measured_Qty(measurement);
 
                 DataTable dt = _IMeasurementProvider.Get_Measured_Detail(measurement);
+                #region 處理OOT Qty
+
+                if (dt != null && dt.Rows.Count > 0)
+                {
+                    bool bolCal;
+                    List<string> columnListsp = new List<string>(); // 用來記錄幾筆有問題
+
+                    List<string> diffArry = new List<string>();
+                    foreach (var itemCol in dt.Columns)
+                    {
+                        if (itemCol.ToString().Contains("diff"))
+                        {
+                            diffArry.Add(itemCol.ToString());
+                        }
+                    }
+
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        foreach (var item in diffArry)
+                        {
+                            if (measurement.Unit.ToString().ToUpper() == "INCH")
+                            {
+                                string num;
+                                if (dr[item.ToString()].ToString().Contains("-"))
+                                {
+                                    string d = dr[item.ToString()].ToString().Replace("-", string.Empty);
+                                    num = _IMeasurementProvider.Get_CalculateSizeSpec(d, dr["Tol(-)"].ToString()).Rows[0]["Vaule"].ToString();
+                                }
+                                else
+                                {
+                                    string d = dr[item.ToString()].ToString();
+                                    num = _IMeasurementProvider.Get_CalculateSizeSpec(d, dr["Tol(+)"].ToString()).Rows[0]["Vaule"].ToString();
+                                }
+
+                                bolCal = num.Contains("-") && !string.IsNullOrEmpty(dr[item.ToString()].ToString());
+                            }
+                            else
+                            {
+                                double d = Convert.ToDouble(dr[item.ToString()]);
+                                double num;
+                                if (d < 0)
+                                {
+                                    num = Math.Abs(d) - Convert.ToDouble(dr["Tol(-)"]);
+                                }
+                                else
+                                {
+                                    num = d - Convert.ToDouble(dr["Tol(+)"]);
+                                }
+
+                                bolCal = num > 0;
+                            }
+
+                            if (bolCal)
+                            {
+                                if (!columnListsp.Contains(item.ToString()))
+                                {
+                                    columnListsp.Add(item.ToString());
+                                }
+                            }
+                        }
+                    }
+
+                    measurement_Result.OOTQty = columnListsp.Count;
+                }
+                #endregion
 
                 string jsonBody = JsonConvert.SerializeObject(dt);
                 measurement_Result.JsonBody = jsonBody;

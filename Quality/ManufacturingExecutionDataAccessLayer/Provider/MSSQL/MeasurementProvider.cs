@@ -242,6 +242,21 @@ and Article = @Article
             return rtQty;
         }
 
+        public DataTable Get_CalculateSizeSpec(string diffValue, string Tol)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@DiffValue", DbType.String, diffValue } ,
+                { "@Tol", DbType.String, Tol } ,
+            };
+
+            string sqlcmd = @"
+select value = dbo.calculateSizeSpec(@DiffValue, @Tol,'INCH');
+";
+            DataTable dt = ExecuteDataTable(CommandType.Text, sqlcmd, objParameter);
+            return dt;
+        }
+
         public DataTable Get_Measured_Detail(Measurement_Request measurement)
         {
             string styleUkey = string.Empty;
