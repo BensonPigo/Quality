@@ -140,6 +140,7 @@
     <Compile Include="Areas\Authority\Controllers\UserListController.cs" />
     <Compile Include="Areas\BulkFGT\BulkFGTAreaRegistration.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\BulkFGTMailGroupController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\GarmentTestController.cs" />
     <Compile Include="Areas\FinalInspection\Controllers\InspectionController.cs" />
     <Compile Include="Areas\FinalInspection\Controllers\QueryController.cs" />
     <Compile Include="Areas\FinalInspection\FinalInspectionAreaRegistration.cs" />
@@ -260,6 +261,7 @@
     <Content Include="Areas\BulkFGT\Views\BulkFGTMailGroup\Index.cshtml" />
     <Content Include="Areas\SampleRFT\Views\PicturesDummy\Index.cshtml" />
     <Content Include="Areas\SampleRFT\Views\Measurement\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\GarmentTest\Index.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />

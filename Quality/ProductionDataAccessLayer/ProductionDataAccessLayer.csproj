@@ -46,6 +46,12 @@
     <Compile Include="Interface\IFactoryProvider.cs" />
     <Compile Include="Interface\IGarmentDefectCodeProvider.cs" />
     <Compile Include="Interface\IGarmentDefectTypeProvider.cs" />
+    <Compile Include="Interface\IGarmentTestDetailApperanceProvider.cs" />
+    <Compile Include="Interface\IGarmentTestDetailFGPTProvider.cs" />
+    <Compile Include="Interface\IGarmentTestDetailFGWTProvider.cs" />
+    <Compile Include="Interface\IGarmentTestDetailProvider.cs" />
+    <Compile Include="Interface\IGarmentTestDetailShrinkageProvider.cs" />
+    <Compile Include="Interface\IGarmentTestProvider.cs" />
     <Compile Include="Interface\IMockupCrockingDetailProvider.cs" />
     <Compile Include="Interface\IMockupCrockingProvider.cs" />
     <Compile Include="Interface\INewCDCodeProvider.cs" />
@@ -66,6 +72,12 @@
     <Compile Include="Provider\MSSQL\FactoryProvider.cs" />
     <Compile Include="Provider\MSSQL\GarmentDefectCodeProvider.cs" />
     <Compile Include="Provider\MSSQL\GarmentDefectTypeProvider.cs" />
+    <Compile Include="Provider\MSSQL\GarmentTestDetailApperanceProvider.cs" />
+    <Compile Include="Provider\MSSQL\GarmentTestDetailFGPTProvider.cs" />
+    <Compile Include="Provider\MSSQL\GarmentTestDetailFGWTProvider.cs" />
+    <Compile Include="Provider\MSSQL\GarmentTestDetailProvider.cs" />
+    <Compile Include="Provider\MSSQL\GarmentTestDetailShrinkageProvider.cs" />
+    <Compile Include="Provider\MSSQL\GarmentTestProvider.cs" />
     <Compile Include="Provider\MSSQL\MockupCrockingDetailProvider.cs" />
     <Compile Include="Provider\MSSQL\MockupCrockingProvider.cs" />
     <Compile Include="Provider\MSSQL\NewCDCodeProvider.cs" />
