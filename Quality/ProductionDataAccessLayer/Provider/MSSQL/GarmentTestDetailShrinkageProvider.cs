@@ -1,0 +1,173 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Data;
+using ProductionDataAccessLayer.Interface;
+using ADOHelper.Template.MSSQL;
+using ADOHelper.Utility;
+using DatabaseObject.ProductionDB;
+
+namespace ProductionDataAccessLayer.Provider.MSSQL
+{
+    public class GarmentTestDetailShrinkageProvider : SQLDAL, IGarmentTestDetailShrinkageProvider
+    {
+        #region 底層連線
+        public GarmentTestDetailShrinkageProvider(string ConString) : base(ConString) { }
+        public GarmentTestDetailShrinkageProvider(SQLDataTransaction tra) : base(tra) { }
+        #endregion
+
+		#region CRUD Base
+		/*回傳(Get) 詳細敘述如下*/
+        /// <summary>
+        /// 回傳
+        /// </summary>
+        /// <param name="Item">成員</param>
+        /// <returns>回傳</returns>
+		/// <info>Author: Admin; Date: 2021/08/23  </info>
+        /// <history>
+        /// xx.  YYYY/MM/DD   Ver   Author      Comments
+        /// ===  ==========  ====  ==========  ==========
+        /// 01.  2021/08/23  1.00    Admin        Create
+        /// </history>
+        public IList<GarmentTest_Detail_Shrinkage> Get(GarmentTest_Detail_Shrinkage Item)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            SbSql.Append("SELECT"+ Environment.NewLine);
+            SbSql.Append("         ID"+ Environment.NewLine);
+            SbSql.Append("        ,No"+ Environment.NewLine);
+            SbSql.Append("        ,Location"+ Environment.NewLine);
+            SbSql.Append("        ,Type"+ Environment.NewLine);
+            SbSql.Append("        ,BeforeWash"+ Environment.NewLine);
+            SbSql.Append("        ,SizeSpec"+ Environment.NewLine);
+            SbSql.Append("        ,AfterWash1"+ Environment.NewLine);
+            SbSql.Append("        ,Shrinkage1"+ Environment.NewLine);
+            SbSql.Append("        ,AfterWash2"+ Environment.NewLine);
+            SbSql.Append("        ,Shrinkage2"+ Environment.NewLine);
+            SbSql.Append("        ,AfterWash3"+ Environment.NewLine);
+            SbSql.Append("        ,Shrinkage3"+ Environment.NewLine);
+            SbSql.Append("        ,Seq"+ Environment.NewLine);
+            SbSql.Append("FROM [GarmentTest_Detail_Shrinkage]"+ Environment.NewLine);
+
+
+
+            return ExecuteList<GarmentTest_Detail_Shrinkage>(CommandType.Text, SbSql.ToString(), objParameter);
+        }
+		/*建立(Create) 詳細敘述如下*/
+        /// <summary>
+        /// 建立
+        /// </summary>
+        /// <param name="Item">成員</param>
+        /// <returns>回傳異動筆數</returns>
+		/// <info>Author: Admin; Date: 2021/08/23  </info>
+        /// <history>
+        /// xx.  YYYY/MM/DD   Ver   Author      Comments
+        /// ===  ==========  ====  ==========  ==========
+        /// 01.  2021/08/23  1.00    Admin        Create
+        /// </history>
+        public int Create(GarmentTest_Detail_Shrinkage Item)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            SbSql.Append("INSERT INTO [GarmentTest_Detail_Shrinkage]"+ Environment.NewLine);
+            SbSql.Append("(" + Environment.NewLine);
+            SbSql.Append("         ID"+ Environment.NewLine);
+            SbSql.Append("        ,No"+ Environment.NewLine);
+            SbSql.Append("        ,Location"+ Environment.NewLine);
+            SbSql.Append("        ,Type"+ Environment.NewLine);
+            SbSql.Append("        ,BeforeWash"+ Environment.NewLine);
+            SbSql.Append("        ,SizeSpec"+ Environment.NewLine);
+            SbSql.Append("        ,AfterWash1"+ Environment.NewLine);
+            SbSql.Append("        ,Shrinkage1"+ Environment.NewLine);
+            SbSql.Append("        ,AfterWash2"+ Environment.NewLine);
+            SbSql.Append("        ,Shrinkage2"+ Environment.NewLine);
+            SbSql.Append("        ,AfterWash3"+ Environment.NewLine);
+            SbSql.Append("        ,Shrinkage3"+ Environment.NewLine);
+            SbSql.Append("        ,Seq"+ Environment.NewLine);
+            SbSql.Append(")"+ Environment.NewLine);
+            SbSql.Append("VALUES"+ Environment.NewLine);
+            SbSql.Append("(" + Environment.NewLine);
+            SbSql.Append("         @ID"); objParameter.Add("@ID", DbType.String, Item.ID);
+            SbSql.Append("        ,@No"); objParameter.Add("@No", DbType.Int32, Item.No);
+            SbSql.Append("        ,@Location"); objParameter.Add("@Location", DbType.String, Item.Location);
+            SbSql.Append("        ,@Type"); objParameter.Add("@Type", DbType.String, Item.Type);
+            SbSql.Append("        ,@BeforeWash"); objParameter.Add("@BeforeWash", DbType.String, Item.BeforeWash);
+            SbSql.Append("        ,@SizeSpec"); objParameter.Add("@SizeSpec", DbType.String, Item.SizeSpec);
+            SbSql.Append("        ,@AfterWash1"); objParameter.Add("@AfterWash1", DbType.String, Item.AfterWash1);
+            SbSql.Append("        ,@Shrinkage1"); objParameter.Add("@Shrinkage1", DbType.String, Item.Shrinkage1);
+            SbSql.Append("        ,@AfterWash2"); objParameter.Add("@AfterWash2", DbType.String, Item.AfterWash2);
+            SbSql.Append("        ,@Shrinkage2"); objParameter.Add("@Shrinkage2", DbType.String, Item.Shrinkage2);
+            SbSql.Append("        ,@AfterWash3"); objParameter.Add("@AfterWash3", DbType.String, Item.AfterWash3);
+            SbSql.Append("        ,@Shrinkage3"); objParameter.Add("@Shrinkage3", DbType.String, Item.Shrinkage3);
+            SbSql.Append("        ,@Seq"); objParameter.Add("@Seq", DbType.String, Item.Seq);
+            SbSql.Append(")"+ Environment.NewLine);
+
+
+
+
+            return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
+        }
+		/*更新(Update) 詳細敘述如下*/
+        /// <summary>
+        /// 更新
+        /// </summary>
+        /// <param name="Item">成員</param>
+        /// <returns>回傳異動筆數</returns>
+		/// <info>Author: Admin; Date: 2021/08/23  </info>
+        /// <history>
+        /// xx.  YYYY/MM/DD   Ver   Author      Comments
+        /// ===  ==========  ====  ==========  ==========
+        /// 01.  2021/08/23  1.00    Admin        Create
+        /// </history>
+        public int Update(GarmentTest_Detail_Shrinkage Item)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            SbSql.Append("UPDATE [GarmentTest_Detail_Shrinkage]"+ Environment.NewLine);
+            SbSql.Append("SET"+ Environment.NewLine);
+            if (Item.ID != null) { SbSql.Append("ID=@ID"+ Environment.NewLine); objParameter.Add("@ID", DbType.String, Item.ID);}
+            if (Item.No != null) { SbSql.Append(",No=@No"+ Environment.NewLine); objParameter.Add("@No", DbType.Int32, Item.No);}
+            if (Item.Location != null) { SbSql.Append(",Location=@Location"+ Environment.NewLine); objParameter.Add("@Location", DbType.String, Item.Location);}
+            if (Item.Type != null) { SbSql.Append(",Type=@Type"+ Environment.NewLine); objParameter.Add("@Type", DbType.String, Item.Type);}
+            if (Item.BeforeWash != null) { SbSql.Append(",BeforeWash=@BeforeWash"+ Environment.NewLine); objParameter.Add("@BeforeWash", DbType.String, Item.BeforeWash);}
+            if (Item.SizeSpec != null) { SbSql.Append(",SizeSpec=@SizeSpec"+ Environment.NewLine); objParameter.Add("@SizeSpec", DbType.String, Item.SizeSpec);}
+            if (Item.AfterWash1 != null) { SbSql.Append(",AfterWash1=@AfterWash1"+ Environment.NewLine); objParameter.Add("@AfterWash1", DbType.String, Item.AfterWash1);}
+            if (Item.Shrinkage1 != null) { SbSql.Append(",Shrinkage1=@Shrinkage1"+ Environment.NewLine); objParameter.Add("@Shrinkage1", DbType.String, Item.Shrinkage1);}
+            if (Item.AfterWash2 != null) { SbSql.Append(",AfterWash2=@AfterWash2"+ Environment.NewLine); objParameter.Add("@AfterWash2", DbType.String, Item.AfterWash2);}
+            if (Item.Shrinkage2 != null) { SbSql.Append(",Shrinkage2=@Shrinkage2"+ Environment.NewLine); objParameter.Add("@Shrinkage2", DbType.String, Item.Shrinkage2);}
+            if (Item.AfterWash3 != null) { SbSql.Append(",AfterWash3=@AfterWash3"+ Environment.NewLine); objParameter.Add("@AfterWash3", DbType.String, Item.AfterWash3);}
+            if (Item.Shrinkage3 != null) { SbSql.Append(",Shrinkage3=@Shrinkage3"+ Environment.NewLine); objParameter.Add("@Shrinkage3", DbType.String, Item.Shrinkage3);}
+            if (Item.Seq != null) { SbSql.Append(",Seq=@Seq"+ Environment.NewLine); objParameter.Add("@Seq", DbType.String, Item.Seq);}
+            SbSql.Append("WHERE 1 = 1" + Environment.NewLine);
+
+
+
+
+            return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
+        }
+		/*刪除(Delete) 詳細敘述如下*/
+        /// <summary>
+        /// 刪除
+        /// </summary>
+        /// <param name="Item">成員</param>
+        /// <returns>回傳異動筆數</returns>
+		/// <info>Author: Admin; Date: 2021/08/23  </info>
+        /// <history>
+        /// xx.  YYYY/MM/DD   Ver   Author      Comments
+        /// ===  ==========  ====  ==========  ==========
+        /// 01.  2021/08/23  1.00    Admin        Create
+        /// </history>
+        public int Delete(GarmentTest_Detail_Shrinkage Item)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            SbSql.Append("DELETE FROM [GarmentTest_Detail_Shrinkage]"+ Environment.NewLine);
+
+
+
+
+            return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
+        }
+	#endregion
+    }
+}
