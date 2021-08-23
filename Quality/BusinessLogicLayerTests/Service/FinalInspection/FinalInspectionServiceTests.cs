@@ -76,8 +76,36 @@ namespace BusinessLogicLayer.Service.Tests
 
                 finalInspection.FabricApprovalDoc = true;
                 finalInspection.GarmentWashingDoc = true;
+                finalInspection.MetalDetectionDoc = true;
+                finalInspection.SealingSampleDoc = true;
                 finalInspection.InspectionStep = "Insp-General";
                 BaseResult result = finalInspectionService.UpdateFinalInspectionByStep(finalInspection, "Insp-General", "SCIMIS");
+
+                if (!result)
+                {
+                    Assert.Fail(result.ErrorMessage);
+                }
+
+
+                finalInspection.CheckCloseShade = true;
+                finalInspection.CheckHandfeel = true;
+                finalInspection.CheckAppearance = true;
+                finalInspection.CheckPrintEmbDecorations = true;
+                finalInspection.CheckFiberContent = true;
+                finalInspection.CheckCareInstructions = true;
+                finalInspection.CheckDecorativeLabel = true;
+                finalInspection.CheckAdicomLabel = true;
+                finalInspection.CheckCountryofOrigion = true;
+                finalInspection.CheckSizeKey = true;
+                finalInspection.Check8FlagLabel = true;
+                finalInspection.CheckAdditionalLabel = true;
+                finalInspection.CheckShippingMark = true;
+                finalInspection.CheckPolytagMarketing = true;
+                finalInspection.CheckColorSizeQty = true;
+                finalInspection.CheckHangtag = true;
+                finalInspection.InspectionStep = "Insp-CheckList";
+
+                result = finalInspectionService.UpdateFinalInspectionByStep(finalInspection, "Insp-CheckList", "SCIMIS");
 
                 if (!result)
                 {
