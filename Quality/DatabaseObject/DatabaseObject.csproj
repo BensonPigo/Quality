@@ -134,6 +134,7 @@
     <Compile Include="ViewModel\FinalInspection\AddDefect.cs" />
     <Compile Include="ViewModel\FinalInspection\Moisture.cs" />
     <Compile Include="ViewModel\FinalInspection\Measurement.cs" />
+    <Compile Include="ViewModel\FinalInspection\QueryReport_Measurement.cs" />
     <Compile Include="ViewModel\FinalInspection\QueryReport.cs" />
     <Compile Include="ViewModel\FinalInspection\QueryFinalInspection.cs" />
     <Compile Include="ViewModel\FinalInspection\Others.cs" />
