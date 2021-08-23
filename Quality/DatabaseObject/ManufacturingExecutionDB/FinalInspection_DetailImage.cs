@@ -29,7 +29,6 @@ namespace DatabaseObject.ManufacturingExecutionDB
         public long FinalInspection_DetailUkey { get; set; }
         /// <summary></summary>
         [Required]
-        [StringLength(-1)]
         [Display(Name = "")]
         public byte[] Image { get; set; }
 

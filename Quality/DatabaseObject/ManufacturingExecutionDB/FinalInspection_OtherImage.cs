@@ -25,7 +25,6 @@ namespace DatabaseObject.ManufacturingExecutionDB
         public string ID { get; set; }
         /// <summary></summary>
         [Required]
-        [StringLength(-1)]
         [Display(Name = "")]
         public byte[] Image { get; set; }
 

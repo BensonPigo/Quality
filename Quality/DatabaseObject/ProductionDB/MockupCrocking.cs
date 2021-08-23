@@ -89,11 +89,9 @@ namespace DatabaseObject.ProductionDB
         [Display(Name = "區分大貨階段 (B) 與開發階段 (S)")]
         public string Type { get; set; }
         /// <summary>測試前拍照</summary>
-        [StringLength(-1)]
         [Display(Name = "測試前拍照")]
         public Byte[] TestBeforePicture { get; set; }
         /// <summary>測試後拍照</summary>
-        [StringLength(-1)]
         [Display(Name = "測試後拍照")]
         public Byte[] TestAfterPicture { get; set; }
         /// <summary>新增日期</summary>

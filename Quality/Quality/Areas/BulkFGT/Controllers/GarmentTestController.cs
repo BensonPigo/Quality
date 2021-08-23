@@ -1,7 +1,9 @@
 ﻿using BusinessLogicLayer.Interface.BulkFGT;
 using BusinessLogicLayer.Service.BulkFGT;
+using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
+using DatabaseObject.ViewModel;
 using Quality.Controllers;
 using System;
 using System.Collections.Generic;
@@ -26,7 +28,15 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             GarmentTest_Request Req = new GarmentTest_Request();
 
-            GarmentTest_Result Result = new GarmentTest_Result();
+            GarmentTest_Result Result = new GarmentTest_Result()
+            {
+                garmentTest = new GarmentTest_ViewModel(),
+                garmentTest_Details = new List<GarmentTest_Detail_ViewModel>() 
+                {
+                    new GarmentTest_Detail_ViewModel() { No = 1 }, 
+                },
+            };
+
             ViewBag.GarmentTestRequest = Req;
             return View(Result);
         }
@@ -34,7 +44,15 @@ namespace Quality.Areas.BulkFGT.Controllers
         [HttpPost]
         public ActionResult Index(GarmentTest_Request Req)
         {
-            GarmentTest_Result Result = new GarmentTest_Result();
+            GarmentTest_Result Result = new GarmentTest_Result()
+            {
+                garmentTest = new GarmentTest_ViewModel(),
+                garmentTest_Details = new List<GarmentTest_Detail_ViewModel>()
+                {
+                    new GarmentTest_Detail_ViewModel() { No = 1 },
+                },
+            };
+            
             ViewBag.GarmentTestRequest = Req;
             return View(Result);
         }

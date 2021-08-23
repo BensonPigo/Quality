@@ -138,6 +138,8 @@
     <Compile Include="ResultModel\UserList_Authority.cs" />
     <Compile Include="ResultModel\UserList_Browse.cs" />
     <Compile Include="ViewModel\BACriteria_ViewModel.cs" />
+    <Compile Include="ViewModel\BulkFGT\GarmentTest_Detail_ViewModel.cs" />
+    <Compile Include="ViewModel\BulkFGT\GarmentTest_ViewModel.cs" />
     <Compile Include="ViewModel\FinalInspection\AddDefect.cs" />
     <Compile Include="ViewModel\FinalInspection\Moisture.cs" />
     <Compile Include="ViewModel\FinalInspection\Measurement.cs" />

@@ -70,7 +70,6 @@ namespace DatabaseObject.ProductionDB
         [Display(Name = "結果")]
         public string Result { get; set; }
         /// <summary>備註</summary>
-        [StringLength(-1)]
         [Display(Name = "備註")]
         public string Remark { get; set; }
         /// <summary>新增人員</summary>
