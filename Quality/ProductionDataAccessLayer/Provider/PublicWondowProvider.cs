@@ -407,7 +407,7 @@ Where 1=1
             return ExecuteList<Window_FtyInventory>(CommandType.Text, SbSql.ToString(), paras);
         }
 
-        public IList<Window_SewingLine> Get_SewingLine(string ID)
+        public IList<Window_SewingLine> Get_SewingLine(string FactoryID, string ID)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -417,7 +417,16 @@ Where 1=1
 Select ID
 From Production.dbo.SewingLine --工廠
 Where Junk = 0
+AND FactoryID=@FactoryID
 ");
+
+            if (!string.IsNullOrEmpty(FactoryID))
+            {
+                SbSql.Append($@"AND FactoryID  = @FactoryID ");
+
+                paras.Add("@FactoryID", DbType.String, FactoryID);
+            }
+
             if (!string.IsNullOrEmpty(ID))
             {
                 SbSql.Append($@"AND ID  = @ID ");

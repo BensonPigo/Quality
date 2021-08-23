@@ -207,16 +207,18 @@ namespace Quality.Controllers
             return View(model);
         }
 
-        public ActionResult SewingLineList()
+        public ActionResult SewingLineList(string FactoryID)
         {
-            var model = _PublicWindowService.Get_SewingLine(string.Empty);
+            var model = _PublicWindowService.Get_SewingLine(FactoryID , string.Empty);
+            ViewData["FactoryID"] = FactoryID;
             return View(model);
         }
 
         [HttpPost]
-        public ActionResult SewingLineList(string ID)
+        public ActionResult SewingLineList(string FactoryID, string ID)
         {
-            var model = _PublicWindowService.Get_SewingLine(ID);
+            var model = _PublicWindowService.Get_SewingLine(FactoryID, ID);
+            ViewData["FactoryID"] = FactoryID;
             return View(model);
         }
     }

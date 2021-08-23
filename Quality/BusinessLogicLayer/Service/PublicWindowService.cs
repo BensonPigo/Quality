@@ -248,7 +248,7 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public List<Window_SewingLine> Get_SewingLine(string ID)
+        public List<Window_SewingLine> Get_SewingLine(string FactoryID , string ID)
         {
             List<Window_SewingLine> result = new List<Window_SewingLine>();
 
@@ -257,7 +257,7 @@ namespace BusinessLogicLayer.Service
                 _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
 
                 //取得登入資訊
-                result = _Provider.Get_SewingLine(ID).ToList();
+                result = _Provider.Get_SewingLine(FactoryID, ID).ToList();
 
             }
             catch (Exception ex)
