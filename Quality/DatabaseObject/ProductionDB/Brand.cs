@@ -46,7 +46,6 @@ namespace DatabaseObject.ProductionDB
         [Display(Name = "中文地址")]
         public string AddressCH { get; set; }
         /// <summary>英文地址</summary>
-        [StringLength(-1)]
         [Display(Name = "英文地址")]
         public string AddressEN { get; set; }
         /// <summary>交易幣別</summary>
@@ -54,7 +53,6 @@ namespace DatabaseObject.ProductionDB
         [Display(Name = "交易幣別")]
         public string CurrencyID { get; set; }
         /// <summary>備註</summary>
-        [StringLength(-1)]
         [Display(Name = "備註")]
         public string Remark { get; set; }
         /// <summary>訂單上的自訂欄位1</summary>

@@ -17,7 +17,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
         /// <summary>Ukey</summary>
         [Required]
         [Display(Name = "Ukey")]
-        public string Ukey { get; set; }
+        public long Ukey { get; set; }
 
         /// <summary>單號</summary>
         [Required]
@@ -58,7 +58,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
         /// <summary>MeasurementUkey</summary>
         [Required]
         [Display(Name = "MeasurementUkey")]
-        public string MeasurementUkey { get; set; }
+        public long MeasurementUkey { get; set; }
 
         /// <summary></summary>
         [StringLength(10)]
