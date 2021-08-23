@@ -6,6 +6,7 @@ using ProductionDataAccessLayer.Interface;
 using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
 using DatabaseObject.ProductionDB;
+using DatabaseObject.ViewModel;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
@@ -16,14 +17,54 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         public GarmentTestProvider(SQLDataTransaction tra) : base(tra) { }
         #endregion
 
-		#region CRUD Base
-		/*回傳Garment Test(Get) 詳細敘述如下*/
+        #region CRUD Base
+
+        public IList<Style> GetStyleID()
+        {
+            string sqlcmd = @"select distinct ID from Style where Junk = 0";
+
+            return ExecuteList<Style>(CommandType.Text, sqlcmd, new SQLParameterCollection());
+        }
+
+        public IList<Brand> GetBrandID()
+        {
+            string sqlcmd = @"select distinct ID from Brand where Junk = 0";
+
+            return ExecuteList<Brand>(CommandType.Text, sqlcmd, new SQLParameterCollection());
+        }
+
+        public IList<Season> GetSeasonID()
+        {
+            string sqlcmd = @"select distinct ID from Season where Junk = 0";
+
+            return ExecuteList<Season>(CommandType.Text, sqlcmd, new SQLParameterCollection());
+        }
+
+        public IList<GarmentTest> GetArticle(GarmentTest_ViewModel filter)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@BrandID", DbType.String, filter.Brand } ,
+                { "@StyleID", DbType.String, filter.StyleID } ,
+                { "@SeasonID", DbType.String, filter.Season} ,
+            };
+            string sqlcmd = @"
+select distinct Article from GarmentTest
+where 1=1
+and BrandID = @BrandID
+and StyleID = @StyleID
+and SeasonID = @SeasonID";
+
+            return ExecuteList<GarmentTest>(CommandType.Text, sqlcmd, objParameter);
+        }
+
+        /*回傳Garment Test(Get) 詳細敘述如下*/
         /// <summary>
         /// 回傳Garment Test
         /// </summary>
         /// <param name="Item">Garment Test成員</param>
         /// <returns>回傳Garment Test</returns>
-		/// <info>Author: Admin; Date: 2021/08/23  </info>
+        /// <info>Author: Admin; Date: 2021/08/23  </info>
         /// <history>
         /// xx.  YYYY/MM/DD   Ver   Author      Comments
         /// ===  ==========  ====  ==========  ==========

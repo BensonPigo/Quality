@@ -41,11 +41,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interface\IAdidasFGWTProvider.cs" />
     <Compile Include="Interface\IBrandProvider.cs" />
     <Compile Include="Interface\IDropDownListProvider.cs" />
     <Compile Include="Interface\IFactoryProvider.cs" />
     <Compile Include="Interface\IGarmentDefectCodeProvider.cs" />
     <Compile Include="Interface\IGarmentDefectTypeProvider.cs" />
+    <Compile Include="Interface\IGarmentDetailSpiralityProvider.cs" />
     <Compile Include="Interface\IGarmentTestDetailApperanceProvider.cs" />
     <Compile Include="Interface\IGarmentTestDetailFGPTProvider.cs" />
     <Compile Include="Interface\IGarmentTestDetailFGWTProvider.cs" />
@@ -66,12 +68,15 @@
     <Compile Include="Interface\IStyleProvider.cs" />
     <Compile Include="Interface\ISystemProvider.cs" />
     <Compile Include="Interface\ITPEPass1Provider.cs" />
+    <Compile Include="Interface\ITypeSelectionProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Provider\MSSQL\AdidasFGWTProvider.cs" />
     <Compile Include="Provider\MSSQL\BrandProvider.cs" />
     <Compile Include="Provider\MSSQL\DropDownListProvider.cs" />
     <Compile Include="Provider\MSSQL\FactoryProvider.cs" />
     <Compile Include="Provider\MSSQL\GarmentDefectCodeProvider.cs" />
     <Compile Include="Provider\MSSQL\GarmentDefectTypeProvider.cs" />
+    <Compile Include="Provider\MSSQL\GarmentDetailSpiralityProvider.cs" />
     <Compile Include="Provider\MSSQL\GarmentTestDetailApperanceProvider.cs" />
     <Compile Include="Provider\MSSQL\GarmentTestDetailFGPTProvider.cs" />
     <Compile Include="Provider\MSSQL\GarmentTestDetailFGWTProvider.cs" />
@@ -92,6 +97,7 @@
     <Compile Include="Provider\MSSQL\StyleProvider.cs" />
     <Compile Include="Provider\MSSQL\SystemProvider.cs" />
     <Compile Include="Provider\MSSQL\TPEPass1Provider.cs" />
+    <Compile Include="Provider\MSSQL\TypeSelectionProvider.cs" />
     <Compile Include="Provider\PublicWondowProvider.cs" />
   </ItemGroup>
   <ItemGroup />

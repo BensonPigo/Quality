@@ -33,6 +33,13 @@ and ukey = @ukey
             return ExecuteList<Style>(CommandType.Text, sqlcmd, objParameter);
         }
 
+        public IList<Style> GetStyleID()
+        {
+            string sqlcmd = @"select distinct id from Style where Junk = 0";
+
+            return ExecuteList<Style>(CommandType.Text, sqlcmd, new SQLParameterCollection());
+        }
+
 
         /*回傳款式資料基本檔(Get) 詳細敘述如下*/
         /// <summary>
