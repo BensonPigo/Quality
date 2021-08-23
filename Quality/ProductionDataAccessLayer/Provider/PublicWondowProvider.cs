@@ -15,6 +15,7 @@ namespace ProductionDataAccessLayer.Provider
         public PublicWondowProvider(SQLDataTransaction tra) : base(tra) { }
         #endregion
 
+
         public IList<Window_Brand> Get_Brand(string ID)
         {
             StringBuilder SbSql = new StringBuilder();
@@ -183,7 +184,7 @@ AND StyleUkey = @StyleUkey
             return ExecuteList<Window_Article>(CommandType.Text, SbSql.ToString(), paras);
         }
 
-        public IList<Window_Technician> Get_Technician(string CallFunction, string Region, string ID)
+        public IList<Window_Technician> Get_Technician(string CallFunction, string ID)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -209,5 +210,223 @@ Where tch.{CallFunction} = 1
             return ExecuteList<Window_Technician>(CommandType.Text, SbSql.ToString(), paras);
         }
 
+        public IList<Window_Pass1> Get_Pass1(string ID)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+
+            SbSql.Append($@"
+Select ID
+		, Name
+		, ExtNo
+		, Factory
+From  Pass1 p1 --工廠
+Where 1=1
+
+");
+
+            if (!string.IsNullOrEmpty(ID))
+            {
+                SbSql.Append($@"AND ID LIKE @ID ");
+                paras.Add("@ID", DbType.String, ID + "%");
+            }
+
+            return ExecuteList<Window_Pass1>(CommandType.Text, SbSql.ToString(), paras);
+        }
+
+        public IList<Window_LocalSupp> Get_LocalSupp(string Name)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+
+            SbSql.Append($@"
+Select ID
+		, Abb
+		, Name
+From Production.dbo.LocalSupp -- 工廠
+Where Junk = 0
+
+");
+
+
+            if (!string.IsNullOrEmpty(Name))
+            {
+                SbSql.Append($@"AND Name LIKE @Name ");
+                paras.Add("@Name", DbType.String, Name + "%");
+            }
+
+            return ExecuteList<Window_LocalSupp>(CommandType.Text, SbSql.ToString(), paras);
+        }
+
+        public IList<Window_TPESupp> Get_TPESupp(string Name)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+
+            string whereLocal = "";
+            string where = "";
+
+
+            if (!string.IsNullOrEmpty(Name))
+            {
+                whereLocal = $@"AND Name LIKE @Name ";
+                where = $@"AND NameEN LIKE @Name ";
+
+                paras.Add("@Name", DbType.String, Name + "%");
+            }
+            /*
+            //台北
+            SbSql.Append($@"
+Select ID
+		, Abb 
+		, Name
+From [PMS\pmsdb\{Region}].Production.dbo.Supp 
+Where Junk = 0
+{whereLocal}
+UNION
+Select ID
+		, Abb = AbbEN
+		, Name =NameEN
+From [PMS\pmsdb\{Region}].Production.dbo.Supp 
+Where Junk = 0
+{where}
+");
+            */
+            
+            ///工廠 用這段
+            SbSql.Append($@"
+Select ID
+		, Abb 
+		, Name
+From Production.dbo.Supp 
+Where Junk = 0
+{whereLocal}
+UNION
+Select ID
+		, Abb = AbbEN
+		, Name =NameEN
+From Production.dbo.Supp 
+Where Junk = 0
+{where}
+");
+            
+
+            return ExecuteList<Window_TPESupp>(CommandType.Text, SbSql.ToString(), paras);
+        }
+
+        public IList<Window_Po_Supp_Detail> Get_Po_Supp_Detail(string POID, string FabricType, string Seq)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+            SbSql.Append($@"
+select psd.SEQ1
+		, psd.SEQ2
+		, psd.SCIRefno
+		, psd.Refno
+		, psd.ColorID
+		, ps.SuppID
+from Production.dbo.PO_Supp_Detail psd
+inner join Production.dbo.Po_Supp ps on psd.ID = ps.ID and psd.Seq1 = ps.SEQ1
+Where psd.FabricType = @FabricType
+AND psd.ID = @POID
+
+");
+            paras.Add("@POID", DbType.String, POID);
+            paras.Add("@FabricType", DbType.String, FabricType);
+
+            if (!string.IsNullOrEmpty(Seq))
+            {
+                SbSql.Append($@"AND (psd.Seq1 = @Seq  OR psd.Seq2 = @Seq OR psd.Seq1+'-'+psd.Seq2 = @Seq )    ");
+                paras.Add("@Seq", DbType.String, Seq);
+            }
+
+            return ExecuteList<Window_Po_Supp_Detail>(CommandType.Text, SbSql.ToString(), paras);
+        }
+
+        public IList<Window_FtyInventory> Get_FtyInventory(string POID, string Seq1, string Seq2, string Roll)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+
+            //台北
+            SbSql.Append($@"
+Select Roll, Dyelot
+From Production.dbo.FtyInventory --工廠
+Where 1=1
+");
+            if (!string.IsNullOrEmpty(Seq1))
+            {
+                SbSql.Append($@"AND Seq1 = @Seq1 ");
+
+                paras.Add("@Seq1", DbType.String, Seq1);
+            }
+
+            if (!string.IsNullOrEmpty(Seq2))
+            {
+                SbSql.Append($@"AND Seq2 = @Seq2 ");
+
+                paras.Add("@Seq2", DbType.String, Seq2);
+            }
+
+            if (!string.IsNullOrEmpty(POID))
+            {
+                SbSql.Append($@"AND POID = @POID ");
+
+                paras.Add("@POID", DbType.String, POID);
+            }
+
+            if (!string.IsNullOrEmpty(Roll))
+            {
+                SbSql.Append($@"AND Roll = @Roll ");
+
+                paras.Add("@Roll", DbType.String, Roll);
+            }
+
+            return ExecuteList<Window_FtyInventory>(CommandType.Text, SbSql.ToString(), paras);
+        }
+
+        public IList<Window_FtyInventory> Get_Appearance(string Lab)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+
+            //台北
+            SbSql.Append($@"
+Select ID, Name
+From Production.dbo.FtyInventory 
+Where 1=1
+");
+            if (!string.IsNullOrEmpty(Lab))
+            {
+                SbSql.Append($@"AND Type  = @Lab ");
+
+                paras.Add("@Lab", DbType.String, Lab);
+            }
+
+
+            return ExecuteList<Window_FtyInventory>(CommandType.Text, SbSql.ToString(), paras);
+        }
+
+        public IList<Window_SewingLine> Get_SewingLine(string ID)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+
+            //台北
+            SbSql.Append($@"
+Select ID
+From Production.dbo.SewingLine --工廠
+Where Junk = 0
+");
+            if (!string.IsNullOrEmpty(ID))
+            {
+                SbSql.Append($@"AND ID  = @ID ");
+
+                paras.Add("@ID", DbType.String, ID);
+            }
+
+
+            return ExecuteList<Window_SewingLine>(CommandType.Text, SbSql.ToString(), paras);
+        }
     }
 }

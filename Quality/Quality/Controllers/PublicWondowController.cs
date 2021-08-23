@@ -99,20 +99,124 @@ namespace Quality.Controllers
             return View(model);
         }
 
-        public ActionResult TechnicianList(string CallFunction, string Region)
+        public ActionResult TechnicianList(string CallFunction)
         {
-            var model = _PublicWindowService.Get_Technician(CallFunction, Region, string.Empty);
-            ViewData["Region"] = Region;
+            var model = _PublicWindowService.Get_Technician(CallFunction, string.Empty);
             ViewData["CallFunction"] = CallFunction;
             return View(model);
         }
 
         [HttpPost]
-        public ActionResult TechnicianList(string CallFunction, string Region, string ID)
+        public ActionResult TechnicianList(string CallFunction, string ID)
         {
-            var model = _PublicWindowService.Get_Technician(CallFunction, Region, ID);
-            ViewData["Region"] = Region;
+            var model = _PublicWindowService.Get_Technician(CallFunction, ID);
             ViewData["CallFunction"] = CallFunction;
+            return View(model);
+        }
+
+
+        public ActionResult LocalSuppList(string Title)
+        {
+            var model = _PublicWindowService.Get_LocalSupp( string.Empty);
+            ViewData["Title"] = Title;
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult LocalSuppList(string Title, string Name)
+        {
+            var model = _PublicWindowService.Get_LocalSupp(Name);
+            ViewData["Title"] = Title;
+            return View(model);
+        }
+
+        public ActionResult TPESuppList(string Title)
+        {
+            var model = _PublicWindowService.Get_TPESupp(string.Empty);
+            ViewData["Title"] = Title;
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult TPESuppList(string Title, string Name)
+        {
+            var model = _PublicWindowService.Get_TPESupp(Name);
+            ViewData["Title"] = Title;
+            return View(model);
+        }
+
+
+        public ActionResult Po_Supp_DetailList(string POID, string FabricType)
+        {
+            var model = _PublicWindowService.Get_Po_Supp_Detail(POID, FabricType, string.Empty);
+            ViewData["POID"] = POID;
+            ViewData["FabricType"] = FabricType;
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult Po_Supp_DetailList(string POID, string FabricType, string Seq)
+        {
+            var model = _PublicWindowService.Get_Po_Supp_Detail(POID, FabricType, Seq);
+            ViewData["POID"] = POID;
+            ViewData["FabricType"] = FabricType;
+            return View(model);
+        }
+
+        public ActionResult FtyInventoryList(string Title, string POID, string Seq1, string Seq2)
+        {
+            var model = _PublicWindowService.Get_FtyInventory(POID, Seq1, Seq2, string.Empty);
+            ViewData["Title"] = Title;
+            ViewData["POID"] = POID;
+            ViewData["Seq1"] = Seq1;
+            ViewData["Seq2"] = Seq2;
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult FtyInventoryList(string Title, string POID, string Seq1, string Seq2, string Roll)
+        {
+            var model = _PublicWindowService.Get_FtyInventory(POID, Seq1, Seq2, Roll);
+            ViewData["Title"] = Title;
+            ViewData["POID"] = POID;
+            ViewData["Seq1"] = Seq1;
+            ViewData["Seq2"] = Seq2;
+            return View(model);
+        }
+
+        public ActionResult AppearanceList(string Lab)
+        {
+            var model = _PublicWindowService.Get_Appearance(Lab);
+
+            return View(model);
+        }
+
+
+        public ActionResult Pass1List(string Title)
+        {
+            var model = _PublicWindowService.Get_Pass1(string.Empty);
+            ViewData["Title"] = Title;
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult Pass1List(string Title, string ID)
+        {
+            var model = _PublicWindowService.Get_Pass1(ID);
+            ViewData["Title"] = Title;
+            return View(model);
+        }
+
+        public ActionResult SewingLineList()
+        {
+            var model = _PublicWindowService.Get_SewingLine(string.Empty);
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult SewingLineList(string ID)
+        {
+            var model = _PublicWindowService.Get_SewingLine(ID);
             return View(model);
         }
     }

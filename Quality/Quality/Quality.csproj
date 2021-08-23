@@ -669,6 +669,13 @@
     <Content Include="Views\PublicWondow\SizeList.cshtml" />
     <Content Include="Views\PublicWondow\StyleList.cshtml" />
     <Content Include="Views\PublicWondow\TechnicianList.cshtml" />
+    <Content Include="Views\PublicWondow\SewingLineList.cshtml" />
+    <Content Include="Views\PublicWondow\Pass1List.cshtml" />
+    <Content Include="Views\PublicWondow\AppearanceList.cshtml" />
+    <Content Include="Views\PublicWondow\FtyInventoryList.cshtml" />
+    <Content Include="Views\PublicWondow\LocalSuppList.cshtml" />
+    <Content Include="Views\PublicWondow\Po_Supp_DetailList.cshtml" />
+    <Content Include="Views\PublicWondow\TPESuppList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

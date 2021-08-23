@@ -2,13 +2,16 @@
 
 @{
     Layout = null;
+    string title = ViewData["Title"] == null ? "Pass1" : ViewData["Title"].ToString();
 }
 
-@model List<Window_Technician>
+@model List<Window_Pass1>
 
-<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script src="~/Scripts/jquery-3.5.1.min.js"></script>
+
 <link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
 <link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+
 <script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
 
 <style>
@@ -40,11 +43,11 @@
 </style>
 
 <fieldset style="width:900px;height:700px;">
-    <legend>Technician</legend>
-    @using (Html.BeginForm("TechnicianList", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post, new { @width = "100%", @height = "5%", @style = "margin-bottom:10px;" }))
+    <legend>@title</legend>
+    @using (Html.BeginForm("Pass1List", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post, new { @width = "100%", @height = "5%", @style = "margin-bottom:10px;" }))
     {
         <input type="text" name="ID" value="" />
-        @Html.Hidden("CallFunction", ViewData["CallFunction"]);
+        @Html.Hidden("Title", title);
         <input type="submit" value="Query" />
         <input id="btnExit" type="button" value="Exit" />
     }
@@ -90,16 +93,16 @@
         $('#MyTable tbody').on('click', 'tr', function (data, type, full, meta) {
 
             // 取得整個Row
-            var TechnicianData = table.row(this).data();
+            var Pass1Data = table.row(this).data();
 
-            var Technician = {
-                ID: TechnicianData[0],
-                Name: TechnicianData[1],
-                ExtNo: TechnicianData[2],
+            var Pass1 = {
+                ID: Pass1Data[0],
+                Name: Pass1Data[1],
+                ExtNo: Pass1Data[2],
             }
 
-            // 呼叫父視窗的GetTechnician Function，把物件傳回去
-            window.opener.GetTechnician(Technician);
+            // 呼叫父視窗的GetPass1 Function，把物件傳回去
+            window.opener.GetPass1(Pass1);
 
             window.close();
         });
