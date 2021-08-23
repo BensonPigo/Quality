@@ -71,6 +71,12 @@
         font-size: 1vw;
         font-weight: 900;
     }
+
+    .viewFont {
+        font-size: 1.5vw;
+        font-weight: 900;
+    }
+
 </style>
 
 <div class="DownLeftWhiteBackgrond">
@@ -83,7 +89,7 @@
             <tr>
                 <td align="right"><p class="searchFont">Article</p></td>
                 <td align="center">
-                    @Html.DropDownListFor(o => o.ListArticle, (List<SelectListItem>)ViewBag.ListArticle, null, new { @class = "form-control", id = "dropListArticle" })
+                    @Html.DropDownListFor(o => o.ListArticle, (List<SelectListItem>)ViewBag.ListArticle, null, new { @class = "form-control", id = "dropArticle" })
                 </td>
             </tr>
             <tr>
@@ -113,7 +119,7 @@
                 <td>
                     <div>
                         <p class="searchFont">Unit</p>
-                        @Html.TextBoxFor(o => o.SizeUnit, new { @class = "form-control" })
+                        @Html.TextBoxFor(o => o.SizeUnit, new { @class = "form-control", @disabled = "disabled" })
                     </div>
                 </td>
                 <td>
@@ -121,70 +127,98 @@
                 </td>
 
                 <td>
-                    <button   >Save</button>
+                    <button>Save</button>
                 </td>
 
             </tr>
         </table>
 
     </div>
-    <button style="right:2em;" class="button" >Next</button>
+    <button style="right:7em;" class="button">Back</button>
+    <button style="right:0em;" class="button">Next</button>
 
 
-    <div class="detail-dialog to-edit-detail" title="Detail">
-        <div class="detail-dialog-content dialog-content-w-icon" style="height:40vh">
-            <table cellspacing="100" id="myTable" class="table table-striped display">
-                <thead>
-                    <tr class="row-name">
-                        <th>Select</th>
-                        <th>Packing List ID</th>
-                        <th>CTN No</th>
+
+</div>
+<div class="detail-dialog to-edit-detail">
+    <div class="detail-dialog-content dialog-content-w-icon" style="height:40vh">
+        <table style="width: 100%; margin-top: 2vh; ">
+            <tbody>
+                <tr>
+                    <td align="right">
+                        <div class="col-auto"><p class="viewFont" style="color:white">Style#</p></div>
+                    </td>
+                    <td align="center">
+                        <div class="col-auto"><select class="form-control" id="ViewListArticle" name="ViewListArticle"></select></div>
+                    </td>
+
+                    <td align="right"><p class="viewFont" style="color:white">Size</p></td>
+                    <td align="center">
+                        <div class="col-auto"><select class="form-control" id="ViewkListSize" name="ViewkListSize"></select></div>
+                    </td>
+                    <td width="10%" align="right"><p class="viewFont" style="color: white; width: 10vw;">Product Type</p></td>
+                    <td align="center">
+                        <div class="col-auto"><select class="form-control" id="ViewListProductType" name="ViewListProductType"></select></div>
+                    </td>
+                    <td align="right"><p class="viewFont" style="color:white">Unit</p></td>
+                    <td align="center">
+                        <div class="col-auto">  @Html.TextBoxFor(o => o.SizeUnit, new {@style="width:10vw", @class = "form-control", @disabled = "disabled" })</div>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+
+        <!--<table cellspacing="100" id="myTable" class="table table-striped display">
+        <thead>
+            <tr class="row-name">
+                <th>Select</th>
+                <th>Packing List ID</th>
+                <th>CTN No</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            <tr>
+                <td>
+                    2
+                </td>
+                <td>
+                    3
+                </td>
+                <td>
+                    6
+                </td>
+            </tr>-->
+        @*@foreach (var item in Model.SelectedPO)
+            {
+                int index = 0;
+                foreach (var subItem in Model.SelectCarton)
+                {
+                    int subindex = 0;
+                    <tr class="row-content" pkey="@item.OrderID,@item.POID" style="vertical-align: middle; text-align: center;">
+                        <td>
+                            @Html.CheckBox($"SelectedPO[{index}].SelectCarton[{subindex}].Selected", subItem.Selected, new { @type = "checkbox" })
+                        </td>
+                        <td>
+                            @Html.Hidden($"SelectedPO[{index}].SelectCarton[{subindex}].PackingListID", subItem.PackingListID)
+                            @Html.DisplayFor(modelItem => subItem.PackingListID)
+                        </td>
+                        <td>
+                            @Html.Hidden($"SelectedPO[{index}].SelectCarton[{subindex}].CTNNo", subItem.CTNNo)
+                            @Html.DisplayFor(modelItem => subItem.CTNNo)
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
 
-                    <tr>
-                        <td>
-                            2
-                        </td>
-                        <td>
-                            3
-                        </td>
-                        <td>
-                            6
-                        </td>
-                    </tr>
+                    subindex = subindex + 1;
+                }
+                index = index + 1;
+            }*@
+        <!--</tbody>
 
-                    @*@foreach (var item in Model.SelectedPO)
-                        {
-                            int index = 0;
-                            foreach (var subItem in Model.SelectCarton)
-                            {
-                                int subindex = 0;
-                                <tr class="row-content" pkey="@item.OrderID,@item.POID" style="vertical-align: middle; text-align: center;">
-                                    <td>
-                                        @Html.CheckBox($"SelectedPO[{index}].SelectCarton[{subindex}].Selected", subItem.Selected, new { @type = "checkbox" })
-                                    </td>
-                                    <td>
-                                        @Html.Hidden($"SelectedPO[{index}].SelectCarton[{subindex}].PackingListID", subItem.PackingListID)
-                                        @Html.DisplayFor(modelItem => subItem.PackingListID)
-                                    </td>
-                                    <td>
-                                        @Html.Hidden($"SelectedPO[{index}].SelectCarton[{subindex}].CTNNo", subItem.CTNNo)
-                                        @Html.DisplayFor(modelItem => subItem.CTNNo)
-                                    </td>
-                                </tr>
-
-                                subindex = subindex + 1;
-                            }
-                            index = index + 1;
-                        }*@
-                </tbody>
-
-            </table>
-            <br />
-            <div>
-            </div>
+        </table>-->
+        <br />
+        <div>
         </div>
     </div>
 </div>
@@ -233,20 +267,21 @@
         },
     });
 
-    //$(".to-edit-detail").dialog({
-    //    width: "70%",
-    //    dialogClass: "add-contact-box",
-    //    buttons: {
-    //        "1": {
-    //            text: 'Next',
-    //            click: function () {
-    //                $(this).dialog("close");
-    //            }
-    //            , "class": "button"
-    //            , "style": "bottom:0;background-color:#E00000"
-    //        },
-    //    },
-    //});
+    $(".to-edit-detail").dialog({
+        width: "70%",
+        
+        //dialogClass: "add-contact-box",
+        //buttons: {
+        //    "1": {
+        //        text: 'Next',
+        //        click: function () {
+        //            $(this).dialog("close");
+        //        }
+        //        , "class": "button"
+        //        , "style": "bottom:0;background-color:#E00000"
+        //    },
+        //},
+    });
 
     $(".to-edit-detail").on("dialogclose", function (event, ui) {
         EditMode = false;
@@ -254,6 +289,45 @@
 
 
     function open_View() {
+
+                $.ajax({
+                url: "@Url.Action("OpenView", new { Area = "FinalInspection" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ SP: '11' }),
+                async: true,
+                    success: function (data) {
+                        var articleOption = "", sizeOption = "", productTypeOption="";
+                        var articleArrList = [], sizeArrList = [], productTypeArrList = [];
+
+                        $.each(data, function (index, value) {
+                            articleArrList.push(value.Article);
+                            sizeArrList.push(value.Article+','+value.Size);
+                            productTypeArrList.push(value.Article + ',' +value.ProductType);
+                        });
+
+                        $.each(articleArrList.filter(onlyUnique), function (index, value) {
+                            articleOption += "<option value=" + value + ">" + value + "</option>";
+                        });
+
+                        $.each(sizeArrList.filter(onlyUnique), function (index, value) {
+                            sizeOption += "<option value=" + value + " >" + value.split(',')[1] + "</option>";
+                        });
+
+                        $.each(productTypeArrList.filter(onlyUnique), function (index, value) {
+                            productTypeOption += "<option value=" + value + ">" + value.split(',')[1]  + "</option>";
+                        });
+
+                        $("#ViewListArticle").html(articleOption);
+                        $("#ViewkListSize").html(sizeOption);
+                        $("#ViewListProductType").html(productTypeOption);
+
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+                    });
+
         $("#myTable tbody").find('tr').each(function (index, value) {
             $(this).show();
         });
@@ -261,5 +335,46 @@
         $(".to-edit-detail").dialog("open");
         $("#myTable").DataTable().columns.adjust();
     }
+
+    $(document).ready(function () {
+        $("#ViewListArticle").on("change", function () {
+
+            var article= document.getElementById("ViewListArticle").value;
+            var element = document.getElementById("ViewkListSize");
+            var articleOption = "", sizeOption = "", productTypeOption = "";
+
+            $("#ViewkListSize > option").each(function () {
+              //  alert(this.text + ' ' + this.value);
+
+                if (this.value.split(',')[0] == article) {
+                    sizeOption += "<option value=" + this.value + ">" + this.text  + "</option>";
+                }
+                else {
+                    sizeOption += "<option hidden value=" + this.value  + ">" + this.text + "</option>";
+                }
+            });
+
+            
+            $("#ViewkListSize").html(sizeOption);
+
+
+            $("#ViewListProductType > option").each(function () {
+                //  alert(this.text + ' ' + this.value);
+
+                if (this.value.split(',')[0] == article) {
+                    productTypeOption += "<option value=" + this.value + ">" + this.text + "</option>";
+                }
+                else {
+                    productTypeOption += "<option hidden value=" + this.value + ">" + this.text + "</option>";
+                }
+            });
+
+
+            $("#ViewListProductType").html(productTypeOption);
+
+        });
+    });
+
+
 
 </script>

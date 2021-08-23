@@ -28,7 +28,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         }
 
         // Setting
-        public ActionResult Index(string txtSP,string txtPO,string txtStyle)
+        public ActionResult Index(string txtSP, string txtPO, string txtStyle)
         {
 
             List<DatabaseObject.ProductionDB.Orders> list = new List<DatabaseObject.ProductionDB.Orders>();
@@ -88,15 +88,15 @@ namespace Quality.Areas.FinalInspection.Controllers
             setting.AcceptQty = 122;
 
             setting.SelectedPO = new List<DatabaseObject.ViewModel.FinalInspection.SelectedPO>();
-            for (int i =1;i<3;i++)
+            for (int i = 1; i < 3; i++)
             {
                 DatabaseObject.ViewModel.FinalInspection.SelectedPO item = new DatabaseObject.ViewModel.FinalInspection.SelectedPO();
                 item.OrderID = "A00" + i.ToString();
-                item.POID = i.ToString(); 
+                item.POID = i.ToString();
                 item.StyleID = "2";
                 item.SeasonID = "3";
                 item.BrandID = "4";
-                item.Qty = i*2;
+                item.Qty = i * 2;
                 item.Cartons = i.ToString();
                 item.AvailableQty = i;
                 setting.SelectedPO.Add(item);
@@ -129,11 +129,11 @@ namespace Quality.Areas.FinalInspection.Controllers
         [HttpPost]
         public ActionResult General(List<DatabaseObject.ProductionDB.Orders> model, string page)
         {
-            if (page=="Back")
+            if (page == "Back")
             {
                 return RedirectToAction("Setting");
             }
-            else if(page == "Next")
+            else if (page == "Next")
             {
                 return RedirectToAction("CheckList");
             }
@@ -494,14 +494,14 @@ namespace Quality.Areas.FinalInspection.Controllers
             //ViewBag.OnlineHelp = this.OnlineHelp + "SampleRFT.Measurement,,";
 
             List<string> listArticle = new List<string>() {
-                 "Inline","Stagger","Final","3rd Party"
+                 "0050","0049"
             };
 
             List<SelectListItem> articleList = new SetListItem().ItemListBinding(listArticle);
             ViewBag.ListArticle = articleList;
 
             List<string> listSize = new List<string>() {
-                 "Inlinea","Stagger","Final","3rd Party"
+                 "S","M","L","XL"
             };
 
             List<SelectListItem> sizeList = new SetListItem().ItemListBinding(listSize);
@@ -509,13 +509,15 @@ namespace Quality.Areas.FinalInspection.Controllers
 
 
             List<string> listProductType = new List<string>() {
-                 "Inlineb","Stagger","Final","3rd Party"
+                 "Bottom","Top"
             };
 
             List<SelectListItem> productTypeList = new SetListItem().ItemListBinding(listProductType);
             ViewBag.ListProductType = productTypeList;
 
             DatabaseObject.ViewModel.FinalInspection.Measurement Measurement = new DatabaseObject.ViewModel.FinalInspection.Measurement();
+
+            Measurement.SizeUnit = "CM";
             DatabaseObject.ViewModel.FinalInspection.MeasurementItem MeasurementItem = new DatabaseObject.ViewModel.FinalInspection.MeasurementItem();
             MeasurementItem.Description = "AAA";
             MeasurementItem.Tol1 = "11";
@@ -561,6 +563,48 @@ namespace Quality.Areas.FinalInspection.Controllers
         //    return View();
         //}
 
+
+        [HttpPost]
+        public ActionResult OpenView(string SP)
+        {
+            List<DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem> listMeasurementViewItem = new List<DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem>();
+
+            DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem MeasurementViewItem1 = new DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem();
+            MeasurementViewItem1.Article = "0050";
+            MeasurementViewItem1.Size = "L";
+            MeasurementViewItem1.ProductType = "Top";
+
+            listMeasurementViewItem.Add(MeasurementViewItem1);
+
+            DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem MeasurementViewItem2 = new DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem();
+            MeasurementViewItem2.Article = "0050";
+            MeasurementViewItem2.Size = "XL";
+            MeasurementViewItem2.ProductType = "Bottom";
+
+            listMeasurementViewItem.Add(MeasurementViewItem2);
+
+            DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem MeasurementViewItem3 = new DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem();
+            MeasurementViewItem3.Article = "0049";
+            MeasurementViewItem3.Size = "S";
+            MeasurementViewItem3.ProductType = "Top";
+
+
+            DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem MeasurementViewItem4 = new DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem();
+            MeasurementViewItem4.Article = "0049";
+            MeasurementViewItem4.Size = "M";
+            MeasurementViewItem4.ProductType = "Top";
+
+            listMeasurementViewItem.Add(MeasurementViewItem4);
+
+
+
+
+            //string someJson = "[  {    \"Code\": \"S021\",    \"Description\": \"A Chest width ( meas. 2cm below armhole )\",    \"Tol(+)\": \"2\",    \"Tol(-)\": \"1\",    \"50_aa\": \"103\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S03\",    \"Description\": \"B WAIST WIDTH\",    \"Tol(+)\": \"2\",    \"Tol(-)\": \"1\",    \"50_aa\": \"99\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S04\",    \"Description\": \"B1 WAIST MEAS. POINT FROM CHEST MEAS. POINT\",    \"Tol(+)\": \"0\",    \"Tol(-)\": \"0\",    \"50_aa\": \"19\",    \"2021/08/20 16:25:38\": \"1\",    \"diff1\": \"-18\"  },  {    \"Code\": \"S05\",    \"Description\": \"D HEM OPENING  (MEAS. STRAIGHT)\",    \"Tol(+)\": \"2\",    \"Tol(-)\": \"1\",    \"50_aa\": \"102\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S06\",    \"Description\": \"E Front zip length (zipend 0,5cm before collar edge) (tolerance +/- 1%)\",    \"Tol(+)\": \"0\",    \"Tol(-)\": \"0\",    \"50_aa\": \"26\",    \"2021/08/20 16:25:38\": \"2\",    \"diff1\": \"-24\"  },  {    \"Code\": \"S07\",    \"Description\": \"F FRONT TO BACK\",    \"Tol(+)\": \"0.5\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"3\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S08\",    \"Description\": \"H 1/2 ZIP - Shoulder length\",    \"Tol(+)\": \"0.8\",    \"Tol(-)\": \"0.4\",    \"50_aa\": \"14.6\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S09\",    \"Description\": \"I 2 PIECE - PRESHAPE  sleeve - Sleeve length\",    \"Tol(+)\": \"1\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"67\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S10\",    \"Description\": \"J Sleeve width ( meas. 2cm below armhole )\",    \"Tol(+)\": \"1\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"39.5\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S11\",    \"Description\": \"K LONG + PRESHAPE SLEEVE -Ellbow width (meas. 32,0cm above sleeve opening)\",    \"Tol(+)\": \"1\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"28.5\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S14\",    \"Description\": \"M LONG + PRESHAPE sleeve - Sleeve opening\",    \"Tol(+)\": \"1\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"21\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S15\",    \"Description\": \"O1 1/2 ZIP - Front neck drop (HPS to c.f. neck seam)\",    \"Tol(+)\": \"0.5\",    \"Tol(-)\": \"0\",    \"50_aa\": \"10.5\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S16\",    \"Description\": \"O2 1/2 ZIP - Back neck drop (HPS to c.b. neck seam) pattern meas.\",    \"Tol(+)\": \"0.5\",    \"Tol(-)\": \"0\",    \"50_aa\": \"2\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S17\",    \"Description\": \"N 1/2 ZIP - Back neck width (HPS to HPS)\",    \"Tol(+)\": \"1\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"14.4\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S18\",    \"Description\": \"Q1 COLLAR LENGTH OUTER EDGE\",    \"Tol(+)\": \"1\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"41.6\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S19\",    \"Description\": \"Q2 Collar height (center front) (tolerance +/- 10%)\",    \"Tol(+)\": \"0\",    \"Tol(-)\": \"0\",    \"50_aa\": \"6\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S20\",    \"Description\": \"Q3 COLLAR HEIGHT (CENTER BACK) (TOLERANCE +/- 10%)\",    \"Tol(+)\": \"0\",    \"Tol(-)\": \"0\",    \"50_aa\": \"4.5\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S21\",    \"Description\": \"S MINIMUM NECK OPENING STRETCHED\",    \"Tol(+)\": \"0\",    \"Tol(-)\": \"0\",    \"50_aa\": \"63\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S22\",    \"Description\": \"Y1 Logo meas.: top edge of logo meas. to HPS\",    \"Tol(+)\": \"0.5\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"17.5\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S23\",    \"Description\": \"Y2 LOGO MEAS.: EDGE OF LOGO TO CENTER FRONT\",    \"Tol(+)\": \"0.5\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"7\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S24\",    \"Description\": \"Z 1/2 ZIP - Back length\",    \"Tol(+)\": \"1.5\",    \"Tol(-)\": \"1\",    \"50_aa\": \"74\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S25\",    \"Description\": \"DEC LABEL\",    \"Tol(+)\": \"\",    \"Tol(-)\": \"\",    \"50_aa\": \"50\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S27\",    \"Description\": \"POLYBAG SIZE (WXL)\",    \"Tol(+)\": \"\",    \"Tol(-)\": \"\",    \"50_aa\": \"30X40\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  }]";
+
+            return Json(listMeasurementViewItem);
+        }
+
+
         public ActionResult Others()
         {
             DatabaseObject.ViewModel.FinalInspection.Others Others = new DatabaseObject.ViewModel.FinalInspection.Others();
@@ -574,7 +618,7 @@ namespace Quality.Areas.FinalInspection.Controllers
 
 
         [HttpPost]
-        public ActionResult Others(DatabaseObject.ViewModel.FinalInspection.Others others,string page)
+        public ActionResult Others(DatabaseObject.ViewModel.FinalInspection.Others others, string page)
         {
             if (page == "Back")
             {
@@ -584,8 +628,9 @@ namespace Quality.Areas.FinalInspection.Controllers
             {
                 return RedirectToAction("Others");
             }
-            return View();;
+            return View(); ;
         }
+
 
     }
 }
