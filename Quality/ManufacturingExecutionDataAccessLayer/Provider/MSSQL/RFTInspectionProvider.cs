@@ -56,7 +56,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 
             if (!string.IsNullOrEmpty(Item.FactoryID)) { SbSql.Append("And r.FactoryID = @FactoryID" + Environment.NewLine); }
 
-            if (Item.ID != null) { SbSql.Append("And r.ID = @ID" + Environment.NewLine); }
+            if (Item.ID != 0) { SbSql.Append("And r.ID = @ID" + Environment.NewLine); }
 
             if (!string.IsNullOrEmpty(Item.Line)) { SbSql.Append("And r.Line = @Line" + Environment.NewLine); }
 

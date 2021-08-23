@@ -22,7 +22,7 @@ namespace DatabaseObject.ProductionDB
         /// <summary></summary>
         [Required]
         [Display(Name = "")]
-        public long Ukey { get; set; }
+        public Int64 Ukey { get; set; }
         /// <summary></summary>
         [Required]
         [StringLength(100)]

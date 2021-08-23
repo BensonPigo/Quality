@@ -111,6 +111,7 @@
     <Compile Include="ProductionDB\System.cs" />
     <Compile Include="ProductionDB\TPEPass1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Public\WindowModel.cs" />
     <Compile Include="RequestModel\FinalInspection_Query.cs" />
     <Compile Include="RequestModel\FinalInspection_Request.cs" />
     <Compile Include="RequestModel\LogIn_Request.cs" />
@@ -152,5 +153,6 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
