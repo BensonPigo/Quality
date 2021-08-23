@@ -26,7 +26,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
         public string Fabrication { get; set; }
         /// <summary>�зǭ�</summary>
         [Display(Name = "�зǭ�")]
-        public string Standard { get; set; }
+        public decimal Standard { get; set; }
         /// <summary>�зǭȳ��</summary>
         [StringLength(1)]
         [Display(Name = "�зǭȳ��")]
@@ -34,7 +34,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
         /// <summary></summary>
         [Required]
         [Display(Name = "")]
-        public string Junk { get; set; }
+        public bool Junk { get; set; }
         /// <summary></summary>
         [StringLength(500)]
         [Display(Name = "")]

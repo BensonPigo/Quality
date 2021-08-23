@@ -1,13 +1,14 @@
 ﻿@using DatabaseObject.Public
 
+
 @{
     Layout = null;
-    string title = ViewData["Title"] == null ? "TPESupp" : ViewData["Title"].ToString();
+
 }
 
 @model List<Window_Appearance>
 
-<script src="~/Scripts/jquery-3.5.1.min.js"></script>
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
 
 <link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
 <link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
@@ -37,37 +38,119 @@
         background-color: lightgray;
     }
 
-    tbody tr:hover {
+    tr:hover {
+        background-color: lightblue;
         cursor: pointer;
+    }
+
+    tr {
+        height: 20px;
+    }
+
+    td {
+        height: 20px;
     }
 </style>
 
-<fieldset style="width:900px;height:700px;">
-    <legend>@title</legend>
-    @using (Html.BeginForm("AppearanceList", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post, new { @width = "100%", @height = "5%", @style = "margin-bottom:10px;" }))
-    {
-        <input type="text" name="ID" value="" />
-        @Html.Hidden("Title", title);
-        @Html.Hidden("POID", ViewData["POID"]);
-        @Html.Hidden("Seq1", ViewData["Seq1"]);
-        @Html.Hidden("Seq2", ViewData["Seq2"]);
-        <input type="submit" value="Query" />
-        <input id="btnExit" type="button" value="Exit" />
-    }
+@using (Html.BeginForm("AppearanceList", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post, new { @width = "100%", @height = "5%", @style = "margin-bottom:10px;" }))
+{
+    <input id="btnSave" type="button" value="Save" />
+    <input id="btnExit" type="button" value="Exit" />
+}
 
-    <div style="width:100%;height:90%;overflow-y: scroll;">
+<div style="width:45%;height:90%;overflow-y: scroll;float:left;margin-right:2%;">
 
-    </div>
-</fieldset>
+    <table id="DataListTable" style="width:100%;">
+        <thead>
+            <tr>
+                <td colspan="3" style="text-align:center;font-weight:900;font-size:1.5em">Click to Add</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>ID</td>
+                <td>Name</td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr style="height:2em" class="DataList" AppearanceID="@item.ID" AppearanceName="@item.Name" onclick="DataListClick(this)">
+                    <td style="width:20px;"><img src="~/Image/Icon/ChildRowOpen.png" /></td>
+                    <td>@item.ID</td>
+                    <td>@item.Name</td>
+                </tr>
+
+            }
+        </tbody>
+    </table>
+    @*
+    *@
+</div>
+<div style="width:45%;height:90%;overflow-y: scroll;float:left;">
+
+    <table id="PickListTable" style="width:100%;">
+        <thead>
+            <tr>
+                <td colspan="3" style="text-align:center;font-weight:900;font-size:1.5em">Pick List</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>ID</td>
+                <td>Name</td>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
 
 <script>
 
 
     $(function () {
 
+        $("#btnSave").click(function () {
+
+            var picked = $(".PickList");
+            var result = [];
+            picked.each(function myfunction() {
+                var obj = this;
+
+                var Appearance = {
+                    ID: $(obj).attr("appearanceid"),
+                    Name: $(obj).attr("appearancename"),
+                }
+                result.push(Appearance);
+            });
+
+            // 呼叫父視窗的 GetAppearance Function，把值傳回去
+            window.opener.GetAppearance(result);
+            window.close();
+        });
 
         $("#btnExit").click(function () {
             window.close();
         });
     });
+
+    //右邊Table點選
+    function DataListClick(obj) {
+        var pick_ID = $(obj).attr("appearanceid");
+        var pick_Name = $(obj).attr("appearanceName");
+
+        var newItem = '<tr style="height:2em" class="PickList" AppearanceID="' + pick_ID + '" AppearanceName="' + pick_Name + '" onclick="PickListClick(this)"><td style="width:20px;"><img src="/Image/Icon/ChildRowClose.png" /></td><td>' + pick_ID + '</td><td>' + pick_Name + '</td></tr>';
+        $("#PickListTable").append(newItem);
+        $(obj).remove();
+    };
+
+    //右邊Table點選
+    function PickListClick(obj) {
+        var pick_ID = $(obj).attr("appearanceid");
+        var pick_Name = $(obj).attr("appearanceName");
+
+        var newItem = '<tr style="height:2em" class="DataList" AppearanceID="' + pick_ID + '" AppearanceName="' + pick_Name + '" onclick="DataListClick(this)"><td style="width:20px;"><img src="/Image/Icon/ChildRowOpen.png" /></td><td>' + pick_ID + '</td><td>' + pick_Name + '</td></tr>';
+
+        $("#DataListTable").append(newItem);
+        $(obj).remove();
+    };
+
 </script>

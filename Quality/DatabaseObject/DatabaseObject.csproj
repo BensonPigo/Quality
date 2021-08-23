@@ -97,6 +97,12 @@
     <Compile Include="ProductionDB\Factory.cs" />
     <Compile Include="ProductionDB\GarmentDefectCode.cs" />
     <Compile Include="ProductionDB\GarmentDefectType.cs" />
+    <Compile Include="ProductionDB\GarmentTest.cs" />
+    <Compile Include="ProductionDB\GarmentTest_Detail.cs" />
+    <Compile Include="ProductionDB\GarmentTest_Detail_Apperance.cs" />
+    <Compile Include="ProductionDB\GarmentTest_Detail_FGPT.cs" />
+    <Compile Include="ProductionDB\GarmentTest_Detail_FGWT.cs" />
+    <Compile Include="ProductionDB\GarmentTest_Detail_Shrinkage.cs" />
     <Compile Include="ProductionDB\MockupCrocking.cs" />
     <Compile Include="ProductionDB\MockupCrocking_Detail.cs" />
     <Compile Include="ProductionDB\NewCDCode.cs" />
@@ -114,6 +120,7 @@
     <Compile Include="Public\WindowModel.cs" />
     <Compile Include="RequestModel\FinalInspection_Query.cs" />
     <Compile Include="RequestModel\FinalInspection_Request.cs" />
+    <Compile Include="RequestModel\GarmentTest_Request.cs" />
     <Compile Include="RequestModel\LogIn_Request.cs" />
     <Compile Include="RequestModel\Measurement_Request.cs" />
     <Compile Include="RequestModel\Quality_Pass1_Request.cs" />
@@ -139,6 +146,7 @@
     <Compile Include="ViewModel\FinalInspection\Others.cs" />
     <Compile Include="ViewModel\FinalInspection\BeautifulProductAudit.cs" />
     <Compile Include="ViewModel\FinalInspection\Setting.cs" />
+    <Compile Include="ResultModel\GarmentTest_Result.cs" />
     <Compile Include="ViewModel\InspectionSave_ViewModel.cs" />
     <Compile Include="ViewModel\Inspection_ViewModel.cs" />
     <Compile Include="ViewModel\ReworkList_ViewModel.cs" />

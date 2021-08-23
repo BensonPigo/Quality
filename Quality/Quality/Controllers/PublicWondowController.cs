@@ -184,13 +184,6 @@ namespace Quality.Controllers
             return View(model);
         }
 
-        public ActionResult AppearanceList(string Lab)
-        {
-            var model = _PublicWindowService.Get_Appearance(Lab);
-
-            return View(model);
-        }
-
 
         public ActionResult Pass1List(string Title)
         {
@@ -219,6 +212,13 @@ namespace Quality.Controllers
         {
             var model = _PublicWindowService.Get_SewingLine(FactoryID, ID);
             ViewData["FactoryID"] = FactoryID;
+            return View(model);
+        }
+
+        public ActionResult AppearanceList(string Lab)
+        {
+            var model = _PublicWindowService.Get_Appearance(Lab);
+
             return View(model);
         }
     }

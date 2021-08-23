@@ -17,7 +17,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
         /// <summary>Ukey</summary>
         [Required]
         [Display(Name = "Ukey")]
-        public string Ukey { get; set; }
+        public long Ukey { get; set; }
 
         /// <summary>單號</summary>
         [Required]

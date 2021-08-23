@@ -1,19 +1,240 @@
 ﻿
 @{
     ViewBag.Title = "Index";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+<link href="~/Areas/FinalInspection/CSS/FinalInspection.css" rel="stylesheet" />
+
+
+
+<style type="text/css">
+
+    #myTable_info {
+        color: white
+    }
+
+    #myTable > th {
+        color: black
+    }
+
+    #myTable_previous, #myTable_next {
+        color: white !important;
+    }
+
+    .searchFont {
+        font-size: 1.5em;
+        font-weight: 900;
+    }
+
+    .center {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .inputStyle {
+        width: 10vw
+    }
+
+    .querylabel {
+        width: 16vw
+    }
+
+
+    /*
+
+    table {
+        border-collapse: collapse;
+    }
+
+    table, th, td {
+        border: 1px solid black;
+    }*/
+</style>
+
+@model List<DatabaseObject.ViewModel.FinalInspection.QueryFinalInspection>
+
+
+@using (Html.BeginForm("Index", "Query", FormMethod.Post, new { onsubmit = "return checkvalue()" }))
+{
+<div class="search-condition">
+
+    <div class="UpWhiteBackgrond" style="height:14vh">
+
+        <table class="center" style="width: 90%;  height: 3vh ">
+            <tr>
+                <td style="width:8%">
+                    <p style=" width: 10vw" class="searchFont">SP#</p>
+                </td>
+                <td style="width:7%">
+                    @Html.TextBox("SP", string.Empty, new { @class = "inputStyle" })
+                </td>
+                <td style="width:8%">
+                    <p class="searchFont ">PO#</p>
+                </td>
+                <td style="width:7%">
+                    @Html.TextBox("POID", string.Empty, new { @class = "inputStyle" })
+                </td>
+
+                <td style="width:10%">
+                    <p style=" width: 15vw" class="searchFont">Style#</p>
+                </td>
+                <td style="width: 7%">
+                    @Html.TextBox("StyleID", string.Empty, new { @class = "inputStyle" })
+                </td>
+                <td rowspan="2" style="width: 8%; vertical-align: middle" align="right">
+
+                    <button type="submit" style="border: 0; background: transparent;">
+                        <img src="~/Image/Icon/Query.png" width="40" height="40" alt="submit" />
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p class="searchFont">SCI Delivery</p>
+                </td>
+                <td>
+                    @Html.TextBox("SciDeliveryStart",string.Empty, new { @class = "form-control date-picker inputStyle" })
+                </td>
+
+                <td colspan="2">
+                    <label style="font-size: 2em">~</label>  @Html.TextBox("SciDeliveryEnd",string.Empty, new { @class = "form-control date-picker inputStyle" })
+                </td>
+
+                <td>
+                    <p class="searchFont">Inspection Result</p>
+                </td>
+
+                <td>
+                    @Html.DropDownList("InspectionResult", (List<SelectListItem>)ViewBag.inspectionResultList, null, new { @class = "form-control inputStyle" })
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
 }
 
 
+<div class="DownWhiteBackgrond" style="height:74vh">
+    <div style="border:0px;padding:15px;">
+        <h1 style="font-size: 3vh; font-weight: 900; color: #999999 ">&nbsp Inspection History</h1>
+        <div class="content-scroll" style=" height: calc( 100vh - 280px )">
+            <div class="inner-scroll" style="float:left">
+                <div>
+                    <table cellspacing="100" id="myTable" class="table table-striped display">
+                        <thead>
+                            <tr class="row-name">
+                                <th>SP#</th>
+                                <th>PO#</th>
+                                <th>SP# Qty</th>
+                                <th>Style</th>
+                                <th>Season</th>
+                                <th>Brand</th>
+                                <th>Inspection <br>Times</th>
+                                <th>Inspection Stage</th>
+                                <th>Inspection Result</th>
+                                <th>Inspection<br> Report</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                string color = string.Empty;
+
+                                switch (item.InspectionResult)
+                                {
+                                    case "Fail":
+                                        color = "#E62513";
+                                        break;
+                                    case "Pass":
+                                        color = "#00CC00";
+                                        break;
+                                    case "On-Going":
+                                        color = "#0000FF";
+                                        break;
+                                }
+                            <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.SP)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.POID)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.SPQty)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.StyleID)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Season)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.BrandID)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.InspectionTimes)
+                                </td>
+                                <td>
+
+                                    <div style="color:@color">
+                                        @Html.DisplayFor(modelItem => item.InspectionResult)
+                                    </div>                              
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.InspectionStage)
+                                </td>
+                                <td>
+                                    <img src="~/Image/Icon/Document.png" width="20" height="20" alt="submit" />
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script type="text/javascript">
 
 
-<input id="Download" type="button" name="" value="Download" />
+    var msg = new MessagerAlert();
 
-
-<script>
     $(function () {
+
+        $('#myTable').DataTable({
+            "pageLength": 10,
+            "paging": true,
+            "filter": false,
+        });
+    });
+
+
+    function checkvalue() {
+        if ($("#SP").val() == "" || $("#POID").val() == "" || $("#StyleID").val() == "" || $("#SciDeliveryStart").val() == "" || $("#SciDeliveryEnd").val() == "") {
+
+            msg.WithError('Please input ＜SP#＞，＜PO#＞，＜Style#＞ and ＜SCI Delivery＞　first!');
+            return false;
+        }
+
+        return true;
+    }
+
+
+        $(function () {
         $("#Download").click(function () {
             location.href = '@Url.Action("DownLoad")';
         });
-    });
+        });
+
 </script>
+
+

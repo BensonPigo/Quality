@@ -17,7 +17,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
         /// <summary></summary>
         [Required]
         [Display(Name = "")]
-        public string Ukey { get; set; }
+        public long Ukey { get; set; }
         /// <summary></summary>
         [Required]
         [StringLength(13)]
@@ -30,7 +30,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
         public string Article { get; set; }
         /// <summary></summary>
         [Display(Name = "")]
-        public string FinalInspection_OrderCartonUkey { get; set; }
+        public long FinalInspection_OrderCartonUkey { get; set; }
         /// <summary></summary>
         [StringLength(10)]
         [Display(Name = "")]
@@ -41,19 +41,19 @@ namespace DatabaseObject.ManufacturingExecutionDB
         public string Fabrication { get; set; }
         /// <summary></summary>
         [Display(Name = "")]
-        public string GarmentTop { get; set; }
+        public decimal GarmentTop { get; set; }
         /// <summary></summary>
         [Display(Name = "")]
-        public string GarmentMiddle { get; set; }
+        public decimal GarmentMiddle { get; set; }
         /// <summary></summary>
         [Display(Name = "")]
-        public string GarmentBottom { get; set; }
+        public decimal GarmentBottom { get; set; }
         /// <summary></summary>
         [Display(Name = "")]
-        public string CTNInside { get; set; }
+        public decimal CTNInside { get; set; }
         /// <summary></summary>
         [Display(Name = "")]
-        public string CTNOutside { get; set; }
+        public decimal CTNOutside { get; set; }
         /// <summary></summary>
         [StringLength(1)]
         [Display(Name = "")]
