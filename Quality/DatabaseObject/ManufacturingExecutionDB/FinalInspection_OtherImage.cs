@@ -17,7 +17,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
         /// <summary></summary>
         [Required]
         [Display(Name = "")]
-        public string Ukey { get; set; }
+        public long Ukey { get; set; }
         /// <summary></summary>
         [Required]
         [StringLength(13)]
@@ -27,7 +27,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
         [Required]
         [StringLength(-1)]
         [Display(Name = "")]
-        public string Image { get; set; }
+        public byte[] Image { get; set; }
 
     }
 }
