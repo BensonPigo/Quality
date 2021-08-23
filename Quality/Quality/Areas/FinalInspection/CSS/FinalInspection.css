@@ -70,6 +70,11 @@ input, select {
     height: 4vh;
 }
 
-input:not(:disabled), select:not(:disabled) {
+textarea {
+    border: 1px solid black;
+    padding:10px;
+}
+
+input:not(:disabled), select:not(:disabled), textarea:not(:disabled) {
     color: #0000ff;
 }

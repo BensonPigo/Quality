@@ -14,6 +14,19 @@ namespace Quality.Areas.FinalInspection.Controllers
 {
     public class InspectionController : BaseController
     {
+        // 測試前端假資料格式
+        public class ListEndlineMoistureClass
+        {
+            public string Instrument;
+            public string Fabrication;
+            public decimal Standard;
+        }
+
+        public class ActionClass
+        {
+            public string name;
+        }
+
         // Setting
         public ActionResult Index(string txtSP,string txtPO,string txtStyle)
         {
@@ -237,10 +250,231 @@ namespace Quality.Areas.FinalInspection.Controllers
 
         }
 
+        public List<SelectListItem> ItemListBinding(Dictionary<string, string> Options)
+        {
+            List<SelectListItem> result_itemList = new List<SelectListItem>();
+            foreach (var item in Options)
+            {
+                SelectListItem i = new SelectListItem()
+                {
+                    Text = item.Value,
+                    Value = item.Key,
+                };
+                result_itemList.Add(i);
+            }
+
+            return result_itemList;
+        }
+
         public ActionResult Moisture()
         {
             DatabaseObject.ViewModel.FinalInspection.Moisture moisture = new DatabaseObject.ViewModel.FinalInspection.Moisture();
-            return View();
+            moisture.FinalInspection_CTNMoisureStandard = 7.5m;
+            moisture.ListArticle = new List<string>();
+            for (int i=0;i<60;i=i+10)
+            {
+                moisture.ListArticle.Add("00" + i.ToString());
+            }
+            moisture.ListCartonItem = new List<DatabaseObject.ViewModel.FinalInspection.CartonItem>();
+            for (int i = 1; i < 6; i++)
+            {
+                DatabaseObject.ViewModel.FinalInspection.CartonItem cartonItem = new DatabaseObject.ViewModel.FinalInspection.CartonItem();
+                cartonItem.FinalInspection_OrderCartonUkey = i;
+                cartonItem.OrderID = "A001";
+                cartonItem.CTNNo = i.ToString();
+                cartonItem.PackinglistID = i.ToString();
+
+                moisture.ListCartonItem.Add(cartonItem);
+            }
+            moisture.ListEndlineMoisture = new List<DatabaseObject.ManufacturingExecutionDB.EndlineMoisture>();
+
+            string jsonString = @"
+[
+  {
+    'Instrument': 'Aqua Boy',
+    'Fabrication': '100% Cotton',
+    'Standard': 56
+  },
+  {
+    'Instrument': 'Aqua Boy',
+    'Fabrication': '100% Linen',
+    'Standard': 67
+  },
+  {
+    'Instrument': 'Aqua Boy',
+    'Fabrication': '100% Polyacrylic',
+    'Standard': 83
+  },
+  {
+    'Instrument': 'Aqua Boy',
+    'Fabrication': '100% Polyamide',
+    'Standard': 67
+  },
+  {
+    'Instrument': 'Aqua Boy',
+    'Fabrication': '100% Polyester',
+    'Standard': 57
+  },
+  {
+    'Instrument': 'Aqua Boy',
+    'Fabrication': '100% Viscose',
+    'Standard': 59
+  },
+  {
+    'Instrument': 'Aqua Boy',
+    'Fabrication': '30% Viscose 70% Polyester',
+    'Standard': 62
+  },
+  {
+    'Instrument': 'Aqua Boy',
+    'Fabrication': '50% Cotton 50% Polyacrylic',
+    'Standard': 62
+  },
+  {
+    'Instrument': 'Aqua Boy',
+    'Fabrication': '50% Cotton 50% Polyester',
+    'Standard': 37
+  },
+  {
+    'Instrument': 'Aqua Boy',
+    'Fabrication': '50% Viscose 50% Cotton',
+    'Standard': 48
+  },
+  {
+    'Instrument': 'Aqua Boy',
+    'Fabrication': '50% Viscose 50% Polyester',
+    'Standard': 57
+  },
+  {
+    'Instrument': 'Aqua Boy',
+    'Fabrication': '60% Cotton 40% Polyester',
+    'Standard': 45
+  },
+  {
+    'Instrument': 'Aqua Boy',
+    'Fabrication': '60% Linen 40% Cotton',
+    'Standard': 47
+  },
+  {
+    'Instrument': 'Aqua Boy',
+    'Fabrication': '70% Cotton 30% Polyamide',
+    'Standard': 59
+  },
+  {
+    'Instrument': 'Aqua Boy',
+    'Fabrication': '70% Cotton 30% Polyester',
+    'Standard': 53
+  },
+  {
+    'Instrument': 'Aqua Boy',
+    'Fabrication': '80% Cotton 20% Polyester',
+    'Standard': 59
+  },
+  {
+    'Instrument': 'Aqua Boy',
+    'Fabrication': '80% Viscose 20% Polyamide',
+    'Standard': 59
+  },
+  {
+    'Instrument': 'Aqua Boy',
+    'Fabrication': '90% Cotton 10% Elastane/Spandex',
+    'Standard': 56
+  },
+  {
+    'Instrument': 'Aqua Boy',
+    'Fabrication': '90% Viscose 10% Elastane/Spandex',
+    'Standard': 59
+  },
+  {
+    'Instrument': 'B Machine',
+    'Fabrication': 'Acetate',
+    'Standard': 7.5
+  },
+  {
+    'Instrument': 'B Machine',
+    'Fabrication': 'Acrylic',
+    'Standard': 5.5
+  },
+  {
+    'Instrument': 'B Machine',
+    'Fabrication': 'Cotton',
+    'Standard': 8
+  },
+  {
+    'Instrument': 'B Machine',
+    'Fabrication': 'Leather',
+    'Standard': 4.6
+  },
+  {
+    'Instrument': 'B Machine',
+    'Fabrication': 'Linen/Flax',
+    'Standard': 9.5
+  },
+  {
+    'Instrument': 'B Machine',
+    'Fabrication': 'Nylon',
+    'Standard': 8
+  },
+  {
+    'Instrument': 'B Machine',
+    'Fabrication': 'Paper/Straw',
+    'Standard': 6.6
+  },
+  {
+    'Instrument': 'B Machine',
+    'Fabrication': 'Polyester',
+    'Standard': 5.5
+  },
+  {
+    'Instrument': 'B Machine',
+    'Fabrication': 'PU',
+    'Standard': 4.6
+  },
+  {
+    'Instrument': 'B Machine',
+    'Fabrication': 'Silk',
+    'Standard': 6
+  },
+  {
+    'Instrument': 'B Machine',
+    'Fabrication': 'Viscose',
+    'Standard': 6
+  },
+  {
+    'Instrument': 'B Machine',
+    'Fabrication': 'Wool',
+    'Standard': 4.5
+  }
+]";
+            List<ListEndlineMoistureClass> objectList = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ListEndlineMoistureClass>>(jsonString);
+            foreach (ListEndlineMoistureClass item in objectList)
+            {
+                DatabaseObject.ManufacturingExecutionDB.EndlineMoisture endlineMoisture = new DatabaseObject.ManufacturingExecutionDB.EndlineMoisture();
+                endlineMoisture.Instrument = item.Instrument;
+                endlineMoisture.Fabrication = item.Fabrication;
+                endlineMoisture.Standard = item.Standard.ToString(); // ??
+
+                moisture.ListEndlineMoisture.Add(endlineMoisture);
+            }
+
+            moisture.ActionSelectListItem = new List<SelectListItem>();
+            jsonString = @"[{'name':''},{'name':'Change carton'},{'name':'Drying garment+change carton'},{'name':'Open carton with drying garment'},{'name':'Others'}]";
+            List<ActionClass> actionList = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ActionClass>>(jsonString);
+            foreach (ActionClass item in actionList)
+            {
+                SelectListItem i = new SelectListItem { Text = item.name, Value = item.name };
+                moisture.ActionSelectListItem.Add(i);
+            }
+
+            ViewBag.ListArticle = new SetListItem().ItemListBinding(moisture.ListArticle);
+            ViewBag.ListCartonItem = moisture.ListCartonItem;
+            ViewBag.ListEndlineMoisture = moisture.ListEndlineMoisture;
+            ViewBag.ActionSelectListItem = moisture.ActionSelectListItem;
+
+            ViewBag.FinalInspection_CTNMoisureStandard = moisture.FinalInspection_CTNMoisureStandard;
+
+            DatabaseObject.ViewModel.FinalInspection.MoistureResult moistureResult = new DatabaseObject.ViewModel.FinalInspection.MoistureResult();
+            return View(moistureResult);
         }
 
         private IMeasurementService _MeasurementService;

@@ -79,11 +79,11 @@
                     </tr>
                     <tr>
                         <td><label>What's day you audit?</label></td>
-                        <td>@Html.TextBoxFor(o => o.AuditDate, "{0:yyyy/MM/dd}", new { @class = "form-control date-picker" })</td>
+                        <td>@Html.TextBoxFor(o => o.AuditDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })</td>
                     </tr>
                     <tr>
                         <td><label>What's sewing line you audit?</label></td>
-                        <td>@Html.TextBoxFor(o => o.SewingLineID, new { @class = "form-control center-block" })</td>
+                        <td>@Html.TextBoxFor(o => o.SewingLineID, new { @readonly="readonly" })</td>
                     </tr>
                 </table>
             </div>
@@ -162,9 +162,7 @@
                 </div>
             </div>
         </div>
-        <div style="width:100%">
-            <button class="button" style="right:0">Next</button>
-        </div>
+        <button class="button" style="right:0">Next</button>
     }
 
 </div>
@@ -184,11 +182,8 @@
         }
 
         $(function () {
-            $(window).keydown(function (event) {
-                if (event.keyCode == 13) {
-                    event.preventDefault();
-                    return false;
-                }
+            $("#SewingLineID").on('click', function () {
+                window.open('@Url.Action("SewingLineList", "PublicWondow",new { Area=""})' + '?FactoryID=@ViewBag.FactoryID', 'SewingLineList', config = 'toolbar=no,status=no,location=no,width=400,height=650' );
             });
 
             var table = $('#SelectedPOTable').DataTable({
@@ -302,8 +297,11 @@
             $(".to-edit-detail").on("dialogclose", function (event, ui) {
                 EditMode = false;
             });
-
         });
+
+        function GetSewingLineList(sewingLineID) {
+            $("#SewingLineID").val(sewingLineID);
+        }
 
         function open_cartonsDetail(pkey) {
             var findValue = pkey.split(',');
@@ -313,12 +311,12 @@
                 $(this).prop('checked', false);
             });
 
-            $(adata).each(function (index, element) {                
+            $(adata).each(function (index, element) {
                 var orderID = element[1];
                 var poID = element[3];
                 if (orderID == findValue[0] && poID == findValue[1]) {
                     rowIndex = element[2];
-                    
+
                 }
             });
 
@@ -328,7 +326,7 @@
                 $('#carton_select_' + this).prop('checked', true);
             });
 
-            $("#currnetSelectedPO").val(rowIndex);            
+            $("#currnetSelectedPO").val(rowIndex);
             $(".to-edit-detail").dialog("open");
             $("#myTable").DataTable().columns.adjust();
         }
@@ -345,7 +343,7 @@
                 '<tr><td>Brand:</td><td>' + d[6] + '</td></tr>' +
                 '<tr><td>SP# Qty:</td><td>' + d[7] + '</td></tr>' +
                 '<tr><td>Cartons:</td><td>' +
-                '<input type="text" readonly="readonly" style="background-color:gray" onclick="open_cartonsDetail(\'' + d[1] + ',' +d[3]+'\');" name="SelectedPO[' + d[2] + '].Cartons" id="SelectedPO[' + d[2] + '].Cartons" value="' + d[8]+'" />' +
+                '<input type="text" readonly="readonly" onclick="open_cartonsDetail(\'' + d[1] + ',' +d[3]+'\');" name="SelectedPO[' + d[2] + '].Cartons" id="SelectedPO[' + d[2] + '].Cartons" value="' + d[8]+'" />' +
                 '</td></tr>'+
                 '<tr><td>Available Qty:</td><td>' +
                 '<input type="number" name="SelectedPO[' + d[2] + '].AvailableQty" id="SelectedPO[' + d[2] + '].AvailableQty" value="' + d[9]+'" />' +
@@ -402,7 +400,7 @@
             }
 
             //*保存前檢查[Choose Inspection Stage]選擇 Final或3rd Party時，若AQL Plan為空白則顯示
-            //<AQL Plan> cannot be empty.
+            //<AQL Plan>thiscannot be empty.
             //var inspectionStage = $("#InspectionStage").val();
             //if (inspectionStage == "Final" || inspectionStage == "3rd Party") {
             //    if () {

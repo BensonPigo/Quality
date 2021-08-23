@@ -14,10 +14,10 @@
             <table class="col-auto table_div" style="width:100%">
                 <tr>
                     <td><label>Article</label></td>
-                    <td>@Html.DropDownList("Article", (List<SelectListItem>)ViewBag.InspectionStageList, null, new { @class = "form-control", @style = "width:157px", @onchange = "onInspectionStageChange(this.value)" })</td>
+                    <td>@Html.DropDownList("Article", (List<SelectListItem>)ViewBag.ListArticle, null, new { @class = "form-control", @style = "width:157px", @onchange = "onInspectionStageChange(this.value)" })</td>
                 </tr>
                 <tr>
-                    <td><label>carton#</label></td>
+                    <td><label id="labCarton">carton#</label></td>
                     <td>@Html.TextBox("CartonNo", new { @readonly = "readonly", @style = "background-color:gray", @onclick = "open_cartonsDetail()" })</td>
                 </tr>
             </table>
@@ -25,7 +25,70 @@
     </div>
 </div>
 <div class="DownRightWhiteBackgrond">
+    <div style="padding:2em 3em 2em 3em">
+        @Html.HiddenFor(o => o.FinalInspectionID)
+        <div class="col-auto"><h1 style="font-size:2em">Moisture</h1></div>
+        <button class="site-btn btn-blue" style="position:absolute;top:1em;right:8.6em">View</button>
+        <button class="site-btn btn-blue" style="position:absolute;top:1em;right:0">Save</button>
+        <div>
+            <table class="col-auto table_div" style="width:100%">
+                <tr>
+                    <td><label>Detection Instrument</label></td>
+                    <td>@Html.TextBoxFor(o => o.Instrument, new { @readonly = "readonly", @onclick = "open_cartonsDetail()" })</td>
+                </tr>
+                <tr>
+                    <td><label>Fabrication</label></td>
+                    <td>@Html.TextBoxFor(o => o.Fabrication, new { @readonly = "readonly", @onclick = "open_cartonsDetail()" })</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <hr style="width:100%" />
+    <div style="padding:2em 3em 2em 3em">
+        <table class="col-auto table_div" style="width:100%">
+            <tr>
+                <td colspan="2"><label>Detection Instrument</label></td>
+                <td colspan="4"><label>(Standard:7.5)</label></td>
+            </tr>
+            <tr>
+                <td><label>Top</label></td>
+                <td>@Html.TextBoxFor(o => o.GarmentTop, new { @type = "number" })</td>
+                <td><label>Middle</label></td>
+                <td>@Html.TextBoxFor(o => o.GarmentMiddle, new { @type = "number" })</td>
+                <td><label>Bottom</label></td>
+                <td>@Html.TextBoxFor(o => o.GarmentBottom, new { @type = "number" })</td>
+            </tr>
+            <tr>
+                <td colspan="2"><label>Carton Moisture</label></td>
+                <td colspan="4"><label>(Standard:@ViewBag.FinalInspection_CTNMoisureStandard)</label></td>
+            </tr>
+            <tr>
+                <td><label>Inside</label></td>
+                <td>@Html.TextBoxFor(o => o.CTNInside, new { @type = "number" })</td>
+                <td><label>Outside</label></td>
+                <td>@Html.TextBoxFor(o => o.CTNOutside, new { @type = "number" })</td>
+                <td colspan="2"></td>
+            </tr>
+        </table>
+    </div>
+    <hr style="width:100%" />
 
+    <div style="padding:2em 3em 2em 3em">
+        <table class="col-auto table_div" style="width:100%">
+            <tr>
+                <td><label>Result</label></td>
+                <td>@Html.TextBoxFor(o => o.Result, new { @style = "border:0;outline:0;disabled:true" })</td>
+                <td><label>Action</label></td>
+                <td>@Html.DropDownListFor(o => o.Action, (List<SelectListItem>)ViewBag.ActionSelectListItem, null, new { @style = "width:157px" })</td>
+            </tr>
+            <tr>
+                <td style="vertical-align:top"><label>Remark</label></td>
+                <td colspan="3">@Html.TextAreaFor(o => o.Remark, new { @style= "width:40%;min-height:200px" })</td>
+            </tr>
+        </table>
+    </div>
+    <button class="button" style="right:7em">Back</button>
+    <button class="button" style="right:0">Next</button>
 </div>
 
 @section FinalInspection_script
@@ -34,22 +97,6 @@
         var EditMode = false; //彈出視窗設定
         var msg = new MessagerAlert();
 
-        // 摺疊資料需先轉成array
-        var adata = {};
-        var index = 0;
-        @foreach (var item in Model)
-        {
-            @*@:adata.push(
-                {
-        "FinalInspectionID": "Airi",
-                  "last_name": "Satou",
-                  "position": "Accountant",
-                  "office": "Tokyo",
-                  "start_date": "28th Nov 08",
-                  "salary": "$162,700"
-                }
-            );*@
-        }
 
         $(function () {
             $(window).keydown(function (event) {
