@@ -49,4 +49,9 @@ namespace DatabaseObject.Public
         public string ExtNo { get; set; }
         public string Factory { get; set; }
     }
+
+    public class Window_SewingLine
+    {
+        public string ID { get; set; }
+    }
 }

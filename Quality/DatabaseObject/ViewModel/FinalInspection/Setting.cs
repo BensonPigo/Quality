@@ -22,7 +22,6 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public List<SelectCarton> SelectCarton { get; set; }
 
         public List<AcceptableQualityLevels> AcceptableQualityLevels { get; set; }
-        public List<string> ListSewingLine { get; set; }
     }
 
     public class SelectedPO
