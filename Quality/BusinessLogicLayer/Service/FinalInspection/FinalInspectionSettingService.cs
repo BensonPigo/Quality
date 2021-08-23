@@ -61,7 +61,6 @@ namespace BusinessLogicLayer.Service
                 }
 
                 result.AcceptableQualityLevels = _FinalInspFromPMSProvider.GetAcceptableQualityLevelsForSetting().ToList();
-                result.ListSewingLine = _FinalInspFromPMSProvider.GetSewingLineForSetting(finalInspection.FactoryID).ToList();
             }
             catch (Exception ex)
             {
@@ -84,7 +83,6 @@ namespace BusinessLogicLayer.Service
                 result.SelectedPO = _FinalInspFromPMSProvider.GetSelectedPOForInspection(listOrderID).ToList();
                 result.SelectCarton = _FinalInspFromPMSProvider.GetSelectedCartonForSetting(listOrderID).ToList();
                 result.AcceptableQualityLevels = _FinalInspFromPMSProvider.GetAcceptableQualityLevelsForSetting().ToList();
-                result.ListSewingLine = _FinalInspFromPMSProvider.GetSewingLineForSetting(FactoryID).ToList();
             }
             catch (Exception ex)
             {
