@@ -271,12 +271,12 @@ namespace Quality.Areas.FinalInspection.Controllers
             DatabaseObject.ViewModel.FinalInspection.Moisture moisture = new DatabaseObject.ViewModel.FinalInspection.Moisture();
             moisture.FinalInspection_CTNMoisureStandard = 7.5m;
             moisture.ListArticle = new List<string>();
-            for (int i=0;i<60;i=i+10)
+            for (int i= 10;i<60;i=i+10)
             {
                 moisture.ListArticle.Add("00" + i.ToString());
             }
             moisture.ListCartonItem = new List<DatabaseObject.ViewModel.FinalInspection.CartonItem>();
-            for (int i = 1; i < 6; i++)
+            for (int i = 1; i < 10; i++)
             {
                 DatabaseObject.ViewModel.FinalInspection.CartonItem cartonItem = new DatabaseObject.ViewModel.FinalInspection.CartonItem();
                 cartonItem.FinalInspection_OrderCartonUkey = i;
@@ -452,7 +452,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                 DatabaseObject.ManufacturingExecutionDB.EndlineMoisture endlineMoisture = new DatabaseObject.ManufacturingExecutionDB.EndlineMoisture();
                 endlineMoisture.Instrument = item.Instrument;
                 endlineMoisture.Fabrication = item.Fabrication;
-                endlineMoisture.Standard = item.Standard.ToString(); // ??
+                endlineMoisture.Standard = item.Standard;
 
                 moisture.ListEndlineMoisture.Add(endlineMoisture);
             }
