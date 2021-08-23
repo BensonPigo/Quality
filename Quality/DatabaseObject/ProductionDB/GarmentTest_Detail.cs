@@ -35,7 +35,6 @@ namespace DatabaseObject.ProductionDB
         [Display(Name = "測試人員")]
         public string inspector { get; set; }
         /// <summary>備註</summary>
-        [StringLength(-1)]
         [Display(Name = "備註")]
         public string Remark { get; set; }
         /// <summary>寄出人員</summary>

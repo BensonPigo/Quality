@@ -29,7 +29,6 @@ namespace DatabaseObject.ManufacturingExecutionDB
         public string FinalInspection_DetailUkey { get; set; }
         /// <summary></summary>
         [Required]
-        [StringLength(-1)]
         [Display(Name = "")]
         public string Image { get; set; }
 

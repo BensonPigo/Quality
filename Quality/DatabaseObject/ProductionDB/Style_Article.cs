@@ -34,7 +34,6 @@ namespace DatabaseObject.ProductionDB
         [Display(Name = "顏色組名稱")]
         public string ArticleName { get; set; }
         /// <summary>成衣成份</summary>
-        [StringLength(-1)]
         [Display(Name = "成衣成份")]
         public string Contents { get; set; }
 

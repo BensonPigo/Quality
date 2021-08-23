@@ -62,7 +62,6 @@ namespace DatabaseObject.ProductionDB
         public string FabricType { get; set; }
         /// <summary>成衣成份</summary>
         [Required]
-        [StringLength(-1)]
         [Display(Name = "成衣成份")]
         public string Contents { get; set; }
         /// <summary>成衣LEADTIME</summary>
@@ -77,7 +76,6 @@ namespace DatabaseObject.ProductionDB
         [Display(Name = "生產工廠")]
         public string Factories { get; set; }
         /// <summary>Planning 放置工廠備註用</summary>
-        [StringLength(-1)]
         [Display(Name = "Planning 放置工廠備註用")]
         public string FTYRemark { get; set; }
         /// <summary>銷樣階段的訂單主管</summary>
@@ -107,7 +105,6 @@ namespace DatabaseObject.ProductionDB
         [Display(Name = "尺寸")]
         public string SizePage { get; set; }
         /// <summary>尺碼範圍</summary>
-        [StringLength(-1)]
         [Display(Name = "尺碼範圍")]
         public string SizeRange { get; set; }
         /// <summary>裝箱件數</summary>
@@ -134,11 +131,9 @@ namespace DatabaseObject.ProductionDB
         [Display(Name = "圖片2")]
         public string Picture2 { get; set; }
         /// <summary>標籤 & 保養說明標籤</summary>
-        [StringLength(-1)]
         [Display(Name = "標籤 & 保養說明標籤")]
         public string Label { get; set; }
         /// <summary>包裝方式</summary>
-        [StringLength(-1)]
         [Display(Name = "包裝方式")]
         public string Packing { get; set; }
         /// <summary>IE申請單號</summary>
@@ -183,7 +178,6 @@ namespace DatabaseObject.ProductionDB
         [Display(Name = "Expection Form")]
         public bool ExpectionForm { get; set; }
         /// <summary>Exception Form Remark</summary>
-        [StringLength(-1)]
         [Display(Name = "Exception Form Remark")]
         public string ExpectionFormRemark { get; set; }
         /// <summary>工廠當地業務</summary>

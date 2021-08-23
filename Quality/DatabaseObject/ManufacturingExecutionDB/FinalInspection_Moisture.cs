@@ -63,7 +63,6 @@ namespace DatabaseObject.ManufacturingExecutionDB
         [Display(Name = "")]
         public string Action { get; set; }
         /// <summary></summary>
-        [StringLength(-1)]
         [Display(Name = "")]
         public string Remark { get; set; }
         /// <summary></summary>
