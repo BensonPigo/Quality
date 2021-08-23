@@ -248,7 +248,7 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public List<Window_SewingLine> Get_SewingLine(string FactoryID , string ID)
+        public List<Window_SewingLine> Get_SewingLine(string FactoryID, string ID)
         {
             List<Window_SewingLine> result = new List<Window_SewingLine>();
 
