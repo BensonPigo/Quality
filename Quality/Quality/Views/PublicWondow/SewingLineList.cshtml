@@ -1,0 +1,81 @@
+﻿@using DatabaseObject.Public
+
+@{
+    Layout = null;
+}
+
+@model List<Window_SewingLine>
+
+    <script src="~/Scripts/jquery-3.5.1.min.js"></script>
+
+    <style>
+
+        ul {
+            padding: 0;
+        }
+
+        li {
+            list-style-type: none;
+            border: 1px solid black;
+            padding: 2px;
+        }
+
+        td {
+            border-style: ridge;
+        }
+
+        .head {
+            border-top: 2px solid black;
+            text-align: center;
+            font-size: 1.2em;
+            background-color: lightgray;
+        }
+
+        li:hover {
+            background-color: lightblue;
+            cursor: pointer;
+        }
+    </style>
+
+    <fieldset style="width:284px;height:500px;">
+        <legend>SewingLine</legend>
+        @using (Html.BeginForm("SewingLineList", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post, new { @width = "100%", @height = "5%", @style = "margin-bottom:10px;" }))
+        {
+        <input type="text" name="ID" value="" />
+        @Html.Hidden("Region", ViewData["Region"]);
+        <input type="submit" value="Query" />
+        <input id="" type="button" value="Exit" />
+        }
+        @*</div>*@
+
+        <div style="width:100%;height:90%;overflow-y: scroll;">
+            <ul border="1" style="width:100%;height:100%;">
+                <li class="head">
+                    SewingLine
+                </li>
+                @foreach (var item in Model)
+                {
+                <li class="SelectItem">@item.ID</li>
+
+                }
+            </ul>
+        </div>
+    </fieldset>
+
+    <script>
+
+
+    $(function () {
+        $(".SelectItem").click(function () {
+
+            // 呼叫父視窗的GetSewingLine Function，把值傳回去
+            window.opener.GetSewingLineList($(this).text());
+
+            window.close();
+        });
+
+        $("#btnExit").click(function () {
+            window.close();
+        });
+    });
+    </script>

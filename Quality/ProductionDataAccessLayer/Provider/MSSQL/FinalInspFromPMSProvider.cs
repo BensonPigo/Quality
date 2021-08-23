@@ -135,29 +135,5 @@ order by AQLType , InspectionLevels
             return ExecuteList<AcceptableQualityLevels>(CommandType.Text, sqlGetData, listPar);
         }
 
-        public IList<string> GetSewingLineForSetting(string factoryID)
-        {
-            SQLParameterCollection listPar = new SQLParameterCollection();
-            listPar.Add("@FactoryID", factoryID);
-
-            string sqlGetData = $@"
-select id
- from SewingLine sl
-where   FactoryID = @FactoryID
-        and Junk = 0
-order by ID
-";
-            
-            DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, listPar);
-
-            if (dtResult.Rows.Count > 0)
-            {
-                return dtResult.AsEnumerable().Select(s => s["id"].ToString()).ToList();
-            }
-            else
-            {
-                return new List<string>();
-            }
-        }
     }
 }

@@ -8,7 +8,6 @@ namespace ProductionDataAccessLayer.Interface
     public interface IFinalInspFromPMSProvider
     {
         IList<AcceptableQualityLevels> GetAcceptableQualityLevelsForSetting();
-        IList<string> GetSewingLineForSetting(string factoryID);
         IList<SelectedPO> GetSelectedPOForInspection(List<string> listOrderID);
         IList<SelectedPO> GetSelectedPOForInspection(string finalInspectionID);
         IList<SelectCarton> GetSelectedCartonForSetting(List<string> listOrderID);

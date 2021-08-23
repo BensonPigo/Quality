@@ -669,6 +669,7 @@
     <Content Include="Views\PublicWondow\SizeList.cshtml" />
     <Content Include="Views\PublicWondow\StyleList.cshtml" />
     <Content Include="Views\PublicWondow\TechnicianList.cshtml" />
+    <Content Include="Views\PublicWondow\SewingLineList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

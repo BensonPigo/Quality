@@ -115,5 +115,21 @@ namespace Quality.Controllers
             ViewData["CallFunction"] = CallFunction;
             return View(model);
         }
+
+        public ActionResult SewingLineList(string Region)
+        {
+            var model = _PublicWindowService.Get_SewingLine(Region, string.Empty);
+            ViewData["Region"] = Region;
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult SewingLineList(string Region, string ID)
+        {
+            var model = _PublicWindowService.Get_SewingLine(Region, ID);
+            ViewData["Region"] = Region;
+            return View(model);
+        }
+
     }
 }

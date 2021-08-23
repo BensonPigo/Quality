@@ -10,7 +10,6 @@ namespace BusinessLogicLayer.Service
     {
         private PublicWondowProvider _Provider { get; set; }
 
-
         public List<Window_Brand> Get_Brand(string ID)
         {
             List<Window_Brand> result = new List<Window_Brand>();
@@ -119,6 +118,146 @@ namespace BusinessLogicLayer.Service
 
                 //取得登入資訊
                 result = _Provider.Get_Technician(CallFunction, Region, ID).ToList();
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
+        public List<Window_Pass1> Get_Pass1(string Region, string ID)
+        {
+            List<Window_Pass1> result = new List<Window_Pass1>();
+
+            try
+            {
+                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+
+                //取得登入資訊
+                result = _Provider.Get_Pass1(Region, ID).ToList();
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
+        public List<Window_LocalSupp> Get_LocalSupp(string Region, string Name)
+        {
+            List<Window_LocalSupp> result = new List<Window_LocalSupp>();
+
+            try
+            {
+                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+
+                //取得登入資訊
+                result = _Provider.Get_LocalSupp(Region, Name).ToList();
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
+        public List<Window_TPESupp> Get_TPESupp(string Region, string Name)
+        {
+            List<Window_TPESupp> result = new List<Window_TPESupp>();
+
+            try
+            {
+                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+
+                //取得登入資訊
+                result = _Provider.Get_TPESupp(Region, Name).ToList();
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
+        public List<Window_Po_Supp_Detail> Get_Po_Supp_Detail(string POID, string FabricType, string Seq)
+        {
+            List<Window_Po_Supp_Detail> result = new List<Window_Po_Supp_Detail>();
+
+            try
+            {
+                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+
+                //取得登入資訊
+                result = _Provider.Get_Po_Supp_Detail(POID, FabricType, Seq).ToList();
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
+        public List<Window_FtyInventory> Get_FtyInventory(string Region, string POID, string Seq1, string Seq2, string Roll)
+        {
+            List<Window_FtyInventory> result = new List<Window_FtyInventory>();
+
+            try
+            {
+                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+
+                //取得登入資訊
+                result = _Provider.Get_FtyInventory(Region, POID, Seq1, Seq2, Roll).ToList();
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
+        public List<Window_FtyInventory> Get_Appearance(string Lab)
+        {
+            List<Window_FtyInventory> result = new List<Window_FtyInventory>();
+
+            try
+            {
+                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+
+                //取得登入資訊
+                result = _Provider.Get_Appearance(Lab).ToList();
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
+        public List<Window_SewingLine> Get_SewingLine(string Region, string ID)
+        {
+            List<Window_SewingLine> result = new List<Window_SewingLine>();
+
+            try
+            {
+                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+
+                //取得登入資訊
+                result = _Provider.Get_SewingLine(Region, ID).ToList();
 
             }
             catch (Exception ex)
