@@ -1,7 +1,155 @@
 ﻿
 @{
-    ViewBag.Title = "CheckList";
+    ViewBag.Title = "Setting";
 }
 
-<h2>CheckList</h2>
+@model DatabaseObject.ManufacturingExecutionDB.FinalInspection
+@section FinalInspection_head{
+    <link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+    <link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+    <link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
 
+    <style type="text/css">
+        #CheckListTable_previous, #CheckListTable_next {
+            color: white !important;
+        }
+
+        tr.shown td.details-control {
+            background: url('/Image/Icon/ChildRowClose.png') no-repeat center center;
+        }
+
+        td.details-control {
+            background: url('/Image/Icon/ChildRowOpen.png') no-repeat center center;
+        }
+    </style>
+}
+@Html.Partial("~/Areas/FinalInspection/Views/Shared/_Inspection_Layout.cshtml")
+<div class="DownWhiteBackgrond">
+    @using (Html.BeginForm("CheckList", "Inspection", FormMethod.Post, new { @id = "settingForm", onsubmit = "return checkSubmitValue(this.submitted);" }))
+    {
+        @Html.HiddenFor(o => o.ID)
+        @Html.HiddenFor(o =>o.POID)
+        <div style="padding:2em 3em 2em 3em;width:60%;float:left;position: absolute;transform: translate(-50%, 0%);left: 50%">
+            <table id="CheckListTable" class="cell-border" style="width:100%">
+            </table>
+        </div>
+        <div style="width:100%">
+            <input type="hidden" id="goPage" name="goPage">
+            <button id="btnBack" onclick="this.form.submitted=this.value;" type="submit" value="Back" class="button" style="right:7em;padding: 0;"><p style="font-size:12px;">Back To Setting</p></button>
+            <button id="btnNext" onclick="this.form.submitted=this.value;" type="submit" value="Next" style="right:0;" class="button">Next</button>
+        </div>
+    }
+
+</div>
+@section FinalInspection_script
+{
+    <script>
+        var EditMode = false; //彈出視窗設定
+        var msg = new MessagerAlert();
+
+        // 摺疊資料需先轉成array
+        var adata = [];
+        var index = 0;
+
+        // 設定大小寫
+        var True = true;
+        var False = false;
+
+        // name, td:value, td:checkbox
+        adata.push([null, 'Fabric Artwork Check List',
+            [
+                ['CheckCloseShade', 'Close / Shade',@Model.CheckCloseShade],
+                ['CheckHandfeel', 'Handfeel', @Model.CheckHandfeel],
+                ['CheckAppearance', 'Appearance',@Model.CheckAppearance],
+                ['CheckPrintEmbDecorations', 'Print / Emb Decorations', @Model.CheckPrintEmbDecorations]
+            ]
+        ]);
+        adata.push([null, 'Label',
+            [
+                ['CheckFiberContent', 'Fiber Content', @Model.CheckFiberContent],
+                ['CheckCareInstructions', 'Care Instructions', @Model.CheckCareInstructions],
+                ['CheckDecorativeLabel', 'Decorative Label', @Model.CheckDecorativeLabel],
+                ['CheckAdicomLabel', 'Adicom Label', @Model.CheckAdicomLabel],
+                ['CheckCountryofOrigion', 'Country of Origion', @Model.CheckCountryofOrigion],
+                ['CheckSizeKey', 'Size Key', @Model.CheckSizeKey],
+                ['Check8FlagLabel', '8 - Flag Label', @Model.Check8FlagLabel],
+                ['CheckAdditionalLabel', 'Additional Label', @Model.CheckAdditionalLabel],
+            ]
+        ]);
+        adata.push([null, 'Fabric Artwork Check List',
+            [
+                ['CheckShippingMark', 'Shipping Mark', @Model.CheckShippingMark],
+                ['CheckHanCheckPolytagMarketingdfeel', 'Polytag / Marketing', @Model.CheckPolytagMarketing],
+                ['CheckColorSizeQty', 'Color / Size / Qty', @Model.CheckColorSizeQty],
+                ['CheckHangtag', 'Hangtag	W', @Model.CheckHangtag],
+            ]
+        ]);
+
+        $(function () {
+            var table = $('#CheckListTable').DataTable({
+                data: adata,
+                autoWidth: false,
+                destroy: true,
+                columnDefs: [
+                    { targets: 0, width: "2%", orderable: false },
+                    { targets: 1, width: "98%", orderable: false },
+                ],
+                columns: [
+                    {
+                        "className": "details-control",
+                    },
+                    {
+                        "style": "color:#E62513",
+                    },
+                ],
+                "filter": false,
+                "paging": false,
+                "info": false,
+                "ordering": false,
+                "pageLength": 10,
+                "scrollY": "50vh",
+                "scrollCollapse": true,
+                "createdRow": function (row, data, index) {
+                    $('td', row).css('background-color', '#FAA7A7');
+                }
+            });
+
+            $("#CheckListTable tbody").on("click", "td.details-control", function () {
+                var tr = $(this).closest('tr');
+                var row = table.row(tr);
+
+                if (row.child.isShown()) {
+                    row.child.hide();
+                    tr.removeClass('shown');
+                }
+                else {
+                    row.child(format(row.data())).show();
+                    tr.addClass('shown');
+                }
+            });
+        });
+
+        function format(d) {
+            var list = d[2];
+            var sTr = "";
+            $(list).each(function (index, value) {
+                sTr = sTr + "<tr><td>" + value[1] + "</td>";
+                if (value[2]) {
+                    sTr = sTr + "<td style='vertical-align: middle'><input type='checkbox' id='"+ value[0] +"' name='" + value[0] + "' checked /></td></tr>";
+                }
+                else {
+                    sTr = sTr + "<td style='vertical-align: middle'><input type='checkbox' id='" + value[0] +"' name='" + value[0] + "'/></td></tr>";
+                }
+            });
+            return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
+                sTr +
+                '</table>';
+        }
+
+        function checkSubmitValue(self) {
+            document.getElementById("page").value = self;
+            return true;
+        }
+    </script>
+}

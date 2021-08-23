@@ -3,5 +3,79 @@
     ViewBag.Title = "BeautifulProductAudit";
 }
 
-<h2>BeautifulProductAudit</h2>
+@model DatabaseObject.ViewModel.FinalInspection.BeautifulProductAudit
+@section FinalInspection_head{
+    <style type="text/css">
+        tr > td{
+            vertical-align:middle;
+            font-size:1.2em;
+        }
+    </style>
+}
 
+@Html.Partial("~/Areas/FinalInspection/Views/Shared/_Inspection_Layout.cshtml")
+<div class="DownWhiteBackgrond">
+    @using (Html.BeginForm("BeautifulProductAudit", "Inspection", FormMethod.Post, new { @id = "settingForm", onsubmit = "return checkSubmitValue(this.submitted);" }))
+    {
+        @Html.HiddenFor(o => o.FinalInspectionID)
+        <div style="padding:2em 3em 2em 3em;width:80%;float:left;position: absolute;transform: translate(-50%, 20%);left: 50%">
+            <div style="width:100%;margin-bottom:2em">
+                <div style="display:inline-block"><h1 style="font-size:2em">Beautiful Product Qty</h1></div>
+                <div style="display:inline-block;margin-left:5%">@Html.TextBoxFor(o => o.BAQty, new { @type = "number", @style = "width:80px", })</div>
+            </div>
+            <div>
+                <div><h1 style="font-size:2em;margin-bottom:1em">Non Beautiful Product</h1></div>
+                <div style="margin-left:25%">
+                    <table class="cell-border productTable" style="width:100%">
+                        @for (int i = 0; i < Model.ListBACriteria.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.HiddenFor(model => Model.ListBACriteria[i].Ukey)
+                                    @Html.DisplayFor(model => Model.ListBACriteria[i].BACriteria):@Html.DisplayFor(model => Model.ListBACriteria[i].BACriteriaDesc)
+                                </td>
+                                @if (Model.ListBACriteria[i].Qty == null)
+                                {
+                                    <td>N/A</td>
+                                    <td></td>
+                                    <td></td>
+                                }
+                                else
+                                {
+                                    <td>@Html.TextBoxFor(model => Model.ListBACriteria[i].Qty, new { @type = "number", @style="width:80px", @onchange = "checkQty(this);" })</td>
+                                    <td> <img src="~/Image/Icon/Camera.png" width="30" height="30" /></td>
+                                    <td><img src="~/Image/Icon/Picture.png" width="30" height="30" /></td>
+                                }
+                            </tr>
+                        }
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div style="width:100%">
+            <input type="hidden" id="goPage" name="goPage">
+            <button id="btnBack" onclick="this.form.submitted=this.value;" type="submit" value="Back" class="button" style="right:7em;padding: 0;"><p style="font-size:12px;">Back To Setting</p></button>
+            <button id="btnNext" onclick="this.form.submitted=this.value;" type="submit" value="Next" style="right:0;" class="button">Next</button>
+        </div>
+    }
+</div>
+@section FinalInspection_script
+{
+    <script>
+        var msg = new MessagerAlert();
+        //不可大於抽樣數量BeautifulProductAudit.SampleSize
+        function checkQty(object) {
+            var sampleSize =@Model.SampleSize;
+            var intValue = parseInt($(object).val());
+            if (intValue > sampleSize) {
+                $(object).val();
+                msg.WithError("can not be more than SampleSize");
+            }
+        }
+
+        function checkSubmitValue(self) {
+            document.getElementById("goPage").value = self;
+            return true;
+        }
+    </script>
+}

@@ -2,6 +2,20 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>整個Final Inspection都會套用的Layout</h2>
-
-@RenderBody()
+@section head{
+    <link href="~/Areas/FinalInspection/CSS/FinalInspection.css" rel="stylesheet" type="text/css">
+    <link href="/ThirdParty/plugins/jquery-magnific-popup/magnific-popup.css" rel="stylesheet" />
+    <link href="/ThirdParty/plugins/jquery-ui/jquery-ui.css" rel="stylesheet" />
+    <style type="text/css">
+        .col-auto > * {
+            width: auto;
+        }
+    </style>
+}
+@RenderSection("FinalInspection_head", required: false)
+<div class="main-content">
+    <div class="main_div">
+        @RenderBody()
+    </div>
+</div>
+@RenderSection("FinalInspection_script", required: false)

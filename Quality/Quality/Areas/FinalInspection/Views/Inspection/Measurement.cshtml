@@ -3,5 +3,263 @@
     ViewBag.Title = "Measurement";
 }
 
-<h2>Measurement</h2>
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
 
+@Html.Partial("~/Areas/FinalInspection/Views/Shared/_Inspection_Layout.cshtml")
+
+@model DatabaseObject.ViewModel.FinalInspection.Measurement
+
+
+
+<style type="text/css">
+    #SelectedPOTable_previous, #SelectedPOTable_next {
+        color: white !important;
+    }
+
+    tr.shown td.details-control {
+        background: url('/Image/Icon/ChildRowClose.png') no-repeat center center;
+    }
+
+    td.details-control {
+        background: url('/Image/Icon/ChildRowOpen.png') no-repeat center center;
+    }
+
+    .whiteBackgrond form {
+        height: 100%
+    }
+
+    .col-auto {
+        margin: 1em
+    }
+
+    .sub_title {
+        font-size: 1.5em;
+        color: #999999
+    }
+
+    .table_div > tbody > tr > td > * {
+        margin: 0.5em;
+    }
+
+    .table_div > tbody > tr > td:first-child {
+        text-align: right;
+        padding-right: 1em;
+        font-weight: bold;
+        vertical-align: middle;
+    }
+
+    .table_div > tbody > tr > td:nth-child(2) {
+        text-align: left;
+    }
+
+    #myTable_info {
+        color: white
+    }
+
+    #myTable_previous, #myTable_next {
+        color: white !important;
+    }
+
+    #myTable_wrapper, #myTable_wrapper > .dataTables_scrollHeadInner {
+        width: 100%
+    }
+
+    .searchFont {
+        font-size: 1vw;
+        font-weight: 900;
+    }
+</style>
+
+<div class="DownLeftWhiteBackgrond">
+    <div style="border:0px;padding:2vh;">
+        <h1 style="font-size: 3vh; font-weight: 900; color: #999999 ">Measurement for what?</h1>
+
+    </div>
+    <table style="width: 100%; margin-top: 2vh; ">
+        <tbody>
+            <tr>
+                <td align="right"><p class="searchFont">Article</p></td>
+                <td align="center">
+                    @Html.DropDownListFor(o => o.ListArticle, (List<SelectListItem>)ViewBag.ListArticle, null, new { @class = "form-control", id = "dropListArticle" })
+                </td>
+            </tr>
+            <tr>
+
+                <td align="right"><p class="searchFont">Size</p></td>
+                <td align="center">
+                    @Html.DropDownListFor(o => o.ListSize, (List<SelectListItem>)ViewBag.ListSize, null, new { @class = "form-control", id = "dropListSize" })
+                </td>
+            </tr>
+
+            <tr>
+                <td align="right"><p class="searchFont">Product Type</p></td>
+                <td align="center">
+                    @Html.DropDownListFor(o => o.ListProductType, (List<SelectListItem>)ViewBag.ListProductType, null, new { @class = "form-control", id = "dropListProductType" })
+                </td>
+
+            </tr>
+
+        </tbody>
+    </table>
+</div>
+<div class="DownRightWhiteBackgrond">
+    <div style="border:0px;padding:2vh;">
+        <h1 style="font-size: 3vh; font-weight: 900; color: #999999 ">Measurement</h1>
+        <table style="width:100%">
+            <tr>
+                <td>
+                    <div>
+                        <p class="searchFont">Unit</p>
+                        @Html.TextBoxFor(o => o.SizeUnit, new { @class = "form-control" })
+                    </div>
+                </td>
+                <td>
+                    <button onclick="open_View();">View</button>
+                </td>
+
+                <td>
+                    <button   >Save</button>
+                </td>
+
+            </tr>
+        </table>
+
+    </div>
+    <button style="right:2em;" class="button" >Next</button>
+
+
+    <div class="detail-dialog to-edit-detail" title="Detail">
+        <div class="detail-dialog-content dialog-content-w-icon" style="height:40vh">
+            <table cellspacing="100" id="myTable" class="table table-striped display">
+                <thead>
+                    <tr class="row-name">
+                        <th>Select</th>
+                        <th>Packing List ID</th>
+                        <th>CTN No</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                        <td>
+                            2
+                        </td>
+                        <td>
+                            3
+                        </td>
+                        <td>
+                            6
+                        </td>
+                    </tr>
+
+                    @*@foreach (var item in Model.SelectedPO)
+                        {
+                            int index = 0;
+                            foreach (var subItem in Model.SelectCarton)
+                            {
+                                int subindex = 0;
+                                <tr class="row-content" pkey="@item.OrderID,@item.POID" style="vertical-align: middle; text-align: center;">
+                                    <td>
+                                        @Html.CheckBox($"SelectedPO[{index}].SelectCarton[{subindex}].Selected", subItem.Selected, new { @type = "checkbox" })
+                                    </td>
+                                    <td>
+                                        @Html.Hidden($"SelectedPO[{index}].SelectCarton[{subindex}].PackingListID", subItem.PackingListID)
+                                        @Html.DisplayFor(modelItem => subItem.PackingListID)
+                                    </td>
+                                    <td>
+                                        @Html.Hidden($"SelectedPO[{index}].SelectCarton[{subindex}].CTNNo", subItem.CTNNo)
+                                        @Html.DisplayFor(modelItem => subItem.CTNNo)
+                                    </td>
+                                </tr>
+
+                                subindex = subindex + 1;
+                            }
+                            index = index + 1;
+                        }*@
+                </tbody>
+
+            </table>
+            <br />
+            <div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+
+    $('#myTable').DataTable({
+        "pageLength": 5,
+        "autoWidth": false,
+        "info": false,
+        "filter": false,
+        "paging": false,
+        "info": false,
+        "scrollY": "40vh",
+        "scrollCollapse": true,
+        columnDefs: [
+            { targets: 0, width: "30%" },
+            { targets: 1, width: "30%" },
+            { targets: 2, width: "30%" },
+        ]
+    });
+
+    $(".detail-dialog").dialog({
+        autoOpen: false,
+        modal: true,
+        closeText: ' ',
+        width: 500,
+        minHeight: 400,
+        position: {
+            my: "center top",
+            at: "center top",
+            of: window
+        },
+        dialogClass: "site-box",
+        open: function (event, ui) {
+            $('.ui-widget-overlay').bind('click', function () {
+                //location.reload();//強制Refresh頁面 Benson
+                $(".ui-dialog-content").dialog('close');
+            });
+            $(this).parent().siblings().find(".ui-dialog-content").dialog('close');
+
+        },
+        close: function () {
+        },
+    });
+
+    //$(".to-edit-detail").dialog({
+    //    width: "70%",
+    //    dialogClass: "add-contact-box",
+    //    buttons: {
+    //        "1": {
+    //            text: 'Next',
+    //            click: function () {
+    //                $(this).dialog("close");
+    //            }
+    //            , "class": "button"
+    //            , "style": "bottom:0;background-color:#E00000"
+    //        },
+    //    },
+    //});
+
+    $(".to-edit-detail").on("dialogclose", function (event, ui) {
+        EditMode = false;
+    });
+
+
+    function open_View() {
+        $("#myTable tbody").find('tr').each(function (index, value) {
+            $(this).show();
+        });
+
+        $(".to-edit-detail").dialog("open");
+        $("#myTable").DataTable().columns.adjust();
+    }
+
+</script>

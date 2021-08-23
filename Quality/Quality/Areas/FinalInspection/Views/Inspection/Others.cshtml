@@ -2,6 +2,138 @@
 @{
     ViewBag.Title = "Others";
 }
+@Html.Partial("~/Areas/FinalInspection/Views/Shared/_Inspection_Layout.cshtml")
+<style type="text/css">
 
-<h2>Others</h2>
 
+
+    .Font {
+        font-size: 1.5em;
+        font-weight: 900;
+    }
+
+    .textFont {
+        font-size: 1.5em;
+    }
+
+
+    td {
+        height: 4em;
+        padding: 1em
+    }
+
+    .ColumnStype {
+        text-align: right;
+    }
+
+    .ColunTD {
+        width: 32%;
+    }
+
+    .ValueTD {
+        width: 25%;
+    }
+
+
+    .al-m {
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        left: 50%;
+    }
+</style>
+
+@model DatabaseObject.ViewModel.FinalInspection.Others
+<div class="DownWhiteBackgrond" style="display: flex; flex-wrap: nowrap; height: 76vh;">
+    @using (Html.BeginForm("Others", "Inspection", FormMethod.Post, new { @id = "OthersForm", onsubmit = "return checkValue(this.submitted)" }))
+    {
+        <table class="al-m" style="width: 80% ; align-items: center; ">
+
+            <tr>
+                <td class="ColumnStype ColunTD"><label class="Font">CFA</label></td>
+                <td class="ValueTD">
+                    <div class="textFont"> @Html.DisplayFor(o => o.CFA)   </div>
+                </td>
+
+                <td class="ColumnStype ColunTD"><label class="Font">Inspection Result</label></td>
+                <td class="ValueTD">
+                    @if (Model != null)
+                    {
+                        string color = "#00CC00";
+                        if (Model.InspectionResult == "Fail")
+                        {
+                            color = "#E62513";
+                        }
+
+
+                        <div class="textFont" style="color:@color">
+                            @Html.DisplayFor(o => o.InspectionResult)
+                        </div>
+
+                    }
+
+                </td>
+            </tr>
+
+            <tr>
+                <td class="ColumnStype"><label class="Font">Production Status</label></td>
+                <td> @Html.TextBoxFor(o => o.ProductionStatus, new { @class = "form-control center-block" })</td>
+                <td class="ColumnStype"><label class="Font">Shipment Status</label></td>
+                <td>
+                    @if (Model != null)
+                    {
+                        string color = "#00CC00";
+                        if (Model.ShipmentStatus == "OnHold")
+                        {
+                            color = "#E62513";
+                        }
+
+                        <div class="textFont" style="color:@color">
+                            @Html.DisplayFor(o => o.ShipmentStatus)
+                        </div>
+                    }
+
+
+                </td>
+            </tr>
+
+            <tr>
+                <td class="ColumnStype"><label class="Font">Other Photo</label></td>
+                <td>
+                    <img src="~/Image/Icon/Camera.png" width="30" height="30" />
+                    <img src="~/Image/Icon/Picture.png" width="30" height="30" />
+                </td>
+                <td></td>
+                <td></td>
+            </tr>
+
+            <tr>
+                <td class="ColumnStype" style="vertical-align:top;"><label class="Font">Remark</label></td>
+                <td colspan="2">
+
+                    @Html.TextAreaFor(o => o.OthersRemark, new { @style = "width:calc(100% - 80px); border: 1px solid black;" })
+
+                </td>
+                <td></td>
+
+            </tr>
+
+        </table>
+        <input type="hidden" id="page" name="page">
+        <button id="btnBack" onclick="this.form.submitted=this.value;" type="submit" value="Back" style="right: 8em;" class="button">Back</button>
+        <button d="btnSubmit" onclick="this.form.submitted=this.value;" type="submit" value="Submit" style="right:0;" class="button">Submit</button>
+    }
+</div>
+
+
+<script>
+
+    var msg = new MessagerAlert();
+
+    function checkValue(self) {
+        document.getElementById("page").value = self;
+
+        return true;
+    }
+
+</script>

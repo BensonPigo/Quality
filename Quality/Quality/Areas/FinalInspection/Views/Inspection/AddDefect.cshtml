@@ -1,7 +1,154 @@
 ﻿
 @{
-    ViewBag.Title = "AddDefect";
+    ViewBag.Title = "Add Defect";
 }
 
-<h2>AddDefect</h2>
+@model DatabaseObject.ViewModel.FinalInspection.AddDefect
+@section FinalInspection_head{
+    <link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+    <link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+    <link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
 
+    <style type="text/css">
+        #CheckListTable_previous, #CheckListTable_next {
+            color: white !important;
+        }
+
+        tr.shown td.details-control {
+            background: url('/Image/Icon/ChildRowClose.png') no-repeat center center;
+        }
+
+        td.details-control {
+            background: url('/Image/Icon/ChildRowOpen.png') no-repeat center center;
+        }
+    </style>
+}
+@Html.Partial("~/Areas/FinalInspection/Views/Shared/_Inspection_Layout.cshtml")
+<div class="DownWhiteBackgrond">
+    @using (Html.BeginForm("AddDefect", "Inspection", FormMethod.Post, new { @id = "AddDefectForm", onsubmit = "return checkValue(this.submitted)" }))
+    {
+
+    <div style="padding:2em 3em 2em 3em;width:80%;float:left;position: absolute;transform: translate(-50%, 0%);left: 50%">
+        <div><h1 style="font-size: 2vh; font-weight: 900; ">How many reject Qty(pcs) @Html.TextBoxFor(o => o.RejectQty, new { @type = "number", @style = "width:10vw", @class = "form-control center-block" })</h1> </div>
+    <table id="CheckListTable" class="cell-border" style="width:100%">
+    </table>
+</div>
+        <div style="width:100%">
+            <input type="hidden" id="page" name="page">
+            <button id="btnBack" onclick="this.form.submitted=this.value;" type="submit" value="Back" class="button" style="right:7em;padding: 0;"><p style="font-size:12px;">Back</p></button>
+            <button id="btnNext" onclick="this.form.submitted=this.value;" type="submit" value="Next" style="right:0;" class="button">Next</button>
+        </div>
+    }
+
+</div>
+@section FinalInspection_script
+{
+    <script>
+        var EditMode = false; //彈出視窗設定
+        var msg = new MessagerAlert();
+
+        // 摺疊資料需先轉成array
+        var adata = [];
+
+        var items = @Html.Raw(Json.Encode(Model.ListFinalInspectionDefectItem));
+        var lookup = {};
+        var result = [];
+
+        // 取出群組
+        for (var item, i = 0; item = items[i++];) {
+            var code = item.DefectTypeDesc;
+
+            if (!(code in lookup)) {
+                lookup[code] = 1;
+                result.push(code);
+            }
+        }
+
+        // 組摺疊用的arrayS
+        var keyCount = 0;
+
+        while (keyCount < result.length)
+        {
+            var temp = [];
+   
+            for (var i = 0; i < items.length; i++) {
+
+                if (result[keyCount] == items[i].DefectTypeDesc) {
+                    temp.push([items[i].Ukey, items[i].DefectCodeDesc, items[i].Qty, items[i].ListFinalInspectionDefectImage, items[i].ListFinalInspectionDefectImage]);
+                }
+            }
+
+            adata.push([null, result[keyCount], temp])
+            keyCount++
+        }
+
+
+        $(function () {
+            var table = $('#CheckListTable').DataTable({
+                data: adata,
+                autoWidth: false,
+                destroy: true,
+                columnDefs: [
+                    { targets: 0, width: "2%", orderable: false },
+                    { targets: 1, width: "98%", orderable: false },
+                ],
+                columns: [
+                    {
+                        "className": "details-control",
+                    },
+                    {
+                        "style": "color:#E62513",
+                    },
+                ],
+                "filter": false,
+                "paging": false,
+                "info": false,
+                "ordering": false,
+                "pageLength": 10,
+                "scrollY": "50vh",
+                "scrollCollapse": true,
+                "createdRow": function (row, data, index) {
+                    $('td', row).css('background-color', '#FAA7A7');
+                }
+            });
+
+            $("#CheckListTable tbody").on("click", "td.details-control", function () {
+                var tr = $(this).closest('tr');
+                var row = table.row(tr);
+
+                if (row.child.isShown()) {
+                    row.child.hide();
+                    tr.removeClass('shown');
+                }
+                else {
+                    row.child(format(row.data())).show();
+                    tr.addClass('shown');
+                }
+            });
+        });
+
+        function format(d) {
+            var list = d[2];
+            var sTr = "";
+            $(list).each(function (index, value) {
+                sTr = sTr + "<tr><td>" + value[1] + "</td>";               
+                sTr = sTr + `<td style='vertical-align: middle'><input type='number'  min="0" style="width: 10vh" id='${value[0]} ' name='${value[0]}'  value='${value[2]}' /></td>
+                            <td> <img src="/Image/Icon/Camera.png" width="25" height="25" /></td>
+                            <td> <img src="/Image/Icon/Picture.png" width="25VW" height="25VW" /></td>
+                            </tr>`;
+               
+            });
+            return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
+                sTr +
+                '</table>';
+        }
+
+        function checkValue(self) {
+            document.getElementById("page").value = self;
+
+            return true;
+        }
+
+    </script>
+}

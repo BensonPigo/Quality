@@ -1,7 +1,32 @@
-﻿@{
-    Layout = "~/Areas/FinalInspection/Views/Shared/_ForAll_Layout.cshtml";
-}
+﻿<div class="UpWhiteBackgrond al-c">
+    <div class="al-m" style="width:100%">
+        @*<div style='float:left;'><h1 style="font-size:1.2em">Inspection Detail</h1></div>*@
+        @{
+            Dictionary<string, string> list = new Dictionary<string, string>();
+            list.Add("General", "General");
+            list.Add("CheckList", "Check List");
+            list.Add("AddDefect", "Add Defect");
+            list.Add("BeautifulProductAudit", "Beautiful Product Audit");
+            list.Add("Moisture", "Moisture");
+            list.Add("Measurement", "Measurement");
+            list.Add("Others", "Others");
 
-<h2>Inspection 逐步的共用區域寫在這</h2>
-
-@RenderBody()
+            List<string> result = new List<string>();
+            string url = Request.Url.AbsoluteUri;
+            string test = string.Empty;
+            foreach (var item in list)
+            {
+                if (url.Contains(item.Key))
+                {
+                    result.Add($"<div style='color:#E62513;display:inline-block'><h1 style='font-size:1.1em'>{item.Value}</h1></div>");
+                }
+                else
+                {
+                    result.Add($"<div style='display:inline-block'><h1 style='font-size:1.1em'>{item.Value}</h1></div>");
+                }
+            }
+            string link = string.Join(" <img src='/Image/Icon/East.png' style='width:1.5em;vertical-align:middle' /> ", result);
+            @Html.Raw(link)
+        }
+    </div>
+</div>
