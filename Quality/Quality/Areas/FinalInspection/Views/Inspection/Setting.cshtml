@@ -320,9 +320,9 @@
                 }
             });
 
-            var cartonList = document.getElementById("SelectedPO[" + rowIndex + "].Cartons").value;
-            var cartonValus = cartonList.split(',');
-            $(cartonValus).each(function () {
+            var cartonValues = document.getElementById("SelectedPO[" + rowIndex + "].Cartons").value;
+            var cartonList = cartonValues.split(',');
+            $(cartonList).each(function () {
                 $('#carton_select_' + this).prop('checked', true);
             });
 
