@@ -42,7 +42,6 @@
         @using (Html.BeginForm("SewingLineList", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post, new { @width = "100%", @height = "5%", @style = "margin-bottom:10px;" }))
         {
         <input type="text" name="ID" value="" />
-        @Html.Hidden("Region", ViewData["Region"]);
         <input type="submit" value="Query" />
         <input id="" type="button" value="Exit" />
         }

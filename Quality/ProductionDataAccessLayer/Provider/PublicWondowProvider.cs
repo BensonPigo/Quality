@@ -184,7 +184,7 @@ AND StyleUkey = @StyleUkey
             return ExecuteList<Window_Article>(CommandType.Text, SbSql.ToString(), paras);
         }
 
-        public IList<Window_Technician> Get_Technician(string CallFunction, string Region, string ID)
+        public IList<Window_Technician> Get_Technician(string CallFunction, string ID)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -194,8 +194,6 @@ Select tch.ID
 		, p1.Name
 		, p1.ExtNo
 		, p1.Factory
---From [PMS\pmsdb\{Region}].Production.dbo.Technician tch   --台北
---Inner join [PMS\pmsdb\{Region}].Production.dbo.Pass1 p1 on tch.ID = p1.ID --台北
 From Production.dbo.Technician tch
 Inner join Production.dbo.Pass1 p1 on tch.ID = p1.ID
 Where tch.{CallFunction} = 1
@@ -212,7 +210,7 @@ Where tch.{CallFunction} = 1
             return ExecuteList<Window_Technician>(CommandType.Text, SbSql.ToString(), paras);
         }
 
-        public IList<Window_Pass1> Get_Pass1(string Region, string ID)
+        public IList<Window_Pass1> Get_Pass1(string ID)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -222,17 +220,10 @@ Select ID
 		, Name
 		, ExtNo
 		, Factory
---From  InterialWeb.dbo.Pass1    --台北
 From  Pass1 p1 --工廠
 Where 1=1
 
 ");
-
-            if (!string.IsNullOrEmpty(Region))
-            {
-                SbSql.Append($@"AND Factory = @Region ");
-                paras.Add("@Region", DbType.String, Region);
-            }
 
             if (!string.IsNullOrEmpty(ID))
             {
@@ -243,7 +234,7 @@ Where 1=1
             return ExecuteList<Window_Pass1>(CommandType.Text, SbSql.ToString(), paras);
         }
 
-        public IList<Window_LocalSupp> Get_LocalSupp(string Region, string Name)
+        public IList<Window_LocalSupp> Get_LocalSupp(string Name)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -252,7 +243,6 @@ Where 1=1
 Select ID
 		, Abb
 		, Name
---From [PMS\pmsdb\{Region}].Production.dbo.LocalSupp --台北
 From Production.dbo.LocalSupp -- 工廠
 Where Junk = 0
 
@@ -268,7 +258,7 @@ Where Junk = 0
             return ExecuteList<Window_LocalSupp>(CommandType.Text, SbSql.ToString(), paras);
         }
 
-        public IList<Window_TPESupp> Get_TPESupp(string Region, string Name)
+        public IList<Window_TPESupp> Get_TPESupp(string Name)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -353,7 +343,7 @@ AND psd.ID = @POID
             return ExecuteList<Window_Po_Supp_Detail>(CommandType.Text, SbSql.ToString(), paras);
         }
 
-        public IList<Window_FtyInventory> Get_FtyInventory(string Region, string POID, string Seq1, string Seq2, string Roll)
+        public IList<Window_FtyInventory> Get_FtyInventory(string POID, string Seq1, string Seq2, string Roll)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -361,7 +351,6 @@ AND psd.ID = @POID
             //台北
             SbSql.Append($@"
 Select Roll, Dyelot
---From [PMS\pmsdb\{Region}].Production.dbo.FtyInventory --台北
 From Production.dbo.FtyInventory --工廠
 Where 1=1
 ");
@@ -418,7 +407,7 @@ Where 1=1
             return ExecuteList<Window_FtyInventory>(CommandType.Text, SbSql.ToString(), paras);
         }
 
-        public IList<Window_SewingLine> Get_SewingLine(string Region, string ID)
+        public IList<Window_SewingLine> Get_SewingLine(string ID)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -426,7 +415,6 @@ Where 1=1
             //台北
             SbSql.Append($@"
 Select ID
---From [PMS\pmsdb\{Region}].Production.dbo.FtyInventory --台北
 From Production.dbo.SewingLine --工廠
 Where Junk = 0
 ");

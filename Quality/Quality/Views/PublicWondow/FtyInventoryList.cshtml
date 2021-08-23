@@ -2,13 +2,16 @@
 
 @{
     Layout = null;
+    string title = ViewData["Title"] == null ? "TPESupp" : ViewData["Title"].ToString();
 }
 
-@model List<Window_Technician>
+@model List<Window_FtyInventory>
 
-<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script src="~/Scripts/jquery-3.5.1.min.js"></script>
+
 <link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
 <link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+
 <script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
 
 <style>
@@ -40,11 +43,14 @@
 </style>
 
 <fieldset style="width:900px;height:700px;">
-    <legend>Technician</legend>
-    @using (Html.BeginForm("TechnicianList", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post, new { @width = "100%", @height = "5%", @style = "margin-bottom:10px;" }))
+    <legend>@title</legend>
+    @using (Html.BeginForm("FtyInventoryList", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post, new { @width = "100%", @height = "5%", @style = "margin-bottom:10px;" }))
     {
-        <input type="text" name="ID" value="" />
-        @Html.Hidden("CallFunction", ViewData["CallFunction"]);
+        <input type="text" name="Roll" value="" />
+        @Html.Hidden("Title", title);
+        @Html.Hidden("POID", ViewData["POID"]);
+        @Html.Hidden("Seq1", ViewData["Seq1"]);
+        @Html.Hidden("Seq2", ViewData["Seq2"]);
         <input type="submit" value="Query" />
         <input id="btnExit" type="button" value="Exit" />
     }
@@ -53,10 +59,8 @@
         <table id="MyTable" style="width:100%;max-height:100%;" class="table table-striped display">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>ExtNo</th>
-                    <th>Factory</th>
+                    <th>Roll</th>
+                    <th>Dyelot</th>
                 </tr>
             </thead>
             <tbody>
@@ -64,10 +68,8 @@
                 {
                     <tr>
 
-                        <td>@item.ID</td>
-                        <td>@item.Name</td>
-                        <td>@item.ExtNo</td>
-                        <td>@item.Factory</td>
+                        <td>@item.Roll</td>
+                        <td>@item.Dyelot</td>
                     </tr>
                 }
             </tbody>
@@ -84,22 +86,25 @@
         var table = $('#MyTable').DataTable({
             "filter": false,
             "paging": false,
-            "info": false
+            "info": false,
+            columnDefs: [
+                { targets: 0, orderable: false },
+                { targets: 1, orderable: false },
+            ],
         });
 
         $('#MyTable tbody').on('click', 'tr', function (data, type, full, meta) {
 
             // 取得整個Row
-            var TechnicianData = table.row(this).data();
+            var FtyInventoryData = table.row(this).data();
 
-            var Technician = {
-                ID: TechnicianData[0],
-                Name: TechnicianData[1],
-                ExtNo: TechnicianData[2],
+            var FtyInventory = {
+                Roll: FtyInventoryData[0],
+                Dyelot: FtyInventoryData[1],
             }
 
-            // 呼叫父視窗的GetTechnician Function，把物件傳回去
-            window.opener.GetTechnician(Technician);
+            // 呼叫父視窗的GetFtyInventory Function，把物件傳回去
+            window.opener.GetFtyInventory(FtyInventory);
 
             window.close();
         });
