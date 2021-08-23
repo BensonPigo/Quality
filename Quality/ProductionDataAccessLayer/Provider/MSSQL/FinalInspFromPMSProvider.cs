@@ -135,5 +135,38 @@ order by AQLType , InspectionLevels
             return ExecuteList<AcceptableQualityLevels>(CommandType.Text, sqlGetData, listPar);
         }
 
+        public IList<FinalInspectionDefectItem> GetFinalInspectionDefectItems(string finalInspectionID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+
+            listPar.Add("@finalInspectionID", finalInspectionID);
+
+            string sqlGetData = $@"
+select  GarmentDefectTypeID,
+        GarmentDefectCodeID,
+        Qty,
+        Ukey
+into #FinalInspection_Detail
+from [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Detail
+where   ID = @finalInspectionID
+
+select  [Ukey] = isnull(fd.Ukey, -1),
+        [DefectType] = gdt.ID,
+        [DefectCode] = gdc.ID,
+        [DefectTypeDesc] = gdt.ID +'-'+gdt.Description,
+        [DefectCodeDesc] = gdc.ID +'-'+gdc.Description,
+        [Qty] = isnull(fd.Qty, 0)
+    from GarmentDefectType gdt with (nolock)
+    inner join GarmentDefectCode gdc with (nolock) on gdt.id=gdc.GarmentDefectTypeID
+    left join   #FinalInspection_Detail fd on fd.GarmentDefectTypeID = gdt.ID and fd.GarmentDefectCodeID = gdc.ID
+    where   gdt.Junk =0 and
+            gdc.Junk =0
+ order by gdt.id,gdc.id
+
+
+";
+            return ExecuteList<FinalInspectionDefectItem>(CommandType.Text, sqlGetData, listPar);
+        }
+
     }
 }

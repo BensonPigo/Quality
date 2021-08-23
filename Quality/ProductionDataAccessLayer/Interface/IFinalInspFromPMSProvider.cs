@@ -12,5 +12,6 @@ namespace ProductionDataAccessLayer.Interface
         IList<SelectedPO> GetSelectedPOForInspection(string finalInspectionID);
         IList<SelectCarton> GetSelectedCartonForSetting(List<string> listOrderID);
         IList<SelectCarton> GetSelectedCartonForSetting(string finalInspectionID);
+        IList<FinalInspectionDefectItem> GetFinalInspectionDefectItems(string finalInspectionID);
     }
 }

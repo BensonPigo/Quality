@@ -17,6 +17,8 @@ namespace BusinessLogicLayer.Interface
         /// <returns>Setting</returns>
         AddDefect GetDefectForInspection(string finalInspectionID);
 
-        BaseResult UpdateFinalInspection(Setting setting, string UserID);
+        BaseResult UpdateFinalInspectionDetail(AddDefect addDefect, string UserID);
+
+        List<byte[]> GetDefectImage(long FinalInspection_DetailUkey);
     }
 }

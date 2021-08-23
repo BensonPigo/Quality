@@ -14,5 +14,9 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         string UpdateFinalInspection(Setting setting, string userID, string factoryID, string MDivisionid);
 
         void UpdateFinalInspectionByStep(FinalInspection finalInspection, string currentStep, string userID);
+
+        IList<byte[]> GetFinalInspectionDefectImage(long FinalInspection_DetailUkey);
+
+        void UpdateFinalInspectionDetail(AddDefect addDefect, string UserID);
     }
 }

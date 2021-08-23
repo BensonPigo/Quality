@@ -21,52 +21,69 @@ namespace BusinessLogicLayer.Service
 
         public AddDefect GetDefectForInspection(string finalInspectionID)
         {
-            throw new NotImplementedException();
-        }
+            AddDefect addDefect = new AddDefect()
+            {
+                FinalInspectionID = finalInspectionID
+            };
 
-        public Setting GetSettingForInspection(string finalInspectionID)
-        {
-            Setting result = new Setting();
-            DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection = new DatabaseObject.ManufacturingExecutionDB.FinalInspection();
             try
             {
                 _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
                 _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
 
-                finalInspection = _FinalInspectionProvider.GetFinalInspection(finalInspectionID);
+                DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection =
+                    _FinalInspectionProvider.GetFinalInspection(finalInspectionID);
+
+                addDefect.FinalInspectionID = finalInspectionID;
 
                 if (!finalInspection)
                 {
-                    result.Result = false;
-                    result.ErrorMessage = finalInspection.ErrorMessage;
-                    return result;
+                    addDefect.RejectQty = 0;
                 }
-
-                result.FinalInspectionID = finalInspectionID;
-                result.InspectionStage = finalInspection.InspectionStage;
-                result.AuditDate = finalInspection.AuditDate;
-                result.SewingLineID = finalInspection.SewingLineID;
-                result.InspectionTimes = finalInspection.InspectionTimes.ToString();
-                result.AcceptableQualityLevelsUkey = finalInspection.AcceptableQualityLevelsUkey.ToString();
-                result.SampleSize = finalInspection.SampleSize;
-                result.AcceptQty = finalInspection.AcceptQty;
-
-                result.SelectedPO = _FinalInspFromPMSProvider.GetSelectedPOForInspection(finalInspectionID).ToList();
-                result.SelectCarton = _FinalInspFromPMSProvider.GetSelectedCartonForSetting(finalInspectionID).ToList();
-
-                foreach (SelectedPO selectedPOItem in result.SelectedPO)
+                else
                 {
-                    var selectedCartons = result.SelectCarton.Where(s => s.OrderID == selectedPOItem.OrderID);
-                    if (!selectedCartons.Any())
-                    {
-                        continue;
-                    }
-
-                    selectedPOItem.Cartons = selectedCartons.Select(s => s.CTNNo).JoinToString(",");
+                    addDefect.RejectQty = finalInspection.RejectQty;
                 }
 
-                result.AcceptableQualityLevels = _FinalInspFromPMSProvider.GetAcceptableQualityLevelsForSetting().ToList();
-                result.ListSewingLine = _FinalInspFromPMSProvider.GetSewingLineForSetting(finalInspection.FactoryID).ToList();
+                addDefect.ListFinalInspectionDefectItem = _FinalInspFromPMSProvider.GetFinalInspectionDefectItems(finalInspectionID).ToList();
+
+            }
+            catch (Exception ex)
+            {
+                addDefect.Result = false;
+                addDefect.ErrorMessage = ex.ToString();
+            }
+
+            return addDefect;
+        }
+
+        public List<byte[]> GetDefectImage(long FinalInspection_DetailUkey)
+        {
+            _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+            return _FinalInspectionProvider.GetFinalInspectionDefectImage(FinalInspection_DetailUkey).ToList();
+
+        }
+
+        public BaseResult UpdateFinalInspectionDetail(AddDefect addDefect, string UserID)
+        {
+            BaseResult result = new BaseResult();
+            
+            try
+            {
+                var needUpdateDefects = addDefect.ListFinalInspectionDefectItem.Where(s => s.Qty > 0 || s.Ukey > 0);
+
+                if (needUpdateDefects.Any())
+                {
+                    addDefect.ListFinalInspectionDefectItem = needUpdateDefects.ToList();
+                }
+                else
+                {
+                    addDefect.ListFinalInspectionDefectItem = new List<FinalInspectionDefectItem>();
+                }
+
+                _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+                _FinalInspectionProvider.UpdateFinalInspectionDetail(addDefect, UserID);
             }
             catch (Exception ex)
             {
@@ -75,11 +92,6 @@ namespace BusinessLogicLayer.Service
             }
 
             return result;
-        }
-
-        public BaseResult UpdateFinalInspection(Setting setting, string UserID)
-        {
-            throw new NotImplementedException();
         }
     }
 }

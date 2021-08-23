@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using DatabaseObject;
 using DatabaseObject.ViewModel.FinalInspection;
 using System.Transactions;
+using System.Linq;
 
 namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 {
@@ -86,12 +87,13 @@ where   ID = @ID
             }
             else
             {
-                return new FinalInspection() { 
+                return new FinalInspection()
+                {
                     Result = false,
                     ErrorMessage = "No Data Found"
                 };
             }
-            
+
         }
 
         public string GetInspectionTimes(string POID)
@@ -105,7 +107,7 @@ select [InspectionTimes] = isnull(max(InspectionTimes), 0) + 1
     from FinalInspection
     where   POID = @POID
 ";
-            
+
             return ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, objParameter).Rows[0]["InspectionTimes"].ToString();
         }
 
@@ -318,6 +320,109 @@ where   ID = @FinalInspectionID
             using (TransactionScope transaction = new TransactionScope())
             {
                 ExecuteNonQuery(CommandType.Text, sqlUpdCmd, objParameter);
+                transaction.Complete();
+            }
+        }
+
+        public IList<byte[]> GetFinalInspectionDefectImage(long FinalInspection_DetailUkey)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection() {
+            { "@FinalInspection_DetailUkey", DbType.Int64, FinalInspection_DetailUkey }
+            };
+
+            string sqlGetData = @"
+select  Image
+    from FinalInspection_DetailImage with (nolock)
+    where   FinalInspection_DetailUkey = @FinalInspection_DetailUkey
+";
+
+            DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, objParameter);
+
+            if (dtResult.Rows.Count > 0)
+            {
+                return dtResult.AsEnumerable().Select(s => (byte[])s["Image"]).ToList();
+            }
+            else
+            {
+                return new List<byte[]>();
+            }
+        }
+
+        public void UpdateFinalInspectionDetail(AddDefect addDefect, string UserID)
+        {
+            using (TransactionScope transaction = new TransactionScope())
+            {
+                SQLParameterCollection objParameter = new SQLParameterCollection() {
+                    { "@FinalInspectionID", DbType.String, addDefect.FinalInspectionID },
+                    { "@RejectQty", DbType.Int32, addDefect.RejectQty },
+                    { "@UserID", DbType.String, UserID },
+                    { "@InspectionStep", DbType.String, addDefect.InspectionStep }
+                };
+
+                string sqlUpdFinalInspection = @"
+update  FinalInspection
+        set PassQty = SampleSize - @RejectQty,
+            RejectQty = @RejectQty,
+            InspectionStep = @InspectionStep,
+            EditName = @UserID,
+            EditDate = getdate()
+where   ID = @FinalInspectionID
+";
+                ExecuteNonQuery(CommandType.Text, sqlUpdFinalInspection, objParameter);
+
+                foreach (FinalInspectionDefectItem defectItem in addDefect.ListFinalInspectionDefectItem)
+                {
+                    string sqlUpdateFinalInspectionDetail = string.Empty;
+                    SQLParameterCollection detailParameter = new SQLParameterCollection() {
+                            { "@FinalInspectionID", DbType.String, addDefect.FinalInspectionID },
+                            { "@GarmentDefectTypeID", DbType.String, defectItem.DefectType },
+                            { "@GarmentDefectCodeID", DbType.String, defectItem.DefectCode },
+                            { "@Ukey", DbType.Int64, defectItem.Ukey },
+                            { "@Qty", DbType.Int32, defectItem.Qty }
+                        };
+
+                    if (defectItem.Ukey == -1)
+                    {
+                        sqlUpdateFinalInspectionDetail = @"
+    DECLARE @FinalInspection_DetailKey table (Ukey bigint)
+
+    insert into FinalInspection_Detail(ID, GarmentDefectTypeID, GarmentDefectCodeID, Qty)
+                OUTPUT INSERTED.Ukey into @FinalInspection_DetailKey
+                values(@FinalInspectionID, @GarmentDefectTypeID, @GarmentDefectCodeID, @Qty)
+
+    select  Ukey from @FinalInspection_DetailKey
+";
+                        DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlUpdateFinalInspectionDetail, detailParameter);
+                        defectItem.Ukey = (long)dtResult.Rows[0]["Ukey"];
+                    }
+                    else
+                    {
+                        sqlUpdateFinalInspectionDetail = @"
+    update  FinalInspection_Detail
+    set Qty = @Qty
+    where   Ukey = @Ukey
+";
+                        ExecuteNonQuery(CommandType.Text, sqlUpdateFinalInspectionDetail, detailParameter);
+                    }
+
+
+                    foreach (byte[] image in defectItem.ListFinalInspectionDefectImage)
+                    {
+                        string sqlInsertFinalInspection_DetailImage = @"
+    insert into FinalInspection_DetailImage(ID, FinalInspection_DetailUkey, Image)
+                values(@FinalInspectionID, @FinalInspection_DetailUkey, @Image)
+";
+                        SQLParameterCollection imgParameter = new SQLParameterCollection() {
+                            { "@FinalInspectionID", DbType.String, addDefect.FinalInspectionID },
+                            { "@FinalInspection_DetailUkey", DbType.Int64, defectItem.Ukey },
+                            { "@Image", image}
+                        };
+
+                        ExecuteNonQuery(CommandType.Text, sqlInsertFinalInspection_DetailImage, imgParameter);
+                    }
+
+                }
+
                 transaction.Complete();
             }
         }
