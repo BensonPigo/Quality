@@ -1,0 +1,216 @@
+﻿@using DatabaseObject.Public
+
+@{
+    Layout = null;
+    string title = ViewData["Title"] == null ? "Pass1" : ViewData["Title"].ToString();
+
+    string strPickedIDs = ViewData["PickedIDs"] == null || ViewData["PickedIDs"].ToString() == "" ? "" : ViewData["PickedIDs"].ToString();
+    List<string> PickedIDs = strPickedIDs.Split(',').Where(o => !string.IsNullOrEmpty(o)).ToList();
+
+
+    string strPickedNames = ViewData["PickedNames"] == null || ViewData["PickedNames"].ToString() == "" ? "" : ViewData["PickedNames"].ToString();
+    List<string> PickedNames = strPickedNames.Split(',').Where(o => !string.IsNullOrEmpty(o)).ToList();
+
+
+
+}
+
+@model List<Window_Color>
+
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+
+<style>
+
+    ul {
+        padding: 0;
+    }
+
+    li {
+        list-style-type: none;
+        border: 1px solid black;
+        padding: 2px;
+    }
+
+    td {
+        border-style: ridge;
+    }
+
+    .head {
+        border-top: 2px solid black;
+        text-align: center;
+        font-size: 1.2em;
+        background-color: lightgray;
+    }
+
+    tr:hover {
+        background-color: lightblue;
+        cursor: pointer;
+    }
+
+    tr {
+        height: 20px;
+    }
+
+    td {
+        height: 20px;
+    }
+</style>
+
+<h3>@title</h3>
+@using (Html.BeginForm("ColorList", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post, new { @width = "100%", @height = "5%", @style = "margin-bottom:10px;", @onsubmit = "return CheckForm();" }))
+{
+    <input type="text" id="ColorId" name="ID" placeholder="ID" value="" />
+    @Html.Hidden("BrandID", ViewData["BrandID"]);
+    @Html.Hidden("Title", title);
+    @Html.Hidden("PickedIDs", strPickedIDs);
+    @Html.Hidden("PickedNames", strPickedNames);
+    <input id="btnQuery" type="submit" value="Query" />
+    <input id="btnSave" type="button" value="Save" />
+    <input id="btnExit" type="button" value="Exit" />
+}
+
+<div style="width:45%;height:90%;overflow-y: scroll;float:left;margin-right:2%;">
+
+    <table id="DataListTable" style="width:100%;">
+        <thead>
+            <tr>
+                <td colspan="3" style="text-align:center;font-weight:900;font-size:1.5em">Click to Add</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>ID</td>
+                <td>Name</td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr style="height:2em" class="DataList" ColorID="@item.ID" ColorName="@item.Name" onclick="DataListClick(this)">
+                    <td style="width:20px;"><img src="~/Image/Icon/ChildRowOpen.png" /></td>                    
+                    <td>@item.ID</td>
+                    <td>@item.Name</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>
+<div style="width:45%;height:90%;overflow-y: scroll;float:left;">
+
+    <table id="PickListTable" style="width:100%;">
+        <thead>
+            <tr>
+                <td colspan="3" style="text-align:center;font-weight:900;font-size:1.5em">Pick List</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>ID</td>
+                <td>Name</td>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < PickedIDs.Count; i++)
+            {
+                <tr style="height:2em" class="PickList" ColorID="@PickedIDs[i]" ColorName="@PickedNames[i]" onclick="DataListClick(this)">
+                    <td style="width:20px;"><img src="~/Image/Icon/ChildRowClose.png" /></td>
+                    <td>@PickedIDs[i]</td>
+                    <td>@PickedNames[i]</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+
+    var ID_List = [];
+    var Name_List = [];
+    $(function () {
+
+        $("#btnSave").click(function () {
+
+
+            var PickList = [];
+            PickList = CollectResult();
+            debugger
+            // 呼叫父視窗的 GetColor Function，把值傳回去
+            window.opener.GetColor(PickList);
+            window.close();
+        });
+
+
+        $("#btnExit").click(function () {
+            window.close();
+        });
+
+        // 把先前選取的資料帶入
+        ID_List = ['@Html.Raw(string.Join("','", PickedIDs))'];
+        Name_List = ['@Html.Raw(string.Join("','", PickedNames))'];
+    });
+
+    //左邊Table點選
+    function DataListClick(obj) {
+        var pick_ID = $(obj).attr("Colorid");
+        var pick_Name = $(obj).attr("ColorName");
+
+        var newItem = '<tr style="height:2em" class="PickList" ColorID="' + pick_ID + '" ColorName="' + pick_Name + '" onclick="PickListClick(this)"><td style="width:20px;"><img src="/Image/Icon/ChildRowClose.png" /></td><td>' + pick_ID + '</td><td>' + pick_Name + '</td></tr>';
+        $("#PickListTable").append(newItem);
+
+        $(obj).remove();
+
+        //存下點選的
+        ID_List.push(pick_ID);
+        Name_List.push(pick_Name);
+
+        $("#PickedIDs").val(ID_List);
+        $("#PickedNames").val(Name_List);
+    };
+
+    //右邊Table點選
+    function PickListClick(obj) {
+        var pick_ID = $(obj).attr("Colorid");
+        var pick_Name = $(obj).attr("ColorName");
+
+        var newItem = '<tr style="height:2em" class="DataList" ColorID="' + pick_ID + '" ColorName="' + pick_Name + '" onclick="DataListClick(this)"><td style="width:20px;"><img src="/Image/Icon/ChildRowOpen.png" /></td><td>' + pick_ID + '</td><td>' + pick_Name + '</td></tr>';
+
+        $("#DataListTable").append(newItem);
+        $(obj).remove();
+
+        ID_List = jQuery.grep(ID_List, function (value) {
+            return value != pick_ID;
+        });
+
+        Name_List = jQuery.grep(Name_List, function (value) {
+            return value != pick_Name;
+        });
+
+        $("#PickedIDs").val(ID_List);
+        $("#PickedNames").val(Name_List);
+
+    };
+
+
+    function CollectResult() {
+        var picked = $(".PickList");
+        var result = [];
+        picked.each(function myfunction() {
+            var obj = this;
+
+            var Color = {
+                ID: $(obj).attr("Colorid"),
+                Name: $(obj).attr("Colorname"),
+            }
+            result.push(Color);
+        });
+        return result;
+    }
+
+    function CheckForm() {
+
+        if ($("#ColorId").val() == "" || $("#ColorId").val() == undefined) {
+            alert("ID can't be empty");
+            return false;
+        }
+
+    }
+</script>

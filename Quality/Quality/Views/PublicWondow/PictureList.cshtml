@@ -1,0 +1,164 @@
+﻿@using DatabaseObject.Public
+
+@{
+    Layout = null;
+    string title = ViewData["Title"] == null ? "Pass1" : ViewData["Title"].ToString();
+    string EditMode = ViewData["EditMode"] == null ? "EditMode" : ViewData["EditMode"].ToString();
+
+
+}
+
+@model Window_Picture
+
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+
+<link href="~/ThirdParty/SciCustom/css/style.css" rel="stylesheet" />
+<style>
+
+    ul {
+        padding: 0;
+    }
+
+    li {
+        list-style-type: none;
+        border: 1px solid black;
+        padding: 2px;
+    }
+
+    td {
+        border-style: ridge;
+    }
+
+    .leftDiv {
+        width: 45%;
+        height: 90%;
+        float: left;
+        margin-right: 2%;
+    }
+
+    .outerDiv {
+        width: 45%;
+        height: 90%;
+        float: left;
+        margin-right: 2%;
+    }
+
+    .grayDiv {
+        width: 100%;
+        height: 4vh;
+        background-color: lightgray;
+        text-align: center;
+    }
+
+    .pointer {
+        cursor: pointer;
+    }
+</style>
+<br />
+<header>
+    <h3 style="width:85%;float:left;margin:0">@title</h3>
+    <input id="btnKeep" type="button" value="Keep" />
+    <input id="btnExit" type="button" value="Exit" />
+</header>
+<br />
+<div class="outerDiv" style="margin-right:2%;">
+    <div class="grayDiv">
+        <h2 style="width:80%;float:left;padding-top:5px">Before</h2>
+        <img id="BeforeCam" class="OpenCamera pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Camera.png" />
+        <img id="BeforeDel" class="pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Delete.png" />
+
+    </div>
+    @{
+        var base64_Brfore = Convert.ToBase64String(Model.BrforeImage);
+        var imgSrc_Brfore = String.Format("data:image/gif;base64,{0}", base64_Brfore);
+
+
+        var base64_After = Convert.ToBase64String(Model.AfterImage);
+        var imgSrc_After = String.Format("data:image/gif;base64,{0}", base64_After);
+    }
+    <img id="BeforePic" Type="Before" style="width:100%;" src="@imgSrc_Brfore" />
+    <img id="OriBeforePic" style="width:100%;display:none;" src="@imgSrc_Brfore" />
+</div>
+<div class="outerDiv">
+    <div class="grayDiv">
+        <h2 style="width:80%;float:left;padding-top:5px">After</h2>
+        <img id="AfterCam" Type="After" class="OpenCamera pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Camera.png" />
+        <img id="AfterDel" class="pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Delete.png" />
+    </div>
+    <img id="AfterPic" style="width:100%;" src="@imgSrc_After" />
+    <img id="OriAfterPic" style="width:100%;display:none;" src="@imgSrc_After" />
+
+</div>
+
+@{
+    Html.RenderPartial("ScreenShot");
+}
+
+<script>
+
+    var ID_List = [];
+    var Name_List = [];
+    $(function () {
+
+
+        // Screenshot Exit
+        $('#btnScreenshotExit').on('click', function () {
+            StopScreen();
+            $('#Screenshot').addClass("display-None");
+        });
+
+
+        $("#btnKeep").click(function () {
+
+            var before = document.querySelector("#BeforePic");
+            var after = document.querySelector("#AfterPic");
+
+            var Picture = {
+                BeforePicture: before.src,
+                AfterPicture: after.src,
+            }
+
+            window.opener.GetPicture(Picture);
+            window.close();
+        });
+
+
+        $("#btnExit").click(function () {
+            window.close();
+        });
+
+        $("#BeforeDel").click(function () {
+            const Ori = document.querySelector("#OriBeforePic");
+            const Setting = document.querySelector("#BeforePic");
+            Setting.src = Ori.src;
+        });
+        $("#AfterDel").click(function () {
+            const Ori = document.querySelector("#OriAfterPic");
+            const Setting = document.querySelector("#AfterPic");
+            Setting.src = Ori.src;
+        });
+
+        CamInit();
+    });
+
+    function CamInit() {
+        $('.OpenCamera').on('click', function () {
+
+            if ('@EditMode' == 'True') {
+                var Type = $(this).attr('Type');
+                var sentID = "BeforePic";
+                switch (Type) {
+                    case "Befroe":
+                        sentID = "BeforePic";
+                        break;
+                    case "After":
+                        sentID = "AfterPic";
+                        break;
+                }
+
+                $('#Screenshot').removeClass("display-None");
+                Screenshot(sentID);
+            }
+        });
+    }
+</script>
