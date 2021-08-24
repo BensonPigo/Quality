@@ -507,7 +507,7 @@ namespace Quality.Areas.FinalInspection.Controllers
 
             DatabaseObject.ViewModel.FinalInspection.Measurement Measurement = new DatabaseObject.ViewModel.FinalInspection.Measurement();
 
-            Measurement.SizeUnit = "CM";
+            Measurement.SizeUnit = "INCH";
 
             DatabaseObject.ViewModel.FinalInspection.MeasurementItem MeasurementItem = new DatabaseObject.ViewModel.FinalInspection.MeasurementItem();
             MeasurementItem.Description = "AAA";
