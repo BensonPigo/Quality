@@ -6,6 +6,7 @@ using ProductionDataAccessLayer.Interface;
 using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
 using DatabaseObject.ProductionDB;
+using DatabaseObject.ViewModel.BulkFGT;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
@@ -16,19 +17,63 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         public GarmentTestDetailFGWTProvider(SQLDataTransaction tra) : base(tra) { }
         #endregion
 
-		#region CRUD Base
-		/*回傳(Get) 詳細敘述如下*/
-        /// <summary>
-        /// 回傳
-        /// </summary>
-        /// <param name="Item">成員</param>
-        /// <returns>回傳</returns>
-		/// <info>Author: Admin; Date: 2021/08/23  </info>
-        /// <history>
-        /// xx.  YYYY/MM/DD   Ver   Author      Comments
-        /// ===  ==========  ====  ==========  ==========
-        /// 01.  2021/08/23  1.00    Admin        Create
-        /// </history>
+        #region CRUD Base
+
+        public IList<GarmentTest_Detail_FGWT_ViewModel> Get_GarmentTest_Detail_FGWT(Int64 ID, string No)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.Int64, ID } ,
+                { "@No", DbType.String, No } ,
+            };
+            string sqlcmd = @"
+select 
+[ID]
+,[No]
+,[Location]
+,[Type]
+,[TestDetail]
+,[BeforeWash]
+,[SizeSpec]
+,[AfterWash]
+,[Shrinkage]
+,[Scale]
+,[Criteria]
+,[Criteria2]
+,[SystemType]
+,[Seq]
+,[Result] = IIF(Scale IS NOT NULL
+    ,IIF(Scale='4-5' OR Scale ='5','Pass',IIF(Scale='','','Fail'))
+    ,IIF( (BeforeWash IS NOT NULL AND AfterWash IS NOT NULL AND Criteria IS NOT NULL AND Shrinkage IS NOT NULL)
+          or (Type = 'spirality: Garment - in percentage (average)')
+          or (Type = 'spirality: Garment - in percentage (average) (Top Method A)')
+          or (Type = 'spirality: Garment - in percentage (average) (Top Method B)')
+          or (Type = 'spirality: Garment - in percentage (average) (Bottom Method A)')
+          or (Type = 'spirality: Garment - in percentage (average) (Bottom Method B)')
+   ,( IIF( TestDetail = '%' OR TestDetail = 'Range%'   
+   -- % 為ISP20201331舊資料、Range% 為ISP20201606加上的新資料，兩者都視作百分比
+      ---- 百分比 判斷方式
+      ,IIF( ISNULL(Criteria,0)  <= ISNULL(Shrinkage,0) AND ISNULL(Shrinkage,0) <= ISNULL(Criteria2,0)
+       , 'Pass'
+       , 'Fail'
+      )
+      ---- 非百分比 判斷方式
+      ,IIF( ISNULL(AfterWash,0) - ISNULL(BeforeWash,0) <= ISNULL(Criteria,0)
+       ,'Pass'
+       ,'Fail'
+      )
+    )
+   )
+   ,''
+ )
+)
+from GarmentTest_Detail_FGWT
+where ID = @ID
+and No = @No
+";
+            return ExecuteList<GarmentTest_Detail_FGWT_ViewModel>(CommandType.Text, sqlcmd, objParameter);
+        }
+
         public IList<GarmentTest_Detail_FGWT> Get(GarmentTest_Detail_FGWT Item)
         {
             StringBuilder SbSql = new StringBuilder();

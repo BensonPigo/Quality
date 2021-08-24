@@ -16,19 +16,35 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         public GarmentDetailSpiralityProvider(SQLDataTransaction tra) : base(tra) { }
         #endregion
 
-		#region CRUD Base
-		/*回傳(Get) 詳細敘述如下*/
-        /// <summary>
-        /// 回傳
-        /// </summary>
-        /// <param name="Item">成員</param>
-        /// <returns>回傳</returns>
-		/// <info>Author: Admin; Date: 2021/08/23  </info>
-        /// <history>
-        /// xx.  YYYY/MM/DD   Ver   Author      Comments
-        /// ===  ==========  ====  ==========  ==========
-        /// 01.  2021/08/23  1.00    Admin        Create
-        /// </history>
+        #region CRUD Base
+
+        public IList<Garment_Detail_Spirality> Get_Garment_Detail_Spirality(Int64 ID, string No)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.Int64, ID } ,
+                { "@No", DbType.String, No } ,
+            };
+            string sqlcmd = @"
+select 
+[ID]
+,[No]
+,[Location]
+,[MethodA_AAPrime]
+,[MethodA_APrimeB]
+,[MethodB_AAPrime]
+,[MethodB_AB]
+,[CM]
+,[MethodA]
+,[MethodB]
+from Garment_Detail_Spirality
+where ID = @ID
+and No = @No
+";
+            return ExecuteList<Garment_Detail_Spirality>(CommandType.Text, sqlcmd, objParameter);
+        }
+
+        /*回傳(Get) 詳細敘述如下*/
         public IList<Garment_Detail_Spirality> Get(Garment_Detail_Spirality Item)
         {
             StringBuilder SbSql = new StringBuilder();

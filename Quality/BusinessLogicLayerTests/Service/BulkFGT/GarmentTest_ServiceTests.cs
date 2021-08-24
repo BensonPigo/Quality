@@ -9,6 +9,8 @@ using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
 using DatabaseObject.ViewModel;
 using DatabaseObject.ResultModel;
+using DatabaseObject.ProductionDB;
+using DatabaseObject.ViewModel.BulkFGT;
 
 namespace BusinessLogicLayer.Service.BulkFGT.Tests
 {
@@ -60,6 +62,96 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
                 List<string> result = new List<string>();
                 IGarmentTestDetailProvider _IGarmentTestDetailProvider = new GarmentTestDetailProvider(Common.ProductionDataAccessLayer);
                 result = _IGarmentTestDetailProvider.GetSizeCode("ESPLO14120030", "010-BLAK").Select(x => x.SizeCode).ToList();
+
+                Assert.IsTrue(result.Count > 0);
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+                throw;
+            }
+        }
+
+        [TestMethod()]
+        public void Get_ShrinkageTest()
+        {
+            try
+            {
+                IList<GarmentTest_Detail_Shrinkage> result = new List<GarmentTest_Detail_Shrinkage>();
+                IGarmentTestDetailShrinkageProvider _IGarmentTestDetailShrinkageProvider = new GarmentTestDetailShrinkageProvider(Common.ProductionDataAccessLayer);
+                result = _IGarmentTestDetailShrinkageProvider.Get_GarmentTest_Detail_Shrinkage(9244, "1");
+
+                Assert.IsTrue(result.Count > 0);
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+                throw;
+            }
+        }
+
+        [TestMethod()]
+        public void Get_SpiralityTest()
+        {
+            try
+            {
+                IList<Garment_Detail_Spirality> result = new List<Garment_Detail_Spirality>();
+                IGarmentDetailSpiralityProvider _IGarmentDetailSpiralityProvider = new GarmentDetailSpiralityProvider(Common.ProductionDataAccessLayer);
+                result = _IGarmentDetailSpiralityProvider.Get_Garment_Detail_Spirality(16608, "1");
+
+                Assert.IsTrue(result.Count > 0);
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+                throw;
+            }
+        }
+
+        [TestMethod()]
+        public void Get_ApperanceTest()
+        {
+            try
+            {
+                IList<GarmentTest_Detail_Apperance_ViewModel> result = new List<GarmentTest_Detail_Apperance_ViewModel>();
+                IGarmentTestDetailApperanceProvider _IGarmentTestDetailApperanceProvider = new GarmentTestDetailApperanceProvider(Common.ProductionDataAccessLayer);
+                result = _IGarmentTestDetailApperanceProvider.Get_GarmentTest_Detail_Apperance(18578, "1");
+
+                Assert.IsTrue(result.Count > 0);
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+                throw;
+            }
+        }
+
+        [TestMethod()]
+        public void Get_FGWTTest()
+        {
+            try
+            {
+                IList<GarmentTest_Detail_FGWT_ViewModel> result = new List<GarmentTest_Detail_FGWT_ViewModel>();
+                IGarmentTestDetailFGWTProvider _IGarmentTestDetailFGWTProvider = new GarmentTestDetailFGWTProvider(Common.ProductionDataAccessLayer);
+                result = _IGarmentTestDetailFGWTProvider.Get_GarmentTest_Detail_FGWT(16615, "1");
+
+                Assert.IsTrue(result.Count > 0);
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+                throw;
+            }
+        }
+
+        [TestMethod()]
+        public void Get_FGPTTest()
+        {
+            try
+            {
+                IList<GarmentTest_Detail_FGPT_ViewModel> result = new List<GarmentTest_Detail_FGPT_ViewModel>();
+                IGarmentTestDetailFGPTProvider _IGarmentTestDetailFGPTProvider = new GarmentTestDetailFGPTProvider(Common.ProductionDataAccessLayer);
+                result = _IGarmentTestDetailFGPTProvider.Get_GarmentTest_Detail_FGPT(16608, "1");
 
                 Assert.IsTrue(result.Count > 0);
             }

@@ -14,6 +14,7 @@ using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
 using ADOHelper.Utility;
+using DatabaseObject.ViewModel.BulkFGT;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -25,7 +26,9 @@ namespace BusinessLogicLayer.Service.BulkFGT
         private IGarmentTestDetailFGWTProvider _IGarmentTestDetailFGWTProvider;
         private IGarmentTestDetailProvider _IGarmentTestDetailProvider;
         private IGarmentTestDetailShrinkageProvider _IGarmentTestDetailShrinkageProvider;
-        
+        private IGarmentDetailSpiralityProvider _IGarmentDetailSpiralityProvider;
+
+
 
         public enum SelectType
         {
@@ -106,6 +109,86 @@ namespace BusinessLogicLayer.Service.BulkFGT
             try
             {
                 result = _IGarmentTestDetailProvider.GetSizeCode(OrderID, Article).Select(x => x.SizeCode).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
+        public IList<GarmentTest_Detail_Shrinkage> Get_Shrinkage(Int64 ID, string No)
+        {
+            IList<GarmentTest_Detail_Shrinkage> result = new List<GarmentTest_Detail_Shrinkage>();
+            _IGarmentTestDetailShrinkageProvider = new GarmentTestDetailShrinkageProvider(Common.ProductionDataAccessLayer);
+            try
+            {
+                result = _IGarmentTestDetailShrinkageProvider.Get_GarmentTest_Detail_Shrinkage(ID, No);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
+        public IList<Garment_Detail_Spirality> Get_Spirality(Int64 ID, string No)
+        {
+            IList<Garment_Detail_Spirality> result = new List<Garment_Detail_Spirality>();
+            _IGarmentDetailSpiralityProvider = new GarmentDetailSpiralityProvider(Common.ProductionDataAccessLayer);
+            try
+            {
+                result = _IGarmentDetailSpiralityProvider.Get_Garment_Detail_Spirality(ID, No);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
+        public IList<GarmentTest_Detail_Apperance_ViewModel> Get_Apperance(Int64 ID, string No)
+        {
+            IList<GarmentTest_Detail_Apperance_ViewModel> result = new List<GarmentTest_Detail_Apperance_ViewModel>();
+            _IGarmentTestDetailApperanceProvider = new GarmentTestDetailApperanceProvider(Common.ProductionDataAccessLayer);
+            try
+            {
+                result = _IGarmentTestDetailApperanceProvider.Get_GarmentTest_Detail_Apperance(ID, No);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
+        public IList<GarmentTest_Detail_FGWT_ViewModel> Get_FGWT(Int64 ID, string No)
+        {
+            IList<GarmentTest_Detail_FGWT_ViewModel> result = new List<GarmentTest_Detail_FGWT_ViewModel>();
+            _IGarmentTestDetailFGWTProvider = new GarmentTestDetailFGWTProvider(Common.ProductionDataAccessLayer);
+            try
+            {
+                result = _IGarmentTestDetailFGWTProvider.Get_GarmentTest_Detail_FGWT(ID, No);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
+        public IList<GarmentTest_Detail_FGPT_ViewModel> Get_FGPT(Int64 ID, string No)
+        {
+            IList<GarmentTest_Detail_FGPT_ViewModel> result = new List<GarmentTest_Detail_FGPT_ViewModel>();
+            _IGarmentTestDetailFGPTProvider = new GarmentTestDetailFGPTProvider(Common.ProductionDataAccessLayer);
+            try
+            {
+                result = _IGarmentTestDetailFGPTProvider.Get_GarmentTest_Detail_FGPT(ID, No);
             }
             catch (Exception ex)
             {
