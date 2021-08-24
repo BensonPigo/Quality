@@ -25,6 +25,10 @@
         color: white !important;
     }
 
+    #row-name {
+        color: black;
+    }
+
     .searchFont {
         font-size: 1.5em;
         font-weight: 900;
@@ -64,22 +68,22 @@
 
     <div class="UpWhiteBackgrond" style="height:14vh">
 
-        <table class="center" style="width: 90%;  height: 3vh ">
+        <table class="center" style="width: 100%;  height: 3vh ">
             <tr>
-                <td style="width:8%">
+                <td style="width:5%" align="right">
                     <p style=" width: 10vw" class="searchFont">SP#</p>
                 </td>
-                <td style="width:7%">
+                <td style="width:10%">
                     @Html.TextBox("SP", string.Empty, new { @class = "inputStyle" })
                 </td>
-                <td style="width:8%">
+                <td style="width:5%" align="right">
                     <p class="searchFont ">PO#</p>
                 </td>
                 <td style="width:7%">
                     @Html.TextBox("POID", string.Empty, new { @class = "inputStyle" })
                 </td>
 
-                <td style="width:10%">
+                <td style="width:9%" align="right">
                     <p style=" width: 15vw" class="searchFont">Style#</p>
                 </td>
                 <td style="width: 7%">
@@ -93,21 +97,16 @@
                 </td>
             </tr>
             <tr>
-                <td>
+                <td align="right">
                     <p class="searchFont">SCI Delivery</p>
                 </td>
-                <td>
-                    @Html.TextBox("SciDeliveryStart",string.Empty, new { @class = "form-control date-picker inputStyle" })
+                <td colspan="3">
+                    @Html.TextBox("SciDeliveryStart", string.Empty, new { @class = "form-control date-picker inputStyle" })
+                    <label style="font-size: 2em">~</label>  @Html.TextBox("SciDeliveryEnd", string.Empty, new { @class = "form-control date-picker inputStyle" })
                 </td>
-
-                <td colspan="2">
-                    <label style="font-size: 2em">~</label>  @Html.TextBox("SciDeliveryEnd",string.Empty, new { @class = "form-control date-picker inputStyle" })
-                </td>
-
-                <td>
+                <td align="right">
                     <p class="searchFont">Inspection Result</p>
                 </td>
-
                 <td>
                     @Html.DropDownList("InspectionResult", (List<SelectListItem>)ViewBag.inspectionResultList, null, new { @class = "form-control inputStyle" })
 
@@ -127,7 +126,7 @@
                 <div>
                     <table cellspacing="100" id="myTable" class="table table-striped display">
                         <thead>
-                            <tr class="row-name">
+                            <tr class="row-name" id="row-name">
                                 <th>SP#</th>
                                 <th>PO#</th>
                                 <th>SP# Qty</th>
@@ -214,6 +213,9 @@
             "pageLength": 10,
             "paging": true,
             "filter": false,
+            "scrollY": "44vh",
+            "scrollCollapse": true,
+
         });
     });
 
