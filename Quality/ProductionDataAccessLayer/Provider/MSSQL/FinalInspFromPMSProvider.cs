@@ -135,5 +135,67 @@ order by AQLType , InspectionLevels
             return ExecuteList<AcceptableQualityLevels>(CommandType.Text, sqlGetData, listPar);
         }
 
+        public IList<FinalInspectionDefectItem> GetFinalInspectionDefectItems(string finalInspectionID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+
+            listPar.Add("@finalInspectionID", finalInspectionID);
+
+            string sqlGetData = $@"
+select  GarmentDefectTypeID,
+        GarmentDefectCodeID,
+        Qty,
+        Ukey
+into #FinalInspection_Detail
+from [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Detail
+where   ID = @finalInspectionID
+
+select  [Ukey] = isnull(fd.Ukey, -1),
+        [DefectType] = gdt.ID,
+        [DefectCode] = gdc.ID,
+        [DefectTypeDesc] = gdt.ID +'-'+gdt.Description,
+        [DefectCodeDesc] = gdc.ID +'-'+gdc.Description,
+        [Qty] = isnull(fd.Qty, 0)
+    from GarmentDefectType gdt with (nolock)
+    inner join GarmentDefectCode gdc with (nolock) on gdt.id=gdc.GarmentDefectTypeID
+    left join   #FinalInspection_Detail fd on fd.GarmentDefectTypeID = gdt.ID and fd.GarmentDefectCodeID = gdc.ID
+    where   gdt.Junk =0 and
+            gdc.Junk =0
+ order by gdt.id,gdc.id
+
+
+";
+            return ExecuteList<FinalInspectionDefectItem>(CommandType.Text, sqlGetData, listPar);
+        }
+
+        public List<string> GetMoistureArticleList(string finalInspectionID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+
+            listPar.Add("@finalInspectionID", finalInspectionID);
+
+            string sqlGetMoistureArticleList = @"
+select  OrderID
+into #FinalInspection_Order
+from [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order with (nolock)
+where ID = @finalInspectionID
+
+select distinct Article 
+from Order_Article
+where id in (select OrderID from #FinalInspection_Order)
+";
+
+            DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetMoistureArticleList, listPar);
+
+            if (dtResult.Rows.Count == 0)
+            {
+                return new List<string>();
+            }
+            else
+            {
+                return dtResult.AsEnumerable().Select(s => s["OrderID"].ToString()).ToList();
+            }
+
+        }
     }
 }

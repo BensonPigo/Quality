@@ -1,0 +1,75 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using BusinessLogicLayer.Interface;
+using DatabaseObject;
+using DatabaseObject.ManufacturingExecutionDB;
+using DatabaseObject.ViewModel.FinalInspection;
+using ManufacturingExecutionDataAccessLayer.Interface;
+using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
+using ProductionDataAccessLayer.Interface;
+using ProductionDataAccessLayer.Provider.MSSQL;
+using ToolKit;
+
+namespace BusinessLogicLayer.Service
+{
+    public class FinalInspectionMoistureService : IFinalInspectionMoistureService
+    {
+        public IFinalInspectionProvider _FinalInspectionProvider { get; set; }
+        public IOrdersProvider _OrdersProvider { get; set; }
+        public IFinalInspFromPMSProvider _FinalInspFromPMSProvider { get; set; }
+
+        public Moisture GetMoistureForInspection(string finalInspectionID)
+        {
+            Moisture moisture = new Moisture();
+
+            try
+            {
+                _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+                _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
+
+                DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection =
+                    _FinalInspectionProvider.GetFinalInspection(finalInspectionID);
+
+                moisture.FinalInspectionID = finalInspectionID;
+                moisture.ListArticle = _FinalInspFromPMSProvider.GetMoistureArticleList(finalInspectionID);
+                moisture.ListCartonItem = _FinalInspectionProvider.GetMoistureListCartonItem(finalInspectionID).ToList();
+
+            }
+            catch (Exception ex)
+            {
+                moisture.Result = false;
+                moisture.ErrorMessage = ex.ToString();
+            }
+
+            return moisture;
+        }
+
+        public List<ViewMoistureResult> GetViewMoistureResult(string finalInspectionID)
+        {
+            try
+            {
+                _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                List<ViewMoistureResult> listViewMoistureResult =
+                    _FinalInspectionProvider.GetViewMoistureResult(finalInspectionID).ToList();
+
+                return listViewMoistureResult;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public BaseResult UpdateMoisture(MoistureResult moistureResult)
+        {
+            throw new NotImplementedException();
+        }
+
+        public BaseResult DeleteMoisture(long ukey)
+        {
+            throw new NotImplementedException();
+        }
+    }
+}
