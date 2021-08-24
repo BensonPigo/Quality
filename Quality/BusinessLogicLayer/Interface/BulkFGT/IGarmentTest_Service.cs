@@ -1,4 +1,5 @@
-﻿using DatabaseObject.ViewModel;
+﻿using DatabaseObject.ResultModel;
+using DatabaseObject.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,8 @@ namespace BusinessLogicLayer.Interface.BulkFGT
     {
         GarmentTest_ViewModel GetSelectItemData(GarmentTest_ViewModel garmentTest_ViewModel, SelectType type);
 
-        GarmentTest_ViewModel GetGarmentTest(GarmentTest_ViewModel garmentTest_ViewModel);
+        GarmentTest_Result GetGarmentTest(GarmentTest_ViewModel garmentTest_ViewModel);
+
+        List<string> Get_SizeCode(string OrderID, string Article);
     }
 }

@@ -68,12 +68,62 @@ and SeasonID = @SeasonID";
                 { "@Article", DbType.String, filter.Article} ,
             };
             string sqlcmd = @"
-select * from GarmentTest 
+select g.ID
+,g.StyleID
+,g.BrandID
+,g.Article
+,g.SeasonID
+,g.FirstOrderID
+,g.DeadLine
+,g.SewingInline
+,g.OrderID
+,g.MDivisionid
+,[MinSciDelivery] = GetSCI.MinSciDelivery
+,[MinBuyerDelivery] = GetSCI.MinBuyerDelivery
+,[SeamBreakageResult] = case when g.SeamBreakageResult = 'P' then 'Pass'
+						     when g.SeamBreakageResult = 'F' then 'Fail' 
+                             else '' end
+,[OdourResult] = case when g.OdourResult = 'P' then 'Pass'
+					  when g.OdourResult = 'F' then 'Fail' 
+                      else '' end
+,[WashResult] = case when g.WashResult = 'P' then 'Pass'
+				     when g.WashResult = 'F' then 'Fail' 
+                     else '' end
+,[WashName] = IIF(WashName.Value is null,'701','710')
+,[SpecialMark] = SpecialMark.Value
+,g.Result, g.Date,g.Remark
+,[GarmentTestAddName] = CONCAT(g.AddName,'-',CreatBy.Name,'',g.AddDate)
+,[GarmentTestEditName] = CONCAT(g.EditName,'-',EditBy.Name,'',g.EditDate)
+,g.AddName,g.EditName
+from GarmentTest g
+left join Pass1 CreatBy on CreatBy.ID = g.AddName
+left join Pass1 EditBy on EditBy.ID = g.EditName
+outer apply(
+	select MinBuyerDelivery,MinSciDelivery
+	from dbo.GetSCI(g.FirstOrderID,'')
+) GetSCI
+outer apply(
+	select Value =  r.Name 
+	from Style s
+	inner join Reason r on s.SpecialMark = r.ID and r.ReasonTypeID = 'Style_SpecialMark'
+	where s.ID = g.StyleID
+	and s.BrandID = g.BrandID
+	and s.SeasonID = g.SeasonID
+)SpecialMark
+outer apply(
+	select Value =  r.Name 
+	from Style s
+	inner join Reason r on s.SpecialMark = r.ID and r.ReasonTypeID = 'Style_SpecialMark'
+	where s.ID = g.StyleID
+	and s.BrandID = g.BrandID
+	and s.SeasonID = g.SeasonID
+	and r.Name in ('MATCH TEAMWEAR','BASEBALL ON FIELD','SOFTBALL ON FIELD','TRAINING TEAMWEAR','LACROSSE ONFIELD','AMERIC. FOOT. ON-FIELD','TIRO','BASEBALL OFF FIELD','NCAA ON ICE','ON-COURT','BBALL PERFORMANCE','BRANDED BLANKS','SLD ON-FIELD','NHL ON ICE','SLD ON-COURT')
+)WashName
 where 1=1
-and BrandID = @BrandID
-and StyleID = @StyleID
-and SeasonID = @SeasonID
-and Article = @Article" + Environment.NewLine;
+and g.BrandID = @BrandID
+and g.StyleID = @StyleID
+and g.SeasonID = @SeasonID
+and g.Article = @Article" + Environment.NewLine;
             if (!string.IsNullOrEmpty(filter.MDivisionid))
             {
                 objParameter.Add("@MDivisionid", DbType.String, filter.MDivisionid);

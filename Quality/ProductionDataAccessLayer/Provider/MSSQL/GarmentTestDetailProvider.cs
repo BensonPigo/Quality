@@ -6,6 +6,7 @@ using ProductionDataAccessLayer.Interface;
 using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
 using DatabaseObject.ProductionDB;
+using DatabaseObject.ViewModel;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
@@ -18,22 +19,91 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 
         #region CRUD Base
 
-        //public IList<GarmentTest_Detail> GetDetail(GarmentTest_Detail filter)
-        //{
-        //    SQLParameterCollection objParameter = new SQLParameterCollection
-        //    {
-        //        { "@ID", DbType.String, filter.ID } ,
-                
-        //    };
-        //}
+        public IList<Order_Qty> GetSizeCode(string OrderID, string Article)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@OrderID", DbType.String, OrderID } ,
+                { "@Article", DbType.String, Article } ,
+            };
 
-		/*回傳Garment Test(Get) 詳細敘述如下*/
+            string sqlcmd = string.Empty;
+            if (string.IsNullOrEmpty(OrderID))
+            {
+                sqlcmd = "select distinct SizeCode from Style_SizeCode order by SizeCode";
+            }
+            else
+            {
+                sqlcmd = @"
+select distinct SizeCode from Order_Qty
+where ID = @OrderID and Article = @Article 
+order by SizeCode";
+            }
+
+            return ExecuteList<Order_Qty>(CommandType.Text, sqlcmd, objParameter);
+        }
+
+        public IList<GarmentTest_Detail_ViewModel> Get_GarmentTestDetail(GarmentTest filter)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.String, filter.ID } ,
+            };
+            string sqlcmd = @"
+select 
+gd.No
+,gd.ID
+,gd.OrderID
+,gd.SizeCode
+,gd.inspdate
+,gd.MtlTypeID
+,[Result] = case when gd.Result = 'P' then 'Pass' 
+				 when gd.Result = 'F' then 'Fail' 
+				 else '' end
+,gd.NonSeamBreakageTest
+,[SeamBreakageResult] = case when gd.SeamBreakageResult = 'P' then 'Pass' 
+							 when gd.SeamBreakageResult = 'F' then 'Fail' 
+							 else '' end
+,[OdourResult] = case when gd.OdourResult = 'P' then 'Pass' 
+					  when gd.OdourResult = 'F' then 'Fail' 
+					  else '' end
+,[WashResult] = case when gd.WashResult = 'P' then 'Pass' 
+					 when gd.WashResult = 'F' then 'Fail' 
+					 else '' end
+,gd.inspector
+,[GarmentTest_Detail_Inspector] = isnull(InspectorName.Name_Extno,'')
+,gd.Remark
+,gd.Sender
+,gd.SendDate
+,gd.Receiver
+,gd.ReceiveDate
+,[GarmentTest_Detail_AddName] = CONCAT(gd.AddName,'-',CreatBy.Name,'',gd.AddDate)
+,[GarmentTest_Detail_EditName] = CONCAT(gd.EditName,'-',EditBy.Name,'',gd.EditDate)
+,gd.SubmitDate,gd.ArrivedQty,gd.LineDry,gd.Temperature,gd.TumbleDry,gd.Machine,gd.HandWash
+,gd.Composition,gd.Neck,gd.Status,gd.LOtoFactory,gd.MtlTypeID,gd.Above50NaturalFibres,gd.Above50SyntheticFibres
+,gd.TestAfterPicture,gd.TestBeforePicture
+from GarmentTest_Detail gd
+left join Pass1 CreatBy on CreatBy.ID = gd.AddName
+left join Pass1 EditBy on EditBy.ID = gd.EditName
+outer apply(
+	select Name_Extno 
+	from View_ShowName
+	where ID=gd.inspector
+)InspectorName
+where gd.ID = @ID
+" + Environment.NewLine;
+            
+
+            return ExecuteList<GarmentTest_Detail_ViewModel>(CommandType.Text, sqlcmd, objParameter);
+        }
+
+        /*回傳Garment Test(Get) 詳細敘述如下*/
         /// <summary>
         /// 回傳Garment Test
         /// </summary>
         /// <param name="Item">Garment Test成員</param>
         /// <returns>回傳Garment Test</returns>
-		/// <info>Author: Admin; Date: 2021/08/23  </info>
+        /// <info>Author: Admin; Date: 2021/08/23  </info>
         /// <history>
         /// xx.  YYYY/MM/DD   Ver   Author      Comments
         /// ===  ==========  ====  ==========  ==========

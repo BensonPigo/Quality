@@ -68,10 +68,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public GarmentTest_ViewModel GetGarmentTest(GarmentTest_ViewModel garmentTest_ViewModel)
+        public GarmentTest_Result GetGarmentTest(GarmentTest_ViewModel garmentTest_ViewModel)
         {
             _IGarmentTestProvider = new GarmentTestProvider(Common.ProductionDataAccessLayer);
-            GarmentTest_ViewModel result = new GarmentTest_ViewModel();
+            _IGarmentTestDetailProvider = new GarmentTestDetailProvider(Common.ProductionDataAccessLayer);
+            GarmentTest_Result result = new GarmentTest_Result();
             try
             {
                 var query = _IGarmentTestProvider.Get_GarmentTest(garmentTest_ViewModel);
@@ -80,7 +81,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     throw new Exception("data not found!");
                 }
 
-                result = query.FirstOrDefault();
+                result.garmentTest = query.FirstOrDefault();
+
+                // Detail
+                result.garmentTest_Details = _IGarmentTestDetailProvider.Get_GarmentTestDetail(
+                    new GarmentTest_ViewModel
+                    {
+                        ID = result.garmentTest.ID
+                    }).ToList();
+
             }
             catch (Exception ex)
             {
@@ -90,13 +99,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public GarmentTest_Detail_ViewModel GetGarmentTest_Detail(GarmentTest_Detail_ViewModel source)
+        public List<string> Get_SizeCode(string OrderID, string Article)
         {
+            List<string> result = new List<string>();
             _IGarmentTestDetailProvider = new GarmentTestDetailProvider(Common.ProductionDataAccessLayer);
-            GarmentTest_Detail_ViewModel result = new GarmentTest_Detail_ViewModel();
             try
             {
-
+                result = _IGarmentTestDetailProvider.GetSizeCode(OrderID, Article).Select(x => x.SizeCode).ToList();
             }
             catch (Exception ex)
             {
@@ -105,7 +114,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             return result;
         }
-
 
         public GarmentTest_ViewModel Save_GarmentTest(GarmentTest_ViewModel garmentTest_ViewModel)
         {

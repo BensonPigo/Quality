@@ -29,7 +29,7 @@ namespace DatabaseObject.ViewModel
 
         public List<string> Article_List { get; set; }
 
-        public bool Result { get; set; }
+        public bool SaveResult { get; set; }
 
         public string ErrMsg { get; set; }
     }
