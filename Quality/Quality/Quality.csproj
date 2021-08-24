@@ -176,6 +176,8 @@
     <Content Include="Image\Icon\Camera.png" />
     <Content Include="Image\Icon\Checking.png" />
     <Content Include="Image\Icon\CheckList.png" />
+    <Content Include="Image\Icon\ChildRowClose.png" />
+    <Content Include="Image\Icon\ChildRowOpen.png" />
     <Content Include="Image\Icon\Confirm.png" />
     <Content Include="Image\Icon\Copy.png" />
     <Content Include="Image\Icon\Cutting.png" />
@@ -679,6 +681,10 @@
     <Content Include="Views\PublicWondow\LocalSuppList.cshtml" />
     <Content Include="Views\PublicWondow\Po_Supp_DetailList.cshtml" />
     <Content Include="Views\PublicWondow\TPESuppList.cshtml" />
+    <Content Include="Views\PublicWondow\ColorList.cshtml" />
+    <Content Include="Views\PublicWondow\FGPTList.cshtml" />
+    <Content Include="Views\PublicWondow\PictureList.cshtml" />
+    <Content Include="Views\Shared\ScreenShot.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
