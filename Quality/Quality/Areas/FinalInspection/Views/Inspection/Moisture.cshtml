@@ -19,7 +19,7 @@
         }
 
         .table_div > tbody > tr > td > * {
-            margin: 0.5em;
+            margin: 0.5em 0.5em 0.5em 0em;
         }
 
         #myCartons_info, #myEndlineMoisture_info {
@@ -35,17 +35,24 @@
         #myEndlineMoisture_wrapper, #myEndlineMoisture_wrapper > .dataTables_scrollHeadInner {
             width: 100%
         }
+
+        .DownLeftWhiteBackgrond input[type="text"], select {
+            width: 90%;
+            box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+        }
     </style>
 }
 @Html.Partial("~/Areas/FinalInspection/Views/Shared/_Inspection_Layout.cshtml")
 <div class="DownLeftWhiteBackgrond">
-    <div style="padding:2em">
-        <div class="col-auto"><h1 style="font-size:2em">Inspection Setting</h1></div>
+    <div style="padding:0.5em">
+        <div class="col-auto"><h1 style="font-size:1.5em">Inspection Setting</h1></div>
         <div>
             <table class="col-auto table_div" style="width:100%">
                 <tr>
                     <td><label>Article</label></td>
-                    <td>@Html.DropDownList("Article", (List<SelectListItem>)ViewBag.ListArticle, null, new { @class = "form-control", @style = "width:157px", @onchange = "onInspectionStageChange(this.value)" })</td>
+                    <td>@Html.DropDownList("Article", (List<SelectListItem>)ViewBag.ListArticle, null, new { @class = "form-control", @onchange = "onInspectionStageChange(this.value)" })</td>
                 </tr>
                 <tr>
                     <td><label id="labCarton">carton#</label></td>
@@ -56,21 +63,21 @@
     </div>
 </div>
 <div class="DownRightWhiteBackgrond">
-    <div style="padding:2em">
+    <div style="padding:0.5em">
         <div style="margin: 1em">
             @Html.HiddenFor(o => o.FinalInspectionID)
-            <div class="col-auto"><h1 style="font-size:2em">Moisture</h1></div>
-            <button class="site-btn btn-blue" style="position:absolute;top:1em;right:8.6em">View</button>
-            <button class="site-btn btn-blue" style="position:absolute;top:1em;right:0">Save</button>
+            <div class="col-auto"><h1 style="font-size:1.5em">Moisture</h1></div>
+            <button class="site-btn btn-blue" type="button" id="View" style="position:absolute;top:1em;right:8.6em">View</button>
+            <button class="site-btn btn-blue" type="button" id="Save" style="position:absolute;top:1em;right:0">Save</button>
             <div>
                 <table class="col-auto table_div" style="width:100%">
                     <tr>
-                        <td><label>Detection Instrument</label></td>
+                        <td style="width:30%"><label>Detection Instrument</label></td>
                         <td>@Html.TextBoxFor(o => o.Instrument, new { @readonly = "readonly", @onclick = "open_EndlineMoistureDetail()" })</td>
                     </tr>
                     <tr>
                         <td><label>Fabrication</label></td>
-                        <td>@Html.TextBoxFor(o => o.Fabrication, new { @readonly = "readonly", @onclick = "open_EndlineMoistureDetail()" })</td>
+                        <td>@Html.TextBoxFor(o => o.Fabrication, new { @disabled = "@disabled"})</td>
                     </tr>
                 </table>
             </div>
@@ -84,11 +91,11 @@
                 </tr>
                 <tr>
                     <td><label>Top</label></td>
-                    <td>@Html.TextBoxFor(o => o.GarmentTop, new { @type = "number" })</td>
+                    <td>@Html.TextBoxFor(o => o.GarmentTop, new { @type = "number", @style="width:100px" })</td>
                     <td><label>Middle</label></td>
-                    <td>@Html.TextBoxFor(o => o.GarmentMiddle, new { @type = "number" })</td>
+                    <td>@Html.TextBoxFor(o => o.GarmentMiddle, new { @type = "number", @style = "width:100px" })</td>
                     <td><label>Bottom</label></td>
-                    <td>@Html.TextBoxFor(o => o.GarmentBottom, new { @type = "number" })</td>
+                    <td>@Html.TextBoxFor(o => o.GarmentBottom, new { @type = "number", @style = "width:100px" })</td>
                 </tr>
                 <tr>
                     <td colspan="2"><label>Carton Moisture</label></td>
@@ -96,9 +103,9 @@
                 </tr>
                 <tr>
                     <td><label>Inside</label></td>
-                    <td>@Html.TextBoxFor(o => o.CTNInside, new { @type = "number" })</td>
+                    <td>@Html.TextBoxFor(o => o.CTNInside, new { @type = "number", @style = "width:100px" })</td>
                     <td><label>Outside</label></td>
-                    <td>@Html.TextBoxFor(o => o.CTNOutside, new { @type = "number" })</td>
+                    <td>@Html.TextBoxFor(o => o.CTNOutside, new { @type = "number", @style = "width:100px" })</td>
                     <td colspan="2"></td>
                 </tr>
             </table>
@@ -114,7 +121,7 @@
                 </tr>
                 <tr>
                     <td style="vertical-align:top"><label>Remark</label></td>
-                    <td colspan="3">@Html.TextAreaFor(o => o.Remark, new { @style = "width:40%;min-height:150px" })</td>
+                    <td colspan="3">@Html.TextAreaFor(o => o.Remark, new { @style = "width:60%;min-height:120px" })</td>
                 </tr>
             </table>
         </div>
@@ -131,7 +138,9 @@
         <table cellspacing="100" id="myCartons" class="table table-striped display">
             <thead>
                 <tr class="row-name">
-                    <th>Select</th>
+                    <th style="display:none">
+                        Ukey
+                    </th>
                     <th>SP#</th>
                     <th>Packing List ID</th>
                     <th>CTN No</th>
@@ -140,20 +149,20 @@
             <tbody>
                 @for (int i = 0; i < @ViewBag.ListCartonItem.Count; i++)
                 {
-                    <tr class="row-content" style="vertical-align: middle; text-align: center;">
-                        <td>
-                            <input type="radio" value="@ViewBag.ListCartonItem[i].FinalInspection_OrderCartonUkey" name="carton_select" id="carton_select_@ViewBag.ListCartonItem[i].FinalInspection_OrderCartonUkey">
-                        </td>
-                        <td>
-                            @ViewBag.ListCartonItem[i].OrderID
-                        </td>
-                        <td>
-                            @ViewBag.ListCartonItem[i].PackinglistID
-                        </td>
-                        <td>
-                            @ViewBag.ListCartonItem[i].CTNNo
-                        </td>
-                    </tr>
+                <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                    <td style="display:none">
+                        @ViewBag.ListCartonItem[i].FinalInspection_OrderCartonUkey
+                    </td>
+                    <td>
+                        @ViewBag.ListCartonItem[i].OrderID
+                    </td>
+                    <td>
+                        @ViewBag.ListCartonItem[i].PackinglistID
+                    </td>
+                    <td>
+                        @ViewBag.ListCartonItem[i].CTNNo
+                    </td>
+                </tr>
                 }
             </tbody>
 
@@ -198,57 +207,42 @@
     </div>
 </div>
 
+<div class="detail-dialog to-edit-detail-myView" title="Detail">
+    <div class="detail-dialog-content dialog-content-w-icon" style="height:40vh">
+        <table cellspacing="100" id="myView" class="table table-striped display">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+        </table>
+        <br />
+        <div>
+        </div>
+    </div>
+</div>
+
 @section FinalInspection_script
 {
     <script>
-        var EditMode = false; //彈出視窗設定
         var msg = new MessagerAlert();
+        var myCartons;
         var myEndlineMoistureTable;
+        var myView;
 
         $(function () {
-            var adata = [];
-            var table = $('#SelectedPOTable').DataTable({
-                data: adata,
-                autoWidth: false,
-                destroy: true,
-                columnDefs: [
-                    { targets: 0, width: "2%", orderable: false },
-                    { targets: 1, width: "98%", orderable: false },
-                ],
-                columns: [
-                    {
-                        "className": "details-control",
-                    },
-                    {
-                        "style": "color:#E62513",
-                    },
-                ],
-                "filter": false,
-                "paging": false,
-                "info": false,
-                "ordering": false,
-                "pageLength": 10,
-                "scrollY": "30vh",
-                "scrollCollapse": true,
-                "createdRow": function (row, data, index) {
-                    $('td', row).css('background-color', '#FAA7A7');
-                }
-            });
-
-            $("#SelectedPOTable tbody").on("click", "td.details-control", function () {
-                var tr = $(this).closest('tr');
-                var row = table.row(tr);
-
-                if (row.child.isShown()) {
-                    row.child.hide();
-                    tr.removeClass('shown');
-                }
-                else {
-                    row.child(format(row.data())).show();
-                    tr.addClass('shown');
-                }
-            });
-
             $(".detail-dialog").dialog({
                 autoOpen: false,
                 modal: true,
@@ -274,7 +268,7 @@
             });
 
             // myCartons
-            $('#myCartons').DataTable({
+            myCartons = $('#myCartons').DataTable({
                 "pageLength": 5,
                 "autoWidth": false,
                 "info": false,
@@ -284,11 +278,10 @@
                 "scrollY": "50vh",
                 "scrollCollapse": true,
                 columnDefs: [
-                    { targets: 0, width: "10%" },
                     { targets: 1, width: "30%" },
                     { targets: 2, width: "30%" },
-                    { targets: 2, width: "30%" },
-                ]
+                    { targets: 3, width: "30%" },
+                ],
             });
 
             $(".to-edit-detail-myCartons").dialog({
@@ -298,14 +291,14 @@
                     "1": {
                         text: 'Next',
                         click: function () {
-                            var checkedList = [];
-                            $('[id^=carton_select_]').each(function () {
-                                if ($(this).prop('checked')) {
-                                    checkedList.push($(this).val());
-                                }
-                            });
+                            var dataRow = myCartons.row('.selected').data();
+                            if (dataRow != undefined) {
+                                document.getElementById("Cartons").value = dataRow[0];
+                            }
+                            else {
+                                document.getElementById("Cartons").value = '';
+                            }
 
-                            document.getElementById("Cartons").value = checkedList.join();
                             $(this).dialog("close");
                         }
                         , "class": "button"
@@ -314,8 +307,15 @@
                 },
             });
 
-            $(".to-edit-detail-myCartons").on("dialogclose", function (event, ui) {
-                EditMode = false;
+            //設定選擇
+            $('#myCartons tBody').on('click', 'tr', function () {
+                if ($(this).hasClass('selected')) {
+                    $(this).removeClass('selected');
+                }
+                else {
+                    myCartons.$('tr.selected').removeClass('selected');
+                    $(this).addClass('selected');
+                }
             });
 
             // myEndlineMoisture
@@ -335,7 +335,6 @@
                 ]
             });
 
-
             //設定選擇
             $('#myEndlineMoisture tBody').on('click', 'tr', function () {
                 if ($(this).hasClass('selected')) {
@@ -354,11 +353,18 @@
                     "1": {
                         text: 'Next',
                         click: function () {
-
                             var dataRow = myEndlineMoistureTable.row('.selected').data();
-                            document.getElementById("Instrument").value = dataRow[0];
-                            document.getElementById("Fabrication").value = dataRow[1];
-                            document.getElementById("GarmentStandard").innerHTML = dataRow[2];
+                            if (dataRow != undefined) {
+                                document.getElementById("Instrument").value = dataRow[0];
+                                document.getElementById("Fabrication").value = dataRow[1];
+                                document.getElementById("GarmentStandard").innerHTML = dataRow[2];
+                            }
+                            else {
+                                document.getElementById("Instrument").value = '';
+                                document.getElementById("Fabrication").value = '';
+                                document.getElementById("GarmentStandard").innerHTML = '';
+                            }
+
                             $(this).dialog("close");
                         }
                         , "class": "button"
@@ -367,68 +373,83 @@
                 },
             });
 
-            $(".to-edit-detail-myEndlineMoisture").on("dialogclose", function (event, ui) {
-                EditMode = false;
+            // myView
+            myView = $('#myView').DataTable({
+                "pageLength": 5,
+                "autoWidth": false,
+                "info": false,
+                "filter": false,
+                "paging": true,
+                "info": false,
+                "scrollY": "50vh",
+                "scrollCollapse": true,
+                columnDefs: [
+                    { targets: 1, width: "30%" },
+                    { targets: 2, width: "30%" },
+                    { targets: 3, width: "30%" },
+                ]
+            });
+
+            $(".to-edit-detail-myView").dialog({
+                width: "70%",
+                dialogClass: "add-contact-box",
+            });
+
+            $('#View').on('click', function () {
+               $.ajax({
+                    url: '@Url.Action("GetViewMoistureResult", "Inspection")',
+                    type: 'POST',
+                   data: jQuery.param({ finalInspectionID: "@ViewBag.FinalInspectionID" }),
+                    global: false,
+                   success: function (response) {
+                       var adata = setData(response);                       
+                       myView.clear();
+                       myView.rows.add(adata).draw();
+
+                       $(".to-edit-detail-myView").dialog("open");
+                       myView.columns.adjust();
+                    },
+                   error: function (xhr, status) {
+                        msg.WithError("Get View fail:" + xhr.responseText + " " + xhr.status);
+                    }
+                });
             });
         });
 
-        function open_cartonsDetail() {
-            var cartonValues = document.getElementById("Cartons").value;
-            $('#carton_select_' + cartonValues).prop('checked', true);
+        function setData(data) {
+            var adata = [];
+            for (var i = 0; i <= data.length - 1; i++) {
+                var tmp = [];
+                tmp.push(data[i].Article);
+                tmp.push(data[i].CTNNo);
+                tmp.push(data[i].Instrument);
+                tmp.push(data[i].Fabrication);
 
+                tmp.push(data[i].GarmentStandard);
+                tmp.push(data[i].GarmentTop);
+                tmp.push(data[i].GarmentMiddle);
+                tmp.push(data[i].GarmentBottom);
+                tmp.push(data[i].CTNStandard);
+                tmp.push(data[i].CTNInside);
+                tmp.push(data[i].CTNOutside);
+                tmp.push(data[i].Result);
+                tmp.push(data[i].Action);
+                tmp.push(data[i].Remark);
+                tmp.push(data[i].Ukey);
+                adata.push(tmp);
+            }
+
+            return adata;
+        }
+
+        function open_cartonsDetail() {
             $(".to-edit-detail-myCartons").dialog("open");
             $("#myCartons").DataTable().columns.adjust();
         }
 
         function open_EndlineMoistureDetail() {
             $(".to-edit-detail-myEndlineMoisture").dialog("open");
-            $("#myCartons").DataTable().columns.adjust();
-        }
-
-        function format(d) {
-            return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
-                '<tr><td>PO#:</td><td>' +
-                '<input type="hidden" name="SelectedPO[' + d[2] + '].ORDERID" id="SelectedPO[' + d[2] + '].ORDERID" value="' + d[1] + '" \/>' +
-                '<input type="hidden" name="SelectedPO[' + d[2] + '].POID" id="SelectedPO[' + d[2] + '].POID" value="' + d[3] + '" \/>' +
-                d[3] +
-                '</td></tr>' +
-                '<tr><td>Style#:</td><td>' + d[4] + '</td></tr>' +
-                '<tr><td>Season:</td><td>' + d[5] + '</td></tr>' +
-                '<tr><td>Brand:</td><td>' + d[6] + '</td></tr>' +
-                '<tr><td>SP# Qty:</td><td>' + d[7] + '</td></tr>' +
-                '<tr><td>Cartons:</td><td>' +
-                '<input type="text" readonly="readonly" style="background-color:gray" onclick="open_cartonsDetail(\'' + d[1] + ',' + d[3] + '\');" name="SelectedPO[' + d[2] + '].Cartons" id="SelectedPO[' + d[2] + '].Cartons" value="' + d[8] + '" />' +
-                '</td></tr>' +
-                '<tr><td>Available Qty:</td><td>' +
-                '<input type="number" name="SelectedPO[' + d[2] + '].AvailableQty" id="SelectedPO[' + d[2] + '].AvailableQty" value="' + d[9] + '" />' +
-                '</td></tr>' +
-                '</table>';
-        }
-
-        function onInspectionStageChange(value) {
-            //選擇 Final或3rd Party時，會把[AQL Plan]變成可編輯，而[Sample Plan Qty]唯讀
-            if (value == "Final" || value == "3rd Party") {
-                $('#SampleSize').prop('disabled', true);
-            }
-
-            //選擇Inline或Stagger時，會把[AQL Plan]變成唯讀並將內容變為空白，而[Sample Plan Qty]可編輯"
-            if (value == "Inline" || value == "Stagger") {
-                $('#SampleSize').prop('disabled', false);
-            }
-        }
-
-        function onSampleSizeChange(value) {
-            // 不可大於 [Total Available Qty]
-            //if ($("#SampleSize").prop("disabled") == false) {
-            //    var totalavailableQtyValue = parseInt($("#totalAvailableQty").text());
-            //    var sampleSizeValue = parseInt(value);
-
-            //    if (sampleSizeValue > totalavailableQtyValue) {
-            //        msg.WithError("[Sample Plan Qty] can not great than [Total Available Qty]");
-            //        return false;
-            //    }
-            //}
-            return true;
+            $("#myEndlineMoisture").DataTable().columns.adjust();
         }
 
         function checkSubmitValue() {

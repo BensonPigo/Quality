@@ -1,4 +1,6 @@
-﻿using BusinessLogicLayer.Interface.SampleRFT;
+﻿using BusinessLogicLayer.Interface;
+using BusinessLogicLayer.Interface.SampleRFT;
+using BusinessLogicLayer.Service;
 using BusinessLogicLayer.Service.SampleRFT;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
@@ -271,6 +273,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         public ActionResult Moisture()
         {
             DatabaseObject.ViewModel.FinalInspection.Moisture moisture = new DatabaseObject.ViewModel.FinalInspection.Moisture();
+            moisture.FinalInspectionID = "ESPCH21080001";
             moisture.FinalInspection_CTNMoisureStandard = 7.5m;
             moisture.ListArticle = new List<string>();
             for (int i= 10;i<60;i=i+10)
@@ -473,10 +476,20 @@ namespace Quality.Areas.FinalInspection.Controllers
             ViewBag.ListEndlineMoisture = moisture.ListEndlineMoisture;
             ViewBag.ActionSelectListItem = moisture.ActionSelectListItem;
 
+            ViewBag.FinalInspectionID = moisture.FinalInspectionID;
             ViewBag.FinalInspection_CTNMoisureStandard = moisture.FinalInspection_CTNMoisureStandard;
 
             DatabaseObject.ViewModel.FinalInspection.MoistureResult moistureResult = new DatabaseObject.ViewModel.FinalInspection.MoistureResult();
             return View(moistureResult);
+        }
+
+        [HttpPost]
+        public ActionResult GetViewMoistureResult(string finalInspectionID)
+        {
+            IFinalInspectionMoistureService finalInspectionMoistureService = new FinalInspectionMoistureService();
+            List<DatabaseObject.ViewModel.FinalInspection.ViewMoistureResult> viewMoistureResultsList = finalInspectionMoistureService.GetViewMoistureResult(finalInspectionID);
+
+            return Json(viewMoistureResultsList);
         }
 
         // GET: SampleRFT/Measurement

@@ -173,7 +173,6 @@
 @section FinalInspection_script
 {
     <script>
-        var EditMode = false; //彈出視窗設定
         var msg = new MessagerAlert();
 
         // 摺疊資料需先轉成array
@@ -293,10 +292,6 @@
                         , "style": "bottom:0;background-color:#E00000"
                     },
                 },
-            });
-
-            $(".to-edit-detail").on("dialogclose", function (event, ui) {
-                EditMode = false;
             });
         });
 
