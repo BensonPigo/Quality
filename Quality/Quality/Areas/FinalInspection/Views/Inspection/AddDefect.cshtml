@@ -71,7 +71,7 @@
         while (keyCount < result.length)
         {
             var temp = [];
-   
+
             for (var i = 0; i < items.length; i++) {
 
                 if (result[keyCount] == items[i].DefectTypeDesc) {
@@ -132,12 +132,12 @@
             var list = d[2];
             var sTr = "";
             $(list).each(function (index, value) {
-                sTr = sTr + "<tr><td>" + value[1] + "</td>";               
+                sTr = sTr + "<tr><td>" + value[1] + "</td>";
                 sTr = sTr + `<td style='vertical-align: middle'><input type='number'  min="0" style="width: 10vh" id='${value[0]} ' name='${value[0]}'  value='${value[2]}' /></td>
                             <td> <img src="/Image/Icon/Camera.png" width="25" height="25" /></td>
                             <td> <img src="/Image/Icon/Picture.png" width="25VW" height="25VW" /></td>
                             </tr>`;
-               
+
             });
             return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
                 sTr +
@@ -145,7 +145,18 @@
         }
 
         function checkValue(self) {
+
             document.getElementById("page").value = self;
+
+            var rejectQty = document.getElementById("RejectQty").value;
+            var model = @Html.Raw(Json.Encode(Model));
+            var sampleSize = model.SampleSize;
+
+            if (rejectQty > sampleSize)
+            {
+                msg.WithError('＜ RejectQty ＞ can not bigger than ＜SampleSize＞');
+                return false;
+            }
 
             return true;
         }
