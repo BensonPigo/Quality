@@ -3,5 +3,88 @@
     ViewBag.Title = "Detail";
 }
 
-<h2>Detail</h2>
+@model DatabaseObject.ViewModel.FinalInspection.Setting
+@section FinalInspection_head{
+    <link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+    <link href="~/ThirdParty/plugins/Tabs/nicepage.css" rel="stylesheet" />
+    <script src="~/ThirdParty/plugins/Tabs/nicepage.js"></script>
+    <style type="text/css">
+        @@media (min-width: 992px) and (max-width: 1199px){
+              .u-sheet{
+                  width: 740px;
+              }
+          }
+    </style>
+}
+<div class="whiteBackgrond">
+    <div>
+        <div>
+            <h1>Inspection Report</h1>
+            <button>Download</button>
+        </div>
+        <div>
+            <div>
+                <div>PO information</div>
+                <div>
+                    <table></table>
+                </div>
+            </div>
+            <div>
+                <div>Inspection Setting</div>
+                <div>
+                    <table></table>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div>Inspection Detail</div>
+            <div>
+                ----
+                <section class="u-align-center u-clearfix u-gradient u-section-1" id="carousel_2976">
+                    <div class="u-clearfix u-sheet u-valign-top u-sheet-1">
+                        <div class="u-expanded-width u-tab-links-align-justify u-tabs u-tabs-1">
+                            <ul id="tab_Head" class="u-border-2 u-border-palette-2-base u-spacing-10 u-tab-list u-unstyled" role="tablist">
+                                <li class="u-tab-item" role="presentation">
+                                    <a class="active u-active-palette-2-base u-button-style u-tab-link u-text-active-white u-text-hover-palette-2-base u-tab-link-1" id="link-tab-0da5" href="#tab-0da5" role="tab" aria-controls="tab-0da5" aria-selected="true">Sample RFT</a>
+                                </li>
+                                <li class="u-tab-item" role="presentation">
+                                    <a class="u-active-palette-2-base u-button-style u-tab-link u-text-active-white u-text-hover-palette-2-base u-tab-link-2" id="link-tab-2917" href="#tab-2917" role="tab" aria-controls="tab-2917" aria-selected="false">Sample Testing</a>
+                                </li>
+                                <li class="u-tab-item u-tab-item-3" role="presentation">
+                                    <a class="u-active-palette-2-base u-button-style u-tab-link u-text-active-white u-text-hover-palette-2-base u-tab-link-3" id="tab-77b6" href="#link-tab-77b6" role="tab" aria-controls="link-tab-77b6" aria-selected="false">Exception</a>
+                                </li>
+                            </ul>
+                            <div class="u-tab-content">
+                                <div class="u-container-style u-tab-active u-tab-pane u-white u-tab-pane-1" id="tab-0da5" role="tabpanel">
+
+                                    <div class="u-container-layout u-valign-middle u-container-layout-1">
+                                        <div class="u-expanded-width u-table u-table-responsive u-table-1">
+                                            Tab 1
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="u-container-style u-tab-pane u-white u-tab-pane-2" id="tab-2917" role="tabpanel">
+                                    <div class="u-container-layout u-valign-middle u-container-layout-2">
+                                        Tab 2
+                                    </div>
+                                </div>
+                                <div class="u-container-style u-tab-pane u-white u-tab-pane-3" id="link-tab-77b6" role="tabpanel">
+                                    <div class="u-container-layout u-valign-middle u-container-layout-3">
+                                        @Html.Partial("~/Areas/FinalInspection/Views/Shared/_Inspection_Layout.cshtml")
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                ------
+            </div>
+        </div>
+        <div>
+
+        </div>
+    </div>
+</div>
 
