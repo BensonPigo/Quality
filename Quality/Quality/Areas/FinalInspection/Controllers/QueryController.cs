@@ -1,5 +1,5 @@
 
-﻿
+
 using BusinessLogicLayer;
 using BusinessLogicLayer.Service.FinalInspection;
 using DatabaseObject.ManufacturingExecutionDB;
@@ -83,6 +83,20 @@ namespace Quality.Areas.FinalInspection.Controllers
             return View();
         }
 
+
+        public ActionResult _Tab5_Layout()
+        {
+            List<DatabaseObject.ViewModel.FinalInspection.ViewMoistureResult> list = new List<DatabaseObject.ViewModel.FinalInspection.ViewMoistureResult>();
+
+            return View(list);
+        }
+
+
+        public ActionResult _Tab7_Layout()
+        {
+            return View();
+        }
+
         public ActionResult DownLoad()
         {
             bool test = false;
@@ -104,11 +118,11 @@ namespace Quality.Areas.FinalInspection.Controllers
                 {
                     SP = "21060448HH003",
                     StyleID = "22256",
-                    BrandID = "REI", 
-                    AQLPlan="qewr",
-                    Carton="ff9999",
-                    TotalSPQty=666,
-                    AvailableQty=22,                    
+                    BrandID = "REI",
+                    AQLPlan = "qewr",
+                    Carton = "ff9999",
+                    TotalSPQty = 666,
+                    AvailableQty = 22,
                     FinalInspection = new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
                     {
                         POID = "21060448HH",
@@ -120,14 +134,14 @@ namespace Quality.Areas.FinalInspection.Controllers
                         RejectQty = 6,
                         ProductionStatus = 1,
                         OthersRemark = "OtherreKKK",
-                        ShipmentStatus="AWER@#$R",
-                        PassQty=897987,
+                        ShipmentStatus = "AWER@#$R",
+                        PassQty = 897987,
                         BAQty = 999,
-                        InspectionStage="???",
-                        AcceptQty=16,
-                        FabricApprovalDoc=true,
-                        SealingSampleDoc=true,
-                        CheckHangtag=true,
+                        InspectionStage = "???",
+                        AcceptQty = 16,
+                        FabricApprovalDoc = true,
+                        SealingSampleDoc = true,
+                        CheckHangtag = true,
                     },
                     ListDefectItem = new List<FinalInspectionDefectItem>()
                     {
@@ -199,7 +213,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             worksheet.Cells[16, 3] = "Handfeel: " + (model.FinalInspection.CheckHandfeel ? "Y" : "N");
             worksheet.Cells[16, 5] = "Appearance: " + (model.FinalInspection.CheckAppearance ? "Y" : "N");
             worksheet.Cells[16, 7] = "Print/ Emb Decorations: " + (model.FinalInspection.CheckPrintEmbDecorations ? "Y" : "N");
-            
+
             // Label
             worksheet.Cells[18, 1] = "Fiber Content: " + (model.FinalInspection.CheckFiberContent ? "Y" : "N");
             worksheet.Cells[18, 3] = "Care Instructions: " + (model.FinalInspection.CheckCareInstructions ? "Y" : "N");
@@ -317,7 +331,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                     Excel.Range rngToInsert = worksheet.get_Range("A30", Type.Missing).EntireRow; // 選擇要被貼上的位置
                     rngToInsert.Insert(Excel.XlInsertShiftDirection.xlShiftDown, rngToCopy.Copy(Type.Missing)); // 貼上
                 }
-                
+
                 // 開始列 30，預設 8 列
                 for (int i = 0; i < copyCount; i++)
                 {
@@ -363,7 +377,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                 for (int i = 0; i < copyCount; i++)
                 {
                     int row = i + 28;
-                    worksheet.Cells[row, 1] = model.ListBACriteriaItem[i].BACriteria + ": "+ model.ListBACriteriaItem[i].BACriteriaDesc;
+                    worksheet.Cells[row, 1] = model.ListBACriteriaItem[i].BACriteria + ": " + model.ListBACriteriaItem[i].BACriteriaDesc;
                     worksheet.Cells[row, 9] = model.ListBACriteriaItem[i].Qty;
                 }
             }
@@ -389,7 +403,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                 for (int i = 0; i < copyCount; i++)
                 {
                     int row = i + 24;
-                    worksheet.Cells[row, 1] = model.ListDefectItem[i].DefectType ;
+                    worksheet.Cells[row, 1] = model.ListDefectItem[i].DefectType;
                     worksheet.Cells[row, 3] = model.ListDefectItem[i].DefectCode;
                     worksheet.Cells[row, 9] = model.ListDefectItem[i].Qty;
                 }
@@ -399,7 +413,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             #region 存檔 > 讀取MemoryStream > 下載 > 刪除
             string fileName = $"FinalInspectionReport_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
             string filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", fileName);
-            Excel.Workbook workbook = excelApp.ActiveWorkbook;            
+            Excel.Workbook workbook = excelApp.ActiveWorkbook;
             workbook.SaveAs(filepath);
             workbook.Close();
             excelApp.Quit();

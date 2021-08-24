@@ -118,11 +118,11 @@
                 selected.push($(this).val());
             });
 
-            if (selected == '') {
+            if (selected.length < 4) {
                 msg.WithError('These items must be selected before go to next step.!');
                 return false;
             }
-         
+
         }
 
         return true;

@@ -1,0 +1,31 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section head{
+    <link href="~/Areas/FinalInspection/CSS/FinalInspection.css" rel="stylesheet" type="text/css">
+    <link href="/ThirdParty/plugins/jquery-magnific-popup/magnific-popup.css" rel="stylesheet" />
+    <link href="/ThirdParty/plugins/jquery-ui/jquery-ui.css" rel="stylesheet" />
+    <style type="text/css">
+        .col-auto > * {
+            width: auto;
+        }
+    </style>
+}
+@RenderSection("FinalInspection_head", required: false)
+<div class="main-content">
+    <div class="main_div">
+        @RenderBody()
+    </div>
+</div>
+<script>
+    $(function () {
+        $(window).keydown(function (event) {
+            if (event.keyCode == 13) {
+                event.preventDefault();
+                return false;
+            }
+        });
+    });
+</script>
+@RenderSection("FinalInspection_script", required: false)

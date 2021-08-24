@@ -4,6 +4,7 @@ using DatabaseObject.Public;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Text;
 
 namespace ProductionDataAccessLayer.Provider
@@ -552,6 +553,48 @@ Where 1=1
             }
 
             return ExecuteList<Window_Picture>(CommandType.Text, SbSql.ToString(), paras);
+        }
+
+        public IList<Window_TestFailMail> Get_TestFailMail(string FactoryID, string Type, string GroupNameList)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+
+            //台北
+            SbSql.Append($@"
+select *
+From Quality_MailGroup 
+Where 1=1
+");
+            if (!string.IsNullOrEmpty(FactoryID))
+            {
+                SbSql.Append($@"AND FactoryID  = @FactoryID  ");
+
+                paras.Add("@FactoryID ", DbType.String, FactoryID);
+            }
+            if (!string.IsNullOrEmpty(Type))
+            {
+                SbSql.Append($@"AND Type  = @Type  ");
+
+                paras.Add("@Type ", DbType.String, Type);
+            }
+
+            if (GroupNameList != null && GroupNameList.Any())
+            {
+                List<string> li = GroupNameList.Split(',').Where(o => !string.IsNullOrEmpty(o)).Distinct().ToList();
+                SbSql.Append($@"AND GroupName IN ('{string.Join("','", li)}') ");
+            }
+
+            //if (!string.IsNullOrEmpty(GroupName))
+            //{
+            //    SbSql.Append($@"AND GroupName = @GroupName  ");
+
+            //    paras.Add("@GroupName ", DbType.String, GroupName );
+            //}
+
+
+
+            return ExecuteList<Window_TestFailMail>(CommandType.Text, SbSql.ToString(), paras);
         }
     }
 }

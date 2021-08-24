@@ -172,6 +172,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         {
             DatabaseObject.ViewModel.FinalInspection.AddDefect addDefct = new DatabaseObject.ViewModel.FinalInspection.AddDefect();
             addDefct.RejectQty = 8;
+            addDefct.SampleSize = 4;
             addDefct.ListFinalInspectionDefectItem = new List<DatabaseObject.ViewModel.FinalInspection.FinalInspectionDefectItem>();
             DatabaseObject.ViewModel.FinalInspection.FinalInspectionDefectItem data = new DatabaseObject.ViewModel.FinalInspection.FinalInspectionDefectItem();
             data.DefectTypeDesc = "Accessories";
@@ -520,7 +521,7 @@ namespace Quality.Areas.FinalInspection.Controllers
 
             DatabaseObject.ViewModel.FinalInspection.Measurement Measurement = new DatabaseObject.ViewModel.FinalInspection.Measurement();
 
-            Measurement.SizeUnit = "CM";
+            Measurement.SizeUnit = "INCH";
 
             DatabaseObject.ViewModel.FinalInspection.MeasurementItem MeasurementItem = new DatabaseObject.ViewModel.FinalInspection.MeasurementItem();
             MeasurementItem.Description = "AAA";

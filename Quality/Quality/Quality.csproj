@@ -273,6 +273,13 @@
     <Content Include="Areas\SampleRFT\Views\PicturesDummy\Index.cshtml" />
     <Content Include="Areas\SampleRFT\Views\Measurement\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\GarmentTest\Index.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Query\_Tab1_Layout.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Query\_Tab2_Layout.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Query\_Tab3_Layout.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Query\_Tab4_Layout.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Query\_Tab5_Layout.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Query\_Tab6_Layout.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Query\_Tab7_Layout.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -694,6 +701,7 @@
     <Content Include="Views\PublicWondow\PictureList.cshtml" />
     <Content Include="Views\Shared\ScreenShot.cshtml" />
     <Content Include="XLT\FinalInspectionReport.xlsx" />
+    <Content Include="Views\PublicWondow\TestFailMailList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

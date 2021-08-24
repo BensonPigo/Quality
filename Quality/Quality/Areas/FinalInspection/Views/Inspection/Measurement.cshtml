@@ -64,21 +64,21 @@
         <tbody>
             <tr>
                 <td align="right"><p class="searchFont">Article</p></td>
-                <td align="center">
+                <td align="left" style="padding-left: 1vw;">
                     @Html.DropDownListFor(o => o.ListArticle, (List<SelectListItem>)ViewBag.ListArticle, null, new { @class = "form-control", id = "dropArticle" })
                 </td>
             </tr>
             <tr>
 
                 <td align="right"><p class="searchFont">Size</p></td>
-                <td align="center">
+                <td align="left" style="padding-left: 1vw;">
                     @Html.DropDownListFor(o => o.ListSize, (List<SelectListItem>)ViewBag.ListSize, null, new { @class = "form-control", id = "dropSize" })
                 </td>
             </tr>
 
             <tr>
                 <td align="right"><p class="searchFont">Product Type</p></td>
-                <td align="center">
+                <td align="left" style="padding-left: 1vw;">
                     @Html.DropDownListFor(o => o.ListProductType, (List<SelectListItem>)ViewBag.ListProductType, null, new { @class = "form-control", id = "dropProductType" })
                 </td>
 
@@ -96,43 +96,44 @@
         <table style="width: 20vw;">
             <tr>
                 <td><p class="searchFont">Unit</p></td>
-                <td>@Html.TextBoxFor(o => o.SizeUnit, new { @class = "form-control", @disabled = "disabled" }) </td>
+                <td>@Html.TextBoxFor(o => o.SizeUnit, new { @class = "form-control", @disabled = "disabled" ,@style ="width:10vw" }) </td>
             </tr>
         </table>
 
-        <div style=" width: 51vw; height: 70vh; overflow-y: auto;">
-            <table class="MeasurementTable DefectTable table table-striped display" id="myTable">
-                <thead>
+        <div style=" width: 51vw; height: 54vh; overflow-y: auto;">
+            <table class="MeasurementTable DefectTable table table-striped display">
+
+                <thead style="text-align: center; font-size: 1.5vw; font-weight: 900;" >
                     <tr>
-                        <th>
-                            <p>Coding</p>
-                        </th>
-                        <th>
+
+                        <th style="width:50vw">
                             <p>Description</p>
                         </th>
-                        <th>
+                        <th style="width:10vw">
                             <p>Tol(+)</p>
                         </th>
-                        <th>
+                        <th style="width:10vw">
                             <p>Tol(-)</p>
                         </th>
-                        <th>
+                        <th style="width:10vw">
                             <p idx="SizeCode"></p>
                         </th>
-                        <th>
+                        <th style="width:10vw">
                             <p></p>
                         </th>
-                        <th>
+                        <th style="width:10vw">
                             <p>Diff</p>
                         </th>
                     </tr>
+                    <tr><th></th></tr>
                 </thead>
-                <tbody>
+                <tbody style="text-align: center;">
                     <tr>
-                        <td colspan="7" style="height: 8vh;vertical-align: middle;" valign="middle" align="center">
+                        <td colspan="6" style="height: 8vh;vertical-align: middle;" valign="middle" align="center">
                             <h3>Data Loading.......</h3>
                         </td>
                     </tr>
+                    <tr><td></td></tr>
                 </tbody>
             </table>
         </div>
@@ -194,7 +195,7 @@
 
         $('#myTable').DataTable({
 
-            "pageLength": 10,
+            "pageLength": 1,
             "filter": false,
             "paging": true,
             "scrollY": "49vh",
@@ -232,17 +233,6 @@
     $(".to-edit-detail").dialog({
         width: "70%",
 
-        //dialogClass: "add-contact-box",
-        //buttons: {
-        //    "1": {
-        //        text: 'Next',
-        //        click: function () {
-        //            $(this).dialog("close");
-        //        }
-        //        , "class": "button"
-        //        , "style": "bottom:0;background-color:#E00000"
-        //    },
-        //},
     });
 
     $(".to-edit-detail").on("dialogclose", function (event, ui) {
@@ -292,9 +282,7 @@
                 }
                     });
 
-        $("#myTable tbody").find('tr').each(function (index, value) {
-            $(this).show();
-        });
+
 
         $(".to-edit-detail").dialog("open");
     }
@@ -385,14 +373,14 @@
 
 
         if (thead == "") {
-            thead += "<tr>";
-            thead += "<th><p>Description</p></th>";
-            thead += "<th><p>Tol(+)</p></th>";
-            thead += "<th><p>Tol(-)</p></th>";
-            thead += "<th><p idx='SizeCode'>" + dropSize.value + "</p></th>";
-            thead += "<th></th>";
-            thead += "<th><p>Diff</p></th>";
-            thead += "</tr>";
+            thead += `<tr>";
+            <th style="width:50vw"><p>Description</p></th>
+            <th style="width:10vw"><p>Tol(+)</p></th>
+            <th style="width:10vw"><p>Tol(-)</p></th>
+            <th style="width:10vw"><p idx='SizeCode'>${dropSize.value}</p></th>
+            <th style="width:10vw"></th>
+            <th style="width:10vw"><p>Diff</p></th>
+            </tr>`;
         }
 
 
@@ -401,7 +389,7 @@
             if (value.Size == dropSize.value) {
 
                 var readonly = "";
-                var bgColor = "bg-lightyellow";
+                var bgColor = "white";
                 if (!value.CanEdit) {
                     bgColor = "bg-lightgray";
                     readonly = "readonly";
@@ -414,10 +402,10 @@
                 <td class='bg-lightgray'><p idx='standard'>${value.SizeSpec}</p></td>`;
 
            if (SizeUnit == "INCH") {
-            tbody += "<td class='" + bgColor + "'><input type='text' idx='SizeSpec' placeholder= '__ __/__' class='" + bgColor + "' " + readonly + "></td>";
+               tbody += "<td class='" + bgColor + "'><input type='text' idx='SizeSpec' placeholder= '__ __/__' style ='width:7vw; height:3.5vh' class='" + bgColor + "' " + readonly + "></td>";
         }
         else {
-            tbody += "<td class='" + bgColor + "'><input type='number' idx='SizeSpec' class='" + bgColor + "' " + readonly + "></td>";
+               tbody += "<td class='" + bgColor + "'><input type='number' idx='SizeSpec' style ='width:7vw; height:3.5vh' class='" + bgColor + "' " + readonly + "></td>";
         }
 
         tbody += "<td><p class='Diff'></p></td>";
