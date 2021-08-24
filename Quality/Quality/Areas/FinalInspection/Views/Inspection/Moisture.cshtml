@@ -18,6 +18,10 @@
             margin: 1em
         }
 
+        .table_div > tbody > tr > td > * {
+            margin: 0.5em;
+        }
+
         #myCartons_info, #myEndlineMoisture_info {
             color: white
         }
@@ -35,7 +39,7 @@
 }
 @Html.Partial("~/Areas/FinalInspection/Views/Shared/_Inspection_Layout.cshtml")
 <div class="DownLeftWhiteBackgrond">
-    <div style="padding:2em 3em 2em 3em">
+    <div style="padding:2em">
         <div class="col-auto"><h1 style="font-size:2em">Inspection Setting</h1></div>
         <div>
             <table class="col-auto table_div" style="width:100%">
@@ -52,70 +56,71 @@
     </div>
 </div>
 <div class="DownRightWhiteBackgrond">
-    <div style="padding:2em 3em 2em 3em">
-        @Html.HiddenFor(o => o.FinalInspectionID)
-        <div class="col-auto"><h1 style="font-size:2em">Moisture</h1></div>
-        <button class="site-btn btn-blue" style="position:absolute;top:1em;right:8.6em">View</button>
-        <button class="site-btn btn-blue" style="position:absolute;top:1em;right:0">Save</button>
-        <div>
+    <div style="padding:2em">
+        <div style="margin: 1em">
+            @Html.HiddenFor(o => o.FinalInspectionID)
+            <div class="col-auto"><h1 style="font-size:2em">Moisture</h1></div>
+            <button class="site-btn btn-blue" style="position:absolute;top:1em;right:8.6em">View</button>
+            <button class="site-btn btn-blue" style="position:absolute;top:1em;right:0">Save</button>
+            <div>
+                <table class="col-auto table_div" style="width:100%">
+                    <tr>
+                        <td><label>Detection Instrument</label></td>
+                        <td>@Html.TextBoxFor(o => o.Instrument, new { @readonly = "readonly", @onclick = "open_EndlineMoistureDetail()" })</td>
+                    </tr>
+                    <tr>
+                        <td><label>Fabrication</label></td>
+                        <td>@Html.TextBoxFor(o => o.Fabrication, new { @readonly = "readonly", @onclick = "open_EndlineMoistureDetail()" })</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <hr style="width:100%" />
+        <div style="margin:1em">
             <table class="col-auto table_div" style="width:100%">
                 <tr>
-                    <td><label>Detection Instrument</label></td>
-                    <td>@Html.TextBoxFor(o => o.Instrument, new { @readonly = "readonly", @onclick = "open_EndlineMoistureDetail()" })</td>
+                    <td colspan="2"><label>Detection Instrument</label></td>
+                    <td colspan="4"><label>(Standard:<label id="GarmentStandard"></label>)</label></td>
                 </tr>
                 <tr>
-                    <td><label>Fabrication</label></td>
-                    <td>@Html.TextBoxFor(o => o.Fabrication, new { @readonly = "readonly", @onclick = "open_EndlineMoistureDetail()" })</td>
+                    <td><label>Top</label></td>
+                    <td>@Html.TextBoxFor(o => o.GarmentTop, new { @type = "number" })</td>
+                    <td><label>Middle</label></td>
+                    <td>@Html.TextBoxFor(o => o.GarmentMiddle, new { @type = "number" })</td>
+                    <td><label>Bottom</label></td>
+                    <td>@Html.TextBoxFor(o => o.GarmentBottom, new { @type = "number" })</td>
+                </tr>
+                <tr>
+                    <td colspan="2"><label>Carton Moisture</label></td>
+                    <td colspan="4"><label>(Standard:@ViewBag.FinalInspection_CTNMoisureStandard)</label></td>
+                </tr>
+                <tr>
+                    <td><label>Inside</label></td>
+                    <td>@Html.TextBoxFor(o => o.CTNInside, new { @type = "number" })</td>
+                    <td><label>Outside</label></td>
+                    <td>@Html.TextBoxFor(o => o.CTNOutside, new { @type = "number" })</td>
+                    <td colspan="2"></td>
                 </tr>
             </table>
         </div>
+        <hr style="width:100%" />
+        <div style="margin:1em">
+            <table class="col-auto table_div" style="width:100%">
+                <tr>
+                    <td><label>Result</label></td>
+                    <td><label id="Result">False</label></td>
+                    <td><label>Action</label></td>
+                    <td>@Html.DropDownListFor(o => o.Action, (List<SelectListItem>)ViewBag.ActionSelectListItem, null, new { @style = "width:157px" })</td>
+                </tr>
+                <tr>
+                    <td style="vertical-align:top"><label>Remark</label></td>
+                    <td colspan="3">@Html.TextAreaFor(o => o.Remark, new { @style = "width:40%;min-height:150px" })</td>
+                </tr>
+            </table>
+        </div>
+        <button id="btnBack" onclick="this.form.submitted=this.value;" type="submit" value="Back" class="button" style="right:7em;padding: 0;"><p style="font-size:12px;">Back</p></button>
+        <button id="btnNext" onclick="this.form.submitted=this.value;" type="submit" value="Next" style="right:0;" class="button">Next</button>
     </div>
-    <hr style="width:100%" />
-    <div style="padding:2em 3em 2em 3em">
-        <table class="col-auto table_div" style="width:100%">
-            <tr>
-                <td colspan="2"><label>Detection Instrument</label></td>
-                <td colspan="4"><label>(Standard:<label id="GarmentStandard"></label>)</label></td>
-            </tr>
-            <tr>
-                <td><label>Top</label></td>
-                <td>@Html.TextBoxFor(o => o.GarmentTop, new { @type = "number" })</td>
-                <td><label>Middle</label></td>
-                <td>@Html.TextBoxFor(o => o.GarmentMiddle, new { @type = "number" })</td>
-                <td><label>Bottom</label></td>
-                <td>@Html.TextBoxFor(o => o.GarmentBottom, new { @type = "number" })</td>
-            </tr>
-            <tr>
-                <td colspan="2"><label>Carton Moisture</label></td>
-                <td colspan="4"><label>(Standard:@ViewBag.FinalInspection_CTNMoisureStandard)</label></td>
-            </tr>
-            <tr>
-                <td><label>Inside</label></td>
-                <td>@Html.TextBoxFor(o => o.CTNInside, new { @type = "number" })</td>
-                <td><label>Outside</label></td>
-                <td>@Html.TextBoxFor(o => o.CTNOutside, new { @type = "number" })</td>
-                <td colspan="2"></td>
-            </tr>
-        </table>
-    </div>
-    <hr style="width:100%" />
-
-    <div style="padding:2em 3em 2em 3em">
-        <table class="col-auto table_div" style="width:100%">
-            <tr>
-                <td><label>Result</label></td>
-                <td>@Html.TextBoxFor(o => o.Result, new { @style = "border:0;outline:0;disabled:true" })</td>
-                <td><label>Action</label></td>
-                <td>@Html.DropDownListFor(o => o.Action, (List<SelectListItem>)ViewBag.ActionSelectListItem, null, new { @style = "width:157px" })</td>
-            </tr>
-            <tr>
-                <td style="vertical-align:top"><label>Remark</label></td>
-                <td colspan="3">@Html.TextAreaFor(o => o.Remark, new { @style = "width:40%;min-height:150px" })</td>
-            </tr>
-        </table>
-    </div>
-    <button class="button" style="right:7em">Back</button>
-    <button class="button" style="right:0">Next</button>
 </div>
 
 
