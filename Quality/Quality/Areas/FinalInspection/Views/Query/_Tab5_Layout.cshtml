@@ -34,7 +34,7 @@
     }
 </style>
 
-@model  List<DatabaseObject.ViewModel.FinalInspection.ViewMoistureResult>
+@model DatabaseObject.ViewModel.FinalInspection.QueryReport
 
 <div class="content-scroll" style=" height: calc( 100vh - 280px )">
     <div class="inner-scroll" style="float:left">
@@ -59,53 +59,53 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model)
+                    @foreach (var item in Model.ListViewMoistureResult)
                     {
-                    <tr class="row-content" style="vertical-align: middle; text-align: center;">
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Article)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.CTNNo)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Instrument)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Fabrication)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.GarmentStandard)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.GarmentTop)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.GarmentMiddle)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.GarmentBottom)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.CTNStandard)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.CTNInside)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.CTNOutside)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Result)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Action)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Remark)
-                        </td>
+                        <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Article)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CTNNo)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Instrument)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Fabrication)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.GarmentStandard)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.GarmentTop)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.GarmentMiddle)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.GarmentBottom)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CTNStandard)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CTNInside)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CTNOutside)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Result)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Action)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Remark)
+                            </td>
 
-                    </tr>
+                        </tr>
                     }
                 </tbody>
 

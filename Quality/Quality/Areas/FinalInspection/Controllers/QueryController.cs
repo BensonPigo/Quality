@@ -80,23 +80,10 @@ namespace Quality.Areas.FinalInspection.Controllers
 
         public ActionResult Detail()
         {
-            return View();
+            DatabaseObject.ViewModel.FinalInspection.QueryReport queryReport = new QueryReport();
+            queryReport.ListViewMoistureResult = new List<ViewMoistureResult>();
+            return View(queryReport);
         }
-
-
-        public ActionResult _Tab5_Layout()
-        {
-            List<DatabaseObject.ViewModel.FinalInspection.ViewMoistureResult> list = new List<DatabaseObject.ViewModel.FinalInspection.ViewMoistureResult>();
-
-            return View(list);
-        }
-
-
-        public ActionResult _Tab7_Layout()
-        {
-            return View();
-        }
-
         public ActionResult DownLoad()
         {
             bool test = false;
