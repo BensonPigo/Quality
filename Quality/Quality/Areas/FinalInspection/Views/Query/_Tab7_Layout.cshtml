@@ -1,31 +1,26 @@
-﻿@{
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
+﻿@model DatabaseObject.ViewModel.FinalInspection.Others
 
-@section head{
-    <link href="~/Areas/FinalInspection/CSS/FinalInspection.css" rel="stylesheet" type="text/css">
-    <link href="/ThirdParty/plugins/jquery-magnific-popup/magnific-popup.css" rel="stylesheet" />
-    <link href="/ThirdParty/plugins/jquery-ui/jquery-ui.css" rel="stylesheet" />
-    <style type="text/css">
-        .col-auto > * {
-            width: auto;
-        }
-    </style>
-}
-@RenderSection("FinalInspection_head", required: false)
-<div class="main-content">
-    <div class="main_div">
-        @RenderBody()
-    </div>
-</div>
-<script>
-    $(function () {
-        $(window).keydown(function (event) {
-            if (event.keyCode == 13) {
-                event.preventDefault();
-                return false;
-            }
-        });
-    });
-</script>
-@RenderSection("FinalInspection_script", required: false)
+<table class="al-m" style="width: 80% ; align-items: center; ">
+
+    <tr>
+        <td ><label class="Font">Production Status</label></td>
+        <td> @Html.DisplayFor(o => o.ProductionStatus, new { @class = "form-control center-block" })</td>
+    </tr>
+
+    <tr>
+
+        <td class="ColumnStype"><label class="Font">Other Photo</label></td>
+        <td>
+            <img src="~/Image/Icon/Picture.png" width="30" height="30" />
+        </td>
+    </tr>
+
+    <tr>
+        <td class="ColumnStype" style="vertical-align:top;"><label class="Font">Remark</label></td>
+        <td colspan="2">
+            @Html.TextAreaFor(o => o.OthersRemark, new { @style = "width:calc(100% - 80px); border: 1px solid black;" })
+
+        </td>
+    </tr>
+
+</table>

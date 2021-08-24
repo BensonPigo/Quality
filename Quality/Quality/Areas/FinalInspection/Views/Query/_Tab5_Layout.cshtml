@@ -1,31 +1,141 @@
-﻿@{
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
+﻿<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+<link href="~/Areas/FinalInspection/CSS/FinalInspection.css" rel="stylesheet" />
 
-@section head{
-    <link href="~/Areas/FinalInspection/CSS/FinalInspection.css" rel="stylesheet" type="text/css">
-    <link href="/ThirdParty/plugins/jquery-magnific-popup/magnific-popup.css" rel="stylesheet" />
-    <link href="/ThirdParty/plugins/jquery-ui/jquery-ui.css" rel="stylesheet" />
-    <style type="text/css">
-        .col-auto > * {
-            width: auto;
-        }
-    </style>
-}
-@RenderSection("FinalInspection_head", required: false)
-<div class="main-content">
-    <div class="main_div">
-        @RenderBody()
+
+
+<style type="text/css">
+
+
+    #myTable_info {
+        color: white
+    }
+
+    #myTable_previous, #myTable_next {
+        color: white !important;
+    }
+
+    #row-name {
+        color: black;
+    }
+
+    .searchFont {
+        font-size: 1.5em;
+        font-weight: 900;
+    }
+
+    .center {
+        margin-top: 0vh;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 1vh;
+    }
+</style>
+
+@model  List<DatabaseObject.ViewModel.FinalInspection.ViewMoistureResult>
+
+<div class="content-scroll" style=" height: calc( 100vh - 280px )">
+    <div class="inner-scroll" style="float:left">
+        <div>
+            <table cellspacing="100" id="myTable" class="table table-striped display">
+                <thead>
+                    <tr id="row-name" class="row-name">
+                        <th>Article</th>
+                        <th>CTN#</th>
+                        <th>Detection Instrument</th>
+                        <th>Fabrication</th>
+                        <th>Garment Moisture Standard</th>
+                        <th>Garment Moisture Top</th>
+                        <th>Garment Moisture Middle</th>
+                        <th>Garment Moisture Bottom</th>
+                        <th>Carton Moisture Standard</th>
+                        <th>Carton Moisture Inside</th>
+                        <th>Carton Moisture Outside</th>
+                        <th>GResult</th>
+                        <th>Action</th>
+                        <th>Remark</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                    <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Article)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CTNNo)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Instrument)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Fabrication)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.GarmentStandard)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.GarmentTop)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.GarmentMiddle)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.GarmentBottom)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CTNStandard)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CTNInside)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CTNOutside)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Result)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Action)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Remark)
+                        </td>
+
+                    </tr>
+                    }
+                </tbody>
+
+            </table>
+        </div>
     </div>
 </div>
-<script>
+
+
+
+<script type="text/javascript">
+
+
+    var msg = new MessagerAlert();
+
     $(function () {
-        $(window).keydown(function (event) {
-            if (event.keyCode == 13) {
-                event.preventDefault();
-                return false;
-            }
+
+        $('#myTable').DataTable({
+
+            "pageLength": 10,
+            "filter": false,
+            "paging": true,
+            "scrollY": "49vh",
+            "scrollCollapse": true,
+
         });
     });
+
 </script>
-@RenderSection("FinalInspection_script", required: false)
+
+
+
+
