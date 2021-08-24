@@ -85,11 +85,14 @@ namespace Quality.Areas.FinalInspection.Controllers
 
         public ActionResult DownLoad()
         {
-            bool test = true;
-            //if (TempData["Model"] == null)
-            //{
-            //    return RedirectToAction("Index");
-            //}
+            bool test = false;
+            if (!test)
+            {
+                if (TempData["Model"] == null)
+                {
+                    return RedirectToAction("Index");
+                }
+            }
 
             QueryReport model = (QueryReport)TempData["Model"];
             TempData["Model"] = model;
