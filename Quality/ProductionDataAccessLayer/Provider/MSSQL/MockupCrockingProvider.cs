@@ -66,35 +66,15 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,AddName"+ Environment.NewLine);
             SbSql.Append("        ,EditDate"+ Environment.NewLine);
             SbSql.Append("        ,EditName"+ Environment.NewLine);
+            SbSql.Append("        ,EditName" + Environment.NewLine);
             SbSql.Append("FROM [MockupCrocking]"+ Environment.NewLine);
 
             SbSql.Append("Where 1 = 1" + Environment.NewLine);
-            if (!string.IsNullOrEmpty(Item.BrandID))
+            if (!string.IsNullOrEmpty(Item.ReportNo))
             {
-                SbSql.Append("And BrandID = @BrandID" + Environment.NewLine);
-                objParameter.Add("@BrandID", DbType.String, Item.BrandID);
+                SbSql.Append("And ReportNo = @ReportNo" + Environment.NewLine);
+                objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
             }
-            if (!string.IsNullOrEmpty(Item.SeasonID))
-            {
-                SbSql.Append("And SeasonID = @SeasonID" + Environment.NewLine);
-                objParameter.Add("@SeasonID", DbType.String, Item.SeasonID);
-            }
-            if (!string.IsNullOrEmpty(Item.StyleID))
-            {
-                SbSql.Append("And StyleID = @StyleID" + Environment.NewLine);
-                objParameter.Add("@StyleID", DbType.String, Item.StyleID);
-            }
-            if (!string.IsNullOrEmpty(Item.Article))
-            {
-                SbSql.Append("And Article = @Article" + Environment.NewLine);
-                objParameter.Add("@Article", DbType.String, Item.Article);
-            }
-            if (!string.IsNullOrEmpty(Item.Type))
-            {
-                SbSql.Append("And Type = @Type" + Environment.NewLine);
-                objParameter.Add("@Type", DbType.String, Item.Type);
-            }
-
 
             return ExecuteList<MockupCrocking>(CommandType.Text, SbSql.ToString(), objParameter);
         }
@@ -157,8 +137,14 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,@Technician"); objParameter.Add("@Technician", DbType.String, Item.Technician);
             SbSql.Append("        ,@MR"); objParameter.Add("@MR", DbType.String, Item.MR);
             SbSql.Append("        ,@Type"); objParameter.Add("@Type", DbType.String, Item.Type);
-            SbSql.Append("        ,@TestBeforePicture"); objParameter.Add("@TestBeforePicture", DbType.String, Item.TestBeforePicture);
-            SbSql.Append("        ,@TestAfterPicture"); objParameter.Add("@TestAfterPicture", DbType.String, Item.TestAfterPicture);
+
+            SbSql.Append("        ,@TestBeforePicture");
+            if (Item.TestBeforePicture != null) { objParameter.Add("@TestBeforePicture", Item.TestBeforePicture); }
+            else { objParameter.Add("@TestBeforePicture", System.Data.SqlTypes.SqlBinary.Null); }
+            SbSql.Append("        ,@TestAfterPicture");
+            if (Item.TestAfterPicture != null) { objParameter.Add("@TestAfterPicture", Item.TestAfterPicture); }
+            else { objParameter.Add("@TestAfterPicture", System.Data.SqlTypes.SqlBinary.Null); }
+
             SbSql.Append("        ,@AddDate"); objParameter.Add("@AddDate", DbType.DateTime, Item.AddDate);
             SbSql.Append("        ,@AddName"); objParameter.Add("@AddName", DbType.String, Item.AddName);
             SbSql.Append("        ,@EditDate"); objParameter.Add("@EditDate", DbType.DateTime, Item.EditDate);
@@ -188,7 +174,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SQLParameterCollection objParameter = new SQLParameterCollection();
             SbSql.Append("UPDATE [MockupCrocking]"+ Environment.NewLine);
             SbSql.Append("SET"+ Environment.NewLine);
-            if (Item.ReportNo != null) { SbSql.Append("ReportNo=@ReportNo"+ Environment.NewLine); objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);}
+
             if (Item.POID != null) { SbSql.Append(",POID=@POID"+ Environment.NewLine); objParameter.Add("@POID", DbType.String, Item.POID);}
             if (Item.StyleID != null) { SbSql.Append(",StyleID=@StyleID"+ Environment.NewLine); objParameter.Add("@StyleID", DbType.String, Item.StyleID);}
             if (Item.SeasonID != null) { SbSql.Append(",SeasonID=@SeasonID"+ Environment.NewLine); objParameter.Add("@SeasonID", DbType.String, Item.SeasonID);}
@@ -204,16 +190,23 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             if (Item.Technician != null) { SbSql.Append(",Technician=@Technician"+ Environment.NewLine); objParameter.Add("@Technician", DbType.String, Item.Technician);}
             if (Item.MR != null) { SbSql.Append(",MR=@MR"+ Environment.NewLine); objParameter.Add("@MR", DbType.String, Item.MR);}
             if (Item.Type != null) { SbSql.Append(",Type=@Type"+ Environment.NewLine); objParameter.Add("@Type", DbType.String, Item.Type);}
-            if (Item.TestBeforePicture != null) { SbSql.Append(",TestBeforePicture=@TestBeforePicture"+ Environment.NewLine); objParameter.Add("@TestBeforePicture", DbType.String, Item.TestBeforePicture);}
-            if (Item.TestAfterPicture != null) { SbSql.Append(",TestAfterPicture=@TestAfterPicture"+ Environment.NewLine); objParameter.Add("@TestAfterPicture", DbType.String, Item.TestAfterPicture);}
             if (Item.AddDate != null) { SbSql.Append(",AddDate=@AddDate"+ Environment.NewLine); objParameter.Add("@AddDate", DbType.DateTime, Item.AddDate);}
             if (Item.AddName != null) { SbSql.Append(",AddName=@AddName"+ Environment.NewLine); objParameter.Add("@AddName", DbType.String, Item.AddName);}
             if (Item.EditDate != null) { SbSql.Append(",EditDate=@EditDate"+ Environment.NewLine); objParameter.Add("@EditDate", DbType.DateTime, Item.EditDate);}
             if (Item.EditName != null) { SbSql.Append(",EditName=@EditName"+ Environment.NewLine); objParameter.Add("@EditName", DbType.String, Item.EditName);}
-            SbSql.Append("WHERE 1 = 1" + Environment.NewLine);
 
+            // 圖檔
+            SbSql.Append(@"
+    TestBeforePicture=@TestBeforePicture,
+    TestAfterPicture=@TestAfterPicture
+");
+            if (Item.TestBeforePicture != null) { objParameter.Add("@TestBeforePicture", Item.TestBeforePicture); }
+            else { objParameter.Add("@TestBeforePicture", System.Data.SqlTypes.SqlBinary.Null); }
+            if (Item.TestAfterPicture != null) { objParameter.Add("@TestAfterPicture", Item.TestAfterPicture); }
+            else { objParameter.Add("@TestAfterPicture", System.Data.SqlTypes.SqlBinary.Null); }
 
-
+            SbSql.Append("WHERE ReportNo = @ReportNo" + Environment.NewLine);
+            objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
@@ -233,13 +226,100 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append("DELETE FROM [MockupCrocking]"+ Environment.NewLine);
+            SbSql.Append("DELETE [MockupCrocking]"+ Environment.NewLine);
+            SbSql.Append("WHERE ReportNo = @ReportNo" + Environment.NewLine);
+            objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
+            return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
+        }
+        #endregion
+
+        public IList<MockupCrocking> GetMockupCrocking(MockupCrocking Item)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            SbSql.Append(@"
+SELECT
+         ReportNo
+        ,POID
+        ,StyleID
+        ,SeasonID
+        ,BrandID
+        ,Article
+        ,ArtworkTypeID
+        ,Remark
+        ,T1Subcon
+        ,TestDate
+        ,ReceivedDate
+        ,ReleasedDate
+        ,Result
+        ,Technician
+        ,MR
+        ,Type
+        ,TestBeforePicture
+        ,TestAfterPicture
+        ,AddDate
+        ,AddName
+        ,EditDate
+        ,EditName
+        ,EditName
+        ,Abb = (select Abb from LocalSupp where ID = T1Subcon)
+        ,TechnicianName = (select name from pass1 p where p.ID = Technician)
+        ,SignaturePic = (select PicPath from system) + (select t.SignaturePic from Technician t where t.ID = Technician)
+FROM [MockupCrocking]
+");
+            SbSql.Append("Where 1 = 1" + Environment.NewLine);
+
+            if (!string.IsNullOrEmpty(Item.BrandID))
+            {
+                SbSql.Append("And BrandID = @BrandID" + Environment.NewLine);
+                objParameter.Add("@BrandID", DbType.String, Item.BrandID);
+            }
+            if (!string.IsNullOrEmpty(Item.SeasonID))
+            {
+                SbSql.Append("And SeasonID = @SeasonID" + Environment.NewLine);
+                objParameter.Add("@SeasonID", DbType.String, Item.SeasonID);
+            }
+            if (!string.IsNullOrEmpty(Item.StyleID))
+            {
+                SbSql.Append("And StyleID = @StyleID" + Environment.NewLine);
+                objParameter.Add("@StyleID", DbType.String, Item.StyleID);
+            }
+            if (!string.IsNullOrEmpty(Item.Article))
+            {
+                SbSql.Append("And Article = @Article" + Environment.NewLine);
+                objParameter.Add("@Article", DbType.String, Item.Article);
+            }
+            if (!string.IsNullOrEmpty(Item.Type))
+            {
+                SbSql.Append("And Type = @Type" + Environment.NewLine);
+                objParameter.Add("@Type", DbType.String, Item.Type);
+            }
 
 
+            return ExecuteList<MockupCrocking>(CommandType.Text, SbSql.ToString(), objParameter);
+        }
 
+        public int UpdatePicture(MockupCrocking Item)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+
+            if (Item.TestBeforePicture != null) { objParameter.Add("@TestBeforePicture", Item.TestBeforePicture); }
+            else { objParameter.Add("@TestBeforePicture", System.Data.SqlTypes.SqlBinary.Null); }
+
+            if (Item.TestAfterPicture != null) { objParameter.Add("@TestAfterPicture", Item.TestAfterPicture); }
+            else { objParameter.Add("@TestAfterPicture", System.Data.SqlTypes.SqlBinary.Null); }
+
+            SbSql.Append(@"
+UPDATE [MockupCrocking]
+SET
+    TestBeforePicture=@TestBeforePicture,
+    TestAfterPicture=@TestAfterPicture
+where ReportNo = @ReportNo
+");
+            objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
-	#endregion
     }
 }
