@@ -168,5 +168,34 @@ select  [Ukey] = isnull(fd.Ukey, -1),
             return ExecuteList<FinalInspectionDefectItem>(CommandType.Text, sqlGetData, listPar);
         }
 
+        public List<string> GetMoistureArticleList(string finalInspectionID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+
+            listPar.Add("@finalInspectionID", finalInspectionID);
+
+            string sqlGetMoistureArticleList = @"
+select  OrderID
+into #FinalInspection_Order
+from [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order with (nolock)
+where ID = @finalInspectionID
+
+select distinct Article 
+from Order_Article
+where id in (select OrderID from #FinalInspection_Order)
+";
+
+            DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetMoistureArticleList, listPar);
+
+            if (dtResult.Rows.Count == 0)
+            {
+                return new List<string>();
+            }
+            else
+            {
+                return dtResult.AsEnumerable().Select(s => s["OrderID"].ToString()).ToList();
+            }
+
+        }
     }
 }

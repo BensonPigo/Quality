@@ -11,6 +11,8 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public int? RejectQty { get; set; }
         public string InspectionStep { get; set; } = "";
 
+        public int? SampleSize { get; set; }
+
         public List<FinalInspectionDefectItem> ListFinalInspectionDefectItem { get; set; }
 
     }

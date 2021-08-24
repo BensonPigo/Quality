@@ -10,7 +10,7 @@ using DatabaseObject.ViewModel.FinalInspection;
 using DatabaseObject;
 using System.Drawing;
 
-namespace BusinessLogicLayer.Service.Tests
+namespace BusinessLogicLayer.Service.FinalInspectionTests
 {
     [TestClass()]
     public class FinalInspectionAddDefectServiceTests
@@ -44,7 +44,7 @@ namespace BusinessLogicLayer.Service.Tests
             {
                 IFinalInspectionAddDefectService finalInspectionAddDefectService = new FinalInspectionAddDefectService();
 
-                List<byte[]> result = finalInspectionAddDefectService.GetDefectImage(11);
+                List<byte[]> result = finalInspectionAddDefectService.GetDefectImage(289);
 
                 Assert.IsTrue(true);
             }
@@ -66,6 +66,7 @@ namespace BusinessLogicLayer.Service.Tests
                 addDefect.RejectQty = 9;
                 addDefect.ListFinalInspectionDefectItem[0].Qty = 5;
                 addDefect.ListFinalInspectionDefectItem[3].Qty = 6;
+                addDefect.InspectionStep = "Insp-CheckList";
                 Bitmap bitmap = new Bitmap(Image.FromFile(@"TestResource\001.jpg"));
                 ImageConverter converter = new ImageConverter();
                 byte[] testImgByte = (byte[])converter.ConvertTo(bitmap, typeof(byte[]));

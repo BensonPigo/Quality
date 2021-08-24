@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace DatabaseObject.ViewModel.FinalInspection
 {
-    public class Moisture
+    public class Moisture : BaseResult
     {
         public string FinalInspectionID { get; set; }
         public decimal? FinalInspection_CTNMoisureStandard { get; set; }

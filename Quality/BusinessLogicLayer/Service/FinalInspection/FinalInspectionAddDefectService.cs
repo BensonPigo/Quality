@@ -38,7 +38,9 @@ namespace BusinessLogicLayer.Service
 
                 if (!finalInspection)
                 {
-                    addDefect.RejectQty = 0;
+                    addDefect.Result = finalInspection.Result;
+                    addDefect.ErrorMessage = finalInspection.ErrorMessage;
+                    return addDefect;
                 }
                 else
                 {

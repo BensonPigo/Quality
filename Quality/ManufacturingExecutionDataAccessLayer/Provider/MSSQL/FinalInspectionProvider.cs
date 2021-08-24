@@ -398,33 +398,235 @@ where   ID = @FinalInspectionID
                     else
                     {
                         sqlUpdateFinalInspectionDetail = @"
-    update  FinalInspection_Detail
-    set Qty = @Qty
-    where   Ukey = @Ukey
+    if (@Qty > 0)
+    begin
+        update  FinalInspection_Detail
+            set Qty = @Qty
+            where   Ukey = @Ukey
+    end
+    else
+    begin
+        delete  FinalInspection_Detail where   Ukey = @Ukey
+    end
+    
 ";
                         ExecuteNonQuery(CommandType.Text, sqlUpdateFinalInspectionDetail, detailParameter);
                     }
 
-
-                    foreach (byte[] image in defectItem.ListFinalInspectionDefectImage)
+                    if (defectItem.Qty > 0)
                     {
-                        string sqlInsertFinalInspection_DetailImage = @"
+                        foreach (byte[] image in defectItem.ListFinalInspectionDefectImage)
+                        {
+                            string sqlInsertFinalInspection_DetailImage = @"
     insert into FinalInspection_DetailImage(ID, FinalInspection_DetailUkey, Image)
                 values(@FinalInspectionID, @FinalInspection_DetailUkey, @Image)
 ";
-                        SQLParameterCollection imgParameter = new SQLParameterCollection() {
+                            SQLParameterCollection imgParameter = new SQLParameterCollection() {
                             { "@FinalInspectionID", DbType.String, addDefect.FinalInspectionID },
                             { "@FinalInspection_DetailUkey", DbType.Int64, defectItem.Ukey },
                             { "@Image", image}
                         };
 
-                        ExecuteNonQuery(CommandType.Text, sqlInsertFinalInspection_DetailImage, imgParameter);
+                            ExecuteNonQuery(CommandType.Text, sqlInsertFinalInspection_DetailImage, imgParameter);
+                        }
                     }
-
                 }
 
                 transaction.Complete();
             }
+        }
+
+        public IList<BACriteriaItem> GetBeautifulProductAuditForInspection(string finalInspectionID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+
+            listPar.Add("@finalInspectionID", finalInspectionID);
+
+            string sqlGetData = $@"
+select ID, Description 
+into #baseBACriteria
+from    [MainServer].Production.dbo.DropDownList ddl 
+where Type = 'PMS_BACriteria'
+order by Seq
+
+select  [Ukey] = isnull(fn.Ukey, -1),
+        [BACriteria] = bac.ID,
+        [BACriteriaDesc] = bac.Description,
+        [Qty] = isnull(fn.Qty, 0)
+    from #baseBACriteria bac with (nolock)
+    left join   FinalInspection_NonBACriteria fn on    fn.ID = @finalInspectionID and
+                                                            fn.BACriteria = bac.ID
+
+
+";
+            return ExecuteList<BACriteriaItem>(CommandType.Text, sqlGetData, listPar);
+        }
+
+        public void UpdateBeautifulProductAudit(BeautifulProductAudit beautifulProductAudit, string UserID)
+        {
+            using (TransactionScope transaction = new TransactionScope())
+            {
+                SQLParameterCollection objParameter = new SQLParameterCollection() {
+                    { "@FinalInspectionID", DbType.String, beautifulProductAudit.FinalInspectionID },
+                    { "@BAQty", DbType.Int32, beautifulProductAudit.BAQty },
+                    { "@UserID", DbType.String, UserID },
+                    { "@InspectionStep", DbType.String, beautifulProductAudit.InspectionStep }
+                };
+
+                string sqlUpdFinalInspection = @"
+update  FinalInspection
+        set BAQty = @BAQty,
+            InspectionStep = @InspectionStep,
+            EditName = @UserID,
+            EditDate = getdate()
+where   ID = @FinalInspectionID
+";
+                ExecuteNonQuery(CommandType.Text, sqlUpdFinalInspection, objParameter);
+
+                foreach (BACriteriaItem criteriaItem in beautifulProductAudit.ListBACriteria)
+                {
+                    string sqlUpdateFinalInspectionDetail = string.Empty;
+                    SQLParameterCollection detailParameter = new SQLParameterCollection() {
+                            { "@FinalInspectionID", DbType.String, beautifulProductAudit.FinalInspectionID },
+                            { "@BACriteria", DbType.String, criteriaItem.BACriteria },
+                            { "@Ukey", DbType.Int64, criteriaItem.Ukey },
+                            { "@Qty", DbType.Int32, criteriaItem.Qty }
+                        };
+
+                    if (criteriaItem.Ukey == -1)
+                    {
+                        sqlUpdateFinalInspectionDetail = @"
+    DECLARE @FinalInspection_NonBACriteriaKey table (Ukey bigint)
+
+    insert into FinalInspection_NonBACriteria(ID, BACriteria, Qty)
+                OUTPUT INSERTED.Ukey into @FinalInspection_NonBACriteriaKey
+                values(@FinalInspectionID, @BACriteria, @Qty)
+
+    select  Ukey from @FinalInspection_NonBACriteriaKey
+";
+                        DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlUpdateFinalInspectionDetail, detailParameter);
+                        criteriaItem.Ukey = (long)dtResult.Rows[0]["Ukey"];
+                    }
+                    else
+                    {
+                        sqlUpdateFinalInspectionDetail = @"
+    if(@Qty > 0)
+    begin
+        update  FinalInspection_NonBACriteria
+            set Qty = @Qty
+            where   Ukey = @Ukey
+    end
+    else
+    begin
+        --數量 = 0 刪除
+        delete  FinalInspection_NonBACriteria where Ukey = @Ukey
+    end
+    
+";
+                        ExecuteNonQuery(CommandType.Text, sqlUpdateFinalInspectionDetail, detailParameter);
+                    }
+
+                    //數量大於0才需要上傳圖片
+                    if (criteriaItem.Qty > 0)
+                    {
+                        foreach (byte[] image in criteriaItem.ListBACriteriaImage)
+                        {
+                            string sqlInsertFinalInspection_NonBACriteriaImage = @"
+    insert into FinalInspection_NonBACriteriaImage(ID, FinalInspection_NonBACriteriaUkey, Image)
+                values(@FinalInspectionID, @FinalInspection_NonBACriteriaUkey, @Image)
+";
+                            SQLParameterCollection imgParameter = new SQLParameterCollection() {
+                            { "@FinalInspectionID", DbType.String, beautifulProductAudit.FinalInspectionID },
+                            { "@FinalInspection_NonBACriteriaUkey", DbType.Int64, criteriaItem.Ukey },
+                            { "@Image", image}
+                        };
+
+                            ExecuteNonQuery(CommandType.Text, sqlInsertFinalInspection_NonBACriteriaImage, imgParameter);
+                        }
+                    }
+                }
+
+                transaction.Complete();
+            }
+        }
+
+        public List<byte[]> GetBACriteriaImage(long FinalInspection_NonBACriteriaUkey)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection() {
+            { "@FinalInspection_NonBACriteriaUkey", DbType.Int64, FinalInspection_NonBACriteriaUkey }
+            };
+
+            string sqlGetData = @"
+select  Image
+    from FinalInspection_NonBACriteriaImage with (nolock)
+    where   FinalInspection_NonBACriteriaUkey = @FinalInspection_NonBACriteriaUkey
+";
+
+            DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, objParameter);
+
+            if (dtResult.Rows.Count > 0)
+            {
+                return dtResult.AsEnumerable().Select(s => (byte[])s["Image"]).ToList();
+            }
+            else
+            {
+                return new List<byte[]>();
+            }
+        }
+
+        public IList<CartonItem> GetMoistureListCartonItem(string finalInspectionID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection() {
+            { "@finalInspectionID", DbType.String, finalInspectionID }
+            };
+
+            string sqlGetMoistureListCartonItem = @"
+select  [FinalInspection_OrderCartonUkey] = Ukey,
+        OrderID,
+        PackinglistID,
+        CTNNo
+from    FinalInspection_OrderCarton with (nolock)
+where ID = @finalInspectionID
+
+";
+            return ExecuteList<CartonItem>(CommandType.Text, sqlGetMoistureListCartonItem, objParameter);
+
+        }
+
+        public IList<ViewMoistureResult> GetViewMoistureResult(string finalInspectionID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection() {
+            { "@finalInspectionID", DbType.String, finalInspectionID }
+            };
+
+            string sqlGetViewMoistureResult = @"
+declare @FinalInspection_CTNMoisureStandard numeric(5,2)
+
+select  @FinalInspection_CTNMoisureStandard = FinalInspection_CTNMoisureStandard
+from    [MainServer].Production.dbo.System
+
+select  fm.Ukey,
+        fm.Article,
+        fo.CTNNo,
+        fm.Instrument,
+        fm.Fabrication,
+        [GarmentStandard] = em.Standard,
+        fm.GarmentTop,
+        fm.GarmentMiddle,
+        fm.GarmentBottom,
+        [CTNStandard] = @FinalInspection_CTNMoisureStandard,
+        fm.CTNInside,
+        fm.CTNOutside,
+        fm.Result,
+        fm.Action,
+        fm.Remark
+from    FinalInspection_Moisture fm with (nolock)
+left join   FinalInspection_OrderCarton fo with (nolock) on fo.Ukey = fm.FinalInspection_OrderCartonUkey
+left join   EndlineMoisture em with (nolock) on em.Instrument = fm.Instrument and em.Fabrication = fm.Fabrication
+where fm.ID = @finalInspectionID
+
+";
+            return ExecuteList<ViewMoistureResult>(CommandType.Text, sqlGetViewMoistureResult, objParameter);
         }
 
         #endregion

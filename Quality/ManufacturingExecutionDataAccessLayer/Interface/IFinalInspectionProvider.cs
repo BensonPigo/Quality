@@ -18,5 +18,15 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         IList<byte[]> GetFinalInspectionDefectImage(long FinalInspection_DetailUkey);
 
         void UpdateFinalInspectionDetail(AddDefect addDefect, string UserID);
+
+        IList<BACriteriaItem> GetBeautifulProductAuditForInspection(string finalInspectionID);
+
+        void UpdateBeautifulProductAudit(BeautifulProductAudit addDefect, string UserID);
+
+        List<byte[]> GetBACriteriaImage(long FinalInspection_NonBACriteriaUkey);
+
+        IList<CartonItem> GetMoistureListCartonItem(string finalInspectionID);
+
+        IList<ViewMoistureResult> GetViewMoistureResult(string finalInspectionID);
     }
 }
