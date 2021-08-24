@@ -71,6 +71,7 @@
     <Compile Include="Interface\Authority\IAuthorityService.cs" />
     <Compile Include="Interface\BulkFGT\IGarmentTest_Service.cs" />
     <Compile Include="Interface\FinalInspection\IQueryService.cs" />
+    <Compile Include="Interface\ISendMailService.cs" />
     <Compile Include="Interface\IMockupCrockingService.cs" />
     <Compile Include="Interface\SampleRFT\IBACriteriaService.cs" />
     <Compile Include="Interface\BulkFGT\IBulkFGTMailGroup_Service.cs" />
@@ -86,6 +87,7 @@
     <Compile Include="Service\Authority\AuthorityService.cs" />
     <Compile Include="Service\BulkFGT\GarmentTest_Service.cs" />
     <Compile Include="Service\FinalInspection\QueryService.cs" />
+    <Compile Include="Service\SendMailService.cs" />
     <Compile Include="Service\MockupCrockingService.cs" />
     <Compile Include="Service\PublicWindowService.cs" />
     <Compile Include="Service\SampleRFT\BACriteriaService.cs" />

@@ -1,5 +1,6 @@
 ﻿using BusinessLogicLayer.Interface;
 using DatabaseObject.ProductionDB;
+using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel;
 using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
@@ -30,6 +31,33 @@ namespace BusinessLogicLayer.Service
             }
 
             return MockupCrocking_ViewModel;
+        }
+
+        // 單獨更新圖檔欄位
+        public MockupUpdatePicture_Result UpdatePicture(MockupCrocking MockupCrocking)
+        {
+            MockupUpdatePicture_Result updatePicture_Result = new MockupUpdatePicture_Result();
+            _MockupCrockingProvider = new MockupCrockingProvider(Common.ProductionDataAccessLayer);
+            try
+            {
+                int updateCT = _MockupCrockingProvider.UpdatePicture(MockupCrocking);
+                if (updateCT == 0)
+                {
+                    updatePicture_Result.result = false;
+                    updatePicture_Result.resultMsg = "Not found Crocking Data!";
+                }
+                else
+                {
+                    updatePicture_Result.result = true;
+                }
+            }
+            catch (System.Exception ex)
+            {
+                updatePicture_Result.result = false;
+                updatePicture_Result.resultMsg = ex.ToString();
+            }
+
+            return updatePicture_Result;
         }
     }
 }
