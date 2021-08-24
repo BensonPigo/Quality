@@ -694,6 +694,7 @@
     <Content Include="Views\PublicWondow\PictureList.cshtml" />
     <Content Include="Views\Shared\ScreenShot.cshtml" />
     <Content Include="XLT\FinalInspectionReport.xlsx" />
+    <Content Include="Views\PublicWondow\TestFailMailList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

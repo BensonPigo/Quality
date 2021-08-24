@@ -276,5 +276,26 @@ namespace Quality.Controllers
             return View(model);
         }
 
+
+        public ActionResult TestFailMailList(string Title, string FactoryID, string Type)
+        {
+            var model = _PublicWindowService.Get_TestFailMail(FactoryID, Type, string.Empty);
+            ViewData["Title"] = Title;
+            ViewData["Type"] = Type;
+            ViewData["FactoryID"] = FactoryID;
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult TestFailMailList(string Title, string FactoryID, string Type, string GroupNameList)
+        {
+            var model = _PublicWindowService.Get_TestFailMail(FactoryID, Type, GroupNameList);
+
+
+            ViewData["Type"] = Type;
+            ViewData["Title"] = Title;
+            ViewData["FactoryID"] = FactoryID;
+            return View(model);
+        }
     }
 }

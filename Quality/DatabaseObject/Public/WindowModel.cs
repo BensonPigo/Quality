@@ -153,4 +153,16 @@ namespace DatabaseObject.Public
         public byte[] BrforeImage { get; set; }
         public byte[] AfterImage { get; set; }
     }
+
+    public class Window_TestFailMail
+    {
+        public string FactoryID { get; set; }
+
+        public string GroupName { get; set; }
+        public string Type { get; set; }
+
+        public string ToAddress { get; set; }
+
+        public string CcAddress { get; set; }
+    }
 }

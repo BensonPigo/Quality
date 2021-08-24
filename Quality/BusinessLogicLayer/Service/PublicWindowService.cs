@@ -332,5 +332,26 @@ namespace BusinessLogicLayer.Service
 
             return result;
         }
+
+
+        public List<Window_TestFailMail> Get_TestFailMail(string FactoryID, string Type, string GroupNameList)
+        {
+            List<Window_TestFailMail> result = new List<Window_TestFailMail>();
+
+            try
+            {
+                _Provider = new PublicWondowProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                //取得登入資訊
+                result = _Provider.Get_TestFailMail(FactoryID, Type, GroupNameList).ToList();
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
     }
 }
