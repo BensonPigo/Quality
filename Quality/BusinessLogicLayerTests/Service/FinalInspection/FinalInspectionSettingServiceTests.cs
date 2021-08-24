@@ -9,7 +9,7 @@ using BusinessLogicLayer.Interface;
 using DatabaseObject.ViewModel.FinalInspection;
 using DatabaseObject;
 
-namespace BusinessLogicLayer.Service.Tests
+namespace BusinessLogicLayer.Service.FinalInspectionTests
 {
     [TestClass()]
     public class FinalInspectionSettingServiceTests

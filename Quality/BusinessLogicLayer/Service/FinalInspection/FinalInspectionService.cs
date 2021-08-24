@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using BusinessLogicLayer.Interface;
+using DatabaseObject;
 using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
@@ -49,6 +50,24 @@ namespace BusinessLogicLayer.Service
             {
                 throw ex;
             }
+        }
+
+        public BaseResult UpdateFinalInspectionByStep(DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection, string currentStep, string userID)
+        {
+            BaseResult result = new BaseResult();
+            try
+            {
+                _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                _FinalInspectionProvider.UpdateFinalInspectionByStep(finalInspection, currentStep, userID);
+            }
+            catch (Exception ex)
+            {
+                result.Result = false;
+                result.ErrorMessage = ex.ToString();
+            }
+
+            return result;
         }
     }
 }

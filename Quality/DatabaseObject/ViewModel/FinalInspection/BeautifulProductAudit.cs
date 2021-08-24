@@ -5,9 +5,11 @@ using System.Collections.Generic;
 
 namespace DatabaseObject.ViewModel.FinalInspection
 {
-    public class BeautifulProductAudit
+    public class BeautifulProductAudit : BaseResult
     {
         public string FinalInspectionID { get; set; }
+
+        public string InspectionStep { get; set; }
         public int? BAQty { get; set; }
 
         public int? SampleSize { get; set; }
@@ -21,6 +23,6 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string BACriteria { get; set; }
         public string BACriteriaDesc { get; set; }
         public int? Qty { get; set; }
-        public List<byte[]> ListBACriteriaImage { get; set; }
+        public List<byte[]> ListBACriteriaImage { get; set; } = new List<byte[]>();
     }
 }
