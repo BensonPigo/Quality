@@ -16,5 +16,5 @@ td.check {
 }
 
 .table-striped > tbody > tr:nth-of-type(odd) {
-    background: #F0F2F2 !important;
+    background: #F0F2F2; /*!important;*/
 }
