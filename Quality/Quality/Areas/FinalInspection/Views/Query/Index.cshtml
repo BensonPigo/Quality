@@ -158,6 +158,15 @@
                                 }
                             <tr class="row-content" style="vertical-align: middle; text-align: center;">
                                 <td>
+                                    <img src="~/Image/Icon/Document.png" width="20" height="20" />
+                                </td>
+                                <td>
+
+                                    <div style="color:@color">
+                                        @Html.DisplayFor(modelItem => item.InspectionResult)
+                                    </div>
+                                </td>
+                                <td>
                                     @Html.DisplayFor(modelItem => item.SP)
                                 </td>
                                 <td>
@@ -178,18 +187,11 @@
                                 <td>
                                     @Html.DisplayFor(modelItem => item.InspectionTimes)
                                 </td>
-                                <td>
 
-                                    <div style="color:@color">
-                                        @Html.DisplayFor(modelItem => item.InspectionResult)
-                                    </div>                              
-                                </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.InspectionStage)
                                 </td>
-                                <td>
-                                    <img src="~/Image/Icon/Document.png" width="20" height="20" alt="submit" />
-                                </td>
+
                             </tr>
                             }
                         </tbody>
