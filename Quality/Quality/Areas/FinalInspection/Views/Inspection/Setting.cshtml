@@ -62,6 +62,10 @@
         #myTable_wrapper, #myTable_wrapper > .dataTables_scrollHeadInner {
             width: 100%
         }
+
+        table.dataTable.cell-border table tbody tr td:not(:first-child) {
+            text-align: center;
+        }
     </style>
 }
 
@@ -83,7 +87,7 @@
                     </tr>
                     <tr>
                         <td><label>What's sewing line you audit?</label></td>
-                        <td>@Html.TextBoxFor(o => o.SewingLineID, new { @readonly="readonly" })</td>
+                        <td>@Html.TextBoxFor(o => o.SewingLineID, new { @readonly = "readonly" })</td>
                     </tr>
                 </table>
             </div>
@@ -94,7 +98,7 @@
             <div style="width:50%;height:40vh;float:left;">
                 <div class="col-auto"><h2 class="sub_title">Selected PO</h2></div>
                 <div class="col-auto">
-                    <table id="SelectedPOTable" class="cell-border" style="width:100%">
+                    <table id="SelectedPOTable" class="cell-border " style="width:100%">
                     </table>
                 </div>
                 <div class="col-auto" style="text-align:right"><p style="font-weight:bold;padding:10px 0">Total Available Qty<label id="totalAvailableQty">200</label></p></div>
@@ -197,10 +201,7 @@
                 columns: [
                     {
                         "className": "details-control",
-                    },
-                    {
-                        "style":"color:#E62513",
-                    },
+                    }
                 ],
                 "filter": false,
                 "paging": false,
@@ -333,7 +334,7 @@
 
         function format(d) {
             return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
-                '<tr><td>PO#:</td><td>' +
+                '<tr><td style="width:90%">PO#:</td><td style="width:10%">' +
                 '<input type="hidden" name="SelectedPO[' + d[2] + '].ORDERID" id="SelectedPO[' + d[2] + '].ORDERID" value="' + d[1] + '" \/>' +
                 '<input type="hidden" name="SelectedPO[' + d[2] + '].POID" id="SelectedPO[' + d[2] + '].POID" value="' + d[3] + '" \/>' +
                 d[3]+
@@ -343,10 +344,10 @@
                 '<tr><td>Brand:</td><td>' + d[6] + '</td></tr>' +
                 '<tr><td>SP# Qty:</td><td>' + d[7] + '</td></tr>' +
                 '<tr><td>Cartons:</td><td>' +
-                '<input type="text" readonly="readonly" onclick="open_cartonsDetail(\'' + d[1] + ',' +d[3]+'\');" name="SelectedPO[' + d[2] + '].Cartons" id="SelectedPO[' + d[2] + '].Cartons" value="' + d[8]+'" />' +
+                '<input type="text" style="width:60px" readonly="readonly" onclick="open_cartonsDetail(\'' + d[1] + ',' +d[3]+'\');" name="SelectedPO[' + d[2] + '].Cartons" id="SelectedPO[' + d[2] + '].Cartons" value="' + d[8]+'" />' +
                 '</td></tr>'+
                 '<tr><td>Available Qty:</td><td>' +
-                '<input type="number" name="SelectedPO[' + d[2] + '].AvailableQty" id="SelectedPO[' + d[2] + '].AvailableQty" value="' + d[9]+'" />' +
+                '<input type="number" style="width:60px" name="SelectedPO[' + d[2] + '].AvailableQty" id="SelectedPO[' + d[2] + '].AvailableQty" value="' + d[9]+'" />' +
                 '</td></tr>' +
                 '</table>';
         }

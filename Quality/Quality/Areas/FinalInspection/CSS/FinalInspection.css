@@ -78,3 +78,12 @@ textarea {
 input:not(:disabled), select:not(:disabled), textarea:not(:disabled) {
     color: #0000ff;
 }
+
+table.dataTable table
+{
+    width:100%;
+}
+
+table.dataTable tr th, table.dataTable.cell-border tbody tr th, table.dataTable.cell-border tbody tr td {
+    border: none !important;
+}

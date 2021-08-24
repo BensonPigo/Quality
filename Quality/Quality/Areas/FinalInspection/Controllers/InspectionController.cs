@@ -88,7 +88,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             setting.AcceptQty = 122;
 
             setting.SelectedPO = new List<DatabaseObject.ViewModel.FinalInspection.SelectedPO>();
-            for (int i = 1; i < 3; i++)
+            for (int i = 1; i < 20; i++)
             {
                 DatabaseObject.ViewModel.FinalInspection.SelectedPO item = new DatabaseObject.ViewModel.FinalInspection.SelectedPO();
                 item.OrderID = "A00" + i.ToString();
