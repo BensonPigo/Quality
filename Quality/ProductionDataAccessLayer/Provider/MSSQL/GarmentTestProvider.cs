@@ -44,9 +44,9 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         {
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
-                { "@BrandID", DbType.String, filter.Brand } ,
+                { "@BrandID", DbType.String, filter.BrandID } ,
                 { "@StyleID", DbType.String, filter.StyleID } ,
-                { "@SeasonID", DbType.String, filter.Season} ,
+                { "@SeasonID", DbType.String, filter.SeasonID} ,
             };
             string sqlcmd = @"
 select distinct Article from GarmentTest
@@ -56,6 +56,31 @@ and StyleID = @StyleID
 and SeasonID = @SeasonID";
 
             return ExecuteList<GarmentTest>(CommandType.Text, sqlcmd, objParameter);
+        }
+
+        public IList<GarmentTest_ViewModel> Get_GarmentTest(GarmentTest_ViewModel filter)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@BrandID", DbType.String, filter.BrandID } ,
+                { "@StyleID", DbType.String, filter.StyleID } ,
+                { "@SeasonID", DbType.String, filter.SeasonID} ,
+                { "@Article", DbType.String, filter.Article} ,
+            };
+            string sqlcmd = @"
+select * from GarmentTest 
+where 1=1
+and BrandID = @BrandID
+and StyleID = @StyleID
+and SeasonID = @SeasonID
+and Article = @Article" + Environment.NewLine;
+            if (!string.IsNullOrEmpty(filter.MDivisionid))
+            {
+                objParameter.Add("@MDivisionid", DbType.String, filter.MDivisionid);
+                sqlcmd += " and MDivisionid = @MDivisionid";
+            }
+
+            return ExecuteList<GarmentTest_ViewModel>(CommandType.Text, sqlcmd, objParameter);
         }
 
         /*回傳Garment Test(Get) 詳細敘述如下*/

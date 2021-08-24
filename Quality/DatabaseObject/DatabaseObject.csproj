@@ -152,7 +152,6 @@
     <Compile Include="ViewModel\FinalInspection\BeautifulProductAudit.cs" />
     <Compile Include="ViewModel\FinalInspection\Setting.cs" />
     <Compile Include="ResultModel\GarmentTest_Result.cs" />
-    <Compile Include="ViewModel\GarmentTest_ViewModel.cs" />
     <Compile Include="ViewModel\InspectionSave_ViewModel.cs" />
     <Compile Include="ViewModel\Inspection_ViewModel.cs" />
     <Compile Include="ViewModel\ReworkList_ViewModel.cs" />

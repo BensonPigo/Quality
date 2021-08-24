@@ -13,6 +13,7 @@ using ManufacturingExecutionDataAccessLayer.Interface;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
+using ADOHelper.Utility;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -67,9 +68,60 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public IList<GarmentTest_ViewModel> CheckSelectItemData(GarmentTest_ViewModel garmentTest_ViewModel, SelectType type)
+        public GarmentTest_ViewModel GetGarmentTest(GarmentTest_ViewModel garmentTest_ViewModel)
         {
-            List<GarmentTest_ViewModel> result = new List<GarmentTest_ViewModel>();
+            _IGarmentTestProvider = new GarmentTestProvider(Common.ProductionDataAccessLayer);
+            GarmentTest_ViewModel result = new GarmentTest_ViewModel();
+            try
+            {
+                var query = _IGarmentTestProvider.Get_GarmentTest(garmentTest_ViewModel);
+                if (!query.Any() || query.Count() == 0)
+                {
+                    throw new Exception("data not found!");
+                }
+
+                result = query.FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
+        public GarmentTest_Detail_ViewModel GetGarmentTest_Detail(GarmentTest_Detail_ViewModel source)
+        {
+            _IGarmentTestDetailProvider = new GarmentTestDetailProvider(Common.ProductionDataAccessLayer);
+            GarmentTest_Detail_ViewModel result = new GarmentTest_Detail_ViewModel();
+            try
+            {
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
+
+        public GarmentTest_ViewModel Save_GarmentTest(GarmentTest_ViewModel garmentTest_ViewModel)
+        {
+            GarmentTest_ViewModel result = new GarmentTest_ViewModel();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            try
+            {
+                _IGarmentTestProvider = new GarmentTestProvider(_ISQLDataTransaction);
+                
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
             return result;
         }
     }

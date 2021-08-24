@@ -16,7 +16,17 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         public GarmentTestDetailProvider(SQLDataTransaction tra) : base(tra) { }
         #endregion
 
-		#region CRUD Base
+        #region CRUD Base
+
+        //public IList<GarmentTest_Detail> GetDetail(GarmentTest_Detail filter)
+        //{
+        //    SQLParameterCollection objParameter = new SQLParameterCollection
+        //    {
+        //        { "@ID", DbType.String, filter.ID } ,
+                
+        //    };
+        //}
+
 		/*回傳Garment Test(Get) 詳細敘述如下*/
         /// <summary>
         /// 回傳Garment Test

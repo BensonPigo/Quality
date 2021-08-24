@@ -13,5 +13,7 @@ namespace ProductionDataAccessLayer.Interface
         IList<Season> GetSeasonID();
 
         IList<GarmentTest> GetArticle(GarmentTest_ViewModel filter);
+
+        IList<GarmentTest_ViewModel> Get_GarmentTest(GarmentTest_ViewModel filter);
     }
 }

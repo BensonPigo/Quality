@@ -20,5 +20,17 @@ namespace DatabaseObject.ViewModel
         public string GarmentTestAddName { get; set; }
 
         public string GarmentTestEditName { get; set; }
+
+        public List<string> StyleID_Lsit { get; set; }
+
+        public List<string> Brand_List { get; set; }
+
+        public List<string> Season_List { get; set; }
+
+        public List<string> Article_List { get; set; }
+
+        public bool Result { get; set; }
+
+        public string ErrMsg { get; set; }
     }
 }
