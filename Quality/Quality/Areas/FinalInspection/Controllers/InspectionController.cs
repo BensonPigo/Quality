@@ -67,6 +67,8 @@ namespace Quality.Areas.FinalInspection.Controllers
 
         public ActionResult Setting()
         {
+            ViewBag.FactoryID = this.FactoryID;
+
             List<string> list = new List<string>() {
                  "Inline","Stagger","Final","3rd Party"
             };
