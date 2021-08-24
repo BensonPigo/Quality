@@ -398,7 +398,7 @@ namespace Quality.Areas.FinalInspection.Controllers
 
             #region 存檔 > 讀取MemoryStream > 下載 > 刪除
             string fileName = $"FinalInspectionReport_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
-            string filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "bin", fileName);
+            string filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", fileName);
             Excel.Workbook workbook = excelApp.ActiveWorkbook;            
             workbook.SaveAs(filepath);
             workbook.Close();
