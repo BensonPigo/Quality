@@ -49,6 +49,11 @@
       <HintPath>..\packages\NPOI.2.1.3.1\lib\net40\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>..\..\_Dll\Microsoft.Office.Interop.Excel.dll</HintPath>
+    </Reference>
     <Reference Include="NPOI, Version=2.1.3.1, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
       <HintPath>..\packages\NPOI.2.1.3.1\lib\net40\NPOI.dll</HintPath>
     </Reference>
@@ -60,6 +65,9 @@
     </Reference>
     <Reference Include="NPOI.OpenXmlFormats, Version=2.1.3.1, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
       <HintPath>..\packages\NPOI.2.1.3.1\lib\net40\NPOI.OpenXmlFormats.dll</HintPath>
+    </Reference>
+    <Reference Include="Sci.Proj">
+      <HintPath>..\..\_Dll\Sci.Proj.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -685,6 +693,7 @@
     <Content Include="Views\PublicWondow\FGPTList.cshtml" />
     <Content Include="Views\PublicWondow\PictureList.cshtml" />
     <Content Include="Views\Shared\ScreenShot.cshtml" />
+    <Content Include="XLT\FinalInspectionReport.xlsx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -728,6 +737,14 @@
     <ProjectReference Include="..\Library\Library.csproj">
       <Project>{3e6d504f-e89b-4c0a-a87d-07d1e6786a13}</Project>
       <Name>Library</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ManufacturingExecutionDataAccessLayer\ManufacturingExecutionDataAccessLayer.csproj">
+      <Project>{642AEBC1-02D9-4716-BB21-61621C62A67F}</Project>
+      <Name>ManufacturingExecutionDataAccessLayer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ProductionDataAccessLayer\ProductionDataAccessLayer.csproj">
+      <Project>{C2E1C298-46BF-4BDB-82A8-102777FA89EA}</Project>
+      <Name>ProductionDataAccessLayer</Name>
     </ProjectReference>
     <ProjectReference Include="..\ToolKit\ToolKit.csproj">
       <Project>{f75434e9-6588-4aa4-87f9-7e419dbcc57f}</Project>

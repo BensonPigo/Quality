@@ -183,7 +183,6 @@ namespace DatabaseObject.ManufacturingExecutionDB
         public string ShipmentStatus { get; set; }
 
         /// <summary>Others-備註</summary>
-        [StringLength(-1)]
         [Display(Name = "Others-備註")]
         public string OthersRemark { get; set; }
 
