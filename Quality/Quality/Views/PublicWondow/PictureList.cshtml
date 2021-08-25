@@ -70,11 +70,11 @@
     </div>
     @{
         var base64_Brfore = Convert.ToBase64String(Model.BrforeImage);
-        var imgSrc_Brfore = String.Format("data:image/gif;base64,{0}", base64_Brfore);
+        var imgSrc_Brfore = String.Format("data:image/webp;base64,{0}", base64_Brfore);
 
 
         var base64_After = Convert.ToBase64String(Model.AfterImage);
-        var imgSrc_After = String.Format("data:image/gif;base64,{0}", base64_After);
+        var imgSrc_After = String.Format("data:image/webp;base64,{0}", base64_After);
     }
     <img id="BeforePic" Type="Before" style="width:100%;" src="@imgSrc_Brfore" />
     <img id="OriBeforePic" style="width:100%;display:none;" src="@imgSrc_Brfore" />
