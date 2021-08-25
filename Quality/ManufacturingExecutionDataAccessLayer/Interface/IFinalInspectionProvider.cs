@@ -28,5 +28,13 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         IList<CartonItem> GetMoistureListCartonItem(string finalInspectionID);
 
         IList<ViewMoistureResult> GetViewMoistureResult(string finalInspectionID);
+
+        IList<EndlineMoisture> GetEndlineMoisture();
+
+        void UpdateMoisture(MoistureResult moistureResult);
+
+        bool CheckMoistureExists(string finalInspectionID, string article, long finalInspection_OrderCartonUkey);
+
+        void DeleteMoisture(long ukey);
     }
 }

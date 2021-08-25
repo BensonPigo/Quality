@@ -223,7 +223,7 @@ namespace DatabaseObject.ProductionDB
         /// <summary></summary>
         [Required]
         [Display(Name = "")]
-        public bool AutomationAutoRunTime { get; set; }
+        public Int16 AutomationAutoRunTime { get; set; }
         /// <summary></summary>
         [Required]
         [Display(Name = "")]
@@ -291,5 +291,6 @@ namespace DatabaseObject.ProductionDB
         [Display(Name = "")]
         public int DQSQtyPCT { get; set; }
 
+        public decimal FinalInspection_CTNMoisureStandard { get; set; }
     }
 }

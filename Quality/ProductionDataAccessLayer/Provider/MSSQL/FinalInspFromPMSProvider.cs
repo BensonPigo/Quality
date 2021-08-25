@@ -11,6 +11,7 @@ using System.Data.SqlClient;
 using DatabaseObject.ViewModel.FinalInspection;
 using System.Linq;
 using ToolKit;
+using System.Web.Mvc;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
@@ -193,9 +194,24 @@ where id in (select OrderID from #FinalInspection_Order)
             }
             else
             {
-                return dtResult.AsEnumerable().Select(s => s["OrderID"].ToString()).ToList();
+                return dtResult.AsEnumerable().Select(s => s["Article"].ToString()).ToList();
             }
 
+        }
+
+        public IList<SelectListItem> GetActionSelectListItem()
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+
+            string sqlGetActionSelectListItem = @"
+select  [Text] = '', [Value] = ''
+union
+select  [Text] = Name, [Value] = Name 
+from DropDownList ddl where
+type='PMS_MoistureAction'
+
+";
+            return ExecuteList<SelectListItem>(CommandType.Text, sqlGetActionSelectListItem, listPar);
         }
     }
 }
