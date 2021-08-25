@@ -9,13 +9,14 @@
         font-weight: 900;
     }
 
-    td {
-        height: 4em;
-        padding: 1em
-    }
-
     .ColumnStype {
         text-align: right;
+    }
+
+    .TDStyle {
+        height: 4em;
+        padding: 1em
+
     }
 
     .ColunTD {
@@ -28,18 +29,18 @@
 </style>
 <table class="al-m" style="width: 80% ;margin-top: 4vh;">
     <tr>
-        <td class="ColumnStype ColunTD"><label class="Font">Production Status</label></td>
-        <td class="ContentText"> @Html.DisplayFor(o => o.FinalInspection.ProductionStatus)</td>
+        <td class="ColumnStype ColunTD TDStyle"><label class="Font">Production Status</label></td>
+        <td class="ContentText TDStyle"> @Html.DisplayFor(o => o.FinalInspection.ProductionStatus)</td>
     </tr>
     <tr>
-        <td class="ColumnStype ColunTD"><label class="Font">Other Photo</label></td>
-        <td>
+        <td class="ColumnStype ColunTD TDStyle"><label class="Font">Other Photo</label></td>
+        <td class="TDStyle">
             <img src="~/Image/Icon/Picture.png" width="30" height="30" />
         </td>
     </tr>
     <tr>
-        <td class="ColumnStype ColunTD" style="vertical-align:top;"><label class="Font">Remark</label></td>
-        <td class="ContentText">
+        <td class="ColumnStype ColunTD TDStyle" style="vertical-align:top;"><label class="Font">Remark</label></td>
+        <td class="ContentText TDStyle">
             @Html.DisplayFor(o => o.FinalInspection.OthersRemark)
 
         </td>

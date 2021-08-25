@@ -12,11 +12,11 @@
 
 
     #myTable_info {
-        color: white
+        color: black
     }
 
     #myTable_previous, #myTable_next {
-        color: white !important;
+        color: black !important;
     }
 
     #row-name {
@@ -34,6 +34,20 @@
         margin-right: auto;
         margin-bottom: 1vh;
     }
+
+    #myTable td {
+        height: 1vh;
+        padding:0;
+    }
+
+
+    .dataTables_scroll {
+        height: 54vh
+    }
+
+
+
+
 </style>
 
 @model List<DatabaseObject.ProductionDB.Orders>
@@ -48,7 +62,7 @@
             <table class="center" style="width: 100%;  height: 3vh ">
                 <tr>
                     <td style="width:5%" align="right">
-                        <p class="searchFont" style="font-size: 18px; font-weight: 900;">SP#</p>
+                        <p class="searchFont">SP#</p>
                     </td>
                     <td style="width:4%" align="center">
                         @Html.TextBox("SP", string.Empty, new { style = "border-color:black;" })

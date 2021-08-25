@@ -16,9 +16,7 @@
 
 <style type="text/css">
 
-    .whiteBackgrond form {
-        height: 100%
-    }
+
 
     .col-auto {
         margin: 1em
@@ -29,19 +27,6 @@
         color: #999999
     }
 
-
-
-    #myTable_info {
-        color: white
-    }
-
-    #myTable_previous, #myTable_next {
-        color: white !important;
-    }
-
-    #myTable_wrapper, #myTable_wrapper > .dataTables_scrollHeadInner {
-        width: 100%
-    }
 
     .searchFont {
         font-size: 1vw;
@@ -191,21 +176,6 @@
 
     var msg = new MessagerAlert();
 
-    $(function () {
-
-        $('#myTable').DataTable({
-
-            "pageLength": 1,
-            "filter": false,
-            "paging": true,
-            "scrollY": "49vh",
-            "scrollCollapse": true,
-
-        });
-    });
-
-
-
     $(".detail-dialog").dialog({
         autoOpen: false,
         modal: true,
@@ -305,8 +275,7 @@
 
     function reloadViewitem() {
         var article = document.getElementById("ViewListArticle").value;
-        var element = document.getElementById("ViewkListSize");
-        var articleOption = "", sizeOption = "", productTypeOption = "";
+        var  sizeOption = "", productTypeOption = "";
 
         $("#ViewkListSize > option").each(function () {
 
@@ -338,11 +307,6 @@
         return true;
     }
 
-    $(document).ready(function () {
-        $("#dropArticle").on("change", function () {
-        });
-    });
-
 
     $(document).ready(function () {
         $("#dropSize").on("change", function () {
@@ -353,10 +317,6 @@
     });
 
 
-    $(document).ready(function () {
-        $("#dropProductType").on("change", function () {
-        });
-    });
 
     function ReloadData() {
         var dropArticle = document.getElementById("dropArticle");
@@ -396,19 +356,19 @@
                 }
 
                 tbody +=  `<tr >
-                <td class='bg-lightblue'><p>${value.Description}</p></td>
-                <td class='bg-lightblue'><p idx='Tol+'>${value.Tol1}</p></td>
-                <td class='bg-lightblue'><p idx='Tol-'>${value.Tol2}</p></td>
-                <td class='bg-lightgray'><p idx='standard'>${value.SizeSpec}</p></td>`;
+                <td class='bg-lightblue'><p style ='padding: 0.5vh'>${value.Description}</p></td>
+                <td class='bg-lightblue'><p style ='padding: 0.5vh' idx='Tol+'>${value.Tol1}</p></td>
+                <td class='bg-lightblue'><p style ='padding: 0.5vh' idx='Tol-'>${value.Tol2}</p></td>
+                <td class='bg-lightgray'><p style ='padding: 0.5vh' idx='standard'>${value.SizeSpec}</p></td>`;
 
            if (SizeUnit == "INCH") {
                tbody += "<td class='" + bgColor + "'><input type='text' idx='SizeSpec' placeholder= '__ __/__' style ='width:7vw; height:3.5vh' class='" + bgColor + "' " + readonly + "></td>";
         }
         else {
-               tbody += "<td class='" + bgColor + "'><input type='number' idx='SizeSpec' style ='width:7vw; height:3.5vh' class='" + bgColor + "' " + readonly + "></td>";
+               tbody += "<td class='" + bgColor + "'><input type='number' idx='SizeSpec' style ='width:7vw; height:2.5vh' class='" + bgColor + "' " + readonly + "></td>";
         }
 
-        tbody += "<td><p class='Diff'></p></td>";
+                tbody += "<td><p style ='padding: 0.5vh' class='Diff'></p></td>";
                 tbody += "</tr>";
             }
         });
