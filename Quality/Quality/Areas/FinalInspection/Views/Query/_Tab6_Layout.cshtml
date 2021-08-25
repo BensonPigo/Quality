@@ -1,1 +1,126 @@
-﻿
+﻿@model DatabaseObject.ViewModel.FinalInspection.QueryReport
+
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+<script src="~/ThirdParty/SciCustom/js/main.js"></script>
+
+<style>
+
+    .TitleFont {
+        font-size: 1.5em;
+        font-weight: 900;
+    }
+</style>
+<table style="width: 100%; margin-top: 2vh; ">
+    <tbody>
+        <tr>
+            <td align="right">
+                <div class="col-auto"><p class="TitleFont">Style#</p></div>
+            </td>
+            <td align="center">
+                <div class="col-auto"><select class="form-control" id="ViewListArticle" name="ViewListArticle"></select></div>
+            </td>
+
+            <td align="right"><p class="TitleFont">Size</p></td>
+            <td align="center">
+                <div class="col-auto"><select class="form-control" id="ViewkListSize" name="ViewkListSize"></select></div>
+            </td>
+            <td align="right" style="width:20%"><p class="TitleFont" width: 10vw;">Product Type</p></td>
+            <td align="center">
+                <div class="col-auto"><select class="form-control" id="ViewListProductType" name="ViewListProductType"></select></div>
+            </td>
+            <td align="right"><p class="TitleFont">Unit</p></td>
+            <td align="center">
+                <div class="col-auto">  @Html.TextBoxFor(o => o.MeasurementUnit, new { @style = "width:10vw", @class = "form-control", @disabled = "disabled" })</div>
+            </td>
+        </tr>
+
+    </tbody>
+</table>
+
+<script type="text/javascript">
+
+    var data = @Html.Raw(Json.Encode(Model.ListMeasurementViewItem));
+
+    var articleOption = "", sizeOption = "", productTypeOption = "";
+    var articleArrList = [], sizeArrList = [], productTypeArrList = [];
+
+    $.each(data, function (index, value) {
+        articleArrList.push(value.Article);
+        sizeArrList.push(value.Article + ',' + value.Size);
+        productTypeArrList.push(value.Article + ',' + value.ProductType);
+    });
+
+    $.each(articleArrList.filter(onlyUnique), function (index, value) {
+        articleOption += "<option value=" + value + ">" + value + "</option>";
+    });
+
+    $.each(sizeArrList.filter(onlyUnique), function (index, value) {
+        sizeOption += "<option value=" + value + " >" + value.split(',')[1] + "</option>";
+    });
+
+    $.each(productTypeArrList.filter(onlyUnique), function (index, value) {
+        productTypeOption += "<option value=" + value + ">" + value.split(',')[1] + "</option>";
+    });
+
+    $("#ViewListArticle").html(articleOption);
+    $("#ViewkListSize").html(sizeOption);
+    $("#ViewListProductType").html(productTypeOption);
+
+    reloadViewitem();
+
+
+
+    $(document).ready(function () {
+        $("#ViewListArticle").on("change", function () {
+            reloadViewitem();
+
+        });
+    });
+
+
+
+    function reloadViewitem() {
+        var article = document.getElementById("ViewListArticle").value;
+        var element = document.getElementById("ViewkListSize");
+        var articleOption = "", sizeOption = "", productTypeOption = "";
+
+        $("#ViewkListSize > option").each(function () {
+
+            if (this.value.split(',')[0] == article) {
+                sizeOption += "<option value=" + this.value + ">" + this.text + "</option>";
+            }
+            else {
+                sizeOption += "<option hidden value=" + this.value + ">" + this.text + "</option>";
+            }
+        });
+
+
+        $("#ViewkListSize").html(sizeOption);
+
+
+        $("#ViewListProductType > option").each(function () {
+
+            if (this.value.split(',')[0] == article) {
+                productTypeOption += "<option value=" + this.value + ">" + this.text + "</option>";
+            }
+            else {
+                productTypeOption += "<option hidden value=" + this.value + ">" + this.text + "</option>";
+            }
+        });
+
+
+        $("#ViewListProductType").html(productTypeOption);
+
+        return true;
+    }
+
+
+
+</script>
+
+
+
+

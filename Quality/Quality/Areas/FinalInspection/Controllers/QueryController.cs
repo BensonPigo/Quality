@@ -1,6 +1,8 @@
 
 
 using BusinessLogicLayer;
+using BusinessLogicLayer.Interface;
+using BusinessLogicLayer.Service;
 using BusinessLogicLayer.Service.FinalInspection;
 using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ProductionDB;
@@ -81,7 +83,47 @@ namespace Quality.Areas.FinalInspection.Controllers
         public ActionResult Detail()
         {
             DatabaseObject.ViewModel.FinalInspection.QueryReport queryReport = new QueryReport();
+            DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection = new DatabaseObject.ManufacturingExecutionDB.FinalInspection();
+
+            finalInspection.ProductionStatus = 100;
+            finalInspection.OthersRemark = @"OthersRemark";
+            queryReport.FinalInspection = finalInspection;
             queryReport.ListViewMoistureResult = new List<ViewMoistureResult>();
+            IFinalInspectionMoistureService finalInspectionMoistureService = new FinalInspectionMoistureService();
+            List<DatabaseObject.ViewModel.FinalInspection.ViewMoistureResult> viewMoistureResultsList = finalInspectionMoistureService.GetViewMoistureResult("ESPCH21080001");
+            queryReport.ListViewMoistureResult = viewMoistureResultsList;
+
+            queryReport.MeasurementUnit = "CM";
+            List<DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem> listMeasurementViewItem = new List<DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem>();
+
+            DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem MeasurementViewItem1 = new DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem();
+            MeasurementViewItem1.Article = "0050";
+            MeasurementViewItem1.Size = "L";
+            MeasurementViewItem1.ProductType = "Top";
+
+            listMeasurementViewItem.Add(MeasurementViewItem1);
+
+            DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem MeasurementViewItem2 = new DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem();
+            MeasurementViewItem2.Article = "0050";
+            MeasurementViewItem2.Size = "XL";
+            MeasurementViewItem2.ProductType = "Bottom";
+
+            listMeasurementViewItem.Add(MeasurementViewItem2);
+
+            DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem MeasurementViewItem3 = new DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem();
+            MeasurementViewItem3.Article = "0049";
+            MeasurementViewItem3.Size = "S";
+            MeasurementViewItem3.ProductType = "Top";
+
+
+            DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem MeasurementViewItem4 = new DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem();
+            MeasurementViewItem4.Article = "0049";
+            MeasurementViewItem4.Size = "M";
+            MeasurementViewItem4.ProductType = "Top";
+
+            listMeasurementViewItem.Add(MeasurementViewItem4);
+            queryReport.ListMeasurementViewItem = listMeasurementViewItem;
+
             return View(queryReport);
         }
         public ActionResult DownLoad()
