@@ -22,17 +22,19 @@
             margin: 0.5em 0.5em 0.5em 0em;
         }
 
-        #myCartons_info, #myEndlineMoisture_info {
+        #myCartons_info, #myEndlineMoisture_info, #myView_info {
             color: white
         }
 
         #myCartons_previous, #myCartons_next,
-        #myEndlineMoisture_previous, #myEndlineMoisture_next {
+        #myEndlineMoisture_previous, #myEndlineMoisture_next,
+        #myView_previous, #myView_next {
             color: white !important;
         }
 
         #myCartons_wrapper, #myCartons_wrapper > .dataTables_scrollHeadInner,
-        #myEndlineMoisture_wrapper, #myEndlineMoisture_wrapper > .dataTables_scrollHeadInner {
+        #myEndlineMoisture_wrapper, #myEndlineMoisture_wrapper > .dataTables_scrollHeadInner,
+        #myView_wrapper, #myView_wrapper > .dataTables_scrollHeadInner {
             width: 100%
         }
 
@@ -134,7 +136,7 @@
 <!--Detail-Cartons彈出視窗-->
 <!--多個Table forA001-->
 <div class="detail-dialog to-edit-detail-myCartons" title="Detail">
-    <div class="detail-dialog-content dialog-content-w-icon" style="height:40vh">
+    <div class="detail-dialog-content dialog-content-w-icon" style="height:70vh">
         <table cellspacing="100" id="myCartons" class="table table-striped display">
             <thead>
                 <tr class="row-name">
@@ -174,7 +176,7 @@
 </div>
 
 <div class="detail-dialog to-edit-detail-myEndlineMoisture" title="Detail">
-    <div class="detail-dialog-content dialog-content-w-icon" style="height:40vh">
+    <div class="detail-dialog-content dialog-content-w-icon" style="height:70vh">
         <table cellspacing="100" id="myEndlineMoisture" class="table table-striped display">
             <thead>
                 <tr class="row-name">
@@ -208,23 +210,24 @@
 </div>
 
 <div class="detail-dialog to-edit-detail-myView" title="Detail">
-    <div class="detail-dialog-content dialog-content-w-icon" style="height:40vh">
+    <div class="detail-dialog-content dialog-content-w-icon" style="height:70vh">
         <table cellspacing="100" id="myView" class="table table-striped display">
             <thead>
-                <tr>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
+                <tr class="row-name">
+                    <th>Article</th>
+                    <th>CTN#</th>
+                    <th>Detection<br />Instrument</th>
+                    <th>Fabrication</th>
+                    <th>Garment<br />Moisture<br />Standard</th>
+                    <th>Garment<br />Moisture<br />TOP</th>
+                    <th>Garment<br />Moisture<br />Middle</th>
+                    <th>Garment<br />Moisture<br />Bottom</th>
+                    <th>Carton<br />Moisture<br />Standard</th>
+                    <th>Carton<br />Moisture<br />Inside</th>
+                    <th>Carton<br />Moisture<br />Outside</th>
+                    <th>Result</th>
+                    <th>Action</th>
+                    <th>Remark</th>
                 </tr>
             </thead>
         </table>
@@ -269,7 +272,7 @@
 
             // myCartons
             myCartons = $('#myCartons').DataTable({
-                "pageLength": 5,
+                "pageLength": 10,
                 "autoWidth": false,
                 "info": false,
                 "filter": false,
@@ -320,7 +323,7 @@
 
             // myEndlineMoisture
             myEndlineMoistureTable = $('#myEndlineMoisture').DataTable({
-                "pageLength": 5,
+                "pageLength": 10,
                 "autoWidth": false,
                 "info": false,
                 "filter": false,
@@ -372,10 +375,13 @@
                     },
                 },
             });
+            var test = $.parseJSON(@Html.Raw(Json.Encode(ViewBag.viewMoistureResultsList)));
+            var adata = setData(test);
+
 
             // myView
             myView = $('#myView').DataTable({
-                "pageLength": 5,
+                "pageLength": 10,
                 "autoWidth": false,
                 "info": false,
                 "filter": false,
@@ -383,11 +389,7 @@
                 "info": false,
                 "scrollY": "50vh",
                 "scrollCollapse": true,
-                columnDefs: [
-                    { targets: 1, width: "30%" },
-                    { targets: 2, width: "30%" },
-                    { targets: 3, width: "30%" },
-                ]
+                "scrollX": true
             });
 
             $(".to-edit-detail-myView").dialog({
@@ -402,7 +404,7 @@
                    data: jQuery.param({ finalInspectionID: "@ViewBag.FinalInspectionID" }),
                     global: false,
                    success: function (response) {
-                       var adata = setData(response);                       
+                       var adata = setData(response);
                        myView.clear();
                        myView.rows.add(adata).draw();
 

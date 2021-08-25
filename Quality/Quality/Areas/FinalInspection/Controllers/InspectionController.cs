@@ -481,6 +481,11 @@ namespace Quality.Areas.FinalInspection.Controllers
             ViewBag.FinalInspection_CTNMoisureStandard = moisture.FinalInspection_CTNMoisureStandard;
 
             DatabaseObject.ViewModel.FinalInspection.MoistureResult moistureResult = new DatabaseObject.ViewModel.FinalInspection.MoistureResult();
+
+
+            //IFinalInspectionMoistureService finalInspectionMoistureService = new FinalInspectionMoistureService();
+            //List<DatabaseObject.ViewModel.FinalInspection.ViewMoistureResult> viewMoistureResultsList = finalInspectionMoistureService.GetViewMoistureResult(moisture.FinalInspectionID);
+            //ViewBag.viewMoistureResultsList = Newtonsoft.Json.JsonConvert.SerializeObject(viewMoistureResultsList, Newtonsoft.Json.Formatting.Indented);
             return View(moistureResult);
         }
 

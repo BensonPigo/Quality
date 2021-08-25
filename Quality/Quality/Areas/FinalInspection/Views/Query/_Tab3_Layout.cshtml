@@ -1,1 +1,22 @@
-﻿
+﻿@model DatabaseObject.ViewModel.FinalInspection.QueryReport
+<table cellspacing="100" id="myTable" class="table table-striped display">
+    <thead>
+        <tr class="row-name">
+            <th>Defect Type</th>
+            <th>Defect Code</th>
+            <th>Defect Qty</th>
+            <th>Defect Photo</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.ListDefectItem)
+        {
+        <tr class="row-content" style="vertical-align: middle; text-align: center;">
+            <td>@item.DefectTypeDesc</td>
+            <td>@item.DefectCodeDesc</td>
+            <td>@item.Qty</td>
+            <td> <img src="/Image/Icon/Picture.png" width="25" height="25" /></td>
+        </tr>
+        }
+    </tbody>
+</table>
