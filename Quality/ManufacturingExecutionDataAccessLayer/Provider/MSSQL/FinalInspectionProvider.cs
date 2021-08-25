@@ -308,6 +308,16 @@ where   ID = @FinalInspectionID
                 case "Insp-BA":
                     break;
                 case "Insp-Moisture":
+                    sqlUpdCmd += $@"
+update FinalInspection
+ set    InspectionStep = @InspectionStep,
+        EditName= @userID,
+        EditDate= getdate()
+where   ID = @FinalInspectionID
+";
+                    objParameter.Add("@FinalInspectionID", finalInspection.ID);
+                    objParameter.Add("@userID", userID);
+                    objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
                     break;
                 case "Insp-Measurement":
                     break;
@@ -627,6 +637,116 @@ where fm.ID = @finalInspectionID
 
 ";
             return ExecuteList<ViewMoistureResult>(CommandType.Text, sqlGetViewMoistureResult, objParameter);
+        }
+
+        public IList<EndlineMoisture> GetEndlineMoisture()
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+
+            string sqlGetEndlineMoisture = @"
+select  Instrument
+        ,Fabrication
+        ,Standard
+        ,Unit
+        ,Junk
+        ,Description
+        ,AddDate
+        ,AddName
+        ,EditDate
+        ,Editname
+from    EndlineMoisture with (nolock)
+
+";
+            return ExecuteList<EndlineMoisture>(CommandType.Text, sqlGetEndlineMoisture, objParameter);
+        }
+
+        public void UpdateMoisture(MoistureResult moistureResult)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            objParameter.Add("@FinalInspectionID", moistureResult.FinalInspectionID);
+            objParameter.Add("@Article", moistureResult.Article);
+            objParameter.Add("@FinalInspection_OrderCartonUkey", moistureResult.FinalInspection_OrderCartonUkey);
+            objParameter.Add("@Instrument", moistureResult.Instrument);
+            objParameter.Add("@Fabrication", moistureResult.Fabrication);
+            objParameter.Add("@GarmentTop", moistureResult.GarmentTop);
+            objParameter.Add("@GarmentMiddle", moistureResult.GarmentMiddle);
+            objParameter.Add("@GarmentBottom", moistureResult.GarmentBottom);
+            objParameter.Add("@CTNInside", moistureResult.CTNInside);
+            objParameter.Add("@CTNOutside", moistureResult.CTNOutside);
+            objParameter.Add("@Result", moistureResult.Result);
+            objParameter.Add("@Action", moistureResult.Action);
+            objParameter.Add("@Remark", moistureResult.Remark);
+            objParameter.Add("@AddName", moistureResult.AddName);
+
+            string sqlInsertFinalInspection_Moisture = @"
+insert into FinalInspection_Moisture
+(
+ID
+,Article
+,FinalInspection_OrderCartonUkey
+,Instrument
+,Fabrication
+,GarmentTop
+,GarmentMiddle
+,GarmentBottom
+,CTNInside
+,CTNOutside
+,Result
+,Action
+,Remark
+,AddName
+,AddDate
+)
+values
+(
+ @FinalInspectionID
+,@Article
+,@FinalInspection_OrderCartonUkey
+,@Instrument
+,@Fabrication
+,@GarmentTop
+,@GarmentMiddle
+,@GarmentBottom
+,@CTNInside
+,@CTNOutside
+,@Result
+,@Action
+,@Remark
+,@AddName
+,GetDate()
+)
+";
+            ExecuteNonQuery(CommandType.Text, sqlInsertFinalInspection_Moisture, objParameter);
+        }
+
+        public void DeleteMoisture(long ukey)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            objParameter.Add("@Ukey", ukey);
+
+            string sqlDeleteMoisture = @" delete FinalInspection_Moisture where Ukey = @Ukey";
+
+            ExecuteNonQuery(CommandType.Text, sqlDeleteMoisture, objParameter);
+        }
+
+        public bool CheckMoistureExists(string finalInspectionID, string article, long finalInspection_OrderCartonUkey)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            objParameter.Add("@FinalInspectionID", finalInspectionID);
+            objParameter.Add("@article", article);
+            objParameter.Add("@finalInspection_OrderCartonUkey", finalInspection_OrderCartonUkey);
+
+            string sqlCheckMoistureExists = @"
+select  [result] = 1 
+from    FinalInspection_Moisture with (nolock)
+where   ID = @FinalInspectionID and
+        Article = @article and
+        FinalInspection_OrderCartonUkey = @finalInspection_OrderCartonUkey
+";
+
+            DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlCheckMoistureExists, objParameter);
+
+            return dtResult.Rows.Count > 0;
         }
 
         #endregion

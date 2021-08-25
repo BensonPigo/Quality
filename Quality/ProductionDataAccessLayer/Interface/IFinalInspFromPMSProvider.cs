@@ -2,6 +2,7 @@ using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ViewModel.FinalInspection;
 using System.Collections.Generic;
+using System.Web.Mvc;
 
 namespace ProductionDataAccessLayer.Interface
 {
@@ -15,5 +16,7 @@ namespace ProductionDataAccessLayer.Interface
         IList<FinalInspectionDefectItem> GetFinalInspectionDefectItems(string finalInspectionID);
 
         List<string> GetMoistureArticleList(string finalInspectionID);
+
+        IList<SelectListItem> GetActionSelectListItem();
     }
 }

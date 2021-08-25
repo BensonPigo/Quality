@@ -112,6 +112,14 @@ namespace BusinessLogicLayer.Service.FinalInspectionTests
                     Assert.Fail(result.ErrorMessage);
                 }
 
+                finalInspection.InspectionStep = "Insp-Moisture";
+                result = finalInspectionService.UpdateFinalInspectionByStep(finalInspection, "Insp-Moisture", "SCIMIS");
+
+                if (!result)
+                {
+                    Assert.Fail(result.ErrorMessage);
+                }
+
                 Assert.IsTrue(true);
             }
             catch (Exception ex)
