@@ -1,5 +1,18 @@
 ﻿@model DatabaseObject.ViewModel.FinalInspection.QueryReport
-<table cellspacing="100" id="myTable3" class="table table-striped display">
+<style>
+    #myTable3_info {
+        color: white
+    }
+
+    #myTable3_previous, #myTable3_next {
+        color: white !important;
+    }
+
+    #myTable3_wrapper, #myTable3_wrapper > .dataTables_scrollHeadInner {
+        width: 100%
+    }
+</style>
+<table id="myTable3" class="table table-striped display">
     <thead>
         <tr class="row-name">
             <th>Defect Type</th>
@@ -20,3 +33,17 @@
         }
     </tbody>
 </table>
+<script>
+    $(function () {
+        $('#myTable3').DataTable({
+            "pageLength": 10,
+            "autoWidth": false,
+            "info": false,
+            "filter": false,
+            "paging": false,
+            "info": false,
+            "scrollY": "40vh",
+            "scrollCollapse": true,
+        });
+    });
+</script>

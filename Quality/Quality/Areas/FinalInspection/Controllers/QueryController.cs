@@ -145,6 +145,44 @@ namespace Quality.Areas.FinalInspection.Controllers
             listMeasurementViewItem.Add(MeasurementViewItem4);
             queryReport.ListMeasurementViewItem = listMeasurementViewItem;
 
+
+            queryReport.FinalInspection.BAQty = 10;
+            queryReport.ListBACriteriaItem = new List<BACriteriaItem>();
+            DatabaseObject.ViewModel.FinalInspection.BACriteriaItem test1 = new DatabaseObject.ViewModel.FinalInspection.BACriteriaItem();
+            test1.Ukey = 1;
+            test1.BACriteria = "C1";
+            test1.BACriteriaDesc = "Delights consumers";
+            queryReport.ListBACriteriaItem.Add(test1);
+
+            DatabaseObject.ViewModel.FinalInspection.BACriteriaItem test2 = new DatabaseObject.ViewModel.FinalInspection.BACriteriaItem();
+            test2.Ukey = 2;
+            test2.BACriteria = "C9";
+            test2.BACriteriaDesc = "Well finished and presented";
+            test2.Qty = 3;
+            queryReport.ListBACriteriaItem.Add(test2);
+
+            // base
+            queryReport.FinalInspection.POID = "A";
+            queryReport.SP = "A001,A002";
+            queryReport.StyleID = "110555";
+            queryReport.BrandID = "Adidas";
+            queryReport.FinalInspection.FactoryID = "MAI";
+            queryReport.TotalSPQty = 200;
+            queryReport.FinalInspection.InspectionStage = "Inline";
+            queryReport.Carton = "A001-1,3;A002-5";
+            queryReport.FinalInspection.AuditDate = new DateTime(2021, 7, 26);
+            queryReport.AvailableQty = 150;
+            queryReport.AQLPlan = "1.0 Level I";
+            queryReport.FinalInspection.SampleSize = 8;
+            queryReport.FinalInspection.AcceptQty = 0;
+            queryReport.FinalInspection.RejectQty = 1;
+            queryReport.FinalInspection.CFA = "Lawrence";
+            queryReport.FinalInspection.SubmitDate = new DateTime(2021, 7, 25);
+            queryReport.FinalInspection.PassQty = 100;
+            queryReport.FinalInspection.RejectQty = 8;
+            queryReport.FinalInspection.InspectionResult = "On-Going";
+            queryReport.FinalInspection.ShipmentStatus = "N/A";
+
             return View(queryReport);
         }
         public ActionResult DownLoad()

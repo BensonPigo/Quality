@@ -98,8 +98,8 @@
                         <td>Inspection Stage</td>
                         <td>@Model.FinalInspection.InspectionStage</td>
                         <td>Carton</td>
-                        <td>@Model.Carton</td>
-                        <td colspan="4"></td>
+                        <td colspan="2">@Model.Carton</td>
+                        <td colspan="2"></td>
                     </tr>
                     <tr>
                         <td>Audit Date</td>
@@ -159,18 +159,27 @@
         <div>
             <table style="width:100%">
                 <tr>
-                    <td style="width:10%">CFA</td>
-                    <td style="width:30%">@Model.FinalInspection.CFA</td>
-                    <td style="width:10%">Pass Qty(pcs)</td>
-                    <td style="width:10%">@Model.FinalInspection.PassQty</td>
-                    <td style="width:10%">Inpection Result</td>
+                    <td style="width:12%">CFA</td>
+                    <td style="width:10%">@Model.FinalInspection.CFA</td>
+                    <td style="width:15%">Pass Qty(pcs)</td>
+                    <td style="width:5%">@Model.FinalInspection.PassQty</td>
+                    <td style="width:15%">Inpection Result</td>
                     <td style="width:10%">@Model.FinalInspection.InspectionResult</td>
                     <td style="width:10%" rowspan="2"><button type="button" class="site-btn btn-red">Go On Inspect</button></td>
                     <td style="width:10%" rowspan="2"><button type="button" class="site-btn btn-blue">Send Mail</button></td>
                 </tr>
                 <tr>
                     <td>Submit Date</td>
-                    <td>@Model.FinalInspection.SubmitDate</td>
+                    <td>
+                        @if (Model.FinalInspection.SubmitDate == null)
+                        {
+                            @:N/A
+                        }
+                        else
+                        {
+                            @Convert.ToDateTime(Model.FinalInspection.SubmitDate).ToString("yyyy/MM/dd")
+                        }
+                    </td>
                     <td>Reject Qty(pcs)</td>
                     <td>@Model.FinalInspection.RejectQty</td>
                     <td>Shipment Status</td>
