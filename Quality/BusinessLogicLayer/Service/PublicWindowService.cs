@@ -267,5 +267,91 @@ namespace BusinessLogicLayer.Service
 
             return result;
         }
+
+        public List<Window_Color> Get_Color(string BrandID, string ID)
+        {
+            List<Window_Color> result = new List<Window_Color>();
+
+            try
+            {
+                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+
+                //取得登入資訊
+                result = _Provider.Get_Color(BrandID, ID).ToList();
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
+        public List<Window_FGPT> Get_FGPT(string VersionID, string Code)
+        {
+            List<Window_FGPT> result = new List<Window_FGPT>();
+
+            try
+            {
+                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+
+                //取得登入資訊
+                result = _Provider.Get_FGPT(VersionID, Code).ToList();
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
+        public Window_Picture Get_Picture(string Table, string BrforeColumn, string AfterColumn, string PKey_1, string PKey_2, string PKey_3, string PKey_1_Val, string PKey_2_Val, string PKey_3_Val)
+        {
+            Window_Picture result = new Window_Picture();
+
+            try
+            {
+                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+
+                //取得登入資訊
+                var r = _Provider.Get_Picture(Table, BrforeColumn, AfterColumn, PKey_1, PKey_2, PKey_3, PKey_1_Val, PKey_2_Val, PKey_3_Val).ToList();
+
+                if (r.Any())
+                {
+                    result = r.FirstOrDefault();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
+
+        public List<Window_TestFailMail> Get_TestFailMail(string FactoryID, string Type, string GroupNameList)
+        {
+            List<Window_TestFailMail> result = new List<Window_TestFailMail>();
+
+            try
+            {
+                _Provider = new PublicWondowProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                //取得登入資訊
+                result = _Provider.Get_TestFailMail(FactoryID, Type, GroupNameList).ToList();
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
     }
 }

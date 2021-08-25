@@ -124,6 +124,7 @@
     <Compile Include="RequestModel\FinalInspection_Query.cs" />
     <Compile Include="RequestModel\FinalInspection_Request.cs" />
     <Compile Include="RequestModel\GarmentTest_Request.cs" />
+    <Compile Include="RequestModel\SendMail_Request.cs" />
     <Compile Include="RequestModel\LogIn_Request.cs" />
     <Compile Include="RequestModel\Measurement_Request.cs" />
     <Compile Include="RequestModel\Quality_Pass1_Request.cs" />
@@ -134,6 +135,8 @@
     <Compile Include="ResultModel\BACriteria_Result.cs" />
     <Compile Include="ResultModel\LogIn_Result.cs" />
     <Compile Include="ResultModel\Measurement_ResultModel.cs" />
+    <Compile Include="ResultModel\MockupUpdatePicture_Result.cs" />
+    <Compile Include="ResultModel\SendMail_Result.cs" />
     <Compile Include="ResultModel\Module_Detail.cs" />
     <Compile Include="ResultModel\Quality_MailGroup_ResultModel.cs" />
     <Compile Include="ResultModel\Quality_Position.cs" />
@@ -149,6 +152,7 @@
     <Compile Include="ViewModel\FinalInspection\AddDefect.cs" />
     <Compile Include="ViewModel\FinalInspection\Moisture.cs" />
     <Compile Include="ViewModel\FinalInspection\Measurement.cs" />
+    <Compile Include="ViewModel\FinalInspection\QueryReport_Measurement.cs" />
     <Compile Include="ViewModel\FinalInspection\QueryReport.cs" />
     <Compile Include="ViewModel\FinalInspection\QueryFinalInspection.cs" />
     <Compile Include="ViewModel\FinalInspection\Others.cs" />

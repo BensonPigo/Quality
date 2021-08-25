@@ -4,6 +4,7 @@ using DatabaseObject.Public;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Text;
 
 namespace ProductionDataAccessLayer.Provider
@@ -436,6 +437,164 @@ AND FactoryID=@FactoryID
 
 
             return ExecuteList<Window_SewingLine>(CommandType.Text, SbSql.ToString(), paras);
+        }
+
+        public IList<Window_Color> Get_Color(string BrandID, string ID)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+
+            //台北
+            SbSql.Append($@"
+Select DISTINCT ID, Name
+--From [TradeDB].Trade.dbo.Color --台北
+From Production.dbo.Color --工廠
+Where Junk=0
+");
+            if (!string.IsNullOrEmpty(BrandID))
+            {
+                SbSql.Append($@"AND BrandID = @BrandID ");
+
+                paras.Add("@BrandID", DbType.String, BrandID);
+            }
+
+            if (!string.IsNullOrEmpty(ID))
+            {
+                SbSql.Append($@"AND ID LIKE @ID ");
+
+                paras.Add("@ID", DbType.String, ID + "%");
+            }
+
+
+            return ExecuteList<Window_Color>(CommandType.Text, SbSql.ToString(), paras);
+        }
+
+        public IList<Window_FGPT> Get_FGPT(string VersionID, string Code)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+
+            //台北
+            SbSql.Append($@"
+select Seq , Code 
+--From [TradeDB].ProductionTPE.dbo.TypeSelection --台北
+From Production.dbo.TypeSelection --工廠
+Where 1=1
+");
+            if (!string.IsNullOrEmpty(VersionID))
+            {
+                SbSql.Append($@"AND VersionID  = @VersionID  ");
+
+                paras.Add("@VersionID ", DbType.String, VersionID);
+            }
+
+            if (!string.IsNullOrEmpty(Code))
+            {
+                SbSql.Append($@"AND Code  LIKE @Code  ");
+
+                paras.Add("@Code ", DbType.String, Code + "%");
+            }
+
+            SbSql.Append($@" ORDER BY Seq");
+
+            return ExecuteList<Window_FGPT>(CommandType.Text, SbSql.ToString(), paras);
+        }
+
+        public IList<Window_Picture> Get_Picture(string Table, string BrforeColumn, string AfterColumn, string PKey_1, string PKey_2, string PKey_3, string PKey_1_Val, string PKey_2_Val, string PKey_3_Val)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+
+            string selectColumn = "";
+
+            if (!string.IsNullOrEmpty(PKey_1))
+            {
+                selectColumn += $@",{PKey_1}" + Environment.NewLine;
+            }
+
+            if (!string.IsNullOrEmpty(PKey_2))
+            {
+                selectColumn += $@",{PKey_2}" + Environment.NewLine;
+            }
+
+            if (!string.IsNullOrEmpty(PKey_3))
+            {
+                selectColumn += $@",{PKey_3}" + Environment.NewLine;
+            }
+
+            //台北
+            SbSql.Append($@"
+select [BrforeImage]={BrforeColumn}
+, [AfterImage]={AfterColumn}
+{selectColumn}
+From {Table} 
+Where 1=1
+");
+
+            if (!string.IsNullOrEmpty(PKey_1))
+            {
+                SbSql.Append($@"AND {PKey_1}  = @PKey_1  ");
+
+                paras.Add("@PKey_1 ", DbType.String, PKey_1_Val);
+            }
+
+            if (!string.IsNullOrEmpty(PKey_2))
+            {
+                SbSql.Append($@"AND {PKey_2}  = @PKey_2  ");
+
+                paras.Add("@PKey_2 ", DbType.String, PKey_2_Val);
+            }
+
+            if (!string.IsNullOrEmpty(PKey_3))
+            {
+                SbSql.Append($@"AND {PKey_3}  = @PKey_3  ");
+
+                paras.Add("@PKey_3 ", DbType.String, PKey_3_Val);
+            }
+
+            return ExecuteList<Window_Picture>(CommandType.Text, SbSql.ToString(), paras);
+        }
+
+        public IList<Window_TestFailMail> Get_TestFailMail(string FactoryID, string Type, string GroupNameList)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+
+            //台北
+            SbSql.Append($@"
+select *
+From Quality_MailGroup 
+Where 1=1
+");
+            if (!string.IsNullOrEmpty(FactoryID))
+            {
+                SbSql.Append($@"AND FactoryID  = @FactoryID  ");
+
+                paras.Add("@FactoryID ", DbType.String, FactoryID);
+            }
+            if (!string.IsNullOrEmpty(Type))
+            {
+                SbSql.Append($@"AND Type  = @Type  ");
+
+                paras.Add("@Type ", DbType.String, Type);
+            }
+
+            if (GroupNameList != null && GroupNameList.Any())
+            {
+                List<string> li = GroupNameList.Split(',').Where(o => !string.IsNullOrEmpty(o)).Distinct().ToList();
+                SbSql.Append($@"AND GroupName IN ('{string.Join("','", li)}') ");
+            }
+
+            //if (!string.IsNullOrEmpty(GroupName))
+            //{
+            //    SbSql.Append($@"AND GroupName = @GroupName  ");
+
+            //    paras.Add("@GroupName ", DbType.String, GroupName );
+            //}
+
+
+
+            return ExecuteList<Window_TestFailMail>(CommandType.Text, SbSql.ToString(), paras);
         }
     }
 }

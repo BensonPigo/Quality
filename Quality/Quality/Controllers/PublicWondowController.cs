@@ -221,5 +221,81 @@ namespace Quality.Controllers
 
             return View(model);
         }
+
+        public ActionResult ColorList(string Title, string BrandID)
+        {
+            //var model = _PublicWindowService.Get_Color(BrandID, string.Empty);
+
+            // Color資料太多，畫面開啟不預設帶入資料
+            List<DatabaseObject.Public.Window_Color> model = new List<DatabaseObject.Public.Window_Color>();
+
+            ViewData["Title"] = Title;
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateInput(false)]
+        public ActionResult ColorList(string Title, string BrandID, string ID, string PickedIDs, string PickedNames)
+        {
+            var result = _PublicWindowService.Get_Color(BrandID, ID);
+            ViewData["Title"] = Title;
+
+            //整理已選擇的ID和Name，需要保留
+            List<string> PickedID_List = PickedIDs.Replace("&#39;", "").Split(',').Where(o => !string.IsNullOrEmpty(o)).ToList();
+            List<string> PickedName_List = PickedNames.Replace("&#39;", "").Split(',').Where(o => !string.IsNullOrEmpty(o)).ToList();
+
+            //排除已選擇的ID
+            var model = result.Where(o => !PickedID_List.Contains(o.ID)).ToList();
+
+            ViewData["PickedIDs"] = string.Join(",", PickedIDs.Split(',').Where(o => !string.IsNullOrEmpty(o)).Distinct());
+            ViewData["PickedNames"] = string.Join(",", PickedNames.Split(',').Where(o => !string.IsNullOrEmpty(o)).Distinct());
+
+            return View(model);
+        }
+
+        public ActionResult FGPTList(string VersionID)
+        {
+            var model = _PublicWindowService.Get_FGPT(VersionID, string.Empty);
+            ViewData["VersionID"] = VersionID;
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult FGPTList(string VersionID, string Code)
+        {
+            var model = _PublicWindowService.Get_FGPT(VersionID, Code);
+            ViewData["VersionID"] = VersionID;
+            return View(model);
+        }
+
+        public ActionResult PictureList(string Title, bool EditMode, string Table, string BrforeColumn, string AfterColumn, string PKey_1, string PKey_2, string PKey_3, string PKey_1_Val, string PKey_2_Val, string PKey_3_Val)
+        {
+            var model = _PublicWindowService.Get_Picture(Table, BrforeColumn, AfterColumn, PKey_1, PKey_2, PKey_3, PKey_1_Val, PKey_2_Val, PKey_3_Val);
+            ViewData["Title"] = Title;
+            ViewData["EditMode"] = EditMode;
+            return View(model);
+        }
+
+
+        public ActionResult TestFailMailList(string Title, string FactoryID, string Type)
+        {
+            var model = _PublicWindowService.Get_TestFailMail(FactoryID, Type, string.Empty);
+            ViewData["Title"] = Title;
+            ViewData["Type"] = Type;
+            ViewData["FactoryID"] = FactoryID;
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult TestFailMailList(string Title, string FactoryID, string Type, string GroupNameList)
+        {
+            var model = _PublicWindowService.Get_TestFailMail(FactoryID, Type, GroupNameList);
+
+
+            ViewData["Type"] = Type;
+            ViewData["Title"] = Title;
+            ViewData["FactoryID"] = FactoryID;
+            return View(model);
+        }
     }
 }

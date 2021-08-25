@@ -111,5 +111,19 @@ namespace DatabaseObject.ProductionDB
         [Display(Name = "編輯人員")]
         public string EditName { get; set; }
 
+        /// <summary>T1 廠商 名稱</summary>
+        [Required]
+        [StringLength(12)]
+        [Display(Name = "T1 廠商 名稱")]
+        public string Abb { get; set; }
+        /// <summary>技術人員 名稱</summary>
+        [Required]
+        [StringLength(30)]
+        [Display(Name = "技術人員 名稱")]
+        public string TechnicianName { get; set; }
+        /// <summary>圖檔完整路徑</summary>
+        [Required]
+        [Display(Name = "圖檔完整路徑")]
+        public string SignaturePic { get; set; }
     }
 }

@@ -5,10 +5,13 @@ using System.Collections.Generic;
 
 namespace DatabaseObject.ViewModel.FinalInspection
 {
-    public class AddDefect
+    public class AddDefect : BaseResult
     {
         public string FinalInspectionID { get; set; }
         public int? RejectQty { get; set; }
+        public string InspectionStep { get; set; } = "";
+
+        public int? SampleSize { get; set; }
 
         public List<FinalInspectionDefectItem> ListFinalInspectionDefectItem { get; set; }
 
@@ -27,6 +30,6 @@ namespace DatabaseObject.ViewModel.FinalInspection
 
         public int Qty { get; set; }
 
-        public List<byte[]> ListFinalInspectionDefectImage { get; set; }
+        public List<byte[]> ListFinalInspectionDefectImage { get; set; } = new List<byte[]>();
     }
 }

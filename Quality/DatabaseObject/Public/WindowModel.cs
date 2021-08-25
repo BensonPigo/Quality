@@ -117,4 +117,52 @@ namespace DatabaseObject.Public
     {
         public string ID { get; set; }
     }
+
+    public class Window_Color
+    {
+        public string ID { get; set; }
+
+        public string Name { get; set; }
+        public string BrandID { get; set; }
+    }
+
+    public class Window_FGPT
+    {
+        public string TypeSelection_VersionID { get; set; }
+
+        public string Seq { get; set; }
+        public string Code { get; set; }
+    }
+
+    public class Window_Picture
+    {
+
+        public string PKey_1 { get; set; }
+        public string PKey_2 { get; set; }
+        public string PKey_3 { get; set; }
+
+        public string PKey_1_val { get; set; }
+        public string PKey_2_val { get; set; }
+        public string PKey_3_val { get; set; }
+
+        public string Table { get; set; }
+        public string BrforeColumn { get; set; }
+        public string AfterColumn { get; set; }
+
+
+        public byte[] BrforeImage { get; set; }
+        public byte[] AfterImage { get; set; }
+    }
+
+    public class Window_TestFailMail
+    {
+        public string FactoryID { get; set; }
+
+        public string GroupName { get; set; }
+        public string Type { get; set; }
+
+        public string ToAddress { get; set; }
+
+        public string CcAddress { get; set; }
+    }
 }

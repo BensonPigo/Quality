@@ -44,26 +44,27 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
             SbSql.Append("SELECT"+ Environment.NewLine);
-            SbSql.Append("         ReportNo"+ Environment.NewLine);
-            SbSql.Append("        ,Ukey"+ Environment.NewLine);
-            SbSql.Append("        ,Design"+ Environment.NewLine);
-            SbSql.Append("        ,ArtworkColor"+ Environment.NewLine);
-            SbSql.Append("        ,FabricRefNo"+ Environment.NewLine);
-            SbSql.Append("        ,FabricColor"+ Environment.NewLine);
-            SbSql.Append("        ,DryScale"+ Environment.NewLine);
-            SbSql.Append("        ,WetScale"+ Environment.NewLine);
-            SbSql.Append("        ,Result"+ Environment.NewLine);
-            SbSql.Append("        ,Remark"+ Environment.NewLine);
-            SbSql.Append("        ,EditName"+ Environment.NewLine);
-            SbSql.Append("        ,EditDate"+ Environment.NewLine);
-            SbSql.Append("FROM [MockupCrocking_Detail]"+ Environment.NewLine);
+            SbSql.Append("         md.ReportNo"+ Environment.NewLine);
+            SbSql.Append("        ,md.Ukey"+ Environment.NewLine);
+            SbSql.Append("        ,md.Design"+ Environment.NewLine);
+            SbSql.Append("        ,md.ArtworkColor"+ Environment.NewLine);
+            SbSql.Append("        ,md.FabricRefNo"+ Environment.NewLine);
+            SbSql.Append("        ,md.FabricColor"+ Environment.NewLine);
+            SbSql.Append("        ,md.DryScale"+ Environment.NewLine);
+            SbSql.Append("        ,md.WetScale"+ Environment.NewLine);
+            SbSql.Append("        ,md.Result"+ Environment.NewLine);
+            SbSql.Append("        ,md.Remark"+ Environment.NewLine);
+            SbSql.Append("        ,md.EditName"+ Environment.NewLine);
+            SbSql.Append("        ,md.EditDate" + Environment.NewLine);
+            SbSql.Append("FROM [MockupCrocking_Detail] md"+ Environment.NewLine);
+            SbSql.Append("inner join MockupCrocking m on m.ReportNo = md.ReportNo" + Environment.NewLine);
             SbSql.Append("Where 1=1" + Environment.NewLine);
+
             if (!string.IsNullOrEmpty(Item.ReportNo))
             {
-                SbSql.Append("And ReportNo = @ReportNo" + Environment.NewLine);
+                SbSql.Append("And md.ReportNo = @ReportNo" + Environment.NewLine);
                 objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
             }
-
 
             return ExecuteList<MockupCrocking_Detail>(CommandType.Text, SbSql.ToString(), objParameter);
         }
@@ -86,7 +87,6 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("INSERT INTO [MockupCrocking_Detail]"+ Environment.NewLine);
             SbSql.Append("(" + Environment.NewLine);
             SbSql.Append("         ReportNo"+ Environment.NewLine);
-            SbSql.Append("        ,Ukey"+ Environment.NewLine);
             SbSql.Append("        ,Design"+ Environment.NewLine);
             SbSql.Append("        ,ArtworkColor"+ Environment.NewLine);
             SbSql.Append("        ,FabricRefNo"+ Environment.NewLine);
@@ -101,7 +101,6 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("VALUES"+ Environment.NewLine);
             SbSql.Append("(" + Environment.NewLine);
             SbSql.Append("         @ReportNo"); objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
-            SbSql.Append("        ,@Ukey"); objParameter.Add("@Ukey", DbType.String, Item.Ukey);
             SbSql.Append("        ,@Design"); objParameter.Add("@Design", DbType.String, Item.Design);
             SbSql.Append("        ,@ArtworkColor"); objParameter.Add("@ArtworkColor", DbType.String, Item.ArtworkColor);
             SbSql.Append("        ,@FabricRefNo"); objParameter.Add("@FabricRefNo", DbType.String, Item.FabricRefNo);
@@ -113,8 +112,6 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,@EditName"); objParameter.Add("@EditName", DbType.String, Item.EditName);
             SbSql.Append("        ,@EditDate"); objParameter.Add("@EditDate", DbType.DateTime, Item.EditDate);
             SbSql.Append(")"+ Environment.NewLine);
-
-
 
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
@@ -138,7 +135,6 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("UPDATE [MockupCrocking_Detail]"+ Environment.NewLine);
             SbSql.Append("SET"+ Environment.NewLine);
             if (Item.ReportNo != null) { SbSql.Append("ReportNo=@ReportNo"+ Environment.NewLine); objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);}
-            if (Item.Ukey != null) { SbSql.Append(",Ukey=@Ukey"+ Environment.NewLine); objParameter.Add("@Ukey", DbType.String, Item.Ukey);}
             if (Item.Design != null) { SbSql.Append(",Design=@Design"+ Environment.NewLine); objParameter.Add("@Design", DbType.String, Item.Design);}
             if (Item.ArtworkColor != null) { SbSql.Append(",ArtworkColor=@ArtworkColor"+ Environment.NewLine); objParameter.Add("@ArtworkColor", DbType.String, Item.ArtworkColor);}
             if (Item.FabricRefNo != null) { SbSql.Append(",FabricRefNo=@FabricRefNo"+ Environment.NewLine); objParameter.Add("@FabricRefNo", DbType.String, Item.FabricRefNo);}
@@ -150,8 +146,8 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             if (Item.EditName != null) { SbSql.Append(",EditName=@EditName"+ Environment.NewLine); objParameter.Add("@EditName", DbType.String, Item.EditName);}
             if (Item.EditDate != null) { SbSql.Append(",EditDate=@EditDate"+ Environment.NewLine); objParameter.Add("@EditDate", DbType.DateTime, Item.EditDate);}
             SbSql.Append("WHERE 1 = 1" + Environment.NewLine);
-
-
+            SbSql.Append("And Ukey = @Ukey" + Environment.NewLine);
+            objParameter.Add("@Ukey", DbType.String, Item.Ukey);
 
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
@@ -173,12 +169,44 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
             SbSql.Append("DELETE FROM [MockupCrocking_Detail]"+ Environment.NewLine);
-
-
+            SbSql.Append("Where Ukey = @Ukey" + Environment.NewLine);
+            objParameter.Add("@Ukey", DbType.String, Item.Ukey);
 
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
-	#endregion
+        #endregion
+
+        public IList<MockupCrocking_Detail> GetMockupCrocking_Detail(MockupCrocking_Detail Item)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            SbSql.Append(@"
+SELECT
+         md.ReportNo
+        ,md.Ukey
+        ,md.Design
+        ,md.ArtworkColor
+        ,md.FabricRefNo
+        ,md.FabricColor
+        ,md.DryScale
+        ,md.WetScale
+        ,md.Result
+        ,md.Remark
+        ,md.EditName
+        ,md.EditDate
+        ,FabricColorName = (select Name from Color WITH (NOLOCK) where ID = md.FabricColor and BrandID = m.BrandID )
+FROM [MockupCrocking_Detail] md
+inner join MockupCrocking m on m.ReportNo = md.ReportNo
+Where 1=1
+");
+            if (!string.IsNullOrEmpty(Item.ReportNo))
+            {
+                SbSql.Append("And md.ReportNo = @ReportNo" + Environment.NewLine);
+                objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
+            }
+
+            return ExecuteList<MockupCrocking_Detail>(CommandType.Text, SbSql.ToString(), objParameter);
+        }
     }
 }

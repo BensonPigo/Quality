@@ -71,6 +71,10 @@ namespace DatabaseObject.ProductionDB
         /// <summary>編輯日期</summary>
         [Display(Name = "編輯日期")]
         public DateTime? EditDate { get; set; }
+        /// <summary>FabricColorName</summary>
+        [Required]
+        [Display(Name = "FabricColorName")]
+        public string FabricColorName { get; set; }
 
     }
 }
