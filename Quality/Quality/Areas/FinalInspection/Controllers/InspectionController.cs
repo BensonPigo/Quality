@@ -526,12 +526,12 @@ namespace Quality.Areas.FinalInspection.Controllers
 
             DatabaseObject.ViewModel.FinalInspection.Measurement Measurement = new DatabaseObject.ViewModel.FinalInspection.Measurement();
 
-            Measurement.SizeUnit = "INCH";
+            Measurement.SizeUnit = "CM";
 
             DatabaseObject.ViewModel.FinalInspection.MeasurementItem MeasurementItem = new DatabaseObject.ViewModel.FinalInspection.MeasurementItem();
             MeasurementItem.Description = "AAA";
-            MeasurementItem.Tol1 = "11";
-            MeasurementItem.Tol2 = "22";
+            MeasurementItem.Tol1 = "444 15/26";
+            MeasurementItem.Tol2 = "999 13/26";
             MeasurementItem.SizeSpec = "44";
             MeasurementItem.Size = "M";
             MeasurementItem.ResultSizeSpec = "";

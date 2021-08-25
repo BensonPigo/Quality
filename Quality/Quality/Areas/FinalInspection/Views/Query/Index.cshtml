@@ -127,6 +127,8 @@
                     <table cellspacing="100" id="myTable" class="table table-striped display">
                         <thead>
                             <tr class="row-name" id="row-name">
+                                <th>Inspection<br> Report</th>
+                                <th>Inspection Result</th>
                                 <th>SP#</th>
                                 <th>PO#</th>
                                 <th>SP# Qty</th>
@@ -135,8 +137,6 @@
                                 <th>Brand</th>
                                 <th>Inspection <br>Times</th>
                                 <th>Inspection Stage</th>
-                                <th>Inspection Result</th>
-                                <th>Inspection<br> Report</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -158,6 +158,15 @@
                                 }
                             <tr class="row-content" style="vertical-align: middle; text-align: center;">
                                 <td>
+                                    <img src="~/Image/Icon/Document.png" width="20" height="20" />
+                                </td>
+                                <td>
+
+                                    <div style="color:@color">
+                                        @Html.DisplayFor(modelItem => item.InspectionResult)
+                                    </div>
+                                </td>
+                                <td>
                                     @Html.DisplayFor(modelItem => item.SP)
                                 </td>
                                 <td>
@@ -178,18 +187,11 @@
                                 <td>
                                     @Html.DisplayFor(modelItem => item.InspectionTimes)
                                 </td>
-                                <td>
 
-                                    <div style="color:@color">
-                                        @Html.DisplayFor(modelItem => item.InspectionResult)
-                                    </div>                              
-                                </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.InspectionStage)
                                 </td>
-                                <td>
-                                    <img src="~/Image/Icon/Document.png" width="20" height="20" alt="submit" />
-                                </td>
+
                             </tr>
                             }
                         </tbody>
@@ -199,11 +201,9 @@
             </div>
         </div>
     </div>
-
 </div>
 
 <script type="text/javascript">
-
 
     var msg = new MessagerAlert();
 
@@ -215,6 +215,7 @@
             "filter": false,
             "scrollY": "44vh",
             "scrollCollapse": true,
+            "scrollX": true
 
         });
     });
