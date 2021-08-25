@@ -452,6 +452,31 @@ and ukey = @ukey
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
-	#endregion
+
+        public string GetSizeUnitByPOID(string POID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection()
+            {
+                 { "@POID", DbType.String, POID} ,
+            };
+
+            string sqlcmd = @"
+select SizeUnit 
+from Style  with (nolock)
+where   ukey = (select styleUkey from orders with (nolock) where ID = @POID)
+";
+
+            DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
+
+            if (dtResult.Rows.Count > 0)
+            {
+                return dtResult.Rows[0]["SizeUnit"].ToString();
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
+        #endregion
     }
 }

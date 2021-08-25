@@ -2,6 +2,7 @@ using DatabaseObject;
 using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ViewModel.FinalInspection;
 using System.Collections.Generic;
+using System.Data;
 
 namespace ManufacturingExecutionDataAccessLayer.Interface
 {
@@ -36,5 +37,9 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         bool CheckMoistureExists(string finalInspectionID, string article, long finalInspection_OrderCartonUkey);
 
         void DeleteMoisture(long ukey);
+
+        void UpdateMeasurement(DatabaseObject.ViewModel.FinalInspection.Measurement measurement, string userID);
+        IList<MeasurementViewItem> GetMeasurementViewItem(string finalInspectionID);
+        DataTable GetMeasurement(string finalInspectionID, string article, string size, string productType);
     }
 }

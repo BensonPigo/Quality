@@ -384,6 +384,58 @@ drop table #tmp
             DataTable dt = ExecuteDataTable(CommandType.Text, sqlcmd, objParameter);
             return dt;
         }
+
+        public IList<Measurement> GetMeasurementsByPOID(string POID, string userID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@POID", DbType.String, POID },
+                { "@userID", DbType.String, userID },
+            };
+
+
+            string sqlcmd = @"
+declare @SizeUnit varchar(8)
+declare @StyleUkey bigint
+
+select  @StyleUkey = StyleUkey
+from    SciProduction_Orders with (nolock)
+where   ID = @POID
+
+exec CopyStyle_ToMeasurement @userID,@StyleUkey;
+
+select  @SizeUnit = SizeUnit
+from    Production.dbo.Style
+where   Ukey = @StyleUkey
+
+SELECT  a.StyleUkey
+        ,a.Tol1
+        ,a.Tol2
+        ,a.Description
+        ,a.Code
+        ,a.SizeCode
+        ,a.SizeSpec
+        ,a.Ukey
+        ,a.AddDate
+        ,a.AddName
+        ,a.Junk
+        ,a.SizeGroup
+        ,a.MeasurementTranslateUkey
+        , [IsPatternMeas] = case when a.Description like '%pattern measn%'  then convert(bit, 1)
+			                when  isnull(a.Tol1, '0') = '0' and isnull(a.Tol2, '0') = '0' and isnull(a.SizeSpec, '0') = '0' then convert(bit, 1)
+			                when  isnull(a.SizeCode,'') = '' then convert(bit, 1)
+			                when  a.SizeSpec like '%[a-zA-Z]%' then convert(bit, 1)
+			                when  (UPPER(@SizeUnit) = 'INCH' and  a.SizeSpec like '%.%') then convert(bit, 1)
+			                when  (UPPER(@SizeUnit) = 'CM' and  a.SizeSpec like '%/%') then convert(bit, 1)
+			                else  convert(bit, 0) end
+FROM [ManufacturingExecution].[dbo].[Measurement] a with(nolock)
+where a.junk=0 
+and a.StyleUkey = @StyleUkey 
+
+";
+
+            return ExecuteList<Measurement>(CommandType.Text, sqlcmd, objParameter, 80);
+        }
         #endregion
     }
 }
