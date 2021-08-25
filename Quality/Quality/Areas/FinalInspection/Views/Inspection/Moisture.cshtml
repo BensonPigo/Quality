@@ -47,91 +47,95 @@
     </style>
 }
 @Html.Partial("~/Areas/FinalInspection/Views/Shared/_Inspection_Layout.cshtml")
-<div class="DownLeftWhiteBackgrond">
-    <div style="padding:0.5em">
-        <div class="col-auto"><h1 style="font-size:1.5em">Inspection Setting</h1></div>
-        <div>
-            <table class="col-auto table_div" style="width:100%">
-                <tr>
-                    <td><label>Article</label></td>
-                    <td>@Html.DropDownList("Article", (List<SelectListItem>)ViewBag.ListArticle, null, new { @class = "form-control", @onchange = "onInspectionStageChange(this.value)" })</td>
-                </tr>
-                <tr>
-                    <td><label id="labCarton">carton#</label></td>
-                    <td>@Html.TextBox("Cartons", string.Empty, new { @readonly = "readonly", @onclick = "open_cartonsDetail()" })</td>
-                </tr>
-            </table>
-        </div>
-    </div>
-</div>
-<div class="DownRightWhiteBackgrond">
-    <div style="padding:0.5em">
-        <div style="margin: 1em">
-            @Html.HiddenFor(o => o.FinalInspectionID)
-            <div class="col-auto"><h1 style="font-size:1.5em">Moisture</h1></div>
-            <button class="site-btn btn-blue" type="button" id="View" style="position:absolute;top:1em;right:8.6em">View</button>
-            <button class="site-btn btn-blue" type="button" id="Save" style="position:absolute;top:1em;right:0">Save</button>
+@using (Html.BeginForm("Moisture", "Inspection", FormMethod.Post, new { @id = "settingForm", onsubmit = "return checkSubmitValue(this.submitted);" }))
+{
+    <div class="DownLeftWhiteBackgrond">
+        <div style="padding:0.5em">
+            <div class="col-auto"><h1 style="font-size:1.5em">Inspection Setting</h1></div>
             <div>
                 <table class="col-auto table_div" style="width:100%">
                     <tr>
-                        <td style="width:30%"><label>Detection Instrument</label></td>
-                        <td>@Html.TextBoxFor(o => o.Instrument, new { @readonly = "readonly", @onclick = "open_EndlineMoistureDetail()" })</td>
+                        <td><label>Article</label></td>
+                        <td>@Html.DropDownList("Article", (List<SelectListItem>)ViewBag.ListArticle, null, new { @class = "form-control", @onchange = "onInspectionStageChange(this.value)" })</td>
                     </tr>
                     <tr>
-                        <td><label>Fabrication</label></td>
-                        <td>@Html.TextBoxFor(o => o.Fabrication, new { @disabled = "@disabled"})</td>
+                        @Html.HiddenFor(o => o.FinalInspection_OrderCartonUkey)
+                        <td><label id="labCarton">carton#</label></td>
+                        <td>@Html.TextBox("Cartons", string.Empty, new { @readonly = "readonly", @onclick = "open_cartonsDetail()" })</td>
                     </tr>
                 </table>
             </div>
         </div>
-        <hr style="width:100%" />
-        <div style="margin:1em">
-            <table class="col-auto table_div" style="width:100%">
-                <tr>
-                    <td colspan="2"><label>Detection Instrument</label></td>
-                    <td colspan="4"><label>(Standard:<label id="GarmentStandard"></label>)</label></td>
-                </tr>
-                <tr>
-                    <td><label>Top</label></td>
-                    <td>@Html.TextBoxFor(o => o.GarmentTop, new { @type = "number", @style="width:100px" })</td>
-                    <td><label>Middle</label></td>
-                    <td>@Html.TextBoxFor(o => o.GarmentMiddle, new { @type = "number", @style = "width:100px" })</td>
-                    <td><label>Bottom</label></td>
-                    <td>@Html.TextBoxFor(o => o.GarmentBottom, new { @type = "number", @style = "width:100px" })</td>
-                </tr>
-                <tr>
-                    <td colspan="2"><label>Carton Moisture</label></td>
-                    <td colspan="4"><label>(Standard:@ViewBag.FinalInspection_CTNMoisureStandard)</label></td>
-                </tr>
-                <tr>
-                    <td><label>Inside</label></td>
-                    <td>@Html.TextBoxFor(o => o.CTNInside, new { @type = "number", @style = "width:100px" })</td>
-                    <td><label>Outside</label></td>
-                    <td>@Html.TextBoxFor(o => o.CTNOutside, new { @type = "number", @style = "width:100px" })</td>
-                    <td colspan="2"></td>
-                </tr>
-            </table>
-        </div>
-        <hr style="width:100%" />
-        <div style="margin:1em">
-            <table class="col-auto table_div" style="width:100%">
-                <tr>
-                    <td><label>Result</label></td>
-                    <td><label id="Result">False</label></td>
-                    <td><label>Action</label></td>
-                    <td>@Html.DropDownListFor(o => o.Action, (List<SelectListItem>)ViewBag.ActionSelectListItem, null, new { @style = "width:157px" })</td>
-                </tr>
-                <tr>
-                    <td style="vertical-align:top"><label>Remark</label></td>
-                    <td colspan="3">@Html.TextAreaFor(o => o.Remark, new { @style = "width:60%;min-height:120px" })</td>
-                </tr>
-            </table>
-        </div>
-        <button id="btnBack" onclick="this.form.submitted=this.value;" type="submit" value="Back" class="button" style="right:7em;padding: 0;"><p style="font-size:12px;">Back</p></button>
-        <button id="btnNext" onclick="this.form.submitted=this.value;" type="submit" value="Next" style="right:0;" class="button">Next</button>
     </div>
-</div>
-
+    <div class="DownRightWhiteBackgrond">
+        <div style="padding:0.5em">
+            <div style="margin: 1em">
+                @Html.HiddenFor(o => o.FinalInspectionID)
+                <div class="col-auto"><h1 style="font-size:1.5em">Moisture</h1></div>
+                <button class="site-btn btn-blue" type="button" id="View" style="position:absolute;top:1em;right:8.6em">View</button>
+                <button class="site-btn btn-blue" type="button" id="Save" style="position:absolute;top:1em;right:0">Save</button>
+                <div>
+                    <table class="col-auto table_div" style="width:100%">
+                        <tr>
+                            <td style="width:30%"><label>Detection Instrument</label></td>
+                            <td>@Html.TextBoxFor(o => o.Instrument, new { @readonly = "readonly", @onclick = "open_EndlineMoistureDetail()" })</td>
+                        </tr>
+                        <tr>
+                            <td><label>Fabrication</label></td>
+                            <td>@Html.TextBoxFor(o => o.Fabrication, new { @disabled = "@disabled" })</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <hr style="width:100%" />
+            <div style="margin:1em">
+                <table class="col-auto table_div" style="width:100%">
+                    <tr>
+                        <td colspan="2"><label>Detection Instrument</label></td>
+                        <td colspan="4"><label>(Standard:<label id="GarmentStandard"></label>)</label></td>
+                    </tr>
+                    <tr>
+                        <td><label>Top</label></td>
+                        <td>@Html.TextBoxFor(o => o.GarmentTop, new { @type = "number", @onchange= "setColor();", @style = "width:100px" })</td>
+                        <td><label>Middle</label></td>
+                        <td>@Html.TextBoxFor(o => o.GarmentMiddle, new { @type = "number", @onchange = "setColor();", @style = "width:100px" })</td>
+                        <td><label>Bottom</label></td>
+                        <td>@Html.TextBoxFor(o => o.GarmentBottom, new { @type = "number", @onchange = "setColor();", @style = "width:100px" })</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><label>Carton Moisture</label></td>
+                        <td colspan="4"><label>(Standard:@ViewBag.FinalInspection_CTNMoisureStandard)</label></td>
+                    </tr>
+                    <tr>
+                        <td><label>Inside</label></td>
+                        <td>@Html.TextBoxFor(o => o.CTNInside, new { @type = "number", @onchange = "setColor();", @style = "width:100px" })</td>
+                        <td><label>Outside</label></td>
+                        <td>@Html.TextBoxFor(o => o.CTNOutside, new { @type = "number", @onchange = "setColor();", @style = "width:100px" })</td>
+                        <td colspan="2"></td>
+                    </tr>
+                </table>
+            </div>
+            <hr style="width:100%" />
+            <div style="margin:1em">
+                <table class="col-auto table_div" style="width:100%">
+                    <tr>
+                        <td style="width:8%"><label>Result</label></td>
+                        <td style="width:50px"><label id="Result"></label></td>
+                        <td style="width:12%"><label>Action</label></td>
+                        <td>@Html.DropDownListFor(o => o.Action, (List<SelectListItem>)ViewBag.ActionSelectListItem, null, new { @style = "width:157px" })</td>
+                    </tr>
+                    <tr>
+                        <td style="vertical-align:top"><label>Remark</label></td>
+                        <td colspan="3">@Html.TextAreaFor(o => o.Remark, new { @style = "width:60%;min-height:120px" })</td>
+                    </tr>
+                </table>
+            </div>
+            <input type="hidden" id="goPage" name="goPage">
+            <button id="btnBack" onclick="this.form.submitted=this.value;" type="submit" value="Back" style="right:7em;" class="button">Back</button>
+            <button id="btnNext" onclick="this.form.submitted=this.value;" type="submit" value="Next" style="right:0;" class="button">Next</button>
+        </div>
+    </div>
+}
 
 <!--Detail-Cartons彈出視窗-->
 <!--多個Table forA001-->
@@ -151,20 +155,20 @@
             <tbody>
                 @for (int i = 0; i < @ViewBag.ListCartonItem.Count; i++)
                 {
-                <tr class="row-content" style="vertical-align: middle; text-align: center;">
-                    <td style="display:none">
-                        @ViewBag.ListCartonItem[i].FinalInspection_OrderCartonUkey
-                    </td>
-                    <td>
-                        @ViewBag.ListCartonItem[i].OrderID
-                    </td>
-                    <td>
-                        @ViewBag.ListCartonItem[i].PackinglistID
-                    </td>
-                    <td>
-                        @ViewBag.ListCartonItem[i].CTNNo
-                    </td>
-                </tr>
+                    <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                        <td style="display:none">
+                            @ViewBag.ListCartonItem[i].FinalInspection_OrderCartonUkey
+                        </td>
+                        <td>
+                            @ViewBag.ListCartonItem[i].OrderID
+                        </td>
+                        <td>
+                            @ViewBag.ListCartonItem[i].PackinglistID
+                        </td>
+                        <td>
+                            @ViewBag.ListCartonItem[i].CTNNo
+                        </td>
+                    </tr>
                 }
             </tbody>
 
@@ -228,6 +232,7 @@
                     <th>Result</th>
                     <th>Action</th>
                     <th>Remark</th>
+                    <th></th>
                 </tr>
             </thead>
         </table>
@@ -246,6 +251,11 @@
         var myView;
 
         $(function () {
+            if (@ViewBag.ListCartonItem.Count == 0) {
+                $('#labCarton').css('visibility', 'hidden');
+                $('#Cartons').css('visibility', 'hidden');
+            }
+
             $(".detail-dialog").dialog({
                 autoOpen: false,
                 modal: true,
@@ -296,7 +306,8 @@
                         click: function () {
                             var dataRow = myCartons.row('.selected').data();
                             if (dataRow != undefined) {
-                                document.getElementById("Cartons").value = dataRow[0];
+                                document.getElementById("FinalInspection_OrderCartonUkey").value = dataRow[0];
+                                document.getElementById("Cartons").value = dataRow[3];
                             }
                             else {
                                 document.getElementById("Cartons").value = '';
@@ -367,7 +378,7 @@
                                 document.getElementById("Fabrication").value = '';
                                 document.getElementById("GarmentStandard").innerHTML = '';
                             }
-
+                            setColor();
                             $(this).dialog("close");
                         }
                         , "class": "button"
@@ -375,9 +386,6 @@
                     },
                 },
             });
-            var test = $.parseJSON(@Html.Raw(Json.Encode(ViewBag.viewMoistureResultsList)));
-            var adata = setData(test);
-
 
             // myView
             myView = $('#myView').DataTable({
@@ -389,7 +397,28 @@
                 "info": false,
                 "scrollY": "50vh",
                 "scrollCollapse": true,
-                "scrollX": true
+                "scrollX": true,
+                columns: [
+                    {},
+                    {},
+                    {},
+                    {},
+                    {},
+                    {},
+                    {},
+                    {},
+                    {},
+                    {},
+                    {},
+                    {},
+                    {},
+                    {},
+                    {
+                        "orderable": false
+                        ,render: function (data, type) {
+                            return '<button class="button" style="padding:0;position:static" value="' + data + '">Delete</button>';
+                        }}
+                    ],
             });
 
             $(".to-edit-detail-myView").dialog({
@@ -454,10 +483,44 @@
             $("#myEndlineMoisture").DataTable().columns.adjust();
         }
 
-        function checkSubmitValue() {
-            //if (onSampleSizeChange(document.getElementById("InspectionStage").value) == false) {
-            //    return false;
-            //}
+        function setColor() {
+            var garmentStandard = $("#GarmentStandard").text();
+            var garmentStandardValue = 0;
+
+            var cartonsValue = @ViewBag.FinalInspection_CTNMoisureStandard;
+
+            $("#Result").text("False");
+            $("#Result").css("color", "#E62513");
+
+//當下列一個成立則顯示Fail，反之則Pass
+//[TOP]>[Garment Standad]
+//[Middle]>[Garment Standad]
+//[Bottom]>[Garment Standard]
+//[Inside]>[Carton Standard]
+//[Outside]>[Carton Standard]
+
+            if (garmentStandard == '') {
+                return;
+            }
+            else {
+                garmentStandardValue = parseInt(garmentStandard);
+                if (garmentStandardValue >= parseInt($("#GarmentTop").val()) &&
+                    garmentStandardValue >= parseInt($("#GarmentMiddle").val()) &&
+                    garmentStandardValue >= parseInt($("#GarmentBottom").val()) &&
+                    cartonsValue >= parseInt($("#CTNInside").val()) &&
+                    cartonsValue >= parseInt($("#CTNOutside").val())) {
+                    $("#Result").text("Pass");
+                    $("#Result").css("color", "#00CC00");
+                }
+            }
+        }
+
+        function checkSubmitValue(self) {
+            if (checkQty($("#BAQty")) == false) {
+                return false;
+            }
+
+            document.getElementById("goPage").value = self;
             return true;
         }
     </script>

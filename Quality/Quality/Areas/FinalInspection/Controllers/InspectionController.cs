@@ -285,13 +285,14 @@ namespace Quality.Areas.FinalInspection.Controllers
             for (int i = 1; i < 10; i++)
             {
                 DatabaseObject.ViewModel.FinalInspection.CartonItem cartonItem = new DatabaseObject.ViewModel.FinalInspection.CartonItem();
-                cartonItem.FinalInspection_OrderCartonUkey = i;
+                cartonItem.FinalInspection_OrderCartonUkey = i + 1;
                 cartonItem.OrderID = "A001";
                 cartonItem.CTNNo = i.ToString();
                 cartonItem.PackinglistID = i.ToString();
 
                 moisture.ListCartonItem.Add(cartonItem);
             }
+
             moisture.ListEndlineMoisture = new List<DatabaseObject.ManufacturingExecutionDB.EndlineMoisture>();
 
             string jsonString = @"
@@ -482,10 +483,6 @@ namespace Quality.Areas.FinalInspection.Controllers
 
             DatabaseObject.ViewModel.FinalInspection.MoistureResult moistureResult = new DatabaseObject.ViewModel.FinalInspection.MoistureResult();
 
-
-            //IFinalInspectionMoistureService finalInspectionMoistureService = new FinalInspectionMoistureService();
-            //List<DatabaseObject.ViewModel.FinalInspection.ViewMoistureResult> viewMoistureResultsList = finalInspectionMoistureService.GetViewMoistureResult(moisture.FinalInspectionID);
-            //ViewBag.viewMoistureResultsList = Newtonsoft.Json.JsonConvert.SerializeObject(viewMoistureResultsList, Newtonsoft.Json.Formatting.Indented);
             return View(moistureResult);
         }
 
@@ -496,6 +493,19 @@ namespace Quality.Areas.FinalInspection.Controllers
             List<DatabaseObject.ViewModel.FinalInspection.ViewMoistureResult> viewMoistureResultsList = finalInspectionMoistureService.GetViewMoistureResult(finalInspectionID);
 
             return Json(viewMoistureResultsList);
+        }
+        [HttpPost]
+        public ActionResult Moisture(DatabaseObject.ViewModel.FinalInspection.MoistureResult moistureResult, string goPage)
+        {
+            if (goPage == "Back")
+            {
+                return RedirectToAction("BeautifulProductAudit");
+            }
+            else if (goPage == "Next")
+            {
+                return RedirectToAction("Measurement");
+            }
+            return View();
         }
 
         // GET: SampleRFT/Measurement
