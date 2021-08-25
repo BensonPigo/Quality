@@ -6,28 +6,9 @@
 @Html.Partial("~/Areas/FinalInspection/Views/Shared/_Inspection_Layout.cshtml")
 <style type="text/css">
 
-    div {
-        word-wrap: break-word;
-        word-break: normal;
-    }
-
-    /*        table {
-        border-collapse: collapse;
-    }
-
-    table, th, td {
-        border: 1px solid black;
-    }*/
-
     .checkboxlabel {
         font-size: 3vh;
         font-weight: 900;
-    }
-
-
-    table {
-        margin-left: auto;
-        margin-right: auto;
     }
 
     td {
@@ -56,76 +37,78 @@
 
 @model DatabaseObject.ManufacturingExecutionDB.FinalInspection
 
-@using (Html.BeginForm("General", "Inspection", FormMethod.Post,  new {@id="GeneralForm", onsubmit = "return checkValue(this.submitted)" }))
+@using (Html.BeginForm("General", "Inspection", FormMethod.Post, new { @id = "GeneralForm", onsubmit = "return checkValue(this.submitted)" }))
 {
-<div class="DownWhiteBackgrond">
+    <div class="DownWhiteBackgrond">
 
-    <table class="al-m" style="width: 48%;">
-        <tr>
-            <td class="fistTD">
-                <div><label class="checkboxlabel" for="FabricApprovalDoc">Fabric Approval</label></div>
-            </td>
-            <td class="secTD">
-                @Html.CheckBox("FabricApprovalDoc", new { @class = "checkboxInput" })
-            </td>
-        </tr>
-        <tr>
-            <td class="fistTD">
-                <div><label class="checkboxlabel" for="SealingSampleDoc">Sealing Sample</label></div>
-            </td>
-            <td class="secTD">
-                @Html.CheckBox("SealingSampleDoc", new { @class = "checkboxInput" })
-            </td>
-        </tr>
-        <tr>
-            <td class="fistTD">
-                <div><label class="checkboxlabel" for="MetalDetectionDoc">Metal Detection</label></div>
-            </td>
-            <td class="secTD">
-                @Html.CheckBox("MetalDetectionDoc", new { @class = "checkboxInput" })
-            </td>
+        <table class="al-m" style="width: 48%;">
+            <tr>
+                <td class="fistTD">
+                    <div><label class="checkboxlabel" for="FabricApprovalDoc">Fabric Approval</label></div>
+                </td>
+                <td class="secTD">
+                    @Html.CheckBox("FabricApprovalDoc")
+                </td>
+            </tr>
+            <tr>
+                <td class="fistTD">
+                    <div><label class="checkboxlabel" for="SealingSampleDoc">Sealing Sample</label></div>
+                </td>
+                <td class="secTD">
+                    @Html.CheckBox("SealingSampleDoc")
+                </td>
+            </tr>
+            <tr>
+                <td class="fistTD">
+                    <div><label class="checkboxlabel" for="MetalDetectionDoc">Metal Detection</label></div>
+                </td>
+                <td class="secTD">
+                    @Html.CheckBox("MetalDetectionDoc")
+                </td>
 
-        </tr>
-        <tr>
-            <td class="fistTD">
-                <div><label class="checkboxlabel" for="GarmentWashingDoc">Garment Washing Test</label></div>
-            </td>
-            <td class="secTD">
-                @Html.CheckBox("GarmentWashingDoc", new { @class = "checkboxInput" })
-            </td>
-        </tr>
-    </table>
-    <input type="hidden" id="page" name="page">
-    <button id="btnBack" onclick="this.form.submitted=this.value;" type="submit" value="Back" class="button" style="right:7em;padding: 0;"><p style=" font-size: 12px;">Back To Setting</p></button>
-    <button id="btnNext" onclick="this.form.submitted=this.value;" type="submit" value="Next" style="right:0;" class="button">Next</button>
+            </tr>
+            <tr>
+                <td class="fistTD">
+                    <div><label class="checkboxlabel" for="GarmentWashingDoc">Garment Washing Test</label></div>
+                </td>
+                <td class="secTD">
+                    @Html.CheckBox("GarmentWashingDoc")
+                </td>
+            </tr>
+        </table>
+        <input type="hidden" id="goPage" name="goPage">
+        <button id="btnBack" onclick="this.form.submitted=this.value;" type="submit" value="Back" class="button" style="right:7em;padding: 0;"><p style=" font-size: 12px;">Back To Setting</p></button>
+        <button id="btnNext" onclick="this.form.submitted=this.value;" type="submit" value="Next" style="right:0;" class="button">Next</button>
 
-</div>
+    </div>
 }
 
+@section FinalInspection_script
+{
+    <script>
 
-<script>
+        var msg = new MessagerAlert();
 
-    var msg = new MessagerAlert();
+        function checkValue(self) {
 
-    function checkValue(self) {
+            document.getElementById("goPage").value = self;
 
-        document.getElementById("page").value = self;
+            if (self == "Next") {
+                var selected = [];
+                var selectedList = $('input:checkbox:checked');
+                selectedList.each(function () {
+                    selected.push($(this).val());
+                });
 
-        if (self == "Next") {
-            var selected = [];
-            var selectedList = $('input:checkbox:checked');
-            selectedList.each(function () {
-                selected.push($(this).val());
-            });
+                if (selected.length < 4) {
+                    msg.WithError('These items must be selected before go to next step.!');
+                    return false;
+                }
 
-            if (selected.length < 4) {
-                msg.WithError('These items must be selected before go to next step.!');
-                return false;
             }
 
+            return true;
         }
 
-        return true;
-    }
-
-</script>
+    </script>
+}

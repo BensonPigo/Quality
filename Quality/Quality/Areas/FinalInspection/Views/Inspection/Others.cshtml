@@ -6,7 +6,6 @@
 <style type="text/css">
 
 
-
     .Font {
         font-size: 1.5em;
         font-weight: 900;
@@ -119,7 +118,7 @@
             </tr>
 
         </table>
-        <input type="hidden" id="page" name="page">
+        <input type="hidden" id="goPage" name="goPage">
         <button id="btnBack" onclick="this.form.submitted=this.value;" type="submit" value="Back" style="right: 7em;" class="button">Back</button>
         <button d="btnSubmit" onclick="this.form.submitted=this.value;" type="submit" value="Submit" style="right: 0; padding: 12px 25px" class="button">Submit</button>
     }
@@ -131,7 +130,7 @@
     var msg = new MessagerAlert();
 
     function checkValue(self) {
-        document.getElementById("page").value = self;
+        document.getElementById("goPage").value = self;
 
         return true;
     }
