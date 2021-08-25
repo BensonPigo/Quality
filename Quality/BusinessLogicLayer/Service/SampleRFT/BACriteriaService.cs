@@ -37,7 +37,7 @@ namespace BusinessLogicLayer.SampleRFT.Service
                 }
                 else
                 {
-                    result.SummaryBACriteria = SumBAProduct / SumInspectedQty * 5;
+                    result.SummaryBACriteria =Convert.ToInt32(1.0 * SumBAProduct / SumInspectedQty * 5);
 
                 }
                 result.DataList = list;
