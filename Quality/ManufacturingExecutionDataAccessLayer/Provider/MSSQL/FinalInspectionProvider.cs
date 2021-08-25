@@ -320,6 +320,16 @@ where   ID = @FinalInspectionID
                     objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
                     break;
                 case "Insp-Measurement":
+                    sqlUpdCmd += $@"
+update FinalInspection
+ set    InspectionStep = @InspectionStep,
+        EditName= @userID,
+        EditDate= getdate()
+where   ID = @FinalInspectionID
+";
+                    objParameter.Add("@FinalInspectionID", finalInspection.ID);
+                    objParameter.Add("@userID", userID);
+                    objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
                     break;
                 case "Insp-Others":
                     break;
@@ -747,6 +757,179 @@ where   ID = @FinalInspectionID and
             DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlCheckMoistureExists, objParameter);
 
             return dtResult.Rows.Count > 0;
+        }
+
+        public void UpdateMeasurement(DatabaseObject.ViewModel.FinalInspection.Measurement measurement, string userID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            DataTable dtDateTime = ExecuteDataTableByServiceConn(CommandType.Text, "select [DateTime] = getdate()", objParameter);
+
+            using (TransactionScope transactionScope = new TransactionScope())
+            {
+                foreach (MeasurementItem measurementItem in measurement.ListMeasurementItem)
+                {
+                    objParameter = new SQLParameterCollection();
+                    objParameter.Add("@ID", measurement.FinalInspectionID);
+                    objParameter.Add("@Article", measurement.SelectedArticle);
+                    objParameter.Add("@SizeCode", measurement.SelectedSize);
+                    objParameter.Add("@Location", measurement.SelectedProductType);
+                    objParameter.Add("@Code", measurementItem.Code);
+                    objParameter.Add("@SizeSpec", measurementItem.ResultSizeSpec);
+                    objParameter.Add("@MeasurementUkey", measurementItem.MeasurementUkey);
+                    objParameter.Add("@AddName", userID);
+                    objParameter.Add("@AddDate", dtDateTime.Rows[0]["DateTime"]);
+
+                    string sqlInsertMeasurement = @"
+insert into FinalInspection_Measurement(
+ID
+,Article
+,SizeCode
+,Location
+,Code
+,SizeSpec
+,MeasurementUkey
+,AddName
+,AddDate
+)
+values
+(
+ @ID
+,@Article
+,@SizeCode
+,@Location
+,@Code
+,@SizeSpec
+,@MeasurementUkey
+,@AddName
+,@AddDate
+)
+";
+                    ExecuteNonQuery(CommandType.Text, sqlInsertMeasurement, objParameter);
+                }
+
+                transactionScope.Complete();
+            }
+        }
+
+        public IList<MeasurementViewItem> GetMeasurementViewItem(string finalInspectionID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            objParameter.Add("@finalInspectionID", finalInspectionID);
+
+            string sqlGetEndlineMoisture = @"
+select  distinct    Article,
+                    [Size] = SizeCode,
+                    [ProductType] = Location,
+                    [MeasurementDataByJson] = ''
+from    FinalInspection_Measurement with (nolock)
+where   ID = @finalInspectionID
+
+";
+            return ExecuteList<MeasurementViewItem>(CommandType.Text, sqlGetEndlineMoisture, objParameter);
+        }
+
+        public DataTable GetMeasurement(string finalInspectionID, string article, string size, string productType)
+        {
+
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@finalInspectionID", DbType.String, finalInspectionID} ,
+                { "@article", DbType.String, article} ,
+                { "@size", DbType.String, size} ,
+                { "@productType", DbType.String, productType} ,
+            };
+
+
+            string sqlcmd = @"
+
+declare @styleukey bigint
+declare @sizeUnit varchar(8)
+declare @POID varchar(13)
+
+select  @POID = POID
+from    FinalInspection with (nolock)
+where   ID = @finalInspectionID
+
+select  @styleukey = Ukey,
+        @sizeUnit = SizeUnit
+from    SciProduction_Style
+where   Ukey = (select StyleUkey from SciProduction_Orders where ID = @POID)
+
+
+select  SizeSpec,
+        MeasurementUkey,
+        AddDate
+into    #tmp_Inspection_Measurement
+from    FinalInspection_Measurement
+where   ID = @finalInspectionID and
+        Article = @article and
+        SizeCode = @size and
+        Location = @productType
+
+
+select m.Ukey
+	,Description = iif(isnull(b.DescEN,'') = '', m.Description, b.DescEN)
+	,m.Tol1
+	,m.Tol2
+	,m.Code
+	,m.SizeCode 
+	,[MeasurementSizeSpec] = m.SizeSpec 
+	,[InspectionMeasurementSizeSpec] = im.SizeSpec
+	,[diff]= max(dbo.calculateSizeSpec(m.SizeSpec,im.SizeSpec, @sizeUnit))
+	,im.AddDate
+	,[HeadSizeCode] = FORMAT(im.AddDate,'yyyy/MM/dd HH:mm:ss')
+into #tmp 
+from Measurement m with(nolock)
+left join #tmp_Inspection_Measurement im on im.MeasurementUkey = m.Ukey 
+LEFT JOIN [ManufacturingExecution].[dbo].[MeasurementTranslate] b ON  m.MeasurementTranslateUkey = b.UKey
+where   m.StyleUkey = @styleukey and
+        m.SizeCode = @size and
+        m.junk = 0
+group by m.Ukey,iif(isnull(b.DescEN,'') = '',m.Description,b.DescEN),m.Tol1,m.Tol2,m.Code,m.SizeCode,m.SizeSpec,im.SizeSpec,im.AddDate
+
+drop table #tmp_Inspection_Measurement
+
+declare @HeadSizeCode as varchar(20),@mSizeCode as varchar(10),@r_id as varchar(10)
+declare @sql varchar(max) = ''
+DECLARE CURSOR_ CURSOR FOR
+Select t.HeadSizeCode, t.SizeCode, ROW_NUMBER() over( order by t.HeadSizeCode) r_id
+from #tmp t
+where t.HeadSizeCode is not null
+group by t.HeadSizeCode, t.SizeCode
+
+OPEN CURSOR_
+FETCH NEXT FROM CURSOR_ INTO @HeadSizeCode,@mSizeCode,@r_id
+While @@FETCH_STATUS = 0
+Begin
+	
+	set @sql = @sql + '
+		,Max(case when SizeCode ='''+@mSizeCode+''' then MeasurementSizeSpec end) as ['+@mSizeCode+'_aa]
+		,Max(case when HeadSizeCode ='''+@HeadSizeCode+''' and SizeCode ='''+@mSizeCode+''' then InspectionMeasurementSizeSpec end) as ['+@HeadSizeCode+']
+		,Max(case when HeadSizeCode ='''+@HeadSizeCode+''' and SizeCode ='''+@mSizeCode+''' then diff end) as diff'+@r_id+''
+FETCH NEXT FROM CURSOR_ INTO @HeadSizeCode,@mSizeCode,@r_id
+End
+CLOSE CURSOR_
+DEALLOCATE CURSOR_ 
+
+set @sql = '
+	select t.Code,t.Description
+		,[Tol(+)] = t.Tol2 
+		,[Tol(-)] = t.Tol1 
+		' + @sql + '
+	from #tmp t 
+	group by t.Description,t.Tol1,t.Tol2,t.code
+    order by t.Code
+'
+
+exec (@sql)
+
+
+drop table #tmp
+
+";
+
+            DataTable dt = ExecuteDataTable(CommandType.Text, sqlcmd, objParameter);
+            return dt;
         }
 
         #endregion

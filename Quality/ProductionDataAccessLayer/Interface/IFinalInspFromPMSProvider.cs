@@ -15,7 +15,9 @@ namespace ProductionDataAccessLayer.Interface
         IList<SelectCarton> GetSelectedCartonForSetting(string finalInspectionID);
         IList<FinalInspectionDefectItem> GetFinalInspectionDefectItems(string finalInspectionID);
 
-        List<string> GetMoistureArticleList(string finalInspectionID);
+        List<string> GetArticleList(string finalInspectionID);
+        List<string> GetSizeList(string finalInspectionID);
+        List<string> GetProductTypeList(string finalInspectionID);
 
         IList<SelectListItem> GetActionSelectListItem();
     }

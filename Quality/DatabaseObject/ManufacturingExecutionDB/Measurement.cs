@@ -55,5 +55,6 @@ namespace DatabaseObject.ManufacturingExecutionDB
         [Display(Name = "MeasurementTranslate Ukey")]
         public Int64 MeasurementTranslateUkey { get; set; }
 
+        public bool IsPatternMeas { get; set; }
     }
 }

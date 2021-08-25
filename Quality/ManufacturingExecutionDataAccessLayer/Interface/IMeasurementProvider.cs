@@ -1,3 +1,4 @@
+using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using System.Collections.Generic;
@@ -18,5 +19,7 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         DataTable Get_Measured_Detail(Measurement_Request measurement);
 
         DataTable Get_CalculateSizeSpec(string diffValue, string Tol);
+
+        IList<Measurement> GetMeasurementsByPOID(string POID, string userID);
     }
 }
