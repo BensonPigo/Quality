@@ -158,6 +158,7 @@
     <Compile Include="Areas\FinalInspection\Controllers\QueryController.cs" />
     <Compile Include="Areas\FinalInspection\FinalInspectionAreaRegistration.cs" />
     <Compile Include="Areas\SampleRFT\Controllers\BACriteriaController.cs" />
+    <Compile Include="Areas\SampleRFT\Controllers\CFTCommentsController.cs" />
     <Compile Include="Areas\SampleRFT\Controllers\InspectionController.cs" />
     <Compile Include="Areas\SampleRFT\Controllers\MeasurementController.cs" />
     <Compile Include="Areas\SampleRFT\Controllers\PFTperLineController.cs" />
@@ -722,6 +723,7 @@
     <Folder Include="Areas\BulkFGT\Views\MockupCrocking\" />
     <Folder Include="Areas\FinalInspection\Models\" />
     <Folder Include="Areas\SampleRFT\Data\" />
+    <Folder Include="Areas\SampleRFT\Views\CFTComments\" />
     <Folder Include="Areas\StyleManagement\Models\" />
     <Folder Include="Models\" />
     <Folder Include="ThirdParty\plugins\bootstrap-fileinput\fonts\" />

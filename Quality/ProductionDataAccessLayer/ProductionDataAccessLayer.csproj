@@ -109,6 +109,7 @@
     <Compile Include="Provider\MSSQL\FinalInspFromPMSProvider.cs" />
     <Compile Include="Provider\MSSQL\OrdersProvider.cs" />
     <Compile Include="Provider\MSSQL\Pass1Provider.cs" />
+    <Compile Include="Provider\MSSQL\PublicWondowProvider.cs" />
     <Compile Include="Provider\MSSQL\SeasonProvider.cs" />
     <Compile Include="Provider\MSSQL\SewingLineProvider.cs" />
     <Compile Include="Provider\MSSQL\StyleArticleProvider.cs" />
@@ -116,7 +117,6 @@
     <Compile Include="Provider\MSSQL\StyleProvider.cs" />
     <Compile Include="Provider\MSSQL\SystemProvider.cs" />
     <Compile Include="Provider\MSSQL\TPEPass1Provider.cs" />
-    <Compile Include="Provider\PublicWondowProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

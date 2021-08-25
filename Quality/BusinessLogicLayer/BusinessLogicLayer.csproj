@@ -69,6 +69,7 @@
   <ItemGroup>
     <Compile Include="Common.cs" />
     <Compile Include="Interface\Authority\IAuthorityService.cs" />
+    <Compile Include="Interface\BulkFGT\IMockupCrockingService.cs" />
     <Compile Include="Interface\FinalInspection\IFinalInspectionMeasurementService.cs" />
     <Compile Include="Interface\FinalInspection\IFinalInspectionMoistureService.cs" />
     <Compile Include="Interface\FinalInspection\IFinalInspectionBeautifulProductAuditService.cs" />
@@ -76,28 +77,28 @@
     <Compile Include="Interface\BulkFGT\IGarmentTest_Service.cs" />
     <Compile Include="Interface\FinalInspection\IQueryService.cs" />
     <Compile Include="Interface\ISendMailService.cs" />
-    <Compile Include="Interface\IMockupCrockingService.cs" />
     <Compile Include="Interface\SampleRFT\IBACriteriaService.cs" />
     <Compile Include="Interface\BulkFGT\IBulkFGTMailGroup_Service.cs" />
     <Compile Include="Interface\FinalInspection\IFinalInspectionSettingService.cs" />
     <Compile Include="Interface\FinalInspection\IFinalInspectionService.cs" />
+    <Compile Include="Interface\SampleRFT\ICFTCommentsService.cs" />
     <Compile Include="Interface\SampleRFT\IInspectionService.cs" />
     <Compile Include="Interface\ILoginService.cs" />
-    <Compile Include="Interface\ICFTCommentsService.cs" />
     <Compile Include="Interface\SampleRFT\IMeasurementService.cs" />
     <Compile Include="Interface\SampleRFT\IPicturesDummyService.cs" />
     <Compile Include="Interface\SampleRFT\IRFTPerLineService.cs" />
     <Compile Include="Interface\StyleManagement\IStyleListService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\Authority\AuthorityService.cs" />
+    <Compile Include="Service\BulkFGT\MockupCrockingService.cs" />
     <Compile Include="Service\FinalInspection\FinalInspectionMeasurementService.cs" />
     <Compile Include="Service\FinalInspection\FinalInspectionMoistureService.cs" />
     <Compile Include="Service\FinalInspection\FinalInspectionBeautifulProductAuditService.cs" />
     <Compile Include="Service\FinalInspection\FinalInspectionAddDefectService.cs" />
     <Compile Include="Service\BulkFGT\GarmentTest_Service.cs" />
     <Compile Include="Service\FinalInspection\QueryService.cs" />
+    <Compile Include="Service\SampleRFT\CFTCommentsService.cs" />
     <Compile Include="Service\SendMailService.cs" />
-    <Compile Include="Service\MockupCrockingService.cs" />
     <Compile Include="Service\PublicWindowService.cs" />
     <Compile Include="Service\SampleRFT\BACriteriaService.cs" />
     <Compile Include="Service\BulkFGT\BulkFGTMailGroup_Service.cs" />
@@ -105,7 +106,6 @@
     <Compile Include="Service\FinalInspection\FinalInspectionService.cs" />
     <Compile Include="Service\SampleRFT\InspectionService.cs" />
     <Compile Include="Service\LoginService.cs" />
-    <Compile Include="Service\CFTCommentsService.cs" />
     <Compile Include="Service\SampleRFT\PicturesDummyService.cs" />
     <Compile Include="Service\SampleRFT\MeasurementService.cs" />
     <Compile Include="Service\SampleRFT\RFTPerLineService.cs" />

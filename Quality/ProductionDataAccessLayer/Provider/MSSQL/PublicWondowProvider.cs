@@ -7,7 +7,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 
-namespace ProductionDataAccessLayer.Provider
+namespace ProductionDataAccessLayer.Provider.MSSQL
 {
     public class PublicWondowProvider : SQLDAL
     {
@@ -293,7 +293,7 @@ Where Junk = 0
 {where}
 ");
             */
-            
+
             ///工廠 用這段
             SbSql.Append($@"
 Select ID
@@ -310,7 +310,7 @@ From Production.dbo.Supp
 Where Junk = 0
 {where}
 ");
-            
+
 
             return ExecuteList<Window_TPESupp>(CommandType.Text, SbSql.ToString(), paras);
         }
