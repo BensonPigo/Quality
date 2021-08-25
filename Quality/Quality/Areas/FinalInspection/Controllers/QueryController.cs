@@ -85,6 +85,27 @@ namespace Quality.Areas.FinalInspection.Controllers
             DatabaseObject.ViewModel.FinalInspection.QueryReport queryReport = new QueryReport();
             DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection = new DatabaseObject.ManufacturingExecutionDB.FinalInspection();
 
+            finalInspection.FabricApprovalDoc = true;
+            finalInspection.SealingSampleDoc = true;
+            finalInspection.MetalDetectionDoc = true;
+            finalInspection.GarmentWashingDoc = true;
+
+            finalInspection.CheckHandfeel = true;
+            queryReport.ListDefectItem = new List<FinalInspectionDefectItem>();
+            DatabaseObject.ViewModel.FinalInspection.FinalInspectionDefectItem data = new DatabaseObject.ViewModel.FinalInspection.FinalInspectionDefectItem();
+            data.DefectTypeDesc = "Accessories";
+            data.DefectCodeDesc = "Accessories broken/damage";
+            data.Qty = 2;
+            data.Ukey = 0;
+            queryReport.ListDefectItem.Add(data);
+
+            DatabaseObject.ViewModel.FinalInspection.FinalInspectionDefectItem data2 = new DatabaseObject.ViewModel.FinalInspection.FinalInspectionDefectItem();
+            data2.DefectTypeDesc = "Accessories";
+            data2.DefectCodeDesc = "Accessories missing/uncompleted";
+            data2.Qty = 0;
+            data.Ukey = 1;
+            queryReport.ListDefectItem.Add(data2);
+
             finalInspection.ProductionStatus = 100;
             finalInspection.OthersRemark = @"OthersRemark";
             queryReport.FinalInspection = finalInspection;

@@ -1,139 +1,298 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "Detail";
 }
 
 @model DatabaseObject.ViewModel.FinalInspection.QueryReport
+
 @section FinalInspection_head{
     <link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
-    <link href="~/ThirdParty/plugins/Tabs/nicepage.css" rel="stylesheet" />
-    <script src="~/ThirdParty/plugins/Tabs/nicepage.js"></script>
+    @*<link href="~/ThirdParty/plugins/Tabs/nicepage.css" rel="stylesheet" />
+    <script src="~/ThirdParty/plugins/Tabs/nicepage.js"></script>*@
     <style type="text/css">
+    /*    .u-spacing-10:not(.u-text) > li:not(:last-child) {
+            margin-right:1vw;
+        }
+*/
+/*        .u-sheet{
+            width:100%;
+        }*/
+
+        .whiteBackgrond div {
+            padding-bottom: 0.5em;
+        }
+
+  /*      .u-active-palette-2-base
+        {
+            background-color:gray;
+        }
+
+        .active {
+            background-color: white;
+        }
+
+        .u-tabs .u-tab-link {
+            padding: 0;
+            height: 3vh;
+        }*/
+
+
+        #tab-Change {
+            width: 100%;
+            height:50vh;
+        }
+
+            #tab-Change > ul {
+                display: block;
+                margin: 0;
+                list-style: none;
+            }
+
+        .tab-title {
+            list-style: none;
+        }
+
+        #tab-Change > ul > li {
+            display: inline-block;
+            vertical-align: top;
+            margin: 0 -1px -1px 0;
+            border: 1px solid #BCBCBC;
+            height: 4vh;
+            line-height: 25px;
+            background: #CDCDCD;
+            padding: 0 15px;
+            list-style: none;
+            box-sizing: border-box;
+        }
+
+            #tab-Change > ul > li a {
+                color: #000;
+                text-decoration: none;
+            }
+
+            #tab-Change > ul > li.active {
+                border-bottom: 1px solid #fff;
+                background: #fff;
+            }
+
+        #tab-Change > .tab-inner {
+            color: #000;
+            border: 1px #BCBCBC solid;
+            height:80vh;
+        }
         @@media (min-width: 992px) and (max-width: 1199px) {
-            .u-sheet {
+          /*  .u-sheet {
                 width: 740px;
             }
+
+            .u-tabs .u-tab-link {
+                height: 6vh;
+            }*/
         }
     </style>
 }
-<div class="whiteBackgrond" style="height:86vh">
-    <div>
-        <div>
-            <h1>Inspection Report</h1>
-            <button>Download</button>
-        </div>
-        <div>
-            <div>
-                <div>PO information</div>
-                <div>
-                    <table></table>
-                </div>
-            </div>
-            <div>
-                <div>Inspection Setting</div>
-                <div>
-                    <table></table>
-                </div>
-            </div>
-        </div>
-        <div>
-            <div>Inspection Detail</div>
-            <div>
-                <section class="u-align-center u-clearfix u-gradient u-section-1" id="carousel_2976">
-                    <div class="u-clearfix u-sheet u-valign-top u-sheet-1">
-                        <div class="u-expanded-width u-tab-links-align-justify u-tabs u-tabs-1">
-                            <ul id="tab_Head" class="u-border-2 u-border-palette-2-base u-spacing-10 u-tab-list u-unstyled" role="tablist">
-                                <li class="u-tab-item" role="presentation">
-                                    <a class="active u-active-palette-2-base u-button-style u-tab-link u-text-active-white u-text-hover-palette-2-base u-tab-link-1" id="link-tab-1" href="#tab-1" role="tab" aria-controls="tab-0da5" aria-selected="true">General</a>
-                                </li>
-                                <li class="u-tab-item" role="presentation">
-                                    <a class="u-active-palette-2-base u-button-style u-tab-link u-text-active-white u-text-hover-palette-2-base u-tab-link-2" id="link-tab-2" href="#tab-2" role="tab" aria-controls="tab-2917" aria-selected="false">Check List</a>
-                                </li>
-                                <li class="u-tab-item" role="presentation">
-                                    <a class="u-active-palette-2-base u-button-style u-tab-link u-text-active-white u-text-hover-palette-2-base u-tab-link-3" id="link-tab-3" href="#tab-3" role="tab" aria-controls="tab-2917" aria-selected="false">Defect</a>
-                                </li>
-                                <li class="u-tab-item" role="presentation">
-                                    <a class="u-active-palette-2-base u-button-style u-tab-link u-text-active-white u-text-hover-palette-2-base u-tab-link-4" id="link-tab-4" href="#tab-4" role="tab" aria-controls="tab-2917" aria-selected="false">Beautiful Product Audit</a>
-                                </li>
-                                <li class="u-tab-item" role="presentation">
-                                    <a class="u-active-palette-2-base u-button-style u-tab-link u-text-active-white u-text-hover-palette-2-base u-tab-link-5" id="link-tab-5" href="#tab-5" role="tab" aria-controls="tab-2917" aria-selected="false">Moisture</a>
-                                </li>
-                                <li class="u-tab-item" role="presentation">
-                                    <a class="u-active-palette-2-base u-button-style u-tab-link u-text-active-white u-text-hover-palette-2-base u-tab-link-6" id="link-tab-6" href="#tab-6" role="tab" aria-controls="tab-2917" aria-selected="false">Measurement</a>
-                                </li>
-                                <li class="u-tab-item" role="presentation">
-                                    <a class="u-active-palette-2-base u-button-style u-tab-link u-text-active-white u-text-hover-palette-2-base u-tab-link-7" id="link-tab-7" href="#tab-7" role="tab" aria-controls="tab-2917" aria-selected="false">Others</a>
-                                </li>
-                            </ul>
-                            <div class="u-tab-content">
-                                <div class="u-container-style u-tab-active u-tab-pane u-white u-tab-pane-1" id="tab-1" role="tabpanel">
-                                    <div class="u-container-layout u-valign-middle u-container-layout-1">
-                                        <div class="u-expanded-width u-table u-table-responsive u-table-1" style="margin:2em">
-                                            @Html.Partial("~/Areas/FinalInspection/Views/Query/_Tab1_Layout.cshtml")
-                                        </div>
-                                    </div>
 
-                                </div>
-                                <div class="u-container-style u-tab-pane u-white u-tab-pane-2" id="tab-2" role="tabpanel">
-                                    <div class="u-container-layout u-valign-middle u-container-layout-2" style="margin:2em">
-                                        @Html.Partial("~/Areas/FinalInspection/Views/Query/_Tab2_Layout.cshtml")
+<div class="whiteBackgrond" style="height:86vh">
+
+
+    <div style="padding:1em">
+        <div>
+            <h1 style="font-size:2em">Inspection Report</h1>
+            <button class="site-btn btn-blue" style="position:absolute;top:2em;right:0">Download</button>
+        </div>
+        <div style="display:inline-block;border:1px solid gray;width:38%;height:15vh;padding-left:5px">
+            <div><h1 style="font-size:1.5em">PO information</h1></div>
+            <div>
+                <table>
+                    <tr>
+                        <td>PO#</td>
+                        <td style="width:10%">@Model.FinalInspection.POID</td>
+                        <td>SP#</td>
+                        <td style="width:20%">@Model.SP</td>
+                        <td>Style</td>
+                        <td style="width:20%">@Model.SP</td>
+                        <td>Brand</td>
+                        <td style="width:10%">@Model.BrandID</td>
+                    </tr>
+                    <tr>
+                        <td>Factory</td>
+                        <td>@Model.FinalInspection.FactoryID</td>
+                        <td colspan="2">Total SP# Qty</td>
+                        <td>@Model.TotalSPQty</td>
+                        <td colspan="3"></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div style="display:inline-block;border:1px solid gray;width:58%;height:15vh;padding-left:5px">
+            <div><h1 style="font-size:1.5em">Inspection Detail</h1></div>
+            <div>
+                <table>
+                    <tr>
+                        <td>Inspection Stage</td>
+                        <td>@Model.FinalInspection.InspectionStage</td>
+                        <td>Carton</td>
+                        <td>@Model.Carton</td>
+                        <td colspan="4"></td>
+                    </tr>
+                    <tr>
+                        <td>Audit Date</td>
+                        <td>@Convert.ToDateTime(Model.FinalInspection.AuditDate).ToString("yyyy/MM/dd")</td>
+                        <td>Available Qty</td>
+                        <td>@Model.AvailableQty</td>
+                        <td colspan="4"></td>
+                    </tr>
+                    <tr>
+                        <td>AQL Plan</td>
+                        <td>@Model.AQLPlan</td>
+                        <td>Sample Plan Qty</td>
+                        <td>@Model.FinalInspection.SampleSize</td>
+                        <td>Accepted</td>
+                        <td>@Model.FinalInspection.AcceptQty</td>
+                        <td>Rejected</td>
+                        <td>@Model.FinalInspection.RejectQty</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div id="tab-Change">
+            <ul class="tab-title">
+                <li link="#tab01">General</li>
+                <li link="#tab02">Check List</li>
+                <li link="#tab03">Defect</li>
+                <li link="#tab04">Beautiful Product Audit</li>
+                <li link="#tab05">Moisture</li>
+                <li link="#tab06">Measurement</li>
+                <li link="#tab07">Others</li>
+            </ul>
+            <div id="tab01" class="tab-inner" style="border:1px solid gray">
+                <div style="height:auto">
+                    @Html.Partial("~/Areas/FinalInspection/Views/Query/_Tab1_Layout.cshtml")
+                </div>
+            </div>
+            <div id="tab02" class="tab-inner" style="border:1px solid gray">
+                @Html.Partial("~/Areas/FinalInspection/Views/Query/_Tab2_Layout.cshtml")
+            </div>
+            <div id="tab03" class="tab-inner" style="">
+                @Html.Partial("~/Areas/FinalInspection/Views/Query/_Tab3_Layout.cshtml")
+            </div>
+            <div id="tab04" class="tab-inner">
+                @Html.Partial("~/Areas/FinalInspection/Views/Query/_Tab4_Layout.cshtml")
+            </div>
+            <div id="tab05" class="tab-inner">
+                @Html.Partial("~/Areas/FinalInspection/Views/Query/_Tab5_Layout.cshtml")
+            </div>
+            <div id="tab06" class="tab-inner">
+                @Html.Partial("~/Areas/FinalInspection/Views/Query/_Tab6_Layout.cshtml")
+            </div>
+            <div id="tab07" class="tab-inner">
+                @Html.Partial("~/Areas/FinalInspection/Views/Query/_Tab7_Layout.cshtml")
+            </div>
+        </div>
+        <div>
+            @*<section class="u-align-center u-clearfix u-gradient u-section-1" id="carousel_2976">
+                <div class="u-clearfix u-sheet u-valign-top u-sheet-1">
+                    <div class="u-expanded-width u-tab-links-align-justify u-tabs u-tabs-1">
+                        <ul id="tab_Head" class="u-border-2 u-border-palette-2-base u-spacing-10 u-tab-list u-unstyled" role="tablist">
+                            <li class="u-tab-item" role="presentation">
+                                <a class="active u-active-palette-2-base u-button-style u-tab-link u-text-active-white u-text-hover-palette-2-base u-tab-link-1" id="link-tab-1" href="#tab-1" role="tab" aria-controls="tab-0da5" aria-selected="true">General</a>
+                            </li>
+                            <li class="u-tab-item" role="presentation">
+                                <a class="u-active-palette-2-base u-button-style u-tab-link u-text-active-white u-text-hover-palette-2-base u-tab-link-2" id="link-tab-2" href="#tab-2" role="tab" aria-controls="tab-2917" aria-selected="false">Check List</a>
+                            </li>
+                            <li class="u-tab-item" role="presentation">
+                                <a class="u-active-palette-2-base u-button-style u-tab-link u-text-active-white u-text-hover-palette-2-base u-tab-link-3" id="link-tab-3" href="#tab-3" role="tab" aria-controls="tab-2917" aria-selected="false">Defect</a>
+                            </li>
+                            <li class="u-tab-item" role="presentation">
+                                <a class="u-active-palette-2-base u-button-style u-tab-link u-text-active-white u-text-hover-palette-2-base u-tab-link-4" id="link-tab-4" href="#tab-4" role="tab" aria-controls="tab-2917" aria-selected="false">Beautiful Product Audit</a>
+                            </li>
+                            <li class="u-tab-item" role="presentation">
+                                <a class="u-active-palette-2-base u-button-style u-tab-link u-text-active-white u-text-hover-palette-2-base u-tab-link-5" id="link-tab-5" href="#tab-5" role="tab" aria-controls="tab-2917" aria-selected="false">Moisture</a>
+                            </li>
+                            <li class="u-tab-item" role="presentation">
+                                <a class="u-active-palette-2-base u-button-style u-tab-link u-text-active-white u-text-hover-palette-2-base u-tab-link-6" id="link-tab-6" href="#tab-6" role="tab" aria-controls="tab-2917" aria-selected="false">Measurement</a>
+                            </li>
+                            <li class="u-tab-item" role="presentation">
+                                <a class="u-active-palette-2-base u-button-style u-tab-link u-text-active-white u-text-hover-palette-2-base u-tab-link-7" id="link-tab-7" href="#tab-7" role="tab" aria-controls="tab-2917" aria-selected="false">Others</a>
+                            </li>
+                        </ul>
+                        <div class="u-tab-content">
+                            <div class="u-container-style u-tab-active u-tab-pane u-white u-tab-pane-1" id="tab-1" role="tabpanel">
+                                <div class="u-container-layout u-valign-middle u-container-layout-1">
+                                    <div class="u-expanded-width u-table u-table-responsive u-table-1" style="margin:2em">
+                                        @Html.Partial("~/Areas/FinalInspection/Views/Query/_Tab1_Layout.cshtml")
                                     </div>
                                 </div>
-                                <div class="u-container-style u-tab-pane u-white u-tab-pane-3" id="tab-3" role="tabpanel">
-                                    <div class="u-container-layout u-valign-middle u-container-layout-3" style="margin:2em">
-                                        @Html.Partial("~/Areas/FinalInspection/Views/Query/_Tab3_Layout.cshtml")
-                                    </div>
+
+                            </div>
+                            <div class="u-container-style u-tab-pane u-white u-tab-pane-2" id="tab-2" role="tabpanel">
+                                <div class="u-container-layout u-valign-middle u-container-layout-2" style="margin:2em">
+                                    @Html.Partial("~/Areas/FinalInspection/Views/Query/_Tab2_Layout.cshtml")
                                 </div>
-                                <div class="u-container-style u-tab-pane u-white u-tab-pane-4" id="tab-4" role="tabpanel">
-                                    <div class="u-container-layout u-valign-middle u-container-layout-4" style="margin:2em">
-                                        @Html.Partial("~/Areas/FinalInspection/Views/Query/_Tab4_Layout.cshtml")
-                                    </div>
+                            </div>
+                            <div class="u-container-style u-tab-pane u-white u-tab-pane-3" id="tab-3" role="tabpanel">
+                                <div class="u-container-layout u-valign-middle u-container-layout-3" style="margin:2em">
+                                    @Html.Partial("~/Areas/FinalInspection/Views/Query/_Tab3_Layout.cshtml")
                                 </div>
-                                <div class="u-container-style u-tab-pane u-white u-tab-pane-5" id="tab-5" role="tabpanel">
-                                    <div class="u-container-layout u-valign-middle u-container-layout-5" style="margin:2em">
-                                        @Html.Partial("~/Areas/FinalInspection/Views/Query/_Tab5_Layout.cshtml")
-                                    </div>
+                            </div>
+                            <div class="u-container-style u-tab-pane u-white u-tab-pane-4" id="tab-4" role="tabpanel">
+                                <div class="u-container-layout u-valign-middle u-container-layout-4" style="margin:2em">
+                                    @Html.Partial("~/Areas/FinalInspection/Views/Query/_Tab4_Layout.cshtml")
                                 </div>
-                                <div class="u-container-style u-tab-pane u-white u-tab-pane-6" id="tab-6" role="tabpanel">
-                                    <div class="u-container-layout u-valign-middle u-container-layout-6" style="margin:2em">
-                                        @Html.Partial("~/Areas/FinalInspection/Views/Query/_Tab6_Layout.cshtml")
-                                    </div>
+                            </div>
+                            <div class="u-container-style u-tab-pane u-white u-tab-pane-5" id="tab-5" role="tabpanel">
+                                <div class="u-container-layout u-valign-middle u-container-layout-5" style="margin:2em">
+                                    @Html.Partial("~/Areas/FinalInspection/Views/Query/_Tab5_Layout.cshtml")
                                 </div>
-                                <div class="u-container-style u-tab-pane u-white u-tab-pane-7" id="tab-7" role="tabpanel">
-                                    <div class="u-container-layout u-valign-middle u-container-layout-7" style="margin:2em">
-                                        @Html.Partial("~/Areas/FinalInspection/Views/Query/_Tab7_Layout.cshtml")
-                                    </div>
+                            </div>
+                            <div class="u-container-style u-tab-pane u-white u-tab-pane-6" id="tab-6" role="tabpanel">
+                                <div class="u-container-layout u-valign-middle u-container-layout-6" style="margin:2em">
+                                    @Html.Partial("~/Areas/FinalInspection/Views/Query/_Tab6_Layout.cshtml")
+                                </div>
+                            </div>
+                            <div class="u-container-style u-tab-pane u-white u-tab-pane-7" id="tab-7" role="tabpanel">
+                                <div class="u-container-layout u-valign-middle u-container-layout-7" style="margin:2em">
+                                    @Html.Partial("~/Areas/FinalInspection/Views/Query/_Tab7_Layout.cshtml")
                                 </div>
                             </div>
                         </div>
                     </div>
-                </section>
-
-                ------
-            </div>
+                </div>
+            </section>*@
         </div>
         <div>
 
         </div>
     </div>
 </div>
-
 @section FinalInspection_script
 {
-<script>
-    var msg = new MessagerAlert();
+    <script>
+        var msg = new MessagerAlert();
 
-    $(function () {
-        $('#myTable').DataTable({
-            "pageLength": 10,
-            "autoWidth": false,
-            "info": false,
-            "filter": false,
-            "paging": true,
-            "info": false,
-            "scrollY": "50vh",
-            "scrollCollapse": true
+
+        $(function () {
+            tabChange();
+            //$('#myTable3').DataTable({
+            //    "pageLength": 10,
+            //    "autoWidth": false,
+            //    "info": false,
+            //    "filter": false,
+            //    "paging": true,
+            //    "info": false,
+            //    "scrollY": "50vh",
+            //    "scrollCollapse": true
+            //});
         });
-    });
-</script>
+
+        function tabChange() {
+            var $li = $('#tab-Change > ul.tab-title li');
+            $($li.eq(0).attr('link')).show();
+
+            $($li.eq(0).addClass('active').attr('link')).siblings('.tab-inner').hide();
+            $li.click(function () {
+                $($(this).attr('link')).show().siblings('.tab-inner').hide();
+                $(this).addClass('active').siblings('.active').removeClass('active');
+            });
+        }
+    </script>
 }

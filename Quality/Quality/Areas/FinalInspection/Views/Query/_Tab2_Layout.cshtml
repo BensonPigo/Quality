@@ -1,6 +1,18 @@
 ﻿@model DatabaseObject.ViewModel.FinalInspection.QueryReport
+<style type="text/css">
+    .checkboxlabel {
+        font-size: 3vh;
+        font-weight: 900;
+    }
+
+    .checkListClass tr td:nth-child(2) {
+        width: 50%;
+        vertical-align: middle;
+    }
+</style>
+
 <div style="display:inline-block;width:40%">
-    <table>
+    <table class="checkListClass">
         <tr>
             <td colspan="2">Fabric Artwork Check List</td>
         </tr>
@@ -39,7 +51,7 @@
     </table>
 </div>
 <div style="display:inline-block;width:40%">
-    <table>
+    <table class="checkListClass">
         <tr>
             <td colspan="2">Packaging</td>
         </tr>
@@ -78,7 +90,7 @@
     </table>
 </div>
 <div>
-    <table>
+    <table class="checkListClass">
         <tr>
             <td colspan="2">Label</td>
         </tr>
@@ -149,17 +161,3 @@
         </tr>
     </table>
 </div>
-
-
-
-<style type="text/css">
-    .checkboxlabel {
-        font-size: 3vh;
-        font-weight: 900;
-    }
-
-    table tr td:nth-child(2) {
-        width: 50%;
-        vertical-align: middle;
-    }
-</style>

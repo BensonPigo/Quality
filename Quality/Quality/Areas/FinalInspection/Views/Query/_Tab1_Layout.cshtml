@@ -1,45 +1,46 @@
 ﻿@model DatabaseObject.ViewModel.FinalInspection.QueryReport
-    <style type="text/css">
-        .checkboxlabel {
-            font-size: 3vh;
-            font-weight: 900;
-        }
-        .secTD {
-            width: 50%;
-            text-align: center;
-            vertical-align: middle;
-        }
-    </style>
-<table class="al-m" style="transform: translate(-50%, 0%);width: 48%;">
+<style type="text/css">
+    .checkboxlabel {
+        font-size: 3vh;
+        font-weight: 900;
+    }
+    .generalClass tr td:nth-child(2) {
+        width: 50%;
+        text-align: center;
+        vertical-align: middle;
+    }
+</style>
+
+<table class="generalClass al-m" style="transform: translate(-50%, 0%);width: 48%;">
     <tr>
-        <td class="secTD">
+        <td>
             @Html.CheckBoxFor(o => o.FinalInspection.FabricApprovalDoc, new { @disabled = "disabled", @class = "checkboxInput" })
         </td>
-        <td class="fistTD">
+        <td>
             <div><label class="checkboxlabel">Fabric Approval</label></div>
         </td>
     </tr>
     <tr>
-        <td class="secTD">
+        <td>
             @Html.CheckBoxFor(o => o.FinalInspection.SealingSampleDoc, new { @disabled = "disabled", @class = "checkboxInput" })
         </td>
-        <td class="fistTD">
+        <td>
             <div><label class="checkboxlabel">Sealing Sample</label></div>
         </td>
     </tr>
     <tr>
-        <td class="secTD">
+        <td>
             @Html.CheckBoxFor(o => o.FinalInspection.MetalDetectionDoc, new { @disabled = "disabled", @class = "checkboxInput" })
         </td>
-        <td class="fistTD">
+        <td>
             <div><label class="checkboxlabel">Metal Detection</label></div>
         </td>
     </tr>
     <tr>
-        <td class="secTD">
+        <td>
             @Html.CheckBoxFor(o => o.FinalInspection.GarmentWashingDoc, new { @disabled = "disabled", @class = "checkboxInput" })
         </td>
-        <td class="fistTD">
+        <td>
             <div><label class="checkboxlabel">Garment Washing Test</label></div>
         </td>
     </tr>
