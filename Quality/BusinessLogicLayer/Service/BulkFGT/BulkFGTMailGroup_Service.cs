@@ -1,5 +1,4 @@
-﻿using BusinessLogicLayer.Interface;
-using DatabaseObject.ManufacturingExecutionDB;
+﻿using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ResultModel;
 using System;
 using System.Collections.Generic;
@@ -8,8 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using ManufacturingExecutionDataAccessLayer.Interface;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
+using BusinessLogicLayer.Interface.BulkFGT;
 
-namespace BusinessLogicLayer.Service
+namespace BusinessLogicLayer.Service.BulkFGT
 {
     public class BulkFGTMailGroup_Service : IBulkFGTMailGroup_Service
     {

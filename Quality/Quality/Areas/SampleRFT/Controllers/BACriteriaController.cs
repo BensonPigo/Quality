@@ -1,4 +1,4 @@
-﻿using BusinessLogicLayer.SampleRFT.Interface;
+﻿using BusinessLogicLayer.Interface.SampleRFT;
 using BusinessLogicLayer.SampleRFT.Service;
 using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ProductionDB;

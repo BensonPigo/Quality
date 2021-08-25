@@ -1,5 +1,5 @@
-﻿using BusinessLogicLayer.Interface;
-using BusinessLogicLayer.Service;
+﻿using BusinessLogicLayer.Interface.BulkFGT;
+using BusinessLogicLayer.Service.BulkFGT;
 using DatabaseObject.ManufacturingExecutionDB;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;

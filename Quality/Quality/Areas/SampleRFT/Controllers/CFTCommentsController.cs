@@ -1,7 +1,5 @@
 ﻿
 using BusinessLogicLayer.Interface.SampleRFT;
-using BusinessLogicLayer.Service;
-using BusinessLogicLayer.Service.SampleRFT;
 using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
@@ -19,6 +17,7 @@ namespace Quality.Areas.SampleRFT.Controllers
 {
     public class CFTCommentsController : BaseController
     {
+        private ICFTCommentsService _ICFTCommentsService;
         // GET: SampleRFT/CFTComments
         public ActionResult Index()
         {

@@ -292,6 +292,7 @@
     <Content Include="Areas\StyleManagement\Views\_ViewStart.cshtml" />
     <Content Include="Areas\StyleManagement\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\StyleManagement\Views\StyleList\Index.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\CFTComments\Index.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -723,7 +724,6 @@
     <Folder Include="Areas\BulkFGT\Views\MockupCrocking\" />
     <Folder Include="Areas\FinalInspection\Models\" />
     <Folder Include="Areas\SampleRFT\Data\" />
-    <Folder Include="Areas\SampleRFT\Views\CFTComments\" />
     <Folder Include="Areas\StyleManagement\Models\" />
     <Folder Include="Models\" />
     <Folder Include="ThirdParty\plugins\bootstrap-fileinput\fonts\" />

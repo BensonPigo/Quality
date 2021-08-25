@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BusinessLogicLayer.SampleRFT.Interface
+namespace BusinessLogicLayer.Interface.SampleRFT
 {
     public interface IBACriteriaService
     {

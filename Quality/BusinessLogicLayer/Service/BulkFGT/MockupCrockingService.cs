@@ -1,4 +1,4 @@
-﻿using BusinessLogicLayer.Interface;
+﻿using BusinessLogicLayer.Interface.BulkFGT;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel;

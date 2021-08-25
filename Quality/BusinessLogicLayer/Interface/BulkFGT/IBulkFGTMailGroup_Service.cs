@@ -6,12 +6,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BusinessLogicLayer.Interface
+namespace BusinessLogicLayer.Interface.BulkFGT
 {
     public interface IBulkFGTMailGroup_Service
     {
         List<Quality_MailGroup> MailGroupGet(Quality_MailGroup quality_Mail);
 
-        Quality_MailGroup_ResultModel MailGroupSave(Quality_MailGroup quality_Mail, Service.BulkFGTMailGroup_Service.SaveType type);
+        Quality_MailGroup_ResultModel MailGroupSave(Quality_MailGroup quality_Mail, BusinessLogicLayer.Service.BulkFGT.BulkFGTMailGroup_Service.SaveType type);
     }
 }

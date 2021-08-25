@@ -10,7 +10,6 @@ using DatabaseObject.ManufacturingExecutionDB;
 using System.Linq;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using DatabaseObject.ResultModel;
-using BusinessLogicLayer.SampleRFT.Interface;
 using BusinessLogicLayer.Interface.SampleRFT;
 
 namespace BusinessLogicLayer.Service.SampleRFT 

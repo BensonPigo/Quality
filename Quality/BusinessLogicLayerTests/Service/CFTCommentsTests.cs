@@ -1,4 +1,6 @@
 ﻿using BusinessLogicLayer.Interface;
+using BusinessLogicLayer.Interface.SampleRFT;
+using BusinessLogicLayer.Service.SampleRFT;
 using DatabaseObject.ViewModel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
