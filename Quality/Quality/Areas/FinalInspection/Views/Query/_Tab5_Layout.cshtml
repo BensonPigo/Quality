@@ -59,6 +59,42 @@
                 <tbody>
                     @foreach (var item in Model.ListViewMoistureResult)
                     {
+                        string garmentTopColor = "Black";
+                        if (item.GarmentTop > item.GarmentStandard)
+                        {
+                            garmentTopColor = "#E62513";
+                        }
+
+                        string garmentMiddleColor = "Black";
+                        if (item.GarmentMiddle > item.GarmentStandard)
+                        {
+                            garmentMiddleColor = "#E62513";
+                        }
+
+                        string garmentBottomColor = "Black";
+                        if (item.GarmentBottom > item.GarmentStandard)
+                        {
+                            garmentBottomColor = "#E62513";
+                        }
+
+                        string ctnInsideColor = "Black";
+                        if (item.CTNInside > item.CTNStandard)
+                        {
+                            ctnInsideColor = "#E62513";
+                        }
+
+                        string ctnOutsideColor = "Black";
+                        if (item.CTNOutside > item.CTNStandard)
+                        {
+                            ctnOutsideColor = "#E62513";
+                        }
+
+                        string resultColor = "#00CC00";
+                        if (item.Result != "Pass")
+                        {
+                            resultColor = "#E62513";
+                        }
+
                         <tr class="row-content" style="vertical-align: middle; text-align: center;">
                             <td>
                                 @Html.DisplayFor(modelItem => item.Article)
@@ -76,25 +112,37 @@
                                 @Html.DisplayFor(modelItem => item.GarmentStandard)
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.GarmentTop)
+                                <div style="color:@garmentTopColor">
+                                    @Html.DisplayFor(modelItem => item.GarmentTop)
+                                </div>
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.GarmentMiddle)
+                                <div style="color:@garmentMiddleColor">
+                                    @Html.DisplayFor(modelItem => item.GarmentMiddle)
+                                </div>
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.GarmentBottom)
+                                <div style="color:@garmentBottomColor">
+                                    @Html.DisplayFor(modelItem => item.GarmentBottom)
+                                </div>
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.CTNStandard)
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.CTNInside)
+                                <div style="color:@ctnInsideColor">
+                                    @Html.DisplayFor(modelItem => item.CTNInside)
+                                </div>
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.CTNOutside)
+                                <div style="color:@ctnOutsideColor">
+                                    @Html.DisplayFor(modelItem => item.CTNOutside)
+                                </div>
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.Result)
+                                <div style="color:@resultColor">
+                                    @Html.DisplayFor(modelItem => item.Result)
+                                </div>
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.Action)
@@ -102,7 +150,6 @@
                             <td>
                                 @Html.DisplayFor(modelItem => item.Remark)
                             </td>
-
                         </tr>
                     }
                 </tbody>
