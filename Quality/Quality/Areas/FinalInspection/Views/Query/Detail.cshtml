@@ -85,20 +85,22 @@
                 <table>
                     <tr>
                         <td>PO#</td>
-                        <td class="valueColor" style="width:10%">@Model.FinalInspection.POID</td>
-                        <td>SP#</td>
-                        <td class="valueColor" style="width:20%">@Model.SP</td>
+                        <td class="valueColor" style="width:20%">@Model.FinalInspection.POID</td>
                         <td>Style</td>
                         <td class="valueColor" style="width:20%">@Model.SP</td>
                         <td>Brand</td>
-                        <td class="valueColor" style="width:10%">@Model.BrandID</td>
+                        <td class="valueColor">@Model.BrandID</td>
+                    </tr>
+                    <tr>
+                        <td>SP#</td>
+                        <td class="valueColor" colspan="5">@Model.SP</td>
                     </tr>
                     <tr>
                         <td>Factory</td>
                         <td class="valueColor">@Model.FinalInspection.FactoryID</td>
                         <td colspan="2">Total SP# Qty</td>
                         <td class="valueColor">@Model.TotalSPQty</td>
-                        <td colspan="3"></td>
+                        <td></td>
                     </tr>
                 </table>
             </div>
@@ -111,7 +113,7 @@
                         <td>Inspection Stage</td>
                         <td class="valueColor">@Model.FinalInspection.InspectionStage</td>
                         <td>Carton</td>
-                        <td colspan="2" class="valueColor">@Model.Carton</td>
+                        <td colspan="2"><button class="site-btn btn-blue">...</button></td>
                         <td colspan="2"></td>
                     </tr>
                     <tr>
@@ -174,7 +176,7 @@
                 <tr>
                     <td style="width:12%">CFA</td>
                     <td class="valueColor" style="width:10%">@Model.FinalInspection.CFA</td>
-                    <td class="valueColor" style="width:15%">Pass Qty(pcs)</td>
+                    <td style="width:15%">Pass Qty(pcs)</td>
                     <td class="valueColor" style="width:5%">@Model.FinalInspection.PassQty</td>
                     <td style="width:15%">Inpection Result</td>
                     <td class="valueColor" style="width:10%">@Model.FinalInspection.InspectionResult</td>
@@ -194,9 +196,9 @@
                         }
                     </td>
                     <td>Reject Qty(pcs)</td>
-                    <td>@Model.FinalInspection.RejectQty</td>
+                    <td class="valueColor">@Model.FinalInspection.RejectQty</td>
                     <td>Shipment Status</td>
-                    <td>@Model.FinalInspection.ShipmentStatus</td>
+                    <td class="valueColor">@Model.FinalInspection.ShipmentStatus</td>
                 </tr>
             </table>
         </div>
