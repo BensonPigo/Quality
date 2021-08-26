@@ -66,7 +66,35 @@ namespace BusinessLogicLayer.Service.SampleRFT
         }
 
         /// <summary>
-        /// 生成Excel，並下載至暫存路徑
+        /// 廢棄：生成Excel，並下載至暫存路徑
+        /// </summary>
+        /// <param name="Req"></param>
+        /// <returns></returns>
+        public DataTable GetExcel_DataTable(CFTComments_ViewModel Req)
+        {
+            string TempTilePath = string.Empty;
+            CFTComments_ViewModel result = new CFTComments_ViewModel();
+            DataTable dt = new DataTable();
+            try
+            {
+                _CFTCommentsProvider = new CFTCommentsProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                // 取得Datatable
+                dt = _CFTCommentsProvider.Get_CFT_OrderComments_DataTable(Req);
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+                //result.Result = false;
+                //result.ErrorMessage = ex.Message;
+            }
+
+            return dt;
+        }
+
+        /// <summary>
+        /// 廢棄：生成Excel，並下載至暫存路徑
         /// </summary>
         /// <param name="Req"></param>
         /// <returns></returns>
@@ -82,8 +110,18 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 // 取得Datatable
                 dt = _CFTCommentsProvider.Get_CFT_OrderComments_DataTable(Req);
 
+                if (!System.IO.Directory.Exists(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\"))
+                {
+                    System.IO.Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\");
+                }
+
+                if (!System.IO.Directory.Exists(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\TMP\\"))
+                {
+                    System.IO.Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\TMP\\");
+                }
+
                 // 開啟excel app
-                Excel.Application excelApp = MyUtility.Excel.ConnectExcel(AppDomain.CurrentDomain.BaseDirectory + "XLT\\CFT Comments.xltx");
+                Excel.Application excelApp = MyUtility.Excel.ConnectExcel(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\CFT Comments.xltx");
 
                 Excel.Worksheet worksheet = excelApp.Sheets[1];
 
@@ -97,7 +135,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 }
 
                 string fileName = $"CFT Comments{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
-                string filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", fileName);
+                string filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
 
                 Excel.Workbook workbook = excelApp.ActiveWorkbook;
                 workbook.SaveAs(filepath);
