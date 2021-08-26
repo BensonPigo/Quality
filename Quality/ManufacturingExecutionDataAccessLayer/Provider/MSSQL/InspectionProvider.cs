@@ -54,7 +54,7 @@ where r.InspectionQty < oq.Qty
 and o.Category = 'S'
 and o.OnSiteSample != 1
 and o.Junk = 0
-and o.PulloutComplete = 1 " + Environment.NewLine);
+and o.PulloutComplete = 0 " + Environment.NewLine);
 
             if (!string.IsNullOrEmpty(inspection_ViewModel.FactoryID)) { SbSql.Append("and o.FtyGroup = @FtyGroup" + Environment.NewLine); }
             if (!string.IsNullOrEmpty(inspection_ViewModel.OrderID)) { SbSql.Append("and o.ID = @ID" + Environment.NewLine); }
@@ -127,7 +127,7 @@ where r_Size.SizeBalanceQty < oq.Qty
 and o.Category = 'S'
 and o.OnSiteSample != 1
 and o.Junk = 0
-and o.PulloutComplete = 1 " + Environment.NewLine);
+and o.PulloutComplete = 0 " + Environment.NewLine);
 
             if (!string.IsNullOrEmpty(inspection_ViewModel.FactoryID)) { SbSql.Append("and o.FtyGroup = @FtyGroup" + Environment.NewLine); }
             if (!string.IsNullOrEmpty(inspection_ViewModel.OrderID)) { SbSql.Append("and o.ID = @ID" + Environment.NewLine); }

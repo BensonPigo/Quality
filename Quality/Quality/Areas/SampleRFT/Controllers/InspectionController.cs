@@ -276,11 +276,14 @@ namespace Quality.Areas.SampleRFT.Controllers
                                                                         , InspectionService.SelectType.ProductType)
                                                                 .ToList();
                 result.Result = inspection_Views.Any();
-                Inspection_ViewModel inspection = inspection_Views.FirstOrDefault();
-                result.SizeQty = inspection.SizeQty;
-                result.SizeBalanceQty = inspection.SizeBalanceQty;
-                result.OrderQty = inspection.OrderQty;
-                result.OrderBalanceQty = inspection.OrderBalanceQty;
+                if (result.Result)
+                {
+                    Inspection_ViewModel inspection = inspection_Views.FirstOrDefault();
+                    result.SizeQty = inspection.SizeQty;
+                    result.SizeBalanceQty = inspection.SizeBalanceQty;
+                    result.OrderQty = inspection.OrderQty;
+                    result.OrderBalanceQty = inspection.OrderBalanceQty;
+                }
             }
 
             return Json(result);
@@ -388,7 +391,7 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             string html = "";
 
-            for (int i = 0; i <= downLists.Count() - 1; i += 2)
+            for (int i = 0; i <= downLists.Count() - 1; i++)
             {
                 string text = defectType.Equals(InspectionService.DefectType.BAAuditCriteria) ? downLists[i].ID + " " + downLists[i].Description : downLists[i].Description ;
                 html += "<tr>";

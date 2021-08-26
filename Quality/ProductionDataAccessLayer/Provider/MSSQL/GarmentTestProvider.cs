@@ -6,6 +6,7 @@ using ProductionDataAccessLayer.Interface;
 using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
 using DatabaseObject.ProductionDB;
+using DatabaseObject.ViewModel;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
@@ -16,14 +17,129 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         public GarmentTestProvider(SQLDataTransaction tra) : base(tra) { }
         #endregion
 
-		#region CRUD Base
-		/*回傳Garment Test(Get) 詳細敘述如下*/
+        #region CRUD Base
+
+        public IList<Style> GetStyleID()
+        {
+            string sqlcmd = @"select distinct ID from Style where Junk = 0";
+
+            return ExecuteList<Style>(CommandType.Text, sqlcmd, new SQLParameterCollection());
+        }
+
+        public IList<Brand> GetBrandID()
+        {
+            string sqlcmd = @"select distinct ID from Brand where Junk = 0";
+
+            return ExecuteList<Brand>(CommandType.Text, sqlcmd, new SQLParameterCollection());
+        }
+
+        public IList<Season> GetSeasonID()
+        {
+            string sqlcmd = @"select distinct ID from Season where Junk = 0";
+
+            return ExecuteList<Season>(CommandType.Text, sqlcmd, new SQLParameterCollection());
+        }
+
+        public IList<GarmentTest> GetArticle(GarmentTest_ViewModel filter)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@BrandID", DbType.String, filter.BrandID } ,
+                { "@StyleID", DbType.String, filter.StyleID } ,
+                { "@SeasonID", DbType.String, filter.SeasonID} ,
+            };
+            string sqlcmd = @"
+select distinct Article from GarmentTest
+where 1=1
+and BrandID = @BrandID
+and StyleID = @StyleID
+and SeasonID = @SeasonID";
+
+            return ExecuteList<GarmentTest>(CommandType.Text, sqlcmd, objParameter);
+        }
+
+        public IList<GarmentTest_ViewModel> Get_GarmentTest(GarmentTest_ViewModel filter)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@BrandID", DbType.String, filter.BrandID } ,
+                { "@StyleID", DbType.String, filter.StyleID } ,
+                { "@SeasonID", DbType.String, filter.SeasonID} ,
+                { "@Article", DbType.String, filter.Article} ,
+            };
+            string sqlcmd = @"
+select g.ID
+,g.StyleID
+,g.BrandID
+,g.Article
+,g.SeasonID
+,g.FirstOrderID
+,g.DeadLine
+,g.SewingInline
+,g.OrderID
+,g.MDivisionid
+,[MinSciDelivery] = GetSCI.MinSciDelivery
+,[MinBuyerDelivery] = GetSCI.MinBuyerDelivery
+,[SeamBreakageResult] = case when g.SeamBreakageResult = 'P' then 'Pass'
+						     when g.SeamBreakageResult = 'F' then 'Fail' 
+                             else '' end
+,[OdourResult] = case when g.OdourResult = 'P' then 'Pass'
+					  when g.OdourResult = 'F' then 'Fail' 
+                      else '' end
+,[WashResult] = case when g.WashResult = 'P' then 'Pass'
+				     when g.WashResult = 'F' then 'Fail' 
+                     else '' end
+,[WashName] = IIF(WashName.Value is null,'701','710')
+,[SpecialMark] = SpecialMark.Value
+,g.Result, g.Date,g.Remark
+,[GarmentTestAddName] = CONCAT(g.AddName,'-',CreatBy.Name,'',g.AddDate)
+,[GarmentTestEditName] = CONCAT(g.EditName,'-',EditBy.Name,'',g.EditDate)
+,g.AddName,g.EditName
+from GarmentTest g
+left join Pass1 CreatBy on CreatBy.ID = g.AddName
+left join Pass1 EditBy on EditBy.ID = g.EditName
+outer apply(
+	select MinBuyerDelivery,MinSciDelivery
+	from dbo.GetSCI(g.FirstOrderID,'')
+) GetSCI
+outer apply(
+	select Value =  r.Name 
+	from Style s
+	inner join Reason r on s.SpecialMark = r.ID and r.ReasonTypeID = 'Style_SpecialMark'
+	where s.ID = g.StyleID
+	and s.BrandID = g.BrandID
+	and s.SeasonID = g.SeasonID
+)SpecialMark
+outer apply(
+	select Value =  r.Name 
+	from Style s
+	inner join Reason r on s.SpecialMark = r.ID and r.ReasonTypeID = 'Style_SpecialMark'
+	where s.ID = g.StyleID
+	and s.BrandID = g.BrandID
+	and s.SeasonID = g.SeasonID
+	and r.Name in ('MATCH TEAMWEAR','BASEBALL ON FIELD','SOFTBALL ON FIELD','TRAINING TEAMWEAR','LACROSSE ONFIELD','AMERIC. FOOT. ON-FIELD','TIRO','BASEBALL OFF FIELD','NCAA ON ICE','ON-COURT','BBALL PERFORMANCE','BRANDED BLANKS','SLD ON-FIELD','NHL ON ICE','SLD ON-COURT')
+)WashName
+where 1=1
+and g.BrandID = @BrandID
+and g.StyleID = @StyleID
+and g.SeasonID = @SeasonID
+and g.Article = @Article" + Environment.NewLine;
+            if (!string.IsNullOrEmpty(filter.MDivisionid))
+            {
+                objParameter.Add("@MDivisionid", DbType.String, filter.MDivisionid);
+                sqlcmd += " and MDivisionid = @MDivisionid";
+            }
+
+            return ExecuteList<GarmentTest_ViewModel>(CommandType.Text, sqlcmd, objParameter);
+        }
+
+        /*回傳Garment Test(Get) 詳細敘述如下*/
         /// <summary>
         /// 回傳Garment Test
         /// </summary>
         /// <param name="Item">Garment Test成員</param>
         /// <returns>回傳Garment Test</returns>
-		/// <info>Author: Admin; Date: 2021/08/23  </info>
+        /// <info>Author: Admin; Date: 2021/08/23  </info>
         /// <history>
         /// xx.  YYYY/MM/DD   Ver   Author      Comments
         /// ===  ==========  ====  ==========  ==========

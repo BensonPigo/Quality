@@ -1,5 +1,6 @@
 ﻿@using DatabaseObject.ResultModel;
 @using DatabaseObject.RequestModel;
+@using DatabaseObject.ViewModel;
 
 @{
     ViewBag.Title = "Index";
@@ -9,16 +10,9 @@
 <link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
 <link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
 <script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+<link href="~/ThirdParty/plugins/jquery-ui/jquery-ui.css" rel="stylesheet" />
 
 @model GarmentTest_Result
-
-@{
-    string SeamBreakageFontColor = Model.garmentTest != null && Model.garmentTest.SeamBreakageResult == "P" ? "Blue" : "Red";
-    string OdourResultFontColor = Model.garmentTest != null && Model.garmentTest.SeamBreakageResult == "P" ? "Blue" : "Red";
-    string WashResultFontColor = Model.garmentTest != null && Model.garmentTest.SeamBreakageResult == "P" ? "Blue" : "Red";
-    string ResultFontColor = Model.garmentTest != null && Model.garmentTest.SeamBreakageResult == "P" ? "Blue" : "Red";
-}
-
 <style type="text/css">
     .row {
         --bs-gutter-x: 1.5rem;
@@ -80,6 +74,9 @@
         border: solid 1px black;
         background-color: white;
     }
+        .DataTable > tbody img{
+            cursor:pointer;
+        }
 
         .DataTable > tbody > tr:nth-of-type(odd) {
             background-color: #ffffff;
@@ -95,10 +92,6 @@
             text-align: left;
             vertical-align: middle;
         }
-
-    .MainTable > tbody > tr > td > input[type="text"] {
-        width: 100%;
-    }
 </style>
 
 <div class="main-content">
@@ -118,22 +111,22 @@
                             <p class="InfoTitle White">Brand</p>
                         </div>
                         <div class="col-auto">
-                            <input id="Brand" type="text" />                            
+                            <input id="Brand" name="Brand" type="text" />
                             <input id="btnBrandSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="BrandSelectItem" value="..." />
                         </div>
                         <div class="col-auto"><p class="InfoTitle White">Season</p></div>
                         <div class="col-auto">
-                            <input id="Season" type="text" />                            
+                            <input id="Season" name="Season" type="text" />
                             <input id="btnSeasonSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="SeasonSelectItem" value="..." />
                         </div>
                         <div class="col-auto"><p class="InfoTitle White">Style</p></div>
                         <div class="col-auto">
-                            <input id="Style" type="text" />
+                            <input id="Style" name="Style" type="text" />
                             <input id="btnStyleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="StyleSelectItem" value="..." />
                         </div>
                         <div class="col-auto"><p class="InfoTitle White">Article</p></div>
                         <div class="col-auto">
-                            <input id="Article" type="text" />
+                            <input id="Article" name="Article" type="text" />
                             <input id="btnArticleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="ArticleSelectItem" value="..." />
                         </div>
 
@@ -171,88 +164,101 @@
                 </div>
 
                 <div style="margin-top: 1em;">
-                    <table class="MainTable DataTable">
+                    <table class="DataTable">
                         <tbody>
                             <tr>
                                 <td style="width: 10vw;"><h5>Style#</h5></td>
                                 <td style="width: 20vw;">
-                                    @Html.TextBoxFor(o => o.garmentTest.StyleID, "", new { @class = "form-control" })
+                                    @Html.DisplayFor(o => o.garmentTest.StyleID, "", "")
                                 </td>
                                 <td style="width: 10vw;"><h5>Season</h5></td>
                                 <td style="width: 20vw;">
-                                    @Html.TextBoxFor(o => o.garmentTest.SeasonID, "", new { @class = "form-control" })
+                                    @Html.DisplayFor(o => o.garmentTest.SeasonID, "", "")
                                 </td>
                                 <td style="width: 10vw;"><h5>Brand</h5></td>
                                 <td style="width: 20vw;">
-                                    @Html.TextBoxFor(o => o.garmentTest.BrandID, "", new { @class = "form-control" })
+                                    @Html.DisplayFor(o => o.garmentTest.BrandID, "", "")
                                 </td>
                             </tr>
                             <tr>
                                 <td><h5>Article</h5></td>
                                 <td>
-                                    @Html.TextBoxFor(o => o.garmentTest.Article, "", new { @class = "form-control" })
+                                    @Html.DisplayFor(o => o.garmentTest.Article, "", "")
                                 </td>
                                 <td><h5>First SP#</h5></td>
                                 <td>
-                                    @Html.TextBoxFor(o => o.garmentTest.FirstOrderID, "", new { @class = "form-control" })
+                                    @Html.DisplayFor(o => o.garmentTest.FirstOrderID, "", "")
                                 </td>
                                 <td><h5>M</h5></td>
                                 <td>
-                                    @Html.TextBoxFor(o => o.garmentTest.MDivisionid, "", new { @class = "form-control" })
+                                    @Html.DisplayFor(o => o.garmentTest.MDivisionid, "", "")
                                 </td>
                             </tr>
                             <tr>
                                 <td><h5>Deadline</h5></td>
                                 <td>
-                                    @Html.TextBoxFor(o => o.garmentTest.DeadLine, "{0:yyyy/MM/dd}", new { @class = "form-control date-picker" })
+                                    @Html.DisplayFor(o => o.garmentTest.DeadLine, "{0:yyyy/MM/dd}",  "")
                                 </td>
                                 <td><h5>Earliest Inline</h5></td>
                                 <td>
-                                    @Html.TextBoxFor(o => o.garmentTest.SewingInline, "", new { @class = "form-control" })
+                                    @Html.DisplayFor(o => o.garmentTest.SewingInline, "", "")
                                 </td>
                                 <td><h5>Earliest SCI Div</h5></td>
                                 <td>
-                                    @Html.TextBoxFor(o => o.garmentTest.MinSciDelivery, "{0:yyyy/MM/dd}", new { @class = "form-control", @disabled = "disabled date-picker" })
+                                    @Html.DisplayFor(o => o.garmentTest.MinSciDelivery, "{0:yyyy/MM/dd}", "")
                                 </td>
                             </tr>
                             <tr>
                                 <td><h5>Special Mark</h5></td>
                                 <td>
-                                    @Html.TextBoxFor(o => o.garmentTest.SpecialMark, "", new { @class = "form-control", @disabled = "disabled" })
+                                    @Html.DisplayFor(o => o.garmentTest.SpecialMark, "", "")
                                 </td>
                                 <td><h5>Earliest Offline</h5></td>
                                 <td>
-                                    @Html.TextBoxFor(o => o.garmentTest.SewingOffline, "{0:yyyy/MM/dd}", new { @class = "form-control date-picker" })
+                                    @Html.DisplayFor(o => o.garmentTest.SewingOffline, "{0:yyyy/MM/dd}", "")
                                 </td>
                                 <td><h5>Earliest Buyer Div</h5></td>
                                 <td>
-                                    @Html.TextBoxFor(o => o.garmentTest.MinBuyerDelivery, "{0:yyyy/MM/dd}", new { @class = "form-control", @disabled = "disabled date-picker" })
+                                    @Html.DisplayFor(o => o.garmentTest.MinBuyerDelivery, "{0:yyyy/MM/dd}", "")
                                 </td>
                             </tr>
+                            @{
+                                string SeamBreakageFontColor = Model.garmentTest != null && Model.garmentTest.SeamBreakageResult == "P" ? "Blue" : "Red";
+                                string SeamBreakageVal = Model.garmentTest != null && Model.garmentTest.SeamBreakageResult == "P" ? "Pass" : "Fail";
+
+                                string OdourResultFontColor = Model.garmentTest != null && Model.garmentTest.OdourResult == "P" ? "Blue" : "Red";
+                                string OdourResultVal = Model.garmentTest != null && Model.garmentTest.OdourResult == "P" ? "Pass" : "Fail";
+
+                                string WashResultFontColor = Model.garmentTest != null && Model.garmentTest.WashResult == "P" ? "Blue" : "Red";
+                                string WashResultVal = Model.garmentTest != null && Model.garmentTest.WashResult == "P" ? "Pass" : "Fail";
+
+                                string ResultFontColor = Model.garmentTest != null && Model.garmentTest.Result == "P" ? "Blue" : "Red";
+                                string ResultVal = Model.garmentTest != null && Model.garmentTest.Result == "P" ? "Pass" : "Fail";
+                            }
                             <tr>
                                 <td><h5>450 Last Result</h5></td>
-                                <td>
-                                    <input id="SeamBreakageResult" type="text" class="@SeamBreakageFontColor" value="@Model.garmentTest.SeamBreakageResult"/>
+                                <td class="@SeamBreakageFontColor">
+                                    @Model.garmentTest.SeamBreakageResult
                                 </td>
                                 <td><h5>451 Last Result</h5></td>
-                                <td>
-                                    <input id="OdourResult" type="text" class="@OdourResultFontColor" value="@Model.garmentTest.OdourResult"/>
+                                <td class="@OdourResultFontColor">
+                                    @Model.garmentTest.OdourResult
                                 </td>
                                 <td>
                                     <h5 class="WashResult">@Model.garmentTest.WashName Last Result</h5>
                                 </td>
-                                <td>
-                                    <input id="WashResult" type="text" class="@WashResultFontColor" value="@Model.garmentTest.WashResult"/>
+                                <td class="@WashResultFontColor">
+                                    @Model.garmentTest.WashResult
                                 </td>
                             </tr>
                             <tr>
                                 <td><h5>Last Result</h5></td>
-                                <td>
-                                    <input id="Result" type="text" class="@ResultFontColor" value="@Model.garmentTest.Result" />
+                                <td class="@ResultFontColor">
+                                    @Model.garmentTest.Result
                                 </td>
                                 <td><h5>Last Test Date</h5></td>
                                 <td>
-                                    @Html.TextBoxFor(o => o.garmentTest.Date, "{0:yyyy/MM/dd}", new { @class = "form-control date-picker" })
+                                    @Html.DisplayFor(o => o.garmentTest.Date, "{0:yyyy/MM/dd}", "")
                                 </td>
                                 <td></td>
                                 <td></td>
@@ -260,17 +266,17 @@
                             <tr>
                                 <td><h5>Last Comment</h5></td>
                                 <td colspan="7">
-                                    @Html.TextBoxFor(o => o.garmentTest.Remark, "", new { @class = "form-control" })
+                                    @Html.DisplayFor(o => o.garmentTest.Remark, "", "")
                                 </td>
                             </tr>
                             <tr>
                                 <td><h5>Create By</h5></td>
                                 <td colspan="2">
-                                    @Html.TextBoxFor(o => o.garmentTest.GarmentTestAddName, "", new { @class = "form-control" })
+                                    @Html.DisplayFor(o => o.garmentTest.GarmentTestAddName, "", "")
                                 </td>
                                 <td><h5>Edit By</h5></td>
                                 <td colspan="2">
-                                    @Html.TextBoxFor(o => o.garmentTest.GarmentTestEditName, "", new { @class = "form-control" })
+                                    @Html.DisplayFor(o => o.garmentTest.GarmentTestEditName, "", "")
                                 </td>
                             </tr>
                         </tbody>
@@ -311,79 +317,89 @@
                             }
                         </thead>
                         <tbody>
-                            @foreach (var item in Model.garmentTest_Details)
+                            @foreach (var garmentTest_Details in Model.garmentTest_Details)
                             {
-                            <tr>
-                                <td style="width:10vw;">
-                                    @Html.TextBoxFor(o => item.No, "", new { @class = "form-control" })
-                                </td>
-                                <td style="width:10vw;">
-                                    @Html.TextBoxFor(o => item.OrderID, "", new { @class = "form-control" })
-                                </td>
-                                <td style="width:10vw;">
-                                    @Html.TextBoxFor(o => item.SizeCode, "", new { @class = "form-control" })
-                                </td>
-                                <td style="width:10vw;">
-                                    @Html.TextBoxFor(o => item.inspdate, "", new { @class = "form-control" })
-                                </td>
-                                <td style="width:10vw;">
-                                    @Html.TextBoxFor(o => item.MtlTypeID, "", new { @class = "form-control" })
-                                </td>
-                                <td style="width:10vw;">
-                                    @Html.TextBoxFor(o => item.Result, "", new { @class = "form-control" })
-                                </td>
-                                <td style="width:10vw;">
-                                    @Html.TextBoxFor(o => item.NonSeamBreakageTest, "", new { @class = "form-control" })
-                                </td>
-                                <td style="width:10vw;">
-                                    @Html.TextBoxFor(o => item.SeamBreakageResult, "", new { @class = "form-control" })
-                                </td>
-                                <td style="width:10vw;">
-                                    @Html.TextBoxFor(o => item.OdourResult, "", new { @class = "form-control" })
-                                </td>
-                                <td style="width:10vw;">
-                                    @Html.TextBoxFor(o => item.WashResult, "", new { @class = "form-control" })
-                                </td>
-                                <td style="width:10vw;">
-                                    @Html.TextBoxFor(o => item.inspector, "", new { @class = "form-control" })
-                                </td>
-                                <td style="width:10vw;">
-                                    @Html.TextBoxFor(o => item.GarmentTest_Detail_Inspector, "", new { @class = "form-control" })                                    
-                                </td>
-                                <td style="width:10vw;">
-                                    @Html.TextBoxFor(o => item.Remark, "", new { @class = "form-control" })
-                                </td>
-                                <td style="width:10vw;">
-                                    <img src="~/Image/Icon/Mail.png" width="30" />
-                                </td>
-                                <td style="width:10vw;">
-                                    @Html.TextBoxFor(o => item.Sender, "", new { @class = "form-control" })
-                                </td>
-                                <td style="width:10vw;">
-                                    @Html.TextBoxFor(o => item.SendDate, "", new { @class = "form-control" })
-                                </td>
-                                <td style="width:10vw;">
-                                    <img src="~/Image/Icon/Mail.png" width="30" />
-                                </td>
-                                <td style="width:10vw;">
-                                    @Html.TextBoxFor(o => item.Receiver, "", new { @class = "form-control" })
-                                </td>
-                                <td style="width:10vw;">
-                                    @Html.TextBoxFor(o => item.ReceiveDate, "", new { @class = "form-control" })
-                                </td>
-                                <td style="width:10vw;">
-                                    @Html.TextBoxFor(o => item.GarmentTest_Detail_AddName, "", new { @class = "form-control" })
-                                </td>
-                                <td style="width:10vw;">
-                                    @Html.TextBoxFor(o => item.GarmentTest_Detail_EditName, "", new { @class = "form-control" })
-                                </td>
-                                <td style="width:10vw;">
-                                    <img src="~/Image/Icon/Edit.png" width="30" />
-                                </td>
-                                <td style="width:10vw;">
-                                    <img src="~/Image/Icon/Delete.png" width="30" />
-                                </td>
-                            </tr>
+                                <tr>
+                                    <td style="width:10vw;">
+                                        <a href="@Url.Action("Detail", "GarmentTest", new { ID = garmentTest_Details.ID, No = garmentTest_Details.No })" idx="@garmentTest_Details.ID" idv="@garmentTest_Details.No">
+                                            @Html.DisplayFor(o => garmentTest_Details.No, "", new { @disabled = "disabled" })
+                                        </a>
+                                    </td>
+                                    <td style="width:10vw;">
+                                        @Html.TextBoxFor(o => garmentTest_Details.OrderID, new { Name = "garmentTest_Details.OrderID" })
+                                    </td>
+                                    <td style="width:10vw;">
+                                        @Html.DropDownListFor(o => garmentTest_Details.SizeCode, (List<SelectListItem>)ViewBag.SizeCodeList, "")
+                                    </td>
+                                    <td style="width:10vw;">
+                                        @Html.TextBoxFor(o => garmentTest_Details.inspdate, "{0:yyyy/MM/dd}", new { @class = "form-control date-picker" })
+                                    </td>
+                                    <td style="width:10vw;">
+                                        @Html.DropDownListFor(o => garmentTest_Details.MtlTypeID, (List<SelectListItem>)ViewBag.MtlTypeIDList, "")
+                                    </td>
+                                    @{
+                                        string garmentTest_DetailsFontColor = garmentTest_Details.Result == "P" ? "Blue" : "Red";
+                                        string garmentTest_DetailsVal = garmentTest_Details.Result == "P" ? "Pass" : "Fail";
+                                    }
+                                    <td class="@garmentTest_DetailsFontColor" style="width:10vw;">
+                                        @garmentTest_DetailsVal
+                                    </td>
+                                    <td style="width:10vw;">
+                                        @{ 
+                                            bool NonSeamBreakageTestVal = garmentTest_Details.NonSeamBreakageTest.HasValue ? garmentTest_Details.NonSeamBreakageTest.Value : false;
+                                        }
+                                        <input id="garmentTest_Details_NonSeamBreakageTest" name="garmentTest_Details.NonSeamBreakageTest" type="checkbox" value="@NonSeamBreakageTestVal">
+                                        <input name="garmentTest_Details.NonSeamBreakageTest" type="hidden" value="@NonSeamBreakageTestVal">
+                                    </td>
+                                    <td style="width:10vw;">
+                                        @Html.DisplayFor(o => garmentTest_Details.SeamBreakageResult, "", "")
+                                    </td>
+                                    <td style="width:10vw;">
+                                        @Html.DisplayFor(o => garmentTest_Details.OdourResult, "", "")
+                                    </td>
+                                    <td style="width:10vw;">
+                                        @Html.DisplayFor(o => garmentTest_Details.WashResult, "", "")
+                                    </td>
+                                    <td style="width:10vw;">
+                                        @Html.TextBoxFor(o => garmentTest_Details.inspector, "", "")
+                                    </td>
+                                    <td style="width:10vw;">
+                                        @Html.DisplayFor(o => garmentTest_Details.GarmentTest_Detail_Inspector, "", "")
+                                    </td>
+                                    <td style="width:10vw;">
+                                        @Html.TextBoxFor(o => garmentTest_Details.Remark, "", "")
+                                    </td>
+                                    <td style="width:10vw;">
+                                        <img class="SendMail" src="~/Image/Icon/Mail.png" width="30" />
+                                    </td>
+                                    <td style="width:10vw;">
+                                        @Html.DisplayFor(o => garmentTest_Details.Sender, "", "")
+                                    </td>
+                                    <td style="width:10vw;">
+                                        @Html.DisplayFor(o => garmentTest_Details.SendDate, "", "")
+                                    </td>
+                                    <td style="width:10vw;">
+                                        <img class="ReceiveMail" src="~/Image/Icon/Mail.png" width="30" />
+                                    </td>
+                                    <td style="width:10vw;">
+                                        @Html.DisplayFor(o => garmentTest_Details.Receiver, "", "")
+                                    </td>
+                                    <td style="width:10vw;">
+                                        @Html.DisplayFor(o => garmentTest_Details.ReceiveDate, "", "")
+                                    </td>
+                                    <td style="width:10vw;">
+                                        @Html.DisplayFor(o => garmentTest_Details.GarmentTest_Detail_AddName, "", "")
+                                    </td>
+                                    <td style="width:10vw;">
+                                        @Html.DisplayFor(o => garmentTest_Details.GarmentTest_Detail_EditName, "", "")
+                                    </td>
+                                    <td style="width:10vw;">
+                                        <img class="detailEdit" src="~/Image/Icon/Edit.png" width="30" />
+                                    </td>
+                                    <td style="width:10vw;">
+                                        <img class="detailDelete" src="~/Image/Icon/Delete.png" width="30" />
+                                    </td>
+                                </tr>
                             }
                         </tbody>
                     </table>
@@ -394,12 +410,97 @@
     </div>
 </div>
 
-
 <script type="text/javascript">
+    var msg;
     var EditMode;
     $(function () {
+        msg = new MessagerAlert();
         EditMode = false;
         IsEditModeChange();
+
+        $('.detailEdit').on('click', function () {
+            if ($(this).prop('src').indexOf("Save.png") > -1) {
+                var tr = $(this).parent().parent();
+                tr.find("input[type='text']").removeAttr("disabled");
+                tr.find("input[type='checkbox']").removeAttr("disabled");
+                tr.find("select").removeAttr("disabled");
+
+                var detail = [];
+                var fcol = tr.children().find('a');
+                var id = fcol.attr("idx");
+                var no = fcol.attr("idv");
+
+                var NonSeamBreakageTest = tr.children().find("input[type='checkbox']").prop("checked");
+                var OrderID, inspdate, inspector, Remark;
+                var SizeCode, MtlTypeID;
+
+                tr.children().find("input[type='text']").each(function (index, value) {
+                    switch (index) {
+                        case 0:
+                            OrderID = $(this).val();
+                            break;
+                        case 1:
+                            inspdate = $(this).val();
+                            break;
+                        case 2:
+                            inspector = $(this).val();
+                            break;
+                        case 3:
+                            Remark = $(this).val();
+                            break;
+                    }
+                })
+
+                tr.children().find("select").each(function (index, value) {
+                    switch (index) {
+                        case 0:
+                            SizeCode = $(this).children("option:selected").val();
+                            break;
+                        case 1:
+                            MtlTypeID = $(this).children("option:selected").val();
+                            break;
+                    }
+                })
+
+                detail.push({
+                    ID: parseInt(id),
+                    No: parseInt(no),
+                    OrderID: OrderID,
+                    inspdate: inspdate,
+                    inspector: inspector,
+                    Remark: Remark,
+                    NonSeamBreakageTest: NonSeamBreakageTest,
+                    SizeCode: SizeCode,
+                    MtlTypeID: MtlTypeID,
+                });
+
+
+                if (detail.length > 0) {
+                    SaveData(detail);
+                }
+                else {
+                    msg.WithError("Save Fail");
+                    return;
+                }
+            }
+            else {
+                $(".rowHeader input[type='text']").attr("disabled", "disabled");
+                $(".rowHeader input[type='button'], #btnQuery").addClass("IsEditModeQuery");
+                $("#Edit, #Save, #Undo").removeClass("IsEditMode");
+                $(".DetailTable img").addClass('display-None');
+                $(this).removeClass('display-None');
+                $('#btnQuery').on('click', function () {
+                    return false;
+                });
+
+                $(this).prop("src", "/Image/Icon/Save.png");
+
+                var tr = $(this).parent().parent();
+                tr.find("input[type='text']").removeAttr("disabled");
+                tr.find("input[type='checkbox']").removeAttr("disabled");
+                tr.find("select").removeAttr("disabled");
+            }
+        });
     });
 
     function IsEditModeChange() {
@@ -410,7 +511,7 @@
             $(".rowHeader input[type='button'], #btnQuery").addClass("IsEditModeQuery");
             $("#Edit").removeClass("IsEditMode");
             $('#Save, #Undo').addClass("IsEditMode");
-            $(".MainTable input[type='text'], .DetailTable input[type='text']").removeAttr("disabled");
+            $(".DetailTable input[type='text'], .DetailTable select, .DetailTable input[type='checkbox']").removeAttr("disabled");
             $(".DetailTable img").addClass('display-None');
 
             $('#btnQuery').on('click', function () {
@@ -422,32 +523,116 @@
             $(".rowHeader input[type='button'], #btnQuery").unbind('click').removeClass("IsEditModeQuery");
             $("#Edit").addClass("IsEditMode");
             $('#Save, #Undo').unbind('click').removeClass("IsEditMode");
-            $(".MainTable input[type='text'], .DetailTable input[type='text']").attr("disabled", "disabled");
+            $(".DetailTable input[type='text'], .DetailTable select, .DetailTable input[type='checkbox']").attr("disabled", "disabled");
             $(".DetailTable img").removeClass('display-None');
         }
-    } 
-
+    }
 
     function EditModeButtionBind() {
         //$(".rowHeader input[type='button']") bind Click;
 
         $('#Edit').on('click', function () {
-            /*if ($('#garmentTest_StyleID').val() != "" && $('#garmentTest_SeasonID').val() != "" && $('#garmentTest_BrandID').val() != "") {
+            if ($('#garmentTest_StyleID').val() != "" && $('#garmentTest_SeasonID').val() != "" && $('#garmentTest_BrandID').val() != "") {
                 EditMode = true;
                 IsEditModeChange();
-            }*/
-            EditMode = true;
-            IsEditModeChange();
+            }
         });
 
-        $('#Save').on('click', function () { 
+        $('#Save').on('click', function () {
+            if ($('#item_No').val() == "") {
+                msg.WithError("No cannot be empty.");
+                return;
+            }
 
+            var detail = [];
+            $('.DetailTable > tbody > tr').each(function (index, value) {
+                var fcol = $(this).children().find('a');
+                var id = fcol.attr("idx");
+                var no = fcol.attr("idv");
+
+                var NonSeamBreakageTest = $(this).children().find("input[type='checkbox']").prop("checked");
+                var OrderID, inspdate, inspector, Remark;
+                var SizeCode, MtlTypeID;
+                $(this).children().find("input[type='text']").each(function (index, value) {
+                    switch (index) {
+                        case 0:
+                            OrderID = $(this).val();
+                            break;
+                        case 1:
+                            inspdate = $(this).val();
+                            break;
+                        case 2:
+                            inspector = $(this).val();
+                            break;
+                        case 3:
+                            Remark = $(this).val();
+                            break;
+                    }
+                })
+
+                $(this).children().find("select").each(function (index, value) {
+                    switch (index) {
+                        case 0:
+                            SizeCode = $(this).children("option:selected").val();
+                            break;
+                        case 1:
+                            MtlTypeID = $(this).children("option:selected").val();
+                            break;
+                    }
+                })
+
+                detail.push({
+                    ID: parseInt(id),
+                    No: parseInt(no),
+                    OrderID: OrderID,
+                    inspdate: inspdate,
+                    inspector: inspector,
+                    Remark: Remark,
+                    NonSeamBreakageTest: NonSeamBreakageTest,
+                    SizeCode: SizeCode,
+                    MtlTypeID: MtlTypeID,
+                });
+            });
+
+            if (detail.length > 0) {
+                SaveData(detail);
+            }
+            else {
+                msg.WithError("Save Fail");
+                return;
+            }
         });
 
         $('#Undo').on('click', function () {
             EditMode = false;
             $('#btnQuery').unbind('click').click();
         });
-
     }
+
+    function SaveData(detail) {
+        $.ajax({
+            url: "@Url.Action("SaveDetail", "GarmentTest", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ details: detail }),
+            async: false,
+            success: function (data) {
+                if (data.Result) {
+                    msg.WithSuccess("Success");
+                    $('#btnQuery').unbind('click').click();
+                }
+                else {
+                    msg.WithError(data.ErrMsg);
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.status);
+                console.log(xhr.responseText);
+
+                console.log(thrownError);
+            }
+        });
+    }
+
+
 </script>

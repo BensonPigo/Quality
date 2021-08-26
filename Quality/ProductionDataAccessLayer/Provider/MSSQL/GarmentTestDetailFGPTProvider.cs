@@ -6,6 +6,7 @@ using ProductionDataAccessLayer.Interface;
 using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
 using DatabaseObject.ProductionDB;
+using DatabaseObject.ViewModel.BulkFGT;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
@@ -16,19 +17,49 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         public GarmentTestDetailFGPTProvider(SQLDataTransaction tra) : base(tra) { }
         #endregion
 
-		#region CRUD Base
-		/*回傳(Get) 詳細敘述如下*/
-        /// <summary>
-        /// 回傳
-        /// </summary>
-        /// <param name="Item">成員</param>
-        /// <returns>回傳</returns>
-		/// <info>Author: Admin; Date: 2021/08/23  </info>
-        /// <history>
-        /// xx.  YYYY/MM/DD   Ver   Author      Comments
-        /// ===  ==========  ====  ==========  ==========
-        /// 01.  2021/08/23  1.00    Admin        Create
-        /// </history>
+        #region CRUD Base
+
+        public IList<GarmentTest_Detail_FGPT_ViewModel> Get_GarmentTest_Detail_FGPT(Int64 ID, string No)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.Int64, ID } ,
+                { "@No", DbType.String, No } ,
+            };
+            string sqlcmd = @"
+select 
+[ID]
+,[No]
+,[Location]
+,[Type] = IIF(t.TypeSelection_VersionID > 0, Replace(t.type, '{0}', ts.Code), t.type)
+,[TestName] = PMS_FGPT_TestName.Description
+,[TestDetail]
+,[Criteria]
+,[TestResult]
+,[TestUnit]
+,t.[Seq]
+,[TypeSelection_VersionID]
+,[TypeSelection_Seq]
+,[Result] = CASE WHEN  t.TestUnit = 'N' AND t.[TestResult] !='' THEN IIF( Cast( t.[TestResult] as float) >= cast( t.Criteria as float) ,'Pass' ,'Fail')
+  WHEN  t.TestUnit = 'mm' THEN IIF(  t.[TestResult] = '<=4' OR t.[TestResult] = '≦4','Pass' , IIF( t.[TestResult]='>4','Fail','')  )
+  WHEN  t.TestUnit = 'Pass/Fail'  THEN t.[TestResult]
+   ELSE ''
+END
+from GarmentTest_Detail_FGPT t
+left join TypeSelection ts on ts.VersionID = t.TypeSelection_VersionID 
+        and ts.Seq = t.TypeSelection_Seq
+outer apply(
+	select Description
+	from DropDownList 
+	where Type = 'PMS_FGPT_TestName' 
+	and ID = t.TestName
+)PMS_FGPT_TestName
+where t.ID = @ID
+and t.No = @No
+";
+            return ExecuteList<GarmentTest_Detail_FGPT_ViewModel>(CommandType.Text, sqlcmd, objParameter);
+        }
+
         public IList<GarmentTest_Detail_FGPT> Get(GarmentTest_Detail_FGPT Item)
         {
             StringBuilder SbSql = new StringBuilder();

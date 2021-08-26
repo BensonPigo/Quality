@@ -17,41 +17,41 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         #endregion
 
 		#region CRUD Base
-		/*回傳(Get) 詳細敘述如下*/
-        /// <summary>
-        /// 回傳
-        /// </summary>
-        /// <param name="Item">成員</param>
-        /// <returns>回傳</returns>
-		/// <info>Author: Admin; Date: 2021/08/23  </info>
-        /// <history>
-        /// xx.  YYYY/MM/DD   Ver   Author      Comments
-        /// ===  ==========  ====  ==========  ==========
-        /// 01.  2021/08/23  1.00    Admin        Create
-        /// </history>
-        public IList<GarmentTest_Detail_Shrinkage> Get(GarmentTest_Detail_Shrinkage Item)
+
+        public IList<GarmentTest_Detail_Shrinkage> Get_GarmentTest_Detail_Shrinkage(Int64 ID, string No)
         {
-            StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append("SELECT"+ Environment.NewLine);
-            SbSql.Append("         ID"+ Environment.NewLine);
-            SbSql.Append("        ,No"+ Environment.NewLine);
-            SbSql.Append("        ,Location"+ Environment.NewLine);
-            SbSql.Append("        ,Type"+ Environment.NewLine);
-            SbSql.Append("        ,BeforeWash"+ Environment.NewLine);
-            SbSql.Append("        ,SizeSpec"+ Environment.NewLine);
-            SbSql.Append("        ,AfterWash1"+ Environment.NewLine);
-            SbSql.Append("        ,Shrinkage1"+ Environment.NewLine);
-            SbSql.Append("        ,AfterWash2"+ Environment.NewLine);
-            SbSql.Append("        ,Shrinkage2"+ Environment.NewLine);
-            SbSql.Append("        ,AfterWash3"+ Environment.NewLine);
-            SbSql.Append("        ,Shrinkage3"+ Environment.NewLine);
-            SbSql.Append("        ,Seq"+ Environment.NewLine);
-            SbSql.Append("FROM [GarmentTest_Detail_Shrinkage]"+ Environment.NewLine);
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.Int64, ID } ,
+                { "@No", DbType.String, No } ,
+            };
+            string sqlcmd = @"
+
+select 
+ID,No
+,[Location] = case [Location] 
+	when 'T' then 'Top' 
+	when 'I' then 'INNER'
+	when 'O' then 'OUTER'
+	when 'B' then 'BOTTOM'
+	ELSE '' end
+,[Type]
+,[BeforeWash]
+,[SizeSpec]
+,[AfterWash1]
+,[Shrinkage1]
+,[AfterWash2]
+,[Shrinkage2]
+,[AfterWash3]
+,[Shrinkage3]
+,[Seq]
+from GarmentTest_Detail_Shrinkage
+where ID = @ID
+and No = @No
+";
 
 
-
-            return ExecuteList<GarmentTest_Detail_Shrinkage>(CommandType.Text, SbSql.ToString(), objParameter);
+            return ExecuteList<GarmentTest_Detail_Shrinkage>(CommandType.Text, sqlcmd, objParameter);
         }
 		/*建立(Create) 詳細敘述如下*/
         /// <summary>

@@ -32,7 +32,6 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             SbSql.Append(
                 @"
 select rd.DefectCode, rd.AreaCode
-into #tmp
 from RFT_Inspection r
 inner join RFT_Inspection_Detail rd on r.ID = rd.ID and rd.Junk = 0" + Environment.NewLine);
 
@@ -53,7 +52,7 @@ inner join RFT_Inspection_Detail rd on r.ID = rd.ID and rd.Junk = 0" + Environme
         /*回傳(Get) 詳細敘述如下*/
         /// <summary>
         /// 回傳
-        /// </summary>
+        /// </summary> 
         /// <param name="Item">成員</param>
         /// <returns>回傳</returns>
         /// <info>Author: Admin; Date: 2021/08/05  </info>
