@@ -12,11 +12,11 @@
             list.Add("Others", "Others");
 
             List<string> result = new List<string>();
-            string url = Request.Url.AbsoluteUri;
+            string url = Request.Url.AbsoluteUri.ToLower();
             string test = string.Empty;
             foreach (var item in list)
             {
-                if (url.Contains(item.Key))
+                if (url.Contains(item.Key.ToLower()))
                 {
                     result.Add($"<div style='color:#E62513;display:inline-block'><h1 style='font-size:1.1em'>{item.Value}</h1></div>");
                 }

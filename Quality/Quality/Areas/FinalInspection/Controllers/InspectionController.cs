@@ -158,6 +158,14 @@ namespace Quality.Areas.FinalInspection.Controllers
         [HttpPost]
         public ActionResult CheckList(DatabaseObject.ManufacturingExecutionDB.FinalInspection finalinspection, string goPage)
         {
+            if (goPage == "Back")
+            {
+                return RedirectToAction("General");
+            }
+            else if (goPage == "Next")
+            {
+                return RedirectToAction("AddDefect");
+            }
             return View();
         }
 
