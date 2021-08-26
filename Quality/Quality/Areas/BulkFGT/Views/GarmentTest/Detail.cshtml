@@ -1,0 +1,260 @@
+﻿
+@{
+    ViewBag.Title = "Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/ThirdParty/plugins/Tabs/nicepage.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/Tabs/nicepage.js"></script>
+
+<style type="text/css">
+    #tab-Change {
+        width: 90vw;
+        
+    }
+
+        #tab-Change > ul {
+            display: block;
+            margin: 0;
+            list-style: none;
+        }
+
+    .tab-title {
+        list-style: none;
+    }
+
+    #tab-Change > ul > li {
+        display: inline-block;
+        vertical-align: top;
+        margin: 0 -1px -1px 0;
+        border: 1px solid #BCBCBC;
+        height: 4vh;
+        line-height: 25px;
+        background: #cdcdcd;
+        padding: 0 15px;
+        list-style: none;
+        box-sizing: border-box;
+    }
+
+        #tab-Change > ul > li a {
+            color: #000;
+            text-decoration: none;
+        }
+
+        #tab-Change > ul > li.active {
+            border-bottom: 1px solid #fff;
+            background: #fff;
+        }
+
+    #tab-Change > .tab-inner {
+        clear: both;
+        color: #000;
+        border: 1px #BCBCBC solid;
+    }
+
+    .DataTable {
+        width: 92vw;
+        font-size: 1rem;
+        font-weight: bold;
+        border: solid 1px black;
+        background-color: white;
+    }
+
+        .DataTable > tbody > tr:nth-of-type(odd) {
+            background-color: #ffffff;
+        }
+
+        .DataTable > tbody > tr:nth-of-type(even) {
+            background-color: #F0F2F2;
+        }
+
+        .DataTable > tbody > tr > td {
+            border: solid 1px gray;
+            padding: 1em;
+            text-align: left;
+            vertical-align: middle;
+        }
+</style>
+
+<div class="main-content">
+    <header class="page-header">
+        <h3>
+            <i class="icon-users"></i><span>Garment Test</span>
+        </h3>
+    </header>
+
+    <div class="main-area">
+        <div class="content-scroll">
+            <div class="inner-scroll">
+                <div style="margin-top: 1em;">
+                    <table id="ButtonMode">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <h4 id="Edit" style=" margin-right: 1em;">
+                                        <img src="~/Image/Icon/Exit.png" width="30" />
+                                        Exit
+                                    </h4>
+                                </td>
+                                <td>
+                                    <h4 id="Edit" style=" margin-right: 1em;">
+                                        <img src="~/Image/Icon/Edit.png" width="30" />
+                                        Edit
+                                    </h4>
+                                </td>
+                                <td>
+                                    <h4 id="Save" style=" margin-right: 1em;">
+                                        <img src="~/Image/Icon/Save.png" width="30" />
+                                        Save
+                                    </h4>
+                                </td>
+                                <td>
+                                    <h4 id="Encode" style=" margin-right: 1em;">
+                                        <img src="~/Image/Icon/Lock.png" width="30" />
+                                        Encode
+                                    </h4>
+                                </td>
+                                <td>
+                                    <h4 id="Amend" style=" margin-right: 1em;">
+                                        <img src="~/Image/Icon/Unlock.png" width="30" />
+                                        Amend
+                                    </h4>
+                                </td>
+                                <td>
+                                    <h4 id="Report" style=" margin-right: 1em;">
+                                        <img src="~/Image/Icon/Print.png" width="30" />
+                                        Report
+                                    </h4>
+                                </td>
+                                <td>
+                                    <h4 id="Picture" style=" margin-right: 1em;">
+                                        <img src="~/Image/Icon/Camera.png" width="30" />
+                                        Picture
+                                    </h4>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="tab-Change" style="margin-top: 1em;">
+                    <ul class="tab-title">
+                        <li><a href="#tab01"><h3>Detail</h3></a></li>
+                        <li><a href="#tab02"><h3>Shrinkage</h3></a></li>
+                        <li><a href="#tab03"><h3>Spirality</h3></a></li>
+                        <li><a href="#tab04"><h3>Appearance</h3></a></li>
+                        <li><a href="#tab05"><h3>FGWT</h3></a></li>
+                        <li><a href="#tab06"><h3>FGPT</h3></a></li>
+                    </ul>
+                    <div id="tab01" class="tab-inner">
+                        <table class="DataTable">
+                            <tbody>
+                                <tr>
+                                    <td><h4>Style#</h4></td>
+                                    <td></td>
+                                    <td><h4>Season</h4></td>
+                                    <td></td>
+                                    <td><h4>Brand</h4></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><h4>SP#</h4></td>
+                                    <td></td>
+                                    <td><h4>Article</h4></td>
+                                    <td></td>
+                                    <td><h4>Size</h4></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><h4>Submit Date</h4></td>
+                                    <td></td>
+                                    <td><h4>Arrive Qty</h4></td>
+                                    <td></td>
+                                    <td><h4>Result</h4></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><h4>LO to Factory</h4></td>
+                                    <td></td>
+                                    <td><h4>Non 450</h4></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="6"><h3>Washing Condition</h3></td>
+                                </tr>
+                                <tr>
+                                    <td><h4>Line Dry</h4></td>
+                                    <td></td>
+                                    <td><h4>Tumble Dry</h4></td>
+                                    <td></td>
+                                    <td><h4>Hand Wash</h4></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><h4>Temperature(oC)</h4></td>
+                                    <td></td>
+                                    <td><h4>Fibre Composition</h4></td>
+                                    <td></td>
+                                    <td colspan="2"></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4">
+                                    <td colspan="2" rowspan="2">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4">
+                                </tr>
+                                <tr>
+                                    <td><h4>Machine Model</h4></td>
+                                    <td></td>
+                                    <td><h4>Remark</h4></td>
+                                    <td colspan="3"></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3"><h4>Streched Neck Opening is OK according to size spec?</h4></td>
+                                    <td></td>
+                                    <td colspan="2"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="tab02" class="tab-inner">
+                        <p>tab02的內容</p>
+                    </div>
+                    <div id="tab03" class="tab-inner">
+                        <p>tab03的內容</p>
+                    </div>
+                    <div id="tab04" class="tab-inner">
+                        <p>tab04的內容</p>
+                    </div>
+                    <div id="tab05" class="tab-inner">
+                        <p>tab05的內容</p>
+                    </div>
+                    <div id="tab06" class="tab-inner">
+                        <p>tab06的內容</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $(function () {
+        tabChange();
+    });
+
+
+    function tabChange() {
+        var $li = $('#tab-Change > ul.tab-title li');
+        $($li.eq(0).addClass('active').find('a').attr('href')).siblings('.tab-inner').hide();
+
+        $li.click(function () {
+            $($(this).find('a').attr('href')).show().siblings('.tab-inner').hide();
+            $(this).addClass('active').siblings('.active').removeClass('active');
+        });
+    }
+</script>

@@ -557,33 +557,33 @@
                                     <tr>
                                         <td>Style#</td>
                                         <td colspan="3" align="left">
-                                            <input id="txtStyle" type="text" readonly="readonly" />
+                                            <input id="txtStyle" type="text" />
                                             <input id="btnStyleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="StyleSelectItem" value="..." />
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>SP#</td>
                                         <td colspan="3">
-                                            <input id="txtSP" type="text" readonly="readonly"/>
+                                            <input id="txtSP" type="text" />
                                             <input id="btnSPSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="SPSelectItem" value="..." />
                                         </td>
                                     </tr>
                                     <tr>
                                         <td style="width: 6.8vw;">Article</td>
                                         <td style="width: 12vw;">
-                                            <input id="txtArticle" type="text" style="width: 8em;" readonly="readonly"/>
+                                            <input id="txtArticle" type="text" style="width: 8em;" />
                                             <input id="btnArticleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="ArticleSelectItem" value="..." />
                                         </td>
                                         <td style="width: 5.7vw;">Size</td>
                                         <td style="width: 12vw;">
-                                            <input id="txtSize" type="text" style="width: 8em;" readonly="readonly"/>
+                                            <input id="txtSize" type="text" style="width: 8em;" />
                                             <input id="btnSizeSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="SizeSelectItem" value="..." />
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Production Type</td>
                                         <td>
-                                            <input id="txtProductType" type="text" style="width: 8em;" readonly="readonly"/>
+                                            <input id="txtProductType" type="text" style="width: 8em;" />
                                             <input id="btnProductTypeSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="ProductTypeSelectItem" value="..." />
                                         </td>
                                         <td colspan="2"><input id="txtProductTypePMS" type="text" readonly="readonly" /></td>
@@ -914,7 +914,7 @@
                 </div>
             </div>
             <div style="float:left; width:12vw; height:73vh; margin:0 1em;">
-                <div>
+                <div style="height: 33vh; overflow-y: auto; overflow-x: hidden;">
                     <table class="DefectTable Responsibility" style="width: 12vw;">
                         <thead>
                             <tr>
@@ -1723,9 +1723,6 @@
                     PMS_RFTBACriteriaID: bAAuditCriteriaID,
                     DefectPicture: pic.replace("data:image/webp;base64,", ""),
                 };
-
-                console.log(datasDetail);
-
                 ReworkListAddReject(datasDetail);
             }
 

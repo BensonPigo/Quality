@@ -151,6 +151,8 @@
     <Compile Include="Areas\Authority\Controllers\UserListController.cs" />
     <Compile Include="Areas\BulkFGT\BulkFGTAreaRegistration.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\BulkFGTMailGroupController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\FabricCrkShrkTestController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\FabricOvenTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\GarmentTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\MockupCrockingController.cs" />
     <Compile Include="Areas\FileActionController.cs" />
@@ -240,6 +242,9 @@
     <Content Include="Image\Icon\View.png" />
     <Content Include="Image\Icon\Washing.png" />
     <Content Include="Image\Icon\XLS.png" />
+    <Content Include="Image\QA_Skewness1.png" />
+    <Content Include="Image\QA_Skewness2.png" />
+    <Content Include="Image\QA_Skewness3.png" />
     <Content Include="Image\searchicon.png" />
     <Content Include="Image\tenor.gif" />
     <Content Include="Scripts\bootstrap.js" />
@@ -281,6 +286,7 @@
     <Content Include="Areas\SampleRFT\Views\PicturesDummy\Index.cshtml" />
     <Content Include="Areas\SampleRFT\Views\Measurement\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\GarmentTest\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\GarmentTest\Detail.cshtml" />
     <Content Include="Areas\FinalInspection\Views\Query\_Tab1_Layout.cshtml" />
     <Content Include="Areas\FinalInspection\Views\Query\_Tab2_Layout.cshtml" />
     <Content Include="Areas\FinalInspection\Views\Query\_Tab3_Layout.cshtml" />
@@ -288,6 +294,7 @@
     <Content Include="Areas\FinalInspection\Views\Query\_Tab5_Layout.cshtml" />
     <Content Include="Areas\FinalInspection\Views\Query\_Tab6_Layout.cshtml" />
     <Content Include="Areas\FinalInspection\Views\Query\_Tab7_Layout.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\FabricCrkShrkTest\Index.cshtml" />
     <Content Include="Areas\StyleManagement\Views\web.config" />
     <Content Include="Areas\StyleManagement\Views\_ViewStart.cshtml" />
     <Content Include="Areas\StyleManagement\Views\Shared\_Layout.cshtml" />
@@ -721,6 +728,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Authority\Data\" />
     <Folder Include="Areas\BulkFGT\Data\" />
+    <Folder Include="Areas\BulkFGT\Views\FabricOvenTest\" />
     <Folder Include="Areas\BulkFGT\Views\MockupCrocking\" />
     <Folder Include="Areas\FinalInspection\Models\" />
     <Folder Include="Areas\SampleRFT\Data\" />
