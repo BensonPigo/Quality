@@ -332,16 +332,50 @@ where   ID = @FinalInspectionID
                     objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
                     break;
                 case "Insp-Others":
+                    sqlUpdCmd += $@"
+update FinalInspection
+ set    ProductionStatus = @ProductionStatus  ,
+        OthersRemark= @OthersRemark    ,
+        CFA= @CFA   ,
+        InspectionStep = @InspectionStep,
+        EditName= @userID,
+        EditDate= getdate()
+where   ID = @FinalInspectionID
+";
+                    objParameter.Add("@FinalInspectionID", finalInspection.ID);
+                    objParameter.Add("@userID", userID);
+                    objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
+                    objParameter.Add("@ProductionStatus", finalInspection.ProductionStatus);
+                    objParameter.Add("@OthersRemark", finalInspection.OthersRemark);
+                    objParameter.Add("@CFA", finalInspection.CFA);
+                    break;
+                case "Submit":
+                    sqlUpdCmd += $@"
+update FinalInspection
+ set    ProductionStatus = @ProductionStatus  ,
+        OthersRemark= @OthersRemark    ,
+        CFA= @CFA   ,
+        InspectionResult= @InspectionResult   ,
+        ShipmentStatus= @ShipmentStatus   ,
+        InspectionStep = 'Insp-Others',
+        EditName= @userID,
+        EditDate= getdate(),
+        SubmitDate=getdate()
+where   ID = @FinalInspectionID
+";
+                    objParameter.Add("@FinalInspectionID", finalInspection.ID);
+                    objParameter.Add("@userID", userID);
+                    objParameter.Add("@InspectionResult", finalInspection.InspectionResult);
+                    objParameter.Add("@ShipmentStatus", finalInspection.ShipmentStatus);
+                    objParameter.Add("@ProductionStatus", finalInspection.ProductionStatus);
+                    objParameter.Add("@OthersRemark", finalInspection.OthersRemark);
+                    objParameter.Add("@CFA", finalInspection.CFA);
                     break;
                 default:
                     break;
             }
 
-            using (TransactionScope transaction = new TransactionScope())
-            {
-                ExecuteNonQuery(CommandType.Text, sqlUpdCmd, objParameter);
-                transaction.Complete();
-            }
+            ExecuteNonQuery(CommandType.Text, sqlUpdCmd, objParameter);
         }
 
         public IList<byte[]> GetFinalInspectionDefectImage(long FinalInspection_DetailUkey)
@@ -930,6 +964,47 @@ drop table #tmp
 
             DataTable dt = ExecuteDataTable(CommandType.Text, sqlcmd, objParameter);
             return dt;
+        }
+
+        public List<byte[]> GetOthersImage(string finalInspectionID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection() {
+            { "@finalInspectionID", DbType.String, finalInspectionID }
+            };
+
+            string sqlGetData = @"
+select  Image
+    from FinalInspection_OtherImage with (nolock)
+    where   ID = @finalInspectionID
+";
+
+            DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, objParameter);
+
+            if (dtResult.Rows.Count > 0)
+            {
+                return dtResult.AsEnumerable().Select(s => (byte[])s["Image"]).ToList();
+            }
+            else
+            {
+                return new List<byte[]>();
+            }
+        }
+
+        public void UpdateFinalInspection_OtherImage(string finalInspectionID, List<byte[]> images)
+        {
+            foreach (byte[] image in images)
+            {
+                string sqlFinalInspection_OtherImage = @"
+    insert into FinalInspection_OtherImage(ID, Image)
+                values(@FinalInspectionID, @Image)
+";
+                SQLParameterCollection imgParameter = new SQLParameterCollection() {
+                            { "@FinalInspectionID", DbType.String, finalInspectionID },
+                            { "@Image", image}
+                        };
+
+                ExecuteNonQuery(CommandType.Text, sqlFinalInspection_OtherImage, imgParameter);
+            }
         }
 
         #endregion

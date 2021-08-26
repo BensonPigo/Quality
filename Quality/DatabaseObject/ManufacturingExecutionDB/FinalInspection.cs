@@ -170,7 +170,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
 
         /// <summary>完成比例</summary>
         [Display(Name = "完成比例")]
-        public decimal ProductionStatus { get; set; }
+        public decimal? ProductionStatus { get; set; }
 
         /// <summary>Pass/ Fail/ On-going</summary>
         [StringLength(8)]
