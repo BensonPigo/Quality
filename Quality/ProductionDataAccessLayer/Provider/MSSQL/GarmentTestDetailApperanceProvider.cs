@@ -6,6 +6,7 @@ using ProductionDataAccessLayer.Interface;
 using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
 using DatabaseObject.ProductionDB;
+using DatabaseObject.ViewModel.BulkFGT;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
@@ -16,19 +17,45 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         public GarmentTestDetailApperanceProvider(SQLDataTransaction tra) : base(tra) { }
         #endregion
 
-		#region CRUD Base
-		/*回傳(Get) 詳細敘述如下*/
-        /// <summary>
-        /// 回傳
-        /// </summary>
-        /// <param name="Item">成員</param>
-        /// <returns>回傳</returns>
-		/// <info>Author: Admin; Date: 2021/08/23  </info>
-        /// <history>
-        /// xx.  YYYY/MM/DD   Ver   Author      Comments
-        /// ===  ==========  ====  ==========  ==========
-        /// 01.  2021/08/23  1.00    Admin        Create
-        /// </history>
+        #region CRUD Base
+        public IList<GarmentTest_Detail_Apperance_ViewModel> Get_GarmentTest_Detail_Apperance(Int64 ID, string No)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.Int64, ID } ,
+                { "@No", DbType.String, No } ,
+            };
+            string sqlcmd = @"
+select  
+ga.[ID]
+,[No]
+,[Type]
+,[Wash1]
+,[Wash2]
+,[Wash3]
+,[Comment]
+,[Seq]
+,[Wash4]
+,[Wash5] 
+,[WashName2] = IIF(WashName.Value is null,'3','10')
+,[WashName3] = IIF(WashName.Value is null,'','15')
+from GarmentTest_Detail_Apperance ga 
+inner join GarmentTest g on ga.ID = g.ID
+outer apply(
+	select Value =  r.Name 
+	from Style s
+	inner join Reason r on s.SpecialMark = r.ID and r.ReasonTypeID = 'Style_SpecialMark'
+	where s.ID = g.StyleID
+	and s.BrandID = g.BrandID
+	and s.SeasonID = g.SeasonID
+	and r.Name in ('MATCH TEAMWEAR','BASEBALL ON FIELD','SOFTBALL ON FIELD','TRAINING TEAMWEAR','LACROSSE ONFIELD','AMERIC. FOOT. ON-FIELD','TIRO','BASEBALL OFF FIELD','NCAA ON ICE','ON-COURT','BBALL PERFORMANCE','BRANDED BLANKS','SLD ON-FIELD','NHL ON ICE','SLD ON-COURT')
+)WashName
+where ga.ID = @ID
+and ga.No = @No
+";
+            return ExecuteList<GarmentTest_Detail_Apperance_ViewModel>(CommandType.Text, sqlcmd, objParameter);
+        }
+
         public IList<GarmentTest_Detail_Apperance> Get(GarmentTest_Detail_Apperance Item)
         {
             StringBuilder SbSql = new StringBuilder();

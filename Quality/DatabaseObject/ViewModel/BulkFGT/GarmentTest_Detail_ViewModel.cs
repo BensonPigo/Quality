@@ -9,6 +9,7 @@ namespace DatabaseObject.ViewModel
 {
     public class GarmentTest_Detail_ViewModel : GarmentTest_Detail
     {
+
         public string GarmentTest_Detail_Inspector { get; set; }
 
         public string GarmentTest_Detail_AddName { get; set; }
