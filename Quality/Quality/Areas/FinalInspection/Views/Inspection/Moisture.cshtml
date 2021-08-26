@@ -28,7 +28,7 @@
 
         .table_div tr td:nth-child(2n+1) {
             font-size:1.2em;
-            font-weight:bold;
+            font-weight:bold;            
         }
 
         #myCartons_previous, #myCartons_next,
@@ -61,11 +61,11 @@
                 <table class="col-auto table_div" style="width:100%">
                     <tr>
                         <td><label>Article</label></td>
-                        <td>@Html.DropDownList("Article", (List<SelectListItem>)ViewBag.ListArticle, null, new { @class = "form-control", @onchange = "onInspectionStageChange(this.value)" })</td>
+                        <td>@Html.DropDownList("Article", (List<SelectListItem>)ViewBag.ListArticle, null, new { @class = "form-control", @style= "width:80%", @onchange = "onInspectionStageChange(this.value)" })</td>
                     </tr>
                     <tr>
                         <td><label class="cartonData">carton#</label></td>
-                        <td>@Html.TextBox("Cartons", string.Empty, new { @class = "cartonData", @readonly = "readonly", @onclick = "open_cartonsDetail()" })</td>
+                        <td>@Html.TextBox("Cartons", string.Empty, new { @class = "cartonData", @readonly = "readonly", @style = "width:80%", @onclick = "open_cartonsDetail()" })</td>
                         @Html.HiddenFor(o => o.FinalInspection_OrderCartonUkey)
                     </tr>
                 </table>
@@ -82,11 +82,11 @@
                 <div>
                     <table class="col-auto table_div" style="width:100%">
                         <tr>
-                            <td style="width:30%"><label>Detection Instrument</label></td>
+                            <td style="width:30%;text-align:right;"><label>Detection Instrument</label></td>
                             <td>@Html.TextBoxFor(o => o.Instrument, new { @readonly = "readonly", @onclick = "open_EndlineMoistureDetail()" })</td>
                         </tr>
                         <tr>
-                            <td><label>Fabrication</label></td>
+                            <td style="text-align: right;"><label>Fabrication</label></td>
                             <td>@Html.TextBoxFor(o => o.Fabrication, new { @disabled = "@disabled" })</td>
                         </tr>
                     </table>
@@ -131,7 +131,7 @@
                     </tr>
                     <tr>
                         <td style="vertical-align:top"><label>Remark</label></td>
-                        <td colspan="3">@Html.TextAreaFor(o => o.Remark, new { @style = "width:60%;min-height:120px" })</td>
+                        <td colspan="3">@Html.TextAreaFor(o => o.Remark, new { @style = "width:60%;min-height:110px" })</td>
                     </tr>
                 </table>
             </div>
