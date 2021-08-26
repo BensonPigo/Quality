@@ -113,12 +113,17 @@ namespace BusinessLogicLayer.Service
             {
                 _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
 
+                DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection =
+                    _FinalInspectionProvider.GetFinalInspection(measurement.FinalInspectionID);
+
                 var needUpdMeasurement = measurement.ListMeasurementItem.Where(s => !string.IsNullOrEmpty(s.ResultSizeSpec));
 
-                if (!needUpdMeasurement.Any())
+                if (!needUpdMeasurement.Any() && 
+                    (finalInspection.InspectionStage == "Final" || finalInspection.InspectionStage == "3rd Party")
+                    )
                 {
                     result.Result = false;
-                    result.ErrorMessage = "Please maintain SizeSpec";
+                    result.ErrorMessage = "Please input the measurement data if <Inspection Stage> is Final or 3rd Party";
                     return result;
                 }
 

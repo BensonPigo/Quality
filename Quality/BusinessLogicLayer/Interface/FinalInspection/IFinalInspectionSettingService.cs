@@ -34,6 +34,6 @@ namespace BusinessLogicLayer.Interface
         /// <param name="factoryID">factoryID</param>
         /// <param name="MDivisionid">MDivisionid</param>
         /// <returns>回傳新增或異動的FinalInspectionID</returns>
-        string UpdateFinalInspection(Setting setting, string UserID, string factoryID, string MDivisionid);
+        BaseResult UpdateFinalInspection(Setting setting, string UserID, string factoryID, string MDivisionid, out string finalInspectionID);
     }
 }

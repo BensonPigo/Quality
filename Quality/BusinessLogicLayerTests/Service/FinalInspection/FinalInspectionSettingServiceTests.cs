@@ -86,13 +86,22 @@ namespace BusinessLogicLayer.Service.FinalInspectionTests
                 setting.SewingLineID = "05";
                 setting.SelectCarton[0].Selected = true;
                 setting.SelectCarton[1].Selected = true;
-                string result = finalInspectionSettingService.UpdateFinalInspection(setting, "SCIMIS", this.factory, this.Mdivision);
+                string result = string.Empty;
+                BaseResult baseResult = finalInspectionSettingService.UpdateFinalInspection(setting, "SCIMIS", this.factory, this.Mdivision, out result);
+                if (!baseResult)
+                {
+                    Assert.Fail(baseResult.ErrorMessage);
+                }
 
                 setting = finalInspectionSettingService.GetSettingForInspection("ESPCH21080001");
                 setting.SampleSize = 9527;
                 setting.SelectCarton[0].Selected = false;
                 setting.SelectCarton[2].Selected = true;
-                result = finalInspectionSettingService.UpdateFinalInspection(setting, "SCIMIS", this.factory, this.Mdivision);
+                baseResult = finalInspectionSettingService.UpdateFinalInspection(setting, "SCIMIS", this.factory, this.Mdivision, out result);
+                if (!baseResult)
+                {
+                    Assert.Fail(baseResult.ErrorMessage);
+                }
 
                 Assert.IsTrue(true);
             }
