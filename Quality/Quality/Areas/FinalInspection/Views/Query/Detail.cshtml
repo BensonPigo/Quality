@@ -68,12 +68,22 @@
             overflow: scroll;
             overflow-x: hidden;
         }
+
+        #Detail_Cartons_info {
+            color: white
+        }
+
+        #Detail_Cartons_previous, #Detail_Cartons_next {
+            color: white !important;
+        }
+
+        #Detail_Cartons_wrapper, #Detail_Cartons_wrapper > .dataTables_scrollHeadInner {
+            width: 100%
+        }
     </style>
 }
 
 <div class="whiteBackgrond" style="height:86vh">
-
-
     <div style="padding:1em">
         <div>
             <h1 style="font-size:2em">Inspection Report</h1>
@@ -201,6 +211,40 @@
                     <td class="valueColor">@Model.FinalInspection.ShipmentStatus</td>
                 </tr>
             </table>
+        </div>
+    </div>
+</div>
+
+<div class="detail-dialog to-edit-detail" title="Detail">
+    <div class="detail-dialog-content dialog-content-w-icon" style="height:40vh">
+        <table cellspacing="100" id="Detail_Cartons" class="table table-striped display">
+            <thead>
+                <tr class="row-name">
+                    <th>Select</th>
+                    <th>Packing List ID</th>
+                    <th>CTN No</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.SelectCarton.Count; i++)
+                {
+                    <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                        <td>
+                            <input type="checkbox" value="@Model.SelectCarton[i].CTNNo" id="carton_select_@Model.SelectCarton[i].CTNNo">
+                        </td>
+                        <td>
+                            @Html.DisplayFor(o => Model.SelectCarton[i].PackingListID)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(o => Model.SelectCarton[i].CTNNo)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+        <br />
+        <div>
         </div>
     </div>
 </div>
