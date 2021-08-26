@@ -101,7 +101,7 @@
                     </tr>
                     <tr>
                         <td style="text-align:right"><label>Top</label></td>
-                        <td>@Html.TextBoxFor(o => o.GarmentTop, new { @type = "number", @step = "0.1", @onchange= "setColor();", @style = "width:100px" })</td>
+                        <td>@Html.TextBoxFor(o => o.GarmentTop, new { @type = "number", @step = "0.1", @onchange = "setColor();", @style = "width:100px" })</td>
                         <td style="text-align:right"><label>Middle</label></td>
                         <td>@Html.TextBoxFor(o => o.GarmentMiddle, new { @type = "number", @step = "0.1", @onchange = "setColor();", @style = "width:100px" })</td>
                         <td style="text-align:right"><label>Bottom</label></td>
@@ -113,7 +113,7 @@
                     </tr>
                     <tr>
                         <td style="text-align:right"><label class="cartonData">Inside</label></td>
-                        <td>@Html.TextBoxFor(o => o.CTNInside, new { @class= "cartonData", @type = "number", @step = "0.1", @onchange = "setColor();", @style = "width:100px" })</td>
+                        <td>@Html.TextBoxFor(o => o.CTNInside, new { @class = "cartonData", @type = "number", @step = "0.1", @onchange = "setColor();", @style = "width:100px" })</td>
                         <td><label>Outside</label></td>
                         <td>@Html.TextBoxFor(o => o.CTNOutside, new { @class = "cartonData", @type = "number", @step = "0.1", @onchange = "setColor();", @style = "width:100px" })</td>
                         <td colspan="2"></td>
@@ -131,12 +131,12 @@
                     </tr>
                     <tr>
                         <td style="vertical-align:top"><label>Remark</label></td>
-                        <td colspan="3">@Html.TextAreaFor(o => o.Remark, new { @style = "width:60%;min-height:110px" })</td>
+                        <td colspan="3">@Html.TextAreaFor(o => o.Remark, new { @style = "width:90%;min-height:10vh" })</td>
                     </tr>
                 </table>
             </div>
             <input type="hidden" id="goPage" name="goPage">
-            <div style="position:absolute;right:1em;bottom:6em;font-size:0.8em">Inline, 3rd Party can skip this step</div>
+            <div style="position:absolute;right:2em;bottom:7em;font-size:0.8em">Inline, 3rd Party can skip this step</div>
             <button id="btnBack" onclick="this.form.submitted=this.value;" type="submit" value="Back" style="right:7em;" class="button">Back</button>
             <button id="btnNext" onclick="this.form.submitted=this.value;" type="submit" value="Next" style="right:0;" class="button">Next</button>
         </div>
