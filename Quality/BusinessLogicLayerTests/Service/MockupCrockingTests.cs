@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
 using DatabaseObject.ProductionDB;
+using BusinessLogicLayer.Interface.BulkFGT;
 
 namespace BusinessLogicLayer.Service.Tests
 {

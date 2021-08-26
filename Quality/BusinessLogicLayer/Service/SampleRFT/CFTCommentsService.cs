@@ -1,5 +1,4 @@
 ﻿using ADOHelper.Template.MSSQL;
-using BusinessLogicLayer.Interface;
 using DatabaseObject.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -11,8 +10,9 @@ using ADOHelper.Utility;
 using DatabaseObject.ManufacturingExecutionDB;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using System.Linq;
+using BusinessLogicLayer.Interface.SampleRFT;
 
-namespace BusinessLogicLayer.Service
+namespace BusinessLogicLayer.Service.SampleRFT
 {
     public class CFTCommentsService : ICFTCommentsService
     {

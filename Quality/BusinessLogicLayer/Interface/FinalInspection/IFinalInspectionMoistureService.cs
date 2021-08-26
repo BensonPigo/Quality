@@ -12,7 +12,9 @@ namespace BusinessLogicLayer.Interface
     {
         Moisture GetMoistureForInspection(string finalInspectionID);
 
-        BaseResult UpdateMoisture(MoistureResult moistureResult);
+        BaseResult UpdateMoistureBySave(MoistureResult moistureResult);
+
+        BaseResult UpdateMoistureByNext(MoistureResult moistureResult);
 
         BaseResult DeleteMoisture(long ukey);
 

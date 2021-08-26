@@ -308,20 +308,74 @@ where   ID = @FinalInspectionID
                 case "Insp-BA":
                     break;
                 case "Insp-Moisture":
+                    sqlUpdCmd += $@"
+update FinalInspection
+ set    InspectionStep = @InspectionStep,
+        EditName= @userID,
+        EditDate= getdate()
+where   ID = @FinalInspectionID
+";
+                    objParameter.Add("@FinalInspectionID", finalInspection.ID);
+                    objParameter.Add("@userID", userID);
+                    objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
                     break;
                 case "Insp-Measurement":
+                    sqlUpdCmd += $@"
+update FinalInspection
+ set    InspectionStep = @InspectionStep,
+        EditName= @userID,
+        EditDate= getdate()
+where   ID = @FinalInspectionID
+";
+                    objParameter.Add("@FinalInspectionID", finalInspection.ID);
+                    objParameter.Add("@userID", userID);
+                    objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
                     break;
                 case "Insp-Others":
+                    sqlUpdCmd += $@"
+update FinalInspection
+ set    ProductionStatus = @ProductionStatus  ,
+        OthersRemark= @OthersRemark    ,
+        CFA= @CFA   ,
+        InspectionStep = @InspectionStep,
+        EditName= @userID,
+        EditDate= getdate()
+where   ID = @FinalInspectionID
+";
+                    objParameter.Add("@FinalInspectionID", finalInspection.ID);
+                    objParameter.Add("@userID", userID);
+                    objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
+                    objParameter.Add("@ProductionStatus", finalInspection.ProductionStatus);
+                    objParameter.Add("@OthersRemark", finalInspection.OthersRemark);
+                    objParameter.Add("@CFA", finalInspection.CFA);
+                    break;
+                case "Submit":
+                    sqlUpdCmd += $@"
+update FinalInspection
+ set    ProductionStatus = @ProductionStatus  ,
+        OthersRemark= @OthersRemark    ,
+        CFA= @CFA   ,
+        InspectionResult= @InspectionResult   ,
+        ShipmentStatus= @ShipmentStatus   ,
+        InspectionStep = 'Insp-Others',
+        EditName= @userID,
+        EditDate= getdate(),
+        SubmitDate=getdate()
+where   ID = @FinalInspectionID
+";
+                    objParameter.Add("@FinalInspectionID", finalInspection.ID);
+                    objParameter.Add("@userID", userID);
+                    objParameter.Add("@InspectionResult", finalInspection.InspectionResult);
+                    objParameter.Add("@ShipmentStatus", finalInspection.ShipmentStatus);
+                    objParameter.Add("@ProductionStatus", finalInspection.ProductionStatus);
+                    objParameter.Add("@OthersRemark", finalInspection.OthersRemark);
+                    objParameter.Add("@CFA", finalInspection.CFA);
                     break;
                 default:
                     break;
             }
 
-            using (TransactionScope transaction = new TransactionScope())
-            {
-                ExecuteNonQuery(CommandType.Text, sqlUpdCmd, objParameter);
-                transaction.Complete();
-            }
+            ExecuteNonQuery(CommandType.Text, sqlUpdCmd, objParameter);
         }
 
         public IList<byte[]> GetFinalInspectionDefectImage(long FinalInspection_DetailUkey)
@@ -627,6 +681,330 @@ where fm.ID = @finalInspectionID
 
 ";
             return ExecuteList<ViewMoistureResult>(CommandType.Text, sqlGetViewMoistureResult, objParameter);
+        }
+
+        public IList<EndlineMoisture> GetEndlineMoisture()
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+
+            string sqlGetEndlineMoisture = @"
+select  Instrument
+        ,Fabrication
+        ,Standard
+        ,Unit
+        ,Junk
+        ,Description
+        ,AddDate
+        ,AddName
+        ,EditDate
+        ,Editname
+from    EndlineMoisture with (nolock)
+
+";
+            return ExecuteList<EndlineMoisture>(CommandType.Text, sqlGetEndlineMoisture, objParameter);
+        }
+
+        public void UpdateMoisture(MoistureResult moistureResult)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            objParameter.Add("@FinalInspectionID", moistureResult.FinalInspectionID);
+            objParameter.Add("@Article", moistureResult.Article);
+            objParameter.Add("@FinalInspection_OrderCartonUkey", moistureResult.FinalInspection_OrderCartonUkey);
+            objParameter.Add("@Instrument", moistureResult.Instrument);
+            objParameter.Add("@Fabrication", moistureResult.Fabrication);
+            objParameter.Add("@GarmentTop", moistureResult.GarmentTop);
+            objParameter.Add("@GarmentMiddle", moistureResult.GarmentMiddle);
+            objParameter.Add("@GarmentBottom", moistureResult.GarmentBottom);
+            objParameter.Add("@CTNInside", moistureResult.CTNInside);
+            objParameter.Add("@CTNOutside", moistureResult.CTNOutside);
+            objParameter.Add("@Result", moistureResult.Result);
+            objParameter.Add("@Action", moistureResult.Action);
+            objParameter.Add("@Remark", moistureResult.Remark);
+            objParameter.Add("@AddName", moistureResult.AddName);
+
+            string sqlInsertFinalInspection_Moisture = @"
+insert into FinalInspection_Moisture
+(
+ID
+,Article
+,FinalInspection_OrderCartonUkey
+,Instrument
+,Fabrication
+,GarmentTop
+,GarmentMiddle
+,GarmentBottom
+,CTNInside
+,CTNOutside
+,Result
+,Action
+,Remark
+,AddName
+,AddDate
+)
+values
+(
+ @FinalInspectionID
+,@Article
+,@FinalInspection_OrderCartonUkey
+,@Instrument
+,@Fabrication
+,@GarmentTop
+,@GarmentMiddle
+,@GarmentBottom
+,@CTNInside
+,@CTNOutside
+,@Result
+,@Action
+,@Remark
+,@AddName
+,GetDate()
+)
+";
+            ExecuteNonQuery(CommandType.Text, sqlInsertFinalInspection_Moisture, objParameter);
+        }
+
+        public void DeleteMoisture(long ukey)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            objParameter.Add("@Ukey", ukey);
+
+            string sqlDeleteMoisture = @" delete FinalInspection_Moisture where Ukey = @Ukey";
+
+            ExecuteNonQuery(CommandType.Text, sqlDeleteMoisture, objParameter);
+        }
+
+        public bool CheckMoistureExists(string finalInspectionID, string article, long finalInspection_OrderCartonUkey)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            objParameter.Add("@FinalInspectionID", finalInspectionID);
+            objParameter.Add("@article", article);
+            objParameter.Add("@finalInspection_OrderCartonUkey", finalInspection_OrderCartonUkey);
+
+            string sqlCheckMoistureExists = @"
+select  [result] = 1 
+from    FinalInspection_Moisture with (nolock)
+where   ID = @FinalInspectionID and
+        Article = @article and
+        FinalInspection_OrderCartonUkey = @finalInspection_OrderCartonUkey
+";
+
+            DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlCheckMoistureExists, objParameter);
+
+            return dtResult.Rows.Count > 0;
+        }
+
+        public void UpdateMeasurement(DatabaseObject.ViewModel.FinalInspection.Measurement measurement, string userID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            DataTable dtDateTime = ExecuteDataTableByServiceConn(CommandType.Text, "select [DateTime] = getdate()", objParameter);
+
+            using (TransactionScope transactionScope = new TransactionScope())
+            {
+                foreach (MeasurementItem measurementItem in measurement.ListMeasurementItem)
+                {
+                    objParameter = new SQLParameterCollection();
+                    objParameter.Add("@ID", measurement.FinalInspectionID);
+                    objParameter.Add("@Article", measurement.SelectedArticle);
+                    objParameter.Add("@SizeCode", measurement.SelectedSize);
+                    objParameter.Add("@Location", measurement.SelectedProductType);
+                    objParameter.Add("@Code", measurementItem.Code);
+                    objParameter.Add("@SizeSpec", measurementItem.ResultSizeSpec);
+                    objParameter.Add("@MeasurementUkey", measurementItem.MeasurementUkey);
+                    objParameter.Add("@AddName", userID);
+                    objParameter.Add("@AddDate", dtDateTime.Rows[0]["DateTime"]);
+
+                    string sqlInsertMeasurement = @"
+insert into FinalInspection_Measurement(
+ID
+,Article
+,SizeCode
+,Location
+,Code
+,SizeSpec
+,MeasurementUkey
+,AddName
+,AddDate
+)
+values
+(
+ @ID
+,@Article
+,@SizeCode
+,@Location
+,@Code
+,@SizeSpec
+,@MeasurementUkey
+,@AddName
+,@AddDate
+)
+";
+                    ExecuteNonQuery(CommandType.Text, sqlInsertMeasurement, objParameter);
+                }
+
+                transactionScope.Complete();
+            }
+        }
+
+        public IList<MeasurementViewItem> GetMeasurementViewItem(string finalInspectionID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            objParameter.Add("@finalInspectionID", finalInspectionID);
+
+            string sqlGetEndlineMoisture = @"
+select  distinct    Article,
+                    [Size] = SizeCode,
+                    [ProductType] = Location,
+                    [MeasurementDataByJson] = ''
+from    FinalInspection_Measurement with (nolock)
+where   ID = @finalInspectionID
+
+";
+            return ExecuteList<MeasurementViewItem>(CommandType.Text, sqlGetEndlineMoisture, objParameter);
+        }
+
+        public DataTable GetMeasurement(string finalInspectionID, string article, string size, string productType)
+        {
+
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@finalInspectionID", DbType.String, finalInspectionID} ,
+                { "@article", DbType.String, article} ,
+                { "@size", DbType.String, size} ,
+                { "@productType", DbType.String, productType} ,
+            };
+
+
+            string sqlcmd = @"
+
+declare @styleukey bigint
+declare @sizeUnit varchar(8)
+declare @POID varchar(13)
+
+select  @POID = POID
+from    FinalInspection with (nolock)
+where   ID = @finalInspectionID
+
+select  @styleukey = Ukey,
+        @sizeUnit = SizeUnit
+from    SciProduction_Style
+where   Ukey = (select StyleUkey from SciProduction_Orders where ID = @POID)
+
+
+select  SizeSpec,
+        MeasurementUkey,
+        AddDate
+into    #tmp_Inspection_Measurement
+from    FinalInspection_Measurement
+where   ID = @finalInspectionID and
+        Article = @article and
+        SizeCode = @size and
+        Location = @productType
+
+
+select m.Ukey
+	,Description = iif(isnull(b.DescEN,'') = '', m.Description, b.DescEN)
+	,m.Tol1
+	,m.Tol2
+	,m.Code
+	,m.SizeCode 
+	,[MeasurementSizeSpec] = m.SizeSpec 
+	,[InspectionMeasurementSizeSpec] = im.SizeSpec
+	,[diff]= max(dbo.calculateSizeSpec(m.SizeSpec,im.SizeSpec, @sizeUnit))
+	,im.AddDate
+	,[HeadSizeCode] = FORMAT(im.AddDate,'yyyy/MM/dd HH:mm:ss')
+into #tmp 
+from Measurement m with(nolock)
+left join #tmp_Inspection_Measurement im on im.MeasurementUkey = m.Ukey 
+LEFT JOIN [ManufacturingExecution].[dbo].[MeasurementTranslate] b ON  m.MeasurementTranslateUkey = b.UKey
+where   m.StyleUkey = @styleukey and
+        m.SizeCode = @size and
+        m.junk = 0
+group by m.Ukey,iif(isnull(b.DescEN,'') = '',m.Description,b.DescEN),m.Tol1,m.Tol2,m.Code,m.SizeCode,m.SizeSpec,im.SizeSpec,im.AddDate
+
+drop table #tmp_Inspection_Measurement
+
+declare @HeadSizeCode as varchar(20),@mSizeCode as varchar(10),@r_id as varchar(10)
+declare @sql varchar(max) = ''
+DECLARE CURSOR_ CURSOR FOR
+Select t.HeadSizeCode, t.SizeCode, ROW_NUMBER() over( order by t.HeadSizeCode) r_id
+from #tmp t
+where t.HeadSizeCode is not null
+group by t.HeadSizeCode, t.SizeCode
+
+OPEN CURSOR_
+FETCH NEXT FROM CURSOR_ INTO @HeadSizeCode,@mSizeCode,@r_id
+While @@FETCH_STATUS = 0
+Begin
+	
+	set @sql = @sql + '
+		,Max(case when SizeCode ='''+@mSizeCode+''' then MeasurementSizeSpec end) as ['+@mSizeCode+'_aa]
+		,Max(case when HeadSizeCode ='''+@HeadSizeCode+''' and SizeCode ='''+@mSizeCode+''' then InspectionMeasurementSizeSpec end) as ['+@HeadSizeCode+']
+		,Max(case when HeadSizeCode ='''+@HeadSizeCode+''' and SizeCode ='''+@mSizeCode+''' then diff end) as diff'+@r_id+''
+FETCH NEXT FROM CURSOR_ INTO @HeadSizeCode,@mSizeCode,@r_id
+End
+CLOSE CURSOR_
+DEALLOCATE CURSOR_ 
+
+set @sql = '
+	select t.Code,t.Description
+		,[Tol(+)] = t.Tol2 
+		,[Tol(-)] = t.Tol1 
+		' + @sql + '
+	from #tmp t 
+	group by t.Description,t.Tol1,t.Tol2,t.code
+    order by t.Code
+'
+
+exec (@sql)
+
+
+drop table #tmp
+
+";
+
+            DataTable dt = ExecuteDataTable(CommandType.Text, sqlcmd, objParameter);
+            return dt;
+        }
+
+        public List<byte[]> GetOthersImage(string finalInspectionID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection() {
+            { "@finalInspectionID", DbType.String, finalInspectionID }
+            };
+
+            string sqlGetData = @"
+select  Image
+    from FinalInspection_OtherImage with (nolock)
+    where   ID = @finalInspectionID
+";
+
+            DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, objParameter);
+
+            if (dtResult.Rows.Count > 0)
+            {
+                return dtResult.AsEnumerable().Select(s => (byte[])s["Image"]).ToList();
+            }
+            else
+            {
+                return new List<byte[]>();
+            }
+        }
+
+        public void UpdateFinalInspection_OtherImage(string finalInspectionID, List<byte[]> images)
+        {
+            foreach (byte[] image in images)
+            {
+                string sqlFinalInspection_OtherImage = @"
+    insert into FinalInspection_OtherImage(ID, Image)
+                values(@FinalInspectionID, @Image)
+";
+                SQLParameterCollection imgParameter = new SQLParameterCollection() {
+                            { "@FinalInspectionID", DbType.String, finalInspectionID },
+                            { "@Image", image}
+                        };
+
+                ExecuteNonQuery(CommandType.Text, sqlFinalInspection_OtherImage, imgParameter);
+            }
         }
 
         #endregion

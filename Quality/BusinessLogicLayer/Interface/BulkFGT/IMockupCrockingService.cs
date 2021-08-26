@@ -3,7 +3,7 @@ using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel;
 using System.Collections.Generic;
 
-namespace BusinessLogicLayer.Interface
+namespace BusinessLogicLayer.Interface.BulkFGT
 {
     public interface IMockupCrockingService
     {

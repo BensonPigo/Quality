@@ -2,7 +2,7 @@
 using DatabaseObject.ViewModel;
 using System.Collections.Generic;
 
-namespace BusinessLogicLayer.Interface
+namespace BusinessLogicLayer.Interface.SampleRFT
 {
     public interface ICFTCommentsService
     {

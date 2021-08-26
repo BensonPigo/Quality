@@ -160,11 +160,14 @@
     <Compile Include="Areas\FinalInspection\Controllers\QueryController.cs" />
     <Compile Include="Areas\FinalInspection\FinalInspectionAreaRegistration.cs" />
     <Compile Include="Areas\SampleRFT\Controllers\BACriteriaController.cs" />
+    <Compile Include="Areas\SampleRFT\Controllers\CFTCommentsController.cs" />
     <Compile Include="Areas\SampleRFT\Controllers\InspectionController.cs" />
     <Compile Include="Areas\SampleRFT\Controllers\MeasurementController.cs" />
     <Compile Include="Areas\SampleRFT\Controllers\PFTperLineController.cs" />
     <Compile Include="Areas\SampleRFT\Controllers\PicturesDummyController.cs" />
     <Compile Include="Areas\SampleRFT\SampleRFTAreaRegistration.cs" />
+    <Compile Include="Areas\StyleManagement\Controllers\StyleListController.cs" />
+    <Compile Include="Areas\StyleManagement\StyleManagementAreaRegistration.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PublicWondowController.cs" />
@@ -292,6 +295,11 @@
     <Content Include="Areas\FinalInspection\Views\Query\_Tab6_Layout.cshtml" />
     <Content Include="Areas\FinalInspection\Views\Query\_Tab7_Layout.cshtml" />
     <Content Include="Areas\BulkFGT\Views\FabricCrkShrkTest\Index.cshtml" />
+    <Content Include="Areas\StyleManagement\Views\web.config" />
+    <Content Include="Areas\StyleManagement\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\StyleManagement\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\StyleManagement\Views\StyleList\Index.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\CFTComments\Index.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -724,6 +732,7 @@
     <Folder Include="Areas\BulkFGT\Views\MockupCrocking\" />
     <Folder Include="Areas\FinalInspection\Models\" />
     <Folder Include="Areas\SampleRFT\Data\" />
+    <Folder Include="Areas\StyleManagement\Models\" />
     <Folder Include="Models\" />
     <Folder Include="ThirdParty\plugins\bootstrap-fileinput\fonts\" />
     <Folder Include="Views\Authority\" />

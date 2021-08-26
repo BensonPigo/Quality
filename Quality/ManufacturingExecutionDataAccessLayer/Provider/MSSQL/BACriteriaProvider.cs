@@ -31,8 +31,8 @@ select OrderID=o.ID
 	,o.OrderTypeID
 	,o.Qty
 	,InspectedQty = ISNULL(Inspected.Qty, 0)
-	,BAProduct = ISNULL(BAProduct.Qty, 0)
-	,BACriteria = IIF( ISNULL(Inspected.Qty, 0) = 0 , 0 ,ISNULL(BAProduct.Qty, 0) / ISNULL(Inspected.Qty, 0) * 5)
+	,BAProduct = ISNULL(Inspected.Qty, 0) - ISNULL(BAProduct.Qty, 0)
+	,BACriteria = CAST( IIF( ISNULL(Inspected.Qty, 0) = 0 , 0 ,(ISNULL(Inspected.Qty, 0) - ISNULL(BAProduct.Qty, 0) ) *1.0 / ISNULL(Inspected.Qty, 0)*1.0 * 5) as INT)
 from SciProduction_Orders o
 OUTER APPLY(
 	select Qty = COUNT(1)
@@ -43,7 +43,7 @@ OUTER APPLY(
 	select Qty =  COUNT(DISTINCT i.ID)
 	from RFT_Inspection i
 	inner join RFT_Inspection_Detail id on i.ID = id.ID
-	WHERE NOT id.PMS_RFTBACriteriaID BETWEEN 'C2' AND 'C9'
+	WHERE id.PMS_RFTBACriteriaID BETWEEN 'C2' AND 'C9'
 	AND i.OrderID = o.ID
 )BAProduct
 

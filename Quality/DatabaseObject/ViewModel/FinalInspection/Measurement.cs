@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace DatabaseObject.ViewModel.FinalInspection
 {
-    public class Measurement
+    public class Measurement : BaseResult
     {
         public string FinalInspectionID { get; set; }
 
@@ -15,6 +15,12 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public List<SelectListItem> ListSize { get; set; }
 
         public List<SelectListItem> ListProductType { get; set; }
+
+        public string SelectedArticle { get; set; }
+
+        public string SelectedSize { get; set; }
+
+        public string SelectedProductType { get; set; }
 
         public string SizeUnit { get; set; }
 
@@ -29,8 +35,9 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string Tol1 { get; set; }
         public string Tol2 { get; set; }
         public string Size { get; set; }
-        public string ResultSizeSpec { get; set; }
+        public string ResultSizeSpec { get; set; } = string.Empty;
         public string Code { get; set; }
+        public long MeasurementUkey { get; set; }
         public bool CanEdit { get; set; }
     }
 

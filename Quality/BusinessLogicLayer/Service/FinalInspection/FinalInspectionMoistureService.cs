@@ -16,7 +16,7 @@ namespace BusinessLogicLayer.Service
     public class FinalInspectionMoistureService : IFinalInspectionMoistureService
     {
         public IFinalInspectionProvider _FinalInspectionProvider { get; set; }
-        public IOrdersProvider _OrdersProvider { get; set; }
+        public ISystemProvider _SystemProvider { get; set; }
         public IFinalInspFromPMSProvider _FinalInspFromPMSProvider { get; set; }
 
         public Moisture GetMoistureForInspection(string finalInspectionID)
@@ -27,14 +27,14 @@ namespace BusinessLogicLayer.Service
             {
                 _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
                 _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
-
-                DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection =
-                    _FinalInspectionProvider.GetFinalInspection(finalInspectionID);
+                _SystemProvider = new SystemProvider(Common.ProductionDataAccessLayer);
 
                 moisture.FinalInspectionID = finalInspectionID;
-                moisture.ListArticle = _FinalInspFromPMSProvider.GetMoistureArticleList(finalInspectionID);
+                moisture.FinalInspection_CTNMoisureStandard = _SystemProvider.Get()[0].FinalInspection_CTNMoisureStandard;
+                moisture.ListArticle = _FinalInspFromPMSProvider.GetArticleList(finalInspectionID);
                 moisture.ListCartonItem = _FinalInspectionProvider.GetMoistureListCartonItem(finalInspectionID).ToList();
-
+                moisture.ListEndlineMoisture = _FinalInspectionProvider.GetEndlineMoisture().ToList();
+                moisture.ActionSelectListItem = _FinalInspFromPMSProvider.GetActionSelectListItem().ToList();
             }
             catch (Exception ex)
             {
@@ -62,14 +62,80 @@ namespace BusinessLogicLayer.Service
             }
         }
 
-        public BaseResult UpdateMoisture(MoistureResult moistureResult)
+        public BaseResult UpdateMoistureBySave(MoistureResult moistureResult)
         {
-            throw new NotImplementedException();
+            BaseResult result = new BaseResult();
+
+            try
+            {
+                _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                bool isMoistureExists = _FinalInspectionProvider.CheckMoistureExists(moistureResult.FinalInspectionID, moistureResult.Article, moistureResult.FinalInspection_OrderCartonUkey);
+
+                if (isMoistureExists)
+                {
+                    result.Result = false;
+                    result.ErrorMessage = "Moisture data already exists, please use View to delete first";
+                    return result;
+                }
+
+                _FinalInspectionProvider.UpdateMoisture(moistureResult);
+
+            }
+            catch (Exception ex)
+            {
+                result.Result = false;
+                result.ErrorMessage = ex.ToString();
+            }
+
+            return result;
+        }
+
+        public BaseResult UpdateMoistureByNext(MoistureResult moistureResult)
+        {
+            BaseResult result = new BaseResult();
+
+            try
+            {
+                _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                bool isMoistureExists = _FinalInspectionProvider.CheckMoistureExists(moistureResult.FinalInspectionID, moistureResult.Article, moistureResult.FinalInspection_OrderCartonUkey);
+
+                if (!isMoistureExists)
+                {
+                    _FinalInspectionProvider.UpdateMoisture(moistureResult);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                result.Result = false;
+                result.ErrorMessage = ex.ToString();
+            }
+
+            return result;
         }
 
         public BaseResult DeleteMoisture(long ukey)
         {
-            throw new NotImplementedException();
+            BaseResult result = new BaseResult();
+
+            try
+            {
+                _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                _FinalInspectionProvider.DeleteMoisture(ukey);
+
+            }
+            catch (Exception ex)
+            {
+                result.Result = false;
+                result.ErrorMessage = ex.ToString();
+            }
+
+            return result;
         }
+
+        
     }
 }

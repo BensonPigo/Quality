@@ -11,6 +11,7 @@ using System.Data.SqlClient;
 using DatabaseObject.ViewModel.FinalInspection;
 using System.Linq;
 using ToolKit;
+using System.Web.Mvc;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
@@ -168,7 +169,7 @@ select  [Ukey] = isnull(fd.Ukey, -1),
             return ExecuteList<FinalInspectionDefectItem>(CommandType.Text, sqlGetData, listPar);
         }
 
-        public List<string> GetMoistureArticleList(string finalInspectionID)
+        public List<string> GetArticleList(string finalInspectionID)
         {
             SQLParameterCollection listPar = new SQLParameterCollection();
 
@@ -181,7 +182,7 @@ from [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order with (noloc
 where ID = @finalInspectionID
 
 select distinct Article 
-from Order_Article
+from Order_Article with (nolock)
 where id in (select OrderID from #FinalInspection_Order)
 ";
 
@@ -193,9 +194,82 @@ where id in (select OrderID from #FinalInspection_Order)
             }
             else
             {
-                return dtResult.AsEnumerable().Select(s => s["OrderID"].ToString()).ToList();
+                return dtResult.AsEnumerable().Select(s => s["Article"].ToString()).ToList();
             }
 
+        }
+
+        public IList<SelectListItem> GetActionSelectListItem()
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+
+            string sqlGetActionSelectListItem = @"
+select  [Text] = '', [Value] = ''
+union
+select  [Text] = Name, [Value] = Name 
+from DropDownList ddl where
+type='PMS_MoistureAction'
+
+";
+            return ExecuteList<SelectListItem>(CommandType.Text, sqlGetActionSelectListItem, listPar);
+        }
+
+        public List<string> GetSizeList(string finalInspectionID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+
+            listPar.Add("@finalInspectionID", finalInspectionID);
+
+            string sqlGetMoistureArticleList = @"
+select  OrderID
+into #FinalInspection_Order
+from [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order with (nolock)
+where ID = @finalInspectionID
+
+select distinct SizeCode 
+from Order_Qty with (nolock)
+where id in (select OrderID from #FinalInspection_Order)
+";
+
+            DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetMoistureArticleList, listPar);
+
+            if (dtResult.Rows.Count == 0)
+            {
+                return new List<string>();
+            }
+            else
+            {
+                return dtResult.AsEnumerable().Select(s => s["SizeCode"].ToString()).ToList();
+            }
+        }
+
+        public List<string> GetProductTypeList(string finalInspectionID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+
+            listPar.Add("@finalInspectionID", finalInspectionID);
+
+            string sqlGetMoistureArticleList = @"
+select  OrderID
+into #FinalInspection_Order
+from [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order with (nolock)
+where ID = @finalInspectionID
+
+select distinct Location 
+from Order_Location with (nolock)
+where OrderId in (select OrderID from #FinalInspection_Order)
+";
+
+            DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetMoistureArticleList, listPar);
+
+            if (dtResult.Rows.Count == 0)
+            {
+                return new List<string>();
+            }
+            else
+            {
+                return dtResult.AsEnumerable().Select(s => s["Location"].ToString()).ToList();
+            }
         }
     }
 }

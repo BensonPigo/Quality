@@ -9,5 +9,7 @@ namespace ProductionDataAccessLayer.Interface
         IList<Style> Get(Style Item);
 
         IList<Style> GetSizeUnit(Int64 ukey);
+
+        string GetSizeUnitByPOID(string POID);
     }
 }
