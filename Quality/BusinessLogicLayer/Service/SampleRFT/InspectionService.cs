@@ -255,6 +255,30 @@ namespace BusinessLogicLayer.Service
                 #region update/insert [RFT_Inspection] and [RFT_Inspection_Detail]
 
                 _RFTInspectionDetailProvider = new RFTInspectionDetailProvider(_ISQLDataTransaction);
+                // 判斷資料是否是空值
+
+                string emptyMsg = string.Empty;
+                if (string.IsNullOrEmpty(inspections.rft_Inspection.OrderID)){emptyMsg += "OrderID cannot be empty." + Environment.NewLine;}
+                if (string.IsNullOrEmpty(inspections.rft_Inspection.Article)) { emptyMsg += "Article cannot be empty." + Environment.NewLine; }
+                if (string.IsNullOrEmpty(inspections.rft_Inspection.Location)) { emptyMsg += "Location cannot be empty." + Environment.NewLine; }
+                if (string.IsNullOrEmpty(inspections.rft_Inspection.Size)) { emptyMsg += "Size cannot be empty." + Environment.NewLine; }
+                if (string.IsNullOrEmpty(inspections.rft_Inspection.Line)) { emptyMsg += "Line cannot be empty." + Environment.NewLine; }
+                if (string.IsNullOrEmpty(inspections.rft_Inspection.FactoryID)) { emptyMsg += "FactoryID cannot be empty." + Environment.NewLine; }
+                if (inspections.rft_Inspection.StyleUkey == 0 || inspections.rft_Inspection.StyleUkey == 0) { emptyMsg += "StyleUkey cannot be empty." + Environment.NewLine; }
+                if (string.IsNullOrEmpty(inspections.rft_Inspection.FixType)) { emptyMsg += "FixType cannot be empty." + Environment.NewLine; }
+                if (string.IsNullOrEmpty(inspections.rft_Inspection.ReworkCardNo)) { emptyMsg += "ReworkCardNo cannot be empty." + Environment.NewLine; }
+                if (string.IsNullOrEmpty(inspections.rft_Inspection.Status)) { emptyMsg += "Status cannot be empty." + Environment.NewLine; }
+                if (string.IsNullOrEmpty(inspections.rft_Inspection.AddName)) { emptyMsg += "AddName cannot be empty." + Environment.NewLine; }
+                if (string.IsNullOrEmpty(inspections.rft_Inspection.ReworkCardType)) { emptyMsg += "ReworkCardType cannot be empty." + Environment.NewLine; }
+                if (inspections.rft_Inspection.InspectionDate == null) { emptyMsg += "InspectionDate cannot be empty." + Environment.NewLine; }
+
+                if (!string.IsNullOrEmpty(emptyMsg))
+                {
+                    inspections.Result = false;
+                    inspections.ErrMsg = emptyMsg;
+                    return inspections;
+                }
+
                 int createCnt = _RFTInspectionDetailProvider.Create_Master_Detail(inspections.rft_Inspection, inspections.fT_Inspection_Details);
                 _ISQLDataTransaction.Commit();
                 // 寄信
