@@ -96,7 +96,7 @@
             <div style="margin:1em">
                 <table class="col-auto table_div" style="width:100%">
                     <tr>
-                        <td colspan="2"><label>Detection Instrument</label></td>
+                        <td colspan="2"><label>Garment Moisture</label></td>
                         <td colspan="4"><label>(Standard:<label id="GarmentStandard"></label>)</label></td>
                     </tr>
                     <tr>
@@ -114,7 +114,7 @@
                     <tr>
                         <td style="text-align:right"><label class="cartonData">Inside</label></td>
                         <td>@Html.TextBoxFor(o => o.CTNInside, new { @class= "cartonData", @type = "number", @step = "0.1", @onchange = "setColor();", @style = "width:100px" })</td>
-                        <td style="text-align:right"><label>Outside</label></td>
+                        <td><label>Outside</label></td>
                         <td>@Html.TextBoxFor(o => o.CTNOutside, new { @class = "cartonData", @type = "number", @step = "0.1", @onchange = "setColor();", @style = "width:100px" })</td>
                         <td colspan="2"></td>
                     </tr>
