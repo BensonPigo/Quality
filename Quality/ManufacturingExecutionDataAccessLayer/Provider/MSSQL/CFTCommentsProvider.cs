@@ -102,5 +102,53 @@ outer apply(
 ");
             return ExecuteList<CFTComments_Result>(CommandType.Text, SbSql.ToString(), objParameter);
         }
+
+        public DataTable Get_CFT_OrderComments_DataTable(CFTComments_ViewModel Req)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            objParameter.Add("@OrderID", DbType.String, Req.OrderID);
+            objParameter.Add("@StyleID", DbType.String, Req.StyleID);
+            objParameter.Add("@BrandID", DbType.String, Req.BrandID);
+            objParameter.Add("@SeasonID", DbType.String, Req.SeasonID);
+            string where;
+            if (!string.IsNullOrEmpty(Req.OrderID))
+            {
+                where = @"
+and o.id = @OrderID";
+            }
+            else
+            {
+                where = @"
+and o.StyleID = @StyleID
+and o.BrandID = @BrandID
+and o.SeasonID = @SeasonID";
+            }
+
+            StringBuilder SbSql = new StringBuilder();
+            SbSql.Append($@"
+select r.OrderID,o.OrderTypeID, r.PMS_RFTCommentsID, r.Comnments
+into #tmpBase
+from [Production].[dbo].Orders o with(nolock)
+inner join RFT_OrderComments r on r.OrderID = o.id
+where 1=1
+and o.junk = 0
+and o.Category = 'S'
+and o.OnSiteSample != 1
+{where}
+
+select SampleStage = a.OrderTypeID, CommentsCategory = a.PMS_RFTCommentsID, c.Comnments
+from (select distinct OrderTypeID,PMS_RFTCommentsID from #tmpBase) a
+outer apply(
+	select Comnments = stuff((
+		select concat(char(10), Comnments)
+		from #tmpBase b
+		where a.OrderTypeID = b.OrderTypeID and a.PMS_RFTCommentsID = b.PMS_RFTCommentsID
+		and Comnments <> ''
+		for xml path('')
+	),1,1,'')
+)c
+");
+            return ExecuteDataTable(CommandType.Text, SbSql.ToString(), objParameter);
+        }
     }
 }

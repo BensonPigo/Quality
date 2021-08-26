@@ -2,6 +2,7 @@
 using DatabaseObject.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,5 +16,7 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         IList<CFTComments_where> GetCFT_Orders(CFTComments_where CFTComments);
         */
         IList<CFTComments_Result> Get_CFT_OrderComments(CFTComments_ViewModel CFTComments);
+
+        DataTable Get_CFT_OrderComments_DataTable(CFTComments_ViewModel Req);
     }
 }
