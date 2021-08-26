@@ -16,6 +16,8 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string AcceptableQualityLevelsUkey { get; set; } = string.Empty;
         public int? SampleSize { get; set; }
         public int? AcceptQty { get; set; }
+        public string AQLPlan { get; set; }
+
 
         public List<SelectedPO> SelectedPO { get; set; }
 
