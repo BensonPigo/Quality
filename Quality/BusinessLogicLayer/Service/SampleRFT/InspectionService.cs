@@ -11,6 +11,7 @@ using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -56,7 +57,7 @@ namespace BusinessLogicLayer.Service
         public enum ReworkListType
         {
             Pass,
-            Wash,
+            Wash, 
             Repl,
             Print,
             Shade,
@@ -255,6 +256,62 @@ namespace BusinessLogicLayer.Service
                 #region update/insert [RFT_Inspection] and [RFT_Inspection_Detail]
 
                 _RFTInspectionDetailProvider = new RFTInspectionDetailProvider(_ISQLDataTransaction);
+
+                #region 判斷資料是否是空值
+
+                // Master
+                string emptyMsg = string.Empty;
+                if (string.IsNullOrEmpty(inspections.rft_Inspection.OrderID)){emptyMsg += "Master OrderID cannot be empty." + Environment.NewLine;}
+                if (string.IsNullOrEmpty(inspections.rft_Inspection.Article)) { emptyMsg += "Master Article cannot be empty." + Environment.NewLine; }
+                if (string.IsNullOrEmpty(inspections.rft_Inspection.Location)) { emptyMsg += "Master Location cannot be empty." + Environment.NewLine; }
+                if (string.IsNullOrEmpty(inspections.rft_Inspection.Size)) { emptyMsg += "Master Size cannot be empty." + Environment.NewLine; }
+                if (string.IsNullOrEmpty(inspections.rft_Inspection.Line)) { emptyMsg += "Master Line cannot be empty." + Environment.NewLine; }
+                if (string.IsNullOrEmpty(inspections.rft_Inspection.FactoryID)) { emptyMsg += "Master FactoryID cannot be empty." + Environment.NewLine; }
+                if (inspections.rft_Inspection.StyleUkey == 0 || inspections.rft_Inspection.StyleUkey == 0) { emptyMsg += "Master StyleUkey cannot be empty." + Environment.NewLine; }
+
+                if (inspections.rft_Inspection.Status.ToLower() != "pass")
+                {
+                    if (string.IsNullOrEmpty(inspections.rft_Inspection.FixType)) { emptyMsg += "Master FixType cannot be empty." + Environment.NewLine; }
+                    if (string.IsNullOrEmpty(inspections.rft_Inspection.ReworkCardNo)) { emptyMsg += "Master ReworkCardNo cannot be empty." + Environment.NewLine; }
+                    if (string.IsNullOrEmpty(inspections.rft_Inspection.ReworkCardType)) { emptyMsg += "Master ReworkCardType cannot be empty." + Environment.NewLine; }
+                }
+
+                if (string.IsNullOrEmpty(inspections.rft_Inspection.Status)) { emptyMsg += "Master Status cannot be empty." + Environment.NewLine; }
+                if (string.IsNullOrEmpty(inspections.rft_Inspection.AddName)) { emptyMsg += "Master AddName cannot be empty." + Environment.NewLine; }
+           
+                if (inspections.rft_Inspection.InspectionDate == null) { emptyMsg += "Master InspectionDate cannot be empty." + Environment.NewLine; }
+
+                // Detail
+                foreach (var item in inspections.fT_Inspection_Details)
+                {
+                    if (string.IsNullOrEmpty(item.DefectCode)) { emptyMsg += "Detail DefectCode cannot be empty." + Environment.NewLine; }
+                    if (string.IsNullOrEmpty(item.AreaCode)) { emptyMsg += "Detail AreaCode cannot be empty." + Environment.NewLine; }
+
+                    if (string.IsNullOrEmpty(item.PMS_RFTBACriteriaID)) { emptyMsg += "Detail PMS_RFTBACriteriaID cannot be empty." + Environment.NewLine; }
+                    if (string.IsNullOrEmpty(item.PMS_RFTRespID)) { emptyMsg += "Detail PMS_RFTRespID cannot be empty." + Environment.NewLine; }
+
+                    if (string.IsNullOrEmpty(item.GarmentDefectTypeID)) { emptyMsg += "Detail GarmentDefectTypeID cannot be empty." + Environment.NewLine; }
+                    if (string.IsNullOrEmpty(item.GarmentDefectCodeID)) { emptyMsg += "Detail GarmentDefectCodeID cannot be empty." + Environment.NewLine; }
+                }
+
+                if (!string.IsNullOrEmpty(emptyMsg))
+                {
+                    inspections.Result = false;
+                    inspections.ErrMsg = emptyMsg;
+                    return inspections;
+                }
+
+                #endregion
+
+                // 判斷檢驗數量不可超過Order_Qty
+                DataTable dtchk = _RFTInspectionDetailProvider.ChkInspQty(inspections.rft_Inspection);
+                if (dtchk == null || dtchk.Rows.Count == 0)
+                {
+                    inspections.Result = false;
+                    inspections.ErrMsg = "Inspection Qty cannot over than Order Qty.";
+                    return inspections;
+                }
+
                 int createCnt = _RFTInspectionDetailProvider.Create_Master_Detail(inspections.rft_Inspection, inspections.fT_Inspection_Details);
                 _ISQLDataTransaction.Commit();
                 // 寄信
@@ -354,6 +411,7 @@ namespace BusinessLogicLayer.Service
 
             return reworkList_Views;
         }
+
         public InspectionSave_ViewModel SaveReworkListAction(List<RFT_Inspection> rFT_Inspections, ReworkListType reworkListType)
         {
             _RFTInspectionProvider = new RFTInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
@@ -363,7 +421,7 @@ namespace BusinessLogicLayer.Service
             try
             {
                 _RFTInspectionProvider = new RFTInspectionProvider(_ISQLDataTransaction);
-                int updateCnt = _RFTInspectionProvider.SaveReworkListAction(rFT_Inspections);
+                int updateCnt = _RFTInspectionProvider.SaveReworkListAction(rFT_Inspections, reworkListType.ToString());
                 _ISQLDataTransaction.Commit();
                 if (updateCnt == 0)
                 {
@@ -493,6 +551,12 @@ namespace BusinessLogicLayer.Service
                 try
                 {
                     _RFTInspectionProvider = new RFTInspectionProvider(_ISQLDataTransaction);
+                    if (rFT_Inspection == null)
+                    {
+                        reworkList_SaveView.Result = false;
+                        reworkList_SaveView.ErrMsg = "Please select data before click.";
+                        return reworkList_SaveView;
+                    }
                     int updateCnt = _RFTInspectionProvider.SaveReworkListDelete(rFT_Inspection);
                     _ISQLDataTransaction.Commit();
                     if (updateCnt == 0)
