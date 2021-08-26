@@ -236,20 +236,47 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
 
-        public int SaveReworkListAction(List<RFT_Inspection> items)
+        public int SaveReworkListAction(List<RFT_Inspection> items, string statusType)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();
-
+            // 調整Repl 無法加.的問題
+            statusType = statusType.ToLower() == "repl" ? "Repl." : statusType;
             int rowcnt = 1;
             string sqlcmd = "";
             foreach (var item in items)
             {
                 // sql Parameter
                 objParameter.Add($"@ID{rowcnt}", string.IsNullOrEmpty(item.ID.ToString()) ? "" : item.ID.ToString());
-                objParameter.Add($"@FixType{rowcnt}", string.IsNullOrEmpty(item.FixType.ToString()) ? "" : item.FixType.ToString());
+                objParameter.Add($"@FixType{rowcnt}", string.IsNullOrEmpty(statusType) ? "" : statusType);
                 objParameter.Add($"@EditName{rowcnt}", string.IsNullOrEmpty(item.EditName.ToString()) ? "" : item.EditName.ToString());
+                objParameter.Add($"@inspectDate{rowcnt}", item.InspectionDate == null ? "NULL" : ((DateTime)item.InspectionDate).ToString("d"));
+                objParameter.Add($"@DisposeReason{rowcnt}", string.IsNullOrEmpty(item.DisposeReason.ToString()) ? "" : item.DisposeReason.ToString());
 
-                sqlcmd = $@"
+                if (statusType.ToLower() == "pass")
+                {
+                    sqlcmd = $@"
+update RFT_Inspection
+set	status = 'Fixed'
+,InspectionDate = @inspectDate
+,EditName = @EditName{rowcnt} , EditDate = GETDATE()
+where ID = @ID{rowcnt}
+
+update rc
+set Status = 'Fixed'
+,EditName = @EditName{rowcnt}, EditDate = GETDATE()
+from ReworkCard rc
+inner join RFT_Inspection inp on inp.ReworkCardNo = rc.No
+and inp.ReworkCardType = rc.Type and inp.Line = rc.Line
+and inp.FactoryID = rc.FactoryID
+where inp.ID = @ID{rowcnt}
+";
+                }
+                else if(statusType.ToLower() == "wash" ||
+                    statusType.ToLower() == "repl." ||
+                    statusType.ToLower() == "print" ||
+                    statusType.ToLower() == "shade")
+                {
+                    sqlcmd = $@"
 update RFT_Inspection
 set	FixType = @FixType{rowcnt}
 ,EditName = @EditName{rowcnt} , EditDate = GETDATE()
@@ -264,6 +291,28 @@ and inp.ReworkCardType = rc.Type and inp.Line = rc.Line
 and inp.FactoryID = rc.FactoryID
 where inp.ID = @ID{rowcnt}
 ";
+                }
+
+                else if (statusType.ToLower() == "dispose")
+                {
+                    sqlcmd = $@"
+update RFT_Inspection
+set	Status = @FixType{rowcnt}
+,EditName = @EditName{rowcnt} , EditDate = GETDATE()
+,DisposeReason = @DisposeReason
+where ID = @ID{rowcnt}
+
+update rc
+set Status = 'Fixed'
+,EditName = @EditName{rowcnt}, EditDate = GETDATE()
+from ReworkCard rc
+inner join RFT_Inspection inp on inp.ReworkCardNo = rc.No
+and inp.ReworkCardType = rc.Type and inp.Line = rc.Line
+and inp.FactoryID = rc.FactoryID
+where inp.ID = @ID{rowcnt}
+";
+                }
+               
                 rowcnt++;
             }
 
@@ -288,8 +337,8 @@ set Status = 'Fixed'
 ,EditName = @EditName{rowcnt}, EditDate = GETDATE()
 from ReworkCard rc
 inner join RFT_Inspection inp on inp.ReworkCardNo = rc.No
-and inp.ReworkCardType = rc.Type and inp.Line = rc.Line
-and inp.FactoryID = rc.FactoryID
+    and inp.ReworkCardType = rc.Type and inp.Line = rc.Line
+    and inp.FactoryID = rc.FactoryID
 where inp.ID = @ID{rowcnt}
 
 delete from RFT_Inspection_Detail
