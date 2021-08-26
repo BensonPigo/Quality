@@ -70,9 +70,10 @@ namespace BusinessLogicLayer.Service.SampleRFT
         /// </summary>
         /// <param name="Req"></param>
         /// <returns></returns>
-        public string GetExcel(CFTComments_ViewModel Req)
+        public CFTComments_ViewModel GetExcel(CFTComments_ViewModel Req)
         {
             string TempTilePath = string.Empty;
+            CFTComments_ViewModel result = new CFTComments_ViewModel();
             DataTable dt = new DataTable();
             try
             {
@@ -106,15 +107,17 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 Marshal.ReleaseComObject(workbook);
                 Marshal.ReleaseComObject(excelApp);
 
-                TempTilePath = filepath;
+                result.TempFilePath = filepath;
+                result.Result = true;
             }
             catch (Exception ex)
             {
-                //model.Result = false;
-                //model.ErrorMessage = ex.Message;
+                throw ex;
+                //result.Result = false;
+                //result.ErrorMessage = ex.Message;
             }
 
-            return TempTilePath;
+            return result;
         }
     }
 }

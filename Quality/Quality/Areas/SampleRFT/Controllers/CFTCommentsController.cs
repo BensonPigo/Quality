@@ -143,7 +143,16 @@ msg.WithInfo('{model.ErrorMessage.Replace("'",string.Empty)}');
 
             DataTable dt = new DataTable();
 
-            string tempFilePath = _ICFTCommentsService.GetExcel(Req);
+            CFTComments_ViewModel  result = _ICFTCommentsService.GetExcel(Req);
+            string tempFilePath = result.TempFilePath;
+
+            if (!result.Result)
+            {
+                result.ErrorMessage = $@"
+msg.WithInfo('{result.ErrorMessage.Replace("'", string.Empty)}');
+";
+                return View("Index", result);
+            }
 
             // 檔名命名
             string fileName = $"CFT Comments{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";

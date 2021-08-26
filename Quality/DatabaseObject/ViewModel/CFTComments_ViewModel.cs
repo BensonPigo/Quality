@@ -13,7 +13,10 @@ namespace DatabaseObject.ViewModel
         public string StyleID { get; set; }
         public string BrandID { get; set; }
         public string SeasonID { get; set; }
-        public string SampleStage { get; set; }    
+        public string SampleStage { get; set; }
+
+        public string TempFilePath{ get; set; }
+
     }
 
     public class CFTComments_Result

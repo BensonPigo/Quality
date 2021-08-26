@@ -11,6 +11,6 @@ namespace BusinessLogicLayer.Interface.SampleRFT
 
         CFTComments_ViewModel Get_CFT_OrderComments(CFTComments_ViewModel CFTComments);
 
-        string GetExcel(CFTComments_ViewModel Req);
+        CFTComments_ViewModel GetExcel(CFTComments_ViewModel Req);
     }
 }
