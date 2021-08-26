@@ -45,6 +45,11 @@
     <Compile Include="Interface\IBrandProvider.cs" />
     <Compile Include="Interface\IDropDownListProvider.cs" />
     <Compile Include="Interface\IFactoryProvider.cs" />
+    <Compile Include="Interface\IFIRLaboratoryCrockingProvider.cs" />
+    <Compile Include="Interface\IFIRLaboratoryHeatProvider.cs" />
+    <Compile Include="Interface\IFIRLaboratoryProvider.cs" />
+    <Compile Include="Interface\IFIRLaboratoryWashProvider.cs" />
+    <Compile Include="Interface\IFIRProvider.cs" />
     <Compile Include="Interface\IGarmentDefectCodeProvider.cs" />
     <Compile Include="Interface\IGarmentDefectTypeProvider.cs" />
     <Compile Include="Interface\IGarmentDetailSpiralityProvider.cs" />
@@ -61,6 +66,8 @@
     <Compile Include="Interface\IOrderQtyProvider.cs" />
     <Compile Include="Interface\IFinalInspFromPMSProvider.cs" />
     <Compile Include="Interface\IOrdersProvider.cs" />
+    <Compile Include="Interface\IOvenDetailProvider.cs" />
+    <Compile Include="Interface\IOvenProvider.cs" />
     <Compile Include="Interface\IPass1Provider.cs" />
     <Compile Include="Interface\ISeasonProvider.cs" />
     <Compile Include="Interface\ISewingLineProvider.cs" />
@@ -74,6 +81,11 @@
     <Compile Include="Provider\MSSQL\BrandProvider.cs" />
     <Compile Include="Provider\MSSQL\DropDownListProvider.cs" />
     <Compile Include="Provider\MSSQL\FactoryProvider.cs" />
+    <Compile Include="Provider\MSSQL\FIRLaboratoryCrockingProvider.cs" />
+    <Compile Include="Provider\MSSQL\FIRLaboratoryHeatProvider.cs" />
+    <Compile Include="Provider\MSSQL\FIRLaboratoryProvider.cs" />
+    <Compile Include="Provider\MSSQL\FIRLaboratoryWashProvider.cs" />
+    <Compile Include="Provider\MSSQL\FIRProvider.cs" />
     <Compile Include="Provider\MSSQL\GarmentDefectCodeProvider.cs" />
     <Compile Include="Provider\MSSQL\GarmentDefectTypeProvider.cs" />
     <Compile Include="Provider\MSSQL\GarmentDetailSpiralityProvider.cs" />
@@ -90,6 +102,8 @@
     <Compile Include="Provider\MSSQL\OrderQtyProvider.cs" />
     <Compile Include="Provider\MSSQL\FinalInspFromPMSProvider.cs" />
     <Compile Include="Provider\MSSQL\OrdersProvider.cs" />
+    <Compile Include="Provider\MSSQL\OvenDetailProvider.cs" />
+    <Compile Include="Provider\MSSQL\OvenProvider.cs" />
     <Compile Include="Provider\MSSQL\Pass1Provider.cs" />
     <Compile Include="Provider\MSSQL\SeasonProvider.cs" />
     <Compile Include="Provider\MSSQL\SewingLineProvider.cs" />
