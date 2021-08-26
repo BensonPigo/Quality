@@ -142,102 +142,27 @@ msg.WithInfo('{model.ErrorMessage.Replace("'",string.Empty)}');
             this.CheckSession();
 
             DataTable dt = new DataTable();
-            /*
-            if (Req.QueryType == "OrderID")
-            {
-                if (Req.OrderID == null || string.IsNullOrEmpty(Req.OrderID))
-                {
 
-                    Req.ErrorMessage = $@"
-msg.WithInfo('SP# cannot be emptry');
-";
-                    return View("Index", Req);
-                }
+            string tempFilePath = _ICFTCommentsService.GetExcel(Req);
 
-                model = _ICFTCommentsService.Get_CFT_Orders(new CFTComments_ViewModel() { OrderID = Req.OrderID });
+            // 檔名命名
+            string fileName = $"CFT Comments{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
 
-                if (model.OrderID == null)
-                {
-                    Req.ErrorMessage = $@"
-msg.WithInfo('Cannot found SP# {Req.OrderID}');
-";
-                    return View("Index", Req);
-                }
+            //下載
+            MemoryStream obj_stream = new MemoryStream();
 
-            }
-            else if (Req.QueryType == "Style")
-            {
-                if (string.IsNullOrEmpty(Req.StyleID) || string.IsNullOrEmpty(Req.BrandID) || string.IsNullOrEmpty(Req.SeasonID)
-                    || Req.StyleID == null || Req.BrandID == null || Req.SeasonID == null)
-                {
+            obj_stream = new MemoryStream(System.IO.File.ReadAllBytes(tempFilePath));
+            Response.AddHeader("Content-Disposition", $"attachment; filename={fileName}");
+            Response.BinaryWrite(obj_stream.ToArray());
+            obj_stream.Close();
+            obj_stream.Dispose();
+            Response.Flush();
+            Response.End();
 
-                    Req.ErrorMessage = $@"
-msg.WithInfo('Style#, Brand and Season cannot be emptry');
-";
-                    return View("Index", Req);
-                }
+            //等待下載完畢後刪除暫存檔
+            System.Threading.Thread.Sleep(3000);
+            System.IO.File.Delete(tempFilePath);
 
-                model = _ICFTCommentsService.Get_CFT_Orders(new CFTComments_ViewModel()
-                {
-                    StyleID = Req.StyleID,
-                    BrandID = Req.BrandID,
-                    SeasonID = Req.SeasonID,
-                });
-
-                if (model.OrderID == null)
-                {
-                    Req.ErrorMessage = $@"
-msg.WithInfo('Cannot found combination Style# {Req.StyleID}, Brand {Req.BrandID}, Season {Req.SeasonID}');
-";
-                    return View("Index", Req);
-                }
-            }
-            */
-
-            Excel.Application excelApp = MyUtility.Excel.ConnectExcel(AppDomain.CurrentDomain.BaseDirectory + "XLT\\CFT Comments.xltx");
-
-            string xltx_name = "CFT Comments.xltx";
-
-            MyUtility.Excel.CopyToXls(dt, string.Empty, xltx_name, 2, false, null, excelApp, wSheet: excelApp.Sheets[1]);
-
-
-            #region 存檔 > 讀取MemoryStream > 下載 > 刪除
-            //string fileName = $""CFT Comments{ DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
-            //string filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", fileName);
-            //Excel.Workbook workbook = excelApp.ActiveWorkbook;
-            //workbook.SaveAs(filepath);
-            //workbook.Close();
-            //excelApp.Quit();
-            //Marshal.ReleaseComObject(worksheet);
-            //Marshal.ReleaseComObject(workbook);
-            //Marshal.ReleaseComObject(excelApp);
-            //MemoryStream obj_stream = new MemoryStream();
-            //var tempFile = System.IO.Path.Combine(filepath);
-            //obj_stream = new MemoryStream(System.IO.File.ReadAllBytes(tempFile));
-            //Response.AddHeader("Content-Disposition", $"attachment; filename={fileName}");
-            //Response.BinaryWrite(obj_stream.ToArray());
-            //obj_stream.Close();
-            //obj_stream.Dispose();
-            //Response.Flush();
-            //Response.End();
-            //System.IO.File.Delete(filepath);
-            #endregion
-
-            //string filepath = _ICFTCommentsService.ToExcel(Req);
-
-            //var tempFile = System.IO.Path.Combine(filepath);
-
-            //MemoryStream obj_stream = new MemoryStream();
-            //obj_stream = new MemoryStream(System.IO.File.ReadAllBytes(tempFile));
-
-            //string fileName = $"CFT Comments{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
-            //Response.AddHeader("Content-Disposition", $"attachment; filename={fileName}");
-            //Response.BinaryWrite(obj_stream.ToArray());
-            //obj_stream.Close();
-            //obj_stream.Dispose();
-            //Response.Flush();
-            //Response.End();
-            //System.IO.File.Delete(filepath);
 
             return View();
         }
