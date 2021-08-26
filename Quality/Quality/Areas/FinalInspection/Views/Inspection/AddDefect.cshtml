@@ -35,8 +35,8 @@
     </table>
 </div>
         <div style="width:100%">
-            <input type="hidden" id="page" name="page">
-            <button id="btnBack" onclick="this.form.submitted=this.value;" type="submit" value="Back" class="button" style="right:7em;padding: 0;"><p style="font-size:12px;">Back</p></button>
+            <input type="hidden" id="goPage" name="goPage">
+            <button id="btnBack" onclick="this.form.submitted=this.value;" type="submit" value="Back" class="button" style="right:7em;">Back</button>
             <button id="btnNext" onclick="this.form.submitted=this.value;" type="submit" value="Next" style="right:0;" class="button">Next</button>
         </div>
     }
@@ -65,13 +65,13 @@
             }
         }
 
-        // 組摺疊用的arrayS
+        // 組摺疊用的array
         var keyCount = 0;
 
         while (keyCount < result.length)
         {
             var temp = [];
-   
+
             for (var i = 0; i < items.length; i++) {
 
                 if (result[keyCount] == items[i].DefectTypeDesc) {
@@ -132,12 +132,12 @@
             var list = d[2];
             var sTr = "";
             $(list).each(function (index, value) {
-                sTr = sTr + "<tr><td>" + value[1] + "</td>";               
-                sTr = sTr + `<td style='vertical-align: middle'><input type='number'  min="0" style="width: 10vh" id='${value[0]} ' name='${value[0]}'  value='${value[2]}' /></td>
-                            <td> <img src="/Image/Icon/Camera.png" width="25" height="25" /></td>
-                            <td> <img src="/Image/Icon/Picture.png" width="25VW" height="25VW" /></td>
+                sTr = sTr + "<tr><td style='width:70%'>" + value[1] + "</td>";
+                sTr = sTr + `<td style='vertical-align: middle'><input type='number'  min="0" style="width: 6vh" id='${value[0]} ' name='${value[0]}'  value='${value[2]}' /></td>
+                            <td> <img src="/Image/Icon/Camera.png" width="25vw" height="25vw" /></td>
+                            <td> <img src="/Image/Icon/Picture.png" width="25vw" height="25vw" /></td>
                             </tr>`;
-               
+
             });
             return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
                 sTr +
@@ -145,7 +145,18 @@
         }
 
         function checkValue(self) {
-            document.getElementById("page").value = self;
+
+            document.getElementById("goPage").value = self;
+
+            var rejectQty = document.getElementById("RejectQty").value;
+            var model = @Html.Raw(Json.Encode(Model));
+            var sampleSize = model.SampleSize;
+
+            if (rejectQty > sampleSize)
+            {
+                msg.WithError('＜ RejectQty ＞ can not bigger than ＜SampleSize＞');
+                return false;
+            }
 
             return true;
         }

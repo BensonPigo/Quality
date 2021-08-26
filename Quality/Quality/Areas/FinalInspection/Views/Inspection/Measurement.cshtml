@@ -16,9 +16,7 @@
 
 <style type="text/css">
 
-    .whiteBackgrond form {
-        height: 100%
-    }
+
 
     .col-auto {
         margin: 1em
@@ -30,19 +28,6 @@
     }
 
 
-
-    #myTable_info {
-        color: white
-    }
-
-    #myTable_previous, #myTable_next {
-        color: white !important;
-    }
-
-    #myTable_wrapper, #myTable_wrapper > .dataTables_scrollHeadInner {
-        width: 100%
-    }
-
     .searchFont {
         font-size: 1vw;
         font-weight: 900;
@@ -52,158 +37,147 @@
         font-size: 1.5vw;
         font-weight: 900;
     }
+
 </style>
 
+@using (Html.BeginForm("Measurement", "Inspection", FormMethod.Post, new { @id = "MeasurementForm", onsubmit = "return checkValue(this.submitted);" }))
+{
+    <div class="DownLeftWhiteBackgrond">
+        <div style="border:0px;padding:2vh;">
+            <h1 style="font-size: 3vh; font-weight: 900; color: #999999 ">Measurement for what?</h1>
 
-<div class="DownLeftWhiteBackgrond">
-    <div style="border:0px;padding:2vh;">
-        <h1 style="font-size: 3vh; font-weight: 900; color: #999999 ">Measurement for what?</h1>
+        </div>
+        <table style="width: 100%; margin-top: 2vh; ">
+            <tbody>
+                <tr>
+                    <td align="right"><p class="searchFont">Article</p></td>
+                    <td align="left" style="padding-left: 1vw;">
+                        @Html.DropDownListFor(o => o.ListArticle, (List<SelectListItem>)ViewBag.ListArticle, null, new { @class = "form-control", id = "dropArticle" })
+                    </td>
+                </tr>
+                <tr>
 
-    </div>
-    <table style="width: 100%; margin-top: 2vh; ">
-        <tbody>
-            <tr>
-                <td align="right"><p class="searchFont">Article</p></td>
-                <td align="center">
-                    @Html.DropDownListFor(o => o.ListArticle, (List<SelectListItem>)ViewBag.ListArticle, null, new { @class = "form-control", id = "dropArticle" })
-                </td>
-            </tr>
-            <tr>
+                    <td align="right"><p class="searchFont">Size</p></td>
+                    <td align="left" style="padding-left: 1vw;">
+                        @Html.DropDownListFor(o => o.ListSize, (List<SelectListItem>)ViewBag.ListSize, null, new { @class = "form-control", id = "dropSize" })
+                    </td>
+                </tr>
 
-                <td align="right"><p class="searchFont">Size</p></td>
-                <td align="center">
-                    @Html.DropDownListFor(o => o.ListSize, (List<SelectListItem>)ViewBag.ListSize, null, new { @class = "form-control", id = "dropSize" })
-                </td>
-            </tr>
+                <tr>
+                    <td align="right"><p class="searchFont">Product Type</p></td>
+                    <td align="left" style="padding-left: 1vw;">
+                        @Html.DropDownListFor(o => o.ListProductType, (List<SelectListItem>)ViewBag.ListProductType, null, new { @class = "form-control", id = "dropProductType" })
+                    </td>
 
-            <tr>
-                <td align="right"><p class="searchFont">Product Type</p></td>
-                <td align="center">
-                    @Html.DropDownListFor(o => o.ListProductType, (List<SelectListItem>)ViewBag.ListProductType, null, new { @class = "form-control", id = "dropProductType" })
-                </td>
+                </tr>
 
-            </tr>
-
-        </tbody>
-    </table>
-</div>
-<div class="DownRightWhiteBackgrond">
-    <div style="border:0px;padding:2vh;">
-        <h1 style="font-size: 3vh; font-weight: 900; color: #999999 ">Measurement</h1>
-        <button class="site-btn btn-blue" style="position:absolute;top:1em;right:8.6em" onclick="open_View();">View</button>
-        <button class="site-btn btn-blue" style="position:absolute;top:1em;right:0">Save</button>
-
-        <table style="width: 20vw;">
-            <tr>
-                <td><p class="searchFont">Unit</p></td>
-                <td>@Html.TextBoxFor(o => o.SizeUnit, new { @class = "form-control", @disabled = "disabled" }) </td>
-            </tr>
+            </tbody>
         </table>
+    </div>
+    <div class="DownRightWhiteBackgrond">
+        <div style="border:0px;padding:2vh;">
+            <h1 style="font-size: 3vh; font-weight: 900; color: #999999 ">Measurement</h1>
+            <button type="button" class="site-btn btn-blue" style="position:absolute;top:1em;right:8.6em" onclick="open_View();">View</button>
+            <button type="button" class="site-btn btn-blue" style="position:absolute;top:1em;right:0">Save</button>
 
-        <div style=" width: 51vw; height: 70vh; overflow-y: auto;">
-            <table class="MeasurementTable DefectTable table table-striped display" id="myTable">
-                <thead>
-                    <tr>
-                        <th>
-                            <p>Coding</p>
-                        </th>
-                        <th>
-                            <p>Description</p>
-                        </th>
-                        <th>
-                            <p>Tol(+)</p>
-                        </th>
-                        <th>
-                            <p>Tol(-)</p>
-                        </th>
-                        <th>
-                            <p idx="SizeCode"></p>
-                        </th>
-                        <th>
-                            <p></p>
-                        </th>
-                        <th>
-                            <p>Diff</p>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td colspan="7" style="height: 8vh;vertical-align: middle;" valign="middle" align="center">
-                            <h3>Data Loading.......</h3>
-                        </td>
-                    </tr>
-                </tbody>
+            <table style="width: 20vw;">
+                <tr>
+                    <td><p class="searchFont">Unit</p></td>
+                    <td>@Html.TextBoxFor(o => o.SizeUnit, new { @class = "form-control", @disabled = "disabled", @style = "width:10vw" }) </td>
+                </tr>
             </table>
+
+            <div style=" width: 51vw; height: 54vh; overflow-y: auto;">
+                <table class="MeasurementTable DefectTable table table-striped display">
+
+                    <thead style="text-align: center; font-size: 1.5vw; font-weight: 900;">
+                        <tr>
+
+                            <th style="width:50vw">
+                                <p>Description</p>
+                            </th>
+                            <th style="width:10vw">
+                                <p>Tol(+)</p>
+                            </th>
+                            <th style="width:10vw">
+                                <p>Tol(-)</p>
+                            </th>
+                            <th style="width:10vw">
+                                <p idx="SizeCode"></p>
+                            </th>
+                            <th style="width:10vw">
+                                <p></p>
+                            </th>
+                            <th style="width:10vw">
+                                <p>Diff</p>
+                            </th>
+                        </tr>
+                        <tr><th></th></tr>
+                    </thead>
+                    <tbody style="text-align: center;">
+                        <tr>
+                            <td colspan="6" style="height: 8vh;vertical-align: middle;" valign="middle" align="center">
+                                <h3>Data Loading.......</h3>
+                            </td>
+                        </tr>
+                        <tr><td></td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+
         </div>
 
-
-
-    </div>
-
-    <input type="hidden" id="goPage" name="goPage">
+        <input type="hidden" id="goPage" name="goPage">
+       <div style="bottom:7em;"> <p >Inline, Stagger stage can skop this step</p></div>
     <button id="btnBack" onclick="this.form.submitted=this.value;" type="submit" value="Back" style="right:7em;" class="button">Back</button>
     <button d="btnNext" onclick="this.form.submitted=this.value;" type="submit" value="Next" style="right:0;" class="button">Next</button>
 
 
 </div>
+}
 
 
+    <div class="detail-dialog to-edit-detail">
+        <div class="detail-dialog-content dialog-content-w-icon" style="height:40vh">
+            <table style="width: 100%; margin-top: 2vh; ">
+                <tbody>
+                    <tr>
+                        <td align="right">
+                            <div class="col-auto"><p class="viewFont" style="color:white">Style#</p></div>
+                        </td>
+                        <td align="center">
+                            <div class="col-auto"><select class="form-control" id="ViewListArticle" name="ViewListArticle"></select></div>
+                        </td>
 
-<div class="detail-dialog to-edit-detail">
-    <div class="detail-dialog-content dialog-content-w-icon" style="height:40vh">
-        <table style="width: 100%; margin-top: 2vh; ">
-            <tbody>
-                <tr>
-                    <td align="right">
-                        <div class="col-auto"><p class="viewFont" style="color:white">Style#</p></div>
-                    </td>
-                    <td align="center">
-                        <div class="col-auto"><select class="form-control" id="ViewListArticle" name="ViewListArticle"></select></div>
-                    </td>
+                        <td align="right"><p class="viewFont" style="color:white">Size</p></td>
+                        <td align="center">
+                            <div class="col-auto"><select class="form-control" id="ViewkListSize" name="ViewkListSize"></select></div>
+                        </td>
+                        <td width="10%" align="right"><p class="viewFont" style="color: white; width: 10vw;">Product Type</p></td>
+                        <td align="center">
+                            <div class="col-auto"><select class="form-control" id="ViewListProductType" name="ViewListProductType"></select></div>
+                        </td>
+                        <td align="right"><p class="viewFont" style="color:white">Unit</p></td>
+                        <td align="center">
+                            <div class="col-auto">  @Html.TextBoxFor(o => o.SizeUnit, new { @style = "width:10vw", @class = "form-control", @disabled = "disabled" })</div>
+                        </td>
+                    </tr>
 
-                    <td align="right"><p class="viewFont" style="color:white">Size</p></td>
-                    <td align="center">
-                        <div class="col-auto"><select class="form-control" id="ViewkListSize" name="ViewkListSize"></select></div>
-                    </td>
-                    <td width="10%" align="right"><p class="viewFont" style="color: white; width: 10vw;">Product Type</p></td>
-                    <td align="center">
-                        <div class="col-auto"><select class="form-control" id="ViewListProductType" name="ViewListProductType"></select></div>
-                    </td>
-                    <td align="right"><p class="viewFont" style="color:white">Unit</p></td>
-                    <td align="center">
-                        <div class="col-auto">  @Html.TextBoxFor(o => o.SizeUnit, new {@style="width:10vw", @class = "form-control", @disabled = "disabled" })</div>
-                    </td>
-                </tr>
+                </tbody>
+            </table>
 
-            </tbody>
-        </table>
-
-        <br />
-        <div>
+            <br />
+            <div>
+            </div>
         </div>
     </div>
-</div>
 
 
-<script type="text/javascript">
+    <script type="text/javascript">
 
     var msg = new MessagerAlert();
-
-    $(function () {
-
-        $('#myTable').DataTable({
-
-            "pageLength": 10,
-            "filter": false,
-            "paging": true,
-            "scrollY": "49vh",
-            "scrollCollapse": true,
-
-        });
-    });
-
-
 
     $(".detail-dialog").dialog({
         autoOpen: false,
@@ -232,17 +206,6 @@
     $(".to-edit-detail").dialog({
         width: "70%",
 
-        //dialogClass: "add-contact-box",
-        //buttons: {
-        //    "1": {
-        //        text: 'Next',
-        //        click: function () {
-        //            $(this).dialog("close");
-        //        }
-        //        , "class": "button"
-        //        , "style": "bottom:0;background-color:#E00000"
-        //    },
-        //},
     });
 
     $(".to-edit-detail").on("dialogclose", function (event, ui) {
@@ -292,9 +255,7 @@
                 }
                     });
 
-        $("#myTable tbody").find('tr').each(function (index, value) {
-            $(this).show();
-        });
+
 
         $(".to-edit-detail").dialog("open");
     }
@@ -317,8 +278,7 @@
 
     function reloadViewitem() {
         var article = document.getElementById("ViewListArticle").value;
-        var element = document.getElementById("ViewkListSize");
-        var articleOption = "", sizeOption = "", productTypeOption = "";
+        var  sizeOption = "", productTypeOption = "";
 
         $("#ViewkListSize > option").each(function () {
 
@@ -350,11 +310,6 @@
         return true;
     }
 
-    $(document).ready(function () {
-        $("#dropArticle").on("change", function () {
-        });
-    });
-
 
     $(document).ready(function () {
         $("#dropSize").on("change", function () {
@@ -365,10 +320,6 @@
     });
 
 
-    $(document).ready(function () {
-        $("#dropProductType").on("change", function () {
-        });
-    });
 
     function ReloadData() {
         var dropArticle = document.getElementById("dropArticle");
@@ -385,14 +336,14 @@
 
 
         if (thead == "") {
-            thead += "<tr>";
-            thead += "<th><p>Description</p></th>";
-            thead += "<th><p>Tol(+)</p></th>";
-            thead += "<th><p>Tol(-)</p></th>";
-            thead += "<th><p idx='SizeCode'>" + dropSize.value + "</p></th>";
-            thead += "<th></th>";
-            thead += "<th><p>Diff</p></th>";
-            thead += "</tr>";
+            thead += `<tr>";
+            <th style="width:50vw"><p>Description</p></th>
+            <th style="width:10vw"><p>Tol(+)</p></th>
+            <th style="width:10vw"><p>Tol(-)</p></th>
+            <th style="width:10vw"><p idx='SizeCode'>${dropSize.value}</p></th>
+            <th style="width:10vw"></th>
+            <th style="width:10vw"><p>Diff</p></th>
+            </tr>`;
         }
 
 
@@ -401,26 +352,26 @@
             if (value.Size == dropSize.value) {
 
                 var readonly = "";
-                var bgColor = "bg-lightyellow";
+                var bgColor = "white";
                 if (!value.CanEdit) {
                     bgColor = "bg-lightgray";
                     readonly = "readonly";
                 }
 
                 tbody +=  `<tr >
-                <td class='bg-lightblue'><p>${value.Description}</p></td>
-                <td class='bg-lightblue'><p idx='Tol+'>${value.Tol1}</p></td>
-                <td class='bg-lightblue'><p idx='Tol-'>${value.Tol2}</p></td>
-                <td class='bg-lightgray'><p idx='standard'>${value.SizeSpec}</p></td>`;
+                <td class='bg-lightblue' style ="vertical-align: middle;"><p style ='padding: 0.5vh'>${value.Description}</p></td>
+                <td class='bg-lightblue' style ="vertical-align: middle;"><p style ='padding: 0.5vh' idx='Tol+'>${value.Tol1}</p></td>
+                <td class='bg-lightblue' style ="vertical-align: middle;"><p style ='padding: 0.5vh' idx='Tol-'>${value.Tol2}</p></td>
+                <td class='bg-lightgray' style ="vertical-align: middle;"><p style ='padding: 0.5vh' idx='standard'>${value.SizeSpec}</p></td>`;
 
            if (SizeUnit == "INCH") {
-            tbody += "<td class='" + bgColor + "'><input type='text' idx='SizeSpec' placeholder= '__ __/__' class='" + bgColor + "' " + readonly + "></td>";
+               tbody += "<td  style ='vertical-align: middle;' class='" + bgColor + "'><input type='text' idx='SizeSpec' placeholder= '__ __/__' style ='width:7vw; height:3.5vh' class='" + bgColor + "' " + readonly + "></td>";
         }
         else {
-            tbody += "<td class='" + bgColor + "'><input type='number' idx='SizeSpec' class='" + bgColor + "' " + readonly + "></td>";
+               tbody += "<td  style ='vertical-align: middle;' class='" + bgColor + "'><input type='number' idx='SizeSpec' style ='width:7vw; height:2.5vh' class='" + bgColor + "' " + readonly + "></td>";
         }
 
-        tbody += "<td><p class='Diff'></p></td>";
+                tbody += "<td style ='vertical-align: middle;'><p style ='padding: 0.5vh' class='Diff'></p></td>";
                 tbody += "</tr>";
             }
         });
@@ -493,4 +444,4 @@
 
     }
 
-</script>
+    </script>

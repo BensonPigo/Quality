@@ -1,31 +1,49 @@
-﻿@{
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
+﻿
+@model DatabaseObject.ViewModel.FinalInspection.QueryReport
 
-@section head{
-    <link href="~/Areas/FinalInspection/CSS/FinalInspection.css" rel="stylesheet" type="text/css">
-    <link href="/ThirdParty/plugins/jquery-magnific-popup/magnific-popup.css" rel="stylesheet" />
-    <link href="/ThirdParty/plugins/jquery-ui/jquery-ui.css" rel="stylesheet" />
-    <style type="text/css">
-        .col-auto > * {
-            width: auto;
-        }
-    </style>
-}
-@RenderSection("FinalInspection_head", required: false)
-<div class="main-content">
-    <div class="main_div">
-        @RenderBody()
-    </div>
-</div>
-<script>
-    $(function () {
-        $(window).keydown(function (event) {
-            if (event.keyCode == 13) {
-                event.preventDefault();
-                return false;
-            }
-        });
-    });
-</script>
-@RenderSection("FinalInspection_script", required: false)
+<style type="text/css">
+
+
+    .Font {
+        font-size: 1.5em;
+        font-weight: 900;
+    }
+
+    .ColumnStype {
+        text-align: right;
+    }
+
+    .TDStyle {
+        height: 4em;
+        padding: 1em
+
+    }
+
+    .ColunTD {
+        width: 32%;
+    }
+
+    .ContentText {
+        color: #0000ff
+    }
+</style>
+<table class="al-m" style="width: 80% ;margin-top: 4vh;">
+    <tr>
+        <td class="ColumnStype ColunTD TDStyle"><label class="Font">Production Status</label></td>
+        <td class="ContentText TDStyle"> @Html.DisplayFor(o => o.FinalInspection.ProductionStatus)</td>
+    </tr>
+    <tr>
+        <td class="ColumnStype ColunTD TDStyle"><label class="Font">Other Photo</label></td>
+        <td class="TDStyle">
+            <img src="~/Image/Icon/Picture.png" width="30" height="30" />
+        </td>
+    </tr>
+    <tr>
+        <td class="ColumnStype ColunTD TDStyle" style="vertical-align:top;"><label class="Font">Remark</label></td>
+        <td class="ContentText TDStyle">
+            @Html.DisplayFor(o => o.FinalInspection.OthersRemark)
+
+        </td>
+    </tr>
+
+</table>

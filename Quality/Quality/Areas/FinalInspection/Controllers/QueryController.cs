@@ -1,6 +1,8 @@
 
-﻿
+
 using BusinessLogicLayer;
+using BusinessLogicLayer.Interface;
+using BusinessLogicLayer.Service;
 using BusinessLogicLayer.Service.FinalInspection;
 using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ProductionDB;
@@ -80,9 +82,109 @@ namespace Quality.Areas.FinalInspection.Controllers
 
         public ActionResult Detail()
         {
-            return View();
-        }
+            DatabaseObject.ViewModel.FinalInspection.QueryReport queryReport = new QueryReport();
+            DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection = new DatabaseObject.ManufacturingExecutionDB.FinalInspection();
 
+            finalInspection.FabricApprovalDoc = true;
+            finalInspection.SealingSampleDoc = true;
+            finalInspection.MetalDetectionDoc = true;
+            finalInspection.GarmentWashingDoc = true;
+
+            finalInspection.CheckHandfeel = true;
+            queryReport.ListDefectItem = new List<FinalInspectionDefectItem>();
+            DatabaseObject.ViewModel.FinalInspection.FinalInspectionDefectItem data = new DatabaseObject.ViewModel.FinalInspection.FinalInspectionDefectItem();
+            data.DefectTypeDesc = "Accessories";
+            data.DefectCodeDesc = "Accessories broken/damage";
+            data.Qty = 2;
+            data.Ukey = 0;
+            queryReport.ListDefectItem.Add(data);
+
+            DatabaseObject.ViewModel.FinalInspection.FinalInspectionDefectItem data2 = new DatabaseObject.ViewModel.FinalInspection.FinalInspectionDefectItem();
+            data2.DefectTypeDesc = "Accessories";
+            data2.DefectCodeDesc = "Accessories missing/uncompleted";
+            data2.Qty = 0;
+            data.Ukey = 1;
+            queryReport.ListDefectItem.Add(data2);
+
+            finalInspection.ProductionStatus = 100;
+            finalInspection.OthersRemark = @"OthersRemark";
+            queryReport.FinalInspection = finalInspection;
+            queryReport.ListViewMoistureResult = new List<ViewMoistureResult>();
+            IFinalInspectionMoistureService finalInspectionMoistureService = new FinalInspectionMoistureService();
+            List<DatabaseObject.ViewModel.FinalInspection.ViewMoistureResult> viewMoistureResultsList = finalInspectionMoistureService.GetViewMoistureResult("ESPCH21080001");
+            queryReport.ListViewMoistureResult = viewMoistureResultsList;
+
+            queryReport.MeasurementUnit = "CM";
+            List<DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem> listMeasurementViewItem = new List<DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem>();
+
+            DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem MeasurementViewItem1 = new DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem();
+            MeasurementViewItem1.Article = "0050";
+            MeasurementViewItem1.Size = "L";
+            MeasurementViewItem1.ProductType = "Top";
+
+            listMeasurementViewItem.Add(MeasurementViewItem1);
+
+            DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem MeasurementViewItem2 = new DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem();
+            MeasurementViewItem2.Article = "0050";
+            MeasurementViewItem2.Size = "XL";
+            MeasurementViewItem2.ProductType = "Bottom";
+
+            listMeasurementViewItem.Add(MeasurementViewItem2);
+
+            DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem MeasurementViewItem3 = new DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem();
+            MeasurementViewItem3.Article = "0049";
+            MeasurementViewItem3.Size = "S";
+            MeasurementViewItem3.ProductType = "Top";
+
+
+            DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem MeasurementViewItem4 = new DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem();
+            MeasurementViewItem4.Article = "0049";
+            MeasurementViewItem4.Size = "M";
+            MeasurementViewItem4.ProductType = "Top";
+
+            listMeasurementViewItem.Add(MeasurementViewItem4);
+            queryReport.ListMeasurementViewItem = listMeasurementViewItem;
+
+
+            queryReport.FinalInspection.BAQty = 10;
+            queryReport.ListBACriteriaItem = new List<BACriteriaItem>();
+            DatabaseObject.ViewModel.FinalInspection.BACriteriaItem test1 = new DatabaseObject.ViewModel.FinalInspection.BACriteriaItem();
+            test1.Ukey = 1;
+            test1.BACriteria = "C1";
+            test1.BACriteriaDesc = "Delights consumers";
+            queryReport.ListBACriteriaItem.Add(test1);
+
+            DatabaseObject.ViewModel.FinalInspection.BACriteriaItem test2 = new DatabaseObject.ViewModel.FinalInspection.BACriteriaItem();
+            test2.Ukey = 2;
+            test2.BACriteria = "C9";
+            test2.BACriteriaDesc = "Well finished and presented";
+            test2.Qty = 3;
+            queryReport.ListBACriteriaItem.Add(test2);
+
+            // base
+            queryReport.FinalInspection.POID = "A";
+            queryReport.SP = "A001,A002";
+            queryReport.StyleID = "110555";
+            queryReport.BrandID = "Adidas";
+            queryReport.FinalInspection.FactoryID = "MAI";
+            queryReport.TotalSPQty = 200;
+            queryReport.FinalInspection.InspectionStage = "Inline";
+            //queryReport.Carton = "A001-1,3;A002-5";
+            queryReport.FinalInspection.AuditDate = new DateTime(2021, 7, 26);
+            queryReport.AvailableQty = 150;
+            queryReport.AQLPlan = "1.0 Level I";
+            queryReport.FinalInspection.SampleSize = 8;
+            queryReport.FinalInspection.AcceptQty = 0;
+            queryReport.FinalInspection.RejectQty = 1;
+            queryReport.FinalInspection.CFA = "Lawrence";
+            queryReport.FinalInspection.SubmitDate = new DateTime(2021, 7, 25);
+            queryReport.FinalInspection.PassQty = 100;
+            queryReport.FinalInspection.RejectQty = 8;
+            queryReport.FinalInspection.InspectionResult = "On-Going";
+            queryReport.FinalInspection.ShipmentStatus = "N/A";
+
+            return View(queryReport);
+        }
         public ActionResult DownLoad()
         {
             bool test = false;
@@ -104,11 +206,11 @@ namespace Quality.Areas.FinalInspection.Controllers
                 {
                     SP = "21060448HH003",
                     StyleID = "22256",
-                    BrandID = "REI", 
-                    AQLPlan="qewr",
+                    BrandID = "REI",
+                    AQLPlan = "qewr",
                     //Carton="ff9999",
-                    TotalSPQty=666,
-                    AvailableQty=22,                    
+                    TotalSPQty = 666,
+                    AvailableQty = 22,
                     FinalInspection = new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
                     {
                         POID = "21060448HH",
@@ -120,14 +222,14 @@ namespace Quality.Areas.FinalInspection.Controllers
                         RejectQty = 6,
                         ProductionStatus = 1,
                         OthersRemark = "OtherreKKK",
-                        ShipmentStatus="AWER@#$R",
-                        PassQty=897987,
+                        ShipmentStatus = "AWER@#$R",
+                        PassQty = 897987,
                         BAQty = 999,
-                        InspectionStage="???",
-                        AcceptQty=16,
-                        FabricApprovalDoc=true,
-                        SealingSampleDoc=true,
-                        CheckHangtag=true,
+                        InspectionStage = "???",
+                        AcceptQty = 16,
+                        FabricApprovalDoc = true,
+                        SealingSampleDoc = true,
+                        CheckHangtag = true,
                     },
                     ListDefectItem = new List<FinalInspectionDefectItem>()
                     {
@@ -199,7 +301,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             worksheet.Cells[16, 3] = "Handfeel: " + (model.FinalInspection.CheckHandfeel ? "Y" : "N");
             worksheet.Cells[16, 5] = "Appearance: " + (model.FinalInspection.CheckAppearance ? "Y" : "N");
             worksheet.Cells[16, 7] = "Print/ Emb Decorations: " + (model.FinalInspection.CheckPrintEmbDecorations ? "Y" : "N");
-            
+
             // Label
             worksheet.Cells[18, 1] = "Fiber Content: " + (model.FinalInspection.CheckFiberContent ? "Y" : "N");
             worksheet.Cells[18, 3] = "Care Instructions: " + (model.FinalInspection.CheckCareInstructions ? "Y" : "N");
@@ -317,7 +419,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                     Excel.Range rngToInsert = worksheet.get_Range("A30", Type.Missing).EntireRow; // 選擇要被貼上的位置
                     rngToInsert.Insert(Excel.XlInsertShiftDirection.xlShiftDown, rngToCopy.Copy(Type.Missing)); // 貼上
                 }
-                
+
                 // 開始列 30，預設 8 列
                 for (int i = 0; i < copyCount; i++)
                 {
@@ -363,7 +465,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                 for (int i = 0; i < copyCount; i++)
                 {
                     int row = i + 28;
-                    worksheet.Cells[row, 1] = model.ListBACriteriaItem[i].BACriteria + ": "+ model.ListBACriteriaItem[i].BACriteriaDesc;
+                    worksheet.Cells[row, 1] = model.ListBACriteriaItem[i].BACriteria + ": " + model.ListBACriteriaItem[i].BACriteriaDesc;
                     worksheet.Cells[row, 9] = model.ListBACriteriaItem[i].Qty;
                 }
             }
@@ -389,7 +491,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                 for (int i = 0; i < copyCount; i++)
                 {
                     int row = i + 24;
-                    worksheet.Cells[row, 1] = model.ListDefectItem[i].DefectType ;
+                    worksheet.Cells[row, 1] = model.ListDefectItem[i].DefectType;
                     worksheet.Cells[row, 3] = model.ListDefectItem[i].DefectCode;
                     worksheet.Cells[row, 9] = model.ListDefectItem[i].Qty;
                 }
@@ -399,7 +501,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             #region 存檔 > 讀取MemoryStream > 下載 > 刪除
             string fileName = $"FinalInspectionReport_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
             string filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", fileName);
-            Excel.Workbook workbook = excelApp.ActiveWorkbook;            
+            Excel.Workbook workbook = excelApp.ActiveWorkbook;
             workbook.SaveAs(filepath);
             workbook.Close();
             excelApp.Quit();
