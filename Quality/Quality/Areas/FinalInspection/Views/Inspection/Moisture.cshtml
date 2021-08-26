@@ -450,6 +450,37 @@
         function setData(data) {
             var adata = [];
             for (var i = 0; i <= data.length - 1; i++) {
+
+                var garmentTopColor = "Black";
+                if (data[i].GarmentTop > data[i].GarmentStandard) {
+                    garmentTopColor = "#E62513";
+                }
+
+                var garmentMiddleColor = "Black";
+                if (data[i].GarmentMiddle > data[i].GarmentStandard) {
+                    garmentMiddleColor = "#E62513";
+                }
+
+                var garmentBottomColor = "Black";
+                if (data[i].GarmentBottom > data[i].GarmentStandard) {
+                    garmentBottomColor = "#E62513";
+                }
+
+                var ctnInsideColor = "Black";
+                if (data[i].CTNInside > data[i].CTNStandard) {
+                    ctnInsideColor = "#E62513";
+                }
+
+                var ctnOutsideColor = "Black";
+                if (data[i].CTNOutside > data[i].CTNStandard) {
+                    ctnOutsideColor = "#E62513";
+                }
+
+                var resultColor = "#00CC00";
+                if (data[i].Result != "Pass") {
+                    resultColor = "#E62513";
+                }
+
                 var tmp = [];
                 tmp.push(data[i].Article);
                 tmp.push(data[i].CTNNo);
@@ -457,13 +488,13 @@
                 tmp.push(data[i].Fabrication);
 
                 tmp.push(data[i].GarmentStandard);
-                tmp.push(data[i].GarmentTop);
-                tmp.push(data[i].GarmentMiddle);
-                tmp.push(data[i].GarmentBottom);
+                tmp.push(` <div style="color:${garmentTopColor}">${data[i].GarmentTop}</div>`);
+                tmp.push(` <div style="color:${garmentMiddleColor}">${data[i].GarmentMiddle}</div>`);
+                tmp.push(` <div style="color:${garmentBottomColor}">${data[i].GarmentBottom}</div>`);
                 tmp.push(data[i].CTNStandard);
-                tmp.push(data[i].CTNInside);
-                tmp.push(data[i].CTNOutside);
-                tmp.push(data[i].Result);
+                tmp.push(` <div style="color:${ctnInsideColor}">${data[i].CTNInside}</div>`);
+                tmp.push(` <div style="color:${ctnOutsideColor}">${data[i].CTNOutside}</div>`);
+                tmp.push(` <div style="color:${resultColor}">${data[i].Result}</div>`);
                 tmp.push(data[i].Action);
                 tmp.push(data[i].Remark);
                 tmp.push(data[i].Ukey);
