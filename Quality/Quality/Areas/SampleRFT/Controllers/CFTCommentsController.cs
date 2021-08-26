@@ -202,42 +202,42 @@ msg.WithInfo('Cannot found combination Style# {Req.StyleID}, Brand {Req.BrandID}
 
 
             #region 存檔 > 讀取MemoryStream > 下載 > 刪除
-            string fileName = $""CFT Comments{ DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
-            string filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", fileName);
-            Excel.Workbook workbook = excelApp.ActiveWorkbook;
-            workbook.SaveAs(filepath);
-            workbook.Close();
-            excelApp.Quit();
-            Marshal.ReleaseComObject(worksheet);
-            Marshal.ReleaseComObject(workbook);
-            Marshal.ReleaseComObject(excelApp);
-            MemoryStream obj_stream = new MemoryStream();
-            var tempFile = System.IO.Path.Combine(filepath);
-            obj_stream = new MemoryStream(System.IO.File.ReadAllBytes(tempFile));
-            Response.AddHeader("Content-Disposition", $"attachment; filename={fileName}");
-            Response.BinaryWrite(obj_stream.ToArray());
-            obj_stream.Close();
-            obj_stream.Dispose();
-            Response.Flush();
-            Response.End();
-            System.IO.File.Delete(filepath);
+            //string fileName = $""CFT Comments{ DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+            //string filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", fileName);
+            //Excel.Workbook workbook = excelApp.ActiveWorkbook;
+            //workbook.SaveAs(filepath);
+            //workbook.Close();
+            //excelApp.Quit();
+            //Marshal.ReleaseComObject(worksheet);
+            //Marshal.ReleaseComObject(workbook);
+            //Marshal.ReleaseComObject(excelApp);
+            //MemoryStream obj_stream = new MemoryStream();
+            //var tempFile = System.IO.Path.Combine(filepath);
+            //obj_stream = new MemoryStream(System.IO.File.ReadAllBytes(tempFile));
+            //Response.AddHeader("Content-Disposition", $"attachment; filename={fileName}");
+            //Response.BinaryWrite(obj_stream.ToArray());
+            //obj_stream.Close();
+            //obj_stream.Dispose();
+            //Response.Flush();
+            //Response.End();
+            //System.IO.File.Delete(filepath);
             #endregion
 
-            string filepath = _ICFTCommentsService.ToExcel(Req);
+            //string filepath = _ICFTCommentsService.ToExcel(Req);
 
-            var tempFile = System.IO.Path.Combine(filepath);
+            //var tempFile = System.IO.Path.Combine(filepath);
 
-            MemoryStream obj_stream = new MemoryStream();
-            obj_stream = new MemoryStream(System.IO.File.ReadAllBytes(tempFile));
+            //MemoryStream obj_stream = new MemoryStream();
+            //obj_stream = new MemoryStream(System.IO.File.ReadAllBytes(tempFile));
 
-            string fileName = $"CFT Comments{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
-            Response.AddHeader("Content-Disposition", $"attachment; filename={fileName}");
-            Response.BinaryWrite(obj_stream.ToArray());
-            obj_stream.Close();
-            obj_stream.Dispose();
-            Response.Flush();
-            Response.End();
-            System.IO.File.Delete(filepath);
+            //string fileName = $"CFT Comments{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+            //Response.AddHeader("Content-Disposition", $"attachment; filename={fileName}");
+            //Response.BinaryWrite(obj_stream.ToArray());
+            //obj_stream.Close();
+            //obj_stream.Dispose();
+            //Response.Flush();
+            //Response.End();
+            //System.IO.File.Delete(filepath);
 
             return View();
         }

@@ -106,7 +106,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                     StyleID = "22256",
                     BrandID = "REI", 
                     AQLPlan="qewr",
-                    Carton="ff9999",
+                    //Carton="ff9999",
                     TotalSPQty=666,
                     AvailableQty=22,                    
                     FinalInspection = new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
@@ -168,7 +168,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             worksheet.Cells[3, 7] = model.FinalInspection.InspectionStage;
 
             worksheet.Cells[4, 3] = model.FinalInspection.POID;
-            worksheet.Cells[4, 7] = model.Carton;
+            //worksheet.Cells[4, 7] = model.Carton;
 
             worksheet.Cells[5, 3] = model.SP;
             worksheet.Cells[5, 7] = model.FinalInspection.AuditDate.HasValue ? ((DateTime)model.FinalInspection.AuditDate).ToString("yyyy/MM/dd") : string.Empty;
