@@ -96,7 +96,7 @@
                                         @Html.TextBoxFor(o => o.SeasonID, new { @value = "Model.SeasonID" })
                                     </td>
                                     <td>
-                                        <input type="submit" class="button" name="name" id="btnFind" value="Find" />
+                                        <input type="submit" class="button"  name="action:Query" id="btnFind" value="Find" />
                                     </td>
                                 </tr>
                                 <tr>
@@ -116,7 +116,7 @@
                                         @Html.TextBoxFor(o => o.SampleStage, new {  @class = "readonly",@value=Model.SampleStage })
                                     </td>
                                     <td>
-                                        <input type="submit" class="button" name="name" id="btnExcel" value="To Excel" />
+                                        <input type="submit" class="button" name="action:ToExcel"id="btnExcel" value="To Excel" />
                                     </td>
                                 </tr>
                             </table>

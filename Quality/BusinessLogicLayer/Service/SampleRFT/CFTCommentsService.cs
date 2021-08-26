@@ -1,16 +1,17 @@
-﻿using ADOHelper.Template.MSSQL;
-using DatabaseObject.ViewModel;
-using System;
+﻿using DatabaseObject.ViewModel;
 using System.Collections.Generic;
-using System.Data;
-using System.Text;
-using ToolKit;
 using ManufacturingExecutionDataAccessLayer.Interface;
-using ADOHelper.Utility;
-using DatabaseObject.ManufacturingExecutionDB;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using System.Linq;
 using BusinessLogicLayer.Interface.SampleRFT;
+using System.IO;
+using Ict;
+using Sci.Data;
+using System;
+using System.Data;
+using System.Runtime.InteropServices;
+using Excel = Microsoft.Office.Interop.Excel;
+using Sci;
 
 namespace BusinessLogicLayer.Service.SampleRFT
 {
@@ -62,6 +63,50 @@ namespace BusinessLogicLayer.Service.SampleRFT
             }
 
             return model;
+        }
+
+
+        public string ToExcel(CFTComments_ViewModel Req)
+        {
+            string TempTilePath = string.Empty;
+            DataTable dt;
+            try
+            {
+                _CFTCommentsProvider = new CFTCommentsProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                // 取得Datatable
+                dt = _CFTCommentsProvider.Get_CFT_OrderComments_DataTable(Req);
+
+                Excel.Application excelApp = MyUtility.Excel.ConnectExcel(AppDomain.CurrentDomain.BaseDirectory + "XLT\\CFT Comments.xltx");
+
+
+                string xltx_name = "CFT Comments.xltx";
+
+                MyUtility.Excel.CopyToXls(dt, string.Empty, xltx_name, 2, false, null, excelApp, wSheet: excelApp.Sheets[1]);
+
+
+
+                #region 存檔 > 讀取MemoryStream > 下載 > 刪除
+                string fileName = $"CFT Comments{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                string filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", fileName);
+                Excel.Workbook workbook = excelApp.ActiveWorkbook;
+                workbook.SaveAs(filepath);
+                workbook.Close();
+                excelApp.Quit();
+                Marshal.ReleaseComObject(workbook);
+                Marshal.ReleaseComObject(excelApp);
+
+                TempTilePath = filepath;
+
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                //model.Result = false;
+                //model.ErrorMessage = ex.Message;
+            }
+
+            return TempTilePath;
         }
     }
 }

@@ -31,12 +31,32 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Ict">
+      <HintPath>..\..\_Dll\Ict.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Win">
+      <HintPath>..\..\_Dll\Ict.Win.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Win.UI">
+      <HintPath>..\..\_Dll\Ict.Win.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>..\..\_Dll\Microsoft.Office.Interop.Excel.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\_Dll\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Sci">
+      <HintPath>..\..\_Dll\Sci.dll</HintPath>
+    </Reference>
+    <Reference Include="Sci.Proj">
+      <HintPath>..\..\_Dll\Sci.Proj.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
