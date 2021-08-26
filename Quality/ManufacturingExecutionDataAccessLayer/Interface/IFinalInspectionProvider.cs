@@ -26,6 +26,8 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
 
         List<byte[]> GetBACriteriaImage(long FinalInspection_NonBACriteriaUkey);
 
+        List<byte[]> GetOthersImage(string finalInspectionID);
+
         IList<CartonItem> GetMoistureListCartonItem(string finalInspectionID);
 
         IList<ViewMoistureResult> GetViewMoistureResult(string finalInspectionID);
@@ -41,5 +43,7 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         void UpdateMeasurement(DatabaseObject.ViewModel.FinalInspection.Measurement measurement, string userID);
         IList<MeasurementViewItem> GetMeasurementViewItem(string finalInspectionID);
         DataTable GetMeasurement(string finalInspectionID, string article, string size, string productType);
+
+        void UpdateFinalInspection_OtherImage(string finalInspectionID, List<byte[]> images);
     }
 }
