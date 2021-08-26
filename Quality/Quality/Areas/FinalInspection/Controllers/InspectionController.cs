@@ -107,7 +107,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             }
 
             setting.SelectCarton = new List<DatabaseObject.ViewModel.FinalInspection.SelectCarton>();
-            for (int i = 1; i < 3; i++)
+            for (int i = 1; i < 15; i++)
             {
                 DatabaseObject.ViewModel.FinalInspection.SelectCarton item = new DatabaseObject.ViewModel.FinalInspection.SelectCarton();
                 item.Selected = true;
@@ -283,16 +283,16 @@ namespace Quality.Areas.FinalInspection.Controllers
                 moisture.ListArticle.Add("00" + i.ToString());
             }
             moisture.ListCartonItem = new List<DatabaseObject.ViewModel.FinalInspection.CartonItem>();
-            for (int i = 1; i < 10; i++)
-            {
-                DatabaseObject.ViewModel.FinalInspection.CartonItem cartonItem = new DatabaseObject.ViewModel.FinalInspection.CartonItem();
-                cartonItem.FinalInspection_OrderCartonUkey = i + 1;
-                cartonItem.OrderID = "A001";
-                cartonItem.CTNNo = i.ToString();
-                cartonItem.PackinglistID = i.ToString();
+            //for (int i = 1; i < 10; i++)
+            //{
+            //    DatabaseObject.ViewModel.FinalInspection.CartonItem cartonItem = new DatabaseObject.ViewModel.FinalInspection.CartonItem();
+            //    cartonItem.FinalInspection_OrderCartonUkey = i + 1;
+            //    cartonItem.OrderID = "A001";
+            //    cartonItem.CTNNo = i.ToString();
+            //    cartonItem.PackinglistID = i.ToString();
 
-                moisture.ListCartonItem.Add(cartonItem);
-            }
+            //    moisture.ListCartonItem.Add(cartonItem);
+            //}
 
             moisture.ListEndlineMoisture = new List<DatabaseObject.ManufacturingExecutionDB.EndlineMoisture>();
 

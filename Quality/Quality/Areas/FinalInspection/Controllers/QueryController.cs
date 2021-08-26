@@ -185,10 +185,9 @@ namespace Quality.Areas.FinalInspection.Controllers
             queryReport.ListCartonInfo = new List<FinalInspection_OrderCarton>();
             for (int i = 1; i < 11; i++)
             {
-                DatabaseObject.ViewModel.FinalInspection.SelectCarton item = new DatabaseObject.ViewModel.FinalInspection.SelectCarton();
-                item.Selected = true;
-                item.OrderID = i.ToString();
-                item.PackingListID = "1";
+                FinalInspection_OrderCarton item = new FinalInspection_OrderCarton();
+                item.OrderID = "A00" + i.ToString();
+                item.PackinglistID = "1";                
                 item.CTNNo = i.ToString();
                 queryReport.ListCartonInfo.Add(item);
             }
