@@ -10,8 +10,10 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
 {
     public interface ICFTCommentsProvider
     {
+        IList<CFTComments_ViewModel> Get_CFT_Orders(CFTComments_ViewModel CFTComments);
+        /*
         IList<CFTComments_where> GetCFT_Orders(CFTComments_where CFTComments);
-
-        IList<CFTComments_ViewModel> GetRFT_OrderComments(CFTComments_where CFTComments);
+        */
+        IList<CFTComments_Result> Get_CFT_OrderComments(CFTComments_ViewModel CFTComments);
     }
 }

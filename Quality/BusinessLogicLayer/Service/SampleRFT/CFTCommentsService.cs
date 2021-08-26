@@ -18,18 +18,50 @@ namespace BusinessLogicLayer.Service.SampleRFT
     {
         private ICFTCommentsProvider _CFTCommentsProvider;
 
-        public CFTComments_where GetCFT_Orders(CFTComments_where CFTComments)
+        public CFTComments_ViewModel Get_CFT_Orders(CFTComments_ViewModel Req)
         {
-            _CFTCommentsProvider = new CFTCommentsProvider(Common.ManufacturingExecutionDataAccessLayer);
-            CFTComments_where CFTCommentsOrders_ViewModel = _CFTCommentsProvider.GetCFT_Orders(CFTComments).FirstOrDefault();
-            return CFTCommentsOrders_ViewModel;
+            CFTComments_ViewModel model = new CFTComments_ViewModel();
+            try
+            {
+                _CFTCommentsProvider = new CFTCommentsProvider(Common.ProductionDataAccessLayer);
+                var res = _CFTCommentsProvider.Get_CFT_Orders(Req).ToList();
+
+                if (res.Any())
+                {
+                    model = res.FirstOrDefault();
+                }
+                
+                model.Result = true;
+            }
+            catch (Exception ex)
+            {
+                model.Result = false;
+                model.ErrorMessage = ex.Message;
+            }
+
+            return model;
         }
 
-        public List<CFTComments_ViewModel> GetRFT_OrderComments(CFTComments_where CFTComments)
+        public CFTComments_ViewModel Get_CFT_OrderComments(CFTComments_ViewModel Req)
         {
-            _CFTCommentsProvider = new CFTCommentsProvider(Common.ManufacturingExecutionDataAccessLayer);
-            List<CFTComments_ViewModel> CFTComments_ViewModel = _CFTCommentsProvider.GetRFT_OrderComments(CFTComments).ToList();
-            return CFTComments_ViewModel;
+            Req.DataList = new List<CFTComments_Result>();
+            CFTComments_ViewModel model = Req;
+
+            try
+            {
+                _CFTCommentsProvider = new CFTCommentsProvider(Common.ManufacturingExecutionDataAccessLayer);
+                var res = _CFTCommentsProvider.Get_CFT_OrderComments(Req).ToList();
+
+                model.DataList = res;
+                model.Result = true;
+            }
+            catch (Exception ex)
+            {
+                model.Result = false;
+                model.ErrorMessage = ex.Message;
+            }
+
+            return model;
         }
     }
 }

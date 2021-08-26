@@ -6,8 +6,8 @@ namespace BusinessLogicLayer.Interface.SampleRFT
 {
     public interface ICFTCommentsService
     {
-        CFTComments_where GetCFT_Orders(CFTComments_where CFTComments);
+        CFTComments_ViewModel Get_CFT_Orders(CFTComments_ViewModel Req);
 
-        List<CFTComments_ViewModel> GetRFT_OrderComments(CFTComments_where CFTComments);
+        CFTComments_ViewModel Get_CFT_OrderComments(CFTComments_ViewModel CFTComments);
     }
 }

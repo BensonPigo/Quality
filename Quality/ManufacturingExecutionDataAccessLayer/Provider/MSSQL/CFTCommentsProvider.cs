@@ -17,15 +17,15 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
         public CFTCommentsProvider(SQLDataTransaction tra) : base(tra) { }
         #endregion
 
-        public IList<CFTComments_where> GetCFT_Orders(CFTComments_where CFTComments)
+        public IList<CFTComments_ViewModel> Get_CFT_Orders(CFTComments_ViewModel Req)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();
-            objParameter.Add("@OrderID", DbType.String, CFTComments.OrderID);
-            objParameter.Add("@StyleID", DbType.String, CFTComments.StyleID);
-            objParameter.Add("@BrandID", DbType.String, CFTComments.BrandID);
-            objParameter.Add("@SeasonID", DbType.String, CFTComments.SeasonID);
+            objParameter.Add("@OrderID", DbType.String, Req.OrderID);
+            objParameter.Add("@StyleID", DbType.String, Req.StyleID);
+            objParameter.Add("@BrandID", DbType.String, Req.BrandID);
+            objParameter.Add("@SeasonID", DbType.String, Req.SeasonID);
             string where;
-            if (!string.IsNullOrEmpty(CFTComments.OrderID))
+            if (Req.OrderID != null || !string.IsNullOrEmpty(Req.OrderID))
             {
                 where = @"
 and o.id = @OrderID";
@@ -40,7 +40,11 @@ and o.SeasonID = @SeasonID";
 
             StringBuilder SbSql = new StringBuilder();
             SbSql.Append($@"
-select OrderID = o.ID, o.StyleID, o.BrandID, o.SeasonID
+select OrderID = o.ID
+, o.StyleID
+, o.BrandID
+, o.SeasonID
+, SampleStage = OrderTypeID
 from [Production].[dbo].Orders o with(nolock)
 where 1=1
 and o.junk = 0
@@ -48,18 +52,18 @@ and o.Category = 'S'
 and o.OnSiteSample != 1
 {where}
 ");
-            return ExecuteList<CFTComments_where>(CommandType.Text, SbSql.ToString(), objParameter);
+            return ExecuteList<CFTComments_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
         }
 
-        public IList<CFTComments_ViewModel> GetRFT_OrderComments(CFTComments_where CFTComments)
+        public IList<CFTComments_Result> Get_CFT_OrderComments(CFTComments_ViewModel Req)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();
-            objParameter.Add("@OrderID", DbType.String, CFTComments.OrderID);
-            objParameter.Add("@StyleID", DbType.String, CFTComments.StyleID);
-            objParameter.Add("@BrandID", DbType.String, CFTComments.BrandID);
-            objParameter.Add("@SeasonID", DbType.String, CFTComments.SeasonID);
+            objParameter.Add("@OrderID", DbType.String, Req.OrderID);
+            objParameter.Add("@StyleID", DbType.String, Req.StyleID);
+            objParameter.Add("@BrandID", DbType.String, Req.BrandID);
+            objParameter.Add("@SeasonID", DbType.String, Req.SeasonID);
             string where;
-            if (!string.IsNullOrEmpty(CFTComments.OrderID))
+            if (!string.IsNullOrEmpty(Req.OrderID))
             {
                 where = @"
 and o.id = @OrderID";
@@ -96,7 +100,7 @@ outer apply(
 	),1,1,'')
 )c
 ");
-            return ExecuteList<CFTComments_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
+            return ExecuteList<CFTComments_Result>(CommandType.Text, SbSql.ToString(), objParameter);
         }
     }
 }
