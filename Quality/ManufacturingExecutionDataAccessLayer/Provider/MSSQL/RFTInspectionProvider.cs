@@ -250,14 +250,14 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
                 objParameter.Add($"@FixType{rowcnt}", string.IsNullOrEmpty(statusType) ? "" : statusType);
                 objParameter.Add($"@EditName{rowcnt}", string.IsNullOrEmpty(item.EditName.ToString()) ? "" : item.EditName.ToString());
                 objParameter.Add($"@inspectDate{rowcnt}", item.InspectionDate == null ? "NULL" : ((DateTime)item.InspectionDate).ToString("d"));
-                objParameter.Add($"@DisposeReason{rowcnt}", string.IsNullOrEmpty(item.DisposeReason.ToString()) ? "" : item.DisposeReason.ToString());
+                objParameter.Add($"@DisposeReason{rowcnt}", string.IsNullOrEmpty(item.DisposeReason) ? "" : item.DisposeReason.ToString());
 
                 if (statusType.ToLower() == "pass")
                 {
                     sqlcmd = $@"
 update RFT_Inspection
 set	status = 'Fixed'
-,InspectionDate = @inspectDate
+,InspectionDate = @inspectDate{rowcnt}
 ,EditName = @EditName{rowcnt} , EditDate = GETDATE()
 where ID = @ID{rowcnt}
 
