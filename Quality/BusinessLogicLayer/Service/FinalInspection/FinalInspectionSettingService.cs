@@ -4,6 +4,7 @@ using System.Linq;
 using BusinessLogicLayer.Interface;
 using DatabaseObject;
 using DatabaseObject.ManufacturingExecutionDB;
+using DatabaseObject.ProductionDB;
 using DatabaseObject.ViewModel.FinalInspection;
 using ManufacturingExecutionDataAccessLayer.Interface;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
@@ -93,14 +94,87 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public string UpdateFinalInspection(Setting setting, string UserID, string factoryID, string MDivisionid)
+        public BaseResult UpdateFinalInspection(Setting setting, string UserID, string factoryID, string MDivisionid, out string finalInspectionID)
         {
             _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+            BaseResult result = new BaseResult();
+            finalInspectionID = string.Empty;
+            #region 檢查AQLPlan 重抓Sample Plan Qty
+            if (setting.InspectionStage == "Final" ||
+                setting.InspectionStage == "3rd Party")
+            {
+                int totalAvailableQty = setting.SelectedPO.Sum(s => s.AvailableQty);
+                setting.AcceptableQualityLevels = _FinalInspFromPMSProvider.GetAcceptableQualityLevelsForSetting().ToList();
+                var AQLResult = setting.AcceptableQualityLevels.AsEnumerable();
+
+                switch (setting.AQLPlan)
+                {
+                    case "1.0 Level I":
+                        AQLResult = setting.AcceptableQualityLevels
+                            .Where(s => s.AQLType == 1 &&
+                                   s.InspectionLevels == "1" &&
+                                   totalAvailableQty >= s.LotSize_Start && totalAvailableQty <= s.LotSize_End);
+                        break;
+                    case "1.0 Level II":
+                        AQLResult = setting.AcceptableQualityLevels
+                            .Where(s => s.AQLType == 1 &&
+                                   s.InspectionLevels == "2" &&
+                                   totalAvailableQty >= s.LotSize_Start && totalAvailableQty <= s.LotSize_End);
+                        break;
+                    case "1.5 Level I":
+                        AQLResult = setting.AcceptableQualityLevels
+                            .Where(s => s.AQLType == (decimal)1.5 &&
+                                   s.InspectionLevels == "1" &&
+                                   totalAvailableQty >= s.LotSize_Start && totalAvailableQty <= s.LotSize_End);
+                        break;
+                    case "2.5 Level I":
+                        AQLResult = setting.AcceptableQualityLevels
+                            .Where(s => s.AQLType == (decimal)2.5 &&
+                                   s.InspectionLevels == "1" &&
+                                   totalAvailableQty >= s.LotSize_Start && totalAvailableQty <= s.LotSize_End);
+                        break;
+                    case "100% Inspection":
+                        AQLResult = new List<AcceptableQualityLevels>() {
+                            new AcceptableQualityLevels(){
+                                AcceptedQty = totalAvailableQty,
+                                SampleSize = totalAvailableQty,
+                                Ukey = -1
+                            }
+                        };
+                        break;
+                    default:
+                        result.Result = false;
+                        result.ErrorMessage = "When Inspection Stage is [Final] or [3rd Party], AQL Plan can not empty";
+                        return result;
+                }
+
+                if (!AQLResult.Any())
+                {
+                    result.Result = false;
+                    result.ErrorMessage = $"No matching SampleSize setting found";
+                    return result;
+                }
+
+                setting.SampleSize = AQLResult.First().SampleSize;
+                setting.AcceptQty = AQLResult.First().AcceptedQty;
+                setting.AcceptableQualityLevelsUkey = AQLResult.First().Ukey.ToString();
+            }
+            #endregion
+
+            if (setting.AcceptQty > setting.SampleSize)
+            {
+                result.Result = false;
+                result.ErrorMessage = $"[Accepted Qty] cannot be more than [Sample Plan Qty] ";
+                return result;
+            }
 
             var selecedCarton = setting.SelectCarton.Where(s => s.Selected);
             setting.SelectCarton = selecedCarton.Any() ? selecedCarton.ToList() : new List<SelectCarton>();
 
-            return _FinalInspectionProvider.UpdateFinalInspection(setting, UserID, factoryID, MDivisionid);
+
+            finalInspectionID = _FinalInspectionProvider.UpdateFinalInspection(setting, UserID, factoryID, MDivisionid);
+
+            return result;
         }
     }
 }

@@ -28,7 +28,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
     {
         public string FinalInspectionID { get; set; }
         public string Article { get; set; }
-        public long FinalInspection_OrderCartonUkey { get; set; }
+        public long? FinalInspection_OrderCartonUkey { get; set; }
         public string Instrument { get; set; }
         public string Fabrication { get; set; }
         public decimal? GarmentTop { get; set; }
@@ -40,7 +40,6 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string Result { get; set; }
         public string Remark { get; set; }
         public string AddName { get; set; }
-
     }
 
     public class ViewMoistureResult

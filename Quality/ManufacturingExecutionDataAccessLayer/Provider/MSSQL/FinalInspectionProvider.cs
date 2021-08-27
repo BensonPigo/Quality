@@ -753,7 +753,7 @@ values
 ,@GarmentBottom
 ,@CTNInside
 ,@CTNOutside
-,@Result
+,iif(@Result = 'Pass', '1', '0')
 ,@Action
 ,@Remark
 ,@AddName
@@ -773,19 +773,29 @@ values
             ExecuteNonQuery(CommandType.Text, sqlDeleteMoisture, objParameter);
         }
 
-        public bool CheckMoistureExists(string finalInspectionID, string article, long finalInspection_OrderCartonUkey)
+        public bool CheckMoistureExists(string finalInspectionID, string article, long? finalInspection_OrderCartonUkey)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();
+            string where = string.Empty;
             objParameter.Add("@FinalInspectionID", finalInspectionID);
-            objParameter.Add("@article", article);
-            objParameter.Add("@finalInspection_OrderCartonUkey", finalInspection_OrderCartonUkey);
 
-            string sqlCheckMoistureExists = @"
+            if (!string.IsNullOrEmpty(article))
+            {
+                where += " and Article = @article";
+                objParameter.Add("@article", article);
+            }
+
+            if (finalInspection_OrderCartonUkey != null)
+            {
+                where += " and FinalInspection_OrderCartonUkey = @finalInspection_OrderCartonUkey";
+                objParameter.Add("@finalInspection_OrderCartonUkey", finalInspection_OrderCartonUkey);
+            }
+                
+
+            string sqlCheckMoistureExists = $@"
 select  [result] = 1 
 from    FinalInspection_Moisture with (nolock)
-where   ID = @FinalInspectionID and
-        Article = @article and
-        FinalInspection_OrderCartonUkey = @finalInspection_OrderCartonUkey
+where   ID = @FinalInspectionID {where}
 ";
 
             DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlCheckMoistureExists, objParameter);
@@ -1005,6 +1015,43 @@ select  Image
 
                 ExecuteNonQuery(CommandType.Text, sqlFinalInspection_OtherImage, imgParameter);
             }
+        }
+
+        public DataTable GetReportMailInfo(string finalInspectionID)
+        {
+            SQLParameterCollection parameter = new SQLParameterCollection() {
+                            { "@FinalInspectionID", DbType.String, finalInspectionID }
+                        };
+
+            string sqlGetData = @"
+declare @StyleID varchar(15)
+declare @SeasonID varchar(10)
+declare @BrandID varchar(8)
+
+select  @StyleID = StyleID,
+        @SeasonID = SeasonID,
+        @BrandID = BrandID
+from    SciProduction_Orders with (nolock)
+where   ID = (select POID from FinalInspection with (nolock) where ID = @FinalInspectionID )
+
+select  f.POID,
+        f.InspectionResult,
+        f.FactoryID,
+        [SP] = (SELECT Stuff((select concat( ',',OrderID) 
+                                from  FinalInspection_Order fo with (nolock) 
+                                where fo.ID = f.ID
+                                FOR XML PATH('')),1,1,'') ),
+        [StyleID] = @StyleID,
+        [SeasonID] = @SeasonID,
+        [BrandID] = @BrandID,
+        [CFA] = (select name from pass1 with (nolock) where ID = f.CFA),
+        [SubmitDate] = Format(f.SubmitDate, 'yyyy/MM/dd'),
+        [AuditDate] = Format(f.AuditDate, 'yyyy/MM/dd')
+from FinalInspection f with (nolock)
+where   f.ID = @FinalInspectionID
+";
+
+            return ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, parameter);
         }
 
         #endregion

@@ -15,7 +15,7 @@ namespace DatabaseObject.ViewModel
         public string SeasonID { get; set; }
         public string SampleStage { get; set; }
 
-        public string TempFilePath{ get; set; }
+        public string TempFileName{ get; set; }
 
     }
 

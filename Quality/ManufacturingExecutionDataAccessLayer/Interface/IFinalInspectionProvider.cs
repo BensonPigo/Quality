@@ -36,7 +36,7 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
 
         void UpdateMoisture(MoistureResult moistureResult);
 
-        bool CheckMoistureExists(string finalInspectionID, string article, long finalInspection_OrderCartonUkey);
+        bool CheckMoistureExists(string finalInspectionID, string article, long? finalInspection_OrderCartonUkey);
 
         void DeleteMoisture(long ukey);
 
@@ -45,5 +45,7 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         DataTable GetMeasurement(string finalInspectionID, string article, string size, string productType);
 
         void UpdateFinalInspection_OtherImage(string finalInspectionID, List<byte[]> images);
+
+        DataTable GetReportMailInfo(string finalInspectionID);
     }
 }
