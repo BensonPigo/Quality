@@ -897,5 +897,28 @@ select  [OrderID] = o.id,
 ";
             return ExecuteList<SelectedPO>(CommandType.Text, sqlGetData, listPar);
         }
+
+        public bool Check_Style_ExistsOrder(string OrderID, string BrandID, string SeasonID, string StyleID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection()
+            {
+                { "@OrderID", DbType.String, OrderID },
+                { "@BrandID", DbType.String, BrandID },
+                { "@SeasonID", DbType.String, SeasonID },
+                { "@StyleID", DbType.String, StyleID },
+            };
+
+            string sqlcmd = @"
+select 1 from Production.dbo.Orders oinner join Production.dbo.Style s on o.StyleUkey = s.Ukeywhere Category = 'B'and o.Junk = 0and s.BrandID = @BrandID and s.SeasonID = @SeasonID and s.ID = @StyleIDand o.ID = @OrderID
+";
+            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
+
+            if (dt == null || dt.Rows.Count == 0)
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }

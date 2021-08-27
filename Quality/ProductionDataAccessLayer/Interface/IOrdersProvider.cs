@@ -9,5 +9,6 @@ namespace ProductionDataAccessLayer.Interface
     {
         IList<Orders> Get(Orders Item);
         IList<Orders> GetOrderForInspection(FinalInspection_Request request);
+        bool Check_Style_ExistsOrder(string OrderID, string BrandID, string SeasonID, string StyleID);
     }
 }

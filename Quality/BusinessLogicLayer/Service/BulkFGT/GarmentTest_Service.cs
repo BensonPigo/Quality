@@ -2,19 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel;
-using ManufacturingExecutionDataAccessLayer.Interface;
-using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
 using ADOHelper.Utility;
-using DatabaseObject.ViewModel;
+using System.Data;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -267,6 +262,22 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 throw;
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
+
+            return result;
+        }
+
+        public bool CheckOrderID(string OrderID, string BrandID, string SeasonID, string StyleID)
+        {
+            IOrdersProvider orders = new OrdersProvider(Common.ProductionDataAccessLayer);
+            bool result = true;
+            try
+            {
+                result = orders.Check_Style_ExistsOrder(OrderID, BrandID, SeasonID, StyleID);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
 
             return result;
         }
