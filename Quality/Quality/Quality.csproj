@@ -171,6 +171,7 @@
     <Compile Include="Areas\BulkFGT\Controllers\FabricOvenTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\GarmentTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\MockupCrockingController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\PullingTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\SearchListController.cs" />
     <Compile Include="Areas\FileActionController.cs" />
     <Compile Include="Areas\FinalInspection\Controllers\InspectionController.cs" />
@@ -319,6 +320,7 @@
     <Content Include="Areas\StyleManagement\Views\StyleList\Index.cshtml" />
     <Content Include="Areas\SampleRFT\Views\CFTComments\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\SearchList\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\PullingTest\Index.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />

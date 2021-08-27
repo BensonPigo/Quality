@@ -172,7 +172,7 @@ AND StyleUkey in (
             return ExecuteList<Window_Article>(CommandType.Text, SbSql.ToString(), paras);
         }
 
-        public IList<Window_Article> Get_Size(string OrderID, Int64 StyleUkey, string Article, string Size)
+        public IList<Window_Article> Get_Size(string OrderID, Int64? StyleUkey, string BrandID, string SeasonID, string StyleID, string Article, string Size)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -201,9 +201,26 @@ AND ID = @OrderID
 select DISTINCT SizeCode
 from Production.dbo.Style_SizeCode
 where 1=1
-AND StyleUkey = @StyleUkey
+
 ");
-                paras.Add("@StyleUkey ", DbType.Int64, StyleUkey);
+                if (StyleUkey.HasValue)
+                {
+                    SbSql.Append($@"AND StyleUkey = @StyleUkey ");
+                    paras.Add("@StyleUkey ", DbType.Int64, StyleUkey);
+                }
+                if (!string.IsNullOrEmpty(StyleID) && !string.IsNullOrEmpty(BrandID) && !string.IsNullOrEmpty(SeasonID))
+                {
+                    SbSql.Append($@"
+AND StyleUkey in (
+	select Ukey
+	from Production.dbo.Style
+	where id= @StyleID and BrandID=@BrandID and SeasonID=@SeasonID
+)
+");
+                    paras.Add("@StyleID ", DbType.String, StyleID);
+                    paras.Add("@BrandID ", DbType.String, BrandID);
+                    paras.Add("@SeasonID ", DbType.String, SeasonID);
+                }
             }
             else
             {
