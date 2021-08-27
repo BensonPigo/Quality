@@ -68,7 +68,7 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public List<Window_Article> Get_Article(string OrderID, Int64 StyleUkey, string Article)
+        public List<Window_Article> Get_Article(string OrderID, Int64 StyleUkey, string StyleID, string Article)
         {
             List<Window_Article> result = new List<Window_Article>();
 
@@ -77,7 +77,7 @@ namespace BusinessLogicLayer.Service
                 _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
 
                 //取得登入資訊
-                result = _Provider.Get_Article(OrderID, StyleUkey, Article).ToList();
+                result = _Provider.Get_Article(OrderID, StyleUkey, StyleID, Article).ToList();
 
             }
             catch (Exception ex)

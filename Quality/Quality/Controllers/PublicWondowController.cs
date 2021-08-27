@@ -63,18 +63,18 @@ namespace Quality.Controllers
             return View(model);
         }
 
-        public ActionResult ArticleList(string OrderID, Int64 StyleUkey)
+        public ActionResult ArticleList(string OrderID, Int64 StyleUkey, string StyleID)
         {
-            var model = _PublicWindowService.Get_Article(OrderID, StyleUkey, string.Empty);
+            var model = _PublicWindowService.Get_Article(OrderID, StyleUkey, StyleID, string.Empty);
             ViewData["OrderID"] = OrderID;
             ViewData["StyleUkey"] = StyleUkey;
             return View(model);
         }
 
         [HttpPost]
-        public ActionResult ArticleList(string OrderID, Int64 StyleUkey, string Article)
+        public ActionResult ArticleList(string OrderID, Int64 StyleUkey, string StyleID, string Article)
         {
-            var model = _PublicWindowService.Get_Article(OrderID, StyleUkey, Article);
+            var model = _PublicWindowService.Get_Article(OrderID, StyleUkey, StyleID, Article);
             ViewData["OrderID"] = OrderID;
             ViewData["StyleUkey"] = StyleUkey;
             return View(model);

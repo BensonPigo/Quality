@@ -1,28 +1,14 @@
 ﻿
 using BusinessLogicLayer.Interface.SampleRFT;
 using BusinessLogicLayer.Service.SampleRFT;
-using DatabaseObject.ManufacturingExecutionDB;
-using DatabaseObject.ProductionDB;
-using DatabaseObject.RequestModel;
 using DatabaseObject.ViewModel;
-using FactoryDashBoardWeb.Helper;
 using Quality.Controllers;
-using Quality.Helper;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using static Quality.Helper.Attribute;
-using Ict;
-using Sci.Data;
-using System;
-using System.Data;
-using System.Runtime.InteropServices;
-using Excel = Microsoft.Office.Interop.Excel;
-using Sci;
 using NPOI.XSSF.UserModel;
 using NPOI.SS.UserModel;
 
@@ -50,7 +36,10 @@ namespace Quality.Areas.SampleRFT.Controllers
             {
                 model =(CFTComments_ViewModel)TempData["Model"];
             }
-
+            if (TempData["tempFilePath"] != null)
+            {
+                ViewData["tempFilePath"] = TempData["tempFilePath"].ToString();
+            }
             return View(model);
         }
 
@@ -137,9 +126,14 @@ msg.WithInfo('{model.ErrorMessage.Replace("'",string.Empty)}');
             return View();
         }
 
+        /// <summary>
+        /// 使用 NPOI 產生Excel 的寫法，可參考：I:\MIS\Personal\Benson\密技\NPOI.png
+        /// </summary>
+        /// <param name="Req"></param>
+        /// <returns></returns>
         [HttpPost]
-        [MultipleButton(Name = "action", Argument = "ToExcel")]
-        public ActionResult ToExcel(CFTComments_ViewModel Req)
+        [MultipleButton(Name = "action", Argument = "ToExcel_NPOI")]
+        public ActionResult ToExcel_NPOI(CFTComments_ViewModel Req)
         {
             this.CheckSession();
 
@@ -252,53 +246,95 @@ msg.WithInfo('Cannot found combination Style# {Req.StyleID}, Brand {Req.BrandID}
         }
 
         /// <summary>
-        /// 廢棄寫法
+        /// 使用Microsoft.Office.Interop.Excel的寫法
         /// </summary>
         /// <param name="Req"></param>
         /// <returns></returns>
         [HttpPost]
-        [MultipleButton(Name = "action", Argument = "ToExcel_2")]
-        public ActionResult ToExcel_2(CFTComments_ViewModel Req)
+        [MultipleButton(Name = "action", Argument = "ToExcel")]
+        public ActionResult ToExcel(CFTComments_ViewModel Req)
         {
             this.CheckSession();
 
             try
             {
 
-                DataTable dt = new DataTable();
+                CFTComments_ViewModel model = new CFTComments_ViewModel();
+                if (Req.QueryType == "OrderID")
+                {
+                    if (Req.OrderID == null || string.IsNullOrEmpty(Req.OrderID))
+                    {
 
-                // 檔名命名
-                string fileName = $"CFT Comments{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
-                string filepath = Server.MapPath($"~/TMP/{fileName}");
+                        Req.ErrorMessage = $@"
+msg.WithInfo('SP# cannot be emptry');
+";
+                        return View("Index", Req);
+                    }
 
-                CFTComments_ViewModel result = _ICFTCommentsService.GetExcel(Req);
-                string tempFilePath = result.TempFilePath;
+                    model = _ICFTCommentsService.Get_CFT_Orders(new CFTComments_ViewModel() { OrderID = Req.OrderID });
 
+                    if (model.OrderID == null)
+                    {
+                        Req.ErrorMessage = $@"
+msg.WithInfo('Cannot found SP# {Req.OrderID}');
+";
+                        return View("Index", Req);
+                    }
 
+                }
+                else if (Req.QueryType == "Style")
+                {
+                    if (string.IsNullOrEmpty(Req.StyleID) || string.IsNullOrEmpty(Req.BrandID) || string.IsNullOrEmpty(Req.SeasonID)
+                        || Req.StyleID == null || Req.BrandID == null || Req.SeasonID == null)
+                    {
 
-                //下載
-                MemoryStream obj_stream = new MemoryStream();
+                        Req.ErrorMessage = $@"
+msg.WithInfo('Style#, Brand and Season cannot be emptry');
+";
+                        return View("Index", Req);
+                    }
 
-                obj_stream = new MemoryStream(System.IO.File.ReadAllBytes(tempFilePath));
-                Response.AddHeader("Content-Disposition", $"attachment; filename={fileName}");
-                Response.BinaryWrite(obj_stream.ToArray());
-                obj_stream.Close();
-                obj_stream.Dispose();
-                Response.Flush();
-                Response.End();
+                    model = _ICFTCommentsService.Get_CFT_Orders(new CFTComments_ViewModel()
+                    {
+                        StyleID = Req.StyleID,
+                        BrandID = Req.BrandID,
+                        SeasonID = Req.SeasonID,
+                    });
 
-                //等待下載完畢後刪除暫存檔
-                System.Threading.Thread.Sleep(2000);
-                System.IO.File.Delete(tempFilePath);
+                    if (model.OrderID == null)
+                    {
+                        Req.ErrorMessage = $@"
+msg.WithInfo('Cannot found combination Style# {Req.StyleID}, Brand {Req.BrandID}, Season {Req.SeasonID}');
+";
+                        return View("Index", Req);
+                    }
+                }
 
+                // 1. 在Service層取得資料，生成Excel檔案，放在暫存路徑，回傳檔名
 
+                CFTComments_ViewModel result = _ICFTCommentsService.GetExcel(model);
+                string tempFilePath = result.TempFileName;
+
+                // 2. 取得hotst name，串成下載URL ，傳到準備前端下載
+                // URL範例：https://misap:1880/TMP/CFT Comments20210826f7f4ad14-186f-451a-9bc1-6edbcaf6cd65.xlsx 
+                // (暫存檔檔名是CFT Comments20210826f7f4ad14-186f-451a-9bc1-6edbcaf6cd65.xlsx)
+                tempFilePath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + tempFilePath;
+
+                // 3. 前端下載方式：請參考Index.cshtml的 「window.location.href = '@download'」;
+
+                model = _ICFTCommentsService.Get_CFT_OrderComments(model);
+                model.QueryType = Req.QueryType;
+
+                TempData["tempFilePath"] = tempFilePath;
+                TempData["Model"] = model;
             }
             catch (Exception ex)
             {
 
                 throw ex;
             }
-            return View();
+
+            return RedirectToAction("Index");
         }
     }
 }

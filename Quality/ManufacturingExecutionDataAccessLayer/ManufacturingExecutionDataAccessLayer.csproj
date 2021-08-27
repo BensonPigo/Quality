@@ -94,6 +94,7 @@
     <Compile Include="Interface\ICFTCommentsProvider.cs" />
     <Compile Include="Interface\IRFTPerLineProvider.cs" />
     <Compile Include="Interface\IRFTPicDuringDummyFittingProvider.cs" />
+    <Compile Include="Interface\ISearchListProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Provider\MSSQL\FinalInspection_MeasurementProvider.cs" />
     <Compile Include="Provider\MSSQL\FinalInspectionProvider.cs" />
@@ -120,6 +121,7 @@
     <Compile Include="Provider\MSSQL\CFTCommentsProvider.cs" />
     <Compile Include="Provider\MSSQL\RFTPerLineProvider.cs" />
     <Compile Include="Provider\MSSQL\RFTPicDuringDummyFittingProvider.cs" />
+    <Compile Include="Provider\MSSQL\SearchListProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ADOHelper\ADOHelper.csproj">

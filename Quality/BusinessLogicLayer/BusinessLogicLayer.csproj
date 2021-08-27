@@ -92,6 +92,7 @@
     <Compile Include="Interface\Authority\IAuthorityService.cs" />
     <Compile Include="Interface\BulkFGT\IFabricCrkShrkTest_Service.cs" />
     <Compile Include="Interface\BulkFGT\IMockupCrockingService.cs" />
+    <Compile Include="Interface\BulkFGT\ISearchListService.cs" />
     <Compile Include="Interface\FinalInspection\IFinalInspectionOthersService.cs" />
     <Compile Include="Interface\FinalInspection\IFinalInspectionMeasurementService.cs" />
     <Compile Include="Interface\FinalInspection\IFinalInspectionMoistureService.cs" />
@@ -115,6 +116,7 @@
     <Compile Include="Service\Authority\AuthorityService.cs" />
     <Compile Include="Service\BulkFGT\FabricCrkShrkTest_Service.cs" />
     <Compile Include="Service\BulkFGT\MockupCrockingService.cs" />
+    <Compile Include="Service\BulkFGT\SearchListService.cs" />
     <Compile Include="Service\FinalInspection\FinalInspectionOthersService.cs" />
     <Compile Include="Service\FinalInspection\FinalInspectionMeasurementService.cs" />
     <Compile Include="Service\FinalInspection\FinalInspectionMoistureService.cs" />
