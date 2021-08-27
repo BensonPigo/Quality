@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 namespace DatabaseObject.ProductionDB
 {
@@ -125,5 +126,9 @@ namespace DatabaseObject.ProductionDB
         [Required]
         [Display(Name = "圖檔完整路徑")]
         public string SignaturePic { get; set; }
+
+        [Required]
+        [Display(Name = "MockupCrocking_Detail")]
+        public List<MockupCrocking_Detail> MockupCrocking_Detail { get; set; }
     }
 }

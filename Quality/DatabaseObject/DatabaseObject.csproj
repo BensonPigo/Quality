@@ -175,8 +175,8 @@
     <Compile Include="ViewModel\InspectionSave_ViewModel.cs" />
     <Compile Include="ViewModel\Inspection_ViewModel.cs" />
     <Compile Include="ViewModel\ReworkList_ViewModel.cs" />
-    <Compile Include="ViewModel\CFTComments_ViewModel.cs" />
-    <Compile Include="ViewModel\MockupCrocking_ViewModel.cs" />
+    <Compile Include="ViewModel\SampleRFT\CFTComments_ViewModel.cs" />
+    <Compile Include="ViewModel\BulkFGT\MockupCrocking_ViewModel.cs" />
     <Compile Include="ViewModel\RFTPerLine_ViewModel.cs" />
     <Compile Include="ViewModel\RFT_Inspection_Measurement_ViewModel.cs" />
     <Compile Include="ViewModel\RFT_OrderComments_ViewModel.cs" />
