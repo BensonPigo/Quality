@@ -32,5 +32,9 @@ namespace DatabaseObject.ViewModel
         public bool SaveResult { get; set; }
 
         public string ErrMsg { get; set; }
+
+        public string Sender { get; set; }
+
+        public string SendDate { get; set; }
     }
 }
