@@ -2,33 +2,18 @@ using System;
 using System.ComponentModel.DataAnnotations;
 namespace DatabaseObject.ProductionDB
 {
-    /*(GarmentTest_Detail_Shrinkage) 詳細敘述如下*/
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <info>Author: Wei; Date: 2021/08/23 </info>
-    /// <history>
-    /// xx.  YYYY/MM/DD   Ver   Author      Comments
-    /// ===  ==========  ====  ==========  ==========
-    /// 01.  2021/08/23   1.00    Admin        Create
-    /// </history>
     public class GarmentTest_Detail_Shrinkage
     {
         /// <summary></summary>
-        [Required]
         [Display(Name = "")]
-        public Int64 ID { get; set; }
+        public Int64? ID { get; set; }
         /// <summary></summary>
-        [Required]
         [Display(Name = "")]
         public int? No { get; set; }
         /// <summary></summary>
-        [Required]
-        [StringLength(1)]
         [Display(Name = "")]
         public string Location { get; set; }
         /// <summary></summary>
-        [Required]
         [StringLength(150)]
         [Display(Name = "")]
         public string Type { get; set; }

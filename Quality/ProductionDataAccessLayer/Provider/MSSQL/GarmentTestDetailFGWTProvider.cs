@@ -6,7 +6,7 @@ using ProductionDataAccessLayer.Interface;
 using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
 using DatabaseObject.ProductionDB;
-using DatabaseObject.ViewModel.BulkFGT;
+using DatabaseObject.ViewModel;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {

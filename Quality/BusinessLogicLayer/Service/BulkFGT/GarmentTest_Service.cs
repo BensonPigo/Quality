@@ -14,7 +14,7 @@ using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
 using ADOHelper.Utility;
-using DatabaseObject.ViewModel.BulkFGT;
+using DatabaseObject.ViewModel;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -71,13 +71,16 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public GarmentTest_Result GetGarmentTest(GarmentTest_ViewModel garmentTest_ViewModel)
+        public GarmentTest_Result GetGarmentTest(GarmentTest_Request garmentTest_ViewModel)
         {
             _IGarmentTestProvider = new GarmentTestProvider(Common.ProductionDataAccessLayer);
             _IGarmentTestDetailProvider = new GarmentTestDetailProvider(Common.ProductionDataAccessLayer);
             GarmentTest_Result result = new GarmentTest_Result();
             try
             {
+                // 抓取 garmentTest_ViewModel.Factory 撈取 M，並傳入Get_GarmentTest
+
+
                 var query = _IGarmentTestProvider.Get_GarmentTest(garmentTest_ViewModel);
                 if (!query.Any() || query.Count() == 0)
                 {
@@ -93,10 +96,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         ID = result.garmentTest.ID
                     }).ToList();
 
+                result.SizeCodes = Get_SizeCode(result.garmentTest.OrderID, result.garmentTest.Article);
+                result.Result = true;
+
             }
             catch (Exception ex)
             {
-                throw ex;
+                result.Result = false;
+                result.ErrMsg = ex.Message.ToString();
             }
 
             return result;

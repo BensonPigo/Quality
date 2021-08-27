@@ -459,9 +459,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         public ActionResult ReworkListSaveAction(List<RFT_Inspection> reworkLists, InspectionService.ReworkListType type)
         {
             foreach (RFT_Inspection item in reworkLists)
-            {
-                item.Status = "Fixed";
-                item.FixType = type.ToString();
+            {                               
                 item.EditName = this.UserID;
                 item.InspectionDate = type.Equals(InspectionService.ReworkListType.Pass) ? this.WorkDate : (DateTime?)null;
             }

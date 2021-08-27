@@ -7,6 +7,7 @@ using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.ViewModel;
+using DatabaseObject.RequestModel;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
@@ -58,13 +59,13 @@ and SeasonID = @SeasonID";
             return ExecuteList<GarmentTest>(CommandType.Text, sqlcmd, objParameter);
         }
 
-        public IList<GarmentTest_ViewModel> Get_GarmentTest(GarmentTest_ViewModel filter)
+        public IList<GarmentTest_ViewModel> Get_GarmentTest(GarmentTest_Request filter)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
-                { "@BrandID", DbType.String, filter.BrandID } ,
-                { "@StyleID", DbType.String, filter.StyleID } ,
-                { "@SeasonID", DbType.String, filter.SeasonID} ,
+                { "@BrandID", DbType.String, filter.Brand } ,
+                { "@StyleID", DbType.String, filter.Style } ,
+                { "@SeasonID", DbType.String, filter.Season} ,
                 { "@Article", DbType.String, filter.Article} ,
             };
             string sqlcmd = @"

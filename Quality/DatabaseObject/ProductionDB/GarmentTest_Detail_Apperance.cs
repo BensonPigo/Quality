@@ -15,49 +15,42 @@ namespace DatabaseObject.ProductionDB
     public class GarmentTest_Detail_Apperance
     {
         /// <summary></summary>
-        [Required]
         [Display(Name = "")]
-        public Int64 ID { get; set; }
+        public Int64? ID { get; set; }
+
         /// <summary></summary>
-        [Required]
         [Display(Name = "")]
         public int? No { get; set; }
+
         /// <summary></summary>
-        [Required]
-        [StringLength(200)]
         [Display(Name = "")]
         public string Type { get; set; }
+
         /// <summary></summary>
-        [Required]
-        [StringLength(10)]
         [Display(Name = "")]
         public string Wash1 { get; set; }
+
         /// <summary></summary>
-        [Required]
-        [StringLength(10)]
         [Display(Name = "")]
         public string Wash2 { get; set; }
+
         /// <summary></summary>
-        [Required]
-        [StringLength(10)]
         [Display(Name = "")]
         public string Wash3 { get; set; }
+
         /// <summary></summary>
-        [StringLength(100)]
         [Display(Name = "")]
         public string Comment { get; set; }
+
         /// <summary></summary>
-        [Required]
         [Display(Name = "")]
         public int? Seq { get; set; }
+
         /// <summary></summary>
-        [Required]
-        [StringLength(10)]
         [Display(Name = "")]
         public string Wash4 { get; set; }
+
         /// <summary></summary>
-        [Required]
-        [StringLength(10)]
         [Display(Name = "")]
         public string Wash5 { get; set; }
 

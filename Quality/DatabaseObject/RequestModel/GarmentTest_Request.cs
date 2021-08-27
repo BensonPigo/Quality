@@ -8,12 +8,16 @@ namespace DatabaseObject.RequestModel
 {
     public class GarmentTest_Request
     {
-        public string Brand { get; set; } = "";
+        public string Brand { get; set; } 
 
-        public string Season { get;set; } = "";
+        public string Season { get;set; }
 
-        public string Style { get; set; } = "";
+        public string Style { get; set; } 
 
-        public string Article { get; set; } = "";
+        public string Article { get; set; } 
+
+        public string Factory { get; set; }
+
+        public string MDivisionid { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿
+﻿@using DatabaseObject.ResultModel;
+
 @{
     ViewBag.Title = "Detail";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -6,10 +7,11 @@
 <link href="~/ThirdParty/plugins/Tabs/nicepage.css" rel="stylesheet" />
 <script src="~/ThirdParty/plugins/Tabs/nicepage.js"></script>
 
+@model GarmentTest_Detail_Result
+
 <style type="text/css">
     #tab-Change {
-        width: 90vw;
-        
+        width: 92vw;
     }
 
         #tab-Change > ul {
@@ -48,7 +50,6 @@
     #tab-Change > .tab-inner {
         clear: both;
         color: #000;
-        border: 1px #BCBCBC solid;
     }
 
     .DataTable {
@@ -73,6 +74,19 @@
             text-align: left;
             vertical-align: middle;
         }
+
+    .White {
+        color: white !important;
+    }
+
+    .Black {
+        color: black !important;
+    }
+
+    .bigSize {
+        width: 3em; 
+        height: 2em;
+    }
 </style>
 
 <div class="main-content">
@@ -146,94 +160,451 @@
                         <li><a href="#tab06"><h3>FGPT</h3></a></li>
                     </ul>
                     <div id="tab01" class="tab-inner">
+                        @if (Model.Detail != null)
+                        {
+                            <table class="DataTable">
+                                <tbody>
+                                    <tr>
+                                        <td style="width:10vw;"><h4>Style#</h4></td>
+                                        <td style="width:20vw;">@Html.DisplayFor(o => Model.Main.StyleID, "", "")</td>
+                                        <td style="width:10vw;"><h4>Season</h4></td>
+                                        <td style="width:20vw;">@Html.DisplayFor(o => Model.Main.SeasonID, "", "")</td>
+                                        <td style="width:10vw;"><h4>Brand</h4></td>
+                                        <td style="width:20vw;">@Html.DisplayFor(o => Model.Main.BrandID, "", "")</td>
+                                    </tr>
+                                    <tr>
+                                        <td><h4>SP#</h4></td>
+                                        <td>@Html.DisplayFor(o => Model.Detail.OrderID, "", "")</td>
+                                        <td><h4>Article</h4></td>
+                                        <td>@Html.DisplayFor(o => Model.Main.Article, "", "")</td>
+                                        <td><h4>Size</h4></td>
+                                        <td>@Html.DisplayFor(o => Model.Detail.SizeCode, "", "")</td>
+                                    </tr>
+                                    <tr>
+                                        <td><h4>Submit Date</h4></td>
+                                        <td>@Html.TextBoxFor(o => Model.Detail.SubmitDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })</td>
+                                        <td><h4>Arrive Qty</h4></td>
+                                        <td>@Html.TextBoxFor(o => Model.Detail.ArrivedQty, "", new { htmlAttributes = new { @type = "number", @min = "0", @step = "1", @value = "0" } })</td>
+                                        <td><h4>Result</h4></td>
+                                        @{
+                                            string DetailFontColor = Model.Detail.Result == "P" ? "blue" : "red";
+                                            string DetailVal = Model.Detail.Result == "P" ? "Pass" : "Fail";
+                                        }
+                                        <td class="@DetailFontColor">
+                                            @DetailVal
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><h4>LO to Factory</h4></td>
+                                        <td>@Html.TextBoxFor(o => Model.Detail.LOtoFactory, "", "")</td>
+                                        <td><h4>Non 450</h4></td>
+                                        <td>
+                                            @{
+                                                bool check = Model.Detail.NonSeamBreakageTest.HasValue ? Model.Detail.NonSeamBreakageTest.Value : false;
+                                            }
+                                            <input id="Detail_NonSeamBreakageTest" name="Detail.NonSeamBreakageTest" type="checkbox" checked="@check" class="bigSize" />
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="6"><h3>Washing Condition</h3></td>
+                                    </tr>
+                                    <tr>
+                                        <td><h4>Line Dry</h4></td>
+                                        <td>@Html.RadioButtonFor(o => Model.Detail.LineDry, "", new { Name = "Group", @class = "bigSize" })</td>
+                                        <td><h4>Tumble Dry</h4></td>
+                                        <td>@Html.RadioButtonFor(o => Model.Detail.TumbleDry, "", new { Name = "Group", @class = "bigSize" })</td>
+                                        <td><h4>Hand Wash</h4></td>
+                                        <td>@Html.RadioButtonFor(o => Model.Detail.HandWash, "", new { Name = "Group", @class = "bigSize" })</td>
+                                    </tr>
+                                    <tr>
+                                        <td><h4>Temperature(oC)</h4></td>
+                                        <td>@Html.DropDownListFor(o => Model.Detail.Temperature, (List<SelectListItem>)ViewBag.TemperatureList, "")</td>
+                                        <td><h4>Fibre Composition</h4></td>
+                                        <td colspan="3">@Html.TextBoxFor(o => Model.Detail.Composition, "", "")</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3"></td>
+                                        <td colspan="3" rowspan="2">
+                                            <div>
+                                                <input id="Detail_Above50NaturalFibres" type="radio" name="Group2" class="bigSize" />
+                                                <label for="Detail_Above50NaturalFibres">All basic Fabrics ≥ 50% natural fibres</label>
+                                            </div>
+                                            <div>
+                                                <input id="Detail_Above50SyntheticFibres" type="radio" name="Group2" class="bigSize" />
+                                                <label for="Detail_Above50SyntheticFibres">All basic Fabrics ≥ 50% synthetic fibres (ex. polyester)</label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3"></td>
+                                    </tr>
+                                    <tr>
+                                        <td><h4>Machine Model</h4></td>
+                                        <td>@Html.DropDownListFor(o => Model.Detail.Machine, (List<SelectListItem>)ViewBag.MachineList, "")</td>
+                                        <td><h4>Remark</h4></td>
+                                        <td colspan="3">
+                                            @Html.TextBoxFor(o => Model.Detail.Remark, "", "")
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3"><h4>Streched Neck Opening is OK according to size spec?</h4></td>
+                                        <td>@Html.DropDownListFor(o => Model.Detail.Neck, (List<SelectListItem>)ViewBag.NeckList, "")</td>
+                                        <td colspan="2"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table style="width:92vw; padding:1em;">
+                                <tr>
+                                    <td align="right">
+                                        <input id="btnGenerateFGWT" type="button" class="site-btn btn-gy" style="margin:0;border:0;" name="GenerateFGWT" value="Generate FGWT" /></td>
+                                </tr>
+                            </table>
+                        }
+
+                    </div>
+                    <div id="tab02" class="tab-inner">
+                        @if (Model.Main != null)
+                        {
+                            <table class="DataTable">
+                                <thead>
+                                    <tr>
+                                        @{
+                                            bool bol710 = Model.Main.WashName == null || Model.Main.WashName.Equals("710");
+                                            string wash3 = bol710 ? "After Wash 10" : "After Wash 3";
+                                            string shrink3 = bol710 ? "Shrinkage 10(%)" : "Shrinkage 3(%)";
+
+                                        }
+                                        <th><h4>Location</h4></th>
+                                        <th><h4>Type</h4></th>
+                                        <th><h4>Before Wash</h4></th>
+                                        <th><h4>Size Spec Meas.</h4></th>
+                                        <th><h4>After Wash 1</h4></th>
+                                        <th><h4>Shrinkage 1(%)</h4></th>
+                                        <th><h4>@wash3</h4></th>
+                                        <th><h4>@shrink3</h4></th>
+                                        @if (bol710)
+                                        {
+                                            <th><h4>After Wash 15</h4></th>
+                                            <th><h4>Shrinkage 15(%)</h4></th>
+                                        }
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i <= Model.Shrinkages.Count -1; i++)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @{
+                                                    string Location = string.Empty;
+                                                    switch (Model.Shrinkages[i].Location)
+                                                    {
+                                                        case "T":
+                                                            Location = "Top";
+                                                            break;
+                                                        case "I":
+                                                            Location = "INNER";
+                                                            break;
+                                                        case "O":
+                                                            Location = "OUTER";
+                                                            break;
+                                                        case "B":
+                                                            Location = "BOTTOM";
+                                                            break;
+                                                    }
+                                                }
+                                                @Location
+                                            </td>
+                                            <td>@Html.DisplayFor(o => Model.Shrinkages[i].Type, "", "")</td>
+                                            <td>@Html.TextBoxFor(o => Model.Shrinkages[i].BeforeWash, "", new { htmlAttributes = new { @type = "number", @min = "0", @step = "0.1", @value = "0" }, @class = "BeforeWash" })</td>
+                                            <td>@Html.TextBoxFor(o => Model.Shrinkages[i].SizeSpec, "", new { htmlAttributes = new { @type = "number", @min = "0", @step = "0.1", @value = "0" } })</td>
+                                            <td>@Html.TextBoxFor(o => Model.Shrinkages[i].AfterWash1, "", new { htmlAttributes = new { @type = "number", @min = "0", @step = "0.1", @value = "0" }, @class = "AfterWash1" })</td>
+                                            <td>@Html.TextBoxFor(o => Model.Shrinkages[i].Shrinkage1, "", new { @disabled = "disabled" })</td>
+                                            <td>@Html.TextBoxFor(o => Model.Shrinkages[i].AfterWash2, "", new { htmlAttributes = new { @type = "number", @min = "0", @step = "0.1", @value = "0" }, @class = "AfterWash2" })</td>
+                                            <td>@Html.TextBoxFor(o => Model.Shrinkages[i].Shrinkage2, "", new { @disabled = "disabled" })</td>
+                                            @if (bol710)
+                                            {
+                                                <td>@Html.TextBoxFor(o => Model.Shrinkages[i].AfterWash3, "", new { htmlAttributes = new { @type = "number", @min = "0", @step = "0.1", @value = "0" }, @class = "AfterWash3" })</td>
+                                                <td>@Html.TextBoxFor(o => Model.Shrinkages[i].Shrinkage3, "", new { @disabled = "disabled" })</td>
+                                            }
+                                        </tr>
+                                    }
+
+                                    @if (Model.Shrinkages.Count == 0)
+                                    {
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            @if (bol710)
+                                            {
+                                                <td></td>
+                                                <td></td>
+                                            }
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                    </div>
+                    <div id="tab03" class="tab-inner">
                         <table class="DataTable">
                             <tbody>
-                                <tr>
-                                    <td><h4>Style#</h4></td>
-                                    <td></td>
-                                    <td><h4>Season</h4></td>
-                                    <td></td>
-                                    <td><h4>Brand</h4></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td><h4>SP#</h4></td>
-                                    <td></td>
-                                    <td><h4>Article</h4></td>
-                                    <td></td>
-                                    <td><h4>Size</h4></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td><h4>Submit Date</h4></td>
-                                    <td></td>
-                                    <td><h4>Arrive Qty</h4></td>
-                                    <td></td>
-                                    <td><h4>Result</h4></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td><h4>LO to Factory</h4></td>
-                                    <td></td>
-                                    <td><h4>Non 450</h4></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="6"><h3>Washing Condition</h3></td>
-                                </tr>
-                                <tr>
-                                    <td><h4>Line Dry</h4></td>
-                                    <td></td>
-                                    <td><h4>Tumble Dry</h4></td>
-                                    <td></td>
-                                    <td><h4>Hand Wash</h4></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td><h4>Temperature(oC)</h4></td>
-                                    <td></td>
-                                    <td><h4>Fibre Composition</h4></td>
-                                    <td></td>
-                                    <td colspan="2"></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="4">
-                                    <td colspan="2" rowspan="2">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="4">
-                                </tr>
-                                <tr>
-                                    <td><h4>Machine Model</h4></td>
-                                    <td></td>
-                                    <td><h4>Remark</h4></td>
-                                    <td colspan="3"></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="3"><h4>Streched Neck Opening is OK according to size spec?</h4></td>
-                                    <td></td>
-                                    <td colspan="2"></td>
-                                </tr>
+                                @for (int i = 0; i <= Model.Spiralities.Count - 1; i++)
+                                {
+                                    string Location = Model.Spiralities[i].Location.Equals("T") ? "Top" : "Bottom";
+                                    <tr>
+                                        <td><h4>Spirality (@Location)%</h4></td>
+                                        <td><h4>Method A</h4></td>
+                                        <td>@Html.TextBoxFor(o => Model.Spiralities[i].MethodA, "", new { htmlAttributes = new { @type = "number", @min = "0", @step = "0.1", @value = "0" } })</td>
+                                        <td><h4>FOR @Location</h4></td>
+                                        <td>AA'</td>
+                                        <td>@Html.TextBoxFor(o => Model.Spiralities[i].MethodA_AAPrime, "", new { htmlAttributes = new { @type = "number", @min = "0", @step = "0.1", @value = "0" } })</td>
+                                        <td>A'B</td>
+                                        <td>@Html.TextBoxFor(o => Model.Spiralities[i].MethodA_APrimeB, "", new { htmlAttributes = new { @type = "number", @min = "0", @step = "0.1", @value = "0" } })</td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td><h4>Method B</h4></td>
+                                        <td>@Html.TextBoxFor(o => Model.Spiralities[i].MethodB, "", new { htmlAttributes = new { @type = "number", @min = "0", @step = "0.1", @value = "0" } })</td>
+                                        <td></td>
+                                        <td>AA'</td>
+                                        <td>@Html.TextBoxFor(o => Model.Spiralities[i].MethodB_AAPrime, "", new { htmlAttributes = new { @type = "number", @min = "0", @step = "0.1", @value = "0" } })</td>
+                                        <td>A'B</td>
+                                        <td>@Html.TextBoxFor(o => Model.Spiralities[i].MethodB_AB, "", new { htmlAttributes = new { @type = "number", @min = "0", @step = "0.1", @value = "0" } })</td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td colspan="3"><h4>Movement of side seam/outseam in CM</h4></td>
+                                        <td></td>
+                                        <td>@Html.TextBoxFor(o => Model.Spiralities[i].CM, "", new { htmlAttributes = new { @type = "number", @min = "0", @step = "0.1", @value = "0" } })</td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                }
                             </tbody>
                         </table>
                     </div>
-                    <div id="tab02" class="tab-inner">
-                        <p>tab02的內容</p>
-                    </div>
-                    <div id="tab03" class="tab-inner">
-                        <p>tab03的內容</p>
-                    </div>
                     <div id="tab04" class="tab-inner">
-                        <p>tab04的內容</p>
+                        @if (Model.Apperance.Count > 0)
+                        {
+                            <table class="DataTable">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2"><h4>After Wash Appearance Check list</h4></th>
+                                        <th><h4>Wash1</h4></th>
+                                        <th><h4>@Model.Apperance[0].WashName2</h4></th>
+                                        @if (!string.IsNullOrEmpty(Model.Apperance[0].WashName3))
+                                        {
+                                            <th><h4>@Model.Apperance[0].WashName3</h4></th>
+                                        }
+                                        <th><h4>Comment</h4></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i <= Model.Apperance.Count - 1; i++)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @{
+                                                    bool showClass = Model.Apperance[i].Seq.Equals(1) || Model.Apperance[i].Seq.Equals(3);
+                                                    string TypeClass = showClass ? "bg-lightred" : "";
+                                                }
+
+                                                @Html.TextBoxFor(o => Model.Apperance[i].Type, "", new { @class = TypeClass })
+                                            </td>
+                                            <td>
+                                                @if (showClass)
+                                                {
+                                                    <img src="~/Image/Icon/List.png" width="30" idx="@Model.Apperance[i].Seq" />
+                                                }
+                                            </td>
+                                            <td>
+                                                @Html.DropDownListFor(o => Model.Apperance[i].Wash1, (List<SelectListItem>)ViewBag.WashList, "")
+                                            </td>
+                                            <td>
+                                                @Html.DropDownListFor(o => Model.Apperance[i].Wash2, (List<SelectListItem>)ViewBag.WashList, "")
+                                            </td>
+                                            @if (!string.IsNullOrEmpty(Model.Apperance[i].WashName3))
+                                            {
+                                                <td>
+                                                    @Html.DropDownListFor(o => Model.Apperance[i].Wash3, (List<SelectListItem>)ViewBag.WashList, "")
+                                                </td>
+                                            }
+                                            <td>
+                                                @Html.DropDownListFor(o => Model.Apperance[i].Comment, (List<SelectListItem>)ViewBag.WashList, "")
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
                     </div>
                     <div id="tab05" class="tab-inner">
-                        <p>tab05的內容</p>
+                        <table class="DataTable">
+                            <thead>
+                                <tr>
+                                    <th><h4>Location</h4></th>
+                                    <th><h4>Type</h4></th>
+                                    <th><h4>Before Wash</h4></th>
+                                    <th><h4>After Wash</h4></th>
+                                    <th><h4>Shrikage(%)</h4></th>
+                                    <th colspan="2"><h4>Scale</h4></th>
+                                    <th><h4>Result</h4></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i <= Model.FGWT.Count - 1; i++)
+                                {
+                                    string Location = Model.FGWT[i].Location.Equals("T") ? "Top" : "Bottom";
+                                    bool bolWash = Model.FGWT[i].Type.Equals(1);
+                                    bool bolScale = Model.FGWT[i].Type.Equals(3);
+                                <tr>
+                                    <td>
+                                        @Location
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(o => Model.FGWT[i].Type)
+                                    </td>
+                                    <td>
+                                        @if (bolWash)
+                                        {
+                                            @Html.TextBoxFor(o => Model.FGWT[i].BeforeWash, "", new { htmlAttributes = new { @type = "number", @min = "0", @step = "0.1", @value = "0" } })
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (bolWash)
+                                        {
+                                            @Html.TextBoxFor(o => Model.FGWT[i].AfterWash, "", new { htmlAttributes = new { @type = "number", @min = "0", @step = "0.1", @value = "0" } })
+                                        }
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(o => Model.FGWT[i].Shrinkage)
+                                    </td>
+                                    <td>
+                                        @if (bolScale)
+                                        {
+                                            @Html.DropDownListFor(o => Model.FGWT[i].Scale, (List<SelectListItem>)ViewBag.ScaleList, "")
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (bolScale)
+                                        {
+                                            <img src="~/Image/Icon/List.png" width="30" idx="@Model.FGWT[i].Seq" />
+                                        }
+                                    </td>
+                                    @{
+                                        string FGWTFontColor = Model.FGWT[i].Result == "P" ? "blue" : "red";
+                                        string FGWTVal = Model.FGWT[i].Result == "P" ? "Pass" : "Fail";
+                                    }
+                                    <td class="@FGWTFontColor">
+                                        @FGWTVal
+                                    </td>
+                                </tr>
+                                }
+
+                                @if (Model.FGWT.Count == 0)
+                                {
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
                     </div>
                     <div id="tab06" class="tab-inner">
-                        <p>tab06的內容</p>
+                        <table class="DataTable">
+                            <thead>
+                                <tr>
+                                    <th><h4>Location</h4></th>
+                                    <th><h4>Test Name</h4></th>
+                                    <th colspan="2"><h4>Type</h4></th>
+                                    <th><h4>Test Result</h4></th>
+                                    <th><h4>Test Detail</h4></th>
+                                    <th><h4>Result</h4></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i <= Model.FGPT.Count - 1; i++)
+                                {
+                                    string Location = string.Empty;
+                                    switch (Model.FGPT[i].Location)
+                                    {
+                                        case "T":
+                                            Location = "Top";
+                                            break;
+                                        case "B":
+                                            Location = "Bottom";
+                                            break;
+                                        case "S":
+                                            Location = "Top+Bottom";
+                                            break;
+                                    };
+                                    bool boolVer = Model.FGPT[i].TypeSelection_VersionID > 0;
+                                    <tr>
+                                        <td>@Location</td>
+                                        <td>@Html.DisplayFor(o => Model.FGPT[i].TestName)</td>
+                                        <td>@Html.DisplayFor(o => Model.FGPT[i].Type)</td>
+                                        <td>
+                                            @if (boolVer)
+                                            {
+                                                <img src="~/Image/Icon/List.png" width="30" idx="@Model.FGPT[i].Seq" />
+                                            }
+                                        </td>
+                                        <td class="bg-lightred">
+                                            @{
+                                                switch (Model.FGPT[i].TestUnit)
+                                                {
+                                                    case "mm":
+                                                        @Html.DropDownListFor(o => Model.FGPT[i].TestResult, (List<SelectListItem>)ViewBag.TestResultmmList, "")
+                                                        break;
+                                                    case "N":
+                                                        @Html.TextBoxFor(o => Model.FGPT[i].TestResult, "", new { htmlAttributes = new { @type = "number", @min = "0", @step = "0.1", @value = "0" } })
+                                                        break;
+                                                    case "Pass/Fail":
+                                                        @Html.DropDownListFor(o => Model.FGPT[i].TestResult, (List<SelectListItem>)ViewBag.TestResultPassList, "")
+                                                        break;
+                                                }
+                                            }
+                                        </td>
+                                        <td>@Html.DisplayFor(o => Model.FGPT[i].TestUnit)</td>
+                                        @{
+                                            string FGPTFontColor = Model.FGPT[i].Result == "P" ? "blue" : "red";
+                                            string FGPTVal = Model.FGPT[i].Result == "P" ? "Pass" : "Fail";
+                                        }
+                                        <td class="@FGPTFontColor">
+                                            @FGPTVal
+                                        </td>
+                                    </tr>
+                                }
+
+                                @if (Model.FGPT.Count == 0)
+                                {
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -257,4 +628,41 @@
             $(this).addClass('active').siblings('.active').removeClass('active');
         });
     }
+
+    function ShrinkagesEventBind() {
+        $('.BeforeWash').on('change', function () {
+            var tr = $(this).parent().parent();
+            var before = $(this).val();
+            $('.AfterWash1,.AfterWash2,.AfterWash3').trigger('change');
+        });
+
+        $('.AfterWash1').on('change', function () {            
+            var tr = $(this).parent().parent();
+            var wash = $(this).val();
+            var before = tr.find("input[class='BeforeWash']").val();
+            var shrink = tr.find("input[class='Shrinkage1']");
+            shrink.val(AfterWashCal(wash, before));
+        });
+
+        $('.AfterWash2').on('change', function () {
+            var tr = $(this).parent().parent();
+            var wash = $(this).val();
+            var before = tr.find("input[class='BeforeWash']").val();
+            var shrink = tr.find("input[class='Shrinkage2']");
+            shrink.val(AfterWashCal(wash, before));
+        });
+
+        $('.AfterWash3').on('change', function () {
+            var tr = $(this).parent().parent();
+            var wash = $(this).val();
+            var before = tr.find("input[class='BeforeWash']").val();
+            var shrink = tr.find("input[class='Shrinkage3']");
+            shrink.val(AfterWashCal(wash, before));
+        });
+    }
+
+    function AfterWashCal(Wash, Before) {
+        return accMul(accDiv(accSubtr(Wash, Before), Before), 100);
+    }
+
 </script>

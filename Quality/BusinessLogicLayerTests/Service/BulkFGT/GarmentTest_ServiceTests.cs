@@ -10,7 +10,7 @@ using ProductionDataAccessLayer.Provider.MSSQL;
 using DatabaseObject.ViewModel;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ProductionDB;
-using DatabaseObject.ViewModel.BulkFGT;
+using DatabaseObject.ViewModel;
 
 namespace BusinessLogicLayer.Service.BulkFGT.Tests
 {
@@ -25,17 +25,17 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
                 IGarmentTestProvider _IGarmentTestProvider = new GarmentTestProvider(Common.ProductionDataAccessLayer);
                 IGarmentTestDetailProvider _IGarmentTestDetailProvider = new GarmentTestDetailProvider(Common.ProductionDataAccessLayer);
                 GarmentTest_Result result = new GarmentTest_Result();
-                var query = _IGarmentTestProvider.Get_GarmentTest(
-                    new GarmentTest_ViewModel
-                    {
-                        StyleID = "NF0A3SR4",
-                        BrandID = "N.FACE",
-                        Article = "N8E",
-                        SeasonID = "19FW",
-                        MDivisionid = "Vm2",
-                    });
+                //var query = _IGarmentTestProvider.Get_GarmentTest(
+                //    new GarmentTest_ViewModel
+                //    {
+                //        StyleID = "NF0A3SR4",
+                //        BrandID = "N.FACE",
+                //        Article = "N8E",
+                //        SeasonID = "19FW",
+                //        MDivisionid = "Vm2",
+                //    });
 
-                result.garmentTest = query.FirstOrDefault();
+                //result.garmentTest = query.FirstOrDefault();
 
                 // Detail
                 result.garmentTest_Details = _IGarmentTestDetailProvider.Get_GarmentTestDetail(
