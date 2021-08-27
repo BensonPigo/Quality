@@ -52,6 +52,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\_Dll\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="office, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="Sci">
       <HintPath>..\..\_Dll\Sci.dll</HintPath>
     </Reference>
@@ -146,6 +149,10 @@
     <ProjectReference Include="..\DatabaseObject\DatabaseObject.csproj">
       <Project>{95d12adf-a503-4a80-b2c9-71e21f2a3aa6}</Project>
       <Name>DatabaseObject</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Library\Library.csproj">
+      <Project>{3E6D504F-E89B-4C0A-A87D-07D1E6786A13}</Project>
+      <Name>Library</Name>
     </ProjectReference>
     <ProjectReference Include="..\ManufacturingExecutionDataAccessLayer\ManufacturingExecutionDataAccessLayer.csproj">
       <Project>{642aebc1-02d9-4716-bb21-61621c62a67f}</Project>

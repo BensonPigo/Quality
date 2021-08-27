@@ -145,7 +145,6 @@
     <Compile Include="ResultModel\FabricOvenTest_Result.cs" />
     <Compile Include="ResultModel\LogIn_Result.cs" />
     <Compile Include="ResultModel\Measurement_ResultModel.cs" />
-    <Compile Include="ResultModel\MockupUpdatePicture_Result.cs" />
     <Compile Include="ResultModel\SendMail_Result.cs" />
     <Compile Include="ResultModel\Module_Detail.cs" />
     <Compile Include="ResultModel\Quality_MailGroup_ResultModel.cs" />
