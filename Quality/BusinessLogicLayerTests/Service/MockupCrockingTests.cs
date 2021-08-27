@@ -19,7 +19,7 @@ namespace BusinessLogicLayer.Service.Tests
                 IMockupCrockingService _MockupCrockingService = new MockupCrockingService();
                 MockupCrocking MockupCrocking = new MockupCrocking() { BrandID = "ADIDAS", SeasonID= "19SS", StyleID= "S1953WTR302", Article= "DU1325", Type="S"};
                 var _Para = _MockupCrockingService.GetMockupCrocking(MockupCrocking);
-                Assert.IsTrue(_Para.MockupCrocking.Count > 0 && _Para.MockupCrocking_Detail.Count > 0);
+                Assert.IsTrue(_Para.MockupCrocking.Count > 0);
             }
             catch (Exception ex)
             {

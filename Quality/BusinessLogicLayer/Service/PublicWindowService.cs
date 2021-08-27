@@ -29,6 +29,25 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
+        public List<Window_Brand> Get_Brand(string ID, string OtherTable, string OtherColumn)
+        {
+            List<Window_Brand> result = new List<Window_Brand>();
+
+            try
+            {
+                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+
+                //取得登入資訊
+                result = _Provider.Get_Brand(ID, OtherTable, OtherColumn).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
         public List<Window_Season> Get_Season(string BrandID, string ID)
         {
             List<Window_Season> result = new List<Window_Season>();

@@ -85,7 +85,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\_Dll\Sci.dll</HintPath>
     </Reference>
-    <Reference Include="Sci.Proj">
+    <Reference Include="Sci.Proj, Version=2020.6.15.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\_Dll\Sci.Proj.dll</HintPath>
     </Reference>
     <Reference Include="System" />

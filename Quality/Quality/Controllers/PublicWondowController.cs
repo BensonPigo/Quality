@@ -25,11 +25,27 @@ namespace Quality.Controllers
         }
 
         [HttpPost]
-        public ActionResult BrandList(string BrandID)
+        public ActionResult BrandList(string BrandID, string ReturnType)
         {
             var model = _PublicWindowService.Get_Brand(BrandID);
+            if (ReturnType.ToUpper() == "JSON")
+            {
+                return Json(model);
+            }
             return View(model);
         }
+
+        [HttpPost]
+        public ActionResult BrandList(string BrandID, string ReturnType ,string OtherTable, string OtherColumn)
+        {
+            var model = _PublicWindowService.Get_Brand(BrandID, OtherTable, OtherColumn);
+            if (ReturnType.ToUpper() == "JSON")
+            {
+                return Json(model);
+            }
+            return View(model);
+        }
+
 
         public ActionResult SeasonList(string BrandID)
         {
@@ -39,10 +55,14 @@ namespace Quality.Controllers
         }
 
         [HttpPost]
-        public ActionResult SeasonList(string BrandID, string SeasonID)
+        public ActionResult SeasonList(string BrandID, string SeasonID, string ReturnType)
         {
             var model = _PublicWindowService.Get_Season(BrandID, SeasonID);
             ViewData["BrandID"] = BrandID;
+            if (ReturnType.ToUpper() == "JSON")
+            {
+                return Json(model);
+            }
             return View(model);
         }
 
@@ -55,11 +75,15 @@ namespace Quality.Controllers
         }
 
         [HttpPost]
-        public ActionResult StyleList(string BrandID, string SeasonID, string StyleID)
+        public ActionResult StyleList(string BrandID, string SeasonID, string StyleID, string ReturnType)
         {
             var model = _PublicWindowService.Get_Style(BrandID, SeasonID, StyleID);
             ViewData["BrandID"] = BrandID;
             ViewData["SeasonID"] = SeasonID;
+            if (ReturnType.ToUpper() == "JSON")
+            {
+                return Json(model);
+            }
             return View(model);
         }
 
@@ -72,11 +96,15 @@ namespace Quality.Controllers
         }
 
         [HttpPost]
-        public ActionResult ArticleList(string OrderID, Int64 StyleUkey, string StyleID, string BrandID, string SeasonID, string Article)
+        public ActionResult ArticleList(string OrderID, Int64 StyleUkey, string StyleID, string BrandID, string SeasonID, string Article, string ReturnType)
         {
             var model = _PublicWindowService.Get_Article(OrderID, StyleUkey, StyleID, BrandID, SeasonID, Article);
             ViewData["OrderID"] = OrderID;
             ViewData["StyleUkey"] = StyleUkey;
+            if (ReturnType.ToUpper() == "JSON")
+            {
+                return Json(model);
+            }
             return View(model);
         }
 
@@ -90,12 +118,16 @@ namespace Quality.Controllers
         }
 
         [HttpPost]
-        public ActionResult SizeList(string OrderID, Int64 StyleUkey, string Article, string Size)
+        public ActionResult SizeList(string OrderID, Int64 StyleUkey, string Article, string Size, string ReturnType)
         {
             var model = _PublicWindowService.Get_Size(OrderID, StyleUkey, Article, Size);
             ViewData["OrderID"] = OrderID;
             ViewData["StyleUkey"] = StyleUkey;
             ViewData["Article"] = Article;
+            if (ReturnType.ToUpper() == "JSON")
+            {
+                return Json(model);
+            }
             return View(model);
         }
 
@@ -107,10 +139,14 @@ namespace Quality.Controllers
         }
 
         [HttpPost]
-        public ActionResult TechnicianList(string CallFunction, string ID)
+        public ActionResult TechnicianList(string CallFunction, string ID, string ReturnType)
         {
             var model = _PublicWindowService.Get_Technician(CallFunction, ID);
             ViewData["CallFunction"] = CallFunction;
+            if (ReturnType.ToUpper() == "JSON")
+            {
+                return Json(model);
+            }
             return View(model);
         }
 
@@ -123,10 +159,14 @@ namespace Quality.Controllers
         }
 
         [HttpPost]
-        public ActionResult LocalSuppList(string Title, string Name)
+        public ActionResult LocalSuppList(string Title, string Name, string ReturnType)
         {
             var model = _PublicWindowService.Get_LocalSupp(Name);
             ViewData["Title"] = Title;
+            if (ReturnType.ToUpper() == "JSON")
+            {
+                return Json(model);
+            }
             return View(model);
         }
 
@@ -138,10 +178,14 @@ namespace Quality.Controllers
         }
 
         [HttpPost]
-        public ActionResult TPESuppList(string Title, string Name)
+        public ActionResult TPESuppList(string Title, string Name, string ReturnType)
         {
             var model = _PublicWindowService.Get_TPESupp(Name);
             ViewData["Title"] = Title;
+            if (ReturnType.ToUpper() == "JSON")
+            {
+                return Json(model);
+            }
             return View(model);
         }
 
@@ -155,11 +199,15 @@ namespace Quality.Controllers
         }
 
         [HttpPost]
-        public ActionResult Po_Supp_DetailList(string POID, string FabricType, string Seq)
+        public ActionResult Po_Supp_DetailList(string POID, string FabricType, string Seq, string ReturnType)
         {
             var model = _PublicWindowService.Get_Po_Supp_Detail(POID, FabricType, Seq);
             ViewData["POID"] = POID;
             ViewData["FabricType"] = FabricType;
+            if (ReturnType.ToUpper() == "JSON")
+            {
+                return Json(model);
+            }
             return View(model);
         }
 
@@ -174,13 +222,17 @@ namespace Quality.Controllers
         }
 
         [HttpPost]
-        public ActionResult FtyInventoryList(string Title, string POID, string Seq1, string Seq2, string Roll)
+        public ActionResult FtyInventoryList(string Title, string POID, string Seq1, string Seq2, string Roll, string ReturnType)
         {
             var model = _PublicWindowService.Get_FtyInventory(POID, Seq1, Seq2, Roll);
             ViewData["Title"] = Title;
             ViewData["POID"] = POID;
             ViewData["Seq1"] = Seq1;
             ViewData["Seq2"] = Seq2;
+            if (ReturnType.ToUpper() == "JSON")
+            {
+                return Json(model);
+            }
             return View(model);
         }
 
@@ -193,10 +245,14 @@ namespace Quality.Controllers
         }
 
         [HttpPost]
-        public ActionResult Pass1List(string Title, string ID)
+        public ActionResult Pass1List(string Title, string ID, string ReturnType)
         {
             var model = _PublicWindowService.Get_Pass1(ID);
             ViewData["Title"] = Title;
+            if (ReturnType.ToUpper() == "JSON")
+            {
+                return Json(model);
+            }
             return View(model);
         }
 
@@ -208,10 +264,14 @@ namespace Quality.Controllers
         }
 
         [HttpPost]
-        public ActionResult SewingLineList(string FactoryID, string ID)
+        public ActionResult SewingLineList(string FactoryID, string ID, string ReturnType)
         {
             var model = _PublicWindowService.Get_SewingLine(FactoryID, ID);
             ViewData["FactoryID"] = FactoryID;
+            if (ReturnType.ToUpper() == "JSON")
+            {
+                return Json(model);
+            }
             return View(model);
         }
 
@@ -219,6 +279,17 @@ namespace Quality.Controllers
         {
             var model = _PublicWindowService.Get_Appearance(Lab);
 
+            return View(model);
+        }
+        [HttpPost]
+        public ActionResult AppearanceList(string Lab, string ReturnType)
+        {
+            var model = _PublicWindowService.Get_Appearance(Lab);
+
+            if (ReturnType.ToUpper() == "JSON")
+            {
+                return Json(model);
+            }
             return View(model);
         }
 

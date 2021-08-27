@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ADOHelper.Utility.Interface
+namespace Library
 {
     public static partial class ConvertToPDF
     {
@@ -32,7 +32,7 @@ namespace ADOHelper.Utility.Interface
                 workBook.ExportAsFixedFormat(targetType, pdfPath);
                 result = true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 result = false;
             }
