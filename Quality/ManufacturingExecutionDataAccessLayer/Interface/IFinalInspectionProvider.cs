@@ -1,5 +1,6 @@
 using DatabaseObject;
 using DatabaseObject.ManufacturingExecutionDB;
+using DatabaseObject.RequestModel;
 using DatabaseObject.ViewModel.FinalInspection;
 using System.Collections.Generic;
 using System.Data;
@@ -47,5 +48,11 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         void UpdateFinalInspection_OtherImage(string finalInspectionID, List<byte[]> images);
 
         DataTable GetReportMailInfo(string finalInspectionID);
+
+        IList<QueryFinalInspection> GetFinalinspectionQueryList(FinalInspection_Query request);
+
+        DataTable GetQueryReportInfo(string finalInspectionID);
+
+        IList<FinalInspection_OrderCarton> GetListCartonInfo(string finalInspectionID);
     }
 }
