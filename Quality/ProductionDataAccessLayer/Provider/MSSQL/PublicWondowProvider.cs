@@ -92,7 +92,7 @@ where junk = 0
             return ExecuteList<Window_Style>(CommandType.Text, SbSql.ToString(), paras);
         }
 
-        public IList<Window_Article> Get_Article(string OrderID, Int64 StyleUkey, string Article)
+        public IList<Window_Article> Get_Article(string OrderID, Int64 StyleUkey, string StyleID, string BrandID, string SeasonID, string Article)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -115,9 +115,26 @@ AND ID = @OrderID
 select DISTINCT Article
 from Production.dbo.Style_Article
 where 1=1
-AND StyleUkey = @StyleUkey
+
 ");
-                paras.Add("@StyleUkey ", DbType.Int64, StyleUkey);
+                if (StyleUkey >0)
+                {
+                    SbSql.Append("AND StyleUkey = @StyleUkey ");
+                    paras.Add("@StyleUkey ", DbType.Int64, StyleUkey);
+                }
+                if (!string.IsNullOrEmpty(StyleID) && !string.IsNullOrEmpty(BrandID) && !string.IsNullOrEmpty(SeasonID))
+                {
+                    SbSql.Append($@"
+AND StyleUkey in (
+	select Ukey
+	from Production.dbo.Style
+	where id= @StyleID and BrandID=@BrandID and SeasonID=@SeasonID
+)
+");
+                    paras.Add("@StyleID ", DbType.String, StyleID);
+                    paras.Add("@BrandID ", DbType.String, BrandID);
+                    paras.Add("@SeasonID ", DbType.String, SeasonID);
+                }
             }
             else
             {

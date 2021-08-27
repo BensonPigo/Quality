@@ -66,7 +66,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
         }
 
         /// <summary>
-        /// 廢棄：生成Excel，並下載至暫存路徑
+        /// 廢棄：取得Datatable
         /// </summary>
         /// <param name="Req"></param>
         /// <returns></returns>
@@ -94,10 +94,10 @@ namespace BusinessLogicLayer.Service.SampleRFT
         }
 
         /// <summary>
-        /// 廢棄：生成Excel，並下載至暫存路徑
+        /// 透過  Microsoft.Office.Interop.Excel 生成Excel，並下載至暫存路徑
         /// </summary>
         /// <param name="Req"></param>
-        /// <returns></returns>
+        /// <returns>暫存檔路徑</returns>
         public CFTComments_ViewModel GetExcel(CFTComments_ViewModel Req)
         {
             string TempTilePath = string.Empty;
@@ -145,7 +145,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 Marshal.ReleaseComObject(workbook);
                 Marshal.ReleaseComObject(excelApp);
 
-                result.TempFilePath = filepath;
+                result.TempFileName = fileName;
                 result.Result = true;
             }
             catch (Exception ex)
