@@ -247,5 +247,28 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             return result;
         }
+
+        public GarmentTest_Detail_Result Generate_FGWT(GarmentTest_Detail_Result viewModel)
+        {
+            GarmentTest_Detail_Result result = new GarmentTest_Detail_Result();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            try
+            {
+                _IGarmentTestDetailFGWTProvider = new GarmentTestDetailFGWTProvider(_ISQLDataTransaction);
+                #region 判斷空值
+                string emptyMsg = string.Empty;
+                if (string.IsNullOrEmpty(viewModel.Detail.MtlTypeID)) { emptyMsg += "MtlTypeID cannot be empty" + Environment.NewLine; }
+                //if (string.IsNullOrEmpty(garmentTest_ViewModel.StyleID)) { emptyMsg += "Master StyleID cannot be empty." + Environment.NewLine; }
+                #endregion
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+            finally { _ISQLDataTransaction.CloseConnection(); }
+
+            return result;
+        }
     }
 }

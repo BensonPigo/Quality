@@ -41,16 +41,17 @@ select  [OrderID] = o.ID
 from [Production].[dbo].Orders o with(nolock)
 inner join [Production].[dbo].Order_Qty oq with(nolock) on o.ID = oq.ID
 inner join [Production].[dbo].Order_Location ol with(nolock) on o.ID = ol.OrderId
-outer apply (
-	select InspectionQty = count(*)
-	from RFT_Inspection r with(nolock)
-	where r.OrderID = o.ID
-	and r.Article = oq.Article
-	and r.Size = oq.SizeCode
-	and r.Location = ol.Location
-	and Status <> 'Dispose'
-)r
-where r.InspectionQty < oq.Qty
+left join (	
+	select OrderID,Article,Size,Location, InspectionQty = count(1)
+	from RFT_Inspection r with(nolock)	
+	where Status <> 'Dispose'
+	group by OrderID,Article,Size,Location
+) r on r.OrderID = o.ID 
+    and r.Article = oq.Article
+    and r.Size = oq.SizeCode
+    and r.Location = ol.Location
+where 1=1
+and isnull(r.InspectionQty,0) < oq.Qty
 and o.Category = 'S'
 and o.OnSiteSample != 1
 and o.Junk = 0

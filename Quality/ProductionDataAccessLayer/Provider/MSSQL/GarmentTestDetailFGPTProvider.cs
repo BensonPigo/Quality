@@ -31,6 +31,11 @@ select
 [ID]
 ,[No]
 ,[Location]
+,[LocationText]= CASE WHEN Location='B' THEN 'Bottom'
+						WHEN Location='T' THEN 'Top'
+						WHEN Location='S' THEN 'Top+Bottom'
+						ELSE ''
+					END
 ,[Type] = IIF(t.TypeSelection_VersionID > 0, Replace(t.type, '{0}', ts.Code), t.type)
 ,[TestName] = PMS_FGPT_TestName.Description
 ,[TestDetail]

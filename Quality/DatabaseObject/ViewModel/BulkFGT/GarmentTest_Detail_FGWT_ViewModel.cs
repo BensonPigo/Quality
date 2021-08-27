@@ -17,5 +17,13 @@ namespace DatabaseObject.ViewModel
         /// 3 : 都不可編輯
         /// </summary>
         public string EditType { get; set; }
+
+
+        /// <summary>
+        /// B : Bottom
+        /// T : Top
+        /// S : Top+Bottom
+        /// </summary>
+        public string LocationText { get; set; }
     }
 }
