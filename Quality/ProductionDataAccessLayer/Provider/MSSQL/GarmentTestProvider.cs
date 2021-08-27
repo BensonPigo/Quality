@@ -426,11 +426,14 @@ INSERT INTO GarmentTest_Detail_FGPT
                 objParameterDetail.Add($"@SeamBreakageResult{cnt}", string.IsNullOrEmpty(item.SeamBreakageResult) ? string.Empty : item.SeamBreakageResult);
                 objParameterDetail.Add($"@OdourResult{cnt}", string.IsNullOrEmpty(item.OdourResult) ? string.Empty : item.OdourResult);
                 objParameterDetail.Add($"@WashResult{cnt}", string.IsNullOrEmpty(item.WashResult) ? string.Empty : item.WashResult);
-                objParameterDetail.Add($"@inspector{cnt}", string.IsNullOrEmpty(item.inspector) ? string.Empty : item.inspector);
-                objParameterDetail.Add($"@inspdate{cnt}", item.inspdate == null ? "NULL" : ((DateTime)item.inspdate).ToString("d"));
+                objParameterDetail.Add($"@inspector{cnt}", string.IsNullOrEmpty(item.inspector) ? string.Empty : item.inspector);                
                 objParameterDetail.Add($"@Remark{cnt}", string.IsNullOrEmpty(item.Remark) ? string.Empty : item.Remark);
                 objParameterDetail.Add($"@EditName{cnt}", string.IsNullOrEmpty(item.EditName) ? string.Empty : item.EditName);
                 objParameterDetail.Add($"@AddName{cnt}", string.IsNullOrEmpty(item.AddName) ? string.Empty : item.AddName);
+
+                //objParameterDetail.Add($"@inspdate{cnt}", item.inspdate == null ? DBNull.Value : ((DateTime)item.inspdate).ToString("d"));
+
+                string inspDate = (item.inspdate == null) ? "Null" : "'" + ((DateTime)item.inspdate).ToString("d") + "'";
 
 
                 if (dtDetail.Rows.Count > 0)
@@ -457,14 +460,16 @@ and No = @No{cnt}
 insert into GarmentTest_Detail(
     ID,No,SizeCode,MtlTypeID,Result,NonSeamBreakageTest,SeamBreakageResult,OdourResult
     ,WashResult
-    ,inspector,inspdate
+    ,inspector
+    ,inspdate
     ,Remark
     ,AddName,AddDate
 )
 values(
     @ID,@No{cnt},@SizeCode{cnt},@MtlTypeID{cnt},@Result{cnt},@NonSeamBreakageTest{cnt},@SeamBreakageResult{cnt},@OdourResult{cnt}
     ,@WashResult{cnt}
-    ,@inspector{cnt},@inspdate{cnt}
+    ,@inspector{cnt}
+    ,{inspDate}
     ,@Remark{cnt}
     ,@AddName{cnt}, GetDate()
 )

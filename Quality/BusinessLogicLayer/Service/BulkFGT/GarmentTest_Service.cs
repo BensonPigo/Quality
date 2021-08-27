@@ -28,8 +28,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
         private IGarmentTestDetailShrinkageProvider _IGarmentTestDetailShrinkageProvider;
         private IGarmentDetailSpiralityProvider _IGarmentDetailSpiralityProvider;
 
-
-
         public enum SelectType
         {
             OrderID,
@@ -79,7 +77,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
             try
             {
                 // 抓取 garmentTest_ViewModel.Factory 撈取 M，並傳入Get_GarmentTest
+                IFactoryProvider factoryProvider = new FactoryProvider(Common.ProductionDataAccessLayer);
+                garmentTest_ViewModel.MDivisionid = factoryProvider.GetMDivisionID(garmentTest_ViewModel.Factory).FirstOrDefault().MDivisionID;
 
+                if (string.IsNullOrEmpty(garmentTest_ViewModel.MDivisionid))
+                {
+                    result.Result = false;
+                    result.ErrMsg = "Mdivision is empty.";
+                    return result;
+                }
 
                 var query = _IGarmentTestProvider.Get_GarmentTest(garmentTest_ViewModel);
                 if (!query.Any() || query.Count() == 0)
