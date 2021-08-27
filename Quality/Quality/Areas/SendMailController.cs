@@ -24,8 +24,8 @@ namespace Quality.Areas
                 string FileNameWithoutExtension = Path.GetFileNameWithoutExtension(file.FileName);
                 string extension = Path.GetExtension(file.FileName);
                 fileName = FileNameWithoutExtension + Guid.NewGuid().ToString("N") + extension;
-                var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", fileName);
-                file.SaveAs(path);
+                string filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
+                file.SaveAs(filepath);
                 // 回傳新檔名, 以供其它操作使用, 例如:SendMail 附件使用檔名存取 Server 上的實體檔案
                 return RedirectToAction(fileName);
             }
