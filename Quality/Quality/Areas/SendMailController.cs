@@ -26,7 +26,7 @@ namespace Quality.Areas
                 fileName = FileNameWithoutExtension + Guid.NewGuid().ToString("N") + extension;
                 string filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
                 file.SaveAs(filepath);
-                // 回傳新檔名, 以供其它操作使用, 例如:SendMail 附件使用檔名存取 Server 上的實體檔案
+
                 return RedirectToAction(fileName);
             }
             else

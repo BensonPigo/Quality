@@ -317,9 +317,28 @@ FROM [MockupCrocking]
 
             SbSql.Append(@"
 UPDATE [MockupCrocking]
-SET
-    TestBeforePicture=@TestBeforePicture,
-    TestAfterPicture=@TestAfterPicture
+SET");
+            if (Item.TestBeforePicture != null && Item.TestAfterPicture == null)
+            {
+                SbSql.Append(@"
+    TestBeforePicture=@TestBeforePicture");
+
+            }
+            else if (Item.TestBeforePicture == null && Item.TestAfterPicture != null)
+            {
+                SbSql.Append(@"
+    TestAfterPicture=@TestAfterPicture");
+
+            }
+            else
+            {
+                SbSql.Append(@"
+    TestBeforePicture=@TestBeforePicture
+    TestAfterPicture=@TestAfterPicture,");
+
+            }
+
+            SbSql.Append(@"
 where ReportNo = @ReportNo
 ");
             objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
