@@ -37,6 +37,26 @@ where junk = 0
             return ExecuteList<Window_Brand>(CommandType.Text, SbSql.ToString(), paras);
         }
 
+        public IList<Window_Brand> Get_Brand(string ID, string OtherTable, string OtherColumn)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+            SbSql.Append($@"
+select ID
+from Production.dbo.{OtherTable}
+where 1=1
+
+");
+            if (!string.IsNullOrEmpty(ID))
+            {
+
+                SbSql.Append($@"AND {OtherColumn} LIKE @ID");
+                paras.Add("@ID", DbType.String, ID + "%");
+            }
+
+            return ExecuteList<Window_Brand>(CommandType.Text, SbSql.ToString(), paras);
+        }
+
         public IList<Window_Season> Get_Season(string BrandID, string ID)
         {
             StringBuilder SbSql = new StringBuilder();
