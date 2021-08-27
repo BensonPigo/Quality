@@ -173,7 +173,7 @@
     <Compile Include="Areas\BulkFGT\Controllers\GarmentTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\MockupCrockingController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\SearchListController.cs" />
-    <Compile Include="Areas\FileActionController.cs" />
+    <Compile Include="Areas\SendMailController.cs" />
     <Compile Include="Areas\FinalInspection\Controllers\InspectionController.cs" />
     <Compile Include="Areas\FinalInspection\Controllers\QueryController.cs" />
     <Compile Include="Areas\FinalInspection\FinalInspectionAreaRegistration.cs" />
@@ -766,7 +766,6 @@
     <Folder Include="ThirdParty\plugins\bootstrap-fileinput\fonts\" />
     <Folder Include="Views\Authority\" />
     <Folder Include="Views\Base\" />
-    <Folder Include="Views\FileAction\" />
     <Folder Include="Views\SampleRFT\" />
   </ItemGroup>
   <ItemGroup>

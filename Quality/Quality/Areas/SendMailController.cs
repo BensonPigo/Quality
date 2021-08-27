@@ -7,7 +7,7 @@ using System.Web.Mvc;
 
 namespace Quality.Areas
 {
-    public class FileActionController : Controller
+    public class SendMailController : Controller
     {
         // GET: FileAction
         public ActionResult Index()

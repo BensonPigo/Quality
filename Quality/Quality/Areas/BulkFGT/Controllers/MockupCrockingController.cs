@@ -1,4 +1,5 @@
 ﻿using BusinessLogicLayer.Interface.BulkFGT;
+using BusinessLogicLayer.Service;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.ViewModel;
 using Quality.Controllers;
@@ -15,6 +16,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         // GET: BulkFGT/MockupCrocking
         public ActionResult Index()
         {
+            _MockupCrockingService = new MockupCrockingService();
             return View();
         }
 

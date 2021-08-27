@@ -73,20 +73,7 @@ namespace BusinessLogicLayer.Service
                 sendMail_Result.resultMsg = ex.ToString();
             }
 
-            DeleteFileonServer(SendMail_Request.FileList);
             return sendMail_Result;
-        }
-
-        private void DeleteFileonServer(List<string> Files)
-        {
-            foreach (string fileName in Files)
-            {
-                string filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", fileName);
-                if (File.Exists(filepath))
-                {
-                    File.Delete(filepath);
-                }
-            }
         }
     }
 }
