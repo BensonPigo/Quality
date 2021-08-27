@@ -44,6 +44,9 @@
         <input type="text" name="Article" value="" />
         @Html.Hidden("OrderID", ViewData["OrderID"]);
         @Html.Hidden("StyleUkey", ViewData["StyleUkey"]);
+        @Html.Hidden("StyleID", ViewData["StyleID"]);
+        @Html.Hidden("BrandID", ViewData["BrandID"]);
+        @Html.Hidden("SeasonID", ViewData["SeasonID"]);
         <input type="submit" value="Query" />
         <input id="btnExit" type="button" value="Exit" />
     }
