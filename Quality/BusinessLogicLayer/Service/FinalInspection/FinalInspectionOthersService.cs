@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
 using BusinessLogicLayer.Interface;
+using BusinessLogicLayer.Service.FinalInspection;
 using DatabaseObject;
 using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ViewModel.FinalInspection;
@@ -109,7 +110,14 @@ namespace BusinessLogicLayer.Service
         {
             BaseResult result = new BaseResult();
 
-            using (TransactionScope transactionScope = new TransactionScope())
+            if (others.ProductionStatus == null)
+            {
+                result.Result = false;
+                result.ErrorMessage = "<Production Status> cannot be empty";
+                return result;
+            }
+
+                using (TransactionScope transactionScope = new TransactionScope())
             {
                 try
                 {
@@ -138,6 +146,7 @@ namespace BusinessLogicLayer.Service
                     transactionScope.Dispose();
                     result.Result = false;
                     result.ErrorMessage = ex.ToString();
+                    return result;
                 }
             }
             return result;

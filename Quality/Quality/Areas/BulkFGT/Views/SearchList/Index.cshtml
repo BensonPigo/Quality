@@ -1,0 +1,250 @@
+﻿
+@using DatabaseObject.ViewModel.BulkFGT
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model SearchList_ViewModel
+
+
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+
+<style type="text/css">
+    .dataTables_wrapper {
+        position: static;
+    }
+
+    h3, label, #myTable_info {
+        color: white
+    }
+
+    #myTable_previous, #myTable_next {
+        color: white !important;
+    }
+
+    select {
+        color: wheat
+    }
+
+    .btnmargin {
+        margin-left: 10px;
+        margin-top: 10px;
+    }
+
+    tfoot input {
+        width: 100%;
+        padding: 3px;
+        box-sizing: border-box;
+    }
+
+    td {
+        padding: 5px 5px 5px 5px;
+    }
+
+    .readonly {
+        background-color: lightgray;
+    }
+
+    .button {
+        width: 5vw;
+    }
+</style>
+<div class="main-content">
+
+    <header class="page-header">
+        <h3>
+            <i class=""></i><span>Search List</span>
+        </h3>
+        <div class="breadcrumb">
+            <div>Home</div>
+            <div class="current">Search List</div>
+        </div>
+    </header>
+
+
+    <div class="main-area">
+
+        <div class="content-scroll">
+            <div class="inner-scroll" style="float:left">
+
+                <div>
+                    @using (Html.BeginForm("Query", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { @class = "", @name = "SearchFrom", @onsubmit = "", @id = "SearchFrom" }))
+                    {
+                        <div>
+                            <table>
+                                <tr>
+                                    <td>
+                                        <label class="FindLab">Brand</label>
+                                    </td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.BrandID, new { @value = Model.BrandID })
+                                        <input id="btnBrandID" onclick="OpenWindow('BrandID')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
+                                    </td>
+                                    <td>
+                                        <label class="FindLab">Season</label>
+                                    </td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.SeasonID, new { @value = Model.SeasonID })
+                                        <input id="btnSeasonID" onclick="OpenWindow('SeasonID')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
+                                    </td>
+                                    <td>
+                                        <label class="FindLab">Style</label>
+                                    </td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.StyleID, new { @value = Model.StyleID })
+                                        <input id="btnStyleID" onclick="OpenWindow('StyleID')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
+                                    </td>
+                                    <td>
+                                        <label class="FindLab">Article</label>
+                                    </td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.Article, new { @value = Model.Article })
+                                        <input id="btnArticle" onclick="OpenWindow('Article')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
+                                    </td>
+                                    <td>
+                                        <input type="submit" class="button" name="action:Query" id="btnQuery" value="Query" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label class="FindLab" for="TypeSP">Type</label>
+                                    </td>
+                                    <td colspan="6">
+                                        @Html.DropDownListFor(o => o.Type, Model.TypeDatasource)
+                                    </td>
+                                    <td>
+                                        <input type="submit" class="button" name="action:ToExcel" id="btnExcel" value="To Excel" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    }
+                </div>
+                <br />
+                <div>
+
+                    <table id="myTable" class="table table-striped display" style="text-align:center">
+                        <thead>
+                            <tr class="row-name">
+                                <th>Type</th>
+                                <th>Report No</th>
+                                <th>SP#</th>
+                                <th>Style#</th>
+                                <th>Brand</th>
+                                <th>Season</th>
+                                <th>Article</th>
+                                <th>Artwork</th>
+                                <th>Result</th>
+                                <th>Test Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.DataList)
+                            {
+                                <tr class="row-content">
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Type)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ReportNo)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.OrderID)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.StyleID)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.BrandID)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SeasonID)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Article)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Artwork)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Result)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.TestDate)
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <br />
+
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+
+
+<script type="text/javascript">
+
+    var msg = new MessagerAlert();
+
+    $(function () {
+
+
+        @Html.Raw(Model.ErrorMessage);
+
+        $('#myTable').DataTable({
+            "pageLength": 20,
+            initComplete: function () {
+            }
+        });
+
+
+
+    });
+
+    function OpenWindow(WindowType) {
+
+
+        if (WindowType == "Brand") {
+            window.open('@Url.Action("BrandList", "PublicWondow",new { Area=""})', WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        }
+        if (WindowType == "Season") {
+            window.open('@Url.Action("SeasonList", "PublicWondow",new { Area=""})', WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        }
+        if (WindowType == "Style") {
+            window.open('@Url.Action("StyleList", "PublicWondow",new { Area=""})', WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        }
+        
+        if (WindowType == "Article" && $("#StyleID").val() != "") {
+            var StyleID = $("#StyleID").val();
+            window.open('@Url.Action("ArticleList", "PublicWondow",new { Area=""})' + '?StyleID=' + StyleID, WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        }
+    }
+    function GetBrandList(BrandID) {
+        $("#BrandID").val(BrandID);
+        // 在這邊取得開窗選擇的Brand，進行後續動作
+    }
+
+    function GetSeasonList(SeasonID) {
+        $("#SeasonID").val(SeasonID);
+        // 在這邊取得開窗選擇的Brand，進行後續動作
+    }
+    function GetStyleList(StyleID) {
+        $("#StyleID").val(StyleID);
+        // 在這邊取得開窗選擇的Brand，進行後續動作
+    }
+    function GetArticleList(Article) {
+        $("#Article").val(Article);
+        // 在這邊取得開窗選擇的Brand，進行後續動作
+    }
+</script>
+

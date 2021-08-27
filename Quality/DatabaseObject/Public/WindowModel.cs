@@ -19,6 +19,7 @@ namespace DatabaseObject.Public
 
     public class Window_Style
     {
+        public Int64 StyleUkey{ get; set; }
         public string ID { get; set; }
         public string BrandID { get; set; }
         public string SeasonID { get; set; }

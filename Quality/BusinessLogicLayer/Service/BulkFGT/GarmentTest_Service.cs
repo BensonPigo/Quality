@@ -205,20 +205,39 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public GarmentTest_ViewModel Save_GarmentTest(GarmentTest_ViewModel garmentTest_ViewModel)
+        public GarmentTest_ViewModel Save_GarmentTest(GarmentTest_ViewModel garmentTest_ViewModel,List<GarmentTest_Detail> detail)
         {
             GarmentTest_ViewModel result = new GarmentTest_ViewModel();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             try
             {
                 _IGarmentTestProvider = new GarmentTestProvider(_ISQLDataTransaction);
-                
-            }
-            catch (Exception)
-            {
+                #region 判斷是否空值
+                string emptyMsg = string.Empty;
+                if (garmentTest_ViewModel.ID == 0) { emptyMsg += "Master ID cannot be 0." + Environment.NewLine; }
+                if (string.IsNullOrEmpty(garmentTest_ViewModel.StyleID)) { emptyMsg += "Master StyleID cannot be empty." + Environment.NewLine; }
+                if (string.IsNullOrEmpty(garmentTest_ViewModel.SeasonID)) { emptyMsg += "Master SeasonID cannot be empty." + Environment.NewLine; }
+                if (string.IsNullOrEmpty(garmentTest_ViewModel.BrandID)) { emptyMsg += "Master BrandID cannot be empty." + Environment.NewLine; }
+                if (string.IsNullOrEmpty(garmentTest_ViewModel.Article)) { emptyMsg += "Master Article cannot be empty." + Environment.NewLine; }
 
-                throw;
+                foreach (var item in detail)
+                {
+                    if (item.No == 0) { emptyMsg += "detail No cannot be 0." + Environment.NewLine; }
+                    if (string.IsNullOrEmpty(item.MtlTypeID)) { emptyMsg += "detail MtlTypeID cannot be empty." + Environment.NewLine; }
+                    if (string.IsNullOrEmpty(item.AddName) && string.IsNullOrEmpty(item.EditName)) { emptyMsg += "detail AddName and EditName cannot be empty." + Environment.NewLine; }
+                }
+             
+                #endregion
+                int saveCnt = _IGarmentTestProvider.Save_GarmentTest(garmentTest_ViewModel, detail);
+                _ISQLDataTransaction.Commit();
             }
+            catch (Exception ex)
+            {
+                _ISQLDataTransaction.RollBack();
+                result.SaveResult = false;
+                result.ErrMsg = ex.Message;
+            }
+            finally { _ISQLDataTransaction.CloseConnection(); }
 
             return result;
         }

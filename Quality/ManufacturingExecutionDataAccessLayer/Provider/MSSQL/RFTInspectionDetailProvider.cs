@@ -18,6 +18,29 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
         #endregion
 
         #region CRUD Base
+        public DataTable ChkInspQty(RFT_Inspection filter)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@OrderID", DbType.String, filter.OrderID } ,
+                { "@Size", DbType.String, filter.Size } ,
+            };
+
+            string sqlcmd = @"
+select oq.Qty,insp.cnt,* 
+from Production.dbo.Order_Qty oq
+outer apply(
+	select cnt = count(1) 
+	from ManufacturingExecution.dbo.Rft_Inspection  i
+	where i.OrderId = oq.ID
+	and i.Size = oq.SizeCode
+)insp
+where oq.id = @OrderID and SizeCode = @Size
+and oq.Qty - isnull(insp.cnt,0) > 0
+";
+            DataTable dt = ExecuteDataTable(CommandType.Text, sqlcmd, objParameter);
+            return dt;
+        }
 
         public IList<RFT_Inspection_Detail> Top3Defects(RFT_Inspection Item)
         {

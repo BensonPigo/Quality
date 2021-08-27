@@ -1,4 +1,5 @@
-﻿using DatabaseObject.ProductionDB;
+﻿using DatabaseObject;
+using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 
@@ -6,6 +7,6 @@ namespace BusinessLogicLayer.Interface
 {
     public interface IQueryService
     {
-        bool SendMail(DatabaseObject.ManufacturingExecutionDB.FinalInspection Req);
+        BaseResult SendMail(string finalInspectionID, bool isTest);
     }
 }

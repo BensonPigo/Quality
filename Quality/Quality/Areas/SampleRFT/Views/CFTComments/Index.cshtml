@@ -3,6 +3,7 @@
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    string download = ViewData["tempFilePath"] == null ? "" : ViewData["tempFilePath"].ToString();
 }
 
 @model CFTComments_ViewModel
@@ -161,6 +162,7 @@
 
 </div>
 
+<input type="button" name="name" id="test" value="DOWNLOAD" />
 
 
 <script type="text/javascript">
@@ -169,6 +171,9 @@
 
     $(function () {
 
+        if ('@download' != '') {
+            window.location.href = '@download';
+        }
 
         @Html.Raw(Model.ErrorMessage);
 
@@ -178,6 +183,9 @@
             }
         });
 
+        $("#test").click(function () {
+            window.location.href = "https://misap:1880/TMP/CFT Comments20210826f7f4ad14-186f-451a-9bc1-6edbcaf6cd65.xlsx";
+        });
 
         $("#OrderID").blur(function () {
             $.ajax({

@@ -1,10 +1,12 @@
 ﻿using ADOHelper.Template.MSSQL;
 using BusinessLogicLayer.Interface;
+using DatabaseObject;
 using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ViewModel.FinalInspection;
 using ManufacturingExecutionDataAccessLayer.Interface;
+using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
 using System;
@@ -18,66 +20,54 @@ using System.Threading.Tasks;
 
 namespace BusinessLogicLayer.Service.FinalInspection
 {
-    public class QueryService: IQueryService
+    public class QueryService : IQueryService
     {
-        private IOrdersProvider _IOrdersProvider;
         private IMailToProvider _IMailToProvider;
+        private IFinalInspectionProvider _FinalInspectionProvider;
+
         //寄信
-        public bool SendMail (DatabaseObject.ManufacturingExecutionDB.FinalInspection Req)
+        public BaseResult SendMail(string finalInspectionID, bool isTest)
         {
-            bool boolTest = true;
-            //透過Req從後端取得資料
-            QueryReport data = new QueryReport();
-            if (boolTest)
-            {
-                data.SP = "21060448HH003";
-                data.StyleID = "22256";
-                data.BrandID = "REI";
-                data.FinalInspection = new DatabaseObject.ManufacturingExecutionDB.FinalInspection() { POID = "21060448HH", FactoryID = "ES2", CFA = "AAA", SubmitDate = DateTime.Now, AuditDate = DateTime.Now, InspectionResult = "Pass" };
-            }
-
-            // GetForFinalInspection 取得 SeasonID
-            _IOrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
-            FinalInspection_Request requestItem = new FinalInspection_Request() { SP = data.SP, POID = data.FinalInspection.POID, FactoryID = data.FinalInspection.FactoryID, StyleID = data.StyleID };
-            IList<Orders> orders = _IOrdersProvider.GetOrderForInspection(requestItem);
-
-            string submitDate = data.FinalInspection.SubmitDate.HasValue ? ((DateTime)data.FinalInspection.SubmitDate).ToString("yyyy/MM/dd") : string.Empty;
-            string auditDate = data.FinalInspection.AuditDate.HasValue ? ((DateTime)data.FinalInspection.AuditDate).ToString("yyyy/MM/dd") : string.Empty;
+            BaseResult baseResult = new BaseResult();
+            // 取得資料
+            _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
 
             // 寄信設定
             _IMailToProvider = new MailToProvider(Common.ManufacturingExecutionDataAccessLayer);
-            List<MailTo> mailTos = _IMailToProvider.Get(new MailTo() { ID = "401" }).ToList();
-            string toAddress = mailTos.Select(s => s.ToAddress).FirstOrDefault();
-            string ccAddress = mailTos.Select(s => s.CcAddress).FirstOrDefault();
-            string subject = $"Final Inspection Report(PO#: {data.FinalInspection.POID})-{data.FinalInspection.InspectionResult}";
-            StringBuilder content = new StringBuilder();
-            content.Append($@"
+
+            try
+            {
+                DataRow drReportMailInfo = _FinalInspectionProvider.GetReportMailInfo(finalInspectionID).Rows[0];
+
+                List<MailTo> mailTos = _IMailToProvider.Get(new MailTo() { ID = "401" }).ToList();
+                string toAddress = mailTos.Select(s => s.ToAddress).FirstOrDefault();
+                string ccAddress = mailTos.Select(s => s.CcAddress).FirstOrDefault();
+                string subject = $"Final Inspection Report(PO#: {drReportMailInfo["POID"]})-{drReportMailInfo["InspectionResult"]}";
+                StringBuilder content = new StringBuilder();
+                content.Append($@"
 Hi all,<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This is final inspection report for [PO#]:<font style='color: blue'> {data.FinalInspection.POID}</font>. Please refer to below information.<br/>
-<b>[Factory]:</b><font style='color: blue'> {data.FinalInspection.FactoryID}</font><br/>
-<b>[SP#]:</b><font style='color: blue'>  {data.SP}</font><br/>
-<b>[Style]:</b><font style='color: blue'>  {data.StyleID}</font><br/>
-<b>[Season]:</b><font style='color: blue'>  {orders.Select(s => s.SeasonID).FirstOrDefault()}</font><br/>
-<b>[Brand]:</b><font style='color: blue'>  {data.BrandID}</font><br/>
-<b>[CFA]:</b><font style='color: blue'>  {data.FinalInspection.CFA}</font><br/>
-<b>[Submit Date]:</b><font style='color: blue'>  {submitDate}</font><br/>
-<b>[Audit Date]:</b><font style='color: blue'>  {auditDate}</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This is final inspection report for [PO#]:<font style='color: blue'> {drReportMailInfo["POID"]}</font>. Please refer to below information.<br/>
+<b>[Factory]:</b><font style='color: blue'> {drReportMailInfo["FactoryID"]}</font><br/>
+<b>[SP#]:</b><font style='color: blue'>  {drReportMailInfo["SP"]}</font><br/>
+<b>[Style]:</b><font style='color: blue'>  {drReportMailInfo["StyleID"]}</font><br/>
+<b>[Season]:</b><font style='color: blue'>  {drReportMailInfo["SeasonID"]}</font><br/>
+<b>[Brand]:</b><font style='color: blue'>  {drReportMailInfo["BrandID"]}</font><br/>
+<b>[CFA]:</b><font style='color: blue'>  {drReportMailInfo["CFA"]}</font><br/>
+<b>[Submit Date]:</b><font style='color: blue'>  {drReportMailInfo["SubmitDate"]}</font><br/>
+<b>[Audit Date]:</b><font style='color: blue'>  {drReportMailInfo["AuditDate"]}</font><br/>
 More detail please click here<br/>
 <br/>
 NOTE: This is an automated reply from a system mailbox. Please do not reply to this email.<br/>
 ");
 
-            string mailFrom = "foxpro@sportscity.com.tw";
-            string mailServer = "Mail.sportscity.com.tw";
-            string eMailID = "foxpro";
-            string eMailPwd = "orpxof";
+                string mailFrom = string.Empty;
+                string mailServer = string.Empty;
+                string eMailID = string.Empty;
+                string eMailPwd = string.Empty;
 
-            string result = string.Empty;
-            //寄件者 & 收件者
+                string result = string.Empty;
+                //寄件者 & 收件者
 
-            if (!boolTest)
-            {
-                //ExecuteDataTable()
                 SQLParameterCollection objParameter = new SQLParameterCollection();
 
                 DataTable dt = SQLDAL.ExecuteDataTable(CommandType.Text, "select * from Production.dbo.System", objParameter);
@@ -88,9 +78,15 @@ NOTE: This is an automated reply from a system mailbox. Please do not reply to t
                     eMailID = dt.Rows[0]["eMailID"].ToString();
                     eMailPwd = dt.Rows[0]["eMailPwd"].ToString();
                 }
-            }
-            try
-            {
+
+                if (isTest)
+                {
+                    mailFrom = "foxpro@sportscity.com.tw";
+                    mailServer = "Mail.sportscity.com.tw";
+                    eMailID = "foxpro";
+                    eMailPwd = "orpxof";
+                }
+
                 MailMessage message = new MailMessage();
                 message.Subject = subject;
 
@@ -125,11 +121,13 @@ NOTE: This is an automated reply from a system mailbox. Please do not reply to t
             }
             catch (Exception ex)
             {
-                return false;
+                baseResult.Result = false;
+                baseResult.ErrorMessage = ex.ToString();
+                return baseResult;
             }
 
-            return true;
+            return baseResult;
         }
-        
+
     }
 }
