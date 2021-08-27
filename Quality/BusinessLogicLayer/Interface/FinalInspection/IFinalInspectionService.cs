@@ -21,5 +21,7 @@ namespace BusinessLogicLayer.Interface
         /// <param name="userID"></param>
         /// <returns>BaseResult</returns>
         BaseResult UpdateFinalInspectionByStep(FinalInspection finalInspection, string currentStep, string userID);
+
+        string GetAQLPlanDesc(long ukey);
     }
 }

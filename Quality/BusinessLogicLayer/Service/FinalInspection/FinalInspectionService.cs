@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using BusinessLogicLayer.Interface;
 using DatabaseObject;
 using DatabaseObject.ManufacturingExecutionDB;
@@ -16,6 +17,30 @@ namespace BusinessLogicLayer.Service
     {
         public IFinalInspectionProvider _FinalInspectionProvider { get; set; }
         public IOrdersProvider _OrdersProvider { get; set; }
+        public IFinalInspFromPMSProvider _FinalInspFromPMSProvider { get; set; }
+
+        public string GetAQLPlanDesc(long ukey)
+        {
+            switch (ukey)
+            {
+                case -1:
+                    return "100% Inspection";
+                case 0:
+                    return string.Empty;
+                default:
+                    _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
+                    List<AcceptableQualityLevels> acceptableQualityLevels = _FinalInspFromPMSProvider.GetAcceptableQualityLevelsForSetting().ToList();
+
+                    if (!acceptableQualityLevels.Any(s => s.Ukey == ukey))
+                    {
+                        return string.Empty;
+                    }
+
+                    return acceptableQualityLevels.Where(s => s.Ukey == ukey)
+                        .Select(s => $"{s.AQLType.ToString("0.0")} Level {s.InspectionLevels.Replace("1", "I").Replace("2", "II")}")
+                        .First();
+            }
+        }
 
         public DatabaseObject.ManufacturingExecutionDB.FinalInspection GetFinalInspection(string finalInspectionID)
         {

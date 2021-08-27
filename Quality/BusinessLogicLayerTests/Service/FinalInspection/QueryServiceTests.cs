@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using BusinessLogicLayer.Interface;
 using DatabaseObject;
+using DatabaseObject.ViewModel.FinalInspection;
+using DatabaseObject.RequestModel;
 
 namespace BusinessLogicLayer.Service.FinalInspection.Tests
 {
@@ -21,6 +23,58 @@ namespace BusinessLogicLayer.Service.FinalInspection.Tests
                 IQueryService _QueryService = new QueryService();
 
                 BaseResult result = _QueryService.SendMail("ESPCH21080001", true);
+
+                if (!result)
+                {
+                    Assert.Fail(result.ErrorMessage);
+                }
+
+                Assert.IsTrue(true);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.ToString());
+            }
+        }
+
+        [TestMethod()]
+        public void GetFinalinspectionQueryListTest()
+        {
+            try
+            {
+                IQueryService _QueryService = new QueryService();
+
+                FinalInspection_Query queryFinalInspection = new FinalInspection_Query();
+
+                queryFinalInspection.POID = "21010007IR";
+
+                List<QueryFinalInspection> result = _QueryService.GetFinalinspectionQueryList(queryFinalInspection);
+
+                queryFinalInspection.SP = "21010007IR";
+                result = _QueryService.GetFinalinspectionQueryList(queryFinalInspection);
+
+                queryFinalInspection.SciDeliveryStart = DateTime.Parse("2021-01-20");
+                result = _QueryService.GetFinalinspectionQueryList(queryFinalInspection);
+
+                queryFinalInspection.InspectionResult = "Pass";
+                result = _QueryService.GetFinalinspectionQueryList(queryFinalInspection);
+
+                Assert.IsTrue(true);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.ToString());
+            }
+        }
+
+        [TestMethod()]
+        public void GetFinalInspectionReportTest()
+        {
+            try
+            {
+                IQueryService _QueryService = new QueryService();
+
+                QueryReport result = _QueryService.GetFinalInspectionReport("ESPCH21080001");
 
                 if (!result)
                 {
