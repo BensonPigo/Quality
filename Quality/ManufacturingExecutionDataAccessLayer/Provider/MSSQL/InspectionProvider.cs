@@ -33,6 +33,19 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 
             SbSql.Append(
                 @"
+-- 塞入Location
+
+select  ID, cnt = count(1),row = ROW_NUMBER()over(order by id)into #tmpfrom Production.dbo.Orders awhere PulloutComplete = 0and Category = 's'and OnSiteSample = 0and junk = 0and brandid = @BrandIDand FtyGroup = @FtyGroupand qty > 0
+and not exists (		select 1		from Production.dbo.Order_Location b		where a.ID = b.OrderId	)and    exists (			    select 1	    from Production.dbo.Style_Location b	    where a.StyleUkey = b.StyleUkey    )
+group by ID
+
+
+declare @cnt int = (select count(1) from #tmp)
+declare @OrderID varchar(16)
+declare @Num int = 1;while @Num <= @cntbegin		set @OrderID = (select top 1 id from #tmp where row = @Num)	exec Production.dbo.Ins_OrderLocation @OrderID	set @Num = @Num + 1enddrop table #tmp
+
+
+-- 撈資料
 select  [OrderID] = o.ID
 	, o.StyleID
 	, oq.Article
@@ -108,14 +121,14 @@ outer apply (
 	and r.Article = oq.Article
 	and r.Size = oq.SizeCode
 	and r.Location = ol.Location
-	and Status in ('Passs', 'Fixed')
+	and Status in ('Pass', 'Fixed')
 )r_Size
 outer apply (
 	select OrderBalanceQty = count(*)
 	from RFT_Inspection r with(nolock)
 	where r.OrderID = o.ID
 	and r.Location = ol.Location
-	and Status in ('Passs', 'Fixed')
+	and Status in ('Pass', 'Fixed')
 )r_Order
 outer apply(
 	select r.Name 
