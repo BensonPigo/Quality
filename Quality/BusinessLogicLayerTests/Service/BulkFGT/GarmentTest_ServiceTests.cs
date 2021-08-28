@@ -199,10 +199,10 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
 
                 GarmentTest_Detail detail2 = new GarmentTest_Detail
                 {
-                    No = 2,
+                    //No = 2,
                     Result = "P",
                     inspdate = Convert.ToDateTime("2021-07-01"),
-                    Remark = "test",
+                    Remark = "test 4",
                     AddName = "Scimis",
                     AddDate = DateTime.Now,
                     Status = "New",
@@ -213,10 +213,10 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
 
                 GarmentTest_Detail detail3 = new GarmentTest_Detail
                 {
-                    No = 3,
+                    //No = 3,
                     //Result = "P",
                     //inspdate = Convert.ToDateTime("2021-07-01"),
-                    Remark = "test 3",
+                    Remark = "test 5",
                     AddName = "Scimis",
                     AddDate = DateTime.Now,
                     //Status = "New",
@@ -229,7 +229,7 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
 
                 List<GarmentTest_Detail> details = new List<GarmentTest_Detail>();
                 //details.Add(detail);
-                //details.Add(detail2);
+                details.Add(detail2);
                 details.Add(detail3);
 
                 #region 判斷是否空值
@@ -240,15 +240,15 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
 
 
                 IGarmentTestProvider _IGarmentTestProvider = new GarmentTestProvider(_ISQLDataTransaction);
-                int saveCnt = _IGarmentTestProvider.Save_GarmentTest(garmentTest_ViewModel, details);
+                bool saveCnt = _IGarmentTestProvider.Save_GarmentTest(garmentTest_ViewModel, details);
                 _ISQLDataTransaction.Commit();
 
-                Assert.IsTrue(saveCnt > 0);
+                Assert.IsTrue(saveCnt);
             }
             catch (Exception ex)
             {
                 Assert.Fail();
-                throw;
+                throw ex;
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
 

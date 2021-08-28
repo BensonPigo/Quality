@@ -227,9 +227,9 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     if (string.IsNullOrEmpty(item.MtlTypeID)) { emptyMsg += "detail MtlTypeID cannot be empty." + Environment.NewLine; }
                     if (string.IsNullOrEmpty(item.AddName) && string.IsNullOrEmpty(item.EditName)) { emptyMsg += "detail AddName and EditName cannot be empty." + Environment.NewLine; }
                 }
-             
+
                 #endregion
-                int saveCnt = _IGarmentTestProvider.Save_GarmentTest(garmentTest_ViewModel, detail);
+                result.SaveResult = _IGarmentTestProvider.Save_GarmentTest(garmentTest_ViewModel, detail);
                 _ISQLDataTransaction.Commit();
             }
             catch (Exception ex)
