@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace DatabaseObject.ViewModel.FinalInspection
 {
-    public class QueryReport
+    public class QueryReport : BaseResult
     {
         public ManufacturingExecutionDB.FinalInspection FinalInspection { get; set; }
         public string SP { get; set; }

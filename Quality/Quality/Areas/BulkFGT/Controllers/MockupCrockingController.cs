@@ -1,4 +1,5 @@
 ﻿using BusinessLogicLayer.Interface.BulkFGT;
+using BusinessLogicLayer.Service;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.ViewModel;
 using Quality.Controllers;
@@ -15,6 +16,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         // GET: BulkFGT/MockupCrocking
         public ActionResult Index()
         {
+            _MockupCrockingService = new MockupCrockingService();
             return View();
         }
 
@@ -30,27 +32,9 @@ namespace Quality.Areas.BulkFGT.Controllers
             this.CheckSession();
             try
             {
-                MockupCrocking_ViewModel model = new MockupCrocking_ViewModel();
-                if (model.ReportNo == null || string.IsNullOrEmpty(model.ReportNo))
-                {
-                    Req.ErrorMessage = $@"
-msg.WithInfo('ReportNo cannot be empty!');
-";
-                    return View("Index", Req);
-                }
-
-                model = _MockupCrockingService.GetMockupCrocking(new MockupCrocking() { ReportNo = model.ReportNo });
-                if (model.MockupCrocking == null || model.MockupCrocking.Count == 0)
-                {
-                    Req.ErrorMessage = $@"
-msg.WithInfo('Cannot found ReportNo {Req.ReportNo}');
-";
-                    return View("Index", Req);
-                }
-
                 // 1. 在Service層取得資料，生成Excel檔案，放在暫存路徑，回傳檔名
-
-                MockupCrocking_ViewModel result = _MockupCrockingService.GetExcel(model);
+                MockupCrocking MockupCrocking = new MockupCrocking { ReportNo = Req.ReportNo };
+                MockupCrocking_ViewModel result = _MockupCrockingService.GetExcel(MockupCrocking);
                 string tempFilePath = result.TempFileName;
                 // 2. 取得hotst name，串成下載URL ，傳到準備前端下載
                 // URL範例：https://misap:1880/TMP/CFT Comments20210826f7f4ad14-186f-451a-9bc1-6edbcaf6cd65.xlsx 

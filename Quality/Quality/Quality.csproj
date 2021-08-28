@@ -172,8 +172,9 @@
     <Compile Include="Areas\BulkFGT\Controllers\FabricOvenTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\GarmentTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\MockupCrockingController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\PullingTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\SearchListController.cs" />
-    <Compile Include="Areas\FileActionController.cs" />
+    <Compile Include="Areas\SendMailController.cs" />
     <Compile Include="Areas\FinalInspection\Controllers\InspectionController.cs" />
     <Compile Include="Areas\FinalInspection\Controllers\QueryController.cs" />
     <Compile Include="Areas\FinalInspection\FinalInspectionAreaRegistration.cs" />
@@ -320,6 +321,7 @@
     <Content Include="Areas\StyleManagement\Views\StyleList\Index.cshtml" />
     <Content Include="Areas\SampleRFT\Views\CFTComments\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\SearchList\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\PullingTest\Index.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -766,7 +768,6 @@
     <Folder Include="ThirdParty\plugins\bootstrap-fileinput\fonts\" />
     <Folder Include="Views\Authority\" />
     <Folder Include="Views\Base\" />
-    <Folder Include="Views\FileAction\" />
     <Folder Include="Views\SampleRFT\" />
   </ItemGroup>
   <ItemGroup>

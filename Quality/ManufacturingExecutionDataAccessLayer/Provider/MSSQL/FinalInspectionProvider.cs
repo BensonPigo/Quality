@@ -11,6 +11,7 @@ using DatabaseObject;
 using DatabaseObject.ViewModel.FinalInspection;
 using System.Transactions;
 using System.Linq;
+using DatabaseObject.RequestModel;
 
 namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 {
@@ -1052,6 +1053,141 @@ where   f.ID = @FinalInspectionID
 ";
 
             return ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, parameter);
+        }
+
+        public DataTable GetQueryReportInfo(string finalInspectionID)
+        {
+            SQLParameterCollection parameter = new SQLParameterCollection() {
+                            { "@FinalInspectionID", DbType.String, finalInspectionID }
+                        };
+
+            string sqlGetData = @"
+declare @StyleID varchar(15)
+declare @SeasonID varchar(10)
+declare @BrandID varchar(8)
+declare @spQty int
+
+select @spQty = isnull(sum(Qty), 0)
+from SciProduction_Orders with (nolock)
+where   ID in (select OrderID from FinalInspection_Order with (nolock) where ID = @FinalInspectionID)
+
+select  @StyleID = StyleID,
+        @SeasonID = SeasonID,
+        @BrandID = BrandID
+from    SciProduction_Orders with (nolock)
+where   ID = (select POID from FinalInspection with (nolock) where ID = @FinalInspectionID )
+
+select  [SP] = (SELECT Stuff((select concat( ',',OrderID) 
+                                from  FinalInspection_Order fo with (nolock) 
+                                where fo.ID = @FinalInspectionID
+                                FOR XML PATH('')),1,1,'') ),
+        [StyleID] = @StyleID,
+        [BrandID] = @BrandID,
+        [CFA] = (select name from pass1 with (nolock) where ID = f.CFA),
+        [TotalSPQty] = @spQty
+from    FinalInspection f with (nolock)
+where ID = @FinalInspectionID
+";
+
+            return ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, parameter);
+        }
+
+        public IList<QueryFinalInspection> GetFinalinspectionQueryList(FinalInspection_Query request)
+        {
+            SQLParameterCollection parameter = new SQLParameterCollection();
+
+            string whereOrder = string.Empty;
+            string whereFinalInspection = string.Empty;
+
+            if (!string.IsNullOrEmpty(request.InspectionResult))
+            {
+                whereFinalInspection += " and f.InspectionResult = @InspectionResult ";
+                whereOrder += @" and ID in (select  distinct OrderID
+from FinalInspection f with (nolock)
+inner join  FinalInspection_Order fo with (nolock) on fo.ID = f.ID
+where f.InspectionResult = @InspectionResult)";
+                parameter.Add("@InspectionResult", request.InspectionResult);
+            }
+
+            if (!string.IsNullOrEmpty(request.POID))
+            {
+                whereOrder += @" and POID = @POID";
+                whereFinalInspection += @" and f.POID = @POID";
+                parameter.Add("@POID", request.POID);
+            }
+
+            if (!string.IsNullOrEmpty(request.SP))
+            {
+                whereOrder += @" and ID = @SP";
+                whereFinalInspection += @" and fo.OrderID = @SP";
+                parameter.Add("@SP", request.SP);
+            }
+
+            if (request.SciDeliveryStart != null)
+            {
+                whereOrder += @" and SciDelivery >= @SciDeliveryStart";
+                parameter.Add("@SciDeliveryStart", request.SciDeliveryStart);
+            }
+
+            if (request.SciDeliveryEnd != null)
+            {
+                whereOrder += @" and SciDelivery <= @SciDeliveryEnd";
+                parameter.Add("@SciDeliveryEnd", request.SciDeliveryEnd);
+            }
+
+            if (!string.IsNullOrEmpty(request.StyleID))
+            {
+                whereOrder += @" and StyleID = @StyleID";
+                parameter.Add("@StyleID", request.StyleID);
+            }
+
+            string sqlGetData = $@"
+
+select  ID,
+        StyleID,
+        SeasonID,
+        BrandID,
+        Qty
+into    #tmpOrders
+from    SciProduction_Orders with (nolock)
+where   1 = 1 {whereOrder}
+
+select  [FinalInspectionID] = f.ID,
+        [SP] = fo.OrderID,
+        f.POID,
+        [SPQty] = cast(o.Qty as varchar),
+        [StyleID] = o.StyleID,
+        [Season] = o.SeasonID,
+        [BrandID] = o.BrandID,
+        [InspectionTimes] = cast(f.InspectionTimes as varchar),
+        f.InspectionStage,
+        f.InspectionResult
+from FinalInspection f with (nolock)
+inner join  FinalInspection_Order fo with (nolock) on fo.ID = f.ID
+inner join  #tmpOrders o on fo.OrderID = o.ID
+where   1 = 1 {whereFinalInspection}
+";
+
+            return ExecuteList<QueryFinalInspection>(CommandType.Text, sqlGetData, parameter);
+        }
+
+        public IList<FinalInspection_OrderCarton> GetListCartonInfo(string finalInspectionID)
+        {
+            SQLParameterCollection parameter = new SQLParameterCollection() {
+                            { "@FinalInspectionID", DbType.String, finalInspectionID }
+                        };
+
+            string sqlGetData = @"
+select  Ukey
+        ,ID
+        ,OrderID
+        ,PackinglistID
+        ,CTNNo
+from    FinalInspection_OrderCarton with (nolock)
+where   ID = @FinalInspectionID
+";
+
+            return ExecuteList<FinalInspection_OrderCarton>(CommandType.Text, sqlGetData, parameter);
         }
 
         #endregion

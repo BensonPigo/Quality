@@ -24,6 +24,77 @@ namespace BusinessLogicLayer.Service.FinalInspection
     {
         private IMailToProvider _IMailToProvider;
         private IFinalInspectionProvider _FinalInspectionProvider;
+        private IFinalInspFromPMSProvider _FinalInspFromPMSProvider;
+        private IStyleProvider _StyleProvider;
+
+        public List<QueryFinalInspection> GetFinalinspectionQueryList(FinalInspection_Query request)
+        {
+            _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+            return _FinalInspectionProvider.GetFinalinspectionQueryList(request).ToList();
+        }
+
+        public QueryReport GetFinalInspectionReport(string finalInspectionID)
+        {
+            _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+            _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
+            _StyleProvider = new StyleProvider(Common.ProductionDataAccessLayer);
+
+            QueryReport queryReport = new QueryReport();
+
+            try
+            {
+                DataTable dtQueryReportInfo = _FinalInspectionProvider.GetQueryReportInfo(finalInspectionID);
+
+                queryReport.FinalInspection = _FinalInspectionProvider.GetFinalInspection(finalInspectionID);
+
+                queryReport.SP = dtQueryReportInfo.Rows[0]["SP"].ToString();
+                queryReport.StyleID = dtQueryReportInfo.Rows[0]["StyleID"].ToString();
+                queryReport.BrandID = dtQueryReportInfo.Rows[0]["BrandID"].ToString();
+                queryReport.FinalInspection.CFA = dtQueryReportInfo.Rows[0]["CFA"].ToString();
+                queryReport.TotalSPQty = (int)dtQueryReportInfo.Rows[0]["TotalSPQty"];
+
+                queryReport.AQLPlan = new FinalInspectionService().GetAQLPlanDesc(queryReport.FinalInspection.AcceptableQualityLevelsUkey);
+
+                queryReport.MeasurementUnit = _StyleProvider.GetSizeUnitByPOID(queryReport.FinalInspection.POID);
+
+                List<FinalInspectionDefectItem> finalInspectionDefectItems = _FinalInspFromPMSProvider.GetFinalInspectionDefectItems(finalInspectionID).ToList();
+                if (finalInspectionDefectItems.Any(s => s.Qty > 0))
+                {
+                    finalInspectionDefectItems = finalInspectionDefectItems.Where(s => s.Qty > 0).ToList();
+                }
+                else
+                {
+                    finalInspectionDefectItems = new List<FinalInspectionDefectItem>();
+                }
+
+                queryReport.ListDefectItem = finalInspectionDefectItems;
+
+                List<BACriteriaItem> bACriteriaItems = _FinalInspectionProvider.GetBeautifulProductAuditForInspection(finalInspectionID).ToList();
+                if (bACriteriaItems.Any(s => s.Qty > 0))
+                {
+                    bACriteriaItems = bACriteriaItems.Where(s => s.Qty > 0).ToList();
+                }
+                else
+                {
+                    bACriteriaItems = new List<BACriteriaItem>();
+                }
+                queryReport.ListBACriteriaItem = bACriteriaItems;
+
+                queryReport.ListCartonInfo = _FinalInspectionProvider.GetListCartonInfo(finalInspectionID).ToList();
+
+                queryReport.ListViewMoistureResult = _FinalInspectionProvider.GetViewMoistureResult(finalInspectionID).ToList();
+
+                queryReport.ListMeasurementViewItem = _FinalInspectionProvider.GetMeasurementViewItem(finalInspectionID).ToList();
+            }
+            catch (Exception ex)
+            {
+                queryReport.Result = false;
+                queryReport.ErrorMessage = ex.ToString();
+            }
+
+            return queryReport;
+        }
 
         //寄信
         public BaseResult SendMail(string finalInspectionID, bool isTest)
