@@ -33,5 +33,7 @@ namespace BusinessLogicLayer.Interface.BulkFGT
         GarmentTest_ViewModel Save_GarmentTest(GarmentTest_ViewModel garmentTest_ViewModel, List<GarmentTest_Detail> detail);
 
         bool CheckOrderID(string OrderID, string BrandID, string SeasonID, string StyleID);
+
+        GarmentTest_Result Generate_FGWT(GarmentTest_Detail_Result viewModel);
     }
 }

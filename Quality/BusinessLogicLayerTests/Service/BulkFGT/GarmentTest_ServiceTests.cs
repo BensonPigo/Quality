@@ -254,5 +254,70 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
 
 
         }
+
+        [TestMethod()]
+        public void Generate_FGWTTest()
+        {
+            GarmentTest_ViewModel result = new GarmentTest_ViewModel();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            try
+            {
+                GarmentTest_ViewModel garmentTest_ViewModel =
+                    new GarmentTest_ViewModel
+                    {
+                        ID = 16608,
+                        OrderID = "20032066WW",
+                        StyleID = "ARWPF20125",
+                        SeasonID = "20FW",
+                        BrandID = "REEBOK",
+                        Article = "FT0964",
+                        MDivisionid = "VM2",
+                    };
+
+                GarmentTest_Detail detail = new GarmentTest_Detail
+                {
+                    ID = 16608,
+                    No = 8,
+                    Result = "P",
+                    inspdate = Convert.ToDateTime("2021-07-01"),
+                    Remark = "test",
+                    AddName = "EE04284",
+                    AddDate = Convert.ToDateTime("2021-07-08 12:46:35.343"),
+                    EditName = "EE04284",
+                    EditDate = Convert.ToDateTime("2021-07-08 00:00:00.000"),
+                    Status = "New",
+                    SizeCode = "32",
+                    MtlTypeID = "KNIT",
+                    LineDry =true,
+                    HandWash = false,
+                    Neck = true,
+                    OdourResult = "P",
+                    Above50NaturalFibres = true,
+                };
+
+                GarmentTest_Detail details = new GarmentTest_Detail();
+                details = detail;
+
+                IGarmentTestDetailFGWTProvider _IGarmentTestDetailFGWTProvider = new GarmentTestDetailFGWTProvider(_ISQLDataTransaction);
+                #region 判斷空值
+                string emptyMsg = string.Empty;
+                if (string.IsNullOrEmpty(detail.MtlTypeID)) { emptyMsg += "MtlTypeID cannot be empty" + Environment.NewLine; }
+                if (_IGarmentTestDetailFGWTProvider.Chk_FGWTExists(detail) == true) { emptyMsg += "Data already exists!!"; }
+                #endregion
+
+
+                result.SaveResult = _IGarmentTestDetailFGWTProvider.Create_FGWT(garmentTest_ViewModel, details);
+                _ISQLDataTransaction.Commit();
+
+                Assert.IsTrue(result.SaveResult);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail();
+                throw ex;
+            }
+            finally { _ISQLDataTransaction.CloseConnection(); }
+
+        }
     }
 }

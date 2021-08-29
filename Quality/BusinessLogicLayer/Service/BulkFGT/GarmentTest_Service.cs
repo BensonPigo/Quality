@@ -243,9 +243,9 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public GarmentTest_Detail_Result Generate_FGWT(GarmentTest_Detail_Result viewModel)
+        public GarmentTest_Result Generate_FGWT(GarmentTest_Detail_Result viewModel)
         {
-            GarmentTest_Detail_Result result = new GarmentTest_Detail_Result();
+            GarmentTest_Result result = new GarmentTest_Result();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             try
             {
@@ -253,13 +253,17 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 #region 判斷空值
                 string emptyMsg = string.Empty;
                 if (string.IsNullOrEmpty(viewModel.Detail.MtlTypeID)) { emptyMsg += "MtlTypeID cannot be empty" + Environment.NewLine; }
-                //if (string.IsNullOrEmpty(garmentTest_ViewModel.StyleID)) { emptyMsg += "Master StyleID cannot be empty." + Environment.NewLine; }
+                if (_IGarmentTestDetailFGWTProvider.Chk_FGWTExists(viewModel.Detail) == true) { emptyMsg += "Data already exists!!"; }
                 #endregion
+
+                result.Result = _IGarmentTestDetailFGWTProvider.Create_FGWT(viewModel.Main, viewModel.Detail);
+                _ISQLDataTransaction.Commit();
             }
             catch (Exception ex)
             {
-
-                throw;
+                _ISQLDataTransaction.RollBack();
+                result.Result = false;
+                result.ErrMsg = ex.Message;
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
 

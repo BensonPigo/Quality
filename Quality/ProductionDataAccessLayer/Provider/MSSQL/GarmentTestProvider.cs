@@ -153,7 +153,6 @@ and g.Article = @Article" + Environment.NewLine;
             }
             #endregion
 
-
             foreach (var item in detail)
             {
                 string sql_Shrinkage_Chk = $"select 1 from Production.dbo.GarmentTest_Detail_Shrinkage with(nolock) where id = '{master.ID}' and NO = '{item.No}'";
