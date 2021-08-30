@@ -27,14 +27,13 @@ namespace Quality.Areas.BulkFGT.Controllers
         /// <returns></returns>
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "ToPDF")]
-        public ActionResult ToPDF(MockupCrocking_ViewModel Req)
+        public ActionResult ToPDF(string ReportNo)
         {
             this.CheckSession();
             try
             {
                 // 1. 在Service層取得資料，生成Excel檔案，放在暫存路徑，回傳檔名
-                MockupCrocking MockupCrocking = new MockupCrocking { ReportNo = Req.ReportNo };
-                MockupCrocking_ViewModel result = _MockupCrockingService.GetExcel(MockupCrocking);
+                var result = _MockupCrockingService.GetExcel(ReportNo);
                 string tempFilePath = result.TempFileName;
                 // 2. 取得hotst name，串成下載URL ，傳到準備前端下載
                 // URL範例：https://misap:1880/TMP/CFT Comments20210826f7f4ad14-186f-451a-9bc1-6edbcaf6cd65.xlsx 

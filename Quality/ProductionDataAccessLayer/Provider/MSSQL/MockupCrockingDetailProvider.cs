@@ -6,6 +6,7 @@ using ProductionDataAccessLayer.Interface;
 using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
 using DatabaseObject.ProductionDB;
+using DatabaseObject.ViewModel;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
@@ -177,7 +178,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         }
         #endregion
 
-        public IList<MockupCrocking_Detail> GetMockupCrocking_Detail(MockupCrocking_Detail Item)
+        public IList<MockupCrocking_Detail_ViewModel> GetMockupCrocking_Detail(MockupCrocking_Detail Item)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
@@ -206,7 +207,7 @@ Where 1=1
                 objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
             }
 
-            return ExecuteList<MockupCrocking_Detail>(CommandType.Text, SbSql.ToString(), objParameter);
+            return ExecuteList<MockupCrocking_Detail_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
         }
     }
 }

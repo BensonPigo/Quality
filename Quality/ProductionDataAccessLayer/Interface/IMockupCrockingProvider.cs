@@ -1,19 +1,18 @@
 using DatabaseObject;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.ResultModel;
+using DatabaseObject.ViewModel;
 using System.Collections.Generic;
 
 namespace ProductionDataAccessLayer.Interface
 {
     public interface IMockupCrockingProvider
     {
-        IList<MockupCrocking> GetMockupCrocking(MockupCrocking Item);
+        IList<MockupCrocking_ViewModel> GetMockupCrocking(MockupCrocking Item);
 
         int Create(MockupCrocking Item);
 
         int Update(MockupCrocking Item);
-
-        int UpdatePicture(MockupCrocking Item);
 
         int Delete(MockupCrocking Item);
     }

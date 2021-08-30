@@ -22,9 +22,9 @@ namespace BusinessLogicLayer.Service
         private IMockupCrockingProvider _MockupCrockingProvider;
         private IMockupCrockingDetailProvider _MockupCrockingDetailProvider;
 
-        public MockupCrocking_ViewModel GetMockupCrocking(MockupCrocking MockupCrocking)
+        public MockupCrockings_ViewModel GetMockupCrocking(MockupCrocking MockupCrocking)
         {
-            MockupCrocking_ViewModel model = new MockupCrocking_ViewModel();
+            MockupCrockings_ViewModel model = new MockupCrockings_ViewModel();
             try
             {
                 _MockupCrockingProvider = new MockupCrockingProvider(Common.ProductionDataAccessLayer);
@@ -47,40 +47,29 @@ namespace BusinessLogicLayer.Service
             return model;
         }
 
-        // 單獨更新圖檔欄位
-        public MockupCrocking_ViewModel UpdatePicture(MockupCrocking MockupCrocking)
-        {
-            MockupCrocking_ViewModel model = new MockupCrocking_ViewModel();
-            _MockupCrockingProvider = new MockupCrockingProvider(Common.ProductionDataAccessLayer);
-            try
-            {
-                int updateCT = _MockupCrockingProvider.UpdatePicture(MockupCrocking);
-                if (updateCT == 0)
-                {
-                    model.Result = false;
-                    model.ErrorMessage = "Not found Crocking Data!";
-                }
-                else
-                {
-                    model.Result = true;
-                }
-            }
-            catch (System.Exception ex)
-            {
-                model.Result = false;
-                model.ErrorMessage = ex.ToString();
-            }
-
-            return model;
-        }
-
-        public MockupCrocking_ViewModel GetExcel(MockupCrocking MockupCrocking)
+        public MockupCrocking_ViewModel GetExcel(string ReportNo)
         {
             bool test = true;
             MockupCrocking_ViewModel result = new MockupCrocking_ViewModel();
+
+            var oneReportNo = GetMockupCrocking(new MockupCrocking() { ReportNo = ReportNo });
+            if (oneReportNo == null)
+            {
+                result.ReportResult = false;
+                result.ErrorMessage = "Get Data Fail!";
+                return result;
+            }
+
+            if (oneReportNo.MockupCrocking.Count == 0)
+            {
+                result.ReportResult = false;
+                result.ErrorMessage = "Data Not found!";
+                return result;
+            }
+
             try
             {
-                result = GetMockupCrocking(MockupCrocking);
+                var mockupCrocking = oneReportNo.MockupCrocking[0];
                 if (!test)
                 {
                     if (!System.IO.Directory.Exists(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\"))
@@ -97,8 +86,7 @@ namespace BusinessLogicLayer.Service
                 _MockupCrockingProvider = new MockupCrockingProvider(Common.ProductionDataAccessLayer);
 
 
-                MockupCrocking mockupCrocking = result.MockupCrocking[0];
-                List<MockupCrocking_Detail> mockupCrocking_Detail = mockupCrocking.MockupCrocking_Detail;
+                var mockupCrocking_Detail = mockupCrocking.MockupCrocking_Detail;
                 string basefileName = "MockupCrocking";
                 string openfilepath;
                 if (test)
@@ -211,12 +199,12 @@ namespace BusinessLogicLayer.Service
                 if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
                 {
                     result.TempFileName = filepathpdf;
-                    result.Result = true;
+                    result.ReportResult = true;
                 }
                 else
                 {
-                    result.ErrorMessage = "ConvertToPDF Fail";
-                    result.Result = false;
+                    result.ErrorMessage = "Convert To PDF Fail";
+                    result.ReportResult = false;
                 }
             }
             catch (System.Exception ex)
@@ -227,9 +215,9 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public MockupCrocking_ViewModel Create(MockupCrocking_ViewModel MockupCrocking)
+        public MockupCrockings_ViewModel Create(MockupCrockings_ViewModel MockupCrocking)
         {
-            MockupCrocking_ViewModel model = new MockupCrocking_ViewModel();
+            MockupCrockings_ViewModel model = new MockupCrockings_ViewModel();
             _MockupCrockingProvider = new MockupCrockingProvider(Common.ProductionDataAccessLayer);
             _MockupCrockingDetailProvider = new MockupCrockingDetailProvider(Common.ProductionDataAccessLayer);
             int insertCt;
