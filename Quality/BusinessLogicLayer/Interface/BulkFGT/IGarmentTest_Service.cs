@@ -20,6 +20,12 @@ namespace BusinessLogicLayer.Interface.BulkFGT
 
         List<string> Get_SizeCode(string OrderID, string Article);
 
+        bool CheckOrderID(string OrderID, string BrandID, string SeasonID, string StyleID);
+
+        GarmentTest_ViewModel SendMail(string ID, string No, string UserID);
+
+        GarmentTest_ViewModel ReceiveMail(string ID, string No, string UserID);
+
         IList<GarmentTest_Detail_Shrinkage> Get_Shrinkage(Int64 ID, string No);
 
         IList<Garment_Detail_Spirality> Get_Spirality(Int64 ID, string No);
@@ -32,8 +38,8 @@ namespace BusinessLogicLayer.Interface.BulkFGT
 
         GarmentTest_ViewModel Save_GarmentTest(GarmentTest_ViewModel garmentTest_ViewModel, List<GarmentTest_Detail> detail);
 
-        bool CheckOrderID(string OrderID, string BrandID, string SeasonID, string StyleID);
-
         GarmentTest_Result Generate_FGWT(GarmentTest_Detail_Result viewModel);
+
+        GarmentTest_ViewModel DeleteDetail(string ID, string No);
     }
 }

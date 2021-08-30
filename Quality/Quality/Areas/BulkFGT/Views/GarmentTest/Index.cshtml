@@ -182,29 +182,30 @@
                             <tr>
                                 <td style="width: 10vw;"><h5>Style#</h5></td>
                                 <td style="width: 20vw;">
-                                    @Html.DisplayFor(o => o.garmentTest.StyleID, "", "")
+                                    @Html.TextBoxFor(o => o.garmentTest.StyleID, "", new { @readonly = "readonly" })
+                                    @Html.TextBoxFor(o => o.garmentTest.ID, "", new { @readonly = "readonly", @class = "display-None" })
                                 </td>
                                 <td style="width: 10vw;"><h5>Season</h5></td>
                                 <td style="width: 20vw;">
-                                    @Html.DisplayFor(o => o.garmentTest.SeasonID, "", "")
+                                    @Html.TextBoxFor(o => o.garmentTest.SeasonID, "", new { @readonly = "readonly" })
                                 </td>
                                 <td style="width: 10vw;"><h5>Brand</h5></td>
                                 <td style="width: 20vw;">
-                                    @Html.DisplayFor(o => o.garmentTest.BrandID, "", "")
+                                    @Html.TextBoxFor(o => o.garmentTest.BrandID, "", new { @readonly = "readonly" })
                                 </td>
                             </tr>
                             <tr>
                                 <td><h5>Article</h5></td>
                                 <td>
-                                    @Html.DisplayFor(o => o.garmentTest.Article, "", "")
+                                    @Html.TextBoxFor(o => o.garmentTest.Article, "", new { @readonly = "readonly" })
                                 </td>
                                 <td><h5>First SP#</h5></td>
                                 <td>
-                                    @Html.DisplayFor(o => o.garmentTest.FirstOrderID, "", "")
+                                    @Html.TextBoxFor(o => o.garmentTest.FirstOrderID, "", new { @readonly = "readonly" })
                                 </td>
                                 <td><h5>M</h5></td>
                                 <td>
-                                    @Html.DisplayFor(o => o.garmentTest.MDivisionid, "", "")
+                                    @Html.TextBoxFor(o => o.garmentTest.MDivisionid, "", new { @readonly = "readonly" })
                                 </td>
                             </tr>
                             <tr>
@@ -232,7 +233,7 @@
                             <tr>
                                 <td><h5>Special Mark</h5></td>
                                 <td>
-                                    @Html.DisplayFor(o => o.garmentTest.SpecialMark, "", "")
+                                    @Html.TextBoxFor(o => o.garmentTest.SpecialMark, "", new { @readonly = "readonly" })
                                 </td>
                                 <td><h5>Earliest Offline</h5></td>
                                 <td>
@@ -342,17 +343,24 @@
                         <tbody>
                             @for(int i = 0; i <= Model.garmentTest_Details.Count - 1; i++)
                             {
+                                string aHref = "";
                                 <tr>
                                     <td style="width:10vw;">
-                                        <a href="@Url.Action("Detail", "GarmentTest", new { ID = Model.garmentTest_Details[i].ID, No = Model.garmentTest_Details[i].No })" idx="@Model.garmentTest_Details[i].ID" idv="@Model.garmentTest_Details[i].No">
+
+                                        @if (Model.garmentTest_Details[i].ID > 0)
+                                        {
+                                            aHref = Url.Action("Detail", "GarmentTest", new { ID = Model.garmentTest_Details[i].ID, No = Model.garmentTest_Details[i].No });
+                                        }
+
+                                        <a href="@aHref" idx="@Model.garmentTest_Details[i].ID" idv="@Model.garmentTest_Details[i].No">
                                             @Html.DisplayFor(o => Model.garmentTest_Details[i].No, "", "")
                                         </a>
                                     </td>
                                     <td style="width:10vw;">
-                                        @Html.TextBoxFor(o => Model.garmentTest_Details[i].OrderID, "", "")
+                                        @Html.TextBoxFor(o => Model.garmentTest_Details[i].OrderID, "", new { @class = "Detail_OrderID" })
                                     </td>
                                     <td style="width:10vw;">
-                                        @Html.DropDownListFor(o => Model.garmentTest_Details[i].SizeCode, (List<SelectListItem>)ViewBag.SizeCodeList, "")
+                                        @Html.DropDownListFor(o => Model.garmentTest_Details[i].SizeCode, (List<SelectListItem>)ViewBag.SizeCodeList, new { @class = "Detail_SizeCode" })
                                     </td>
                                     <td style="width:10vw;">
                                         @Html.TextBoxFor(o => Model.garmentTest_Details[i].inspdate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
@@ -395,19 +403,19 @@
                                     <td style="width:10vw;">
                                         <img class="SendMail" src="~/Image/Icon/Mail.png" width="30" />
                                     </td>
-                                    <td style="width:10vw;">
+                                    <td class="Sender" style="width:10vw;">
                                         @Html.DisplayFor(o => Model.garmentTest_Details[i].Sender, "", "")
                                     </td>
-                                    <td style="width:10vw;">
+                                    <td class="SendDate" style="width:10vw;">
                                         @Html.DisplayFor(o => Model.garmentTest_Details[i].SendDate, "", "")
                                     </td>
                                     <td style="width:10vw;">
                                         <img class="ReceiveMail" src="~/Image/Icon/Mail.png" width="30" />
                                     </td>
-                                    <td style="width:10vw;">
+                                    <td class="Receiver" style="width:10vw;">
                                         @Html.DisplayFor(o => Model.garmentTest_Details[i].Receiver, "", "")
                                     </td>
-                                    <td style="width:10vw;">
+                                    <td class="ReceiveDate" style="width:10vw;">
                                         @Html.DisplayFor(o => Model.garmentTest_Details[i].ReceiveDate, "", "")
                                     </td>
                                     <td style="width:10vw;">
@@ -440,97 +448,7 @@
         msg = new MessagerAlert();
         EditMode = false;
         IsEditModeChange();
-
-        $('.detailEdit').on('click', function () {
-            if ($(this).prop('src').indexOf("Save.png") > -1) {
-                var tr = $(this).parent().parent();
-                tr.find("input[type='text']").removeAttr("disabled");
-                tr.find("input[type='checkbox']").removeAttr("disabled");
-                tr.find("select").removeAttr("disabled");
-
-                var detail = [];
-                var fcol = tr.children().find('a');
-                var id = fcol.attr("idx");
-                var no = fcol.attr("idv");
-
-                var NonSeamBreakageTest = tr.children().find("input[type='checkbox']").prop("checked");
-                var OrderID, inspdate, inspector, Remark;
-                var SizeCode, MtlTypeID;
-
-                tr.children().find("input[type='text']").each(function (index, value) {
-                    switch (index) {
-                        case 0:
-                            OrderID = $(this).val();
-                            break;
-                        case 1:
-                            inspdate = $(this).val();
-                            break;
-                        case 2:
-                            inspector = $(this).val();
-                            break;
-                        case 3:
-                            Remark = $(this).val();
-                            break;
-                    }
-                })
-
-                tr.children().find("select").each(function (index, value) {
-                    switch (index) {
-                        case 0:
-                            SizeCode = $(this).children("option:selected").val();
-                            break;
-                        case 1:
-                            MtlTypeID = $(this).children("option:selected").val();
-                            break;
-                    }
-                })
-
-                detail.push({
-                    ID: parseInt(id),
-                    No: parseInt(no),
-                    OrderID: OrderID,
-                    inspdate: inspdate,
-                    inspector: inspector,
-                    Remark: Remark,
-                    NonSeamBreakageTest: NonSeamBreakageTest,
-                    SizeCode: SizeCode,
-                    MtlTypeID: MtlTypeID,
-                });
-
-
-                if (detail.length > 0) {
-                    SaveData(detail);
-                }
-                else {
-                    msg.WithError("Save Fail");
-                    return;
-                }
-            }
-            else {
-                $(".rowHeader input[type='text']").attr("disabled", "disabled");
-                $(".rowHeader input[type='button'], #btnQuery").addClass("IsEditModeQuery");
-                $("#Edit, #Save, #Undo").removeClass("IsEditMode");
-                $(".DetailTable img").addClass('display-None');
-                $(this).removeClass('display-None');
-                $('#btnQuery').on('click', function () {
-                    return false;
-                });
-
-                $(this).prop("src", "/Image/Icon/Save.png");
-
-                var tr = $(this).parent().parent();
-                tr.find("input[type='text']").removeAttr("disabled");
-                tr.find("input[type='checkbox']").removeAttr("disabled");
-                tr.find("select").removeAttr("disabled");
-            }
-        });
-
-        $('#btnQuery').on('click', function () {
-            if ($('#Brand').val() == '' || $('#Season').val() == '' || $('#Style').val() == '' || $('#Article').val() == '') {
-                msg.WithError("Style, Brand, Season and Article cannot be empty");
-                return false;
-            }
-        });
+        DetailDynamicBind();
 
         if ('@Model.Result' == 'False') {
             msg.WithError('@Model.ErrMsg');
@@ -542,7 +460,8 @@
 
         if (EditMode) {
             $(".rowHeader input[type='text']").attr("disabled", "disabled");
-            $(".rowHeader input[type='button'], #btnQuery").addClass("IsEditModeQuery");
+            $(".rowHeader input[type='button']").unbind('click').addClass("IsEditModeQuery");
+            $('#btnQuery').addClass("IsEditModeQuery");
             $("#Edit").removeClass("IsEditMode");
             $('#Save, #Undo, #New').addClass("IsEditMode");
             $(".DetailTable input[type='text'], .DetailTable select, .DetailTable input[type='checkbox']").removeAttr("disabled");
@@ -554,17 +473,24 @@
         }
         else {
             $(".rowHeader input[type='text']").removeAttr("disabled");
-            $(".rowHeader input[type='button'], #btnQuery").unbind('click').removeClass("IsEditModeQuery");
+            $(".rowHeader input[type='button']").removeClass("IsEditModeQuery");
+            $('#btnQuery').unbind('click').removeClass("IsEditModeQuery");
             $("#Edit").addClass("IsEditMode");
             $('#Save, #Undo, #New').unbind('click').removeClass("IsEditMode");
             $(".DetailTable input[type='text'], .DetailTable select, .DetailTable input[type='checkbox']").attr("disabled", "disabled");
             $(".DetailTable img").removeClass('display-None');
+            QueryButtonBind();
+
+            $('#btnQuery').on('click', function () {
+                if ($('#Brand').val() == '' || $('#Season').val() == '' || $('#Style').val() == '' || $('#Article').val() == '') {
+                    msg.WithError("Style, Brand, Season and Article cannot be empty");
+                    return false;
+                }
+            });
         }
     }
 
     function EditModeButtionBind() {
-        //$(".rowHeader input[type='button']") bind Click;
-
         $('#Edit').on('click', function () {
             if ($('#garmentTest_StyleID').val() != "" && $('#garmentTest_SeasonID').val() != "" && $('#garmentTest_BrandID').val() != "") {
                 EditMode = true;
@@ -573,12 +499,8 @@
         });
 
         $('#Save').on('click', function () {
-            if ($('#item_No').val() == "") {
-                msg.WithError("No cannot be empty.");
-                return;
-            }
-
             var detail = [];
+            var ErrMsg = "";
             $('.DetailTable > tbody > tr').each(function (index, value) {
                 var fcol = $(this).children().find('a');
                 var id = fcol.attr("idx");
@@ -615,6 +537,17 @@
                     }
                 })
 
+
+                if (OrderID == "") {
+                    ErrMsg += "SP# cannot be empty";
+                    return;
+                }
+
+                if (MtlTypeID == "") {
+                    ErrMsg += "Material Type cannot be empty";
+                    return;
+                }
+
                 detail.push({
                     ID: parseInt(id),
                     No: parseInt(no),
@@ -628,6 +561,11 @@
                 });
             });
 
+            if (ErrMsg != "") {
+                msg.WithError(ErrMsg);
+                return;
+            }
+
             if (detail.length > 0) {
                 SaveData(detail);
             }
@@ -639,11 +577,214 @@
 
         $('#Undo').on('click', function () {
             EditMode = false;
-            $('#btnQuery').unbind('click').click();
+            IsEditModeChange();
+            $('#btnQuery').click();
         });
 
         $('#New').on('click', function () {
-            AddDetailRow('@Model.garmentTest.OrderID', '@Model.garmentTest.Article');
+            AddDetailRow($('#garmentTest_FirstOrderID').val(), $('#garmentTest_Article').val());
+        });
+    }
+
+    function DetailDynamicBind() {
+        $('.detailEdit').unbind('click').on('click', function () {
+            if ($(this).prop('src').indexOf("Save.png") > -1) {
+                var tr = $(this).parent().parent();
+                tr.find("input[type='text']").removeAttr("disabled");
+                tr.find("input[type='checkbox']").removeAttr("disabled");
+                tr.find("select").removeAttr("disabled");
+
+                var detail = [];
+                var fcol = tr.children().find('a');
+                var id = fcol.attr("idx");
+                var no = fcol.attr("idv");
+
+                var NonSeamBreakageTest = tr.children().find("input[type='checkbox']").prop("checked");
+                var OrderID, inspdate, inspector, Remark;
+                var SizeCode, MtlTypeID;
+
+                tr.children().find("input[type='text']").each(function (index, value) {
+                    switch (index) {
+                        case 0:
+                            OrderID = $(this).val();
+                            break;
+                        case 1:
+                            inspdate = $(this).val();
+                            break;
+                        case 2:
+                            inspector = $(this).val();
+                            break;
+                        case 3:
+                            Remark = $(this).val();
+                            break;
+                    }
+                })
+
+                if (OrderID == "") {
+                    msg.WithError("SP# cannot be empty");
+                    return;
+                }
+
+                if (MtlTypeID == "") {
+                    msg.WithError("Material Type cannot be empty");
+                    return;
+                }
+
+                tr.children().find("select").each(function (index, value) {
+                    switch (index) {
+                        case 0:
+                            SizeCode = $(this).children("option:selected").val();
+                            break;
+                        case 1:
+                            MtlTypeID = $(this).children("option:selected").val();
+                            break;
+                    }
+                })
+
+                detail.push({
+                    ID: parseInt(id),
+                    No: parseInt(no),
+                    OrderID: OrderID,
+                    inspdate: inspdate,
+                    inspector: inspector,
+                    Remark: Remark,
+                    NonSeamBreakageTest: NonSeamBreakageTest,
+                    SizeCode: SizeCode,
+                    MtlTypeID: MtlTypeID,
+                });
+
+                if (detail.length > 0) {
+                    SaveData(detail);
+                }
+                else {
+                    msg.WithError("Save Fail");
+                    return;
+                }
+            }
+            else {
+                $(".rowHeader input[type='text']").attr("disabled", "disabled");
+                $(".rowHeader input[type='button'], #btnQuery").addClass("IsEditModeQuery");
+                $("#Edit, #Save, #Undo").removeClass("IsEditMode");
+                $(".DetailTable img").addClass('display-None');
+                $(this).removeClass('display-None');
+                $('#btnQuery').on('click', function () {
+                    return false;
+                });
+
+                $(this).prop("src", "/Image/Icon/Save.png");
+
+                var tr = $(this).parent().parent();
+                tr.find("input[type='text']").removeAttr("disabled");
+                tr.find("input[type='checkbox']").removeAttr("disabled");
+                tr.find("select").removeAttr("disabled");
+            }
+        });
+
+        $('.detailDelete').unbind('click').on('click', function () {
+            msg.WithConfirm('Do you want to delete the data ?',
+                function ()
+                {
+                    $.ajax({
+                        url: "@Url.Action("DeleteDetail", "GarmentTest", new { Area = "BulkFGT" })",
+                        type: 'POST',
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify({ details: detail }),
+                        async: false,
+                        success: function (data) {
+                            if (data.SaveResult) {
+                                $(this).parents().parents().remove();
+                                msg.WithSuccess("Delete Success");
+                            }
+                            else {
+                                msg.WithError(data.ErrMsg);
+                            }
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            console.log(xhr.responseText);
+                        }
+                    });
+                }, null);
+        });
+
+        $('.SendMail').unbind('click').on('click'), function () {
+            var tr = $(this).parents().parents();
+            var fcol = tr.children().find('a');
+            var id = fcol.attr("idx");
+            var no = fcol.attr("idv");
+            $.ajax({
+                url: "@Url.Action("SendMail", "GarmentTest", new { Area = "BulkFGT" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID: id, No: no }),
+                async: true,
+                success: function (data) {
+                    if (data.SaveResult) {
+                        tr.find("td[class='Sender']").html(data.Sender);
+                        tr.find("td[class='SendDate']").html(data.SendDate);
+                    }
+                    else {
+                        msg.WithError(data.ErrMsg);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $('.ReceiveMail').unbind('click').on('click'), function () {
+            var tr = $(this).parents().parents();
+            var fcol = tr.children().find('a');
+            var id = fcol.attr("idx");
+            var no = fcol.attr("idv");
+            $.ajax({
+                url: "@Url.Action("ReceiveMail", "GarmentTest", new { Area = "BulkFGT" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID: id, No: no }),
+                async: true,
+                success: function (data) {
+                    if (data.SaveResult) {
+                        tr.find("td[class='Receiver']").html(data.Sender);
+                        tr.find("td[class='ReceiveDate']").html(data.SendDate);
+                    }
+                    else {
+                        msg.WithError(data.ErrMsg);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $('.Detail_OrderID').unbind('blur').on('blur', function () {
+            var SizeCode = $(this).parent().siblings().find("select[class='Detail_SizeCode']");
+            var OrderID = $(this).val();
+            var Brand = $('#Brand').val();
+            var Season = $('#Season').val();
+            var Style = $('#Style').val();
+            var Article = $('#Article').val();
+            $.ajax({
+                url: "@Url.Action("ChangeSizeCode", "GarmentTest", new { Area = "BulkFGT" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ OrderID: OrderID, Brand: Brand, Season: Season, Style: Style, Article: Article }),
+                async: false,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $(this).val('');
+                        msg.WithError("SP not Found");
+                    }
+                    else {
+                        SizeCode.html(data);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+
         });
     }
 
@@ -655,7 +796,7 @@
             data: JSON.stringify({ details: detail }),
             async: false,
             success: function (data) {
-                if (data.Result) {
+                if (data.SaveResult) {
                     msg.WithSuccess("Success");
                     $('#btnQuery').unbind('click').click();
                 }
@@ -664,10 +805,7 @@
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {
-                console.log(xhr.status);
                 console.log(xhr.responseText);
-
-                console.log(thrownError);
             }
         });
     }
@@ -683,6 +821,7 @@
             async: false,
             success: function (data) {
                 $('.DetailTable > tbody').append(data);
+                DetailDynamicBind();
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 console.log(xhr.responseText);
@@ -690,4 +829,45 @@
         });
     }
 
+    function QueryButtonBind() {
+        $('#btnBrandSelectItem').on('click', function () {
+             window.open('@Url.Action("BrandList", "PublicWondow",new { Area=""})', 'Brand', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        });
+
+        $('#btnSeasonSelectItem').on('click', function () {
+            var para = "?BrandID=" + $('#Brand').val();
+            window.open('@Url.Action("SeasonList", "PublicWondow",new { Area=""})' + para, 'Season', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        });
+
+        $('#btnStyleSelectItem').on('click', function () {
+            var para = "?BrandID=" + $('#Brand').val() + "&SeasonID=" + $('#Season').val();
+            window.open('@Url.Action("StyleList", "PublicWondow",new { Area=""})' + para, 'Style', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        });
+
+        $('#btnArticleSelectItem').on('click', function () {
+            if ($('#Brand').val() == '' || $('#Season').val() == '' || $('#Style').val() == '') {
+                msg.WithError('Please input style, brand and season before choose article.');
+                return;
+            }
+
+            var para = "?OrderID=&StyleUkey=0&BrandID=" + $('#Brand').val() + "&SeasonID=" + $('#Season').val() + "&StyleID=" + $('#Style').val();
+            window.open('@Url.Action("ArticleList", "PublicWondow",new { Area=""})' + para, 'Article', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        });
+    }
+
+    function GetBrandList(data) {
+        $('#Brand').val(data);
+    }
+
+    function GetSeasonList(data) {
+        $('#Season').val(data);
+    }
+
+    function GetStyleList(data) {
+        $('#Style').val(data);
+    }
+
+    function GetArticleList(data) {
+        $('#Article').val(data);
+    }
 </script>

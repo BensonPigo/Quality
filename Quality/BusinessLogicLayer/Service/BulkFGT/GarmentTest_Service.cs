@@ -98,6 +98,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     }).ToList();
 
                 result.SizeCodes = Get_SizeCode(result.garmentTest.OrderID, result.garmentTest.Article);
+                result.req = garmentTest_ViewModel;
                 result.Result = true;
 
             }
@@ -122,6 +123,33 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 throw ex;
             }
+
+            return result;
+        }
+
+
+        public GarmentTest_ViewModel SendMail(string ID, string No, string UserID)
+        {
+            GarmentTest_ViewModel result = new GarmentTest_ViewModel()
+            {
+                SaveResult = false,
+                ErrMsg = "Err",
+                Sender = UserID,
+                SendDate = DateTime.Now.ToString("yyyy/MM/dd"),
+            };
+
+            return result;
+        }
+
+        public GarmentTest_ViewModel ReceiveMail(string ID, string No, string UserID)
+        {
+            GarmentTest_ViewModel result = new GarmentTest_ViewModel()
+            {
+                SaveResult = false,
+                ErrMsg = "Err",
+                Sender = UserID,
+                SendDate = DateTime.Now.ToString("yyyy/MM/dd"),
+            };
 
             return result;
         }
@@ -208,6 +236,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
         public GarmentTest_ViewModel Save_GarmentTest(GarmentTest_ViewModel garmentTest_ViewModel,List<GarmentTest_Detail> detail)
         {
+            // 僅傳入 List<GarmentTest_Detail> detail
+
             GarmentTest_ViewModel result = new GarmentTest_ViewModel();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             try
@@ -282,6 +312,17 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 throw ex;
             }
+
+            return result;
+        }
+
+        public GarmentTest_ViewModel DeleteDetail(string ID, string No)
+        {
+            GarmentTest_ViewModel result = new GarmentTest_ViewModel()
+            {
+                SaveResult = false,
+                ErrMsg = "Err",
+            };
 
             return result;
         }

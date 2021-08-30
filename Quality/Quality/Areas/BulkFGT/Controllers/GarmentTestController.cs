@@ -39,10 +39,10 @@ namespace Quality.Areas.BulkFGT.Controllers
                 Result = true,
                 SizeCodes = _GarmentTest_Service.Get_SizeCode(string.Empty, string.Empty),
                 garmentTest = new GarmentTest_ViewModel(),
-                garmentTest_Details = new List<GarmentTest_Detail_ViewModel>() { 
-                    new GarmentTest_Detail_ViewModel() { ID = 1, No = 1 },
-                    new GarmentTest_Detail_ViewModel() { ID = 1, No = 2 },
-                } ,
+                garmentTest_Details = new List<GarmentTest_Detail_ViewModel>() 
+                {
+                    new GarmentTest_Detail_ViewModel() { No = 1, ID = 0 },
+                },
                 req = new GarmentTest_Request(), 
             };
 
@@ -59,6 +59,12 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             Req.Factory = this.FactoryID;
             GarmentTest_Result Result = _GarmentTest_Service.GetGarmentTest(Req);
+            if (!Result.Result)
+            {
+                Result.garmentTest = new GarmentTest_ViewModel() { ID = 0 };
+                Result.SizeCodes = new List<string>();
+            }
+            
             if (Result.garmentTest_Details == null || Result.garmentTest_Details.Count == 0)
             {
                 Result.garmentTest_Details = new List<GarmentTest_Detail_ViewModel>()
@@ -68,7 +74,6 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
 
             Result.req = Req;
-
             List<SelectListItem> SizeCodeList = new SetListItem().ItemListBinding(Result.SizeCodes);
             List<SelectListItem> MtlTypeIDList = new SetListItem().ItemListBinding(this.MtlTypeIDs);
             ViewBag.SizeCodeList = SizeCodeList;
@@ -80,7 +85,38 @@ namespace Quality.Areas.BulkFGT.Controllers
         [HttpPost]
         public JsonResult SaveDetail(List<GarmentTest_Detail> details)
         {
-            var result = new { Result = false, ErrMsg = "Err" };
+            GarmentTest_ViewModel result = new GarmentTest_ViewModel()
+            {
+                SaveResult = false,
+                ErrMsg = "Err",
+            };
+
+            return Json(result);
+        }
+
+        [HttpPost]
+        public JsonResult DeleteDetail(string ID, string No)
+        {
+            GarmentTest_ViewModel result = new GarmentTest_ViewModel()
+            {
+                SaveResult = false,
+                ErrMsg = "Err",
+            };
+
+            return Json(result);
+        }
+
+        [HttpPost]
+        public JsonResult SendMail(string ID, string No)
+        {
+            GarmentTest_ViewModel result = _GarmentTest_Service.SendMail(ID, No, this.UserID); 
+            return Json(result);
+        }
+
+        [HttpPost]
+        public JsonResult ReceiveMail(string ID, string No)
+        {
+            GarmentTest_ViewModel result = _GarmentTest_Service.ReceiveMail(ID, No, this.UserID);
             return Json(result);
         }
 
@@ -92,9 +128,9 @@ namespace Quality.Areas.BulkFGT.Controllers
             List<string> sizecodes = _GarmentTest_Service.Get_SizeCode(OrderID, Article);
             string html = "";
             html += "<tr>";
-            html += "<td><a href='/BulkFGT/GarmentTest/Detail/" + ID + "?No=" + lastNO.ToString() + "' idx='" + ID + "' idv = '" + lastNO.ToString() + "'>" + lastNO.ToString() + "</a></td>";
-            html += "<td><input id='garmentTest_Details_" + i + "_OrderID' name='garmentTest_Details[" + i + "].OrderID' type='text'></td>";
-            html += "<td><select id='garmentTest_Details_" + i + "_SizeCode' name='garmentTest_Details[" + i + "].SizeCode'><option value=''></option>";
+            html += "<td><a href='' idx='" + ID + "' idv = '" + lastNO.ToString() + "'>" + lastNO.ToString() + "</a></td>";
+            html += "<td><input id='garmentTest_Details_" + i + "_OrderID' name='garmentTest_Details[" + i + "].OrderID' class='Detail_OrderID' type='text'></td>";
+            html += "<td><select id='garmentTest_Details_" + i + "_SizeCode' name='garmentTest_Details[" + i + "].SizeCode' class='Detail_SizeCode'><option value=''></option>";
             foreach(string val in sizecodes)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
@@ -126,6 +162,22 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "<td><img class='detailEdit display-None' src='/Image/Icon/Edit.png' width='30'></td>";
             html += "<td><img class='detailDelete display-None' src='/Image/Icon/Delete.png' width='30'></td>";
             html += "</tr>";
+
+            return Content(html);
+        }
+
+        public ActionResult ChangeSizeCode(string OrderID, string Brand, string Season, string Style, string Article)
+        {
+            bool chk = _GarmentTest_Service.CheckOrderID(OrderID, Brand, Season, Style);
+            string html = "";
+            if (chk)
+            {
+                List<string> sizeCodes = _GarmentTest_Service.Get_SizeCode(OrderID, Article);                
+                foreach (string val in sizeCodes)
+                {
+                    html += "<option value='" + val + "'>" + val + "</option>";
+                }
+            }
 
             return Content(html);
         }
