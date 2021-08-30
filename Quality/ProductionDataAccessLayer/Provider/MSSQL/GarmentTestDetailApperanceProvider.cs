@@ -7,6 +7,7 @@ using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.ViewModel;
+using System.Data.SqlClient;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
@@ -54,6 +55,45 @@ where ga.ID = @ID
 and ga.No = @No
 ";
             return ExecuteList<GarmentTest_Detail_Apperance_ViewModel>(CommandType.Text, sqlcmd, objParameter);
+        }
+
+        public bool Update_Apperance(List<GarmentTest_Detail_Apperance_ViewModel> source)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            int idx = 0;
+            string sqlcmd = string.Empty;
+
+
+            foreach (var item in source)
+            {
+                // Key
+                objParameter.Add(new SqlParameter($"@ID{idx}", item.ID));
+                objParameter.Add(new SqlParameter($"@No{idx}", item.No));
+                objParameter.Add(new SqlParameter($"@Seq{idx}", item.Seq));
+
+                objParameter.Add(new SqlParameter($"@Type{idx}", string.IsNullOrEmpty(item.Type) ? string.Empty : item.Type));
+                objParameter.Add(new SqlParameter($"@Wash1{idx}", string.IsNullOrEmpty(item.Wash1) ? string.Empty : item.Wash1));
+                objParameter.Add(new SqlParameter($"@Wash2{idx}", string.IsNullOrEmpty(item.Wash2) ? string.Empty : item.Wash2));
+                objParameter.Add(new SqlParameter($"@Wash3{idx}", string.IsNullOrEmpty(item.Wash3) ? string.Empty : item.Wash3));
+                objParameter.Add(new SqlParameter($"@Wash4{idx}", string.IsNullOrEmpty(item.Wash4) ? string.Empty : item.Wash4));
+                objParameter.Add(new SqlParameter($"@Wash5{idx}", string.IsNullOrEmpty(item.Wash5) ? string.Empty : item.Wash5));
+                objParameter.Add(new SqlParameter($"@Comment{idx}", string.IsNullOrEmpty(item.Comment) ? string.Empty : item.Comment));
+
+                sqlcmd += $@"
+update GarmentTest_Detail_Apperance set
+    [Type]  = @Type{idx},
+	[Wash1] = @Wash1{idx},
+    [Wash2]	= @Wash2{idx},
+    [Wash3]	= @Wash3{idx},
+    [Wash4]	= @Wash4{idx},
+    [Wash5]	= @Wash5{idx},
+    [Comment]	= @Comment{idx}
+where ID = @ID{idx} and No = @No{idx} and Seq = @Seq{idx}
+" + Environment.NewLine;
+                idx++;
+            }
+
+            return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
         }
 
         public IList<GarmentTest_Detail_Apperance> Get(GarmentTest_Detail_Apperance Item)

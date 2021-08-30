@@ -7,5 +7,7 @@ namespace ProductionDataAccessLayer.Interface
     public interface IGarmentTestDetailShrinkageProvider
     {
         IList<GarmentTest_Detail_Shrinkage> Get_GarmentTest_Detail_Shrinkage(Int64 ID, string No);
+
+        bool Update_GarmentTestShrinkage(List<GarmentTest_Detail_Shrinkage> source);
     }
 }

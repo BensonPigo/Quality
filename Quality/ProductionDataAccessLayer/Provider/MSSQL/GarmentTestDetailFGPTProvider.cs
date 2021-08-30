@@ -7,6 +7,7 @@ using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.ViewModel;
+using System.Data.SqlClient;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
@@ -18,6 +19,43 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         #endregion
 
         #region CRUD Base
+
+        public bool Update_FGPT(List<GarmentTest_Detail_FGPT_ViewModel> source)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            int idx = 0;
+            string sqlcmd = string.Empty;
+
+
+            foreach (var item in source)
+            {
+                // Key
+                objParameter.Add(new SqlParameter($"@ID{idx}", item.ID));
+                objParameter.Add(new SqlParameter($"@No{idx}", item.No));
+                objParameter.Add(new SqlParameter($"@Location{idx}", item.Location));
+                objParameter.Add(new SqlParameter($"@Type{idx}", item.Type));
+                objParameter.Add(new SqlParameter($"@Seq{idx}", item.Seq));
+                objParameter.Add(new SqlParameter($"@TestName{idx}", item.TestName));
+
+                objParameter.Add(new SqlParameter($"@TestResult{idx}", item.TestResult));
+                objParameter.Add(new SqlParameter($"@TestUnit{idx}", item.TestUnit));
+                objParameter.Add(new SqlParameter($"@TypeSelection_Seq{idx}", item.TypeSelection_Seq));
+
+
+                sqlcmd += $@"
+update GarmentTest_Detail_FGPT set
+    [TestResult]    = @TestResult{idx},
+    [TestUnit]	    = @TestUnit{idx},
+    [TypeSelection_Seq]	= @TypeSelection_Seq{idx}
+where ID = @ID{idx} and No = @No{idx} and Type = @Type{idx} and Location = @Location{idx}
+and Seq = @Seq{idx} and TestName = @TestName{idx}
+" + Environment.NewLine;
+
+                idx++;
+            }
+
+            return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
+        }
 
         public IList<GarmentTest_Detail_FGPT_ViewModel> Get_GarmentTest_Detail_FGPT(Int64 ID, string No)
         {

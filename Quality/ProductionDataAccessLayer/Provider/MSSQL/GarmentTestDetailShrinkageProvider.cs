@@ -6,6 +6,7 @@ using ProductionDataAccessLayer.Interface;
 using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
 using DatabaseObject.ProductionDB;
+using System.Data.SqlClient;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
@@ -50,16 +51,68 @@ where ID = @ID
 and No = @No
 ";
 
-
             return ExecuteList<GarmentTest_Detail_Shrinkage>(CommandType.Text, sqlcmd, objParameter);
         }
-		/*建立(Create) 詳細敘述如下*/
+
+        public bool Update_GarmentTestShrinkage(List<GarmentTest_Detail_Shrinkage> source)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            int idx = 0;
+            string sqlcmd = string.Empty;
+
+
+            foreach (var item in source)
+            {
+                // 畫面資料 轉換成DB資料
+                if (item.Location.ToUpper() == "BOTTOM") { item.Location = "B"; }
+                if (item.Location.ToUpper() == "TOP") { item.Location = "T"; }
+                if (item.Location.ToUpper() == "INNER") { item.Location = "I"; }
+                if (item.Location.ToUpper() == "OUTER") { item.Location = "O"; }
+
+                // Key
+                objParameter.Add(new SqlParameter($"@ID{idx}", item.ID));
+                objParameter.Add(new SqlParameter($"@No{idx}", item.No));
+                objParameter.Add(new SqlParameter($"@Location{idx}", item.Location));
+                objParameter.Add(new SqlParameter($"@Type{idx}", item.Type));
+
+                objParameter.Add(new SqlParameter($"@BeforeWash{idx}", item.BeforeWash));
+                objParameter.Add(new SqlParameter($"@SizeSpec{idx}", item.SizeSpec));
+
+                objParameter.Add(new SqlParameter($"@AfterWash1{idx}", item.AfterWash1));
+                objParameter.Add(new SqlParameter($"@Shrinkage1{idx}", item.Shrinkage1));
+
+                objParameter.Add(new SqlParameter($"@AfterWash2{idx}", item.Shrinkage1));
+                objParameter.Add(new SqlParameter($"@Shrinkage2{idx}", item.Shrinkage2));
+
+                objParameter.Add(new SqlParameter($"@AfterWash3{idx}", item.AfterWash3));
+                objParameter.Add(new SqlParameter($"@Shrinkage3{idx}", item.Shrinkage3));
+
+
+                sqlcmd += $@"
+update GarmentTest_Detail_Shrinkage set
+    [BeforeWash]    = @BeforeWash{idx},
+    [SizeSpec]	    = @SizeSpec{idx},
+    [AfterWash1]	= @AfterWash1{idx},
+    [Shrinkage1]	= @Shrinkage1{idx},
+    [AfterWash2]	= @AfterWash2{idx},
+    [Shrinkage2]	= @Shrinkage2{idx},
+    [AfterWash3]	= @AfterWash3{idx},
+    [Shrinkage3]	= @Shrinkage3{idx}
+where ID = @ID{idx} and No = @No{idx} and Type = @Type{idx} and Location = @Location{idx}
+" + Environment.NewLine;
+                idx++;
+            }
+
+            return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
+        }
+
+        /*建立(Create) 詳細敘述如下*/
         /// <summary>
         /// 建立
         /// </summary>
         /// <param name="Item">成員</param>
         /// <returns>回傳異動筆數</returns>
-		/// <info>Author: Admin; Date: 2021/08/23  </info>
+        /// <info>Author: Admin; Date: 2021/08/23  </info>
         /// <history>
         /// xx.  YYYY/MM/DD   Ver   Author      Comments
         /// ===  ==========  ====  ==========  ==========

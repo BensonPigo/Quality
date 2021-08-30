@@ -7,6 +7,7 @@ using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.ViewModel;
+using System.Linq;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
@@ -95,6 +96,163 @@ where gd.ID = @ID
             
 
             return ExecuteList<GarmentTest_Detail_ViewModel>(CommandType.Text, sqlcmd, objParameter);
+        }
+
+        public int Delete_GarmentTestDetail(string ID, string No)
+        {  
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.String, ID } ,
+                { "@No", DbType.String, No } ,
+            };
+
+            string sqlcmd = @"
+Delete GarmentTest_Detail_Shrinkage  where id = @ID and NO = @No
+Delete GarmentTest_Detail_Apperance where id = @ID and NO = @No
+Delete GarmentTest_Detail_FGWT where id = @ID and NO = @No
+Delete GarmentTest_Detail_FGPT where id = @ID and NO = @No
+Delete Garment_Detail_Spirality where id = @ID and NO = @No
+
+Delete GarmentTest_Detail where id = @ID and NO = @No
+";
+            return ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter);
+        }
+
+        public bool Chk_AllResult(string ID, string No)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.String, ID } ,
+                { "@No", DbType.String, No } ,
+            };
+
+            string sqlcmd = @"
+
+-- FGPT
+select distinct [Result] = CASE WHEN  t.TestUnit = 'N' AND t.[TestResult] !='' THEN IIF( Cast( t.[TestResult] as float) >= cast( t.Criteria as float) ,'Pass' ,'Fail')
+  WHEN  t.TestUnit = 'mm' THEN IIF(  t.[TestResult] = '<=4' OR t.[TestResult] = '≦4','Pass' , IIF( t.[TestResult]='>4','Fail','')  )
+  WHEN  t.TestUnit = 'Pass/Fail'  THEN t.[TestResult]
+   ELSE ''
+END
+from GarmentTest_Detail_FGPT t
+where t.ID = @ID
+and t.No = @No
+
+union
+
+--FGWT
+select distinct
+[Result] = IIF(Scale IS NOT NULL
+    ,IIF(Scale='4-5' OR Scale ='5','Pass',IIF(Scale='','','Fail'))
+    ,IIF( (BeforeWash IS NOT NULL AND AfterWash IS NOT NULL AND Criteria IS NOT NULL AND Shrinkage IS NOT NULL)
+          or (Type = 'spirality: Garment - in percentage (average)')
+          or (Type = 'spirality: Garment - in percentage (average) (Top Method A)')
+          or (Type = 'spirality: Garment - in percentage (average) (Top Method B)')
+          or (Type = 'spirality: Garment - in percentage (average) (Bottom Method A)')
+          or (Type = 'spirality: Garment - in percentage (average) (Bottom Method B)')
+   ,( IIF( TestDetail = '%' OR TestDetail = 'Range%'   
+   -- % 為ISP20201331舊資料、Range% 為ISP20201606加上的新資料，兩者都視作百分比
+      ---- 百分比 判斷方式
+      ,IIF( ISNULL(Criteria,0)  <= ISNULL(Shrinkage,0) AND ISNULL(Shrinkage,0) <= ISNULL(Criteria2,0)
+       , 'Pass'
+       , 'Fail'
+      )
+      ---- 非百分比 判斷方式
+      ,IIF( ISNULL(AfterWash,0) - ISNULL(BeforeWash,0) <= ISNULL(Criteria,0)
+       ,'Pass'
+       ,'Fail'
+      )
+    )
+   )
+   ,''
+ )
+)
+from GarmentTest_Detail_FGWT f
+where ID = @ID
+and No = @No
+
+--
+";
+            return ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter).AsEnumerable().Where(x => x.Equals("Fail")).Any();
+        }
+
+        public string Get_LastResult(string ID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.String, ID } ,
+            };
+
+            string sqlcmd = @"
+select Result 
+from  GarmentTest_Detail t
+where No = (
+	select Max(No) from GarmentTest_Detail s
+	where s.ID = t.ID
+)
+and ID = @ID
+";
+            return Convert.ToString(ExecuteScalar(CommandType.Text, sqlcmd, objParameter));
+        }
+
+        public bool Update_GarmentTestDetail(GarmentTest_Detail_ViewModel source)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", source.ID } ,
+                { "@No", source.No } ,
+                { "@SubmitDate", DbType.Date, source.SubmitDate},
+                { "@ArrivedQty", source.ArrivedQty } ,
+                { "@LOtoFactory", source.LOtoFactory } ,
+                { "@Result", source.Result } ,
+                { "@Remark", source.Remark } ,
+                { "@LineDry", DbType.Boolean, source.LineDry } ,
+                { "@Temperature", source.Temperature } ,
+                { "@TumbleDry", DbType.Boolean, source.TumbleDry } ,
+                { "@Machine", source.Machine } ,
+                { "@HandWash",DbType.Boolean, source.HandWash } ,
+                { "@Composition", source.Composition } ,
+                { "@Neck", DbType.Boolean, source.Neck } ,
+                { "@Above50NaturalFibres", DbType.Boolean, source.Above50NaturalFibres } ,
+                { "@Above50SyntheticFibres", DbType.Boolean, source.Above50SyntheticFibres } ,
+                { "@EditName", source.EditName } ,
+            };
+
+            string sqlcmd = $@"
+update GarmentTest_Detail set
+    SubmitDate = @SubmitDate,
+    ArrivedQty =  @ArrivedQty,
+    LOtoFactory =  @LOtoFactory,
+    Result = @Result,
+    Remark =  @Remark,
+    LineDry =  @LineDry,
+    Temperature =  @Temperature,
+    TumbleDry =  @TumbleDry,
+    Machine =  @Machine,
+    HandWash =  @HandWash,
+    Composition =  @Composition,
+    Neck = @Neck ,
+    Above50NaturalFibres =  @Above50NaturalFibres,
+    Above50SyntheticFibres =  @Above50SyntheticFibres,
+    EditName = @EditName,
+    EditDate = GetDate()
+where ID = @ID and No = @No
+";
+            return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
+        }
+
+        public bool Encode_GarmentTestDetail(string ID, string Status)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.String, ID } ,
+                { "@Status", DbType.String, Status } ,
+            };
+
+            string sqlcmd = @"
+Update GarmentTest_Detail set Status=@Status where id = @ID
+";
+            return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
         }
 
         /*回傳Garment Test(Get) 詳細敘述如下*/

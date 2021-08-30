@@ -6,6 +6,7 @@ using ProductionDataAccessLayer.Interface;
 using ADOHelper.Template.MSSQL;
 using DatabaseObject.ProductionDB;
 using ADOHelper.Utility;
+using System.Data.SqlClient;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
@@ -42,6 +43,43 @@ where ID = @ID
 and No = @No
 ";
             return ExecuteList<Garment_Detail_Spirality>(CommandType.Text, sqlcmd, objParameter);
+        }
+
+        public bool Update_Spirality(List<Garment_Detail_Spirality> source)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            int idx = 0;
+            string sqlcmd = string.Empty;
+
+            foreach (var item in source)
+            {
+                // Key
+                objParameter.Add(new SqlParameter($"@ID{idx}", item.ID));
+                objParameter.Add(new SqlParameter($"@No{idx}", item.No));
+                objParameter.Add(new SqlParameter($"@Location{idx}", item.Location));
+
+                objParameter.Add(new SqlParameter($"@MethodA_AAPrime{idx}", item.MethodA_AAPrime));
+                objParameter.Add(new SqlParameter($"@MethodA_APrimeB{idx}", item.MethodA_APrimeB));
+                objParameter.Add(new SqlParameter($"@MethodB_AAPrime{idx}", item.MethodB_AAPrime));
+                objParameter.Add(new SqlParameter($"@MethodB_AB{idx}", item.MethodB_AB));
+                objParameter.Add(new SqlParameter($"@CM{idx}", item.CM));
+                objParameter.Add(new SqlParameter($"@MethodA{idx}", item.MethodA));
+                objParameter.Add(new SqlParameter($"@MethodB{idx}", item.MethodB));
+
+                sqlcmd += $@"
+UPDATE [dbo].[Garment_Detail_Spirality]
+   SET [MethodA_AAPrime] = @MethodA_AAPrime{idx}
+      ,[MethodA_APrimeB] = @MethodA_APrimeB{idx}
+      ,[MethodB_AAPrime] = @MethodB_AAPrime{idx}
+      ,[MethodB_AB] = @MethodB_AB{idx}
+      ,[CM] = @CM{idx}
+      ,[MethodA] = @MethodA{idx}
+      ,[MethodB] = @MethodB{idx}
+WHERE id = @ID{idx} and No = @No{idx} and Location = @Location{idx}
+" + Environment.NewLine;
+            }
+
+            return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
         }
 
         /*回傳(Get) 詳細敘述如下*/

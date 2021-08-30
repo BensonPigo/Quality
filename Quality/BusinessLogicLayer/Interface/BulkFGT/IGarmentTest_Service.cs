@@ -41,5 +41,9 @@ namespace BusinessLogicLayer.Interface.BulkFGT
         GarmentTest_Result Generate_FGWT(GarmentTest_Detail_Result viewModel);
 
         GarmentTest_ViewModel DeleteDetail(string ID, string No);
+
+        GarmentTest_Detail_Result Save_GarmentTestDetail(GarmentTest_Detail_Result source);
+
+        string Get_LastResult(string ID);
     }
 }
