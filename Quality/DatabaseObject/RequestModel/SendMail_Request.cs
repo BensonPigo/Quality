@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Web;
 
 namespace DatabaseObject.RequestModel
 {
@@ -12,6 +13,6 @@ namespace DatabaseObject.RequestModel
         /// <summary>
         /// 路徑+檔案名稱
         /// </summary>
-        public List<string> FileList { get; set; }
+        public List<HttpPostedFileBase> FileUploader { get; set; }
     }
 }

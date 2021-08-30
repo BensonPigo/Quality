@@ -55,15 +55,14 @@ namespace BusinessLogicLayer.Service
                 client.DeliveryMethod = SmtpDeliveryMethod.Network;
 
                 // 夾檔
-                if (SendMail_Request.FileList != null && SendMail_Request.FileList.Count > 0)
+                if (SendMail_Request.FileUploader != null && SendMail_Request.FileUploader.Count > 0)
                 {
-                    foreach (var file in SendMail_Request.FileList)
+                    foreach (var fileUploader in SendMail_Request.FileUploader)
                     {
-                        if (!file.Equals(string.Empty))
+                        if (fileUploader != null)
                         {
-                            string filepath = file;
-                            Attachment attachFile = new Attachment(filepath);
-                            message.Attachments.Add(attachFile);
+                            string fileName = Path.GetFileName(fileUploader.FileName);
+                            message.Attachments.Add(new Attachment(fileUploader.InputStream, fileName));
                         }
                     }
                 }
