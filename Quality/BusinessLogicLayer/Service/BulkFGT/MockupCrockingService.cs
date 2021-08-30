@@ -13,6 +13,7 @@ using System.Runtime.InteropServices;
 using System;
 using System.IO;
 using Library;
+using System.Diagnostics;
 
 namespace BusinessLogicLayer.Service
 {
@@ -75,19 +76,22 @@ namespace BusinessLogicLayer.Service
 
         public MockupCrocking_ViewModel GetExcel(MockupCrocking MockupCrocking)
         {
+            bool test = true;
             MockupCrocking_ViewModel result = new MockupCrocking_ViewModel();
             try
             {
                 result = GetMockupCrocking(MockupCrocking);
-
-                if (!System.IO.Directory.Exists(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\"))
+                if (!test)
                 {
-                    System.IO.Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\");
-                }
+                    if (!System.IO.Directory.Exists(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\"))
+                    {
+                        System.IO.Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\");
+                    }
 
-                if (!System.IO.Directory.Exists(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\TMP\\"))
-                {
-                    System.IO.Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\TMP\\");
+                    if (!System.IO.Directory.Exists(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\TMP\\"))
+                    {
+                        System.IO.Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\TMP\\");
+                    }
                 }
 
                 _MockupCrockingProvider = new MockupCrockingProvider(Common.ProductionDataAccessLayer);
@@ -96,7 +100,20 @@ namespace BusinessLogicLayer.Service
                 MockupCrocking mockupCrocking = result.MockupCrocking[0];
                 List<MockupCrocking_Detail> mockupCrocking_Detail = mockupCrocking.MockupCrocking_Detail;
                 string basefileName = "MockupCrocking";
-                Excel.Application excelApp = MyUtility.Excel.ConnectExcel(System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx");
+                string openfilepath;
+                if (test)
+                {
+                    openfilepath = "C:\\Git\\Quality\\Quality\\Quality\\bin\\XLT\\MockupCrocking.xltx";
+                }
+                else
+                {
+                    openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
+                }
+
+                Excel.Application excelApp = MyUtility.Excel.ConnectExcel(openfilepath);
+
+
+
                 excelApp.DisplayAlerts = false;
                 Excel.Worksheet worksheet = excelApp.Sheets[1];
 
@@ -164,8 +181,23 @@ namespace BusinessLogicLayer.Service
                 }
                 #endregion
 
-                string fileName = $"{basefileName}{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
-                string filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
+                string fileName = $"{basefileName}{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+                string filexlsx = fileName + ".xlsx";
+                string fileNamePDF = fileName + ".pdf";
+
+                string filepath;
+                string filepathpdf;
+                if (test)
+                {
+                    filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", filexlsx);
+                    filepathpdf = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", fileNamePDF);
+                }
+                else
+                {
+                    filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filexlsx);
+                    filepathpdf = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileNamePDF);
+                }
+
 
                 Excel.Workbook workbook = excelApp.ActiveWorkbook;
                 workbook.SaveAs(filepath);
@@ -175,10 +207,10 @@ namespace BusinessLogicLayer.Service
                 Marshal.ReleaseComObject(workbook);
                 Marshal.ReleaseComObject(excelApp);
 
-                string fileNamePDF = $"{basefileName}{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.PDF";
-                if (ConvertToPDF.ExcelToPDF(filepath, fileNamePDF))
+
+                if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
                 {
-                    result.TempFileName = fileNamePDF;
+                    result.TempFileName = filepathpdf;
                     result.Result = true;
                 }
                 else

@@ -744,7 +744,9 @@
     <Content Include="Views\Shared\ScreenShot.cshtml" />
     <Content Include="XLT\FinalInspectionReport.xlsx" />
     <Content Include="Views\PublicWondow\TestFailMailList.cshtml" />
-    <Content Include="XLT\MockupCrocking.xltx" />
+    <Content Include="XLT\MockupCrocking.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="XLT\CFT Comments.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

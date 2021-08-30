@@ -28,13 +28,14 @@ namespace BusinessLogicLayer.Service.Tests
         }
 
         [TestMethod()]
-        public void GetExcel()
+        public void Getpdf()
         {
             try
             {
                 IMockupCrockingService _MockupCrockingService = new MockupCrockingService();
                 MockupCrocking model = new MockupCrocking() { ReportNo = "PHCK180800007" };
                 MockupCrocking_ViewModel MockupCrocking_ViewModel = _MockupCrockingService.GetExcel(model);
+                string file = MockupCrocking_ViewModel.TempFileName;
             }
             catch (Exception ex)
             {

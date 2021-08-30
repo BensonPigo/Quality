@@ -25,7 +25,7 @@ namespace BusinessLogicLayer.Service
                 var system = _SystemProvider.Get();
 
                 MailMessage message = new MailMessage();
-                message.From = new MailAddress(SendMail_Request.From);
+                message.From = new MailAddress(system[0].Sendfrom);
 
                 foreach (var to in SendMail_Request.To.Split(';'))
                 {
@@ -55,14 +55,16 @@ namespace BusinessLogicLayer.Service
                 client.DeliveryMethod = SmtpDeliveryMethod.Network;
 
                 // 夾檔
-                foreach (var file in SendMail_Request.FileList)
+                if (SendMail_Request.FileList != null && SendMail_Request.FileList.Count > 0)
                 {
-                    if (!file.Equals(string.Empty))
+                    foreach (var file in SendMail_Request.FileList)
                     {
-                        //string filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
-                        string filepath = file;
-                        Attachment attachFile = new Attachment(filepath);
-                        message.Attachments.Add(attachFile);
+                        if (!file.Equals(string.Empty))
+                        {
+                            string filepath = file;
+                            Attachment attachFile = new Attachment(filepath);
+                            message.Attachments.Add(attachFile);
+                        }
                     }
                 }
 
