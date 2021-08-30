@@ -65,13 +65,13 @@
     <Compile Include="Service\FinalInspection\FinalInspectionMoistureServiceTests.cs" />
     <Compile Include="Service\FinalInspection\FinalInspectionOthersServiceTests.cs" />
     <Compile Include="Service\FinalInspection\QueryServiceTests.cs" />
-    <Compile Include="Service\MockupCrockingTests.cs" />
+    <Compile Include="Service\BulkFGT\MockupCrockingTests.cs" />
     <Compile Include="Service\FinalInspection\FinalInspectionServiceTests.cs" />
     <Compile Include="Service\FinalInspection\FinalInspectionSettingServiceTests.cs" />
     <Compile Include="Service\InspectionServiceTests.cs" />
     <Compile Include="Service\CFTCommentsTests.cs" />
     <Compile Include="Service\RFTPerLineServiceTests.cs" />
-    <Compile Include="Service\BulkFGTMailGroupTest.cs" />
+    <Compile Include="Service\BulkFGT\BulkFGTMailGroupTest.cs" />
     <Compile Include="Service\SampleRFT\MeasurementServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>

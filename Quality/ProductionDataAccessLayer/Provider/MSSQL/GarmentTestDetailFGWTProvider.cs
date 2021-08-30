@@ -6,7 +6,7 @@ using ProductionDataAccessLayer.Interface;
 using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
 using DatabaseObject.ProductionDB;
-using DatabaseObject.ViewModel.BulkFGT;
+using DatabaseObject.ViewModel;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
@@ -31,6 +31,11 @@ select
 [ID]
 ,[No]
 ,[Location]
+,[LocationText]= CASE WHEN Location='B' THEN 'Bottom'
+						WHEN Location='T' THEN 'Top'
+						WHEN Location='S' THEN 'Top+Bottom'
+						ELSE ''
+					END
 ,[Type]
 ,[TestDetail]
 ,[BeforeWash]
@@ -41,6 +46,11 @@ select
 ,[Criteria]
 ,[Criteria2]
 ,[SystemType]
+,[EditType] = case 
+	when (Criteria is not null  or Criteria is not null) and IsInPercentage.value !=1 then '1'
+	when Scale is not null and IsInPercentage.value !=1 then '2'
+	else '3' end
+,[IsInPercentage] = IsInPercentage.value
 ,[Seq]
 ,[Result] = IIF(Scale IS NOT NULL
     ,IIF(Scale='4-5' OR Scale ='5','Pass',IIF(Scale='','','Fail'))
@@ -67,9 +77,20 @@ select
    ,''
  )
 )
-from GarmentTest_Detail_FGWT
+from GarmentTest_Detail_FGWT f
+outer apply(
+	select value =
+	cast((
+	case when f.Type = 'spirality: Garment - in percentage (average)'
+			or f.Type = 'spirality: Garment - in percentage (average) (Top Method A)'
+			or f.Type = 'spirality: Garment - in percentage (average) (Top Method B)' 
+			or f.Type = 'spirality: Garment - in percentage (average) (Bottom Method A)'
+			or f.Type = 'spirality: Garment - in percentage (average) (Bottom Method B)' then 1
+			else 0 end) as bit)
+)IsInPercentage
 where ID = @ID
 and No = @No
+order by Seq asc , Location
 ";
             return ExecuteList<GarmentTest_Detail_FGWT_ViewModel>(CommandType.Text, sqlcmd, objParameter);
         }

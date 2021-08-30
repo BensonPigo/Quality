@@ -8,10 +8,10 @@ namespace DatabaseObject.RequestModel
         public string To { get; set; }
         public string CC { get; set; }
         public string Subject { get; set; }
-        public string Description { get; set; }
+        public string Body { get; set; }
 
         /// <summary>
-        /// 只有檔案名
+        /// 路徑+檔案名稱
         /// </summary>
         public List<string> FileList { get; set; }
     }

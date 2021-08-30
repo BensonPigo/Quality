@@ -26,5 +26,20 @@ namespace BusinessLogicLayer.Service.Tests
                 Assert.Fail(ex.ToString());
             }
         }
+
+        [TestMethod()]
+        public void GetExcel()
+        {
+            try
+            {
+                IMockupCrockingService _MockupCrockingService = new MockupCrockingService();
+                MockupCrocking model = new MockupCrocking() { ReportNo = "PHCK180800007" };
+                MockupCrocking_ViewModel MockupCrocking_ViewModel = _MockupCrockingService.GetExcel(model);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.ToString());
+            }
+        }
     }
 }

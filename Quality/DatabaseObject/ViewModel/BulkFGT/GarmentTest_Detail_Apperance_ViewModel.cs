@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DatabaseObject.ViewModel.BulkFGT
+namespace DatabaseObject.ViewModel
 {
     public class GarmentTest_Detail_Apperance_ViewModel: GarmentTest_Detail_Apperance
     {

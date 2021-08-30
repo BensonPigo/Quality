@@ -10,7 +10,8 @@ using ProductionDataAccessLayer.Provider.MSSQL;
 using DatabaseObject.ViewModel;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ProductionDB;
-using DatabaseObject.ViewModel.BulkFGT;
+using DatabaseObject.ViewModel;
+using ADOHelper.Utility;
 
 namespace BusinessLogicLayer.Service.BulkFGT.Tests
 {
@@ -25,17 +26,17 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
                 IGarmentTestProvider _IGarmentTestProvider = new GarmentTestProvider(Common.ProductionDataAccessLayer);
                 IGarmentTestDetailProvider _IGarmentTestDetailProvider = new GarmentTestDetailProvider(Common.ProductionDataAccessLayer);
                 GarmentTest_Result result = new GarmentTest_Result();
-                var query = _IGarmentTestProvider.Get_GarmentTest(
-                    new GarmentTest_ViewModel
-                    {
-                        StyleID = "NF0A3SR4",
-                        BrandID = "N.FACE",
-                        Article = "N8E",
-                        SeasonID = "19FW",
-                        MDivisionid = "Vm2",
-                    });
+                //var query = _IGarmentTestProvider.Get_GarmentTest(
+                //    new GarmentTest_ViewModel
+                //    {
+                //        StyleID = "NF0A3SR4",
+                //        BrandID = "N.FACE",
+                //        Article = "N8E",
+                //        SeasonID = "19FW",
+                //        MDivisionid = "Vm2",
+                //    });
 
-                result.garmentTest = query.FirstOrDefault();
+                //result.garmentTest = query.FirstOrDefault();
 
                 // Detail
                 result.garmentTest_Details = _IGarmentTestDetailProvider.Get_GarmentTestDetail(
@@ -160,6 +161,98 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
                 Assert.Fail();
                 throw;
             }
+        }
+
+        [TestMethod()]
+        public void Save_GarmentTestTest()
+        {
+            GarmentTest_ViewModel result = new GarmentTest_ViewModel();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            try
+            {
+                GarmentTest_ViewModel garmentTest_ViewModel =
+                    new GarmentTest_ViewModel
+                    {
+                        ID = 16608,
+                        OrderID = "20032066WW",
+                        StyleID = "ARWPF20125",
+                        SeasonID = "20FW",
+                        BrandID = "REEBOK",
+                        Article = "FT0964",
+                        MDivisionid = "VM2",
+                    };
+
+                GarmentTest_Detail detail = new GarmentTest_Detail
+                {
+                    No = 1,
+                    Result = "P",
+                    inspdate = Convert.ToDateTime("2021-07-01"),
+                    Remark = "test",
+                    AddName = "EE04284",
+                    AddDate = Convert.ToDateTime("2021-07-08 12:46:35.343"),
+                    EditName = "EE04284",
+                    EditDate = Convert.ToDateTime("2021-07-08 00:00:00.000"),
+                    Status = "New",
+                    SizeCode = "36",
+                    MtlTypeID = "WOVEN",
+                };
+
+                GarmentTest_Detail detail2 = new GarmentTest_Detail
+                {
+                    No = 2,
+                    Result = "P",
+                    inspdate = Convert.ToDateTime("2021-07-01"),
+                    Remark = "test",
+                    AddName = "Scimis",
+                    AddDate = DateTime.Now,
+                    Status = "New",
+                    SizeCode = "32",
+                    MtlTypeID = "KNIT",
+                    OdourResult = "P"
+                };
+
+                GarmentTest_Detail detail3 = new GarmentTest_Detail
+                {
+                    No = 3,
+                    //Result = "P",
+                    //inspdate = Convert.ToDateTime("2021-07-01"),
+                    Remark = "test 3",
+                    AddName = "Scimis",
+                    AddDate = DateTime.Now,
+                    //Status = "New",
+                    //SizeCode = "32",
+                    MtlTypeID = "KNIT",
+                    //OdourResult = "P"
+                };
+
+
+
+                List<GarmentTest_Detail> details = new List<GarmentTest_Detail>();
+                //details.Add(detail);
+                //details.Add(detail2);
+                details.Add(detail3);
+
+                #region 判斷是否空值
+                string emptyMsg = string.Empty;
+                if (garmentTest_ViewModel.ID == 0) { emptyMsg += "Master OrderID cannot be empty." + Environment.NewLine; }
+
+                #endregion
+
+
+                IGarmentTestProvider _IGarmentTestProvider = new GarmentTestProvider(_ISQLDataTransaction);
+                int saveCnt = _IGarmentTestProvider.Save_GarmentTest(garmentTest_ViewModel, details);
+                _ISQLDataTransaction.Commit();
+
+                Assert.IsTrue(saveCnt > 0);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail();
+                throw;
+            }
+            finally { _ISQLDataTransaction.CloseConnection(); }
+
+
         }
     }
 }

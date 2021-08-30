@@ -1,5 +1,5 @@
 using DatabaseObject.ProductionDB;
-using DatabaseObject.ViewModel.BulkFGT;
+using DatabaseObject.ViewModel;
 using System;
 using System.Collections.Generic;
 

@@ -1,7 +1,8 @@
 ﻿using DatabaseObject.ProductionDB;
+using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel;
-using DatabaseObject.ViewModel.BulkFGT;
+using DatabaseObject.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace BusinessLogicLayer.Interface.BulkFGT
     {
         GarmentTest_ViewModel GetSelectItemData(GarmentTest_ViewModel garmentTest_ViewModel, SelectType type);
 
-        GarmentTest_Result GetGarmentTest(GarmentTest_ViewModel garmentTest_ViewModel);
+        GarmentTest_Result GetGarmentTest(GarmentTest_Request garmentTest_ViewModel);
 
         List<string> Get_SizeCode(string OrderID, string Article);
 
@@ -28,5 +29,9 @@ namespace BusinessLogicLayer.Interface.BulkFGT
         IList<GarmentTest_Detail_FGWT_ViewModel> Get_FGWT(Int64 ID, string No);
 
         IList<GarmentTest_Detail_FGPT_ViewModel> Get_FGPT(Int64 ID, string No);
+
+        GarmentTest_ViewModel Save_GarmentTest(GarmentTest_ViewModel garmentTest_ViewModel, List<GarmentTest_Detail> detail);
+
+        bool CheckOrderID(string OrderID, string BrandID, string SeasonID, string StyleID);
     }
 }

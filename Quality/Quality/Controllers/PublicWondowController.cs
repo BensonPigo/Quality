@@ -92,6 +92,9 @@ namespace Quality.Controllers
             var model = _PublicWindowService.Get_Article(OrderID, StyleUkey, StyleID, BrandID, SeasonID, string.Empty);
             ViewData["OrderID"] = OrderID;
             ViewData["StyleUkey"] = StyleUkey;
+            ViewData["StyleID"] = StyleID;
+            ViewData["BrandID"] = BrandID;
+            ViewData["SeasonID"] = SeasonID;
             return View(model);
         }
 
@@ -101,6 +104,9 @@ namespace Quality.Controllers
             var model = _PublicWindowService.Get_Article(OrderID, StyleUkey, StyleID, BrandID, SeasonID, Article);
             ViewData["OrderID"] = OrderID;
             ViewData["StyleUkey"] = StyleUkey;
+            ViewData["StyleID"] = StyleID;
+            ViewData["BrandID"] = BrandID;
+            ViewData["SeasonID"] = SeasonID;
             if (ReturnType.ToUpper() == "JSON")
             {
                 return Json(model);
@@ -108,22 +114,28 @@ namespace Quality.Controllers
             return View(model);
         }
 
-        public ActionResult SizeList(string OrderID, Int64 StyleUkey, string Article)
+        public ActionResult SizeList(string OrderID, Int64? StyleUkey, string BrandID, string SeasonID, string StyleID, string Article)
         {
-            var model = _PublicWindowService.Get_Size(OrderID, StyleUkey, Article, string.Empty);
+            var model = _PublicWindowService.Get_Size(OrderID, StyleUkey, BrandID, SeasonID, StyleID, Article, string.Empty);
             ViewData["OrderID"] = OrderID;
             ViewData["StyleUkey"] = StyleUkey;
             ViewData["Article"] = Article;
+            ViewData["BrandID"] = BrandID;
+            ViewData["SeasonID"] = SeasonID;
+            ViewData["StyleID"] = StyleID;
             return View(model);
         }
 
         [HttpPost]
-        public ActionResult SizeList(string OrderID, Int64 StyleUkey, string Article, string Size, string ReturnType)
+        public ActionResult SizeList(string OrderID, Int64? StyleUkey, string BrandID, string SeasonID, string StyleID, string Article, string Size, string ReturnType)
         {
-            var model = _PublicWindowService.Get_Size(OrderID, StyleUkey, Article, Size);
+            var model = _PublicWindowService.Get_Size(OrderID, StyleUkey, BrandID, SeasonID, StyleID, Article, Size);
             ViewData["OrderID"] = OrderID;
             ViewData["StyleUkey"] = StyleUkey;
             ViewData["Article"] = Article;
+            ViewData["BrandID"] = BrandID;
+            ViewData["SeasonID"] = SeasonID;
+            ViewData["StyleID"] = StyleID;
             if (ReturnType.ToUpper() == "JSON")
             {
                 return Json(model);

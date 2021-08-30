@@ -13,6 +13,8 @@ namespace BusinessLogicLayer.Service
 {
     public class SendMailService : ISendMailService
     {
+
+
         private ISystemProvider _SystemProvider;
         public SendMail_Result SendMail(SendMail_Request SendMail_Request)
         {
@@ -42,7 +44,8 @@ namespace BusinessLogicLayer.Service
                 }
 
                 message.Subject = SendMail_Request.Subject;
-                message.Body = SendMail_Request.Description;
+                message.IsBodyHtml = true;
+                message.Body = SendMail_Request.Body;
 
                 // mail Smtp
                 SmtpClient client = new SmtpClient(system[0].Mailserver);
@@ -52,11 +55,12 @@ namespace BusinessLogicLayer.Service
                 client.DeliveryMethod = SmtpDeliveryMethod.Network;
 
                 // 夾檔
-                foreach (var fileName in SendMail_Request.FileList)
+                foreach (var file in SendMail_Request.FileList)
                 {
-                    if (!fileName.Equals(string.Empty))
+                    if (!file.Equals(string.Empty))
                     {
-                        string filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", fileName);
+                        //string filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
+                        string filepath = file;
                         Attachment attachFile = new Attachment(filepath);
                         message.Attachments.Add(attachFile);
                     }
@@ -73,20 +77,8 @@ namespace BusinessLogicLayer.Service
                 sendMail_Result.resultMsg = ex.ToString();
             }
 
-            DeleteFileonServer(SendMail_Request.FileList);
             return sendMail_Result;
         }
 
-        private void DeleteFileonServer(List<string> Files)
-        {
-            foreach (string fileName in Files)
-            {
-                string filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", fileName);
-                if (File.Exists(filepath))
-                {
-                    File.Delete(filepath);
-                }
-            }
-        }
     }
 }

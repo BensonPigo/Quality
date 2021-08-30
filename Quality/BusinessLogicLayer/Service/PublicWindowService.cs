@@ -107,7 +107,7 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public List<Window_Article> Get_Size(string OrderID, Int64 StyleUkey, string Article, string Size)
+        public List<Window_Article> Get_Size(string OrderID, Int64? StyleUkey, string BrandID, string SeasonID, string StyleID, string Article, string Size)
         {
             List<Window_Article> result = new List<Window_Article>();
 
@@ -116,7 +116,7 @@ namespace BusinessLogicLayer.Service
                 _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
 
                 //取得登入資訊
-                result = _Provider.Get_Size(OrderID, StyleUkey, Article, Size).ToList();
+                result = _Provider.Get_Size(OrderID, StyleUkey, BrandID, SeasonID, StyleID, Article, Size).ToList();
 
             }
             catch (Exception ex)

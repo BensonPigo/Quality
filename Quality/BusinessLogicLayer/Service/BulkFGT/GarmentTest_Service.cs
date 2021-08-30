@@ -2,19 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel;
-using ManufacturingExecutionDataAccessLayer.Interface;
-using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
 using ADOHelper.Utility;
-using DatabaseObject.ViewModel.BulkFGT;
+using System.Data;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -27,8 +22,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
         private IGarmentTestDetailProvider _IGarmentTestDetailProvider;
         private IGarmentTestDetailShrinkageProvider _IGarmentTestDetailShrinkageProvider;
         private IGarmentDetailSpiralityProvider _IGarmentDetailSpiralityProvider;
-
-
 
         public enum SelectType
         {
@@ -71,13 +64,24 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public GarmentTest_Result GetGarmentTest(GarmentTest_ViewModel garmentTest_ViewModel)
+        public GarmentTest_Result GetGarmentTest(GarmentTest_Request garmentTest_ViewModel)
         {
             _IGarmentTestProvider = new GarmentTestProvider(Common.ProductionDataAccessLayer);
             _IGarmentTestDetailProvider = new GarmentTestDetailProvider(Common.ProductionDataAccessLayer);
             GarmentTest_Result result = new GarmentTest_Result();
             try
             {
+                // 抓取 garmentTest_ViewModel.Factory 撈取 M，並傳入Get_GarmentTest
+                IFactoryProvider factoryProvider = new FactoryProvider(Common.ProductionDataAccessLayer);
+                garmentTest_ViewModel.MDivisionid = factoryProvider.GetMDivisionID(garmentTest_ViewModel.Factory).FirstOrDefault().MDivisionID;
+
+                if (string.IsNullOrEmpty(garmentTest_ViewModel.MDivisionid))
+                {
+                    result.Result = false;
+                    result.ErrMsg = "Mdivision is empty.";
+                    return result;
+                }
+
                 var query = _IGarmentTestProvider.Get_GarmentTest(garmentTest_ViewModel);
                 if (!query.Any() || query.Count() == 0)
                 {
@@ -93,10 +97,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         ID = result.garmentTest.ID
                     }).ToList();
 
+                result.SizeCodes = Get_SizeCode(result.garmentTest.OrderID, result.garmentTest.Article);
+                result.Result = true;
+
             }
             catch (Exception ex)
             {
-                throw ex;
+                result.Result = false;
+                result.ErrMsg = ex.Message.ToString();
             }
 
             return result;
@@ -198,19 +206,77 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public GarmentTest_ViewModel Save_GarmentTest(GarmentTest_ViewModel garmentTest_ViewModel)
+        public GarmentTest_ViewModel Save_GarmentTest(GarmentTest_ViewModel garmentTest_ViewModel,List<GarmentTest_Detail> detail)
         {
             GarmentTest_ViewModel result = new GarmentTest_ViewModel();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             try
             {
                 _IGarmentTestProvider = new GarmentTestProvider(_ISQLDataTransaction);
-                
+                #region 判斷是否空值
+                string emptyMsg = string.Empty;
+                if (garmentTest_ViewModel.ID == 0) { emptyMsg += "Master ID cannot be 0." + Environment.NewLine; }
+                if (string.IsNullOrEmpty(garmentTest_ViewModel.StyleID)) { emptyMsg += "Master StyleID cannot be empty." + Environment.NewLine; }
+                if (string.IsNullOrEmpty(garmentTest_ViewModel.SeasonID)) { emptyMsg += "Master SeasonID cannot be empty." + Environment.NewLine; }
+                if (string.IsNullOrEmpty(garmentTest_ViewModel.BrandID)) { emptyMsg += "Master BrandID cannot be empty." + Environment.NewLine; }
+                if (string.IsNullOrEmpty(garmentTest_ViewModel.Article)) { emptyMsg += "Master Article cannot be empty." + Environment.NewLine; }
+
+                foreach (var item in detail)
+                {
+                    if (item.No == 0) { emptyMsg += "detail No cannot be 0." + Environment.NewLine; }
+                    if (string.IsNullOrEmpty(item.MtlTypeID)) { emptyMsg += "detail MtlTypeID cannot be empty." + Environment.NewLine; }
+                    if (string.IsNullOrEmpty(item.AddName) && string.IsNullOrEmpty(item.EditName)) { emptyMsg += "detail AddName and EditName cannot be empty." + Environment.NewLine; }
+                }
+             
+                #endregion
+                int saveCnt = _IGarmentTestProvider.Save_GarmentTest(garmentTest_ViewModel, detail);
+                _ISQLDataTransaction.Commit();
             }
-            catch (Exception)
+            catch (Exception ex)
+            {
+                _ISQLDataTransaction.RollBack();
+                result.SaveResult = false;
+                result.ErrMsg = ex.Message;
+            }
+            finally { _ISQLDataTransaction.CloseConnection(); }
+
+            return result;
+        }
+
+        public GarmentTest_Detail_Result Generate_FGWT(GarmentTest_Detail_Result viewModel)
+        {
+            GarmentTest_Detail_Result result = new GarmentTest_Detail_Result();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            try
+            {
+                _IGarmentTestDetailFGWTProvider = new GarmentTestDetailFGWTProvider(_ISQLDataTransaction);
+                #region 判斷空值
+                string emptyMsg = string.Empty;
+                if (string.IsNullOrEmpty(viewModel.Detail.MtlTypeID)) { emptyMsg += "MtlTypeID cannot be empty" + Environment.NewLine; }
+                //if (string.IsNullOrEmpty(garmentTest_ViewModel.StyleID)) { emptyMsg += "Master StyleID cannot be empty." + Environment.NewLine; }
+                #endregion
+            }
+            catch (Exception ex)
             {
 
                 throw;
+            }
+            finally { _ISQLDataTransaction.CloseConnection(); }
+
+            return result;
+        }
+
+        public bool CheckOrderID(string OrderID, string BrandID, string SeasonID, string StyleID)
+        {
+            IOrdersProvider orders = new OrdersProvider(Common.ProductionDataAccessLayer);
+            bool result = true;
+            try
+            {
+                result = orders.Check_Style_ExistsOrder(OrderID, BrandID, SeasonID, StyleID);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
 
             return result;

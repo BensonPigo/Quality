@@ -7,6 +7,9 @@ using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.ViewModel;
+using DatabaseObject.RequestModel;
+using System.Linq;
+using System.Data.SqlClient;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
@@ -58,13 +61,13 @@ and SeasonID = @SeasonID";
             return ExecuteList<GarmentTest>(CommandType.Text, sqlcmd, objParameter);
         }
 
-        public IList<GarmentTest_ViewModel> Get_GarmentTest(GarmentTest_ViewModel filter)
+        public IList<GarmentTest_ViewModel> Get_GarmentTest(GarmentTest_Request filter)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
-                { "@BrandID", DbType.String, filter.BrandID } ,
-                { "@StyleID", DbType.String, filter.StyleID } ,
-                { "@SeasonID", DbType.String, filter.SeasonID} ,
+                { "@BrandID", DbType.String, filter.Brand } ,
+                { "@StyleID", DbType.String, filter.Style } ,
+                { "@SeasonID", DbType.String, filter.Season} ,
                 { "@Article", DbType.String, filter.Article} ,
             };
             string sqlcmd = @"
@@ -131,6 +134,543 @@ and g.Article = @Article" + Environment.NewLine;
             }
 
             return ExecuteList<GarmentTest_ViewModel>(CommandType.Text, sqlcmd, objParameter);
+        }
+
+        public int Save_GarmentTest(GarmentTest_ViewModel master, List<GarmentTest_Detail> detail)
+        {
+            string sqlcmd = "";
+            SQLParameterCollection objParameterDetail = new SQLParameterCollection();
+            int cnt = 0;
+
+            foreach (var item in detail)
+            {
+                string sql_Shrinkage_Chk = $"select 1 from Production.dbo.GarmentTest_Detail_Shrinkage with(nolock) where id = '{master.ID}' and NO = '{item.No}'";
+                DataTable dtChk_Shrinkage = ExecuteDataTableByServiceConn(CommandType.Text, sql_Shrinkage_Chk, new SQLParameterCollection());
+
+                string sql_detail = $@"select 1 from GarmentTest_Detail with(nolock) where  id = '{master.ID}' and NO = '{item.No}'";
+                DataTable dtDetail = ExecuteDataTableByServiceConn(CommandType.Text, sql_detail, new SQLParameterCollection());
+
+                if (dtChk_Shrinkage!= null && dtChk_Shrinkage.Rows.Count == 0)
+                {
+                    #region insertShrinkage
+                    SQLParameterCollection objParameter1 = new SQLParameterCollection
+                    {
+                        { "@ID", DbType.String, master.ID} ,
+                        { "@BrandID", DbType.String, master.BrandID } ,
+                        { "@No", DbType.String, item.No} ,
+                    };
+
+                    string insertShrinkage = $@"
+select sl.Location
+into #Location1
+from GarmentTest gt with(nolock)
+inner join style s with(nolock) on s.id = gt.StyleID
+inner join Style_Location sl with(nolock) on sl.styleukey = s.ukey
+where gt.id = @ID and sl.Location !='B'
+group by sl.Location
+order by sl.Location desc
+
+CREATE TABLE #type1([type] [varchar](20),seq numeric(6,0))
+insert into #type1 values('Chest Width',1)
+insert into #type1 values('Sleeve Width',2)
+insert into #type1 values('Sleeve Length',3)
+insert into #type1 values('Back Length',4)
+insert into #type1 values('Hem Opening',5)
+---
+select distinct sl.Location
+into #Location2
+from GarmentTest gt with(nolock)
+inner join style s with(nolock) on s.id = gt.StyleID
+inner join Style_Location sl with(nolock) on sl.styleukey = s.ukey
+where gt.id = @ID and sl.Location ='B'
+
+CREATE TABLE #type2([type] [varchar](20),seq numeric(6,0))
+insert into #type2 values('Waistband (relax)',1)
+insert into #type2 values('Hip Width',2)
+insert into #type2 values('Thigh Width',3)
+insert into #type2 values('Side Seam',4)
+insert into #type2 values('Leg Opening',5)
+
+select sl.Location,s.BrandID
+into #Location_S
+from GarmentTest gt with(nolock)
+inner join style s with(nolock) on s.id = gt.StyleID
+inner join Style_Location sl with(nolock) on sl.styleukey = s.ukey
+where gt.id = @ID
+group by sl.Location,s.BrandID
+order by sl.Location desc
+
+declare @location_combo varchar(15) = 
+(select LocationList = Stuff((
+	select concat(',',Location)
+	from (
+			select 	distinct
+				Location
+			from #Location_S d
+		) s 
+			order by Location asc
+	for xml path ('')
+) , 1, 1, ''))
+
+if @location_combo = 'B,T' and @BrandID = 'ADIDAS'
+begin
+	INSERT INTO [dbo].[GarmentTest_Detail_Shrinkage]([ID],[No],[Location],[Type],[seq])
+	select  @ID,@NO, t2.Location, t1.Type, t1.Seq 
+	from GarmentTestShrinkage t1 
+	inner join  #Location_S t2 on t1.Location = t2.Location
+	where exists(
+	select 1 from #Location_S s	
+	where (
+			(s.BrandID = 'ADIDAS' and t1.BrandID = s.BrandID)
+			or
+			(s.BrandID !='ADIDAS' and t1.BrandID = '')
+		)
+	)
+	and t1.LocationGroup = 'TB'
+end
+else
+begin
+	INSERT INTO [dbo].[GarmentTest_Detail_Shrinkage]([ID],[No],[Location],[Type],[seq])
+	select  @ID,@NO, t2.Location, t1.Type, t1.Seq 
+	from GarmentTestShrinkage t1 
+	inner join  #Location_S t2 on t1.LocationGroup = t2.Location
+	where exists(
+	select 1 from #Location_S s	
+	where (
+			(s.BrandID = 'ADIDAS' and t1.BrandID = s.BrandID)
+			or
+			(s.BrandID !='ADIDAS' and t1.BrandID = '')
+		)
+	)
+end
+INSERT INTO [dbo].[GarmentTest_Detail_Twisting]([ID],[No],[Location])
+select @ID,@NO,* from #Location1
+INSERT INTO [dbo].[GarmentTest_Detail_Twisting]([ID],[No],[Location])
+select @ID,@NO,* from #Location2
+
+INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
+values (@ID,@NO,'Printing / Heat Transfer',1)
+INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
+values (@ID,@NO,'Label',2)
+INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
+values (@ID,@NO,'Zipper / Snap Button / Button / Tie Cord',3)
+INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
+values (@ID,@NO,'Discoloration (colour change )',4)
+INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
+values (@ID,@NO,'Colour Staining',5)
+INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
+values (@ID,@NO,'Pilling',6)
+INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
+values (@ID,@NO,'Shrinkage & Twisting',7)
+INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
+values (@ID,@NO,'Appearance of garment after wash',8)
+";
+                    ExecuteDataTableByServiceConn(CommandType.Text, insertShrinkage, objParameter1);
+                    #endregion
+                }
+
+                #region 建立 Garment_Detail_Spirality
+                // 代表是新增的資料
+                if (dtDetail.Rows.Count == 0)
+                {
+                    SQLParameterCollection objParameter_Loction = new SQLParameterCollection
+                    {
+                        { "@StyleID", DbType.String, master.StyleID} ,
+                        { "@BrandID", DbType.String, master.BrandID } ,
+                        { "@SeasonID", DbType.String, master.SeasonID} ,
+                    };
+
+                    string sql_Location = @"
+select sl.Location
+from Style s
+inner join Style_Location sl on sl.StyleUkey = s.Ukey
+where s.id = @StyleID AND s.BrandID = @BrandID AND s.SeasonID = @SeasonID
+";
+                    DataTable dt_Location = ExecuteDataTableByServiceConn(CommandType.Text, sql_Location, objParameter_Loction);
+
+                    string sqlcmd_Spirality = string.Empty;
+                    if (dt_Location.Select("Location = 'T'").Any())
+                    {
+                        sqlcmd_Spirality += $@"INSERT INTO[dbo].[Garment_Detail_Spirality]([ID],[No],[Location])VALUES('{master.ID}','{item.No}','T');";
+                    }
+
+                    if (dt_Location.Select("Location = 'B'").Any())
+                    {
+                        sqlcmd_Spirality += $@"INSERT INTO[dbo].[Garment_Detail_Spirality]([ID],[No],[Location])VALUES('{master.ID}','{item.No}','B');";
+                    }
+
+                    ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd_Spirality, objParameter_Loction);
+                }
+                #endregion
+
+                #region 寫入GarmentTest_Detail_FGPT
+                SQLParameterCollection objParameter_Loctions = new SQLParameterCollection
+                    {
+                        { "@StyleID", DbType.String, master.StyleID} ,
+                        { "@BrandID", DbType.String, master.BrandID } ,
+                        { "@SeasonID", DbType.String, master.SeasonID} ,
+                    };
+
+                string sql_locations = $@"
+SELECT locations = STUFF(
+	(
+        select DISTINCT ',' + sl.Location
+	    from Style s
+	    INNER JOIN Style_Location sl ON s.Ukey = sl.StyleUkey 
+	    where s.id = @StyleID AND s.BrandID = @BrandID AND s.SeasonID = @SeasonID
+	    FOR XML PATH('')
+	) 
+,1,1,'')";
+                DataTable dtLocations = ExecuteDataTableByServiceConn(CommandType.Text, sql_locations, objParameter_Loctions);
+                List<string> locations = dtLocations.Rows[0]["locations"].ToString().Split(',').ToList();
+                bool containsT = locations.Contains("T");
+                bool containsB = locations.Contains("B");
+
+                StringBuilder insertCmd = new StringBuilder();
+                List<SqlParameter> parameters = new List<SqlParameter>();
+                List<GarmentTest_Detail_FGPT> fGPTs = new List<GarmentTest_Detail_FGPT>();
+
+                string sql_RugbyFootBall = $@"select 1 from Style s where s.id = @StyleID AND s.BrandID = @BrandID AND s.SeasonID = @SeasonID AND s.ProgramID like '%FootBall%'";
+                DataTable dtRugbyFootBall = ExecuteDataTableByServiceConn(CommandType.Text, sql_RugbyFootBall, objParameter_Loctions);
+                bool isRugbyFootBall = dtRugbyFootBall.Rows.Count > 0;
+
+                // 若只有B則寫入Bottom的項目+ALL的項目，若只有T則寫入TOP的項目+ALL的項目，若有B和T則寫入Top+ Bottom的項目+ALL的項目
+                if (containsT && containsB)
+                {
+                    fGPTs = GetDefaultFGPT(false, false, true, isRugbyFootBall, "S");
+                }
+                else if (containsT)
+                {
+                    fGPTs = GetDefaultFGPT(containsT, false, false, isRugbyFootBall, "T");
+                }
+                else
+                {
+                    fGPTs = GetDefaultFGPT(false, containsB, false, isRugbyFootBall, "B");
+                }
+
+                if (item.MtlTypeID.ToString().ToUpper() == "KNIT")
+                {
+                    fGPTs = fGPTs.Where(w => w.TestName == "PHX-AP0450" || w.TestName == "PHX-AP0451").ToList();
+                }
+
+                int idx = 0;
+
+                SQLParameterCollection objParameterFGPT = new SQLParameterCollection();
+
+                foreach (var fGPT in fGPTs)
+                {
+                    string location = string.Empty;
+
+                    switch (fGPT.Location)
+                    {
+                        case "Top":
+                            location = "T";
+                            break;
+                        case "Bottom":
+                            location = "B";
+                            break;
+                        case "Full": // Top+Bottom = Full
+                            location = "S";
+                            break;
+                        default:
+                            location = fGPT.Location;
+                            break;
+                    }
+
+                    insertCmd.Append($@"
+
+INSERT INTO GarmentTest_Detail_FGPT
+           (ID,No,Location,Type,TestDetail,TestUnit,Criteria,TestName,Seq,TypeSelection_VersionID,TypeSelection_Seq)
+     VALUES
+           ( {master.ID}
+           , {item.No}
+           , @Location{idx}
+           , @Type{idx}
+           , @TestDetail{idx}
+           , @TestUnit{idx}
+           , @Criteria{idx}  
+           , @TestName{idx}
+           , '{fGPT.Seq}'
+           , '{fGPT.TypeSelection_VersionID}'
+           , '{fGPT.TypeSelection_Seq}')
+");
+
+                    objParameterFGPT.Add(new SqlParameter($"@Location{idx}", location));
+                    objParameterFGPT.Add(new SqlParameter($"@Type{idx}", fGPT.Type));
+                    objParameterFGPT.Add(new SqlParameter($"@TestDetail{idx}", fGPT.TestDetail));
+                    objParameterFGPT.Add(new SqlParameter($"@TestUnit{idx}", fGPT.TestUnit));
+                    objParameterFGPT.Add(new SqlParameter($"@Criteria{idx}", fGPT.Criteria));
+                    objParameterFGPT.Add(new SqlParameter($"@TestName{idx}", fGPT.TestName));
+                    idx++;
+                }
+
+                // 找不到才Insert
+                string sql_Chk_FGPT = $"SELECT 1 FROM GarmentTest_Detail_FGPT WHERE ID ='{master.ID}' AND NO='{item.No}'";
+                DataTable dtChk_FGPT = ExecuteDataTableByServiceConn(CommandType.Text, sql_Chk_FGPT, new SQLParameterCollection());
+                if (dtChk_FGPT.Rows.Count == 0)
+                {
+                    ExecuteDataTableByServiceConn(CommandType.Text, insertCmd.ToString(), objParameterFGPT);
+                }
+
+                #endregion
+
+                #region Save Detail 
+                // 代表已有資料, update
+                objParameterDetail.Add($"@ID", master.ID);
+                objParameterDetail.Add($"@No{cnt}", item.No == null ? 0 : item.No);
+
+                objParameterDetail.Add($"@SizeCode{cnt}", string.IsNullOrEmpty(item.SizeCode) ? string.Empty : item.SizeCode);
+                objParameterDetail.Add($"@MtlTypeID{cnt}", string.IsNullOrEmpty(item.MtlTypeID) ? string.Empty : item.MtlTypeID);
+                objParameterDetail.Add($"@Result{cnt}", string.IsNullOrEmpty(item.Result) ? string.Empty : item.Result);
+                objParameterDetail.Add($"@NonSeamBreakageTest{cnt}", item.NonSeamBreakageTest == null ? false : item.NonSeamBreakageTest);
+                objParameterDetail.Add($"@SeamBreakageResult{cnt}", string.IsNullOrEmpty(item.SeamBreakageResult) ? string.Empty : item.SeamBreakageResult);
+                objParameterDetail.Add($"@OdourResult{cnt}", string.IsNullOrEmpty(item.OdourResult) ? string.Empty : item.OdourResult);
+                objParameterDetail.Add($"@WashResult{cnt}", string.IsNullOrEmpty(item.WashResult) ? string.Empty : item.WashResult);
+                objParameterDetail.Add($"@inspector{cnt}", string.IsNullOrEmpty(item.inspector) ? string.Empty : item.inspector);                
+                objParameterDetail.Add($"@Remark{cnt}", string.IsNullOrEmpty(item.Remark) ? string.Empty : item.Remark);
+                objParameterDetail.Add($"@EditName{cnt}", string.IsNullOrEmpty(item.EditName) ? string.Empty : item.EditName);
+                objParameterDetail.Add($"@AddName{cnt}", string.IsNullOrEmpty(item.AddName) ? string.Empty : item.AddName);
+
+                //objParameterDetail.Add($"@inspdate{cnt}", item.inspdate == null ? DBNull.Value : ((DateTime)item.inspdate).ToString("d"));
+
+                string inspDate = (item.inspdate == null) ? "Null" : "'" + ((DateTime)item.inspdate).ToString("d") + "'";
+
+
+                if (dtDetail.Rows.Count > 0)
+                {
+                    sqlcmd += $@"
+update GarmentTest_Detail
+set SizeCode = @SizeCode{cnt}
+,MtlTypeID = @MtlTypeID{cnt}
+,Result = @Result{cnt}
+,NonSeamBreakageTest = @NonSeamBreakageTest{cnt}
+,SeamBreakageResult = @SeamBreakageResult{cnt}
+,OdourResult = @OdourResult{cnt}
+,WashResult = @WashResult{cnt}
+,inspector = @inspector{cnt},inspdate = @inspdate{cnt}
+,Remark = @Remark{cnt}
+,EditName = @EditName{cnt},EditDate = GetDate()
+where ID = @ID
+and No = @No{cnt}
+" + Environment.NewLine;
+                }
+                else
+                {
+                    sqlcmd += $@"
+insert into GarmentTest_Detail(
+    ID,No,SizeCode,MtlTypeID,Result,NonSeamBreakageTest,SeamBreakageResult,OdourResult
+    ,WashResult
+    ,inspector
+    ,inspdate
+    ,Remark
+    ,AddName,AddDate
+)
+values(
+    @ID,@No{cnt},@SizeCode{cnt},@MtlTypeID{cnt},@Result{cnt},@NonSeamBreakageTest{cnt},@SeamBreakageResult{cnt},@OdourResult{cnt}
+    ,@WashResult{cnt}
+    ,@inspector{cnt}
+    ,{inspDate}
+    ,@Remark{cnt}
+    ,@AddName{cnt}, GetDate()
+)
+";
+                }
+
+                #endregion
+
+                cnt++;
+            }
+
+            return ExecuteNonQuery(CommandType.Text, sqlcmd, objParameterDetail);
+        }
+
+        /// <summary>
+        /// 取得預設FGPT
+        /// </summary>
+        /// <param name="isTop">isTop</param>
+        /// <param name="isBottom">isBottom</param>
+        /// <param name="isTop_Bottom">isTop_Bottom</param>
+        /// <param name="isRugbyFootBall">isRugbyFootBall</param>
+        /// <param name="location">location</param>
+        /// <returns>List<FGPT></returns>
+        public static List<GarmentTest_Detail_FGPT> GetDefaultFGPT(bool isTop, bool isBottom, bool isTop_Bottom, bool isRugbyFootBall, string location)
+        {
+            List<GarmentTest_Detail_FGPT> defaultFGPTList = new List<GarmentTest_Detail_FGPT>();
+
+            List<GarmentTest_Detail_FGPT> upperOnly = new List<GarmentTest_Detail_FGPT>()
+            {
+                new GarmentTest_Detail_FGPT() { Seq = 3, Location = "Top", TestDetail = "mm", TestUnit = "mm", TestName = "PHX-AP0413", Type = "seam slippage: Garment - weft - upper bodywear 150N", Criteria = 4 },
+                new GarmentTest_Detail_FGPT() { Seq = 6, Location = "Top", TestDetail = "mm", TestUnit = "mm", TestName = "PHX-AP0413", Type = "seam slippage: Garment - warp - upper bodywear 150N", Criteria = 4 },
+                new GarmentTest_Detail_FGPT() { Seq = 9, Location = "Top", TestDetail = "pass/fail", TestUnit = "N", TestName = "PHX-AP0413", Type = "No fabric breakage: Garment - weft - upper bodywear 150N", Criteria = 150 },
+                new GarmentTest_Detail_FGPT() { Seq = 12, Location = "Top", TestDetail = "pass/fail", TestUnit = "N", TestName = "PHX-AP0413", Type = "No fabric breakage: Garment - warp - upper bodywear 150N", Criteria = 150 },
+                new GarmentTest_Detail_FGPT() { Seq = 15, Location = "Top", TestDetail = "pass/fail", TestUnit = "N", TestName = "PHX-AP0413", Type = "No seam breakage: Garment - weft - upper bodywear 150N", Criteria = 150 },
+                new GarmentTest_Detail_FGPT() { Seq = 18, Location = "Top", TestDetail = "pass/fail", TestUnit = "N", TestName = "PHX-AP0413", Type = "No seam breakage: Garment - warp - upper bodywear 150N", Criteria = 150 },
+                new GarmentTest_Detail_FGPT() { Seq = 1, Location = "Top", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - width direction - Upper body wear/ full body wear (Side seam - Method B  ≥180N )", Criteria = 180 },
+                new GarmentTest_Detail_FGPT() { Seq = 2, Location = "Top", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - width direction - Upper body wear/ full body wear (Armhole seam - Method B ≥180N)", Criteria = 180 },
+                new GarmentTest_Detail_FGPT() { Seq = 3, Location = "Top", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - width direction - Upper body wear/ full body wear (Under arm seam or sleeve seam - Method B ≥180N )", Criteria = 180 },
+                new GarmentTest_Detail_FGPT() { Seq = 4, Location = "Top", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - width direction - Upper body wear/ full body wear (Shoulder seam - Method B ≥180N )", Criteria = 180 },
+                new GarmentTest_Detail_FGPT() { Seq = 5, Location = "Top", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - width direction - Upper body wear/ full body wear (Waistband seam  - Method B ≥180N )", Criteria = 180 },
+                new GarmentTest_Detail_FGPT() { Seq = 6, Location = "Top", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - width direction - Upper body wear/ full body wear (Hood seam - Method B ≥180N )", Criteria = 180 },
+                new GarmentTest_Detail_FGPT() { Seq = 7, Location = "Top", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - width direction - Upper body wear/ full body wear ({0}- Method B ≥180N ) Other Joining seam  selection", Criteria = 180, TypeSelection_VersionID = 1, TypeSelection_Seq = 1 },
+                new GarmentTest_Detail_FGPT() { Seq = 8, Location = "Top", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - width direction - Upper body wear/ full body wear ({0}- Method B ≥180N ) Other Joining seam  selection", Criteria = 180, TypeSelection_VersionID = 1, TypeSelection_Seq = 1 },
+                new GarmentTest_Detail_FGPT() { Seq = 9, Location = "Top", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - width direction - Upperr body wear/ full body wear ({0}- Method B ≥180N ) Other Joining seam  selection", Criteria = 180, TypeSelection_VersionID = 1, TypeSelection_Seq = 1 },
+                new GarmentTest_Detail_FGPT() { Seq = 19, Location = "Top", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - Upper  body wear/ full body wear (Side seam - Method A ≥70N)", Criteria = 70 },
+                new GarmentTest_Detail_FGPT() { Seq = 20, Location = "Top", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - Upper body wear/ full body wear (Armhole seam - Method A ≥70N )", Criteria = 70 },
+                new GarmentTest_Detail_FGPT() { Seq = 21, Location = "Top", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - Upperr body wear/ full body wear (Under arm seam or sleeve seam - Method A ≥70N )", Criteria = 70 },
+                new GarmentTest_Detail_FGPT() { Seq = 22, Location = "Top", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - Upper body wear/ full body wear (Shoulder seam - Method A ≥70N)", Criteria = 70 },
+                new GarmentTest_Detail_FGPT() { Seq = 23, Location = "Top", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - Upper body wear/ full body wear (Neck seam - Method A ≥70N )", Criteria = 70 },
+                new GarmentTest_Detail_FGPT() { Seq = 24, Location = "Top", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - Upper body wear/ full body wear (Waistband seam - Method A ≥70N )", Criteria = 70 },
+                new GarmentTest_Detail_FGPT() { Seq = 25, Location = "Top", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - Upper body wear/ full body wear (Hood seam - Method A ≥70N )", Criteria = 70 },
+                new GarmentTest_Detail_FGPT() { Seq = 26, Location = "Top", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - Upper body wear/ full body wear ({0}- Method A ≥70N ) Other Joining seam  selection", Criteria = 70, TypeSelection_VersionID = 1, TypeSelection_Seq = 1 },
+                new GarmentTest_Detail_FGPT() { Seq = 27, Location = "Top", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - Upper body wear/ full body wear ({0}- Method A ≥70N ) Other Joining seam  selection", Criteria = 70, TypeSelection_VersionID = 1, TypeSelection_Seq = 1 },
+                new GarmentTest_Detail_FGPT() { Seq = 28, Location = "Top", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - Upper body wear/ full body wear ({0}- Method A ≥70N ) Other Joining seam  selection", Criteria = 70, TypeSelection_VersionID = 1, TypeSelection_Seq = 1 },
+                new GarmentTest_Detail_FGPT() { Seq = 29, Location = "Top", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - width direction - Upper body wear/ full body wear (Side seam - Method B ≥140N )", Criteria = 140 },
+                new GarmentTest_Detail_FGPT() { Seq = 30, Location = "Top", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - width direction - Upper body wear/ full body wear (Armhole seam - Method B ≥140N )", Criteria = 140 },
+                new GarmentTest_Detail_FGPT() { Seq = 31, Location = "Top", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - width direction - Upper body wear/ full body wear (Under arm seam or sleeve seam - Method B ≥140N )", Criteria = 140 },
+                new GarmentTest_Detail_FGPT() { Seq = 32, Location = "Top", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - width direction - Upper body wear/ full body wear (Shoulder seam - Method B ≥140N )", Criteria = 140 },
+                new GarmentTest_Detail_FGPT() { Seq = 33, Location = "Top", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - width direction - Upper body wear/ full body wear (Waistband seam  - Method B ≥140N )", Criteria = 140 },
+                new GarmentTest_Detail_FGPT() { Seq = 34, Location = "Top", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - width direction - Upper body wear/ full body wear (Hood seam - Method B ≥140N )", Criteria = 140 },
+                new GarmentTest_Detail_FGPT() { Seq = 35, Location = "Top", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - width direction - Upper body wear/ full body wear ({0}- Method B ≥140N ) Other Joining seam  selection", Criteria = 140, TypeSelection_VersionID = 1, TypeSelection_Seq = 1 },
+                new GarmentTest_Detail_FGPT() { Seq = 36, Location = "Top", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - width direction - Upper body wear/ full body wear ({0}- Method B ≥140N ) Other Joining seam  selection", Criteria = 140, TypeSelection_VersionID = 1, TypeSelection_Seq = 1 },
+                new GarmentTest_Detail_FGPT() { Seq = 37, Location = "Top", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - width direction - Upperr body wear/ full body wear ({0}- Method B ≥140N ) Other Joining seam  selection", Criteria = 140, TypeSelection_VersionID = 1, TypeSelection_Seq = 1 },
+            };
+
+            List<GarmentTest_Detail_FGPT> lowerOnly = new List<GarmentTest_Detail_FGPT>()
+            {
+                new GarmentTest_Detail_FGPT() { Seq = 1, Location = "Bottom", TestDetail = "mm", TestUnit = "mm", TestName = "PHX-AP0413", Type = "seam slippage: Garment - weft - lower body wear/ full body wear 150N", Criteria = 4 },
+                new GarmentTest_Detail_FGPT() { Seq = 4, Location = "Bottom", TestDetail = "mm", TestUnit = "mm", TestName = "PHX-AP0413", Type = "seam slippage: Garment - warp - lower body wear/ full body wear 150N", Criteria = 4 },
+                new GarmentTest_Detail_FGPT() { Seq = 7, Location = "Bottom", TestDetail = "pass/fail", TestUnit = "N", TestName = "PHX-AP0413", Type = "No fabric breakage: Garment - weft - lower body wear/ full body wear 150N", Criteria = 150 },
+                new GarmentTest_Detail_FGPT() { Seq = 10, Location = "Bottom", TestDetail = "pass/fail", TestUnit = "N", TestName = "PHX-AP0413", Type = "No fabric breakage: Garment - warp - lower body wear/ full body wear 150N", Criteria = 150 },
+                new GarmentTest_Detail_FGPT() { Seq = 13, Location = "Bottom", TestDetail = "pass/fail", TestUnit = "N", TestName = "PHX-AP0413", Type = "No seam breakage: Garment - weft - lower body wear/ full body wear 150N", Criteria = 150 },
+                new GarmentTest_Detail_FGPT() { Seq = 16, Location = "Bottom", TestDetail = "pass/fail", TestUnit = "N", TestName = "PHX-AP0413", Type = "No seam breakage: Garment - warp - lower body wear/ full body wear 150N", Criteria = 150 },
+                new GarmentTest_Detail_FGPT() { Seq = 10, Location = "Bottom", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - length direction - lower body wear/ full body wear (Back rise- Method B ≥180N )", Criteria = 180 },
+                new GarmentTest_Detail_FGPT() { Seq = 11, Location = "Bottom", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - length direction - lower body wear/ full body wear (Crotch- Method B ≥180N)", Criteria = 180 },
+                new GarmentTest_Detail_FGPT() { Seq = 12, Location = "Bottom", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - width direction - lower body wear/ full body wear (Front rise- Method B ≥180N )", Criteria = 180 },
+                new GarmentTest_Detail_FGPT() { Seq = 13, Location = "Bottom", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - width direction - lower body wear/ full body wear (Inseam- Method B ≥180N )", Criteria = 180 },
+                new GarmentTest_Detail_FGPT() { Seq = 14, Location = "Bottom", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - width direction - lower body wear/ full body wear (Sideseam- Method B ≥180N )", Criteria = 180 },
+                new GarmentTest_Detail_FGPT() { Seq = 15, Location = "Bottom", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - width direction - lower body wear/ full body wear (Waistband- Method B ≥180N )", Criteria = 180 },
+                new GarmentTest_Detail_FGPT() { Seq = 16, Location = "Bottom", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - width direction - lower body wear/ full body wear ({0}- Method B ≥180N ) Other Joining seam  selection", Criteria = 180, TypeSelection_VersionID = 2, TypeSelection_Seq = 1 },
+                new GarmentTest_Detail_FGPT() { Seq = 17, Location = "Bottom", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - width direction - lower body wear/ full body wear ({0}- Method B ≥180N ) Other Joining seam  selection", Criteria = 180, TypeSelection_VersionID = 2, TypeSelection_Seq = 1 },
+                new GarmentTest_Detail_FGPT() { Seq = 18, Location = "Bottom", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - width direction - lower body wear/ full body wear ({0}- Method B ≥180N ) Other Joining seam  selection", Criteria = 180, TypeSelection_VersionID = 2, TypeSelection_Seq = 1 },
+                new GarmentTest_Detail_FGPT() { Seq = 38, Location = "Bottom", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - lower body wear/ full body wear (Back rise- Method A ≥70N  )", Criteria = 70 },
+                new GarmentTest_Detail_FGPT() { Seq = 39, Location = "Bottom", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - lower body wear/ full body wear (Front rise- Method A ≥70N  )", Criteria = 70 },
+                new GarmentTest_Detail_FGPT() { Seq = 40, Location = "Bottom", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - lower body wear/ full body wear (Inseam- Method A ≥70N  )", Criteria = 70 },
+                new GarmentTest_Detail_FGPT() { Seq = 41, Location = "Bottom", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - lower body wear/ full body wear (Waistband- Method A ≥70N  )", Criteria = 70 },
+                new GarmentTest_Detail_FGPT() { Seq = 42, Location = "Bottom", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - lower body wear/ full body wear (Sideseam- Method A ≥70N  )", Criteria = 70 },
+                new GarmentTest_Detail_FGPT() { Seq = 43, Location = "Bottom", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - lower body wear/ full body wear ({0}- Method A  ≥70N ) Other Joining seam  selection", Criteria = 70, TypeSelection_VersionID = 2, TypeSelection_Seq = 1 },
+                new GarmentTest_Detail_FGPT() { Seq = 44, Location = "Bottom", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - lower body wear/ full body wear ({0}- Method A ≥70N ) Other Joining seam  selection", Criteria = 70, TypeSelection_VersionID = 2, TypeSelection_Seq = 1 },
+                new GarmentTest_Detail_FGPT() { Seq = 45, Location = "Bottom", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - lower body wear/ full body wear ({0}- Method A  ≥70N  ) Other Joining seam  selection", Criteria = 70, TypeSelection_VersionID = 2, TypeSelection_Seq = 1 },
+                new GarmentTest_Detail_FGPT() { Seq = 46, Location = "Bottom", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - width direction - lower body wear/ full body wear (Front rise- Method B ≥140N )", Criteria = 140 },
+                new GarmentTest_Detail_FGPT() { Seq = 47, Location = "Bottom", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - lower body wear/ full body wear (Back rise- Method B ≥140N )", Criteria = 140 },
+                new GarmentTest_Detail_FGPT() { Seq = 48, Location = "Bottom", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - lower body wear/ full body wear (Crotch- Method B ≥140N )", Criteria = 140 },
+                new GarmentTest_Detail_FGPT() { Seq = 49, Location = "Bottom", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - width direction - lower body wear/ full body wear (Inseam- Method B ≥140N )", Criteria = 140 },
+                new GarmentTest_Detail_FGPT() { Seq = 50, Location = "Bottom", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - width direction - lower body wear/ full body wear (Sideseam- Method B ≥140N )", Criteria = 140 },
+                new GarmentTest_Detail_FGPT() { Seq = 51, Location = "Bottom", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - width direction - lower body wear/ full body wear (Waistband- Method B ≥140N )", Criteria = 140 },
+                new GarmentTest_Detail_FGPT() { Seq = 52, Location = "Bottom", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - width direction - lower body wear/ full body wear ({0}- Method B ≥140N ) Other Joining seam  selection", Criteria = 140, TypeSelection_VersionID = 2, TypeSelection_Seq = 1 },
+                new GarmentTest_Detail_FGPT() { Seq = 53, Location = "Bottom", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - width direction - lower body wear/ full body wear ({0}- Method B ≥140N ) Other Joining seam  selection", Criteria = 140, TypeSelection_VersionID = 2, TypeSelection_Seq = 1 },
+                new GarmentTest_Detail_FGPT() { Seq = 54, Location = "Bottom", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - width direction - lower body wear/ full body wear ({0}- Method B ≥140N ) Other Joining seam  selection", Criteria = 140, TypeSelection_VersionID = 2, TypeSelection_Seq = 1 },
+            };
+
+            List<GarmentTest_Detail_FGPT> fullBody = new List<GarmentTest_Detail_FGPT>()
+            {
+                new GarmentTest_Detail_FGPT() { Seq = 1, Location = "Full", TestDetail = "mm", TestUnit = "mm", TestName = "PHX-AP0413", Type = "seam slippage: Garment - weft - lower body wear/ full body wear 150N", Criteria = 4 },
+                new GarmentTest_Detail_FGPT() { Seq = 4, Location = "Full", TestDetail = "mm", TestUnit = "mm", TestName = "PHX-AP0413", Type = "seam slippage: Garment - warp - lower body wear/ full body wear 150N", Criteria = 4 },
+                new GarmentTest_Detail_FGPT() { Seq = 7, Location = "Full", TestDetail = "pass/fail", TestUnit = "N", TestName = "PHX-AP0413", Type = "No fabric breakage: Garment - weft - lower body wear/ full body wear 150N", Criteria = 150 },
+                new GarmentTest_Detail_FGPT() { Seq = 10, Location = "Full", TestDetail = "pass/fail", TestUnit = "N", TestName = "PHX-AP0413", Type = "No fabric breakage: Garment - warp - lower body wear/ full body wear 150N", Criteria = 150 },
+                new GarmentTest_Detail_FGPT() { Seq = 13, Location = "Full", TestDetail = "pass/fail", TestUnit = "N", TestName = "PHX-AP0413", Type = "No seam breakage: Garment - weft - lower body wear/ full body wear 150N", Criteria = 150 },
+                new GarmentTest_Detail_FGPT() { Seq = 16, Location = "Full", TestDetail = "pass/fail", TestUnit = "N", TestName = "PHX-AP0413", Type = "No seam breakage: Garment - warp - lower body wear/ full body wear 150N", Criteria = 150 },
+                new GarmentTest_Detail_FGPT() { Seq = 1, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - width direction - Upper body wear/ full body wear (Side seam - Method B  ≥180N )", Criteria = 180 },
+                new GarmentTest_Detail_FGPT() { Seq = 2, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - width direction - Upper body wear/ full body wear (Armhole seam - Method B ≥180N)", Criteria = 180 },
+                new GarmentTest_Detail_FGPT() { Seq = 3, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - width direction - Upper body wear/ full body wear (Under arm seam or sleeve seam - Method B ≥180N )", Criteria = 180 },
+                new GarmentTest_Detail_FGPT() { Seq = 4, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - width direction - Upper body wear/ full body wear (Shoulder seam - Method B ≥180N )", Criteria = 180 },
+                new GarmentTest_Detail_FGPT() { Seq = 5, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - width direction - Upper body wear/ full body wear (Waistband seam  - Method B ≥180N )", Criteria = 180 },
+                new GarmentTest_Detail_FGPT() { Seq = 6, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - width direction - Upper body wear/ full body wear (Hood seam - Method B ≥180N )", Criteria = 180 },
+                new GarmentTest_Detail_FGPT() { Seq = 7, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - width direction - Upper body wear/ full body wear ({0}- Method B ≥180N ) Other Joining seam  selection", Criteria = 180, TypeSelection_VersionID = 1, TypeSelection_Seq = 1 },
+                new GarmentTest_Detail_FGPT() { Seq = 8, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - width direction - Upper body wear/ full body wear ({0}- Method B ≥180N ) Other Joining seam  selection", Criteria = 180, TypeSelection_VersionID = 1, TypeSelection_Seq = 1 },
+                new GarmentTest_Detail_FGPT() { Seq = 9, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - width direction - Upperr body wear/ full body wear ({0}- Method B ≥180N ) Other Joining seam  selection", Criteria = 180, TypeSelection_VersionID = 1, TypeSelection_Seq = 1 },
+                new GarmentTest_Detail_FGPT() { Seq = 10, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - length direction - lower body wear/ full body wear (Back rise- Method B ≥180N )", Criteria = 180 },
+                new GarmentTest_Detail_FGPT() { Seq = 11, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - length direction - lower body wear/ full body wear (Crotch- Method B ≥180N)", Criteria = 180 },
+                new GarmentTest_Detail_FGPT() { Seq = 12, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - width direction - lower body wear/ full body wear (Front rise- Method B ≥180N )", Criteria = 180 },
+                new GarmentTest_Detail_FGPT() { Seq = 13, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - width direction - lower body wear/ full body wear (Inseam- Method B ≥180N )", Criteria = 180 },
+                new GarmentTest_Detail_FGPT() { Seq = 14, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - width direction - lower body wear/ full body wear (Sideseam- Method B ≥180N )", Criteria = 180 },
+                new GarmentTest_Detail_FGPT() { Seq = 15, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - width direction - lower body wear/ full body wear (Waistband- Method B ≥180N )", Criteria = 180 },
+                new GarmentTest_Detail_FGPT() { Seq = 16, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - width direction - lower body wear/ full body wear ({0}- Method B ≥180N ) Other Joining seam  selection", Criteria = 180, TypeSelection_VersionID = 2, TypeSelection_Seq = 1 },
+                new GarmentTest_Detail_FGPT() { Seq = 17, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - width direction - lower body wear/ full body wear ({0}- Method B ≥180N ) Other Joining seam  selection", Criteria = 180, TypeSelection_VersionID = 2, TypeSelection_Seq = 1 },
+                new GarmentTest_Detail_FGPT() { Seq = 18, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage after wash (only for welded/bonded seams): Garment - width direction - lower body wear/ full body wear ({0}- Method B ≥180N ) Other Joining seam  selection", Criteria = 180, TypeSelection_VersionID = 2, TypeSelection_Seq = 1 },
+                new GarmentTest_Detail_FGPT() { Seq = 19, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - Upper  body wear/ full body wear (Side seam - Method A ≥70N)", Criteria = 70 },
+                new GarmentTest_Detail_FGPT() { Seq = 20, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - Upper body wear/ full body wear (Armhole seam - Method A ≥70N )", Criteria = 70 },
+                new GarmentTest_Detail_FGPT() { Seq = 21, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - Upperr body wear/ full body wear (Under arm seam or sleeve seam - Method A ≥70N )", Criteria = 70 },
+                new GarmentTest_Detail_FGPT() { Seq = 22, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - Upper body wear/ full body wear (Shoulder seam - Method A ≥70N)", Criteria = 70 },
+                new GarmentTest_Detail_FGPT() { Seq = 23, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - Upper body wear/ full body wear (Neck seam - Method A ≥70N )", Criteria = 70 },
+                new GarmentTest_Detail_FGPT() { Seq = 24, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - Upper body wear/ full body wear (Waistband seam - Method A ≥70N )", Criteria = 70 },
+                new GarmentTest_Detail_FGPT() { Seq = 25, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - Upper body wear/ full body wear (Hood seam - Method A ≥70N )", Criteria = 70 },
+                new GarmentTest_Detail_FGPT() { Seq = 26, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - Upper body wear/ full body wear ({0}- Method A ≥70N ) Other Joining seam  selection", Criteria = 70, TypeSelection_VersionID = 1, TypeSelection_Seq = 1 },
+                new GarmentTest_Detail_FGPT() { Seq = 27, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - Upper body wear/ full body wear ({0}- Method A ≥70N ) Other Joining seam  selection", Criteria = 70, TypeSelection_VersionID = 1, TypeSelection_Seq = 1 },
+                new GarmentTest_Detail_FGPT() { Seq = 28, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - Upper body wear/ full body wear ({0}- Method A ≥70N ) Other Joining seam  selection", Criteria = 70, TypeSelection_VersionID = 1, TypeSelection_Seq = 1 },
+                new GarmentTest_Detail_FGPT() { Seq = 29, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - width direction - Upper body wear/ full body wear (Side seam - Method B ≥140N )", Criteria = 140 },
+                new GarmentTest_Detail_FGPT() { Seq = 30, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - width direction - Upper body wear/ full body wear (Armhole seam - Method B ≥140N )", Criteria = 140 },
+                new GarmentTest_Detail_FGPT() { Seq = 31, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - width direction - Upper body wear/ full body wear (Under arm seam or sleeve seam - Method B ≥140N )", Criteria = 140 },
+                new GarmentTest_Detail_FGPT() { Seq = 32, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - width direction - Upper body wear/ full body wear (Shoulder seam - Method B ≥140N )", Criteria = 140 },
+                new GarmentTest_Detail_FGPT() { Seq = 33, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - width direction - Upper body wear/ full body wear (Waistband seam  - Method B ≥140N )", Criteria = 140 },
+                new GarmentTest_Detail_FGPT() { Seq = 34, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - width direction - Upper body wear/ full body wear (Hood seam - Method B ≥140N )", Criteria = 140 },
+                new GarmentTest_Detail_FGPT() { Seq = 35, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - width direction - Upper body wear/ full body wear ({0}- Method B ≥140N ) Other Joining seam  selection", Criteria = 140, TypeSelection_VersionID = 1, TypeSelection_Seq = 1 },
+                new GarmentTest_Detail_FGPT() { Seq = 36, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - width direction - Upper body wear/ full body wear ({0}- Method B ≥140N ) Other Joining seam  selection", Criteria = 140, TypeSelection_VersionID = 1, TypeSelection_Seq = 1 },
+                new GarmentTest_Detail_FGPT() { Seq = 37, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - width direction - Upperr body wear/ full body wear ({0}- Method B ≥140N ) Other Joining seam  selection", Criteria = 140, TypeSelection_VersionID = 1, TypeSelection_Seq = 1 },
+                new GarmentTest_Detail_FGPT() { Seq = 38, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - lower body wear/ full body wear (Back rise- Method A ≥70N  )", Criteria = 70 },
+                new GarmentTest_Detail_FGPT() { Seq = 39, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - lower body wear/ full body wear (Front rise- Method A ≥70N  )", Criteria = 70 },
+                new GarmentTest_Detail_FGPT() { Seq = 40, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - lower body wear/ full body wear (Inseam- Method A ≥70N  )", Criteria = 70 },
+                new GarmentTest_Detail_FGPT() { Seq = 41, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - lower body wear/ full body wear (Waistband- Method A ≥70N  )", Criteria = 70 },
+                new GarmentTest_Detail_FGPT() { Seq = 42, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - lower body wear/ full body wear (Sideseam- Method A ≥70N  )", Criteria = 70 },
+                new GarmentTest_Detail_FGPT() { Seq = 43, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - lower body wear/ full body wear ({0}- Method A  ≥70N ) Other Joining seam  selection", Criteria = 70, TypeSelection_VersionID = 2, TypeSelection_Seq = 1 },
+                new GarmentTest_Detail_FGPT() { Seq = 44, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - lower body wear/ full body wear ({0}- Method A ≥70N ) Other Joining seam  selection", Criteria = 70, TypeSelection_VersionID = 2, TypeSelection_Seq = 1 },
+                new GarmentTest_Detail_FGPT() { Seq = 45, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - lower body wear/ full body wear ({0}- Method A  ≥70N  ) Other Joining seam  selection", Criteria = 70, TypeSelection_VersionID = 2, TypeSelection_Seq = 1 },
+                new GarmentTest_Detail_FGPT() { Seq = 46, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - width direction - lower body wear/ full body wear (Front rise- Method B ≥140N )", Criteria = 140 },
+                new GarmentTest_Detail_FGPT() { Seq = 47, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - lower body wear/ full body wear (Back rise- Method B ≥140N )", Criteria = 140 },
+                new GarmentTest_Detail_FGPT() { Seq = 48, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - length direction - lower body wear/ full body wear (Crotch- Method B ≥140N )", Criteria = 140 },
+                new GarmentTest_Detail_FGPT() { Seq = 49, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - width direction - lower body wear/ full body wear (Inseam- Method B ≥140N )", Criteria = 140 },
+                new GarmentTest_Detail_FGPT() { Seq = 50, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - width direction - lower body wear/ full body wear (Sideseam- Method B ≥140N )", Criteria = 140 },
+                new GarmentTest_Detail_FGPT() { Seq = 51, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - width direction - lower body wear/ full body wear (Waistband- Method B ≥140N )", Criteria = 140 },
+                new GarmentTest_Detail_FGPT() { Seq = 52, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - width direction - lower body wear/ full body wear ({0}- Method B ≥140N ) Other Joining seam  selection", Criteria = 140, TypeSelection_VersionID = 2, TypeSelection_Seq = 1 },
+                new GarmentTest_Detail_FGPT() { Seq = 53, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - width direction - lower body wear/ full body wear ({0}- Method B ≥140N ) Other Joining seam  selection", Criteria = 140, TypeSelection_VersionID = 2, TypeSelection_Seq = 1 },
+                new GarmentTest_Detail_FGPT() { Seq = 54, Location = "Full", TestDetail = "N", TestUnit = "N", TestName = "PHX-AP0450", Type = "seam breakage: Garment - width direction - lower body wear/ full body wear ({0}- Method B ≥140N ) Other Joining seam  selection", Criteria = 140, TypeSelection_VersionID = 2, TypeSelection_Seq = 1 },
+            };
+
+            List<GarmentTest_Detail_FGPT> rugby_FootBall = new List<GarmentTest_Detail_FGPT>()
+            {
+                new GarmentTest_Detail_FGPT() { Seq = 2, Location = "Football Style", TestDetail = "mm", TestUnit = "mm", TestName = "PHX-AP0413", Type = "seam slippage: Garment - weft - Rugby/Football 160N", Criteria = 4 },
+                new GarmentTest_Detail_FGPT() { Seq = 5, Location = "Football Style", TestDetail = "mm", TestUnit = "mm", TestName = "PHX-AP0413", Type = "seam slippage: Garment - warp - Rugby/Football160N", Criteria = 4 },
+                new GarmentTest_Detail_FGPT() { Seq = 8, Location = "Football Style", TestDetail = "pass/fail", TestUnit = "N", TestName = "PHX-AP0413", Type = "No fabric breakage: Garment - weft - Rugby/Football 160N", Criteria = 160 },
+                new GarmentTest_Detail_FGPT() { Seq = 11, Location = "Football Style", TestDetail = "pass/fail", TestUnit = "N", TestName = "PHX-AP0413", Type = "No fabric breakage: Garment - warp - Rugby/Football 160N", Criteria = 160 },
+                new GarmentTest_Detail_FGPT() { Seq = 14, Location = "Football Style", TestDetail = "pass/fail", TestUnit = "N", TestName = "PHX-AP0413", Type = "No seam breakage: Garment - weft -Rugby/Football 160N", Criteria = 160 },
+                new GarmentTest_Detail_FGPT() { Seq = 17, Location = "Football Style", TestDetail = "pass/fail", TestUnit = "N", TestName = "PHX-AP0413", Type = "No seam breakage: Garment - warp - Rugby/Football 160N", Criteria = 160 },
+            };
+
+            switch (location)
+            {
+                case "T":
+                    defaultFGPTList.AddRange(upperOnly);
+                    break;
+                case "B":
+                    defaultFGPTList.AddRange(lowerOnly);
+                    break;
+                case "S":
+                    defaultFGPTList.AddRange(fullBody);
+                    break;
+            }
+
+            if (isRugbyFootBall)
+            {
+                foreach (var fGPT in rugby_FootBall)
+                {
+                    fGPT.Location = location;
+                }
+
+                defaultFGPTList.AddRange(rugby_FootBall);
+            }
+
+            defaultFGPTList.Add(new GarmentTest_Detail_FGPT() { Seq = 1, Location = string.Empty, Type = "odour: Garment", TestDetail = "pass/fail", TestUnit = "pass/Fail", TestName = "PHX-AP0451", });
+
+            return defaultFGPTList.OrderBy(o => o.Type).ToList();
         }
 
         /*回傳Garment Test(Get) 詳細敘述如下*/

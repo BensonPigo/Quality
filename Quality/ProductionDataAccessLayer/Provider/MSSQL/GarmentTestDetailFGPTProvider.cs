@@ -6,7 +6,7 @@ using ProductionDataAccessLayer.Interface;
 using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
 using DatabaseObject.ProductionDB;
-using DatabaseObject.ViewModel.BulkFGT;
+using DatabaseObject.ViewModel;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
@@ -31,6 +31,11 @@ select
 [ID]
 ,[No]
 ,[Location]
+,[LocationText]= CASE WHEN Location='B' THEN 'Bottom'
+						WHEN Location='T' THEN 'Top'
+						WHEN Location='S' THEN 'Top+Bottom'
+						ELSE ''
+					END
 ,[Type] = IIF(t.TypeSelection_VersionID > 0, Replace(t.type, '{0}', ts.Code), t.type)
 ,[TestName] = PMS_FGPT_TestName.Description
 ,[TestDetail]

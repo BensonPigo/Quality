@@ -15,26 +15,18 @@ namespace DatabaseObject.ProductionDB
     public class GarmentTest_Detail_FGWT
     {
         /// <summary></summary>
-        [Required]
         [Display(Name = "")]
-        public Int64 ID { get; set; }
+        public Int64? ID { get; set; }
         /// <summary></summary>
-        [Required]
         [Display(Name = "")]
         public int? No { get; set; }
         /// <summary></summary>
-        [Required]
-        [StringLength(1)]
         [Display(Name = "")]
         public string Location { get; set; }
         /// <summary></summary>
-        [Required]
-        [StringLength(150)]
         [Display(Name = "")]
         public string Type { get; set; }
         /// <summary></summary>
-        [Required]
-        [StringLength(15)]
         [Display(Name = "")]
         public string TestDetail { get; set; }
         /// <summary></summary>
@@ -50,7 +42,6 @@ namespace DatabaseObject.ProductionDB
         [Display(Name = "")]
         public decimal Shrinkage { get; set; }
         /// <summary></summary>
-        [StringLength(5)]
         [Display(Name = "")]
         public string Scale { get; set; }
         /// <summary></summary>
@@ -60,12 +51,9 @@ namespace DatabaseObject.ProductionDB
         [Display(Name = "Pass 標準；Criteria2 主要用在判斷一個區間")]
         public decimal Criteria2 { get; set; }
         /// <summary></summary>
-        [Required]
-        [StringLength(150)]
         [Display(Name = "")]
         public string SystemType { get; set; }
         /// <summary></summary>
-        [Required]
         [Display(Name = "")]
         public int? Seq { get; set; }
 

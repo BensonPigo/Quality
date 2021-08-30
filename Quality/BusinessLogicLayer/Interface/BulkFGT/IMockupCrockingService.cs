@@ -9,8 +9,10 @@ namespace BusinessLogicLayer.Interface.BulkFGT
     {
         MockupCrocking_ViewModel GetMockupCrocking(MockupCrocking MockupCrocking);
 
+        MockupCrocking_ViewModel Create(MockupCrocking_ViewModel MockupCrocking);
+
         MockupCrocking_ViewModel UpdatePicture(MockupCrocking MockupCrocking);
 
-        MockupCrocking_ViewModel GetExcel(MockupCrocking_ViewModel Req);
+        MockupCrocking_ViewModel GetExcel(MockupCrocking Req);
     }
 }

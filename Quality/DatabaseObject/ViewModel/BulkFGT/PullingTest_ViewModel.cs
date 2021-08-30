@@ -15,6 +15,9 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string StyleID { get; set; }
         public string Article { get; set; }
 
+
+        public List<string> ReportNo_Source { get; set; }
+
         public List<SelectListItem> Result_Source
         {
             get
@@ -27,6 +30,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
             }
             set { }
         }
+
         public List<SelectListItem> TestItem_Source
         {
             get
@@ -62,6 +66,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string Result { get; set; }
         public string TestItem { get; set; }
         public string PullForce { get; set; }
+        public string PullForceUnit { get; set; }
         public int Time { get; set; }
         public string FabricRefno { get; set; }
         public string AccRefno { get; set; }

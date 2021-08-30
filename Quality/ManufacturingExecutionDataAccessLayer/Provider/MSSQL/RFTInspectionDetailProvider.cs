@@ -54,20 +54,41 @@ and oq.Qty - isnull(insp.cnt,0) > 0
 
             SbSql.Append(
                 @"
-select rd.DefectCode, rd.AreaCode
-from RFT_Inspection r
-inner join RFT_Inspection_Detail rd on r.ID = rd.ID and rd.Junk = 0" + Environment.NewLine);
+;with DefectCntDt as (
+    select top 3 [DefectCode] = gdc.Description
+        ,id.GarmentDefectCodeID
+        ,[DefectCnt] = count(*) 
+    from RFT_Inspection i WITH (NOLOCK)
+    inner join RFT_Inspection_Detail id  WITH (NOLOCK) on id.ID = i.ID
+    left join [dbo].[SciProduction_GarmentDefectCode] gdc with (nolock) on id.GarmentDefectCodeID = gdc.id 
+    where 1=1
+  And ((i.AddDate >= @InspectionDate and i.AddDate <= DATEADD(SECOND, -1, DATEADD(day, 1,@InspectionDate))) 
+  or (i.EditDate >= @InspectionDate and i.EditDate <= DATEADD(SECOND, -1, DATEADD(day, 1,@InspectionDate)))) 
+    and i.Line = @Line
+    and i.FactoryID = @FactoryID
+    and id.junk = 0
+    group by gdc.Description,id.GarmentDefectCodeID 
+    order by count(*) desc,gdc.Description asc
+)
 
-
-            SbSql.Append("Where r.FactoryID = @FactoryID" + Environment.NewLine);
-
-            if (string.IsNullOrEmpty(Item.Line)) { SbSql.Append("And r.Line = @Line" + Environment.NewLine); }
-
-            if (Item.InspectionDate.HasValue)
-            {
-                SbSql.Append("And ((r.AddDate >= @InspectionDate and r.AddDate <= DATEADD(SECOND, -1, DATEADD(day, 1,@InspectionDate))) " + Environment.NewLine);
-                SbSql.Append("  or (r.EditDate >= @InspectionDate and r.EditDate <= DATEADD(SECOND, -1, DATEADD(day, 1,@InspectionDate)))) " + Environment.NewLine);
-            }
+select [DefectCode] = replace(DefectCode,'/','/ '),
+       [AreaCode] = (select Stuff((
+                    select top 3 concat( '/ ',a.Code)   
+                    from RFT_Inspection i WITH (NOLOCK)
+                    inner join RFT_Inspection_Detail id  WITH (NOLOCK) on id.ID = i.ID
+                    inner join dbo.Area a  WITH (NOLOCK) on id.AreaCode = a.Code
+                    where 1=1
+                        And ((i.AddDate >= @InspectionDate and i.AddDate <= DATEADD(SECOND, -1, DATEADD(day, 1,@InspectionDate))) 
+  or (i.EditDate >= @InspectionDate and i.EditDate <= DATEADD(SECOND, -1, DATEADD(day, 1,@InspectionDate)))) 
+                    and i.Line = @Line
+                    and i.FactoryID = @FactoryID        
+                    and id.GarmentDefectCodeID = DefectCntDt.GarmentDefectCodeID 
+                    and id.junk = 0
+                    group by a.Code  order by count(*) desc  FOR XML PATH('')),1,1,'') )
+		,GarmentDefectCodeID
+from DefectCntDt
+" + Environment.NewLine);
+        
 
             return ExecuteList<RFT_Inspection_Detail>(CommandType.Text, SbSql.ToString(), objParameter);
         }

@@ -15,56 +15,50 @@ namespace DatabaseObject.ProductionDB
     public class GarmentTest_Detail_FGPT
     {
         /// <summary></summary>
-        [Required]
         [Display(Name = "")]
-        public Int64 ID { get; set; }
+        public Int64? ID { get; set; }
+
         /// <summary></summary>
-        [Required]
         [Display(Name = "")]
         public int? No { get; set; }
+
         /// <summary></summary>
-        [Required]
-        [StringLength(1)]
         [Display(Name = "")]
         public string Location { get; set; }
+
         /// <summary></summary>
-        [Required]
-        [StringLength(300)]
         [Display(Name = "")]
         public string Type { get; set; }
+
         /// <summary></summary>
-        [Required]
-        [StringLength(30)]
         [Display(Name = "")]
         public string TestName { get; set; }
+
         /// <summary></summary>
-        [Required]
-        [StringLength(10)]
         [Display(Name = "")]
         public string TestDetail { get; set; }
+
         /// <summary></summary>
         [Display(Name = "")]
         public int? Criteria { get; set; }
+
         /// <summary></summary>
-        [Required]
-        [StringLength(10)]
         [Display(Name = "")]
         public string TestResult { get; set; }
+
         /// <summary></summary>
-        [Required]
-        [StringLength(10)]
         [Display(Name = "")]
         public string TestUnit { get; set; }
+
         /// <summary></summary>
-        [Required]
         [Display(Name = "")]
         public int? Seq { get; set; }
+
         /// <summary></summary>
-        [Required]
         [Display(Name = "")]
         public int? TypeSelection_VersionID { get; set; }
+
         /// <summary></summary>
-        [Required]
         [Display(Name = "")]
         public int? TypeSelection_Seq { get; set; }
 

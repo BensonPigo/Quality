@@ -73,13 +73,13 @@ namespace BusinessLogicLayer.Service
             return model;
         }
 
-        public MockupCrocking_ViewModel GetExcel(MockupCrocking_ViewModel Req)
+        public MockupCrocking_ViewModel GetExcel(MockupCrocking MockupCrocking)
         {
-            bool test = false;
-            string TempTilePath = string.Empty;
             MockupCrocking_ViewModel result = new MockupCrocking_ViewModel();
             try
             {
+                result = GetMockupCrocking(MockupCrocking);
+
                 if (!System.IO.Directory.Exists(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\"))
                 {
                     System.IO.Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\");
@@ -90,12 +90,14 @@ namespace BusinessLogicLayer.Service
                     System.IO.Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\TMP\\");
                 }
 
+                _MockupCrockingProvider = new MockupCrockingProvider(Common.ProductionDataAccessLayer);
+
+
                 MockupCrocking mockupCrocking = result.MockupCrocking[0];
                 List<MockupCrocking_Detail> mockupCrocking_Detail = mockupCrocking.MockupCrocking_Detail;
                 string basefileName = "MockupCrocking";
                 Excel.Application excelApp = MyUtility.Excel.ConnectExcel(System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx");
                 excelApp.DisplayAlerts = false;
-                excelApp.Visible = test;
                 Excel.Worksheet worksheet = excelApp.Sheets[1];
 
                 // 設定表頭資料
@@ -191,6 +193,40 @@ namespace BusinessLogicLayer.Service
             }
 
             return result;
+        }
+
+        public MockupCrocking_ViewModel Create(MockupCrocking_ViewModel MockupCrocking)
+        {
+            MockupCrocking_ViewModel model = new MockupCrocking_ViewModel();
+            _MockupCrockingProvider = new MockupCrockingProvider(Common.ProductionDataAccessLayer);
+            _MockupCrockingDetailProvider = new MockupCrockingDetailProvider(Common.ProductionDataAccessLayer);
+            int insertCt;
+            try
+            {
+                insertCt = _MockupCrockingProvider.Create(MockupCrocking.MockupCrocking[0]);
+                foreach (var MockupCrocking_Detail in MockupCrocking.MockupCrocking[0].MockupCrocking_Detail)
+                {
+                    _MockupCrockingDetailProvider.Create(MockupCrocking_Detail);
+                }
+
+                if (insertCt == 0)
+                {
+                    model.Result = false;
+                    model.ErrorMessage = "Insert 0 count Data!";
+
+                }
+                else
+                {
+                    model.Result = true;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
+            return model;
         }
     }
 }

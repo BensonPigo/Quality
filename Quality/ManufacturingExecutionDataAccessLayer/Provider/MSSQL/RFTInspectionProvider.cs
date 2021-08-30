@@ -299,7 +299,7 @@ where inp.ID = @ID{rowcnt}
 update RFT_Inspection
 set	Status = @FixType{rowcnt}
 ,EditName = @EditName{rowcnt} , EditDate = GETDATE()
-,DisposeReason = @DisposeReason
+,DisposeReason = @DisposeReason{rowcnt}
 where ID = @ID{rowcnt}
 
 update rc

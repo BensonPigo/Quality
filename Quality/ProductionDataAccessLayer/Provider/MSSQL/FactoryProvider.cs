@@ -31,5 +31,15 @@ and IsProduceFty = 1
 
             return ExecuteList<Factory>(CommandType.Text, SbSql.ToString(), objParameter);
         }
+
+        public IList<Factory> GetMDivisionID(string fty)
+        {
+            string sqlcmd = $@"
+select MDivisionID from Factory 
+where ID = '{fty}'
+";
+
+            return ExecuteList<Factory>(CommandType.Text, sqlcmd, new SQLParameterCollection());
+        }
     }
 }

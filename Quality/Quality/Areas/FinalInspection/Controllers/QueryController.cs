@@ -168,8 +168,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             queryReport.BrandID = "Adidas";
             queryReport.FinalInspection.FactoryID = "MAI";
             queryReport.TotalSPQty = 200;
-            queryReport.FinalInspection.InspectionStage = "Inline";
-            //queryReport.Carton = "A001-1,3;A002-5";
+            queryReport.FinalInspection.InspectionStage = "Inline";            
             queryReport.FinalInspection.AuditDate = new DateTime(2021, 7, 26);
             queryReport.AvailableQty = 150;
             queryReport.AQLPlan = "1.0 Level I";
@@ -182,6 +181,16 @@ namespace Quality.Areas.FinalInspection.Controllers
             queryReport.FinalInspection.RejectQty = 8;
             queryReport.FinalInspection.InspectionResult = "On-Going";
             queryReport.FinalInspection.ShipmentStatus = "N/A";
+
+            queryReport.ListCartonInfo = new List<FinalInspection_OrderCarton>();
+            for (int i = 1; i < 11; i++)
+            {
+                FinalInspection_OrderCarton item = new FinalInspection_OrderCarton();
+                item.OrderID = "A00" + i.ToString();
+                item.PackinglistID = "1";                
+                item.CTNNo = i.ToString();
+                queryReport.ListCartonInfo.Add(item);
+            }
 
             return View(queryReport);
         }

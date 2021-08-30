@@ -16,7 +16,7 @@ namespace BusinessLogicLayerTests.Service
             try
             {
                 IBulkFGTMailGroup_Service _BulkFGTMailGroup_Service = new BulkFGTMailGroup_Service();
-                Quality_MailGroup quality_Mail = new Quality_MailGroup() { Type = "BulkFGT" };
+                Quality_MailGroup quality_Mail = new Quality_MailGroup() { Type = "BulkFGT", FactoryID = "xxx" };
                 var _Para = _BulkFGTMailGroup_Service.MailGroupGet(quality_Mail);
                 Assert.IsTrue(_Para[0].ToAddress == "Dyson.chen@sportscity.com.tw");
             }
