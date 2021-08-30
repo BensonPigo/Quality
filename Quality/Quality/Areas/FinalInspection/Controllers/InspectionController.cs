@@ -30,101 +30,65 @@ namespace Quality.Areas.FinalInspection.Controllers
         }
 
         // Setting
-        public ActionResult Index(string txtSP, string txtPO, string txtStyle)
+        public ActionResult Index(string SP, string POID, string StyleID)
         {
+            FinalInspection_Request finalInspection_Request = new FinalInspection_Request() { 
+                SP = SP,
+                POID = POID,
+                StyleID = StyleID,
+                FactoryID = this.FactoryID
+            };
+            FinalInspectionService finalInspectionService = new FinalInspectionService();
 
             List<DatabaseObject.ProductionDB.Orders> list = new List<DatabaseObject.ProductionDB.Orders>();
-            DatabaseObject.ProductionDB.Orders temp = new DatabaseObject.ProductionDB.Orders();
-            DatabaseObject.ProductionDB.Orders temp2 = new DatabaseObject.ProductionDB.Orders();
-            for (int i = 0; i < 25; i++)
+
+            if (!string.IsNullOrEmpty(SP) ||
+                !string.IsNullOrEmpty(POID) ||
+                !string.IsNullOrEmpty(StyleID) )
             {
-                temp.ID = "ID" + i;
-                temp.POID = "POID1";
-                temp.Qty = 123;
-                temp.StyleID = "styleID1";
-                temp.SeasonID = "SeasonID1";
-                temp.BrandID = "BrandID1";
-                list.Add(temp);
+                list = finalInspectionService.GetOrderForInspection(finalInspection_Request).ToList();
             }
-
-
-            temp2.ID = "ID2";
-            temp2.POID = "POID2";
-            temp2.Qty = 234;
-            temp2.StyleID = "styleID2";
-            temp2.SeasonID = "SeasonID2";
-            temp2.BrandID = "BrandID2";
-            list.Add(temp2);
-
 
             return View(list);
         }
 
         [HttpPost]
-        public ActionResult GoSetting(List<DatabaseObject.ProductionDB.Orders> models)
+        public ActionResult GoSetting(List<DatabaseObject.ProductionDB.Orders> model)
         {
 
             return RedirectToAction("Setting");
         }
 
-        public ActionResult Setting()
+        [HttpPost]
+        public ActionResult Setting(List<DatabaseObject.ProductionDB.Orders> model, string finalInspectionID)
         {
             ViewBag.FactoryID = this.FactoryID;
 
-            List<string> list = new List<string>() {
-                 "Inline","Stagger","Final","3rd Party"
-            };
-            List<SelectListItem> inspectionStageList = new SetListItem().ItemListBinding(list);
-            ViewBag.InspectionStageList = inspectionStageList;
-
-            list = new List<string>() {
-                string.Empty, "1.0 Level I", "1.0 Level II", "1.5 Level I", "2.5 Level I", "100% Inspection"
-            };
-            List<SelectListItem> aqlPlanList = new SetListItem().ItemListBinding(list);
-            ViewBag.AQLPlanList = aqlPlanList;
-
             DatabaseObject.ViewModel.FinalInspection.Setting setting = new DatabaseObject.ViewModel.FinalInspection.Setting();
-            setting.InspectionStage = "Inline";
-            setting.AuditDate = System.DateTime.Now;
-            setting.SewingLineID = "8";
-            setting.InspectionTimes = "122";
-            setting.SampleSize = 8;
-            setting.AcceptQty = 122;
+            FinalInspectionSettingService finalInspectionSettingService = new FinalInspectionSettingService();
 
-            setting.SelectedPO = new List<DatabaseObject.ViewModel.FinalInspection.SelectedPO>();
-            for (int i = 1; i < 20; i++)
+            if (model != null)
             {
-                DatabaseObject.ViewModel.FinalInspection.SelectedPO item = new DatabaseObject.ViewModel.FinalInspection.SelectedPO();
-                item.OrderID = "A00" + i.ToString();
-                item.POID = i.ToString();
-                item.StyleID = "2";
-                item.SeasonID = "3";
-                item.BrandID = "4";
-                item.Qty = i * 2;
-                item.Cartons = i.ToString();
-                item.AvailableQty = i;
-                setting.SelectedPO.Add(item);
+                string poID = model[0].POID;
+                List<string> listOrderID = model.Select(s => s.ID).ToList();
+
+                setting = finalInspectionSettingService.GetSettingForInspection(poID, listOrderID, this.FactoryID);
             }
 
             setting.SelectCarton = new List<DatabaseObject.ViewModel.FinalInspection.SelectCarton>();
-            for (int i = 1; i < 3; i++)
+            for (int i = 1; i < 15; i++)
             {
-                DatabaseObject.ViewModel.FinalInspection.SelectCarton item = new DatabaseObject.ViewModel.FinalInspection.SelectCarton();
-                item.Selected = true;
-                item.OrderID = i.ToString();
-                item.PackingListID = "1";
-                item.CTNNo = i.ToString();
-                setting.SelectCarton.Add(item);
+                setting = finalInspectionSettingService.GetSettingForInspection(finalInspectionID);
             }
 
             return View(setting);
         }
 
-        [HttpPost]
-        public ActionResult Setting(DatabaseObject.ViewModel.FinalInspection.Setting setting)
-        {
-            return RedirectToAction("General");
-        }
+        //[HttpPost]
+        //public ActionResult Setting(DatabaseObject.ViewModel.FinalInspection.Setting setting)
+        //{
+        //    return RedirectToAction("General");
+        //}
         public ActionResult General()
         {
             return View();
@@ -283,16 +247,16 @@ namespace Quality.Areas.FinalInspection.Controllers
                 moisture.ListArticle.Add("00" + i.ToString());
             }
             moisture.ListCartonItem = new List<DatabaseObject.ViewModel.FinalInspection.CartonItem>();
-            for (int i = 1; i < 10; i++)
-            {
-                DatabaseObject.ViewModel.FinalInspection.CartonItem cartonItem = new DatabaseObject.ViewModel.FinalInspection.CartonItem();
-                cartonItem.FinalInspection_OrderCartonUkey = i + 1;
-                cartonItem.OrderID = "A001";
-                cartonItem.CTNNo = i.ToString();
-                cartonItem.PackinglistID = i.ToString();
+            //for (int i = 1; i < 10; i++)
+            //{
+            //    DatabaseObject.ViewModel.FinalInspection.CartonItem cartonItem = new DatabaseObject.ViewModel.FinalInspection.CartonItem();
+            //    cartonItem.FinalInspection_OrderCartonUkey = i + 1;
+            //    cartonItem.OrderID = "A001";
+            //    cartonItem.CTNNo = i.ToString();
+            //    cartonItem.PackinglistID = i.ToString();
 
-                moisture.ListCartonItem.Add(cartonItem);
-            }
+            //    moisture.ListCartonItem.Add(cartonItem);
+            //}
 
             moisture.ListEndlineMoisture = new List<DatabaseObject.ManufacturingExecutionDB.EndlineMoisture>();
 

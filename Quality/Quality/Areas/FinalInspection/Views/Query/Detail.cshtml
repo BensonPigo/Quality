@@ -24,6 +24,10 @@
             color: black;
         }
 
+        #Detail_Cartons_wrapper tr.row-name {
+            color: wheat;
+        }
+
         #tab-Change {
             width: 100%;
         }
@@ -68,12 +72,22 @@
             overflow: scroll;
             overflow-x: hidden;
         }
+
+        #Detail_Cartons_info {
+            color: white
+        }
+
+        #Detail_Cartons_previous, #Detail_Cartons_next {
+            color: white !important;
+        }
+
+        #Detail_Cartons_wrapper, #Detail_Cartons_wrapper > .dataTables_scrollHeadInner {
+            width: 100%
+        }
     </style>
 }
 
 <div class="whiteBackgrond" style="height:86vh">
-
-
     <div style="padding:1em">
         <div>
             <h1 style="font-size:2em">Inspection Report</h1>
@@ -113,7 +127,7 @@
                         <td>Inspection Stage</td>
                         <td class="valueColor">@Model.FinalInspection.InspectionStage</td>
                         <td>Carton</td>
-                        <td colspan="2"><button class="site-btn btn-blue">...</button></td>
+                        <td colspan="2"><button type="button" style="min-width:50%" onclick="open_cartonsDetail()" class="site-btn btn-blue">...</button></td>
                         <td colspan="2"></td>
                     </tr>
                     <tr>
@@ -185,7 +199,7 @@
                 </tr>
                 <tr>
                     <td>Submit Date</td>
-                    <td>
+                    <td class="valueColor">
                         @if (Model.FinalInspection.SubmitDate == null)
                         {
                             @:N/A
@@ -204,6 +218,40 @@
         </div>
     </div>
 </div>
+
+<div class="detail-dialog-cartons to-edit-detail-cartons">
+    <div class="detail-dialog-content dialog-content-w-icon" style="height:60vh">
+        <table cellspacing="100" id="Detail_Cartons" class="table table-striped display">
+            <thead>
+                <tr class="row-name">
+                    <th>SP</th>
+                    <th>Packing List ID</th>
+                    <th>CTN No</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.ListCartonInfo.Count; i++)
+                {
+                    <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                        <td>
+                            @Html.DisplayFor(o => Model.ListCartonInfo[i].OrderID)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(o => Model.ListCartonInfo[i].PackinglistID)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(o => Model.ListCartonInfo[i].CTNNo)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+        <br />
+        <div>
+        </div>
+    </div>
+</div>
 @section FinalInspection_script
 {
     <script>
@@ -211,6 +259,50 @@
 
         $(function () {
             tabChange();
+
+            $('#Detail_Cartons').DataTable({
+                "autoWidth": false,
+                "info": false,
+                "filter": false,
+                "paging": false,
+                "info": false,
+                "scrollY": "50vh",
+                "scrollCollapse": true,
+                columnDefs: [
+                    { targets: 0, width: "30%" },
+                    { targets: 1, width: "30%" },
+                    { targets: 2, width: "30%" },
+                ]
+            });
+
+            $(".detail-dialog-cartons").dialog({
+                autoOpen: false,
+                modal: true,
+                closeText: ' ',
+                width: 500,
+                minHeight: 400,
+                position: {
+                    my: "center top",
+                    at: "center top",
+                    of: window
+                },
+                dialogClass: "site-box",
+                open: function (event, ui) {
+                    $('.ui-widget-overlay').bind('click', function () {
+                        //location.reload();//強制Refresh頁面 Benson
+                        $(".ui-dialog-content").dialog('close');
+                    });
+                    $(this).parent().siblings().find(".ui-dialog-content").dialog('close');
+
+                },
+                close: function () {
+                },
+            });
+
+            $(".to-edit-detail-cartons").dialog({
+                width: "70%",
+                dialogClass: "add-contact-box",
+            });
         });
 
         function tabChange() {
@@ -222,6 +314,11 @@
                 $($(this).attr('link')).show().siblings('.tab-inner').hide();
                 $(this).addClass('active').siblings('.active').removeClass('active');
             });
+        }
+
+        function open_cartonsDetail() {
+            $(".to-edit-detail-cartons").dialog("open");
+            $("#Detail_Cartons").DataTable().columns.adjust();
         }
     </script>
 }

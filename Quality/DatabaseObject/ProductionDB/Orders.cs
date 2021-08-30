@@ -630,5 +630,7 @@ namespace DatabaseObject.ProductionDB
         [Display(Name = "")]
         public string SizeUnitWeight { get; set; }
 
+        public bool Checked { get; set; }
+
     }
 }

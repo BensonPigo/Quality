@@ -18,14 +18,14 @@
     }
 </style>
 
-<div class="CheckListClass margin-c">
-    <div style="display:inline-block;width:40%">
+<div class="CheckListClass margin-c" style="padding-left:10%">
+    <div style="display:inline-block;width:50%">
         <table class="checkListClass">
             <tr>
                 <td colspan="2" style="font-size: 2em;font-weight:bold">Fabric Artwork Check List</td>
             </tr>
             <tr>
-                <td style="width:20%">
+                <td style="width:3vw">
                     @Html.CheckBoxFor(o => o.FinalInspection.CheckCloseShade, new { @disabled = "disabled", @class = "checkboxInput" })
                 </td>
                 <td>
@@ -64,7 +64,7 @@
                 <td colspan="2" style="font-size: 2em;font-weight:bold">Packaging</td>
             </tr>
             <tr>
-                <td style="width:20%">
+                <td style="width:3vw">
                     @Html.CheckBoxFor(o => o.FinalInspection.CheckShippingMark, new { @disabled = "disabled", @class = "checkboxInput" })
                 </td>
                 <td>
@@ -103,7 +103,7 @@
                 <td colspan="2" style="font-size: 2em;font-weight:bold">Label</td>
             </tr>
             <tr>
-                <td style="width:20%">
+                <td style="width:3vw">
                     @Html.CheckBoxFor(o => o.FinalInspection.CheckFiberContent, new { @disabled = "disabled", @class = "checkboxInput" })
                 </td>
                 <td>
