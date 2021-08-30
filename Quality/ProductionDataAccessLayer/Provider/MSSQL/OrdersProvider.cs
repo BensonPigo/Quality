@@ -855,25 +855,38 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         {
             string sqlGetData = string.Empty;
             SQLParameterCollection listPar = new SQLParameterCollection();
-            listPar.Add("@Ftygroup", requestItem.FactoryID);
-            listPar.Add("@SP", requestItem.SP);
-            listPar.Add("@POID", requestItem.POID);
-            listPar.Add("@StyleID", requestItem.StyleID);
 
-            sqlGetData = @"
-select o.id 
-     , o.poid 
+            string where = string.Empty;
+
+            listPar.Add("@Ftygroup", requestItem.FactoryID);
+            if (!string.IsNullOrEmpty(requestItem.SP))
+            {
+                listPar.Add("@SP", requestItem.SP);
+                where += " and o.id = @SP ";
+            }
+
+            if (!string.IsNullOrEmpty(requestItem.POID))
+            {
+                listPar.Add("@POID", requestItem.POID);
+                where += " and o.POID = @POID ";
+            }
+
+            if (!string.IsNullOrEmpty(requestItem.StyleID))
+            {
+                listPar.Add("@StyleID", requestItem.StyleID);
+                where += " and o.StyleID = @StyleID ";
+            }
+
+            sqlGetData = $@"
+select o.ID 
+     , o.POID 
      , o.Qty  
      , o.StyleID  
      , o.SeasonID 
      , o.BrandID 
   from orders o
-where 1=1
-   and o.ftygroup = @Ftygroup
-   and o.id = @SP
-   and o.POID = @POID
-   and o.StyleID = @StyleID
-   and o.PulloutComplete = 0
+where o.ftygroup = @Ftygroup and o.PulloutComplete = 0
+        {where}
 ";
 
             return ExecuteList<Orders>(CommandType.Text, sqlGetData, listPar);

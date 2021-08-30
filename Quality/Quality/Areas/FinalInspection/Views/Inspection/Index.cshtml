@@ -37,7 +37,7 @@
 
     #myTable td {
         height: 1vh;
-        padding:0;
+        padding: 0;
     }
 
 
@@ -48,12 +48,9 @@
     .dataTables_wrapper .dataTables_paginate .paginate_button {
         color: black !important;
     }
-
-
 </style>
 
 @model List<DatabaseObject.ProductionDB.Orders>
-
 
 @using (Html.BeginForm("Index", "Inspection", FormMethod.Post, new { onsubmit = "return checkvalue()" }))
 {
@@ -169,13 +166,13 @@
             "paging": true,
             "scrollY": "49vh",
             "scrollCollapse": true,
-           
+
         });
     });
 
 
     function checkvalue() {
-        if ($("#SP").val() == "" || $("#POID").val() == "" || $("#StyleID").val() == "") {
+        if ($("#SP").val() == "" && $("#POID").val() == "" && $("#StyleID").val() == "") {
 
             msg.WithError('Please input ＜SP#＞，＜PO#＞ or ＜Style#＞ first!');
 
