@@ -12,5 +12,7 @@ namespace ProductionDataAccessLayer.Interface
         bool Chk_FGWTExists(GarmentTest_Detail source);
 
         bool Create_FGWT(GarmentTest Master, GarmentTest_Detail source);
+
+        bool Update_FGWT(List<GarmentTest_Detail_FGWT_ViewModel> source);
     }
 }

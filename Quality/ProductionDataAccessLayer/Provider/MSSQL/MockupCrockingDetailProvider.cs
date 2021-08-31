@@ -6,6 +6,7 @@ using ProductionDataAccessLayer.Interface;
 using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
 using DatabaseObject.ProductionDB;
+using DatabaseObject.ViewModel;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
@@ -177,7 +178,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         }
         #endregion
 
-        public IList<MockupCrocking_Detail> GetMockupCrocking_Detail(MockupCrocking_Detail Item)
+        public IList<MockupCrocking_Detail_ViewModel> GetMockupCrocking_Detail(MockupCrocking_Detail Item)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
@@ -195,7 +196,9 @@ SELECT
         ,md.Remark
         ,md.EditName
         ,md.EditDate
-        ,FabricColorName = (select Name from Color WITH (NOLOCK) where ID = md.FabricColor and BrandID = m.BrandID )
+		,ArtworkColorName = (select stuff((select concat(';', Name) from Color where ID in (select Data from SplitString(md.ArtworkColor,';')) and BrandID = m.BrandID for xml path('')),1,1,''))
+        ,FabricColorName = (select stuff((select concat(';', Name) from Color where ID in (select Data from SplitString(md.FabricColor,';')) and BrandID = m.BrandID for xml path('')),1,1,''))
+		,LastUpdate = Concat (md.EditName, '-', Format(md.EditDate,'yyyy/MM/dd HH:mm:ss'))
 FROM [MockupCrocking_Detail] md
 inner join MockupCrocking m on m.ReportNo = md.ReportNo
 Where 1=1
@@ -206,7 +209,7 @@ Where 1=1
                 objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
             }
 
-            return ExecuteList<MockupCrocking_Detail>(CommandType.Text, SbSql.ToString(), objParameter);
+            return ExecuteList<MockupCrocking_Detail_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
         }
     }
 }

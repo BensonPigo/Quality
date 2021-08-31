@@ -340,6 +340,69 @@ INSERT INTO GarmentTest_Detail_FGWT
             return result;
         }
 
+        public bool Update_FGWT(List<GarmentTest_Detail_FGWT_ViewModel> source)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            int idx = 0;
+            string sqlcmd = string.Empty;
+
+
+            foreach (var item in source)
+            {
+                // Key
+                objParameter.Add(new SqlParameter($"@ID{idx}", item.ID));
+                objParameter.Add(new SqlParameter($"@No{idx}", item.No));
+                objParameter.Add(new SqlParameter($"@Location{idx}", item.Location));
+                objParameter.Add(new SqlParameter($"@Type{idx}", item.Type));
+
+                objParameter.Add(new SqlParameter($"@BeforeWash{idx}", item.BeforeWash));
+                objParameter.Add(new SqlParameter($"@SizeSpec{idx}", item.SizeSpec));
+                objParameter.Add(new SqlParameter($"@AfterWash{idx}", item.AfterWash));
+                objParameter.Add(new SqlParameter($"@Shrinkage{idx}", item.Shrinkage));
+                objParameter.Add(new SqlParameter($"@Scale{idx}", item.Scale));
+
+
+                sqlcmd += $@"
+update gf
+	set gf.[BeforeWash] = @BeforeWash{idx},
+		gf.[SizeSpec]  = @SizeSpec{idx},
+		gf.[AfterWash]	= @AfterWash{idx},
+		gf.[Shrinkage]	= iif(gf.Type = 'spirality: Garment - in percentage (average)', iif(sl.Location in ('B','T','S') , gt.Twisting, 0), @Shrinkage{idx}),
+		gf.[Scale]	= @Scale{idx} 
+from GarmentTest_Detail_FGWT gf
+outer apply (
+	select distinct
+		[Location] = iif (slC.cnt > 1, 'S', sl.Location)
+	from GarmentTest g
+	inner join Style s on g.StyleID = s.ID and g.BrandID = s.BrandID and g.SeasonID = s.SeasonID
+	inner join Style_Location sl on s.Ukey = sl.StyleUkey
+	outer apply (
+		select cnt = count(*)
+		from Style_Location sl 
+		where s.Ukey = sl.StyleUkey
+		and sl.Location in ('B', 'T')
+	)slC
+	where gf.ID = g.ID
+)sl 
+outer apply (
+	select Twisting = sum(Twisting)
+	from (
+		select Twisting = case when sl.Location in ('B','T') then gt.Twisting
+					when sl.Location = 'S' and gt.Location = 'B' then gt.Twisting
+					else 0
+					end
+		from GarmentTest_Detail_Twisting gt
+		where gf.ID = gt.ID and gf.No = gt.No
+	)gt
+)gt
+where gf.ID = @ID{idx} and gf.No = @No{idx} and gf.Location = @Location{idx} and gf.Type = @Type{idx}
+" + Environment.NewLine;
+                idx++;
+            }
+
+            return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
+        }
+
         private string UpdateGarmentTest_Detail_FGWTShrinkage(long? ID, long? NO)
         {
             SQLParameterCollection objParameter_Spirality = new SQLParameterCollection

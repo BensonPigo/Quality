@@ -32,6 +32,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
             Brand,
         }
 
+        public enum DetailStatus
+        {
+            Encode,
+            Amend,
+        }
+
         public GarmentTest_ViewModel GetSelectItemData(GarmentTest_ViewModel garmentTest_ViewModel, SelectType type)
         {
             _IGarmentTestProvider = new GarmentTestProvider(Common.ProductionDataAccessLayer);
@@ -242,7 +248,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             try
             {
-                _IGarmentTestProvider = new GarmentTestProvider(_ISQLDataTransaction);
                 #region 判斷是否空值
                 string emptyMsg = string.Empty;
                 if (garmentTest_ViewModel.ID == 0) { emptyMsg += "Master ID cannot be 0." + Environment.NewLine; }
@@ -258,7 +263,17 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     if (string.IsNullOrEmpty(item.AddName) && string.IsNullOrEmpty(item.EditName)) { emptyMsg += "detail AddName and EditName cannot be empty." + Environment.NewLine; }
                 }
 
+                if (!string.IsNullOrEmpty(emptyMsg))
+                {
+                    result.SaveResult = false;
+                    result.ErrMsg = emptyMsg;
+                    _ISQLDataTransaction.CloseConnection();
+                    return result;
+                }
+
                 #endregion
+
+                _IGarmentTestProvider = new GarmentTestProvider(_ISQLDataTransaction);
                 result.SaveResult = _IGarmentTestProvider.Save_GarmentTest(garmentTest_ViewModel, detail);
                 _ISQLDataTransaction.Commit();
             }
@@ -300,6 +315,61 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
+        public string Get_LastResult(string ID)
+        {
+            string result = string.Empty;
+            try
+            {
+                _IGarmentTestDetailProvider = new GarmentTestDetailProvider(Common.ProductionDataAccessLayer);
+                result = _IGarmentTestDetailProvider.Get_LastResult(ID);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
+        public GarmentTest_Detail_Result Encode_Detail(GarmentTest_Detail_Result viewModel, string GroupName, DetailStatus status)
+        {
+            GarmentTest_Detail_Result result = new GarmentTest_Detail_Result();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            try
+            {
+                switch (status)
+                {
+                    case DetailStatus.Encode:
+                        _IGarmentTestDetailProvider = new GarmentTestDetailProvider(_ISQLDataTransaction);
+
+                        // 代表所有result 有任一個是Fail 就寄信
+                        if (_IGarmentTestDetailProvider.Chk_AllResult(viewModel.Detail.ID.ToString(), viewModel.Detail.No.ToString()) == false)
+                        {
+
+                        }
+                        result.Result = _IGarmentTestDetailProvider.Encode_GarmentTestDetail(viewModel.Detail.ID.ToString(), "Confirmed");
+                        break;
+                    case DetailStatus.Amend:
+                        _IGarmentTestDetailProvider = new GarmentTestDetailProvider(_ISQLDataTransaction);
+                        result.Result = _IGarmentTestDetailProvider.Encode_GarmentTestDetail(viewModel.Detail.ID.ToString(), "New");
+                        break;
+                    default:
+                        break;
+                }
+              
+                _ISQLDataTransaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                _ISQLDataTransaction.RollBack();
+                result.Result = false;
+                result.ErrMsg = ex.Message;
+            }
+            finally { _ISQLDataTransaction.CloseConnection(); }
+
+            return result;
+        }
+
         public bool CheckOrderID(string OrderID, string BrandID, string SeasonID, string StyleID)
         {
             IOrdersProvider orders = new OrdersProvider(Common.ProductionDataAccessLayer);
@@ -318,11 +388,130 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
         public GarmentTest_ViewModel DeleteDetail(string ID, string No)
         {
-            GarmentTest_ViewModel result = new GarmentTest_ViewModel()
+            GarmentTest_ViewModel result = new GarmentTest_ViewModel();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            try
             {
-                SaveResult = false,
-                ErrMsg = "Err",
-            };
+                #region 判斷是否空值
+                string emptyMsg = string.Empty;
+                if (string.IsNullOrEmpty(ID)) { emptyMsg += "Master ID cannot be 0 or null" + Environment.NewLine; }
+                if (string.IsNullOrEmpty(No)) { emptyMsg += "No cannot be 0 or null" + Environment.NewLine; }
+
+                if (!string.IsNullOrEmpty(emptyMsg))
+                {
+                    result.SaveResult = false;
+                    result.ErrMsg = emptyMsg;
+                    return result;
+                }
+                #endregion
+
+                _IGarmentTestDetailProvider = new GarmentTestDetailProvider(_ISQLDataTransaction);
+                int deleteCnt = _IGarmentTestDetailProvider.Delete_GarmentTestDetail(ID, No);
+                result.SaveResult = true;
+                _ISQLDataTransaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                _ISQLDataTransaction.RollBack();
+                result.SaveResult = false;
+                result.ErrMsg = ex.Message;
+            }
+            finally { _ISQLDataTransaction.CloseConnection(); }
+
+            return result;
+        }
+
+        public GarmentTest_Detail_Result Save_GarmentTestDetail(GarmentTest_Detail_Result source)
+        {
+            GarmentTest_Detail_Result result = new GarmentTest_Detail_Result();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            try
+            {
+                result.Result = true;
+                string errMsg = string.Empty;
+
+                // Detail Save
+                _IGarmentTestDetailProvider = new GarmentTestDetailProvider(_ISQLDataTransaction);
+                if (_IGarmentTestDetailProvider.Update_GarmentTestDetail(source.Detail) == false)
+                {
+                    _ISQLDataTransaction.RollBack();
+                    result.Result = false;
+                    result.ErrMsg = "Update detail is empty.";
+                    return result;
+                }
+
+                // Shrinkage Save
+                _IGarmentTestDetailShrinkageProvider = new GarmentTestDetailShrinkageProvider(_ISQLDataTransaction);
+                #region 檢查空值
+                foreach (var item in source.Shrinkages)
+                {
+                    bool isAllEmpty = (item.AfterWash1 == 0) && (item.AfterWash2 == 0) && (item.AfterWash3 == 0);
+
+                    if (item.BeforeWash == 0 && isAllEmpty == false)
+                    {
+                        result.Result = false;
+                        result.ErrMsg = @"<BeforeWash> can not be empty or 0 !!";
+                        return result;
+                    }
+                }
+                #endregion
+
+                if (_IGarmentTestDetailShrinkageProvider.Update_GarmentTestShrinkage(source.Shrinkages) == false)
+                {
+                    _ISQLDataTransaction.RollBack();
+                    result.Result = false;
+                    result.ErrMsg = "Update Shrinkage is empty.";
+                    return result;
+                }
+
+                // Spirality Save
+                _IGarmentDetailSpiralityProvider = new GarmentDetailSpiralityProvider(_ISQLDataTransaction);
+                if (_IGarmentDetailSpiralityProvider.Update_Spirality(source.Spiralities) == false)
+                {
+                    _ISQLDataTransaction.RollBack();
+                    result.Result = false;
+                    result.ErrMsg = "Update Spirality is empty.";
+                    return result;
+                }
+
+                // Apperance Save 
+                _IGarmentTestDetailApperanceProvider = new GarmentTestDetailApperanceProvider(_ISQLDataTransaction);
+                if (_IGarmentTestDetailApperanceProvider.Update_Apperance(source.Apperance) == false)
+                {
+                    _ISQLDataTransaction.RollBack();
+                    result.Result = false;
+                    result.ErrMsg = "Update Apperance is empty.";
+                    return result;
+                }
+
+                // FGPT Save
+                _IGarmentTestDetailFGPTProvider = new GarmentTestDetailFGPTProvider(_ISQLDataTransaction);
+                if (_IGarmentTestDetailFGPTProvider.Update_FGPT(source.FGPT) == false)
+                {
+                    _ISQLDataTransaction.RollBack();
+                    result.Result = false;
+                    result.ErrMsg = "Update FGPT is empty.";
+                    return result;
+                }
+
+                // FGWT Save
+                _IGarmentTestDetailFGWTProvider = new GarmentTestDetailFGWTProvider(_ISQLDataTransaction);
+                if (_IGarmentTestDetailFGWTProvider.Update_FGWT(source.FGWT) == false)
+                {
+                    _ISQLDataTransaction.RollBack();
+                    result.Result = false;
+                    result.ErrMsg = "Update FGWT is empty.";
+                    return result;
+                }
+                _ISQLDataTransaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                _ISQLDataTransaction.RollBack();
+                result.Result = false;
+                result.ErrMsg = ex.Message;
+            }
+            finally { _ISQLDataTransaction.CloseConnection(); }
 
             return result;
         }
