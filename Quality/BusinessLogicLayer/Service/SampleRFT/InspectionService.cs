@@ -287,7 +287,6 @@ namespace BusinessLogicLayer.Service
                     if (string.IsNullOrEmpty(item.DefectCode)) { emptyMsg += "Detail DefectCode cannot be empty." + Environment.NewLine; }
                     if (string.IsNullOrEmpty(item.AreaCode)) { emptyMsg += "Detail AreaCode cannot be empty." + Environment.NewLine; }
 
-                    if (string.IsNullOrEmpty(item.PMS_RFTBACriteriaID)) { emptyMsg += "Detail PMS_RFTBACriteriaID cannot be empty." + Environment.NewLine; }
                     if (string.IsNullOrEmpty(item.PMS_RFTRespID)) { emptyMsg += "Detail PMS_RFTRespID cannot be empty." + Environment.NewLine; }
 
                     if (string.IsNullOrEmpty(item.GarmentDefectTypeID)) { emptyMsg += "Detail GarmentDefectTypeID cannot be empty." + Environment.NewLine; }
