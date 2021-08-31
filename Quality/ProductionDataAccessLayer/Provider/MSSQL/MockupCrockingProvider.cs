@@ -250,12 +250,15 @@ SELECT
         ,ArtworkTypeID
         ,Remark
         ,T1Subcon
+		,T1SubconName = Concat (T1Subcon,'-'+(select Abb from LocalSupp where ID = T1Subcon))
         ,TestDate
         ,ReceivedDate
         ,ReleasedDate
         ,Result
         ,Technician
+        ,TechnicianName = TechnicianName.Name_Extno
         ,MR
+		,MRName = MRName.Name_Extno
         ,Type
         ,TestBeforePicture
         ,TestAfterPicture
@@ -263,11 +266,13 @@ SELECT
         ,AddName
         ,EditDate
         ,EditName
-        ,EditName
-        ,Abb = (select Abb from LocalSupp where ID = T1Subcon)
-        ,TechnicianName = (select name from pass1 p where p.ID = Technician)
         ,SignaturePic = (select PicPath from system) + (select t.SignaturePic from Technician t where t.ID = Technician)
-FROM [MockupCrocking]
+		,LastEditName = iif(EditName <> '', Concat (EditName, '-', EditName.Name, ' ', Format(EditDate,'yyyy/MM/dd HH:mm:ss')), Concat (AddName, '-', AddName.Name, ' ', Format(AddDate,'yyyy/MM/dd HH:mm:ss')))
+FROM [MockupCrocking] m
+outer apply (select Name_Extno from View_ShowName where id = m.Technician) TechnicianName
+outer apply (select Name_Extno from View_ShowName where id = m.MR) MRName
+outer apply (select Name from Pass1 where id = m.AddName) AddName
+outer apply (select Name from Pass1 where id = m.EditName) EditName
 ");
             SbSql.Append("Where 1 = 1" + Environment.NewLine);
 

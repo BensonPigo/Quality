@@ -12,5 +12,7 @@ namespace BusinessLogicLayer.Interface.BulkFGT
         MockupCrockings_ViewModel Create(MockupCrockings_ViewModel MockupCrocking);
 
         MockupCrocking_ViewModel GetExcel(string ReportNo);
+
+        MockupCrockingScale GetScale();
     }
 }

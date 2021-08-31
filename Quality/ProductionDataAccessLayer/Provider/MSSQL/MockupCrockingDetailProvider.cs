@@ -196,7 +196,9 @@ SELECT
         ,md.Remark
         ,md.EditName
         ,md.EditDate
-        ,FabricColorName = (select Name from Color WITH (NOLOCK) where ID = md.FabricColor and BrandID = m.BrandID )
+		,ArtworkColorName = (select stuff((select concat(';', Name) from Color where ID in (select Data from SplitString(md.ArtworkColor,';')) and BrandID = m.BrandID for xml path('')),1,1,''))
+        ,FabricColorName = (select stuff((select concat(';', Name) from Color where ID in (select Data from SplitString(md.FabricColor,';')) and BrandID = m.BrandID for xml path('')),1,1,''))
+		,LastUpdate = Concat (md.EditName, '-', Format(md.EditDate,'yyyy/MM/dd HH:mm:ss'))
 FROM [MockupCrocking_Detail] md
 inner join MockupCrocking m on m.ReportNo = md.ReportNo
 Where 1=1
