@@ -263,6 +263,46 @@ Update GarmentTest_Detail set Status=@Status where id = @ID
             return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
         }
 
+        public DataTable Get_Mail_Content(string ID, string No)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.String, ID } ,
+                { "@No", DbType.String, No } ,
+            };
+
+            string sqlcmd = @"
+select  
+g.StyleID
+,g.BrandID
+,g.SeasonID
+,g.Article
+,g.OrderID
+,[SpecialMark] = SpecialMark.Value
+,gd.No
+,gd.SizeCode
+,[TestDate] = gd.inspdate
+,g.Result
+,[450 Result] = gd.SeamBreakageResult
+,[451 Result] = gd.OdourResult
+,[701 Result] = gd.WashResult
+,gd.inspector
+,[Comments] = gd.Remark
+from GarmentTest g
+inner join GarmentTest_Detail gd on g.ID = gd.ID
+outer apply(
+	select Value =  r.Name 
+	from Style s
+	inner join Reason r on s.SpecialMark = r.ID and r.ReasonTypeID = 'Style_SpecialMark'
+	where s.ID = g.StyleID
+	and s.BrandID = g.BrandID
+	and s.SeasonID = g.SeasonID
+)SpecialMark
+where gd.ID = @ID and gd.No = @No
+";
+            return ExecuteDataTable(CommandType.Text, sqlcmd, objParameter);
+        }
+
         /*回傳Garment Test(Get) 詳細敘述如下*/
         /// <summary>
         /// 回傳Garment Test

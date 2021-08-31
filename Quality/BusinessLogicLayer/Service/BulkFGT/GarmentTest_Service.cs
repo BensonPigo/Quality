@@ -10,6 +10,9 @@ using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
 using ADOHelper.Utility;
 using System.Data;
+using DatabaseObject.ManufacturingExecutionDB;
+using ManufacturingExecutionDataAccessLayer.Interface;
+using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -382,10 +385,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public GarmentTest_Detail_Result Encode_Detail(GarmentTest_Detail_Result viewModel, string GroupName, DetailStatus status)
+        public GarmentTest_Detail_Result Encode_Detail(GarmentTest_ViewModel Main, GarmentTest_Detail_ViewModel Detail, List<Quality_MailGroup> mailGroups, DetailStatus status)
         {
             GarmentTest_Detail_Result result = new GarmentTest_Detail_Result();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            IBulkFGTMailGroupProvider _BulkFGTMailGroupProvider = new BulkFGTMailGroupProvider(Common.ManufacturingExecutionDataAccessLayer);
             try
             {
                 switch (status)
@@ -393,16 +397,38 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     case DetailStatus.Encode:
                         _IGarmentTestDetailProvider = new GarmentTestDetailProvider(_ISQLDataTransaction);
 
-                        // 代表所有result 有任一個是Fail 就寄信
-                        if (_IGarmentTestDetailProvider.Chk_AllResult(viewModel.Detail.ID.ToString(), viewModel.Detail.No.ToString()) == false)
+                        // all result 有任一個是Fail 就寄信
+                        if (_IGarmentTestDetailProvider.Chk_AllResult(Main.ID.ToString(), Detail.No.ToString()) == false)
                         {
+                            string ToAddress = string.Empty;
+                            string CCAddress = string.Empty;
 
+                            foreach (var item in mailGroups)
+                            {
+                                ToAddress += item + ";";
+                                CCAddress += item + ";";
+                            }
+
+                            if (string.IsNullOrEmpty(ToAddress) == true)
+                            {
+                                result.Result = false;
+                                result.ErrMsg = "To email address is empty!";
+                                return result;
+                            }
+
+                            DataTable dtContent = _IGarmentTestDetailProvider.Get_Mail_Content(Detail.ID.ToString(), Detail.No.ToString());
+
+                            //MailTools.MailToHtml(
+                            //    ToAddress
+
+                            //    ,
+                            //    );
                         }
-                        result.Result = _IGarmentTestDetailProvider.Encode_GarmentTestDetail(viewModel.Detail.ID.ToString(), "Confirmed");
+                        result.Result = _IGarmentTestDetailProvider.Encode_GarmentTestDetail(Detail.ID.ToString(), "Confirmed");
                         break;
                     case DetailStatus.Amend:
                         _IGarmentTestDetailProvider = new GarmentTestDetailProvider(_ISQLDataTransaction);
-                        result.Result = _IGarmentTestDetailProvider.Encode_GarmentTestDetail(viewModel.Detail.ID.ToString(), "New");
+                        result.Result = _IGarmentTestDetailProvider.Encode_GarmentTestDetail(Detail.ID.ToString(), "New");
                         break;
                     default:
                         break;
