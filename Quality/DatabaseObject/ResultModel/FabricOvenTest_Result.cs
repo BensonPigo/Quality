@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DatabaseObject.Public;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,7 @@ namespace DatabaseObject.ResultModel
     public class FabricOvenTest_Result
     {
         public FabricOvenTest_Main Main { get; set; }
-        public List<FabricOvenTest_Detail> Details { get; set; }
+        public List<FabricOvenTest_Detail> Details { get; set; } = new List<FabricOvenTest_Detail>();
     }
 
     public class FabricOvenTest_Main
@@ -43,8 +44,8 @@ namespace DatabaseObject.ResultModel
     public class FabricOvenTest_Detail_Result
     {
         public List<string> ScaleIDs { get; set; }
-        public FabricOvenTest_Detail_Main Main { get; set; }
-        public List<FabricOvenTest_Detail_Detail> Details { get; set; }
+        public FabricOvenTest_Detail_Main Main { get; set; } = new FabricOvenTest_Detail_Main();
+        public List<FabricOvenTest_Detail_Detail> Details { get; set; } = new List<FabricOvenTest_Detail_Detail>();
     }
 
     public class FabricOvenTest_Detail_Main
@@ -59,7 +60,7 @@ namespace DatabaseObject.ResultModel
         public string Status { get; set; }
     }
 
-    public class FabricOvenTest_Detail_Detail
+    public class FabricOvenTest_Detail_Detail : CompareBase
     {
         public DateTime? SubmitDate { get; set; }
         public string OvenGroup { get; set; }
@@ -78,5 +79,39 @@ namespace DatabaseObject.ResultModel
         public string LastUpdate { get; set; }
         public string Temperature { get; set; }
         public string Time { get; set; }
+
+        public string Seq1 {
+            get {
+                if (string.IsNullOrEmpty(this.SEQ))
+                {
+                    return string.Empty;
+                }
+
+                if (!this.SEQ.Contains("-"))
+                {
+                    return string.Empty;
+                }
+
+                return this.SEQ.Split('-')[0].Trim();
+            }
+        }
+
+        public string Seq2
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(this.SEQ))
+                {
+                    return string.Empty;
+                }
+
+                if (!this.SEQ.Contains("-"))
+                {
+                    return string.Empty;
+                }
+
+                return this.SEQ.Split('-')[1].Trim();
+            }
+        }
     }
 }
