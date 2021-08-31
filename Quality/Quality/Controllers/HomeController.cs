@@ -70,6 +70,7 @@ namespace Quality.Controllers
                 this.BulkFGT_Brand = result.pass1.BulkFGT_Brand;
                 this.MenuList = result.Menus;
                 this.Factorys = result.Factorys;
+                this.MDivisionID = result.MDivisionID;
                 this.FactoryID = result.FactoryID;
                 this.Lines = result.Lines;
                 this.Line = this.Lines.FirstOrDefault();
