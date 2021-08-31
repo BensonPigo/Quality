@@ -99,7 +99,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             GarmentTest_ViewModel result = new GarmentTest_ViewModel()
             {
-                SaveResult = false,
+                SaveResult = true,
                 ErrMsg = "Err",
             };
 
@@ -166,6 +166,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Content(html);
         }
 
+        [HttpPost]
         public ActionResult ChangeSizeCode(string OrderID, string Brand, string Season, string Style, string Article)
         {
             bool chk = _GarmentTest_Service.CheckOrderID(OrderID, Brand, Season, Style);

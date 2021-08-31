@@ -79,6 +79,8 @@ where junk = 0
                 paras.Add("@BrandID", DbType.String, BrandID);
             }
 
+            SbSql.Append(" Order by ID desc");
+
             return ExecuteList<Window_Season>(CommandType.Text, SbSql.ToString(), paras);
         }
 

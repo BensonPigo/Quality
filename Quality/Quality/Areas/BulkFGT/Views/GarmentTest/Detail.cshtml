@@ -83,6 +83,16 @@
         color: black !important;
     }
 
+    .IsEditMode {
+        color: white !important;
+        cursor: pointer;
+    }
+
+    .IsEditModeQuery {
+        color: gray !important;
+        cursor: no-drop;
+    }
+
     .bigSize {
         width: 3em; 
         height: 2em;
@@ -105,8 +115,11 @@
                             <tr>
                                 <td>
                                     <h4 id="Edit" style=" margin-right: 1em;">
-                                        <img src="~/Image/Icon/Exit.png" width="30" />
-                                        Exit
+                                        <a href="@Url.Action("Index", "GarmentTest", new { Brand = Model.Main.BrandID , Season = Model.Main.SeasonID, Style = Model.Main.StyleID, Article = Model.Main.Article })">
+                                            <img src="~/Image/Icon/Exit.png" width="30" />
+                                            Exit
+                                        </a>
+                                      
                                     </h4>
                                 </td>
                                 <td>
@@ -166,7 +179,12 @@
                                 <tbody>
                                     <tr>
                                         <td style="width:10vw;"><h4>Style#</h4></td>
-                                        <td style="width:20vw;">@Html.DisplayFor(o => Model.Main.StyleID, "", "")</td>
+                                        <td style="width:20vw;">
+                                            @Html.DisplayFor(o => Model.Main.StyleID, "", "")
+                                            @Html.TextBoxFor(o => Model.Detail.Status, "", new { @readonly = "readonly", @class = "display-None" })
+                                            @Html.TextBoxFor(o => Model.Detail.ID, "", new { @readonly = "readonly", @class = "display-None" })
+                                            @Html.TextBoxFor(o => Model.Detail.No, "", new { @readonly = "readonly", @class = "display-None" })
+                                        </td>
                                         <td style="width:10vw;"><h4>Season</h4></td>
                                         <td style="width:20vw;">@Html.DisplayFor(o => Model.Main.SeasonID, "", "")</td>
                                         <td style="width:10vw;"><h4>Brand</h4></td>
@@ -614,10 +632,48 @@
 
 
 <script type="text/javascript">
+    var msg;
+    var EditMode;
     $(function () {
+        msg = new MessagerAlert();
+        EditMode = false;
+        IsEditModeChange();
+
         tabChange();
+
     });
 
+    function IsEditModeChange() {
+        EditModeButtionBind();
+
+        if (EditMode) {
+            $("#Edit, #Encode, #Amend, #Report, #Picture").removeClass("IsEditMode");
+            $('#Save, #Undo').addClass("IsEditMode");
+            $('#btnGenerateFGWT').unbind('click').addClass("IsEditModeQuery");
+        }
+        else {
+            $("#Report, #Picture").addClass("IsEditMode");
+            $('#Save, #Undo').unbind('click').removeClass("IsEditMode");
+            $('#btnGenerateFGWT').removeClass("IsEditModeQuery");
+
+            if ($('#status').val() == "New") {
+                $('#Edit, #Encode').addClass("IsEditMode");
+            }
+
+            if ($('#status').val() == "Confirmed") {
+                $('#Amend').addClass("IsEditMode");
+            }
+        }
+    }
+
+    function EditModeButtionBind() {
+        $('#Edit').on('click', function () {
+            if ($('#garmentTest_StyleID').val() != "" && $('#garmentTest_SeasonID').val() != "" && $('#garmentTest_BrandID').val() != "") {
+                EditMode = true;
+                IsEditModeChange();
+            }
+        });
+    }
 
     function tabChange() {
         var $li = $('#tab-Change > ul.tab-title li');
@@ -636,7 +692,7 @@
             $('.AfterWash1,.AfterWash2,.AfterWash3').trigger('change');
         });
 
-        $('.AfterWash1').on('change', function () {            
+        $('.AfterWash1').on('change', function () {
             var tr = $(this).parent().parent();
             var wash = $(this).val();
             var before = tr.find("input[class='BeforeWash']").val();
