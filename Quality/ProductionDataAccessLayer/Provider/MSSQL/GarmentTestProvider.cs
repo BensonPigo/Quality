@@ -698,10 +698,14 @@ values(
         /// ===  ==========  ====  ==========  ==========
         /// 01.  2021/08/23  1.00    Admin        Create
         /// </history>
-        public IList<GarmentTest> Get(GarmentTest Item)
+        public IList<GarmentTest> Get(string ID)
         {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.String, ID } ,
+            };
+
             StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
             SbSql.Append("SELECT"+ Environment.NewLine);
             SbSql.Append("         ID"+ Environment.NewLine);
             SbSql.Append("        ,FirstOrderID"+ Environment.NewLine);
@@ -727,7 +731,7 @@ values(
             SbSql.Append("        ,OdourResult"+ Environment.NewLine);
             SbSql.Append("        ,WashResult"+ Environment.NewLine);
             SbSql.Append("FROM [GarmentTest]"+ Environment.NewLine);
-
+            SbSql.Append("where ID = " + Environment.NewLine);
 
 
             return ExecuteList<GarmentTest>(CommandType.Text, SbSql.ToString(), objParameter);
