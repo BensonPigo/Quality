@@ -698,10 +698,14 @@ values(
         /// ===  ==========  ====  ==========  ==========
         /// 01.  2021/08/23  1.00    Admin        Create
         /// </history>
-        public IList<GarmentTest> Get(GarmentTest Item)
+        public IList<GarmentTest_ViewModel> Get(string ID)
         {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.String, ID } ,
+            };
+
             StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
             SbSql.Append("SELECT"+ Environment.NewLine);
             SbSql.Append("         ID"+ Environment.NewLine);
             SbSql.Append("        ,FirstOrderID"+ Environment.NewLine);
@@ -727,10 +731,10 @@ values(
             SbSql.Append("        ,OdourResult"+ Environment.NewLine);
             SbSql.Append("        ,WashResult"+ Environment.NewLine);
             SbSql.Append("FROM [GarmentTest]"+ Environment.NewLine);
+            SbSql.Append("where ID = @ID" + Environment.NewLine);
 
 
-
-            return ExecuteList<GarmentTest>(CommandType.Text, SbSql.ToString(), objParameter);
+            return ExecuteList<GarmentTest_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
         }
 		/*建立Garment Test(Create) 詳細敘述如下*/
         /// <summary>
