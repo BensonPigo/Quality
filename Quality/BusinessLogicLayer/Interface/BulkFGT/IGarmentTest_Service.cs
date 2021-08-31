@@ -26,15 +26,15 @@ namespace BusinessLogicLayer.Interface.BulkFGT
 
         GarmentTest_ViewModel ReceiveMail(string ID, string No, string UserID);
 
-        IList<GarmentTest_Detail_Shrinkage> Get_Shrinkage(Int64 ID, string No);
+        IList<GarmentTest_Detail_Shrinkage> Get_Shrinkage(string ID, string No);
 
-        IList<Garment_Detail_Spirality> Get_Spirality(Int64 ID, string No);
+        IList<Garment_Detail_Spirality> Get_Spirality(string ID, string No);
 
-        IList<GarmentTest_Detail_Apperance_ViewModel> Get_Apperance(Int64 ID, string No);
+        IList<GarmentTest_Detail_Apperance_ViewModel> Get_Apperance(string ID, string No);
 
-        IList<GarmentTest_Detail_FGWT_ViewModel> Get_FGWT(Int64 ID, string No);
+        IList<GarmentTest_Detail_FGWT_ViewModel> Get_FGWT(string ID, string No);
 
-        IList<GarmentTest_Detail_FGPT_ViewModel> Get_FGPT(Int64 ID, string No);
+        IList<GarmentTest_Detail_FGPT_ViewModel> Get_FGPT(string ID, string No);
 
         GarmentTest_ViewModel Save_GarmentTest(GarmentTest_ViewModel garmentTest_ViewModel, List<GarmentTest_Detail> detail);
 
@@ -45,5 +45,13 @@ namespace BusinessLogicLayer.Interface.BulkFGT
         GarmentTest_Detail_Result Save_GarmentTestDetail(GarmentTest_Detail_Result source);
 
         string Get_LastResult(string ID);
+
+        GarmentTest_Detail_Result Get_All_Detail(string ID, string No);
+
+        GarmentTest_ViewModel Get_Main(string ID);
+
+        GarmentTest_Detail_ViewModel Get_Detail(string ID, string No);
+
+        List<string> Get_Scales();
     }
 }

@@ -698,7 +698,7 @@ values(
         /// ===  ==========  ====  ==========  ==========
         /// 01.  2021/08/23  1.00    Admin        Create
         /// </history>
-        public IList<GarmentTest> Get(string ID)
+        public IList<GarmentTest_ViewModel> Get(string ID)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
@@ -731,10 +731,10 @@ values(
             SbSql.Append("        ,OdourResult"+ Environment.NewLine);
             SbSql.Append("        ,WashResult"+ Environment.NewLine);
             SbSql.Append("FROM [GarmentTest]"+ Environment.NewLine);
-            SbSql.Append("where ID = " + Environment.NewLine);
+            SbSql.Append("where ID = @ID" + Environment.NewLine);
 
 
-            return ExecuteList<GarmentTest>(CommandType.Text, SbSql.ToString(), objParameter);
+            return ExecuteList<GarmentTest_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
         }
 		/*建立Garment Test(Create) 詳細敘述如下*/
         /// <summary>

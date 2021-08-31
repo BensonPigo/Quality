@@ -19,5 +19,9 @@ namespace ProductionDataAccessLayer.Interface
         string Get_LastResult(string ID);
 
         bool Chk_AllResult(string ID, string No);
+
+        IList<GarmentTest_Detail_ViewModel> Get(string ID, string No);
+
+        List<string> GetScales();
     }
 }
