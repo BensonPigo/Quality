@@ -347,11 +347,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         {
 
                         }
-                        result.Result = _IGarmentTestDetailProvider.Encode_GarmentTestDetail(ID, "Confirmed");
+                        result.Result = _IGarmentTestDetailProvider.Encode_GarmentTestDetail(viewModel.Detail.ID.ToString(), "Confirmed");
                         break;
                     case DetailStatus.Amend:
                         _IGarmentTestDetailProvider = new GarmentTestDetailProvider(_ISQLDataTransaction);
-                        result.Result = _IGarmentTestDetailProvider.Encode_GarmentTestDetail(ID, "New");
+                        result.Result = _IGarmentTestDetailProvider.Encode_GarmentTestDetail(viewModel.Detail.ID.ToString(), "New");
                         break;
                     default:
                         break;
