@@ -21,11 +21,13 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();
             objParameter.Add("@Type ", DbType.String, quality_Mail.Type);
+            objParameter.Add("@FactoryID ", DbType.String, quality_Mail.FactoryID);
             StringBuilder SbSql = new StringBuilder();
             SbSql.Append(@"
 select q.FactoryID, q.Type, q.GroupName, q.ToAddress, q.CcAddress
 from Quality_MailGroup q
 where q.Type = @Type
+and q.FactoryID = @FactoryID
 ");
             return ExecuteList<Quality_MailGroup>(CommandType.Text, SbSql.ToString(), objParameter);
         }

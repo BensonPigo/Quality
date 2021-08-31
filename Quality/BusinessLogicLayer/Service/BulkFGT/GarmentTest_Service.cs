@@ -331,7 +331,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public GarmentTest_Detail_Result Encode_Detail(string ID, string No, DetailStatus status)
+        public GarmentTest_Detail_Result Encode_Detail(GarmentTest_Detail_Result viewModel, string GroupName, DetailStatus status)
         {
             GarmentTest_Detail_Result result = new GarmentTest_Detail_Result();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
@@ -343,7 +343,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         _IGarmentTestDetailProvider = new GarmentTestDetailProvider(_ISQLDataTransaction);
 
                         // 代表所有result 有任一個是Fail 就寄信
-                        if (_IGarmentTestDetailProvider.Chk_AllResult(ID, No) == false)
+                        if (_IGarmentTestDetailProvider.Chk_AllResult(viewModel.Detail.ID.ToString(), viewModel.Detail.No.ToString()) == false)
                         {
 
                         }
