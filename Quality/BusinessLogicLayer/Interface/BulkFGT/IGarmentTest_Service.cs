@@ -38,7 +38,7 @@ namespace BusinessLogicLayer.Interface.BulkFGT
 
         GarmentTest_ViewModel Save_GarmentTest(GarmentTest_ViewModel garmentTest_ViewModel, List<GarmentTest_Detail> detail);
 
-        GarmentTest_Result Generate_FGWT(GarmentTest_Detail_Result viewModel);
+        GarmentTest_Result Generate_FGWT(GarmentTest_ViewModel Main, GarmentTest_Detail_ViewModel Detail);
 
         GarmentTest_ViewModel DeleteDetail(string ID, string No);
 
