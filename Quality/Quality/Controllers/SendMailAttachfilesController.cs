@@ -1,4 +1,5 @@
-﻿using BusinessLogicLayer.Interface;
+﻿using ADOHelper.Utility;
+using BusinessLogicLayer.Interface;
 using BusinessLogicLayer.Service;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
@@ -12,12 +13,11 @@ namespace Quality.Controllers
 {
     public class SendMailAttachfilesController : BaseController
     {
-        private ISendMailService _SendMailService;
+        private MailTools _SendMail;
 
         public SendMailAttachfilesController()
         {
-            _SendMailService = new SendMailService();
-
+            _SendMail = new MailTools();
         }
 
         public ActionResult SendMailer(string TO, string CC)
@@ -36,7 +36,7 @@ namespace Quality.Controllers
         [HttpPost]
         public ActionResult SendMailer(SendMail_Request _Request)
         {
-            SendMail_Result result = _SendMailService.SendMail(_Request);
+            SendMail_Result result = MailTools.SendMail(_Request);
 
             string js = "";
            
