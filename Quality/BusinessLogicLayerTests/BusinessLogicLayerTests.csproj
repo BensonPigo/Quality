@@ -70,6 +70,7 @@
     <Compile Include="Service\FinalInspection\FinalInspectionSettingServiceTests.cs" />
     <Compile Include="Service\InspectionServiceTests.cs" />
     <Compile Include="Service\CFTCommentsTests.cs" />
+    <Compile Include="Service\SendmailTests.cs" />
     <Compile Include="Service\RFTPerLineServiceTests.cs" />
     <Compile Include="Service\BulkFGT\BulkFGTMailGroupTest.cs" />
     <Compile Include="Service\SampleRFT\MeasurementServiceTests.cs" />

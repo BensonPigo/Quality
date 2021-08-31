@@ -37,6 +37,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.Helpers.dll</HintPath>
     </Reference>
@@ -175,7 +176,7 @@
     <Compile Include="ViewModel\Inspection_ViewModel.cs" />
     <Compile Include="ViewModel\ReworkList_ViewModel.cs" />
     <Compile Include="ViewModel\SampleRFT\CFTComments_ViewModel.cs" />
-    <Compile Include="ViewModel\BulkFGT\MockupCrocking_ViewModel.cs" />
+    <Compile Include="ViewModel\BulkFGT\MockupCrockings_ViewModel.cs" />
     <Compile Include="ViewModel\RFTPerLine_ViewModel.cs" />
     <Compile Include="ViewModel\RFT_Inspection_Measurement_ViewModel.cs" />
     <Compile Include="ViewModel\RFT_OrderComments_ViewModel.cs" />

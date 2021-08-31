@@ -23,29 +23,48 @@ namespace BusinessLogicLayer.Service
             {
                 _SystemProvider = new SystemProvider(Common.ProductionDataAccessLayer);
                 var system = _SystemProvider.Get();
+                if (system == null || system.Count == 0)
+                {
+                    sendMail_Result.result = false;
+                    sendMail_Result.resultMsg = "Get system datas fail!";
+                    return sendMail_Result; ;
+                }
 
                 MailMessage message = new MailMessage();
-                message.From = new MailAddress(SendMail_Request.From);
+                message.From = new MailAddress(system[0].Sendfrom);
 
-                foreach (var to in SendMail_Request.To.Split(';'))
+                if (SendMail_Request.To != null && SendMail_Request.To != string.Empty)
                 {
-                    if (!string.IsNullOrEmpty(to))
+                    foreach (var to in SendMail_Request.To.Split(';'))
                     {
-                        message.To.Add(to);
+                        if (!string.IsNullOrEmpty(to))
+                        {
+                            message.To.Add(to);
+                        }
                     }
                 }
 
-                foreach (var cc in SendMail_Request.CC.Split(';'))
+                if (SendMail_Request.CC != null && SendMail_Request.CC != string.Empty)
                 {
-                    if (!string.IsNullOrEmpty(cc))
+                    foreach (var cc in SendMail_Request.CC.Split(';'))
                     {
-                        message.To.Add(cc);
+                        if (!string.IsNullOrEmpty(cc))
+                        {
+                            message.To.Add(cc);
+                        }
                     }
                 }
 
-                message.Subject = SendMail_Request.Subject;
+                if (SendMail_Request.Subject != null)
+                {
+                    message.Subject = SendMail_Request.Subject;
+                }
+
                 message.IsBodyHtml = true;
-                message.Body = SendMail_Request.Body;
+                if (SendMail_Request.Body != null)
+                {
+                    message.Body = SendMail_Request.Body;
+                }
 
                 // mail Smtp
                 SmtpClient client = new SmtpClient(system[0].Mailserver);
@@ -55,14 +74,15 @@ namespace BusinessLogicLayer.Service
                 client.DeliveryMethod = SmtpDeliveryMethod.Network;
 
                 // 夾檔
-                foreach (var file in SendMail_Request.FileList)
+                if (SendMail_Request.FileUploader != null && SendMail_Request.FileUploader.Count > 0)
                 {
-                    if (!file.Equals(string.Empty))
+                    foreach (var fileUploader in SendMail_Request.FileUploader)
                     {
-                        //string filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
-                        string filepath = file;
-                        Attachment attachFile = new Attachment(filepath);
-                        message.Attachments.Add(attachFile);
+                        if (fileUploader != null)
+                        {
+                            string fileName = Path.GetFileName(fileUploader.FileName);
+                            message.Attachments.Add(new Attachment(fileUploader.InputStream, fileName));
+                        }
                     }
                 }
 

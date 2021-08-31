@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Web;
 
 namespace DatabaseObject.RequestModel
 {
     public class SendMail_Request
     {
-        public string From { get; set; }
         public string To { get; set; }
         public string CC { get; set; }
         public string Subject { get; set; }
@@ -13,6 +13,6 @@ namespace DatabaseObject.RequestModel
         /// <summary>
         /// 路徑+檔案名稱
         /// </summary>
-        public List<string> FileList { get; set; }
+        public List<HttpPostedFileBase> FileUploader { get; set; }
     }
 }
