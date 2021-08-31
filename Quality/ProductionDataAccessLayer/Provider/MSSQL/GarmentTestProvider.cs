@@ -136,11 +136,22 @@ and g.Article = @Article" + Environment.NewLine;
             return ExecuteList<GarmentTest_ViewModel>(CommandType.Text, sqlcmd, objParameter);
         }
 
-        public int Save_GarmentTest(GarmentTest_ViewModel master, List<GarmentTest_Detail> detail)
+        public bool Save_GarmentTest(GarmentTest_ViewModel master, List<GarmentTest_Detail> detail)
         {
-            string sqlcmd = "";
-            SQLParameterCollection objParameterDetail = new SQLParameterCollection();
-            int cnt = 0;
+            bool result = true;
+            #region 產生新的No
+            string sql_MaxNo = $@"select MaxNo = isnull(max(No),0) from GarmentTest_Detail with(nolock) where  id = '{master.ID}'";
+            DataTable dtMaxNo = ExecuteDataTableByServiceConn(CommandType.Text, sql_MaxNo, new SQLParameterCollection());
+            int maxno = Convert.ToInt32(dtMaxNo.Rows[0]["MaxNo"]);
+            foreach (var item in detail)
+            {
+                if (item.No == 0 || item.No == null)
+                {
+                    maxno++;
+                    item.No = maxno;
+                }
+            }
+            #endregion
 
             foreach (var item in detail)
             {
@@ -415,43 +426,45 @@ INSERT INTO GarmentTest_Detail_FGPT
                 #endregion
 
                 #region Save Detail 
+
+                SQLParameterCollection objParameterDetail = new SQLParameterCollection();
                 // 代表已有資料, update
                 objParameterDetail.Add($"@ID", master.ID);
-                objParameterDetail.Add($"@No{cnt}", item.No == null ? 0 : item.No);
+                objParameterDetail.Add($"@No", item.No == null ? 0 : item.No);
 
-                objParameterDetail.Add($"@SizeCode{cnt}", string.IsNullOrEmpty(item.SizeCode) ? string.Empty : item.SizeCode);
-                objParameterDetail.Add($"@MtlTypeID{cnt}", string.IsNullOrEmpty(item.MtlTypeID) ? string.Empty : item.MtlTypeID);
-                objParameterDetail.Add($"@Result{cnt}", string.IsNullOrEmpty(item.Result) ? string.Empty : item.Result);
-                objParameterDetail.Add($"@NonSeamBreakageTest{cnt}", item.NonSeamBreakageTest == null ? false : item.NonSeamBreakageTest);
-                objParameterDetail.Add($"@SeamBreakageResult{cnt}", string.IsNullOrEmpty(item.SeamBreakageResult) ? string.Empty : item.SeamBreakageResult);
-                objParameterDetail.Add($"@OdourResult{cnt}", string.IsNullOrEmpty(item.OdourResult) ? string.Empty : item.OdourResult);
-                objParameterDetail.Add($"@WashResult{cnt}", string.IsNullOrEmpty(item.WashResult) ? string.Empty : item.WashResult);
-                objParameterDetail.Add($"@inspector{cnt}", string.IsNullOrEmpty(item.inspector) ? string.Empty : item.inspector);                
-                objParameterDetail.Add($"@Remark{cnt}", string.IsNullOrEmpty(item.Remark) ? string.Empty : item.Remark);
-                objParameterDetail.Add($"@EditName{cnt}", string.IsNullOrEmpty(item.EditName) ? string.Empty : item.EditName);
-                objParameterDetail.Add($"@AddName{cnt}", string.IsNullOrEmpty(item.AddName) ? string.Empty : item.AddName);
+                objParameterDetail.Add($"@SizeCode", string.IsNullOrEmpty(item.SizeCode) ? string.Empty : item.SizeCode);
+                objParameterDetail.Add($"@MtlTypeID", string.IsNullOrEmpty(item.MtlTypeID) ? string.Empty : item.MtlTypeID);
+                objParameterDetail.Add($"@Result", string.IsNullOrEmpty(item.Result) ? string.Empty : item.Result);
+                objParameterDetail.Add($"@NonSeamBreakageTest", item.NonSeamBreakageTest == null ? false : item.NonSeamBreakageTest);
+                objParameterDetail.Add($"@SeamBreakageResult", string.IsNullOrEmpty(item.SeamBreakageResult) ? string.Empty : item.SeamBreakageResult);
+                objParameterDetail.Add($"@OdourResult", string.IsNullOrEmpty(item.OdourResult) ? string.Empty : item.OdourResult);
+                objParameterDetail.Add($"@WashResult", string.IsNullOrEmpty(item.WashResult) ? string.Empty : item.WashResult);
+                objParameterDetail.Add($"@inspector", string.IsNullOrEmpty(item.inspector) ? string.Empty : item.inspector);                
+                objParameterDetail.Add($"@Remark", string.IsNullOrEmpty(item.Remark) ? string.Empty : item.Remark);
+                objParameterDetail.Add($"@EditName", string.IsNullOrEmpty(item.EditName) ? string.Empty : item.EditName);
+                objParameterDetail.Add($"@AddName", string.IsNullOrEmpty(item.AddName) ? string.Empty : item.AddName);
 
-                //objParameterDetail.Add($"@inspdate{cnt}", item.inspdate == null ? DBNull.Value : ((DateTime)item.inspdate).ToString("d"));
+                //objParameterDetail.Add($"@inspdate", item.inspdate == null ? DBNull.Value : ((DateTime)item.inspdate).ToString("d"));
 
                 string inspDate = (item.inspdate == null) ? "Null" : "'" + ((DateTime)item.inspdate).ToString("d") + "'";
 
-
+                string sqlcmd = string.Empty;
                 if (dtDetail.Rows.Count > 0)
                 {
                     sqlcmd += $@"
 update GarmentTest_Detail
-set SizeCode = @SizeCode{cnt}
-,MtlTypeID = @MtlTypeID{cnt}
-,Result = @Result{cnt}
-,NonSeamBreakageTest = @NonSeamBreakageTest{cnt}
-,SeamBreakageResult = @SeamBreakageResult{cnt}
-,OdourResult = @OdourResult{cnt}
-,WashResult = @WashResult{cnt}
-,inspector = @inspector{cnt},inspdate = @inspdate{cnt}
-,Remark = @Remark{cnt}
-,EditName = @EditName{cnt},EditDate = GetDate()
+set SizeCode = @SizeCode
+,MtlTypeID = @MtlTypeID
+,Result = @Result
+,NonSeamBreakageTest = @NonSeamBreakageTest
+,SeamBreakageResult = @SeamBreakageResult
+,OdourResult = @OdourResult
+,WashResult = @WashResult
+,inspector = @inspector,inspdate = @inspdate
+,Remark = @Remark
+,EditName = @EditName,EditDate = GetDate()
 where ID = @ID
-and No = @No{cnt}
+and No = @No
 " + Environment.NewLine;
                 }
                 else
@@ -466,22 +479,22 @@ insert into GarmentTest_Detail(
     ,AddName,AddDate
 )
 values(
-    @ID,@No{cnt},@SizeCode{cnt},@MtlTypeID{cnt},@Result{cnt},@NonSeamBreakageTest{cnt},@SeamBreakageResult{cnt},@OdourResult{cnt}
-    ,@WashResult{cnt}
-    ,@inspector{cnt}
+    @ID,@No,@SizeCode,@MtlTypeID,@Result,@NonSeamBreakageTest,@SeamBreakageResult,@OdourResult
+    ,@WashResult
+    ,@inspector
     ,{inspDate}
-    ,@Remark{cnt}
-    ,@AddName{cnt}, GetDate()
+    ,@Remark
+    ,@AddName, GetDate()
 )
 ";
                 }
 
-                #endregion
+                result = Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameterDetail)) > 0;
 
-                cnt++;
+                #endregion
             }
 
-            return ExecuteNonQuery(CommandType.Text, sqlcmd, objParameterDetail);
+            return result;
         }
 
         /// <summary>

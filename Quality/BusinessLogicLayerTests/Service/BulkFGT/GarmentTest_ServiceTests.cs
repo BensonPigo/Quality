@@ -199,10 +199,10 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
 
                 GarmentTest_Detail detail2 = new GarmentTest_Detail
                 {
-                    No = 2,
+                    //No = 2,
                     Result = "P",
                     inspdate = Convert.ToDateTime("2021-07-01"),
-                    Remark = "test",
+                    Remark = "test 4",
                     AddName = "Scimis",
                     AddDate = DateTime.Now,
                     Status = "New",
@@ -213,10 +213,10 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
 
                 GarmentTest_Detail detail3 = new GarmentTest_Detail
                 {
-                    No = 3,
+                    //No = 3,
                     //Result = "P",
                     //inspdate = Convert.ToDateTime("2021-07-01"),
-                    Remark = "test 3",
+                    Remark = "test 5",
                     AddName = "Scimis",
                     AddDate = DateTime.Now,
                     //Status = "New",
@@ -229,7 +229,7 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
 
                 List<GarmentTest_Detail> details = new List<GarmentTest_Detail>();
                 //details.Add(detail);
-                //details.Add(detail2);
+                details.Add(detail2);
                 details.Add(detail3);
 
                 #region 判斷是否空值
@@ -240,19 +240,339 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
 
 
                 IGarmentTestProvider _IGarmentTestProvider = new GarmentTestProvider(_ISQLDataTransaction);
-                int saveCnt = _IGarmentTestProvider.Save_GarmentTest(garmentTest_ViewModel, details);
+                bool saveCnt = _IGarmentTestProvider.Save_GarmentTest(garmentTest_ViewModel, details);
                 _ISQLDataTransaction.Commit();
 
-                Assert.IsTrue(saveCnt > 0);
+                Assert.IsTrue(saveCnt);
             }
             catch (Exception ex)
             {
                 Assert.Fail();
-                throw;
+                throw ex;
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
 
 
+        }
+
+        [TestMethod()]
+        public void Generate_FGWTTest()
+        {
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            try
+            {
+                GarmentTest_Detail_Result result = new GarmentTest_Detail_Result();
+                GarmentTest_Detail_ViewModel detail = new GarmentTest_Detail_ViewModel
+                {
+                    ID = 16608,
+                    No = 8,
+                    SubmitDate = Convert.ToDateTime("2021-08-30"),
+                    ArrivedQty = 1,
+                    LOtoFactory = "ESP",
+                    Result = "P",
+                    Remark = "Test",
+                    LineDry = true,
+                    Temperature = 30,
+                    TumbleDry = false,
+                    Machine = "Top Load",
+                    HandWash = false,
+                    Composition = "",
+                    Neck = true,
+                    Above50NaturalFibres = true,
+                    Above50SyntheticFibres = false,
+                    EditName = "SCIMIS",
+                };
+
+
+                // Detail Save
+                IGarmentTestDetailProvider _IGarmentTestDetailProvider = new GarmentTestDetailProvider(_ISQLDataTransaction);
+                if (_IGarmentTestDetailProvider.Update_GarmentTestDetail(detail) == false)
+                {
+                    _ISQLDataTransaction.RollBack();
+                    result.Result = false;
+                    result.ErrMsg = "Update detail is empty.";
+                    Assert.Fail();
+                }
+
+                // Shrinkage Save
+                GarmentTest_Detail_Shrinkage shrinkage = new GarmentTest_Detail_Shrinkage
+                {
+                    ID = 16608,
+                    No = 8,
+                    Location = "T",
+                    Type = "chest width",
+                    Seq = 1,
+                    BeforeWash = 4,
+                    SizeSpec = 2,
+                    AfterWash1 = 3,
+                    Shrinkage1 = -25,
+                    AfterWash2 = 4,
+                    Shrinkage2 = 0,
+                    AfterWash3 = 5,
+                    Shrinkage3 = 25,
+                };
+
+                GarmentTest_Detail_Shrinkage shrinkage2 = new GarmentTest_Detail_Shrinkage
+                {
+                    ID = 16608,
+                    No = 8,
+                    Location = "T",
+                    Type = "sleeve width",
+                    Seq = 2,
+                    BeforeWash = 2,
+                    SizeSpec = 2,
+                    AfterWash1 = 3,
+                    Shrinkage1 = 50,
+                    AfterWash2 = 4,
+                    Shrinkage2 = 100,
+                    AfterWash3 = 0,
+                    Shrinkage3 = 0,
+                };
+
+                List<GarmentTest_Detail_Shrinkage> Shrinkages = new List<GarmentTest_Detail_Shrinkage>();
+                Shrinkages.Add(shrinkage);
+                Shrinkages.Add(shrinkage2);
+
+                GarmentTestDetailShrinkageProvider _IGarmentTestDetailShrinkageProvider = new GarmentTestDetailShrinkageProvider(_ISQLDataTransaction);
+                if (_IGarmentTestDetailShrinkageProvider.Update_GarmentTestShrinkage(Shrinkages) == false)
+                {
+                    _ISQLDataTransaction.RollBack();
+                    result.Result = false;
+                    result.ErrMsg = "Update Shrinkage is empty.";
+                    Assert.Fail();
+                }
+
+
+                // Spirality Save
+                Garment_Detail_Spirality Spirality = new Garment_Detail_Spirality
+                {
+                    ID = 16608,
+                    No = 8,
+                    Location = "T",
+                    MethodA_AAPrime = 1,
+                    MethodA_APrimeB = 4,
+                    MethodB_AAPrime = 3,
+                    MethodB_AB = 5,
+                    CM = 2,
+                    MethodA = 25,
+                    MethodB = 60,
+                };
+
+                List<Garment_Detail_Spirality> Spiralities = new List<Garment_Detail_Spirality>();
+                Spiralities.Add(Spirality);
+
+                GarmentDetailSpiralityProvider _IGarmentDetailSpiralityProvider = new GarmentDetailSpiralityProvider(_ISQLDataTransaction);
+                if (_IGarmentDetailSpiralityProvider.Update_Spirality(Spiralities) == false)
+                {
+                    _ISQLDataTransaction.RollBack();
+                    result.Result = false;
+                    result.ErrMsg = "Update Spirality is empty.";
+                    Assert.Fail();
+                }
+
+
+
+                // Apperance Save 
+                GarmentTest_Detail_Apperance_ViewModel Apperance = new GarmentTest_Detail_Apperance_ViewModel
+                {
+                    ID = 16608,
+                    No = 8,
+                    Type = "Printing / Heat Transfer",
+                    Wash1 = "Accepted",
+                    Wash2 = "Rejected",
+                    Wash3 = "Accepted",
+                    Comment = "test",
+                    Seq = 1,
+                };
+
+                GarmentTest_Detail_Apperance_ViewModel Apperance2 = new GarmentTest_Detail_Apperance_ViewModel
+                {
+                    ID = 16608,
+                    No = 8,
+                    Type = "Label",
+                    Wash1 = "Accepted",
+                    Wash2 = "Rejected",
+                    Wash3 = "Accepted",
+                    Comment = "test",
+                    Seq = 2,
+                };
+                List<GarmentTest_Detail_Apperance_ViewModel> Apperances = new List<GarmentTest_Detail_Apperance_ViewModel>();
+                Apperances.Add(Apperance);
+                Apperances.Add(Apperance2);
+
+
+                GarmentTestDetailApperanceProvider _IGarmentTestDetailApperanceProvider = new GarmentTestDetailApperanceProvider(_ISQLDataTransaction);
+                if (_IGarmentTestDetailApperanceProvider.Update_Apperance(Apperances) == false)
+                {
+                    _ISQLDataTransaction.RollBack();
+                    result.Result = false;
+                    result.ErrMsg = "Update Apperance is empty.";
+                    Assert.Fail();
+                }
+
+
+                // FGPT Save
+                GarmentTest_Detail_FGPT_ViewModel FGPT = new GarmentTest_Detail_FGPT_ViewModel
+                {
+                    ID = 16608,
+                    No = 8,
+                    Location = "T",
+                    Type = "seam breakage after wash (only for welded/bonded seams): Garment - width direction - Upper body wear/ full body wear ({0}- Method B ≥180N ) Other Joining seam  selection",
+                    TestName = "PHX-AP0450",
+                    TestDetail = "N",
+                    Criteria = 180,
+                    TestResult = "",
+                    TestUnit = "N",
+                    Seq = 7,
+                    TypeSelection_Seq = 1,
+                    TypeSelection_VersionID = 1,
+                };
+
+                GarmentTest_Detail_FGPT_ViewModel FGPT2 = new GarmentTest_Detail_FGPT_ViewModel
+                {
+                    ID = 16608,
+                    No = 8,
+                    Location = "T",
+                    Type = "seam breakage after wash (only for welded/bonded seams): Garment - width direction - Upper body wear/ full body wear (Armhole seam - Method B ≥180N)",
+                    TestName = "PHX-AP0450",
+                    TestDetail = "N",
+                    Criteria = 180,
+                    TestResult = "",
+                    TestUnit = "N",
+                    Seq = 2,
+                    TypeSelection_Seq = 0,
+                    TypeSelection_VersionID = 0,
+                };
+
+                List<GarmentTest_Detail_FGPT_ViewModel> FGPTs = new List<GarmentTest_Detail_FGPT_ViewModel>();
+                FGPTs.Add(FGPT);
+
+                GarmentTestDetailFGPTProvider _IGarmentTestDetailFGPTProvider = new GarmentTestDetailFGPTProvider(_ISQLDataTransaction);
+                if (_IGarmentTestDetailFGPTProvider.Update_FGPT(FGPTs) == false)
+                {
+                    _ISQLDataTransaction.RollBack();
+                    result.Result = false;
+                    result.ErrMsg = "Update FGPT is empty.";
+                    Assert.Fail();
+                }
+
+                // FGWT Save
+                GarmentTest_Detail_FGWT_ViewModel FGWT = new GarmentTest_Detail_FGWT_ViewModel
+                {
+                    ID = 16608,
+                    No = 8,
+                    Location = "",
+                    Type = "spirality: Garment - hem opening in cm",
+                    TestDetail = "cm",
+                    BeforeWash = 2,
+                    SizeSpec = 0,
+                    AfterWash = 1,
+                    Shrinkage = -50,
+                    Scale = "",
+                    Criteria = 2,
+                    Criteria2 = 0,
+                    SystemType = "spirality: Garment - hem opening in cm",
+                    Seq = 1
+                };
+
+                GarmentTest_Detail_FGWT_ViewModel FGWT2 = new GarmentTest_Detail_FGWT_ViewModel
+                {
+                    ID = 16608,
+                    No = 8,
+                    Location = "T",
+                    Type = "dimensional change: jacket-like garment a) length of necktape",
+                    TestDetail = "%",
+                    BeforeWash = 2,
+                    SizeSpec = 0,
+                    AfterWash = 1,
+                    Shrinkage = -50,
+                    Scale = "",
+                    Criteria = 2,
+                    Criteria2 = 0,
+                    SystemType = "spirality: Garment - hem opening in cm",
+                    Seq = 1
+                };
+
+                List<GarmentTest_Detail_FGWT_ViewModel> FGWTs = new List<GarmentTest_Detail_FGWT_ViewModel>();
+                FGWTs.Add(FGWT);
+                FGWTs.Add(FGWT);
+
+                GarmentTestDetailFGWTProvider _IGarmentTestDetailFGWTProvider = new GarmentTestDetailFGWTProvider(_ISQLDataTransaction);
+                if (_IGarmentTestDetailFGWTProvider.Update_FGWT(FGWTs) == false)
+                {
+                    _ISQLDataTransaction.RollBack();
+                    result.Result = false;
+                    result.ErrMsg = "Update FGWT is empty.";
+                    Assert.Fail();
+                }
+                _ISQLDataTransaction.Commit();
+
+                Assert.IsTrue(true);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail();
+                throw ex;
+            }
+            finally { _ISQLDataTransaction.CloseConnection(); }
+
+        }
+
+        [TestMethod()]
+        public void Save_GarmentTestDetailTest()
+        {
+            Assert.Fail();
+        }
+
+        [TestMethod()]
+        public void Encode_DetailTest()
+        {
+            GarmentTest_Detail_Result result = new GarmentTest_Detail_Result();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            try
+            {
+                string _status = "Confirmed";
+                IGarmentTestDetailProvider _IGarmentTestDetailProvider = new GarmentTestDetailProvider(_ISQLDataTransaction);
+                result.Result = _IGarmentTestDetailProvider.Encode_GarmentTestDetail("16608", _status);
+                _ISQLDataTransaction.Commit();
+                Assert.IsTrue(result.Result == true);
+            }
+            catch (Exception ex)
+            {
+                _ISQLDataTransaction.RollBack();
+                result.Result = false;
+                result.ErrMsg = ex.Message;
+                Assert.Fail();
+            }
+            finally { _ISQLDataTransaction.CloseConnection(); }
+        }
+
+        [TestMethod()]
+        public void Encode_DetailTest1()
+        {
+            GarmentTest_Detail_Result result = new GarmentTest_Detail_Result();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            try
+            {
+                GarmentTestDetailProvider _IGarmentTestDetailProvider = new GarmentTestDetailProvider(_ISQLDataTransaction);
+
+                // 代表所有result 有任一個是Fail 就寄信
+                if (_IGarmentTestDetailProvider.Chk_AllResult("16608", "2") == false)
+                {
+
+                }
+                result.Result = _IGarmentTestDetailProvider.Encode_GarmentTestDetail("16608", "Confirmed");
+                _ISQLDataTransaction.Commit();
+                Assert.IsTrue(result.Result == true);
+            }
+            catch (Exception ex)
+            {
+                _ISQLDataTransaction.RollBack();
+                result.Result = false;
+                result.ErrMsg = ex.Message;
+                Assert.Fail();
+            }
+            finally { _ISQLDataTransaction.CloseConnection(); }
         }
     }
 }

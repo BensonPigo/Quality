@@ -13,6 +13,8 @@ using System.Runtime.InteropServices;
 using System;
 using System.IO;
 using Library;
+using System.Diagnostics;
+using System.Transactions;
 
 namespace BusinessLogicLayer.Service
 {
@@ -21,16 +23,18 @@ namespace BusinessLogicLayer.Service
         private IMockupCrockingProvider _MockupCrockingProvider;
         private IMockupCrockingDetailProvider _MockupCrockingDetailProvider;
 
-        public MockupCrocking_ViewModel GetMockupCrocking(MockupCrocking MockupCrocking)
+        public MockupCrockings_ViewModel GetMockupCrocking(MockupCrocking MockupCrocking)
         {
-            MockupCrocking_ViewModel model = new MockupCrocking_ViewModel();
+            MockupCrockings_ViewModel model = new MockupCrockings_ViewModel();
             try
             {
                 _MockupCrockingProvider = new MockupCrockingProvider(Common.ProductionDataAccessLayer);
                 _MockupCrockingDetailProvider = new MockupCrockingDetailProvider(Common.ProductionDataAccessLayer);
                 model.MockupCrocking = _MockupCrockingProvider.GetMockupCrocking(MockupCrocking).ToList();
+                model.ReportNos = new List<string>();
                 foreach (var item in model.MockupCrocking)
                 {
+                    model.ReportNos.Add(item.ReportNo);
                     MockupCrocking_Detail mockupCrocking_Detail = new MockupCrocking_Detail() { ReportNo = item.ReportNo };
                     item.MockupCrocking_Detail = _MockupCrockingDetailProvider.GetMockupCrocking_Detail(mockupCrocking_Detail).ToList();
                 }
@@ -46,63 +50,67 @@ namespace BusinessLogicLayer.Service
             return model;
         }
 
-        // 單獨更新圖檔欄位
-        public MockupCrocking_ViewModel UpdatePicture(MockupCrocking MockupCrocking)
+        public MockupCrocking_ViewModel GetExcel(string ReportNo)
         {
-            MockupCrocking_ViewModel model = new MockupCrocking_ViewModel();
-            _MockupCrockingProvider = new MockupCrockingProvider(Common.ProductionDataAccessLayer);
-            try
-            {
-                int updateCT = _MockupCrockingProvider.UpdatePicture(MockupCrocking);
-                if (updateCT == 0)
-                {
-                    model.Result = false;
-                    model.ErrorMessage = "Not found Crocking Data!";
-                }
-                else
-                {
-                    model.Result = true;
-                }
-            }
-            catch (System.Exception ex)
-            {
-                model.Result = false;
-                model.ErrorMessage = ex.ToString();
-            }
-
-            return model;
-        }
-
-        public MockupCrocking_ViewModel GetExcel(MockupCrocking MockupCrocking)
-        {
+            bool test = false;
             MockupCrocking_ViewModel result = new MockupCrocking_ViewModel();
+
+            var oneReportNo = GetMockupCrocking(new MockupCrocking() { ReportNo = ReportNo });
+            if (oneReportNo == null)
+            {
+                result.ReportResult = false;
+                result.ErrorMessage = "Get Data Fail!";
+                return result;
+            }
+
+            if (oneReportNo.MockupCrocking.Count == 0)
+            {
+                result.ReportResult = false;
+                result.ErrorMessage = "Data Not found!";
+                return result;
+            }
+
             try
             {
-                result = GetMockupCrocking(MockupCrocking);
-
-                if (!System.IO.Directory.Exists(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\"))
+                var mockupCrocking = oneReportNo.MockupCrocking[0];
+                if (!test)
                 {
-                    System.IO.Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\");
-                }
+                    if (!System.IO.Directory.Exists(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\"))
+                    {
+                        System.IO.Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\");
+                    }
 
-                if (!System.IO.Directory.Exists(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\TMP\\"))
-                {
-                    System.IO.Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\TMP\\");
+                    if (!System.IO.Directory.Exists(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\TMP\\"))
+                    {
+                        System.IO.Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\TMP\\");
+                    }
                 }
 
                 _MockupCrockingProvider = new MockupCrockingProvider(Common.ProductionDataAccessLayer);
 
 
-                MockupCrocking mockupCrocking = result.MockupCrocking[0];
-                List<MockupCrocking_Detail> mockupCrocking_Detail = mockupCrocking.MockupCrocking_Detail;
+                var mockupCrocking_Detail = mockupCrocking.MockupCrocking_Detail;
                 string basefileName = "MockupCrocking";
-                Excel.Application excelApp = MyUtility.Excel.ConnectExcel(System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx");
+                string openfilepath;
+                if (test)
+                {
+                    openfilepath = "C:\\Git\\Quality\\Quality\\Quality\\bin\\XLT\\MockupCrocking.xltx";
+                }
+                else
+                {
+                    openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
+                }
+
+                Excel.Application excelApp = MyUtility.Excel.ConnectExcel(openfilepath);
+
+
+
                 excelApp.DisplayAlerts = false;
                 Excel.Worksheet worksheet = excelApp.Sheets[1];
 
                 // 設定表頭資料
                 worksheet.Cells[4, 2] = mockupCrocking.ReportNo;
-                worksheet.Cells[5, 2] = mockupCrocking.T1Subcon + "-" + mockupCrocking.Abb;
+                worksheet.Cells[5, 2] = mockupCrocking.T1SubconName;
 
                 worksheet.Cells[6, 2] = mockupCrocking.BrandID;
                 worksheet.Cells[4, 6] = mockupCrocking.ReleasedDate;
@@ -164,8 +172,23 @@ namespace BusinessLogicLayer.Service
                 }
                 #endregion
 
-                string fileName = $"{basefileName}{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
-                string filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
+                string fileName = $"{basefileName}{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+                string filexlsx = fileName + ".xlsx";
+                string fileNamePDF = fileName + ".pdf";
+
+                string filepath;
+                string filepathpdf;
+                if (test)
+                {
+                    filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", filexlsx);
+                    filepathpdf = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", fileNamePDF);
+                }
+                else
+                {
+                    filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filexlsx);
+                    filepathpdf = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileNamePDF);
+                }
+
 
                 Excel.Workbook workbook = excelApp.ActiveWorkbook;
                 workbook.SaveAs(filepath);
@@ -175,16 +198,16 @@ namespace BusinessLogicLayer.Service
                 Marshal.ReleaseComObject(workbook);
                 Marshal.ReleaseComObject(excelApp);
 
-                string fileNamePDF = $"{basefileName}{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.PDF";
-                if (ConvertToPDF.ExcelToPDF(filepath, fileNamePDF))
+
+                if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
                 {
-                    result.TempFileName = fileNamePDF;
-                    result.Result = true;
+                    result.TempFileName = filepathpdf;
+                    result.ReportResult = true;
                 }
                 else
                 {
-                    result.ErrorMessage = "ConvertToPDF Fail";
-                    result.Result = false;
+                    result.ErrorMessage = "Convert To PDF Fail";
+                    result.ReportResult = false;
                 }
             }
             catch (System.Exception ex)
@@ -195,38 +218,57 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public MockupCrocking_ViewModel Create(MockupCrocking_ViewModel MockupCrocking)
+        public MockupCrockings_ViewModel Create(MockupCrockings_ViewModel MockupCrocking)
         {
-            MockupCrocking_ViewModel model = new MockupCrocking_ViewModel();
+            MockupCrockings_ViewModel model = new MockupCrockings_ViewModel();
             _MockupCrockingProvider = new MockupCrockingProvider(Common.ProductionDataAccessLayer);
             _MockupCrockingDetailProvider = new MockupCrockingDetailProvider(Common.ProductionDataAccessLayer);
             int insertCt;
             try
             {
-                insertCt = _MockupCrockingProvider.Create(MockupCrocking.MockupCrocking[0]);
-                foreach (var MockupCrocking_Detail in MockupCrocking.MockupCrocking[0].MockupCrocking_Detail)
+                using (TransactionScope scope = new TransactionScope())
                 {
-                    _MockupCrockingDetailProvider.Create(MockupCrocking_Detail);
+                    insertCt = _MockupCrockingProvider.Create(MockupCrocking.MockupCrocking[0]);
+                    if (insertCt == 0)
+                    {
+                        model.Result = false;
+                        model.ErrorMessage = "Insert MockupCrocking Fail!";
+                        return model;
+                    }
+
+                    foreach (var MockupCrocking_Detail in MockupCrocking.MockupCrocking[0].MockupCrocking_Detail)
+                    {
+                        insertCt = _MockupCrockingDetailProvider.Create(MockupCrocking_Detail);
+                        if (insertCt == 0)
+                        {
+                            model.Result = false;
+                            model.ErrorMessage = "Insert MockupCrocking_Detail Fail!";
+                            return model;
+                        }
+                    }
+
+                    scope.Complete();
                 }
 
-                if (insertCt == 0)
-                {
-                    model.Result = false;
-                    model.ErrorMessage = "Insert 0 count Data!";
-
-                }
-                else
-                {
-                    model.Result = true;
-                }
+                model.Result = true;
             }
             catch (Exception ex)
             {
-
                 throw ex;
             }
 
             return model;
+        }
+
+        public MockupCrockingScale GetScale()
+        {
+            MockupCrockingScale mockupCrockingScale = new MockupCrockingScale
+            {
+                DryScale = new List<string>() { "1", "1-2", "2", "2-3", "3", "3-4", "4", "4-5", "5" },
+                WetScale = new List<string>() { "1", "1-2", "2", "2-3", "3", "3-4", "4", "4-5", "5" },
+            };
+
+            return mockupCrockingScale;
         }
     }
 }

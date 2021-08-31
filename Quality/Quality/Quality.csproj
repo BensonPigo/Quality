@@ -174,7 +174,6 @@
     <Compile Include="Areas\BulkFGT\Controllers\MockupCrockingController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\PullingTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\SearchListController.cs" />
-    <Compile Include="Areas\SendMailController.cs" />
     <Compile Include="Areas\FinalInspection\Controllers\InspectionController.cs" />
     <Compile Include="Areas\FinalInspection\Controllers\QueryController.cs" />
     <Compile Include="Areas\FinalInspection\FinalInspectionAreaRegistration.cs" />
@@ -744,7 +743,9 @@
     <Content Include="Views\Shared\ScreenShot.cshtml" />
     <Content Include="XLT\FinalInspectionReport.xlsx" />
     <Content Include="Views\PublicWondow\TestFailMailList.cshtml" />
-    <Content Include="XLT\MockupCrocking.xltx" />
+    <Content Include="XLT\MockupCrocking.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="XLT\CFT Comments.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

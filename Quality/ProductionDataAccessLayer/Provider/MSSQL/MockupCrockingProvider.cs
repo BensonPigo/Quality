@@ -6,6 +6,7 @@ using ProductionDataAccessLayer.Interface;
 using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
 using DatabaseObject.ProductionDB;
+using DatabaseObject.ViewModel;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
@@ -202,6 +203,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 ");
             if (Item.TestBeforePicture != null) { objParameter.Add("@TestBeforePicture", Item.TestBeforePicture); }
             else { objParameter.Add("@TestBeforePicture", System.Data.SqlTypes.SqlBinary.Null); }
+
             if (Item.TestAfterPicture != null) { objParameter.Add("@TestAfterPicture", Item.TestAfterPicture); }
             else { objParameter.Add("@TestAfterPicture", System.Data.SqlTypes.SqlBinary.Null); }
 
@@ -233,7 +235,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         }
         #endregion
 
-        public IList<MockupCrocking> GetMockupCrocking(MockupCrocking Item)
+        public IList<MockupCrocking_ViewModel> GetMockupCrocking(MockupCrocking Item)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
@@ -248,12 +250,15 @@ SELECT
         ,ArtworkTypeID
         ,Remark
         ,T1Subcon
+		,T1SubconName = Concat (T1Subcon,'-'+(select Abb from LocalSupp where ID = T1Subcon))
         ,TestDate
         ,ReceivedDate
         ,ReleasedDate
         ,Result
         ,Technician
+        ,TechnicianName = TechnicianName.Name_Extno
         ,MR
+		,MRName = MRName.Name_Extno
         ,Type
         ,TestBeforePicture
         ,TestAfterPicture
@@ -261,11 +266,13 @@ SELECT
         ,AddName
         ,EditDate
         ,EditName
-        ,EditName
-        ,Abb = (select Abb from LocalSupp where ID = T1Subcon)
-        ,TechnicianName = (select name from pass1 p where p.ID = Technician)
         ,SignaturePic = (select PicPath from system) + (select t.SignaturePic from Technician t where t.ID = Technician)
-FROM [MockupCrocking]
+		,LastEditName = iif(EditName <> '', Concat (EditName, '-', EditName.Name, ' ', Format(EditDate,'yyyy/MM/dd HH:mm:ss')), Concat (AddName, '-', AddName.Name, ' ', Format(AddDate,'yyyy/MM/dd HH:mm:ss')))
+FROM [MockupCrocking] m
+outer apply (select Name_Extno from View_ShowName where id = m.Technician) TechnicianName
+outer apply (select Name_Extno from View_ShowName where id = m.MR) MRName
+outer apply (select Name from Pass1 where id = m.AddName) AddName
+outer apply (select Name from Pass1 where id = m.EditName) EditName
 ");
             SbSql.Append("Where 1 = 1" + Environment.NewLine);
 
@@ -301,49 +308,7 @@ FROM [MockupCrocking]
             }
 
 
-            return ExecuteList<MockupCrocking>(CommandType.Text, SbSql.ToString(), objParameter);
-        }
-
-        public int UpdatePicture(MockupCrocking Item)
-        {
-            StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
-
-            if (Item.TestBeforePicture != null) { objParameter.Add("@TestBeforePicture", Item.TestBeforePicture); }
-            else { objParameter.Add("@TestBeforePicture", System.Data.SqlTypes.SqlBinary.Null); }
-
-            if (Item.TestAfterPicture != null) { objParameter.Add("@TestAfterPicture", Item.TestAfterPicture); }
-            else { objParameter.Add("@TestAfterPicture", System.Data.SqlTypes.SqlBinary.Null); }
-
-            SbSql.Append(@"
-UPDATE [MockupCrocking]
-SET");
-            if (Item.TestBeforePicture != null && Item.TestAfterPicture == null)
-            {
-                SbSql.Append(@"
-    TestBeforePicture=@TestBeforePicture");
-
-            }
-            else if (Item.TestBeforePicture == null && Item.TestAfterPicture != null)
-            {
-                SbSql.Append(@"
-    TestAfterPicture=@TestAfterPicture");
-
-            }
-            else
-            {
-                SbSql.Append(@"
-    TestBeforePicture=@TestBeforePicture
-    TestAfterPicture=@TestAfterPicture,");
-
-            }
-
-            SbSql.Append(@"
-where ReportNo = @ReportNo
-");
-            objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
-
-            return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
+            return ExecuteList<MockupCrocking_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
         }
     }
 }
