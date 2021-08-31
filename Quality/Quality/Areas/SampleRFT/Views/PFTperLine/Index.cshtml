@@ -2,7 +2,7 @@
 @using System.Data;
 @{
     ViewBag.Title = "Index";
-Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
@@ -79,7 +79,7 @@ Layout = "~/Views/Shared/_Layout.cshtml";
     <div class="main-area">
         <div class="content-scroll">
             <div>
-                @using (Html.BeginForm("Index", "PFTperLine", FormMethod.Post ))
+                @using (Html.BeginForm("Index", "PFTperLine", FormMethod.Post))
                 {
                     <div>
                         <table>
@@ -114,15 +114,15 @@ Layout = "~/Views/Shared/_Layout.cshtml";
             <br />
             <h3 class="fontColor">Monthly RFT</h3>
             <br />
-            <div>
-                <div class="inner-scroll" style="float: left; height: 13vh;">
+            <div style=" padding-right: 2.5vw">
+                <div class="inner-scroll" style="float: left; height: 13vh; overflow-y: hidden">
                     <table cellspacing="100" class="table-striped">
                         <thead>
                             <tr>
                                 @foreach (DataColumn item in Model.MonthlyData.Columns)
                                 {
 
-                                    <th style="width:10vw">@item.ColumnName</th>
+                                    <th>@item.ColumnName</th>
                                 }
                             </tr>
                         </thead>
@@ -148,35 +148,38 @@ Layout = "~/Views/Shared/_Layout.cshtml";
             <br />
             <h3 class="fontColor">Daily RFT</h3>
             <br />
-            <div id="DailyRFTtable"></div>
+            <div style=" padding-right: 2.5vw">
             <div class="inner-scroll" style="float: left ;height: 42vh;">
-                <table cellspacing="100" class="table-striped">
-                    <thead>
-                        <tr>
-                            @foreach (DataColumn item in Model.DailyData.Columns)
-                            {
-                               
-                                <th style="width:10vw">@item.ColumnName</th>
-                            }
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                        @foreach (DataRow items in Model.DailyData.Rows)
-                        {
+        
+                    <table cellspacing="100" class="table-striped">
+                        <thead>
                             <tr>
-                                @foreach (DataColumn column in Model.DailyData.Columns)
+                                @foreach (DataColumn item in Model.DailyData.Columns)
                                 {
-                                    <td>
-                                        @items[column]
-                                    </td>
+
+                                    <th style="width:10vw">@item.ColumnName</th>
                                 }
                             </tr>
-                        }
+                        </thead>
+                        <tbody>
 
-                    </tbody>
-                </table>
+                            @foreach (DataRow items in Model.DailyData.Rows)
+                            {
+                                <tr>
+                                    @foreach (DataColumn column in Model.DailyData.Columns)
+                                    {
+                                        <td>
+                                            @items[column]
+                                        </td>
+                                    }
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+          
             </div>
+                </div>
         </div>
     </div>
 
