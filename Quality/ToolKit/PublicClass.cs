@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DatabaseObject.Public;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -121,6 +122,80 @@ namespace ToolKit
             }
 
             return result.TrimStart(joinString.ToCharArray());
+        }
+
+        public static List<T> CompareListValue<T>(List<T> newList, List<T> oldList, string keyCols, string compareCols) where T : CompareBase
+        {
+            List<T> resultList = new List<T>();
+            string[] keyColArray = keyCols.Split(',');
+
+            var typeTarget = typeof(T);
+
+            // 判斷old 不存在於 new 表示應該被刪除
+            foreach (var oldItem in oldList)
+            {
+                bool needDelete = !newList.Any(newItem =>
+                {
+                    bool isKeySame = true;
+                    foreach (string fieldName in keyColArray)
+                    {
+                        if (!typeTarget.GetProperty(fieldName).GetValue(newItem).EqualString(typeTarget.GetProperty(fieldName).GetValue(oldItem)))
+                        {
+                            isKeySame = false;
+                            break;
+                        }
+                    }
+                    return isKeySame;
+                });
+
+                if (needDelete)
+                {
+                    oldItem.StateType = CompareStateType.Delete;
+                    resultList.Add(oldItem);
+                }
+            }
+
+            // 判斷需要新增或修改
+            foreach (var newItem in newList)
+            {
+                var matchResult = oldList.Where(
+                        oldItem =>
+                        {
+                            bool isKeySame = true;
+                            foreach (string fieldName in keyColArray)
+                            {
+                                if (!typeTarget.GetProperty(fieldName).GetValue(newItem).EqualString(typeTarget.GetProperty(fieldName).GetValue(oldItem)))
+                                {
+                                    isKeySame = false;
+                                    break;
+                                }
+                            }
+                            return isKeySame;
+
+                        }
+                    );
+
+                if (!matchResult.Any())
+                {
+                    newItem.StateType = CompareStateType.Add;
+                    resultList.Add(newItem);
+                    continue;
+                }
+
+                var matchItem = matchResult.First();
+
+                foreach (string compareField in compareCols.Split(','))
+                {
+                    if (!typeTarget.GetProperty(compareField).GetValue(newItem).EqualString(typeTarget.GetProperty(compareField).GetValue(matchItem)))
+                    {
+                        newItem.StateType = CompareStateType.Edit;
+                        resultList.Add(newItem);
+                        break;
+                    }
+                }
+            }
+
+            return resultList;
         }
     }
 }
