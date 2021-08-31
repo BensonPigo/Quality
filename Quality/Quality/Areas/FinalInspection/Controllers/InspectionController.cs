@@ -2,9 +2,14 @@
 using BusinessLogicLayer.Interface.SampleRFT;
 using BusinessLogicLayer.Service;
 using BusinessLogicLayer.Service.SampleRFT;
+using DatabaseObject;
+using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
+using DatabaseObject.ResultModel.FinalInspection;
+using DatabaseObject.ViewModel.FinalInspection;
 using FactoryDashBoardWeb.Helper;
+using Newtonsoft.Json;
 using Quality.Controllers;
 using System;
 using System.Collections.Generic;
@@ -30,40 +35,55 @@ namespace Quality.Areas.FinalInspection.Controllers
         }
 
         // Setting
-        public ActionResult Index(string SP, string POID, string StyleID)
+        public ActionResult Index(PoSelect Req)
         {
-            FinalInspection_Request finalInspection_Request = new FinalInspection_Request() { 
-                SP = SP,
-                POID = POID,
-                StyleID = StyleID,
+            this.CheckSession();
+
+            FinalInspection_Request finalInspection_Request = new FinalInspection_Request() {
+                SP = Req.SP,
+                POID = Req.POID,
+                StyleID = Req.StyleID,
                 FactoryID = this.FactoryID
             };
             FinalInspectionService finalInspectionService = new FinalInspectionService();
 
-            List<DatabaseObject.ProductionDB.Orders> list = new List<DatabaseObject.ProductionDB.Orders>();
+            PoSelect model = new PoSelect() { DataList = new List<PoSelect_Result>() };
 
-            if (!string.IsNullOrEmpty(SP) ||
-                !string.IsNullOrEmpty(POID) ||
-                !string.IsNullOrEmpty(StyleID) )
+            List<PoSelect_Result> list = new List<PoSelect_Result>();
+            string ErrorMessage = string.Empty;
+
+            try
             {
-                list = finalInspectionService.GetOrderForInspection(finalInspection_Request).ToList();
+                if (!string.IsNullOrEmpty(Req.SP) ||
+                    !string.IsNullOrEmpty(Req.POID) ||
+                    !string.IsNullOrEmpty(Req.StyleID))
+                {
+                    list = finalInspectionService.GetOrderForInspection_ByModel(finalInspection_Request).ToList();
+                }
+                model.DataList = list;
+            }
+            catch (Exception ex)
+            {
+                model.ErrorMessage = $@"
+msg.WithInfo('{ex.Message}');
+";
             }
 
-            return View(list);
+            return View(model);
         }
 
         [HttpPost]
-        public ActionResult GoSetting(List<DatabaseObject.ProductionDB.Orders> model)
+        public ActionResult GoSetting(List<PoSelect_Result> model)
         {
-
-            return RedirectToAction("Setting");
+            return RedirectToAction("Setting", model);
         }
 
         [HttpPost]
-        public ActionResult Setting(List<DatabaseObject.ProductionDB.Orders> model, string finalInspectionID)
+        //public ActionResult Setting(List<DatabaseObject.ProductionDB.Orders> model, string finalInspectionID)
+        public ActionResult Setting(List<PoSelect_Result> model/*, string finalInspectionID*/)
         {
             ViewBag.FactoryID = this.FactoryID;
-
+            string finalInspectionID = "";
             DatabaseObject.ViewModel.FinalInspection.Setting setting = new DatabaseObject.ViewModel.FinalInspection.Setting();
             FinalInspectionSettingService finalInspectionSettingService = new FinalInspectionSettingService();
 
@@ -75,48 +95,133 @@ namespace Quality.Areas.FinalInspection.Controllers
                 setting = finalInspectionSettingService.GetSettingForInspection(poID, listOrderID, this.FactoryID);
             }
 
-            setting.SelectCarton = new List<DatabaseObject.ViewModel.FinalInspection.SelectCarton>();
-            for (int i = 1; i < 15; i++)
+            ViewBag.InspectionStageList = new List<SelectListItem>()
             {
-                setting = finalInspectionSettingService.GetSettingForInspection(finalInspectionID);
-            }
+                new SelectListItem(){Text="Inline",Value="Inline"},
+                new SelectListItem(){Text="Stagger",Value="Stagger"},
+                new SelectListItem(){Text="Final",Value="Final"},
+                new SelectListItem(){Text="3rd Party",Value="3rd Party"},
+            };
 
+            ViewBag.AQLPlanList = new List<SelectListItem>()
+            {
+                new SelectListItem(){Text="",Value=""},
+                new SelectListItem(){Text="1.0 Level I",Value="1.0 Level I"},
+                new SelectListItem(){Text="1.0 Level II",Value="1.0 Level II"},
+                new SelectListItem(){Text="1.5 Level I",Value="1.5 Level I"},
+                new SelectListItem(){Text="2.5 Level I",Value="2.5 Level I"},
+                new SelectListItem(){Text="100% Inspection",Value="100% Inspection"},
+            };
+
+            //setting.SelectCarton = new List<DatabaseObject.ViewModel.FinalInspection.SelectCarton>();
+            //for (int i = 1; i < 15; i++)
+            //{
+            //    setting = finalInspectionSettingService.GetSettingForInspection(finalInspectionID);
+            //}
+
+            TempData["Setting"] = setting;
             return View(setting);
         }
 
-        //[HttpPost]
-        //public ActionResult Setting(DatabaseObject.ViewModel.FinalInspection.Setting setting)
-        //{
-        //    return RedirectToAction("General");
-        //}
-        public ActionResult General()
+        [HttpPost]
+        public ActionResult AQL_AJAX(string AQLPlan)
         {
-            return View();
+            Setting setting = new Setting();
+            if (TempData["Setting"] != null)
+            {
+                setting = (Setting)TempData["Setting"];
+            }
+            TempData["Setting"] = setting;
+            var SamplePlanQty = 0;
+            var AcceptedQty = 0;
+            var RejectQty = 0;
+            AcceptableQualityLevels tmp = new AcceptableQualityLevels();
+            switch (AQLPlan)
+            {
+                case "1.0 Level I":
+                    tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "1" && o.LotSize_Start <= o.LotSize_End).FirstOrDefault();
+                    SamplePlanQty = tmp.SampleSize.Value;
+                    AcceptedQty = tmp.AcceptedQty.Value;
+                    break;
+                case "1.0 Level II":
+                    tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "2" && o.LotSize_Start <= o.LotSize_End).FirstOrDefault();
+                    SamplePlanQty = tmp.SampleSize.Value;
+                    AcceptedQty = tmp.AcceptedQty.Value;
+                    break;
+                case "1.5 Level I":
+                    tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(1.5) && o.InspectionLevels == "1" && o.LotSize_Start <= o.LotSize_End).FirstOrDefault();
+                    SamplePlanQty = tmp.SampleSize.Value;
+                    AcceptedQty = tmp.AcceptedQty.Value;
+                    break;
+                case "2.5 Level I":
+                    tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(2.5) && o.InspectionLevels == "1" && o.LotSize_Start <= o.LotSize_End).FirstOrDefault();
+                    SamplePlanQty = tmp.SampleSize.Value;
+                    AcceptedQty = tmp.AcceptedQty.Value;
+                    break;
+                default:
+                    break;
+            }
+            RejectQty = AcceptedQty + 1;
+
+            var jsonObject = new List<object>();
+            jsonObject.Add(JsonConvert.SerializeObject(SamplePlanQty));
+            jsonObject.Add(JsonConvert.SerializeObject(AcceptedQty));
+            jsonObject.Add(JsonConvert.SerializeObject(RejectQty));
+
+            return Json(jsonObject);
         }
 
         [HttpPost]
-        public ActionResult General(List<DatabaseObject.ProductionDB.Orders> model, string goPage)
+        public ActionResult GoGeneral(Setting setting)
         {
+            FinalInspectionSettingService sevice = new FinalInspectionSettingService();
+
+            string finalInspectionID = string.Empty;
+
+            // Setting存檔，並取得 finalInspectionID
+            BaseResult result = sevice.UpdateFinalInspection(setting, this.UserID, this.FactoryID, this.MDivisionID, out finalInspectionID);
+
+            // 錯誤回到Setting頁
+            if (!result)
+            {
+                setting.ErrorMessage = result.ErrorMessage;
+                return View("Setting", setting);
+            }
+
+            TempData["FinalInspectionID"] = finalInspectionID;
+            return RedirectToAction("General", new { goPage= "Next" });
+        }
+
+
+        //[HttpPost]
+        //public ActionResult General(List<DatabaseObject.ProductionDB.Orders> model, string goPage)
+        public ActionResult General(string goPage)
+        {
+            string FinalInspectionID = string.Empty;
+            if (TempData["FinalInspectionID"] != null)
+            {
+                FinalInspectionID = TempData["FinalInspectionID"].ToString();
+            }
+
             if (goPage == "Back")
             {
                 return RedirectToAction("Setting");
             }
             else if (goPage == "Next")
             {
-                return RedirectToAction("CheckList");
+                return RedirectToAction("CheckList", new { FinalInspectionID = FinalInspectionID });
             }
 
             return View();
         }
 
-        public ActionResult CheckList()
+        public ActionResult CheckList(string FinalInspectionID)
         {
-            DatabaseObject.ManufacturingExecutionDB.FinalInspection finalinspection = new DatabaseObject.ManufacturingExecutionDB.FinalInspection();
+            FinalInspectionService sevice = new FinalInspectionService();
 
-            finalinspection.ID = "A001";
-            finalinspection.POID = "1";
-            finalinspection.CheckHandfeel = true;
-            return View(finalinspection);
+            DatabaseObject.ManufacturingExecutionDB.FinalInspection model = sevice.GetFinalInspection(FinalInspectionID);
+
+            return View(model);
         }
 
         [HttpPost]

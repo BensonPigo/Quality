@@ -6,6 +6,7 @@ using DatabaseObject;
 using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
+using DatabaseObject.ResultModel.FinalInspection;
 using ManufacturingExecutionDataAccessLayer.Interface;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using ProductionDataAccessLayer.Interface;
@@ -76,6 +77,24 @@ namespace BusinessLogicLayer.Service
                 throw ex;
             }
         }
+
+
+        public IList<PoSelect_Result> GetOrderForInspection_ByModel(FinalInspection_Request request)
+        {
+            try
+            {
+                _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
+
+                IList<PoSelect_Result> result = _OrdersProvider.GetOrderForInspection_ByModel(request);
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
 
         public BaseResult UpdateFinalInspectionByStep(DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection, string currentStep, string userID)
         {

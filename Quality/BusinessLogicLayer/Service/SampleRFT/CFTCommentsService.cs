@@ -29,9 +29,19 @@ namespace BusinessLogicLayer.Service.SampleRFT
 
                 if (res.Any())
                 {
-                    model = res.FirstOrDefault();
+                    if (Req.QueryType == "Style")
+                    {
+                        model.BrandID = Req.BrandID;
+                        model.SeasonID = Req.SeasonID;
+                        model.StyleID = Req.StyleID;
+                    }
+
+                    if (Req.QueryType == "OrderID")
+                    {
+                        model = res.FirstOrDefault();
+                    }
                 }
-                
+
                 model.Result = true;
             }
             catch (Exception ex)
