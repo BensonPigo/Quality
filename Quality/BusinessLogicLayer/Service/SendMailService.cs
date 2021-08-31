@@ -13,8 +13,6 @@ namespace BusinessLogicLayer.Service
 {
     public class SendMailService : ISendMailService
     {
-
-
         private ISystemProvider _SystemProvider;
         public SendMail_Result SendMail(SendMail_Request SendMail_Request)
         {
@@ -50,7 +48,7 @@ namespace BusinessLogicLayer.Service
                     {
                         if (!string.IsNullOrEmpty(cc))
                         {
-                            message.To.Add(cc);
+                            message.CC.Add(cc);
                         }
                     }
                 }

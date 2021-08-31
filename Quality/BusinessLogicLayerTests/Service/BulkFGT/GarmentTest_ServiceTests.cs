@@ -12,6 +12,7 @@ using DatabaseObject.ResultModel;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.ViewModel;
 using ADOHelper.Utility;
+using BusinessLogicLayer.Interface.BulkFGT;
 
 namespace BusinessLogicLayer.Service.BulkFGT.Tests
 {
@@ -80,7 +81,7 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
             {
                 IList<GarmentTest_Detail_Shrinkage> result = new List<GarmentTest_Detail_Shrinkage>();
                 IGarmentTestDetailShrinkageProvider _IGarmentTestDetailShrinkageProvider = new GarmentTestDetailShrinkageProvider(Common.ProductionDataAccessLayer);
-                result = _IGarmentTestDetailShrinkageProvider.Get_GarmentTest_Detail_Shrinkage(9244, "1");
+                result = _IGarmentTestDetailShrinkageProvider.Get_GarmentTest_Detail_Shrinkage("9244", "1");
 
                 Assert.IsTrue(result.Count > 0);
             }
@@ -98,7 +99,7 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
             {
                 IList<Garment_Detail_Spirality> result = new List<Garment_Detail_Spirality>();
                 IGarmentDetailSpiralityProvider _IGarmentDetailSpiralityProvider = new GarmentDetailSpiralityProvider(Common.ProductionDataAccessLayer);
-                result = _IGarmentDetailSpiralityProvider.Get_Garment_Detail_Spirality(16608, "1");
+                result = _IGarmentDetailSpiralityProvider.Get_Garment_Detail_Spirality("16608", "1");
 
                 Assert.IsTrue(result.Count > 0);
             }
@@ -116,7 +117,7 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
             {
                 IList<GarmentTest_Detail_Apperance_ViewModel> result = new List<GarmentTest_Detail_Apperance_ViewModel>();
                 IGarmentTestDetailApperanceProvider _IGarmentTestDetailApperanceProvider = new GarmentTestDetailApperanceProvider(Common.ProductionDataAccessLayer);
-                result = _IGarmentTestDetailApperanceProvider.Get_GarmentTest_Detail_Apperance(18578, "1");
+                result = _IGarmentTestDetailApperanceProvider.Get_GarmentTest_Detail_Apperance("18578", "1");
 
                 Assert.IsTrue(result.Count > 0);
             }
@@ -134,7 +135,7 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
             {
                 IList<GarmentTest_Detail_FGWT_ViewModel> result = new List<GarmentTest_Detail_FGWT_ViewModel>();
                 IGarmentTestDetailFGWTProvider _IGarmentTestDetailFGWTProvider = new GarmentTestDetailFGWTProvider(Common.ProductionDataAccessLayer);
-                result = _IGarmentTestDetailFGWTProvider.Get_GarmentTest_Detail_FGWT(16615, "1");
+                result = _IGarmentTestDetailFGWTProvider.Get_GarmentTest_Detail_FGWT("16615", "1");
 
                 Assert.IsTrue(result.Count > 0);
             }
@@ -152,7 +153,7 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
             {
                 IList<GarmentTest_Detail_FGPT_ViewModel> result = new List<GarmentTest_Detail_FGPT_ViewModel>();
                 IGarmentTestDetailFGPTProvider _IGarmentTestDetailFGPTProvider = new GarmentTestDetailFGPTProvider(Common.ProductionDataAccessLayer);
-                result = _IGarmentTestDetailFGPTProvider.Get_GarmentTest_Detail_FGPT(16608, "1");
+                result = _IGarmentTestDetailFGPTProvider.Get_GarmentTest_Detail_FGPT("16608", "1");
 
                 Assert.IsTrue(result.Count > 0);
             }
@@ -573,6 +574,25 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
                 Assert.Fail();
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
+        }
+
+        [TestMethod()]
+        public void Get_All_DetailTest()
+        {
+            try
+            {
+                GarmentTest_Detail_Result result = new GarmentTest_Detail_Result();
+
+                IGarmentTestDetailProvider _IGarmentTestDetailProvider = new GarmentTestDetailProvider(Common.ProductionDataAccessLayer);
+                result.Scales = _IGarmentTestDetailProvider.GetScales();
+                Assert.IsTrue(result.Scales.Count > 0);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail();
+                throw ex;
+            }
+            
         }
     }
 }

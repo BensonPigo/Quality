@@ -17,6 +17,8 @@ namespace ProductionDataAccessLayer.Interface
 
         IList<GarmentTest_ViewModel> Get_GarmentTest(GarmentTest_Request filter);
 
-        bool Save_GarmentTest(GarmentTest_ViewModel master, List<GarmentTest_Detail> detail);
+        IList<GarmentTest_ViewModel> Get(string ID);
+
+        bool Save_GarmentTest(GarmentTest_ViewModel master, List<GarmentTest_Detail> detail, string UserID);
     }
 }
