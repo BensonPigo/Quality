@@ -69,15 +69,17 @@ where junk = 0
 ");
             if (!string.IsNullOrEmpty(ID))
             {
-                SbSql.Append($@"AND ID LIKE @ID");
+                SbSql.Append($@"AND ID LIKE @ID ");
                 paras.Add("@ID", DbType.String, ID + "%");
             }
 
             if (!string.IsNullOrEmpty(BrandID))
             {
-                SbSql.Append($@"AND BrandID = @BrandID");
+                SbSql.Append($@"AND BrandID = @BrandID ");
                 paras.Add("@BrandID", DbType.String, BrandID);
             }
+
+            SbSql.Append(" Order by ID desc");
 
             return ExecuteList<Window_Season>(CommandType.Text, SbSql.ToString(), paras);
         }
