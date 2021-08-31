@@ -108,7 +108,7 @@
     <div class="main-area">
         <div class="content-scroll">
             <div class="inner-scroll">
-                @using (Html.BeginForm("Index", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post))
+                @using (Html.BeginForm("Index", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { id = "QueryForm" }))
                 {
                     <div class="row rowHeader">
                         <div class="col-auto">
@@ -360,13 +360,25 @@
                                         @Html.TextBoxFor(o => Model.garmentTest_Details[i].OrderID, "", new { @class = "Detail_OrderID" })
                                     </td>
                                     <td style="width:10vw;">
-                                        @Html.DropDownListFor(o => Model.garmentTest_Details[i].SizeCode, (List<SelectListItem>)ViewBag.SizeCodeList, new { @class = "Detail_SizeCode" })
+                                        <select class="Detail_SizeCode" id="Model.garmentTest_Details_@{@i}__.SizeCode" name="Model.garmentTest_Details[@i].SizeCode" disabled="disabled">
+                                            @foreach (var item in (List<SelectListItem>)ViewBag.SizeCodeList)
+                                            {
+                                                string selected = item.Text.Equals(Model.garmentTest_Details[i].SizeCode) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        </select>                                        
                                     </td>
                                     <td style="width:10vw;">
                                         @Html.TextBoxFor(o => Model.garmentTest_Details[i].inspdate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
                                     </td>
                                     <td style="width:10vw;">
-                                        @Html.DropDownListFor(o => Model.garmentTest_Details[i].MtlTypeID, (List<SelectListItem>)ViewBag.MtlTypeIDList, "")
+                                        <select id="Model_garmentTest_Details_@{@i}__MtlTypeID" name="Model.garmentTest_Details[@i].MtlTypeID" disabled="disabled">
+                                            @foreach (var item in (List<SelectListItem>)ViewBag.MtlTypeIDList)
+                                            {
+                                                string selected = item.Text.Equals(Model.garmentTest_Details[i].MtlTypeID) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        </select>
                                     </td>
                                     @{
                                         string garmentTest_DetailsFontColor = Model.garmentTest_Details[i].Result == "P" ? "blue" : "red";
@@ -379,7 +391,7 @@
                                         @{ 
                                             bool NonSeamBreakageTestVal = Model.garmentTest_Details[i].NonSeamBreakageTest.HasValue ? Model.garmentTest_Details[i].NonSeamBreakageTest.Value : false;
                                         }
-                                        <input id="garmentTest_Details_NonSeamBreakageTest" name="garmentTest_Details.NonSeamBreakageTest" type="checkbox" value="@NonSeamBreakageTestVal">
+                                        <input id="garmentTest_Details_NonSeamBreakageTest" name="garmentTest_Details.NonSeamBreakageTest" type="checkbox" checked="@NonSeamBreakageTestVal">
                                         <input name="garmentTest_Details.NonSeamBreakageTest" type="hidden" value="@NonSeamBreakageTestVal">
                                     </td>
                                     <td style="width:10vw;">
@@ -561,13 +573,21 @@
                 });
             });
 
+            var main = {
+                ID: parseInt($('#garmentTest_ID').val()),
+                StyleID: $('#garmentTest_StyleID').val(),
+                SeasonID: $('#garmentTest_SeasonID').val(),
+                BrandID: $('#garmentTest_BrandID').val(),
+                Article: $('#garmentTest_Article').val(),
+            };
+
             if (ErrMsg != "") {
                 msg.WithError(ErrMsg);
                 return;
             }
 
             if (detail.length > 0) {
-                SaveData(detail);
+                SaveData(main, detail);
             }
             else {
                 msg.WithError("Save Fail");
@@ -653,8 +673,16 @@
                     MtlTypeID: MtlTypeID,
                 });
 
+                var main = {
+                    ID: parseInt($('#garmentTest_ID').val()),
+                    StyleID: $('#garmentTest_StyleID').val(),
+                    SeasonID: $('#garmentTest_SeasonID').val(),
+                    BrandID: $('#garmentTest_BrandID').val(),
+                    Article: $('#garmentTest_Article').val(),
+                };
+
                 if (detail.length > 0) {
-                    SaveData(detail);
+                    SaveData(main, detail);
                 }
                 else {
                     msg.WithError("Save Fail");
@@ -766,6 +794,10 @@
         });
 
         $('.Detail_OrderID').unbind('blur').on('blur', function () {
+            if ($(this).val() == "") {
+                return;
+            }
+
             var SizeCode = $(this).parent().siblings().find("select[class='Detail_SizeCode']");
             var OrderID = $(this).val();
             var Brand = $('#Brand').val();
@@ -795,17 +827,17 @@
         });
     }
 
-    function SaveData(detail) {
+    function SaveData(main, detail) {
         $.ajax({
             url: "@Url.Action("SaveDetail", "GarmentTest", new { Area = "BulkFGT" })",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
-            data: JSON.stringify({ details: detail }),
+            data: JSON.stringify({ main: main, details: detail }),
             async: false,
             success: function (data) {
                 if (data.SaveResult) {
                     msg.WithSuccess("Success");
-                    $('#btnQuery').unbind('click').click();
+                    document.getElementById("QueryForm").submit();
                 }
                 else {
                     msg.WithError(data.ErrMsg);

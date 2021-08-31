@@ -290,8 +290,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 throw ex;
             }
         }
-
-        public GarmentTest_ViewModel Save_GarmentTest(GarmentTest_ViewModel garmentTest_ViewModel,List<GarmentTest_Detail> detail)
+        public GarmentTest_ViewModel Save_GarmentTest(GarmentTest_ViewModel garmentTest_ViewModel,List<GarmentTest_Detail> detail, string UserID)
         {
             // 僅傳入 List<GarmentTest_Detail> detail
 
@@ -311,7 +310,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     if (item.No == 0) { emptyMsg += "detail No cannot be 0." + Environment.NewLine; }
                     if (string.IsNullOrEmpty(item.MtlTypeID)) { emptyMsg += "detail MtlTypeID cannot be empty." + Environment.NewLine; }
-                    if (string.IsNullOrEmpty(item.AddName) && string.IsNullOrEmpty(item.EditName)) { emptyMsg += "detail AddName and EditName cannot be empty." + Environment.NewLine; }
+                    // if (string.IsNullOrEmpty(item.AddName) && string.IsNullOrEmpty(item.EditName)) { emptyMsg += "detail AddName and EditName cannot be empty." + Environment.NewLine; }
                 }
 
                 if (!string.IsNullOrEmpty(emptyMsg))
@@ -325,7 +324,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 #endregion
 
                 _IGarmentTestProvider = new GarmentTestProvider(_ISQLDataTransaction);
-                result.SaveResult = _IGarmentTestProvider.Save_GarmentTest(garmentTest_ViewModel, detail);
+                result.SaveResult = _IGarmentTestProvider.Save_GarmentTest(garmentTest_ViewModel, detail, UserID);
                 _ISQLDataTransaction.Commit();
             }
             catch (Exception ex)

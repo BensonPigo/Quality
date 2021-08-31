@@ -82,5 +82,60 @@ namespace ADOHelper.Utility
 
             return result;
         }
+
+        public string DataTableChangeHtml(DataTable dt)
+        {
+            string html = "<html> ";
+
+            html += @"
+<style>
+    .DataTable {
+        width: 92vw;
+        font-size: 1rem;
+        font-weight: bold;
+        border: solid 1px black;
+        background-color: white;
+    }
+        .DataTable > tbody > tr:nth-of-type(odd) {
+            background-color: #ffffff;
+        }
+
+        .DataTable > tbody > tr:nth-of-type(even) {
+            background-color: #F0F2F2;
+        }
+
+        .DataTable > tbody > tr > td {
+            border: solid 1px gray;
+            padding: 1em;
+            text-align: left;
+            vertical-align: middle;
+        }
+</style>
+";
+
+            html += "<body> ";
+            html += "<table class='DataTable'> ";
+            html += "<thead><tr> ";
+            for (int i = 0; i <= dt.Columns.Count - 1; i++)
+            {
+                html += "<th>" + dt.Columns[i].ColumnName + "</th> ";
+            }
+            html += "</tr></thead> ";
+            html += "<tbody> ";
+            for (int i = 0; i <= dt.Rows.Count - 1 ; i++)
+            {
+                html += "<tr> ";
+                for (int j = 0; j <= dt.Columns.Count -1; j++)
+                {
+                    html += "<td>" + dt.Rows[i][j].ToString() + "</td> ";
+                }
+                html += "</tr> ";
+            }
+            html += "</tbody> ";
+            html += "</table> ";
+            html += "</body> ";
+            html += "</html> ";
+            return html;
+        }
     }
 }

@@ -114,12 +114,11 @@
                         <tbody>
                             <tr>
                                 <td>
-                                    <h4 id="Edit" style=" margin-right: 1em;">
+                                    <h4 id="Exit" style=" margin-right: 1em;">
                                         <a href="@Url.Action("Index", "GarmentTest", new { Brand = Model.Main.BrandID , Season = Model.Main.SeasonID, Style = Model.Main.StyleID, Article = Model.Main.Article })">
                                             <img src="~/Image/Icon/Exit.png" width="30" />
                                             Exit
                                         </a>
-                                      
                                     </h4>
                                 </td>
                                 <td>
@@ -175,7 +174,7 @@
                     <div id="tab01" class="tab-inner">
                         @if (Model.Detail != null)
                         {
-                            <table class="DataTable">
+                            <table id="Detail" class="DataTable">
                                 <tbody>
                                     <tr>
                                         <td style="width:10vw;"><h4>Style#</h4></td>
@@ -202,7 +201,9 @@
                                         <td><h4>Submit Date</h4></td>
                                         <td>@Html.TextBoxFor(o => Model.Detail.SubmitDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })</td>
                                         <td><h4>Arrive Qty</h4></td>
-                                        <td>@Html.TextBoxFor(o => Model.Detail.ArrivedQty, "", new { htmlAttributes = new { @type = "number", @min = "0", @step = "1", @value = "0" } })</td>
+                                        <td>
+                                            <input id="Detail_ArrivedQty" name="Detail.ArrivedQty" type="number" min="0" step="1" value="@Model.Detail.ArrivedQty">
+                                        </td>
                                         <td><h4>Result</h4></td>
                                         @{
                                             string DetailFontColor = Model.Detail.Result == "P" ? "blue" : "red";
@@ -238,7 +239,15 @@
                                     </tr>
                                     <tr>
                                         <td><h4>Temperature(oC)</h4></td>
-                                        <td>@Html.DropDownListFor(o => Model.Detail.Temperature, (List<SelectListItem>)ViewBag.TemperatureList, "")</td>
+                                        <td>
+                                            <select id="Detail_Temperature" name="Detail.Temperature">
+                                                @foreach (var item in (List<SelectListItem>)ViewBag.TemperatureList)
+                                                {
+                                                    string selected = item.Text.Equals(Model.Detail.Temperature.ToString()) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>                                        
+                                        </td>
                                         <td><h4>Fibre Composition</h4></td>
                                         <td colspan="3">@Html.TextBoxFor(o => Model.Detail.Composition, "", "")</td>
                                     </tr>
@@ -246,11 +255,15 @@
                                         <td colspan="3"></td>
                                         <td colspan="3" rowspan="2">
                                             <div>
-                                                <input id="Detail_Above50NaturalFibres" type="radio" name="Group2" class="bigSize" />
+                                                @{ 
+                                                    string DetailAbove50NaturalFibres = Model.Detail.Above50NaturalFibres != null && Model.Detail.Above50NaturalFibres.Value ? "checked" : "";
+                                                    string DetailAbove50SyntheticFibres = Model.Detail.Above50SyntheticFibres != null && Model.Detail.Above50SyntheticFibres.Value ? "checked" : "";
+                                                }
+                                                <input id="Detail_Above50NaturalFibres" type="radio" name="Group2" class="bigSize" @DetailAbove50NaturalFibres />
                                                 <label for="Detail_Above50NaturalFibres">All basic Fabrics ≥ 50% natural fibres</label>
                                             </div>
                                             <div>
-                                                <input id="Detail_Above50SyntheticFibres" type="radio" name="Group2" class="bigSize" />
+                                                <input id="Detail_Above50SyntheticFibres" type="radio" name="Group2" class="bigSize" @DetailAbove50SyntheticFibres/>
                                                 <label for="Detail_Above50SyntheticFibres">All basic Fabrics ≥ 50% synthetic fibres (ex. polyester)</label>
                                             </div>
                                         </td>
@@ -260,7 +273,14 @@
                                     </tr>
                                     <tr>
                                         <td><h4>Machine Model</h4></td>
-                                        <td>@Html.DropDownListFor(o => Model.Detail.Machine, (List<SelectListItem>)ViewBag.MachineList, "")</td>
+                                        <td>
+                                            <select id="Detail_Machine" name="Detail.Machine">
+                                                @foreach (var item in (List<SelectListItem>)ViewBag.MachineList)
+                                                {
+                                                    string selected = Model.Detail.Machine != null && item.Text.Equals(Model.Detail.Machine.ToString()) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>
                                         <td><h4>Remark</h4></td>
                                         <td colspan="3">
                                             @Html.TextBoxFor(o => Model.Detail.Remark, "", "")
@@ -268,7 +288,15 @@
                                     </tr>
                                     <tr>
                                         <td colspan="3"><h4>Streched Neck Opening is OK according to size spec?</h4></td>
-                                        <td>@Html.DropDownListFor(o => Model.Detail.Neck, (List<SelectListItem>)ViewBag.NeckList, "")</td>
+                                        <td>
+                                            <select id="Detail_Neck" name="Detail.Neck">
+                                                @foreach (var item in (List<SelectListItem>)ViewBag.NeckList)
+                                                {
+                                                    string selected = item.Text.Equals(Model.Detail.Neck.ToString()) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>                                            
+                                        </td>
                                         <td colspan="2"></td>
                                     </tr>
                                 </tbody>
@@ -310,41 +338,39 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @for (int i = 0; i <= Model.Shrinkages.Count -1; i++)
+                                    @for (int i = 0; i <= Model.Shrinkages.Count - 1; i++)
                                     {
                                         <tr>
                                             <td>
-                                                @{
-                                                    string Location = string.Empty;
-                                                    switch (Model.Shrinkages[i].Location)
-                                                    {
-                                                        case "T":
-                                                            Location = "Top";
-                                                            break;
-                                                        case "I":
-                                                            Location = "INNER";
-                                                            break;
-                                                        case "O":
-                                                            Location = "OUTER";
-                                                            break;
-                                                        case "B":
-                                                            Location = "BOTTOM";
-                                                            break;
-                                                    }
-                                                }
-                                                @Location
+                                                @Model.Shrinkages[i].Location
                                             </td>
-                                            <td>@Html.DisplayFor(o => Model.Shrinkages[i].Type, "", "")</td>
-                                            <td>@Html.TextBoxFor(o => Model.Shrinkages[i].BeforeWash, "", new { htmlAttributes = new { @type = "number", @min = "0", @step = "0.1", @value = "0" }, @class = "BeforeWash" })</td>
-                                            <td>@Html.TextBoxFor(o => Model.Shrinkages[i].SizeSpec, "", new { htmlAttributes = new { @type = "number", @min = "0", @step = "0.1", @value = "0" } })</td>
-                                            <td>@Html.TextBoxFor(o => Model.Shrinkages[i].AfterWash1, "", new { htmlAttributes = new { @type = "number", @min = "0", @step = "0.1", @value = "0" }, @class = "AfterWash1" })</td>
-                                            <td>@Html.TextBoxFor(o => Model.Shrinkages[i].Shrinkage1, "", new { @disabled = "disabled" })</td>
-                                            <td>@Html.TextBoxFor(o => Model.Shrinkages[i].AfterWash2, "", new { htmlAttributes = new { @type = "number", @min = "0", @step = "0.1", @value = "0" }, @class = "AfterWash2" })</td>
-                                            <td>@Html.TextBoxFor(o => Model.Shrinkages[i].Shrinkage2, "", new { @disabled = "disabled" })</td>
+                                            <td style="width: 18vw;">@Html.DisplayFor(o => Model.Shrinkages[i].Type, "", "")</td>
+                                            <td>
+                                                <input id="Shrinkages_@{@i}__BeforeWash" name="Shrinkages[@i].BeforeWash" class="BeforeWash" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].BeforeWash" style="width: 8vw;">                                                
+                                            </td>
+                                            <td>
+                                                <input id="Shrinkages_@{@i}__SizeSpec" name="Shrinkages[@i].SizeSpec" class="SizeSpec" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].SizeSpec" style="width: 8vw;">                                                                                                
+                                            </td>
+                                            <td>
+                                                <input id="Shrinkages_@{@i}__AfterWash1" name="Shrinkages[@i].AfterWash1" class="AfterWash1" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].AfterWash1" style="width: 8vw;">
+                                            </td>
+                                            <td>
+                                                <input id="Shrinkages_@{@i}__Shrinkage1" name="Shrinkages[@i].Shrinkage1" class="Shrinkage1" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].Shrinkage1" readonly="readonly" style="width: 8vw;">
+                                            </td>
+                                            <td>
+                                                <input id="Shrinkages_@{@i}__AfterWash2" name="Shrinkages[@i].AfterWash2" class="AfterWash2" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].AfterWash2" style="width: 8vw;">
+                                            </td>
+                                            <td>
+                                                <input id="Shrinkages_@{@i}__Shrinkage2" name="Shrinkages[@i].Shrinkage2" class="Shrinkage2" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].Shrinkage2" readonly="readonly" style="width: 8vw;">
+                                            </td>
                                             @if (bol710)
                                             {
-                                                <td>@Html.TextBoxFor(o => Model.Shrinkages[i].AfterWash3, "", new { htmlAttributes = new { @type = "number", @min = "0", @step = "0.1", @value = "0" }, @class = "AfterWash3" })</td>
-                                                <td>@Html.TextBoxFor(o => Model.Shrinkages[i].Shrinkage3, "", new { @disabled = "disabled" })</td>
+                                                <td>
+                                                    <input id="Shrinkages_@{@i}__AfterWash3" name="Shrinkages[@i].AfterWash3" class="AfterWash3" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].AfterWash3" style="width: 8vw;">
+                                                </td>
+                                                <td>
+                                                    <input id="Shrinkages_@{@i}__Shrinkage3" name="Shrinkages[@i].Shrinkage3" class="Shrinkage3" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].Shrinkage3" readonly="readonly" style="width: 8vw;">
+                                                </td>
                                             }
                                         </tr>
                                     }
@@ -380,28 +406,42 @@
                                     <tr>
                                         <td><h4>Spirality (@Location)%</h4></td>
                                         <td><h4>Method A</h4></td>
-                                        <td>@Html.TextBoxFor(o => Model.Spiralities[i].MethodA, "", new { htmlAttributes = new { @type = "number", @min = "0", @step = "0.1", @value = "0" } })</td>
+                                        <td>
+                                            <input id="Spiralities_@{@i}__MethodA" name="Spiralities[@i].MethodA" type="number" min="0" step="0.1" value="@Model.Spiralities[i].MethodA">
+                                        </td>
                                         <td><h4>FOR @Location</h4></td>
                                         <td>AA'</td>
-                                        <td>@Html.TextBoxFor(o => Model.Spiralities[i].MethodA_AAPrime, "", new { htmlAttributes = new { @type = "number", @min = "0", @step = "0.1", @value = "0" } })</td>
+                                        <td>
+                                            <input id="Spiralities_@{@i}__MethodA_AAPrime" name="Spiralities[@i].MethodA_AAPrime" type="number" min="0" step="0.1" value="@Model.Spiralities[i].MethodA_AAPrime">
+                                        </td>
                                         <td>A'B</td>
-                                        <td>@Html.TextBoxFor(o => Model.Spiralities[i].MethodA_APrimeB, "", new { htmlAttributes = new { @type = "number", @min = "0", @step = "0.1", @value = "0" } })</td>
+                                        <td>
+                                            <input id="Spiralities_@{@i}__MethodA_APrimeB" name="Spiralities[@i].MethodA_APrimeB" type="number" min="0" step="0.1" value="@Model.Spiralities[i].MethodA_APrimeB">
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td></td>
                                         <td><h4>Method B</h4></td>
-                                        <td>@Html.TextBoxFor(o => Model.Spiralities[i].MethodB, "", new { htmlAttributes = new { @type = "number", @min = "0", @step = "0.1", @value = "0" } })</td>
+                                        <td>
+                                            <input id="Spiralities_@{@i}__MethodB" name="Spiralities[@i].MethodB" type="number" min="0" step="0.1" value="@Model.Spiralities[i].MethodB">
+                                        </td>
                                         <td></td>
                                         <td>AA'</td>
-                                        <td>@Html.TextBoxFor(o => Model.Spiralities[i].MethodB_AAPrime, "", new { htmlAttributes = new { @type = "number", @min = "0", @step = "0.1", @value = "0" } })</td>
+                                        <td>
+                                            <input id="Spiralities_@{@i}__MethodB_AAPrime" name="Spiralities[@i].MethodB_AAPrime" type="number" min="0" step="0.1" value="@Model.Spiralities[i].MethodB_AAPrime">
+                                        </td>
                                         <td>A'B</td>
-                                        <td>@Html.TextBoxFor(o => Model.Spiralities[i].MethodB_AB, "", new { htmlAttributes = new { @type = "number", @min = "0", @step = "0.1", @value = "0" } })</td>
+                                        <td>
+                                            <input id="Spiralities_@{@i}__MethodB_AB" name="Spiralities[@i].MethodB_AB" type="number" min="0" step="0.1" value="@Model.Spiralities[i].MethodB_AB">
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td></td>
                                         <td colspan="3"><h4>Movement of side seam/outseam in CM</h4></td>
                                         <td></td>
-                                        <td>@Html.TextBoxFor(o => Model.Spiralities[i].CM, "", new { htmlAttributes = new { @type = "number", @min = "0", @step = "0.1", @value = "0" } })</td>
+                                        <td>
+                                            <input id="Spiralities_@{@i}__CM" name="Spiralities[@i].CM" type="number" min="0" step="0.1" value="@Model.Spiralities[i].CM">
+                                        </td>
                                         <td></td>
                                         <td></td>
                                     </tr>
@@ -444,20 +484,44 @@
                                                 }
                                             </td>
                                             <td>
-                                                @Html.DropDownListFor(o => Model.Apperance[i].Wash1, (List<SelectListItem>)ViewBag.WashList, "")
+                                                <select id="Apperance_@{@i}__Wash1" name="Apperance[@i].Wash1">
+                                                    @foreach (var item in (List<SelectListItem>)ViewBag.WashList)
+                                                    {
+                                                        string selected = item.Text.Equals(Model.Apperance[i].Wash1.ToString()) ? "selected" : "";
+                                                        <option value="@item.Value" @selected>@item.Text</option>
+                                                    }
+                                                </select>
                                             </td>
                                             <td>
-                                                @Html.DropDownListFor(o => Model.Apperance[i].Wash2, (List<SelectListItem>)ViewBag.WashList, "")
+                                                <select id="Apperance_@{@i}__Wash2" name="Apperance[@i].Wash2">
+                                                    @foreach (var item in (List<SelectListItem>)ViewBag.WashList)
+                                                    {
+                                                        string selected = item.Text.Equals(Model.Apperance[i].Wash2.ToString()) ? "selected" : "";
+                                                        <option value="@item.Value" @selected>@item.Text</option>
+                                                    }
+                                                </select>
                                             </td>
                                             @if (!string.IsNullOrEmpty(Model.Apperance[i].WashName3))
                                             {
                                                 <td>
-                                                    @Html.DropDownListFor(o => Model.Apperance[i].Wash3, (List<SelectListItem>)ViewBag.WashList, "")
+                                                    <select id="Apperance_@{@i}__Wash3" name="Apperance[@i].Wash3">
+                                                        @foreach (var item in (List<SelectListItem>)ViewBag.WashList)
+                                                        {
+                                                            string selected = item.Text.Equals(Model.Apperance[i].Wash3.ToString()) ? "selected" : "";
+                                                            <option value="@item.Value" @selected>@item.Text</option>
+                                                        }
+                                                    </select>                                                    
                                                 </td>
                                             }
-                                            <td>
-                                                @Html.DropDownListFor(o => Model.Apperance[i].Comment, (List<SelectListItem>)ViewBag.WashList, "")
-                                            </td>
+                                        <td>
+                                            <select id="Apperance_@{@i}__Comment" name="Apperance[@i].Comment">
+                                                @foreach (var item in (List<SelectListItem>)ViewBag.WashList)
+                                                {
+                                                    string selected = Model.Apperance[i].Comment!= null && item.Text.Equals(Model.Apperance[i].Comment.ToString()) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>
+                                        </td>
                                         </tr>
                                     }
                                 </tbody>
@@ -465,7 +529,7 @@
                         }
                     </div>
                     <div id="tab05" class="tab-inner">
-                        <table class="DataTable">
+                        <table id="FGWT" class="DataTable">
                             <thead>
                                 <tr>
                                     <th><h4>Location</h4></th>
@@ -493,13 +557,13 @@
                                     <td>
                                         @if (bolWash)
                                         {
-                                            @Html.TextBoxFor(o => Model.FGWT[i].BeforeWash, "", new { htmlAttributes = new { @type = "number", @min = "0", @step = "0.1", @value = "0" } })
+                                            <input id="FGWT_@{@i}__BeforeWash" name="FGWT[@i].BeforeWash" type="number" min="0" step="0.1" value="@Model.FGWT[i].BeforeWash">
                                         }
                                     </td>
                                     <td>
                                         @if (bolWash)
                                         {
-                                            @Html.TextBoxFor(o => Model.FGWT[i].AfterWash, "", new { htmlAttributes = new { @type = "number", @min = "0", @step = "0.1", @value = "0" } })
+                                            <input id="FGWT_@{@i}__AfterWash" name="FGWT[@i].AfterWash" type="number" min="0" step="0.1" value="@Model.FGWT[i].AfterWash">
                                         }
                                     </td>
                                     <td>
@@ -508,7 +572,13 @@
                                     <td>
                                         @if (bolScale)
                                         {
-                                            @Html.DropDownListFor(o => Model.FGWT[i].Scale, (List<SelectListItem>)ViewBag.ScaleList, "")
+                                            <select id="FGWT_@{@i}__Scale" name="FGWT[@i].Scale">
+                                                @foreach (var item in (List<SelectListItem>)ViewBag.ScaleList)
+                                                {
+                                                    string selected = item.Text.Equals(Model.FGWT[i].Scale.ToString()) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>
                                         }
                                     </td>
                                     <td>
@@ -584,16 +654,28 @@
                                         </td>
                                         <td class="bg-lightred">
                                             @{
-                                                switch (Model.FGPT[i].TestUnit)
+                                                switch (Model.FGPT[i].TestUnit.ToUpper())
                                                 {
-                                                    case "mm":
-                                                        @Html.DropDownListFor(o => Model.FGPT[i].TestResult, (List<SelectListItem>)ViewBag.TestResultmmList, "")
+                                                    case "MM":
+                                                        <select id="FGPT_@{@i}__TestResult" name="FGPT[@i].TestResult">
+                                                            @foreach (var item in (List<SelectListItem>)ViewBag.TestResultmmList)
+                                                            {
+                                                                string selected = item.Text.Equals(Model.FGPT[i].TestResult.ToString()) ? "selected" : "";
+                                                                <option value="@item.Value" @selected>@item.Text</option>
+                                                            }
+                                                        </select>
                                                         break;
                                                     case "N":
-                                                        @Html.TextBoxFor(o => Model.FGPT[i].TestResult, "", new { htmlAttributes = new { @type = "number", @min = "0", @step = "0.1", @value = "0" } })
+                                                        <input id="FGPT_@{@i}__TestResult" name="FGPT[@i].TestResult" type="number" min="0" step="0.1" value="@Model.FGPT[i].TestResult">
                                                         break;
-                                                    case "Pass/Fail":
-                                                        @Html.DropDownListFor(o => Model.FGPT[i].TestResult, (List<SelectListItem>)ViewBag.TestResultPassList, "")
+                                                    case "PASS/FAIL":
+                                                        <select id="FGPT_@{@i}__TestResult" name="FGPT[@i].TestResult">
+                                                            @foreach (var item in (List<SelectListItem>)ViewBag.TestResultPassList)
+                                                            {
+                                                                string selected = item.Text.Equals(Model.FGPT[i].TestResult.ToString()) ? "selected" : "";
+                                                                <option value="@item.Value" @selected>@item.Text</option>
+                                                            }
+                                                        </select>
                                                         break;
                                                 }
                                             }
@@ -638,41 +720,72 @@
         msg = new MessagerAlert();
         EditMode = false;
         IsEditModeChange();
-
+        ShrinkagesEventBind();
         tabChange();
-
     });
 
     function IsEditModeChange() {
         EditModeButtionBind();
 
         if (EditMode) {
-            $("#Edit, #Encode, #Amend, #Report, #Picture").removeClass("IsEditMode");
+            $("#Edit, #Encode, #Amend, #Report").removeClass("IsEditMode");
             $('#Save, #Undo').addClass("IsEditMode");
             $('#btnGenerateFGWT').unbind('click').addClass("IsEditModeQuery");
+
+            $('.DataTable input, .DataTable select').removeAttr("disabled");
         }
         else {
-            $("#Report, #Picture").addClass("IsEditMode");
+            $("#Report").addClass("IsEditMode");
             $('#Save, #Undo').unbind('click').removeClass("IsEditMode");
-            $('#btnGenerateFGWT').removeClass("IsEditModeQuery");
 
-            if ($('#status').val() == "New") {
+            if ($('#FGWT > tbody > tr').length > 1) {
+                $('#btnGenerateFGWT').removeClass("IsEditModeQuery");
+            }
+
+            if ($('#Detail_Status').val() == "New") {
                 $('#Edit, #Encode').addClass("IsEditMode");
             }
 
-            if ($('#status').val() == "Confirmed") {
+            if ($('#Detail_Status').val() == "Confirmed") {
                 $('#Amend').addClass("IsEditMode");
             }
+
+            $('.DataTable input, .DataTable select').attr("disabled", "disabled");
         }
     }
 
     function EditModeButtionBind() {
-        $('#Edit').on('click', function () {
-            if ($('#garmentTest_StyleID').val() != "" && $('#garmentTest_SeasonID').val() != "" && $('#garmentTest_BrandID').val() != "") {
+        if ($('#Detail_Status').val() == "New") {
+            $('#Edit').on('click', function () {
                 EditMode = true;
                 IsEditModeChange();
-            }
+            });
+
+            $('#Encode').on('click', function () {
+
+            });
+        }
+
+        if ($('#Detail_Status').val() == "Confirmed") {
+            $('#Amend').on('click', function () {
+
+            });
+        }
+
+        $('#Save').on('click', function () {
+
         });
+
+        $('#Report').on('click', function () {
+
+        });
+
+        if ($('#FGWT > tbody > tr').length > 1) {
+            $('#btnGenerateFGWT').on('click', function () {
+
+            });
+        }
+        
     }
 
     function tabChange() {
@@ -686,13 +799,13 @@
     }
 
     function ShrinkagesEventBind() {
-        $('.BeforeWash').on('change', function () {
+        $('.BeforeWash').on('blur', function () {
             var tr = $(this).parent().parent();
             var before = $(this).val();
-            $('.AfterWash1,.AfterWash2,.AfterWash3').trigger('change');
+            $('.AfterWash1,.AfterWash2,.AfterWash3').trigger('blur');
         });
 
-        $('.AfterWash1').on('change', function () {
+        $('.AfterWash1').on('blur', function () {
             var tr = $(this).parent().parent();
             var wash = $(this).val();
             var before = tr.find("input[class='BeforeWash']").val();
@@ -700,7 +813,7 @@
             shrink.val(AfterWashCal(wash, before));
         });
 
-        $('.AfterWash2').on('change', function () {
+        $('.AfterWash2').on('blur', function () {
             var tr = $(this).parent().parent();
             var wash = $(this).val();
             var before = tr.find("input[class='BeforeWash']").val();
@@ -708,7 +821,7 @@
             shrink.val(AfterWashCal(wash, before));
         });
 
-        $('.AfterWash3').on('change', function () {
+        $('.AfterWash3').on('blur', function () {
             var tr = $(this).parent().parent();
             var wash = $(this).val();
             var before = tr.find("input[class='BeforeWash']").val();
@@ -718,7 +831,7 @@
     }
 
     function AfterWashCal(Wash, Before) {
-        return accMul(accDiv(accSubtr(Wash, Before), Before), 100);
+        return Round(accMul(accDiv(accSubtr(Wash, Before), Before), 100));
     }
 
 </script>
