@@ -69,10 +69,15 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public List<MockupWash_Detail_ViewModel> MockupWash_Detail { get; set; }
     }
 
-    public class MockupWash_Detail_ViewModel: MockupWash_Detail
+    public class MockupWash_Detail_ViewModel : MockupWash_Detail
     {
         public string ArtworkColorName { get; set; }
         public string FabricColorName { get; set; }
         public string LastUpdate { get; set; }
+    }
+
+    public class AccessoryRefNo
+    {
+        public string Refno { get; set; }
     }
 }

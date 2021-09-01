@@ -50,15 +50,15 @@
             text-align: left;
         }
 
-        #myTable_info {
+        #CartonTable_info {
             color: white
         }
 
-        #myTable_previous, #myTable_next {
+        #CartonTable_previous, #CartonTable_next {
             color: white !important;
         }
 
-        #myTable_wrapper, #myTable_wrapper > .dataTables_scrollHeadInner {
+        #CartonTable_wrapper, #CartonTable_wrapper > .dataTables_scrollHeadInner {
             width: 100%
         }
 
@@ -71,6 +71,7 @@
 <div class="whiteBackgrond" style="display:flex;flex-wrap:nowrap;height:85vh;align-items:center; vertical-align:middle">
     @using (Html.BeginForm("GoGeneral", "Inspection", FormMethod.Post, new { @id = "settingForm", onsubmit = "return checkSubmitValue();" }))
     {
+        @Html.HiddenFor(o=>o.FinalInspectionID)
         <div style="padding:2em 3em 2em 3em">
             <div class="col-auto"><h1 style="font-size:2em">Inspection Setting</h1></div>
 
@@ -97,6 +98,7 @@
             <div style="width:50%;height:25vh;float:left;">
                 <div class="col-auto"><h2 class="sub_title">Inspection Number</h2></div>
                 <div class="col-auto"><label style="padding-left:3em;font-weight:bold">This is <font style="color:#0000ff">@Html.DisplayFor(o => o.InspectionTimes)</font> times to inspect for this PO#</label></div>
+                @Html.HiddenFor(o => o.InspectionTimes)
             </div>
 
             @*Selected PO*@
@@ -105,7 +107,7 @@
                 <div class="col-auto">
                     <table id="SelectedPOTable" class="cell-border " style="width:100%"></table>
                 </div>
-                <div class="col-auto" style="text-align:right"><p style="font-weight:bold;padding:10px 0">Total Available Qty <label id="totalAvailableQty" style="font-size:1.2em">0</label></p></div>
+                <div class="col-auto" style="text-align:right"><p style="font-weight:bold;padding:10px 0">Total Available Qty <label id="totalAvailableQty" style="font-size:1.2em">@ViewData["TotalAvailableQty"]</label></p></div>
             </div>
 
             @*AQL Plan*@
@@ -127,12 +129,12 @@
                     </tr>
                     <tr>
                         <td><label>Accepted Qty</label></td>
-                        <td>@Html.TextBoxFor(o => o.AcceptQty, new { @type = "number",@style= "width:49%;", @min = "0", @class = "form-control center-block" })</td>
+                        <td>@Html.TextBoxFor(o => o.AcceptQty, new { @type = "number", @style = "width:49%;", @min = "0", @class = "form-control center-block" })</td>
                     </tr>
                     <tr>
                         <td><label>Reject Qty</label></td>
                         <td>
-                        <input id="RejectQty" type="number" class="form-control center-block" min="0" value="0"/>
+                            <input id="RejectQty" type="number" class="form-control center-block" min="0" value="@ViewData["RejectQty"]" />
                         </td>
                     </tr>
                 </table>
@@ -143,12 +145,13 @@
         <input type="hidden" id="currnetSelectedPO" />
         <div class="detail-dialog to-edit-detail" title="Detail">
             <div class="detail-dialog-content dialog-content-w-icon" style="height:40vh">
-                <table cellspacing="100" id="myTable" class="table table-striped display">
+                <table cellspacing="100" id="CartonTable" class="table table-striped display">
                     <thead>
                         <tr class="row-name">
                             <th>Select</th>
                             <th>Packing List ID</th>
                             <th>CTN No</th>
+                            <th>SP</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -156,7 +159,9 @@
                         {
                             <tr class="row-content" style="vertical-align: middle; text-align: center;">
                                 <td>
-                                    <input type="checkbox" value="@Model.SelectCarton[i].CTNNo" id="carton_select_@Model.SelectCarton[i].CTNNo">
+                                    @{ string Ischecked = Model.SelectCarton[i].Selected ? "checked" : ""; }
+                                    @*@Html.CheckBox($"Carton_Select_[{i}]", Model.SelectCarton[i].Selected, new { @class = "messageCheckbox", @Idx = i, @CTNNo = Model.SelectCarton[i].CTNNo, @PackingListID = Model.SelectCarton[i].PackingListID, @OrderID = Model.SelectCarton[i].OrderID, @onclick = "SelectCartonChange(this)" })*@
+                                    <input type="checkbox" ID="Carton_Select_[@i]" class = "messageCheckbox" Idx = @i CTNNo = @Model.SelectCarton[i].CTNNo PackingListID = @Model.SelectCarton[i].PackingListID OrderID = @Model.SelectCarton[i].OrderID onclick = "SelectCartonChange(this)" />
                                 </td>
                                 <td>
                                     @Html.DisplayFor(o => Model.SelectCarton[i].PackingListID)
@@ -164,10 +169,12 @@
                                 <td>
                                     @Html.DisplayFor(o => Model.SelectCarton[i].CTNNo)
                                 </td>
+                                <td>
+                                    @Model.SelectCarton[i].OrderID-
+                                </td>
                             </tr>
                         }
                     </tbody>
-
                 </table>
                 <br />
                 <div>
@@ -175,6 +182,15 @@
             </div>
         </div>
         <button class="button" style="right:0">Next</button>
+
+        //Model.SelectCarton的標籤藏在這邊
+        for (int i = 0; i < Model.SelectCarton.Count; i++)
+        {
+            @Html.Hidden($"SelectCarton[{i}].Selected", Model.SelectCarton[i].Selected)
+            @Html.Hidden($"SelectCarton[{i}].PackingListID", Model.SelectCarton[i].PackingListID)
+            @Html.Hidden($"SelectCarton[{i}].CTNNo", Model.SelectCarton[i].CTNNo)
+            @Html.Hidden($"SelectCarton[{i}].OrderID", Model.SelectCarton[i].OrderID)
+        }
     }
 
 </div>
@@ -200,7 +216,7 @@
             });
 
             table = $('#SelectedPOTable').DataTable({
-            data: adata,
+                data: adata,
                 autoWidth: false,
                 destroy: true,
                 columnDefs: [
@@ -237,6 +253,7 @@
                 }
                 else {
                     var orderID = row.data()[1];
+                    
                     row.child(format(row.data(), orderID)).show();
                     tr.addClass('shown');
                 }
@@ -259,17 +276,18 @@
                     table.row($("#SelectPO_" + orderID).closest('tr')).data()[8] = $(this).find("input").val();
                 }
                 if (Column == "AvailableQty") {
-                    
+
                     table.row($("#SelectPO_" + orderID).closest('tr')).data()[9] = $(this).find("input").val();
                     Order_AvailableQty[orderID] = $(this).find("input").val();
                     Cacu_AvailableQty();
                 }
             });
 
-            $('#myTable').DataTable({
+            $("#CartonTable").DataTable({
                 "pageLength": 10,
                 "autoWidth": false,
                 "info": false,
+                destroy: true, // 設定這個才能重新初始化Datatables
                 "filter": false,
                 "paging": false,
                 "info": false,
@@ -279,6 +297,7 @@
                     { targets: 0, width: "30%" },
                     { targets: 1, width: "30%" },
                     { targets: 2, width: "30%" },
+                    { targets: 3, visible:false },
                 ]
             });
 
@@ -315,9 +334,12 @@
                         click: function () {
 
                             var checkedList = [];
-                            $('[id^=carton_select_]').each(function () {
+
+                            $('[id^=Carton_Select_]').each(function () {
+
                                 if ($(this).prop('checked')) {
-                                    checkedList.push($(this).val());
+                                    //checkedList.push($(this).val());
+                                    checkedList.push($(this).attr("ctnno"));
                                 }
                             });
 
@@ -420,8 +442,33 @@
         function open_cartonsDetail(pkey) {
             var findValue = pkey.split(',');
             var rowIndex;
+            var sp = findValue[0];
+            $(".to-edit-detail").dialog("open");
+            ShowLoading();
+            $("#CartonTable").DataTable({
+                "pageLength": 10,
+                "autoWidth": false,
+                "info": false,
+                destroy: true, // 設定這個才能重新初始化Datatables
+                //"filter": false,
+                "paging": false,
+                "info": false,
+                "scrollY": "40vh",
+                "scrollCollapse": true,
+                "search": {
+                    "search": sp+'-'
+                },
+                columnDefs: [
+                    { targets: 0, width: "30%" },
+                    { targets: 1, width: "30%" },
+                    { targets: 2, width: "30%" },
+                    { targets: 3, visible: false },
+                ]
+            })/*.columns.adjust()*/;
 
-            $('[id^=carton_select_]').each(function () {
+            $("#CartonTable_filter").hide();
+
+            $('[id^=Carton_Select_]').each(function () {
                 $(this).prop('checked', false);
             });
 
@@ -436,13 +483,18 @@
 
             var cartonValues = document.getElementById("SelectedPO[" + rowIndex + "].Cartons").value;
             var cartonList = cartonValues.split(',');
-            $(cartonList).each(function () {
-                $('#carton_select_' + this).prop('checked', true);
-            });
 
+            if (cartonValues != '') {
+
+                $(cartonList).each(function () {
+
+                    //$('#carton_select_' + this).prop('checked', true);
+                    $('input[Type=checkbox][CTNNo=' + this + ']').prop('checked', true);
+                });
+            }
             $("#currnetSelectedPO").val(rowIndex);
-            $(".to-edit-detail").dialog("open");
-            $("#myTable").DataTable().columns.adjust();
+
+            NonLoading();
         }
 
         function format(d, orderID) {
@@ -478,6 +530,17 @@
             }
         }
 
+        //選擇箱子時，將資料同步到Model的標籤
+        function SelectCartonChange(self) {
+
+            var Idx = $(self).attr("Idx");
+            var OrderID = $(self).attr("orderID");
+            var PackingListID = $(self).attr("PackingListID");
+            var CTNNo = $(self).attr("CTNNo");
+            var icChecked = $(self).prop("checked");
+            $("input[Type=hidden][ID=SelectCarton_" + Idx + "__Selected]").val(icChecked);
+        }
+
         function onSampleSizeChange(value) {
             // 不可大於 [Total Available Qty]
             if ($("#SampleSize").prop("disabled") == false) {
@@ -486,6 +549,7 @@
 
                 if (sampleSizeValue > totalavailableQtyValue) {
                     msg.WithError("[Sample Plan Qty] can not great than [Total Available Qty]");
+                    $("#SampleSize").val(0);
                     return false;
                 }
             }
@@ -530,7 +594,7 @@
             //請依照AQL Plan中所寫邏輯重抓AcceptableQualityLevels設定資料
 
 
-
+            //為避免POST抓不到畫面上的控制項，因此要全部打開
             var trlist = $("#SelectedPOTable tbody td.details-control");
 
             trlist.each(function () {
@@ -538,8 +602,9 @@
                 var row = table.row(tr);
 
                 if (row.child.isShown()) {
-                    row.child.hide();
-                    tr.removeClass('shown');
+                    // 打開的就不用管他
+                    //row.child.hide();
+                    //tr.removeClass('shown');
                 }
                 else {
                     row.child(format(row.data())).show();

@@ -1,5 +1,6 @@
 ﻿using BusinessLogicLayer.Interface.BulkFGT;
 using DatabaseObject.ProductionDB;
+using DatabaseObject.RequestModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using Library;
 using Microsoft.Office.Interop.Excel;
@@ -12,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Transactions;
+using System.Web.Mvc;
 
 namespace BusinessLogicLayer.Service
 {
@@ -21,7 +23,7 @@ namespace BusinessLogicLayer.Service
         private IMockupWashDetailProvider _MockupWashDetailProvider;
         private IDropDownListProvider _DropDownListProvider;
 
-        public MockupWashs_ViewModel GetMockupWash(MockupWash MockupWash)
+        public MockupWashs_ViewModel GetMockupWash(MockupWash_Request MockupWash)
         {
             MockupWashs_ViewModel model = new MockupWashs_ViewModel();
             try
@@ -61,7 +63,7 @@ namespace BusinessLogicLayer.Service
             bool test = false;
             MockupWash_ViewModel result = new MockupWash_ViewModel();
 
-            var oneReportNo = GetMockupWash(new MockupWash() { ReportNo = ReportNo });
+            var oneReportNo = GetMockupWash(new MockupWash_Request() { ReportNo = ReportNo });
             if (oneReportNo == null)
             {
                 result.ReportResult = false;
@@ -291,6 +293,26 @@ namespace BusinessLogicLayer.Service
             }
 
             return model;
+        }
+
+        public List<SelectListItem> GetAccessoryRefNo(AccessoryRefNo_Request Request)
+        {
+            List<SelectListItem> selectListItems = new List<SelectListItem>();
+            try
+            {
+                _MockupWashProvider = new MockupWashProvider(Common.ProductionDataAccessLayer);
+                var AccessoryRefNos = _MockupWashProvider.GetAccessoryRefNo(Request).ToList();
+                foreach (var item in AccessoryRefNos)
+                {
+                    selectListItems.Add(new SelectListItem { Value = item.Refno, Text = item.Refno });
+                }
+            }
+            catch (Exception )
+            {
+
+            }
+
+            return selectListItems;
         }
     }
 }

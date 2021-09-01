@@ -167,6 +167,7 @@
     <Compile Include="Areas\Authority\Controllers\AuthoritybyPositionController.cs" />
     <Compile Include="Areas\Authority\Controllers\UserListController.cs" />
     <Compile Include="Areas\BulkFGT\BulkFGTAreaRegistration.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\AccessoryOvenWashController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\BulkFGTMailGroupController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\FabricCrkShrkTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\FabricOvenTestController.cs" />
@@ -323,6 +324,9 @@
     <Content Include="Areas\BulkFGT\Views\SearchList\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\PullingTest\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\MockupCrocking\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\AccessoryOvenWash\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\AccessoryOvenWash\OvenTest.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\AccessoryOvenWash\WashTest.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />

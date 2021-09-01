@@ -135,6 +135,7 @@
     <Compile Include="Public\CompareBase.cs" />
     <Compile Include="Public\WindowModel.cs" />
     <Compile Include="RequestModel\FinalInspection_Query.cs" />
+    <Compile Include="RequestModel\MockupWash_Request.cs" />
     <Compile Include="RequestModel\MockupCrocking_Request.cs" />
     <Compile Include="RequestModel\FinalInspection_Request.cs" />
     <Compile Include="RequestModel\GarmentTest_Request.cs" />
@@ -162,6 +163,7 @@
     <Compile Include="ResultModel\UserList_Authority.cs" />
     <Compile Include="ResultModel\UserList_Browse.cs" />
     <Compile Include="ViewModel\BACriteria_ViewModel.cs" />
+    <Compile Include="ViewModel\BulkFGT\Accessory_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\GarmentTest_Detail_Apperance_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\GarmentTest_Detail_FGPT_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\GarmentTest_Detail_FGWT_ViewModel.cs" />
