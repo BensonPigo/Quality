@@ -97,6 +97,7 @@ namespace BusinessLogicLayer.Service
         public BaseResult UpdateFinalInspection(Setting setting, string UserID, string factoryID, string MDivisionid, out string finalInspectionID)
         {
             _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+            _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
             BaseResult result = new BaseResult();
             finalInspectionID = string.Empty;
             try

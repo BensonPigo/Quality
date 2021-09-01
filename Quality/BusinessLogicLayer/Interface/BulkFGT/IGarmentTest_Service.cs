@@ -58,5 +58,7 @@ namespace BusinessLogicLayer.Interface.BulkFGT
         GarmentTest_Detail_Result Encode_Detail(string ID, string No, DetailStatus status);
 
         GarmentTest_Result SentMail(string ID, string No, List<Quality_MailGroup> mailGroups);
+
+        GarmentTest_Detail_Result ToReport(string ID, string No, ReportType type, bool IsToPDF);
     }
 }

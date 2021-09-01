@@ -106,6 +106,23 @@ where ID = @ID{idx} and No = @No{idx} and Type = @Type{idx} and Location = @Loca
             return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
         }
 
+        public DataTable Get_dt_Shrinkage(string ID, string No)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.String, ID } ,
+                { "@No", DbType.String, No } ,
+            };
+            string sqlcmd = @"
+
+select *
+from GarmentTest_Detail_Shrinkage
+where ID = @ID
+and No = @No
+";
+            return ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
+        }
+
         /*建立(Create) 詳細敘述如下*/
         /// <summary>
         /// 建立

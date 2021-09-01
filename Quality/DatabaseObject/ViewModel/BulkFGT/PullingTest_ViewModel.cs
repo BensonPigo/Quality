@@ -66,7 +66,8 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string Result { get; set; }
         public string TestItem { get; set; }
         public string PullForce { get; set; }
-        public string PullForceUnit { get; set; }
+        public string PullForceUnit { get; set; }        
+        public string Inspector { get; set; }
         public int Time { get; set; }
         public string FabricRefno { get; set; }
         public string AccRefno { get; set; }

@@ -34,7 +34,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             public string name;
         }
 
-        // Setting
+        #region 查詢SP#
         public ActionResult Index(PoSelect Req)
         {
             this.CheckSession();
@@ -73,27 +73,73 @@ msg.WithInfo('{ex.Message}');
         }
 
         [HttpPost]
-        public ActionResult GoSetting(List<PoSelect_Result> model)
-        {
-            return RedirectToAction("Setting", model);
-        }
-
-        [HttpPost]
-        //public ActionResult Setting(List<DatabaseObject.ProductionDB.Orders> model, string finalInspectionID)
-        public ActionResult Setting(List<PoSelect_Result> model/*, string finalInspectionID*/)
+        public ActionResult Setting(List<PoSelect_Result> model, string finalInspectionID)
         {
             ViewBag.FactoryID = this.FactoryID;
-            string finalInspectionID = "";
+            //string finalInspectionID = "";
             DatabaseObject.ViewModel.FinalInspection.Setting setting = new DatabaseObject.ViewModel.FinalInspection.Setting();
             FinalInspectionSettingService finalInspectionSettingService = new FinalInspectionSettingService();
 
+            // 判斷是由Index頁進來，還是其他地方
             if (model != null)
             {
-                string poID = model[0].POID;
-                List<string> listOrderID = model.Select(s => s.ID).ToList();
+                var selected = model.Where(o => o.Selected).ToList();
 
-                setting = finalInspectionSettingService.GetSettingForInspection(poID, listOrderID, this.FactoryID);
+                if (selected.Any())
+                {
+                    string poID = selected[0].POID;
+                    List<string> listOrderID = selected.Select(s => s.ID).ToList();
+
+                    setting = finalInspectionSettingService.GetSettingForInspection(poID, listOrderID, this.FactoryID);
+
+                }
             }
+            else
+            {
+                setting = finalInspectionSettingService.GetSettingForInspection(finalInspectionID);
+            }
+
+            ViewBag.InspectionStageList = new List<SelectListItem>()
+            {
+                new SelectListItem(){Text="Inline",Value="Inline"},
+                new SelectListItem(){Text="Stagger",Value="Stagger"},
+                new SelectListItem(){Text="Final",Value="Final"},
+                new SelectListItem(){Text="3rd Party",Value="3rd Party"},
+            };
+
+            ViewBag.AQLPlanList = new List<SelectListItem>()
+            {
+                new SelectListItem(){Text="",Value=""},
+                new SelectListItem(){Text="1.0 Level I",Value="1.0 Level I"},
+                new SelectListItem(){Text="1.0 Level II",Value="1.0 Level II"},
+                new SelectListItem(){Text="1.5 Level I",Value="1.5 Level I"},
+                new SelectListItem(){Text="2.5 Level I",Value="2.5 Level I"},
+                new SelectListItem(){Text="100% Inspection",Value="100% Inspection"},
+            };
+
+            //setting.SelectCarton = new List<DatabaseObject.ViewModel.FinalInspection.SelectCarton>();
+            //for (int i = 1; i < 15; i++)
+            //{
+            //    setting = finalInspectionSettingService.GetSettingForInspection(finalInspectionID);
+            //}
+
+            TempData["Setting"] = setting;
+            return View(setting);
+        }
+
+        #endregion
+
+        #region Setting頁
+
+
+        public ActionResult Setting(string finalInspectionID)
+        {
+            ViewBag.FactoryID = this.FactoryID;
+            //string finalInspectionID = "";
+            DatabaseObject.ViewModel.FinalInspection.Setting setting = new DatabaseObject.ViewModel.FinalInspection.Setting();
+            FinalInspectionSettingService finalInspectionSettingService = new FinalInspectionSettingService();
+
+            setting = finalInspectionSettingService.GetSettingForInspection(finalInspectionID);
 
             ViewBag.InspectionStageList = new List<SelectListItem>()
             {
@@ -171,6 +217,11 @@ msg.WithInfo('{ex.Message}');
             return Json(jsonObject);
         }
 
+        /// <summary>
+        /// 按下Next
+        /// </summary>
+        /// <param name="setting"></param>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult GoGeneral(Setting setting)
         {
@@ -185,35 +236,72 @@ msg.WithInfo('{ex.Message}');
             if (!result)
             {
                 setting.ErrorMessage = result.ErrorMessage;
+                
+
+                ViewBag.InspectionStageList = new List<SelectListItem>()
+                {
+                    new SelectListItem(){Text="Inline",Value="Inline"},
+                    new SelectListItem(){Text="Stagger",Value="Stagger"},
+                    new SelectListItem(){Text="Final",Value="Final"},
+                    new SelectListItem(){Text="3rd Party",Value="3rd Party"},
+                };
+
+                ViewBag.AQLPlanList = new List<SelectListItem>()
+                {
+                    new SelectListItem(){Text="",Value=""},
+                    new SelectListItem(){Text="1.0 Level I",Value="1.0 Level I"},
+                    new SelectListItem(){Text="1.0 Level II",Value="1.0 Level II"},
+                    new SelectListItem(){Text="1.5 Level I",Value="1.5 Level I"},
+                    new SelectListItem(){Text="2.5 Level I",Value="2.5 Level I"},
+                    new SelectListItem(){Text="100% Inspection",Value="100% Inspection"},
+                };
+
                 return View("Setting", setting);
             }
 
-            TempData["FinalInspectionID"] = finalInspectionID;
-            return RedirectToAction("General", new { goPage= "Next" });
+            //TempData["FinalInspectionID"] = finalInspectionID;
+            return RedirectToAction("General", new { FinalInspectionID= finalInspectionID });
         }
 
+        #endregion
 
-        //[HttpPost]
-        //public ActionResult General(List<DatabaseObject.ProductionDB.Orders> model, string goPage)
-        public ActionResult General(string goPage)
+        #region General頁面
+
+        public ActionResult General(string FinalInspectionID)
         {
-            string FinalInspectionID = string.Empty;
-            if (TempData["FinalInspectionID"] != null)
-            {
-                FinalInspectionID = TempData["FinalInspectionID"].ToString();
-            }
+            FinalInspectionService sevice = new FinalInspectionService();
+            DatabaseObject.ManufacturingExecutionDB.FinalInspection model = sevice.GetFinalInspection(FinalInspectionID);
 
+            return View(model);
+        }
+
+        /// <summary>
+        /// 按下Next or Back
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="goPage"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult GoCheckList(DatabaseObject.ManufacturingExecutionDB.FinalInspection model, string goPage)
+        {
+            string FinalInspectionID = model.ID;
             if (goPage == "Back")
             {
-                return RedirectToAction("Setting");
+                return RedirectToAction("Setting", new { finalInspectionID = FinalInspectionID });
             }
             else if (goPage == "Next")
             {
                 return RedirectToAction("CheckList", new { FinalInspectionID = FinalInspectionID });
             }
 
-            return View();
+            FinalInspectionService sevice = new FinalInspectionService();
+            model.InspectionStep = "Insp-General";
+            sevice.UpdateFinalInspectionByStep(model, "Insp-General", this.UserID);
+
+            return View(model);
         }
+        #endregion
+
 
         public ActionResult CheckList(string FinalInspectionID)
         {

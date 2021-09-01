@@ -128,14 +128,36 @@
         });
 
         $("#BeforeDel").click(function () {
+
+            // DB的圖檔
             const Ori = document.querySelector("#OriBeforePic");
+
+            // User拍下的圖片
             const Setting = document.querySelector("#BeforePic");
-            Setting.src = Ori.src;
+
+            // 如果User沒拍，則刪除原本的
+            if (Setting == "" || Setting == null || Setting == undefined) {
+                Setting.src = "";
+            }
+            else {
+                Setting.src = Ori.src;
+            }
         });
         $("#AfterDel").click(function () {
+
+            // DB的圖檔
             const Ori = document.querySelector("#OriAfterPic");
+
+            // User拍下的圖片
             const Setting = document.querySelector("#AfterPic");
-            Setting.src = Ori.src;
+
+            // 如果User沒拍，則刪除原本的
+            if (Setting == "" || Setting == null || Setting == undefined) {
+                Setting.src = "";
+            }
+            else {
+                Setting.src = Ori.src;
+            }
         });
 
         CamInit();
