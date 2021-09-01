@@ -33,13 +33,13 @@ namespace DatabaseObject.RequestModel
         public string TxtSize { get; set; }
 
         /// <inheritdoc/>
-        public bool RdbtnLine { get; set; }
+        public bool? RdbtnLine { get; set; }
 
         /// <inheritdoc/>
-        public bool RdbtnTumble { get; set; }
+        public bool? RdbtnTumble { get; set; }
 
         /// <inheritdoc/>
-        public bool RdbtnHand { get; set; }
+        public bool? RdbtnHand { get; set; }
 
         /// <inheritdoc/>
         public string ComboTemperature { get; set; }

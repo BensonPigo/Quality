@@ -126,6 +126,41 @@ Delete GarmentTest_Detail where id = @ID and NO = @No
             return ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter);
         }
 
+        public bool Update_Sender(string ID, string No, string UserID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.String, ID } ,
+                { "@No", DbType.String, No } ,
+                { "@UserID", DbType.String, UserID } ,
+            };
+
+            string sqlcmd = @"
+update GarmentTest_Detail
+set Sender = @UserID , SendDate = GETDATE()
+where ID = @ID and No = @No
+";
+            return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
+        }
+
+        public bool Update_Receive(string ID, string No, string UserID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.String, ID } ,
+                { "@No", DbType.String, No } ,
+                { "@UserID", DbType.String, UserID } ,
+            };
+
+            string sqlcmd = @"
+update GarmentTest_Detail
+set Receiver = @UserID , ReceiveDate = GETDATE()
+where ID = @ID and No = @No
+
+";
+            return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
+        }
+
         public bool Chk_AllResult(string ID, string No)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection

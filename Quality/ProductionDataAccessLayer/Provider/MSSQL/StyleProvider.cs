@@ -50,7 +50,7 @@ and ukey = @ukey
             };
 
             string sqlcmd = @"
-select StyleName from Style where ID =@ID and SeasonID = @SeasonID and BrandID = @BrandID
+select StyleName from Style where ID =@StyleID and SeasonID = @SeasonID and BrandID = @BrandID
 ";
             DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
 
