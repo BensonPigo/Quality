@@ -16,7 +16,7 @@ namespace DatabaseObject.ProductionDB
     {
         /// <summary>Garment_Detail.ID</summary>
         [Display(Name = "Garment_Detail.ID")]
-        public long ID { get; set; }
+        public long? ID { get; set; }
 
         /// <summary>Garment_Detail.No</summary>
         [Display(Name = "Garment_Detail.No")]
@@ -26,25 +26,25 @@ namespace DatabaseObject.ProductionDB
         public string Location { get; set; }
 
 
-        public decimal MethodA_AAPrime { get; set; }
+        public decimal? MethodA_AAPrime { get; set; }
 
 
-        public decimal MethodA_APrimeB { get; set; }
+        public decimal? MethodA_APrimeB { get; set; }
 
 
-        public decimal MethodB_AAPrime { get; set; }
+        public decimal? MethodB_AAPrime { get; set; }
 
 
-        public decimal MethodB_AB { get; set; }
+        public decimal? MethodB_AB { get; set; }
 
 
-        public decimal CM { get; set; }
+        public decimal? CM { get; set; }
 
 
-        public decimal MethodA { get; set; }
+        public decimal? MethodA { get; set; }
 
 
-        public decimal MethodB { get; set; }
+        public decimal? MethodB { get; set; }
 
     }
 }
