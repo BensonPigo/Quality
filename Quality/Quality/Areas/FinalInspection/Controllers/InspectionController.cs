@@ -89,10 +89,16 @@ msg.WithInfo('{ex.Message}');
 
             if (model != null)
             {
-                string poID = model[0].POID;
-                List<string> listOrderID = model.Select(s => s.ID).ToList();
+                var selected = model.Where(o => o.Selected).ToList();
 
-                setting = finalInspectionSettingService.GetSettingForInspection(poID, listOrderID, this.FactoryID);
+                if (selected.Any())
+                {
+                    string poID = selected[0].POID;
+                    List<string> listOrderID = selected.Select(s => s.ID).ToList();
+
+                    setting = finalInspectionSettingService.GetSettingForInspection(poID, listOrderID, this.FactoryID);
+
+                }
             }
 
             ViewBag.InspectionStageList = new List<SelectListItem>()

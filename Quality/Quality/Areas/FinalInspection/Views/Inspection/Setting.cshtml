@@ -50,15 +50,15 @@
             text-align: left;
         }
 
-        #myTable_info {
+        #CartonTable_info {
             color: white
         }
 
-        #myTable_previous, #myTable_next {
+        #CartonTable_previous, #CartonTable_next {
             color: white !important;
         }
 
-        #myTable_wrapper, #myTable_wrapper > .dataTables_scrollHeadInner {
+        #CartonTable_wrapper, #CartonTable_wrapper > .dataTables_scrollHeadInner {
             width: 100%
         }
 
@@ -68,116 +68,122 @@
     </style>
 }
 
-<div class="whiteBackgrond" style="display:flex;flex-wrap:nowrap;height:85vh;align-items:center; vertical-align:middle">
-    @using (Html.BeginForm("GoGeneral", "Inspection", FormMethod.Post, new { @id = "settingForm", onsubmit = "return checkSubmitValue();" }))
-    {
-        <div style="padding:2em 3em 2em 3em">
-            <div class="col-auto"><h1 style="font-size:2em">Inspection Setting</h1></div>
+    <div class="whiteBackgrond" style="display:flex;flex-wrap:nowrap;height:85vh;align-items:center; vertical-align:middle">
+        @using (Html.BeginForm("GoGeneral", "Inspection", FormMethod.Post, new { @id = "settingForm", onsubmit = "return checkSubmitValue();" }))
+        {
+            <div style="padding:2em 3em 2em 3em">
+                <div class="col-auto"><h1 style="font-size:2em">Inspection Setting</h1></div>
 
-            @*Basic*@
-            <div style="width:50%;height:25vh;float:left;">
-                <div class="col-auto"><h2 class="sub_title">Basic</h2></div>
-                <table class="col-auto table_div" style="width:100%">
-                    <tr>
-                        <td><label>Choose Inspection Stage</label></td>
-                        <td>@Html.DropDownListFor(o => o.InspectionStage, (List<SelectListItem>)ViewBag.InspectionStageList, null, new { @class = "form-control", @style = "width:157px", @onchange = "onInspectionStageChange(this.value)" })</td>
-                    </tr>
-                    <tr>
-                        <td><label>What's day you audit?</label></td>
-                        <td>@Html.TextBoxFor(o => o.AuditDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })</td>
-                    </tr>
-                    <tr>
-                        <td><label>What's sewing line you audit?</label></td>
-                        <td>@Html.TextBoxFor(o => o.SewingLineID, new { @readonly = "readonly" })</td>
-                    </tr>
-                </table>
-            </div>
-
-            @*Inspection Number*@
-            <div style="width:50%;height:25vh;float:left;">
-                <div class="col-auto"><h2 class="sub_title">Inspection Number</h2></div>
-                <div class="col-auto"><label style="padding-left:3em;font-weight:bold">This is <font style="color:#0000ff">@Html.DisplayFor(o => o.InspectionTimes)</font> times to inspect for this PO#</label></div>
-            </div>
-
-            @*Selected PO*@
-            <div style="width:50%;height:40vh;float:left;">
-                <div class="col-auto"><h2 class="sub_title">Selected PO</h2></div>
-                <div class="col-auto">
-                    <table id="SelectedPOTable" class="cell-border " style="width:100%"></table>
-                </div>
-                <div class="col-auto" style="text-align:right"><p style="font-weight:bold;padding:10px 0">Total Available Qty <label id="totalAvailableQty" style="font-size:1.2em">0</label></p></div>
-            </div>
-
-            @*AQL Plan*@
-            <div style="width:50%;height:40vh;float:left;">
-                <div class="col-auto"><h2 class="sub_title">AQL Plan</h2></div>
-                <table class="col-auto table_div" style="width:100%">
-                    <tr>
-                        <td><label>AQL Plan</label></td>
-                        <td>@Html.DropDownListFor(o => o.AQLPlan, (List<SelectListItem>)ViewBag.AQLPlanList, null, new { @class = "form-control", @disabled = "disabled" })</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" style="text-align:center">
-                            <label style="font-weight:normal;font-size:0.8em">(Inline, Stagger stage can skip AQL Plan, encode below directly)</label>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label>Sample Plan Qty</label></td>
-                        <td>@Html.TextBoxFor(o => o.SampleSize, new { @type = "number", @min = "0", @class = "form-control center-block", @onchange = "onSampleSizeChange(this.value)" })</td>
-                    </tr>
-                    <tr>
-                        <td><label>Accepted Qty</label></td>
-                        <td>@Html.TextBoxFor(o => o.AcceptQty, new { @type = "number",@style= "width:49%;", @min = "0", @class = "form-control center-block" })</td>
-                    </tr>
-                    <tr>
-                        <td><label>Reject Qty</label></td>
-                        <td>
-                        <input id="RejectQty" type="number" class="form-control center-block" min="0" value="0"/>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-        <!--Detail-Cartons彈出視窗-->
-        <!--多個Table forA001-->
-        <input type="hidden" id="currnetSelectedPO" />
-        <div class="detail-dialog to-edit-detail" title="Detail">
-            <div class="detail-dialog-content dialog-content-w-icon" style="height:40vh">
-                <table cellspacing="100" id="myTable" class="table table-striped display">
-                    <thead>
-                        <tr class="row-name">
-                            <th>Select</th>
-                            <th>Packing List ID</th>
-                            <th>CTN No</th>
+                @*Basic*@
+                <div style="width:50%;height:25vh;float:left;">
+                    <div class="col-auto"><h2 class="sub_title">Basic</h2></div>
+                    <table class="col-auto table_div" style="width:100%">
+                        <tr>
+                            <td><label>Choose Inspection Stage</label></td>
+                            <td>@Html.DropDownListFor(o => o.InspectionStage, (List<SelectListItem>)ViewBag.InspectionStageList, null, new { @class = "form-control", @style = "width:157px", @onchange = "onInspectionStageChange(this.value)" })</td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @for (int i = 0; i < Model.SelectCarton.Count; i++)
-                        {
-                            <tr class="row-content" style="vertical-align: middle; text-align: center;">
-                                <td>
-                                    <input type="checkbox" value="@Model.SelectCarton[i].CTNNo" id="carton_select_@Model.SelectCarton[i].CTNNo">
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(o => Model.SelectCarton[i].PackingListID)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(o => Model.SelectCarton[i].CTNNo)
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
+                        <tr>
+                            <td><label>What's day you audit?</label></td>
+                            <td>@Html.TextBoxFor(o => o.AuditDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })</td>
+                        </tr>
+                        <tr>
+                            <td><label>What's sewing line you audit?</label></td>
+                            <td>@Html.TextBoxFor(o => o.SewingLineID, new { @readonly = "readonly" })</td>
+                        </tr>
+                    </table>
+                </div>
 
-                </table>
-                <br />
-                <div>
+                @*Inspection Number*@
+                <div style="width:50%;height:25vh;float:left;">
+                    <div class="col-auto"><h2 class="sub_title">Inspection Number</h2></div>
+                    <div class="col-auto"><label style="padding-left:3em;font-weight:bold">This is <font style="color:#0000ff">@Html.DisplayFor(o => o.InspectionTimes)</font> times to inspect for this PO#</label></div>
+                </div>
+
+                @*Selected PO*@
+                <div style="width:50%;height:40vh;float:left;">
+                    <div class="col-auto"><h2 class="sub_title">Selected PO</h2></div>
+                    <div class="col-auto">
+                        <table id="SelectedPOTable" class="cell-border " style="width:100%"></table>
+                    </div>
+                    <div class="col-auto" style="text-align:right"><p style="font-weight:bold;padding:10px 0">Total Available Qty <label id="totalAvailableQty" style="font-size:1.2em">0</label></p></div>
+                </div>
+
+                @*AQL Plan*@
+                <div style="width:50%;height:40vh;float:left;">
+                    <div class="col-auto"><h2 class="sub_title">AQL Plan</h2></div>
+                    <table class="col-auto table_div" style="width:100%">
+                        <tr>
+                            <td><label>AQL Plan</label></td>
+                            <td>@Html.DropDownListFor(o => o.AQLPlan, (List<SelectListItem>)ViewBag.AQLPlanList, null, new { @class = "form-control", @disabled = "disabled" })</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="text-align:center">
+                                <label style="font-weight:normal;font-size:0.8em">(Inline, Stagger stage can skip AQL Plan, encode below directly)</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label>Sample Plan Qty</label></td>
+                            <td>@Html.TextBoxFor(o => o.SampleSize, new { @type = "number", @min = "0", @class = "form-control center-block", @onchange = "onSampleSizeChange(this.value)" })</td>
+                        </tr>
+                        <tr>
+                            <td><label>Accepted Qty</label></td>
+                            <td>@Html.TextBoxFor(o => o.AcceptQty, new { @type = "number", @style = "width:49%;", @min = "0", @class = "form-control center-block" })</td>
+                        </tr>
+                        <tr>
+                            <td><label>Reject Qty</label></td>
+                            <td>
+                                <input id="RejectQty" type="number" class="form-control center-block" min="0" value="0" />
+                            </td>
+                        </tr>
+                    </table>
                 </div>
             </div>
-        </div>
-        <button class="button" style="right:0">Next</button>
-    }
+            <!--Detail-Cartons彈出視窗-->
+            <!--多個Table forA001-->
+            <input type="hidden" id="currnetSelectedPO" />
+            <div class="detail-dialog to-edit-detail" title="Detail">
+                <div class="detail-dialog-content dialog-content-w-icon" style="height:40vh">
+                    <table cellspacing="100" id="CartonTable" class="table table-striped display">
+                        <thead>
+                            <tr class="row-name">
+                                <th>Select</th>
+                                <th>Packing List ID</th>
+                                <th>CTN No</th>
+                                <th>SP</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.SelectCarton.Count; i++)
+                            {
+                                <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                                    <td>
+                                        @Html.CheckBox($"SelectCarton[{i}].Selected", false, new { @class = "messageCheckbox", @CTNNo = Model.SelectCarton[i].CTNNo })
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(o => Model.SelectCarton[i].PackingListID)
+                                        @Html.Hidden($"SelectCarton[{i}].PackingListID", Model.SelectCarton[i].PackingListID)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(o => Model.SelectCarton[i].CTNNo)
+                                        @Html.Hidden($"SelectCarton[{i}].CTNNo", Model.SelectCarton[i].CTNNo)
+                                    </td>
+                                    <td>
+                                        @Html.Hidden($"SelectCarton[{i}].OrderID", Model.SelectCarton[i].OrderID)
+                                        @Model.SelectCarton[i].OrderID-
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <br />
+                    <div>
+                    </div>
+                </div>
+            </div>
+            <button class="button" style="right:0">Next</button>
+        }
 
-</div>
+    </div>
 @section FinalInspection_script
 {
     <script>
@@ -200,7 +206,7 @@
             });
 
             table = $('#SelectedPOTable').DataTable({
-            data: adata,
+                data: adata,
                 autoWidth: false,
                 destroy: true,
                 columnDefs: [
@@ -266,10 +272,11 @@
                 }
             });
 
-            $('#myTable').DataTable({
+            $("#CartonTable").DataTable({
                 "pageLength": 10,
                 "autoWidth": false,
                 "info": false,
+                destroy: true, // 設定這個才能重新初始化Datatables
                 "filter": false,
                 "paging": false,
                 "info": false,
@@ -279,6 +286,7 @@
                     { targets: 0, width: "30%" },
                     { targets: 1, width: "30%" },
                     { targets: 2, width: "30%" },
+                    { targets: 3, visible:false },
                 ]
             });
 
@@ -315,9 +323,12 @@
                         click: function () {
 
                             var checkedList = [];
-                            $('[id^=carton_select_]').each(function () {
+                            
+                            $('[id^=SelectCarton]').each(function () {
+                                
                                 if ($(this).prop('checked')) {
-                                    checkedList.push($(this).val());
+                                    //checkedList.push($(this).val());
+                                    checkedList.push($(this).attr("ctnno"));
                                 }
                             });
 
@@ -420,8 +431,33 @@
         function open_cartonsDetail(pkey) {
             var findValue = pkey.split(',');
             var rowIndex;
+            var sp = findValue[0];
+            $(".to-edit-detail").dialog("open");
+            ShowLoading();
+            $("#CartonTable").DataTable({
+                "pageLength": 10,
+                "autoWidth": false,
+                "info": false,
+                destroy: true, // 設定這個才能重新初始化Datatables
+                //"filter": false,
+                "paging": false,
+                "info": false,
+                "scrollY": "40vh",
+                "scrollCollapse": true,
+                "search": {
+                    "search": sp+'-'
+                },
+                columnDefs: [
+                    { targets: 0, width: "30%" },
+                    { targets: 1, width: "30%" },
+                    { targets: 2, width: "30%" },
+                    { targets: 3, visible: false },
+                ]
+            })/*.columns.adjust()*/;
 
-            $('[id^=carton_select_]').each(function () {
+            $("#CartonTable_filter").hide();
+
+            $('[id^=SelectCarton]').each(function () {
                 $(this).prop('checked', false);
             });
 
@@ -436,13 +472,18 @@
 
             var cartonValues = document.getElementById("SelectedPO[" + rowIndex + "].Cartons").value;
             var cartonList = cartonValues.split(',');
-            $(cartonList).each(function () {
-                $('#carton_select_' + this).prop('checked', true);
-            });
+            
+            if (cartonValues != '') {
+                
+                $(cartonList).each(function () {
 
+                    //$('#carton_select_' + this).prop('checked', true);
+                    $('input[Type=checkbox][CTNNo=' + this + ']').prop('checked', true);
+                });
+            }
             $("#currnetSelectedPO").val(rowIndex);
-            $(".to-edit-detail").dialog("open");
-            $("#myTable").DataTable().columns.adjust();
+
+            NonLoading();
         }
 
         function format(d, orderID) {
@@ -530,7 +571,7 @@
             //請依照AQL Plan中所寫邏輯重抓AcceptableQualityLevels設定資料
 
 
-
+            //為避免POST抓不到畫面上的控制項，因此要全部打開
             var trlist = $("#SelectedPOTable tbody td.details-control");
 
             trlist.each(function () {
@@ -538,8 +579,9 @@
                 var row = table.row(tr);
 
                 if (row.child.isShown()) {
-                    row.child.hide();
-                    tr.removeClass('shown');
+                    // 打開的就不用管他
+                    //row.child.hide();
+                    //tr.removeClass('shown');
                 }
                 else {
                     row.child(format(row.data())).show();
