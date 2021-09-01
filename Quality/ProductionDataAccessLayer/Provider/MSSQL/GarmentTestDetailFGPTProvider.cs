@@ -75,6 +75,7 @@ select
 						ELSE ''
 					END
 ,[Type] = IIF(t.TypeSelection_VersionID > 0, Replace(t.type, '{0}', ts.Code), t.type)
+,[TypeOri] = t.type
 ,[TestName] = PMS_FGPT_TestName.Description
 ,[TestDetail]
 ,[Criteria]

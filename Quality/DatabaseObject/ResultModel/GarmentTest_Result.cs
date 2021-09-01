@@ -48,6 +48,8 @@ namespace DatabaseObject.ResultModel
         public string ErrMsg { get; set; }
 
         public bool sentMail { get; set; }
+
+        public string reportPath { get; set; }
     }
 }
 
