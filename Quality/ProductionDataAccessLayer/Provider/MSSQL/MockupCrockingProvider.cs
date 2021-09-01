@@ -1,6 +1,7 @@
 using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
 using DatabaseObject.ProductionDB;
+using DatabaseObject.RequestModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using ProductionDataAccessLayer.Interface;
 using System;
@@ -235,7 +236,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         }
         #endregion
 
-        public IList<MockupCrocking_ViewModel> GetMockupCrocking(MockupCrocking Item)
+        public IList<MockupCrocking_ViewModel> GetMockupCrocking(MockupCrocking_Request Item)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
