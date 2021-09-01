@@ -166,6 +166,9 @@ msg.WithInfo('{ex.Message}');
             //}
 
             TempData["Setting"] = setting;
+            ViewData["TotalAvailableQty"] = setting.SelectedPO.Sum(o => o.AvailableQty);
+            ViewData["RejectQty"] = setting.AcceptQty + 1;
+
             return View(setting);
         }
 
@@ -259,7 +262,6 @@ msg.WithInfo('{ex.Message}');
                 return View("Setting", setting);
             }
 
-            //TempData["FinalInspectionID"] = finalInspectionID;
             return RedirectToAction("General", new { FinalInspectionID= finalInspectionID });
         }
 
@@ -285,24 +287,26 @@ msg.WithInfo('{ex.Message}');
         public ActionResult GoCheckList(DatabaseObject.ManufacturingExecutionDB.FinalInspection model, string goPage)
         {
             string FinalInspectionID = model.ID;
+
             if (goPage == "Back")
             {
                 return RedirectToAction("Setting", new { finalInspectionID = FinalInspectionID });
             }
             else if (goPage == "Next")
             {
+
+                FinalInspectionService sevice = new FinalInspectionService();
+                model.InspectionStep = "Insp-General";
+                sevice.UpdateFinalInspectionByStep(model, "Insp-General", this.UserID);
+
                 return RedirectToAction("CheckList", new { FinalInspectionID = FinalInspectionID });
             }
-
-            FinalInspectionService sevice = new FinalInspectionService();
-            model.InspectionStep = "Insp-General";
-            sevice.UpdateFinalInspectionByStep(model, "Insp-General", this.UserID);
 
             return View(model);
         }
         #endregion
 
-
+        #region CheckList頁面
         public ActionResult CheckList(string FinalInspectionID)
         {
             FinalInspectionService sevice = new FinalInspectionService();
@@ -317,16 +321,21 @@ msg.WithInfo('{ex.Message}');
         {
             if (goPage == "Back")
             {
-                return RedirectToAction("General");
+                return RedirectToAction("General", new { FinalInspectionID = finalinspection.ID });
             }
             else if (goPage == "Next")
             {
-                return RedirectToAction("AddDefect");
+                FinalInspectionService sevice = new FinalInspectionService();
+                finalinspection.InspectionStep = "Insp-CheckList";
+                sevice.UpdateFinalInspectionByStep(finalinspection, "Insp-CheckList", this.UserID);
+
+                return RedirectToAction("AddDefect", new { FinalInspectionID = finalinspection.ID });
             }
             return View();
         }
+        #endregion
 
-        public ActionResult AddDefect()
+        public ActionResult AddDefect(string FinalInspectionID)
         {
             DatabaseObject.ViewModel.FinalInspection.AddDefect addDefct = new DatabaseObject.ViewModel.FinalInspection.AddDefect();
             addDefct.RejectQty = 8;

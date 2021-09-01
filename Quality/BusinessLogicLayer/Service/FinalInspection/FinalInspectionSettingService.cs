@@ -52,7 +52,7 @@ namespace BusinessLogicLayer.Service
 
                 foreach (SelectedPO selectedPOItem in result.SelectedPO)
                 {
-                    var selectedCartons = result.SelectCarton.Where(s => s.OrderID == selectedPOItem.OrderID);
+                    var selectedCartons = result.SelectCarton.Where(s => s.Selected && s.OrderID == selectedPOItem.OrderID);
                     if (!selectedCartons.Any())
                     {
                         continue;
