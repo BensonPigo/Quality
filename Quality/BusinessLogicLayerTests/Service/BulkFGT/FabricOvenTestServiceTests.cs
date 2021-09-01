@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using BusinessLogicLayer.Interface.BulkFGT;
 using DatabaseObject.ResultModel;
 using DatabaseObject;
+using System.Drawing;
 
 namespace BusinessLogicLayer.Service.Tests
 {
@@ -111,6 +112,14 @@ namespace BusinessLogicLayer.Service.Tests
                 BaseResult baseResult = fabricOvenTestService.SaveFabricOvenTestDetail(fabricOvenTest_Detail_Result, "SCIMIS");
 
                 fabricOvenTest_Detail_Result.Main.TestNo = "1";
+                Bitmap bitmap = new Bitmap(Image.FromFile(@"TestResource\001.jpg"));
+                ImageConverter converter = new ImageConverter();
+                byte[] testImgByte = (byte[])converter.ConvertTo(bitmap, typeof(byte[]));
+                fabricOvenTest_Detail_Result.Main.TestBeforePicture = testImgByte;
+
+                testImgByte = (byte[])converter.ConvertTo(new Bitmap(Image.FromFile(@"TestResource\Koala.jpg")), typeof(byte[]));
+                fabricOvenTest_Detail_Result.Main.TestAfterPicture = null;
+
                 fabricOvenTest_Detail_Result.Details[0].Remark = "9527";
                 fabricOvenTest_Detail_Result.Details[0].SubmitDate = DateTime.Now.Date;
                 fabricOvenTest_Detail_Result.Details[0].Roll = "3";
@@ -173,6 +182,69 @@ namespace BusinessLogicLayer.Service.Tests
                 IFabricOvenTestService fabricOvenTestService = new FabricOvenTestService();
 
                 BaseResult baseResult = fabricOvenTestService.AmendFabricOvenTestDetail("21051739BB", "3");
+
+                if (!baseResult)
+                {
+                    Assert.Fail(baseResult.ErrorMessage);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.ToString());
+            }
+        }
+
+        [TestMethod()]
+        public void SendFailResultMailTest()
+        {
+            try
+            {
+                IFabricOvenTestService fabricOvenTestService = new FabricOvenTestService();
+
+                SendMail_Result result = fabricOvenTestService.SendFailResultMail("aaron.shie@sportscity.com.tw", "aaron.shie@sportscity.com.tw", "21051739BB", "3", true);
+
+                if (!result.result)
+                {
+                    Assert.Fail(result.resultMsg);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.ToString());
+            }
+        }
+
+        [TestMethod()]
+        public void ToExcelFabricOvenTestDetailTest()
+        {
+            try
+            {
+                IFabricOvenTestService fabricOvenTestService = new FabricOvenTestService();
+                string excelName;
+                BaseResult baseResult = fabricOvenTestService.ToExcelFabricOvenTestDetail("21051739BB", "1", out excelName, true);
+
+                if (!baseResult)
+                {
+                    Assert.Fail(baseResult.ErrorMessage);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.ToString());
+            }
+        }
+
+        [TestMethod()]
+        public void ToPdfFabricOvenTestDetailTest()
+        {
+            try
+            {
+                IFabricOvenTestService fabricOvenTestService = new FabricOvenTestService();
+                string excelName;
+                BaseResult baseResult = fabricOvenTestService.ToPdfFabricOvenTestDetail("21051739BB", "1", out excelName, true);
 
                 if (!baseResult)
                 {

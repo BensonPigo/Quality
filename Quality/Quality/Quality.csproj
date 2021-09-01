@@ -685,6 +685,9 @@
     <Content Include="ThirdParty\SciCustom\js\jquery-ui.min.js" />
     <Content Include="ThirdParty\SciCustom\js\main.js" />
     <Content Include="ThirdParty\SciCustom\js\MemoList.js" />
+    <Content Include="TMP\001.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -758,6 +761,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\SendMailAttachfiles\SendMailer.cshtml" />
+    <Content Include="XLT\FabricOvenTestDetailReport.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\FabricOvenTestDetailReportToPDF.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

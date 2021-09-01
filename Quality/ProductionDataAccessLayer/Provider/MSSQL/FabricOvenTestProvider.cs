@@ -48,7 +48,9 @@ select	[TestNo] = cast(o.TestNo as varchar),
 		[Inspector] = o.Inspector,
         [Result] = o.Result,
 		[Remark] = o.Remark,
-		[Status] = o.Status
+		[Status] = o.Status,
+        [TestBeforePicture] = o.TestBeforePicture,
+        [TestAfterPicture] = o.TestAfterPicture
 from Oven o with (nolock)
 left join pass1 pass1AddName on o.AddName = pass1AddName.ID
 left join pass1 pass1EditName on o.EditName = pass1EditName.ID
@@ -171,6 +173,8 @@ where o.POID = @POID
             listPar.Add("@Result", fabricOvenTest_Detail_Result.Main.Result);
             listPar.Add("@Remark", fabricOvenTest_Detail_Result.Main.Remark);
             listPar.Add("@editName", userID);
+            listPar.Add("@TestBeforePicture", fabricOvenTest_Detail_Result.Main.TestBeforePicture);
+            listPar.Add("@TestAfterPicture", fabricOvenTest_Detail_Result.Main.TestAfterPicture);
 
             string sqlUpdateOven = @"
 update  Oven set    InspDate = @InspDate,
@@ -179,7 +183,9 @@ update  Oven set    InspDate = @InspDate,
                     Inspector = @Inspector,
                     Remark = @Remark,
                     EditName = @editName,
-                    EditDate = getdate()
+                    EditDate = getdate(),
+                    TestBeforePicture = @TestBeforePicture,
+                    TestAfterPicture = @TestAfterPicture
 where   POID = @POID and TestNo = @TestNo
 
 select  [OvenID] = ID
@@ -349,6 +355,8 @@ update  Oven_Detail set Roll           =  @Roll         ,
             listPar.Add("@Result", fabricOvenTest_Detail_Result.Main.Result);
             listPar.Add("@Remark", fabricOvenTest_Detail_Result.Main.Remark);
             listPar.Add("@addName", userID);
+            listPar.Add("@TestBeforePicture", fabricOvenTest_Detail_Result.Main.TestBeforePicture);
+            listPar.Add("@TestAfterPicture", fabricOvenTest_Detail_Result.Main.TestAfterPicture);
 
             string sqlInsertOven = @"
 declare @TestNo numeric(2,0)
@@ -358,9 +366,9 @@ select  @TestNo = isnull(Max(TestNo), 0) + 1
 from    Oven 
 where POID = @POID
 
-insert into Oven(POID, TestNo, InspDate, Article, Result, Status, Inspector, Remark, addName, addDate)
+insert into Oven(POID, TestNo, InspDate, Article, Result, Status, Inspector, Remark, addName, addDate, TestBeforePicture, TestAfterPicture)
         OUTPUT INSERTED.ID into @OvenID
-        values(@POID, @TestNo, @InspDate, @Article, @Result, 'New', @Inspector, @Remark, @addName, getdate())
+        values(@POID, @TestNo, @InspDate, @Article, @Result, 'New', @Inspector, @Remark, @addName, getdate(), @TestBeforePicture, @TestAfterPicture)
 
 select  [OvenID] = ID
 from @OvenID
@@ -511,6 +519,75 @@ select  [SP#] = ov.POID,
 from    Oven ov with (nolock)
 left join  Orders o with (nolock) on ov.POID = o.ID
 where ov.POID = @poID and ov.TestNo = @TestNo
+";
+
+            return ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, listPar);
+        }
+
+        public DataTable GetOvenDetailForExcel(string poID, string TestNo)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@poID", poID);
+            listPar.Add("@TestNo", TestNo);
+
+            string sqlGetData = @"
+select	[SubmitDate] = od.SubmitDate,
+        [OvenGroup] = od.OvenGroup,
+        [SEQ] = Concat(od.Seq1, '-', od.Seq2),
+        [Roll] = od.Roll,
+        [Dyelot] = od.Dyelot,
+        [Refno] = psd.Refno,
+        [SCIRefno] = psd.SCIRefno,
+        [ColorID] = psd.ColorID,
+        [Result] = od.Result,
+        [ChangeScale] = od.changeScale,
+        [ResultChange] = od.ResultChange,
+        [StainingScale] = od.StainingScale,
+        [ResultStain] = od.ResultStain,
+        [Remark] = od.Remark,
+        [LastUpdate] = Concat(od.EditName, '-', pass1EditName.Name, ' ', pass1EditName.Extno),
+        [Temperature] = cast(od.Temperature as varchar),
+        [Time] = cast(od.Time as varchar),
+        [Supplier] = ps.SuppID+'-'+s.AbbEN
+from Oven_Detail od with (nolock)
+inner join Oven o with (nolock) on o.ID = od.ID
+left join PO_Supp_Detail psd with (nolock) on o.POID = psd.ID and od.SEQ1 = psd.SEQ1 and od.SEQ2 = psd.SEQ2
+left join PO_Supp ps WITH (NOLOCK) on psd.ID = ps.ID and psd.Seq1 = ps.Seq1
+left join supp s with (nolock) on ps.SuppID = s.ID
+left join pass1 pass1EditName on od.EditName = pass1EditName.ID
+where   o.POID = @POID and o.TestNo = @TestNo
+";
+
+            return ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, listPar);
+        }
+
+        public DataTable GetOven(string poID, string TestNo)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@poID", poID);
+            listPar.Add("@TestNo", TestNo);
+
+            string sqlGetData = @"
+select  ov.ID
+        ,ov.POID
+        ,ov.TestNo
+        ,ov.InspDate
+        ,ov.Article
+        ,ov.Result
+        ,ov.Status
+        ,ov.Inspector
+        ,ov.Remark
+        ,ov.addName
+        ,ov.addDate
+        ,ov.EditName
+        ,ov.EditDate
+        ,ov.Temperature
+        ,ov.Time
+        ,ov.TestBeforePicture
+        ,ov.TestAfterPicture
+        ,[InspectorName] = (select Name from Pass1 where ID = ov.Inspector)
+from    Oven ov with (nolock)
+where   ov.POID = @poID and ov.TestNo = @TestNo
 ";
 
             return ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, listPar);

@@ -17,12 +17,12 @@ namespace BusinessLogicLayer.Interface.BulkFGT
         BaseResult SaveFabricOvenTestDetail(FabricOvenTest_Detail_Result fabricOvenTest_Detail_Result, string userID);
 
         BaseResult EncodeFabricOvenTestDetail(string poID, string TestNo, out string ovenTestResult);
-        BaseResult SendFailResultMail(string toAddress, string ccAddress, string poID, string TestNo);
+        SendMail_Result SendFailResultMail(string toAddress, string ccAddress, string poID, string TestNo, bool isTest);
 
         BaseResult AmendFabricOvenTestDetail(string poID, string TestNo);
 
-        string ToExcelFabricOvenTestDetail(string poID, string TestNo);
+        BaseResult ToExcelFabricOvenTestDetail(string poID, string TestNo, out string excelFileName, bool isTest);
 
-        string ToPdfFabricOvenTestDetail(string poID, string TestNo);
+        BaseResult ToPdfFabricOvenTestDetail(string poID, string TestNo, out string pdfFileName, bool isTest);
     }
 }
