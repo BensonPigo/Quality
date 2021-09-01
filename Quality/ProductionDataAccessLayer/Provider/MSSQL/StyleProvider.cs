@@ -40,6 +40,23 @@ and ukey = @ukey
             return ExecuteList<Style>(CommandType.Text, sqlcmd, new SQLParameterCollection());
         }
 
+        public string GetStyleName(string StyleID,string Season,string Brand)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection()
+            {
+                 { "@StyleID", DbType.String, StyleID } ,
+                 { "@SeasonID", DbType.String, Season } ,
+                 { "@BrandID", DbType.String, Brand } ,
+            };
+
+            string sqlcmd = @"
+select StyleName from Style where ID =@ID and SeasonID = @SeasonID and BrandID = @BrandID
+";
+            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
+
+            return dt.Rows[0]["StyleName"].ToString();
+        }
+
 
         /*回傳款式資料基本檔(Get) 詳細敘述如下*/
         /// <summary>
