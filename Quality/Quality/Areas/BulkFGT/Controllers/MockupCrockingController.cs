@@ -1,4 +1,5 @@
-﻿using BusinessLogicLayer.Interface;
+﻿using ADOHelper.Utility;
+using BusinessLogicLayer.Interface;
 using BusinessLogicLayer.Interface.BulkFGT;
 using BusinessLogicLayer.Service;
 using DatabaseObject.ProductionDB;
@@ -17,11 +18,11 @@ namespace Quality.Areas.BulkFGT.Controllers
     public class MockupCrockingController : BaseController
     {
         private IMockupCrockingService _MockupCrockingService;
-        private ISendMailService _SendMailService;
+        private MailTools _SendMail;
         public MockupCrockingController()
         {
             _MockupCrockingService = new MockupCrockingService();
-            _SendMailService = new SendMailService();
+            _SendMail = new MailTools();
         }
 
         // GET: BulkFGT/MockupCrocking

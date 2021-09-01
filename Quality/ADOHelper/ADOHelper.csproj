@@ -34,6 +34,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -50,6 +51,12 @@
     <Compile Include="Utility\Interface\ISQLDataTransaction.cs" />
     <Compile Include="Utility\MailTools.cs" />
     <Compile Include="Utility\SQLDataTransaction.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DatabaseObject\DatabaseObject.csproj">
+      <Project>{95d12adf-a503-4a80-b2c9-71e21f2a3aa6}</Project>
+      <Name>DatabaseObject</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

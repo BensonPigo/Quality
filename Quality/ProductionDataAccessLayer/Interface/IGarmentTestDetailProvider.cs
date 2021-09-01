@@ -1,6 +1,7 @@
 using DatabaseObject.ProductionDB;
 using DatabaseObject.ViewModel;
 using System.Collections.Generic;
+using System.Data;
 
 namespace ProductionDataAccessLayer.Interface
 {
@@ -23,5 +24,7 @@ namespace ProductionDataAccessLayer.Interface
         IList<GarmentTest_Detail_ViewModel> Get(string ID, string No);
 
         List<string> GetScales();
+
+        DataTable Get_Mail_Content(string ID, string No);
     }
 }

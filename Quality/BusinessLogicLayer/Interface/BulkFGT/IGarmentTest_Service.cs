@@ -1,4 +1,5 @@
-﻿using DatabaseObject.ProductionDB;
+﻿using DatabaseObject.ManufacturingExecutionDB;
+using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel;
@@ -53,5 +54,9 @@ namespace BusinessLogicLayer.Interface.BulkFGT
         GarmentTest_Detail_ViewModel Get_Detail(string ID, string No);
 
         List<string> Get_Scales();
+
+        GarmentTest_Detail_Result Encode_Detail(string ID, string No, DetailStatus status);
+
+        GarmentTest_Result SentMail(string ID, string No, List<Quality_MailGroup> mailGroups);
     }
 }

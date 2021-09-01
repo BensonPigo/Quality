@@ -330,16 +330,19 @@ namespace BusinessLogicLayer.Service
                           OrderID = OrderID,
                       }, "200").ToList();
 
-                    string errorMsg = MailTools.MailToHtml(
-                      mailToAddress[0].ToAddress
-                      , mailToSubject[0].Subject.ToString().Replace("{0}", OrderID)
-                      , string.Empty
-                      , mailToSubject[0].Content
-                      );
-
-                    if (!string.IsNullOrEmpty(errorMsg))
+                    SendMail_Request request = new SendMail_Request()
                     {
-                        inspections.ErrMsg = errorMsg;
+                        To = mailToAddress[0].ToAddress,
+                        CC = string.Empty,
+                        Subject = mailToSubject[0].Subject.ToString().Replace("{0}", OrderID),
+                        Body = mailToSubject[0].Content,
+                    };
+
+                    SendMail_Result result =  MailTools.SendMail(request);
+
+                    if (!string.IsNullOrEmpty(result.resultMsg))
+                    {
+                        inspections.ErrMsg = result.resultMsg;
                         inspections.Result = false;
                     }
                     else
@@ -833,12 +836,22 @@ vertical-align: middle;
 
                 html += "   </tbody> </table>";
 
-                MailTools.MailToHtml(
-                     mailToAddress[0].ToAddress
-                     , mailToSubject[0].Subject.ToString().Replace("{0}", rFT_OrderComments.OrderID)
-                     , string.Empty
-                     , html
-                );
+                SendMail_Request request = new SendMail_Request()
+                {
+                    To = mailToAddress[0].ToAddress,
+                    CC = string.Empty,
+                    Subject = mailToSubject[0].Subject.ToString().Replace("{0}", rFT_OrderComments.OrderID),
+                    Body = html,
+                };
+
+                SendMail_Result result = MailTools.SendMail(request);
+
+                if (!result.result)
+                {
+                    rFT_OrderComments_ViewModel.Result = false;
+                    rFT_OrderComments_ViewModel.ErrMsg = result.resultMsg;
+                    return rFT_OrderComments_ViewModel;
+                }
 
                 #endregion
 
