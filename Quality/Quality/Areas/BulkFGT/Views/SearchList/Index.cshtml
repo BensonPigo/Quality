@@ -27,7 +27,7 @@
     }
 
     select {
-        color: wheat
+        color: black
     }
 
     .btnmargin {
@@ -42,15 +42,29 @@
     }
 
     td {
-        padding: 5px 5px 5px 5px;
+        padding: 0.3vw;
     }
+
+    .col-auto {
+        width: auto;
+    }
+
+        .col-auto > p {
+            padding: 0
+        }
 
     .readonly {
         background-color: lightgray;
     }
 
     .button {
-        width: 5vw;
+        width: 7vw;
+    }
+
+    .row-name {
+        color: black;
+        font-size: 1.2em;
+        background-color: gray;
     }
 </style>
 <div class="main-content">
@@ -72,7 +86,7 @@
             <div class="inner-scroll" style="float:left">
 
                 <div>
-                    @using (Html.BeginForm("Query", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { @class = "", @name = "SearchFrom", @onsubmit = "", @id = "SearchFrom" }))
+                    @using (Html.BeginForm("Query", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { @class = "", @name = "SearchFrom", @onsubmit = "return checkvalue(this.submitted)", @id = "SearchFrom" }))
                     {
                         <div>
                             <table>
@@ -80,44 +94,46 @@
                                     <td>
                                         <label class="FindLab">Brand</label>
                                     </td>
-                                    <td>
-                                        @Html.TextBoxFor(o => o.BrandID, new { @value = Model.BrandID })
-                                        <input id="btnBrandID" onclick="OpenWindow('BrandID')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
+                                    <td nowrap="nowrap">
+                                        <div>
+                                            @Html.TextBoxFor(o => o.BrandID, new { @value = Model.BrandID, @style = "width:9vw" })
+                                            <input id="btnBrandID" onclick="OpenWindow('BrandID')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
+                                        </div>
                                     </td>
                                     <td>
                                         <label class="FindLab">Season</label>
                                     </td>
-                                    <td>
-                                        @Html.TextBoxFor(o => o.SeasonID, new { @value = Model.SeasonID })
+                                    <td nowrap="nowrap">
+                                        @Html.TextBoxFor(o => o.SeasonID, new { @value = Model.SeasonID, @style = "width:9vw" })
                                         <input id="btnSeasonID" onclick="OpenWindow('SeasonID')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
                                     </td>
                                     <td>
                                         <label class="FindLab">Style</label>
                                     </td>
-                                    <td>
-                                        @Html.TextBoxFor(o => o.StyleID, new { @value = Model.StyleID })
+                                    <td nowrap="nowrap">
+                                        @Html.TextBoxFor(o => o.StyleID, new { @value = Model.StyleID, @style = "width:9.5vw" })
                                         <input id="btnStyleID" onclick="OpenWindow('StyleID')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
                                     </td>
                                     <td>
                                         <label class="FindLab">Article</label>
                                     </td>
-                                    <td>
-                                        @Html.TextBoxFor(o => o.Article, new { @value = Model.Article })
+                                    <td nowrap="nowrap">
+                                        @Html.TextBoxFor(o => o.Article, new { @value = Model.Article, @style = "width:9.5vw" })
                                         <input id="btnArticle" onclick="OpenWindow('Article')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
                                     </td>
-                                    <td>
-                                        <input type="submit" class="button" name="action:Query" id="btnQuery" value="Query" />
+                                    <td style="padding: 0vw;">
+                                        <input type="submit" onclick="this.form.submitted=this.value;" class="button" style="" name="action:Query" id="btnQuery" value="Query" />
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
                                         <label class="FindLab" for="TypeSP">Type</label>
                                     </td>
-                                    <td colspan="6">
+                                    <td colspan="7">
                                         @Html.DropDownListFor(o => o.Type, Model.TypeDatasource)
                                     </td>
-                                    <td>
-                                        <input type="submit" class="button" name="action:ToExcel" id="btnExcel" value="To Excel" />
+                                    <td style="padding: 0vw;">
+                                        <input type="submit" class="button" onclick="this.form.submitted=this.value;" style="" name="action:ToExcel" id="btnExcel" value="To Excel" />
                                     </td>
                                 </tr>
                             </table>
@@ -129,7 +145,7 @@
 
                     <table id="myTable" class="table table-striped display" style="text-align:center">
                         <thead>
-                            <tr class="row-name">
+                            <tr class="row-name" style="color:black">
                                 <th>Type</th>
                                 <th>Report No</th>
                                 <th>SP#</th>
@@ -147,7 +163,8 @@
                             {
                                 <tr class="row-content">
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.Type)
+                                        <a href="/Quality/StyleManagement/StyleResult/Result?BrandID=@Html.DisplayFor(modelItem => item.BrandID)&amp;SeasonID=@Html.DisplayFor(modelItem => item.SeasonID)&amp;StyleID=@Html.DisplayFor(modelItem => item.StyleID)">  @Html.DisplayFor(modelItem => item.Type)</a>
+
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.ReportNo)
@@ -203,8 +220,10 @@
 
         $('#myTable').DataTable({
             "pageLength": 20,
-            initComplete: function () {
-            }
+            "filter": false,
+            "paging": true,
+            "scrollCollapse": true
+
         });
 
 
@@ -214,19 +233,20 @@
     function OpenWindow(WindowType) {
 
 
-        if (WindowType == "Brand") {
+        if (WindowType == "BrandID") {
             window.open('@Url.Action("BrandList", "PublicWondow",new { Area=""})', WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
         }
-        if (WindowType == "Season") {
+        if (WindowType == "SeasonID") {
             window.open('@Url.Action("SeasonList", "PublicWondow",new { Area=""})', WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
         }
-        if (WindowType == "Style") {
-            window.open('@Url.Action("StyleList", "PublicWondow",new { Area=""})', WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        if (WindowType == "StyleID") {
+            var para = "?BrandID=" + $('#BrandID').val() + "&SeasonID=" + $('#SeasonID').val();
+            window.open('@Url.Action("StyleList", "PublicWondow",new { Area=""})' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
         }
-        
+
         if (WindowType == "Article" && $("#StyleID").val() != "") {
-            var StyleID = $("#StyleID").val();
-            window.open('@Url.Action("ArticleList", "PublicWondow",new { Area=""})' + '?StyleID=' + StyleID, WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
+            var para = "?OrderID=&StyleUkey=0&BrandID=" + $('#BrandID').val() + "&SeasonID=" + $('#SeasonID').val() + "&StyleID=" + $('#StyleID').val();
+            window.open('@Url.Action("ArticleList", "PublicWondow",new { Area=""})' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
         }
     }
     function GetBrandList(BrandID) {
@@ -246,5 +266,22 @@
         $("#Article").val(Article);
         // 在這邊取得開窗選擇的Brand，進行後續動作
     }
+
+
+    function checkvalue(buttonName) {
+
+        if (buttonName =="Query") {
+        if (($("#BradID").val() == "" || $("#SeasonID").val() == "" ) && $("#StyleID").val() == "") {
+
+            var msgContent = "[Style] or [Brand, Season] can't be cmpty. ";
+            msg.WithError(msgContent);
+
+            return false;
+            }
+        }
+
+        return true;
+    }
+
 </script>
 
