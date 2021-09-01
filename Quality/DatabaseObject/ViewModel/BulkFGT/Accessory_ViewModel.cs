@@ -44,16 +44,19 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public int Result { get; set; }
 
         public bool NonOven { get; set; }
+        public string OvenResult { get; set; }
         public string OvenScale { get; set; }
         public DateTime? OvenDate { get; set; }
         public string OvenInspector { get; set; }
         public string OvenRemark { get; set; }
 
         public bool NonWash { get; set; }
+        public string WashResult { get; set; }
         public string WashScale { get; set; }
         public DateTime? WashDate { get; set; }
         public string WashInspector { get; set; }
         public string WashRemark { get; set; }
+        public string Receiving { get; set; }
     }
 
 

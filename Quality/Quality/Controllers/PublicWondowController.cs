@@ -36,7 +36,7 @@ namespace Quality.Controllers
         }
 
         [HttpPost]
-        public ActionResult BrandList(string BrandID, string ReturnType ,string OtherTable, string OtherColumn)
+        public ActionResult BrandListOther(string BrandID, string ReturnType ,string OtherTable, string OtherColumn)
         {
             var model = _PublicWindowService.Get_Brand(BrandID, OtherTable, OtherColumn);
             if (ReturnType.ToUpper() == "JSON")
