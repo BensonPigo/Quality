@@ -1,7 +1,5 @@
-using DatabaseObject;
 using DatabaseObject.ProductionDB;
-using DatabaseObject.ResultModel;
-using DatabaseObject.ViewModel;
+using DatabaseObject.ViewModel.BulkFGT;
 using System.Collections.Generic;
 
 namespace ProductionDataAccessLayer.Interface

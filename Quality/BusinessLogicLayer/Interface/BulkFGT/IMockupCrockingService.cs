@@ -1,7 +1,5 @@
 ﻿using DatabaseObject.ProductionDB;
-using DatabaseObject.ResultModel;
-using DatabaseObject.ViewModel;
-using System.Collections.Generic;
+using DatabaseObject.ViewModel.BulkFGT;
 
 namespace BusinessLogicLayer.Interface.BulkFGT
 {

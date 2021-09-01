@@ -1,20 +1,17 @@
 ﻿using BusinessLogicLayer.Interface.BulkFGT;
 using DatabaseObject.ProductionDB;
-using DatabaseObject.ResultModel;
-using DatabaseObject.ViewModel;
+using DatabaseObject.ViewModel.BulkFGT;
+using Library;
 using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
 using Sci;
-using System.Collections.Generic;
-using System.Linq;
-using System.Drawing;
-using Excel = Microsoft.Office.Interop.Excel;
-using System.Runtime.InteropServices;
 using System;
+using System.Collections.Generic;
 using System.IO;
-using Library;
-using System.Diagnostics;
+using System.Linq;
+using System.Runtime.InteropServices;
 using System.Transactions;
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace BusinessLogicLayer.Service
 {

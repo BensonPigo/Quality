@@ -94,6 +94,7 @@
     <Compile Include="Common.cs" />
     <Compile Include="Interface\Authority\IAuthorityService.cs" />
     <Compile Include="Interface\BulkFGT\IFabricCrkShrkTest_Service.cs" />
+    <Compile Include="Interface\BulkFGT\IMockupWashService.cs" />
     <Compile Include="Interface\BulkFGT\IMockupCrockingService.cs" />
     <Compile Include="Interface\BulkFGT\ISearchListService.cs" />
     <Compile Include="Interface\FinalInspection\IFinalInspectionOthersService.cs" />
@@ -118,6 +119,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\Authority\AuthorityService.cs" />
     <Compile Include="Service\BulkFGT\FabricCrkShrkTest_Service.cs" />
+    <Compile Include="Service\BulkFGT\MockupWashService.cs" />
     <Compile Include="Service\BulkFGT\MockupCrockingService.cs" />
     <Compile Include="Service\BulkFGT\SearchListService.cs" />
     <Compile Include="Service\FinalInspection\FinalInspectionOthersService.cs" />

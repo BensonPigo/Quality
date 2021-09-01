@@ -113,6 +113,8 @@
     <Compile Include="ProductionDB\Garment_Detail_Spirality.cs" />
     <Compile Include="ProductionDB\MockupCrocking.cs" />
     <Compile Include="ProductionDB\MockupCrocking_Detail.cs" />
+    <Compile Include="ProductionDB\MockupWash.cs" />
+    <Compile Include="ProductionDB\MockupWash_Detail.cs" />
     <Compile Include="ProductionDB\NewCDCode.cs" />
     <Compile Include="ProductionDB\Orders.cs" />
     <Compile Include="ProductionDB\Order_Location.cs" />
@@ -161,6 +163,7 @@
     <Compile Include="ViewModel\BulkFGT\GarmentTest_Detail_FGWT_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\GarmentTest_Detail_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\GarmentTest_ViewModel.cs" />
+    <Compile Include="ViewModel\BulkFGT\MockupWashs_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\PullingTest_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\SearchList_ViewModel.cs" />
     <Compile Include="ViewModel\FinalInspection\AddDefect.cs" />
