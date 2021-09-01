@@ -11,14 +11,13 @@ namespace ADOHelper.Utility
 {
     public class MailTools
     {
-        public static SendMail_Result SendMail(SendMail_Request SendMail_Request)
+        public static SendMail_Result SendMail(SendMail_Request SendMail_Request, bool isTest = false)
         {
             SendMail_Result sendMail_Result = new SendMail_Result();
             try
             {
                 SQLParameterCollection objParameter = new SQLParameterCollection();
 
-                bool boolTest = true;
                 string mailFrom = "foxpro@sportscity.com.tw";
                 string mailServer = "Mail.sportscity.com.tw";
                 string EmailID = "foxpro";
@@ -27,7 +26,7 @@ namespace ADOHelper.Utility
                 string result = string.Empty;
                 //寄件者 & 收件者
 
-                if (!boolTest)
+                if (!isTest)
                 {
                     //ExecuteDataTable()
                     DataTable dt = SQLDAL.ExecuteDataTable(CommandType.Text, "select * from Production.dbo.System", new SQLParameterCollection());

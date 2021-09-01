@@ -150,8 +150,8 @@ namespace BusinessLogicLayer.Service.Tests
             try
             {
                 IFabricOvenTestService fabricOvenTestService = new FabricOvenTestService();
-
-                BaseResult baseResult = fabricOvenTestService.EncodeFabricOvenTestDetail("21051739BB", "3");
+                string ovenTestResult;
+                BaseResult baseResult = fabricOvenTestService.EncodeFabricOvenTestDetail("21051739BB", "3", out ovenTestResult);
 
                 if (!baseResult)
                 {
