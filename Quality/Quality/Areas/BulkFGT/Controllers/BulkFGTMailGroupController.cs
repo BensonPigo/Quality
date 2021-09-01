@@ -1,6 +1,7 @@
 ﻿using BusinessLogicLayer.Interface.BulkFGT;
 using BusinessLogicLayer.Service.BulkFGT;
 using DatabaseObject.ManufacturingExecutionDB;
+using FactoryDashBoardWeb.Helper;
 using Quality.Controllers;
 using System;
 using System.Collections.Generic;
@@ -35,6 +36,9 @@ namespace Quality.Areas.BulkFGT.Controllers
                 CcAddress = "",
             };
 
+            List<SelectListItem> FactoryList = new SetListItem().ItemListBinding(this.Factorys);
+            ViewBag.FactoryList = FactoryList;
+
             _BulkFGTMailGroup_Service.MailGroupSave(quality_Mail, BulkFGTMailGroup_Service.SaveType.Insert);
 
 
@@ -43,8 +47,28 @@ namespace Quality.Areas.BulkFGT.Controllers
 
 
             _BulkFGTMailGroup_Service.MailGroupSave(quality_Mail, BulkFGTMailGroup_Service.SaveType.Delete);
+            quality_MailGroups.Add(quality_Mail);
+            return View(quality_MailGroups);
+        }
 
-            return View();
+
+        [HttpPost]
+        public ActionResult GetDetail(string Factory, string GroupName)
+        {
+            List<SelectListItem> FactoryList = new SetListItem().ItemListBinding(this.Factorys);
+            ViewBag.FactoryList = FactoryList;
+            Quality_MailGroup quality_Mail = new Quality_MailGroup();
+
+            if (!string.IsNullOrEmpty(Factory))
+            {
+                quality_Mail.FactoryID = "ESP";
+                quality_Mail.Type = "BulkFGT";
+                quality_Mail.GroupName = "ttttTest";
+                quality_Mail.ToAddress = "jack.hsu@sportscity.com.tw";
+                quality_Mail.CcAddress = "";
+            }
+
+            return Json(quality_Mail);
         }
     }
 }
