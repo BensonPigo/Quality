@@ -183,10 +183,10 @@ namespace DatabaseObject.ProductionDB
         /// <summary>工廠當地業務</summary>
         [StringLength(10)]
         [Display(Name = "工廠當地業務")]
-        public bool LocalMR { get; set; }
+        public string LocalMR { get; set; }
         /// <summary>工廠自行建立之款式</summary>
         [Display(Name = "工廠自行建立之款式")]
-        public string LocalStyle { get; set; }
+        public bool LocalStyle { get; set; }
         /// <summary>Factory PP Meeting</summary>
         [Display(Name = "Factory PP Meeting")]
         public DateTime? PPMeeting { get; set; }

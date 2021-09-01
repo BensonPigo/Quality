@@ -26,5 +26,10 @@ namespace ProductionDataAccessLayer.Interface
         void AmendFabricOven(string poID, string TestNo);
 
         DataTable GetFailMailContentData(string poID, string TestNo);
+
+        DataTable GetOvenDetailForExcel(string poID, string TestNo);
+
+        DataTable GetOven(string poID, string TestNo);
+
     }
 }
