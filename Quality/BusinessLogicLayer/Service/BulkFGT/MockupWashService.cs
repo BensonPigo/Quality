@@ -1,5 +1,6 @@
 ﻿using BusinessLogicLayer.Interface.BulkFGT;
 using DatabaseObject.ProductionDB;
+using DatabaseObject.RequestModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using Library;
 using Microsoft.Office.Interop.Excel;
@@ -21,7 +22,7 @@ namespace BusinessLogicLayer.Service
         private IMockupWashDetailProvider _MockupWashDetailProvider;
         private IDropDownListProvider _DropDownListProvider;
 
-        public MockupWashs_ViewModel GetMockupWash(MockupWash MockupWash)
+        public MockupWashs_ViewModel GetMockupWash(MockupWash_Request MockupWash)
         {
             MockupWashs_ViewModel model = new MockupWashs_ViewModel();
             try
@@ -61,7 +62,7 @@ namespace BusinessLogicLayer.Service
             bool test = false;
             MockupWash_ViewModel result = new MockupWash_ViewModel();
 
-            var oneReportNo = GetMockupWash(new MockupWash() { ReportNo = ReportNo });
+            var oneReportNo = GetMockupWash(new MockupWash_Request() { ReportNo = ReportNo });
             if (oneReportNo == null)
             {
                 result.ReportResult = false;
@@ -288,6 +289,23 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 throw ex;
+            }
+
+            return model;
+        }
+
+        public AccessoryRefNos GetAccessoryRefNo(AccessoryRefNo_Request Request)
+        {
+            AccessoryRefNos model = new AccessoryRefNos();
+            try
+            {
+                _MockupWashProvider = new MockupWashProvider(Common.ProductionDataAccessLayer);
+                model.AccessoryRefNo = _MockupWashProvider.GetAccessoryRefNo(Request).ToList();
+            }
+            catch (Exception ex)
+            {
+                model.Result = false;
+                model.ErrorMessage = ex.Message;
             }
 
             return model;

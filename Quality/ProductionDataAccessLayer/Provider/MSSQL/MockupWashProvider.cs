@@ -1,13 +1,13 @@
 using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
 using DatabaseObject.ProductionDB;
+using DatabaseObject.RequestModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using ProductionDataAccessLayer.Interface;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
-using System.Web.Mvc;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
@@ -244,7 +244,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
 
-        public IList<MockupWash_ViewModel> GetMockupWash(MockupWash Item)
+        public IList<MockupWash_ViewModel> GetMockupWash(MockupWash_Request Item)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
@@ -329,6 +329,34 @@ outer apply (select Name from Pass1 where id = m.EditName) EditName
             }
 
             return ExecuteList<MockupWash_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
+        }
+
+        public IList<AccessoryRefNo> GetAccessoryRefNo(AccessoryRefNo_Request Item)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            SbSql.Append(@"
+select sb.Refno
+from Style_BOA sb
+inner join Fabric f on sb.SCIRefno = f.SCIRefno
+");
+            SbSql.Append("Where 1 = 1" + Environment.NewLine);
+
+            if (Item.StyleUkey != null)
+            {
+                SbSql.Append("And sb.StyleUkey = @StyleUkey" + Environment.NewLine);
+                objParameter.Add("@StyleUkey", DbType.Int64, Item.StyleUkey);
+            }
+
+            if (!string.IsNullOrEmpty(Item.BrandID) && !string.IsNullOrEmpty(Item.SeasonID) && !string.IsNullOrEmpty(Item.StyleID))
+            {
+                SbSql.Append("And sb.StyleUkey = (select styleukey from Style where ID = @StyleID and SeasonID = @SeasonID and BrandID = @BrandID)" + Environment.NewLine);
+                objParameter.Add("@StyleID", DbType.String, Item.StyleID);
+                objParameter.Add("@SeasonID", DbType.String, Item.SeasonID);
+                objParameter.Add("@BrandID", DbType.String, Item.BrandID);
+            }
+
+            return ExecuteList<AccessoryRefNo>(CommandType.Text, SbSql.ToString(), objParameter);
         }
         #endregion
     }
