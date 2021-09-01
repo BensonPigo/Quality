@@ -31,6 +31,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             };
 
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(Result.ReportNo_Source);
+            ViewBag.ResultList = new SetListItem().ItemListBinding("Pass,Fail".Split(',').ToList());
             return View(Result);
         }
 
@@ -45,10 +46,13 @@ namespace Quality.Areas.BulkFGT.Controllers
                 StyleID = Req.StyleID,
                 Article = Req.Article,
                 ReportNo_Source = "5,6,7".Split(',').ToList(),
-                Detail = new PullingTest_Result(),
+                Detail = new PullingTest_Result() {
+                    ReportNo = "1234",
+                },
             };
 
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(Result.ReportNo_Source);
+            ViewBag.ResultList = new SetListItem().ItemListBinding("Pass,Fail".Split(',').ToList());
             return View("Index", Result);
         }
 
@@ -58,15 +62,16 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             PullingTest_ViewModel Result = new PullingTest_ViewModel()
             {
-                BrandID = string.Empty,
-                SeasonID = string.Empty,
-                StyleID = string.Empty,
-                Article = string.Empty,
+                BrandID = Req.BrandID,
+                SeasonID = Req.SeasonID,
+                StyleID = Req.StyleID,
+                Article = Req.Article,
                 ReportNo_Source = "1,2,3,4".Split(',').ToList(),
                 Detail = new PullingTest_Result(),
             };
 
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(Result.ReportNo_Source);
+            ViewBag.ResultList = new SetListItem().ItemListBinding("Pass,Fail".Split(',').ToList());
             return View("Index", Result);
         }
 
@@ -74,7 +79,19 @@ namespace Quality.Areas.BulkFGT.Controllers
         [MultipleButton(Name = "action", Argument = "New")]
         public ActionResult NewSave(PullingTest_ViewModel Req)
         {
-            return View();
+            PullingTest_ViewModel Result = new PullingTest_ViewModel()
+            {
+                BrandID = Req.BrandID,
+                SeasonID = Req.SeasonID,
+                StyleID = Req.StyleID,
+                Article = Req.Article,
+                ReportNo_Source = "1,2,3,4".Split(',').ToList(),
+                Detail = new PullingTest_Result(),
+            };
+
+            ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(Result.ReportNo_Source);
+            ViewBag.ResultList = new SetListItem().ItemListBinding("Pass,Fail".Split(',').ToList());
+            return View("Index", Result);
         }
     }
 }
