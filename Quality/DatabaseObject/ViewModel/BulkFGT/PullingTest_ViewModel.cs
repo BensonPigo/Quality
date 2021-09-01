@@ -54,7 +54,6 @@ namespace DatabaseObject.ViewModel.BulkFGT
 
     public class PullingTest_Result
     {
-        // 搜尋列
         public string ReportNo { get; set; }
         public string POID { get; set; }
         public string BrandID { get; set; }

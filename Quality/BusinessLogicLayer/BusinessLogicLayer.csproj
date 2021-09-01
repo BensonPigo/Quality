@@ -119,6 +119,7 @@
     <Compile Include="Interface\StyleManagement\IStyleListService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\Authority\AuthorityService.cs" />
+    <Compile Include="Service\BulkFGT\AccessoryOvenWashService.cs" />
     <Compile Include="Service\BulkFGT\FabricOvenTestService.cs" />
     <Compile Include="Service\BulkFGT\FabricCrkShrkTest_Service.cs" />
     <Compile Include="Service\BulkFGT\MockupWashService.cs" />
