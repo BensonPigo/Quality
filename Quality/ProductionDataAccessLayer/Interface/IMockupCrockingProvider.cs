@@ -1,14 +1,13 @@
-using DatabaseObject;
 using DatabaseObject.ProductionDB;
-using DatabaseObject.ResultModel;
-using DatabaseObject.ViewModel;
+using DatabaseObject.RequestModel;
+using DatabaseObject.ViewModel.BulkFGT;
 using System.Collections.Generic;
 
 namespace ProductionDataAccessLayer.Interface
 {
     public interface IMockupCrockingProvider
     {
-        IList<MockupCrocking_ViewModel> GetMockupCrocking(MockupCrocking Item);
+        IList<MockupCrocking_ViewModel> GetMockupCrocking(MockupCrocking_Request Item);
 
         int Create(MockupCrocking Item);
 

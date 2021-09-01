@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace DatabaseObject.ViewModel
+namespace DatabaseObject.ViewModel.BulkFGT
 {
     public class MockupCrockings_ViewModel : BaseResult
     {

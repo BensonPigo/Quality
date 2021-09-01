@@ -3,6 +3,7 @@ using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
+using DatabaseObject.ResultModel.FinalInspection;
 using System.Collections.Generic;
 
 namespace BusinessLogicLayer.Interface
@@ -10,6 +11,8 @@ namespace BusinessLogicLayer.Interface
     public interface IFinalInspectionService
     {
         IList<Orders> GetOrderForInspection(FinalInspection_Request request);
+
+        IList<PoSelect_Result> GetOrderForInspection_ByModel(FinalInspection_Request request);
 
         FinalInspection GetFinalInspection(string FinalInspectionID);
 

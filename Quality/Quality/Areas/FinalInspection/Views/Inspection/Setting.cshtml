@@ -69,10 +69,12 @@
 }
 
 <div class="whiteBackgrond" style="display:flex;flex-wrap:nowrap;height:85vh;align-items:center; vertical-align:middle">
-    @using (Html.BeginForm("Setting", "Inspection", FormMethod.Post, new { @id = "settingForm", onsubmit = "return checkSubmitValue();" }))
+    @using (Html.BeginForm("GoGeneral", "Inspection", FormMethod.Post, new { @id = "settingForm", onsubmit = "return checkSubmitValue();" }))
     {
         <div style="padding:2em 3em 2em 3em">
             <div class="col-auto"><h1 style="font-size:2em">Inspection Setting</h1></div>
+
+            @*Basic*@
             <div style="width:50%;height:25vh;float:left;">
                 <div class="col-auto"><h2 class="sub_title">Basic</h2></div>
                 <table class="col-auto table_div" style="width:100%">
@@ -90,24 +92,29 @@
                     </tr>
                 </table>
             </div>
+
+            @*Inspection Number*@
             <div style="width:50%;height:25vh;float:left;">
                 <div class="col-auto"><h2 class="sub_title">Inspection Number</h2></div>
                 <div class="col-auto"><label style="padding-left:3em;font-weight:bold">This is <font style="color:#0000ff">@Html.DisplayFor(o => o.InspectionTimes)</font> times to inspect for this PO#</label></div>
             </div>
+
+            @*Selected PO*@
             <div style="width:50%;height:40vh;float:left;">
                 <div class="col-auto"><h2 class="sub_title">Selected PO</h2></div>
                 <div class="col-auto">
-                    <table id="SelectedPOTable" class="cell-border " style="width:100%">
-                    </table>
+                    <table id="SelectedPOTable" class="cell-border " style="width:100%"></table>
                 </div>
-                <div class="col-auto" style="text-align:right"><p style="font-weight:bold;padding:10px 0">Total Available Qty <label id="totalAvailableQty" style="font-size:1.2em">200</label></p></div>
+                <div class="col-auto" style="text-align:right"><p style="font-weight:bold;padding:10px 0">Total Available Qty <label id="totalAvailableQty" style="font-size:1.2em">0</label></p></div>
             </div>
+
+            @*AQL Plan*@
             <div style="width:50%;height:40vh;float:left;">
                 <div class="col-auto"><h2 class="sub_title">AQL Plan</h2></div>
                 <table class="col-auto table_div" style="width:100%">
                     <tr>
                         <td><label>AQL Plan</label></td>
-                        @*<td>@Html.DropDownListFor(o => o.AQLPlan, (List<SelectListItem>)ViewBag.AQLPlanList, null, new { @class = "form-control" })</td>*@
+                        <td>@Html.DropDownListFor(o => o.AQLPlan, (List<SelectListItem>)ViewBag.AQLPlanList, null, new { @class = "form-control", @disabled = "disabled" })</td>
                     </tr>
                     <tr>
                         <td colspan="2" style="text-align:center">
@@ -116,15 +123,17 @@
                     </tr>
                     <tr>
                         <td><label>Sample Plan Qty</label></td>
-                        <td>@Html.TextBoxFor(o => o.SampleSize, new { @type = "number", @class = "form-control center-block", @onchange = "onSampleSizeChange(this.value)" })</td>
+                        <td>@Html.TextBoxFor(o => o.SampleSize, new { @type = "number", @min = "0", @class = "form-control center-block", @onchange = "onSampleSizeChange(this.value)" })</td>
                     </tr>
                     <tr>
                         <td><label>Accepted Qty</label></td>
-                        <td>@Html.TextBoxFor(o => o.AcceptQty, new { @type = "number", @class = "form-control center-block" })</td>
+                        <td>@Html.TextBoxFor(o => o.AcceptQty, new { @type = "number",@style= "width:49%;", @min = "0", @class = "form-control center-block" })</td>
                     </tr>
                     <tr>
                         <td><label>Reject Qty</label></td>
-                        <td><label>1234</label></td>
+                        <td>
+                        <input id="RejectQty" type="number" class="form-control center-block" min="0" value="0"/>
+                        </td>
                     </tr>
                 </table>
             </div>
@@ -177,6 +186,8 @@
         // 摺疊資料需先轉成array
         var adata = [];
         var index = 0;
+        var Order_AvailableQty = { };
+        var table;
         @foreach (var item in Model.SelectedPO)
         {
             @:adata.push([null, '@item.OrderID', index,'@item.POID', '@item.StyleID', '@item.SeasonID', '@item.BrandID', @item.Qty, '@item.Cartons',@item.AvailableQty]);
@@ -188,7 +199,7 @@
                 window.open('@Url.Action("SewingLineList", "PublicWondow",new { Area=""})' + '?FactoryID=@ViewBag.FactoryID', 'SewingLineList', config = 'toolbar=no,status=no,location=no,width=400,height=650' );
             });
 
-            var table = $('#SelectedPOTable').DataTable({
+            table = $('#SelectedPOTable').DataTable({
             data: adata,
                 autoWidth: false,
                 destroy: true,
@@ -209,23 +220,51 @@
                 "scrollY": "30vh",
                 "scrollCollapse": true,
                 "createdRow": function (row, data, index) {
+
                     $('td', row).css('background-color', '#FAA7A7');
+                    $('td', row).attr('ID','SelectPO_'+ data[1]);
             }
         });
 
-        $("#SelectedPOTable tbody").on("click", "td.details-control", function () {
-            var tr = $(this).closest('tr');
-            var row = table.row(tr);
+            $("#SelectedPOTable tbody").on("click", "td.details-control", function () {
 
-            if (row.child.isShown()) {
-                row.child.hide();
-                tr.removeClass('shown');
-            }
-            else {
-                row.child(format(row.data())).show();
-                tr.addClass('shown');
-            }
-        });
+                var tr = $(this).closest('tr');
+                var row = table.row(tr);
+
+                if (row.child.isShown()) {
+                    row.child.hide();
+                    tr.removeClass('shown');
+                }
+                else {
+                    var orderID = row.data()[1];
+                    row.child(format(row.data(), orderID)).show();
+                    tr.addClass('shown');
+                }
+            });
+
+            $("#SelectedPOTable tbody").on("blur", "td.OpenDetail", function () {
+
+
+                // 取得修改了哪個SP底下的資料
+                var orderID = $(this).find("input").attr("OrderID");
+
+                //取得修改哪個欄位
+                var Column = $(this).find("input").attr("Col");
+
+                var partentTd = $("#SelectPO_" + orderID);
+                var tr = $(partentTd).closest('tr');
+                var row = table.row(tr);
+
+                if (Column=="Cartons") {
+                    table.row($("#SelectPO_" + orderID).closest('tr')).data()[8] = $(this).find("input").val();
+                }
+                if (Column == "AvailableQty") {
+                    
+                    table.row($("#SelectPO_" + orderID).closest('tr')).data()[9] = $(this).find("input").val();
+                    Order_AvailableQty[orderID] = $(this).find("input").val();
+                    Cacu_AvailableQty();
+                }
+            });
 
             $('#myTable').DataTable({
                 "pageLength": 10,
@@ -242,7 +281,6 @@
                     { targets: 2, width: "30%" },
                 ]
             });
-
 
             $(".detail-dialog").dialog({
                 autoOpen: false,
@@ -292,7 +330,88 @@
                     },
                 },
             });
+
+            $("#InspectionStage").change(function () {
+                if ($(this).val() == "Final" || $(this).val() == "3rd Party") {
+                    $("#AQLPlan").attr("disabled", false);
+                }
+                else {
+                    $("#AQLPlan").val("");
+                    $("#AQLPlan").attr("disabled", true);
+                }
+            });
+
+            // AQLPlan選單變化事件
+            $("#AQLPlan").change(function () {
+                var aql = $(this).val()
+
+                // 若不是100% Inspection，則AJAX回去取資料
+                if (aql != "100% Inspection") {
+                    $.ajax({
+                        url: '@Url.Action("AQL_AJAX")',
+                        data: { AQLPlan: aql },
+                        type: 'POST',
+                        dataType: "json",
+                        async: false,
+                        success: function (res) {
+
+                            var SamplePlanQty = res[0];
+                            var AcceptedQty = res[1];
+                            //RejectQty一律是AcceptQty+1
+                            $("#SampleSize").val(SamplePlanQty);
+                            $("#AcceptQty").val(AcceptedQty);
+                            $("#RejectQty").val(parseInt(AcceptedQty) +1 );
+                        }
+                    })
+                    $("#AcceptQty").removeAttr("max");
+                }
+                else {
+                    // 若是100% Inspection，則AJAX回去取資料，SampleSize帶入左邊Select PO的Total Available Qty數量，RejectQty一律是AcceptQty+1
+                    var TotalAvailableQty = parseInt($("#totalAvailableQty").text());
+                    $("#SampleSize").val(TotalAvailableQty);
+                    $("#AcceptQty").val(0);
+                    $("#RejectQty").val(1);
+
+                    $("#AcceptQty").attr("max", TotalAvailableQty);
+                }
+            });
+
+            //Accept Qty欄位變更事件
+            $("#AcceptQty").change(function () {
+                var thisVal = parseInt($(this).val());
+
+                if ($("#AQLPlan").val() == "100% Inspection") {
+                    var SamplePlanQty = parseInt($("#SampleSize").val());
+
+                    if (thisVal > SamplePlanQty) {
+                        $(this).val(SamplePlanQty);
+                        thisVal = SamplePlanQty;
+                    }
+                }
+                $("#RejectQty").val(thisVal + 1);
+            });
         });
+
+        // Selected PO異動Available Qty時。自動加總到下方的「Total Available Qty」、右方的「AQL Plan」
+        function Cacu_AvailableQty() {
+
+            var total = 0;
+            for (var key in Order_AvailableQty) {
+                total = total + parseInt(Order_AvailableQty[key]);
+            }
+
+            $("#totalAvailableQty").text(total);
+
+            //同步到AQL
+
+            if ($("#AQLPlan").val() == "100% Inspection") {
+                $("#SampleSize").val(total);
+                $("#AcceptQty").val(0);
+                $("#AcceptQty").removeAttr("max");
+                $("#AcceptQty").attr("max", total);
+            }
+
+        }
 
         function GetSewingLineList(sewingLineID) {
             $("#SewingLineID").val(sewingLineID);
@@ -326,7 +445,7 @@
             $("#myTable").DataTable().columns.adjust();
         }
 
-        function format(d) {
+        function format(d, orderID) {
             return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
                 '<tr><td style="width:90%">PO#:</td><td style="width:10%">' +
                 '<input type="hidden" name="SelectedPO[' + d[2] + '].ORDERID" id="SelectedPO[' + d[2] + '].ORDERID" value="' + d[1] + '" \/>' +
@@ -337,11 +456,11 @@
                 '<tr><td>Season:</td><td>' + d[5] + '</td></tr>' +
                 '<tr><td>Brand:</td><td>' + d[6] + '</td></tr>' +
                 '<tr><td>SP# Qty:</td><td>' + d[7] + '</td></tr>' +
-                '<tr><td>Cartons:</td><td>' +
-                '<input type="text" style="width:60px" readonly="readonly" onclick="open_cartonsDetail(\'' + d[1] + ',' +d[3]+'\');" name="SelectedPO[' + d[2] + '].Cartons" id="SelectedPO[' + d[2] + '].Cartons" value="' + d[8]+'" />' +
+                '<tr><td>Cartons:</td><td class="OpenDetail" >' +
+                '<input type="text" style="width:60px" readonly="readonly" onclick="open_cartonsDetail(\'' + d[1] + ',' + d[3] + '\');" name="SelectedPO[' + d[2] + '].Cartons" id="SelectedPO[' + d[2] + '].Cartons" value="' + d[8] + '" OrderID="' + orderID +'" Col="Cartons"/>' +
                 '</td></tr>'+
-                '<tr><td>Available Qty:</td><td>' +
-                '<input type="number" style="width:60px" name="SelectedPO[' + d[2] + '].AvailableQty" id="SelectedPO[' + d[2] + '].AvailableQty" value="' + d[9]+'" />' +
+                '<tr><td>Available Qty:</td><td class="OpenDetail" >' +
+                '<input type="number" style="width:60px" name="SelectedPO[' + d[2] + '].AvailableQty" id="SelectedPO[' + d[2] + '].AvailableQty" value="' + d[9] + '" OrderID="' + orderID +'" min="0" Col="AvailableQty"/>' +
                 '</td></tr>' +
                 '</table>';
         }
@@ -409,6 +528,24 @@
             // -1.5 Level I
             // -2.5 Level I
             //請依照AQL Plan中所寫邏輯重抓AcceptableQualityLevels設定資料
+
+
+
+            var trlist = $("#SelectedPOTable tbody td.details-control");
+
+            trlist.each(function () {
+                var tr = $(this).closest('tr');
+                var row = table.row(tr);
+
+                if (row.child.isShown()) {
+                    row.child.hide();
+                    tr.removeClass('shown');
+                }
+                else {
+                    row.child(format(row.data())).show();
+                    tr.addClass('shown');
+                }
+            });
 
             return true;
         }

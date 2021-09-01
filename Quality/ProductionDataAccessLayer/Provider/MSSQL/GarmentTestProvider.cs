@@ -136,7 +136,7 @@ and g.Article = @Article" + Environment.NewLine;
             return ExecuteList<GarmentTest_ViewModel>(CommandType.Text, sqlcmd, objParameter);
         }
 
-        public bool Save_GarmentTest(GarmentTest_ViewModel master, List<GarmentTest_Detail> detail)
+        public bool Save_GarmentTest(GarmentTest_ViewModel master, List<GarmentTest_Detail> detail, string UserID)
         {
             bool result = true;
             #region 產生新的No
@@ -441,8 +441,10 @@ INSERT INTO GarmentTest_Detail_FGPT
                 objParameterDetail.Add($"@WashResult", string.IsNullOrEmpty(item.WashResult) ? string.Empty : item.WashResult);
                 objParameterDetail.Add($"@inspector", string.IsNullOrEmpty(item.inspector) ? string.Empty : item.inspector);                
                 objParameterDetail.Add($"@Remark", string.IsNullOrEmpty(item.Remark) ? string.Empty : item.Remark);
-                objParameterDetail.Add($"@EditName", string.IsNullOrEmpty(item.EditName) ? string.Empty : item.EditName);
-                objParameterDetail.Add($"@AddName", string.IsNullOrEmpty(item.AddName) ? string.Empty : item.AddName);
+                // objParameterDetail.Add($"@EditName", string.IsNullOrEmpty(item.EditName) ? string.Empty : item.EditName);
+                // objParameterDetail.Add($"@AddName", string.IsNullOrEmpty(item.AddName) ? string.Empty : item.AddName);
+                objParameterDetail.Add($"@UserID", string.IsNullOrEmpty(UserID) ? string.Empty : UserID);
+                objParameterDetail.Add($"@OrderID", string.IsNullOrEmpty(item.OrderID) ? string.Empty : item.OrderID);
 
                 //objParameterDetail.Add($"@inspdate", item.inspdate == null ? DBNull.Value : ((DateTime)item.inspdate).ToString("d"));
 
@@ -454,15 +456,16 @@ INSERT INTO GarmentTest_Detail_FGPT
                     sqlcmd += $@"
 update GarmentTest_Detail
 set SizeCode = @SizeCode
+,OrderID = @OrderID
 ,MtlTypeID = @MtlTypeID
 ,Result = @Result
 ,NonSeamBreakageTest = @NonSeamBreakageTest
 ,SeamBreakageResult = @SeamBreakageResult
 ,OdourResult = @OdourResult
 ,WashResult = @WashResult
-,inspector = @inspector,inspdate = @inspdate
+,inspector = @inspector,inspdate = {inspDate}
 ,Remark = @Remark
-,EditName = @EditName,EditDate = GetDate()
+,EditName = @UserID, EditDate = GetDate()
 where ID = @ID
 and No = @No
 " + Environment.NewLine;
@@ -472,19 +475,23 @@ and No = @No
                     sqlcmd += $@"
 insert into GarmentTest_Detail(
     ID,No,SizeCode,MtlTypeID,Result,NonSeamBreakageTest,SeamBreakageResult,OdourResult
+    ,OrderID
     ,WashResult
     ,inspector
     ,inspdate
     ,Remark
     ,AddName,AddDate
+    ,Status
 )
 values(
     @ID,@No,@SizeCode,@MtlTypeID,@Result,@NonSeamBreakageTest,@SeamBreakageResult,@OdourResult
+    ,@OrderID
     ,@WashResult
     ,@inspector
     ,{inspDate}
     ,@Remark
-    ,@AddName, GetDate()
+    ,@UserID, GetDate()
+    ,'New'
 )
 ";
                 }
@@ -698,10 +705,14 @@ values(
         /// ===  ==========  ====  ==========  ==========
         /// 01.  2021/08/23  1.00    Admin        Create
         /// </history>
-        public IList<GarmentTest> Get(GarmentTest Item)
+        public IList<GarmentTest_ViewModel> Get(string ID)
         {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.String, ID } ,
+            };
+
             StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
             SbSql.Append("SELECT"+ Environment.NewLine);
             SbSql.Append("         ID"+ Environment.NewLine);
             SbSql.Append("        ,FirstOrderID"+ Environment.NewLine);
@@ -727,10 +738,10 @@ values(
             SbSql.Append("        ,OdourResult"+ Environment.NewLine);
             SbSql.Append("        ,WashResult"+ Environment.NewLine);
             SbSql.Append("FROM [GarmentTest]"+ Environment.NewLine);
+            SbSql.Append("where ID = @ID" + Environment.NewLine);
 
 
-
-            return ExecuteList<GarmentTest>(CommandType.Text, SbSql.ToString(), objParameter);
+            return ExecuteList<GarmentTest_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
         }
 		/*建立Garment Test(Create) 詳細敘述如下*/
         /// <summary>
