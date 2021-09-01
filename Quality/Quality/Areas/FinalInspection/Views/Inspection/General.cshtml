@@ -37,7 +37,7 @@
 
 @model DatabaseObject.ManufacturingExecutionDB.FinalInspection
 
-@using (Html.BeginForm("General", "Inspection", FormMethod.Post, new { @id = "GeneralForm", onsubmit = "return checkValue(this.submitted)" }))
+@using (Html.BeginForm("GoCheckList", "Inspection", FormMethod.Post, new { @id = "GeneralForm", onsubmit = "return checkValue(this.submitted)" }))
 {
     <div class="DownWhiteBackgrond">
 
@@ -47,7 +47,8 @@
                     <div><label class="checkboxlabel" for="FabricApprovalDoc">Fabric Approval</label></div>
                 </td>
                 <td class="secTD">
-                    @Html.CheckBox("FabricApprovalDoc")
+                    @*@Html.CheckBox("FabricApprovalDoc")*@
+                    @Html.CheckBoxFor(o => o.FabricApprovalDoc)
                 </td>
             </tr>
             <tr>
@@ -55,7 +56,8 @@
                     <div><label class="checkboxlabel" for="SealingSampleDoc">Sealing Sample</label></div>
                 </td>
                 <td class="secTD">
-                    @Html.CheckBox("SealingSampleDoc")
+                    @*@Html.CheckBox("SealingSampleDoc")*@
+                    @Html.CheckBoxFor(o => o.SealingSampleDoc)
                 </td>
             </tr>
             <tr>
@@ -63,7 +65,8 @@
                     <div><label class="checkboxlabel" for="MetalDetectionDoc">Metal Detection</label></div>
                 </td>
                 <td class="secTD">
-                    @Html.CheckBox("MetalDetectionDoc")
+                    @*@Html.CheckBox("MetalDetectionDoc")*@
+                    @Html.CheckBoxFor(o => o.MetalDetectionDoc)
                 </td>
 
             </tr>
@@ -72,7 +75,8 @@
                     <div><label class="checkboxlabel" for="GarmentWashingDoc">Garment Washing Test</label></div>
                 </td>
                 <td class="secTD">
-                    @Html.CheckBox("GarmentWashingDoc")
+                    @*@Html.CheckBox("GarmentWashingDoc")*@
+                    @Html.CheckBoxFor(o => o.GarmentWashingDoc)
                 </td>
             </tr>
         </table>
@@ -80,6 +84,7 @@
         <button id="btnBack" onclick="this.form.submitted=this.value;" type="submit" value="Back" class="button" style="right:7em;padding: 0;"><p style=" font-size: 12px; padding: 14px 0">Back To Setting</p></button>
         <button id="btnNext" onclick="this.form.submitted=this.value;" type="submit" value="Next" style="right:0;" class="button">Next</button>
 
+        @Html.HiddenFor(o=>o.ID)
     </div>
 }
 

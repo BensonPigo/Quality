@@ -68,122 +68,131 @@
     </style>
 }
 
-    <div class="whiteBackgrond" style="display:flex;flex-wrap:nowrap;height:85vh;align-items:center; vertical-align:middle">
-        @using (Html.BeginForm("GoGeneral", "Inspection", FormMethod.Post, new { @id = "settingForm", onsubmit = "return checkSubmitValue();" }))
-        {
-            <div style="padding:2em 3em 2em 3em">
-                <div class="col-auto"><h1 style="font-size:2em">Inspection Setting</h1></div>
+<div class="whiteBackgrond" style="display:flex;flex-wrap:nowrap;height:85vh;align-items:center; vertical-align:middle">
+    @using (Html.BeginForm("GoGeneral", "Inspection", FormMethod.Post, new { @id = "settingForm", onsubmit = "return checkSubmitValue();" }))
+    {
+        <div style="padding:2em 3em 2em 3em">
+            <div class="col-auto"><h1 style="font-size:2em">Inspection Setting</h1></div>
 
-                @*Basic*@
-                <div style="width:50%;height:25vh;float:left;">
-                    <div class="col-auto"><h2 class="sub_title">Basic</h2></div>
-                    <table class="col-auto table_div" style="width:100%">
-                        <tr>
-                            <td><label>Choose Inspection Stage</label></td>
-                            <td>@Html.DropDownListFor(o => o.InspectionStage, (List<SelectListItem>)ViewBag.InspectionStageList, null, new { @class = "form-control", @style = "width:157px", @onchange = "onInspectionStageChange(this.value)" })</td>
-                        </tr>
-                        <tr>
-                            <td><label>What's day you audit?</label></td>
-                            <td>@Html.TextBoxFor(o => o.AuditDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })</td>
-                        </tr>
-                        <tr>
-                            <td><label>What's sewing line you audit?</label></td>
-                            <td>@Html.TextBoxFor(o => o.SewingLineID, new { @readonly = "readonly" })</td>
-                        </tr>
-                    </table>
-                </div>
-
-                @*Inspection Number*@
-                <div style="width:50%;height:25vh;float:left;">
-                    <div class="col-auto"><h2 class="sub_title">Inspection Number</h2></div>
-                    <div class="col-auto"><label style="padding-left:3em;font-weight:bold">This is <font style="color:#0000ff">@Html.DisplayFor(o => o.InspectionTimes)</font> times to inspect for this PO#</label></div>
-                </div>
-
-                @*Selected PO*@
-                <div style="width:50%;height:40vh;float:left;">
-                    <div class="col-auto"><h2 class="sub_title">Selected PO</h2></div>
-                    <div class="col-auto">
-                        <table id="SelectedPOTable" class="cell-border " style="width:100%"></table>
-                    </div>
-                    <div class="col-auto" style="text-align:right"><p style="font-weight:bold;padding:10px 0">Total Available Qty <label id="totalAvailableQty" style="font-size:1.2em">0</label></p></div>
-                </div>
-
-                @*AQL Plan*@
-                <div style="width:50%;height:40vh;float:left;">
-                    <div class="col-auto"><h2 class="sub_title">AQL Plan</h2></div>
-                    <table class="col-auto table_div" style="width:100%">
-                        <tr>
-                            <td><label>AQL Plan</label></td>
-                            <td>@Html.DropDownListFor(o => o.AQLPlan, (List<SelectListItem>)ViewBag.AQLPlanList, null, new { @class = "form-control", @disabled = "disabled" })</td>
-                        </tr>
-                        <tr>
-                            <td colspan="2" style="text-align:center">
-                                <label style="font-weight:normal;font-size:0.8em">(Inline, Stagger stage can skip AQL Plan, encode below directly)</label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><label>Sample Plan Qty</label></td>
-                            <td>@Html.TextBoxFor(o => o.SampleSize, new { @type = "number", @min = "0", @class = "form-control center-block", @onchange = "onSampleSizeChange(this.value)" })</td>
-                        </tr>
-                        <tr>
-                            <td><label>Accepted Qty</label></td>
-                            <td>@Html.TextBoxFor(o => o.AcceptQty, new { @type = "number", @style = "width:49%;", @min = "0", @class = "form-control center-block" })</td>
-                        </tr>
-                        <tr>
-                            <td><label>Reject Qty</label></td>
-                            <td>
-                                <input id="RejectQty" type="number" class="form-control center-block" min="0" value="0" />
-                            </td>
-                        </tr>
-                    </table>
-                </div>
+            @*Basic*@
+            <div style="width:50%;height:25vh;float:left;">
+                <div class="col-auto"><h2 class="sub_title">Basic</h2></div>
+                <table class="col-auto table_div" style="width:100%">
+                    <tr>
+                        <td><label>Choose Inspection Stage</label></td>
+                        <td>@Html.DropDownListFor(o => o.InspectionStage, (List<SelectListItem>)ViewBag.InspectionStageList, null, new { @class = "form-control", @style = "width:157px", @onchange = "onInspectionStageChange(this.value)" })</td>
+                    </tr>
+                    <tr>
+                        <td><label>What's day you audit?</label></td>
+                        <td>@Html.TextBoxFor(o => o.AuditDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })</td>
+                    </tr>
+                    <tr>
+                        <td><label>What's sewing line you audit?</label></td>
+                        <td>@Html.TextBoxFor(o => o.SewingLineID, new { @readonly = "readonly" })</td>
+                    </tr>
+                </table>
             </div>
-            <!--Detail-Cartons彈出視窗-->
-            <!--多個Table forA001-->
-            <input type="hidden" id="currnetSelectedPO" />
-            <div class="detail-dialog to-edit-detail" title="Detail">
-                <div class="detail-dialog-content dialog-content-w-icon" style="height:40vh">
-                    <table cellspacing="100" id="CartonTable" class="table table-striped display">
-                        <thead>
-                            <tr class="row-name">
-                                <th>Select</th>
-                                <th>Packing List ID</th>
-                                <th>CTN No</th>
-                                <th>SP</th>
+
+            @*Inspection Number*@
+            <div style="width:50%;height:25vh;float:left;">
+                <div class="col-auto"><h2 class="sub_title">Inspection Number</h2></div>
+                <div class="col-auto"><label style="padding-left:3em;font-weight:bold">This is <font style="color:#0000ff">@Html.DisplayFor(o => o.InspectionTimes)</font> times to inspect for this PO#</label></div>
+                @Html.HiddenFor(o => o.InspectionTimes)
+            </div>
+
+            @*Selected PO*@
+            <div style="width:50%;height:40vh;float:left;">
+                <div class="col-auto"><h2 class="sub_title">Selected PO</h2></div>
+                <div class="col-auto">
+                    <table id="SelectedPOTable" class="cell-border " style="width:100%"></table>
+                </div>
+                <div class="col-auto" style="text-align:right"><p style="font-weight:bold;padding:10px 0">Total Available Qty <label id="totalAvailableQty" style="font-size:1.2em">0</label></p></div>
+            </div>
+
+            @*AQL Plan*@
+            <div style="width:50%;height:40vh;float:left;">
+                <div class="col-auto"><h2 class="sub_title">AQL Plan</h2></div>
+                <table class="col-auto table_div" style="width:100%">
+                    <tr>
+                        <td><label>AQL Plan</label></td>
+                        <td>@Html.DropDownListFor(o => o.AQLPlan, (List<SelectListItem>)ViewBag.AQLPlanList, null, new { @class = "form-control", @disabled = "disabled" })</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="text-align:center">
+                            <label style="font-weight:normal;font-size:0.8em">(Inline, Stagger stage can skip AQL Plan, encode below directly)</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label>Sample Plan Qty</label></td>
+                        <td>@Html.TextBoxFor(o => o.SampleSize, new { @type = "number", @min = "0", @class = "form-control center-block", @onchange = "onSampleSizeChange(this.value)" })</td>
+                    </tr>
+                    <tr>
+                        <td><label>Accepted Qty</label></td>
+                        <td>@Html.TextBoxFor(o => o.AcceptQty, new { @type = "number", @style = "width:49%;", @min = "0", @class = "form-control center-block" })</td>
+                    </tr>
+                    <tr>
+                        <td><label>Reject Qty</label></td>
+                        <td>
+                            <input id="RejectQty" type="number" class="form-control center-block" min="0" value="0" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <!--Detail-Cartons彈出視窗-->
+        <!--多個Table forA001-->
+        <input type="hidden" id="currnetSelectedPO" />
+        <div class="detail-dialog to-edit-detail" title="Detail">
+            <div class="detail-dialog-content dialog-content-w-icon" style="height:40vh">
+                <table cellspacing="100" id="CartonTable" class="table table-striped display">
+                    <thead>
+                        <tr class="row-name">
+                            <th>Select</th>
+                            <th>Packing List ID</th>
+                            <th>CTN No</th>
+                            <th>SP</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.SelectCarton.Count; i++)
+                        {
+                            <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                                <td>
+                                    @{ string Ischecked = Model.SelectCarton[i].Selected ? "checked" : ""; }
+                                    @*@Html.CheckBox($"Carton_Select_[{i}]", Model.SelectCarton[i].Selected, new { @class = "messageCheckbox", @Idx = i, @CTNNo = Model.SelectCarton[i].CTNNo, @PackingListID = Model.SelectCarton[i].PackingListID, @OrderID = Model.SelectCarton[i].OrderID, @onclick = "SelectCartonChange(this)" })*@
+                                    <input type="checkbox" ID="Carton_Select_[@i]" class = "messageCheckbox" Idx = @i CTNNo = @Model.SelectCarton[i].CTNNo PackingListID = @Model.SelectCarton[i].PackingListID OrderID = @Model.SelectCarton[i].OrderID onclick = "SelectCartonChange(this)" />
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(o => Model.SelectCarton[i].PackingListID)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(o => Model.SelectCarton[i].CTNNo)
+                                </td>
+                                <td>
+                                    @Model.SelectCarton[i].OrderID-
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @for (int i = 0; i < Model.SelectCarton.Count; i++)
-                            {
-                                <tr class="row-content" style="vertical-align: middle; text-align: center;">
-                                    <td>
-                                        @Html.CheckBox($"SelectCarton[{i}].Selected", false, new { @class = "messageCheckbox", @CTNNo = Model.SelectCarton[i].CTNNo })
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(o => Model.SelectCarton[i].PackingListID)
-                                        @Html.Hidden($"SelectCarton[{i}].PackingListID", Model.SelectCarton[i].PackingListID)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(o => Model.SelectCarton[i].CTNNo)
-                                        @Html.Hidden($"SelectCarton[{i}].CTNNo", Model.SelectCarton[i].CTNNo)
-                                    </td>
-                                    <td>
-                                        @Html.Hidden($"SelectCarton[{i}].OrderID", Model.SelectCarton[i].OrderID)
-                                        @Model.SelectCarton[i].OrderID-
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                    <br />
-                    <div>
-                    </div>
+                        }
+                    </tbody>
+                </table>
+                <br />
+                <div>
                 </div>
             </div>
-            <button class="button" style="right:0">Next</button>
-        }
+        </div>
+        <button class="button" style="right:0">Next</button>
 
-    </div>
+        //Model.SelectCarton的標籤藏在這邊
+        for (int i = 0; i < Model.SelectCarton.Count; i++)
+        {
+            @Html.Hidden($"SelectCarton[{i}].Selected", Model.SelectCarton[i].Selected)
+            @Html.Hidden($"SelectCarton[{i}].PackingListID", Model.SelectCarton[i].PackingListID)
+            @Html.Hidden($"SelectCarton[{i}].CTNNo", Model.SelectCarton[i].CTNNo)
+            @Html.Hidden($"SelectCarton[{i}].OrderID", Model.SelectCarton[i].OrderID)
+        }
+    }
+
+</div>
 @section FinalInspection_script
 {
     <script>
@@ -265,7 +274,7 @@
                     table.row($("#SelectPO_" + orderID).closest('tr')).data()[8] = $(this).find("input").val();
                 }
                 if (Column == "AvailableQty") {
-                    
+
                     table.row($("#SelectPO_" + orderID).closest('tr')).data()[9] = $(this).find("input").val();
                     Order_AvailableQty[orderID] = $(this).find("input").val();
                     Cacu_AvailableQty();
@@ -323,9 +332,9 @@
                         click: function () {
 
                             var checkedList = [];
-                            
-                            $('[id^=SelectCarton]').each(function () {
-                                
+
+                            $('[id^=Carton_Select_]').each(function () {
+
                                 if ($(this).prop('checked')) {
                                     //checkedList.push($(this).val());
                                     checkedList.push($(this).attr("ctnno"));
@@ -457,7 +466,7 @@
 
             $("#CartonTable_filter").hide();
 
-            $('[id^=SelectCarton]').each(function () {
+            $('[id^=Carton_Select_]').each(function () {
                 $(this).prop('checked', false);
             });
 
@@ -472,9 +481,9 @@
 
             var cartonValues = document.getElementById("SelectedPO[" + rowIndex + "].Cartons").value;
             var cartonList = cartonValues.split(',');
-            
+
             if (cartonValues != '') {
-                
+
                 $(cartonList).each(function () {
 
                     //$('#carton_select_' + this).prop('checked', true);
@@ -519,6 +528,17 @@
             }
         }
 
+        //選擇箱子時，將資料同步到Model的標籤
+        function SelectCartonChange(self) {
+
+            var Idx = $(self).attr("Idx");
+            var OrderID = $(self).attr("orderID");
+            var PackingListID = $(self).attr("PackingListID");
+            var CTNNo = $(self).attr("CTNNo");
+            var icChecked = $(self).prop("checked");
+            $("input[Type=hidden][ID=SelectCarton_" + Idx + "__Selected]").val(icChecked);
+        }
+
         function onSampleSizeChange(value) {
             // 不可大於 [Total Available Qty]
             if ($("#SampleSize").prop("disabled") == false) {
@@ -527,6 +547,7 @@
 
                 if (sampleSizeValue > totalavailableQtyValue) {
                     msg.WithError("[Sample Plan Qty] can not great than [Total Available Qty]");
+                    $("#SampleSize").val(0);
                     return false;
                 }
             }
