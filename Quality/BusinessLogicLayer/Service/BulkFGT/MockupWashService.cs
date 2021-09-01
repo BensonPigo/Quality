@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Transactions;
+using System.Web.Mvc;
 
 namespace BusinessLogicLayer.Service
 {
@@ -294,21 +295,24 @@ namespace BusinessLogicLayer.Service
             return model;
         }
 
-        public AccessoryRefNos GetAccessoryRefNo(AccessoryRefNo_Request Request)
+        public List<SelectListItem> GetAccessoryRefNo(AccessoryRefNo_Request Request)
         {
-            AccessoryRefNos model = new AccessoryRefNos();
+            List<SelectListItem> selectListItems = new List<SelectListItem>();
             try
             {
                 _MockupWashProvider = new MockupWashProvider(Common.ProductionDataAccessLayer);
-                model.AccessoryRefNo = _MockupWashProvider.GetAccessoryRefNo(Request).ToList();
+                var AccessoryRefNos = _MockupWashProvider.GetAccessoryRefNo(Request).ToList();
+                foreach (var item in AccessoryRefNos)
+                {
+                    selectListItems.Add(new SelectListItem { Value = item.Refno, Text = item.Refno });
+                }
             }
-            catch (Exception ex)
+            catch (Exception )
             {
-                model.Result = false;
-                model.ErrorMessage = ex.Message;
+
             }
 
-            return model;
+            return selectListItems;
         }
     }
 }

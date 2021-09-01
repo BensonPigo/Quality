@@ -76,12 +76,6 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string LastUpdate { get; set; }
     }
 
-
-    public class AccessoryRefNos : BaseResult
-    {
-        public List<AccessoryRefNo> AccessoryRefNo { get; set; }
-    }
-
     public class AccessoryRefNo
     {
         public string Refno { get; set; }

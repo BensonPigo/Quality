@@ -1,5 +1,7 @@
 ﻿using DatabaseObject.RequestModel;
 using DatabaseObject.ViewModel.BulkFGT;
+using System.Collections.Generic;
+using System.Web.Mvc;
 
 namespace BusinessLogicLayer.Interface.BulkFGT
 {
@@ -7,7 +9,7 @@ namespace BusinessLogicLayer.Interface.BulkFGT
     {
         MockupWashs_ViewModel GetMockupWash(MockupWash_Request MockupWash);
 
-        AccessoryRefNos GetAccessoryRefNo(AccessoryRefNo_Request Request);
+        List<SelectListItem> GetAccessoryRefNo(AccessoryRefNo_Request Request);
 
         MockupWashs_ViewModel Create(MockupWashs_ViewModel MockupWash);
 
