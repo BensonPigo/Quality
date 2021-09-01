@@ -1,6 +1,7 @@
 ﻿using DatabaseObject.ProductionDB;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
 
 namespace DatabaseObject.ViewModel.BulkFGT
 {
@@ -9,6 +10,21 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public List<string> ReportNos { get; set; }
 
         public List<MockupWash_ViewModel> MockupWash { get; set; }
+
+        public List<SelectListItem> Result_Source
+        {
+            get
+            {
+                return new List<SelectListItem>()
+                {
+                    new SelectListItem(){ Text="Pass",Value="Pass"},
+                    new SelectListItem(){ Text="Fail",Value="Fail"},
+                };
+            }
+            set { }
+        }
+
+        public List<SelectListItem> TestingMethod_Source { get; set; }
     }
 
     public class MockupWash_ViewModel : MockupWash

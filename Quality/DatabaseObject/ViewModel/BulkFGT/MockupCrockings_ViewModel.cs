@@ -1,6 +1,7 @@
 ﻿using DatabaseObject.ProductionDB;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
 
 namespace DatabaseObject.ViewModel.BulkFGT
 {
@@ -9,6 +10,39 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public List<string> ReportNos { get; set; }
 
         public List<MockupCrocking_ViewModel> MockupCrocking { get; set; }
+
+        public List<SelectListItem> Result_Source
+        {
+            get
+            {
+                return new List<SelectListItem>()
+                {
+                    new SelectListItem(){ Text="Pass",Value="Pass"},
+                    new SelectListItem(){ Text="Fail",Value="Fail"},
+                };
+            }
+            set { }
+        }
+
+        public List<SelectListItem> Scale
+        {
+            get
+            {
+                return new List<SelectListItem>()
+                {
+                    new SelectListItem(){ Text="1",Value="1"},
+                    new SelectListItem(){ Text="1-2",Value="1-2"},
+                    new SelectListItem(){ Text="2",Value="2"},
+                    new SelectListItem(){ Text="2-3",Value="2-3"},
+                    new SelectListItem(){ Text="3",Value="3"},
+                    new SelectListItem(){ Text="3-4",Value="3-4"},
+                    new SelectListItem(){ Text="4",Value="4"},
+                    new SelectListItem(){ Text="4-5",Value="4-5"},
+                    new SelectListItem(){ Text="5",Value="5"},
+                };
+            }
+            set { }
+        }
     }
 
     public class MockupCrocking_ViewModel : MockupCrocking
@@ -50,11 +84,5 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string ArtworkColorName { get; set; }
         public string FabricColorName { get; set; }
         public string LastUpdate { get; set; }
-    }
-
-    public class MockupCrockingScale
-    {
-        public List<string> DryScale { get; set; }
-        public List<string> WetScale { get; set; }
     }
 }

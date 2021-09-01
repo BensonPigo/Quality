@@ -257,16 +257,5 @@ namespace BusinessLogicLayer.Service
 
             return model;
         }
-
-        public MockupCrockingScale GetScale()
-        {
-            MockupCrockingScale mockupCrockingScale = new MockupCrockingScale
-            {
-                DryScale = new List<string>() { "1", "1-2", "2", "2-3", "3", "3-4", "4", "4-5", "5" },
-                WetScale = new List<string>() { "1", "1-2", "2", "2-3", "3", "3-4", "4", "4-5", "5" },
-            };
-
-            return mockupCrockingScale;
-        }
     }
 }

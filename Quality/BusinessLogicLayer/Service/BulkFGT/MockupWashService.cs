@@ -19,6 +19,7 @@ namespace BusinessLogicLayer.Service
     {
         private IMockupWashProvider _MockupWashProvider;
         private IMockupWashDetailProvider _MockupWashDetailProvider;
+        private IDropDownListProvider _DropDownListProvider;
 
         public MockupWashs_ViewModel GetMockupWash(MockupWash MockupWash)
         {
@@ -34,6 +35,14 @@ namespace BusinessLogicLayer.Service
                     model.ReportNos.Add(item.ReportNo);
                     MockupWash_Detail mockupWash_Detail = new MockupWash_Detail() { ReportNo = item.ReportNo };
                     item.MockupWash_Detail = _MockupWashDetailProvider.GetMockupWash_Detail(mockupWash_Detail).ToList();
+                }
+
+                model.TestingMethod_Source = new List<System.Web.Mvc.SelectListItem>();
+                _DropDownListProvider = new DropDownListProvider(Common.ProductionDataAccessLayer);
+                List<DropDownList> downLists = _DropDownListProvider.Get(new DropDownList() { Type = "PMS_MockupWashMethod", }).ToList();
+                foreach (var item in downLists)
+                {
+                    model.TestingMethod_Source.Add(new System.Web.Mvc.SelectListItem() { Value = item.ID, Text = item.Description });
                 }
 
                 model.Result = true;
