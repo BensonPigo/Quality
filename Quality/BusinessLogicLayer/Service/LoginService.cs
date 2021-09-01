@@ -60,6 +60,8 @@ namespace BusinessLogicLayer.Service
                         mesPass1.FirstOrDefault().Factory.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList() :
                         pmsPass1.FirstOrDefault().Factory.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList();
 
+                var M = FactoryProvider.GetMDivisionID(logIn_Request.FactoryID);
+
                 if (!result.Factorys.Where(x => x.Equals(logIn_Request.FactoryID)).Any())
                 {
                     throw new Exception(string.Format("Not have permission of {0}.", logIn_Request.FactoryID));
@@ -67,6 +69,7 @@ namespace BusinessLogicLayer.Service
 
                 result.pass1 = quality_Pass1s.FirstOrDefault();
                 result.Menus = QualityMenuProvider.Get(result.pass1).ToList();
+                result.MDivisionID = M.Any() ? M.FirstOrDefault().MDivisionID : string.Empty;
                 result.FactoryID = result.Factorys.Where(x => x.Equals(logIn_Request.FactoryID)).Any() ? logIn_Request.FactoryID.Trim() : result.Factorys.FirstOrDefault().Trim();
                 result.Lines = SewingLineProvider.GetSewinglineID().GroupBy(x => x.ID).Select(x => x.Key).ToList();
                 result.Brands = BrandProvider.Get().GroupBy(x => x.ID).Select(x => x.Key).ToList();

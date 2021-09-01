@@ -78,10 +78,11 @@ and o.SeasonID = @SeasonID";
 
             StringBuilder SbSql = new StringBuilder();
             SbSql.Append($@"
-select r.OrderID,o.OrderTypeID, r.PMS_RFTCommentsID, r.Comnments
+select r.OrderID,o.OrderTypeID, PMS_RFTCommentsID = d.Description, r.Comnments
 into #tmpBase
 from [Production].[dbo].Orders o with(nolock)
 inner join RFT_OrderComments r on r.OrderID = o.id
+left join Production.dbo.DropdownList d ON d.Type='PMS_RFTComments' AND d.ID = r.PMS_RFTCommentsID
 where 1=1
 and o.junk = 0
 and o.Category = 'S'

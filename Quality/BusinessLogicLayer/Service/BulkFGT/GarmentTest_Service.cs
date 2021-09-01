@@ -133,7 +133,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-
         public GarmentTest_ViewModel SendMail(string ID, string No, string UserID)
         {
             GarmentTest_ViewModel result = new GarmentTest_ViewModel()
@@ -160,23 +159,62 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public IList<GarmentTest_Detail_Shrinkage> Get_Shrinkage(Int64 ID, string No)
+        public GarmentTest_Detail_Result Get_All_Detail(string ID, string No)
         {
-            IList<GarmentTest_Detail_Shrinkage> result = new List<GarmentTest_Detail_Shrinkage>();
+            GarmentTest_Detail_Result result = new GarmentTest_Detail_Result();
+
+            result.Main = Get_Main(ID);
+            result.Detail = Get_Detail(ID, No);
+            result.Shrinkages = Get_Shrinkage(ID, No).ToList();
+            result.Spiralities = Get_Spirality(ID, No).ToList();
+            result.Apperance = Get_Apperance(ID, No).ToList();
+            result.FGPT = Get_FGPT(ID,No).ToList();
+            result.FGWT = Get_FGWT(ID, No).ToList();
+            result.Scales = Get_Scales();
+
+            return result;
+        }
+
+        public IList<GarmentTest_Detail_Shrinkage> Get_Shrinkage(string ID, string No)
+        {
             _IGarmentTestDetailShrinkageProvider = new GarmentTestDetailShrinkageProvider(Common.ProductionDataAccessLayer);
             try
             {
-                result = _IGarmentTestDetailShrinkageProvider.Get_GarmentTest_Detail_Shrinkage(ID, No);
+                return _IGarmentTestDetailShrinkageProvider.Get_GarmentTest_Detail_Shrinkage(ID, No);
             }
             catch (Exception ex)
             {
                 throw ex;
             }
-
-            return result;
         }
 
-        public IList<Garment_Detail_Spirality> Get_Spirality(Int64 ID, string No)
+        public GarmentTest_ViewModel Get_Main(string ID)
+        {
+            _IGarmentTestProvider = new GarmentTestProvider(Common.ProductionDataAccessLayer);
+            try
+            {
+                return _IGarmentTestProvider.Get(ID).First();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public GarmentTest_Detail_ViewModel Get_Detail(string ID, string No)
+        {
+            _IGarmentTestDetailProvider = new GarmentTestDetailProvider(Common.ProductionDataAccessLayer);
+            try
+            {
+                return _IGarmentTestDetailProvider.Get(ID, No).First();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public IList<Garment_Detail_Spirality> Get_Spirality(string ID, string No)
         {
             IList<Garment_Detail_Spirality> result = new List<Garment_Detail_Spirality>();
             _IGarmentDetailSpiralityProvider = new GarmentDetailSpiralityProvider(Common.ProductionDataAccessLayer);
@@ -192,7 +230,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public IList<GarmentTest_Detail_Apperance_ViewModel> Get_Apperance(Int64 ID, string No)
+        public IList<GarmentTest_Detail_Apperance_ViewModel> Get_Apperance(string ID, string No)
         {
             IList<GarmentTest_Detail_Apperance_ViewModel> result = new List<GarmentTest_Detail_Apperance_ViewModel>();
             _IGarmentTestDetailApperanceProvider = new GarmentTestDetailApperanceProvider(Common.ProductionDataAccessLayer);
@@ -208,7 +246,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public IList<GarmentTest_Detail_FGWT_ViewModel> Get_FGWT(Int64 ID, string No)
+        public IList<GarmentTest_Detail_FGWT_ViewModel> Get_FGWT(string ID, string No)
         {
             IList<GarmentTest_Detail_FGWT_ViewModel> result = new List<GarmentTest_Detail_FGWT_ViewModel>();
             _IGarmentTestDetailFGWTProvider = new GarmentTestDetailFGWTProvider(Common.ProductionDataAccessLayer);
@@ -224,7 +262,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public IList<GarmentTest_Detail_FGPT_ViewModel> Get_FGPT(Int64 ID, string No)
+        public IList<GarmentTest_Detail_FGPT_ViewModel> Get_FGPT(string ID, string No)
         {
             IList<GarmentTest_Detail_FGPT_ViewModel> result = new List<GarmentTest_Detail_FGPT_ViewModel>();
             _IGarmentTestDetailFGPTProvider = new GarmentTestDetailFGPTProvider(Common.ProductionDataAccessLayer);
@@ -240,7 +278,19 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public GarmentTest_ViewModel Save_GarmentTest(GarmentTest_ViewModel garmentTest_ViewModel,List<GarmentTest_Detail> detail)
+        public List<string> Get_Scales()
+        {
+            _IGarmentTestDetailProvider = new GarmentTestDetailProvider(Common.ProductionDataAccessLayer);
+            try
+            {
+                return _IGarmentTestDetailProvider.GetScales();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public GarmentTest_ViewModel Save_GarmentTest(GarmentTest_ViewModel garmentTest_ViewModel,List<GarmentTest_Detail> detail, string UserID)
         {
             // 僅傳入 List<GarmentTest_Detail> detail
 
@@ -260,7 +310,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     if (item.No == 0) { emptyMsg += "detail No cannot be 0." + Environment.NewLine; }
                     if (string.IsNullOrEmpty(item.MtlTypeID)) { emptyMsg += "detail MtlTypeID cannot be empty." + Environment.NewLine; }
-                    if (string.IsNullOrEmpty(item.AddName) && string.IsNullOrEmpty(item.EditName)) { emptyMsg += "detail AddName and EditName cannot be empty." + Environment.NewLine; }
+                    // if (string.IsNullOrEmpty(item.AddName) && string.IsNullOrEmpty(item.EditName)) { emptyMsg += "detail AddName and EditName cannot be empty." + Environment.NewLine; }
                 }
 
                 if (!string.IsNullOrEmpty(emptyMsg))
@@ -274,7 +324,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 #endregion
 
                 _IGarmentTestProvider = new GarmentTestProvider(_ISQLDataTransaction);
-                result.SaveResult = _IGarmentTestProvider.Save_GarmentTest(garmentTest_ViewModel, detail);
+                result.SaveResult = _IGarmentTestProvider.Save_GarmentTest(garmentTest_ViewModel, detail, UserID);
                 _ISQLDataTransaction.Commit();
             }
             catch (Exception ex)
@@ -288,7 +338,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public GarmentTest_Result Generate_FGWT(GarmentTest_Detail_Result viewModel)
+        public GarmentTest_Result Generate_FGWT(GarmentTest_ViewModel Main, GarmentTest_Detail_ViewModel Detail)
         {
             GarmentTest_Result result = new GarmentTest_Result();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
@@ -297,11 +347,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 _IGarmentTestDetailFGWTProvider = new GarmentTestDetailFGWTProvider(_ISQLDataTransaction);
                 #region 判斷空值
                 string emptyMsg = string.Empty;
-                if (string.IsNullOrEmpty(viewModel.Detail.MtlTypeID)) { emptyMsg += "MtlTypeID cannot be empty" + Environment.NewLine; }
-                if (_IGarmentTestDetailFGWTProvider.Chk_FGWTExists(viewModel.Detail) == true) { emptyMsg += "Data already exists!!"; }
+                if (string.IsNullOrEmpty(Detail.MtlTypeID)) { emptyMsg += "MtlTypeID cannot be empty" + Environment.NewLine; }
+                if (_IGarmentTestDetailFGWTProvider.Chk_FGWTExists(Detail) == true) { emptyMsg += "Data already exists!!"; }
                 #endregion
 
-                result.Result = _IGarmentTestDetailFGWTProvider.Create_FGWT(viewModel.Main, viewModel.Detail);
+                result.Result = _IGarmentTestDetailFGWTProvider.Create_FGWT(Main, Detail);
                 _ISQLDataTransaction.Commit();
             }
             catch (Exception ex)

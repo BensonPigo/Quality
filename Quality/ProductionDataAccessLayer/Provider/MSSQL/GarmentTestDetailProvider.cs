@@ -44,6 +44,14 @@ order by SizeCode";
             return ExecuteList<Order_Qty>(CommandType.Text, sqlcmd, objParameter);
         }
 
+        public List<string> GetScales()
+        {
+            string sqlcmd = @"select ID from Scale  WHERE Junk=0 order by ID";
+            DataTable dt = ExecuteDataTable(CommandType.Text, sqlcmd, new SQLParameterCollection());
+
+            return dt.Rows.OfType<DataRow>().Select(dr => dr.Field<string>("ID")).ToList();
+        }
+
         public IList<GarmentTest_Detail_ViewModel> Get_GarmentTestDetail(GarmentTest filter)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection
@@ -267,10 +275,14 @@ Update GarmentTest_Detail set Status=@Status where id = @ID
         /// ===  ==========  ====  ==========  ==========
         /// 01.  2021/08/23  1.00    Admin        Create
         /// </history>
-        public IList<GarmentTest_Detail> Get(GarmentTest_Detail Item)
+        public IList<GarmentTest_Detail_ViewModel> Get(string ID, string No)
         {
             StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.String, ID } ,
+                { "@No", DbType.String, No } ,
+            };
             SbSql.Append("SELECT"+ Environment.NewLine);
             SbSql.Append("         ID"+ Environment.NewLine);
             SbSql.Append("        ,No"+ Environment.NewLine);
@@ -310,10 +322,10 @@ Update GarmentTest_Detail set Status=@Status where id = @ID
             SbSql.Append("        ,TestBeforePicture"+ Environment.NewLine);
             SbSql.Append("        ,TestAfterPicture"+ Environment.NewLine);
             SbSql.Append("FROM [GarmentTest_Detail]"+ Environment.NewLine);
+            SbSql.Append("where ID = @ID" + Environment.NewLine);
+            SbSql.Append("and No = @No" + Environment.NewLine);
 
-
-
-            return ExecuteList<GarmentTest_Detail>(CommandType.Text, SbSql.ToString(), objParameter);
+            return ExecuteList<GarmentTest_Detail_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
         }
 		/*建立Garment Test(Create) 詳細敘述如下*/
         /// <summary>

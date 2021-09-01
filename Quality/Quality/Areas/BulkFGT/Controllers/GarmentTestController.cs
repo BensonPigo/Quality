@@ -83,13 +83,11 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
-        public JsonResult SaveDetail(List<GarmentTest_Detail> details)
-        {
-            GarmentTest_ViewModel result = new GarmentTest_ViewModel()
-            {
-                SaveResult = false,
-                ErrMsg = "Err",
-            };
+        public JsonResult SaveDetail(GarmentTest_ViewModel main, List<GarmentTest_Detail> details)
+        {            
+            GarmentTest_ViewModel result = _GarmentTest_Service.Save_GarmentTest(main, details, this.UserID);
+
+
 
             return Json(result);
         }
@@ -99,7 +97,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             GarmentTest_ViewModel result = new GarmentTest_ViewModel()
             {
-                SaveResult = false,
+                SaveResult = true,
                 ErrMsg = "Err",
             };
 
@@ -166,6 +164,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Content(html);
         }
 
+        [HttpPost]
         public ActionResult ChangeSizeCode(string OrderID, string Brand, string Season, string Style, string Article)
         {
             bool chk = _GarmentTest_Service.CheckOrderID(OrderID, Brand, Season, Style);
@@ -191,18 +190,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             List<SelectListItem> TestResultPassList = new SetListItem().ItemListBinding(TestResultPass);
             List<SelectListItem> TestResultmmList = new SetListItem().ItemListBinding(TestResultmm);
 
-            GarmentTest_Detail_Result Detail_Result = new GarmentTest_Detail_Result()
-            {
-                Scales = new List<string>(),
-                Main = new GarmentTest_ViewModel(),
-                Detail = new GarmentTest_Detail_ViewModel(),
-                Shrinkages = new List<GarmentTest_Detail_Shrinkage>(),
-                Spiralities = new List<Garment_Detail_Spirality>(),
-                Apperance = new List<GarmentTest_Detail_Apperance_ViewModel>(),
-                FGWT = new List<GarmentTest_Detail_FGWT_ViewModel>(),
-                FGPT = new List<GarmentTest_Detail_FGPT_ViewModel>(),
-            };
-
+            GarmentTest_Detail_Result Detail_Result = _GarmentTest_Service.Get_All_Detail(ID, No);
             List<SelectListItem> ScaleList = new SetListItem().ItemListBinding(Detail_Result.Scales);
 
             ViewBag.TemperatureList = TemperatureList;

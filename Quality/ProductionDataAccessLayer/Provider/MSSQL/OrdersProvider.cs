@@ -11,6 +11,7 @@ using System.Data.SqlClient;
 using DatabaseObject.ViewModel.FinalInspection;
 using System.Linq;
 using ToolKit;
+using DatabaseObject.ResultModel.FinalInspection;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
@@ -851,6 +852,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         }
         #endregion
 
+
         public IList<Orders> GetOrderForInspection(FinalInspection_Request requestItem)
         {
             string sqlGetData = string.Empty;
@@ -890,6 +892,47 @@ where o.ftygroup = @Ftygroup and o.PulloutComplete = 0
 ";
 
             return ExecuteList<Orders>(CommandType.Text, sqlGetData, listPar);
+        }
+
+        public IList<PoSelect_Result> GetOrderForInspection_ByModel(FinalInspection_Request requestItem)
+        {
+            string sqlGetData = string.Empty;
+            SQLParameterCollection listPar = new SQLParameterCollection();
+
+            string where = string.Empty;
+
+            listPar.Add("@Ftygroup", requestItem.FactoryID);
+            if (!string.IsNullOrEmpty(requestItem.SP))
+            {
+                listPar.Add("@SP", requestItem.SP);
+                where += " and o.id = @SP ";
+            }
+
+            if (!string.IsNullOrEmpty(requestItem.POID))
+            {
+                listPar.Add("@POID", requestItem.POID);
+                where += " and o.POID = @POID ";
+            }
+
+            if (!string.IsNullOrEmpty(requestItem.StyleID))
+            {
+                listPar.Add("@StyleID", requestItem.StyleID);
+                where += " and o.StyleID = @StyleID ";
+            }
+
+            sqlGetData = $@"
+select o.ID 
+     , o.POID 
+     , o.Qty  
+     , o.StyleID  
+     , o.SeasonID 
+     , o.BrandID 
+  from orders o
+where o.ftygroup = @Ftygroup and o.PulloutComplete = 0
+        {where}
+";
+
+            return ExecuteList<PoSelect_Result>(CommandType.Text, sqlGetData, listPar);
         }
 
         public IList<SelectedPO> GetSelectedPOForInspection(List<string> listOrderID)

@@ -1,4 +1,6 @@
-﻿
+﻿@using DatabaseObject.ViewModel.FinalInspection
+@using DatabaseObject
+     
 
 <link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
 <link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
@@ -11,11 +13,11 @@
 <style type="text/css">
 
 
-    #myTable_info {
+    #DetailTable_info {
         color: black
     }
 
-    #myTable_previous, #myTable_next {
+    #DetailTable_previous, #DetailTable_next {
         color: black !important;
     }
 
@@ -35,7 +37,7 @@
         margin-bottom: 1vh;
     }
 
-    #myTable td {
+    #DetailTable td {
         height: 1vh;
         padding: 0;
     }
@@ -50,7 +52,11 @@
     }
 </style>
 
-@model List<DatabaseObject.ProductionDB.Orders>
+@{ 
+    string ErrorMessage = Model.ErrorMessage == null ? "" : Model.ErrorMessage;
+}
+
+@model PoSelect
 
 @using (Html.BeginForm("Index", "Inspection", FormMethod.Post, new { onsubmit = "return checkvalue()" }))
 {
@@ -64,20 +70,20 @@
                         <p class="searchFont">SP#</p>
                     </td>
                     <td style="width:4%" align="center">
-                        @Html.TextBox("SP", string.Empty, new { style = "border-color:black;" })
+                        @Html.TextBoxFor(o => o.SP, string.Empty, new { style = "border-color:black;" })
                     </td>
                     <td style="width:5%" align="right">
                         <p class="searchFont ">PO#</p>
                     </td>
                     <td style="width:4%" align="center">
-                        @Html.TextBox("POID", string.Empty, new { style = "border-color:black;" })
+                        @Html.TextBoxFor(o => o.POID, string.Empty, new { style = "border-color:black;" })
                     </td>
 
                     <td style="width:5%" align="right">
                         <p class="searchFont">Style#</p>
                     </td>
                     <td style="width:4%" align="center">
-                        @Html.TextBox("StyleID", string.Empty, new { style = "border-color:black;" })
+                        @Html.TextBoxFor( o => o.StyleID, string.Empty, new { style = "border-color:black;" })
                     </td>
                     <td style="width: 8%; vertical-align: bottom;" align="right">
 
@@ -91,7 +97,7 @@
     </div>
 }
 
-@using (Html.BeginForm("GoSetting", "Inspection", FormMethod.Post, new { onsubmit = "return checkDetail()" }))
+@using (Html.BeginForm("Setting", "Inspection", FormMethod.Post, new { onsubmit = "return checkDetail()" }))
 {
 <div class="DownWhiteBackgrond" style="height:80vh" >
     <div style="border:0px;padding:2vh;">
@@ -99,7 +105,7 @@
         <div class="content-scroll" style=" height: calc( 100vh - 280px )">
             <div class="inner-scroll" style="float:left">
                 <div>
-                    <table cellspacing="100" id="myTable" class="table table-striped display">
+                    <table cellspacing="100" id="DetailTable" class="table table-striped display">
                         <thead>
                             <tr id="row-name" class="row-name" >
                                 <th>SP#</th>
@@ -112,31 +118,39 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var item in Model)
+                            @{ int idx = 0; }
+                            @foreach (var item in Model.DataList)
                             {
                                 <tr class="row-content" style="vertical-align: middle; text-align: center;">
                                     <td>
                                         @Html.DisplayFor(modelItem => item.ID)
+                                        @Html.Hidden($"model[{idx}].ID", item.ID)
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.POID)
+                                        @Html.Hidden($"model[{idx}].POID", item.POID)
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.Qty)
+                                        @Html.Hidden($"model[{idx}].Qty", item.Qty)
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.StyleID)
+                                        @Html.Hidden($"model[{idx}].StyleID", item.StyleID)
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.SeasonID)
+                                        @Html.Hidden($"model[{idx}].SeasonID", item.SeasonID)
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.BrandID)
+                                        @Html.Hidden($"model[{idx}].BrandID", item.BrandID)
                                     </td>
                                     <td>
-                                        <input class="messageCheckbox" type="checkbox" id="checkSelect" value=@Html.DisplayFor(modelItem => item.POID) />
+                                        @Html.CheckBox($"model[{idx}].Selected", item.Selected ,new { @class= "messageCheckbox" })
                                     </td>
                                 </tr>
+                                idx++;
                             }
                         </tbody>
 
@@ -145,7 +159,7 @@
             </div>
         </div>
     </div>
-    <button style="right:2em;" class="button">Next</button>
+    <button style="right:2em;" class="button" id="btnNext">Next</button>
 </div>
 
 }
@@ -157,16 +171,17 @@
 
     var msg = new MessagerAlert();
 
+    var table;
     $(function () {
+        
+        @Html.Raw(Model.ErrorMessage);   
 
-        $('#myTable').DataTable({
-
+        table = $('#DetailTable').DataTable({
             "pageLength": 10,
             "filter": false,
             "paging": true,
             "scrollY": "49vh",
             "scrollCollapse": true,
-
         });
     });
 
@@ -212,11 +227,11 @@
             msg.WithError('Cannot selet multi ＜PO#＞');
             return false;
         }
-
+        
+        table.page.len(99999).draw();
 
         return true;
     }
-
 
 
 </script>
