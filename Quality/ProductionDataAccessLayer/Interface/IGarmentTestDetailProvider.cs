@@ -26,5 +26,9 @@ namespace ProductionDataAccessLayer.Interface
         List<string> GetScales();
 
         DataTable Get_Mail_Content(string ID, string No);
+
+        bool Update_Sender(string ID, string No, string UserID);
+
+        bool Update_Receive(string ID, string No, string UserID);
     }
 }

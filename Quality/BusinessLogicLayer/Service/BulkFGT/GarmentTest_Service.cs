@@ -151,26 +151,70 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
         public GarmentTest_ViewModel SendMail(string ID, string No, string UserID)
         {
-            GarmentTest_ViewModel result = new GarmentTest_ViewModel()
+            GarmentTest_ViewModel result = new GarmentTest_ViewModel();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            try
             {
-                SaveResult = false,
-                ErrMsg = "Err",
-                Sender = UserID,
-                SendDate = DateTime.Now.ToString("yyyy/MM/dd"),
-            };
+                #region 判斷是否空值
+                string emptyMsg = string.Empty;
+                if (string.IsNullOrEmpty(ID)) { emptyMsg += "Master ID cannot be 0 or null" + Environment.NewLine; }
+                if (string.IsNullOrEmpty(No)) { emptyMsg += "No cannot be 0 or null" + Environment.NewLine; }
+                if (string.IsNullOrEmpty(UserID)) { emptyMsg += "UserID cannot be 0 or null" + Environment.NewLine; }
+
+                if (!string.IsNullOrEmpty(emptyMsg))
+                {
+                    result.SaveResult = false;
+                    result.ErrMsg = emptyMsg;
+                    return result;
+                }
+                #endregion
+
+                _IGarmentTestDetailProvider = new GarmentTestDetailProvider(_ISQLDataTransaction);
+                result.SaveResult = _IGarmentTestDetailProvider.Update_Sender(ID, No, UserID);
+                _ISQLDataTransaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                _ISQLDataTransaction.RollBack();
+                result.SaveResult = false;
+                result.ErrMsg = ex.Message.ToString();
+            }
+            finally { _ISQLDataTransaction.CloseConnection(); }
 
             return result;
         }
 
         public GarmentTest_ViewModel ReceiveMail(string ID, string No, string UserID)
         {
-            GarmentTest_ViewModel result = new GarmentTest_ViewModel()
+            GarmentTest_ViewModel result = new GarmentTest_ViewModel();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            try
             {
-                SaveResult = false,
-                ErrMsg = "Err",
-                Sender = UserID,
-                SendDate = DateTime.Now.ToString("yyyy/MM/dd"),
-            };
+                #region 判斷是否空值
+                string emptyMsg = string.Empty;
+                if (string.IsNullOrEmpty(ID)) { emptyMsg += "Master ID cannot be 0 or null" + Environment.NewLine; }
+                if (string.IsNullOrEmpty(No)) { emptyMsg += "No cannot be 0 or null" + Environment.NewLine; }
+                if (string.IsNullOrEmpty(UserID)) { emptyMsg += "UserID cannot be 0 or null" + Environment.NewLine; }
+
+                if (!string.IsNullOrEmpty(emptyMsg))
+                {
+                    result.SaveResult = false;
+                    result.ErrMsg = emptyMsg;
+                    return result;
+                }
+                #endregion
+
+                _IGarmentTestDetailProvider = new GarmentTestDetailProvider(_ISQLDataTransaction);
+                result.SaveResult = _IGarmentTestDetailProvider.Update_Receive(ID, No, UserID);
+                _ISQLDataTransaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                _ISQLDataTransaction.RollBack();
+                result.SaveResult = false;
+                result.ErrMsg = ex.Message.ToString();
+            }
+            finally { _ISQLDataTransaction.CloseConnection(); }
 
             return result;
         }
@@ -651,16 +695,34 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return strValie;
         }
 
-        public GarmentTest_Detail_Result ToReport(string ID, string No, ReportType type, bool IsToPDF)
+        public GarmentTest_Detail_Result ToReport(string ID, string No, ReportType type, bool IsToPDF, bool test = false)
         {
             GarmentTest_Detail_Result all_Data = Get_All_Detail(ID, No);
             all_Data.reportPath = string.Empty;
-            P04Data data = new P04Data();
+            P04Data data = new P04Data
+            {
+                DateSubmit = all_Data.Detail.SubmitDate,
+                NumArriveQty = all_Data.Detail.ArrivedQty,
+                TxtSize = all_Data.Detail.SizeCode,
+                RdbtnLine = all_Data.Detail.LineDry,
+                RdbtnHand = all_Data.Detail.HandWash,
+                ComboTemperature = all_Data.Detail.Temperature.ToString(),
+                ComboMachineModel = all_Data.Detail.Machine,
+                TxtFibreComposition = all_Data.Detail.Composition,
+                ComboNeck = all_Data.Detail.Neck == true ? "Yest" : "No",
+                TxtLotoFactory = all_Data.Detail.LOtoFactory,
+            };
+
+
             bool IsNewData = all_Data.Apperance.Count == 9 ? false : true;
-            bool test = true;
+            //bool test = false;
 
             IStyleProvider styleProvider = new StyleProvider(Common.ProductionDataAccessLayer);
             string StyleName = styleProvider.GetStyleName(all_Data.Main.StyleID, all_Data.Main.SeasonID, all_Data.Main.BrandID);
+
+            IOrdersProvider ordersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
+            Orders orders = ordersProvider.Get(new Orders() { ID = all_Data.Main.OrderID }).First();
+
 
             _IGarmentTestDetailShrinkageProvider = new GarmentTestDetailShrinkageProvider(Common.ProductionDataAccessLayer);
             DataTable dtShrinkages = _IGarmentTestDetailShrinkageProvider.Get_dt_Shrinkage(ID, No);
@@ -719,18 +781,18 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         worksheet.Cells[4, 9] = MyUtility.Convert.GetString(all_Data.Main.OrderID);
                         worksheet.Cells[4, 11] = MyUtility.Convert.GetString(all_Data.Main.BrandID);
                         worksheet.Cells[6, 4] = MyUtility.Convert.GetString(all_Data.Main.StyleID);
-                        worksheet.Cells[7, 8] = MyUtility.GetValue.Lookup($"select CustPONo from Orders with(nolock) where id = '{all_Data.Main.OrderID}'");
+                        worksheet.Cells[7, 8] = orders.CustPONo;
                         worksheet.Cells[7, 4] = MyUtility.Convert.GetString(all_Data.Main.Article);
-                        worksheet.Cells[6, 8] = MyUtility.GetValue.Lookup($"select StyleName from Style with(nolock) where id = '{all_Data.Main.StyleID}' and seasonid = '{all_Data.Main.SeasonID}' and brandid = '{all_Data.Main.BrandID}'");
+                        worksheet.Cells[6, 8] = StyleName;
                         worksheet.Cells[8, 8] = MyUtility.Convert.GetDecimal(data.NumArriveQty.Value);
 
-                        string sendDate = Convert.ToDateTime(MyUtility.GetValue.Lookup($"SELECT BuyerDelivery FROM Orders WHERE ID = '{all_Data.Main.OrderID}'")).ToShortDateString();
+                        string sendDate = Convert.ToDateTime(orders.BuyerDelivery).ToShortDateString();
                         worksheet.Cells[8, 4] = sendDate;
                         worksheet.Cells[8, 10] = MyUtility.Convert.GetString(data.TxtSize);
 
-                        worksheet.Cells[11, 4] = data.RdbtnLine ? "V" : string.Empty;
-                        worksheet.Cells[12, 4] = data.RdbtnTumble ? "V" : string.Empty;
-                        worksheet.Cells[13, 4] = data.RdbtnHand ? "V" : string.Empty;
+                        worksheet.Cells[11, 4] = data.RdbtnLine == true ? "V" : string.Empty;
+                        worksheet.Cells[12, 4] = data.RdbtnTumble == true ? "V" : string.Empty;
+                        worksheet.Cells[13, 4] = data.RdbtnHand == true ? "V" : string.Empty;
                         worksheet.Cells[11, 8] = data.ComboTemperature + "˚C ";
                         worksheet.Cells[12, 8] = data.ComboMachineModel;
                         worksheet.Cells[13, 8] = data.TxtFibreComposition;
@@ -755,22 +817,25 @@ namespace BusinessLogicLayer.Service.BulkFGT
                             // ToPDF
                             if (IsToPDF)
                             {
-                                string sql_cmd = $@"select p.name,[SignaturePic] = s.PicPath + t.SignaturePic
-                                        from Technician t WITH (NOLOCK)
-                                        inner join pass1 p WITH (NOLOCK) on t.ID = p.ID  
-                                        outer apply (select PicPath from system) s 
-                                        where t.ID = '{all_Data.Detail.inspector}'
-                                        and t.GarmentTest = 1";
-                                DataRow drTechnicianInfo;
+                                string sql_cmd = $@"
+select p.name,[SignaturePic] = s.PicPath + t.SignaturePic
+from Production.dbo.Technician t WITH (NOLOCK)
+inner join Production.dbo.pass1 p WITH (NOLOCK) on t.ID = p.ID  
+outer apply (select PicPath from Production.dbo.system) s 
+where t.ID = '{all_Data.Detail.inspector}'
+and t.GarmentTest=1
+";
                                 string technicianName = string.Empty;
                                 string picSource = string.Empty;
                                 Image img = null;
                                 Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[12, 2];
 
-                                if (MyUtility.Check.Seek(sql_cmd, out drTechnicianInfo))
+                                DataTable dtTechnicianInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sql_cmd, new ADOHelper.Template.MSSQL.SQLParameterCollection());
+
+                                if (dtTechnicianInfo != null && dtTechnicianInfo.Rows.Count > 0)
                                 {
-                                    technicianName = drTechnicianInfo["name"].ToString();
-                                    picSource = drTechnicianInfo["SignaturePic"].ToString();
+                                    technicianName = dtTechnicianInfo.Rows[0]["name"].ToString();
+                                    picSource = dtTechnicianInfo.Rows[0]["SignaturePic"].ToString();
 
                                     // Name
                                     worksheet.Cells[76, 9] = technicianName;
@@ -1429,23 +1494,25 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                             if (IsToPDF)
                             {
-                                string sql_cmd = $@"select p.name,[SignaturePic] = s.PicPath + t.SignaturePic
-                                            from Technician t WITH (NOLOCK)
-                                            inner join pass1 p WITH (NOLOCK) on t.ID = p.ID  
-                                            outer apply (select PicPath from system) s 
-                                            where t.ID = '{all_Data.Detail.inspector}'
-                                            and t.GarmentTest=1
+                                string sql_cmd = $@"
+select p.name,[SignaturePic] = s.PicPath + t.SignaturePic
+from Production.dbo.Technician t WITH (NOLOCK)
+inner join Production.dbo.pass1 p WITH (NOLOCK) on t.ID = p.ID  
+outer apply (select PicPath from Production.dbo.system) s 
+where t.ID = '{all_Data.Detail.inspector}'
+and t.GarmentTest=1
 ";
-                                DataRow drTechnicianInfo;
                                 string technicianName = string.Empty;
                                 string picSource = string.Empty;
                                 Image img = null;
                                 Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[12, 2];
 
-                                if (MyUtility.Check.Seek(sql_cmd, out drTechnicianInfo))
+                                DataTable dtTechnicianInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sql_cmd, new ADOHelper.Template.MSSQL.SQLParameterCollection());
+
+                                if (dtTechnicianInfo != null && dtTechnicianInfo.Rows.Count > 0)
                                 {
-                                    technicianName = drTechnicianInfo["name"].ToString();
-                                    picSource = drTechnicianInfo["SignaturePic"].ToString();
+                                    technicianName = dtTechnicianInfo.Rows[0]["name"].ToString();
+                                    picSource = dtTechnicianInfo.Rows[0]["SignaturePic"].ToString();
 
                                     // Name
                                     worksheet.Cells[76, 9] = technicianName;
@@ -2087,7 +2154,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         {
                             if (ConvertToPDF.ExcelToPDF(filepath_2018, filepathpdf_2018))
                             {
-                                all_Data.reportPath = filepath_2018;
+                                all_Data.reportPath = filepathpdf_2018;
                                 all_Data.Result = true;
                             }
                             else
@@ -2141,22 +2208,24 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                     if (IsToPDF)
                     {
-                        string sql_cmd = $@"select p.name,[SignaturePic] = s.PicPath + t.SignaturePic
-                                        from Technician t WITH (NOLOCK)
-                                        inner join pass1 p WITH (NOLOCK) on t.ID = p.ID  
-                                        outer apply (select PicPath from system) s 
-                                        where t.ID = '{all_Data.Detail.inspector}'
-                                        and t.GarmentTest=1
+                        string sql_cmd = $@"
+select p.name,[SignaturePic] = s.PicPath + t.SignaturePic
+from Production.dbo.Technician t WITH (NOLOCK)
+inner join Production.dbo.pass1 p WITH (NOLOCK) on t.ID = p.ID  
+outer apply (select PicPath from Production.dbo.system) s 
+where t.ID = '{all_Data.Detail.inspector}'
+and t.GarmentTest=1
 ";
-                        DataRow drTechnicianInfo;
                         string technicianName = string.Empty;
                         string picSource = string.Empty;
                         Image img = null;
 
-                        if (MyUtility.Check.Seek(sql_cmd, out drTechnicianInfo))
+                        DataTable dtTechnicianInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sql_cmd, new ADOHelper.Template.MSSQL.SQLParameterCollection());
+
+                        if (dtTechnicianInfo != null && dtTechnicianInfo.Rows.Count > 0)
                         {
-                            technicianName = drTechnicianInfo["name"].ToString();
-                            picSource = drTechnicianInfo["SignaturePic"].ToString();
+                            technicianName = dtTechnicianInfo.Rows[0]["name"].ToString();
+                            picSource = dtTechnicianInfo.Rows[0]["SignaturePic"].ToString();
 
                             // Name
                             worksheet_2020.Cells[31, 7] = technicianName;
@@ -2191,10 +2260,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                     worksheet_2020.Cells[5, 1] = "adidas Article No.: " + MyUtility.Convert.GetString(all_Data.Main.Article);
                     worksheet_2020.Cells[5, 3] = "adidas Working No.: " + MyUtility.Convert.GetString(all_Data.Main.StyleID);
-                    worksheet_2020.Cells[5, 4] = "adidas Model No.: " + MyUtility.GetValue.Lookup($"SELECT StyleName FROM Style WHERE ID='{all_Data.Main.StyleID}'");
+                    worksheet_2020.Cells[5, 4] = "adidas Model No.: " + StyleName;
 
-                    worksheet_2020.Cells[6, 1] = "T1 Supplier Ref.: " + MyUtility.GetValue.Lookup($"SELECT FactoryID FROM Orders WHERE ID='{all_Data.Main.OrderID}'");
-                    worksheet_2020.Cells[6, 3] = "T1 Factory Name: " + MyUtility.GetValue.Lookup($"SELECT o.BrandAreaCode FROM GarmentTest g INNER JOIN Orders o ON g.OrderID = o.ID WHERE g.OrderID='{all_Data.Main.OrderID}'");
+                    worksheet_2020.Cells[6, 1] = "T1 Supplier Ref.: " + orders.FactoryID;
+                    worksheet_2020.Cells[6, 3] = "T1 Factory Name: " +  orders.BrandAreaCode;
                     worksheet_2020.Cells[6, 4] = "LO to Factory: " + data.TxtLotoFactory;
 
                     if (data.DateSubmit.HasValue)
@@ -2293,7 +2362,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     {
                         if (ConvertToPDF.ExcelToPDF(filepath_2020, filepathpdf_2020))
                         {
-                            all_Data.reportPath = filepath_2020;
+                            all_Data.reportPath = filepathpdf_2020;
                             all_Data.Result = true;
                         }
                         else
@@ -2341,22 +2410,25 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     #region 插入圖片與Technician名字
                     if (IsToPDF)
                     {
-                        string sql_cmd = $@"select p.name,[SignaturePic] = s.PicPath + t.SignaturePic
-                                        from Technician t WITH (NOLOCK)
-                                        inner join pass1 p WITH (NOLOCK) on t.ID = p.ID  
-                                        outer apply (select PicPath from system) s 
-                                        where t.ID = '{all_Data.Detail.inspector}'
-                                        and t.GarmentTest=1
+                        string sql_cmd = $@"
+select p.name,[SignaturePic] = s.PicPath + t.SignaturePic
+from Production.dbo.Technician t WITH (NOLOCK)
+inner join Production.dbo.pass1 p WITH (NOLOCK) on t.ID = p.ID  
+outer apply (select PicPath from Production.dbo.system) s 
+where t.ID = '{all_Data.Detail.inspector}'
+and t.GarmentTest=1
 ";
-                        DataRow drTechnicianInfo;
                         string technicianName = string.Empty;
                         string picSource = string.Empty;
                         Image img = null;
 
-                        if (MyUtility.Check.Seek(sql_cmd, out drTechnicianInfo))
+                        DataTable dtTechnicianInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sql_cmd, new ADOHelper.Template.MSSQL.SQLParameterCollection());
+
+
+                        if (dtTechnicianInfo != null && dtTechnicianInfo.Rows.Count > 0)
                         {
-                            technicianName = drTechnicianInfo["name"].ToString();
-                            picSource = drTechnicianInfo["SignaturePic"].ToString();
+                            technicianName = dtTechnicianInfo.Rows[0]["name"].ToString();
+                            picSource = dtTechnicianInfo.Rows[0]["SignaturePic"].ToString();
 
                             // Name
                             worksheet_Physical.Cells[159, 7] = technicianName;
@@ -2390,10 +2462,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                     worksheet_Physical.Cells[5, 1] = "adidas Article No.: " + MyUtility.Convert.GetString(all_Data.Main.Article);
                     worksheet_Physical.Cells[5, 3] = "adidas Working No.: " + MyUtility.Convert.GetString(all_Data.Main.StyleID);
-                    worksheet_Physical.Cells[5, 4] = "adidas Model No.: " + MyUtility.GetValue.Lookup($"SELECT StyleName FROM Style WHERE ID='{all_Data.Main.StyleID}'");
+                    worksheet_Physical.Cells[5, 4] = "adidas Model No.: " + StyleName;
 
-                    worksheet_Physical.Cells[6, 1] = "T1 Supplier Ref.: " + MyUtility.GetValue.Lookup($"SELECT FactoryID FROM Orders WHERE ID='{all_Data.Main.OrderID}'");
-                    worksheet_Physical.Cells[6, 3] = "T1 Factory Name: " + MyUtility.GetValue.Lookup($"SELECT o.BrandAreaCode FROM GarmentTest g INNER JOIN Orders o ON g.OrderID = o.ID WHERE g.OrderID='{all_Data.Main.OrderID}'");
+                    worksheet_Physical.Cells[6, 1] = "T1 Supplier Ref.: " + orders.FactoryID;
+                    worksheet_Physical.Cells[6, 3] = "T1 Factory Name: " + orders.BrandAreaCode;
                     worksheet_Physical.Cells[6, 4] = "LO to Factory: " + data.TxtLotoFactory;
 
                     if (data.DateSubmit.HasValue)
@@ -2534,7 +2606,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     {
                         if (ConvertToPDF.ExcelToPDF(filepath_Physical, filepathpdf_Physical))
                         {
-                            all_Data.reportPath = filepath_Physical;
+                            all_Data.reportPath = filepathpdf_Physical;
                             all_Data.Result = true;
                         }
                         else
