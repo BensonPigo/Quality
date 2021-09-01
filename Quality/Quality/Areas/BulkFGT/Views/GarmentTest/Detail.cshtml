@@ -10,6 +10,20 @@
 @model GarmentTest_Detail_Result
 
 <style type="text/css">
+    .content-scroll {
+        height: calc( 100vh - 110px );
+        overflow: hidden;
+        position: relative;
+        margin-top: 15px;
+    }
+
+    .inner-scroll {
+        height: calc(100vh - 110px);
+        overflow-y: scroll;
+        padding-right: 30px;
+        width: calc(100% + 30px);
+    }
+
     #tab-Change {
         width: 92vw;
     }
@@ -97,6 +111,27 @@
         width: 3em; 
         height: 2em;
     }
+
+    .ReportAction {
+        width: 29vw;
+        height: 29vh;
+        position: absolute;
+        left: 30vw;
+        top: 19vh;
+        z-index: 1042;
+        background-color: #c8eac8;
+        border: solid 1px black;
+        font-size: 1.4em;
+        font-weight: bold;
+    }
+
+        .ReportAction > table > tbody > tr > td {
+            padding: 0.5em;
+        }
+
+            .ReportAction > table > tbody > tr > td > input[type=button] {
+                cursor: pointer;
+            }
 </style>
 
 <div class="main-content">
@@ -152,6 +187,37 @@
                                             <img src="~/Image/Icon/Print.png" width="30" />
                                             Report
                                         </h4>
+                                        <div class="ReportAction display-None">
+                                            <table>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <input id="ReportOption" name="ReportOption" type="radio" class="bigSize" value="Wash_Test_2018">
+                                                            <label for="ReportOptionx">Finished Garement Wash Test Ver.2018</label>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <input id="ReportOption" name="ReportOption" type="radio" class="bigSize" value="Wash_Test_2020">
+                                                            <label for="ReportOptionx">Finished Garement Wash Test Ver.2020</label>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <input id="ReportOption" name="ReportOption" type="radio" class="bigSize" value="Physical_Test">
+                                                            <label for="ReportOptionx">Finished Garement Physical Test</label>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="text-align: center;">
+                                                            <input id="ReportPDF" type="button" value="PDF">
+                                                            <input id="ReportExcel" type="button" value="Excel" style="margin: 0 1em;">
+                                                            <input id="ReportExit" type="button" value="Exit">
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </td>
                                     <td>
                                         <h4 id="Picture" style=" margin-right: 1em;">
@@ -184,7 +250,7 @@
                                                 @Html.DisplayFor(o => Model.Main.StyleID, "", "")
                                                 @Html.TextBoxFor(o => Model.Detail.Status, "", new { @readonly = "readonly", @class = "display-None" })
                                                 @Html.TextBoxFor(o => Model.Detail.ID, "", new { @readonly = "readonly", @class = "display-None" })
-                                                @Html.TextBoxFor(o => Model.Detail.No, "", new { @readonly = "readonly", @class = "display-None" })
+                                                @Html.TextBoxFor(o => Model.Detail.No, "", new { @readonly = "readonly", @class = "display-None" })                                                
                                             </td>
                                             <td style="width:10vw;"><h4>Season</h4></td>
                                             <td style="width:20vw;">@Html.DisplayFor(o => Model.Main.SeasonID, "", "")</td>
@@ -262,11 +328,11 @@
                                                         string DetailAbove50SyntheticFibres = Model.Detail.Above50SyntheticFibres != null && Model.Detail.Above50SyntheticFibres.Value ? "checked" : "";
                                                     }
                                                     <input id="Detail_Above50" name="Detail.Above50" type="radio" class="bigSize" value="Above50NaturalFibres" @DetailAbove50NaturalFibres />
-                                                    <label for="Detail_Above50NaturalFibres">All basic Fabrics ≥ 50% natural fibres</label>
+                                                    <label for="Detail_Above50x">All basic Fabrics ≥ 50% natural fibres</label>
                                                 </div>
                                                 <div>
                                                     <input id="Detail_Above50" name="Detail.Above50" type="radio" class="bigSize" value="Above50SyntheticFibres" @DetailAbove50SyntheticFibres />
-                                                    <label for="Detail_Above50SyntheticFibres">All basic Fabrics ≥ 50% synthetic fibres (ex. polyester)</label>
+                                                    <label for="Detail_Above50x">All basic Fabrics ≥ 50% synthetic fibres (ex. polyester)</label>
                                                 </div>
                                             </td>
                                         </tr>
@@ -493,11 +559,11 @@
                                                 <td>
                                                     @if (showClass)
                                                     {
-                                                        <img src="~/Image/Icon/List.png" width="30" idx="@Model.Apperance[i].Seq" class="AppearanceList" />
+                                                        <img src="~/Image/Icon/List.png" width="30" idx="@Model.Apperance[i].Seq" class="AppearanceList" style="cursor:pointer;"/>
                                                     }
                                                 </td>
                                                 <td>
-                                                    <select id="Apperance_@{@i}__Wash1" name="Apperance[@i].Wash1">
+                                                    <select id="Apperance_@{@i}__Wash1" name="Apperance[@i].Wash1" style="width:100%;">
                                                         @foreach (var item in (List<SelectListItem>)ViewBag.WashList)
                                                         {
                                                             string selected = item.Text.Equals(Model.Apperance[i].Wash1.ToString()) ? "selected" : "";
@@ -506,7 +572,7 @@
                                                     </select>
                                                 </td>
                                                 <td>
-                                                    <select id="Apperance_@{@i}__Wash2" name="Apperance[@i].Wash2">
+                                                    <select id="Apperance_@{@i}__Wash2" name="Apperance[@i].Wash2" style="width:100%;">
                                                         @foreach (var item in (List<SelectListItem>)ViewBag.WashList)
                                                         {
                                                             string selected = item.Text.Equals(Model.Apperance[i].Wash2.ToString()) ? "selected" : "";
@@ -517,7 +583,7 @@
                                                 @if (!string.IsNullOrEmpty(Model.Apperance[i].WashName3))
                                                 {
                                                     <td>
-                                                        <select id="Apperance_@{@i}__Wash3" name="Apperance[@i].Wash3">
+                                                        <select id="Apperance_@{@i}__Wash3" name="Apperance[@i].Wash3" style="width:100%;">
                                                             @foreach (var item in (List<SelectListItem>)ViewBag.WashList)
                                                             {
                                                                 string selected = item.Text.Equals(Model.Apperance[i].Wash3.ToString()) ? "selected" : "";
@@ -527,7 +593,7 @@
                                                     </td>
                                                 }
                                                 <td>
-                                                    <select id="Apperance_@{@i}__Comment" name="Apperance[@i].Comment">
+                                                    <select id="Apperance_@{@i}__Comment" name="Apperance[@i].Comment" style="width:100%;">
                                                         @foreach (var item in (List<SelectListItem>)ViewBag.WashList)
                                                         {
                                                             string selected = Model.Apperance[i].Comment != null && item.Text.Equals(Model.Apperance[i].Comment.ToString()) ? "selected" : "";
@@ -570,6 +636,7 @@
                                                 @Html.TextBoxFor(o => Model.FGWT[i].ID, new { @readonly = "readonly", @class = "display-None" })
                                                 @Html.TextBoxFor(o => Model.FGWT[i].No, new { @readonly = "readonly", @class = "display-None" })
                                                 @Html.TextBoxFor(o => Model.FGWT[i].Location, new { @readonly = "readonly", @class = "display-None" })
+                                                @Html.TextBoxFor(o => Model.FGWT[i].Seq, new { @readonly = "readonly", @class = "display-None" })
                                             </td>
                                             <td>
                                                 @if (bolWash)
@@ -599,9 +666,9 @@
                                                 }
                                             </td>
                                             <td>
-                                                @if (bolScale)
+                                                @if (bolScale && false)
                                                 {
-                                                    <img src="~/Image/Icon/List.png" width="30" idx="@Model.FGWT[i].Seq" />
+                                                    <img src="~/Image/Icon/List.png" width="30" idx="@Model.FGWT[i].Seq" style="cursor:pointer;" />
                                                 }
                                             </td>
                                             @{
@@ -668,7 +735,7 @@
                                                 @Html.TextBoxFor(o => Model.FGPT[i].Seq, new { @readonly = "readonly", @class = "display-None" })
                                                 @Html.TextBoxFor(o => Model.FGPT[i].TypeSelection_VersionID, new { @readonly = "readonly", @class = "display-None" })
                                                 @Html.TextBoxFor(o => Model.FGPT[i].TestName, new { @readonly = "readonly", @class = "display-None" })
-                                                @Html.TextBoxFor(o => Model.FGPT[i].Type, new { @readonly = "readonly", @class = "display-None" })
+                                                @Html.TextBoxFor(o => Model.FGPT[i].Type, new { @readonly = "readonly", @class = "display-None txtFGPTType" })
                                                 @Html.TextBoxFor(o => Model.FGPT[i].TypeSelection_Seq, new { @readonly = "readonly", @class = "display-None" })                                                
                                             </td>
                                             <td>
@@ -678,10 +745,10 @@
                                             <td class="FGPTType">
                                                 @Html.DisplayFor(o => Model.FGPT[i].Type)
                                             </td>
-                                            <td>
+                                            <td style="width:5vw;">
                                                 @if (boolVer)
                                                 {
-                                                    <img src="~/Image/Icon/List.png" width="30" class="FGPTList" idx="@Model.FGPT[i].TypeSelection_VersionID" />
+                                                    <img src="~/Image/Icon/List.png" width="30" class="FGPTList" idx="@Model.FGPT[i].TypeSelection_VersionID" style="cursor:pointer;" />
                                                 }
                                             </td>
                                             <td class="bg-lightred">
@@ -689,7 +756,7 @@
                                                     switch (Model.FGPT[i].TestUnit.ToUpper())
                                                     {
                                                         case "MM":
-                                                            <select id="FGPT_@{@i}__TestResult" name="FGPT[@i].TestResult">
+                                                            <select id="FGPT_@{@i}__TestResult" name="FGPT[@i].TestResult" style="width:100%;">
                                                                 @foreach (var item in (List<SelectListItem>)ViewBag.TestResultmmList)
                                                                 {
                                                                     string selected = item.Text.Equals(Model.FGPT[i].TestResult.ToString()) ? "selected" : "";
@@ -701,7 +768,7 @@
                                                             <input id="FGPT_@{@i}__TestResult" name="FGPT[@i].TestResult" type="number" min="0" step="0.1" value="@Model.FGPT[i].TestResult">
                                                             break;
                                                         case "PASS/FAIL":
-                                                            <select id="FGPT_@{@i}__TestResult" name="FGPT[@i].TestResult">
+                                                            <select id="FGPT_@{@i}__TestResult" name="FGPT[@i].TestResult" style="width:100%;">
                                                                 @foreach (var item in (List<SelectListItem>)ViewBag.TestResultPassList)
                                                                 {
                                                                     string selected = item.Text.Equals(Model.FGPT[i].TestResult.ToString()) ? "selected" : "";
@@ -760,6 +827,7 @@
         ShrinkagesEventBind();
         ApperanceEventBind();
         FGPTEventBind();
+        ReportEventBind();
         tabChange();
 
         if ('@Model.Result' == 'False') {
@@ -774,12 +842,12 @@
         EditModeButtionBind();
 
         if (EditMode) {
-            $("#Edit, #Encode, #Amend, #Report").removeClass("IsEditMode");
+            $("#Edit, #Encode, #Amend, #Report").unbind('click').removeClass("IsEditMode");
             $('#Save, #Undo').addClass("IsEditMode");
             $('#btnGenerateFGWT').unbind('click').addClass("IsEditModeQuery");
 
             $('.DataTable input, .DataTable select').removeAttr("disabled");
-            $('.ApperanceList, .FGPTList').removeClass('display-None');
+            $('.AppearanceList, .FGPTList').removeClass('display-None');
         }
         else {
             $("#Report").addClass("IsEditMode");
@@ -798,8 +866,10 @@
             }
 
             $('.DataTable input, .DataTable select').attr("disabled", "disabled");
-            $('.ApperanceList, .FGPTList').addClass('display-None');
+            $('.AppearanceList, .FGPTList').addClass('display-None');
         }
+
+        $('#Picture').addClass("IsEditMode");
     }
 
     function EditModeButtionBind() {
@@ -810,24 +880,77 @@
             });
 
             $('#Encode').on('click', function () {
-
+                $.ajax({
+                    url: "@Url.Action("Encode_Detail", "GarmentTest", new { Area = "BulkFGT" })",
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ ID: $('#Detail_ID').val(), No: $('#Detail_No').val(), status: "Encode" }),
+                    async: false,
+                    success: function (data) {
+                        if (data.Result) {
+                            if (data.sentMail) {
+                                FailMail();
+                            }
+                            else {
+                                msg.WithSuccesCheck("Success", function () {
+                                    location.reload();
+                                });
+                            }
+                        }
+                        else {
+                            msg.WithError(data.ErrMsg);
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                });
             });
         }
 
         if ($('#Detail_Status').val() == "Confirmed") {
             $('#Amend').on('click', function () {
-
+                $.ajax({
+                    url: "@Url.Action("Encode_Detail", "GarmentTest", new { Area = "BulkFGT" })",
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ ID: $('#Detail_ID').val(), No: $('#Detail_No').val(), status: "Amend" }),
+                    async: false,
+                    success: function (data) {
+                        if (data.Result) {
+                            msg.WithSuccesCheck("Success", function () {
+                                location.reload();
+                            });
+                        }
+                        else {
+                            msg.WithError(data.ErrMsg);
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                });
             });
         }
 
         $('#Save').on('click', function () {
-            
-
             document.getElementById("DetailForm").submit();
         });
 
         $('#Report').on('click', function () {
+            $('.ReportAction').removeClass('display-None');
+        });
 
+        $('#Picture').on('click', function () {
+            var para = "?Title=" + $('.page-header span').html() + "&EditMode=" + EditMode;
+            para += "&" + "Table=GarmentTest_Detail";
+            para += "&" + "BrforeColumn=TestBeforePicture";
+            para += "&" + "AfterColumn=TestAfterPicture";
+            para += "&" + "PKey_1=ID";
+            para += "&" + "PKey_2=No";
+            para += "&" + "PKey_1_Val=" + $('#Detail_ID').val();
+            para += "&" + "PKey_2_Val=" + $('#Detail_No').val();
+            window.open('@Url.Action("PictureList", "PublicWondow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1024,height=750');
         });
 
         if ($('#FGWT > tbody > tr').length == 1) {
@@ -840,8 +963,9 @@
                     async: false,
                     success: function (data) {
                         if (data.Result) {
-                            msg.WithSuccess("Success");
-                            location.reload();
+                            msg.WithSuccesCheck("Success", function () {
+                                location.reload();
+                            });
                         }
                         else {
                             msg.WithError(data.ErrMsg);
@@ -856,17 +980,6 @@
 
     }
 
-    //function SaveBefore() {   
-    //    var LineDry = $('#Detail_LineDry').is(':checked');
-    //    var TumbleDry = $('#Detail_TumbleDry').is(':checked');
-    //    var HandWash = $('#Detail_HandWash').is(':checked');
-
-    //    if (!LineDry && !TumbleDry && !HandWash) {
-    //        msg.WithError("Line Dry")
-    //    }
-
-    //}
-
     function tabChange() {
         var $li = $('#tab-Change > ul.tab-title li');
         $($li.eq(0).addClass('active').find('a').attr('href')).siblings('.tab-inner').hide();
@@ -874,6 +987,43 @@
         $li.click(function () {
             $($(this).find('a').attr('href')).show().siblings('.tab-inner').hide();
             $(this).addClass('active').siblings('.active').removeClass('active');
+        });
+    }
+
+    function ReportEventBind() {
+        $('#ReportPDF').on('click', function () {
+            ToReport(1);
+        });
+
+        $('#ReportExcel').on('click', function () {
+            ToReport(0);
+        });
+
+        $('#ReportExit').on('click', function () {
+            $('.ReportAction').addClass('display-None');
+        });
+    }
+
+    function ToReport(IsToPDF) {
+        var type = $('#ReportOption:checked').val();
+        $.ajax({
+            url: "@Url.Action("Report", "GarmentTest", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ ID: $('#Detail_ID').val(), No: $('#Detail_No').val(), type: type, IsToPDF: IsToPDF}),
+            async: false,
+            success: function (data) {
+                if (data.Result) {
+                    console.log(data.reportPath);
+                    window.location.href = data.reportPath;
+                }
+                else {
+                    msg.WithError(data.ErrMsg);
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
         });
     }
 
@@ -915,6 +1065,7 @@
 
     function ApperanceEventBind() {
         $('.AppearanceList').on('click', function () {
+            $('#Appearance .selected').removeClass('selected');
             var td = $(this).parent().parent().find("td:nth-child(1)");
             td.addClass('selected');
             var seq = $(this).attr('idx');
@@ -937,6 +1088,7 @@
 
     function FGPTEventBind() {
         $('.FGPTList').on('click', function () {
+            $('#FGPT .selected').removeClass('selected');
             var td = $(this).parent().parent().find("td:nth-child(2)");
             td.addClass('selected');
             var version = $(this).attr('idx');
@@ -949,8 +1101,76 @@
     function GetFGPT(data) {
         var oriVal = $('#FGPT .selected .TypeOri').val();
         var newVal = oriVal.replace("{0}", data.Code);
-        $('#FGPT .selected').siblings("td[class='FGPTType']").val(newVal);
+        $('#FGPT .selected').siblings("td[class='FGPTType']").html(newVal);
+        $('#FGPT .selected').siblings("td").children("input[class='display-None txtFGPTType']").val(newVal);
         $('#FGPT .selected').removeClass('selected');
     }
 
+    function FailMail() {
+        var para = "?Title=" + $('.page-header span').html() + "&FactoryID=@ViewBag.FactoryID&Type=BulkFGT";
+        window.open('@Url.Action("TestFailMailList", "PublicWondow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
+    }
+
+    function GetTestFailMailList(data) {
+        var to = "";
+        var cc = "";
+        $.each(data, function (index, value) {
+            to += value.To + ';';
+            cc += value.CC + ';';
+        });
+
+        $.ajax({
+            url: "@Url.Action("FailMain", "GarmentTest", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ ID: $('#Detail_ID').val(), No: $('#Detail_No').val(), TO: to, CC: cc }),
+            async: false,
+            success: function (data) {
+                if (data.Result) {
+                    msg.WithSuccesCheck("Success", function () {
+                        location.reload();
+                    });
+                }
+                else {
+                    msg.WithWarningCheck(data.ErrMsg, function () {
+                        location.reload();
+                    });
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                // console.log(xhr.responseText);
+                msg.WithWarningCheck(xhr.responseText, function () {
+                    location.reload();
+                });
+            }
+        });
+    }
+
+    function GetPicture(data) {
+        var garmentTest_Detail = {
+            ID: $('#Detail_ID').val(),
+            No: $('#Detail_No').val(),
+            TestBeforePicture: data.BeforePicture.replace("data:image/webp;base64,", ""),
+            TestAfterPicture: data.AfterPicture.replace("data:image/webp;base64,", ""),
+        };
+
+        $.ajax({
+            url: "@Url.Action("DetailPictureSave", "GarmentTest", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ garmentTest_Detail }),
+            async: false,
+            success: function (data) {
+                if (data.Result) {
+                    msg.WithSucces("Success");
+                }
+                else {
+                    msg.WithError(data.ErrMsg);
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
 </script>

@@ -14,6 +14,14 @@
 
 @model GarmentTest_Result
 <style type="text/css">
+    .content-scroll {
+        height: calc( 100vh - 180px );
+    }
+
+    .inner-scroll {
+        height: calc(100vh - 180px);
+    }
+
     .row {
         --bs-gutter-x: 1.5rem;
         --bs-gutter-y: 0;
@@ -465,6 +473,10 @@
         if ('@Model.Result' == 'False') {
             msg.WithError('@Model.ErrMsg');
         }
+
+        if (!$("body").hasClass("sidebar-collapse")) {
+            $(".menu-trigger").click();
+        }
     });
 
     function IsEditModeChange() {
@@ -504,6 +516,10 @@
 
     function EditModeButtionBind() {
         $('#Edit').on('click', function () {
+            if ($('#garmentTest_ID').val() == "") {
+                return;
+            }
+
             if ($('#garmentTest_StyleID').val() != "" && $('#garmentTest_SeasonID').val() != "" && $('#garmentTest_BrandID').val() != "") {
                 EditMode = true;
                 IsEditModeChange();
@@ -608,6 +624,10 @@
 
     function DetailDynamicBind() {
         $('.detailEdit').unbind('click').on('click', function () {
+            if ($('#garmentTest_ID').val() == "") {
+                return;
+            }
+
             if ($(this).prop('src').indexOf("Save.png") > -1) {
                 var tr = $(this).parent().parent();
                 tr.find("input[type='text']").removeAttr("disabled");
@@ -709,6 +729,10 @@
         });
 
         $('.detailDelete').unbind('click').on('click', function () {
+            if ($('#garmentTest_ID').val() == "") {
+                return;
+            }
+
             var t = $(this);
             var tr = $(this).parents().parents();
             var fcol = tr.children().find('a');
@@ -742,6 +766,10 @@
         });
 
         $('.SendMail').unbind('click').on('click', function () {
+            if ($('#garmentTest_ID').val() == "") {
+                return;
+            }
+
             var tr = $(this).parents().parents();
             var fcol = tr.children().find('a');
             var id = fcol.attr("idx");
@@ -768,6 +796,10 @@
         });
 
         $('.ReceiveMail').unbind('click').on('click', function () {
+            if ($('#garmentTest_ID').val() == "") {
+                return;
+            }
+
             var tr = $(this).parents().parents();
             var fcol = tr.children().find('a');
             var id = fcol.attr("idx");
@@ -794,6 +826,10 @@
         });
 
         $('.Detail_OrderID').unbind('blur').on('blur', function () {
+            if ($('#garmentTest_ID').val() == "") {
+                return;
+            }
+
             if ($(this).val() == "") {
                 return;
             }
@@ -850,6 +886,10 @@
     }
 
     function AddDetailRow(OrderID, Article) {
+        if ($('#garmentTest_ID').val() == "") {
+            return;
+        }
+
         var ID;
         var lastNO;
         if ($('.DetailTable > tbody > tr').length > 0) {

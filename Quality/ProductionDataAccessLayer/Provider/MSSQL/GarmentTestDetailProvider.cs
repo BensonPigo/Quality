@@ -281,7 +281,7 @@ g.StyleID
 ,[SpecialMark] = SpecialMark.Value
 ,gd.No
 ,gd.SizeCode
-,[TestDate] = gd.inspdate
+,[TestDate] = format(gd.inspdate, 'yyyy/MM/dd')
 ,g.Result
 ,[450 Result] = gd.SeamBreakageResult
 ,[451 Result] = gd.OdourResult

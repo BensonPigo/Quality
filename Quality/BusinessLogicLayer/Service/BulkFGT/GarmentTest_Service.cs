@@ -440,12 +440,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
             GarmentTest_Result result = new GarmentTest_Result();
             string ToAddress = string.Empty;
             string CCAddress = string.Empty;
+            _IGarmentTestDetailProvider = new GarmentTestDetailProvider(Common.ProductionDataAccessLayer);
             try
             {
                 foreach (var item in mailGroups)
                 {
-                    ToAddress += item + ";";
-                    CCAddress += item + ";";
+                    ToAddress += item.ToAddress + ";";
+                    CCAddress += item.CcAddress + ";";
                 }
 
                 if (string.IsNullOrEmpty(ToAddress) == true)
@@ -657,7 +658,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             all_Data.reportPath = string.Empty;
             P04Data data = new P04Data();
             bool IsNewData = all_Data.Apperance.Count == 9 ? false : true;
-            bool test = true;
+            bool test = false;
 
             IStyleProvider styleProvider = new StyleProvider(Common.ProductionDataAccessLayer);
             string StyleName = styleProvider.GetStyleName(all_Data.Main.StyleID, all_Data.Main.SeasonID, all_Data.Main.BrandID);
@@ -2557,6 +2558,18 @@ namespace BusinessLogicLayer.Service.BulkFGT
             }
 
             return all_Data;
+        }
+
+        public GarmentTest_Result DetailPictureSave(GarmentTest_Detail garmentTest_Detail)
+        {
+            // 結構中僅傳送 ID, NO, TestBeforePicture, TestAfterPicture
+            // 直接存檔
+            GarmentTest_Result result = new GarmentTest_Result() 
+            {
+                Result = false,
+                ErrMsg = "Err",
+            };
+            return result;
         }
     }
 }
