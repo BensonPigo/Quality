@@ -42,13 +42,5 @@ namespace BusinessLogicLayer.Service.Tests
                 Assert.Fail(ex.ToString());
             }
         }
-
-        [TestMethod()]
-        public void GetScale()
-        {
-            IMockupCrockingService _MockupCrockingService = new MockupCrockingService();
-            var x = _MockupCrockingService.GetScale();
-            Assert.IsTrue(x.WetScale.Count > 0);
-        }
     }
 }
