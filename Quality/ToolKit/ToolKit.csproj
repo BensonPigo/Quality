@@ -50,5 +50,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PublicClass.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DatabaseObject\DatabaseObject.csproj">
+      <Project>{95d12adf-a503-4a80-b2c9-71e21f2a3aa6}</Project>
+      <Name>DatabaseObject</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

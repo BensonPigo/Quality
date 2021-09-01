@@ -46,6 +46,8 @@ namespace DatabaseObject.ResultModel
         public bool Result { get; set; }
 
         public string ErrMsg { get; set; }
+
+        public bool sentMail { get; set; }
     }
 }
 

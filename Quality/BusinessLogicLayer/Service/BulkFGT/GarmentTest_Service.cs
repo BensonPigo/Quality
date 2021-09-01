@@ -10,6 +10,9 @@ using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
 using ADOHelper.Utility;
 using System.Data;
+using DatabaseObject.ManufacturingExecutionDB;
+using ManufacturingExecutionDataAccessLayer.Interface;
+using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -36,6 +39,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
         {
             Encode,
             Amend,
+        }
+
+        public enum ReportType
+        {
+            Wash_Test_2018,
+            Wash_Test_2020,
+            Physical_Test,
         }
 
         public GarmentTest_ViewModel GetSelectItemData(GarmentTest_ViewModel garmentTest_ViewModel, SelectType type)
@@ -381,10 +391,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public GarmentTest_Detail_Result Encode_Detail(GarmentTest_Detail_Result viewModel, string GroupName, DetailStatus status)
+        public GarmentTest_Detail_Result Encode_Detail(string ID, string No, DetailStatus status)
         {
             GarmentTest_Detail_Result result = new GarmentTest_Detail_Result();
+            result.sentMail = false;
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            IBulkFGTMailGroupProvider _BulkFGTMailGroupProvider = new BulkFGTMailGroupProvider(Common.ManufacturingExecutionDataAccessLayer);
             try
             {
                 switch (status)
@@ -392,16 +404,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     case DetailStatus.Encode:
                         _IGarmentTestDetailProvider = new GarmentTestDetailProvider(_ISQLDataTransaction);
 
-                        // 代表所有result 有任一個是Fail 就寄信
-                        if (_IGarmentTestDetailProvider.Chk_AllResult(viewModel.Detail.ID.ToString(), viewModel.Detail.No.ToString()) == false)
-                        {
-
-                        }
-                        result.Result = _IGarmentTestDetailProvider.Encode_GarmentTestDetail(viewModel.Detail.ID.ToString(), "Confirmed");
+                        // all result 有任一個是Fail 就寄信
+                        result.sentMail = !_IGarmentTestDetailProvider.Chk_AllResult(ID, No);
+                        result.Result = _IGarmentTestDetailProvider.Encode_GarmentTestDetail(ID, "Confirmed");
                         break;
                     case DetailStatus.Amend:
                         _IGarmentTestDetailProvider = new GarmentTestDetailProvider(_ISQLDataTransaction);
-                        result.Result = _IGarmentTestDetailProvider.Encode_GarmentTestDetail(viewModel.Detail.ID.ToString(), "New");
+                        result.Result = _IGarmentTestDetailProvider.Encode_GarmentTestDetail(ID, "New");
                         break;
                     default:
                         break;
@@ -416,6 +425,49 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 result.ErrMsg = ex.Message;
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
+
+            return result;
+        }
+
+        public GarmentTest_Result SentMail(string ID, string No, List<Quality_MailGroup> mailGroups)
+        {
+            GarmentTest_Result result = new GarmentTest_Result();
+            string ToAddress = string.Empty;
+            string CCAddress = string.Empty;
+            try
+            {
+                foreach (var item in mailGroups)
+                {
+                    ToAddress += item + ";";
+                    CCAddress += item + ";";
+                }
+
+                if (string.IsNullOrEmpty(ToAddress) == true)
+                {
+                    result.Result = false;
+                    result.ErrMsg = "To email address is empty!";
+                    return result;
+                }
+
+                DataTable dtContent = _IGarmentTestDetailProvider.Get_Mail_Content(ID, No);
+                string strHtml = MailTools.DataTableChangeHtml(dtContent);
+
+                SendMail_Request request = new SendMail_Request()
+                {
+                    To = ToAddress,
+                    CC = CCAddress,
+                    Subject = "Garment Test – Test Fail",
+                    Body = strHtml,
+                };
+
+                MailTools.SendMail(request);
+                result.Result = true;
+            }
+            catch (Exception ex)
+            {
+                result.Result = false;
+                result.ErrMsg = ex.Message.ToString();
+            }
 
             return result;
         }
@@ -564,6 +616,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
             finally { _ISQLDataTransaction.CloseConnection(); }
 
             return result;
+        }
+
+        public string ToReport(ReportType type, bool IsToPDF)
+        {
+            string filePath = string.Empty;
+            return filePath;
         }
     }
 }

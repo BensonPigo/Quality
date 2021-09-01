@@ -1,4 +1,5 @@
-﻿using BusinessLogicLayer.Interface;
+﻿using ADOHelper.Utility;
+using BusinessLogicLayer.Interface;
 using DatabaseObject.RequestModel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -14,7 +15,6 @@ namespace BusinessLogicLayer.Service.Tests
         {
             try
             {
-                ISendMailService _RFTPerLineService = new SendMailService();
                 SendMail_Request request = new SendMail_Request()
                 {
                     To= "jeff.yeh@sportscity.com.tw",
@@ -22,7 +22,7 @@ namespace BusinessLogicLayer.Service.Tests
                     Subject="oo",
                     Body="xx",
                 };
-               var result = _RFTPerLineService.SendMail(request);
+               var result = MailTools.SendMail(request);
                 Assert.IsTrue(result.result);
             }
             catch (Exception ex)
