@@ -83,13 +83,11 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
-        public JsonResult SaveDetail(List<GarmentTest_Detail> details)
-        {
-            GarmentTest_ViewModel result = new GarmentTest_ViewModel()
-            {
-                SaveResult = false,
-                ErrMsg = "Err",
-            };
+        public JsonResult SaveDetail(GarmentTest_ViewModel main, List<GarmentTest_Detail> details)
+        {            
+            GarmentTest_ViewModel result = _GarmentTest_Service.Save_GarmentTest(main, details, this.UserID);
+
+
 
             return Json(result);
         }
@@ -99,7 +97,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             GarmentTest_ViewModel result = new GarmentTest_ViewModel()
             {
-                SaveResult = false,
+                SaveResult = true,
                 ErrMsg = "Err",
             };
 
@@ -166,6 +164,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Content(html);
         }
 
+        [HttpPost]
         public ActionResult ChangeSizeCode(string OrderID, string Brand, string Season, string Style, string Article)
         {
             bool chk = _GarmentTest_Service.CheckOrderID(OrderID, Brand, Season, Style);
@@ -191,18 +190,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             List<SelectListItem> TestResultPassList = new SetListItem().ItemListBinding(TestResultPass);
             List<SelectListItem> TestResultmmList = new SetListItem().ItemListBinding(TestResultmm);
 
-            GarmentTest_Detail_Result Detail_Result = new GarmentTest_Detail_Result()
-            {
-                Scales = new List<string>(),
-                Main = new GarmentTest_ViewModel(),
-                Detail = new GarmentTest_Detail_ViewModel(),
-                Shrinkages = new List<GarmentTest_Detail_Shrinkage>(),
-                Spiralities = new List<Garment_Detail_Spirality>(),
-                Apperance = new List<GarmentTest_Detail_Apperance_ViewModel>(),
-                FGWT = new List<GarmentTest_Detail_FGWT_ViewModel>(),
-                FGPT = new List<GarmentTest_Detail_FGPT_ViewModel>(),
-            };
-
+            GarmentTest_Detail_Result Detail_Result = _GarmentTest_Service.Get_All_Detail(ID, No);
             List<SelectListItem> ScaleList = new SetListItem().ItemListBinding(Detail_Result.Scales);
 
             ViewBag.TemperatureList = TemperatureList;
@@ -213,6 +201,76 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.TestResultPassList = TestResultPassList;
             ViewBag.TestResultmmList = TestResultmmList;
             return View(Detail_Result);
+        }
+
+        [HttpPost]
+        public ActionResult Detail(GarmentTest_Detail_Result result)
+        {
+            result.Detail.LineDry = false;
+            result.Detail.TumbleDry = false;
+            result.Detail.HandWash = false;
+            switch (result.Detail.DrySelect)
+            {
+                case "LineDry":
+                    result.Detail.LineDry = true;
+                    break;
+                case "TumbleDry":
+                    result.Detail.TumbleDry = true;
+                    break;
+                case "HandWash":
+                    result.Detail.HandWash = true;
+                    break;
+            }
+
+            result.Detail.Above50NaturalFibres = false;
+            result.Detail.Above50SyntheticFibres = false;
+            switch (result.Detail.Above50)
+            {
+                case "Above50NaturalFibres":
+                    result.Detail.Above50NaturalFibres = true;
+                    break;
+                case "Above50SyntheticFibres":
+                    result.Detail.Above50SyntheticFibres = true;
+                    break;
+            }
+
+
+            foreach(var item in result.FGPT.Where(x => string.IsNullOrEmpty(x.Location)))
+            {
+                item.Location = string.Empty;
+            }
+
+            GarmentTest_Detail_Result saveresult = _GarmentTest_Service.Save_GarmentTestDetail(result);
+            GarmentTest_Detail_Result Detail_Result = _GarmentTest_Service.Get_All_Detail(result.Detail.ID.ToString(), result.Detail.No.ToString());
+
+            Detail_Result.Result = saveresult.Result;
+            Detail_Result.ErrMsg = saveresult.ErrMsg;
+
+            List<SelectListItem> TemperatureList = new SetListItem().ItemListBinding(Temperatures);
+            List<SelectListItem> MachineList = new SetListItem().ItemListBinding(Machines);
+            List<SelectListItem> NeckList = new SetListItem().ItemListBinding(Necks);
+            List<SelectListItem> WashList = new SetListItem().ItemListBinding(Washs);
+            List<SelectListItem> TestResultPassList = new SetListItem().ItemListBinding(TestResultPass);
+            List<SelectListItem> TestResultmmList = new SetListItem().ItemListBinding(TestResultmm);
+            List<SelectListItem> ScaleList = new SetListItem().ItemListBinding(Detail_Result.Scales);
+            ViewBag.TemperatureList = TemperatureList;
+            ViewBag.MachineList = MachineList;
+            ViewBag.NeckList = NeckList;
+            ViewBag.WashList = WashList;
+            ViewBag.ScaleList = ScaleList;
+            ViewBag.TestResultPassList = TestResultPassList;
+            ViewBag.TestResultmmList = TestResultmmList;
+
+            return View(Detail_Result);
+        }
+
+        [HttpPost]
+        public JsonResult GenerateFGWT(string ID, string No)
+        {
+            GarmentTest_ViewModel main = _GarmentTest_Service.Get_Main(ID);
+            GarmentTest_Detail_ViewModel detail = _GarmentTest_Service.Get_Detail(ID, No);
+            GarmentTest_Result result = _GarmentTest_Service.Generate_FGWT(main, detail);
+            return Json(new { result.Result, result.ErrMsg });
         }
     }
 }

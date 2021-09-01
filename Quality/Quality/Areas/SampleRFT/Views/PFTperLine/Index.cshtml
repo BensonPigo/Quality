@@ -1,7 +1,218 @@
-﻿
+﻿@using DatabaseObject.ViewModel;
+@using System.Data;
 @{
     ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Index</h2>
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
 
+<style>
+
+    .fontColor {
+        color: white;
+        font-size: 1.6em;
+    }
+
+    .queryPadding {
+        padding-right: 2vw;
+    }
+
+    .table-mainArea {
+        width: 100%;
+        background-color: #575757;
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .table-striped {
+        background-color: white;
+        vertical-align: middle;
+        text-align: center;
+    }
+
+        .table-striped > tbody > tr:nth-of-type(even) {
+            background-color: #F0F2F2;
+        }
+
+        .table-striped > tbody > tr:nth-of-type(odd) {
+            background-color: #ffffff;
+        }
+
+        .table-striped > thead > tr > th {
+            background-color: gray;
+            padding: 1em;
+            font-weight: bold;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .table-striped > tbody > tr > td {
+            padding: 1em;
+        }
+
+            .table-striped > tbody > tr > td > input {
+                font-size: 1.2em;
+                width: 9em;
+            }
+
+                .table-striped > tbody > tr > td > input[type="text"]:disabled {
+                    background-color: transparent;
+                }
+</style>
+
+<div class="main-content">
+
+    <header class="page-header">
+        <h3>
+            <i class=""></i><span>RFT (per line)</span>
+        </h3>
+        <div class="breadcrumb">
+            <div>Home</div>
+            <div class="current">RFT (per line)</div>
+        </div>
+    </header>
+
+
+    <div class="main-area">
+        <div class="content-scroll">
+            <div>
+                @using (Html.BeginForm("Index", "PFTperLine", FormMethod.Post))
+                {
+                    <div>
+                        <table>
+                            <tr>
+
+                                <td class="queryPadding">
+                                    <label class="fontColor">Factory</label>
+                                </td>
+                                <td class="queryPadding">
+                                    @Html.DropDownList("Factory", (List<SelectListItem>)ViewBag.FactoryList, null, new { @class = "form-control inputStyle" })
+                                </td>
+                                <td class="queryPadding">
+                                    <label class="fontColor">Year</label>
+                                </td>
+                                <td class="queryPadding">
+                                    @Html.DropDownList("Years", (List<SelectListItem>)ViewBag.YearsList, null, new { @class = "form-control inputStyle" })
+                                </td>
+                                <td class="queryPadding">
+                                    <label class="fontColor">Month</label>
+                                </td>
+                                <td class="queryPadding">
+                                    @Html.DropDownList("Month", (List<SelectListItem>)ViewBag.MonthList, null, new { @class = "form-control inputStyle" })
+                                </td>
+                                <td class="queryPadding">
+                                    <input type="submit" name="name" id="btnQuery" value="Query" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                }
+            </div>
+            <br />
+            <h3 class="fontColor">Monthly RFT</h3>
+            <br />
+            <div style=" padding-right: 2.5vw">
+                <div class="inner-scroll" style="float: left; height: 13vh; overflow-y: hidden">
+                    <table cellspacing="100" class="table-striped">
+                        <thead>
+                            <tr>
+                                @foreach (DataColumn item in Model.MonthlyData.Columns)
+                                {
+
+                                    <th>@item.ColumnName</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @foreach (DataRow items in Model.MonthlyData.Rows)
+                            {
+                                <tr>
+                                    @foreach (DataColumn column in Model.MonthlyData.Columns)
+                                    {
+                                        <td>
+                                            @items[column]
+                                        </td>
+                                    }
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <br />
+            <br />
+            <h3 class="fontColor">Daily RFT</h3>
+            <br />
+            <div style=" padding-right: 2.5vw">
+            <div class="inner-scroll" style="float: left ;height: 42vh;">
+        
+                    <table cellspacing="100" class="table-striped">
+                        <thead>
+                            <tr>
+                                @foreach (DataColumn item in Model.DailyData.Columns)
+                                {
+
+                                    <th style="width:10vw">@item.ColumnName</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @foreach (DataRow items in Model.DailyData.Rows)
+                            {
+                                <tr>
+                                    @foreach (DataColumn column in Model.DailyData.Columns)
+                                    {
+                                        <td>
+                                            @items[column]
+                                        </td>
+                                    }
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+          
+            </div>
+                </div>
+        </div>
+    </div>
+
+
+</div>
+
+<script type="text/javascript">
+
+    var items = @Html.Raw(Json.Encode(Model.rftPerLine.monthlyRFTs));
+
+    var thead = "";
+    var tbody = "";
+
+    var isfirst = true;
+    $.each(items, function (index, value) {
+        if (isfirst) {
+            thead +=
+                `<th><p>Month</p></th>`
+            tbody +=
+                `<td><p>${value.Month}</p></td>`
+            isfirst = false;
+        }
+
+        thead +=
+            `<th><p>${value.Line}</p></th>`
+        tbody +=
+            `<td><p>${value.RFT}</p></td>`
+    });
+
+    thead = `<tr>${thead}<\tr>`
+    tbody = `<tr>${tbody}<\tr>`
+
+    $('.MonthlyTable>thead').html(thead);
+    $('.MonthlyTable>tbody').html(tbody);
+
+</script>

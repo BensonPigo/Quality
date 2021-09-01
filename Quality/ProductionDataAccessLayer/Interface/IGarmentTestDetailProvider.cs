@@ -1,6 +1,7 @@
 using DatabaseObject.ProductionDB;
 using DatabaseObject.ViewModel;
 using System.Collections.Generic;
+using System.Data;
 
 namespace ProductionDataAccessLayer.Interface
 {
@@ -19,5 +20,15 @@ namespace ProductionDataAccessLayer.Interface
         string Get_LastResult(string ID);
 
         bool Chk_AllResult(string ID, string No);
+
+        IList<GarmentTest_Detail_ViewModel> Get(string ID, string No);
+
+        List<string> GetScales();
+
+        DataTable Get_Mail_Content(string ID, string No);
+
+        bool Update_Sender(string ID, string No, string UserID);
+
+        bool Update_Receive(string ID, string No, string UserID);
     }
 }

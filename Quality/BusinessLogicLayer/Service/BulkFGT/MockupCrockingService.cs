@@ -1,20 +1,18 @@
 ﻿using BusinessLogicLayer.Interface.BulkFGT;
 using DatabaseObject.ProductionDB;
-using DatabaseObject.ResultModel;
-using DatabaseObject.ViewModel;
+using DatabaseObject.RequestModel;
+using DatabaseObject.ViewModel.BulkFGT;
+using Library;
 using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
 using Sci;
-using System.Collections.Generic;
-using System.Linq;
-using System.Drawing;
-using Excel = Microsoft.Office.Interop.Excel;
-using System.Runtime.InteropServices;
 using System;
+using System.Collections.Generic;
 using System.IO;
-using Library;
-using System.Diagnostics;
+using System.Linq;
+using System.Runtime.InteropServices;
 using System.Transactions;
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace BusinessLogicLayer.Service
 {
@@ -23,7 +21,7 @@ namespace BusinessLogicLayer.Service
         private IMockupCrockingProvider _MockupCrockingProvider;
         private IMockupCrockingDetailProvider _MockupCrockingDetailProvider;
 
-        public MockupCrockings_ViewModel GetMockupCrocking(MockupCrocking MockupCrocking)
+        public MockupCrockings_ViewModel GetMockupCrocking(MockupCrocking_Request MockupCrocking)
         {
             MockupCrockings_ViewModel model = new MockupCrockings_ViewModel();
             try
@@ -55,7 +53,7 @@ namespace BusinessLogicLayer.Service
             bool test = false;
             MockupCrocking_ViewModel result = new MockupCrocking_ViewModel();
 
-            var oneReportNo = GetMockupCrocking(new MockupCrocking() { ReportNo = ReportNo });
+            var oneReportNo = GetMockupCrocking(new MockupCrocking_Request() { ReportNo = ReportNo });
             if (oneReportNo == null)
             {
                 result.ReportResult = false;
@@ -258,17 +256,6 @@ namespace BusinessLogicLayer.Service
             }
 
             return model;
-        }
-
-        public MockupCrockingScale GetScale()
-        {
-            MockupCrockingScale mockupCrockingScale = new MockupCrockingScale
-            {
-                DryScale = new List<string>() { "1", "1-2", "2", "2-3", "3", "3-4", "4", "4-5", "5" },
-                WetScale = new List<string>() { "1", "1-2", "2", "2-3", "3", "3-4", "4", "4-5", "5" },
-            };
-
-            return mockupCrockingScale;
         }
     }
 }

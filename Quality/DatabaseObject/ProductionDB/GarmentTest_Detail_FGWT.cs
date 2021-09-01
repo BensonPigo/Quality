@@ -31,25 +31,25 @@ namespace DatabaseObject.ProductionDB
         public string TestDetail { get; set; }
         /// <summary></summary>
         [Display(Name = "")]
-        public decimal BeforeWash { get; set; }
+        public decimal? BeforeWash { get; set; }
         /// <summary></summary>
         [Display(Name = "")]
-        public decimal SizeSpec { get; set; }
+        public decimal? SizeSpec { get; set; }
         /// <summary></summary>
         [Display(Name = "")]
-        public decimal AfterWash { get; set; }
+        public decimal? AfterWash { get; set; }
         /// <summary></summary>
         [Display(Name = "")]
-        public decimal Shrinkage { get; set; }
+        public decimal? Shrinkage { get; set; }
         /// <summary></summary>
         [Display(Name = "")]
         public string Scale { get; set; }
         /// <summary></summary>
         [Display(Name = "")]
-        public decimal Criteria { get; set; }
+        public decimal? Criteria { get; set; }
         /// <summary>Pass 標準；Criteria2 主要用在判斷一個區間</summary>
         [Display(Name = "Pass 標準；Criteria2 主要用在判斷一個區間")]
-        public decimal Criteria2 { get; set; }
+        public decimal? Criteria2 { get; set; }
         /// <summary></summary>
         [Display(Name = "")]
         public string SystemType { get; set; }

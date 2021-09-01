@@ -19,11 +19,11 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 
         #region CRUD Base
 
-        public IList<Garment_Detail_Spirality> Get_Garment_Detail_Spirality(Int64 ID, string No)
+        public IList<Garment_Detail_Spirality> Get_Garment_Detail_Spirality(string ID, string No)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
-                { "@ID", DbType.Int64, ID } ,
+                { "@ID", DbType.String, ID } ,
                 { "@No", DbType.String, No } ,
             };
             string sqlcmd = @"

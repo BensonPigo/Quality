@@ -17,5 +17,7 @@ namespace DatabaseObject.ViewModel
         /// S : Top+Bottom
         /// </summary>
         public string LocationText { get; set; }
+
+        public string TypeOri { get; set; }
     }
 }

@@ -247,9 +247,9 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public List<Window_FtyInventory> Get_Appearance(string Lab)
+        public List<Window_Appearance> Get_Appearance(string Lab)
         {
-            List<Window_FtyInventory> result = new List<Window_FtyInventory>();
+            List<Window_Appearance> result = new List<Window_Appearance>();
 
             try
             {

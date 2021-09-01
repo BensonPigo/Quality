@@ -43,9 +43,13 @@ namespace DatabaseObject.ResultModel
 
         public List<GarmentTest_Detail_FGPT_ViewModel> FGPT { get; set; }
 
-        public bool Result { get; set; }
+        public bool? Result { get; set; }
 
         public string ErrMsg { get; set; }
+
+        public bool sentMail { get; set; }
+
+        public string reportPath { get; set; }
     }
 }
 

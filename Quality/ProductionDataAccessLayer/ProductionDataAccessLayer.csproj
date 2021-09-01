@@ -37,6 +37,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.Helpers.dll</HintPath>
     </Reference>
@@ -67,6 +68,7 @@
     <Compile Include="Interface\IBrandProvider.cs" />
     <Compile Include="Interface\IDropDownListProvider.cs" />
     <Compile Include="Interface\IFactoryProvider.cs" />
+    <Compile Include="Interface\IFabricOvenTestProvider.cs" />
     <Compile Include="Interface\IFIRLaboratoryCrockingProvider.cs" />
     <Compile Include="Interface\IFIRLaboratoryHeatProvider.cs" />
     <Compile Include="Interface\IFIRLaboratoryProvider.cs" />
@@ -83,6 +85,8 @@
     <Compile Include="Interface\IGarmentTestProvider.cs" />
     <Compile Include="Interface\IMockupCrockingDetailProvider.cs" />
     <Compile Include="Interface\IMockupCrockingProvider.cs" />
+    <Compile Include="Interface\IMockupWashDetailProvider.cs" />
+    <Compile Include="Interface\IMockupWashProvider.cs" />
     <Compile Include="Interface\INewCDCodeProvider.cs" />
     <Compile Include="Interface\IOrderLocationProvider.cs" />
     <Compile Include="Interface\IOrderQtyProvider.cs" />
@@ -91,6 +95,7 @@
     <Compile Include="Interface\IOvenDetailProvider.cs" />
     <Compile Include="Interface\IOvenProvider.cs" />
     <Compile Include="Interface\IPass1Provider.cs" />
+    <Compile Include="Interface\IScaleProvider.cs" />
     <Compile Include="Interface\ISeasonProvider.cs" />
     <Compile Include="Interface\ISewingLineProvider.cs" />
     <Compile Include="Interface\IStyleArticleProvider.cs" />
@@ -104,6 +109,7 @@
     <Compile Include="Provider\MSSQL\BrandProvider.cs" />
     <Compile Include="Provider\MSSQL\DropDownListProvider.cs" />
     <Compile Include="Provider\MSSQL\FactoryProvider.cs" />
+    <Compile Include="Provider\MSSQL\FabricOvenTestProvider.cs" />
     <Compile Include="Provider\MSSQL\FIRLaboratoryCrockingProvider.cs" />
     <Compile Include="Provider\MSSQL\FIRLaboratoryHeatProvider.cs" />
     <Compile Include="Provider\MSSQL\FIRLaboratoryProvider.cs" />
@@ -120,6 +126,8 @@
     <Compile Include="Provider\MSSQL\GarmentTestProvider.cs" />
     <Compile Include="Provider\MSSQL\MockupCrockingDetailProvider.cs" />
     <Compile Include="Provider\MSSQL\MockupCrockingProvider.cs" />
+    <Compile Include="Provider\MSSQL\MockupWashDetailProvider.cs" />
+    <Compile Include="Provider\MSSQL\MockupWashProvider.cs" />
     <Compile Include="Provider\MSSQL\NewCDCodeProvider.cs" />
     <Compile Include="Provider\MSSQL\OrderLocationProvider.cs" />
     <Compile Include="Provider\MSSQL\OrderQtyProvider.cs" />
@@ -129,6 +137,7 @@
     <Compile Include="Provider\MSSQL\OvenProvider.cs" />
     <Compile Include="Provider\MSSQL\Pass1Provider.cs" />
     <Compile Include="Provider\MSSQL\PublicWondowProvider.cs" />
+    <Compile Include="Provider\MSSQL\ScaleProvider.cs" />
     <Compile Include="Provider\MSSQL\SeasonProvider.cs" />
     <Compile Include="Provider\MSSQL\SewingLineProvider.cs" />
     <Compile Include="Provider\MSSQL\StyleArticleProvider.cs" />

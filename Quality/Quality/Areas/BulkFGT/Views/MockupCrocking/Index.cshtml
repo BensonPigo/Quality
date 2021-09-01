@@ -1,0 +1,19 @@
+﻿
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<input id="send" type="button" value="send"/>
+
+<script>
+    $(function () {
+
+        $('#send').click(function () {
+            var para = "?TO=jack.hsu@sportscity.com.tw";
+            window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=650,height=400');
+        });
+
+    });
+</script>

@@ -16,7 +16,7 @@ namespace DatabaseObject.ProductionDB
     {
         /// <summary>ID</summary>
         [Display(Name = "ID")]
-        public Int64 ID { get; set; }
+        public Int64? ID { get; set; }
 
         /// <summary>首次訂單號碼</summary>
         [Display(Name = "首次訂單號碼")]

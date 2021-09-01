@@ -24,7 +24,7 @@ namespace DatabaseObject.ProductionDB
 
         /// <summary></summary>
         [Display(Name = "")]
-        public string Location { get; set; }
+        public string Location { get; set; } = "";
 
         /// <summary></summary>
         [Display(Name = "")]

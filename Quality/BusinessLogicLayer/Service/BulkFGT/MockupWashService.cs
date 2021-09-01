@@ -1,0 +1,318 @@
+﻿using BusinessLogicLayer.Interface.BulkFGT;
+using DatabaseObject.ProductionDB;
+using DatabaseObject.RequestModel;
+using DatabaseObject.ViewModel.BulkFGT;
+using Library;
+using Microsoft.Office.Interop.Excel;
+using ProductionDataAccessLayer.Interface;
+using ProductionDataAccessLayer.Provider.MSSQL;
+using Sci;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Transactions;
+using System.Web.Mvc;
+
+namespace BusinessLogicLayer.Service
+{
+    public class MockupWashService : IMockupWashService
+    {
+        private IMockupWashProvider _MockupWashProvider;
+        private IMockupWashDetailProvider _MockupWashDetailProvider;
+        private IDropDownListProvider _DropDownListProvider;
+
+        public MockupWashs_ViewModel GetMockupWash(MockupWash_Request MockupWash)
+        {
+            MockupWashs_ViewModel model = new MockupWashs_ViewModel();
+            try
+            {
+                _MockupWashProvider = new MockupWashProvider(Common.ProductionDataAccessLayer);
+                _MockupWashDetailProvider = new MockupWashDetailProvider(Common.ProductionDataAccessLayer);
+                model.MockupWash = _MockupWashProvider.GetMockupWash(MockupWash).ToList();
+                model.ReportNos = new List<string>();
+                foreach (var item in model.MockupWash)
+                {
+                    model.ReportNos.Add(item.ReportNo);
+                    MockupWash_Detail mockupWash_Detail = new MockupWash_Detail() { ReportNo = item.ReportNo };
+                    item.MockupWash_Detail = _MockupWashDetailProvider.GetMockupWash_Detail(mockupWash_Detail).ToList();
+                }
+
+                model.TestingMethod_Source = new List<System.Web.Mvc.SelectListItem>();
+                _DropDownListProvider = new DropDownListProvider(Common.ProductionDataAccessLayer);
+                List<DropDownList> downLists = _DropDownListProvider.Get(new DropDownList() { Type = "PMS_MockupWashMethod", }).ToList();
+                foreach (var item in downLists)
+                {
+                    model.TestingMethod_Source.Add(new System.Web.Mvc.SelectListItem() { Value = item.ID, Text = item.Description });
+                }
+
+                model.Result = true;
+            }
+            catch (Exception ex)
+            {
+                model.Result = false;
+                model.ErrorMessage = ex.Message;
+            }
+
+            return model;
+        }
+
+        public MockupWash_ViewModel GetExcel(string ReportNo)
+        {
+            bool test = false;
+            MockupWash_ViewModel result = new MockupWash_ViewModel();
+
+            var oneReportNo = GetMockupWash(new MockupWash_Request() { ReportNo = ReportNo });
+            if (oneReportNo == null)
+            {
+                result.ReportResult = false;
+                result.ErrorMessage = "Get Data Fail!";
+                return result;
+            }
+
+            if (oneReportNo.MockupWash.Count == 0)
+            {
+                result.ReportResult = false;
+                result.ErrorMessage = "Data Not found!";
+                return result;
+            }
+
+            try
+            {
+                var mockupWash = oneReportNo.MockupWash[0];
+                if (!test)
+                {
+                    if (!System.IO.Directory.Exists(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\"))
+                    {
+                        System.IO.Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\");
+                    }
+
+                    if (!System.IO.Directory.Exists(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\TMP\\"))
+                    {
+                        System.IO.Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\TMP\\");
+                    }
+                }
+
+                _MockupWashProvider = new MockupWashProvider(Common.ProductionDataAccessLayer);
+
+
+                var mockupWash_Detail = mockupWash.MockupWash_Detail;
+                string basefileName = "MockupWash";
+                string openfilepath;
+                if (test)
+                {
+                    openfilepath = "C:\\Git\\Quality\\Quality\\Quality\\bin\\XLT\\MockupWash.xltx";
+                }
+                else
+                {
+                    openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
+                }
+
+                Application excelApp = MyUtility.Excel.ConnectExcel(openfilepath);
+
+
+
+                excelApp.DisplayAlerts = false;
+                Worksheet worksheet = excelApp.Sheets[1];
+
+                bool haveHT = mockupWash.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER");
+                int htRow = 6;
+                int haveHTrow = haveHT ? htRow : 0;
+
+                // 設定表頭資料
+                worksheet.Cells[4, 2] = mockupWash.ReportNo;
+                worksheet.Cells[5, 2] = mockupWash.T1SubconName;
+                worksheet.Cells[6, 2] = mockupWash.T2SupplierName;
+
+                worksheet.Cells[7, 2] = mockupWash.TestingMethod;
+                worksheet.Cells[4, 6] = mockupWash.ReleasedDate;
+                worksheet.Cells[5, 6] = mockupWash.TestDate;
+                worksheet.Cells[6, 6] = mockupWash.ReceivedDate;
+                worksheet.Cells[7, 6] = mockupWash.SeasonID;
+
+                if (haveHT)
+                {
+                    worksheet.Cells[10, 2] = mockupWash.HTPlate;
+                    worksheet.Cells[11, 2] = mockupWash.HTFlim;
+                    worksheet.Cells[12, 2] = mockupWash.HTTime;
+                    worksheet.Cells[13, 2] = mockupWash.HTPressure;
+                    worksheet.Cells[10, 6] = mockupWash.HTPellOff;
+                    worksheet.Cells[11, 6] = mockupWash.HT2ndPressnoreverse;
+                    worksheet.Cells[12, 6] = mockupWash.HT2ndPressreversed;
+                    worksheet.Cells[13, 6] = mockupWash.HTCoolingTime;
+                }
+                else
+                {
+                    for (int i = 0; i < htRow; i++)
+                    {
+                        worksheet.Rows[9].Delete(XlDeleteShiftDirection.xlShiftUp);
+                    }
+                }
+
+                worksheet.Cells[13 + haveHTrow, 2] = mockupWash.TechnicianName;
+
+                Range cell = worksheet.Cells[12 + haveHTrow, 2];
+
+                string picSource = mockupWash.SignaturePic;
+                if (!MyUtility.Check.Empty(picSource))
+                {
+                    if (File.Exists(picSource))
+                    {
+                        worksheet.Shapes.AddPicture(picSource, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
+                    }
+                }
+
+                #region 表身資料
+                // 插入多的row
+                if (mockupWash_Detail.Count > 0)
+                {
+                    Range rngToInsert = worksheet.get_Range($"A{10 + haveHTrow}:G{10 + haveHTrow}", Type.Missing).EntireRow;
+                    for (int i = 1; i < mockupWash_Detail.Count; i++)
+                    {
+                        rngToInsert.Insert(XlInsertShiftDirection.xlShiftDown);
+                        worksheet.get_Range(string.Format("E{0}:G{0}", (10 + haveHTrow + i - 1).ToString())).Merge(false);
+                    }
+
+                    Marshal.ReleaseComObject(rngToInsert);
+                }
+
+                // 塞進資料
+                int start_row = 10 + haveHTrow;
+                foreach (var item in mockupWash_Detail)
+                {
+                    string remark = item.Remark;
+                    string fabric = string.IsNullOrEmpty(item.FabricColorName) ? item.FabricRefNo : item.FabricRefNo + " - " + item.FabricColorName;
+                    string artwork = mockupWash.ArtworkTypeID + "/" + item.Design + " - " + item.ArtworkColor;
+                    worksheet.Cells[start_row, 1] = mockupWash.StyleID;
+                    worksheet.Cells[start_row, 2] = fabric;
+                    worksheet.Cells[start_row, 3] = artwork;
+                    worksheet.Cells[start_row, 4] = item.Result;
+                    worksheet.Cells[start_row, 5] = item.Remark;
+                    worksheet.Rows[start_row].Font.Bold = false;
+                    worksheet.Rows[start_row].WrapText = true;
+                    worksheet.Rows[start_row].HorizontalAlignment = XlHAlign.xlHAlignCenter;
+
+                    // 合併儲存格無法AutoFit()因此要自己算高度
+                    if (fabric.Length > remark.Length || artwork.Length > remark.Length)
+                    {
+                        worksheet.Rows[start_row].AutoFit();
+                    }
+                    else
+                    {
+                        worksheet.Range[$"E{start_row}", $"E{start_row}"].RowHeight = ((remark.Length / 20) + 1) * 16.5;
+                    }
+
+                    start_row++;
+                }
+                #endregion
+
+                string fileName = $"{basefileName}{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+                string filexlsx = fileName + ".xlsx";
+                string fileNamePDF = fileName + ".pdf";
+
+                string filepath;
+                string filepathpdf;
+                if (test)
+                {
+                    filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", filexlsx);
+                    filepathpdf = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", fileNamePDF);
+                }
+                else
+                {
+                    filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filexlsx);
+                    filepathpdf = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileNamePDF);
+                }
+
+
+                Workbook workbook = excelApp.ActiveWorkbook;
+                workbook.SaveAs(filepath);
+                workbook.Close();
+                excelApp.Quit();
+                Marshal.ReleaseComObject(worksheet);
+                Marshal.ReleaseComObject(workbook);
+                Marshal.ReleaseComObject(excelApp);
+
+
+                if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
+                {
+                    result.TempFileName = filepathpdf;
+                    result.ReportResult = true;
+                }
+                else
+                {
+                    result.ErrorMessage = "Convert To PDF Fail";
+                    result.ReportResult = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
+        public MockupWashs_ViewModel Create(MockupWashs_ViewModel MockupWash)
+        {
+            MockupWashs_ViewModel model = new MockupWashs_ViewModel();
+            _MockupWashProvider = new MockupWashProvider(Common.ProductionDataAccessLayer);
+            _MockupWashDetailProvider = new MockupWashDetailProvider(Common.ProductionDataAccessLayer);
+            int insertCt;
+            try
+            {
+                using (TransactionScope scope = new TransactionScope())
+                {
+                    insertCt = _MockupWashProvider.Create(MockupWash.MockupWash[0]);
+                    if (insertCt == 0)
+                    {
+                        model.Result = false;
+                        model.ErrorMessage = "Insert MockupWash Fail!";
+                        return model;
+                    }
+
+                    foreach (var MockupWash_Detail in MockupWash.MockupWash[0].MockupWash_Detail)
+                    {
+                        insertCt = _MockupWashDetailProvider.Create(MockupWash_Detail);
+                        if (insertCt == 0)
+                        {
+                            model.Result = false;
+                            model.ErrorMessage = "Insert MockupWash_Detail Fail!";
+                            return model;
+                        }
+                    }
+
+                    scope.Complete();
+                }
+
+                model.Result = true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return model;
+        }
+
+        public List<SelectListItem> GetAccessoryRefNo(AccessoryRefNo_Request Request)
+        {
+            List<SelectListItem> selectListItems = new List<SelectListItem>();
+            try
+            {
+                _MockupWashProvider = new MockupWashProvider(Common.ProductionDataAccessLayer);
+                var AccessoryRefNos = _MockupWashProvider.GetAccessoryRefNo(Request).ToList();
+                foreach (var item in AccessoryRefNos)
+                {
+                    selectListItems.Add(new SelectListItem { Value = item.Refno, Text = item.Refno });
+                }
+            }
+            catch (Exception )
+            {
+
+            }
+
+            return selectListItems;
+        }
+    }
+}

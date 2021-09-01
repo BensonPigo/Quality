@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Data;
-using ProductionDataAccessLayer.Interface;
 using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
 using DatabaseObject.ProductionDB;
-using DatabaseObject.ViewModel;
+using DatabaseObject.ViewModel.BulkFGT;
+using ProductionDataAccessLayer.Interface;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Text;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
@@ -27,14 +27,14 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         public MockupCrockingDetailProvider(SQLDataTransaction tra) : base(tra) { }
         #endregion
 
-		#region CRUD Base
-		/*回傳(Get) 詳細敘述如下*/
+        #region CRUD Base
+        /*回傳(Get) 詳細敘述如下*/
         /// <summary>
         /// 回傳
         /// </summary>
         /// <param name="Item">成員</param>
         /// <returns>回傳</returns>
-		/// <info>Author: Admin; Date: 2021/08/19  </info>
+        /// <info>Author: Admin; Date: 2021/08/19  </info>
         /// <history>
         /// xx.  YYYY/MM/DD   Ver   Author      Comments
         /// ===  ==========  ====  ==========  ==========
@@ -44,20 +44,20 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append("SELECT"+ Environment.NewLine);
-            SbSql.Append("         md.ReportNo"+ Environment.NewLine);
-            SbSql.Append("        ,md.Ukey"+ Environment.NewLine);
-            SbSql.Append("        ,md.Design"+ Environment.NewLine);
-            SbSql.Append("        ,md.ArtworkColor"+ Environment.NewLine);
-            SbSql.Append("        ,md.FabricRefNo"+ Environment.NewLine);
-            SbSql.Append("        ,md.FabricColor"+ Environment.NewLine);
-            SbSql.Append("        ,md.DryScale"+ Environment.NewLine);
-            SbSql.Append("        ,md.WetScale"+ Environment.NewLine);
-            SbSql.Append("        ,md.Result"+ Environment.NewLine);
-            SbSql.Append("        ,md.Remark"+ Environment.NewLine);
-            SbSql.Append("        ,md.EditName"+ Environment.NewLine);
+            SbSql.Append("SELECT" + Environment.NewLine);
+            SbSql.Append("         md.ReportNo" + Environment.NewLine);
+            SbSql.Append("        ,md.Ukey" + Environment.NewLine);
+            SbSql.Append("        ,md.Design" + Environment.NewLine);
+            SbSql.Append("        ,md.ArtworkColor" + Environment.NewLine);
+            SbSql.Append("        ,md.FabricRefNo" + Environment.NewLine);
+            SbSql.Append("        ,md.FabricColor" + Environment.NewLine);
+            SbSql.Append("        ,md.DryScale" + Environment.NewLine);
+            SbSql.Append("        ,md.WetScale" + Environment.NewLine);
+            SbSql.Append("        ,md.Result" + Environment.NewLine);
+            SbSql.Append("        ,md.Remark" + Environment.NewLine);
+            SbSql.Append("        ,md.EditName" + Environment.NewLine);
             SbSql.Append("        ,md.EditDate" + Environment.NewLine);
-            SbSql.Append("FROM [MockupCrocking_Detail] md"+ Environment.NewLine);
+            SbSql.Append("FROM [MockupCrocking_Detail] md" + Environment.NewLine);
             SbSql.Append("inner join MockupCrocking m on m.ReportNo = md.ReportNo" + Environment.NewLine);
             SbSql.Append("Where 1=1" + Environment.NewLine);
 
@@ -69,13 +69,13 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 
             return ExecuteList<MockupCrocking_Detail>(CommandType.Text, SbSql.ToString(), objParameter);
         }
-		/*建立(Create) 詳細敘述如下*/
+        /*建立(Create) 詳細敘述如下*/
         /// <summary>
         /// 建立
         /// </summary>
         /// <param name="Item">成員</param>
         /// <returns>回傳異動筆數</returns>
-		/// <info>Author: Admin; Date: 2021/08/19  </info>
+        /// <info>Author: Admin; Date: 2021/08/19  </info>
         /// <history>
         /// xx.  YYYY/MM/DD   Ver   Author      Comments
         /// ===  ==========  ====  ==========  ==========
@@ -85,21 +85,21 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append("INSERT INTO [MockupCrocking_Detail]"+ Environment.NewLine);
+            SbSql.Append("INSERT INTO [MockupCrocking_Detail]" + Environment.NewLine);
             SbSql.Append("(" + Environment.NewLine);
-            SbSql.Append("         ReportNo"+ Environment.NewLine);
-            SbSql.Append("        ,Design"+ Environment.NewLine);
-            SbSql.Append("        ,ArtworkColor"+ Environment.NewLine);
-            SbSql.Append("        ,FabricRefNo"+ Environment.NewLine);
-            SbSql.Append("        ,FabricColor"+ Environment.NewLine);
-            SbSql.Append("        ,DryScale"+ Environment.NewLine);
-            SbSql.Append("        ,WetScale"+ Environment.NewLine);
-            SbSql.Append("        ,Result"+ Environment.NewLine);
-            SbSql.Append("        ,Remark"+ Environment.NewLine);
-            SbSql.Append("        ,EditName"+ Environment.NewLine);
-            SbSql.Append("        ,EditDate"+ Environment.NewLine);
-            SbSql.Append(")"+ Environment.NewLine);
-            SbSql.Append("VALUES"+ Environment.NewLine);
+            SbSql.Append("         ReportNo" + Environment.NewLine);
+            SbSql.Append("        ,Design" + Environment.NewLine);
+            SbSql.Append("        ,ArtworkColor" + Environment.NewLine);
+            SbSql.Append("        ,FabricRefNo" + Environment.NewLine);
+            SbSql.Append("        ,FabricColor" + Environment.NewLine);
+            SbSql.Append("        ,DryScale" + Environment.NewLine);
+            SbSql.Append("        ,WetScale" + Environment.NewLine);
+            SbSql.Append("        ,Result" + Environment.NewLine);
+            SbSql.Append("        ,Remark" + Environment.NewLine);
+            SbSql.Append("        ,EditName" + Environment.NewLine);
+            SbSql.Append("        ,EditDate" + Environment.NewLine);
+            SbSql.Append(")" + Environment.NewLine);
+            SbSql.Append("VALUES" + Environment.NewLine);
             SbSql.Append("(" + Environment.NewLine);
             SbSql.Append("         @ReportNo"); objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
             SbSql.Append("        ,@Design"); objParameter.Add("@Design", DbType.String, Item.Design);
@@ -112,18 +112,18 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,@Remark"); objParameter.Add("@Remark", DbType.String, Item.Remark);
             SbSql.Append("        ,@EditName"); objParameter.Add("@EditName", DbType.String, Item.EditName);
             SbSql.Append("        ,@EditDate"); objParameter.Add("@EditDate", DbType.DateTime, Item.EditDate);
-            SbSql.Append(")"+ Environment.NewLine);
+            SbSql.Append(")" + Environment.NewLine);
 
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
-		/*更新(Update) 詳細敘述如下*/
+        /*更新(Update) 詳細敘述如下*/
         /// <summary>
         /// 更新
         /// </summary>
         /// <param name="Item">成員</param>
         /// <returns>回傳異動筆數</returns>
-		/// <info>Author: Admin; Date: 2021/08/19  </info>
+        /// <info>Author: Admin; Date: 2021/08/19  </info>
         /// <history>
         /// xx.  YYYY/MM/DD   Ver   Author      Comments
         /// ===  ==========  ====  ==========  ==========
@@ -133,33 +133,33 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append("UPDATE [MockupCrocking_Detail]"+ Environment.NewLine);
-            SbSql.Append("SET"+ Environment.NewLine);
-            if (Item.ReportNo != null) { SbSql.Append("ReportNo=@ReportNo"+ Environment.NewLine); objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);}
-            if (Item.Design != null) { SbSql.Append(",Design=@Design"+ Environment.NewLine); objParameter.Add("@Design", DbType.String, Item.Design);}
-            if (Item.ArtworkColor != null) { SbSql.Append(",ArtworkColor=@ArtworkColor"+ Environment.NewLine); objParameter.Add("@ArtworkColor", DbType.String, Item.ArtworkColor);}
-            if (Item.FabricRefNo != null) { SbSql.Append(",FabricRefNo=@FabricRefNo"+ Environment.NewLine); objParameter.Add("@FabricRefNo", DbType.String, Item.FabricRefNo);}
-            if (Item.FabricColor != null) { SbSql.Append(",FabricColor=@FabricColor"+ Environment.NewLine); objParameter.Add("@FabricColor", DbType.String, Item.FabricColor);}
-            if (Item.DryScale != null) { SbSql.Append(",DryScale=@DryScale"+ Environment.NewLine); objParameter.Add("@DryScale", DbType.String, Item.DryScale);}
-            if (Item.WetScale != null) { SbSql.Append(",WetScale=@WetScale"+ Environment.NewLine); objParameter.Add("@WetScale", DbType.String, Item.WetScale);}
-            if (Item.Result != null) { SbSql.Append(",Result=@Result"+ Environment.NewLine); objParameter.Add("@Result", DbType.String, Item.Result);}
-            if (Item.Remark != null) { SbSql.Append(",Remark=@Remark"+ Environment.NewLine); objParameter.Add("@Remark", DbType.String, Item.Remark);}
-            if (Item.EditName != null) { SbSql.Append(",EditName=@EditName"+ Environment.NewLine); objParameter.Add("@EditName", DbType.String, Item.EditName);}
-            if (Item.EditDate != null) { SbSql.Append(",EditDate=@EditDate"+ Environment.NewLine); objParameter.Add("@EditDate", DbType.DateTime, Item.EditDate);}
+            SbSql.Append("UPDATE [MockupCrocking_Detail]" + Environment.NewLine);
+            SbSql.Append("SET" + Environment.NewLine);
+            if (Item.ReportNo != null) { SbSql.Append("ReportNo=@ReportNo" + Environment.NewLine); objParameter.Add("@ReportNo", DbType.String, Item.ReportNo); }
+            if (Item.Design != null) { SbSql.Append(",Design=@Design" + Environment.NewLine); objParameter.Add("@Design", DbType.String, Item.Design); }
+            if (Item.ArtworkColor != null) { SbSql.Append(",ArtworkColor=@ArtworkColor" + Environment.NewLine); objParameter.Add("@ArtworkColor", DbType.String, Item.ArtworkColor); }
+            if (Item.FabricRefNo != null) { SbSql.Append(",FabricRefNo=@FabricRefNo" + Environment.NewLine); objParameter.Add("@FabricRefNo", DbType.String, Item.FabricRefNo); }
+            if (Item.FabricColor != null) { SbSql.Append(",FabricColor=@FabricColor" + Environment.NewLine); objParameter.Add("@FabricColor", DbType.String, Item.FabricColor); }
+            if (Item.DryScale != null) { SbSql.Append(",DryScale=@DryScale" + Environment.NewLine); objParameter.Add("@DryScale", DbType.String, Item.DryScale); }
+            if (Item.WetScale != null) { SbSql.Append(",WetScale=@WetScale" + Environment.NewLine); objParameter.Add("@WetScale", DbType.String, Item.WetScale); }
+            if (Item.Result != null) { SbSql.Append(",Result=@Result" + Environment.NewLine); objParameter.Add("@Result", DbType.String, Item.Result); }
+            if (Item.Remark != null) { SbSql.Append(",Remark=@Remark" + Environment.NewLine); objParameter.Add("@Remark", DbType.String, Item.Remark); }
+            if (Item.EditName != null) { SbSql.Append(",EditName=@EditName" + Environment.NewLine); objParameter.Add("@EditName", DbType.String, Item.EditName); }
+            if (Item.EditDate != null) { SbSql.Append(",EditDate=@EditDate" + Environment.NewLine); objParameter.Add("@EditDate", DbType.DateTime, Item.EditDate); }
             SbSql.Append("WHERE 1 = 1" + Environment.NewLine);
             SbSql.Append("And Ukey = @Ukey" + Environment.NewLine);
-            objParameter.Add("@Ukey", DbType.String, Item.Ukey);
+            objParameter.Add("@Ukey", DbType.Int64, Item.Ukey);
 
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
-		/*刪除(Delete) 詳細敘述如下*/
+        /*刪除(Delete) 詳細敘述如下*/
         /// <summary>
         /// 刪除
         /// </summary>
         /// <param name="Item">成員</param>
         /// <returns>回傳異動筆數</returns>
-		/// <info>Author: Admin; Date: 2021/08/19  </info>
+        /// <info>Author: Admin; Date: 2021/08/19  </info>
         /// <history>
         /// xx.  YYYY/MM/DD   Ver   Author      Comments
         /// ===  ==========  ====  ==========  ==========
@@ -169,10 +169,9 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append("DELETE FROM [MockupCrocking_Detail]"+ Environment.NewLine);
+            SbSql.Append("DELETE FROM [MockupCrocking_Detail]" + Environment.NewLine);
             SbSql.Append("Where Ukey = @Ukey" + Environment.NewLine);
-            objParameter.Add("@Ukey", DbType.String, Item.Ukey);
-
+            objParameter.Add("@Ukey", DbType.Int64, Item.Ukey);
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }

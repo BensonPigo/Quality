@@ -69,15 +69,17 @@ where junk = 0
 ");
             if (!string.IsNullOrEmpty(ID))
             {
-                SbSql.Append($@"AND ID LIKE @ID");
+                SbSql.Append($@"AND ID LIKE @ID ");
                 paras.Add("@ID", DbType.String, ID + "%");
             }
 
             if (!string.IsNullOrEmpty(BrandID))
             {
-                SbSql.Append($@"AND BrandID = @BrandID");
+                SbSql.Append($@"AND BrandID = @BrandID ");
                 paras.Add("@BrandID", DbType.String, BrandID);
             }
+
+            SbSql.Append(" Order by ID desc");
 
             return ExecuteList<Window_Season>(CommandType.Text, SbSql.ToString(), paras);
         }
@@ -440,26 +442,31 @@ Where 1=1
             return ExecuteList<Window_FtyInventory>(CommandType.Text, SbSql.ToString(), paras);
         }
 
-        public IList<Window_FtyInventory> Get_Appearance(string Lab)
+        public IList<Window_Appearance> Get_Appearance(string Lab)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
 
-            //台北
-            SbSql.Append($@"
-Select ID, Name
-From Production.dbo.FtyInventory 
-Where 1=1
-");
-            if (!string.IsNullOrEmpty(Lab))
+            if (Lab == "1")
             {
-                SbSql.Append($@"AND Type  = @Lab ");
-
-                paras.Add("@Lab", DbType.String, Lab);
+                SbSql.Append($@"
+Select ID 
+     , Name 
+from DropDownList 
+Where Type = 'Pms_LabSubProcess' 
+");
+            }
+            else
+            {
+                SbSql.Append($@"
+Select ID
+     , Name
+from DropDownList
+Where Type = 'Pms_LabAccessory'
+");
             }
 
-
-            return ExecuteList<Window_FtyInventory>(CommandType.Text, SbSql.ToString(), paras);
+            return ExecuteList<Window_Appearance>(CommandType.Text, SbSql.ToString(), paras);
         }
 
         public IList<Window_SewingLine> Get_SewingLine(string FactoryID, string ID)
@@ -530,21 +537,21 @@ Where Junk=0
 
             //台北
             SbSql.Append($@"
-select Seq , Code 
---From [TradeDB].ProductionTPE.dbo.TypeSelection --台北
-From Production.dbo.TypeSelection --工廠
-Where 1=1
+select Seq = cast(Seq as varchar), Code 
+--From [TradeDB].ProductionTPE.dbo.TypeSelection --台北 
+From Production.dbo.TypeSelection --工廠 
+Where 1=1 
 ");
             if (!string.IsNullOrEmpty(VersionID))
             {
-                SbSql.Append($@"AND VersionID  = @VersionID  ");
+                SbSql.Append($@" AND VersionID  = @VersionID  ");
 
                 paras.Add("@VersionID ", DbType.String, VersionID);
             }
 
             if (!string.IsNullOrEmpty(Code))
             {
-                SbSql.Append($@"AND Code  LIKE @Code  ");
+                SbSql.Append($@" AND Code  LIKE @Code  ");
 
                 paras.Add("@Code ", DbType.String, Code + "%");
             }
