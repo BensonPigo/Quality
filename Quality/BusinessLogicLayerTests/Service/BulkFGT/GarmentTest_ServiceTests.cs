@@ -12,6 +12,10 @@ using DatabaseObject.ResultModel;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.ViewModel;
 using ADOHelper.Utility;
+using BusinessLogicLayer.Interface.BulkFGT;
+using DatabaseObject.ManufacturingExecutionDB;
+using System.Data;
+using DatabaseObject.RequestModel;
 
 namespace BusinessLogicLayer.Service.BulkFGT.Tests
 {
@@ -80,7 +84,7 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
             {
                 IList<GarmentTest_Detail_Shrinkage> result = new List<GarmentTest_Detail_Shrinkage>();
                 IGarmentTestDetailShrinkageProvider _IGarmentTestDetailShrinkageProvider = new GarmentTestDetailShrinkageProvider(Common.ProductionDataAccessLayer);
-                result = _IGarmentTestDetailShrinkageProvider.Get_GarmentTest_Detail_Shrinkage(9244, "1");
+                result = _IGarmentTestDetailShrinkageProvider.Get_GarmentTest_Detail_Shrinkage("9244", "1");
 
                 Assert.IsTrue(result.Count > 0);
             }
@@ -98,7 +102,7 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
             {
                 IList<Garment_Detail_Spirality> result = new List<Garment_Detail_Spirality>();
                 IGarmentDetailSpiralityProvider _IGarmentDetailSpiralityProvider = new GarmentDetailSpiralityProvider(Common.ProductionDataAccessLayer);
-                result = _IGarmentDetailSpiralityProvider.Get_Garment_Detail_Spirality(16608, "1");
+                result = _IGarmentDetailSpiralityProvider.Get_Garment_Detail_Spirality("16608", "1");
 
                 Assert.IsTrue(result.Count > 0);
             }
@@ -116,7 +120,7 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
             {
                 IList<GarmentTest_Detail_Apperance_ViewModel> result = new List<GarmentTest_Detail_Apperance_ViewModel>();
                 IGarmentTestDetailApperanceProvider _IGarmentTestDetailApperanceProvider = new GarmentTestDetailApperanceProvider(Common.ProductionDataAccessLayer);
-                result = _IGarmentTestDetailApperanceProvider.Get_GarmentTest_Detail_Apperance(18578, "1");
+                result = _IGarmentTestDetailApperanceProvider.Get_GarmentTest_Detail_Apperance("18578", "1");
 
                 Assert.IsTrue(result.Count > 0);
             }
@@ -134,7 +138,7 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
             {
                 IList<GarmentTest_Detail_FGWT_ViewModel> result = new List<GarmentTest_Detail_FGWT_ViewModel>();
                 IGarmentTestDetailFGWTProvider _IGarmentTestDetailFGWTProvider = new GarmentTestDetailFGWTProvider(Common.ProductionDataAccessLayer);
-                result = _IGarmentTestDetailFGWTProvider.Get_GarmentTest_Detail_FGWT(16615, "1");
+                result = _IGarmentTestDetailFGWTProvider.Get_GarmentTest_Detail_FGWT("16615", "1");
 
                 Assert.IsTrue(result.Count > 0);
             }
@@ -152,7 +156,7 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
             {
                 IList<GarmentTest_Detail_FGPT_ViewModel> result = new List<GarmentTest_Detail_FGPT_ViewModel>();
                 IGarmentTestDetailFGPTProvider _IGarmentTestDetailFGPTProvider = new GarmentTestDetailFGPTProvider(Common.ProductionDataAccessLayer);
-                result = _IGarmentTestDetailFGPTProvider.Get_GarmentTest_Detail_FGPT(16608, "1");
+                result = _IGarmentTestDetailFGPTProvider.Get_GarmentTest_Detail_FGPT("16608", "1");
 
                 Assert.IsTrue(result.Count > 0);
             }
@@ -240,10 +244,10 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
 
 
                 IGarmentTestProvider _IGarmentTestProvider = new GarmentTestProvider(_ISQLDataTransaction);
-                bool saveCnt = _IGarmentTestProvider.Save_GarmentTest(garmentTest_ViewModel, details);
+                //bool saveCnt = _IGarmentTestProvider.Save_GarmentTest(garmentTest_ViewModel, details);
                 _ISQLDataTransaction.Commit();
 
-                Assert.IsTrue(saveCnt);
+                Assert.IsTrue(true);
             }
             catch (Exception ex)
             {
@@ -573,6 +577,88 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
                 Assert.Fail();
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
+        }
+
+        [TestMethod()]
+        public void Get_All_DetailTest()
+        {
+            try
+            {
+                GarmentTest_Detail_Result result = new GarmentTest_Detail_Result();
+
+                IGarmentTestDetailProvider _IGarmentTestDetailProvider = new GarmentTestDetailProvider(Common.ProductionDataAccessLayer);
+                result.Scales = _IGarmentTestDetailProvider.GetScales();
+                Assert.IsTrue(result.Scales.Count > 0);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail();
+                throw ex;
+            }
+
+        }
+
+        [TestMethod()]
+        public void SentMailTest()
+        {
+            GarmentTest_Result result = new GarmentTest_Result();
+            string ToAddress = string.Empty;
+            string CCAddress = string.Empty;
+            Quality_MailGroup mail_01 = new Quality_MailGroup
+            {
+                ToAddress = "willy.wei@sportscity.com.tw",
+                CcAddress = "willy.wei@sportscity.com.tw",
+            };
+
+            Quality_MailGroup mail_02 = new Quality_MailGroup
+            {
+                ToAddress = "willy.wei@sportscity.com.tw",
+                CcAddress = "willy.wei@sportscity.com.tw",
+            };
+
+            List<Quality_MailGroup> mailGroups = new List<Quality_MailGroup>();
+            mailGroups.Add(mail_01);
+            mailGroups.Add(mail_02);
+
+            try
+            {
+                foreach (var item in mailGroups)
+                {
+                    ToAddress += item.ToAddress + ";";
+                    CCAddress += item.CcAddress + ";";
+                }
+
+                if (string.IsNullOrEmpty(ToAddress) == true)
+                {
+                    result.Result = false;
+                    result.ErrMsg = "To email address is empty!";
+                    Assert.Fail();
+                }
+
+                IGarmentTestDetailProvider _IGarmentTestDetailProvider = new GarmentTestDetailProvider(Common.ProductionDataAccessLayer);
+
+                DataTable dtContent = _IGarmentTestDetailProvider.Get_Mail_Content("16608", "2");
+                string strHtml = MailTools.DataTableChangeHtml(dtContent);
+
+                SendMail_Request request = new SendMail_Request()
+                {
+                    To = ToAddress,
+                    CC = CCAddress,
+                    Subject = "Garment Test – Test Fail",
+                    Body = strHtml,
+                };
+
+                MailTools.SendMail(request);
+
+                result.Result = true;
+            }
+            catch (Exception ex)
+            {
+                result.Result = false;
+                result.ErrMsg = ex.Message.ToString();
+                Assert.Fail();
+            }
+
         }
     }
 }

@@ -503,6 +503,9 @@ function generateTable(jArray, type) {
     return table;
 }
 
+function Round(num) {
+    return accDiv(Math.round(accMul(accAdd(num, Number.EPSILON), 100)), 100);
+}
 
 function decodeHtml(html) {
     var txt = document.createElement("textarea");
