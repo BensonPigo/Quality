@@ -83,7 +83,7 @@ namespace ADOHelper.Utility
             return result;
         }
 
-        public string DataTableChangeHtml(DataTable dt)
+        public static string DataTableChangeHtml(DataTable dt)
         {
             string html = "<html> ";
 

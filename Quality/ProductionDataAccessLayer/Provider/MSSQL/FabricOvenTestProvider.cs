@@ -191,10 +191,11 @@ where   POID = @POID and TestNo = @TestNo
             FabricOvenTest_Detail_Result oldOvenData = GetFabricOvenTest_Detail(fabricOvenTest_Detail_Result.Main.POID, fabricOvenTest_Detail_Result.Main.TestNo);
 
             List<FabricOvenTest_Detail_Detail> needUpdateDetailList =
-                PublicClass.CompareListValue<FabricOvenTest_Detail_Detail>(fabricOvenTest_Detail_Result.Details, 
-                oldOvenData.Details,
-                "OvenGroup,SEQ",
-                "SubmitDate,Roll,ChangeScale,ResultChange,StainingScale,ResultStain,Remark,Temperature,Time");
+                PublicClass.CompareListValue<FabricOvenTest_Detail_Detail>(
+                    fabricOvenTest_Detail_Result.Details,
+                    oldOvenData.Details,
+                    "OvenGroup,SEQ",
+                    "SubmitDate,Roll,ChangeScale,ResultChange,StainingScale,ResultStain,Remark,Temperature,Time");
 
 
 
@@ -269,7 +270,7 @@ update  Oven_Detail set Roll           =  @Roll         ,
                 SEQ2 = @SEQ2
 ";
 
-            using (TransactionScope transaction = new TransactionScope()) 
+            using (TransactionScope transaction = new TransactionScope())
             {
                 DataTable dtResult = ExecuteDataTable(CommandType.Text, sqlUpdateOven, listPar);
                 long ovenID = (long)dtResult.Rows[0]["OvenID"];
@@ -488,6 +489,31 @@ where POID = @poID and TestNo = @TestNo
 
 ";
             ExecuteNonQuery(CommandType.Text, sqlUpdateOvenMain, listPar);
+        }
+
+        public DataTable GetFailMailContentData(string poID, string TestNo)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@poID", poID);
+            listPar.Add("@TestNo", TestNo);
+
+            string sqlGetData = @"
+select  [SP#] = ov.POID,
+        [Style] = o.StyleID,
+        [Brand] = o.BrandID,
+        [Season] = o.SeasonID,
+        [No of Test] = ov.TestNo,
+        [Test Date] = Format(ov.InspDate, 'yyyy/MM/dd'),
+        [Article] = ov.Article,
+        [Result] = ov.Result,
+        [Inspector] = ov.Inspector,
+        [Remark] = ov.Remark
+from    Oven ov with (nolock)
+left join  Orders o with (nolock) on ov.POID = o.ID
+where ov.POID = @poID and ov.TestNo = @TestNo
+";
+
+            return ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, listPar);
         }
 
         #endregion
