@@ -30,7 +30,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "AccessorySave")]
-        public ActionResult AccessorySave()
+        public ActionResult AccessorySave(Accessory_ViewModel Req)
         {
             return View();
         }
@@ -40,29 +40,27 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         #region OvenTest頁面
 
-        public ActionResult OvenTest()
+        public ActionResult OvenTest(Accessory_Oven Req)
         {
             return View();
         }
 
-        public ActionResult OvenEdit()
+        [HttpPost]
+        [MultipleButton(Name = "action", Argument = "OvenSave")]
+        public ActionResult OvenSave(Accessory_Oven Req)
         {
             return View();
         }
 
-        public ActionResult OvenUndo()
+        [HttpPost]
+        [MultipleButton(Name = "action", Argument = "OvenEncode")]
+        public ActionResult OvenEncode(Accessory_Oven Req)
         {
             return View();
         }
 
-        public ActionResult OvenSave()
-        {
-            return View();
-        }
-        public ActionResult OvenEncode()
-        {
-            return View();
-        }
+        [HttpPost]
+        [MultipleButton(Name = "action", Argument = "OvenAmend")]
         public ActionResult OvenAmend()
         {
             return View();
@@ -72,30 +70,28 @@ namespace Quality.Areas.BulkFGT.Controllers
 
 
         #region WashTest頁面
-        public ActionResult WashTest()
+        public ActionResult WashTest(Accessory_Wash Req)
         {
             return View();
         }
 
-        public ActionResult WashEdit()
+        [HttpPost]
+        [MultipleButton(Name = "action", Argument = "WashSave")]
+        public ActionResult WashSave(Accessory_Wash Req)
         {
             return View();
         }
 
-        public ActionResult WashUndo()
+        [HttpPost]
+        [MultipleButton(Name = "action", Argument = "WashEncode")]
+        public ActionResult WashEncode(Accessory_Wash Req)
         {
             return View();
         }
 
-        public ActionResult WashSave()
-        {
-            return View();
-        }
-        public ActionResult WashEncode()
-        {
-            return View();
-        }
-        public ActionResult WashAmend()
+        [HttpPost]
+        [MultipleButton(Name = "action", Argument = "WashAmend")]
+        public ActionResult WashAmend(Accessory_Wash Req)
         {
             return View();
         }

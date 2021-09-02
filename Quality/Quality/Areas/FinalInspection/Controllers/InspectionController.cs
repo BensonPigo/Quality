@@ -335,11 +335,23 @@ msg.WithInfo('{ex.Message}');
         }
         #endregion
 
+        #region AddDefect頁面
+        #endregion
         public ActionResult AddDefect(string FinalInspectionID)
         {
+            FinalInspectionService sevice = new FinalInspectionService();
+            FinalInspectionAddDefectService Addsevice = new FinalInspectionAddDefectService();
+
+            DatabaseObject.ManufacturingExecutionDB.FinalInspection model = sevice.GetFinalInspection(FinalInspectionID);
+
             DatabaseObject.ViewModel.FinalInspection.AddDefect addDefct = new DatabaseObject.ViewModel.FinalInspection.AddDefect();
-            addDefct.RejectQty = 8;
-            addDefct.SampleSize = 4;
+            addDefct = Addsevice.GetDefectForInspection(FinalInspectionID);
+
+            addDefct.FinalInspectionID = FinalInspectionID;
+            addDefct.RejectQty = model.RejectQty;
+            addDefct.SampleSize = model.SampleSize;
+
+
             addDefct.ListFinalInspectionDefectItem = new List<DatabaseObject.ViewModel.FinalInspection.FinalInspectionDefectItem>();
             DatabaseObject.ViewModel.FinalInspection.FinalInspectionDefectItem data = new DatabaseObject.ViewModel.FinalInspection.FinalInspectionDefectItem();
             data.DefectTypeDesc = "Accessories";
