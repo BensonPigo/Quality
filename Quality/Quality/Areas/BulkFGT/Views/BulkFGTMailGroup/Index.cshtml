@@ -38,7 +38,7 @@
         <div class="breadcrumb" style=" position: relative;">
             <div>Home</div>
             <div class="current">Bulk FGT Mail Group</div>
-            <input id="btnNew" onclick="New_Click('', 'New')" class="site-btn btn-gy btn-sm" style="bottom: 1vh; right: 2em; position: absolute; "  type="button" name="name" value="New" />
+            <input id="btnNew" onclick="New_Click('', 'New')" class="site-btn btn-gy btn-sm" style="bottom: 0vh; right: 2em; position: absolute; width: 15vh; "  type="button" name="name" value="New" />
         </div>
     </header>
 
@@ -97,45 +97,49 @@
 
 <!--Detail彈跳視窗-->
 <div class="detail-dialog to-edit-detail" title="Detail">
-    <div class="detail-dialog-content dialog-content-w-icon" style="height:75vh">
+    <div class="detail-dialog-content dialog-content-w-icon" style="height:65vh">
         <form class="page-display-form nr-form" style="width:80%;padding:0;">
             <div class="form-item" style="height: 100%;">
-                <table style="border: 1px solid gray;font-size: 1vw;width: 100%;height: 10vh;text-align: center;background-color: transparent;color: white;">
+                <table style="border: 1px solid gray; font-size: 1vw; width: 100%; height: 10vh; text-align: left; background-color: transparent; color: white; table-layout: fixed; ">
                     <tr>
-                        <td style="width:10vw;border: 1px solid gray;height: 5vh;font-size: 2vh;background-color:#696868;vertical-align: middle;">
+                        <td style="width:20%;border: 1px solid gray;height: 5vh;font-size: 2vh;background-color:#696868;vertical-align: middle;">
                             <label>Factory</label>
                         </td>
-                        <td style="border: 1px solid gray;font-size: 2vh;vertical-align: middle;width: 15vw;">
+                        <td style="border: 1px solid gray; font-size: 2vh; vertical-align: middle; width: 80%; padding: 1vh;">
                             @Html.DropDownList("Factory", (List<SelectListItem>)ViewBag.FactoryList, null, new { @class = "form-control inputStyle" })
                         </td>
 
                     </tr>
                     <tr>
-                        <td style="width:10vw;border: 1px solid gray;height: 5vh;font-size: 2vh;background-color:#696868;vertical-align: middle;">
+                        <td style="width:20%;border: 1px solid gray;height: 5vh;font-size: 2vh;background-color:#696868;vertical-align: middle;">
                             <label>Group Name</label>
                         </td>
-                        <td style=" border: 1px solid gray;font-size: 2vh;vertical-align: middle;">
+                        <td style="border: 1px solid gray; font-size: 2vh; vertical-align: middle; padding: 1vh; width: 80%; word-wrap: break-word; ">
                             <div class="detail_Head" id="GroupName"></div>
-                            <input class="input_Head" style="width: 90%; height: 90%;" tpye="text" id="input_GroupName" value="" />
+                            <input class="input_Head" style="width: 20vh; height: 90%;" tpye="text" id="input_GroupName" value="" />
                         </td>
 
                     </tr>
                     <tr>
-                        <td style="width: 10vw; border: 1px solid gray; height: 25vh; font-size: 2vh; background-color: #696868; vertical-align: middle;">
+                        <td style="width: 20%; border: 1px solid gray; height: 25vh; font-size: 2vh; background-color: #696868; vertical-align: middle;">
                             <label>To Address</label>
                         </td>
-                        <td style=" border: 1px solid gray;font-size: 2vh;vertical-align: middle;">
+                        <td style="border: 1px solid gray; font-size: 2vh; vertical-align: top; padding: 1vh; width: 80%; word-wrap: break-word; ">
                             <span class="detail_Head" id="ToAddress"></span>
-                            <input class="input_Head " style="width: 90%; height: 90%;" tpye="text" id="input_ToAddress" value="" />
+                            <div class="container" style="display: flex;">
+                                <textarea class="input_Head" id="input_ToAddress" name="input_ToAddress" rows="3" cols="50" onkeydown="if(event.keyCode == 13) return false;"></textarea>
+                            </div>
                         </td>
                     </tr>
                     <tr>
-                        <td style="width: 10vw; border: 1px solid gray; height: 25vh; font-size: 2vh; background-color: #696868; vertical-align: middle;">
+                        <td style="width: 20%; border: 1px solid gray; height: 25vh; font-size: 2vh; background-color: #696868; vertical-align: middle;">
                             <label>Cc Address</label>
                         </td>
-                        <td style=" border: 1px solid gray;font-size: 2vh;vertical-align: middle;">
+                        <td style="border: 1px solid gray; font-size: 2vh; vertical-align: top; padding: 1vh; width: 80%; word-wrap: break-word; ">
                             <span class="detail_Head" id="CcAddress"></span>
-                            <input class="input_Head" style="width: 90%; height: 90%;" tpye="text" id="input_CcAddress" value="" />
+                            <div class="container" style="display: flex;">
+                                <textarea class="input_Head" id="input_CcAddress" name="input_CcAddress" rows="3" cols="50" onkeydown="if(event.keyCode == 13) return false;"></textarea>
+                            </div>
                         </td>
                     </tr>
                 </table>
@@ -168,6 +172,7 @@
                 { width: '5%', targets: 4, orderable: false },
                 { width: '5%', targets: 5, orderable: false },
             ]
+            
         });
 
     });
