@@ -2154,7 +2154,7 @@ and t.GarmentTest=1
                         {
                             if (ConvertToPDF.ExcelToPDF(filepath_2018, filepathpdf_2018))
                             {
-                                all_Data.reportPath = filepathpdf_2018;
+                                all_Data.reportPath = fileNamePDF_2018;
                                 all_Data.Result = true;
                             }
                             else
@@ -2166,7 +2166,7 @@ and t.GarmentTest=1
 
                         if (!IsToPDF)
                         {
-                            all_Data.reportPath = filepath_2018;
+                            all_Data.reportPath = filexlsx_2018;
                             all_Data.Result = true;
                         }
                         #endregion
@@ -2188,7 +2188,7 @@ and t.GarmentTest=1
                         return all_Data;
                     }
 
-                    string basefileName_2020 = "Wash_2020";
+                    string basefileName_2020 = "WashTest_2020_FGWT";
                     string openfilepath_2020;
                     if (test)
                     {
@@ -2362,7 +2362,7 @@ and t.GarmentTest=1
                     {
                         if (ConvertToPDF.ExcelToPDF(filepath_2020, filepathpdf_2020))
                         {
-                            all_Data.reportPath = filepathpdf_2020;
+                            all_Data.reportPath = fileNamePDF_2020;
                             all_Data.Result = true;
                         }
                         else
@@ -2374,7 +2374,7 @@ and t.GarmentTest=1
 
                     if (!IsToPDF)
                     {
-                        all_Data.reportPath = filepath_2020;
+                        all_Data.reportPath = filexlsx_2020;
                         all_Data.Result = true;
                     }
                     #endregion
@@ -2606,7 +2606,7 @@ and t.GarmentTest=1
                     {
                         if (ConvertToPDF.ExcelToPDF(filepath_Physical, filepathpdf_Physical))
                         {
-                            all_Data.reportPath = filepathpdf_Physical;
+                            all_Data.reportPath = fileNamePDF_Physical;
                             all_Data.Result = true;
                         }
                         else
@@ -2618,7 +2618,7 @@ and t.GarmentTest=1
 
                     if (!IsToPDF)
                     {
-                        all_Data.reportPath = filepath_Physical;
+                        all_Data.reportPath = filexlsx_Physical;
                         all_Data.Result = true;
                     }
                     #endregion
