@@ -329,8 +329,8 @@
             $('#Save, #Undo, #New').addClass("IsEditMode");
 
             if (EditType == "New") {
-                $(".DetailTable input:not(#Detail_ReportNo), .DetailTable select").removeAttr("disabled");
-                $(".DetailTable input:not(#Detail_ReportNo), .DetailTable select").removeAttr("readonly");
+                $(".DetailTable input:not(#Detail_ReportNo,#Detail_LastEditName), .DetailTable select").removeAttr("disabled");
+                $(".DetailTable input:not(#Detail_ReportNo,#Detail_LastEditName), .DetailTable select").removeAttr("readonly");
             }
             else {
                 $(".OnlyEdit").removeAttr("disabled").removeAttr("readonly");
