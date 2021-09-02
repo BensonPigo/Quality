@@ -1,8 +1,10 @@
-﻿using System;
+﻿using DatabaseObject.ViewModel.BulkFGT;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using static Quality.Helper.Attribute;
 
 namespace Quality.Areas.BulkFGT.Controllers
 {
@@ -20,16 +22,14 @@ namespace Quality.Areas.BulkFGT.Controllers
             return View();
         }
 
-        public ActionResult AccessoryEdit()
+        [HttpPost]
+        public ActionResult Query(Accessory_ViewModel Req)
         {
             return View();
         }
 
-        public ActionResult AccessoryUndo()
-        {
-            return View();
-        }
-
+        [HttpPost]
+        [MultipleButton(Name = "action", Argument = "AccessorySave")]
         public ActionResult AccessorySave()
         {
             return View();
