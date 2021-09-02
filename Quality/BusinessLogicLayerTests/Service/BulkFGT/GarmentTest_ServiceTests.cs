@@ -676,7 +676,32 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
             //    Assert.Fail();
             //    throw ex;
             //}
-            
+
+        }
+
+        [TestMethod()]
+        public void DetailPictureSaveTest()
+        {
+            try
+            {
+                GarmentTest_Result all_Data = new GarmentTest_Result();
+                GarmentTest_Detail detail = new GarmentTest_Detail
+                {
+                    ID = 16608,
+                    No = 2,
+                    TestAfterPicture = null,
+                    TestBeforePicture = null,
+                };
+
+                IGarmentTest_Service _Service = new GarmentTest_Service();
+                all_Data = _Service.DetailPictureSave(detail);
+                Assert.IsTrue(all_Data.Result);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail();
+                throw ex;
+            }
         }
     }
 }

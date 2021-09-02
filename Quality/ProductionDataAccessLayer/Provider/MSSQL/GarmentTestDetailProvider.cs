@@ -261,6 +261,12 @@ and ID = @ID
                 { "@EditName", source.EditName } ,
             };
 
+            if (source.TestBeforePicture != null) { objParameter.Add("@TestBeforePicture", source.TestBeforePicture); }
+            else { objParameter.Add("@TestBeforePicture", System.Data.SqlTypes.SqlBinary.Null); }
+
+            if (source.TestAfterPicture != null) { objParameter.Add("@TestAfterPicture", source.TestAfterPicture); }
+            else { objParameter.Add("@TestAfterPicture", System.Data.SqlTypes.SqlBinary.Null); }
+
             string sqlcmd = $@"
 update GarmentTest_Detail set
     SubmitDate = @SubmitDate,
@@ -278,7 +284,33 @@ update GarmentTest_Detail set
     Above50NaturalFibres =  @Above50NaturalFibres,
     Above50SyntheticFibres =  @Above50SyntheticFibres,
     EditName = @EditName,
-    EditDate = GetDate()
+    EditDate = GetDate(),
+    TestBeforePicture = @TestBeforePicture,
+    TestAfterPicture = @TestAfterPicture
+where ID = @ID and No = @No
+";
+            return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
+        }
+
+        public bool Save_Detail_Picture(GarmentTest_Detail source)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+             {
+                { "@ID", source.ID } ,
+                { "@No", source.No } ,
+            }; 
+
+            if (source.TestBeforePicture != null) { objParameter.Add("@TestBeforePicture", source.TestBeforePicture); }
+            else { objParameter.Add("@TestBeforePicture", System.Data.SqlTypes.SqlBinary.Null); }
+
+            if (source.TestAfterPicture != null) { objParameter.Add("@TestAfterPicture", source.TestAfterPicture); }
+            else { objParameter.Add("@TestAfterPicture", System.Data.SqlTypes.SqlBinary.Null); }
+
+            string sqlcmd = $@"
+update GarmentTest_Detail 
+set
+    TestBeforePicture = @TestBeforePicture,
+    TestAfterPicture = @TestAfterPicture
 where ID = @ID and No = @No
 ";
             return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;

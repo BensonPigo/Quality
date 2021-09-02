@@ -2633,13 +2633,32 @@ and t.GarmentTest=1
 
         public GarmentTest_Result DetailPictureSave(GarmentTest_Detail garmentTest_Detail)
         {
-            // 結構中僅傳送 ID, NO, TestBeforePicture, TestAfterPicture
-            // 直接存檔
-            GarmentTest_Result result = new GarmentTest_Result() 
+            GarmentTest_Result result = new GarmentTest_Result();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            try
             {
-                Result = false,
-                ErrMsg = "Err",
-            };
+                result.Result = true;
+
+                // Detail Save
+                _IGarmentTestDetailProvider = new GarmentTestDetailProvider(_ISQLDataTransaction);
+                if (_IGarmentTestDetailProvider.Save_Detail_Picture(garmentTest_Detail) == false)
+                {
+                    _ISQLDataTransaction.RollBack();
+                    result.Result = false;
+                    result.ErrMsg = "Update Picture is empty.";
+                    return result;
+                }
+              
+                _ISQLDataTransaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                _ISQLDataTransaction.RollBack();
+                result.Result = false;
+                result.ErrMsg = ex.Message;
+            }
+            finally { _ISQLDataTransaction.CloseConnection(); }
+
             return result;
         }
     }
