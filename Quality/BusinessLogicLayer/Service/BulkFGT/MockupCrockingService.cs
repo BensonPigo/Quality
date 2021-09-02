@@ -233,5 +233,15 @@ namespace BusinessLogicLayer.Service
 
             return model;
         }
+
+        public MockupCrocking_ViewModel Update(MockupCrocking_ViewModel MockupCrocking)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MockupCrocking_ViewModel Delete(MockupCrocking_ViewModel MockupCrocking)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
