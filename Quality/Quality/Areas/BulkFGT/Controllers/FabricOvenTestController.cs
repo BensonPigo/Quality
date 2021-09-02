@@ -16,7 +16,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         private IFabricOvenTestService _FabricOvenTestService;
         private List<string> Results = new List<string>() { "Pass", "Fail" };
         private List<string> Temperatures = new List<string>() { "70", "90" };
-        private List<string> Times = new List<string>() { "4", "24","48" };
+        private List<string> Times = new List<string>() { "4", "24", "48" };
         public FabricOvenTestController()
         {
             _FabricOvenTestService = new FabricOvenTestService();
@@ -43,13 +43,14 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             FabricOvenTest_Result model = _FabricOvenTestService.GetFabricOvenTest_Result("21051739BB");
 
+            ViewBag.POID = POID;
             return View(model);
         }
 
-        public ActionResult Detail()
+        public ActionResult Detail(string POID, string TestNo)
         {
 
-            FabricOvenTest_Detail_Result model = _FabricOvenTestService.GetFabricOvenTest_Detail_Result("21051739BB","");
+            FabricOvenTest_Detail_Result model = _FabricOvenTestService.GetFabricOvenTest_Detail_Result("21051739BB", "");
 
             List<SelectListItem> ScaleIDList = new SetListItem().ItemListBinding(model.ScaleIDs);
             List<SelectListItem> ResultChangeList = new SetListItem().ItemListBinding(Results);
@@ -64,6 +65,21 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.TemperatureList = TemperatureList;
             ViewBag.TimeList = TimeList;
             return View(model);
+        }
+
+
+
+        [HttpPost]
+        public JsonResult SaveMaster(FabricOvenTest_Main Main)
+        {
+            var result = _FabricOvenTestService.SaveFabricOvenTestMain(Main);
+           
+
+
+            return Json(result);
+
+
+        }
+
     }
-}
 }
