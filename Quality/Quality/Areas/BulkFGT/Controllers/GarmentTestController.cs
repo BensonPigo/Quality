@@ -55,6 +55,41 @@ namespace Quality.Areas.BulkFGT.Controllers
             return View(Result);
         }
 
+
+        public ActionResult IndexBack(string Brand, string Season, string Style, string Article)
+        {
+            GarmentTest_Request Req = new GarmentTest_Request()
+            {
+                Brand = Brand,
+                Season = Season,
+                Style = Style,
+                Article = Article,
+                Factory = this.FactoryID,
+            }; 
+            GarmentTest_Result Result = _GarmentTest_Service.GetGarmentTest(Req);
+            if (!Result.Result)
+            {
+                Result.garmentTest = new GarmentTest_ViewModel() { ID = 0 };
+                Result.SizeCodes = new List<string>();
+            }
+
+            if (Result.garmentTest_Details == null || Result.garmentTest_Details.Count == 0)
+            {
+                Result.garmentTest_Details = new List<GarmentTest_Detail_ViewModel>()
+                {
+                    new GarmentTest_Detail_ViewModel() { No = 1, ID = Result.garmentTest.ID },
+                };
+            }
+
+            Result.req = Req;
+            List<SelectListItem> SizeCodeList = new SetListItem().ItemListBinding(Result.SizeCodes);
+            List<SelectListItem> MtlTypeIDList = new SetListItem().ItemListBinding(this.MtlTypeIDs);
+            ViewBag.SizeCodeList = SizeCodeList;
+            ViewBag.MtlTypeIDList = MtlTypeIDList;
+            ViewBag.GarmentTestRequest = Req;
+            return View("Index", Result);
+        }
+
         [HttpPost]
         public ActionResult Index(GarmentTest_Request Req)
         {
@@ -300,26 +335,6 @@ namespace Quality.Areas.BulkFGT.Controllers
             GarmentTest_Detail_Result result = _GarmentTest_Service.ToReport(ID, No, type, IsToPDF);
             result.reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + result.reportPath;
             return Json(new { result.Result, result.ErrMsg, result.reportPath });
-        }
-
-        [HttpPost]
-        public JsonResult DetailPictureSave(GarmentTest_Detail garmentTest_Detail) 
-        {
-            GarmentTest_Result result = new GarmentTest_Result();
-            if (garmentTest_Detail.ID is null || garmentTest_Detail.ID == 0)
-            {
-                result.Result = false;
-                result.ErrMsg = "ID is null";
-            }
-
-            if (garmentTest_Detail.No is null || garmentTest_Detail.No == 0)
-            {
-                result.Result = false;
-                result.ErrMsg = "No is null";
-            }
-
-            result = _GarmentTest_Service.DetailPictureSave(garmentTest_Detail);
-            return Json(new { result.Result, result.ErrMsg });
         }
     }
 }

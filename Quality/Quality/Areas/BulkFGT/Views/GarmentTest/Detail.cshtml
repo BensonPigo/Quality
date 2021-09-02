@@ -152,7 +152,7 @@
                                 <tr>
                                     <td>
                                         <h4 id="Exit" style=" margin-right: 1em;">
-                                            <a href="@Url.Action("Index", "GarmentTest", new { Brand = Model.Main.BrandID , Season = Model.Main.SeasonID, Style = Model.Main.StyleID, Article = Model.Main.Article })">
+                                            <a href="@Url.Action("IndexBack", "GarmentTest", new { Brand = Model.Main.BrandID , Season = Model.Main.SeasonID, Style = Model.Main.StyleID, Article = Model.Main.Article })">
                                                 <img src="~/Image/Icon/Exit.png" width="30" />
                                                 Exit
                                             </a>
@@ -248,9 +248,11 @@
                                             <td style="width:10vw;"><h4>Style#</h4></td>
                                             <td style="width:20vw;">
                                                 @Html.DisplayFor(o => Model.Main.StyleID, "", "")
-                                                @Html.TextBoxFor(o => Model.Detail.Status, "", new { @readonly = "readonly", @class = "display-None" })
-                                                @Html.TextBoxFor(o => Model.Detail.ID, "", new { @readonly = "readonly", @class = "display-None" })
-                                                @Html.TextBoxFor(o => Model.Detail.No, "", new { @readonly = "readonly", @class = "display-None" })                                                
+                                                @Html.HiddenFor(o => Model.Detail.Status)
+                                                @Html.HiddenFor(o => Model.Detail.ID)
+                                                @Html.HiddenFor(o => Model.Detail.No)
+                                                @Html.HiddenFor(o => Model.Detail.TestBeforePicture)
+                                                @Html.HiddenFor(o => Model.Detail.TestAfterPicture)
                                             </td>
                                             <td style="width:10vw;"><h4>Season</h4></td>
                                             <td style="width:20vw;">@Html.DisplayFor(o => Model.Main.SeasonID, "", "")</td>
@@ -412,8 +414,8 @@
                                             <tr>
                                                 <td>
                                                     @Html.TextBoxFor(o => Model.Shrinkages[i].Location, new { @readonly = "readonly", @style="width:6vw;" })
-                                                    @Html.TextBoxFor(o => Model.Shrinkages[i].ID, new { @readonly = "readonly", @class = "display-None" })
-                                                    @Html.TextBoxFor(o => Model.Shrinkages[i].No, new { @readonly = "readonly", @class = "display-None" })
+                                                    @Html.HiddenFor(o => Model.Shrinkages[i].ID)
+                                                    @Html.HiddenFor(o => Model.Shrinkages[i].No)
                                                 </td>
                                                 <td style="width: 18vw;">@Html.TextBoxFor(o => Model.Shrinkages[i].Type, new { @readonly = "readonly" })</td>
                                                 <td>
@@ -477,9 +479,9 @@
                                         <tr>
                                             <td>
                                                 <h4>Spirality (@Location)%</h4>
-                                                @Html.TextBoxFor(o => Model.Spiralities[i].ID, new { @readonly = "readonly", @class = "display-None" })
-                                                @Html.TextBoxFor(o => Model.Spiralities[i].No, new { @readonly = "readonly", @class = "display-None" })
-                                                @Html.TextBoxFor(o => Model.Spiralities[i].Location, new { @readonly = "readonly", @class = "display-None" })
+                                                @Html.HiddenFor(o => Model.Spiralities[i].ID)
+                                                @Html.HiddenFor(o => Model.Spiralities[i].No)
+                                                @Html.HiddenFor(o => Model.Spiralities[i].Location)
                                             </td>
                                             <td><h4>Method A</h4></td>
                                             <td>
@@ -552,9 +554,9 @@
                                                     }
 
                                                     @Html.TextBoxFor(o => Model.Apperance[i].Type, "", new { @readonly = "readonly", @class = TypeClass, @style = "width:100%;" })
-                                                    @Html.TextBoxFor(o => Model.Apperance[i].ID, new { @readonly = "readonly", @class = "display-None" })
-                                                    @Html.TextBoxFor(o => Model.Apperance[i].No, new { @readonly = "readonly", @class = "display-None" })
-                                                    @Html.TextBoxFor(o => Model.Apperance[i].Seq, new { @readonly = "readonly", @class = "display-None" })
+                                                    @Html.HiddenFor(o => Model.Apperance[i].ID)
+                                                    @Html.HiddenFor(o => Model.Apperance[i].No)
+                                                    @Html.HiddenFor(o => Model.Apperance[i].Seq)
                                                 </td>
                                                 <td>
                                                     @if (showClass)
@@ -632,11 +634,11 @@
                                             </td>
                                             <td>
                                                 @Html.DisplayFor(o => Model.FGWT[i].Type)
-                                                @Html.TextBoxFor(o => Model.FGWT[i].Type, new { @readonly = "readonly", @class = "display-None" })
-                                                @Html.TextBoxFor(o => Model.FGWT[i].ID, new { @readonly = "readonly", @class = "display-None" })
-                                                @Html.TextBoxFor(o => Model.FGWT[i].No, new { @readonly = "readonly", @class = "display-None" })
-                                                @Html.TextBoxFor(o => Model.FGWT[i].Location, new { @readonly = "readonly", @class = "display-None" })
-                                                @Html.TextBoxFor(o => Model.FGWT[i].Seq, new { @readonly = "readonly", @class = "display-None" })
+                                                @Html.HiddenFor(o => Model.FGWT[i].Type)
+                                                @Html.HiddenFor(o => Model.FGWT[i].ID)
+                                                @Html.HiddenFor(o => Model.FGWT[i].No)
+                                                @Html.HiddenFor(o => Model.FGWT[i].Location)
+                                                @Html.HiddenFor(o => Model.FGWT[i].Seq)
                                             </td>
                                             <td>
                                                 @if (bolWash)
@@ -729,14 +731,14 @@
                                         <tr>
                                             <td>
                                                 @Location
-                                                @Html.TextBoxFor(o => Model.FGPT[i].ID, new { @readonly = "readonly", @class = "display-None" })
-                                                @Html.TextBoxFor(o => Model.FGPT[i].No, new { @readonly = "readonly", @class = "display-None" })
-                                                @Html.TextBoxFor(o => Model.FGPT[i].Location, new { @readonly = "readonly", @class = "display-None" })
-                                                @Html.TextBoxFor(o => Model.FGPT[i].Seq, new { @readonly = "readonly", @class = "display-None" })
-                                                @Html.TextBoxFor(o => Model.FGPT[i].TypeSelection_VersionID, new { @readonly = "readonly", @class = "display-None" })
-                                                @Html.TextBoxFor(o => Model.FGPT[i].TestName, new { @readonly = "readonly", @class = "display-None" })
+                                                @Html.HiddenFor(o => Model.FGPT[i].ID)
+                                                @Html.HiddenFor(o => Model.FGPT[i].No)
+                                                @Html.HiddenFor(o => Model.FGPT[i].Location)
+                                                @Html.HiddenFor(o => Model.FGPT[i].Seq)
+                                                @Html.HiddenFor(o => Model.FGPT[i].TypeSelection_VersionID)
+                                                @Html.HiddenFor(o => Model.FGPT[i].TestName)
                                                 @Html.TextBoxFor(o => Model.FGPT[i].Type, new { @readonly = "readonly", @class = "display-None txtFGPTType" })
-                                                @Html.TextBoxFor(o => Model.FGPT[i].TypeSelection_Seq, new { @readonly = "readonly", @class = "display-None" })                                                
+                                                @Html.HiddenFor(o => Model.FGPT[i].TypeSelection_Seq)                                                
                                             </td>
                                             <td>
                                                 @Html.DisplayFor(o => Model.FGPT[i].TestName)
@@ -781,7 +783,7 @@
                                             </td>
                                             <td>
                                                 @Html.DisplayFor(o => Model.FGPT[i].TestUnit)
-                                                @Html.TextBoxFor(o => Model.FGPT[i].TestUnit, new { @readonly = "readonly", @class = "display-None" })
+                                                @Html.HiddenFor(o => Model.FGPT[i].TestUnit)
                                             </td>
                                             @{
                                                 string FGPTFontColor = Model.FGPT[i].Result == "P" ? "blue" : "red";
@@ -1146,30 +1148,7 @@
     }
 
     function GetPicture(data) {
-        var garmentTest_Detail = {
-            ID: $('#Detail_ID').val(),
-            No: $('#Detail_No').val(),
-            TestBeforePicture: data.BeforePicture.replace("data:image/webp;base64,", ""),
-            TestAfterPicture: data.AfterPicture.replace("data:image/webp;base64,", ""),
-        };
-
-        $.ajax({
-            url: "@Url.Action("DetailPictureSave", "GarmentTest", new { Area = "BulkFGT" })",
-            type: 'POST',
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify({ garmentTest_Detail }),
-            async: false,
-            success: function (data) {
-                if (data.Result) {
-                    msg.WithSucces("Success");
-                }
-                else {
-                    msg.WithError(data.ErrMsg);
-                }
-            },
-            error: function (xhr, ajaxOptions, thrownError) {
-                console.log(xhr.responseText);
-            }
-        });
+        $('#Detail_TestBeforePicture').val(data.BeforePicture.replace("data:image/webp;base64,", ""));
+        $('#Detail_TestAfterPicture').val(data.AfterPicture.replace("data:image/webp;base64,", ""));
     }
 </script>
