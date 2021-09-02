@@ -57,10 +57,6 @@
         background-color: lightgray;
     }
 
-    .button {
-        width: 7vw;
-    }
-
     .row-name {
         color: black;
         font-size: 1.2em;
@@ -117,7 +113,7 @@
                                 <input id="btnArticle" onclick="OpenWindow('Article')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
                             </td>
                             <td style="padding: 0vw;">
-                                <input type="submit" onclick="this.form.submitted=this.value;" class="button" style="" name="action:Query" id="btnQuery" value="Query" />
+                                <input type="submit" onclick="this.form.submitted=this.value;" class="site-btn btn-gy font1rem Black" style="width: 7vw;" name="action:Query" id="btnQuery" value="Query" />
                             </td>
                         </tr>
                         <tr>
@@ -128,7 +124,7 @@
                                 @Html.DropDownListFor(o => o.Type, Model.TypeDatasource)
                             </td>
                             <td style="padding: 0vw;">
-                                <input type="submit" class="button" onclick="this.form.submitted=this.value;" style="" name="action:ToExcel" id="btnExcel" value="To Excel" />
+                                <input type="submit" class="site-btn btn-gy font1rem Black" onclick="this.form.submitted=this.value;" style="width: 7vw;" name="action:ToExcel" id="btnExcel" value="To Excel" />
                             </td>
                         </tr>
                     </table>
