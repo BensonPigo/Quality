@@ -9,10 +9,6 @@
 
 @model DatabaseObject.ViewModel.BulkFGT.PullingTest_ViewModel
 <style type="text/css">
-    .inner-scroll, .content-scroll {
-        height: calc( 100vh - 150px );
-    }
-
     .row {
         --bs-gutter-x: 1.5rem;
         --bs-gutter-y: 0;
@@ -24,12 +20,12 @@
         margin-left: calc(var(--bs-gutter-x)/ -2);
     }
 
-        .row > * {
-            flex-shrink: 0;
-            width: 100%;
-            max-width: 100%;
-            padding-left: calc(var(--bs-gutter-x)/ 2);
-        }
+    .row > * {
+        flex-shrink: 0;
+        width: 100%;
+        max-width: 100%;
+        padding-left: calc(var(--bs-gutter-x)/ 2);
+    }
 
     .rowHeader {
         font-size: 1.1vw;
@@ -48,9 +44,9 @@
         width: auto;
     }
 
-        .col-auto > p {
-            padding: 0
-        }
+    .col-auto > p {
+        padding: 0
+    }
 
     .White {
         color: white !important;
@@ -82,23 +78,27 @@
         background-color: white;
     }
 
-        .DataTable > tbody img {
-            cursor: pointer;
-        }
+    .DataTable > tbody img {
+        cursor: pointer;
+    }
 
-        .DataTable > tbody > tr:nth-of-type(odd) {
-            background-color: #ffffff;
-        }
+    .DataTable > tbody > tr:nth-of-type(odd) {
+        background-color: #ffffff;
+    }
 
-        .DataTable > tbody > tr:nth-of-type(even) {
-            background-color: #F0F2F2;
-        }
+    .DataTable > tbody > tr:nth-of-type(even) {
+        background-color: #F0F2F2;
+    }
 
-        .DataTable > tbody > tr > td {
-            border: solid 1px gray;
-            padding: 1em;
-            text-align: left;
-            vertical-align: middle;
+    .DataTable > tbody > tr > td {
+        border: solid 1px gray;
+        padding: 0.5em;
+        text-align: left;
+        vertical-align: middle;
+    }
+
+        .DataTable input[type='text'], .DataTable input[type='number'] {
+            width: 70%;
         }
 </style>
 @using (Html.BeginForm("Index", "PullingTest", new { }, FormMethod.Post))
@@ -122,22 +122,22 @@
                         </div>
                         <div class="col-auto">
                             <input id="BrandID" name="BrandID" type="text" value="@Model.BrandID" />
-                            <input id="btnBrandSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="BrandSelectItem" value="..." />
+                            <input id="btnBrandSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
                         </div>
                         <div class="col-auto"><p class="InfoTitle White">Season</p></div>
                         <div class="col-auto">
                             <input id="SeasonID" name="SeasonID" type="text" value="@Model.SeasonID" />
-                            <input id="btnSeasonSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="SeasonSelectItem" value="..." />
+                            <input id="btnSeasonSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
                         </div>
                         <div class="col-auto"><p class="InfoTitle White">Style</p></div>
                         <div class="col-auto">
                             <input id="StyleID" name="StyleID" type="text" style="width: 15vw" value="@Model.StyleID" />
-                            <input id="btnStyleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="StyleSelectItem" value="..." />
+                            <input id="btnStyleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
                         </div>
                         <div class="col-auto"><p class="InfoTitle White">Article</p></div>
                         <div class="col-auto">
                             <input id="Article" name="Article" type="text" value="@Model.Article" />
-                            <input id="btnArticleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="ArticleSelectItem" value="..." />
+                            <input id="btnArticleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
                         </div>
 
                         <div class="col-auto">
@@ -200,31 +200,31 @@
                                     <td style="width: 10vw;"><h5>Brand#</h5></td>
                                     <td style="width: 20vw;">
                                         @Html.TextBoxFor(o => o.Detail.BrandID, "")
-                                        <input id="btnDetailBrandSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="BrandSelectItem" value="..." />
+                                        <input id="btnDetailBrandSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td style="width: 10vw;"><h5>Season</h5></td>
-                                    <td style="width: 20vw;">
+                                    <td><h5>Season</h5></td>
+                                    <td>
                                         @Html.TextBoxFor(o => o.Detail.SeasonID, "", new { @readonly = "readonly" })
-                                        <input id="btnDetailSeasonSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="SeasonSelectItem" value="..." />
+                                        <input id="btnDetailSeasonSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
                                     </td>
-                                    <td style="width: 10vw;"><h5>Brand</h5></td>
-                                    <td style="width: 20vw;">
+                                    <td><h5>Brand</h5></td>
+                                    <td>
                                         @Html.TextBoxFor(o => o.Detail.StyleID, "", new { @readonly = "readonly" })
-                                        <input id="btnDetailStyleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="StyleSelectItem" value="..." />
+                                        <input id="btnDetailStyleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
                                     </td>
                                     <td><h5>Article</h5></td>
                                     <td>
                                         @Html.TextBoxFor(o => o.Detail.Article, "", new { @class = "OnlyEdit", @readonly = "readonly" })
-                                        <input id="btnDetailArticleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="ArticleSelectItem" value="..." />
+                                        <input id="btnDetailArticleSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
                                     </td>
                                 </tr>
                                 <tr>
                                     <td><h5>Size</h5></td>
                                     <td>
                                         @Html.TextBoxFor(o => o.Detail.SizeCode, "", new { @class = "OnlyEdit", @readonly = "readonly" })
-                                        <input id="btnDetailSizeCodeSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                        <input id="btnDetailSizeCodeSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
                                     </td>
                                     <td><h5>Remark</h5></td>
                                     <td colspan="3">
@@ -232,29 +232,27 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td style="width: 10vw;"><h5>Test Date</h5></td>
-                                    <td style="width: 20vw;">
+                                    <td><h5>Test Date</h5></td>
+                                    <td>
                                         @Html.TextBoxFor(o => o.Detail.TestDate, "{0:yyyy/MM/dd}", new { @readonly = "readonly", @class = "date-picker OnlyEdit" })
-                                        <input id="btnDetailSeasonSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="SeasonSelectItem" value="..." />
                                     </td>
-                                    <td style="width: 10vw;"><h5>Result</h5></td>
-                                    <td style="width: 20vw;">
+                                    <td><h5>Result</h5></td>
+                                    <td>
                                         @Html.DropDownListFor(o => o.Detail.Result, (List<SelectListItem>)ViewBag.ResultList, null, new { @class = "OnlyEdit"})
                                     </td>
                                     <td><h5>Inspector</h5></td>
                                     <td>
-                                        @*@Html.TextBoxFor(o => o.Detail.Article, "", new { @readonly = "readonly" })
-                                            <input id="btnDetailArticleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="ArticleSelectItem" value="..." />*@
+                                        @Html.TextBoxFor(o => o.Detail.Inspector, "", new { @readonly = "readonly" })
+                                        <input id="btnDetailInspectorSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td style="width: 10vw;"><h5>Test Item</h5></td>
-                                    <td style="width: 20vw;">
+                                    <td><h5>Test Item</h5></td>
+                                    <td>
                                         @Html.DropDownListFor(o => o.Detail.TestItem, Model.TestItem_Source, null, new { @class = "OnlyEdit" })
-                                        <input id="btnDetailSeasonSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="SeasonSelectItem" value="..." />
                                     </td>
-                                    <td style="width: 10vw;"><h5>Newton</h5></td>
-                                    <td style="width: 20vw;">
+                                    <td><h5>Newton</h5></td>
+                                    <td>
                                         @Html.TextBoxFor(o => o.Detail.PullForceUnit, "", new { @class = "OnlyEdit", @readonly = "readonly", @type = "number", @step = "0.01" })
                                     </td>
                                     <td><h5>Sec</h5></td>
@@ -263,12 +261,12 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td style="width: 10vw;"><h5>Fabric Ref#</h5></td>
-                                    <td style="width: 20vw;">
+                                    <td><h5>Fabric Ref#</h5></td>
+                                    <td>
                                         @Html.TextBoxFor(o => o.Detail.FabricRefno, "", new { @class = "OnlyEdit", @readonly = "readonly", @type = "number" })
                                     </td>
-                                    <td style="width: 10vw;"><h5>Accessory</h5></td>
-                                    <td style="width: 20vw;">
+                                    <td><h5>Accessory</h5></td>
+                                    <td>
                                         @Html.TextBoxFor(o => o.Detail.AccRefno, "", new { @class = "OnlyEdit", @readonly = "readonly" })
                                     </td>
                                     <td><h5>Snap Operator</h5></td>
@@ -292,32 +290,33 @@
 }
 <script type="text/javascript">
     var msg;
-        var EditMode;
-        var EditType;
-        $(function () {
-            msg = new MessagerAlert();
+    var EditMode;
+    var EditType;
+    $(function () {
+        msg = new MessagerAlert();
 
-            EditMode = false;
-            IsEditModeChange();
-        });
+        EditMode = false;
+        IsEditModeChange();
+    });
 
-        function IsEditModeChange() {
-            EditModeButtionBind();
-            Clear();
-
+    function IsEditModeChange() {
+        EditModeButtionBind();
+        Clear();
 
         if (EditMode) {
             $(".queryHeader select").attr("disabled", "disabled");
+            $('#btnNew').unbind('click').addClass("IsEditModeQuery");
 
             $(".rowHeader input[type='text']").attr("disabled", "disabled");
             $(".rowHeader input[type='button']").unbind('click').addClass("IsEditModeQuery");
-            $('#btnNew').unbind('click').addClass("IsEditModeQuery");
             $('#btnQuery').addClass("IsEditModeQuery");
+
             $("#Edit, #Delete, #Picture").removeClass("IsEditMode");
             $('#Save, #Undo, #New').addClass("IsEditMode");
 
             if (EditType == "New") {
-                $(".DetailTable input[type='text'], .DetailTable select, .DetailTable input[type='checkbox']").removeAttr("disabled");
+                $(".DetailTable input:not(#Detail_ReportNo), .DetailTable select").removeAttr("disabled");
+                $(".DetailTable input:not(#Detail_ReportNo), .DetailTable select").removeAttr("readonly");
             }
             else {
                 $(".OnlyEdit").removeAttr("disabled");
@@ -332,17 +331,17 @@
         }
         else {
             $(".queryHeader select").removeAttr("disabled");
+            $(".rowHeader input[type='text']").removeAttr("disabled");
+            $(".rowHeader input[type='button']").removeClass("IsEditModeQuery");
 
             if ($('#Detail_ReportNo').val() != undefined && $('#Detail_ReportNo').val() !='') {
-                $(".rowHeader input[type='text']").removeAttr("disabled");
-                $(".rowHeader input[type='button']").removeClass("IsEditModeQuery");
                 $("#Edit, #Delete, #Picture").addClass("IsEditMode");
             }
 
             $('#btnNew').removeClass("IsEditModeQuery");
             $('#btnQuery').unbind('click').removeClass("IsEditModeQuery");
             $('#Save, #Undo, #New').unbind('click').removeClass("IsEditMode");
-            $(".DetailTable input[type='text'], .DetailTable select").attr("disabled", "disabled");
+            $(".DetailTable input, .DetailTable select").attr("disabled", "disabled");
             $(".DetailTable img").removeClass('display-None');
             QueryButtonBind();
 
@@ -355,13 +354,13 @@
                 }
             });
         }
-        }
+    }
 
-        function Clear() {
-            if (EditType == "New") {
-                $(".DetailTable input[type='text'], .DetailTable select").val('');
-            }
+    function Clear() {
+        if (EditType == "New") {
+            $(".DetailTable input[type='text'], .DetailTable select").val('');
         }
+    }
 
     function EditModeButtionBind() {
         $('#Edit').on('click', function () {
@@ -428,7 +427,7 @@
         //    msg.WithConfirm('Do you want to delete the data ?',
         //        function ()
         //        {
-        //   }         
+        //   }
         //});
     }
 
@@ -459,6 +458,92 @@
             var para = "?OrderID=&StyleUkey=0&BrandID=" + $('#BrandID').val() + "&SeasonID=" + $('#SeasonID').val() + "&StyleID=" + $('#StyleID').val();
             window.open('@Url.Action("ArticleList", "PublicWondow",new { Area=""})' + para, 'Article', config = 'toolbar=no,status=no,location=no,width=400,height=650');
         });
+
+        blurEvent();
+    }
+
+    function blurEvent(name) {
+        $("#" + name+"BrandID").blur(function () {
+            $.ajax({
+                url: "@Url.Action("BrandList", "PublicWondow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#" + name +"BrandID").val('');
+                        msg.WithError('Brand Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $("#" + name +"SeasonID").blur(function () {
+            var BrandID = $('#' + name +'BrandID').val();
+            $.ajax({
+                url: "@Url.Action("SeasonList", "PublicWondow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: BrandID, SeasonID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#" + name+"SeasonID").val('');
+                        msg.WithError('Season Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $("#" + name +"Style").blur(function () {
+            var BrandID = $('#' + name +'BrandID').val();
+            var SeasonID = $('#' + name +'SeasonID').val();
+            $.ajax({
+                url: "@Url.Action("StyleList", "PublicWondow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: BrandID, SeasonID: SeasonID, StyleID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#" + name+"StyleID").val('');
+                        msg.WithError('Style Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $('#' + name+'Article').blur(function () {
+            var BrandID = $('#' + name +'BrandID').val();
+            var SeasonID = $('#' + name +'SeasonID').val();
+            var StyleID = $('#' + name +'StyleID').val();
+            $.ajax({
+                url: "@Url.Action("ArticleList", "PublicWondow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: BrandID, StyleUkey : 0, SeasonID: SeasonID, StyleID: StyleID, ArticleID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#" + name+"Article").val('');
+                        msg.WithError('Article Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
     }
 
     function DetailButtonBind() {
@@ -467,34 +552,101 @@
         });
 
         $('#btnDetailSeasonSelectItem').on('click', function () {
+            if (checkValue('season') == 0) {
+                return;
+            }
+
             var para = "?BrandID=" + $('#Detail_BrandID').val();
             window.open('@Url.Action("SeasonList", "PublicWondow",new { Area=""})' + para, 'SeasonID', config = 'toolbar=no,status=no,location=no,width=400,height=650');
         });
 
+        $('#btnDetailInspectorSelectItem').on('click', function () {
+            window.open('@Url.Action("Pass1List", "PublicWondow",new { Area=""})', 'Inspector', config = 'toolbar=no,status=no,location=no,width=1000,height=650');
+        });
+
         $('#btnDetailStyleSelectItem').on('click', function () {
+            if (checkValue('style') == 0) {
+                return;
+            }
+
             var para = "?BrandID=" + $('#Detail_BrandID').val() + "&SeasonID=" + $('#Detail_SeasonID').val();
             window.open('@Url.Action("StyleList", "PublicWondow",new { Area=""})' + para, 'StyleID', config = 'toolbar=no,status=no,location=no,width=400,height=650');
         });
 
         $('#btnDetailArticleSelectItem').on('click', function () {
-            if ($('#Detail_BrandID').val() == '' || $('#Detail_SeasonID').val() == '' || $('#Detail_StyleID').val() == '') {
-                msg.WithError('Please input style, brand and season before choose article.');
+            var para = '';
+            var result = checkValue('article');
+            if (result == 0) {
                 return;
             }
-
-            var para = "?OrderID=&StyleUkey=0&BrandID=" + $('#Detail_BrandID').val() + "&Detail.SeasonID=" + $('#SeasonID').val() + "&StyleID=" + $('#Detail_StyleID').val();
+            else if (result == 1) {
+                para = "?OrderID=" + $('#Detail_POID').val() + "&StyleUkey=0";
+            }
+            else if (result == 2) {
+                para = "?OrderID=&StyleUkey=0&BrandID=" + $('#Detail_BrandID').val() + "&SeasonID=" + $('#Detail_SeasonID').val() + "&StyleID=" + $('#Detail_StyleID').val();
+            }
             window.open('@Url.Action("ArticleList", "PublicWondow",new { Area=""})' + para, 'Article', config = 'toolbar=no,status=no,location=no,width=400,height=650');
         });
 
         $('#btnDetailSizeCodeSelectItem').on('click', function () {
-            if ($('#Detail_BrandID').val() == '' || $('#Detail_SeasonID').val() == '' || $('#Detail_StyleID').val() == '' || $('#Detail_ArticleID').val() == '') {
-                msg.WithError('Please input style, brand and season, article before choose size.');
+            var para = '';
+            var result = checkValue('sizecode');
+            if (result == 0) {
                 return;
             }
+            else if (result == 1) {
+                para = "?OrderID=" + $('#Detail_POID').val() + "&StyleUkey=0&Article=" + $('#Detail_Article').val();
+            }
+            else if (result == 2) {
+                para = "?OrderID=&StyleUkey=0&BrandID=" + $('#Detail_BrandID').val() + "&SeasonID=" + $('#Detail_SeasonID').val() + "&StyleID=" + $('#Detail_StyleID').val();
+            }
 
-            var para = "?OrderID=&StyleUkey=0&BrandID=" + $('#Detail_BrandID').val() + "&Detail.SeasonID=" + $('#SeasonID').val() + "&StyleID=" + $('#Detail_StyleID').val() + "&Article=" + $('#Detail_ArticleID').val();
             window.open('@Url.Action("SizeList", "PublicWondow",new { Area=""})' + para, 'SizeCode', config = 'toolbar=no,status=no,location=no,width=400,height=650');
         });
+
+        blurEvent("Detail_");
+    }
+
+    function checkValue(type) {
+        switch (type) {
+            case 'season':
+                if ($('#Detail_BrandID').val() == '') {
+                    msg.WithError('Please input brand before choose season.');
+                    return 0;
+                }
+                break;
+            case 'style':
+                if ($('#Detail_BrandID').val() == '' || $('#Detail_SeasonID').val() == '') {
+                    msg.WithError('Please input brand, season before choose style.');
+                    return 0;
+                }
+                break;
+            case 'article':
+                if ($('#Detail_POID').val() != '') {
+                    return 1;
+                }
+                else if ($('#Detail_BrandID').val() != '' && $('#Detail_SeasonID').val() != '' && $('#Detail_StyleID').val() != '') {
+                    return 2;
+                }
+                else {
+                    msg.WithError('Please input sp# or style, brand and season before choose article.');
+                    return 0;
+                }
+                break;
+            case 'sizecode':
+                if ($('#Detail_POID').val() != '' && $('#Detail_Article').val() != '') {
+                    return 1;
+                }
+                else if ($('#Detail_BrandID').val() != '' && $('#Detail_SeasonID').val() != '' && $('#Detail_StyleID').val() != '') {
+                    return 2;
+                }
+                else {
+                    msg.WithError('Please input sp#, article or style, brand and season before choose size.');
+                    return 0;
+                }
+                break;
+        }
+
     }
 
         function GetBrandList(data) {
@@ -531,5 +683,13 @@
             else {
                 $('#Article').val(data);
             }
-        }
+    }
+
+    function GetSizeList(data) {
+        $('#Detail_SizeCode').val(data);
+    }
+
+    function GetPass1(data) {
+        $('#Detail_Inspector').val(data.ID);
+    }
 </script>
