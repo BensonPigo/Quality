@@ -1,4 +1,5 @@
 ﻿using DatabaseObject.ViewModel.BulkFGT;
+using Quality.Controllers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using static Quality.Helper.Attribute;
 
 namespace Quality.Areas.BulkFGT.Controllers
 {
-    public class AccessoryOvenWashController : Controller
+    public class AccessoryOvenWashController : BaseController
     {
 
         #region AccessoryOvenWash頁面

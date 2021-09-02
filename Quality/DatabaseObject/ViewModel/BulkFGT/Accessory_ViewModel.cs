@@ -32,6 +32,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string Seq1 { get; set; }
         public string Seq2 { get; set; }
         public string Seq { get; set; }
+
         public string WKNo { get; set; }
         public DateTime? WhseArrival { get; set; }
         public string SCIRefno { get; set; }
@@ -70,6 +71,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string Seq2 { get; set; }
         public string Seq { get; set; }
         public string POID { get; set; }
+
         public string SCIRefno { get; set; }
         public string WKNo { get; set; }
         public string Refno { get; set; }
