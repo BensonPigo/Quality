@@ -169,10 +169,12 @@
     <Compile Include="Areas\BulkFGT\BulkFGTAreaRegistration.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\AccessoryOvenWashController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\BulkFGTMailGroupController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\FabricColorFastnessController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\FabricCrkShrkTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\FabricOvenTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\GarmentTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\MockupCrockingController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\MockupOvenTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\MockupWashController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\PullingTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\SearchListController.cs" />
@@ -331,6 +333,8 @@
     <Content Include="Areas\BulkFGT\Views\FabricOvenTest\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\FabricOvenTest\Detail.cshtml" />
     <Content Include="Areas\BulkFGT\Views\MockupWash\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\MockupOvenTest\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\FabricColorFastness\Index.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
