@@ -20,6 +20,17 @@
         margin-left: calc(var(--bs-gutter-x)/ -2);
     }
 
+    .button {
+        background-color: #E00000; /* Red */
+        border: none;
+        color: white;
+        padding: 6px 16px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+    }
+
     .row > * {
         flex-shrink: 0;
         width: 100%;
@@ -109,8 +120,9 @@
                 <span>Pulling test for Snap/Button/Rivet</span>
             </h3>
             <div class="breadcrumb queryHeader" style="justify-content: flex-end;">
+                <h4 style="margin-right: 1em;color:white">Report No</h4>
                 @Html.DropDownList("ReportNo", (List<SelectListItem>)ViewBag.ReportNo_Source, null, new { @class = "form-control" })
-                <input id="btnNew" type="button" class="site-btn btn-blue" style="margin-left:1em;border:0;" name="New" value="New">
+                <input id="btnNew" type="button" class="button" style="margin-left:1em;border:0;" name="New" value="New">
             </div>
         </header>
         <div class="main-area">
@@ -150,19 +162,19 @@
                             <tbody>
                                 <tr>
                                     <td>
-                                        <h4 id="Edit" style=" margin-right: 1em;">
+                                        <h4 id="Edit" style="margin-right: 1em;">
                                             <img src="~/Image/Icon/Edit.png" width="30" />
                                             Edit
                                         </h4>
                                     </td>
                                     <td>
-                                        <h4 id="Save" style=" margin-right: 1em;">
+                                        <h4 id="Save" style="margin-right: 1em;">
                                             <img src="~/Image/Icon/Save.png" width="30" />
                                             Save
                                         </h4>
                                     </td>
                                     <td>
-                                        <h4 id="Undo" style=" margin-right: 1em;">
+                                        <h4 id="Undo" style="margin-right: 1em;">
                                             <img src="~/Image/Icon/Undo.png" width="30" />
                                             Undo
                                         </h4>
@@ -189,7 +201,7 @@
                         <table class="DataTable DetailTable">
                             <tbody>
                                 <tr>
-                                    <td style="width: 10vw;"><h5>Report No.</h5></td>
+                                    <td style="width: 10vw;"><h5>Report No</h5></td>
                                     <td style="width: 20vw;">
                                         @Html.TextBoxFor(o => o.Detail.ReportNo, "", new { @readonly = "readonly" })
                                     </td>
@@ -197,7 +209,7 @@
                                     <td style="width: 20vw;">
                                         @Html.TextBoxFor(o => o.Detail.POID, "")
                                     </td>
-                                    <td style="width: 10vw;"><h5>Brand#</h5></td>
+                                    <td style="width: 10vw;"><h5>Brand</h5></td>
                                     <td style="width: 20vw;">
                                         @Html.TextBoxFor(o => o.Detail.BrandID, "")
                                         <input id="btnDetailBrandSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
@@ -209,7 +221,7 @@
                                         @Html.TextBoxFor(o => o.Detail.SeasonID, "", new { @readonly = "readonly" })
                                         <input id="btnDetailSeasonSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
                                     </td>
-                                    <td><h5>Brand</h5></td>
+                                    <td><h5>Style#</h5></td>
                                     <td>
                                         @Html.TextBoxFor(o => o.Detail.StyleID, "", new { @readonly = "readonly" })
                                         <input id="btnDetailStyleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />

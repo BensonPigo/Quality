@@ -27,7 +27,11 @@ namespace Quality.Areas.BulkFGT.Controllers
                 StyleID = string.Empty,
                 Article = string.Empty,
                 ReportNo_Source = new List<string>(),
-                Detail = new PullingTest_Result(),
+                Detail = new PullingTest_Result()
+                {
+                    ReportNo = "test",
+
+                },
             };
 
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(Result.ReportNo_Source);
@@ -46,8 +50,19 @@ namespace Quality.Areas.BulkFGT.Controllers
                 StyleID = Req.StyleID,
                 Article = Req.Article,
                 ReportNo_Source = "5,6,7".Split(',').ToList(),
-                Detail = new PullingTest_Result() {
-                    ReportNo = "1234",
+                Detail = new PullingTest_Result()
+                {
+                    ReportNo = "PHOV190100039",
+                    POID = "1234",
+                    BrandID = "ADIDAS",
+                    SeasonID = "19FW",
+                    StyleID = "S1953WTR342",
+                    Article = "FJ5381",
+                    Result = "Fail",
+                    TestItem = "Snaps",
+                    Time = 10,
+                    LastEditName = "PC8000068-JESSIE BALISBIS 2019/07/11 10:43:18"
+
                 },
             };
 
