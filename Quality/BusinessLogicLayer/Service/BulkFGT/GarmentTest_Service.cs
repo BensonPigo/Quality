@@ -484,12 +484,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
             GarmentTest_Result result = new GarmentTest_Result();
             string ToAddress = string.Empty;
             string CCAddress = string.Empty;
+            _IGarmentTestDetailProvider = new GarmentTestDetailProvider(Common.ProductionDataAccessLayer);
             try
             {
                 foreach (var item in mailGroups)
                 {
-                    ToAddress += item + ";";
-                    CCAddress += item + ";";
+                    ToAddress += item.ToAddress + ";";
+                    CCAddress += item.CcAddress + ";";
                 }
 
                 if (string.IsNullOrEmpty(ToAddress) == true)
@@ -715,7 +716,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
 
             bool IsNewData = all_Data.Apperance.Count == 9 ? false : true;
-            //bool test = false;
 
             IStyleProvider styleProvider = new StyleProvider(Common.ProductionDataAccessLayer);
             string StyleName = styleProvider.GetStyleName(all_Data.Main.StyleID, all_Data.Main.SeasonID, all_Data.Main.BrandID);
@@ -2154,7 +2154,7 @@ and t.GarmentTest=1
                         {
                             if (ConvertToPDF.ExcelToPDF(filepath_2018, filepathpdf_2018))
                             {
-                                all_Data.reportPath = filepathpdf_2018;
+                                all_Data.reportPath = fileNamePDF_2018;
                                 all_Data.Result = true;
                             }
                             else
@@ -2166,7 +2166,7 @@ and t.GarmentTest=1
 
                         if (!IsToPDF)
                         {
-                            all_Data.reportPath = filepath_2018;
+                            all_Data.reportPath = filexlsx_2018;
                             all_Data.Result = true;
                         }
                         #endregion
@@ -2188,7 +2188,7 @@ and t.GarmentTest=1
                         return all_Data;
                     }
 
-                    string basefileName_2020 = "Wash_2020";
+                    string basefileName_2020 = "WashTest_2020_FGWT";
                     string openfilepath_2020;
                     if (test)
                     {
@@ -2362,7 +2362,7 @@ and t.GarmentTest=1
                     {
                         if (ConvertToPDF.ExcelToPDF(filepath_2020, filepathpdf_2020))
                         {
-                            all_Data.reportPath = filepathpdf_2020;
+                            all_Data.reportPath = fileNamePDF_2020;
                             all_Data.Result = true;
                         }
                         else
@@ -2374,7 +2374,7 @@ and t.GarmentTest=1
 
                     if (!IsToPDF)
                     {
-                        all_Data.reportPath = filepath_2020;
+                        all_Data.reportPath = filexlsx_2020;
                         all_Data.Result = true;
                     }
                     #endregion
@@ -2606,7 +2606,7 @@ and t.GarmentTest=1
                     {
                         if (ConvertToPDF.ExcelToPDF(filepath_Physical, filepathpdf_Physical))
                         {
-                            all_Data.reportPath = filepathpdf_Physical;
+                            all_Data.reportPath = fileNamePDF_Physical;
                             all_Data.Result = true;
                         }
                         else
@@ -2618,7 +2618,7 @@ and t.GarmentTest=1
 
                     if (!IsToPDF)
                     {
-                        all_Data.reportPath = filepath_Physical;
+                        all_Data.reportPath = filexlsx_Physical;
                         all_Data.Result = true;
                     }
                     #endregion
@@ -2629,6 +2629,18 @@ and t.GarmentTest=1
             }
 
             return all_Data;
+        }
+
+        public GarmentTest_Result DetailPictureSave(GarmentTest_Detail garmentTest_Detail)
+        {
+            // 結構中僅傳送 ID, NO, TestBeforePicture, TestAfterPicture
+            // 直接存檔
+            GarmentTest_Result result = new GarmentTest_Result() 
+            {
+                Result = false,
+                ErrMsg = "Err",
+            };
+            return result;
         }
     }
 }

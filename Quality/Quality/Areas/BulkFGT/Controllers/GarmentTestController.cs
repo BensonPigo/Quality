@@ -1,5 +1,6 @@
 ﻿using BusinessLogicLayer.Interface.BulkFGT;
 using BusinessLogicLayer.Service.BulkFGT;
+using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
@@ -200,6 +201,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.ScaleList = ScaleList;
             ViewBag.TestResultPassList = TestResultPassList;
             ViewBag.TestResultmmList = TestResultmmList;
+            ViewBag.FactoryID = this.FactoryID;
             return View(Detail_Result);
         }
 
@@ -260,6 +262,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.ScaleList = ScaleList;
             ViewBag.TestResultPassList = TestResultPassList;
             ViewBag.TestResultmmList = TestResultmmList;
+            ViewBag.FactoryID = this.FactoryID;
 
             return View(Detail_Result);
         }
@@ -270,6 +273,52 @@ namespace Quality.Areas.BulkFGT.Controllers
             GarmentTest_ViewModel main = _GarmentTest_Service.Get_Main(ID);
             GarmentTest_Detail_ViewModel detail = _GarmentTest_Service.Get_Detail(ID, No);
             GarmentTest_Result result = _GarmentTest_Service.Generate_FGWT(main, detail);
+            return Json(new { result.Result, result.ErrMsg });
+        }
+
+        [HttpPost]
+        public JsonResult Encode_Detail(string ID, string No, GarmentTest_Service.DetailStatus status)
+        {
+            GarmentTest_Detail_Result result = _GarmentTest_Service.Encode_Detail(ID, No, status);
+            return Json(new { result.Result, result.ErrMsg, result.sentMail });
+        }
+
+        [HttpPost]
+        public JsonResult FailMain(string ID, string No, string TO, string CC)
+        {
+            List<Quality_MailGroup> mailGroups = new List<Quality_MailGroup>() {
+                new Quality_MailGroup() { ToAddress = TO, CcAddress = CC, }
+            };
+            GarmentTest_Result result = _GarmentTest_Service.SentMail(ID, No, mailGroups);
+
+            return Json(new { result.Result, result.ErrMsg });
+        }
+
+        [HttpPost]
+        public JsonResult Report(string ID, string No, GarmentTest_Service.ReportType type, bool IsToPDF)
+        {
+            GarmentTest_Detail_Result result = _GarmentTest_Service.ToReport(ID, No, type, IsToPDF);
+            result.reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + result.reportPath;
+            return Json(new { result.Result, result.ErrMsg, result.reportPath });
+        }
+
+        [HttpPost]
+        public JsonResult DetailPictureSave(GarmentTest_Detail garmentTest_Detail) 
+        {
+            GarmentTest_Result result = new GarmentTest_Result();
+            if (garmentTest_Detail.ID is null || garmentTest_Detail.ID == 0)
+            {
+                result.Result = false;
+                result.ErrMsg = "ID is null";
+            }
+
+            if (garmentTest_Detail.No is null || garmentTest_Detail.No == 0)
+            {
+                result.Result = false;
+                result.ErrMsg = "No is null";
+            }
+
+            result = _GarmentTest_Service.DetailPictureSave(garmentTest_Detail);
             return Json(new { result.Result, result.ErrMsg });
         }
     }

@@ -327,6 +327,8 @@
     <Content Include="Areas\BulkFGT\Views\AccessoryOvenWash\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\AccessoryOvenWash\OvenTest.cshtml" />
     <Content Include="Areas\BulkFGT\Views\AccessoryOvenWash\WashTest.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\FabricOvenTest\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\FabricOvenTest\Detail.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -788,7 +790,6 @@
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Authority\Data\" />
     <Folder Include="Areas\BulkFGT\Data\" />
-    <Folder Include="Areas\BulkFGT\Views\FabricOvenTest\" />
     <Folder Include="Areas\FinalInspection\Models\" />
     <Folder Include="Areas\SampleRFT\Data\" />
     <Folder Include="Areas\StyleManagement\Models\" />
