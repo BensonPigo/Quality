@@ -1,7 +1,451 @@
-﻿
+﻿@using DatabaseObject.ResultModel;
+
 @{
     ViewBag.Title = "Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<link href="~/ThirdParty/plugins/Tabs/nicepage.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/Tabs/nicepage.js"></script>
 
-<h2>Detail</h2>
+@model FabricOvenTest_Detail_Result
 
+<style type="text/css">
+    .content-scroll {
+        height: calc( 100vh - 110px );
+        overflow: hidden;
+        position: relative;
+        margin-top: 15px;
+    }
+
+    .inner-scroll {
+        height: calc(100vh - 110px);
+        overflow-y: scroll;
+        padding-right: 30px;
+        width: calc(100% + 30px);
+    }
+
+    #tab-Change {
+        width: 92vw;
+    }
+
+        #tab-Change > ul {
+            display: block;
+            margin: 0;
+            list-style: none;
+        }
+
+    .tab-title {
+        list-style: none;
+    }
+
+    #tab-Change > ul > li {
+        display: inline-block;
+        vertical-align: top;
+        margin: 0 -1px -1px 0;
+        border: 1px solid #BCBCBC;
+        height: 4vh;
+        line-height: 25px;
+        background: #cdcdcd;
+        padding: 0 15px;
+        list-style: none;
+        box-sizing: border-box;
+    }
+
+        #tab-Change > ul > li a {
+            color: #000;
+            text-decoration: none;
+        }
+
+        #tab-Change > ul > li.active {
+            border-bottom: 1px solid #fff;
+            background: #fff;
+        }
+
+    #tab-Change > .tab-inner {
+        clear: both;
+        color: #000;
+    }
+
+    .DataTable {
+        width: 92vw;
+        font-size: 1rem;
+        font-weight: bold;
+        border: solid 1px black;
+        background-color: white;
+    }
+
+        .DataTable > tbody > tr:nth-of-type(odd) {
+            background-color: #ffffff;
+        }
+
+        .DataTable > tbody > tr:nth-of-type(even) {
+            background-color: #F0F2F2;
+        }
+
+        .DataTable > tbody > tr > td {
+            border: solid 1px gray;
+            padding: 1em;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+    .White {
+        color: white !important;
+    }
+
+    .Black {
+        color: black !important;
+    }
+
+    .IsEditMode {
+        color: white !important;
+        cursor: pointer;
+    }
+
+    .IsEditModeQuery {
+        color: gray !important;
+        cursor: no-drop;
+    }
+
+    .bigSize {
+        width: 3em;
+        height: 2em;
+    }
+
+    .ReportAction {
+        width: 29vw;
+        height: 29vh;
+        position: absolute;
+        left: 30vw;
+        top: 19vh;
+        z-index: 1042;
+        background-color: #c8eac8;
+        border: solid 1px black;
+        font-size: 1.4em;
+        font-weight: bold;
+    }
+
+        .ReportAction > table > tbody > tr > td {
+            padding: 0.5em;
+        }
+
+            .ReportAction > table > tbody > tr > td > input[type=button] {
+                cursor: pointer;
+            }
+</style>
+
+
+<div class="main-content">
+    <header class="page-header">
+        <h3>
+            <i class="icon-users"></i><span>Garment Test</span>
+        </h3>
+    </header>
+
+    <div class="main-area">
+        <div class="content-scroll">
+            <div class="inner-scroll">
+                @using (Html.BeginForm("Detail", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { id = "DetailForm" }))
+                {
+                    <div style="margin-top: 1em;">
+                        <table id="ButtonMode">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <h4 id="Exit" style=" margin-right: 1em;">
+                                            @*<a href="@Url.Action("Index", "GarmentTest", new { Brand = Model.Main.BrandID , Season = Model.Main.SeasonID, Style = Model.Main.StyleID, Article = Model.Main.Article })">
+                                                    <img src="~/Image/Icon/Exit.png" width="30" />
+                                                    Exit
+                                                </a>*@
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 id="Edit" style=" margin-right: 1em;">
+                                            <img src="~/Image/Icon/Edit.png" width="30" />
+                                            Edit
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 id="Save" style=" margin-right: 1em;">
+                                            <img src="~/Image/Icon/Save.png" width="30" />
+                                            Save
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 id="Encode" style=" margin-right: 1em;">
+                                            <img src="~/Image/Icon/Lock.png" width="30" />
+                                            Encode
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 id="Amend" style=" margin-right: 1em;">
+                                            <img src="~/Image/Icon/Unlock.png" width="30" />
+                                            Amend
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 id="Report" style=" margin-right: 1em;">
+                                            <img src="~/Image/Icon/Print.png" width="30" />
+                                            Report
+                                        </h4>
+                                        <div class="ReportAction display-None">
+                                            <table>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <input id="ReportOption" name="ReportOption" type="radio" class="bigSize" value="Wash_Test_2018">
+                                                            <label for="ReportOptionx">Finished Garement Wash Test Ver.2018</label>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <input id="ReportOption" name="ReportOption" type="radio" class="bigSize" value="Wash_Test_2020">
+                                                            <label for="ReportOptionx">Finished Garement Wash Test Ver.2020</label>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <input id="ReportOption" name="ReportOption" type="radio" class="bigSize" value="Physical_Test">
+                                                            <label for="ReportOptionx">Finished Garement Physical Test</label>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="text-align: center;">
+                                                            <input id="ReportPDF" type="button" value="PDF">
+                                                            <input id="ReportExcel" type="button" value="Excel" style="margin: 0 1em;">
+                                                            <input id="ReportExit" type="button" value="Exit">
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <h4 id="Picture" style=" margin-right: 1em;">
+                                            <img src="~/Image/Icon/Camera.png" width="30" />
+                                            Picture
+                                        </h4>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="margin-top: 1em;">
+                        <table class="DataTable">
+                            <tbody>
+                                <tr>
+                                    <td style="width: 10vw;"><h5>No of Test#</h5></td>
+                                    <td style="width: 20vw;">
+                                        @Html.DisplayFor(o => o.Main.TestNo, "", "")
+                                    </td>
+                                    <td style="width: 10vw;"><h5>SP#</h5></td>
+                                    <td style="width: 20vw;">
+                                        @Html.DisplayFor(o => o.Main.POID, "", "")
+                                    </td>
+
+                                    <td style="width: 10vw;"><h5>TestDate</h5></td>
+
+                                    <td style="width: 20vw;">
+                                        @Html.TextBoxFor(o => Model.Main.InspDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
+                                    </td>
+                                </tr>
+                                <tr>
+
+                                    <td><h5>Article</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => Model.Main.Article, "", new { @class = "OnlyEdit", @readonly = "readonly" })
+                                        <input id="btnDetailArticleSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                    </td>
+                                    <td><h5>Inspector</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => Model.Main.Inspector, "", new { @class = "OnlyEdit", @readonly = "readonly" })
+                                        <input id="btnDetailInspectorSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                    </td>
+                                    @{
+                                        string ResultColor = Model.Main.Result == "Pass" ? "blue" : "red";
+                                    }
+                                    <td><h5>Result</h5></td>
+                                    <td class="@ResultColor">
+                                        @Html.DisplayFor(o => o.Main.Result, "", "")
+                                    </td>
+                                </tr>
+                                <tr>
+
+                                    <td><h5>Remark</h5></td>
+                                    <td>
+                                        @Html.DisplayFor(o => o.Main.Remark, "", "")
+                                    </td>
+                                    <td></td>
+
+                                    <td>
+                                    </td>
+                                    <td></td>
+                                    <td>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div style="margin-top: 1em; width: 92vw; overflow:auto;">
+                        <table class="DetailTable DataTable">
+                            <thead>
+
+                                <tr>
+                                    <th><h4>Submit Date</h4></th>
+                                    <th><h4>Group</h4></th>
+                                    <th><h4>SEQ#</h4></th>
+                                    <th><h4>Roll#</h4></th>
+                                    <th><h4>Dyelot</h4></th>
+                                    <th><h4>Refno</h4></th>
+                                    <th><h4>SCI Refno</h4></th>
+                                    <th><h4>Color</h4></th>
+                                    <th><h4>Result</h4></th>
+                                    <th><h4>Color Change Scale</h4></th>
+                                    <th><h4>Result (Change)</h4></th>
+                                    <th><h4>Color Staining Scale</h4></th>
+                                    <th><h4>Result (Staining)</h4></th>
+                                    <th><h4>Remark</h4></th>
+                                    <th><h4>LastUpdate</h4></th>
+                                    <th><h4>Temperature(˚C)</h4></th>
+                                    <th><h4>Time(hrs)</h4></th>
+                                    <th><h4></h4></th>
+                                </tr>
+
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i <= Model.Details.Count - 1; i++)
+                                {
+                                    <tr>
+                                        <td style="width:10vw;">
+
+                                            @Html.TextBoxFor(o => Model.Details[i].SubmitDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
+                                        </td>
+                                        <td style="width:10vw;">
+                                            @Html.TextBoxFor(o => Model.Details[i].OvenGroup, "", "")
+                                        </td>
+                                        <td style="width:10vw;">
+                                            @Html.DisplayFor(o => Model.Details[i].SEQ, "", "")
+                                        </td>
+                                        <td style="width:10vw;">
+                                            @Html.DisplayFor(o => Model.Details[i].Roll, "", "")
+                                        </td>
+
+                                        <td style="width:10vw;">
+                                            @Html.DisplayFor(o => Model.Details[i].Dyelot, "", "")
+                                        </td>
+                                        <td style="width:10vw;">
+                                            @Html.DisplayFor(o => Model.Details[i].Refno, "", "")
+                                        </td>
+                                        <td style="width:10vw;">
+                                            @Html.DisplayFor(o => Model.Details[i].SCIRefno, "", "")
+                                        </td>
+                                        <td style="width:10vw;">
+                                            @Html.DisplayFor(o => Model.Details[i].ColorID, "", "")
+                                        </td>
+                                        @{
+                                            string detailResultColor = Model.Details[i].Result == "Pass" ? "blue" : "red";
+                                        }
+                                        <td class="@detailResultColor" style="width:10vw;">
+                                            @Html.DisplayFor(o => Model.Details[i].Result, "", "")
+                                        </td>
+                                        <td style="width:10vw;">
+                                            <select id="Model.Details_@{@i}__.ChangeScale" name="Model.Details[@i].ChangeScale">
+                                                @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
+                                                {
+                                                    string selected = item.Text.Equals(Model.Details[i].ChangeScale) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>
+                                        </td>
+                                        <td style="width:10vw;">
+
+                                            <select id="Model.Details_@{@i}__.ResultChange" name="Model.Details[@i].ResultChange">
+                                                @foreach (var item in (List<SelectListItem>)ViewBag.ResultChangeList)
+                                                {
+                                                    string selected = item.Text.Equals(Model.Details[i].ResultChange) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>
+
+                                        </td>
+                                        <td style="width:10vw;">
+                                            <select id="Model.Details_@{@i}__.StainingScale" name="Model.Details[@i].StainingScale">
+                                                @foreach (var item in (List<SelectListItem>)ViewBag.StainingScaleList)
+                                                {
+                                                    string selected = item.Text.Equals(Model.Details[i].StainingScale) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>
+                                        </td>
+                                        <td style="width:10vw;">
+                                            <select id="Model.Details_@{@i}__.ResultStain" name="Model.Details[@i].ResultStain">
+                                                @foreach (var item in (List<SelectListItem>)ViewBag.ResultStainList)
+                                                {
+                                                    string selected = item.Text.Equals(Model.Details[i].ResultStain) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>
+                                        </td>
+                                        <td style="width:10vw;">
+                                            @Html.TextBoxFor(o => Model.Details[i].Remark, "", "")
+                                        </td>
+                                        <td style="width:10vw;">
+                                            @Html.TextBoxFor(o => Model.Details[i].LastUpdate, "", "")
+                                        </td>
+                                        <td style="width:10vw;">
+                                            <select id="Model.Details_@{@i}__.Temperature" name="Model.Details[@i].Temperature">
+                                                @foreach (var item in (List<SelectListItem>)ViewBag.TemperatureList)
+                                                {
+                                                    string selected = item.Text.Equals(Model.Details[i].ResultStain) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>
+                                        </td>
+                                        <td style="width:10vw;">
+                                            <select id="Model.Details_@{@i}__.Time" name="Model.Details[@i].Time">
+                                                @foreach (var item in (List<SelectListItem>)ViewBag.TimeList)
+                                                {
+                                                    string selected = item.Text.Equals(Model.Details[i].Time) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>
+                                        </td>
+                                        <td style="width:10vw;">
+                                            <img class="detailDelete" src="~/Image/Icon/Delete.png" width="30" />
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+                    </div>
+
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var msg;
+    var EditMode;
+    $(function () {
+        msg = new MessagerAlert();
+        EditMode = false;
+        IsEditModeChange();
+
+
+    });
+
+    function IsEditModeChange() {
+
+        if (EditMode) {
+
+        }
+        else {
+
+        }
+    }
+</script>
