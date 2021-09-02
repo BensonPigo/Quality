@@ -168,9 +168,11 @@
                                         </h4>
                                     </td>
                                     <td>
-                                        <h4 id="Save" style="margin-right: 1em;">
-                                            <img src="~/Image/Icon/Save.png" width="30" />
-                                            Save
+                                        <h4 style="margin-right: 1em;">
+                                            <button id="Save" type="submit" style="margin:0;min-width:0;background-color:transparent">
+                                                <img src="~/Image/Icon/Save.png" width="30" />
+                                                Save
+                                            </button>
                                         </h4>
                                     </td>
                                     <td>
@@ -240,7 +242,7 @@
                                     </td>
                                     <td><h5>Remark</h5></td>
                                     <td colspan="3">
-                                        @Html.TextBoxFor(o => o.Detail.Remark, "", new { @readonly = "readonly" })
+                                        @Html.TextBoxFor(o => o.Detail.Remark, "", new {@class = "OnlyEdit",  @readonly = "readonly" })
                                     </td>
                                 </tr>
                                 <tr>
@@ -275,7 +277,7 @@
                                 <tr>
                                     <td><h5>Fabric Ref#</h5></td>
                                     <td>
-                                        @Html.TextBoxFor(o => o.Detail.FabricRefno, "", new { @class = "OnlyEdit", @readonly = "readonly", @type = "number" })
+                                        @Html.TextBoxFor(o => o.Detail.FabricRefno, "", new { @class = "OnlyEdit", @readonly = "readonly"})
                                     </td>
                                     <td><h5>Accessory</h5></td>
                                     <td>
@@ -446,7 +448,7 @@
                 IsEditModeChange();
             });
 
-            $('#Save').on('click', function () {
+            $('#Save').on('click', function (e) {
                 var detail = [];
                 var ErrMsg = "";
 
@@ -457,16 +459,20 @@
 
                 //檢查TestDate, {PullForceUnit}, Sec, Fabric Ref#, Accessory Ref# 不可為空
                 if ($('#Detail_TestDate').val() == '' || $('#Detail_PullForceUnit').val() == '' || $('#Detail_Time').val() == ''
-                    || $('#Detail_Article').val() == ''
+                    || $('#Detail_FabricRefno').val() == '' || $('#Detail_AccRefno').val() == ''
                     || $('#Detail_TestDate').val() == undefined || $('#Detail_PullForceUnit').val() == undefined || $('#Detail_Time').val() == undefined
-                    || $('#Detail_Article').val() == undefined) {
+                    || $('#Detail_FabricRefno').val() == undefined || $('#Detail_AccRefno').val() == undefined) {
                     ErrMsg += "TestDate, Newton, Sec, Fabric Ref# and Accessory Ref# cannot be empty<br/>";
                 }
 
                 if (ErrMsg != "") {
+                    e.preventDefault();
                     msg.WithError(ErrMsg);
                     return;
                 }
+
+                //因為是submit，所以會直接送出
+                //麻煩請再修改
 
             });
 

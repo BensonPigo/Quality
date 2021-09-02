@@ -27,11 +27,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 StyleID = string.Empty,
                 Article = string.Empty,
                 ReportNo_Source = new List<string>(),
-                Detail = new PullingTest_Result()
-                {
-                    ReportNo = "test",
-
-                },
+                Detail = new PullingTest_Result(),
             };
 
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(Result.ReportNo_Source);
