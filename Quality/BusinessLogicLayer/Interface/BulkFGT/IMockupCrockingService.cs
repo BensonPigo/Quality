@@ -6,10 +6,10 @@ namespace BusinessLogicLayer.Interface.BulkFGT
 {
     public interface IMockupCrockingService
     {
-        MockupCrockings_ViewModel GetMockupCrocking(MockupCrocking_Request MockupCrocking);
+        MockupCrocking_ViewModel GetMockupCrocking(MockupCrocking_Request MockupCrocking);
 
-        MockupCrockings_ViewModel Create(MockupCrockings_ViewModel MockupCrocking);
+        MockupCrocking_ViewModel Create(MockupCrocking_ViewModel MockupCrocking);
 
-        MockupCrocking_ViewModel GetExcel(string ReportNo);
+        MockupCrocking_ViewModel GetPDF(MockupCrocking_ViewModel MockupCrocking, bool test = false);
     }
 }

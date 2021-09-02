@@ -64,6 +64,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
     {
         //Oven
 
+        public string AIR_LaboratoryID { get; set; }
         public string POID { get; set; }
         public string SCIRefno { get; set; }
         public string WKNo { get; set; }
@@ -79,12 +80,13 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string Remark { get; set; }
         public string OvenInspector { get; set; }
         public DateTime? OvenDate { get; set; }
+
+        public bool OvenEncode { get; set; }
     }
 
     public class Accessory_Wash
     {
-        //Oven
-
+        public string AIR_LaboratoryID { get; set; }
         public string POID { get; set; }
         public string SCIRefno { get; set; }
         public string WKNo { get; set; }
@@ -100,5 +102,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string Remark { get; set; }
         public string WashInspector { get; set; }
         public DateTime? WashDate { get; set; }
+
+        public bool WashEncode { get; set; }
     }
 }

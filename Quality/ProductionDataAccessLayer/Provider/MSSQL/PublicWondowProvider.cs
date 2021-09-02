@@ -17,7 +17,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         #endregion
 
 
-        public IList<Window_Brand> Get_Brand(string ID)
+        public IList<Window_Brand> Get_Brand(string ID,bool IsExact)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -29,9 +29,16 @@ where junk = 0
 ");
             if (!string.IsNullOrEmpty(ID))
             {
-
-                SbSql.Append($@"AND ID LIKE @ID");
-                paras.Add("@ID", DbType.String, ID + "%");
+                if (IsExact)
+                {
+                    SbSql.Append($@"AND ID = @ID");
+                    paras.Add("@ID", DbType.String, ID);
+                }
+                else
+                {
+                    SbSql.Append($@"AND ID LIKE @ID");
+                    paras.Add("@ID", DbType.String, ID + "%");
+                }
             }
 
             return ExecuteList<Window_Brand>(CommandType.Text, SbSql.ToString(), paras);
@@ -57,7 +64,7 @@ where 1=1
             return ExecuteList<Window_Brand>(CommandType.Text, SbSql.ToString(), paras);
         }
 
-        public IList<Window_Season> Get_Season(string BrandID, string ID)
+        public IList<Window_Season> Get_Season(string BrandID, string ID, bool IsExact)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -69,8 +76,16 @@ where junk = 0
 ");
             if (!string.IsNullOrEmpty(ID))
             {
-                SbSql.Append($@"AND ID LIKE @ID ");
-                paras.Add("@ID", DbType.String, ID + "%");
+                if (IsExact)
+                {
+                    SbSql.Append($@"AND ID = @ID ");
+                    paras.Add("@ID", DbType.String, ID);
+                }
+                else
+                {
+                    SbSql.Append($@"AND ID LIKE @ID ");
+                    paras.Add("@ID", DbType.String, ID + "%");
+                }
             }
 
             if (!string.IsNullOrEmpty(BrandID))
@@ -84,7 +99,7 @@ where junk = 0
             return ExecuteList<Window_Season>(CommandType.Text, SbSql.ToString(), paras);
         }
 
-        public IList<Window_Style> Get_Style(string BrandID, string SeasonID, string ID)
+        public IList<Window_Style> Get_Style(string BrandID, string SeasonID, string ID, bool IsExact)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -96,8 +111,16 @@ where junk = 0
 ");
             if (!string.IsNullOrEmpty(ID))
             {
-                SbSql.Append($@"AND ID LIKE @ID ");
-                paras.Add("@ID", DbType.String, ID + "%");
+                if (IsExact)
+                {
+                    SbSql.Append($@"AND ID = @ID ");
+                    paras.Add("@ID", DbType.String, ID);
+                }
+                else
+                {
+                    SbSql.Append($@"AND ID LIKE @ID ");
+                    paras.Add("@ID", DbType.String, ID + "%");
+                }
             }
 
             if (!string.IsNullOrEmpty(BrandID))
@@ -114,7 +137,7 @@ where junk = 0
             return ExecuteList<Window_Style>(CommandType.Text, SbSql.ToString(), paras);
         }
 
-        public IList<Window_Article> Get_Article(string OrderID, Int64 StyleUkey, string StyleID, string BrandID, string SeasonID, string Article)
+        public IList<Window_Article> Get_Article(string OrderID, Int64 StyleUkey, string StyleID, string BrandID, string SeasonID, string Article, bool IsExact)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -167,14 +190,22 @@ AND StyleUkey in (
 
             if (!string.IsNullOrEmpty(Article))
             {
-                SbSql.Append($@"AND Article LIKE @Article ");
-                paras.Add("@Article", DbType.String, Article + "%");
+                if (IsExact)
+                {
+                    SbSql.Append($@"AND Article = @Article ");
+                    paras.Add("@Article", DbType.String, Article);
+                }
+                else
+                {
+                    SbSql.Append($@"AND Article LIKE @Article ");
+                    paras.Add("@Article", DbType.String, Article + "%");
+                }
             }
 
             return ExecuteList<Window_Article>(CommandType.Text, SbSql.ToString(), paras);
         }
 
-        public IList<Window_Article> Get_Size(string OrderID, Int64? StyleUkey, string BrandID, string SeasonID, string StyleID, string Article, string Size)
+        public IList<Window_Article> Get_Size(string OrderID, Int64? StyleUkey, string BrandID, string SeasonID, string StyleID, string Article, string Size, bool IsExact)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -233,15 +264,23 @@ AND StyleUkey in (
 
             if (!string.IsNullOrEmpty(Size))
             {
-                SbSql.Append($@"AND SizeCode LIKE @Size ");
-                paras.Add("@Size", DbType.String, Size + "%");
+                if (IsExact)
+                {
+                    SbSql.Append($@"AND SizeCode = @Size ");
+                    paras.Add("@Size", DbType.String, Size);
+                }
+                else
+                {
+                    SbSql.Append($@"AND SizeCode LIKE @Size ");
+                    paras.Add("@Size", DbType.String, Size + "%");
+                }
             }
 
 
             return ExecuteList<Window_Article>(CommandType.Text, SbSql.ToString(), paras);
         }
 
-        public IList<Window_Technician> Get_Technician(string CallFunction, string ID)
+        public IList<Window_Technician> Get_Technician(string CallFunction, string ID, bool IsExact)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -260,14 +299,22 @@ Where tch.{CallFunction} = 1
 
             if (!string.IsNullOrEmpty(ID))
             {
-                SbSql.Append($@"AND tch.ID LIKE @ID ");
-                paras.Add("@ID", DbType.String, ID + "%");
+                if (IsExact)
+                {
+                    SbSql.Append($@"AND tch.ID = @ID ");
+                    paras.Add("@ID", DbType.String, ID);
+                }
+                else
+                {
+                    SbSql.Append($@"AND tch.ID LIKE @ID ");
+                    paras.Add("@ID", DbType.String, ID + "%");
+                }
             }
 
             return ExecuteList<Window_Technician>(CommandType.Text, SbSql.ToString(), paras);
         }
 
-        public IList<Window_Pass1> Get_Pass1(string ID)
+        public IList<Window_Pass1> Get_Pass1(string ID, bool IsExact)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -284,14 +331,22 @@ Where 1=1
 
             if (!string.IsNullOrEmpty(ID))
             {
-                SbSql.Append($@"AND ID LIKE @ID ");
-                paras.Add("@ID", DbType.String, ID + "%");
+                if (IsExact)
+                {
+                    SbSql.Append($@"AND ID = @ID ");
+                    paras.Add("@ID", DbType.String, ID);
+                }
+                else
+                {
+                    SbSql.Append($@"AND ID LIKE @ID ");
+                    paras.Add("@ID", DbType.String, ID + "%");
+                }
             }
 
             return ExecuteList<Window_Pass1>(CommandType.Text, SbSql.ToString(), paras);
         }
 
-        public IList<Window_LocalSupp> Get_LocalSupp(string Name)
+        public IList<Window_LocalSupp> Get_LocalSupp(string Name, bool IsExact)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -308,14 +363,22 @@ Where Junk = 0
 
             if (!string.IsNullOrEmpty(Name))
             {
-                SbSql.Append($@"AND Name LIKE @Name ");
-                paras.Add("@Name", DbType.String, Name + "%");
+                if (IsExact)
+                {
+                    SbSql.Append($@"AND Name = @Name ");
+                    paras.Add("@Name", DbType.String, Name);
+                }
+                else
+                {
+                    SbSql.Append($@"AND Name LIKE @Name ");
+                    paras.Add("@Name", DbType.String, Name + "%");
+                }
             }
 
             return ExecuteList<Window_LocalSupp>(CommandType.Text, SbSql.ToString(), paras);
         }
 
-        public IList<Window_TPESupp> Get_TPESupp(string Name)
+        public IList<Window_TPESupp> Get_TPESupp(string Name, bool IsExact)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -326,10 +389,20 @@ Where Junk = 0
 
             if (!string.IsNullOrEmpty(Name))
             {
-                whereLocal = $@"AND Name LIKE @Name ";
-                where = $@"AND NameEN LIKE @Name ";
+                if (IsExact)
+                {
+                    whereLocal = $@"AND Name = @Name ";
+                    where = $@"AND NameEN = @Name ";
 
-                paras.Add("@Name", DbType.String, Name + "%");
+                    paras.Add("@Name", DbType.String, Name);
+                }
+                else
+                {
+                    whereLocal = $@"AND Name LIKE @Name ";
+                    where = $@"AND NameEN LIKE @Name ";
+
+                    paras.Add("@Name", DbType.String, Name + "%");
+                }
             }
             /*
             //台北
@@ -371,7 +444,7 @@ Where Junk = 0
             return ExecuteList<Window_TPESupp>(CommandType.Text, SbSql.ToString(), paras);
         }
 
-        public IList<Window_Po_Supp_Detail> Get_Po_Supp_Detail(string POID, string FabricType, string Seq)
+        public IList<Window_Po_Supp_Detail> Get_Po_Supp_Detail(string POID, string FabricType, string Seq, bool IsExact)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -395,12 +468,14 @@ AND psd.ID = @POID
             {
                 SbSql.Append($@"AND (psd.Seq1 = @Seq  OR psd.Seq2 = @Seq OR psd.Seq1+'-'+psd.Seq2 = @Seq )    ");
                 paras.Add("@Seq", DbType.String, Seq);
+
+                // IsExact沒有用到
             }
 
             return ExecuteList<Window_Po_Supp_Detail>(CommandType.Text, SbSql.ToString(), paras);
         }
 
-        public IList<Window_FtyInventory> Get_FtyInventory(string POID, string Seq1, string Seq2, string Roll)
+        public IList<Window_FtyInventory> Get_FtyInventory(string POID, string Seq1, string Seq2, string Roll, bool IsExact)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -439,6 +514,8 @@ Where 1=1
                 paras.Add("@Roll", DbType.String, Roll);
             }
 
+            // IsExact沒有用到
+
             return ExecuteList<Window_FtyInventory>(CommandType.Text, SbSql.ToString(), paras);
         }
 
@@ -469,7 +546,7 @@ Where Type = 'Pms_LabAccessory'
             return ExecuteList<Window_Appearance>(CommandType.Text, SbSql.ToString(), paras);
         }
 
-        public IList<Window_SewingLine> Get_SewingLine(string FactoryID, string ID)
+        public IList<Window_SewingLine> Get_SewingLine(string FactoryID, string ID, bool IsExact)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -491,9 +568,17 @@ AND FactoryID=@FactoryID
 
             if (!string.IsNullOrEmpty(ID))
             {
-                SbSql.Append($@"AND ID  = @ID ");
+                if (IsExact)
+                {
+                    SbSql.Append($@"AND ID  = @ID ");
+                    paras.Add("@ID", DbType.String, ID);
+                }
+                else
+                {
+                    SbSql.Append($@"AND ID  LIKE @ID ");
+                    paras.Add("@ID", DbType.String, ID + "%");
 
-                paras.Add("@ID", DbType.String, ID);
+                }
             }
 
 
@@ -561,7 +646,7 @@ Where 1=1
             return ExecuteList<Window_FGPT>(CommandType.Text, SbSql.ToString(), paras);
         }
 
-        public IList<Window_Picture> Get_Picture(string Table, string BrforeColumn, string AfterColumn, string PKey_1, string PKey_2, string PKey_3, string PKey_1_Val, string PKey_2_Val, string PKey_3_Val)
+        public IList<Window_Picture> Get_Picture(string Table, string BrforeColumn, string AfterColumn, string PKey_1, string PKey_2, string PKey_3, string PKey_4, string PKey_1_Val, string PKey_2_Val, string PKey_3_Val, string PKey_4_Val)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -581,6 +666,11 @@ Where 1=1
             if (!string.IsNullOrEmpty(PKey_3))
             {
                 selectColumn += $@",{PKey_3}" + Environment.NewLine;
+            }
+
+            if (!string.IsNullOrEmpty(PKey_4))
+            {
+                selectColumn += $@",{PKey_4}" + Environment.NewLine;
             }
 
             //台北
@@ -611,6 +701,13 @@ Where 1=1
                 SbSql.Append($@"AND {PKey_3}  = @PKey_3  ");
 
                 paras.Add("@PKey_3 ", DbType.String, PKey_3_Val);
+            }
+
+            if (!string.IsNullOrEmpty(PKey_4))
+            {
+                SbSql.Append($@"AND {PKey_4}  = @PKey_4  ");
+
+                paras.Add("@PKey_4 ", DbType.String, PKey_3_Val);
             }
 
             return ExecuteList<Window_Picture>(CommandType.Text, SbSql.ToString(), paras);

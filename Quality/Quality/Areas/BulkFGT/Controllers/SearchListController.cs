@@ -35,10 +35,21 @@ namespace Quality.Areas.BulkFGT.Controllers
                TypeDatasource = data,
            };
 
+            List<SearchList_Result> detailList = new List<SearchList_Result>();
+            SearchList_Result detail = new SearchList_Result();
+            detail.Type = "Fabirc Crocking & Test";
+            detail.StyleID = "S2106GHTT203";
+            detail.BrandID = "Adidas";
+            detail.SeasonID = "20FW";
+            detail.Article = "GC8429";
+            detailList.Add(detail);
+            model.DataList = detailList;
+
             if (TempData["Model"] != null)
             {
                 model = (SearchList_ViewModel)TempData["Model"];
             }
+
 
             return View(model);
         }
@@ -50,31 +61,33 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             this.CheckSession();
 
-            // 必填條件
-            if ((Req.BrandID == "" || Req.SeasonID == "") || Req.StyleID == "")
-            {
-                Req.ErrorMessage = $@"
-msg.WithInfo('[Style] or [Brand, Season] can't be cmpty. ');
-";
-                TempData["Model"] = Req;
-                return RedirectToAction("Index");
-            }
+//            // 必填條件
+//            if ((Req.BrandID == "" || Req.SeasonID == "") || Req.StyleID == "")
+//            {
+//                Req.ErrorMessage = $@"
+//msg.WithInfo('[Style] or [Brand, Season] can't be cmpty. ');
+//";
+//                TempData["Model"] = Req;
+//                return RedirectToAction("Index");
+//            }
 
-            SearchList_ViewModel model = new SearchList_ViewModel();
-            Req.DataList = new List<SearchList_Result>();
+//            SearchList_ViewModel model = new SearchList_ViewModel();
+//            Req.DataList = new List<SearchList_Result>();
 
+//            List<SelectListItem> data = _SearchListService.GetTypeDatasource(this.UserID);
 
-            // Query
-            model = _SearchListService.Get_SearchList(model);
+//            model.TypeDatasource = data;
+//            // Query
+//            model = _SearchListService.Get_SearchList(model);
 
-            if (!model.Result)
-            {
-                model.ErrorMessage = $@"
-msg.WithInfo('{model.ErrorMessage.Replace("'", string.Empty)}');
-";
-            }
+//            if (!model.Result)
+//            {
+//                model.ErrorMessage = $@"
+//msg.WithInfo('{model.ErrorMessage.Replace("'", string.Empty)}');
+//";
+//            }
 
-            TempData["Model"] = model;
+//            TempData["Model"] = model;
 
             return RedirectToAction("Index");
         }

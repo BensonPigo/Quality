@@ -21,56 +21,38 @@ namespace BusinessLogicLayer.Service
         private IMockupCrockingProvider _MockupCrockingProvider;
         private IMockupCrockingDetailProvider _MockupCrockingDetailProvider;
 
-        public MockupCrockings_ViewModel GetMockupCrocking(MockupCrocking_Request MockupCrocking)
+        public MockupCrocking_ViewModel GetMockupCrocking(MockupCrocking_Request MockupCrocking)
         {
-            MockupCrockings_ViewModel model = new MockupCrockings_ViewModel();
+            MockupCrocking_ViewModel mockupCrocking_model = new MockupCrocking_ViewModel();
             try
             {
                 _MockupCrockingProvider = new MockupCrockingProvider(Common.ProductionDataAccessLayer);
                 _MockupCrockingDetailProvider = new MockupCrockingDetailProvider(Common.ProductionDataAccessLayer);
-                model.MockupCrocking = _MockupCrockingProvider.GetMockupCrocking(MockupCrocking).ToList();
-                model.ReportNos = new List<string>();
-                foreach (var item in model.MockupCrocking)
-                {
-                    model.ReportNos.Add(item.ReportNo);
-                    MockupCrocking_Detail mockupCrocking_Detail = new MockupCrocking_Detail() { ReportNo = item.ReportNo };
-                    item.MockupCrocking_Detail = _MockupCrockingDetailProvider.GetMockupCrocking_Detail(mockupCrocking_Detail).ToList();
-                }
-
-                model.Result = true;
+                mockupCrocking_model = _MockupCrockingProvider.GetMockupCrocking(MockupCrocking).ToList().First();
+                mockupCrocking_model.ReportNo_Source = _MockupCrockingProvider.GetMockupCrockingReportNoList(MockupCrocking).Select(s => s.ReportNo).ToList();
+                MockupCrocking_Detail mockupCrocking_Detail = new MockupCrocking_Detail() { ReportNo = mockupCrocking_model.ReportNo };
+                mockupCrocking_model.MockupCrocking_Detail = _MockupCrockingDetailProvider.GetMockupCrocking_Detail(mockupCrocking_Detail).ToList();
             }
             catch (System.Exception ex)
             {
-                model.Result = false;
-                model.ErrorMessage = ex.Message;
+
             }
 
-            return model;
+            return mockupCrocking_model;
         }
 
-        public MockupCrocking_ViewModel GetExcel(string ReportNo)
+        public MockupCrocking_ViewModel GetPDF(MockupCrocking_ViewModel mockupCrocking, bool test = false)
         {
-            bool test = false;
             MockupCrocking_ViewModel result = new MockupCrocking_ViewModel();
-
-            var oneReportNo = GetMockupCrocking(new MockupCrocking_Request() { ReportNo = ReportNo });
-            if (oneReportNo == null)
+            if (mockupCrocking == null)
             {
                 result.ReportResult = false;
-                result.ErrorMessage = "Get Data Fail!";
-                return result;
-            }
-
-            if (oneReportNo.MockupCrocking.Count == 0)
-            {
-                result.ReportResult = false;
-                result.ErrorMessage = "Data Not found!";
+                result.ReportErrorMessage = "Get Data Fail!";
                 return result;
             }
 
             try
             {
-                var mockupCrocking = oneReportNo.MockupCrocking[0];
                 if (!test)
                 {
                     if (!System.IO.Directory.Exists(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\"))
@@ -204,7 +186,7 @@ namespace BusinessLogicLayer.Service
                 }
                 else
                 {
-                    result.ErrorMessage = "Convert To PDF Fail";
+                    result.ReportErrorMessage = "Convert To PDF Fail";
                     result.ReportResult = false;
                 }
             }
@@ -216,9 +198,9 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public MockupCrockings_ViewModel Create(MockupCrockings_ViewModel MockupCrocking)
+        public MockupCrocking_ViewModel Create(MockupCrocking_ViewModel MockupCrocking)
         {
-            MockupCrockings_ViewModel model = new MockupCrockings_ViewModel();
+            MockupCrocking_ViewModel model = new MockupCrocking_ViewModel();
             _MockupCrockingProvider = new MockupCrockingProvider(Common.ProductionDataAccessLayer);
             _MockupCrockingDetailProvider = new MockupCrockingDetailProvider(Common.ProductionDataAccessLayer);
             int insertCt;
@@ -226,29 +208,23 @@ namespace BusinessLogicLayer.Service
             {
                 using (TransactionScope scope = new TransactionScope())
                 {
-                    insertCt = _MockupCrockingProvider.Create(MockupCrocking.MockupCrocking[0]);
+                    insertCt = _MockupCrockingProvider.Create(MockupCrocking);
                     if (insertCt == 0)
                     {
-                        model.Result = false;
-                        model.ErrorMessage = "Insert MockupCrocking Fail!";
                         return model;
                     }
 
-                    foreach (var MockupCrocking_Detail in MockupCrocking.MockupCrocking[0].MockupCrocking_Detail)
+                    foreach (var MockupCrocking_Detail in MockupCrocking.MockupCrocking_Detail)
                     {
                         insertCt = _MockupCrockingDetailProvider.Create(MockupCrocking_Detail);
                         if (insertCt == 0)
                         {
-                            model.Result = false;
-                            model.ErrorMessage = "Insert MockupCrocking_Detail Fail!";
                             return model;
                         }
                     }
 
                     scope.Complete();
                 }
-
-                model.Result = true;
             }
             catch (Exception ex)
             {

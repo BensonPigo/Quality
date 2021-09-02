@@ -7,6 +7,8 @@ namespace ProductionDataAccessLayer.Interface
 {
     public interface IMockupWashProvider
     {
+        IList<MockupWash_ViewModel> GetMockupWashReportNoList(MockupWash_Request Item);
+
         IList<MockupWash_ViewModel> GetMockupWash(MockupWash_Request Item);
 
         IList<AccessoryRefNo> GetAccessoryRefNo(AccessoryRefNo_Request Item);
