@@ -85,7 +85,9 @@
     <Compile Include="Interface\IGarmentTestProvider.cs" />
     <Compile Include="Interface\IMockupCrockingDetailProvider.cs" />
     <Compile Include="Interface\IMockupCrockingProvider.cs" />
+    <Compile Include="Interface\IMockupOvenDetailProvider.cs" />
     <Compile Include="Interface\IMockupWashDetailProvider.cs" />
+    <Compile Include="Interface\IMockupOvenProvider.cs" />
     <Compile Include="Interface\IMockupWashProvider.cs" />
     <Compile Include="Interface\INewCDCodeProvider.cs" />
     <Compile Include="Interface\IOrderLocationProvider.cs" />
@@ -126,7 +128,9 @@
     <Compile Include="Provider\MSSQL\GarmentTestProvider.cs" />
     <Compile Include="Provider\MSSQL\MockupCrockingDetailProvider.cs" />
     <Compile Include="Provider\MSSQL\MockupCrockingProvider.cs" />
+    <Compile Include="Provider\MSSQL\MockupOvenDetailProvider.cs" />
     <Compile Include="Provider\MSSQL\MockupWashDetailProvider.cs" />
+    <Compile Include="Provider\MSSQL\MockupOvenProvider.cs" />
     <Compile Include="Provider\MSSQL\MockupWashProvider.cs" />
     <Compile Include="Provider\MSSQL\NewCDCodeProvider.cs" />
     <Compile Include="Provider\MSSQL\OrderLocationProvider.cs" />
