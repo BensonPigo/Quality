@@ -13,6 +13,10 @@ namespace BusinessLogicLayer.Interface.BulkFGT
 
         MockupWash_ViewModel Create(MockupWash_ViewModel MockupWash);
 
+        MockupWash_ViewModel Update(MockupWash_ViewModel MockupWash);
+
+        MockupWash_ViewModel Delete(MockupWash_ViewModel MockupWash);
+
         MockupWash_ViewModel GetPDF(MockupWash_ViewModel MockupWash, bool test = false);
     }
 }
