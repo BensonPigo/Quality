@@ -240,13 +240,14 @@ and ID = @ID
 
         public bool Update_GarmentTestDetail(GarmentTest_Detail_ViewModel source)
         {
+            string LOtoFactory = string.IsNullOrEmpty(source.LOtoFactory) ? string.Empty : source.LOtoFactory;
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
                 { "@ID", source.ID } ,
                 { "@No", source.No } ,
                 { "@SubmitDate", DbType.Date, source.SubmitDate},
                 { "@ArrivedQty", source.ArrivedQty } ,
-                { "@LOtoFactory", source.LOtoFactory } ,
+                { "@LOtoFactory", LOtoFactory} ,
                 { "@Result", source.Result } ,
                 { "@Remark", source.Remark } ,
                 { "@LineDry", DbType.Boolean, source.LineDry } ,

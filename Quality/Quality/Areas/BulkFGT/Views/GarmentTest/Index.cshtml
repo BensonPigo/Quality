@@ -14,13 +14,6 @@
 
 @model GarmentTest_Result
 <style type="text/css">
-    .content-scroll {
-        height: calc( 100vh - 180px );
-    }
-
-    .inner-scroll {
-        height: calc(100vh - 180px);
-    }
 
     .row {
         --bs-gutter-x: 1.5rem;
@@ -210,6 +203,7 @@
                                 <td><h5>First SP#</h5></td>
                                 <td>
                                     @Html.TextBoxFor(o => o.garmentTest.FirstOrderID, "", new { @readonly = "readonly" })
+                                    @Html.HiddenFor(o => o.garmentTest.OrderID)
                                 </td>
                                 <td><h5>M</h5></td>
                                 <td>
@@ -254,31 +248,35 @@
                             </tr>
                             @{
                                 string SeamBreakageFontColor = Model.garmentTest != null && Model.garmentTest.SeamBreakageResult == "P" ? "blue" : "red";
-                                string SeamBreakageVal = Model.garmentTest != null && Model.garmentTest.SeamBreakageResult == "P" ? "Pass" : "Fail";
+                                string SeamBreakageVal = Model.garmentTest != null && Model.garmentTest.SeamBreakageResult == "P" ? "Pass" :
+                                                        string.IsNullOrEmpty(Model.garmentTest.SeamBreakageResult) ? string.Empty : "Fail";
 
                                 string OdourResultFontColor = Model.garmentTest != null && Model.garmentTest.OdourResult == "P" ? "blue" : "red";
-                                string OdourResultVal = Model.garmentTest != null && Model.garmentTest.OdourResult == "P" ? "Pass" : "Fail";
+                                string OdourResultVal = Model.garmentTest != null && Model.garmentTest.OdourResult == "P" ? "Pass" :
+                                                        string.IsNullOrEmpty(Model.garmentTest.OdourResult) ? string.Empty : "Fail";
 
                                 string WashResultFontColor = Model.garmentTest != null && Model.garmentTest.WashResult == "P" ? "blue" : "red";
-                                string WashResultVal = Model.garmentTest != null && Model.garmentTest.WashResult == "P" ? "Pass" : "Fail";
+                                string WashResultVal = Model.garmentTest != null && Model.garmentTest.WashResult == "P" ? "Pass" :
+                                                        string.IsNullOrEmpty(Model.garmentTest.WashResult) ? string.Empty : "Fail";
 
                                 string ResultFontColor = Model.garmentTest != null && Model.garmentTest.Result == "P" ? "blue" : "red";
-                                string ResultVal = Model.garmentTest != null && Model.garmentTest.Result == "P" ? "Pass" : "Fail";
+                                string ResultVal = Model.garmentTest != null && Model.garmentTest.Result == "P" ? "Pass" :
+                                                        string.IsNullOrEmpty(Model.garmentTest.Result) ? string.Empty : "Fail";
                             }
                             <tr>
                                 <td><h5>450 Last Result</h5></td>
                                 <td class="@SeamBreakageFontColor">
-                                    @Model.garmentTest.SeamBreakageResult
+                                    @SeamBreakageVal
                                 </td>
                                 <td><h5>451 Last Result</h5></td>
                                 <td class="@OdourResultFontColor">
-                                    @Model.garmentTest.OdourResult
+                                    @OdourResultVal
                                 </td>
                                 <td>
                                     <h5 class="WashResult">@Model.garmentTest.WashName Last Result</h5>
                                 </td>
                                 <td class="@WashResultFontColor">
-                                    @Model.garmentTest.WashResult
+                                    @WashResultVal
                                 </td>
                             </tr>
                             <tr>
@@ -316,12 +314,13 @@
                     <table class="DetailTable DataTable">
                         <thead>
                             @{
+                                string trClass = Model.garmentTest_Details.Count == 0 ? "display-None" : "";
                                 string washName = "701";
                                 if (Model != null && Model.garmentTest_Details != null && Model.garmentTest_Details.Count() > 0)
                                 {
                                     washName = Model.garmentTest.WashName;
                                 }
-                                <tr>
+                                <tr class="@trClass">
                                     <th><h4>No. of Test</h4></th>
                                     <th><h4>SP#</h4></th>
                                     <th><h4>Size</h4></th>
@@ -357,10 +356,10 @@
 
                                         @if (Model.garmentTest_Details[i].ID > 0)
                                         {
-                                            aHref = Url.Action("Detail", "GarmentTest", new { ID = Model.garmentTest_Details[i].ID, No = Model.garmentTest_Details[i].No });
+                                            aHref = Url.Action("Detail", "GarmentTest", new { ID = Model.garmentTest_Details[i].ID, No = Model.garmentTest_Details[i].No, EditMode = false });
                                         }
 
-                                        <a href="@aHref" idx="@Model.garmentTest_Details[i].ID" idv="@Model.garmentTest_Details[i].No">
+                                        <a href="@aHref" class="detailA" idx="@Model.garmentTest_Details[i].ID" idv="@Model.garmentTest_Details[i].No">
                                             @Html.DisplayFor(o => Model.garmentTest_Details[i].No, "", "")
                                         </a>
                                     </td>
@@ -390,7 +389,8 @@
                                     </td>
                                     @{
                                         string garmentTest_DetailsFontColor = Model.garmentTest_Details[i].Result == "P" ? "blue" : "red";
-                                        string garmentTest_DetailsVal = Model.garmentTest_Details[i].Result == "P" ? "Pass" : "Fail";
+                                        string garmentTest_DetailsVal = Model.garmentTest_Details[i].Result == "P" ? "Pass" :
+                                                        string.IsNullOrEmpty(Model.garmentTest_Details[i].Result) ? string.Empty : "Fail";
                                     }
                                     <td class="@garmentTest_DetailsFontColor" style="width:10vw;">
                                         @garmentTest_DetailsVal
@@ -618,114 +618,127 @@
         });
 
         $('#New').on('click', function () {
-            AddDetailRow($('#garmentTest_FirstOrderID').val(), $('#garmentTest_Article').val());
+            AddDetailRow($('#garmentTest_OrderID').val(), $('#garmentTest_Article').val());
         });
     }
 
     function DetailDynamicBind() {
+        //$('.detailEdit').unbind('click').on('click', function () {
+        //    if ($('#garmentTest_ID').val() == "") {
+        //        return;
+        //    }
+
+        //    if ($(this).prop('src').indexOf("Save.png") > -1) {
+        //        var tr = $(this).parent().parent();
+        //        tr.find("input[type='text']").removeAttr("disabled");
+        //        tr.find("input[type='checkbox']").removeAttr("disabled");
+        //        tr.find("select").removeAttr("disabled");
+
+        //        var detail = [];
+        //        var fcol = tr.children().find('a');
+        //        var id = fcol.attr("idx");
+        //        var no = fcol.attr("idv");
+
+        //        var NonSeamBreakageTest = tr.children().find("input[type='checkbox']").prop("checked");
+        //        var OrderID, inspdate, inspector, Remark;
+        //        var SizeCode, MtlTypeID;
+
+        //        tr.children().find("input[type='text']").each(function (index, value) {
+        //            switch (index) {
+        //                case 0:
+        //                    OrderID = $(this).val();
+        //                    break;
+        //                case 1:
+        //                    inspdate = $(this).val();
+        //                    break;
+        //                case 2:
+        //                    inspector = $(this).val();
+        //                    break;
+        //                case 3:
+        //                    Remark = $(this).val();
+        //                    break;
+        //            }
+        //        })
+
+        //        if (OrderID == "") {
+        //            msg.WithError("SP# cannot be empty");
+        //            return;
+        //        }
+
+        //        if (MtlTypeID == "") {
+        //            msg.WithError("Material Type cannot be empty");
+        //            return;
+        //        }
+
+        //        tr.children().find("select").each(function (index, value) {
+        //            switch (index) {
+        //                case 0:
+        //                    SizeCode = $(this).children("option:selected").val();
+        //                    break;
+        //                case 1:
+        //                    MtlTypeID = $(this).children("option:selected").val();
+        //                    break;
+        //            }
+        //        })
+
+        //        detail.push({
+        //            ID: parseInt(id),
+        //            No: parseInt(no),
+        //            OrderID: OrderID,
+        //            inspdate: inspdate,
+        //            inspector: inspector,
+        //            Remark: Remark,
+        //            NonSeamBreakageTest: NonSeamBreakageTest,
+        //            SizeCode: SizeCode,
+        //            MtlTypeID: MtlTypeID,
+        //        });
+
+        //        var main = {
+        //            ID: parseInt($('#garmentTest_ID').val()),
+        //            StyleID: $('#garmentTest_StyleID').val(),
+        //            SeasonID: $('#garmentTest_SeasonID').val(),
+        //            BrandID: $('#garmentTest_BrandID').val(),
+        //            Article: $('#garmentTest_Article').val(),
+        //        };
+
+        //        if (detail.length > 0) {
+        //            SaveData(main, detail);
+        //        }
+        //        else {
+        //            msg.WithError("Save Fail");
+        //            return;
+        //        }
+        //    }
+        //    else {
+        //        $(".rowHeader input[type='text']").attr("disabled", "disabled");
+        //        $(".rowHeader input[type='button'], #btnQuery").addClass("IsEditModeQuery");
+        //        $("#Edit, #Save, #Undo").removeClass("IsEditMode");
+        //        $(".DetailTable img").addClass('display-None');
+        //        $(this).removeClass('display-None');
+        //        $('#btnQuery').on('click', function () {
+        //            return false;
+        //        });
+
+        //        $(this).prop("src", "/Image/Icon/Save.png");
+
+        //        var tr = $(this).parent().parent();
+        //        tr.find("input[type='text']").removeAttr("disabled");
+        //        tr.find("input[type='checkbox']").removeAttr("disabled");
+        //        tr.find("select").removeAttr("disabled");
+        //    }
+        //});
+
         $('.detailEdit').unbind('click').on('click', function () {
             if ($('#garmentTest_ID').val() == "") {
                 return;
             }
 
-            if ($(this).prop('src').indexOf("Save.png") > -1) {
-                var tr = $(this).parent().parent();
-                tr.find("input[type='text']").removeAttr("disabled");
-                tr.find("input[type='checkbox']").removeAttr("disabled");
-                tr.find("select").removeAttr("disabled");
+            var tr = $(this).parents().parents();
+            var fcol = tr.children().find("a[class='detailA']");
+            var id = fcol.attr("idx");
+            var no = fcol.attr("idv");
 
-                var detail = [];
-                var fcol = tr.children().find('a');
-                var id = fcol.attr("idx");
-                var no = fcol.attr("idv");
-
-                var NonSeamBreakageTest = tr.children().find("input[type='checkbox']").prop("checked");
-                var OrderID, inspdate, inspector, Remark;
-                var SizeCode, MtlTypeID;
-
-                tr.children().find("input[type='text']").each(function (index, value) {
-                    switch (index) {
-                        case 0:
-                            OrderID = $(this).val();
-                            break;
-                        case 1:
-                            inspdate = $(this).val();
-                            break;
-                        case 2:
-                            inspector = $(this).val();
-                            break;
-                        case 3:
-                            Remark = $(this).val();
-                            break;
-                    }
-                })
-
-                if (OrderID == "") {
-                    msg.WithError("SP# cannot be empty");
-                    return;
-                }
-
-                if (MtlTypeID == "") {
-                    msg.WithError("Material Type cannot be empty");
-                    return;
-                }
-
-                tr.children().find("select").each(function (index, value) {
-                    switch (index) {
-                        case 0:
-                            SizeCode = $(this).children("option:selected").val();
-                            break;
-                        case 1:
-                            MtlTypeID = $(this).children("option:selected").val();
-                            break;
-                    }
-                })
-
-                detail.push({
-                    ID: parseInt(id),
-                    No: parseInt(no),
-                    OrderID: OrderID,
-                    inspdate: inspdate,
-                    inspector: inspector,
-                    Remark: Remark,
-                    NonSeamBreakageTest: NonSeamBreakageTest,
-                    SizeCode: SizeCode,
-                    MtlTypeID: MtlTypeID,
-                });
-
-                var main = {
-                    ID: parseInt($('#garmentTest_ID').val()),
-                    StyleID: $('#garmentTest_StyleID').val(),
-                    SeasonID: $('#garmentTest_SeasonID').val(),
-                    BrandID: $('#garmentTest_BrandID').val(),
-                    Article: $('#garmentTest_Article').val(),
-                };
-
-                if (detail.length > 0) {
-                    SaveData(main, detail);
-                }
-                else {
-                    msg.WithError("Save Fail");
-                    return;
-                }
-            }
-            else {
-                $(".rowHeader input[type='text']").attr("disabled", "disabled");
-                $(".rowHeader input[type='button'], #btnQuery").addClass("IsEditModeQuery");
-                $("#Edit, #Save, #Undo").removeClass("IsEditMode");
-                $(".DetailTable img").addClass('display-None');
-                $(this).removeClass('display-None');
-                $('#btnQuery').on('click', function () {
-                    return false;
-                });
-
-                $(this).prop("src", "/Image/Icon/Save.png");
-
-                var tr = $(this).parent().parent();
-                tr.find("input[type='text']").removeAttr("disabled");
-                tr.find("input[type='checkbox']").removeAttr("disabled");
-                tr.find("select").removeAttr("disabled");
-            }
+            window.location.href = "@Url.Action("Detail", "GarmentTest", new { EditMode = true })" + "&ID=" + id + "&No=" + no;
         });
 
         $('.detailDelete').unbind('click').on('click', function () {
@@ -735,9 +748,10 @@
 
             var t = $(this);
             var tr = $(this).parents().parents();
-            var fcol = tr.children().find('a');
+            var fcol = tr.children().find("a[class='detailA']");
             var id = fcol.attr("idx");
             var no = fcol.attr("idv");
+
             msg.WithConfirm('Do you want to delete the data ?',
                 function ()
                 {
@@ -749,8 +763,6 @@
                         async: false,
                         success: function (data) {
                             if (data.SaveResult) {
-                                console.log(tr);
-                                console.log(t);
                                 t.parents().parents('tr').remove();
                                 msg.WithSuccess("Delete Success");
                             }
@@ -908,6 +920,7 @@
             data: JSON.stringify({ ID: ID, lastNO: lastNO, OrderID: OrderID, Article: Article}),
             async: false,
             success: function (data) {
+                $('.DetailTable > thead > tr').show();
                 $('.DetailTable > tbody').append(data);
                 DetailDynamicBind();
             },

@@ -648,14 +648,18 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
 
                 // FGWT Save
-                _IGarmentTestDetailFGWTProvider = new GarmentTestDetailFGWTProvider(_ISQLDataTransaction);
-                if (_IGarmentTestDetailFGWTProvider.Update_FGWT(source.FGWT) == false)
+                if (source.FGWT != null)
                 {
-                    _ISQLDataTransaction.RollBack();
-                    result.Result = false;
-                    result.ErrMsg = "Update FGWT is empty.";
-                    return result;
+                    _IGarmentTestDetailFGWTProvider = new GarmentTestDetailFGWTProvider(_ISQLDataTransaction);
+                    if (_IGarmentTestDetailFGWTProvider.Update_FGWT(source.FGWT) == false)
+                    {
+                        _ISQLDataTransaction.RollBack();
+                        result.Result = false;
+                        result.ErrMsg = "Update FGWT is empty.";
+                        return result;
+                    }
                 }
+
                 _ISQLDataTransaction.Commit();
             }
             catch (Exception ex)

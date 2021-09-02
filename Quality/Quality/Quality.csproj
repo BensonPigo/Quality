@@ -189,6 +189,7 @@
     <Compile Include="Areas\SampleRFT\Controllers\PicturesDummyController.cs" />
     <Compile Include="Areas\SampleRFT\SampleRFTAreaRegistration.cs" />
     <Compile Include="Areas\StyleManagement\Controllers\StyleListController.cs" />
+    <Compile Include="Areas\StyleManagement\Controllers\PrintBarcodeController.cs" />
     <Compile Include="Areas\StyleManagement\StyleManagementAreaRegistration.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -335,6 +336,8 @@
     <Content Include="Areas\BulkFGT\Views\MockupWash\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\MockupOvenTest\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\FabricColorFastness\Index.cshtml" />
+    <Content Include="Areas\StyleManagement\Views\PrintBarcode\Index.cshtml" />
+    <Content Include="Areas\StyleManagement\Views\PrintBarcode\PrintBarcode.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />

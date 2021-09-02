@@ -40,10 +40,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 Result = true,
                 SizeCodes = _GarmentTest_Service.Get_SizeCode(string.Empty, string.Empty),
                 garmentTest = new GarmentTest_ViewModel(),
-                garmentTest_Details = new List<GarmentTest_Detail_ViewModel>() 
-                {
-                    new GarmentTest_Detail_ViewModel() { No = 1, ID = 0 },
-                },
+                garmentTest_Details = new List<GarmentTest_Detail_ViewModel>(),
                 req = new GarmentTest_Request(), 
             };
 
@@ -54,7 +51,6 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.MtlTypeIDList = MtlTypeIDList;
             return View(Result);
         }
-
 
         public ActionResult IndexBack(string Brand, string Season, string Style, string Article)
         {
@@ -101,13 +97,13 @@ namespace Quality.Areas.BulkFGT.Controllers
                 Result.SizeCodes = new List<string>();
             }
             
-            if (Result.garmentTest_Details == null || Result.garmentTest_Details.Count == 0)
-            {
-                Result.garmentTest_Details = new List<GarmentTest_Detail_ViewModel>()
-                {
-                    new GarmentTest_Detail_ViewModel() { No = 1, ID = Result.garmentTest.ID },
-                };
-            }
+            //if (Result.garmentTest_Details == null || Result.garmentTest_Details.Count == 0)
+            //{
+            //    Result.garmentTest_Details = new List<GarmentTest_Detail_ViewModel>()
+            //    {
+            //        new GarmentTest_Detail_ViewModel() { No = 1, ID = Result.garmentTest.ID },
+            //    };
+            //}
 
             Result.req = Req;
             List<SelectListItem> SizeCodeList = new SetListItem().ItemListBinding(Result.SizeCodes);
@@ -123,19 +119,13 @@ namespace Quality.Areas.BulkFGT.Controllers
         {            
             GarmentTest_ViewModel result = _GarmentTest_Service.Save_GarmentTest(main, details, this.UserID);
 
-
-
             return Json(result);
         }
 
         [HttpPost]
         public JsonResult DeleteDetail(string ID, string No)
         {
-            GarmentTest_ViewModel result = new GarmentTest_ViewModel()
-            {
-                SaveResult = true,
-                ErrMsg = "Err",
-            };
+            GarmentTest_ViewModel result = _GarmentTest_Service.DeleteDetail(ID, No);
 
             return Json(result);
         }
@@ -162,7 +152,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             List<string> sizecodes = _GarmentTest_Service.Get_SizeCode(OrderID, Article);
             string html = "";
             html += "<tr>";
-            html += "<td><a href='' idx='" + ID + "' idv = '" + lastNO.ToString() + "'>" + lastNO.ToString() + "</a></td>";
+            html += "<td><a idx='" + ID + "' idv = '" + lastNO.ToString() + "'>" + lastNO.ToString() + "</a></td>";
             html += "<td><input id='garmentTest_Details_" + i + "_OrderID' name='garmentTest_Details[" + i + "].OrderID' class='Detail_OrderID' type='text'></td>";
             html += "<td><select id='garmentTest_Details_" + i + "_SizeCode' name='garmentTest_Details[" + i + "].SizeCode' class='Detail_SizeCode'><option value=''></option>";
             foreach(string val in sizecodes)
@@ -177,7 +167,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
-            html += "<td class='red'>Fail</td>";
+            html += "<td></td>";
             html += "<td><input id='garmentTest_Details_" + i + "_NonSeamBreakageTest' name='garmentTest_Details[" + i + "].NonSeamBreakageTest' type='checkbox'><input name='garmentTest_Details.NonSeamBreakageTest' type='hidden'></td>";
             html += "<td></td>";
             html += "<td></td>";
@@ -217,7 +207,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Content(html);
         }
 
-        public ActionResult Detail(string ID, string No)
+        public ActionResult Detail(string ID, string No, bool EditMode)
         {
             List<SelectListItem> TemperatureList = new SetListItem().ItemListBinding(Temperatures);
             List<SelectListItem> MachineList = new SetListItem().ItemListBinding(Machines);
@@ -227,6 +217,8 @@ namespace Quality.Areas.BulkFGT.Controllers
             List<SelectListItem> TestResultmmList = new SetListItem().ItemListBinding(TestResultmm);
 
             GarmentTest_Detail_Result Detail_Result = _GarmentTest_Service.Get_All_Detail(ID, No);
+            Detail_Result.EditMode = EditMode;
+
             List<SelectListItem> ScaleList = new SetListItem().ItemListBinding(Detail_Result.Scales);
 
             ViewBag.TemperatureList = TemperatureList;
@@ -279,7 +271,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             GarmentTest_Detail_Result saveresult = _GarmentTest_Service.Save_GarmentTestDetail(result);
             GarmentTest_Detail_Result Detail_Result = _GarmentTest_Service.Get_All_Detail(result.Detail.ID.ToString(), result.Detail.No.ToString());
-
+            Detail_Result.EditMode = result.EditMode;
             Detail_Result.Result = saveresult.Result;
             Detail_Result.ErrMsg = saveresult.ErrMsg;
 
