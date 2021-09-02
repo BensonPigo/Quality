@@ -244,6 +244,51 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
 
+        public IList<MockupWash_ViewModel> GetMockupWashReportNoList(MockupWash_Request Item)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            SbSql.Append(@"
+SELECT ReportNo
+FROM MockupWash m
+");
+            SbSql.Append("Where 1 = 1" + Environment.NewLine);
+
+            if (!string.IsNullOrEmpty(Item.ReportNo))
+            {
+                SbSql.Append("And ReportNo = @ReportNo" + Environment.NewLine);
+                objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
+            }
+            if (!string.IsNullOrEmpty(Item.BrandID))
+            {
+                SbSql.Append("And BrandID = @BrandID" + Environment.NewLine);
+                objParameter.Add("@BrandID", DbType.String, Item.BrandID);
+            }
+            if (!string.IsNullOrEmpty(Item.SeasonID))
+            {
+                SbSql.Append("And SeasonID = @SeasonID" + Environment.NewLine);
+                objParameter.Add("@SeasonID", DbType.String, Item.SeasonID);
+            }
+            if (!string.IsNullOrEmpty(Item.StyleID))
+            {
+                SbSql.Append("And StyleID = @StyleID" + Environment.NewLine);
+                objParameter.Add("@StyleID", DbType.String, Item.StyleID);
+            }
+            if (!string.IsNullOrEmpty(Item.Article))
+            {
+                SbSql.Append("And Article = @Article" + Environment.NewLine);
+                objParameter.Add("@Article", DbType.String, Item.Article);
+            }
+            if (!string.IsNullOrEmpty(Item.Type))
+            {
+                SbSql.Append("And Type = @Type" + Environment.NewLine);
+                objParameter.Add("@Type", DbType.String, Item.Type);
+            }
+
+            SbSql.Append("Order by ReportNo");
+            return ExecuteList<MockupWash_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
+        }
+
         public IList<MockupWash_ViewModel> GetMockupWash(MockupWash_Request Item)
         {
             StringBuilder SbSql = new StringBuilder();
@@ -328,6 +373,7 @@ outer apply (select Name from Pass1 where id = m.EditName) EditName
                 objParameter.Add("@Type", DbType.String, Item.Type);
             }
 
+            SbSql.Append("Order by ReportNo");
             return ExecuteList<MockupWash_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
         }
 

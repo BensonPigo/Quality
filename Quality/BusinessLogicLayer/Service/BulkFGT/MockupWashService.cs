@@ -21,66 +21,39 @@ namespace BusinessLogicLayer.Service
     {
         private IMockupWashProvider _MockupWashProvider;
         private IMockupWashDetailProvider _MockupWashDetailProvider;
-        private IDropDownListProvider _DropDownListProvider;
 
-        public MockupWashs_ViewModel GetMockupWash(MockupWash_Request MockupWash)
+        public MockupWash_ViewModel GetMockupWash(MockupWash_Request MockupWash)
         {
-            MockupWashs_ViewModel model = new MockupWashs_ViewModel();
+            MockupWash_ViewModel mockupWash_model = new MockupWash_ViewModel();
             try
             {
                 _MockupWashProvider = new MockupWashProvider(Common.ProductionDataAccessLayer);
                 _MockupWashDetailProvider = new MockupWashDetailProvider(Common.ProductionDataAccessLayer);
-                model.MockupWash = _MockupWashProvider.GetMockupWash(MockupWash).ToList();
-                model.ReportNos = new List<string>();
-                foreach (var item in model.MockupWash)
-                {
-                    model.ReportNos.Add(item.ReportNo);
-                    MockupWash_Detail mockupWash_Detail = new MockupWash_Detail() { ReportNo = item.ReportNo };
-                    item.MockupWash_Detail = _MockupWashDetailProvider.GetMockupWash_Detail(mockupWash_Detail).ToList();
-                }
-
-                model.TestingMethod_Source = new List<System.Web.Mvc.SelectListItem>();
-                _DropDownListProvider = new DropDownListProvider(Common.ProductionDataAccessLayer);
-                List<DropDownList> downLists = _DropDownListProvider.Get(new DropDownList() { Type = "PMS_MockupWashMethod", }).ToList();
-                foreach (var item in downLists)
-                {
-                    model.TestingMethod_Source.Add(new System.Web.Mvc.SelectListItem() { Value = item.ID, Text = item.Description });
-                }
-
-                model.Result = true;
+                mockupWash_model = _MockupWashProvider.GetMockupWash(MockupWash).ToList().First();
+                mockupWash_model.ReportNo_Source = _MockupWashProvider.GetMockupWashReportNoList(MockupWash).Select(s => s.ReportNo).ToList();
+                MockupWash_Detail mockupWash_Detail = new MockupWash_Detail() { ReportNo = mockupWash_model.ReportNo };
+                mockupWash_model.MockupWash_Detail = _MockupWashDetailProvider.GetMockupWash_Detail(mockupWash_Detail).ToList();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                model.Result = false;
-                model.ErrorMessage = ex.Message;
             }
 
-            return model;
+            return mockupWash_model;
         }
 
-        public MockupWash_ViewModel GetExcel(string ReportNo)
+        public MockupWash_ViewModel GetPDF(MockupWash_ViewModel mockupWash, bool test = false)
         {
-            bool test = false;
             MockupWash_ViewModel result = new MockupWash_ViewModel();
-
-            var oneReportNo = GetMockupWash(new MockupWash_Request() { ReportNo = ReportNo });
-            if (oneReportNo == null)
+            if (mockupWash == null)
             {
                 result.ReportResult = false;
-                result.ErrorMessage = "Get Data Fail!";
+                result.ReportErrorMessage = "Get Data Fail!";
                 return result;
             }
 
-            if (oneReportNo.MockupWash.Count == 0)
-            {
-                result.ReportResult = false;
-                result.ErrorMessage = "Data Not found!";
-                return result;
-            }
 
             try
             {
-                var mockupWash = oneReportNo.MockupWash[0];
                 if (!test)
                 {
                     if (!System.IO.Directory.Exists(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\"))
@@ -241,7 +214,7 @@ namespace BusinessLogicLayer.Service
                 }
                 else
                 {
-                    result.ErrorMessage = "Convert To PDF Fail";
+                    result.ReportErrorMessage = "Convert To PDF Fail";
                     result.ReportResult = false;
                 }
             }
@@ -253,9 +226,9 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public MockupWashs_ViewModel Create(MockupWashs_ViewModel MockupWash)
+        public MockupWash_ViewModel Create(MockupWash_ViewModel MockupWash)
         {
-            MockupWashs_ViewModel model = new MockupWashs_ViewModel();
+            MockupWash_ViewModel model = new MockupWash_ViewModel();
             _MockupWashProvider = new MockupWashProvider(Common.ProductionDataAccessLayer);
             _MockupWashDetailProvider = new MockupWashDetailProvider(Common.ProductionDataAccessLayer);
             int insertCt;
@@ -263,21 +236,17 @@ namespace BusinessLogicLayer.Service
             {
                 using (TransactionScope scope = new TransactionScope())
                 {
-                    insertCt = _MockupWashProvider.Create(MockupWash.MockupWash[0]);
+                    insertCt = _MockupWashProvider.Create(MockupWash);
                     if (insertCt == 0)
                     {
-                        model.Result = false;
-                        model.ErrorMessage = "Insert MockupWash Fail!";
                         return model;
                     }
 
-                    foreach (var MockupWash_Detail in MockupWash.MockupWash[0].MockupWash_Detail)
+                    foreach (var MockupWash_Detail in MockupWash.MockupWash_Detail)
                     {
                         insertCt = _MockupWashDetailProvider.Create(MockupWash_Detail);
                         if (insertCt == 0)
                         {
-                            model.Result = false;
-                            model.ErrorMessage = "Insert MockupWash_Detail Fail!";
                             return model;
                         }
                     }
@@ -285,7 +254,6 @@ namespace BusinessLogicLayer.Service
                     scope.Complete();
                 }
 
-                model.Result = true;
             }
             catch (Exception ex)
             {

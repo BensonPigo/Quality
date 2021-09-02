@@ -7,12 +7,12 @@ namespace BusinessLogicLayer.Interface.BulkFGT
 {
     public interface IMockupWashService
     {
-        MockupWashs_ViewModel GetMockupWash(MockupWash_Request MockupWash);
+        MockupWash_ViewModel GetMockupWash(MockupWash_Request MockupWash);
 
         List<SelectListItem> GetAccessoryRefNo(AccessoryRefNo_Request Request);
 
-        MockupWashs_ViewModel Create(MockupWashs_ViewModel MockupWash);
+        MockupWash_ViewModel Create(MockupWash_ViewModel MockupWash);
 
-        MockupWash_ViewModel GetExcel(string ReportNo);
+        MockupWash_ViewModel GetPDF(MockupWash_ViewModel MockupWash, bool test = false);
     }
 }
