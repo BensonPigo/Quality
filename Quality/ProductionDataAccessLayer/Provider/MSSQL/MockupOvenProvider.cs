@@ -11,16 +11,6 @@ using System.Text;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
-    /*(MockupOvenProvider) 詳細敘述如下*/
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <info>Author: Admin; Date: 2021/08/31  </info>
-    /// <history>
-    /// xx.  YYYY/MM/DD   Ver   Author      Comments
-    /// ===  ==========  ====  ==========  ==========
-    /// 01.  2021/08/31  1.00    Admin        Create
-    /// </history>
     public class MockupOvenProvider : SQLDAL, IMockupOvenProvider
     {
         #region 底層連線
@@ -218,18 +208,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
-        /*刪除(Delete) 詳細敘述如下*/
-        /// <summary>
-        /// 刪除
-        /// </summary>
-        /// <param name="Item">成員</param>
-        /// <returns>回傳異動筆數</returns>
-        /// <info>Author: Admin; Date: 2021/08/31  </info>
-        /// <history>
-        /// xx.  YYYY/MM/DD   Ver   Author      Comments
-        /// ===  ==========  ====  ==========  ==========
-        /// 01.  2021/08/31  1.00    Admin        Create
-        /// </history>
+
         public int Delete(MockupOven Item)
         {
             StringBuilder SbSql = new StringBuilder();
@@ -285,12 +264,17 @@ FROM MockupOven m
             return ExecuteList<MockupOven_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
         }
 
-        public IList<MockupOven_ViewModel> GetMockupOven(MockupOven_Request Item)
+        public IList<MockupOven_ViewModel> GetMockupOven(MockupOven_Request Item, bool istop1)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append(@"
-SELECT
+            string top1 = string.Empty;
+            if (istop1)
+            {
+                top1 = "top 1";
+            }
+            SbSql.Append($@"
+SELECT {top1}
          ReportNo
         ,POID
         ,StyleID
@@ -371,34 +355,6 @@ outer apply (select Name from Pass1 where id = m.EditName) EditName
 
             SbSql.Append("Order by ReportNo");
             return ExecuteList<MockupOven_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
-        }
-
-        public IList<AccessoryRefNo> GetAccessoryRefNo(AccessoryRefNo_Request Item)
-        {
-            StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append(@"
-select sb.Refno
-from Style_BOA sb
-inner join Fabric f on sb.SCIRefno = f.SCIRefno
-");
-            SbSql.Append("Where 1 = 1" + Environment.NewLine);
-
-            if (Item.StyleUkey != null)
-            {
-                SbSql.Append("And sb.StyleUkey = @StyleUkey" + Environment.NewLine);
-                objParameter.Add("@StyleUkey", DbType.Int64, Item.StyleUkey);
-            }
-
-            if (!string.IsNullOrEmpty(Item.BrandID) && !string.IsNullOrEmpty(Item.SeasonID) && !string.IsNullOrEmpty(Item.StyleID))
-            {
-                SbSql.Append("And sb.StyleUkey = (select styleukey from Style where ID = @StyleID and SeasonID = @SeasonID and BrandID = @BrandID)" + Environment.NewLine);
-                objParameter.Add("@StyleID", DbType.String, Item.StyleID);
-                objParameter.Add("@SeasonID", DbType.String, Item.SeasonID);
-                objParameter.Add("@BrandID", DbType.String, Item.BrandID);
-            }
-
-            return ExecuteList<AccessoryRefNo>(CommandType.Text, SbSql.ToString(), objParameter);
         }
         #endregion
     }

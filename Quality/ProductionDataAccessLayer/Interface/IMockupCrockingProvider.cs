@@ -9,7 +9,7 @@ namespace ProductionDataAccessLayer.Interface
     {
         IList<MockupCrocking_ViewModel> GetMockupCrockingReportNoList(MockupCrocking_Request Item);
 
-        IList<MockupCrocking_ViewModel> GetMockupCrocking(MockupCrocking_Request Item);
+        IList<MockupCrocking_ViewModel> GetMockupCrocking(MockupCrocking_Request Item, bool istop1 = false);
 
         int Create(MockupCrocking Item);
 
