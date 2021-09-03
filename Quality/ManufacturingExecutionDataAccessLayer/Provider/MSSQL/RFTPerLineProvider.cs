@@ -95,9 +95,9 @@ cross join #tmpAllday d
 outer apply(select ct = count(1) from #tmpRft where Line = s.ID and Date = d.date)ttl
 outer apply(select ct = count(1) from #tmpRft where Line = s.ID and Date = d.date and Status = 'Pass')pass
 left join (
-	select distinct Line
+	select distinct Line, Date
 	from #tmpRft
-)exist on  Line = s.ID 
+)exist on exist.Line = s.ID and exist.Date = d.date
 where s.Junk = 0
 and s.FactoryID = @FactoryID
 
