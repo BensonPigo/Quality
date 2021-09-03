@@ -101,6 +101,7 @@
     <Compile Include="Interface\ISeasonProvider.cs" />
     <Compile Include="Interface\ISewingLineProvider.cs" />
     <Compile Include="Interface\IStyleArticleProvider.cs" />
+    <Compile Include="Interface\IStyleBOAProvider.cs" />
     <Compile Include="Interface\IStyleListProvider.cs" />
     <Compile Include="Interface\IStyleProvider.cs" />
     <Compile Include="Interface\ISystemProvider.cs" />
@@ -145,6 +146,7 @@
     <Compile Include="Provider\MSSQL\SeasonProvider.cs" />
     <Compile Include="Provider\MSSQL\SewingLineProvider.cs" />
     <Compile Include="Provider\MSSQL\StyleArticleProvider.cs" />
+    <Compile Include="Provider\MSSQL\StyleBOAProvider.cs" />
     <Compile Include="Provider\MSSQL\StyleListProvider.cs" />
     <Compile Include="Provider\MSSQL\StyleProvider.cs" />
     <Compile Include="Provider\MSSQL\SystemProvider.cs" />

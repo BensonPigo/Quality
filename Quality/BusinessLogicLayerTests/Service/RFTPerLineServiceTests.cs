@@ -30,8 +30,8 @@ namespace BusinessLogicLayer.Service.Tests
             try
             {
                 IRFTPerLineService _RFTPerLineService = new RFTPerLineService();
-                var data = _RFTPerLineService.RFTPerLineQuery("es2", "2021", "8");
-                Assert.IsTrue(data.dailyRFTs[0].Month == "August" && data.monthlyRFTs[0].Month == "August");
+                var data = _RFTPerLineService.RFTPerLineQuery("es3", "2021", "9");
+                Assert.IsTrue(data.dailyRFTs[0].Month == "September" && data.monthlyRFTs[0].RFT == 1);
             }
             catch (Exception ex)
             {

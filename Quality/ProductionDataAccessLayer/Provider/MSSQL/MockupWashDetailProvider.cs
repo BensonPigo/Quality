@@ -146,6 +146,7 @@ SELECT
 		,md.TypeofPrint
         ,md.Design
         ,md.ArtworkColor
+        ,md.AccessoryRefno
         ,md.FabricRefNo
         ,md.FabricColor
         ,md.Result

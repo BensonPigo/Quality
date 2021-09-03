@@ -10,16 +10,6 @@ using System.Text;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
-    /*(MockupOvenDetailProvider) 詳細敘述如下*/
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <info>Author: Admin; Date: 2021/08/31  </info>
-    /// <history>
-    /// xx.  YYYY/MM/DD   Ver   Author      Comments
-    /// ===  ==========  ====  ==========  ==========
-    /// 01.  2021/08/31  1.00    Admin        Create
-    /// </history>
     public class MockupOvenDetailProvider : SQLDAL, IMockupOvenDetailProvider
     {
         #region 底層連線
@@ -112,18 +102,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
-        /*刪除(Delete) 詳細敘述如下*/
-        /// <summary>
-        /// 刪除
-        /// </summary>
-        /// <param name="Item">成員</param>
-        /// <returns>回傳異動筆數</returns>
-        /// <info>Author: Admin; Date: 2021/08/31  </info>
-        /// <history>
-        /// xx.  YYYY/MM/DD   Ver   Author      Comments
-        /// ===  ==========  ====  ==========  ==========
-        /// 01.  2021/08/31  1.00    Admin        Create
-        /// </history>
+
         public int Delete(MockupOven_Detail Item)
         {
             StringBuilder SbSql = new StringBuilder();
@@ -146,6 +125,7 @@ SELECT
 		,md.TypeofPrint
         ,md.Design
         ,md.ArtworkColor
+        ,md.AccessoryRefno
         ,md.FabricRefNo
         ,md.FabricColor
         ,md.Result

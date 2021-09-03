@@ -130,6 +130,7 @@
     <Compile Include="ProductionDB\SewingLine.cs" />
     <Compile Include="ProductionDB\Style.cs" />
     <Compile Include="ProductionDB\Style_Article.cs" />
+    <Compile Include="ProductionDB\Style_BOA.cs" />
     <Compile Include="ProductionDB\System.cs" />
     <Compile Include="ProductionDB\TPEPass1.cs" />
     <Compile Include="ProductionDB\TypeSelection.cs" />
@@ -138,6 +139,7 @@
     <Compile Include="Public\WindowModel.cs" />
     <Compile Include="RequestModel\FinalInspection_Query.cs" />
     <Compile Include="RequestModel\MockupOven_Request.cs" />
+    <Compile Include="RequestModel\AccessoryRefNo_Request.cs" />
     <Compile Include="RequestModel\MockupWash_Request.cs" />
     <Compile Include="RequestModel\MockupCrocking_Request.cs" />
     <Compile Include="RequestModel\FinalInspection_Request.cs" />

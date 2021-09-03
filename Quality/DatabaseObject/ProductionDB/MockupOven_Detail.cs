@@ -3,16 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 namespace DatabaseObject.ProductionDB
 {
-    /*(MockupOven_Detail) 詳細敘述如下*/
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <info>Author: Wei; Date: 2021/09/02 </info>
-    /// <history>
-    /// xx.  YYYY/MM/DD   Ver   Author      Comments
-    /// ===  ==========  ====  ==========  ==========
-    /// 01.  2021/09/02   1.00    Admin        Create
-    /// </history>
     public class MockupOven_Detail
     {
         [Display(Name = "測試單號")]
@@ -29,6 +19,9 @@ namespace DatabaseObject.ProductionDB
 
         [Display(Name = "工段顏色")]
         public string ArtworkColor { get; set; }
+
+        [Display(Name = "熱轉印物料")]
+        public string AccessoryRefno { get; set; }
 
         [Display(Name = "主料料號")]
         public string FabricRefNo { get; set; }
