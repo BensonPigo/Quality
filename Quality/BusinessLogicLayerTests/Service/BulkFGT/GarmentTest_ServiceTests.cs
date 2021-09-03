@@ -694,7 +694,6 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
                 };
 
                 IGarmentTest_Service _Service = new GarmentTest_Service();
-                all_Data = _Service.DetailPictureSave(detail);
                 Assert.IsTrue(all_Data.Result);
             }
             catch (Exception ex)

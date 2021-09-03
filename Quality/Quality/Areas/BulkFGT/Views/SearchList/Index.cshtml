@@ -57,10 +57,6 @@
         background-color: lightgray;
     }
 
-    .button {
-        width: 7vw;
-    }
-
     .row-name {
         color: black;
         font-size: 1.2em;
@@ -81,69 +77,63 @@
 
 
     <div class="main-area">
-
+        <div>
+            @using (Html.BeginForm("Query", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { @class = "", @name = "SearchFrom", @onsubmit = "return checkvalue(this.submitted)", @id = "SearchFrom" }))
+            {
+                    <table style="width:100%;">
+                        <tr>
+                            <td>
+                                <label class="FindLab">Brand</label>
+                            </td>
+                            <td nowrap="nowrap">
+                                <div>
+                                    @Html.TextBoxFor(o => o.BrandID, new { @value = Model.BrandID, @style = "width:9vw" })
+                                    <input id="btnBrandID" onclick="OpenWindow('BrandID')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
+                                </div>
+                            </td>
+                            <td>
+                                <label class="FindLab">Season</label>
+                            </td>
+                            <td nowrap="nowrap">
+                                @Html.TextBoxFor(o => o.SeasonID, new { @value = Model.SeasonID, @style = "width:9vw" })
+                                <input id="btnSeasonID" onclick="OpenWindow('SeasonID')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
+                            </td>
+                            <td>
+                                <label class="FindLab">Style</label>
+                            </td>
+                            <td nowrap="nowrap">
+                                @Html.TextBoxFor(o => o.StyleID, new { @value = Model.StyleID, @style = "width:9.5vw" })
+                                <input id="btnStyleID" onclick="OpenWindow('StyleID')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
+                            </td>
+                            <td>
+                                <label class="FindLab">Article</label>
+                            </td>
+                            <td nowrap="nowrap">
+                                @Html.TextBoxFor(o => o.Article, new { @value = Model.Article, @style = "width:9.5vw" })
+                                <input id="btnArticle" onclick="OpenWindow('Article')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
+                            </td>
+                            <td style="padding: 0vw;">
+                                <input type="submit" onclick="this.form.submitted=this.value;" class="site-btn btn-gy font1rem Black" style="width: 7vw;" name="action:Query" id="btnQuery" value="Query" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label class="FindLab" for="TypeSP">Type</label>
+                            </td>
+                            <td colspan="7">
+                                @Html.DropDownListFor(o => o.Type, Model.TypeDatasource)
+                            </td>
+                            <td style="padding: 0vw;">
+                                <input type="submit" class="site-btn btn-gy font1rem Black" onclick="this.form.submitted=this.value;" style="width: 7vw;" name="action:ToExcel" id="btnExcel" value="To Excel" />
+                            </td>
+                        </tr>
+                    </table>
+            }
+        </div>
         <div class="content-scroll">
             <div class="inner-scroll" style="float:left">
-
                 <div>
-                    @using (Html.BeginForm("Query", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { @class = "", @name = "SearchFrom", @onsubmit = "return checkvalue(this.submitted)", @id = "SearchFrom" }))
-                    {
-                        <div>
-                            <table>
-                                <tr>
-                                    <td>
-                                        <label class="FindLab">Brand</label>
-                                    </td>
-                                    <td nowrap="nowrap">
-                                        <div>
-                                            @Html.TextBoxFor(o => o.BrandID, new { @value = Model.BrandID, @style = "width:9vw" })
-                                            <input id="btnBrandID" onclick="OpenWindow('BrandID')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <label class="FindLab">Season</label>
-                                    </td>
-                                    <td nowrap="nowrap">
-                                        @Html.TextBoxFor(o => o.SeasonID, new { @value = Model.SeasonID, @style = "width:9vw" })
-                                        <input id="btnSeasonID" onclick="OpenWindow('SeasonID')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
-                                    </td>
-                                    <td>
-                                        <label class="FindLab">Style</label>
-                                    </td>
-                                    <td nowrap="nowrap">
-                                        @Html.TextBoxFor(o => o.StyleID, new { @value = Model.StyleID, @style = "width:9.5vw" })
-                                        <input id="btnStyleID" onclick="OpenWindow('StyleID')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
-                                    </td>
-                                    <td>
-                                        <label class="FindLab">Article</label>
-                                    </td>
-                                    <td nowrap="nowrap">
-                                        @Html.TextBoxFor(o => o.Article, new { @value = Model.Article, @style = "width:9.5vw" })
-                                        <input id="btnArticle" onclick="OpenWindow('Article')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
-                                    </td>
-                                    <td style="padding: 0vw;">
-                                        <input type="submit" onclick="this.form.submitted=this.value;" class="button" style="" name="action:Query" id="btnQuery" value="Query" />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <label class="FindLab" for="TypeSP">Type</label>
-                                    </td>
-                                    <td colspan="7">
-                                        @Html.DropDownListFor(o => o.Type, Model.TypeDatasource)
-                                    </td>
-                                    <td style="padding: 0vw;">
-                                        <input type="submit" class="button" onclick="this.form.submitted=this.value;" style="" name="action:ToExcel" id="btnExcel" value="To Excel" />
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    }
-                </div>
-                <br />
-                <div>
-
-                    <table id="myTable" class="table table-striped display" style="text-align:center">
+                    <table id="myTable" class="table table-striped display" style="text-align:center; width:150%">
                         <thead>
                             <tr class="row-name" style="color:black">
                                 <th>Type</th>
@@ -203,8 +193,6 @@
             </div>
         </div>
     </div>
-
-
 </div>
 
 
@@ -222,7 +210,10 @@
             "pageLength": 20,
             "filter": false,
             "paging": true,
-            "scrollCollapse": true
+            "scrollY": "49vh",
+            "scrollCollapse": true,
+            "scrollX": true,
+            "autoWidth": false
 
         });
 
@@ -271,7 +262,7 @@
     function checkvalue(buttonName) {
 
         if (buttonName =="Query") {
-        if (($("#BradID").val() == "" || $("#SeasonID").val() == "" ) && $("#StyleID").val() == "") {
+        if (($("#BrandID").val() == "" || $("#SeasonID").val() == "" ) && $("#StyleID").val() == "") {
 
             var msgContent = "[Style] or [Brand, Season] can't be cmpty. ";
             msg.WithError(msgContent);

@@ -21,6 +21,7 @@ namespace BusinessLogicLayer.Service
     {
         private IMockupWashProvider _MockupWashProvider;
         private IMockupWashDetailProvider _MockupWashDetailProvider;
+        private IStyleBOAProvider _IStyleBOAProvider;
 
         public MockupWash_ViewModel GetMockupWash(MockupWash_Request MockupWash)
         {
@@ -29,13 +30,14 @@ namespace BusinessLogicLayer.Service
             {
                 _MockupWashProvider = new MockupWashProvider(Common.ProductionDataAccessLayer);
                 _MockupWashDetailProvider = new MockupWashDetailProvider(Common.ProductionDataAccessLayer);
-                mockupWash_model = _MockupWashProvider.GetMockupWash(MockupWash).ToList().First();
+                mockupWash_model = _MockupWashProvider.GetMockupWash(MockupWash, istop1: true).ToList().First();
                 mockupWash_model.ReportNo_Source = _MockupWashProvider.GetMockupWashReportNoList(MockupWash).Select(s => s.ReportNo).ToList();
                 MockupWash_Detail mockupWash_Detail = new MockupWash_Detail() { ReportNo = mockupWash_model.ReportNo };
                 mockupWash_model.MockupWash_Detail = _MockupWashDetailProvider.GetMockupWash_Detail(mockupWash_Detail).ToList();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                throw ex;
             }
 
             return mockupWash_model;
@@ -265,19 +267,21 @@ namespace BusinessLogicLayer.Service
 
         public List<SelectListItem> GetAccessoryRefNo(AccessoryRefNo_Request Request)
         {
+            Request.MtlTypeID = "HEAT TRANS";
             List<SelectListItem> selectListItems = new List<SelectListItem>();
             try
             {
                 _MockupWashProvider = new MockupWashProvider(Common.ProductionDataAccessLayer);
-                var AccessoryRefNos = _MockupWashProvider.GetAccessoryRefNo(Request).ToList();
+                _IStyleBOAProvider = new StyleBOAProvider(Common.ProductionDataAccessLayer);
+                var AccessoryRefNos = _IStyleBOAProvider.GetAccessoryRefNo(Request).ToList();
                 foreach (var item in AccessoryRefNos)
                 {
                     selectListItems.Add(new SelectListItem { Value = item.Refno, Text = item.Refno });
                 }
             }
-            catch (Exception )
+            catch (Exception ex)
             {
-
+                throw ex;
             }
 
             return selectListItems;

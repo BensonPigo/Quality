@@ -104,7 +104,7 @@
                                     @Html.DropDownList("Month", (List<SelectListItem>)ViewBag.MonthList, null, new { @class = "form-control inputStyle" })
                                 </td>
                                 <td class="queryPadding">
-                                    <input type="submit" name="name" id="btnQuery" value="Query" />
+                                    <input class="site-btn btn-gy btn-sm" type="submit" name="name" id="btnQuery" value="Query" />
                                 </td>
                             </tr>
                         </table>
@@ -116,13 +116,13 @@
             <br />
             <div style=" padding-right: 2.5vw">
                 <div class="inner-scroll" style="float: left; height: 13vh; overflow-y: hidden">
-                    <table cellspacing="100" class="table-striped">
+                    <table cellspacing="100" class="table-striped" style="width:550%;">
                         <thead>
                             <tr>
                                 @foreach (DataColumn item in Model.MonthlyData.Columns)
                                 {
 
-                                    <th>@item.ColumnName</th>
+                                    <th style="width:10vw">@item.ColumnName</th>
                                 }
                             </tr>
                         </thead>
@@ -149,8 +149,9 @@
             <h3 class="fontColor">Daily RFT</h3>
             <br />
             <div style=" padding-right: 2.5vw">
-                <div class="inner-scroll" style="float: left ;height: 42vh;">
-                    <table cellspacing="100" class="table-striped">
+
+            <div class="inner-scroll" style="float: left ;height: 40vh;">
+                    <table cellspacing="100" class="table-striped" style="width:550%;">
                         <thead>
                             <tr>
                                 @foreach (DataColumn item in Model.DailyData.Columns)
