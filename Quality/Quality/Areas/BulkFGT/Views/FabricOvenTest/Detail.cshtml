@@ -138,7 +138,7 @@
 <div class="main-content">
     <header class="page-header">
         <h3>
-            <i class="icon-users"></i><span>Garment Test</span>
+            <i class="icon-users"></i><span>Fabric Oven Test</span>
         </h3>
     </header>
 
@@ -153,10 +153,10 @@
                                 <tr>
                                     <td>
                                         <h4 id="Exit" style=" margin-right: 1em;">
-                                            @*<a href="@Url.Action("Index", "GarmentTest", new { Brand = Model.Main.BrandID , Season = Model.Main.SeasonID, Style = Model.Main.StyleID, Article = Model.Main.Article })">
-                                                    <img src="~/Image/Icon/Exit.png" width="30" />
-                                                    Exit
-                                                </a>*@
+                                            <a href="@Url.Action("Index", "FabricOvenTest", new { POID = Model.Main.POID})">
+                                                <img src="~/Image/Icon/Exit.png" width="30" />
+                                                Exit
+                                            </a>
                                         </h4>
                                     </td>
                                     <td>
@@ -226,6 +226,12 @@
                                             Picture
                                         </h4>
                                     </td>
+                                    <td align="right">
+                                        <h4 id="New" style=" margin-right: 10em;">
+                                            <img src="~/Image/Icon/New.png" width="30" />
+                                            New Item
+                                        </h4>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -272,16 +278,10 @@
                                 <tr>
 
                                     <td><h5>Remark</h5></td>
-                                    <td>
+                                    <td colspan="5">
                                         @Html.DisplayFor(o => o.Main.Remark, "", "")
                                     </td>
-                                    <td></td>
 
-                                    <td>
-                                    </td>
-                                    <td></td>
-                                    <td>
-                                    </td>
                                 </tr>
 
                             </tbody>
@@ -291,7 +291,6 @@
                     <div style="margin-top: 1em; width: 92vw; overflow:auto;">
                         <table class="DetailTable DataTable">
                             <thead>
-
                                 <tr>
                                     <th><h4>Submit Date</h4></th>
                                     <th><h4>Group</h4></th>
@@ -419,7 +418,6 @@
                                 }
                             </tbody>
                         </table>
-
                     </div>
 
                 }
@@ -435,17 +433,143 @@
         msg = new MessagerAlert();
         EditMode = false;
         IsEditModeChange();
-
-
     });
 
     function IsEditModeChange() {
+        EditModeButtionBind();
 
         if (EditMode) {
+            $(".rowHeader input[type='text']").attr("disabled", "disabled");
+            $(".rowHeader input[type='button']").unbind('click').addClass("IsEditModeQuery");
+            $('#btnQuery').addClass("IsEditModeQuery");
+            $("#Edit").removeClass("IsEditMode");
+            $('#Save, #Undo, #New').addClass("IsEditMode");
+            $(".DataTable input[type='text']").removeAttr("disabled");
+            $(".DetailTable img").addClass('display-None');
+            $(".OnlyEdit").removeAttr("disabled").removeAttr("readonly");
+
+           DetailButtonBind();
 
         }
         else {
+            $(".rowHeader input[type='text']").removeAttr("disabled");
+            $(".rowHeader input[type='button']").removeClass("IsEditModeQuery");
+            $('#btnQuery').unbind('click').removeClass("IsEditModeQuery");
+
+                $("#Edit").addClass("IsEditMode");
+
+
+            $('#Save, #Undo').unbind('click').removeClass("IsEditMode");
+            $(".DataTable input[type='text']").attr("disabled", "disabled");
+
 
         }
     }
+
+
+        function DetailButtonBind() {
+            $('#btnDetailArticleSelectItem').on('click', function () {
+                var para = "?OrderID=" + $('#Main_POID').val() + "&StyleUkey=0";
+                 window.open('@Url.Action("ArticleList","PublicWondow",new{Area=""})' + para,'Article',config='toolbar=no,status=no,location=no,width=400,height=650');
+            });
+
+              $('#btnDetailInspectorSelectItem').on('click', function () {
+                window.open('@Url.Action("Pass1List","PublicWondow",new{Area=""})','Inspector',config='toolbar=no,status=no,location=no,width=1000,height=650');
+            });
+
+        }
+
+      function EditModeButtionBind() {
+        $('#Edit').on('click', function () {
+            if ($('#Main_POID').val() == "") {
+                return;
+            }
+
+            if ($('#Main_POID').val() != "") {
+                EditMode = true;
+                IsEditModeChange();
+            }
+        });
+
+        $('#Save').on('click', function () {
+
+            var main = {
+                POID: $('#Main_POID').val(),
+                Remark: $('#Main_Remark').val()
+            };
+            var Details = null;
+            var POID = $('#Main_POID').val();
+            var Remark = $('#Main_Remark').val();
+            SaveData(main);
+        });
+
+
+
+        $('#Undo').on('click', function () {
+            EditMode = false;
+            IsEditModeChange();
+            $('#btnQuery').click();
+        });
+
+
+        $('#New').on('click', function () {
+            if ($('#Main_POID').val() == "") {
+                return;
+            }
+          AddDetailRow();
+        });
+
+    }
+
+            function SaveData(main) {
+        $.ajax({
+            url: "@Url.Action("SaveMaster", "FabricOvenTest", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ main: main, }),
+            async: false,
+            success: function (data) {
+                document.getElementById("QueryForm").submit();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+        function AddDetailRow() {
+        //if ($('#garmentTest_ID').val() == "") {
+        //    return;
+        //}
+
+        //var ID;
+        //var lastNO;
+        //if ($('.DetailTable > tbody > tr').length > 0) {
+        //    ID = parseInt($('.DetailTable > tbody > tr:last-child > td > a').attr('idx'));
+        //    lastNO = parseInt($('.DetailTable > tbody > tr:last-child > td > a').attr('idv')) + 1;
+        //}
+        //else {
+        //    ID = $('#garmentTest_ID').val();
+        //    lastNO = 1;
+        //}
+
+            var POID = $('#Main_POID').val();
+        $.ajax({
+            url: "@Url.Action("AddDetailRow", "FabricOvenTest", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ POID: POID}),
+            async: false,
+            success: function (data) {
+                $('.DetailTable > tbody').append(data);
+                //DetailDynamicBind();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+
+
 </script>

@@ -50,7 +50,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         public ActionResult Detail(string POID, string TestNo)
         {
 
-            FabricOvenTest_Detail_Result model = _FabricOvenTestService.GetFabricOvenTest_Detail_Result("21051739BB", "");
+            FabricOvenTest_Detail_Result model = _FabricOvenTestService.GetFabricOvenTest_Detail_Result("21051739BB", TestNo);
 
             List<SelectListItem> ScaleIDList = new SetListItem().ItemListBinding(model.ScaleIDs);
             List<SelectListItem> ResultChangeList = new SetListItem().ItemListBinding(Results);
@@ -79,6 +79,85 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Json(result);
 
 
+        }
+
+        [HttpPost]
+        public ActionResult AddDetailRow(string POID)
+        {
+            FabricOvenTest_Detail_Result model = _FabricOvenTestService.GetFabricOvenTest_Detail_Result("21051739BB", "");
+
+
+            List<SelectListItem> ResultChangeList = new SetListItem().ItemListBinding(Results);
+            List<SelectListItem> ResultStainList = new SetListItem().ItemListBinding(Results);
+            List<SelectListItem> TemperatureList = new SetListItem().ItemListBinding(Temperatures);
+            List<SelectListItem> TimeList = new SetListItem().ItemListBinding(Times);
+
+          //  int i = lastNO - 1;
+            FabricOvenTest_Detail_Detail detail = new FabricOvenTest_Detail_Detail();
+            string html = "";
+            html += "<tr>";
+            html += "<td><input class='form-control date-picker hasDatepicker' data-val='true' data-val-date='欄位 檢驗日期 必須是日期。'  type='text' value=''></td>";
+            html += "<td><input type='text'></td>"; // group
+            html += "<td><input type='text'></td>"; // seq
+            html += "<td><input type='text'></td>"; // roll
+            html += "<td><input type='text'></td>"; // dyelot
+            html += "<td><input type='text'></td>"; // Refno
+            html += "<td><input type='text'></td>"; // SCIRefno
+            html += "<td><input type='text'></td>"; // ColorID
+            html += "<td><input class='detailResultColor' type='text'></td>"; // Result
+
+            html += "<td><select ><option value=''></option>"; // ChangeScale
+            foreach (string val in model.ScaleIDs)
+            {
+                html += "<option value='" + val + "'>" + val + "</option>";
+            }
+            html += "</select></td>";
+
+            html += "<td><select ><option value=''></option>"; // ResultChange
+            foreach (string val in Results)
+            {
+                html += "<option value='" + val + "'>" + val + "</option>";
+            }
+            html += "</select></td>";
+
+            html += "<td><select ><option value=''></option>"; // StainingScale
+            foreach (string val in model.ScaleIDs)
+            {
+                html += "<option value='" + val + "'>" + val + "</option>";
+            }
+            html += "</select></td>";
+
+            html += "<td><select ><option value=''></option>"; // ResultStain
+            foreach (string val in Results)
+            {
+                html += "<option value='" + val + "'>" + val + "</option>";
+            }
+            html += "</select></td>";
+
+            html += "<td><input type='text'></td>"; // remark
+
+            html += "<td><input type='text'></td>"; // LastUpdate
+
+
+            html += "<td><select ><option value=''></option>"; // Temperature
+            foreach (string val in Temperatures)
+            {
+                html += "<option value='" + val + "'>" + val + "</option>";
+            }
+            html += "</select></td>";
+
+
+            html += "<td><select ><option value=''></option>"; // Time
+            foreach (string val in Times)
+            {
+                html += "<option value='" + val + "'>" + val + "</option>";
+            }
+            html += "</select></td>";
+
+            html += "<td><img class='detailDelete display-None' src='/Image/Icon/Delete.png' width='30'></td>";
+            html += "</tr>";
+
+            return Content(html);
         }
 
     }

@@ -308,7 +308,7 @@
                                         <img class="detailEdit" onclick="DetailView('@Model.Details[i].TestNo')" src="~/Image/Icon/Edit.png" width="30" />
                                     </td>
                                     <td style="width:10vw;">
-                                        <img class="detailDelete" src="~/Image/Icon/Delete.png" width="30" />
+                                        <img class="detailDelete" onclick="DetailDelete('@Model.Details[i].TestNo')" src="~/Image/Icon/Delete.png" width="30" />
                                     </td>
                                 </tr>
                             }
@@ -426,7 +426,10 @@
 
 
         $('#New').on('click', function () {
-            location.href = '@Url.Action("Detail")?POID=' + document.getElementById("Main_POID").value.trim() + '&TestNo=""';
+            if ($('#Main_POID').val() == "") {
+                return;
+            }
+            location.href = '@Url.Action("Detail")?POID=' + document.getElementById("Main_POID").value.trim() + '&TestNo=';
         });
 
 
@@ -436,6 +439,41 @@
 
         location.href = '@Url.Action("Detail")?POID=' + document.getElementById("Main_POID").value.trim() + '&TestNo=' + TestNo;
     }
+
+
+    function DetailDelete(TestNo) {
+
+                msg.WithConfirm('Do you want to delete the data ?',
+                function ()
+                {
+                    @*$.ajax({
+                        url: "@Url.Action("DeleteDetail", "GarmentTest", new { Area = "BulkFGT" })",
+                        type: 'POST',
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify({ ID: id, No: no }),
+                        async: false,
+                        success: function (data) {
+                            if (data.SaveResult) {
+                                console.log(tr);
+                                console.log(t);
+                                t.parents().parents('tr').remove();
+                                msg.WithSuccess("Delete Success");
+                            }
+                            else {
+                                msg.WithError(data.ErrMsg);
+                            }
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            console.log(xhr.responseText);
+                        }
+                    });*@
+                    }, null);
+
+
+    }
+
+
+
 
 
 
