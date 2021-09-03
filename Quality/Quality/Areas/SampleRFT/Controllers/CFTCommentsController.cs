@@ -258,13 +258,6 @@ msg.WithInfo('Cannot found combination Style# {Req.StyleID}, Brand {Req.BrandID}
         [MultipleButton(Name = "action", Argument = "ToExcel")]
         public ActionResult ToExcel(CFTComments_ViewModel Req)
         {
-            this.CheckSession();
-            IFabricCrkShrkTest_Service fabricCrkShrkTest_Service = new FabricCrkShrkTest_Service();
-            string excelName;
-            BaseResult baseResult = fabricCrkShrkTest_Service.ToExcelFabricCrkShrkTestCrockingDetail(350829, out excelName, false);
-            TempData["tempFilePath"] = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + excelName;
-            return RedirectToAction("Index");
-
             try
             {
 

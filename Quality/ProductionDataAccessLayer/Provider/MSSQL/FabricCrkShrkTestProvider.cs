@@ -626,6 +626,50 @@ where flc.ID = @ID
             return ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, listPar);
         }
 
+        public DataTable GetCrockingArticleForPdfReport(long ID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@ID", ID);
+
+            string sqlGetData = @"
+SELECT distinct fd.InspDate,
+                oc.Article,
+                fd.DryScale,
+                fd.ResultDry, 
+                fd.DryScale_Weft, 
+                fd.ResultDry_Weft,
+                fd.WetScale_Weft,
+                fd.ResultWet_Weft,
+                fd.WetScale,
+                fd.ResultWet,
+                fd.Remark,
+                fd.Inspector,
+                fd.Roll,
+                fd.Dyelot,
+                fd.Result,
+                a.Name
+FROM Order_BOF bof
+inner join PO_Supp_Detail p on p.id=bof.id and bof.SCIRefno=p.SCIRefno
+inner join Order_ColorCombo OC on oc.id=p.id and oc.FabricCode=bof.FabricCode
+inner join orders o on o.id = bof.id
+inner join FIR_Laboratory f on f.poid = o.poid and f.seq1 = p.seq1 and f.seq2 = p.seq2
+inner join FIR_Laboratory_Crocking fd on fd.id = f.id
+outer apply
+(
+	select Name = stuff((
+		select concat(',',Name)
+		from pass1 
+		where id = fd.Inspector
+		for xml path('')
+	),1,1,'')
+)a
+where  f.ID = @ID
+order by fd.InspDate,oc.article
+";
+
+            return ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, listPar);
+        }
+
         #endregion
 
     }

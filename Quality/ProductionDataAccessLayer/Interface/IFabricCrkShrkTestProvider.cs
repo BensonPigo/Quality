@@ -34,5 +34,7 @@ namespace ProductionDataAccessLayer.Interface
         void AmendFabricCrocking(long ID);
 
         DataTable GetCrockingDetailForReport(long ID);
+
+        DataTable GetCrockingArticleForPdfReport(long ID);
     }
 }
