@@ -97,8 +97,8 @@ namespace BusinessLogicLayer.Service
 
                 // 設定表頭資料
                 worksheet.Cells[4, 2] = mockupWash.ReportNo;
-                worksheet.Cells[5, 2] = mockupWash.T1SubconName;
-                worksheet.Cells[6, 2] = mockupWash.T2SupplierName;
+                worksheet.Cells[5, 2] = mockupWash.T1Subcon + "-" + mockupWash.T1SubconAbb; ;
+                worksheet.Cells[6, 2] = mockupWash.T2Supplier + "-" + mockupWash.T2SupplierAbb; ;
 
                 worksheet.Cells[7, 2] = mockupWash.TestingMethod;
                 worksheet.Cells[4, 6] = mockupWash.ReleasedDate;

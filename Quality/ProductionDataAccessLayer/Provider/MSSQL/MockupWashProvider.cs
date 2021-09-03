@@ -309,9 +309,9 @@ SELECT {top1}
         ,ArtworkTypeID
         ,Remark
         ,T1Subcon
-		,T1SubconName = Concat (T1Subcon,'-'+(select Abb from LocalSupp where ID = T1Subcon))
+		,T1SubconAbb = (select Abb from LocalSupp where ID = T1Subcon)
         ,T2Supplier
-		,T2SupplierName = Concat (T2Supplier,'-'+ (select top 1 Abb from (select Abb from LocalSupp where ID = m.T2Supplier and Junk = 0 union select AbbEN from Supp where ID = m.T2Supplier and Junk = 0)x))
+		,T2SupplierAbb = (select top 1 Abb from (select Abb from LocalSupp where ID = m.T2Supplier and Junk = 0 union select AbbEN from Supp where ID = m.T2Supplier and Junk = 0)x)
         ,TestDate
         ,ReceivedDate
         ,ReleasedDate

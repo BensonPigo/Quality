@@ -43,7 +43,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         }
 
         [Display(Name = "T1 廠商 名稱")]
-        public string T1SubconName { get; set; }
+        public string T1SubconAbb { get; set; }
 
         [Display(Name = "技術人員 名稱")]
         public string TechnicianName { get; set; }

@@ -97,8 +97,8 @@ namespace BusinessLogicLayer.Service
 
                 // 設定表頭資料
                 worksheet.Cells[4, 2] = mockupOven.ReportNo;
-                worksheet.Cells[5, 2] = mockupOven.T1SubconName;
-                worksheet.Cells[6, 2] = mockupOven.T2SupplierName;
+                worksheet.Cells[5, 2] = mockupOven.T1Subcon + "-" + mockupOven.T1SubconAbb;
+                worksheet.Cells[6, 2] = mockupOven.T2Supplier + "-" + mockupOven.T2SupplierAbb;
                 worksheet.Cells[7, 2] = mockupOven.BrandID;
                 worksheet.Cells[8, 2] = $"5.14 color migration test({mockupOven.TestTemperature} degree @ {mockupOven.TestTime} hours)";
 
