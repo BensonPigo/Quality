@@ -39,9 +39,6 @@ namespace DatabaseObject.ViewModel.BulkFGT
         [Display(Name = "LastEditName")]
         public string LastEditName { get; set; }
 
-        [Display(Name = "TestingMethodDescription")]
-        public string TestingMethodDescription { get; set; }
-
         [Display(Name = "報表電子簽章圖檔完整路徑")]
         public string SignaturePic { get; set; }
 
@@ -59,6 +56,19 @@ namespace DatabaseObject.ViewModel.BulkFGT
 
     public class MockupWash_Detail_ViewModel : MockupWash_Detail
     {
+        public List<SelectListItem> Result_Source
+        {
+            get
+            {
+                return new List<SelectListItem>()
+                {
+                    new SelectListItem(){ Text="Pass",Value="Pass"},
+                    new SelectListItem(){ Text="Fail",Value="Fail"},
+                };
+            }
+            set { }
+        }
+
         public string ArtworkColorName { get; set; }
         public string FabricColorName { get; set; }
         public string LastUpdate { get; set; }

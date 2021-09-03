@@ -194,9 +194,16 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             if (Item.AddName != null) { SbSql.Append(",AddName=@AddName" + Environment.NewLine); objParameter.Add("@AddName", DbType.String, Item.AddName); }
             if (Item.EditDate != null) { SbSql.Append(",EditDate=@EditDate" + Environment.NewLine); objParameter.Add("@EditDate", DbType.DateTime, Item.EditDate); }
             if (Item.EditName != null) { SbSql.Append(",EditName=@EditName" + Environment.NewLine); objParameter.Add("@EditName", DbType.String, Item.EditName); }
-            if (Item.OtherMethod != null) { SbSql.Append(",OtherMethod=@OtherMethod" + Environment.NewLine); objParameter.Add("@OtherMethod", DbType.Boolean, Item.OtherMethod); }
-            if (Item.MethodID != null) { SbSql.Append(",MethodID=@MethodID" + Environment.NewLine); objParameter.Add("@MethodID", DbType.String, Item.MethodID); }
-            if (Item.TestingMethod != null) { SbSql.Append(",TestingMethod=@TestingMethod" + Environment.NewLine); objParameter.Add("@TestingMethod", DbType.String, Item.TestingMethod); }
+
+            SbSql.Append($@"
+,OtherMethod=@OtherMethod
+,MethodID=iif(@OtherMethod = 0, '', @MethodID)
+,TestingMethod=iif(@OtherMethod = 0, @TestingMethod, '')
+");
+            objParameter.Add("@OtherMethod", DbType.Boolean, Item.OtherMethod);
+            objParameter.Add("@MethodID", DbType.String, Item.MethodID);
+            objParameter.Add("@TestingMethod", DbType.String, Item.TestingMethod);
+
             if (Item.HTPlate != null) { SbSql.Append(",HTPlate=@HTPlate" + Environment.NewLine); objParameter.Add("@HTPlate", DbType.Int32, Item.HTPlate); }
             if (Item.HTFlim != null) { SbSql.Append(",HTFlim=@HTFlim" + Environment.NewLine); objParameter.Add("@HTFlim", DbType.Int32, Item.HTFlim); }
             if (Item.HTTime != null) { SbSql.Append(",HTTime=@HTTime" + Environment.NewLine); objParameter.Add("@HTTime", DbType.Int32, Item.HTTime); }
@@ -324,7 +331,6 @@ SELECT {top1}
 		,m.OtherMethod
         ,m.MethodID
         ,m.TestingMethod
-		,TestingMethodDescription = iif(m.OtherMethod = 0, m.TestingMethod, (select Description from DropdownList where Type = 'PMS_MockupWashMethod' and ID = m.TestingMethod))
 		,m.HTPlate
 		,m.HTPellOff
 		,m.HTFlim
