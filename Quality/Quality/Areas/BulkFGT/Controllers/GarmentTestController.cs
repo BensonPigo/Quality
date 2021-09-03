@@ -145,11 +145,20 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
-        public ActionResult AddDetailRow(string ID, int lastNO, string OrderID, string Article)
+        public ActionResult AddDetailRow(string ID, int lastNO, string OrderID, string Article, string Brand, string Season, string Style)
         {
             int i = lastNO - 1;
             GarmentTest_Detail_ViewModel detail = new GarmentTest_Detail_ViewModel();
-            List<string> sizecodes = _GarmentTest_Service.Get_SizeCode(OrderID, Article);
+
+            bool chk = _GarmentTest_Service.CheckOrderID(OrderID, Brand, Season, Style);
+            List<string> sizecodes = new List<string>();
+            if (chk) {
+                sizecodes = _GarmentTest_Service.Get_SizeCode(OrderID, Article);
+            }
+            else {
+                sizecodes = _GarmentTest_Service.Get_SizeCode(Style, Season, Brand);
+            }
+
             string html = "";
             html += "<tr>";
             html += "<td><a idx='" + ID + "' idv = '" + lastNO.ToString() + "'>" + lastNO.ToString() + "</a></td>";
@@ -160,7 +169,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
-            html += "<td><input class='form-control date-picker hasDatepicker' data-val='true' data-val-date='欄位 檢驗日期 必須是日期。' id='garmentTest_Details_" + i + "_inspdate' name='garmentTest_Details[" + i + "].inspdate' type='text' value=''></td>";
+            html += "<td><input class='form-control date-picker' id='garmentTest_Details_" + i + "_inspdate' name='garmentTest_Details[" + i + "].inspdate' type='text' value=''></td>";
             html += "<td><select id='garmentTest_Details_" + i + "_MtlTypeID' name='garmentTest_Details[" + i + "].MtlTypeID'><option value=''></option>";
             foreach (string val in MtlTypeIDs)
             {
@@ -184,7 +193,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "<td></td>";
             html += "<td></td>";
             html += "<td><img class='detailEdit display-None' src='/Image/Icon/Edit.png' width='30'></td>";
-            html += "<td><img class='detailDelete display-None' src='/Image/Icon/Delete.png' width='30'></td>";
+            html += "<td><img class='detailDelete' src='/Image/Icon/Delete.png' width='30'></td>";
             html += "</tr>";
 
             return Content(html);
@@ -195,13 +204,18 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             bool chk = _GarmentTest_Service.CheckOrderID(OrderID, Brand, Season, Style);
             string html = "";
+            List<string> sizeCodes = new List<string>();
             if (chk)
             {
-                List<string> sizeCodes = _GarmentTest_Service.Get_SizeCode(OrderID, Article);                
-                foreach (string val in sizeCodes)
-                {
-                    html += "<option value='" + val + "'>" + val + "</option>";
-                }
+                 sizeCodes = _GarmentTest_Service.Get_SizeCode(OrderID, Article);
+            }
+            else
+            {
+                sizeCodes = _GarmentTest_Service.Get_SizeCode(Style, Season, Brand); 
+            }
+            foreach (string val in sizeCodes)
+            {
+                html += "<option value='" + val + "'>" + val + "</option>";
             }
 
             return Content(html);

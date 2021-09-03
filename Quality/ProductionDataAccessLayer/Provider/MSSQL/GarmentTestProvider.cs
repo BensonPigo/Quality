@@ -139,6 +139,12 @@ and g.Article = @Article" + Environment.NewLine;
         public bool Save_GarmentTest(GarmentTest_ViewModel master, List<GarmentTest_Detail> detail, string UserID)
         {
             bool result = true;
+            // 判斷 no存不存在原本DB
+            //    DB存在    資料存在    update
+            //    DB不存在  資料存在    insert   // NO 直接抓最新一筆新增。
+            //    DB存在    資料不存在  delete
+
+
             #region 產生新的No
             string sql_MaxNo = $@"select MaxNo = isnull(max(No),0) from GarmentTest_Detail with(nolock) where  id = '{master.ID}'";
             DataTable dtMaxNo = ExecuteDataTableByServiceConn(CommandType.Text, sql_MaxNo, new SQLParameterCollection());

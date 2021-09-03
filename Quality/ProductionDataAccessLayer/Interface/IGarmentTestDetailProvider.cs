@@ -11,6 +11,8 @@ namespace ProductionDataAccessLayer.Interface
 
         IList<Order_Qty> GetSizeCode(string OrderID, string Article);
 
+        IList<Order_Qty> GetSizeCode(string StyleID, string SeasonID, string BrandID);
+
         int Delete_GarmentTestDetail(string ID, string No);
 
         bool Update_GarmentTestDetail(GarmentTest_Detail_ViewModel source);

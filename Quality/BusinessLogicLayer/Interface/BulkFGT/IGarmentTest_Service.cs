@@ -21,6 +21,8 @@ namespace BusinessLogicLayer.Interface.BulkFGT
 
         List<string> Get_SizeCode(string OrderID, string Article);
 
+        List<string> Get_SizeCode(string StyleID, string SeasonID, string BrandID);
+
         bool CheckOrderID(string OrderID, string BrandID, string SeasonID, string StyleID);
 
         GarmentTest_ViewModel SendMail(string ID, string No, string UserID);

@@ -500,7 +500,7 @@
             $('#Save, #Undo, #New').addClass("IsEditMode");
             $(".DetailTable input[type='text'], .DetailTable select, .DetailTable input[type='checkbox']").removeAttr("disabled");
             $(".DetailTable img").addClass('display-None');
-
+            $('.detailDelete').removeClass('display-None');
             $('#btnQuery').on('click', function () {
                 return false;
             });
@@ -513,6 +513,8 @@
             $('#Save, #Undo, #New').unbind('click').removeClass("IsEditMode");
             $(".DetailTable input[type='text'], .DetailTable select, .DetailTable input[type='checkbox']").attr("disabled", "disabled");
             $(".DetailTable img").removeClass('display-None');
+            $('.detailDelete').addClass('display-None');
+
             QueryButtonBind();
 
             $('#btnQuery').on('click', function () {
@@ -628,7 +630,7 @@
         });
 
         $('#New').on('click', function () {
-            AddDetailRow($('#garmentTest_OrderID').val(), $('#garmentTest_Article').val());
+            AddDetailRow($('#garmentTest_OrderID').val(), $('#garmentTest_Article').val(), $('#garmentTest_BrandID').val(), $('#garmentTest_SeasonID').val(), $('#garmentTest_StyleID').val());
         });
     }
 
@@ -761,8 +763,14 @@
             var fcol = tr.children().find("a[class='detailA']");
             var id = fcol.attr("idx");
             var no = fcol.attr("idv");
-
             msg.WithConfirm('Do you want to delete the data ?',
+                function ()
+                {
+                    t.parents().parents('tr').remove();
+                    msg.WithSuccess("Delete Success");
+                }, null);
+
+            @*msg.WithConfirm('Do you want to delete the data ?',
                 function ()
                 {
                     $.ajax({
@@ -784,7 +792,7 @@
                             console.log(xhr.responseText);
                         }
                     });
-                }, null);
+                }, null);*@
         });
 
         $('.SendMail').unbind('click').on('click', function () {
@@ -907,7 +915,7 @@
         });
     }
 
-    function AddDetailRow(OrderID, Article) {
+    function AddDetailRow(OrderID, Article, Brand, Season, Style) {
         if ($('#garmentTest_ID').val() == "") {
             return;
         }
@@ -927,12 +935,13 @@
             url: "@Url.Action("AddDetailRow", "GarmentTest", new { Area = "BulkFGT" })",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
-            data: JSON.stringify({ ID: ID, lastNO: lastNO, OrderID: OrderID, Article: Article}),
+            data: JSON.stringify({ ID: ID, lastNO: lastNO, OrderID: OrderID, Article: Article, Brand: Brand, Season: Season, Style: Style}),
             async: false,
             success: function (data) {
                 $('.DetailTable > thead > tr').show();
                 $('.DetailTable > tbody').append(data);
                 DetailDynamicBind();
+                $('.date-picker').datepicker({ changeYear: true, changeMonth: true, currentText: "Now" });
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 console.log(xhr.responseText);

@@ -119,7 +119,17 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         ID = result.garmentTest.ID
                     }).ToList();
 
-                result.SizeCodes = Get_SizeCode(result.garmentTest.OrderID, result.garmentTest.Article);
+
+                bool chk = CheckOrderID(result.garmentTest.OrderID, result.garmentTest.BrandID, result.garmentTest.SeasonID, result.garmentTest.StyleID);
+                if (chk)
+                {
+                    result.SizeCodes = Get_SizeCode(result.garmentTest.OrderID, result.garmentTest.Article);
+                }
+                else
+                {
+                    result.SizeCodes = Get_SizeCode(result.garmentTest.StyleID, result.garmentTest.SeasonID, result.garmentTest.BrandID);
+                }
+
                 result.req = garmentTest_ViewModel;
                 result.Result = true;
 
@@ -140,6 +150,22 @@ namespace BusinessLogicLayer.Service.BulkFGT
             try
             {
                 result = _IGarmentTestDetailProvider.GetSizeCode(OrderID, Article).Select(x => x.SizeCode).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
+        public List<string> Get_SizeCode(string StyleID, string SeasonID, string BrandID)
+        {
+            List<string> result = new List<string>();
+            _IGarmentTestDetailProvider = new GarmentTestDetailProvider(Common.ProductionDataAccessLayer);
+            try
+            {
+                result = _IGarmentTestDetailProvider.GetSizeCode(StyleID, SeasonID, BrandID).Select(x => x.SizeCode).ToList();
             }
             catch (Exception ex)
             {
