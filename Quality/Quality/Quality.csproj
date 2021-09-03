@@ -338,6 +338,9 @@
     <Content Include="Areas\BulkFGT\Views\FabricColorFastness\Index.cshtml" />
     <Content Include="Areas\StyleManagement\Views\PrintBarcode\Index.cshtml" />
     <Content Include="Areas\StyleManagement\Views\PrintBarcode\PrintBarcode.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\FabricCrkShrkTest\CrockingTest.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\FabricCrkShrkTest\HeatTest.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\FabricCrkShrkTest\WashTest.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -792,6 +795,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="XLT\WashTest_Physical.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\MockupOven.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

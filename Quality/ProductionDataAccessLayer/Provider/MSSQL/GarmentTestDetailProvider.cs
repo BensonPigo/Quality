@@ -44,6 +44,25 @@ order by SizeCode";
             return ExecuteList<Order_Qty>(CommandType.Text, sqlcmd, objParameter);
         }
 
+        public IList<Order_Qty> GetSizeCode(string StyleID, string SeasonID, string BrandID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@StyleID", DbType.String, StyleID } ,
+                { "@SeasonID", DbType.String, SeasonID } ,
+                { "@BrandID", DbType.String, BrandID } ,
+            };
+
+            string sqlcmd = @"
+select distinct SizeCode 
+from Style s
+inner join Style_SizeCode sc on s.Ukey = sc.StyleUkey
+where s.ID = @StyleID and s.SeasonID = @SeasonID and s.BrandID = @BrandID
+";
+
+            return ExecuteList<Order_Qty>(CommandType.Text, sqlcmd, objParameter);
+        }
+
         public List<string> GetScales()
         {
             string sqlcmd = @"select ID from Scale  WHERE Junk=0 order by ID";

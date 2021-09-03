@@ -7,7 +7,6 @@ using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
 using Sci;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -28,14 +27,14 @@ namespace BusinessLogicLayer.Service
             {
                 _MockupCrockingProvider = new MockupCrockingProvider(Common.ProductionDataAccessLayer);
                 _MockupCrockingDetailProvider = new MockupCrockingDetailProvider(Common.ProductionDataAccessLayer);
-                mockupCrocking_model = _MockupCrockingProvider.GetMockupCrocking(MockupCrocking).ToList().First();
+                mockupCrocking_model = _MockupCrockingProvider.GetMockupCrocking(MockupCrocking, istop1: true).ToList().First();
                 mockupCrocking_model.ReportNo_Source = _MockupCrockingProvider.GetMockupCrockingReportNoList(MockupCrocking).Select(s => s.ReportNo).ToList();
                 MockupCrocking_Detail mockupCrocking_Detail = new MockupCrocking_Detail() { ReportNo = mockupCrocking_model.ReportNo };
                 mockupCrocking_model.MockupCrocking_Detail = _MockupCrockingDetailProvider.GetMockupCrocking_Detail(mockupCrocking_Detail).ToList();
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
-
+                throw ex;
             }
 
             return mockupCrocking_model;
@@ -90,7 +89,7 @@ namespace BusinessLogicLayer.Service
 
                 // 設定表頭資料
                 worksheet.Cells[4, 2] = mockupCrocking.ReportNo;
-                worksheet.Cells[5, 2] = mockupCrocking.T1SubconName;
+                worksheet.Cells[5, 2] = mockupCrocking.T1Subcon + "-" + mockupCrocking.T1SubconAbb;
 
                 worksheet.Cells[6, 2] = mockupCrocking.BrandID;
                 worksheet.Cells[4, 6] = mockupCrocking.ReleasedDate;
@@ -190,7 +189,7 @@ namespace BusinessLogicLayer.Service
                     result.ReportResult = false;
                 }
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 throw ex;
             }

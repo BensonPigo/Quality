@@ -21,6 +21,7 @@ namespace BusinessLogicLayer.Service
     {
         private IMockupOvenProvider _MockupOvenProvider;
         private IMockupOvenDetailProvider _MockupOvenDetailProvider;
+        private IStyleBOAProvider _IStyleBOAProvider;
 
         public MockupOven_ViewModel GetMockupOven(MockupOven_Request MockupOven)
         {
@@ -29,13 +30,14 @@ namespace BusinessLogicLayer.Service
             {
                 _MockupOvenProvider = new MockupOvenProvider(Common.ProductionDataAccessLayer);
                 _MockupOvenDetailProvider = new MockupOvenDetailProvider(Common.ProductionDataAccessLayer);
-                mockupOven_model = _MockupOvenProvider.GetMockupOven(MockupOven).ToList().First();
+                mockupOven_model = _MockupOvenProvider.GetMockupOven(MockupOven, istop1: true).ToList().First();
                 mockupOven_model.ReportNo_Source = _MockupOvenProvider.GetMockupOvenReportNoList(MockupOven).Select(s => s.ReportNo).ToList();
                 MockupOven_Detail mockupOven_Detail = new MockupOven_Detail() { ReportNo = mockupOven_model.ReportNo };
                 mockupOven_model.MockupOven_Detail = _MockupOvenDetailProvider.GetMockupOven_Detail(mockupOven_Detail).ToList();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                throw ex;
             }
 
             return mockupOven_model;
@@ -95,13 +97,14 @@ namespace BusinessLogicLayer.Service
 
                 // 設定表頭資料
                 worksheet.Cells[4, 2] = mockupOven.ReportNo;
-                worksheet.Cells[5, 2] = mockupOven.T1SubconName;
-                worksheet.Cells[6, 2] = mockupOven.T2SupplierName;
+                worksheet.Cells[5, 2] = mockupOven.T1Subcon + "-" + mockupOven.T1SubconAbb;
+                worksheet.Cells[6, 2] = mockupOven.T2Supplier + "-" + mockupOven.T2SupplierAbb;
+                worksheet.Cells[7, 2] = mockupOven.BrandID;
+                worksheet.Cells[8, 2] = $"5.14 color migration test({mockupOven.TestTemperature} degree @ {mockupOven.TestTime} hours)";
 
                 worksheet.Cells[4, 6] = mockupOven.ReleasedDate;
                 worksheet.Cells[5, 6] = mockupOven.TestDate;
-                worksheet.Cells[6, 6] = mockupOven.ReceivedDate;
-                worksheet.Cells[7, 6] = mockupOven.SeasonID;
+                worksheet.Cells[6, 6] = mockupOven.SeasonID;
 
                 if (haveHT)
                 {
@@ -262,21 +265,24 @@ namespace BusinessLogicLayer.Service
             return model;
         }
 
+
         public List<SelectListItem> GetAccessoryRefNo(AccessoryRefNo_Request Request)
         {
+            Request.MtlTypeID = "HEAT TRANS";
             List<SelectListItem> selectListItems = new List<SelectListItem>();
             try
             {
                 _MockupOvenProvider = new MockupOvenProvider(Common.ProductionDataAccessLayer);
-                var AccessoryRefNos = _MockupOvenProvider.GetAccessoryRefNo(Request).ToList();
+                _IStyleBOAProvider = new StyleBOAProvider(Common.ProductionDataAccessLayer);
+                var AccessoryRefNos = _IStyleBOAProvider.GetAccessoryRefNo(Request).ToList();
                 foreach (var item in AccessoryRefNos)
                 {
                     selectListItems.Add(new SelectListItem { Value = item.Refno, Text = item.Refno });
                 }
             }
-            catch (Exception )
+            catch (Exception ex)
             {
-
+                throw ex;
             }
 
             return selectListItems;
@@ -284,12 +290,76 @@ namespace BusinessLogicLayer.Service
 
         public MockupOven_ViewModel Update(MockupOven_ViewModel MockupOven)
         {
-            throw new NotImplementedException();
+            MockupOven_ViewModel model = new MockupOven_ViewModel();
+            _MockupOvenProvider = new MockupOvenProvider(Common.ProductionDataAccessLayer);
+            _MockupOvenDetailProvider = new MockupOvenDetailProvider(Common.ProductionDataAccessLayer);
+            int insertCt;
+            try
+            {
+                using (TransactionScope scope = new TransactionScope())
+                {
+                    insertCt = _MockupOvenProvider.Update(MockupOven);
+                    if (insertCt == 0)
+                    {
+                        return model;
+                    }
+
+                    foreach (var MockupOven_Detail in MockupOven.MockupOven_Detail)
+                    {
+                        insertCt = _MockupOvenDetailProvider.Update(MockupOven_Detail);
+                        if (insertCt == 0)
+                        {
+                            return model;
+                        }
+                    }
+
+                    scope.Complete();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return model;
         }
 
         public MockupOven_ViewModel Delete(MockupOven_ViewModel MockupOven)
         {
-            throw new NotImplementedException();
+            MockupOven_ViewModel model = new MockupOven_ViewModel();
+            _MockupOvenProvider = new MockupOvenProvider(Common.ProductionDataAccessLayer);
+            _MockupOvenDetailProvider = new MockupOvenDetailProvider(Common.ProductionDataAccessLayer);
+            int insertCt;
+            try
+            {
+                using (TransactionScope scope = new TransactionScope())
+                {
+                    insertCt = _MockupOvenProvider.Delete(MockupOven);
+                    if (insertCt == 0)
+                    {
+                        return model;
+                    }
+
+                    foreach (var MockupOven_Detail in MockupOven.MockupOven_Detail)
+                    {
+                        insertCt = _MockupOvenDetailProvider.Delete(MockupOven_Detail);
+                        if (insertCt == 0)
+                        {
+                            return model;
+                        }
+                    }
+
+                    scope.Complete();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return model;
         }
     }
 }

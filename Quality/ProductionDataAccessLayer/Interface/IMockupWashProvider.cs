@@ -9,9 +9,7 @@ namespace ProductionDataAccessLayer.Interface
     {
         IList<MockupWash_ViewModel> GetMockupWashReportNoList(MockupWash_Request Item);
 
-        IList<MockupWash_ViewModel> GetMockupWash(MockupWash_Request Item);
-
-        IList<AccessoryRefNo> GetAccessoryRefNo(AccessoryRefNo_Request Item);
+        IList<MockupWash_ViewModel> GetMockupWash(MockupWash_Request Item, bool istop1 = false);
 
         int Create(MockupWash Item);
 
