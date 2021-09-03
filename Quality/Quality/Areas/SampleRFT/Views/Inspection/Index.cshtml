@@ -1469,9 +1469,27 @@
                 return;
             }
 
-            $('.RewoekListSetting').attr("idx", "F").html('');
-            GetDefectCategory();
-            $('#SelectItemBackground, #AddDefect').removeClass('display-None').unbind('click');
+            $.ajax({
+                url: "@Url.Action("ChkInspQty", "Inspection", new { Area = "SampleRFT" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ OrderID: $("#txtSP").val(), Size: $("#txtSize").val() }),
+                async: false,
+                success: function (data) {
+                    if (data.Result) {
+                        $('.RewoekListSetting').attr("idx", "F").html('');
+                        GetDefectCategory();
+                        $('#SelectItemBackground, #AddDefect').removeClass('display-None').unbind('click');
+                    }
+                    else {
+                        msg.WithError(data.ErrMsg);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+
         });
 
         $('#btnReworkList').on('click', function () {
@@ -1681,7 +1699,7 @@
             }
 
             if (bAAuditCriteriaID == null) {
-                bAAuditCriteriaID = ""; 
+                bAAuditCriteriaID = "";
                 bAAuditCriteria = "";
             }
 
@@ -2311,8 +2329,9 @@
             async: false,
             success: function (data) {
                 if (data.Result) {
-                    msg.WithSuccess("You pass 1 garment.");
-                    $('#btnRefresh').click();
+                    msg.WithSuccesCheck("You pass 1 garment.", function () {
+                        $('#btnRefresh').click();
+                    });
                 }
                 else {
                     msg.WithError(data.ErrMsg);
@@ -2727,8 +2746,9 @@
                     msg.WithError(data.ErrMsg);
                 }
                 else {
-                    msg.WithSuccess("Success");
-                    ReworkListGet();
+                    msg.WithSuccesCheck("Success", function () {
+                        ReworkListGet();
+                    });
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {
@@ -2749,8 +2769,9 @@
                     msg.WithError(data.ErrMsg);
                 }
                 else {
-                    msg.WithSuccess("Success");
-                    ReworkListGet();
+                    msg.WithSuccesCheck("Success", function () {
+                        ReworkListGet();
+                    });
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {
@@ -2783,9 +2804,10 @@
                     msg.WithError(data.ErrMsg);
                 }
                 else {
-                    msg.WithSuccess("Success");
-                    $('#btnReworkListValidateExit').click();
-                    ReworkListGet();
+                    msg.WithSuccesCheck("Success", function () {
+                        $('#btnReworkListValidateExit').click();
+                        ReworkListGet();
+                    });
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {
@@ -2965,7 +2987,7 @@
 
             var tr = $(this).parent().parent();
 
-            datasDetail.push({                 
+            datasDetail.push({
                  MeasurementUkey: parseInt(tr.attr('idv')),
                  StyleUkey: parseInt(tr.attr('idx')),
                  Code: tr.find("p[idx='Code']").html(),
@@ -2988,8 +3010,9 @@
                     msg.WithError(data.ErrMsg);
                 }
                 else {
-                    msg.WithSuccess("Success");
-                    $('#btnMeasurementExit').click();                    
+                    msg.WithSuccesCheck("Success", function () {
+                        $('#btnMeasurementExit').click();
+                    });
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {
@@ -3135,10 +3158,11 @@
             async: true,
             success: function (data) {
                 if (data.Result) {
-                    msg.WithSuccess("Success");
-                    $('#btnPictureDuringDummyFittingExit').click();
-                    $('#btnRefresh').click();
-                    IsEditModeButtonChange();
+                    msg.WithSuccesCheck("Success", function () {
+                        $('#btnPictureDuringDummyFittingExit').click();
+                        $('#btnRefresh').click();
+                        IsEditModeButtonChange();
+                    });
                 }
                 else {
                     msg.WithError(data.ErrMsg);

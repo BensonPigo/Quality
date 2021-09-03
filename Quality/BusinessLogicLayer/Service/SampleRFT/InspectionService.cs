@@ -370,6 +370,24 @@ namespace BusinessLogicLayer.Service
             return inspections;
         }
 
+        public InspectionSave_ViewModel ChkInspQty(InspectionSave_ViewModel inspections)
+        {
+            _RFTInspectionDetailProvider = new RFTInspectionDetailProvider(Common.ManufacturingExecutionDataAccessLayer);
+            // 判斷檢驗數量不可超過Order_Qty
+            DataTable dtchk = _RFTInspectionDetailProvider.ChkInspQty(inspections.rft_Inspection);
+            if (dtchk == null || dtchk.Rows.Count == 0)
+            {
+                inspections.Result = false;
+                inspections.ErrMsg = "Inspection Qty cannot over than Order Qty.";
+            }
+            else
+            {
+                inspections.Result = true;
+            }
+
+            return inspections;
+        }
+
         public IList<ReworkCard> GetReworkCards(ReworkCard rework)
         {
             _IReworkCardProvider = new ReworkCardProvider(Common.ManufacturingExecutionDataAccessLayer);
