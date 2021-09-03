@@ -59,6 +59,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service\BulkFGT\FabricCrkShrkTest_ServiceTests.cs" />
     <Compile Include="Service\BulkFGT\FabricOvenTestServiceTests.cs" />
     <Compile Include="Service\BulkFGT\GarmentTest_ServiceTests.cs" />
     <Compile Include="Service\FinalInspection\FinalInspectionAddDefectServiceTests.cs" />
@@ -104,6 +105,18 @@
     <None Include="XLT\CFT Comments.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Content Include="XLT\FabricCrockingTestWeftWarp.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\FabricCrockingTestPDFWeftWarp.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\FabricCrockingTestPDF.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\FabricCrockingTest.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="XLT\FabricOvenTestDetailReport.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

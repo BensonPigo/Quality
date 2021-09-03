@@ -178,6 +178,21 @@ namespace BusinessLogicLayer.Service
 
                 _FabricOvenTestProvider = new FabricOvenTestProvider(Common.ProductionDataAccessLayer);
 
+                //再檢查一次Result
+                foreach (FabricOvenTest_Detail_Detail fabricOvenTest_Detail_Detail in fabricOvenTest_Detail_Result.Details)
+                {
+                    if (fabricOvenTest_Detail_Detail.ResultChange.ToUpper() == "FAIL" ||
+                        fabricOvenTest_Detail_Detail.ResultStain.ToUpper() == "FAIL" 
+                        )
+                    {
+                        fabricOvenTest_Detail_Detail.Result = "Fail";
+                    }
+                    else
+                    {
+                        fabricOvenTest_Detail_Detail.Result = "Pass";
+                    }
+                }
+
                 if (fabricOvenTest_Detail_Result.Main.TestBeforePicture == null)
                 {
                     fabricOvenTest_Detail_Result.Main.TestBeforePicture = new byte[0];
