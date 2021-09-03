@@ -7,10 +7,12 @@ using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
 using Sci;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Transactions;
+using System.Web.Mvc;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace BusinessLogicLayer.Service
@@ -19,6 +21,7 @@ namespace BusinessLogicLayer.Service
     {
         private IMockupCrockingProvider _MockupCrockingProvider;
         private IMockupCrockingDetailProvider _MockupCrockingDetailProvider;
+        private IStyleArtworkProvider _IStyleArtworkProvider;
 
         public MockupCrocking_ViewModel GetMockupCrocking(MockupCrocking_Request MockupCrocking)
         {
@@ -38,6 +41,26 @@ namespace BusinessLogicLayer.Service
             }
 
             return mockupCrocking_model;
+        }
+
+        public List<SelectListItem> GetArtworkTypeID(StyleArtwork_Request Request)
+        {
+            List<SelectListItem> selectListItems = new List<SelectListItem>();
+            try
+            {
+                _IStyleArtworkProvider = new StyleArtworkProvider(Common.ProductionDataAccessLayer);
+                var ArtworkTypeID = _IStyleArtworkProvider.GetArtworkTypeID(Request).ToList();
+                foreach (var item in ArtworkTypeID)
+                {
+                    selectListItems.Add(new SelectListItem { Value = item.ArtworkTypeID, Text = item.ArtworkTypeID });
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return selectListItems;
         }
 
         public MockupCrocking_ViewModel GetPDF(MockupCrocking_ViewModel mockupCrocking, bool test = false)

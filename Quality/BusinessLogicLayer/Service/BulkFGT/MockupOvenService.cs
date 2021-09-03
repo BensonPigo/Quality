@@ -22,6 +22,7 @@ namespace BusinessLogicLayer.Service
         private IMockupOvenProvider _MockupOvenProvider;
         private IMockupOvenDetailProvider _MockupOvenDetailProvider;
         private IStyleBOAProvider _IStyleBOAProvider;
+        private IStyleArtworkProvider _IStyleArtworkProvider;
 
         public MockupOven_ViewModel GetMockupOven(MockupOven_Request MockupOven)
         {
@@ -41,6 +42,47 @@ namespace BusinessLogicLayer.Service
             }
 
             return mockupOven_model;
+        }
+
+        public List<SelectListItem> GetArtworkTypeID(StyleArtwork_Request Request)
+        {
+            List<SelectListItem> selectListItems = new List<SelectListItem>();
+            try
+            {
+                _IStyleArtworkProvider = new StyleArtworkProvider(Common.ProductionDataAccessLayer);
+                var ArtworkTypeID = _IStyleArtworkProvider.GetArtworkTypeID(Request).ToList();
+                foreach (var item in ArtworkTypeID)
+                {
+                    selectListItems.Add(new SelectListItem { Value = item.ArtworkTypeID, Text = item.ArtworkTypeID });
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return selectListItems;
+        }
+
+        public List<SelectListItem> GetAccessoryRefNo(AccessoryRefNo_Request Request)
+        {
+            Request.MtlTypeID = "HEAT TRANS";
+            List<SelectListItem> selectListItems = new List<SelectListItem>();
+            try
+            {
+                _IStyleBOAProvider = new StyleBOAProvider(Common.ProductionDataAccessLayer);
+                var AccessoryRefNos = _IStyleBOAProvider.GetAccessoryRefNo(Request).ToList();
+                foreach (var item in AccessoryRefNos)
+                {
+                    selectListItems.Add(new SelectListItem { Value = item.Refno, Text = item.Refno });
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return selectListItems;
         }
 
         public MockupOven_ViewModel GetPDF(MockupOven_ViewModel mockupOven, bool test = false)
@@ -263,29 +305,6 @@ namespace BusinessLogicLayer.Service
             }
 
             return model;
-        }
-
-
-        public List<SelectListItem> GetAccessoryRefNo(AccessoryRefNo_Request Request)
-        {
-            Request.MtlTypeID = "HEAT TRANS";
-            List<SelectListItem> selectListItems = new List<SelectListItem>();
-            try
-            {
-                _MockupOvenProvider = new MockupOvenProvider(Common.ProductionDataAccessLayer);
-                _IStyleBOAProvider = new StyleBOAProvider(Common.ProductionDataAccessLayer);
-                var AccessoryRefNos = _IStyleBOAProvider.GetAccessoryRefNo(Request).ToList();
-                foreach (var item in AccessoryRefNos)
-                {
-                    selectListItems.Add(new SelectListItem { Value = item.Refno, Text = item.Refno });
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-
-            return selectListItems;
         }
 
         public MockupOven_ViewModel Update(MockupOven_ViewModel MockupOven)

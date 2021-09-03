@@ -58,6 +58,29 @@ namespace BusinessLogicLayer.Service.Tests
             }
         }
 
+
+        [TestMethod()]
+        public void GetArtworkTypeID()
+        {
+            try
+            {
+                IMockupWashService _MockupWashService = new MockupWashService();
+                StyleArtwork_Request StyleArtwork_Request = new StyleArtwork_Request()
+                {
+                    BrandID = "U.ARMOUR",
+                    SeasonID = "20FW",
+                    StyleID = "1342962",
+                    //StyleUkey =75468,
+                };
+                var selectListItems = _MockupWashService.GetArtworkTypeID(StyleArtwork_Request);
+                Assert.IsTrue(true);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.ToString());
+            }
+        }
+
         [TestMethod()]
         public void GetPDF()
         {
