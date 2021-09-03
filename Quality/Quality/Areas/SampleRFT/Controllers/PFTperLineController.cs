@@ -26,32 +26,41 @@ namespace Quality.Areas.SampleRFT.Controllers
             ViewBag.OnlineHelp = this.OnlineHelp + "SampleRFT.PFTperLine,,";
         }
 
-        // GET: SampleRFT/PFTperLine
-        public ActionResult Index(string Factory,string Years,string Month)
+        public ActionResult Index()
         {
-
             RFTPerLine_ViewModel rftPerLine = _RFTPerLineService.GetQueryPara();
-
             List<SelectListItem> FactoryList = new SetListItem().ItemListBinding(this.Factorys);
+            List<SelectListItem> YearsList = new SetListItem().ItemListBinding(rftPerLine.Years); 
+            List<SelectListItem> MonthList = new SetListItem().ItemListBinding(rftPerLine.Months);
+           
             ViewBag.FactoryList = FactoryList;
-
-            List<SelectListItem> YearsList = new SetListItem().ItemListBinding(rftPerLine.Years);
             ViewBag.YearsList = YearsList;
-
-            Dictionary<string, object> months = new Dictionary<string, object>();
-
-            foreach (var month in rftPerLine.Months)
-            {
-                months.Add(month.Key, month.Value);
-            }
-
-            List<SelectListItem> MonthList = new SetListItem().ItemListBinding(months);
             ViewBag.MonthList = MonthList;
 
-            RFTPerLine_ViewModel rftPerLineQuery = _RFTPerLineService.RFTPerLineQuery(this.FactoryID, rftPerLine.Years.FirstOrDefault(), rftPerLine.Months.FirstOrDefault().Key.ToString());
+            RFTPerLine_Request result = GetData(this.FactoryID, rftPerLine.Years.FirstOrDefault(), rftPerLine.Months.Keys.FirstOrDefault());
+            return View(result);
+        }
 
-            rftPerLine.monthlyRFTs = rftPerLineQuery.monthlyRFTs;
-            rftPerLine.dailyRFTs = rftPerLineQuery.dailyRFTs;
+        [HttpPost]
+        public ActionResult Index(string Factory,string Years,string Month)
+        {
+            RFTPerLine_ViewModel rftPerLine = _RFTPerLineService.GetQueryPara();
+            List<SelectListItem> FactoryList = new SetListItem().ItemListBinding(this.Factorys);
+            List<SelectListItem> YearsList = new SetListItem().ItemListBinding(rftPerLine.Years);
+            List<SelectListItem> MonthList = new SetListItem().ItemListBinding(rftPerLine.Months);
+
+            ViewBag.FactoryList = FactoryList;
+            ViewBag.YearsList = YearsList;
+            ViewBag.MonthList = MonthList;
+            RFTPerLine_Request result = GetData(Factory, Years, Month);
+
+            return View(result);
+        }
+
+        private RFTPerLine_Request GetData(string Factory, string Years, string Month)
+        {
+            RFTPerLine_ViewModel rftPerLineQuery = _RFTPerLineService.RFTPerLineQuery(Factory, Years, Month);
+            RFTPerLine_Request reslut = new RFTPerLine_Request();
 
             DataTable monthlydt = new DataTable();
 
@@ -70,7 +79,7 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             foreach (DataColumn line in monthlydt.Columns)
             {
-                var item = rftPerLine.monthlyRFTs.AsEnumerable().Where(r => r.Line == line.ColumnName).FirstOrDefault();
+                var item = rftPerLineQuery.monthlyRFTs.AsEnumerable().Where(r => r.Line == line.ColumnName).FirstOrDefault();
 
                 if (item != null)
                 {
@@ -86,7 +95,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             monthlydt.Rows.Add(monthlyRow);
 
 
-           DataTable dailydt = new DataTable();
+            DataTable dailydt = new DataTable();
 
             List<string> dtHeader = rftPerLineQuery.dailyRFTs.AsEnumerable().Select(r => r.Line).Distinct().ToList();
 
@@ -99,7 +108,6 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             List<int> dailylist = rftPerLineQuery.dailyRFTs.AsEnumerable().Select(r => r.Date).Distinct().ToList();
 
-
             foreach (int date in dailylist)
             {
                 bool dateFistTime = true;
@@ -107,7 +115,7 @@ namespace Quality.Areas.SampleRFT.Controllers
 
                 foreach (DataColumn line in dailydt.Columns)
                 {
-                    var item = rftPerLine.dailyRFTs.AsEnumerable().Where(r => r.Line == line.ColumnName && r.Date == date).FirstOrDefault();
+                    var item = rftPerLineQuery.dailyRFTs.AsEnumerable().Where(r => r.Line == line.ColumnName && r.Date == date).FirstOrDefault();
 
                     if (item != null)
                     {
@@ -125,13 +133,11 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             }
 
-            string dailyjson = JsonConvert.SerializeObject(dailydt);
-            dynamic data = new ExpandoObject();
-            data.rftPerLine = rftPerLine;
-            data.MonthlyData = monthlydt;
-            data.DailyData = dailydt;
-            return View(data);
-        }
+            reslut.monthlyRFTs = rftPerLineQuery.monthlyRFTs;
+            reslut.MonthlyData = monthlydt;
+            reslut.DailyData = dailydt;
 
+            return reslut;
+        } 
     }
 }

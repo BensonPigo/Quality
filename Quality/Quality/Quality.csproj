@@ -169,10 +169,13 @@
     <Compile Include="Areas\BulkFGT\BulkFGTAreaRegistration.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\AccessoryOvenWashController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\BulkFGTMailGroupController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\FabricColorFastnessController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\FabricCrkShrkTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\FabricOvenTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\GarmentTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\MockupCrockingController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\MockupOvenTestController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\MockupWashController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\PullingTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\SearchListController.cs" />
     <Compile Include="Areas\FinalInspection\Controllers\InspectionController.cs" />
@@ -186,6 +189,7 @@
     <Compile Include="Areas\SampleRFT\Controllers\PicturesDummyController.cs" />
     <Compile Include="Areas\SampleRFT\SampleRFTAreaRegistration.cs" />
     <Compile Include="Areas\StyleManagement\Controllers\StyleListController.cs" />
+    <Compile Include="Areas\StyleManagement\Controllers\PrintBarcodeController.cs" />
     <Compile Include="Areas\StyleManagement\StyleManagementAreaRegistration.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -329,6 +333,11 @@
     <Content Include="Areas\BulkFGT\Views\AccessoryOvenWash\WashTest.cshtml" />
     <Content Include="Areas\BulkFGT\Views\FabricOvenTest\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\FabricOvenTest\Detail.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\MockupWash\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\MockupOvenTest\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\FabricColorFastness\Index.cshtml" />
+    <Content Include="Areas\StyleManagement\Views\PrintBarcode\Index.cshtml" />
+    <Content Include="Areas\StyleManagement\Views\PrintBarcode\PrintBarcode.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />

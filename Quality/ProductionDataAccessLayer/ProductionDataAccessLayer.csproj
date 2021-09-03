@@ -85,7 +85,9 @@
     <Compile Include="Interface\IGarmentTestProvider.cs" />
     <Compile Include="Interface\IMockupCrockingDetailProvider.cs" />
     <Compile Include="Interface\IMockupCrockingProvider.cs" />
+    <Compile Include="Interface\IMockupOvenDetailProvider.cs" />
     <Compile Include="Interface\IMockupWashDetailProvider.cs" />
+    <Compile Include="Interface\IMockupOvenProvider.cs" />
     <Compile Include="Interface\IMockupWashProvider.cs" />
     <Compile Include="Interface\INewCDCodeProvider.cs" />
     <Compile Include="Interface\IOrderLocationProvider.cs" />
@@ -100,6 +102,7 @@
     <Compile Include="Interface\ISewingLineProvider.cs" />
     <Compile Include="Interface\IStyleArticleProvider.cs" />
     <Compile Include="Interface\IStyleListProvider.cs" />
+    <Compile Include="Interface\IStyleManagementProvider.cs" />
     <Compile Include="Interface\IStyleProvider.cs" />
     <Compile Include="Interface\ISystemProvider.cs" />
     <Compile Include="Interface\ITPEPass1Provider.cs" />
@@ -126,7 +129,9 @@
     <Compile Include="Provider\MSSQL\GarmentTestProvider.cs" />
     <Compile Include="Provider\MSSQL\MockupCrockingDetailProvider.cs" />
     <Compile Include="Provider\MSSQL\MockupCrockingProvider.cs" />
+    <Compile Include="Provider\MSSQL\MockupOvenDetailProvider.cs" />
     <Compile Include="Provider\MSSQL\MockupWashDetailProvider.cs" />
+    <Compile Include="Provider\MSSQL\MockupOvenProvider.cs" />
     <Compile Include="Provider\MSSQL\MockupWashProvider.cs" />
     <Compile Include="Provider\MSSQL\NewCDCodeProvider.cs" />
     <Compile Include="Provider\MSSQL\OrderLocationProvider.cs" />
@@ -142,6 +147,7 @@
     <Compile Include="Provider\MSSQL\SewingLineProvider.cs" />
     <Compile Include="Provider\MSSQL\StyleArticleProvider.cs" />
     <Compile Include="Provider\MSSQL\StyleListProvider.cs" />
+    <Compile Include="Provider\MSSQL\StyleManagementProvider.cs" />
     <Compile Include="Provider\MSSQL\StyleProvider.cs" />
     <Compile Include="Provider\MSSQL\SystemProvider.cs" />
     <Compile Include="Provider\MSSQL\TPEPass1Provider.cs" />

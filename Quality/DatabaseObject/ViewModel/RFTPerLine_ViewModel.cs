@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -35,5 +36,12 @@ namespace DatabaseObject.ViewModel
         public string Line { get; set; }
 
         public decimal RFT { get; set; }
+    }
+
+    public class RFTPerLine_Request
+    {
+        public List<MonthlyRFT> monthlyRFTs { get; set; }
+        public DataTable MonthlyData { get; set; }
+        public DataTable DailyData { get; set; }
     }
 }

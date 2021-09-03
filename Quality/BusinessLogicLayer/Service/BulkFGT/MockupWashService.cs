@@ -282,5 +282,15 @@ namespace BusinessLogicLayer.Service
 
             return selectListItems;
         }
+
+        public MockupWash_ViewModel Update(MockupWash_ViewModel MockupWash)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MockupWash_ViewModel Delete(MockupWash_ViewModel MockupWash)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

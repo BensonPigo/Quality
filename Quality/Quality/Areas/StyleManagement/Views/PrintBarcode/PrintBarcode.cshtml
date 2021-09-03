@@ -1,0 +1,50 @@
+﻿
+@{
+    ViewBag.Title = "PrintBarcode";
+    Layout = null;
+    List<int> StyleUkeyList = new List<int>();
+
+    if (ViewData["StyleUkeyList"] != null)
+    {
+        StyleUkeyList = (List<int>)ViewData["StyleUkeyList"];
+    }
+}
+
+<script src="~/Scripts/jquery-3.5.1.min.js"></script>
+<script src="~/ThirdParty/plugins/JsBarcode/JsBarcode.all.min.js"></script>
+
+<style>
+    @@media print {
+        body {
+            counter-reset: page-number; /* 初始化，名字可自訂，數值為0 */
+            text-align: center;
+        }
+
+        .barcodeDiv {
+            page-break-after: always;
+        }
+    }
+
+    @@page {
+        margin: 0; /* 邊界與內容的距離 */
+        size: 9cm 4cm; /*列印紙張大小*/
+    }
+</style>
+
+@foreach (var ukey in StyleUkeyList)
+{
+    <div class="barcodeDiv">
+        <svg class="barcode" jsbarcode-format="CODE128" jsbarcode-value="@ukey" jsbarcode-width="3"
+             jsbarcode-height="90"></svg>
+    </div>
+
+}
+
+<script>
+
+    $(function () {
+        JsBarcode(".barcode").init();
+        window.print();
+    });
+
+</script>

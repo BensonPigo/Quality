@@ -1,12 +1,15 @@
-﻿using System;
+﻿using DatabaseObject.ViewModel.BulkFGT;
+using Quality.Controllers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using static Quality.Helper.Attribute;
 
 namespace Quality.Areas.BulkFGT.Controllers
 {
-    public class AccessoryOvenWashController : Controller
+    public class AccessoryOvenWashController : BaseController
     {
 
         #region AccessoryOvenWash頁面
@@ -20,17 +23,15 @@ namespace Quality.Areas.BulkFGT.Controllers
             return View();
         }
 
-        public ActionResult AccessoryEdit()
+        [HttpPost]
+        public ActionResult Query(Accessory_ViewModel Req)
         {
             return View();
         }
 
-        public ActionResult AccessoryUndo()
-        {
-            return View();
-        }
-
-        public ActionResult AccessorySave()
+        [HttpPost]
+        [MultipleButton(Name = "action", Argument = "AccessorySave")]
+        public ActionResult AccessorySave(Accessory_ViewModel Req)
         {
             return View();
         }
@@ -40,29 +41,27 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         #region OvenTest頁面
 
-        public ActionResult OvenTest()
+        public ActionResult OvenTest(Accessory_Oven Req)
         {
             return View();
         }
 
-        public ActionResult OvenEdit()
+        [HttpPost]
+        [MultipleButton(Name = "action", Argument = "OvenSave")]
+        public ActionResult OvenSave(Accessory_Oven Req)
         {
             return View();
         }
 
-        public ActionResult OvenUndo()
+        [HttpPost]
+        [MultipleButton(Name = "action", Argument = "OvenEncode")]
+        public ActionResult OvenEncode(Accessory_Oven Req)
         {
             return View();
         }
 
-        public ActionResult OvenSave()
-        {
-            return View();
-        }
-        public ActionResult OvenEncode()
-        {
-            return View();
-        }
+        [HttpPost]
+        [MultipleButton(Name = "action", Argument = "OvenAmend")]
         public ActionResult OvenAmend()
         {
             return View();
@@ -72,30 +71,28 @@ namespace Quality.Areas.BulkFGT.Controllers
 
 
         #region WashTest頁面
-        public ActionResult WashTest()
+        public ActionResult WashTest(Accessory_Wash Req)
         {
             return View();
         }
 
-        public ActionResult WashEdit()
+        [HttpPost]
+        [MultipleButton(Name = "action", Argument = "WashSave")]
+        public ActionResult WashSave(Accessory_Wash Req)
         {
             return View();
         }
 
-        public ActionResult WashUndo()
+        [HttpPost]
+        [MultipleButton(Name = "action", Argument = "WashEncode")]
+        public ActionResult WashEncode(Accessory_Wash Req)
         {
             return View();
         }
 
-        public ActionResult WashSave()
-        {
-            return View();
-        }
-        public ActionResult WashEncode()
-        {
-            return View();
-        }
-        public ActionResult WashAmend()
+        [HttpPost]
+        [MultipleButton(Name = "action", Argument = "WashAmend")]
+        public ActionResult WashAmend(Accessory_Wash Req)
         {
             return View();
         }

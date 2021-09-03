@@ -114,6 +114,8 @@
     <Compile Include="ProductionDB\Garment_Detail_Spirality.cs" />
     <Compile Include="ProductionDB\MockupCrocking.cs" />
     <Compile Include="ProductionDB\MockupCrocking_Detail.cs" />
+    <Compile Include="ProductionDB\MockupOven.cs" />
+    <Compile Include="ProductionDB\MockupOven_Detail.cs" />
     <Compile Include="ProductionDB\MockupWash.cs" />
     <Compile Include="ProductionDB\MockupWash_Detail.cs" />
     <Compile Include="ProductionDB\NewCDCode.cs" />
@@ -135,6 +137,7 @@
     <Compile Include="Public\CompareBase.cs" />
     <Compile Include="Public\WindowModel.cs" />
     <Compile Include="RequestModel\FinalInspection_Query.cs" />
+    <Compile Include="RequestModel\MockupOven_Request.cs" />
     <Compile Include="RequestModel\MockupWash_Request.cs" />
     <Compile Include="RequestModel\MockupCrocking_Request.cs" />
     <Compile Include="RequestModel\FinalInspection_Request.cs" />
@@ -159,6 +162,7 @@
     <Compile Include="ResultModel\Quality_MailGroup_ResultModel.cs" />
     <Compile Include="ResultModel\Quality_Position.cs" />
     <Compile Include="ResultModel\StyleList.cs" />
+    <Compile Include="ResultModel\StyleManagement_Request.cs" />
     <Compile Include="ResultModel\UserList.cs" />
     <Compile Include="ResultModel\UserList_Authority.cs" />
     <Compile Include="ResultModel\UserList_Browse.cs" />
@@ -169,7 +173,8 @@
     <Compile Include="ViewModel\BulkFGT\GarmentTest_Detail_FGWT_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\GarmentTest_Detail_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\GarmentTest_ViewModel.cs" />
-    <Compile Include="ViewModel\BulkFGT\MockupWashs_ViewModel.cs" />
+    <Compile Include="ViewModel\BulkFGT\MockupOven_ViewModel.cs" />
+    <Compile Include="ViewModel\BulkFGT\MockupWash_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\PullingTest_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\SearchList_ViewModel.cs" />
     <Compile Include="ViewModel\FinalInspection\AddDefect.cs" />
@@ -185,14 +190,16 @@
     <Compile Include="ResultModel\GarmentTest_Result.cs" />
     <Compile Include="ViewModel\InspectionSave_ViewModel.cs" />
     <Compile Include="ViewModel\Inspection_ViewModel.cs" />
+    <Compile Include="ViewModel\PrintBarcode_ViewModel.cs" />
     <Compile Include="ViewModel\ReworkList_ViewModel.cs" />
     <Compile Include="ViewModel\SampleRFT\CFTComments_ViewModel.cs" />
-    <Compile Include="ViewModel\BulkFGT\MockupCrockings_ViewModel.cs" />
+    <Compile Include="ViewModel\BulkFGT\MockupCrocking_ViewModel.cs" />
     <Compile Include="ViewModel\RFTPerLine_ViewModel.cs" />
     <Compile Include="ViewModel\RFT_Inspection_Measurement_ViewModel.cs" />
     <Compile Include="ViewModel\RFT_OrderComments_ViewModel.cs" />
     <Compile Include="ViewModel\RFT_PicDuringDummyFitting_ViewModel.cs" />
     <Compile Include="ViewModel\SelectItem_ViewModel.cs" />
+    <Compile Include="ViewModel\StyleResult_ViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

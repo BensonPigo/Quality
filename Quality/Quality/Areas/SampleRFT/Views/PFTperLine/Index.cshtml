@@ -149,37 +149,36 @@
             <h3 class="fontColor">Daily RFT</h3>
             <br />
             <div style=" padding-right: 2.5vw">
+
             <div class="inner-scroll" style="float: left ;height: 40vh;">
-        
                     <table cellspacing="100" class="table-striped" style="width:550%;">
                         <thead>
                             <tr>
                                 @foreach (DataColumn item in Model.DailyData.Columns)
-                                {
+                                    {
 
-                                    <th style="width:10vw">@item.ColumnName</th>
-                                }
+                                        <th style="width:10vw">@item.ColumnName</th>
+                                    }
                             </tr>
                         </thead>
                         <tbody>
 
                             @foreach (DataRow items in Model.DailyData.Rows)
-                            {
-                                <tr>
-                                    @foreach (DataColumn column in Model.DailyData.Columns)
-                                    {
-                                        <td>
-                                            @items[column]
-                                        </td>
-                                    }
-                                </tr>
-                            }
+                                {
+                                    <tr>
+                                        @foreach (DataColumn column in Model.DailyData.Columns)
+                                        {
+                                            <td>
+                                                @items[column]
+                                            </td>
+                                        }
+                                    </tr>
+                                }
 
                         </tbody>
                     </table>
-          
-            </div>
                 </div>
+            </div>
         </div>
     </div>
 
@@ -188,7 +187,7 @@
 
 <script type="text/javascript">
 
-    var items = @Html.Raw(Json.Encode(Model.rftPerLine.monthlyRFTs));
+    var items = @Html.Raw(Json.Encode(Model.monthlyRFTs));
 
     var thead = "";
     var tbody = "";
@@ -214,5 +213,13 @@
 
     $('.MonthlyTable>thead').html(thead);
     $('.MonthlyTable>tbody').html(tbody);
+
+
+
+    $(function () {
+        if (!$("body").hasClass("sidebar-collapse")) {
+            $(".menu-trigger").click();
+        }
+    });
 
 </script>

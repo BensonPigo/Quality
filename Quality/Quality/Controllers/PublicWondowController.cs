@@ -25,7 +25,7 @@ namespace Quality.Controllers
         }
 
         [HttpPost]
-        public ActionResult BrandList(string BrandID, string ReturnType)
+        public ActionResult BrandList(string BrandID, string ReturnType = "")
         {
             bool IsExact = ReturnType.ToUpper() == "JSON";
             var model = _PublicWindowService.Get_Brand(BrandID, IsExact);
@@ -37,7 +37,7 @@ namespace Quality.Controllers
         }
 
         [HttpPost]
-        public ActionResult BrandListOther(string BrandID, string ReturnType ,string OtherTable, string OtherColumn)
+        public ActionResult BrandListOther(string BrandID, string OtherTable, string OtherColumn, string ReturnType = "")
         {
             var model = _PublicWindowService.Get_Brand(BrandID, OtherTable, OtherColumn);
             if (ReturnType.ToUpper() == "JSON")
@@ -56,7 +56,7 @@ namespace Quality.Controllers
         }
 
         [HttpPost]
-        public ActionResult SeasonList(string BrandID, string SeasonID, string ReturnType)
+        public ActionResult SeasonList(string BrandID, string SeasonID, string ReturnType = "")
         {
             bool IsExact = ReturnType.ToUpper() == "JSON";
             var model = _PublicWindowService.Get_Season(BrandID, SeasonID, IsExact);
@@ -77,7 +77,7 @@ namespace Quality.Controllers
         }
 
         [HttpPost]
-        public ActionResult StyleList(string BrandID, string SeasonID, string StyleID, string ReturnType)
+        public ActionResult StyleList(string BrandID, string SeasonID, string StyleID, string ReturnType = "")
         {
             bool IsExact = ReturnType.ToUpper() == "JSON";
             var model = _PublicWindowService.Get_Style(BrandID, SeasonID, StyleID, IsExact);
@@ -102,7 +102,7 @@ namespace Quality.Controllers
         }
 
         [HttpPost]
-        public ActionResult ArticleList(string OrderID, Int64 StyleUkey, string StyleID, string BrandID, string SeasonID, string Article, string ReturnType)
+        public ActionResult ArticleList(string OrderID, Int64 StyleUkey, string StyleID, string BrandID, string SeasonID, string Article, string ReturnType = "")
         {
             bool IsExact = ReturnType.ToUpper() == "JSON";
             var model = _PublicWindowService.Get_Article(OrderID, StyleUkey, StyleID, BrandID, SeasonID, Article, IsExact);
@@ -131,7 +131,7 @@ namespace Quality.Controllers
         }
 
         [HttpPost]
-        public ActionResult SizeList(string OrderID, Int64? StyleUkey, string BrandID, string SeasonID, string StyleID, string Article, string Size, string ReturnType)
+        public ActionResult SizeList(string OrderID, Int64? StyleUkey, string BrandID, string SeasonID, string StyleID, string Article, string Size, string ReturnType = "")
         {
             // 若是驗證則需要精準判斷
             bool IsExact = ReturnType.ToUpper() == "JSON";
@@ -157,7 +157,7 @@ namespace Quality.Controllers
         }
 
         [HttpPost]
-        public ActionResult TechnicianList(string CallFunction, string ID, string ReturnType)
+        public ActionResult TechnicianList(string CallFunction, string ID, string ReturnType = "")
         {
             bool IsExact = ReturnType.ToUpper() == "JSON";
             var model = _PublicWindowService.Get_Technician(CallFunction, ID, IsExact);
@@ -178,7 +178,7 @@ namespace Quality.Controllers
         }
 
         [HttpPost]
-        public ActionResult LocalSuppList(string Title, string Name, string ReturnType)
+        public ActionResult LocalSuppList(string Title, string Name, string ReturnType = "")
         {
             bool IsExact = ReturnType.ToUpper() == "JSON";
             var model = _PublicWindowService.Get_LocalSupp(Name, IsExact);
@@ -198,7 +198,7 @@ namespace Quality.Controllers
         }
 
         [HttpPost]
-        public ActionResult TPESuppList(string Title, string Name, string ReturnType)
+        public ActionResult TPESuppList(string Title, string Name, string ReturnType = "")
         {
             bool IsExact = ReturnType.ToUpper() == "JSON";
             var model = _PublicWindowService.Get_TPESupp(Name, IsExact);
@@ -220,7 +220,7 @@ namespace Quality.Controllers
         }
 
         [HttpPost]
-        public ActionResult Po_Supp_DetailList(string POID, string FabricType, string Seq, string ReturnType)
+        public ActionResult Po_Supp_DetailList(string POID, string FabricType, string Seq, string ReturnType = "")
         {
             bool IsExact = ReturnType.ToUpper() == "JSON";
             var model = _PublicWindowService.Get_Po_Supp_Detail(POID, FabricType, Seq, IsExact);
@@ -244,7 +244,7 @@ namespace Quality.Controllers
         }
 
         [HttpPost]
-        public ActionResult FtyInventoryList(string Title, string POID, string Seq1, string Seq2, string Roll, string ReturnType)
+        public ActionResult FtyInventoryList(string Title, string POID, string Seq1, string Seq2, string Roll, string ReturnType = "")
         {
             bool IsExact = ReturnType.ToUpper() == "JSON";
             var model = _PublicWindowService.Get_FtyInventory(POID, Seq1, Seq2, Roll, IsExact);
@@ -268,7 +268,7 @@ namespace Quality.Controllers
         }
 
         [HttpPost]
-        public ActionResult Pass1List(string Title, string ID, string ReturnType)
+        public ActionResult Pass1List(string Title, string ID, string ReturnType = "")
         {
             bool IsExact = ReturnType.ToUpper() == "JSON";
             var model = _PublicWindowService.Get_Pass1(ID, IsExact);
@@ -288,7 +288,7 @@ namespace Quality.Controllers
         }
 
         [HttpPost]
-        public ActionResult SewingLineList(string FactoryID, string ID, string ReturnType)
+        public ActionResult SewingLineList(string FactoryID, string ID, string ReturnType = "")
         {
             bool IsExact = ReturnType.ToUpper() == "JSON";
             var model = _PublicWindowService.Get_SewingLine(FactoryID, ID, IsExact);
@@ -307,7 +307,7 @@ namespace Quality.Controllers
             return View(model);
         }
         [HttpPost]
-        public ActionResult AppearanceList(string Lab, string ReturnType)
+        public ActionResult AppearanceList(string Lab, string ReturnType = "")
         {
             var model = _PublicWindowService.Get_Appearance(Lab);
 

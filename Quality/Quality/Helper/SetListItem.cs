@@ -55,5 +55,21 @@ namespace FactoryDashBoardWeb.Helper
 
             return result_itemList;
         }
+
+        public List<SelectListItem> ItemListBinding(Dictionary<string, int> Options)
+        {
+            List<SelectListItem> result_itemList = new List<SelectListItem>();
+            foreach (var item in Options)
+            {
+                SelectListItem i = new SelectListItem()
+                {
+                    Text = item.Key.ToString(),
+                    Value = item.Value.ToString()
+                };
+                result_itemList.Add(i);
+            }
+
+            return result_itemList;
+        }
     }
 }

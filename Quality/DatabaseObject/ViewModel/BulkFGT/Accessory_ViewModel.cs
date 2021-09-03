@@ -17,7 +17,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public DateTime? EarliestSCIDel { get; set; }
         public DateTime? TargetLeadTime { get; set; }
         public DateTime? CompletionDate { get; set; }
-        public decimal ArticlePercent{ get; set; }
+        public decimal ArticlePercent { get; set; }
         public string MtlCmplt { get; set; }
         public string Remark { get; set; }
         public string CreateBy { get; set; }
@@ -28,9 +28,11 @@ namespace DatabaseObject.ViewModel.BulkFGT
     public class Accessory_Result
     {
         //表身
+        public string AIR_LaboratoryID { get; set; }
         public string Seq1 { get; set; }
         public string Seq2 { get; set; }
         public string Seq { get; set; }
+
         public string WKNo { get; set; }
         public DateTime? WhseArrival { get; set; }
         public string SCIRefno { get; set; }
@@ -65,7 +67,11 @@ namespace DatabaseObject.ViewModel.BulkFGT
         //Oven
 
         public string AIR_LaboratoryID { get; set; }
+        public string Seq1 { get; set; }
+        public string Seq2 { get; set; }
+        public string Seq { get; set; }
         public string POID { get; set; }
+
         public string SCIRefno { get; set; }
         public string WKNo { get; set; }
         public string Refno { get; set; }
@@ -87,6 +93,9 @@ namespace DatabaseObject.ViewModel.BulkFGT
     public class Accessory_Wash
     {
         public string AIR_LaboratoryID { get; set; }
+        public string Seq1 { get; set; }
+        public string Seq2 { get; set; }
+        public string Seq { get; set; }
         public string POID { get; set; }
         public string SCIRefno { get; set; }
         public string WKNo { get; set; }
