@@ -22,6 +22,7 @@ namespace BusinessLogicLayer.Service
         private IMockupWashProvider _MockupWashProvider;
         private IMockupWashDetailProvider _MockupWashDetailProvider;
         private IStyleBOAProvider _IStyleBOAProvider;
+        private IDropDownListProvider _DropDownListProvider;
 
         public MockupWash_ViewModel GetMockupWash(MockupWash_Request MockupWash)
         {
@@ -34,6 +35,15 @@ namespace BusinessLogicLayer.Service
                 mockupWash_model.ReportNo_Source = _MockupWashProvider.GetMockupWashReportNoList(MockupWash).Select(s => s.ReportNo).ToList();
                 MockupWash_Detail mockupWash_Detail = new MockupWash_Detail() { ReportNo = mockupWash_model.ReportNo };
                 mockupWash_model.MockupWash_Detail = _MockupWashDetailProvider.GetMockupWash_Detail(mockupWash_Detail).ToList();
+
+                mockupWash_model.TestingMethod_Source = new List<SelectListItem>();
+                _DropDownListProvider = new DropDownListProvider(Common.ProductionDataAccessLayer);
+                DropDownList downList = new DropDownList() { Type = "PMS_MockupWashMethod" };
+                List<DropDownList> dropDowns = _DropDownListProvider.Get(downList).ToList();
+                foreach (var item in dropDowns)
+                {
+                    mockupWash_model.TestingMethod_Source.Add(new SelectListItem() { Value = item.ID, Text = item.Description });
+                }
             }
             catch (Exception ex)
             {
@@ -41,6 +51,74 @@ namespace BusinessLogicLayer.Service
             }
 
             return mockupWash_model;
+        }
+
+        public List<SelectListItem> GetAccessoryRefNo(AccessoryRefNo_Request Request)
+        {
+            Request.MtlTypeID = "HEAT TRANS";
+            List<SelectListItem> selectListItems = new List<SelectListItem>();
+            try
+            {
+                _IStyleBOAProvider = new StyleBOAProvider(Common.ProductionDataAccessLayer);
+                var AccessoryRefNos = _IStyleBOAProvider.GetAccessoryRefNo(Request).ToList();
+                foreach (var item in AccessoryRefNos)
+                {
+                    selectListItems.Add(new SelectListItem { Value = item.Refno, Text = item.Refno });
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return selectListItems;
+        }
+
+        public MockupWash_ViewModel Create(MockupWash_ViewModel MockupWash)
+        {
+            MockupWash_ViewModel model = new MockupWash_ViewModel();
+            _MockupWashProvider = new MockupWashProvider(Common.ProductionDataAccessLayer);
+            _MockupWashDetailProvider = new MockupWashDetailProvider(Common.ProductionDataAccessLayer);
+            int insertCt;
+            try
+            {
+                using (TransactionScope scope = new TransactionScope())
+                {
+                    insertCt = _MockupWashProvider.Create(MockupWash);
+                    if (insertCt == 0)
+                    {
+                        return model;
+                    }
+
+                    foreach (var MockupWash_Detail in MockupWash.MockupWash_Detail)
+                    {
+                        insertCt = _MockupWashDetailProvider.Create(MockupWash_Detail);
+                        if (insertCt == 0)
+                        {
+                            return model;
+                        }
+                    }
+
+                    scope.Complete();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return model;
+        }
+
+        public MockupWash_ViewModel Update(MockupWash_ViewModel MockupWash)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MockupWash_ViewModel Delete(MockupWash_ViewModel MockupWash)
+        {
+            throw new NotImplementedException();
         }
 
         public MockupWash_ViewModel GetPDF(MockupWash_ViewModel mockupWash, bool test = false)
@@ -97,8 +175,8 @@ namespace BusinessLogicLayer.Service
 
                 // 設定表頭資料
                 worksheet.Cells[4, 2] = mockupWash.ReportNo;
-                worksheet.Cells[5, 2] = mockupWash.T1SubconName;
-                worksheet.Cells[6, 2] = mockupWash.T2SupplierName;
+                worksheet.Cells[5, 2] = mockupWash.T1Subcon + "-" + mockupWash.T1SubconAbb; ;
+                worksheet.Cells[6, 2] = mockupWash.T2Supplier + "-" + mockupWash.T2SupplierAbb; ;
 
                 worksheet.Cells[7, 2] = mockupWash.TestingMethod;
                 worksheet.Cells[4, 6] = mockupWash.ReleasedDate;
@@ -226,75 +304,6 @@ namespace BusinessLogicLayer.Service
             }
 
             return result;
-        }
-
-        public MockupWash_ViewModel Create(MockupWash_ViewModel MockupWash)
-        {
-            MockupWash_ViewModel model = new MockupWash_ViewModel();
-            _MockupWashProvider = new MockupWashProvider(Common.ProductionDataAccessLayer);
-            _MockupWashDetailProvider = new MockupWashDetailProvider(Common.ProductionDataAccessLayer);
-            int insertCt;
-            try
-            {
-                using (TransactionScope scope = new TransactionScope())
-                {
-                    insertCt = _MockupWashProvider.Create(MockupWash);
-                    if (insertCt == 0)
-                    {
-                        return model;
-                    }
-
-                    foreach (var MockupWash_Detail in MockupWash.MockupWash_Detail)
-                    {
-                        insertCt = _MockupWashDetailProvider.Create(MockupWash_Detail);
-                        if (insertCt == 0)
-                        {
-                            return model;
-                        }
-                    }
-
-                    scope.Complete();
-                }
-
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-
-            return model;
-        }
-
-        public List<SelectListItem> GetAccessoryRefNo(AccessoryRefNo_Request Request)
-        {
-            Request.MtlTypeID = "HEAT TRANS";
-            List<SelectListItem> selectListItems = new List<SelectListItem>();
-            try
-            {
-                _MockupWashProvider = new MockupWashProvider(Common.ProductionDataAccessLayer);
-                _IStyleBOAProvider = new StyleBOAProvider(Common.ProductionDataAccessLayer);
-                var AccessoryRefNos = _IStyleBOAProvider.GetAccessoryRefNo(Request).ToList();
-                foreach (var item in AccessoryRefNos)
-                {
-                    selectListItems.Add(new SelectListItem { Value = item.Refno, Text = item.Refno });
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-
-            return selectListItems;
-        }
-
-        public MockupWash_ViewModel Update(MockupWash_ViewModel MockupWash)
-        {
-            throw new NotImplementedException();
-        }
-
-        public MockupWash_ViewModel Delete(MockupWash_ViewModel MockupWash)
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -20,7 +20,7 @@ namespace BusinessLogicLayer.Service.Tests
                 IMockupWashService _MockupWashService = new MockupWashService();
                 MockupWash_Request MockupWash = new MockupWash_Request () 
                 { 
-                    ReportNo = "PHWA201000482",
+                    ReportNo = "PHWA190900003",
                     //Type = "B",
                     //BrandID = "ADIDAS",
                     //SeasonID= "20SS", 
@@ -28,7 +28,7 @@ namespace BusinessLogicLayer.Service.Tests
                     //Article= "FL0237"
                 };
                 var mockupWash = _MockupWashService.GetMockupWash(MockupWash);
-                Assert.IsTrue(true);
+                Assert.IsTrue(mockupWash.POID == "TESTPOID233");
             }
             catch (Exception ex)
             {

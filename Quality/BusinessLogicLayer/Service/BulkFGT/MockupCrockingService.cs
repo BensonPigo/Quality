@@ -89,7 +89,7 @@ namespace BusinessLogicLayer.Service
 
                 // 設定表頭資料
                 worksheet.Cells[4, 2] = mockupCrocking.ReportNo;
-                worksheet.Cells[5, 2] = mockupCrocking.T1SubconName;
+                worksheet.Cells[5, 2] = mockupCrocking.T1Subcon + "-" + mockupCrocking.T1SubconAbb;
 
                 worksheet.Cells[6, 2] = mockupCrocking.BrandID;
                 worksheet.Cells[4, 6] = mockupCrocking.ReleasedDate;
