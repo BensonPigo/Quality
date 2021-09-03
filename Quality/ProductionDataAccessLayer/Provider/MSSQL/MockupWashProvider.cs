@@ -322,6 +322,8 @@ SELECT {top1}
 		,MRName = MRName.Name_Extno
 		,LastEditName = iif(EditName <> '', Concat (EditName, '-', EditName.Name, ' ', Format(EditDate,'yyyy/MM/dd HH:mm:ss')), Concat (AddName, '-', AddName.Name, ' ', Format(AddDate,'yyyy/MM/dd HH:mm:ss')))
 		,m.OtherMethod
+        ,m.MethodID
+        ,m.TestingMethod
 		,TestingMethodDescription = iif(m.OtherMethod = 0, m.TestingMethod, (select Description from DropdownList where Type = 'PMS_MockupWashMethod' and ID = m.TestingMethod))
 		,m.HTPlate
 		,m.HTPellOff

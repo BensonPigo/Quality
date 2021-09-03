@@ -23,6 +23,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         }
 
         public List<SelectListItem> TestingMethod_Source { get; set; }
+
         [Display(Name = "T1 廠商 名稱")]
         public string T1SubconAbb { get; set; }
 
@@ -61,10 +62,5 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string ArtworkColorName { get; set; }
         public string FabricColorName { get; set; }
         public string LastUpdate { get; set; }
-    }
-
-    public class AccessoryRefNo
-    {
-        public string Refno { get; set; }
     }
 }
