@@ -11,6 +11,9 @@ using System.Web.Mvc;
 using static Quality.Helper.Attribute;
 using NPOI.XSSF.UserModel;
 using NPOI.SS.UserModel;
+using BusinessLogicLayer.Interface;
+using BusinessLogicLayer.Service;
+using DatabaseObject;
 
 namespace Quality.Areas.SampleRFT.Controllers
 {
@@ -255,8 +258,6 @@ msg.WithInfo('Cannot found combination Style# {Req.StyleID}, Brand {Req.BrandID}
         [MultipleButton(Name = "action", Argument = "ToExcel")]
         public ActionResult ToExcel(CFTComments_ViewModel Req)
         {
-            this.CheckSession();
-
             try
             {
 

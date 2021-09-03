@@ -67,6 +67,7 @@
     <Compile Include="Interface\IAdidasFGWTProvider.cs" />
     <Compile Include="Interface\IBrandProvider.cs" />
     <Compile Include="Interface\IDropDownListProvider.cs" />
+    <Compile Include="Interface\IFabricCrkShrkTestProvider.cs" />
     <Compile Include="Interface\IFactoryProvider.cs" />
     <Compile Include="Interface\IFabricOvenTestProvider.cs" />
     <Compile Include="Interface\IFIRLaboratoryCrockingProvider.cs" />
@@ -112,6 +113,7 @@
     <Compile Include="Provider\MSSQL\AdidasFGWTProvider.cs" />
     <Compile Include="Provider\MSSQL\BrandProvider.cs" />
     <Compile Include="Provider\MSSQL\DropDownListProvider.cs" />
+    <Compile Include="Provider\MSSQL\FabricCrkShrkTestProvider.cs" />
     <Compile Include="Provider\MSSQL\FactoryProvider.cs" />
     <Compile Include="Provider\MSSQL\FabricOvenTestProvider.cs" />
     <Compile Include="Provider\MSSQL\FIRLaboratoryCrockingProvider.cs" />
