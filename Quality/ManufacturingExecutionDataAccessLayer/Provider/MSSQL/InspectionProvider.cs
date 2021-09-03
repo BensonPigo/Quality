@@ -107,9 +107,9 @@ select  [OrderID] = o.ID
 	, [SampleStage] = o.OrderTypeID
 	, [OriginalLine] = o.SewLine
 	, [SizeQty] = cast(oq.Qty as varchar)
-	, [SizeBalanceQty] = cast(r_Size.SizeBalanceQty as varchar)
+	, [SizeBalanceQty] = cast(oq.Qty - r_Size.SizeBalanceQty as varchar)
 	, [OrderQty] = cast(o.qty as varchar)
-	, [OrderBalanceQty] = cast(r_Order.OrderBalanceQty as varchar)
+	, [OrderBalanceQty] = cast(o.qty - r_Order.OrderBalanceQty as varchar)
 from [Production].[dbo].Orders o with(nolock)
 inner join [Production].[dbo].Style s with(nolock) on o.StyleUkey = s.Ukey
 inner join [Production].[dbo].Order_Qty oq with(nolock) on o.ID = oq.ID

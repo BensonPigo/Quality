@@ -34,6 +34,7 @@ outer apply(
 	from ManufacturingExecution.dbo.Rft_Inspection  i
 	where i.OrderId = oq.ID
 	and i.Size = oq.SizeCode
+    and Status <> 'Dispose'
 )insp
 where oq.id = @OrderID and SizeCode = @Size
 and oq.Qty - isnull(insp.cnt,0) > 0
@@ -221,6 +222,8 @@ from DefectCntDt
             };
 
             string sqlcmd = $@"
+declare @ID as bigint
+
 INSERT INTO [RFT_Inspection](
        [OrderID] ,[Article] ,[Location] ,[Size] ,[Line] ,[FactoryID] ,[StyleUkey] ,[FixType]
       ,[ReworkCardNo] ,[Status] ,[AddDate] ,[AddName] ,[ReworkCardType] ,[InspectionDate])
@@ -229,7 +232,7 @@ values(
     ,@FixType,@ReworkCardNo,@Status, GetDate(),@UserName,@ReworkCardType,@InspectionDate
 )
 
-select @@IDENTITY as ID
+select @ID = @@IDENTITY
 ";
 
             int detailcnt = 1;
@@ -263,9 +266,9 @@ INSERT INTO [RFT_Inspection_Detail](
     ,[GarmentDefectTypeID]
     ,[GarmentDefectCodeID]
     {picColumn}
-    ,[AddDate])
+    ,[AddDate]) 
 values(
-    @@IDENTITY
+    @ID
     ,@DefectCode{detailcnt}
     ,@AreaCode{detailcnt}
     ,0

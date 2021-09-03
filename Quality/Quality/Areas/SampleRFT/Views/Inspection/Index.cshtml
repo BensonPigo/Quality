@@ -10,6 +10,14 @@
 <link href="~/ThirdParty/plugins/jquery-ui/jquery-ui.css" rel="stylesheet" />
 <script src="~/ThirdParty/plugins/jquery-magnific-popup/jquery.magnific-popup.js"></script>
 <style type="text/css">
+    .content-scroll {
+        height: calc( 95vh - 200px );
+    }
+
+    .inner-scroll {
+        height: calc( 95vh - 200px );
+    }
+
     .row {
         --bs-gutter-x: 1.5rem;
         --bs-gutter-y: 0;
@@ -1316,7 +1324,7 @@
             $("#txtArticle").val() == "" ||
             $("#txtSize").val() == "" ||
             $("#txtProductType").val() == "" ||
-            parseIntEX($('#txtSizeBalanceQty').val()) >= parseIntEX($('#txtSizeQty').val())) {
+            parseIntEX($('#txtSizeBalanceQty').val()) <= 0) {
 
             EditMode = false;
         }
@@ -2937,7 +2945,7 @@
                             return;
                         }
 
-                        var finval = FractionDiff(standard, val);
+                        var finval = FractionDiff(val, standard);
                         $(this).parent().parent().children().find("p[class='Diff']").html(finval);
 
                         var sTolh = FractionAdd(standard, tolh);
@@ -2957,7 +2965,7 @@
                             return;
                         }
 
-                        var finval = accSubtr(standard, val);
+                        var finval = accSubtr(val, standard);
                         $(this).parent().parent().children().find("p[class='Diff']").html(finval);
 
                         val = parseFloat(val);

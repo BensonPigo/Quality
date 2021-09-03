@@ -254,7 +254,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 
                 if (statusType.ToLower() == "pass")
                 {
-                    sqlcmd = $@"
+                    sqlcmd += $@"
 update RFT_Inspection
 set	status = 'Fixed'
 ,InspectionDate = @inspectDate{rowcnt}
@@ -276,7 +276,7 @@ where inp.ID = @ID{rowcnt}
                     statusType.ToLower() == "print" ||
                     statusType.ToLower() == "shade")
                 {
-                    sqlcmd = $@"
+                    sqlcmd += $@"
 update RFT_Inspection
 set	FixType = @FixType{rowcnt}
 ,EditName = @EditName{rowcnt} , EditDate = GETDATE()
@@ -295,7 +295,7 @@ where inp.ID = @ID{rowcnt}
 
                 else if (statusType.ToLower() == "dispose")
                 {
-                    sqlcmd = $@"
+                    sqlcmd += $@"
 update RFT_Inspection
 set	Status = @FixType{rowcnt}
 ,EditName = @EditName{rowcnt} , EditDate = GETDATE()
