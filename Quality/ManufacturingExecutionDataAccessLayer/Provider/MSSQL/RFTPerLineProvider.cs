@@ -38,10 +38,15 @@ and Month(rft.AddDate) = @Month
 select
 	Month = DateName(Month, DateAdd(Month, @Month, -1)),
 	Line = s.ID,
-	RFT = cast(iif(isnull(ttl.ct, 0) = 0, 0, round(isnull(pass.ct, 0) * 1.0 / ttl.ct, 2)) as decimal(5,2))
+	RFT = cast(iif(exist.Line is null, null ,iif(ttl.ct = 0, 0, round(isnull(pass.ct, 0) * 1.0 / ttl.ct, 2))) as decimal(5,2)) * 100
 from SciProduction_SewingLine s
 outer apply(select ct = count(1) from #tmpRft where Line = s.ID )ttl
 outer apply(select ct = count(1) from #tmpRft where Line = s.ID and Status = 'Pass')pass
+left join (
+	select distinct Line
+	from #tmpRft
+)exist on  Line = s.ID 
+where s.Junk = 0
 where s.Junk = 0
 and s.FactoryID = @FactoryID
 
@@ -85,7 +90,7 @@ select
 	Date = d.date,
 	Month = DateName(Month, DateAdd(Month, @Month, -1)),
 	Line = s.ID,
-	RFT = cast(iif(isnull(ttl.ct, 0) = 0, 0, round(isnull(pass.ct, 0) * 1.0 / ttl.ct, 2)) as decimal(5,2))
+	RFT = cast(iif(isnull(ttl.ct, 0) = 0, 0, round(isnull(pass.ct, 0) * 1.0 / ttl.ct, 2)) as decimal(5,2)) * 100
 from SciProduction_SewingLine s
 cross join #tmpAllday d
 outer apply(select ct = count(1) from #tmpRft where Line = s.ID and Date = d.date)ttl

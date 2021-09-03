@@ -37,7 +37,11 @@ namespace Quality.Areas.SampleRFT.Controllers
             ViewBag.YearsList = YearsList;
             ViewBag.MonthList = MonthList;
 
-            RFTPerLine_Request result = GetData(this.FactoryID, rftPerLine.Years.FirstOrDefault(), rftPerLine.Months.Keys.FirstOrDefault());
+            int Year = DateTime.Now.Year;
+            int Month = DateTime.Now.Month;
+            string MonthEn =  rftPerLine.Months.Where(x => x.Value == DateTime.Now.Month).FirstOrDefault().Key;
+
+            RFTPerLine_Request result = GetData(this.FactoryID, Year.ToString(), MonthEn);
             return View(result);
         }
 

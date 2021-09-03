@@ -20,5 +20,22 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             return View();
         }
+
+        public ActionResult CrockingTest()
+        {
+            return View();
+        }
+
+
+        public ActionResult HeatTest()
+        {
+            return View();
+        }
+
+
+        public ActionResult WashTest()
+        {
+            return View();
+        }
     }
 }

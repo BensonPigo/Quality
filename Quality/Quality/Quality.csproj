@@ -338,6 +338,9 @@
     <Content Include="Areas\BulkFGT\Views\FabricColorFastness\Index.cshtml" />
     <Content Include="Areas\StyleManagement\Views\PrintBarcode\Index.cshtml" />
     <Content Include="Areas\StyleManagement\Views\PrintBarcode\PrintBarcode.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\FabricCrkShrkTest\CrockingTest.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\FabricCrkShrkTest\HeatTest.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\FabricCrkShrkTest\WashTest.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />

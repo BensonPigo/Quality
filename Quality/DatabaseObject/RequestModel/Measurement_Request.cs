@@ -18,6 +18,7 @@ namespace DatabaseObject.RequestModel
         public bool Result { get; set; }
         public string ErrMsg { get; set; }
         public string Factory { get; set; }
-        
+        public string FileName { get; set; }
+
     }
 }
