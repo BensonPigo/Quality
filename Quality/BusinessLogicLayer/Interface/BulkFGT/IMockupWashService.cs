@@ -1,5 +1,4 @@
-﻿using DatabaseObject.ProductionDB;
-using DatabaseObject.RequestModel;
+﻿using DatabaseObject.RequestModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using System.Collections.Generic;
 using System.Web.Mvc;
@@ -11,6 +10,8 @@ namespace BusinessLogicLayer.Interface.BulkFGT
         MockupWash_ViewModel GetMockupWash(MockupWash_Request MockupWash);
 
         List<SelectListItem> GetAccessoryRefNo(AccessoryRefNo_Request Request);
+
+        List<SelectListItem> GetArtworkTypeID(StyleArtwork_Request Request);
 
         MockupWash_ViewModel Create(MockupWash_ViewModel MockupWash);
 

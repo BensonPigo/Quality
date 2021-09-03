@@ -22,6 +22,7 @@ namespace BusinessLogicLayer.Service
         private IMockupWashProvider _MockupWashProvider;
         private IMockupWashDetailProvider _MockupWashDetailProvider;
         private IStyleBOAProvider _IStyleBOAProvider;
+        private IStyleArtworkProvider _IStyleArtworkProvider;
         private IDropDownListProvider _DropDownListProvider;
 
         public MockupWash_ViewModel GetMockupWash(MockupWash_Request MockupWash)
@@ -51,6 +52,26 @@ namespace BusinessLogicLayer.Service
             }
 
             return mockupWash_model;
+        }
+
+        public List<SelectListItem> GetArtworkTypeID(StyleArtwork_Request Request)
+        {
+            List<SelectListItem> selectListItems = new List<SelectListItem>();
+            try
+            {
+                _IStyleArtworkProvider = new StyleArtworkProvider(Common.ProductionDataAccessLayer);
+                var ArtworkTypeID = _IStyleArtworkProvider.GetArtworkTypeID(Request).ToList();
+                foreach (var item in ArtworkTypeID)
+                {
+                    selectListItems.Add(new SelectListItem { Value = item.ArtworkTypeID, Text = item.ArtworkTypeID });
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return selectListItems;
         }
 
         public List<SelectListItem> GetAccessoryRefNo(AccessoryRefNo_Request Request)

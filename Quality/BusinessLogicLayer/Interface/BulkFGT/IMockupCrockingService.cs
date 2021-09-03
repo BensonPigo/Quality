@@ -1,12 +1,15 @@
-﻿using DatabaseObject.ProductionDB;
-using DatabaseObject.RequestModel;
+﻿using DatabaseObject.RequestModel;
 using DatabaseObject.ViewModel.BulkFGT;
+using System.Collections.Generic;
+using System.Web.Mvc;
 
 namespace BusinessLogicLayer.Interface.BulkFGT
 {
     public interface IMockupCrockingService
     {
         MockupCrocking_ViewModel GetMockupCrocking(MockupCrocking_Request MockupCrocking);
+
+        List<SelectListItem> GetArtworkTypeID(StyleArtwork_Request Request);
 
         MockupCrocking_ViewModel Create(MockupCrocking_ViewModel MockupCrocking);
 
