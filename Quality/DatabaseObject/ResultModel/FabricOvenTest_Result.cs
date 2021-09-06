@@ -55,6 +55,7 @@ namespace DatabaseObject.ResultModel
         public DateTime? InspDate { get; set; }
         public string Article { get; set; }
         public string Inspector { get; set; }
+        public string InspectorName { get; set; }
         public string Result { get; set; }
         public string Remark { get; set; }
         public string Status { get; set; }

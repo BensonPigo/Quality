@@ -72,7 +72,7 @@
     }
 
     .DataTable {
-        width: 92vw;
+        
         font-size: 1rem;
         font-weight: bold;
         border: solid 1px black;
@@ -190,7 +190,7 @@
                                     </td>
                                     <td>
                                         <h4 id="Excel" style=" margin-right: 1em; width: 6vw;">
-                                            <img src="~/Image/Icon/PDF.png" width="30" />
+                                            <img src="~/Image/Icon/XLS.png" width="30" />
                                             Excel
                                         </h4>
                                     </td>
@@ -226,14 +226,14 @@
                                         @Html.DisplayFor(o => o.Main.TestNo, "", "")
                                     </td>
                                     <td style="width: 10vw;"><h5>SP#</h5></td>
-                                    <td style="width: 20vw;">
+                                    <td style="width: 28vw;">
                                         @Html.DisplayFor(o => o.Main.POID, "", "")
                                         @Html.HiddenFor(o => o.Main.POID)
                                     </td>
 
                                     <td style="width: 10vw;"><h5>TestDate</h5></td>
 
-                                    <td style="width: 20vw;">
+                                    <td style="width: 15vw;">
                                         @Html.TextBoxFor(o => Model.Main.InspDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
                                     </td>
                                 </tr>
@@ -246,8 +246,9 @@
                                     </td>
                                     <td><h5>Inspector</h5></td>
                                     <td>
-                                        @Html.TextBox("Main_Inspector_Show", "", new { @readonly = "readonly", @style = "width: 12vw" })
-                                        @Html.HiddenFor(o => Model.Main.Inspector)
+                                        @Html.TextBoxFor(o => Model.Main.Inspector, "", new { @readonly = "readonly", @style = "width: 7vw" })
+                                        @Html.TextBoxFor(o => Model.Main.InspectorName, "", new { @readonly = "readonly", @style = "width: 8vw" })
+
                                         <input id="btnDetailInspectorSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
                                     </td>
                                     @{
@@ -274,10 +275,11 @@
                         </table>
                     </div>
 
-                    <div style="margin-top: 1em; width: 92vw; overflow:auto;">
-                        <table class="DetailTable DataTable">
+                    <div style="margin-top: 1em; overflow:auto;">
+                        <table class="DetailTable DataTable" style='width:210vw'>
                             <thead>
                                 <tr>
+
                                     <th><h4>Submit Date</h4></th>
                                     <th><h4>Group</h4></th>
                                     <th><h4>SEQ#</h4></th>
@@ -303,6 +305,8 @@
                                 @for (int i = 0; i <= Model.Details.Count - 1; i++)
                                 {
                                     <tr>
+
+
                                         <td style="width:10vw;">
 
                                             @Html.Hidden("Seq", "", new { @idx = i })
@@ -312,25 +316,32 @@
                                         <td style="width:10vw;">
                                             @Html.TextBoxFor(o => Model.Details[i].OvenGroup, "", "")
                                         </td>
+                                        <td  style="width:10vw;">
+                                            <div style="width:9vw;">
+                                                @Html.TextBoxFor(o => Model.Details[i].SEQ, "", new { @readonly = "readonly", @style = "width:6vw" })
+
+                                                <input id="btnDetailSEQSelectItem" idv=@(i.ToString()) type="button" class="btnDetailSEQSelectItem OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                                </div>
+
+</td>
                                         <td style="width:10vw;">
-                                            @Html.TextBoxFor(o => Model.Details[i].SEQ, "", "")
-                                            <input id="btnDetailSEQSelectItem" onclick='selectSEQ(this)' type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
-                                        </td>
-                                        <td style="width:10vw;">
-                                            @Html.DisplayFor(o => Model.Details[i].Roll, "", "")
-                                        </td>
+                                            <div style="width:9vw;">
+                                                @Html.TextBoxFor(o => Model.Details[i].Roll, "", new { @readonly = "readonly", @style = "width:6vw" })
+                                                <input id="btnDetailRollSelectItem" idv=@(i.ToString()) type="button" class="btnDetailRollSelectItem OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                                </div>
+</td>
 
                                         <td style="width:10vw;">
-                                            @Html.DisplayFor(o => Model.Details[i].Dyelot, "", "")
+                                            @Html.TextBoxFor(o => Model.Details[i].Dyelot, "", new { @readonly = "readonly" })
                                         </td>
                                         <td style="width:10vw;">
-                                            @Html.DisplayFor(o => Model.Details[i].Refno, "", "")
+                                            @Html.TextBoxFor(o => Model.Details[i].Refno, "", new { @readonly = "readonly" })
                                         </td>
                                         <td style="width:10vw;">
-                                            @Html.DisplayFor(o => Model.Details[i].SCIRefno, "", "")
+                                            @Html.TextBoxFor(o => Model.Details[i].SCIRefno, "", new { @readonly = "readonly" })
                                         </td>
                                         <td style="width:10vw;">
-                                            @Html.DisplayFor(o => Model.Details[i].ColorID, "", "")
+                                            @Html.TextBoxFor(o => Model.Details[i].ColorID, "", new { @readonly = "readonly" })
                                         </td>
                                         @{
                                             string detailResultColor = Model.Details[i].Result == "Pass" ? "blue" : "red";
@@ -401,8 +412,12 @@
                                             </select>
                                         </td>
                                         <td style="width:10vw;">
-                                            <img class="detailDelete" src="~/Image/Icon/Delete.png" width="30" />
+                                            <div style="width:5vw;">
+                                                <img class="detailDelete" src="~/Image/Icon/Delete.png" width="30" />       
+                                            </div>
+
                                         </td>
+
                                     </tr>
                                 }
                             </tbody>
@@ -432,16 +447,17 @@
         if (EditMode) {
             $("#Edit,#Encode").removeClass("IsEditMode");
             $('#Save, #New').addClass("IsEditMode");
-            $(".DataTable input[type='text']").removeAttr("disabled");
+            $(".DataTable input[type='text'], .DetailTable select").removeAttr("disabled");
             $(".DetailTable img").addClass('display-None');
             $(".OnlyEdit").removeAttr("disabled").removeAttr("readonly");
-           DetailButtonBind();
+            DetailButtonBind();
+            DetailDetailButtonBind();
+
         }
         else {
 
-
             $('#Save').unbind('click').removeClass("IsEditMode");
-            $(".DataTable input[type='text']").attr("disabled", "disabled");
+            $(".DataTable input[type='text'], .DetailTable select").attr("disabled", "disabled");
 
             if ($('#Main_Status').val() == "New") {
                 $('#Edit, #Encode').addClass("IsEditMode");
@@ -469,6 +485,28 @@
                 window.open('@Url.Action("Pass1List","PublicWondow",new{Area=""})','Inspector',config='toolbar=no,status=no,location=no,width=1000,height=650');
             });
 
+    }
+
+    function DetailDetailButtonBind() {
+
+        $('.btnDetailSEQSelectItem').unbind('click').on('click', function () {
+            var TargetID=  $(this).attr("idv");
+            var para = "?POID=" + $('#Main_POID').val() + "&FabricType=F&TargetID=" + TargetID;
+             window.open('@Url.Action("Po_Supp_DetailList", "PublicWondow",new{Area=""})' + para,'',config='toolbar=no,status=no,location=no,width=1000,height=650');
+        });
+
+
+        $('.btnDetailRollSelectItem').unbind('click').on('click', function () {
+            var TargetID = $(this).attr("idv");
+            if ($("#Details_" + TargetID + "__SEQ").val() == '' || $("#Details_" + TargetID + "__SEQ").val() == undefined) {
+                msg.WithError('Please input SEQ# before choose Roll#.');
+                return;
+            }
+
+         var seq = $("#Details_" + TargetID + "__SEQ").val().split("-");
+         var para = "?Title=Roll&POID=" + $('#Main_POID').val() + "&Seq1=" + seq[0] + "&Seq2=" + seq[1] +"&TargetID=" + TargetID;
+         window.open('@Url.Action("FtyInventoryList", "PublicWondow",new{Area=""})' + para,'',config='toolbar=no,status=no,location=no,width=1000,height=650');
+        });
         }
 
       function EditModeButtionBind() {
@@ -547,6 +585,9 @@
                           case 2:
                               SEQ = $(this).val();
                               break;
+                          case 8:
+                              Result = $(this).val();
+                              break;
                       }
                   })
 
@@ -563,18 +604,18 @@
                   })
 
 
-                  if (OvenGroup == "" || OvenGroup== "undefined")
+                  if (OvenGroup == "" || OvenGroup== undefined)
                   {
                       ErrMsg += "Group cannot be empty.";
                       return false;
                   }
 
-                  if (SEQ == "" || SEQ == "undefined") {
+                  if (SEQ == "" || SEQ == undefined) {
                       ErrMsg += "Seq cannot be empty.";
                       return false;
                   }
 
-                  if (Result == "" || Result == "undefined" || ChangeScale == "" || ChangeScale == "undefined" || StainingScale == "" || StainingScale == "undefined") {
+                  if (Result == "" || Result == undefined || ChangeScale == "" || ChangeScale == undefined || StainingScale == "" || StainingScale == undefined) {
                       ErrMsg += "Color Change Scale, Color Staining Scale and Result cannot be empty.";
                       return false;
                   }
@@ -620,10 +661,6 @@
 
     function AddDetailRow() {
 
-        //if ($('#garmentTest_ID').val() == "") {
-        //    return;
-        //}
-
         var ID;
         var lastNO;
         if ($('.DetailTable > tbody > tr').length > 0) {
@@ -642,7 +679,8 @@
             async: false,
             success: function (data) {
                 $('.DetailTable > tbody').append(data);
-                //DetailDynamicBind();
+                DetailDetailButtonBind();
+                $('.date-picker').datepicker({ changeYear: true, changeMonth: true, currentText: "Now" });
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 console.log(xhr.responseText);
@@ -684,25 +722,29 @@
 
     }
 
-    function selectSEQ(self)
-    {       
-
-     var para = "?OrderID=" + $('#Main_POID').val() + "&StyleUkey=0";
-     window.open('@Url.Action("Po_Supp_DetailList", "PublicWondow",new{Area=""})' + para,'Article',config='toolbar=no,status=no,location=no,width=400,height=650');
-
-    }
-
     function GetArticleList(data) {
             $('#Main_Article').val(data);
     }
 
     function GetPass1(data) {
 
-
-        $('#Main_Inspector_Show').val(data.ID + " " + data.Name);
-        $('#Main_Inspector').val(data.ID );
+        $('#Main_Inspector').val(data.ID);
+        $('#Main_InspectorName').val(data.Name );
     }
 
+    function GetPo_Supp_Detail(data, TargetID) {
+
+        $("#Details_" + TargetID + "__SEQ").val(data.Seq1 + "-" + data.Seq2);
+        $("#Details_" + TargetID + "__Refno").val(data.Refno);
+        $("#Details_" + TargetID + "__SCIRefno").val(data.SCIRefno);
+        $("#Details_" + TargetID + "__ColorID").val(data.ColorID);
+    }
+
+    function GetFtyInventory(data, TargetID) {
+
+        $("#Details_" + TargetID + "__Roll").val(data.Roll);
+        $("#Details_" + TargetID + "__Dyelot").val(data.Dyelot);
+    }
 
 
 
