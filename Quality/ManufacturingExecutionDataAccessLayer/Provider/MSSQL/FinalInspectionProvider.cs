@@ -12,6 +12,7 @@ using DatabaseObject.ViewModel.FinalInspection;
 using System.Transactions;
 using System.Linq;
 using DatabaseObject.RequestModel;
+using System.Threading;
 
 namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 {
@@ -187,6 +188,7 @@ set     InspectionStage = @InspectionStage                         ,
 where   ID = @FinalInspectionID
 
 delete  FinalInspection_Order where ID = @FinalInspectionID
+delete  FinalInspection_Order_QtyShip where ID = @FinalInspectionID
 delete  FinalInspection_OrderCarton where ID = @FinalInspectionID
 ";
             }
@@ -214,11 +216,19 @@ insert into FinalInspection_Order(ID, OrderID, AvailableQty)
 ";
             }
 
+            foreach (SelectOrderShipSeq selectOrderShipSeq in setting.SelectOrderShipSeq)
+            {
+                sqlUpdCmd += $@"
+insert into FinalInspection_Order_QtyShip(ID, OrderID, Seq, ShipmodeID)
+            values(@FinalInspectionID, '{selectOrderShipSeq.OrderID}', '{selectOrderShipSeq.Seq}', '{selectOrderShipSeq.ShipmodeID}')
+";
+            }
+
             foreach (SelectCarton selectCartonItem in setting.SelectCarton)
             {
                 sqlUpdCmd += $@"
-insert into FinalInspection_OrderCarton(ID, OrderID, PackingListID, CTNNo)
-            values(@FinalInspectionID, '{selectCartonItem.OrderID}', '{selectCartonItem.PackingListID}', '{selectCartonItem.CTNNo}')
+insert into FinalInspection_OrderCarton(ID, OrderID, PackingListID, CTNNo, Seq)
+            values(@FinalInspectionID, '{selectCartonItem.OrderID}', '{selectCartonItem.PackingListID}', '{selectCartonItem.CTNNo}', '{selectCartonItem.Seq}')
 ";
             }
             using (TransactionScope transaction = new TransactionScope())
@@ -1152,6 +1162,11 @@ into    #tmpOrders
 from    SciProduction_Orders with (nolock)
 where   1 = 1 {whereOrder}
 
+select  ID, Article
+into    #tmpOrderArticle
+from    [MainServer].Production.dbo.Order_Article with (nolock)
+where   ID in (select ID from #tmpOrders)
+
 select  [FinalInspectionID] = f.ID,
         [SP] = fo.OrderID,
         f.POID,
@@ -1159,6 +1174,7 @@ select  [FinalInspectionID] = f.ID,
         [StyleID] = o.StyleID,
         [Season] = o.SeasonID,
         [BrandID] = o.BrandID,
+        [Article] = (SELECT Stuff((select concat( ',',Article)   from #tmpOrderArticle where ID = fo.OrderID FOR XML PATH('')),1,1,'') ),
         [InspectionTimes] = cast(f.InspectionTimes as varchar),
         f.InspectionStage,
         f.InspectionResult
