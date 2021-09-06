@@ -2,6 +2,7 @@
 
 @{
     Layout = null;
+    string TargetID = ViewData["TargetID"] == null ? string.Empty : ViewData["TargetID"].ToString();
 }
 
 @model List<Window_Article>
@@ -47,6 +48,7 @@
         @Html.Hidden("StyleID", ViewData["StyleID"]);
         @Html.Hidden("BrandID", ViewData["BrandID"]);
         @Html.Hidden("SeasonID", ViewData["SeasonID"]);
+        @Html.Hidden("TargetID", TargetID)
         <input type="submit" value="Query" />
         <input id="btnExit" type="button" value="Exit" />
     }
@@ -73,7 +75,7 @@
         $(".SelectItem").click(function () {
 
             // 呼叫父視窗的GetArticle Function，把值傳回去
-            window.opener.GetArticleList($(this).text());
+            window.opener.GetArticleList($(this).text(), '@TargetID');
 
             window.close();
         });

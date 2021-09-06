@@ -3,6 +3,7 @@
 @{
     Layout = null;
     string title = ViewData["Title"] == null ? "TPESupp" : ViewData["Title"].ToString();
+    string TargetID = ViewData["TargetID"] == null ? string.Empty : ViewData["TargetID"].ToString();
 }
 
 @model List<Window_TPESupp>
@@ -48,6 +49,7 @@
     {
         <input type="text" name="Name" value="" />
         @Html.Hidden("Title", title);
+        @Html.Hidden("TargetID", TargetID)
         <input type="submit" value="Query" />
         <input id="btnExit" type="button" value="Exit" />
     }
@@ -100,7 +102,7 @@
             }
 
             // 呼叫父視窗的GetTPESupp Function，把物件傳回去
-            window.opener.GetTPESupp(TPESupp);
+            window.opener.GetTPESupp(TPESupp, '@TargetID');
 
             window.close();
         });
