@@ -227,6 +227,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("FROM [Orders]" + Environment.NewLine);
             SbSql.Append("Where 1 = 1" + Environment.NewLine);
             if (!string.IsNullOrEmpty(Item.ID.ToString())) { SbSql.Append("And ID = @ID" + Environment.NewLine); }
+            if (!string.IsNullOrEmpty(Item.Category)) { SbSql.Append("And Category = @Category" + Environment.NewLine); objParameter.Add("@Category", DbType.String, Item.Category); }
 
 
             return ExecuteList<Orders>(CommandType.Text, SbSql.ToString(), objParameter);

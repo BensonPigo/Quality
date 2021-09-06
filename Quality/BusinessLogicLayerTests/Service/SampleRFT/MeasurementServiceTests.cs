@@ -52,5 +52,23 @@ namespace BusinessLogicLayer.Service.SampleRFT.Tests
         {
             Assert.Fail();
         }
+
+        [TestMethod()]
+        public void MeasurementToExcelTest()
+        {
+            try
+            {
+                Measurement_Request all_Data = new Measurement_Request();
+                IMeasurementService _Service = new MeasurementService();
+                all_Data = _Service.MeasurementToExcel("21031564GGS02", "ES2", true);
+                Assert.IsTrue(all_Data.Result);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail();
+                throw ex;
+            }
+
+        }
     }
 }

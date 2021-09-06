@@ -18,16 +18,11 @@ namespace BusinessLogicLayer.Service.Tests
             try
             {
                 IMockupWashService _MockupWashService = new MockupWashService();
-                MockupWash_Request MockupWash = new MockupWash_Request () 
-                { 
-                    ReportNo = "PHWA190900003",
-                    //Type = "B",
-                    //BrandID = "ADIDAS",
-                    //SeasonID= "20SS", 
-                    //StyleID= "S201CSPM108",
-                    //Article= "FL0237"
-                };
+                MockupWash_Request MockupWash = new MockupWash_Request()
+                { ReportNo = "PHWA190900003" };
+                //{ BrandID = "ADIDAS", SeasonID = "20SS", StyleID = "S201CSPM108", Article = "FL0237" };
                 var mockupWash = _MockupWashService.GetMockupWash(MockupWash);
+
                 Assert.IsTrue(mockupWash.POID == "TESTPOID233");
             }
             catch (Exception ex)
@@ -87,12 +82,8 @@ namespace BusinessLogicLayer.Service.Tests
             try
             {
                 IMockupWashService _MockupWashService = new MockupWashService();
-                Orders Orders = new Orders()
-                {
-                    ID = "21080085IE044",
-                };
-                var x = _MockupWashService.GetOrders(Orders);
-                Assert.IsTrue(x[0].BrandID == "LLL" && x[0].StyleID == "LW4BTPS" && x[0].SeasonID == "21WI");
+                var orders = _MockupWashService.GetOrders(new Orders() { ID = "21090101IE022" });
+                Assert.IsTrue(orders.Count == 1);
             }
             catch (Exception ex)
             {

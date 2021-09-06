@@ -236,10 +236,25 @@
 
         if ($('#JsonBody').val() != "") {
             var datas = JSON.parse($('#JsonBody').val());
+            if (datas.length == 0) {
+                msg.WithErrorCheck("No data Found", function () {
+                    return false;
+                });
+            }
             $('#Content').html(generateTable(datas, "Measurement"));
             $('#Content').children("table").addClass("table-striped");
             ChangeColor();
         }
+
+        if ('@Model.ErrMsg' != '') {
+            msg.WithError('@Model.ErrMsg');
+        }
+
+        $('#Find').on('click', function () {
+            if ($('#OrderID').val() == "") {
+                return false;
+            }
+        });
     });
 
 
@@ -253,11 +268,15 @@
             $.each($(this).children(), function () {
                 var tdName = $(this).attr('idx');
 
-                if (tdName == 'Tol(+)') {
+                if (tdName == null) {
+                    return false;
+                }
+
+                if (tdName == "Tol(+)") {
                     tolh = $(this).html();
                 }
 
-                if (tdName == 'Tol(-)') {
+                if (tdName == "Tol(-)") {
                     toll = $(this).html();
                 }
 

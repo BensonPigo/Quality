@@ -119,7 +119,20 @@ namespace Quality.Areas.BulkFGT.Controllers
         {            
             GarmentTest_ViewModel result = _GarmentTest_Service.Save_GarmentTest(main, details, this.UserID);
 
-            return Json(result);
+            GarmentTest_Result result1 = new GarmentTest_Result()
+            {
+                Result = result.SaveResult,
+                ErrMsg = result.ErrMsg,
+                req = new GarmentTest_Request()
+                {
+                    Style = main.StyleID,
+                    Article = main.Article,
+                    Brand = main.BrandID,
+                    Season = main.SeasonID,
+                }
+            };
+
+            return Json(result1);
         }
 
         [HttpPost]
@@ -133,7 +146,11 @@ namespace Quality.Areas.BulkFGT.Controllers
         [HttpPost]
         public JsonResult SendMail(string ID, string No)
         {
-            GarmentTest_ViewModel result = _GarmentTest_Service.SendMail(ID, No, this.UserID); 
+            GarmentTest_ViewModel result = _GarmentTest_Service.SendMail(ID, No, this.UserID);
+            GarmentTest_Detail_ViewModel detail = _GarmentTest_Service.Get_Detail(ID, No);
+            result.Sender = detail.Sender;
+            result.SendDate = detail.SendDate.HasValue ? detail.SendDate.Value.ToString("yyyy/MM/dd HH:mm:ss") : string.Empty;
+
             return Json(result);
         }
 
@@ -141,6 +158,10 @@ namespace Quality.Areas.BulkFGT.Controllers
         public JsonResult ReceiveMail(string ID, string No)
         {
             GarmentTest_ViewModel result = _GarmentTest_Service.ReceiveMail(ID, No, this.UserID);
+            GarmentTest_Detail_ViewModel detail = _GarmentTest_Service.Get_Detail(ID, No);
+            result.Sender = detail.Receiver;
+            result.SendDate = detail.ReceiveDate.HasValue ? detail.ReceiveDate.Value.ToString("yyyy/MM/dd HH:mm:ss") : string.Empty;
+
             return Json(result);
         }
 
