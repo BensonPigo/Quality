@@ -257,6 +257,7 @@ namespace BusinessLogicLayer.Service
 
         public BaseResult Create(MockupCrocking_ViewModel MockupCrocking)
         {
+            MockupCrocking.Type = "B";
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             _MockupCrockingProvider = new MockupCrockingProvider(_ISQLDataTransaction);

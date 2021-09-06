@@ -146,7 +146,6 @@ namespace BusinessLogicLayer.Service.Tests
                     HT2ndPressnoreverse = 2,
                     HT2ndPressreversed = 3,
                     HTCoolingTime = "66TT",
-                    Type = "S",
                     MockupWash_Detail = new System.Collections.Generic.List<MockupWash_Detail_ViewModel>()
                     {
                         new MockupWash_Detail_ViewModel(){ReportNo = "T1",TypeofPrint="TTTT1",Design="d100",ArtworkColor="0001",FabricRefNo="RF",AccessoryRefno="AF",FabricColor  = "FCC",Result="Pass",Remark="RRRK",EditName = "SCIMIS"},
@@ -199,7 +198,6 @@ namespace BusinessLogicLayer.Service.Tests
                     HT2ndPressnoreverse = 1,
                     HT2ndPressreversed = 1,
                     HTCoolingTime = "up",
-                    Type = "B",
                     MockupWash_Detail = new System.Collections.Generic.List<MockupWash_Detail_ViewModel>()
                     {
                         new MockupWash_Detail_ViewModel(){TypeofPrint="up",Design="up",ArtworkColor="up",FabricRefNo="up",AccessoryRefno="up",FabricColor  = "up",Result="up",Remark="up",EditName = "up",Ukey=21860},

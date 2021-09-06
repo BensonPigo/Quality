@@ -317,6 +317,7 @@ namespace BusinessLogicLayer.Service
 
         public BaseResult Create(MockupWash_ViewModel MockupWash)
         {
+            MockupWash.Type = "B";
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             _MockupWashProvider = new MockupWashProvider(_ISQLDataTransaction);

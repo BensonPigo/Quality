@@ -307,6 +307,7 @@ namespace BusinessLogicLayer.Service
 
         public BaseResult Create(MockupOven_ViewModel MockupOven)
         {
+            MockupOven.Type = "B";
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             _MockupOvenProvider = new MockupOvenProvider(_ISQLDataTransaction);
