@@ -47,7 +47,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             return View(model);
         }
 
-        public ActionResult Detail(string POID, string TestNo)
+        public ActionResult Detail(string POID, string TestNo,string EditMode)
         {
 
             FabricOvenTest_Detail_Result model = _FabricOvenTestService.GetFabricOvenTest_Detail_Result("21051739BB", TestNo);
@@ -64,6 +64,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.ResultStainList = ResultStainList;
             ViewBag.TemperatureList = TemperatureList;
             ViewBag.TimeList = TimeList;
+            ViewBag.EditMode = EditMode;
             return View(model);
         }
 
@@ -82,7 +83,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
-        public ActionResult AddDetailRow(string POID)
+        public ActionResult AddDetailRow(string POID, int lastNO)
         {
             FabricOvenTest_Detail_Result model = _FabricOvenTestService.GetFabricOvenTest_Detail_Result("21051739BB", "");
 
@@ -92,11 +93,11 @@ namespace Quality.Areas.BulkFGT.Controllers
             List<SelectListItem> TemperatureList = new SetListItem().ItemListBinding(Temperatures);
             List<SelectListItem> TimeList = new SetListItem().ItemListBinding(Times);
 
-          //  int i = lastNO - 1;
+            int i = lastNO;
             FabricOvenTest_Detail_Detail detail = new FabricOvenTest_Detail_Detail();
             string html = "";
             html += "<tr>";
-            html += "<td><input class='form-control date-picker hasDatepicker' data-val='true' data-val-date='欄位 檢驗日期 必須是日期。'  type='text' value=''></td>";
+            html += "<td> <input id ='Seq' idx= " + i + " type ='hidden'></input> <input class='date-picker hasDatepicker' data-val='true' data-val-date='欄位 檢驗日期 必須是日期。'  type='text' value=''></td>";
             html += "<td><input type='text'></td>"; // group
             html += "<td><input type='text'></td>"; // seq
             html += "<td><input type='text'></td>"; // roll
@@ -104,7 +105,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "<td><input type='text'></td>"; // Refno
             html += "<td><input type='text'></td>"; // SCIRefno
             html += "<td><input type='text'></td>"; // ColorID
-            html += "<td><input class='detailResultColor' type='text'></td>"; // Result
+            html += "<td><input  id='Details_" + i + "__Result' name='Details[" + i + "].Result'  class='detailResultColor' type='text'></td>"; // Result
 
             html += "<td><select ><option value=''></option>"; // ChangeScale
             foreach (string val in model.ScaleIDs)
@@ -113,7 +114,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
             html += "</select></td>";
 
-            html += "<td><select ><option value=''></option>"; // ResultChange
+            html += "<td><select onchange='selectChange(this)' id='Details_" + i + "__ResultChange' name='Details[" + i + "].ResultChange' ><option value=''></option>"; // ResultChange
             foreach (string val in Results)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
@@ -127,7 +128,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
             html += "</select></td>";
 
-            html += "<td><select ><option value=''></option>"; // ResultStain
+            html += "<td><select onchange='selectChange(this)' id='Details_" + i + "__ResultStain' name='Details[" + i + "].ResultStain' ><option value=''></option>"; // ResultStain
             foreach (string val in Results)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";

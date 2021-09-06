@@ -157,9 +157,9 @@
                                         Undo
                                     </h4>
                                 </td>
-                                <td style="width: 66%;">
+                                <td style="width: 36%;">
                                 </td>
-                                <td align="right">
+                                <td >
                                     <h4 id="New" style=" margin-right: 10em;">
                                         <img src="~/Image/Icon/New.png" width="30" />
                                         New Test No
@@ -272,7 +272,7 @@
 
                                         @if (Model.Details[i].TestNo != "")
                                         {
-                                            aHref = Url.Action("Detail", "FabricOvenTest", new { POID = Model.Main.POID, TestNo = Model.Details[i].TestNo });
+                                            aHref = Url.Action("Detail", "FabricOvenTest", new { POID = Model.Main.POID, TestNo = Model.Details[i].TestNo,  EditMode = false});
                                         }
 
                                         <a href="@aHref" idx="@Model.Main.POID ," idv="@Model.Details[i].TestNo">
@@ -283,6 +283,7 @@
                                     @{
                                         string InspDate = Model.Details[i].InspDate.HasValue ? Model.Details[i].InspDate.Value.ToString("yyyy/MM/dd") : string.Empty;
                                         string ResultColor = Model.Details[i].Result == "Pass" ? "blue" : "red";
+                                        string  showPic = Model.Details[i].Status=="New"? string.Empty:"display: none" ;
                                     }
 
                                     <td style="width:10vw;">
@@ -305,19 +306,16 @@
                                         @Html.DisplayFor(o => Model.Details[i].LastUpdate, "", "")
                                     </td>
                                     <td style="width:10vw;">
-                                        <img class="detailEdit" onclick="DetailView('@Model.Details[i].TestNo')" src="~/Image/Icon/Edit.png" width="30" />
+                                        <img class="detailEdit" style="@showPic" onclick="DetailView('@Model.Details[i].TestNo')" src="~/Image/Icon/Edit.png" width="30" />
                                     </td>
                                     <td style="width:10vw;">
-                                        <img class="detailDelete" onclick="DetailDelete('@Model.Details[i].TestNo')" src="~/Image/Icon/Delete.png" width="30" />
+                                        <img class="detailDelete"  style="@showPic" onclick="DetailDelete('@Model.Details[i].TestNo')" src="~/Image/Icon/Delete.png" width="30" />
                                     </td>
                                 </tr>
                             }
                         </tbody>
                     </table>
-
                 </div>
-
-
             </div>
         </div>
     </div>
@@ -429,15 +427,14 @@
             if ($('#Main_POID').val() == "") {
                 return;
             }
-            location.href = '@Url.Action("Detail")?POID=' + document.getElementById("Main_POID").value.trim() + '&TestNo=';
+            location.href = '@Url.Action("Detail")?POID=' + document.getElementById("Main_POID").value.trim() + '&TestNo=&EditMode=True';
         });
 
 
     }
 
     function DetailView(TestNo) {
-
-        location.href = '@Url.Action("Detail")?POID=' + document.getElementById("Main_POID").value.trim() + '&TestNo=' + TestNo;
+        location.href = '@Url.Action("Detail")?POID=' + document.getElementById("Main_POID").value.trim() + '&TestNo=' + TestNo + '&EditMode=True' ;
     }
 
 
@@ -446,35 +443,9 @@
                 msg.WithConfirm('Do you want to delete the data ?',
                 function ()
                 {
-                    @*$.ajax({
-                        url: "@Url.Action("DeleteDetail", "GarmentTest", new { Area = "BulkFGT" })",
-                        type: 'POST',
-                        contentType: "application/json; charset=utf-8",
-                        data: JSON.stringify({ ID: id, No: no }),
-                        async: false,
-                        success: function (data) {
-                            if (data.SaveResult) {
-                                console.log(tr);
-                                console.log(t);
-                                t.parents().parents('tr').remove();
-                                msg.WithSuccess("Delete Success");
-                            }
-                            else {
-                                msg.WithError(data.ErrMsg);
-                            }
-                        },
-                        error: function (xhr, ajaxOptions, thrownError) {
-                            console.log(xhr.responseText);
-                        }
-                    });*@
                     }, null);
 
-
-    }
-
-
-
-
+            }
 
 
 </script>
