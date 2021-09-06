@@ -1,4 +1,6 @@
-﻿using BusinessLogicLayer.Interface.BulkFGT;
+﻿using ADOHelper.Utility;
+using BusinessLogicLayer.Interface.BulkFGT;
+using DatabaseObject;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ViewModel.BulkFGT;
@@ -126,53 +128,6 @@ namespace BusinessLogicLayer.Service
             {
                 throw ex;
             }
-        }
-
-        public MockupWash_ViewModel Create(MockupWash_ViewModel MockupWash)
-        {
-            MockupWash_ViewModel model = new MockupWash_ViewModel();
-            _MockupWashProvider = new MockupWashProvider(Common.ProductionDataAccessLayer);
-            _MockupWashDetailProvider = new MockupWashDetailProvider(Common.ProductionDataAccessLayer);
-            int insertCt;
-            try
-            {
-                using (TransactionScope scope = new TransactionScope())
-                {
-                    insertCt = _MockupWashProvider.Create(MockupWash);
-                    if (insertCt == 0)
-                    {
-                        return model;
-                    }
-
-                    foreach (var MockupWash_Detail in MockupWash.MockupWash_Detail)
-                    {
-                        insertCt = _MockupWashDetailProvider.Create(MockupWash_Detail);
-                        if (insertCt == 0)
-                        {
-                            return model;
-                        }
-                    }
-
-                    scope.Complete();
-                }
-
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-
-            return model;
-        }
-
-        public MockupWash_ViewModel Update(MockupWash_ViewModel MockupWash)
-        {
-            throw new NotImplementedException();
-        }
-
-        public MockupWash_ViewModel Delete(MockupWash_ViewModel MockupWash)
-        {
-            throw new NotImplementedException();
         }
 
         public MockupWash_ViewModel GetPDF(MockupWash_ViewModel mockupWash, bool test = false)
@@ -359,5 +314,143 @@ namespace BusinessLogicLayer.Service
 
             return result;
         }
+
+        public BaseResult Create(MockupWash_ViewModel MockupWash)
+        {
+            BaseResult result = new BaseResult();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            _MockupWashProvider = new MockupWashProvider(_ISQLDataTransaction);
+            _MockupWashDetailProvider = new MockupWashDetailProvider(_ISQLDataTransaction);
+            int count;
+            try
+            {
+                count = _MockupWashProvider.Create(MockupWash);
+                if (count == 0)
+                {
+                    result.Result = false;
+                    result.ErrorMessage = "Create MockupWash Fail. 0 Count";
+                    return result;
+                }
+
+                foreach (var MockupWash_Detail in MockupWash.MockupWash_Detail)
+                {
+                    count = _MockupWashDetailProvider.Create(MockupWash_Detail);
+                    if (count == 0)
+                    {
+                        result.Result = false;
+                        result.ErrorMessage = "Create MockupWash_Detail Fail. 0 Count";
+                        return result;
+                    }
+                }
+
+                result.Result = true;
+                _ISQLDataTransaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                result.Result = false;
+                result.ErrorMessage = "Create MockupWash Fail";
+                result.Exception = ex;
+                _ISQLDataTransaction.RollBack();
+                throw ex;
+            }
+            finally { _ISQLDataTransaction.CloseConnection(); }
+            return result;
+        }
+
+        public BaseResult Update(MockupWash_ViewModel MockupWash)
+        {
+            BaseResult result = new BaseResult();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            _MockupWashProvider = new MockupWashProvider(_ISQLDataTransaction);
+            _MockupWashDetailProvider = new MockupWashDetailProvider(_ISQLDataTransaction);
+            int count;
+            try
+            {
+                count = _MockupWashProvider.Update(MockupWash);
+                if (count == 0)
+                {
+                    result.Result = false;
+                    result.ErrorMessage = "Update MockupWash Fail. 0 Count";
+                    return result;
+                }
+
+                foreach (var MockupWash_Detail in MockupWash.MockupWash_Detail)
+                {
+                    count = _MockupWashDetailProvider.Update(MockupWash_Detail);
+                    if (count == 0)
+                    {
+                        result.Result = false;
+                        result.ErrorMessage = "Update MockupWash_Detail Fail. 0 Count";
+                        return result;
+                    }
+                }
+
+                result.Result = true;
+                _ISQLDataTransaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                result.Result = false;
+                result.ErrorMessage = "Update MockupWash Fail";
+                result.Exception = ex;
+                _ISQLDataTransaction.RollBack();
+                throw ex;
+            }
+            finally { _ISQLDataTransaction.CloseConnection(); }
+            return result;
+        }
+
+        public BaseResult Delete(MockupWash_ViewModel MockupWash)
+        {
+            BaseResult result = new BaseResult();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            _MockupWashProvider = new MockupWashProvider(_ISQLDataTransaction);
+            int count;
+            try
+            {
+                count = _MockupWashProvider.Delete(MockupWash);
+                result.Result = true;
+                _ISQLDataTransaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                result.Result = false;
+                result.ErrorMessage = "Delete MockupWash Fail";
+                result.Exception = ex;
+                _ISQLDataTransaction.RollBack();
+                throw ex;
+            }
+            finally { _ISQLDataTransaction.CloseConnection(); }
+            return result;
+        }
+
+        public BaseResult DeleteDetail(List<MockupWash_Detail_ViewModel> MockupWashDetail)
+        {
+            BaseResult result = new BaseResult();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            _MockupWashDetailProvider = new MockupWashDetailProvider(_ISQLDataTransaction);
+            try
+            {
+                foreach (var MockupWash_Detail in MockupWashDetail)
+                {
+                    _MockupWashDetailProvider.Delete(MockupWash_Detail);
+                }
+
+                result.Result = true;
+                _ISQLDataTransaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                result.Result = false;
+                result.ErrorMessage = "Delete MockupWash Detail Fail";
+                result.Exception = ex;
+                _ISQLDataTransaction.RollBack();
+                throw ex;
+            }
+            finally { _ISQLDataTransaction.CloseConnection(); }
+            return result;
+        }
+
     }
 }

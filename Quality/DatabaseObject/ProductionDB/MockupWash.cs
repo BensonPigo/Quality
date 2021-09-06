@@ -95,7 +95,7 @@ namespace DatabaseObject.ProductionDB
         public int? HTTime { get; set; }
         /// <summary>HTPressure</summary>
         [Display(Name = "HTPressure")]
-        public decimal HTPressure { get; set; }
+        public decimal? HTPressure { get; set; }
         /// <summary>HTPellOff</summary>
         [Display(Name = "HTPellOff")]
         public string HTPellOff { get; set; }

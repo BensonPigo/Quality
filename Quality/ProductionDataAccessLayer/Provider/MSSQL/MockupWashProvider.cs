@@ -104,8 +104,6 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,MR" + Environment.NewLine);
             SbSql.Append("        ,AddDate" + Environment.NewLine);
             SbSql.Append("        ,AddName" + Environment.NewLine);
-            SbSql.Append("        ,EditDate" + Environment.NewLine);
-            SbSql.Append("        ,EditName" + Environment.NewLine);
             SbSql.Append("        ,OtherMethod" + Environment.NewLine);
             SbSql.Append("        ,MethodID" + Environment.NewLine);
             SbSql.Append("        ,TestingMethod" + Environment.NewLine);
@@ -133,16 +131,14 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,@Remark"); objParameter.Add("@Remark", DbType.String, Item.Remark);
             SbSql.Append("        ,@T1Subcon"); objParameter.Add("@T1Subcon", DbType.String, Item.T1Subcon);
             SbSql.Append("        ,@T2Supplier"); objParameter.Add("@T2Supplier", DbType.String, Item.T2Supplier);
-            SbSql.Append("        ,@TestDate"); objParameter.Add("@TestDate", DbType.String, Item.TestDate);
-            SbSql.Append("        ,@ReceivedDate"); objParameter.Add("@ReceivedDate", DbType.String, Item.ReceivedDate);
-            SbSql.Append("        ,@ReleasedDate"); objParameter.Add("@ReleasedDate", DbType.String, Item.ReleasedDate);
+            SbSql.Append("        ,@TestDate"); objParameter.Add("@TestDate", DbType.Date, Item.TestDate);
+            SbSql.Append("        ,@ReceivedDate"); objParameter.Add("@ReceivedDate", DbType.Date, Item.ReceivedDate);
+            SbSql.Append("        ,@ReleasedDate"); objParameter.Add("@ReleasedDate", DbType.Date, Item.ReleasedDate);
             SbSql.Append("        ,@Result"); objParameter.Add("@Result", DbType.String, Item.Result);
             SbSql.Append("        ,@Technician"); objParameter.Add("@Technician", DbType.String, Item.Technician);
             SbSql.Append("        ,@MR"); objParameter.Add("@MR", DbType.String, Item.MR);
-            SbSql.Append("        ,@AddDate"); objParameter.Add("@AddDate", DbType.DateTime, Item.AddDate);
+            SbSql.Append("        ,GETDATE()");
             SbSql.Append("        ,@AddName"); objParameter.Add("@AddName", DbType.String, Item.AddName);
-            SbSql.Append("        ,@EditDate"); objParameter.Add("@EditDate", DbType.DateTime, Item.EditDate);
-            SbSql.Append("        ,@EditName"); objParameter.Add("@EditName", DbType.String, Item.EditName);
             SbSql.Append("        ,@OtherMethod"); objParameter.Add("@OtherMethod", DbType.Boolean, Item.OtherMethod);
             SbSql.Append("        ,@MethodID"); objParameter.Add("@MethodID", DbType.String, Item.MethodID);
             SbSql.Append("        ,@TestingMethod"); objParameter.Add("@TestingMethod", DbType.String, Item.TestingMethod);
@@ -173,9 +169,8 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
             SbSql.Append("UPDATE [MockupWash]" + Environment.NewLine);
-            SbSql.Append("SET" + Environment.NewLine);
-            if (Item.ReportNo != null) { SbSql.Append("ReportNo=@ReportNo" + Environment.NewLine); objParameter.Add("@ReportNo", DbType.String, Item.ReportNo); }
-            if (Item.POID != null) { SbSql.Append(",POID=@POID" + Environment.NewLine); objParameter.Add("@POID", DbType.String, Item.POID); }
+            SbSql.Append("SET POID=@POID" + Environment.NewLine);
+            objParameter.Add("@POID", DbType.String, Item.POID);
             if (Item.StyleID != null) { SbSql.Append(",StyleID=@StyleID" + Environment.NewLine); objParameter.Add("@StyleID", DbType.String, Item.StyleID); }
             if (Item.SeasonID != null) { SbSql.Append(",SeasonID=@SeasonID" + Environment.NewLine); objParameter.Add("@SeasonID", DbType.String, Item.SeasonID); }
             if (Item.BrandID != null) { SbSql.Append(",BrandID=@BrandID" + Environment.NewLine); objParameter.Add("@BrandID", DbType.String, Item.BrandID); }
@@ -184,15 +179,14 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             if (Item.Remark != null) { SbSql.Append(",Remark=@Remark" + Environment.NewLine); objParameter.Add("@Remark", DbType.String, Item.Remark); }
             if (Item.T1Subcon != null) { SbSql.Append(",T1Subcon=@T1Subcon" + Environment.NewLine); objParameter.Add("@T1Subcon", DbType.String, Item.T1Subcon); }
             if (Item.T2Supplier != null) { SbSql.Append(",T2Supplier=@T2Supplier" + Environment.NewLine); objParameter.Add("@T2Supplier", DbType.String, Item.T2Supplier); }
-            if (Item.TestDate != null) { SbSql.Append(",TestDate=@TestDate" + Environment.NewLine); objParameter.Add("@TestDate", DbType.String, Item.TestDate); }
-            if (Item.ReceivedDate != null) { SbSql.Append(",ReceivedDate=@ReceivedDate" + Environment.NewLine); objParameter.Add("@ReceivedDate", DbType.String, Item.ReceivedDate); }
-            if (Item.ReleasedDate != null) { SbSql.Append(",ReleasedDate=@ReleasedDate" + Environment.NewLine); objParameter.Add("@ReleasedDate", DbType.String, Item.ReleasedDate); }
+            if (Item.TestDate != null) { SbSql.Append(",TestDate=@TestDate" + Environment.NewLine); objParameter.Add("@TestDate", DbType.Date, Item.TestDate); }
+            if (Item.ReceivedDate != null) { SbSql.Append(",ReceivedDate=@ReceivedDate" + Environment.NewLine); objParameter.Add("@ReceivedDate", DbType.Date, Item.ReceivedDate); }
+            if (Item.ReleasedDate != null) { SbSql.Append(",ReleasedDate=@ReleasedDate" + Environment.NewLine); objParameter.Add("@ReleasedDate", DbType.Date, Item.ReleasedDate); }
             if (Item.Result != null) { SbSql.Append(",Result=@Result" + Environment.NewLine); objParameter.Add("@Result", DbType.String, Item.Result); }
             if (Item.Technician != null) { SbSql.Append(",Technician=@Technician" + Environment.NewLine); objParameter.Add("@Technician", DbType.String, Item.Technician); }
             if (Item.MR != null) { SbSql.Append(",MR=@MR" + Environment.NewLine); objParameter.Add("@MR", DbType.String, Item.MR); }
-            if (Item.AddDate != null) { SbSql.Append(",AddDate=@AddDate" + Environment.NewLine); objParameter.Add("@AddDate", DbType.DateTime, Item.AddDate); }
-            if (Item.AddName != null) { SbSql.Append(",AddName=@AddName" + Environment.NewLine); objParameter.Add("@AddName", DbType.String, Item.AddName); }
-            if (Item.EditDate != null) { SbSql.Append(",EditDate=@EditDate" + Environment.NewLine); objParameter.Add("@EditDate", DbType.DateTime, Item.EditDate); }
+
+            SbSql.Append(",EditDate=GETDATE()" + Environment.NewLine);
             if (Item.EditName != null) { SbSql.Append(",EditName=@EditName" + Environment.NewLine); objParameter.Add("@EditName", DbType.String, Item.EditName); }
 
             SbSql.Append($@"
@@ -215,8 +209,8 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 
             // 圖檔
             SbSql.Append(@"
-    TestBeforePicture=@TestBeforePicture,
-    TestAfterPicture=@TestAfterPicture
+,TestBeforePicture=@TestBeforePicture
+,TestAfterPicture=@TestAfterPicture
 ");
             if (Item.TestBeforePicture != null) { objParameter.Add("@TestBeforePicture", Item.TestBeforePicture); }
             else { objParameter.Add("@TestBeforePicture", System.Data.SqlTypes.SqlBinary.Null); }
@@ -225,22 +219,12 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             else { objParameter.Add("@TestAfterPicture", System.Data.SqlTypes.SqlBinary.Null); }
 
             if (Item.Type != null) { SbSql.Append(",Type=@Type" + Environment.NewLine); objParameter.Add("@Type", DbType.String, Item.Type); }
-            SbSql.Append("WHERE 1 = 1" + Environment.NewLine);
+            SbSql.Append("WHERE ReportNo = @ReportNo" + Environment.NewLine);
+            objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
-        /*刪除(Delete) 詳細敘述如下*/
-        /// <summary>
-        /// 刪除
-        /// </summary>
-        /// <param name="Item">成員</param>
-        /// <returns>回傳異動筆數</returns>
-        /// <info>Author: Admin; Date: 2021/08/31  </info>
-        /// <history>
-        /// xx.  YYYY/MM/DD   Ver   Author      Comments
-        /// ===  ==========  ====  ==========  ==========
-        /// 01.  2021/08/31  1.00    Admin        Create
-        /// </history>
+
         public int Delete(MockupWash Item)
         {
             StringBuilder SbSql = new StringBuilder();
