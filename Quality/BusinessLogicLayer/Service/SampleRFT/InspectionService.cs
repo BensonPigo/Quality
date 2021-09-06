@@ -80,6 +80,20 @@ namespace BusinessLogicLayer.Service
             {
                 switch (type)
                 {
+                    case SelectType.StyleID:
+                        result = result.GroupBy(x => new { x.StyleID, x.OrderID, x.ProductTypePMS, x.Brand, x.Season, x.SampleStage, x.OriginalLine, x.OrderQty })
+                                    .Select(x => new Inspection_ViewModel()
+                                    {
+                                        StyleID = x.Key.StyleID,
+                                        OrderID = x.Key.OrderID,
+                                        ProductTypePMS = x.Key.ProductTypePMS,
+                                        Brand = x.Key.Brand,
+                                        Season = x.Key.Season,
+                                        SampleStage = x.Key.SampleStage,
+                                        OriginalLine = x.Key.OriginalLine,
+                                        OrderQty = x.Key.OrderQty
+                                    }).ToList();
+                        break;
                     case SelectType.OrderID:
                         result = result.GroupBy(x => new { x.StyleID, x.OrderID, x.ProductTypePMS, x.Brand, x.Season, x.SampleStage, x.OriginalLine, x.OrderQty })
                                     .Select(x => new Inspection_ViewModel()
@@ -132,28 +146,36 @@ namespace BusinessLogicLayer.Service
 
             Inspection_ViewModel result = new Inspection_ViewModel();
             List<RFT_Inspection> inspections = _RFTInspectionProvider.Get(new RFT_Inspection()
-            {
-                FactoryID = inspection_ViewModel.FactoryID,
-                Line = inspection_ViewModel.Line,
-                InspectionDate = inspection_ViewModel.InspectionDate,
-            })
-                                                .ToList();
+                    {
+                        FactoryID = inspection_ViewModel.FactoryID,
+                        Line = inspection_ViewModel.Line,
+                    })
+                    .ToList();
+
+            List<RFT_Inspection> inspections_six = _RFTInspectionProvider.Get(new RFT_Inspection()
+                    {
+                        FactoryID = inspection_ViewModel.FactoryID,
+                        Line = inspection_ViewModel.Line,
+                        InspectionDate = inspection_ViewModel.InspectionDate,
+                    })
+                    .ToList();
+
             List<RFT_Inspection_Detail> inspection_details = _RFTInspectionDetailProvider.Top3Defects(new RFT_Inspection()
-            {
-                FactoryID = inspection_ViewModel.FactoryID,
-                Line = inspection_ViewModel.Line,
-                InspectionDate = inspection_ViewModel.InspectionDate,
-            })
-                                                .ToList();
+                    {
+                        FactoryID = inspection_ViewModel.FactoryID,
+                        Line = inspection_ViewModel.Line,
+                        InspectionDate = inspection_ViewModel.InspectionDate,
+                    })
+                    .ToList();
 
             result.Pass = inspections.Where(x => x.Status.Equals("Pass") || x.Status.Equals("Fixed")).Count().ToString();
             result.Reject = inspections.Where(x => x.Status.Equals("Reject") || x.Status.Equals("Fixed")).Count().ToString();
-            result.Hard = inspections.Where(x => x.FixType.Equals("Hard")).Count().ToString();
-            result.Quick = inspections.Where(x => x.FixType.Equals("Quick")).Count().ToString();
-            result.Wash = inspections.Where(x => x.FixType.Equals("Wash")).Count().ToString();
-            result.Repl = inspections.Where(x => x.FixType.Equals("Repl.")).Count().ToString();
-            result.Print = inspections.Where(x => x.FixType.Equals("Print")).Count().ToString();
-            result.Shade = inspections.Where(x => x.FixType.Equals("Shade")).Count().ToString();
+            result.Hard = inspections_six.Where(x => x.FixType.Equals("Hard") && x.Status.Equals("Reject")).Count().ToString();
+            result.Quick = inspections_six.Where(x => x.FixType.Equals("Quick") && x.Status.Equals("Reject")).Count().ToString();
+            result.Wash = inspections_six.Where(x => x.FixType.Equals("Wash") && x.Status.Equals("Reject")).Count().ToString();
+            result.Repl = inspections_six.Where(x => x.FixType.Equals("Repl.") && x.Status.Equals("Reject")).Count().ToString();
+            result.Print = inspections_six.Where(x => x.FixType.Equals("Print") && x.Status.Equals("Reject")).Count().ToString();
+            result.Shade = inspections_six.Where(x => x.FixType.Equals("Shade") && x.Status.Equals("Reject")).Count().ToString();
             result.Dispose = inspections.Where(x => x.Status.Equals("Dispose")).Count().ToString();
 
             List<string> top3DefectCode = inspection_details

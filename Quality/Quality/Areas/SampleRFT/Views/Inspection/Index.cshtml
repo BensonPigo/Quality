@@ -1777,7 +1777,7 @@
             $('#SelectItemBackground').on('click', function () {
                 $("#SelectItemBackground, .SelectItem").addClass('display-None');
             });
-            $('.FixType').html('');
+            $('.FixType, .ReworkCardNoSelectValue').html('');
             $('#btnRefresh').click();
         });
 
@@ -2128,6 +2128,9 @@
                         $('#txtSizeQty').val(data.SizeQty);
                         $('#txtSizeBalanceQty').val(data.SizeBalanceQty);
                         $('#txtOrderBalanceQty').val(data.OrderBalanceQty);
+
+                        SizeClick($("#txtStyle").val(), $("#txtSP").val(), $("#txtArticle").val());
+                        ProductTypeClick($("#txtStyle").val(), $("#txtSP").val(), $("#txtArticle").val(), $("#txtSize").val());
                     }
                     $('#btnRefresh').click();
                 }
@@ -2504,7 +2507,7 @@
 
                 $('.ReworkCardNoInside').html(content);
                 $('.ReworkCardNoInside>input').on('click', function () {
-                    if ($(this).attr("idx") == "Rework") {
+                    if ($(this).attr("idx") == "Rework") {                        
                         return;
                     }
 
@@ -2622,6 +2625,7 @@
             success: function (data) {
                 if (data.Result) {
                     $("#DefectType>tbody>tr").remove();
+                    $('.ReworkCardNoSelectValue').html('');
                     $('#btnReworkCardNoExit').click();
                     $('#btnRefresh').click();
                     IsEditModeButtonChange();
@@ -2710,6 +2714,7 @@
                 });
 
                 $('.btnReworkListPass').on('click', function () {
+                    $('.ReworkListTable > tbody > tr').find("input[type='checkbox']").prop("checked", false);
                     $(this).parent().parent().find("input[type='checkbox']").prop("checked", true);
                     ReworkListSaveAction('Pass', '');
                 });
@@ -2721,6 +2726,7 @@
                 });
 
                 $(".ReworkListTableAction>input[type='button']").on('click', function () {
+                    $('.ReworkListTable > tbody > tr').find("input[type='checkbox']").prop("checked", false);
                     $(this).parent().parent().parent().parent().find("input[type='checkbox']").prop("checked", true);
                     ReworkListSaveAction($(this).attr('idx'), '');
                 });
