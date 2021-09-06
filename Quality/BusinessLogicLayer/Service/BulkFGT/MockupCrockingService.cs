@@ -27,15 +27,19 @@ namespace BusinessLogicLayer.Service
 
         public MockupCrocking_ViewModel GetMockupCrocking(MockupCrocking_Request MockupCrocking)
         {
+            MockupCrocking.Type = "B";
             MockupCrocking_ViewModel mockupCrocking_model = new MockupCrocking_ViewModel();
             try
             {
                 _MockupCrockingProvider = new MockupCrockingProvider(Common.ProductionDataAccessLayer);
                 _MockupCrockingDetailProvider = new MockupCrockingDetailProvider(Common.ProductionDataAccessLayer);
-                mockupCrocking_model = _MockupCrockingProvider.GetMockupCrocking(MockupCrocking, istop1: true).ToList().First();
-                mockupCrocking_model.ReportNo_Source = _MockupCrockingProvider.GetMockupCrockingReportNoList(MockupCrocking).Select(s => s.ReportNo).ToList();
-                MockupCrocking_Detail mockupCrocking_Detail = new MockupCrocking_Detail() { ReportNo = mockupCrocking_model.ReportNo };
-                mockupCrocking_model.MockupCrocking_Detail = _MockupCrockingDetailProvider.GetMockupCrocking_Detail(mockupCrocking_Detail).ToList();
+                mockupCrocking_model = _MockupCrockingProvider.GetMockupCrocking(MockupCrocking, istop1: true).ToList().FirstOrDefault();
+                if (mockupCrocking_model != null)
+                {
+                    mockupCrocking_model.ReportNo_Source = _MockupCrockingProvider.GetMockupCrockingReportNoList(MockupCrocking).Select(s => s.ReportNo).ToList();
+                    MockupCrocking_Detail mockupCrocking_Detail = new MockupCrocking_Detail() { ReportNo = mockupCrocking_model.ReportNo };
+                    mockupCrocking_model.MockupCrocking_Detail = _MockupCrockingDetailProvider.GetMockupCrocking_Detail(mockupCrocking_Detail).ToList();
+                }
             }
             catch (Exception ex)
             {
