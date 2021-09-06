@@ -1,6 +1,8 @@
 ﻿
 @{
-    ViewBag.Title = "Add Defect";
+                /**/
+
+                ViewBag.Title = "Add Defect";
 }
 
 @model DatabaseObject.ViewModel.FinalInspection.AddDefect
@@ -29,11 +31,10 @@
     @using (Html.BeginForm("AddDefect", "Inspection", FormMethod.Post, new { @id = "AddDefectForm", onsubmit = "return checkValue(this.submitted)" }))
     {
 
-    <div style="padding:2em 3em 2em 3em;width:80%;float:left;position: absolute;transform: translate(-50%, 0%);left: 50%">
-        <div><h1 style="font-size: 2vh; font-weight: 900; ">How many reject Qty(pcs) @Html.TextBoxFor(o => o.RejectQty, new { @type = "number", @style = "width:10vw", @class = "form-control center-block" })</h1> </div>
-    <table id="CheckListTable" class="cell-border" style="width:100%">
-    </table>
-</div>
+        <div style="padding:2em 3em 2em 3em;width:80%;float:left;position: absolute;transform: translate(-50%, 0%);left: 50%">
+            <div><h1 style="font-size: 2vh; font-weight: 900; ">How many reject Qty(pcs) @Html.TextBoxFor(o => o.RejectQty, new { @type = "number", @style = "width:10vw", @class = "form-control center-block" })</h1> </div>
+            <table id="CheckListTable" class="cell-border" style="width:100%"></table>
+        </div>
         <div style="width:100%">
             <input type="hidden" id="goPage" name="goPage">
             <button id="btnBack" onclick="this.form.submitted=this.value;" type="submit" value="Back" class="button" style="right:7em;">Back</button>
@@ -134,8 +135,8 @@
             $(list).each(function (index, value) {
                 sTr = sTr + "<tr><td style='width:70%'>" + value[1] + "</td>";
                 sTr = sTr + `<td style='vertical-align: middle'><input type='number'  min="0" style="width: 6vh" id='${value[0]} ' name='${value[0]}'  value='${value[2]}' /></td>
-                            <td> <img src="/Image/Icon/Camera.png" width="25vw" height="25vw" /></td>
-                            <td> <img src="/Image/Icon/Picture.png" width="25vw" height="25vw" /></td>
+                            <td> <img src="/Image/Icon/Camera.png" style="cursor: pointer;" onclick="ScreenShot()" width="25vw" height="25vw" /></td>
+                            <td> <img src="/Image/Icon/Picture.png" style="cursor: pointer;" onclick="OpenPicture(${value[0]})" width="25vw" height="25vw" /></td>
                             </tr>`;
 
             });
@@ -161,5 +162,20 @@
             return true;
         }
 
+        function OpenPicture(DetailUkey) {
+
+            // Ukey = -1代表沒圖片
+            if (DetailUkey == -1) {
+                msg.WithInfo("No Picture");
+            }
+            else {
+                window.open('@Url.Action("DefectPicture")?DetailUkey=' + DetailUkey, "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
+            }
+        }
+
+        function ScreenShot() {
+            window.open('@Url.Action("TakePicture")', "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
+
+        }
     </script>
 }

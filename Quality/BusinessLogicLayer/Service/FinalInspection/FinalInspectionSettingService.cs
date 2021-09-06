@@ -29,6 +29,8 @@ namespace BusinessLogicLayer.Service
                 _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
                 _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
 
+                FinalInspectionService f = new FinalInspectionService();
+
                 finalInspection = _FinalInspectionProvider.GetFinalInspection(finalInspectionID);
 
                 if (!finalInspection)
@@ -43,7 +45,10 @@ namespace BusinessLogicLayer.Service
                 result.AuditDate = finalInspection.AuditDate;
                 result.SewingLineID = finalInspection.SewingLineID;
                 result.InspectionTimes = finalInspection.InspectionTimes.ToString();
+
                 result.AcceptableQualityLevelsUkey = finalInspection.AcceptableQualityLevelsUkey.ToString();
+                result.AQLPlan = f.GetAQLPlanDesc(finalInspection.AcceptableQualityLevelsUkey);
+
                 result.SampleSize = finalInspection.SampleSize;
                 result.AcceptQty = finalInspection.AcceptQty;
 
@@ -113,6 +118,24 @@ namespace BusinessLogicLayer.Service
 
                     switch (setting.AQLPlan)
                     {
+                        case "":
+                            AQLResult = new List<AcceptableQualityLevels>() {
+                                new AcceptableQualityLevels(){
+                                    AcceptedQty = setting.AcceptQty,
+                                    SampleSize = totalAvailableQty,
+                                    Ukey = 0
+                                }
+                            };
+                            break;
+                        case null:
+                            AQLResult = new List<AcceptableQualityLevels>() {
+                                new AcceptableQualityLevels(){
+                                    AcceptedQty = setting.AcceptQty,
+                                    SampleSize = totalAvailableQty,
+                                    Ukey = 0
+                                }
+                            };
+                            break;
                         case "1.0 Level I":
                             AQLResult = setting.AcceptableQualityLevels
                                 .Where(s => s.AQLType == 1 &&

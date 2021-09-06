@@ -335,6 +335,10 @@
     <Content Include="Areas\BulkFGT\Views\MockupWash\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\MockupOvenTest\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\FabricColorFastness\Index.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Shared\PictureList.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Inspection\DefectPicture.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Inspection\TakePicture.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Shared\ScreenShot.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />

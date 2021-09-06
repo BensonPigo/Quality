@@ -2,6 +2,7 @@
 
 @{
     Layout = null;
+    string TargetID = ViewData["TargetID"] == null ? string.Empty : ViewData["TargetID"].ToString();
 }
 
 @model List<Window_Season>
