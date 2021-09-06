@@ -79,7 +79,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             if (string.IsNullOrEmpty(Brand))
             {
                 viewModel.Result = false;
-                viewModel.Brand = this.Brand;
+                viewModel.Brand = string.Empty;
                 return Json(viewModel);
             }
 
@@ -115,7 +115,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             }
 
             var query = _InspectionService
-                            .GetSelectItemData(new Inspection_ViewModel() { FactoryID = this.FactoryID, StyleID = StyleID })
+                            .CheckSelectItemData(new Inspection_ViewModel() { FactoryID = this.FactoryID, StyleID = StyleID }, InspectionService.SelectType.StyleID)
                             .ToList();
 
             viewModel.Result = query.Any();

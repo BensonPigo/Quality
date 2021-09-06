@@ -18,16 +18,11 @@ namespace BusinessLogicLayer.Service.Tests
             try
             {
                 IMockupWashService _MockupWashService = new MockupWashService();
-                MockupWash_Request MockupWash = new MockupWash_Request () 
-                { 
-                    ReportNo = "PHWA190900003",
-                    //Type = "B",
-                    //BrandID = "ADIDAS",
-                    //SeasonID= "20SS", 
-                    //StyleID= "S201CSPM108",
-                    //Article= "FL0237"
-                };
+                MockupWash_Request MockupWash = new MockupWash_Request()
+                { ReportNo = "PHWA190900003" };
+                //{ BrandID = "ADIDAS", SeasonID = "20SS", StyleID = "S201CSPM108", Article = "FL0237" };
                 var mockupWash = _MockupWashService.GetMockupWash(MockupWash);
+
                 Assert.IsTrue(mockupWash.POID == "TESTPOID233");
             }
             catch (Exception ex)

@@ -801,7 +801,7 @@
             }
 
             var tr = $(this).parents().parents();
-            var fcol = tr.children().find('a');
+            var fcol = tr.children().find("a[class='detailA']");
             var id = fcol.attr("idx");
             var no = fcol.attr("idv");
             $.ajax({
@@ -831,7 +831,7 @@
             }
 
             var tr = $(this).parents().parents();
-            var fcol = tr.children().find('a');
+            var fcol = tr.children().find("a[class='detailA']");
             var id = fcol.attr("idx");
             var no = fcol.attr("idv");
             $.ajax({

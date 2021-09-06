@@ -22,7 +22,7 @@ namespace BusinessLogicLayer.Service.Tests
             get
             {
                 IFabricCrkShrkTestProvider _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
-                return _FabricCrkShrkTestProvider.GetTestPOID();
+                return _FabricCrkShrkTestProvider.GetTestPOID(string.Empty);
             }
         }
 
@@ -31,7 +31,7 @@ namespace BusinessLogicLayer.Service.Tests
             get
             {
                 IFabricCrkShrkTestProvider _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
-                return _FabricCrkShrkTestProvider.GetTestFIRID();
+                return _FabricCrkShrkTestProvider.GetTestFIRID(string.Empty);
             }
         }
 
@@ -224,6 +224,27 @@ namespace BusinessLogicLayer.Service.Tests
                 IFabricCrkShrkTest_Service fabricCrkShrkTest_Service = new FabricCrkShrkTest_Service();
                 string excelName;
                 BaseResult baseResult = fabricCrkShrkTest_Service.ToExcelFabricCrkShrkTestCrockingDetail(this.ID, out excelName, true);
+
+                if (!baseResult)
+                {
+                    Assert.Fail(baseResult.ErrorMessage);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.ToString());
+            }
+        }
+
+        [TestMethod()]
+        public void ToPdfFabricCrkShrkTestCrockingDetailTest()
+        {
+            try
+            {
+                IFabricCrkShrkTest_Service fabricCrkShrkTest_Service = new FabricCrkShrkTest_Service();
+                string excelName;
+                BaseResult baseResult = fabricCrkShrkTest_Service.ToPdfFabricCrkShrkTestCrockingDetail(ID, out excelName, true);
 
                 if (!baseResult)
                 {

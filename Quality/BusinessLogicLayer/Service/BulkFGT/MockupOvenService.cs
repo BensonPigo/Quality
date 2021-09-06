@@ -28,15 +28,19 @@ namespace BusinessLogicLayer.Service
 
         public MockupOven_ViewModel GetMockupOven(MockupOven_Request MockupOven)
         {
+            MockupOven.Type = "B";
             MockupOven_ViewModel mockupOven_model = new MockupOven_ViewModel();
             try
             {
                 _MockupOvenProvider = new MockupOvenProvider(Common.ProductionDataAccessLayer);
                 _MockupOvenDetailProvider = new MockupOvenDetailProvider(Common.ProductionDataAccessLayer);
-                mockupOven_model = _MockupOvenProvider.GetMockupOven(MockupOven, istop1: true).ToList().First();
-                mockupOven_model.ReportNo_Source = _MockupOvenProvider.GetMockupOvenReportNoList(MockupOven).Select(s => s.ReportNo).ToList();
-                MockupOven_Detail mockupOven_Detail = new MockupOven_Detail() { ReportNo = mockupOven_model.ReportNo };
-                mockupOven_model.MockupOven_Detail = _MockupOvenDetailProvider.GetMockupOven_Detail(mockupOven_Detail).ToList();
+                mockupOven_model = _MockupOvenProvider.GetMockupOven(MockupOven, istop1: true).ToList().FirstOrDefault();
+                if (mockupOven_model != null)
+                {
+                    mockupOven_model.ReportNo_Source = _MockupOvenProvider.GetMockupOvenReportNoList(MockupOven).Select(s => s.ReportNo).ToList();
+                    MockupOven_Detail mockupOven_Detail = new MockupOven_Detail() { ReportNo = mockupOven_model.ReportNo };
+                    mockupOven_model.MockupOven_Detail = _MockupOvenDetailProvider.GetMockupOven_Detail(mockupOven_Detail).ToList();
+                }
             }
             catch (Exception ex)
             {

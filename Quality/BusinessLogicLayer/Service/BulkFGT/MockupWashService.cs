@@ -29,23 +29,27 @@ namespace BusinessLogicLayer.Service
 
         public MockupWash_ViewModel GetMockupWash(MockupWash_Request MockupWash)
         {
+            MockupWash.Type = "B";
             MockupWash_ViewModel mockupWash_model = new MockupWash_ViewModel();
             try
             {
                 _MockupWashProvider = new MockupWashProvider(Common.ProductionDataAccessLayer);
                 _MockupWashDetailProvider = new MockupWashDetailProvider(Common.ProductionDataAccessLayer);
-                mockupWash_model = _MockupWashProvider.GetMockupWash(MockupWash, istop1: true).ToList().First();
-                mockupWash_model.ReportNo_Source = _MockupWashProvider.GetMockupWashReportNoList(MockupWash).Select(s => s.ReportNo).ToList();
-                MockupWash_Detail mockupWash_Detail = new MockupWash_Detail() { ReportNo = mockupWash_model.ReportNo };
-                mockupWash_model.MockupWash_Detail = _MockupWashDetailProvider.GetMockupWash_Detail(mockupWash_Detail).ToList();
-
-                mockupWash_model.TestingMethod_Source = new List<SelectListItem>();
-                _DropDownListProvider = new DropDownListProvider(Common.ProductionDataAccessLayer);
-                DropDownList downList = new DropDownList() { Type = "PMS_MockupWashMethod" };
-                List<DropDownList> dropDowns = _DropDownListProvider.Get(downList).ToList();
-                foreach (var item in dropDowns)
+                mockupWash_model = _MockupWashProvider.GetMockupWash(MockupWash, istop1: true).ToList().FirstOrDefault();
+                if (mockupWash_model != null)
                 {
-                    mockupWash_model.TestingMethod_Source.Add(new SelectListItem() { Value = item.ID, Text = item.Description });
+                    mockupWash_model.ReportNo_Source = _MockupWashProvider.GetMockupWashReportNoList(MockupWash).Select(s => s.ReportNo).ToList();
+                    MockupWash_Detail mockupWash_Detail = new MockupWash_Detail() { ReportNo = mockupWash_model.ReportNo };
+                    mockupWash_model.MockupWash_Detail = _MockupWashDetailProvider.GetMockupWash_Detail(mockupWash_Detail).ToList();
+
+                    mockupWash_model.TestingMethod_Source = new List<SelectListItem>();
+                    _DropDownListProvider = new DropDownListProvider(Common.ProductionDataAccessLayer);
+                    DropDownList downList = new DropDownList() { Type = "PMS_MockupWashMethod" };
+                    List<DropDownList> dropDowns = _DropDownListProvider.Get(downList).ToList();
+                    foreach (var item in dropDowns)
+                    {
+                        mockupWash_model.TestingMethod_Source.Add(new SelectListItem() { Value = item.ID, Text = item.Description });
+                    }
                 }
             }
             catch (Exception ex)
