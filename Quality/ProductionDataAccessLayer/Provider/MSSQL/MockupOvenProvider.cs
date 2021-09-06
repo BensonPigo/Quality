@@ -292,9 +292,11 @@ SELECT {top1}
         ,ReleasedDate
         ,Result
         ,Technician
-        ,TechnicianName = TechnicianName.Name_Extno
+        ,TechnicianName = Technician_ne.Name
+        ,TechnicianExtNo = Technician_ne.ExtNo
         ,MR
-		,MRName = MRName.Name_Extno
+		,MRName = MR_ne.Name
+		,MRExtNo = MR_ne.Extno
 		,LastEditName = iif(EditName <> '', Concat (EditName, '-', EditName.Name, ' ', Format(EditDate,'yyyy/MM/dd HH:mm:ss')), Concat (AddName, '-', AddName.Name, ' ', Format(AddDate,'yyyy/MM/dd HH:mm:ss')))
 		,m.TestTemperature
 		,m.TestTime
@@ -315,8 +317,8 @@ SELECT {top1}
         ,EditName
         ,SignaturePic = (select PicPath from system) + (select t.SignaturePic from Technician t where t.ID = Technician)
 FROM MockupOven m
-outer apply (select Name_Extno from View_ShowName where id = m.Technician) TechnicianName
-outer apply (select Name_Extno from View_ShowName where id = m.MR) MRName
+outer apply (select Name, ExtNo from pass1 p inner join Technician t on t.ID = p.ID where t.id = m.Technician) Technician_ne
+outer apply (select Name, ExtNo from pass1 where id = m.MR) MR_ne
 outer apply (select Name from Pass1 where id = m.AddName) AddName
 outer apply (select Name from Pass1 where id = m.EditName) EditName
 ");

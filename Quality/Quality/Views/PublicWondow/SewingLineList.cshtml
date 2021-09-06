@@ -2,6 +2,7 @@
 
 @{
     Layout = null;
+    string TargetID = ViewData["TargetID"] == null ? string.Empty : ViewData["TargetID"].ToString();
 }
 
 @model List<Window_SewingLine>
@@ -43,6 +44,7 @@
     {
         <input type="text" name="ID" value="" />
         @Html.Hidden("FactoryID", ViewData["FactoryID"]);
+        @Html.Hidden("TargetID", TargetID)
         <input type="submit" value="Query" />
         <input id="btnExit" type="button" value="Exit" />
     }
@@ -69,7 +71,7 @@
         $(".SelectItem").click(function () {
 
             // 呼叫父視窗的GetSewingLine Function，把值傳回去
-            window.opener.GetSewingLineList($(this).text());
+            window.opener.GetSewingLineList($(this).text(), '@TargetID');
 
             window.close();
         });

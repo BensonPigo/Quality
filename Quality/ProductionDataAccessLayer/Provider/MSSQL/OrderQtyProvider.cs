@@ -44,6 +44,9 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,EditName"+ Environment.NewLine);
             SbSql.Append("        ,EditDate"+ Environment.NewLine);
             SbSql.Append("FROM [Order_Qty]"+ Environment.NewLine);
+            SbSql.Append("Where 1 = 1" + Environment.NewLine);
+            if (!string.IsNullOrEmpty(Item.ID.ToString())) { SbSql.Append("And ID = @ID" + Environment.NewLine); }
+            objParameter.Add("@ID", DbType.String, Item.ID);
 
 
 
@@ -152,6 +155,21 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
-	#endregion
+        #endregion
+
+        public IList<Order_Qty> GetDistinctArticle(Order_Qty Item)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            SbSql.Append(@"
+SELECT Distinct Article
+From Order_Qty
+Where 1 = 1
+");
+            if (!string.IsNullOrEmpty(Item.ID.ToString())) { SbSql.Append("And ID = @ID" + Environment.NewLine); }
+            objParameter.Add("@ID", DbType.String, Item.ID);
+
+            return ExecuteList<Order_Qty>(CommandType.Text, SbSql.ToString(), objParameter);
+        }
     }
 }

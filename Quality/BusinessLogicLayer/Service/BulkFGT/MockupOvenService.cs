@@ -23,6 +23,8 @@ namespace BusinessLogicLayer.Service
         private IMockupOvenDetailProvider _MockupOvenDetailProvider;
         private IStyleBOAProvider _IStyleBOAProvider;
         private IStyleArtworkProvider _IStyleArtworkProvider;
+        private IOrdersProvider _OrdersProvider;
+        private IOrderQtyProvider _OrderQtyProvider;
 
         public MockupOven_ViewModel GetMockupOven(MockupOven_Request MockupOven)
         {
@@ -83,6 +85,33 @@ namespace BusinessLogicLayer.Service
             }
 
             return selectListItems;
+        }
+
+        public List<Orders> GetOrders(Orders orders)
+        {
+            _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
+            try
+            {
+                orders.Category = "B";
+                return _OrdersProvider.Get(orders).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public List<Order_Qty> GetDistinctArticle(Order_Qty order_Qty)
+        {
+            _OrderQtyProvider = new OrderQtyProvider(Common.ProductionDataAccessLayer);
+            try
+            {
+                return _OrderQtyProvider.GetDistinctArticle(order_Qty).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public MockupOven_ViewModel GetPDF(MockupOven_ViewModel mockupOven, bool test = false)

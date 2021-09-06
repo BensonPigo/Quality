@@ -55,7 +55,28 @@ namespace BusinessLogicLayer.Service
 
         public BaseResult AmendFabricCrkShrkTestHeatDetail(long ID)
         {
-            throw new NotImplementedException();
+            BaseResult baseResult = new BaseResult();
+            _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
+            try
+            {
+                FabricCrkShrkTestHeat_Main fabricCrkShrkTestHeat_Main = _FabricCrkShrkTestProvider.GetFabricHeatTest_Main(ID);
+
+                if (fabricCrkShrkTestHeat_Main.HeatEncode == false)
+                {
+                    baseResult.Result = false;
+                    baseResult.ErrorMessage = $"This record is not Encode";
+                    return baseResult;
+                }
+
+                _FabricCrkShrkTestProvider.AmendFabricHeat(ID);
+            }
+            catch (Exception ex)
+            {
+                baseResult.Result = false;
+                baseResult.ErrorMessage = ex.ToString();
+            }
+
+            return baseResult;
         }
 
         public BaseResult AmendFabricCrkShrkTestWashDetail(long ID)
@@ -109,12 +130,53 @@ namespace BusinessLogicLayer.Service
             }
         }
 
-        public BaseResult EncodeFabricCrkShrkTestHeatDetail(long ID, out string ovenTestResult)
+        public BaseResult EncodeFabricCrkShrkTestHeatDetail(long ID, string userID, out string testResult)
         {
-            throw new NotImplementedException();
+            BaseResult baseResult = new BaseResult();
+            _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
+            testResult = string.Empty;
+            try
+            {
+                FabricCrkShrkTestHeat_Result fabricCrkShrkTestHeat_Result = this.GetFabricCrkShrkTestHeat_Result(ID);
+
+                if (fabricCrkShrkTestHeat_Result.Heat_Main.HeatEncode == true)
+                {
+                    baseResult.Result = false;
+                    baseResult.ErrorMessage = $"This record already Encode";
+                    return baseResult;
+                }
+
+                if (fabricCrkShrkTestHeat_Result.Heat_Detail.Count == 0)
+                {
+                    baseResult.Result = false;
+                    baseResult.ErrorMessage = $"Please test one Roll least.";
+                    return baseResult;
+                }
+
+                string HeatResult = "Pass";
+
+                if (fabricCrkShrkTestHeat_Result.Heat_Detail.Any(s => s.Result.ToUpper() == "FAIL"))
+                {
+                    HeatResult = "Fail";
+                }
+
+                testResult = HeatResult;
+
+                DateTime? HeatDate = fabricCrkShrkTestHeat_Result.Heat_Detail.Max(s => s.Inspdate);
+
+                _FabricCrkShrkTestProvider.EncodeFabricHeat(ID, testResult, HeatDate, userID);
+
+                return baseResult;
+            }
+            catch (Exception ex)
+            {
+                baseResult.Result = false;
+                baseResult.ErrorMessage = ex.ToString();
+                return baseResult;
+            }
         }
 
-        public BaseResult EncodeFabricCrkShrkTestWashDetail(long ID, out string ovenTestResult)
+        public BaseResult EncodeFabricCrkShrkTestWashDetail(long ID, string userID, out string ovenTestResult)
         {
             throw new NotImplementedException();
         }
@@ -148,7 +210,25 @@ namespace BusinessLogicLayer.Service
 
         public FabricCrkShrkTestHeat_Result GetFabricCrkShrkTestHeat_Result(long ID)
         {
-            throw new NotImplementedException();
+            try
+            {
+                FabricCrkShrkTestHeat_Result fabricCrkShrkTestHeat_Result = new FabricCrkShrkTestHeat_Result();
+                _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
+
+                _ScaleProvider = new ScaleProvider(Common.ProductionDataAccessLayer);
+
+                fabricCrkShrkTestHeat_Result.Heat_Main = _FabricCrkShrkTestProvider.GetFabricHeatTest_Main(ID);
+
+                fabricCrkShrkTestHeat_Result.Heat_Detail = _FabricCrkShrkTestProvider.GetFabricHeatTest_Detail(ID);
+
+                fabricCrkShrkTestHeat_Result.ID = ID;
+
+                return fabricCrkShrkTestHeat_Result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public FabricCrkShrkTestWash_Result GetFabricCrkShrkTestWash_Result(long ID)
@@ -252,7 +332,72 @@ namespace BusinessLogicLayer.Service
 
         public BaseResult SaveFabricCrkShrkTestHeatDetail(FabricCrkShrkTestHeat_Result fabricCrkShrkTestHeat_Result, string userID)
         {
-            throw new NotImplementedException();
+            BaseResult baseResult = new BaseResult();
+            try
+            {
+                bool isRollDyelotEmpty = fabricCrkShrkTestHeat_Result.Heat_Detail.Any(s => MyUtility.Check.Empty(s.Roll) || MyUtility.Check.Empty(s.Dyelot));
+                if (isRollDyelotEmpty)
+                {
+                    baseResult.Result = false;
+                    baseResult.ErrorMessage = "Roll and Dyelot cannot be empty.";
+                    return baseResult;
+                }
+
+                bool isHorizontalVerticalEmpty = fabricCrkShrkTestHeat_Result.Heat_Detail.Any(s =>
+                                                    MyUtility.Check.Empty(s.VerticalOriginal) ||
+                                                    MyUtility.Check.Empty(s.HorizontalOriginal) ||
+                                                    MyUtility.Check.Empty(s.HorizontalTest1) ||
+                                                    MyUtility.Check.Empty(s.HorizontalTest2) ||
+                                                    MyUtility.Check.Empty(s.HorizontalTest3) ||
+                                                    MyUtility.Check.Empty(s.VerticalTest1) ||
+                                                    MyUtility.Check.Empty(s.VerticalTest2) ||
+                                                    MyUtility.Check.Empty(s.VerticalTest3) 
+                                                    ) ;
+
+                if (isHorizontalVerticalEmpty)
+                {
+                    baseResult.Result = false;
+                    baseResult.ErrorMessage = "Horizontal and Vertical cannot be empty.";
+                    return baseResult;
+                }
+
+                bool isInspectorEmpty = fabricCrkShrkTestHeat_Result.Heat_Detail.Any(s => MyUtility.Check.Empty(s.Inspector));
+                if (isInspectorEmpty)
+                {
+                    baseResult.Result = false;
+                    baseResult.ErrorMessage = "Lab Tech cannot be empty.";
+                    return baseResult;
+                }
+
+                bool isResultEmpty = fabricCrkShrkTestHeat_Result.Heat_Detail.Any(s => MyUtility.Check.Empty(s.Result));
+                if (isResultEmpty)
+                {
+                    baseResult.Result = false;
+                    baseResult.ErrorMessage = "Result cannot be empty.";
+                    return baseResult;
+                }
+
+                _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
+
+                if (fabricCrkShrkTestHeat_Result.Heat_Main.HeatTestBeforePicture == null)
+                {
+                    fabricCrkShrkTestHeat_Result.Heat_Main.HeatTestBeforePicture = new byte[0];
+                }
+
+                if (fabricCrkShrkTestHeat_Result.Heat_Main.HeatTestAfterPicture == null)
+                {
+                    fabricCrkShrkTestHeat_Result.Heat_Main.HeatTestAfterPicture = new byte[0];
+                }
+
+                _FabricCrkShrkTestProvider.UpdateFabricHeatTestDetail(fabricCrkShrkTestHeat_Result, userID);
+            }
+            catch (Exception ex)
+            {
+                baseResult.Result = false;
+                baseResult.ErrorMessage = ex.ToString();
+            }
+
+            return baseResult;
         }
 
         public BaseResult SaveFabricCrkShrkTestMain(FabricCrkShrkTest_Result fabricCrkShrkTest_Result)
@@ -732,149 +877,208 @@ namespace BusinessLogicLayer.Service
 
         }
 
+        private class PageInfoForPDF
+        {
+            public int StartRow { get; set; }
+
+            public bool IsSingle { get; set; }
+        }
+
+        private List<PageInfoForPDF> GetPageInfo(int firstStartRow, int ttlRowCnt)
+        {
+            List<PageInfoForPDF> infoForPDFs = new List<PageInfoForPDF>();
+            int pagestartRow = firstStartRow;
+            bool isSingle = true;
+
+            if (firstStartRow >= 35 && firstStartRow <= 71)
+            {
+                pagestartRow = 73;
+                isSingle = false;
+            }
+
+            if (firstStartRow > 71 && ((firstStartRow - 71) % 74) > 37)
+            {
+                pagestartRow = ((((firstStartRow - 71) / 74) + 1) * 74) + 73;
+                isSingle = false;
+            }
+
+            infoForPDFs.Add(new PageInfoForPDF { StartRow = pagestartRow, IsSingle = isSingle });
+
+            int removeFirstPageRowCnt = isSingle ? ttlRowCnt - 1 : ttlRowCnt - 2;
+            int pageCnt = MyUtility.Convert.GetInt(Math.Ceiling(removeFirstPageRowCnt / 2.0));
+            isSingle = false;
+            for (int i = 0; i < pageCnt; i++)
+            {
+                if (i == pageCnt - 1 && (removeFirstPageRowCnt % 2) > 0)
+                {
+                    isSingle = true;
+                }
+
+                if (pagestartRow % 74 != 73)
+                {
+                    pagestartRow = pagestartRow < 72 ? 73 : ((((pagestartRow - 71) / 74) + 1) * 74) + 73;
+                }
+                else
+                {
+                    pagestartRow += 74;
+                }
+
+                infoForPDFs.Add(new PageInfoForPDF { StartRow = pagestartRow, IsSingle = isSingle });
+            }
+
+            return infoForPDFs;
+        }
+
+        private string singleCubeRangeSource = $"A1:N36";
+        private string doubleCubeRangeSource = $"A39:N110";
+
         private string CreateExcelOnlyWEFTandWARP(long ID, bool isTest)
         {
-            return string.Empty;
-            //_FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
-            //_OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
-            //_StyleProvider = new StyleProvider(Common.ProductionDataAccessLayer);
-            //_FIRLaboratoryProvider = new FIRLaboratoryProvider(Common.ProductionDataAccessLayer);
+            _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
+            _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
+            _StyleProvider = new StyleProvider(Common.ProductionDataAccessLayer);
+            _FIRLaboratoryProvider = new FIRLaboratoryProvider(Common.ProductionDataAccessLayer);
 
-            //string baseFilePath = isTest ? Directory.GetCurrentDirectory() : System.Web.HttpContext.Current.Server.MapPath("~/");
+            string baseFilePath = isTest ? Directory.GetCurrentDirectory() : System.Web.HttpContext.Current.Server.MapPath("~/");
 
-            //FabricCrkShrkTestCrocking_Main fabricCrkShrkTestCrocking_Main = _FabricCrkShrkTestProvider.GetFabricCrockingTest_Main(ID);
-            //FIR_Laboratory fir_Laboratory = _FIRLaboratoryProvider.Get(new FIR_Laboratory() { ID = ID }).ToList()[0];
+            FabricCrkShrkTestCrocking_Main fabricCrkShrkTestCrocking_Main = _FabricCrkShrkTestProvider.GetFabricCrockingTest_Main(ID);
+            FIR_Laboratory fir_Laboratory = _FIRLaboratoryProvider.Get(new FIR_Laboratory() { ID = ID }).ToList()[0];
 
-            //Orders orders = _OrdersProvider.Get(new Orders() { ID = fabricCrkShrkTestCrocking_Main.POID })[0];
-            //Style style = _StyleProvider.Get(new Style() { Ukey = orders.StyleUkey })[0];
+            Orders orders = _OrdersProvider.Get(new Orders() { ID = fabricCrkShrkTestCrocking_Main.POID })[0];
+            Style style = _StyleProvider.Get(new Style() { Ukey = orders.StyleUkey })[0];
 
-            //string submitDate = string.Empty;
-            //if (!MyUtility.Check.Empty(fir_Laboratory.ReceiveSampleDate))
-            //{
-            //    submitDate = ((DateTime)fir_Laboratory.ReceiveSampleDate).ToString("yyyy/MM/dd");
-            //}
+            string submitDate = string.Empty;
+            if (!MyUtility.Check.Empty(fir_Laboratory.ReceiveSampleDate))
+            {
+                submitDate = ((DateTime)fir_Laboratory.ReceiveSampleDate).ToString("yyyy/MM/dd");
+            }
 
-            //var groupArticle = _FabricCrkShrkTestProvider.GetCrockingArticleForPdfReport(ID).AsEnumerable()
-            //     .GroupBy(s => new {
-            //         Article = s["Article"].ToString(),
-            //         InspDate = MyUtility.Check.Empty(s["InspDate"]) ? string.Empty : ((DateTime)s["InspDate"]).ToString("yyyy/MM/dd"),
-            //         Name = s["Name"].ToString(),
-            //         Inspector = s["Inspector"].ToString()
-            //     });
+            var groupArticle = _FabricCrkShrkTestProvider.GetCrockingArticleForPdfReport(ID).AsEnumerable()
+                 .GroupBy(s => new
+                 {
+                     Article = s["Article"].ToString(),
+                     InspDate = MyUtility.Check.Empty(s["InspDate"]) ? string.Empty : ((DateTime)s["InspDate"]).ToString("yyyy/MM/dd"),
+                     Name = s["Name"].ToString(),
+                     Inspector = s["Inspector"].ToString()
+                 });
 
-            //Microsoft.Office.Interop.Excel.Application objApp = MyUtility.Excel.ConnectExcel(baseFilePath + "\\XLT\\FabricCrockingTestPDFWeftWarp.xltx");
-            //Microsoft.Office.Interop.Excel.Worksheet worksheetForCopyCube = (Microsoft.Office.Interop.Excel.Worksheet)objApp.ActiveWorkbook.Worksheets[2];
-            //objApp.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
-            //for (int i = 1; i < groupArticle.Count(); i++)
-            //{
-            //    Microsoft.Office.Interop.Excel.Worksheet worksheet1 = (Microsoft.Office.Interop.Excel.Worksheet)objApp.ActiveWorkbook.Worksheets[1];
-            //    Microsoft.Office.Interop.Excel.Worksheet worksheetn = (Microsoft.Office.Interop.Excel.Worksheet)objApp.ActiveWorkbook.Worksheets[i + 1];
+            Microsoft.Office.Interop.Excel.Application objApp = MyUtility.Excel.ConnectExcel(baseFilePath + "\\XLT\\FabricCrockingTestPDFWeftWarp.xltx");
+            Microsoft.Office.Interop.Excel.Worksheet worksheetForCopyCube = (Microsoft.Office.Interop.Excel.Worksheet)objApp.ActiveWorkbook.Worksheets[2];
+            objApp.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
+            for (int i = 1; i < groupArticle.Count(); i++)
+            {
+                Microsoft.Office.Interop.Excel.Worksheet worksheet1 = (Microsoft.Office.Interop.Excel.Worksheet)objApp.ActiveWorkbook.Worksheets[1];
+                Microsoft.Office.Interop.Excel.Worksheet worksheetn = (Microsoft.Office.Interop.Excel.Worksheet)objApp.ActiveWorkbook.Worksheets[i + 1];
 
-            //    worksheet1.Copy(worksheetn);
-            //}
+                worksheet1.Copy(worksheetn);
+            }
 
-            //int j = 0;
-            //foreach (var groupItem in groupArticle)
-            //{
-            //    Microsoft.Office.Interop.Excel.Worksheet worksheet = objApp.ActiveWorkbook.Worksheets[j + 1];   // 取得工作表
-            //    worksheet.Cells[3, 2] = submitDate;
-            //    if (!MyUtility.Check.Empty(groupItem.Key.InspDate))
-            //    {
-            //        worksheet.Cells[3, 5] = groupItem.Key.InspDate;
-            //    }
+            int j = 0;
+            foreach (var groupItem in groupArticle)
+            {
+                Microsoft.Office.Interop.Excel.Worksheet worksheet = objApp.ActiveWorkbook.Worksheets[j + 1];   // 取得工作表
+                worksheet.Cells[3, 2] = submitDate;
+                if (!MyUtility.Check.Empty(groupItem.Key.InspDate))
+                {
+                    worksheet.Cells[3, 5] = groupItem.Key.InspDate;
+                }
 
-            //    worksheet.Cells[5, 12] = groupItem.Key.Article;
-            //    worksheet.Cells[3, 9] = fabricCrkShrkTestCrocking_Main.POID;
-            //    worksheet.Cells[3, 13] = fabricCrkShrkTestCrocking_Main.BrandID;
-            //    worksheet.Cells[5, 2] = fabricCrkShrkTestCrocking_Main.StyleID;
-            //    worksheet.Cells[5, 5] = orders.CustPONo;
-            //    worksheet.Cells[6, 2] = style.StyleName;
-            //    worksheet.Cells[6, 12] = fabricCrkShrkTestCrocking_Main.ArriveQty;
-            //    worksheet.Cells[13, 9] = groupItem.Key.Name;
+                worksheet.Cells[5, 12] = groupItem.Key.Article;
+                worksheet.Cells[3, 9] = fabricCrkShrkTestCrocking_Main.POID;
+                worksheet.Cells[3, 13] = fabricCrkShrkTestCrocking_Main.BrandID;
+                worksheet.Cells[5, 2] = fabricCrkShrkTestCrocking_Main.StyleID;
+                worksheet.Cells[5, 5] = orders.CustPONo;
+                worksheet.Cells[6, 2] = style.StyleName;
+                worksheet.Cells[6, 12] = fabricCrkShrkTestCrocking_Main.ArriveQty;
+                worksheet.Cells[13, 9] = groupItem.Key.Name;
 
-            //    int k = 10;
-            //    foreach (DataRow detailItemRow in groupItem)
-            //    {
-            //        worksheet.Cells[k, 1] = fabricCrkShrkTestCrocking_Main.Refno;
-            //        worksheet.Cells[k, 2] = this.txtColor.Text;
-            //        worksheet.Cells[k, 3] = row2["Dyelot"];
-            //        worksheet.Cells[k, 4] = row2["Roll"];
-            //        worksheet.Cells[k, 5] = row2["DryScale"];
-            //        worksheet.Cells[k, 6] = row2["ResultDry"];
-            //        worksheet.Cells[k, 7] = row2["DryScale_Weft"];
-            //        worksheet.Cells[k, 8] = row2["ResultDry_Weft"];
-            //        worksheet.Cells[k, 9] = row2["WetScale"];
-            //        worksheet.Cells[k, 10] = row2["ResultWet"];
-            //        worksheet.Cells[k, 11] = row2["WetScale_Weft"];
-            //        worksheet.Cells[k, 12] = row2["ResultWet_Weft"];
-            //        worksheet.Cells[k, 13] = row2["Result"];
-            //        worksheet.Cells[k, 14] = row2["Remark"];
+                int k = 10;
+                foreach (DataRow detailItemRow in groupItem)
+                {
+                    worksheet.Cells[k, 1] = fabricCrkShrkTestCrocking_Main.Refno;
+                    worksheet.Cells[k, 2] = fabricCrkShrkTestCrocking_Main.ColorID;
+                    worksheet.Cells[k, 3] = detailItemRow["Dyelot"];
+                    worksheet.Cells[k, 4] = detailItemRow["Roll"];
+                    worksheet.Cells[k, 5] = detailItemRow["DryScale"];
+                    worksheet.Cells[k, 6] = detailItemRow["ResultDry"];
+                    worksheet.Cells[k, 7] = detailItemRow["DryScale_Weft"];
+                    worksheet.Cells[k, 8] = detailItemRow["ResultDry_Weft"];
+                    worksheet.Cells[k, 9] = detailItemRow["WetScale"];
+                    worksheet.Cells[k, 10] = detailItemRow["ResultWet"];
+                    worksheet.Cells[k, 11] = detailItemRow["WetScale_Weft"];
+                    worksheet.Cells[k, 12] = detailItemRow["ResultWet_Weft"];
+                    worksheet.Cells[k, 13] = detailItemRow["Result"];
+                    worksheet.Cells[k, 14] = detailItemRow["Remark"];
 
-            //        Microsoft.Office.Interop.Excel.Range rg = worksheet.Range[worksheet.Cells[k, 1], worksheet.Cells[k, 14]];
+                    Microsoft.Office.Interop.Excel.Range rg = worksheet.Range[worksheet.Cells[k, 1], worksheet.Cells[k, 14]];
 
-            //        // 加框線
-            //        rg.Borders.LineStyle = 1;
-            //        rg.Borders.Weight = 3;
-            //        rg.WrapText = true; // 自動換列
-            //        rg.Font.Bold = false;
+                    // 加框線
+                    rg.Borders.LineStyle = 1;
+                    rg.Borders.Weight = 3;
+                    rg.WrapText = true; // 自動換列
+                    rg.Font.Bold = false;
 
-            //        // 水平,垂直置中
-            //        rg.HorizontalAlignment = Microsoft.Office.Interop.Excel.XlHAlign.xlHAlignCenter;
-            //        rg.VerticalAlignment = Microsoft.Office.Interop.Excel.XlHAlign.xlHAlignCenter;
+                    // 水平,垂直置中
+                    rg.HorizontalAlignment = Microsoft.Office.Interop.Excel.XlHAlign.xlHAlignCenter;
+                    rg.VerticalAlignment = Microsoft.Office.Interop.Excel.XlHAlign.xlHAlignCenter;
 
-            //        k++;
-            //    }
+                    k++;
+                }
 
-            //    // worksheet.get_Range("B9:J9").Font.Bold = true;
-            //    // worksheet.Cells.EntireColumn.AutoFit();
-            //    #region 開始畫格子
+                // worksheet.get_Range("B9:J9").Font.Bold = true;
+                // worksheet.Cells.EntireColumn.AutoFit();
+                #region 開始畫格子
 
-            //    int firstCubeStartRow = 15 + dt2.Rows.Count;
+                int firstCubeStartRow = 15 + groupArticle.Count();
 
-            //    List<PageInfoForPDF> infoForPDFs = this.GetPageInfo(firstCubeStartRow, dt2.Rows.Count);
-            //    Microsoft.Office.Interop.Excel.Range cubeCopyRange;
-            //    Microsoft.Office.Interop.Excel.Range pastCubeRange;
-            //    foreach (PageInfoForPDF pageInfoForPDF in infoForPDFs)
-            //    {
-            //        if (pageInfoForPDF.IsSingle)
-            //        {
-            //            cubeCopyRange = worksheetForCopyCube.get_Range(this.singleCubeRangeSource, Type.Missing).EntireRow;
-            //        }
-            //        else
-            //        {
-            //            cubeCopyRange = worksheetForCopyCube.get_Range(this.doubleCubeRangeSource, Type.Missing).EntireRow;
-            //        }
+                List<PageInfoForPDF> infoForPDFs = this.GetPageInfo(firstCubeStartRow, groupArticle.Count());
+                Microsoft.Office.Interop.Excel.Range cubeCopyRange;
+                Microsoft.Office.Interop.Excel.Range pastCubeRange;
+                foreach (PageInfoForPDF pageInfoForPDF in infoForPDFs)
+                {
+                    if (pageInfoForPDF.IsSingle)
+                    {
+                        cubeCopyRange = worksheetForCopyCube.get_Range(this.singleCubeRangeSource, Type.Missing).EntireRow;
+                    }
+                    else
+                    {
+                        cubeCopyRange = worksheetForCopyCube.get_Range(this.doubleCubeRangeSource, Type.Missing).EntireRow;
+                    }
 
-            //        pastCubeRange = worksheet.get_Range($"A{pageInfoForPDF.StartRow}", Type.Missing).EntireRow;
-            //        pastCubeRange.Insert(cubeCopyRange.Copy(Type.Missing)); // 貼上
-            //    }
-            //    #endregion
-            //    int printPageCountNotIncludeFirst = infoForPDFs[0].IsSingle ? (infoForPDFs.Count - 1) : infoForPDFs.Count;
-            //    int headPageCount = dt2.Rows.Count > 58 ? MyUtility.Convert.GetInt(Math.Ceiling((dt2.Rows.Count - 58) / 74.0)) : 0;
-            //    int lastPageRowNum = lastPageRowNum = 71 + (74 * (printPageCountNotIncludeFirst + headPageCount));
+                    pastCubeRange = worksheet.get_Range($"A{pageInfoForPDF.StartRow}", Type.Missing).EntireRow;
+                    pastCubeRange.Insert(cubeCopyRange.Copy(Type.Missing)); // 貼上
+                }
+                #endregion
+                int printPageCountNotIncludeFirst = infoForPDFs[0].IsSingle ? (infoForPDFs.Count - 1) : infoForPDFs.Count;
+                int headPageCount = groupArticle.Count() > 58 ? MyUtility.Convert.GetInt(Math.Ceiling((groupItem.Count() - 58) / 74.0)) : 0;
+                int lastPageRowNum = lastPageRowNum = 71 + (74 * (printPageCountNotIncludeFirst + headPageCount));
 
-            //    worksheet.PageSetup.PrintArea = $"$A$1:$N${lastPageRowNum.ToString()}";
-            //    Marshal.ReleaseComObject(worksheet);
-            //    j++;
-            //}
+                worksheet.PageSetup.PrintArea = $"$A$1:$N${lastPageRowNum.ToString()}";
+                Marshal.ReleaseComObject(worksheet);
+                j++;
+            }
 
-            //worksheetForCopyCube.Delete();
+            worksheetForCopyCube.Delete();
 
-            //#region Save & Show Excel
-            //string strFileName = string.Empty;
-            //string strPDFFileName = string.Empty;
-            //strFileName = Class.MicrosoftFile.GetName("Quality_P03_Crocking_Test_for_PDF_Weft_Warp");
-            //strPDFFileName = Class.MicrosoftFile.GetName("Quality_P03_Crocking_Test_for_PDF_Weft_Warp", Class.PDFFileNameExtension.PDF);
-            //objApp.ActiveWorkbook.SaveAs(strFileName);
-            //objApp.Quit();
-            //Marshal.ReleaseComObject(objApp);
-            //#endregion
+            #region Save & Show Excel
+            string pdfFileName = $"FabricCrockingTestPDFWeftWarp{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
+            string excelFileName = $"FabricCrockingTestPDFWeftWarp{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
 
-            //if (ConvertToPDF.ExcelToPDF(strFileName, strPDFFileName))
-            //{
-            //    ProcessStartInfo startInfo = new ProcessStartInfo(strPDFFileName);
-            //    Process.Start(startInfo);
-            //}
+            string pdfPath = Path.Combine(baseFilePath, "TMP", pdfFileName);
+            string excelPath = Path.Combine(baseFilePath, "TMP", excelFileName);
+
+            objApp.ActiveWorkbook.SaveAs(excelPath);
+            objApp.Quit();
+
+            bool isCreatePdfOK = ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
+            Marshal.ReleaseComObject(objApp);
+            if (!isCreatePdfOK)
+            {
+                throw new Exception("ConvertToPDF fail");
+            }
+
+            return pdfFileName;
+            #endregion
         }
 
         public BaseResult ToPdfFabricCrkShrkTestHeatDetail(long ID, out string pdfFileName, bool isTest)
@@ -885,6 +1089,33 @@ namespace BusinessLogicLayer.Service
         public BaseResult ToPdfFabricCrkShrkTestWashDetail(long ID, out string pdfFileName, bool isTest)
         {
             throw new NotImplementedException();
+        }
+
+        public SendMail_Result SendHeatFailResultMail(string toAddress, string ccAddress, long ID, bool isTest)
+        {
+            SendMail_Result result = new SendMail_Result();
+            try
+            {
+                _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
+                DataTable dtResult = _FabricCrkShrkTestProvider.GetHeatFailMailContentData(ID);
+                string mailBody = MailTools.DataTableChangeHtml(dtResult);
+                SendMail_Request sendMail_Request = new SendMail_Request()
+                {
+                    To = toAddress,
+                    CC = ccAddress,
+                    Subject = "Fabric Heat Test - Test Fail",
+                    Body = mailBody
+                };
+                result = MailTools.SendMail(sendMail_Request, isTest);
+
+            }
+            catch (Exception ex)
+            {
+                result.result = false;
+                result.resultMsg = ex.ToString();
+            }
+
+            return result;
         }
     }
 }

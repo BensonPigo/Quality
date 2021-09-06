@@ -5,7 +5,7 @@
     string title = ViewData["Title"] == null ? "Pass1" : ViewData["Title"].ToString();
     string EditMode = ViewData["EditMode"] == null ? "EditMode" : ViewData["EditMode"].ToString();
 
-    string TargetID = ViewData["TargetID"] == null ? string.Empty : ViewData["TargetID"].ToString();
+
 }
 
 @model Window_Picture
@@ -135,16 +135,15 @@
 
             // User拍下的圖片
             const Setting = document.querySelector("#BeforePic");
-             
+
             // 如果User沒拍，則刪除原本的
-            if (Ori == "" || Ori == null || Ori == undefined) {
-                document.querySelector("#BeforePic").removeAttribute('src');
+            if (Setting == "" || Setting == null || Setting == undefined) {
+                Setting.src = "";
             }
             else {
                 Setting.src = Ori.src;
             }
         });
-
         $("#AfterDel").click(function () {
 
             // DB的圖檔
@@ -154,8 +153,8 @@
             const Setting = document.querySelector("#AfterPic");
 
             // 如果User沒拍，則刪除原本的
-            if (Ori == "" || Ori == null || Ori == undefined) {
-                document.querySelector("#AfterPic").removeAttribute('src');
+            if (Setting == "" || Setting == null || Setting == undefined) {
+                Setting.src = "";
             }
             else {
                 Setting.src = Ori.src;

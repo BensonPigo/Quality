@@ -339,45 +339,56 @@ msg.WithInfo('{ex.Message}');
         #endregion
         public ActionResult AddDefect(string FinalInspectionID)
         {
-            FinalInspectionService sevice = new FinalInspectionService();
+            FinalInspectionSettingService SettingService = new FinalInspectionSettingService();
             FinalInspectionAddDefectService Addsevice = new FinalInspectionAddDefectService();
 
-            DatabaseObject.ManufacturingExecutionDB.FinalInspection model = sevice.GetFinalInspection(FinalInspectionID);
+            Setting model = SettingService.GetSettingForInspection(FinalInspectionID);
 
             DatabaseObject.ViewModel.FinalInspection.AddDefect addDefct = new DatabaseObject.ViewModel.FinalInspection.AddDefect();
             addDefct = Addsevice.GetDefectForInspection(FinalInspectionID);
 
             addDefct.FinalInspectionID = FinalInspectionID;
-            addDefct.RejectQty = model.RejectQty;
+
             addDefct.SampleSize = model.SampleSize;
 
 
-            addDefct.ListFinalInspectionDefectItem = new List<DatabaseObject.ViewModel.FinalInspection.FinalInspectionDefectItem>();
-            DatabaseObject.ViewModel.FinalInspection.FinalInspectionDefectItem data = new DatabaseObject.ViewModel.FinalInspection.FinalInspectionDefectItem();
-            data.DefectTypeDesc = "Accessories";
-            data.DefectCodeDesc = "Accessories broken/damage";
-            data.Qty = 2;
-            data.Ukey = 0;
-            addDefct.ListFinalInspectionDefectItem.Add(data);
-
-            DatabaseObject.ViewModel.FinalInspection.FinalInspectionDefectItem data2 = new DatabaseObject.ViewModel.FinalInspection.FinalInspectionDefectItem();
-            data2.DefectTypeDesc = "Accessories";
-            data2.DefectCodeDesc = "Accessories missing/uncompleted";
-            data2.Qty = 0;
-            data.Ukey = 1;
-            addDefct.ListFinalInspectionDefectItem.Add(data2);
-
-
-            DatabaseObject.ViewModel.FinalInspection.FinalInspectionDefectItem data3 = new DatabaseObject.ViewModel.FinalInspection.FinalInspectionDefectItem();
-            data3.DefectTypeDesc = "Cleanliness";
-            data3.DefectCodeDesc = "Cleanliness ABC";
-            data3.Qty = 0;
-            data.Ukey = 2;
-            addDefct.ListFinalInspectionDefectItem.Add(data3);
-
-
-
+            TempData["Model"] = addDefct;
             return View(addDefct);
+        }
+
+
+
+        public ActionResult DefectPicture(string DetailUkey)
+        {
+            AddDefect MainData = new AddDefect();
+            if (TempData["Model"] != null)
+            {
+                MainData = (AddDefect)TempData["Model"];
+            }
+            TempData["Model"] = MainData;
+
+            DetailUkey = DetailUkey == null || DetailUkey == string.Empty ? "0" : DetailUkey;
+            long FinalInspection_DetailUkey = Convert.ToInt64(DetailUkey);
+            FinalInspectionAddDefectService Addsevice = new FinalInspectionAddDefectService();
+            List<byte[]> model = Addsevice.GetDefectImage(FinalInspection_DetailUkey);
+
+            // 把畫面上User拍的照片加進去，一起顯示
+            List<FinalInspectionDefectItem> currentDetail = MainData.ListFinalInspectionDefectItem.Where(o => o.Ukey == FinalInspection_DetailUkey).ToList();
+
+            if (currentDetail.Any())
+            {
+                foreach (var item in currentDetail.FirstOrDefault().ListFinalInspectionDefectImage)
+                {
+                    model.Add(item);
+                }
+            }
+
+            return View(model);
+        }
+
+        public ActionResult TakePicture()
+        {
+            return View();
         }
 
         [HttpPost]

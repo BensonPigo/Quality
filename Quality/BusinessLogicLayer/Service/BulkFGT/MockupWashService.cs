@@ -24,6 +24,8 @@ namespace BusinessLogicLayer.Service
         private IStyleBOAProvider _IStyleBOAProvider;
         private IStyleArtworkProvider _IStyleArtworkProvider;
         private IDropDownListProvider _DropDownListProvider;
+        private IOrdersProvider _OrdersProvider;
+        private IOrderQtyProvider _OrderQtyProvider;
 
         public MockupWash_ViewModel GetMockupWash(MockupWash_Request MockupWash)
         {
@@ -93,6 +95,33 @@ namespace BusinessLogicLayer.Service
             }
 
             return selectListItems;
+        }
+
+        public List<Orders> GetOrders(Orders orders)
+        {
+            _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
+            try
+            {
+                orders.Category = "B";
+                return _OrdersProvider.Get(orders).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public List<Order_Qty> GetDistinctArticle(Order_Qty order_Qty)
+        {
+            _OrderQtyProvider = new OrderQtyProvider(Common.ProductionDataAccessLayer);
+            try
+            {
+                return _OrderQtyProvider.GetDistinctArticle(order_Qty).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public MockupWash_ViewModel Create(MockupWash_ViewModel MockupWash)

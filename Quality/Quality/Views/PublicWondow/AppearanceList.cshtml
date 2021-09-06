@@ -3,6 +3,7 @@
 
 @{
     Layout = null;
+    string TargetID = ViewData["TargetID"] == null ? string.Empty : ViewData["TargetID"].ToString();
 
 }
 
@@ -54,6 +55,7 @@
 
 @using (Html.BeginForm("AppearanceList", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post, new { @width = "100%", @height = "5%", @style = "margin-bottom:10px;" }))
 {
+    @Html.Hidden("TargetID", TargetID)
     <input id="btnSave" type="button" value="Save" />
     <input id="btnExit" type="button" value="Exit" />
 }
@@ -123,7 +125,7 @@
             });
 
             // 呼叫父視窗的 GetAppearance Function，把值傳回去
-            window.opener.GetAppearance(result);
+            window.opener.GetAppearance(result, '@TargetID');
             window.close();
         });
 

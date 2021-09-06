@@ -2,6 +2,7 @@
 
 @{
     Layout = null;
+    string TargetID = ViewData["TargetID"]== null ? string.Empty : ViewData["TargetID"].ToString();
 }
 
 @model List<Window_Brand>
@@ -42,6 +43,7 @@
     {
         <input type="text" name="BrandID" value="" />
         <input type="submit" value="Query" />
+        @Html.Hidden("TargetID", TargetID)
         <input id="btnExit" type="button" value="Exit" />
     }
     @*</div>*@
@@ -67,7 +69,7 @@
         $(".SelectItem").click(function () {
 
             // 呼叫父視窗的GetBrand Function，把值傳回去
-            window.opener.GetBrandList($(this).text());
+            window.opener.GetBrandList($(this).text(), '@TargetID');
 
             window.close();
         });
