@@ -96,6 +96,8 @@
     <Compile Include="ProductionDB\AcceptableQualityLevels.cs" />
     <Compile Include="ProductionDB\Adidas_FGWT.cs" />
     <Compile Include="ProductionDB\Brand.cs" />
+    <Compile Include="ProductionDB\ColorFastness.cs" />
+    <Compile Include="ProductionDB\ColorFastness_Detail.cs" />
     <Compile Include="ProductionDB\DropDownList.cs" />
     <Compile Include="ProductionDB\Factory.cs" />
     <Compile Include="ProductionDB\FIR.cs" />
@@ -172,6 +174,7 @@
     <Compile Include="ResultModel\UserList_Browse.cs" />
     <Compile Include="ViewModel\BACriteria_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\Accessory_ViewModel.cs" />
+    <Compile Include="ViewModel\BulkFGT\FabricColorFastness_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\GarmentTest_Detail_Apperance_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\GarmentTest_Detail_FGPT_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\GarmentTest_Detail_FGWT_ViewModel.cs" />
