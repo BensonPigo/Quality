@@ -3,6 +3,7 @@
 @{
     Layout = null;
     string title = ViewData["Title"] == null ? "Pass1" : ViewData["Title"].ToString();
+    string TargetID = ViewData["TargetID"] == null ? string.Empty : ViewData["TargetID"].ToString();
 }
 
 @model List<Window_Pass1>
@@ -48,6 +49,7 @@
     {
         <input type="text" name="ID" value="" />
         @Html.Hidden("Title", title);
+        @Html.Hidden("TargetID", TargetID)
         <input type="submit" value="Query" />
         <input id="btnExit" type="button" value="Exit" />
     }
@@ -102,7 +104,7 @@
             }
 
             // 呼叫父視窗的GetPass1 Function，把物件傳回去
-            window.opener.GetPass1(Pass1);
+            window.opener.GetPass1(Pass1, '@TargetID');
 
             window.close();
         });

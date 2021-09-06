@@ -3,6 +3,7 @@
 @{
     Layout = null;
     string title = ViewData["Title"] == null ? "TPESupp" : ViewData["Title"].ToString();
+    string TargetID = ViewData["TargetID"] == null ? string.Empty : ViewData["TargetID"].ToString();
 }
 
 @model List<Window_FtyInventory>
@@ -51,6 +52,7 @@
         @Html.Hidden("POID", ViewData["POID"]);
         @Html.Hidden("Seq1", ViewData["Seq1"]);
         @Html.Hidden("Seq2", ViewData["Seq2"]);
+        @Html.Hidden("TargetID", TargetID)
         <input type="submit" value="Query" />
         <input id="btnExit" type="button" value="Exit" />
     }
@@ -104,7 +106,7 @@
             }
 
             // 呼叫父視窗的GetFtyInventory Function，把物件傳回去
-            window.opener.GetFtyInventory(FtyInventory);
+            window.opener.GetFtyInventory(FtyInventory, '@TargetID');
 
             window.close();
         });

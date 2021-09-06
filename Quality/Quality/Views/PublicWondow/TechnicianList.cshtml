@@ -2,6 +2,7 @@
 
 @{
     Layout = null;
+    string TargetID = ViewData["TargetID"] == null ? string.Empty : ViewData["TargetID"].ToString();
 }
 
 @model List<Window_Technician>
@@ -45,6 +46,7 @@
     {
         <input type="text" name="ID" value="" />
         @Html.Hidden("CallFunction", ViewData["CallFunction"]);
+        @Html.Hidden("TargetID", TargetID)
         <input type="submit" value="Query" />
         <input id="btnExit" type="button" value="Exit" />
     }
@@ -99,7 +101,7 @@
             }
 
             // 呼叫父視窗的GetTechnician Function，把物件傳回去
-            window.opener.GetTechnician(Technician);
+            window.opener.GetTechnician(Technician, '@TargetID');
 
             window.close();
         });

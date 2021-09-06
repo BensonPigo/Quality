@@ -44,6 +44,7 @@
     {
         <input type="text" name="SeasonID" value="" />
         @Html.Hidden("BrandID", ViewData["BrandID"]);
+        @Html.Hidden("TargetID", TargetID)
         <input type="submit" value="Query" />
         <input id="btnExit" type="button" value="Exit" />
     }
@@ -70,7 +71,7 @@
         $(".SelectItem").click(function () {
 
             // 呼叫父視窗的GetSeason Function，把值傳回去
-            window.opener.GetSeasonList($(this).text());
+            window.opener.GetSeasonList($(this).text(), '@TargetID');
 
             window.close();
         });

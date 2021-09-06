@@ -2,6 +2,7 @@
 
 @{
     Layout = null;
+    string TargetID = ViewData["TargetID"] == null ? string.Empty : ViewData["TargetID"].ToString();
 }
 
 @model List<Window_Style>
@@ -44,6 +45,7 @@
         <input type="text" name="StyleID" value="" />
         @Html.Hidden("BrandID", ViewData["BrandID"]);
         @Html.Hidden("SeasonID", ViewData["SeasonID"]);
+        @Html.Hidden("TargetID", TargetID)
         <input type="submit" value="Query" />
         <input id="btnExit" type="button" value="Exit" />
     }
@@ -70,7 +72,7 @@
         $(".SelectItem").click(function () {
 
             // 呼叫父視窗的GetStyle Function，把值傳回去
-            window.opener.GetStyleList($(this).text());
+            window.opener.GetStyleList($(this).text(), '@TargetID');
 
             window.close();
         });
