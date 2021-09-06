@@ -201,7 +201,7 @@ where   POID = @POID and TestNo = @TestNo
                     fabricOvenTest_Detail_Result.Details,
                     oldOvenData.Details,
                     "OvenGroup,SEQ",
-                    "SubmitDate,Roll,ChangeScale,ResultChange,StainingScale,ResultStain,Remark,Temperature,Time");
+                    "Result,SubmitDate,Roll,ChangeScale,ResultChange,StainingScale,ResultStain,Remark,Temperature,Time");
 
 
 

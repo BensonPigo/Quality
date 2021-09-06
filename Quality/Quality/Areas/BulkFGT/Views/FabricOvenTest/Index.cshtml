@@ -1,7 +1,480 @@
-﻿
+﻿@using DatabaseObject.ResultModel;
 @{
     ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Index</h2>
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+<link href="~/ThirdParty/plugins/jquery-ui/jquery-ui.css" rel="stylesheet" />
 
+@model FabricOvenTest_Result
+
+<style type="text/css">
+    .content-scroll {
+        height: calc( 100vh - 180px );
+    }
+
+    .inner-scroll {
+        height: calc(100vh - 180px);
+    }
+
+    .row {
+        --bs-gutter-x: 1.5rem;
+        --bs-gutter-y: 0;
+        display: flex;
+        flex-wrap: wrap;
+        width: 95vw;
+        margin-top: calc(var(--bs-gutter-y) * -1);
+        margin-right: calc(var(--bs-gutter-x)/ -2);
+        margin-left: calc(var(--bs-gutter-x)/ -2);
+    }
+
+        .row > * {
+            flex-shrink: 0;
+            width: 100%;
+            max-width: 100%;
+            padding-left: calc(var(--bs-gutter-x)/ 2);
+        }
+
+    .rowHeader {
+        font-size: 1.1vw;
+        font-weight: bold;
+    }
+
+        .rowHeader input[type="text"] {
+            width: 12vw;
+        }
+
+    .col-auto {
+        width: auto;
+    }
+
+        .col-auto > p {
+            padding: 0
+        }
+
+    .White {
+        color: white !important;
+    }
+
+    .Black {
+        color: black !important;
+    }
+
+    .IsEditMode {
+        color: white !important;
+        cursor: pointer;
+    }
+
+    .IsEditModeQuery {
+        color: gray !important;
+        cursor: no-drop;
+    }
+
+    #ButtonMode {
+        width: 92vw;
+    }
+
+    .DataTable {
+        width: 92vw;
+        font-size: 1rem;
+        font-weight: bold;
+        border: solid 1px black;
+        background-color: white;
+    }
+
+        .DataTable > tbody img {
+            cursor: pointer;
+        }
+
+        .DataTable > tbody > tr:nth-of-type(odd) {
+            background-color: #ffffff;
+        }
+
+        .DataTable > tbody > tr:nth-of-type(even) {
+            background-color: #F0F2F2;
+        }
+
+        .DataTable > tbody > tr > td {
+            border: solid 1px gray;
+            padding: 0.5em;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+    .DetailTable > tbody > tr > td {
+        text-align: center;
+    }
+</style>
+
+<div class="main-content">
+    <header class="page-header">
+        <h3>
+            <i class="icon-users"></i><span>Fabric Oven Test</span>
+        </h3>
+    </header>
+
+    <div class="main-area">
+        <div class="content-scroll">
+            <div class="inner-scroll">
+                @using (Html.BeginForm("Index", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { id = "QueryForm" }))
+                {
+                    <div class="row rowHeader">
+                        <div class="col-auto">
+                            <p class="InfoTitle White">SP# </p>
+                        </div>
+                        <div class="col-auto">
+                            <input id="POID" name="POID" type="text" value=@ViewBag.POID />
+                        </div>
+
+                        <div class="col-auto">
+                            <button id="btnQuery" type="submit" class="site-btn btn-gy font1rem Black" style="padding: 0.4em;">Query</button>
+                        </div>
+                    </div>
+                }
+
+                <div style="margin-top: 1em;">
+                    <table id="ButtonMode">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <h4 id="Edit" style=" margin-right: 1em;">
+                                        <img src="~/Image/Icon/Edit.png" width="30" />
+                                        Edit
+                                    </h4>
+                                </td>
+                                <td>
+                                    <h4 id="Save" style=" margin-right: 1em;">
+                                        <img src="~/Image/Icon/Save.png" width="30" />
+                                        Save
+                                    </h4>
+                                </td>
+                                <td>
+                                    <h4 id="Undo" style=" margin-right: 1em;">
+                                        <img src="~/Image/Icon/Undo.png" width="30" />
+                                        Undo
+                                    </h4>
+                                </td>
+                                <td style="width: 66%;">
+                                </td>
+                                <td align="right">
+                                    <h4 id="New" style=" margin-right: 10em;">
+                                        <img src="~/Image/Icon/New.png" width="30" />
+                                        New Test No
+                                    </h4>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="margin-top: 1em;">
+                    <table class="DataTable">
+                        <tbody>
+                            <tr>
+                                <td style="width: 10vw;"><h5>SP#</h5></td>
+                                <td style="width: 20vw;">
+                                    @Html.TextBoxFor(o => o.Main.POID, "", new { @readonly = "readonly" })
+                                </td>
+                                <td style="width: 10vw;"><h5>Style#</h5></td>
+                                <td style="width: 20vw;">
+                                    @Html.DisplayFor(o => o.Main.StyleID, "", "")
+                                </td>
+                                <td style="width: 10vw;"><h5>Brand</h5></td>
+                                <td style="width: 20vw;">
+                                    @Html.DisplayFor(o => o.Main.BrandID, "", "")
+                                </td>
+                            </tr>
+                            <tr>
+                                @{
+                                    string CutInline = Model.Main.CutInline.HasValue ? Model.Main.CutInline.Value.ToString("yyyy/MM/dd") : string.Empty;
+                                    string MinSciDelivery = Model.Main.MinSciDelivery.HasValue ? Model.Main.MinSciDelivery.Value.ToString("yyyy/MM/dd") : string.Empty;
+                                    string TargetLeadTime = Model.Main.TargetLeadTime.HasValue ? Model.Main.TargetLeadTime.Value.ToString("yyyy/MM/dd") : string.Empty;
+                                    string CompletionDate = Model.Main.CompletionDate.HasValue ? Model.Main.CompletionDate.Value.ToString("yyyy/MM/dd") : string.Empty;
+
+                                }
+                                <td><h5>Season</h5></td>
+                                <td>
+                                    @Html.DisplayFor(o => o.Main.SeasonID, "", "")
+                                </td>
+                                <td><h5>Earliest Est. Cutting Date</h5></td>
+                                <td>
+                                    @CutInline
+                                </td>
+                                <td><h5>Earliest SCI Del</h5></td>
+                                <td>
+                                    @MinSciDelivery
+                                </td>
+                            </tr>
+                            <tr>
+
+                                <td><h5>Target Lead Time</h5></td>
+                                <td>
+                                    @TargetLeadTime
+                                </td>
+                                <td><h5>Completion Date</h5></td>
+                                @CompletionDate
+                                <td>
+                                </td>
+                                <td><h5>Article % of Inspection</h5></td>
+                                <td>
+                                    @Html.DisplayFor(o => o.Main.LabOvenPercent, "", "")
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><h5>Remark</h5></td>
+                                <td colspan="5">
+                                    @Html.TextBoxFor(o => o.Main.Remark, "", new { @readonly = "readonly", @class = "OnlyEdit" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><h5>Create By</h5></td>
+                                <td colspan="2">
+                                    @Html.DisplayFor(o => o.Main.CreateBy, "", "")
+                                </td>
+
+                                <td>
+                                    <h5>Edit By</h5>
+                                </td>
+                                <td colspan="2">
+                                    @Html.DisplayFor(o => o.Main.EditBy, "", "")
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="margin-top: 1em; width: 92vw; overflow:auto;">
+                    <table class="DetailTable DataTable" style="text-align:center;">
+                        <thead style="text-align: center">
+                            @{
+                                <tr>
+                                    <th><h4>No. of Test</h4></th>
+                                    <th><h4>Test Date</h4></th>
+                                    <th><h4>Article</h4></th>
+                                    <th><h4>Result</h4></th>
+                                    <th><h4>Inspector</h4></th>
+                                    <th><h4>Remark</h4></th>
+                                    <th><h4>Last Update</h4></th>
+                                    <th><h4></h4></th>
+                                    <th><h4></h4></th>
+
+                                </tr>
+                            }
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i <= Model.Details.Count - 1; i++)
+                            {
+                                string aHref = "";
+                                <tr>
+                                    <td style="width:10vw;">
+
+                                        @if (Model.Details[i].TestNo != "")
+                                        {
+                                            aHref = Url.Action("Detail", "FabricOvenTest", new { POID = Model.Main.POID, TestNo = Model.Details[i].TestNo });
+                                        }
+
+                                        <a href="@aHref" idx="@Model.Main.POID ," idv="@Model.Details[i].TestNo">
+                                            @Html.DisplayFor(o => Model.Details[i].TestNo, "", "")
+                                        </a>
+                                    </td>
+
+                                    @{
+                                        string InspDate = Model.Details[i].InspDate.HasValue ? Model.Details[i].InspDate.Value.ToString("yyyy/MM/dd") : string.Empty;
+                                        string ResultColor = Model.Details[i].Result == "Pass" ? "blue" : "red";
+                                    }
+
+                                    <td style="width:10vw;">
+                                        InspDate
+                                    </td>
+                                    <td style="width:10vw;">
+                                        @Html.DisplayFor(o => Model.Details[i].Article, "", "")
+                                    </td>
+                                    <td class="@ResultColor" style="width:10vw;">
+                                        @Html.DisplayFor(o => Model.Details[i].Result, "", "")
+                                    </td>
+
+                                    <td style="width:10vw;">
+                                        @Html.DisplayFor(o => Model.Details[i].Inspector, "", "")
+                                    </td>
+                                    <td style="width:10vw;">
+                                        @Html.DisplayFor(o => Model.Details[i].Remark, "", "")
+                                    </td>
+                                    <td style="width:10vw;">
+                                        @Html.DisplayFor(o => Model.Details[i].LastUpdate, "", "")
+                                    </td>
+                                    <td style="width:10vw;">
+                                        <img class="detailEdit" onclick="DetailView('@Model.Details[i].TestNo')" src="~/Image/Icon/Edit.png" width="30" />
+                                    </td>
+                                    <td style="width:10vw;">
+                                        <img class="detailDelete" onclick="DetailDelete('@Model.Details[i].TestNo')" src="~/Image/Icon/Delete.png" width="30" />
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var msg;
+    var EditMode;
+    $(function () {
+        msg = new MessagerAlert();
+        EditMode = false;
+        IsEditModeChange();
+
+    });
+
+
+
+    function IsEditModeChange() {
+        EditModeButtionBind();
+
+        if (EditMode) {
+            $(".rowHeader input[type='text']").attr("disabled", "disabled");
+            $(".rowHeader input[type='button']").unbind('click').addClass("IsEditModeQuery");
+            $('#btnQuery').addClass("IsEditModeQuery");
+            $("#Edit, #New").removeClass("IsEditMode");
+            $('#Save, #Undo').addClass("IsEditMode");
+            $(".DataTable input[type='text']").removeAttr("disabled");
+            $(".DetailTable img").addClass('display-None');
+
+            $(".OnlyEdit").removeAttr("disabled").removeAttr("readonly");
+
+            $('#btnQuery').on('click', function () {
+                return false;
+            });
+        }
+        else {
+            $(".rowHeader input[type='text']").removeAttr("disabled");
+            $(".rowHeader input[type='button']").removeClass("IsEditModeQuery");
+            $('#btnQuery').unbind('click').removeClass("IsEditModeQuery");
+
+            if ($('#POID').val() != undefined && $('#POID').val() != '')
+            {
+                $("#Edit, #New").addClass("IsEditMode");
+            }
+
+            $('#Save, #Undo').unbind('click').removeClass("IsEditMode");
+            $(".DataTable input[type='text']").attr("disabled", "disabled");
+            $(".DetailTable img").removeClass('display-None');
+
+
+            $('#btnQuery').on('click', function () {
+                if ($('#POID').val() == '') {
+                    msg.WithError("SP# cannot be empty");
+                    return false;
+                }
+            });
+        }
+    }
+
+
+    function EditModeButtionBind() {
+        $('#Edit').on('click', function () {
+            if ($('#Main_POID').val() == "") {
+                return;
+            }
+
+            if ($('#Main_POID').val() != "") {
+                EditMode = true;
+                IsEditModeChange();
+            }
+        });
+
+        $('#Save').on('click', function () {
+
+            var main = {
+                POID: $('#Main_POID').val(),
+                Remark: $('#Main_Remark').val()
+            };
+            var Details = null;
+            var POID = $('#Main_POID').val();
+            var Remark = $('#Main_Remark').val();
+            SaveData(main);
+        });
+
+        function SaveData(main) {
+        $.ajax({
+            url: "@Url.Action("SaveMaster", "FabricOvenTest", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ main: main, }),
+            async: false,
+            success: function (data) {
+                document.getElementById("QueryForm").submit();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+        $('#Undo').on('click', function () {
+            EditMode = false;
+            IsEditModeChange();
+            $('#btnQuery').click();
+        });
+
+
+        $('#New').on('click', function () {
+            if ($('#Main_POID').val() == "") {
+                return;
+            }
+            location.href = '@Url.Action("Detail")?POID=' + document.getElementById("Main_POID").value.trim() + '&TestNo=';
+        });
+
+
+    }
+
+    function DetailView(TestNo) {
+
+        location.href = '@Url.Action("Detail")?POID=' + document.getElementById("Main_POID").value.trim() + '&TestNo=' + TestNo;
+    }
+
+
+    function DetailDelete(TestNo) {
+
+                msg.WithConfirm('Do you want to delete the data ?',
+                function ()
+                {
+                    @*$.ajax({
+                        url: "@Url.Action("DeleteDetail", "GarmentTest", new { Area = "BulkFGT" })",
+                        type: 'POST',
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify({ ID: id, No: no }),
+                        async: false,
+                        success: function (data) {
+                            if (data.SaveResult) {
+                                console.log(tr);
+                                console.log(t);
+                                t.parents().parents('tr').remove();
+                                msg.WithSuccess("Delete Success");
+                            }
+                            else {
+                                msg.WithError(data.ErrMsg);
+                            }
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            console.log(xhr.responseText);
+                        }
+                    });*@
+                    }, null);
+
+
+    }
+
+
+
+
+
+
+</script>

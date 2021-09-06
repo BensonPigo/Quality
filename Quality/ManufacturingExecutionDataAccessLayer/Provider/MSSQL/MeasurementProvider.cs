@@ -201,7 +201,7 @@ select o.OrderTypeID,[OrderID] = o.ID,o.StyleID,o.SeasonID
 from Production.dbo.Orders o
 left join Production.dbo.Style s on o.StyleUkey = s.Ukey
 where o.ID = @OrderID
-and o.FactoryID = @FactoryID
+--and o.FactoryID = @FactoryID
 ";
             return ExecuteList<Measurement_Request>(CommandType.Text, sqlcmd, objParameter);
         }

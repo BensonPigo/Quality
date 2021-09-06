@@ -11,6 +11,8 @@ namespace ProductionDataAccessLayer.Interface
 
         IList<Order_Qty> GetSizeCode(string OrderID, string Article);
 
+        IList<Order_Qty> GetSizeCode(string StyleID, string SeasonID, string BrandID);
+
         int Delete_GarmentTestDetail(string ID, string No);
 
         bool Update_GarmentTestDetail(GarmentTest_Detail_ViewModel source);
@@ -30,5 +32,7 @@ namespace ProductionDataAccessLayer.Interface
         bool Update_Sender(string ID, string No, string UserID);
 
         bool Update_Receive(string ID, string No, string UserID);
+
+        bool Save_Detail_Picture(GarmentTest_Detail source);
     }
 }

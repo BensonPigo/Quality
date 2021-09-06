@@ -153,10 +153,13 @@ namespace BusinessLogicLayer.Service.SampleRFT
             return measurement_Request;
         }
 
-        public void MeasurementToExcel(Measurement_Request measurement)
+        public Measurement_Request MeasurementToExcel(string OrderID)
         {
-            
-            throw new NotImplementedException();
+            Measurement_Request result = new Measurement_Request() {
+                Result = false,
+                ErrMsg = "eff",
+            };
+            return result;
         }
     }
 }

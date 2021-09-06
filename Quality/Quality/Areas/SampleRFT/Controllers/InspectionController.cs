@@ -41,7 +41,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             };
 
             List<SelectListItem> FactoryitemList = new SetListItem().ItemListBinding(this.Factorys);
-            List<SelectListItem> LineList = new SetListItem().ItemListBinding(this.Lines); 
+            List<SelectListItem> LineList = new SetListItem().ItemListBinding(this.Lines);
 
             ViewBag.FactoryList = FactoryitemList;
             ViewBag.LineList = LineList;
@@ -56,7 +56,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         public ActionResult Index(Inspection_ViewModel request)
         {
             this.FactoryID = request.FactoryID;
-            this.Line = request.Line;            
+            this.Line = request.Line;
             this.WorkDate = request.InspectionDate = CheckWorkDate.Check(request.InspectionDate);
             this.SelectItemData = _InspectionService.GetSelectItemData(new Inspection_ViewModel() { FactoryID = this.FactoryID, Brand = this.Brand }).ToList();
             List<SelectListItem> FactoryitemList = new SetListItem().ItemListBinding(this.Factorys);
@@ -92,7 +92,7 @@ namespace Quality.Areas.SampleRFT.Controllers
 
         [HttpPost]
         public ActionResult GetStyle(string OrderID)
-        {            
+        {
             List<string> styles = this.SelectItemData.Where(x => string.IsNullOrEmpty(OrderID) || x.OrderID.Equals(OrderID))
                                     .GroupBy(x => x.StyleID)
                                     .Select(x => x.Key).ToList();
@@ -300,7 +300,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             };
 
             RFT_Inspection rFT_Inspection = new RFT_Inspection()
-            { 
+            {
                 OrderID = OrderID,
                 Article = Article,
                 Location = ProductType,
@@ -317,8 +317,24 @@ namespace Quality.Areas.SampleRFT.Controllers
             inspectionSave_View.rft_Inspection = rFT_Inspection;
             InspectionSave_ViewModel save_ViewModel = _InspectionService.SaveRFTInspection(inspectionSave_View);
 
-            viewModel.Result = save_ViewModel.Result; 
+            viewModel.Result = save_ViewModel.Result;
+            viewModel.ErrMsg = save_ViewModel.ErrMsg;
             return Json(viewModel);
+        }
+
+        public JsonResult ChkInspQty(string OrderID, string Size)
+        {
+            InspectionSave_ViewModel inspectionSave_View = new InspectionSave_ViewModel();
+            inspectionSave_View.rft_Inspection = new RFT_Inspection();
+            if (string.IsNullOrEmpty(OrderID) || string.IsNullOrEmpty(Size))
+            {
+                return Json(new { Result = false, ErrMsg = "OrderID, Size is Empty" }) ;
+            }
+            inspectionSave_View.rft_Inspection.OrderID = OrderID;
+            inspectionSave_View.rft_Inspection.Size = Size;
+
+            InspectionSave_ViewModel result = _InspectionService.ChkInspQty(inspectionSave_View);
+            return Json(new { result.Result, result .ErrMsg} );
         }
 
         [HttpPost]

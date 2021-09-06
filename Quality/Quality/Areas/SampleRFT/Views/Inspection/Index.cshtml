@@ -10,6 +10,14 @@
 <link href="~/ThirdParty/plugins/jquery-ui/jquery-ui.css" rel="stylesheet" />
 <script src="~/ThirdParty/plugins/jquery-magnific-popup/jquery.magnific-popup.js"></script>
 <style type="text/css">
+    .content-scroll {
+        height: calc( 95vh - 200px );
+    }
+
+    .inner-scroll {
+        height: calc( 95vh - 200px );
+    }
+
     .row {
         --bs-gutter-x: 1.5rem;
         --bs-gutter-y: 0;
@@ -1316,7 +1324,7 @@
             $("#txtArticle").val() == "" ||
             $("#txtSize").val() == "" ||
             $("#txtProductType").val() == "" ||
-            parseIntEX($('#txtSizeBalanceQty').val()) >= parseIntEX($('#txtSizeQty').val())) {
+            parseIntEX($('#txtSizeBalanceQty').val()) <= 0) {
 
             EditMode = false;
         }
@@ -1469,9 +1477,27 @@
                 return;
             }
 
-            $('.RewoekListSetting').attr("idx", "F").html('');
-            GetDefectCategory();
-            $('#SelectItemBackground, #AddDefect').removeClass('display-None').unbind('click');
+            $.ajax({
+                url: "@Url.Action("ChkInspQty", "Inspection", new { Area = "SampleRFT" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ OrderID: $("#txtSP").val(), Size: $("#txtSize").val() }),
+                async: false,
+                success: function (data) {
+                    if (data.Result) {
+                        $('.RewoekListSetting').attr("idx", "F").html('');
+                        GetDefectCategory();
+                        $('#SelectItemBackground, #AddDefect').removeClass('display-None').unbind('click');
+                    }
+                    else {
+                        msg.WithError(data.ErrMsg);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+
         });
 
         $('#btnReworkList').on('click', function () {
@@ -1681,7 +1707,7 @@
             }
 
             if (bAAuditCriteriaID == null) {
-                bAAuditCriteriaID = ""; 
+                bAAuditCriteriaID = "";
                 bAAuditCriteria = "";
             }
 
@@ -2311,8 +2337,9 @@
             async: false,
             success: function (data) {
                 if (data.Result) {
-                    msg.WithSuccess("You pass 1 garment.");
-                    $('#btnRefresh').click();
+                    msg.WithSuccesCheck("You pass 1 garment.", function () {
+                        $('#btnRefresh').click();
+                    });
                 }
                 else {
                     msg.WithError(data.ErrMsg);
@@ -2727,8 +2754,9 @@
                     msg.WithError(data.ErrMsg);
                 }
                 else {
-                    msg.WithSuccess("Success");
-                    ReworkListGet();
+                    msg.WithSuccesCheck("Success", function () {
+                        ReworkListGet();
+                    });
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {
@@ -2749,8 +2777,9 @@
                     msg.WithError(data.ErrMsg);
                 }
                 else {
-                    msg.WithSuccess("Success");
-                    ReworkListGet();
+                    msg.WithSuccesCheck("Success", function () {
+                        ReworkListGet();
+                    });
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {
@@ -2783,9 +2812,10 @@
                     msg.WithError(data.ErrMsg);
                 }
                 else {
-                    msg.WithSuccess("Success");
-                    $('#btnReworkListValidateExit').click();
-                    ReworkListGet();
+                    msg.WithSuccesCheck("Success", function () {
+                        $('#btnReworkListValidateExit').click();
+                        ReworkListGet();
+                    });
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {
@@ -2868,8 +2898,8 @@
                     tbody += "<tr idx='" + value.StyleUkey + "' idv='" + value.MeasurementUkey + "' idi='" + value.SizeCode + "'>";
                     tbody += "<td class='bg-lightblue'><p idx='Code'>" + value.Code + "</p></td>";
                     tbody += "<td class='bg-lightblue'><p>" + value.Description + "</p></td>";
-                    tbody += "<td class='bg-lightblue'><p idx='Tol+'>" + value.Tol1 + "</p></td>";
-                    tbody += "<td class='bg-lightblue'><p idx='Tol-'>" + value.Tol2 + "</p></td>";
+                    tbody += "<td class='bg-lightblue'><p idx='Tol+'>" + value.Tol2 + "</p></td>";
+                    tbody += "<td class='bg-lightblue'><p idx='Tol-'>" + value.Tol1 + "</p></td>";
                     tbody += "<td class='bg-lightgray'><p idx='standard'>" + value.SizeSpec + "</p></td>";
 
                     if (value.SizeCode == "INCH") {
@@ -2915,7 +2945,7 @@
                             return;
                         }
 
-                        var finval = FractionDiff(standard, val);
+                        var finval = FractionDiff(val, standard);
                         $(this).parent().parent().children().find("p[class='Diff']").html(finval);
 
                         var sTolh = FractionAdd(standard, tolh);
@@ -2935,7 +2965,7 @@
                             return;
                         }
 
-                        var finval = accSubtr(standard, val);
+                        var finval = accSubtr(val, standard);
                         $(this).parent().parent().children().find("p[class='Diff']").html(finval);
 
                         val = parseFloat(val);
@@ -2965,7 +2995,7 @@
 
             var tr = $(this).parent().parent();
 
-            datasDetail.push({                 
+            datasDetail.push({
                  MeasurementUkey: parseInt(tr.attr('idv')),
                  StyleUkey: parseInt(tr.attr('idx')),
                  Code: tr.find("p[idx='Code']").html(),
@@ -2988,8 +3018,9 @@
                     msg.WithError(data.ErrMsg);
                 }
                 else {
-                    msg.WithSuccess("Success");
-                    $('#btnMeasurementExit').click();                    
+                    msg.WithSuccesCheck("Success", function () {
+                        $('#btnMeasurementExit').click();
+                    });
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {
@@ -3135,10 +3166,11 @@
             async: true,
             success: function (data) {
                 if (data.Result) {
-                    msg.WithSuccess("Success");
-                    $('#btnPictureDuringDummyFittingExit').click();
-                    $('#btnRefresh').click();
-                    IsEditModeButtonChange();
+                    msg.WithSuccesCheck("Success", function () {
+                        $('#btnPictureDuringDummyFittingExit').click();
+                        $('#btnRefresh').click();
+                        IsEditModeButtonChange();
+                    });
                 }
                 else {
                     msg.WithError(data.ErrMsg);

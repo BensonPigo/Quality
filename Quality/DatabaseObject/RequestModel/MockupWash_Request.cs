@@ -11,12 +11,4 @@ namespace DatabaseObject.RequestModel
         public string Article { get; set; }
         public string Type { get; set; }
     }
-
-    public class AccessoryRefNo_Request
-    {
-        public long? StyleUkey { get; set; }
-        public string BrandID { get; set; }
-        public string SeasonID { get; set; }
-        public string StyleID { get; set; }
-    }
 }

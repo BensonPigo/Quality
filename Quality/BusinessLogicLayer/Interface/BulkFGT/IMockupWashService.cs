@@ -11,6 +11,8 @@ namespace BusinessLogicLayer.Interface.BulkFGT
 
         List<SelectListItem> GetAccessoryRefNo(AccessoryRefNo_Request Request);
 
+        List<SelectListItem> GetArtworkTypeID(StyleArtwork_Request Request);
+
         MockupWash_ViewModel Create(MockupWash_ViewModel MockupWash);
 
         MockupWash_ViewModel Update(MockupWash_ViewModel MockupWash);

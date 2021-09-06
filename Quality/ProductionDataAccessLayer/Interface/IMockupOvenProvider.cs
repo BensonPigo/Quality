@@ -9,9 +9,7 @@ namespace ProductionDataAccessLayer.Interface
     {
         IList<MockupOven_ViewModel> GetMockupOvenReportNoList(MockupOven_Request Item);
 
-        IList<MockupOven_ViewModel> GetMockupOven(MockupOven_Request Item);
-
-        IList<AccessoryRefNo> GetAccessoryRefNo(AccessoryRefNo_Request Item);
+        IList<MockupOven_ViewModel> GetMockupOven(MockupOven_Request Item, bool istop1 = false);
 
         int Create(MockupOven Item);
 

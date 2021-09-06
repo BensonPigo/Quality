@@ -17,7 +17,7 @@ namespace BusinessLogicLayer.Service.Tests
             try
             {
                 ICFTCommentsService _CFTCommentsService = new CFTCommentsService();
-                CFTComments_ViewModel CFTComments = new CFTComments_ViewModel() { OrderID = "20120739GGS01"};
+                CFTComments_ViewModel CFTComments = new CFTComments_ViewModel() { OrderID = "21090047IRS02" };
                 var _Para = _CFTCommentsService.Get_CFT_OrderComments(CFTComments).DataList;
                 Assert.IsTrue(_Para.Count == 1 );
             }
@@ -26,5 +26,22 @@ namespace BusinessLogicLayer.Service.Tests
                 Assert.Fail(ex.ToString());
             }
         }
+
+        [TestMethod()]
+        public void GetExcel()
+        {
+            try
+            {
+                ICFTCommentsService _CFTCommentsService = new CFTCommentsService();
+                CFTComments_ViewModel CFTComments = new CFTComments_ViewModel() { OrderID = "21090047IRS02" };
+                var _Para = _CFTCommentsService.Get_CFT_OrderComments(CFTComments).DataList;
+                Assert.IsTrue(_Para.Count == 1);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.ToString());
+            }
+        }
+
     }
 }

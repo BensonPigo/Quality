@@ -50,6 +50,8 @@ namespace DatabaseObject.ResultModel
         public bool sentMail { get; set; }
 
         public string reportPath { get; set; }
+
+        public bool EditMode { get; set; } = false;
     }
 }
 

@@ -236,7 +236,6 @@ function gcd(a, b) {
     }
 }
 
-
 function FractionDiff(standard, val) {
     var si = 0, i = 0
     var sm, m
@@ -469,7 +468,7 @@ function generateTable(jArray, type) {
         Object.keys(row).forEach(tdName => {
             let td = document.createElement('td');
             td.textContent = row[tdName];
-
+            td.setAttribute("idx", tdName);
             tr.appendChild(td);
         });
         tbody.appendChild(tr);
@@ -511,4 +510,8 @@ function decodeHtml(html) {
     var txt = document.createElement("textarea");
     txt.innerHTML = html;
     return txt.value;
+}
+
+const isDate = (date) => {
+    return (new Date(date) !== "Invalid Date") && !isNaN(new Date(date));
 }
