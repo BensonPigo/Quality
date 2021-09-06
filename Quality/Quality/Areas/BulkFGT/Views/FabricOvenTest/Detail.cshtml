@@ -1,7 +1,709 @@
-﻿
+﻿@using DatabaseObject.ResultModel;
+
 @{
     ViewBag.Title = "Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<link href="~/ThirdParty/plugins/Tabs/nicepage.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/Tabs/nicepage.js"></script>
 
-<h2>Detail</h2>
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+<link href="~/ThirdParty/plugins/jquery-ui/jquery-ui.css" rel="stylesheet" />
 
+@model FabricOvenTest_Detail_Result
+
+<style type="text/css">
+    .content-scroll {
+        height: calc( 100vh - 110px );
+        overflow: hidden;
+        position: relative;
+        margin-top: 15px;
+    }
+
+    .inner-scroll {
+        height: calc(100vh - 110px);
+        overflow-y: scroll;
+        padding-right: 30px;
+        width: calc(100% + 30px);
+    }
+
+    #tab-Change {
+        width: 92vw;
+    }
+
+        #tab-Change > ul {
+            display: block;
+            margin: 0;
+            list-style: none;
+        }
+
+    .tab-title {
+        list-style: none;
+    }
+
+    #tab-Change > ul > li {
+        display: inline-block;
+        vertical-align: top;
+        margin: 0 -1px -1px 0;
+        border: 1px solid #BCBCBC;
+        height: 4vh;
+        line-height: 25px;
+        background: #cdcdcd;
+        padding: 0 15px;
+        list-style: none;
+        box-sizing: border-box;
+    }
+
+        #tab-Change > ul > li a {
+            color: #000;
+            text-decoration: none;
+        }
+
+        #tab-Change > ul > li.active {
+            border-bottom: 1px solid #fff;
+            background: #fff;
+        }
+
+    #tab-Change > .tab-inner {
+        clear: both;
+        color: #000;
+    }
+
+    .DataTable {
+        width: 92vw;
+        font-size: 1rem;
+        font-weight: bold;
+        border: solid 1px black;
+        background-color: white;
+    }
+
+        .DataTable > tbody > tr:nth-of-type(odd) {
+            background-color: #ffffff;
+        }
+
+        .DataTable > tbody > tr:nth-of-type(even) {
+            background-color: #F0F2F2;
+        }
+
+        .DataTable > tbody > tr > td {
+            border: solid 1px gray;
+            padding: 1em;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+    .White {
+        color: white !important;
+    }
+
+    .Black {
+        color: black !important;
+    }
+
+    .IsEditMode {
+        color: white !important;
+        cursor: pointer;
+    }
+
+    .IsEditModeQuery {
+        color: gray !important;
+        cursor: no-drop;
+    }
+
+    .bigSize {
+        width: 3em;
+        height: 2em;
+    }
+
+    .ReportAction {
+        width: 29vw;
+        height: 29vh;
+        position: absolute;
+        left: 30vw;
+        top: 19vh;
+        z-index: 1042;
+        background-color: #c8eac8;
+        border: solid 1px black;
+        font-size: 1.4em;
+        font-weight: bold;
+    }
+
+        .ReportAction > table > tbody > tr > td {
+            padding: 0.5em;
+        }
+
+            .ReportAction > table > tbody > tr > td > input[type=button] {
+                cursor: pointer;
+            }
+</style>
+
+
+<div class="main-content">
+    <header class="page-header">
+        <h3>
+            <i class="icon-users"></i><span>Fabric Oven Test</span>
+        </h3>
+    </header>
+
+    <div class="main-area">
+        <div class="content-scroll">
+            <div class="inner-scroll">
+                @using (Html.BeginForm("Detail", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { id = "DetailForm" }))
+                {
+                    <div style="margin-top: 1em;">
+                        <table id="ButtonMode">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <h4 id="Exit" style=" margin-right: 1em;width:5vw ">
+                                            <a href="@Url.Action("IndexBack", "FabricOvenTest", new { POID = Model.Main.POID})">
+                                                <img src="~/Image/Icon/Exit.png" width="30" />
+                                                Exit
+                                            </a>
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 id="Edit" style=" margin-right: 1em;; width: 5vw">
+                                            <img src="~/Image/Icon/Edit.png" width="30" />
+                                            Edit
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 id="Save" style=" margin-right: 1em; width: 6vw">
+                                            <img src="~/Image/Icon/Save.png" width="30" />
+                                            Save
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 id="Encode" style=" margin-right: 1em; width: 7vw;">
+                                            <img src="~/Image/Icon/Lock.png" width="30" />
+                                            Encode
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 id="Amend" style=" margin-right: 1em; width: 7vw;">
+                                            <img src="~/Image/Icon/Unlock.png" width="30" />
+                                            Amend
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 id="Excel" style=" margin-right: 1em; width: 6vw;">
+                                            <img src="~/Image/Icon/PDF.png" width="30" />
+                                            Excel
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 id="PDF" style=" margin-right: 1em; width: 5vw;">
+                                            <img src="~/Image/Icon/PDF.png" width="30" />
+                                            PDF
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 id="Picture" style=" margin-right: 1em; width: 7vw;">
+                                            <img src="~/Image/Icon/Camera.png" width="30" />
+                                            Picture
+                                        </h4>
+                                    </td>
+
+                                    <td align="right">
+                                        <h4 id="New" style=" margin-right: 10em;">
+                                            <img src="~/Image/Icon/New.png" width="30" />
+                                            New Item
+                                        </h4>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="margin-top: 1em;">
+                        <table class="DataTable">
+                            <tbody>
+                                <tr>
+                                    <td style="width: 10vw;"><h5>No of Test#</h5></td>
+                                    <td style="width: 20vw;">
+                                        @Html.DisplayFor(o => o.Main.TestNo, "", "")
+                                    </td>
+                                    <td style="width: 10vw;"><h5>SP#</h5></td>
+                                    <td style="width: 20vw;">
+                                        @Html.DisplayFor(o => o.Main.POID, "", "")
+                                        @Html.HiddenFor(o => o.Main.POID)
+                                    </td>
+
+                                    <td style="width: 10vw;"><h5>TestDate</h5></td>
+
+                                    <td style="width: 20vw;">
+                                        @Html.TextBoxFor(o => Model.Main.InspDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
+                                    </td>
+                                </tr>
+                                <tr>
+
+                                    <td><h5>Article</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => Model.Main.Article, "", new { @readonly = "readonly", @style = "width: 12vw" })
+                                        <input id="btnDetailArticleSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                    </td>
+                                    <td><h5>Inspector</h5></td>
+                                    <td>
+                                        @Html.TextBox("Main_Inspector_Show", "", new { @readonly = "readonly", @style = "width: 12vw" })
+                                        @Html.HiddenFor(o => Model.Main.Inspector)
+                                        <input id="btnDetailInspectorSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                    </td>
+                                    @{
+                                        string ResultColor = Model.Main.Result == "Pass" ? "blue" : "red";
+                                    }
+                                    <td><h5>Result</h5></td>
+                                    <td class="@ResultColor">
+                                        @Html.DisplayFor(o => o.Main.Result, "", "")
+                                    </td>
+                                </tr>
+                                <tr>
+
+                                    <td><h5>Remark</h5></td>
+                                    <td colspan="5">
+                                        @Html.DisplayFor(o => o.Main.Remark, "", "")
+                                        @Html.HiddenFor(o => o.Main.TestBeforePicture)
+                                        @Html.HiddenFor(o => o.Main.TestAfterPicture)
+                                        @Html.HiddenFor(o => o.Main.Status)
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div style="margin-top: 1em; width: 92vw; overflow:auto;">
+                        <table class="DetailTable DataTable">
+                            <thead>
+                                <tr>
+                                    <th><h4>Submit Date</h4></th>
+                                    <th><h4>Group</h4></th>
+                                    <th><h4>SEQ#</h4></th>
+                                    <th><h4>Roll#</h4></th>
+                                    <th><h4>Dyelot</h4></th>
+                                    <th><h4>Refno</h4></th>
+                                    <th><h4>SCI Refno</h4></th>
+                                    <th><h4>Color</h4></th>
+                                    <th><h4>Result</h4></th>
+                                    <th><h4>Color Change Scale</h4></th>
+                                    <th><h4>Result (Change)</h4></th>
+                                    <th><h4>Color Staining Scale</h4></th>
+                                    <th><h4>Result (Staining)</h4></th>
+                                    <th><h4>Remark</h4></th>
+                                    <th><h4>LastUpdate</h4></th>
+                                    <th><h4>Temperature(˚C)</h4></th>
+                                    <th><h4>Time(hrs)</h4></th>
+                                    <th><h4></h4></th>
+                                </tr>
+
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i <= Model.Details.Count - 1; i++)
+                                {
+                                    <tr>
+                                        <td style="width:10vw;">
+
+                                            @Html.Hidden("Seq", "", new { @idx = i })
+
+                                            @Html.TextBoxFor(o => Model.Details[i].SubmitDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
+                                        </td>
+                                        <td style="width:10vw;">
+                                            @Html.TextBoxFor(o => Model.Details[i].OvenGroup, "", "")
+                                        </td>
+                                        <td style="width:10vw;">
+                                            @Html.TextBoxFor(o => Model.Details[i].SEQ, "", "")
+                                            <input id="btnDetailSEQSelectItem" onclick='selectSEQ(this)' type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                        </td>
+                                        <td style="width:10vw;">
+                                            @Html.DisplayFor(o => Model.Details[i].Roll, "", "")
+                                        </td>
+
+                                        <td style="width:10vw;">
+                                            @Html.DisplayFor(o => Model.Details[i].Dyelot, "", "")
+                                        </td>
+                                        <td style="width:10vw;">
+                                            @Html.DisplayFor(o => Model.Details[i].Refno, "", "")
+                                        </td>
+                                        <td style="width:10vw;">
+                                            @Html.DisplayFor(o => Model.Details[i].SCIRefno, "", "")
+                                        </td>
+                                        <td style="width:10vw;">
+                                            @Html.DisplayFor(o => Model.Details[i].ColorID, "", "")
+                                        </td>
+                                        @{
+                                            string detailResultColor = Model.Details[i].Result == "Pass" ? "blue" : "red";
+                                        }
+                                        <td style="width:10vw;">
+                                            @Html.TextBoxFor(o => Model.Details[i].Result, "", new { @class = detailResultColor, @readonly = "readonly" })
+                                        </td>
+                                        <td style="width:10vw;">
+                                            <select>
+                                                @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
+                                                {
+                                                    string selected = item.Text.Equals(Model.Details[i].ChangeScale) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>
+                                        </td>
+                                        <td style="width:10vw;">
+
+                                            <select onchange='selectChange(this)' id="Details_@{@i}__ResultChange" name="Details[@i].ResultChange">
+                                                @foreach (var item in (List<SelectListItem>)ViewBag.ResultChangeList)
+                                                {
+                                                    string selected = item.Text.Equals(Model.Details[i].ResultChange) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>
+
+                                        </td>
+                                        <td style="width:10vw;">
+                                            <select id="test">
+                                                @foreach (var item in (List<SelectListItem>)ViewBag.StainingScaleList)
+                                                {
+                                                    string selected = item.Text.Equals(Model.Details[i].StainingScale) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>
+                                        </td>
+                                        <td style="width:10vw;">
+                                            <select onchange='selectChange(this)' id="Details_@{@i}__ResultStain" name="Details[@i].ResultStain">
+                                                @foreach (var item in (List<SelectListItem>)ViewBag.ResultStainList)
+                                                {
+                                                    string selected = item.Text.Equals(Model.Details[i].ResultStain) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>
+                                        </td>
+                                        <td style="width:10vw;">
+                                            @Html.TextBoxFor(o => Model.Details[i].Remark, "", "")
+                                        </td>
+                                        <td style="width:10vw;">
+                                            @Html.TextBoxFor(o => Model.Details[i].LastUpdate, "", "")
+                                        </td>
+                                        <td style="width:10vw;">
+                                            <select>
+                                                @foreach (var item in (List<SelectListItem>)ViewBag.TemperatureList)
+                                                {
+                                                    string selected = item.Text.Equals(Model.Details[i].ResultStain) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>
+                                        </td>
+                                        <td style="width:10vw;">
+                                            <select>
+                                                @foreach (var item in (List<SelectListItem>)ViewBag.TimeList)
+                                                {
+                                                    string selected = item.Text.Equals(Model.Details[i].Time) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>
+                                        </td>
+                                        <td style="width:10vw;">
+                                            <img class="detailDelete" src="~/Image/Icon/Delete.png" width="30" />
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var msg;
+
+    var EditMode;
+    $(function () {
+
+        msg = new MessagerAlert();
+        EditMode = ('@ViewBag.EditMode' == 'True');
+        IsEditModeChange();
+    });
+
+    function IsEditModeChange() {
+        EditModeButtionBind();
+
+        if (EditMode) {
+            $("#Edit,#Encode").removeClass("IsEditMode");
+            $('#Save, #New').addClass("IsEditMode");
+            $(".DataTable input[type='text']").removeAttr("disabled");
+            $(".DetailTable img").addClass('display-None');
+            $(".OnlyEdit").removeAttr("disabled").removeAttr("readonly");
+           DetailButtonBind();
+        }
+        else {
+
+
+            $('#Save').unbind('click').removeClass("IsEditMode");
+            $(".DataTable input[type='text']").attr("disabled", "disabled");
+
+            if ($('#Main_Status').val() == "New") {
+                $('#Edit, #Encode').addClass("IsEditMode");
+            }
+            else
+            {
+                $('#Edit, #Encode').unbind('click');
+
+            }
+
+            if ($('#Main_Status').val() == "Confirmed") {
+                $('#Amend').addClass("IsEditMode");
+            }
+        }
+    }
+
+
+        function DetailButtonBind() {
+            $('#btnDetailArticleSelectItem').on('click', function () {
+                var para = "?OrderID=" + $('#Main_POID').val() + "&StyleUkey=0";
+                 window.open('@Url.Action("ArticleList","PublicWondow",new{Area=""})' + para,'Article',config='toolbar=no,status=no,location=no,width=400,height=650');
+            });
+
+              $('#btnDetailInspectorSelectItem').on('click', function () {
+                window.open('@Url.Action("Pass1List","PublicWondow",new{Area=""})','Inspector',config='toolbar=no,status=no,location=no,width=1000,height=650');
+            });
+
+        }
+
+      function EditModeButtionBind() {
+        $('#Edit').on('click', function () {
+            if ($('#Main_POID').val() == "") {
+                return;
+            }
+
+            if ($('#Main_POID').val() != "") {
+                EditMode = true;
+                IsEditModeChange();
+            }
+        });
+
+        $('#Save').on('click', function () {
+
+            if ($('#Main_Article').val()== "") {
+                msg.WithWarning("Article cannot be empty.");
+                return;
+            }
+
+
+            if ($('#Main_Inspector').val() == "") {
+                msg.WithWarning("Inspector cannot be empty.");
+                return;
+            }
+
+
+            if ($('#Main_InspDate').val() == "") {
+                msg.WithWarning("Test Date cannot be empty.");
+                return;
+            }
+
+            //var main = {
+            //    POID: $('#Main_POID').val(),
+            //    Remark: $('#Main_Remark').val()
+            //};
+            //var Details = null;
+            //var POID = $('#Main_POID').val();
+            //var Remark = $('#Main_Remark').val();
+            //SaveData(main);
+        });
+
+
+
+          $('#New').unbind('click').on('click', function () {
+            if ($('#Main_POID').val() == "") {
+                return;
+            }
+
+            if (!EditMode) {
+                return;
+              }
+
+              if ($('#Main_Status').val() != "New")
+              {
+                  return;
+              }
+
+          AddDetailRow();
+          });
+
+          $('#Encode').unbind('click').on('click', function () {
+
+              var detail = [];
+              var ErrMsg = "";
+              $('.DetailTable > tbody > tr').each(function (index, value) {
+
+                  var OvenGroup, SEQ, Result;
+                  var Result,ChangeScale, StainingScale;
+                  $(this).children().find("input[type='text']").each(function (index, value) {
+                      switch (index) {
+                          case 1:
+                              OvenGroup= $(this).val();
+                              break;
+                          case 2:
+                              SEQ = $(this).val();
+                              break;
+                      }
+                  })
+
+
+                  $(this).children().find("select").each(function (index, value) {
+                      switch (index) {
+                          case 0:
+                              ChangeScale = $(this).children("option:selected").val();
+                              break;
+                          case 2:
+                              StainingScale = $(this).children("option:selected").val();
+                              break;
+                      }
+                  })
+
+
+                  if (OvenGroup == "" || OvenGroup== "undefined")
+                  {
+                      ErrMsg += "Group cannot be empty.";
+                      return false;
+                  }
+
+                  if (SEQ == "" || SEQ == "undefined") {
+                      ErrMsg += "Seq cannot be empty.";
+                      return false;
+                  }
+
+                  if (Result == "" || Result == "undefined" || ChangeScale == "" || ChangeScale == "undefined" || StainingScale == "" || StainingScale == "undefined") {
+                      ErrMsg += "Color Change Scale, Color Staining Scale and Result cannot be empty.";
+                      return false;
+                  }
+
+                  detail.push({
+                      OvenGroup: OvenGroup,
+                      SEQ: SEQ
+                  });
+
+
+              });
+
+              if (detail.length == 0) {
+                  ErrMsg += "Data is empty please fill-in data first.";
+              }
+
+              if (ErrMsg != "") {
+                  msg.WithError(ErrMsg);
+                  return;
+              }
+
+
+
+            });
+
+    }
+
+            function SaveData(main) {
+        @*$.ajax({
+            url: "@Url.Action("SaveMaster", "FabricOvenTest", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ main: main, }),
+            async: false,
+            success: function (data) {
+                document.getElementById("QueryForm").submit();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });*@
+    }
+
+    function AddDetailRow() {
+
+        //if ($('#garmentTest_ID').val() == "") {
+        //    return;
+        //}
+
+        var ID;
+        var lastNO;
+        if ($('.DetailTable > tbody > tr').length > 0) {
+            lastNO = parseInt($('.DetailTable > tbody > tr:last-child > td > input[type="hidden"] ').attr('idx')) + 1;
+        }
+        else {
+            lastNO = 0;
+        }
+
+            var POID = $('#Main_POID').val();
+        $.ajax({
+            url: "@Url.Action("AddDetailRow", "FabricOvenTest", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ POID: POID, lastNO: lastNO}),
+            async: false,
+            success: function (data) {
+                $('.DetailTable > tbody').append(data);
+                //DetailDynamicBind();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+
+    $(document).ready(function () {
+        $("#dropSize").on("change", function () {
+
+            Result();
+
+        });
+    });
+
+
+    function selectChange(self) {
+
+        var selectedText = $(self).val();
+
+        var key= $(self).parents('td').parents('tr').children('td').find("input[type='hidden']").attr('idx');
+
+        var resultChange = document.getElementById("Details_" + key + "__ResultChange").value;
+        var resultStain = document.getElementById("Details_" + key + "__ResultStain").value;
+
+        if (resultChange == "Fail" || resultStain == "Fail") {
+            document.getElementById("Details_" + key + "__Result").value = 'Fail';
+        }
+        else
+        {
+            document.getElementById("Details_" + key + "__Result").value = 'Pass';
+        }
+
+        $("#Details_" + key + "__Result").removeClass("blue").removeClass("red");;
+        var detailResultColor = document.getElementById("Details_" + key + "__Result").value == "Pass" ? "blue" : "red";
+        $("#Details_" + key + "__Result").addClass(detailResultColor);
+
+
+    }
+
+    function selectSEQ(self)
+    {       
+
+     var para = "?OrderID=" + $('#Main_POID').val() + "&StyleUkey=0";
+     window.open('@Url.Action("Po_Supp_DetailList", "PublicWondow",new{Area=""})' + para,'Article',config='toolbar=no,status=no,location=no,width=400,height=650');
+
+    }
+
+    function GetArticleList(data) {
+            $('#Main_Article').val(data);
+    }
+
+    function GetPass1(data) {
+
+
+        $('#Main_Inspector_Show').val(data.ID + " " + data.Name);
+        $('#Main_Inspector').val(data.ID );
+    }
+
+
+
+
+</script>

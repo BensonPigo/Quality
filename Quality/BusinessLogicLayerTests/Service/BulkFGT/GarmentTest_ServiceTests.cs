@@ -664,19 +664,43 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
         [TestMethod()]
         public void ToReportTest()
         {
-            //try
-            //{
-            //    GarmentTest_Detail_Result all_Data = new GarmentTest_Detail_Result();
-            //    IGarmentTest_Service _Service = new GarmentTest_Service();
-            //    all_Data = _Service.ToReport("16608", "2", GarmentTest_Service.ReportType.Physical_Test, true);
-            //    Assert.IsTrue(!string.IsNullOrEmpty(all_Data.reportPath));
-            //}
-            //catch (Exception ex)
-            //{
-            //    Assert.Fail();
-            //    throw ex;
-            //}
-            
+            try
+            {
+                GarmentTest_Detail_Result all_Data = new GarmentTest_Detail_Result();
+                IGarmentTest_Service _Service = new GarmentTest_Service();
+                all_Data = _Service.ToReport("16608", "2", GarmentTest_Service.ReportType.Physical_Test, true);
+                Assert.IsTrue(!string.IsNullOrEmpty(all_Data.reportPath));
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail();
+                throw ex;
+            }
+
+        }
+
+        [TestMethod()]
+        public void DetailPictureSaveTest()
+        {
+            try
+            {
+                GarmentTest_Result all_Data = new GarmentTest_Result();
+                GarmentTest_Detail detail = new GarmentTest_Detail
+                {
+                    ID = 16608,
+                    No = 2,
+                    TestAfterPicture = null,
+                    TestBeforePicture = null,
+                };
+
+                IGarmentTest_Service _Service = new GarmentTest_Service();
+                Assert.IsTrue(all_Data.Result);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail();
+                throw ex;
+            }
         }
     }
 }

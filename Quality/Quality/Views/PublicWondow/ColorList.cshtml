@@ -11,8 +11,7 @@
     string strPickedNames = ViewData["PickedNames"] == null || ViewData["PickedNames"].ToString() == "" ? "" : ViewData["PickedNames"].ToString();
     List<string> PickedNames = strPickedNames.Split(',').Where(o => !string.IsNullOrEmpty(o)).ToList();
 
-
-
+    string TargetID = ViewData["TargetID"] == null ? string.Empty : ViewData["TargetID"].ToString();
 }
 
 @model List<Window_Color>
@@ -64,6 +63,7 @@
     @Html.Hidden("Title", title);
     @Html.Hidden("PickedIDs", strPickedIDs);
     @Html.Hidden("PickedNames", strPickedNames);
+    @Html.Hidden("TargetID", TargetID)
     <input id="btnQuery" type="submit" value="Query" />
     <input id="btnSave" type="button" value="Save" />
     <input id="btnExit" type="button" value="Exit" />
@@ -86,7 +86,7 @@
             @foreach (var item in Model)
             {
                 <tr style="height:2em" class="DataList" ColorID="@item.ID" ColorName="@item.Name" onclick="DataListClick(this)">
-                    <td style="width:20px;"><img src="~/Image/Icon/ChildRowOpen.png" /></td>                    
+                    <td style="width:20px;"><img src="~/Image/Icon/ChildRowOpen.png" /></td>
                     <td>@item.ID</td>
                     <td>@item.Name</td>
                 </tr>
@@ -134,7 +134,7 @@
             PickList = CollectResult();
             debugger
             // 呼叫父視窗的 GetColor Function，把值傳回去
-            window.opener.GetColor(PickList);
+            window.opener.GetColor(PickList, '@TargetID');
             window.close();
         });
 

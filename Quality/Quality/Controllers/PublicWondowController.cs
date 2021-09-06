@@ -18,17 +18,19 @@ namespace Quality.Controllers
 
 
         // GET: PublicWondow
-        public ActionResult BrandList()
+        public ActionResult BrandList(string TargetID)
         {
             var model = _PublicWindowService.Get_Brand(null, false);
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
 
         [HttpPost]
-        public ActionResult BrandList(string BrandID, string ReturnType = "")
+        public ActionResult BrandList(string BrandID, string TargetID, string ReturnType = "")
         {
             bool IsExact = ReturnType.ToUpper() == "JSON";
             var model = _PublicWindowService.Get_Brand(BrandID, IsExact);
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             if (ReturnType.ToUpper() == "JSON")
             {
                 return Json(model);
@@ -37,9 +39,10 @@ namespace Quality.Controllers
         }
 
         [HttpPost]
-        public ActionResult BrandListOther(string BrandID, string OtherTable, string OtherColumn, string ReturnType = "")
+        public ActionResult BrandListOther(string BrandID, string OtherTable, string OtherColumn, string TargetID, string ReturnType = "")
         {
             var model = _PublicWindowService.Get_Brand(BrandID, OtherTable, OtherColumn);
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             if (ReturnType.ToUpper() == "JSON")
             {
                 return Json(model);
@@ -48,19 +51,21 @@ namespace Quality.Controllers
         }
 
 
-        public ActionResult SeasonList(string BrandID)
+        public ActionResult SeasonList(string BrandID, string TargetID)
         {
             var model = _PublicWindowService.Get_Season(BrandID, string.Empty, false);
             ViewData["BrandID"] = BrandID;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
 
         [HttpPost]
-        public ActionResult SeasonList(string BrandID, string SeasonID, string ReturnType = "")
+        public ActionResult SeasonList(string BrandID, string SeasonID, string TargetID, string ReturnType = "")
         {
             bool IsExact = ReturnType.ToUpper() == "JSON";
             var model = _PublicWindowService.Get_Season(BrandID, SeasonID, IsExact);
             ViewData["BrandID"] = BrandID;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             if (ReturnType.ToUpper() == "JSON")
             {
                 return Json(model);
@@ -68,21 +73,23 @@ namespace Quality.Controllers
             return View(model);
         }
 
-        public ActionResult StyleList(string BrandID, string SeasonID)
+        public ActionResult StyleList(string BrandID, string SeasonID, string TargetID)
         {
             var model = _PublicWindowService.Get_Style(BrandID, SeasonID, string.Empty, false);
             ViewData["BrandID"] = BrandID;
             ViewData["SeasonID"] = SeasonID;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
 
         [HttpPost]
-        public ActionResult StyleList(string BrandID, string SeasonID, string StyleID, string ReturnType = "")
+        public ActionResult StyleList(string BrandID, string SeasonID, string StyleID, string TargetID, string ReturnType = "")
         {
             bool IsExact = ReturnType.ToUpper() == "JSON";
             var model = _PublicWindowService.Get_Style(BrandID, SeasonID, StyleID, IsExact);
             ViewData["BrandID"] = BrandID;
             ViewData["SeasonID"] = SeasonID;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             if (ReturnType.ToUpper() == "JSON")
             {
                 return Json(model);
@@ -90,7 +97,7 @@ namespace Quality.Controllers
             return View(model);
         }
 
-        public ActionResult ArticleList(string OrderID, Int64 StyleUkey, string StyleID, string BrandID, string SeasonID)
+        public ActionResult ArticleList(string OrderID, Int64 StyleUkey, string StyleID, string BrandID, string SeasonID, string TargetID)
         {
             var model = _PublicWindowService.Get_Article(OrderID, StyleUkey, StyleID, BrandID, SeasonID, string.Empty, false);
             ViewData["OrderID"] = OrderID;
@@ -98,11 +105,12 @@ namespace Quality.Controllers
             ViewData["StyleID"] = StyleID;
             ViewData["BrandID"] = BrandID;
             ViewData["SeasonID"] = SeasonID;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
 
         [HttpPost]
-        public ActionResult ArticleList(string OrderID, Int64 StyleUkey, string StyleID, string BrandID, string SeasonID, string Article, string ReturnType = "")
+        public ActionResult ArticleList(string OrderID, Int64 StyleUkey, string StyleID, string BrandID, string SeasonID, string Article, string TargetID, string ReturnType = "")
         {
             bool IsExact = ReturnType.ToUpper() == "JSON";
             var model = _PublicWindowService.Get_Article(OrderID, StyleUkey, StyleID, BrandID, SeasonID, Article, IsExact);
@@ -111,6 +119,7 @@ namespace Quality.Controllers
             ViewData["StyleID"] = StyleID;
             ViewData["BrandID"] = BrandID;
             ViewData["SeasonID"] = SeasonID;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             if (ReturnType.ToUpper() == "JSON")
             {
                 return Json(model);
@@ -118,7 +127,7 @@ namespace Quality.Controllers
             return View(model);
         }
 
-        public ActionResult SizeList(string OrderID, Int64? StyleUkey, string BrandID, string SeasonID, string StyleID, string Article)
+        public ActionResult SizeList(string OrderID, Int64? StyleUkey, string BrandID, string SeasonID, string StyleID, string Article, string TargetID)
         {
             var model = _PublicWindowService.Get_Size(OrderID, StyleUkey, BrandID, SeasonID, StyleID, Article, string.Empty, false);
             ViewData["OrderID"] = OrderID;
@@ -127,11 +136,12 @@ namespace Quality.Controllers
             ViewData["BrandID"] = BrandID;
             ViewData["SeasonID"] = SeasonID;
             ViewData["StyleID"] = StyleID;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
 
         [HttpPost]
-        public ActionResult SizeList(string OrderID, Int64? StyleUkey, string BrandID, string SeasonID, string StyleID, string Article, string Size, string ReturnType = "")
+        public ActionResult SizeList(string OrderID, Int64? StyleUkey, string BrandID, string SeasonID, string StyleID, string Article, string Size, string TargetID, string ReturnType = "")
         {
             // 若是驗證則需要精準判斷
             bool IsExact = ReturnType.ToUpper() == "JSON";
@@ -142,6 +152,7 @@ namespace Quality.Controllers
             ViewData["BrandID"] = BrandID;
             ViewData["SeasonID"] = SeasonID;
             ViewData["StyleID"] = StyleID;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             if (ReturnType.ToUpper() == "JSON")
             {
                 return Json(model);
@@ -149,19 +160,21 @@ namespace Quality.Controllers
             return View(model);
         }
 
-        public ActionResult TechnicianList(string CallFunction)
+        public ActionResult TechnicianList(string CallFunction, string TargetID)
         {
             var model = _PublicWindowService.Get_Technician(CallFunction, string.Empty, false);
             ViewData["CallFunction"] = CallFunction;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
 
         [HttpPost]
-        public ActionResult TechnicianList(string CallFunction, string ID, string ReturnType = "")
+        public ActionResult TechnicianList(string CallFunction, string TargetID, string ID, string ReturnType = "")
         {
             bool IsExact = ReturnType.ToUpper() == "JSON";
             var model = _PublicWindowService.Get_Technician(CallFunction, ID, IsExact);
             ViewData["CallFunction"] = CallFunction;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             if (ReturnType.ToUpper() == "JSON")
             {
                 return Json(model);
@@ -170,19 +183,21 @@ namespace Quality.Controllers
         }
 
 
-        public ActionResult LocalSuppList(string Title)
+        public ActionResult LocalSuppList(string Title, string TargetID)
         {
             var model = _PublicWindowService.Get_LocalSupp( string.Empty, false);
             ViewData["Title"] = Title;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
 
         [HttpPost]
-        public ActionResult LocalSuppList(string Title, string Name, string ReturnType = "")
+        public ActionResult LocalSuppList(string Title, string TargetID, string Name, string ReturnType = "")
         {
             bool IsExact = ReturnType.ToUpper() == "JSON";
             var model = _PublicWindowService.Get_LocalSupp(Name, IsExact);
             ViewData["Title"] = Title;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             if (ReturnType.ToUpper() == "JSON")
             {
                 return Json(model);
@@ -190,19 +205,21 @@ namespace Quality.Controllers
             return View(model);
         }
 
-        public ActionResult TPESuppList(string Title)
+        public ActionResult TPESuppList(string Title, string TargetID)
         {
             var model = _PublicWindowService.Get_TPESupp(string.Empty, false);
             ViewData["Title"] = Title;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
 
         [HttpPost]
-        public ActionResult TPESuppList(string Title, string Name, string ReturnType = "")
+        public ActionResult TPESuppList(string Title, string TargetID, string Name, string ReturnType = "")
         {
             bool IsExact = ReturnType.ToUpper() == "JSON";
             var model = _PublicWindowService.Get_TPESupp(Name, IsExact);
             ViewData["Title"] = Title;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             if (ReturnType.ToUpper() == "JSON")
             {
                 return Json(model);
@@ -211,21 +228,23 @@ namespace Quality.Controllers
         }
 
 
-        public ActionResult Po_Supp_DetailList(string POID, string FabricType)
+        public ActionResult Po_Supp_DetailList(string POID, string FabricType, string TargetID)
         {
             var model = _PublicWindowService.Get_Po_Supp_Detail(POID, FabricType, string.Empty, false);
             ViewData["POID"] = POID;
             ViewData["FabricType"] = FabricType;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
 
         [HttpPost]
-        public ActionResult Po_Supp_DetailList(string POID, string FabricType, string Seq, string ReturnType = "")
+        public ActionResult Po_Supp_DetailList(string POID, string FabricType, string Seq, string TargetID, string ReturnType = "")
         {
             bool IsExact = ReturnType.ToUpper() == "JSON";
             var model = _PublicWindowService.Get_Po_Supp_Detail(POID, FabricType, Seq, IsExact);
             ViewData["POID"] = POID;
             ViewData["FabricType"] = FabricType;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             if (ReturnType.ToUpper() == "JSON")
             {
                 return Json(model);
@@ -233,18 +252,19 @@ namespace Quality.Controllers
             return View(model);
         }
 
-        public ActionResult FtyInventoryList(string Title, string POID, string Seq1, string Seq2)
+        public ActionResult FtyInventoryList(string Title, string POID, string Seq1, string Seq2, string TargetID)
         {
             var model = _PublicWindowService.Get_FtyInventory(POID, Seq1, Seq2, string.Empty, false);
             ViewData["Title"] = Title;
             ViewData["POID"] = POID;
             ViewData["Seq1"] = Seq1;
             ViewData["Seq2"] = Seq2;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
 
         [HttpPost]
-        public ActionResult FtyInventoryList(string Title, string POID, string Seq1, string Seq2, string Roll, string ReturnType = "")
+        public ActionResult FtyInventoryList(string Title, string POID, string Seq1, string Seq2, string Roll, string TargetID, string ReturnType = "")
         {
             bool IsExact = ReturnType.ToUpper() == "JSON";
             var model = _PublicWindowService.Get_FtyInventory(POID, Seq1, Seq2, Roll, IsExact);
@@ -252,6 +272,7 @@ namespace Quality.Controllers
             ViewData["POID"] = POID;
             ViewData["Seq1"] = Seq1;
             ViewData["Seq2"] = Seq2;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             if (ReturnType.ToUpper() == "JSON")
             {
                 return Json(model);
@@ -260,19 +281,21 @@ namespace Quality.Controllers
         }
 
 
-        public ActionResult Pass1List(string Title)
+        public ActionResult Pass1List(string Title, string TargetID)
         {
             var model = _PublicWindowService.Get_Pass1(string.Empty, false);
             ViewData["Title"] = Title;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
 
         [HttpPost]
-        public ActionResult Pass1List(string Title, string ID, string ReturnType = "")
+        public ActionResult Pass1List(string Title, string ID, string TargetID, string ReturnType = "")
         {
             bool IsExact = ReturnType.ToUpper() == "JSON";
             var model = _PublicWindowService.Get_Pass1(ID, IsExact);
             ViewData["Title"] = Title;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             if (ReturnType.ToUpper() == "JSON")
             {
                 return Json(model);
@@ -280,19 +303,21 @@ namespace Quality.Controllers
             return View(model);
         }
 
-        public ActionResult SewingLineList(string FactoryID)
+        public ActionResult SewingLineList(string FactoryID, string TargetID)
         {
             var model = _PublicWindowService.Get_SewingLine(FactoryID , string.Empty, false);
             ViewData["FactoryID"] = FactoryID;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
 
         [HttpPost]
-        public ActionResult SewingLineList(string FactoryID, string ID, string ReturnType = "")
+        public ActionResult SewingLineList(string FactoryID, string ID, string TargetID, string ReturnType = "")
         {
             bool IsExact = ReturnType.ToUpper() == "JSON";
             var model = _PublicWindowService.Get_SewingLine(FactoryID, ID, IsExact);
             ViewData["FactoryID"] = FactoryID;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             if (ReturnType.ToUpper() == "JSON")
             {
                 return Json(model);
@@ -300,16 +325,18 @@ namespace Quality.Controllers
             return View(model);
         }
 
-        public ActionResult AppearanceList(string Lab)
+        public ActionResult AppearanceList(string Lab, string TargetID)
         {
             var model = _PublicWindowService.Get_Appearance(Lab);
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
 
             return View(model);
         }
         [HttpPost]
-        public ActionResult AppearanceList(string Lab, string ReturnType = "")
+        public ActionResult AppearanceList(string Lab, string TargetID, string ReturnType = "")
         {
             var model = _PublicWindowService.Get_Appearance(Lab);
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
 
             if (ReturnType.ToUpper() == "JSON")
             {
@@ -318,7 +345,7 @@ namespace Quality.Controllers
             return View(model);
         }
 
-        public ActionResult ColorList(string Title, string BrandID)
+        public ActionResult ColorList(string Title, string BrandID, string TargetID)
         {
             //var model = _PublicWindowService.Get_Color(BrandID, string.Empty);
 
@@ -326,12 +353,13 @@ namespace Quality.Controllers
             List<DatabaseObject.Public.Window_Color> model = new List<DatabaseObject.Public.Window_Color>();
 
             ViewData["Title"] = Title;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
 
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult ColorList(string Title, string BrandID, string ID, string PickedIDs, string PickedNames)
+        public ActionResult ColorList(string Title, string BrandID, string ID, string PickedIDs, string TargetID, string PickedNames)
         {
             var result = _PublicWindowService.Get_Color(BrandID, ID);
             ViewData["Title"] = Title;
@@ -345,45 +373,50 @@ namespace Quality.Controllers
 
             ViewData["PickedIDs"] = string.Join(",", PickedIDs.Split(',').Where(o => !string.IsNullOrEmpty(o)).Distinct());
             ViewData["PickedNames"] = string.Join(",", PickedNames.Split(',').Where(o => !string.IsNullOrEmpty(o)).Distinct());
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
 
             return View(model);
         }
 
-        public ActionResult FGPTList(string VersionID)
+        public ActionResult FGPTList(string VersionID, string TargetID)
         {
             var model = _PublicWindowService.Get_FGPT(VersionID, string.Empty);
             ViewData["VersionID"] = VersionID;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
 
         [HttpPost]
-        public ActionResult FGPTList(string VersionID, string Code)
+        public ActionResult FGPTList(string VersionID, string Code, string TargetID)
         {
             var model = _PublicWindowService.Get_FGPT(VersionID, Code);
             ViewData["VersionID"] = VersionID;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
 
-        public ActionResult PictureList(string Title, bool EditMode, string Table, string BrforeColumn, string AfterColumn, string PKey_1, string PKey_2, string PKey_3, string PKey_4, string PKey_1_Val, string PKey_2_Val, string PKey_3_Val, string PKey_4_Val)
+        public ActionResult PictureList(string Title, bool EditMode, string TargetID, string Table, string BrforeColumn, string AfterColumn, string PKey_1, string PKey_2, string PKey_3, string PKey_4, string PKey_1_Val, string PKey_2_Val, string PKey_3_Val, string PKey_4_Val)
         {
             var model = _PublicWindowService.Get_Picture(Table, BrforeColumn, AfterColumn, PKey_1, PKey_2, PKey_3, PKey_4, PKey_1_Val, PKey_2_Val, PKey_3_Val, PKey_4_Val);
             ViewData["Title"] = Title;
             ViewData["EditMode"] = EditMode;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
 
 
-        public ActionResult TestFailMailList(string Title, string FactoryID, string Type)
+        public ActionResult TestFailMailList(string Title, string FactoryID, string Type, string TargetID)
         {
             var model = _PublicWindowService.Get_TestFailMail(FactoryID, Type, string.Empty);
             ViewData["Title"] = Title;
             ViewData["Type"] = Type;
             ViewData["FactoryID"] = FactoryID;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
 
         [HttpPost]
-        public ActionResult TestFailMailList(string Title, string FactoryID, string Type, string GroupNameList)
+        public ActionResult TestFailMailList(string Title, string FactoryID, string Type, string GroupNameList, string TargetID)
         {
             var model = _PublicWindowService.Get_TestFailMail(FactoryID, Type, GroupNameList);
 
@@ -391,6 +424,7 @@ namespace Quality.Controllers
             ViewData["Type"] = Type;
             ViewData["Title"] = Title;
             ViewData["FactoryID"] = FactoryID;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
     }

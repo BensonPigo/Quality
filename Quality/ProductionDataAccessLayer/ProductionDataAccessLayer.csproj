@@ -69,6 +69,7 @@
     <Compile Include="Interface\IColorFastnessDetailProvider.cs" />
     <Compile Include="Interface\IColorFastnessProvider.cs" />
     <Compile Include="Interface\IDropDownListProvider.cs" />
+    <Compile Include="Interface\IFabricCrkShrkTestProvider.cs" />
     <Compile Include="Interface\IFactoryProvider.cs" />
     <Compile Include="Interface\IFabricOvenTestProvider.cs" />
     <Compile Include="Interface\IFIRLaboratoryCrockingProvider.cs" />
@@ -103,7 +104,10 @@
     <Compile Include="Interface\ISeasonProvider.cs" />
     <Compile Include="Interface\ISewingLineProvider.cs" />
     <Compile Include="Interface\IStyleArticleProvider.cs" />
+    <Compile Include="Interface\IStyleArtworkProvider.cs" />
+    <Compile Include="Interface\IStyleBOAProvider.cs" />
     <Compile Include="Interface\IStyleListProvider.cs" />
+    <Compile Include="Interface\IStyleManagementProvider.cs" />
     <Compile Include="Interface\IStyleProvider.cs" />
     <Compile Include="Interface\ISystemProvider.cs" />
     <Compile Include="Interface\ITPEPass1Provider.cs" />
@@ -114,6 +118,7 @@
     <Compile Include="Provider\MSSQL\ColorFastnessDetailProvider.cs" />
     <Compile Include="Provider\MSSQL\ColorFastnessProvider.cs" />
     <Compile Include="Provider\MSSQL\DropDownListProvider.cs" />
+    <Compile Include="Provider\MSSQL\FabricCrkShrkTestProvider.cs" />
     <Compile Include="Provider\MSSQL\FactoryProvider.cs" />
     <Compile Include="Provider\MSSQL\FabricOvenTestProvider.cs" />
     <Compile Include="Provider\MSSQL\FIRLaboratoryCrockingProvider.cs" />
@@ -149,7 +154,10 @@
     <Compile Include="Provider\MSSQL\SeasonProvider.cs" />
     <Compile Include="Provider\MSSQL\SewingLineProvider.cs" />
     <Compile Include="Provider\MSSQL\StyleArticleProvider.cs" />
+    <Compile Include="Provider\MSSQL\StyleArtworkProvider.cs" />
+    <Compile Include="Provider\MSSQL\StyleBOAProvider.cs" />
     <Compile Include="Provider\MSSQL\StyleListProvider.cs" />
+    <Compile Include="Provider\MSSQL\StyleManagementProvider.cs" />
     <Compile Include="Provider\MSSQL\StyleProvider.cs" />
     <Compile Include="Provider\MSSQL\SystemProvider.cs" />
     <Compile Include="Provider\MSSQL\TPEPass1Provider.cs" />

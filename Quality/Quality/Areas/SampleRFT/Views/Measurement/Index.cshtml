@@ -79,7 +79,7 @@
     <div class="main-area">
         <div class="content-scroll">
             <div class="inner-scroll">
-                @using (Html.BeginForm("Index", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post))
+                @using (Html.BeginForm("Index", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { @id = "QueryForm" }))
                 {
                     <table class="table-mainArea">
                         <tbody>
@@ -177,7 +177,7 @@
     $(function () {
         msg = new MessagerAlert();
 
-        $('#OrderID').on('change', function () {
+        $('#OrderID').on('blur', function () {
             var val = $(this).val();
             if (val.trim() == "") {
                 return;
@@ -202,6 +202,8 @@
                         $("#Article").html(option);
                     }
                     else {
+                        $('#Content,#Article').html('');
+                        $('#StyleID,#SeasonID,#Unit,#OrderTypeID').val('');
                         msg.WithError(data.ErrMsg);
                     }
                 },
@@ -212,15 +214,128 @@
         });
 
         $("#ToExcel").click(function () {
-            location.href = '@Url.Action("ExcelExport")';
+            $.ajax({
+                url: "@Url.Action("ToExcel", "Measurement", new { Area = "SampleRFT" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ OrderID: $('#OrderID').val() }),
+                async: false,
+                success: function (data) {
+                    if (data.Result) {
+                        window.location.href = data.FileName;
+                    }
+                    else {
+                        msg.WithError(data.ErrMsg);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
         });
 
         if ($('#JsonBody').val() != "") {
             var datas = JSON.parse($('#JsonBody').val());
+            if (datas.length == 0) {
+                msg.WithErrorCheck("No data Found", function () {
+                    return false;
+                });
+            }
             $('#Content').html(generateTable(datas, "Measurement"));
             $('#Content').children("table").addClass("table-striped");
+            ChangeColor();
         }
+
+        if ('@Model.ErrMsg' != '') {
+            msg.WithError('@Model.ErrMsg');
+        }
+
+        $('#Find').on('click', function () {
+            if ($('#OrderID').val() == "") {
+                return false;
+            }
+        });
     });
+
+
+    function ChangeColor() {
+        var unit = $('#Unit').val();
+        $.each($('#Content > table > tbody > tr'), function () {
+            var standard;
+            var tolh;
+            var toll;
+            var val;
+            $.each($(this).children(), function () {
+                var tdName = $(this).attr('idx');
+
+                if (tdName == null) {
+                    return false;
+                }
+
+                if (tdName == "Tol(+)") {
+                    tolh = $(this).html();
+                }
+
+                if (tdName == "Tol(-)") {
+                    toll = $(this).html();
+                }
+
+                if (isDate(tdName)) {
+                    val = $(this).html();
+                    $(this).css('background-color', 'rgb(234, 234, 113);');
+                }
+
+                if (tdName.indexOf('_aa') > -1) {
+                    standard = $(this).html();
+                    $(this).css('background-color', 'rgb(211, 211, 211);');
+                }
+
+                if (tdName.indexOf('diff') > -1) {
+                    $(this).css('background-color', 'rgb(234, 234, 113);');
+
+                    if (standard == null || val == null || tolh == null || toll == null) {
+                        return;
+                    }
+                    else {
+                        cal(unit, standard, val, tolh, toll, $(this));
+                    }
+                }
+            });
+        });
+    }
+
+    function cal(unit, standard, val, tolh, toll, obj) {
+        if (unit == "INCH") {
+            if (standard.indexOf('.') > -1) {
+                return;
+            }
+            var sTolh = FractionAdd(standard, tolh);
+            var sToll = FractionDiff(standard, toll);
+            var diffTolh = String(FractionDiff(sTolh, val));
+            var diffToll = String(FractionDiff(val, sToll));
+
+            if (diffTolh.indexOf('-') > -1 || diffToll.indexOf('-') > -1) {
+                obj.addClass("red");
+            }
+            else {
+                obj.removeClass("red");
+            }
+        }
+        else {
+            if (standard.indexOf('/') > -1) {
+                return;
+            }
+
+            var sTolh = parseFloat(accAdd(standard, tolh));
+            var sToll = parseFloat(accSubtr(standard, toll));
+            if (sTolh >= val && val >= sToll) {
+                obj.removeClass("red");
+            }
+            else {
+                obj.addClass("red");
+            }
+        }
+    }
 </script>
 
 

@@ -1,4 +1,5 @@
-﻿using DatabaseObject.RequestModel;
+﻿using DatabaseObject.ProductionDB;
+using DatabaseObject.RequestModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using System.Collections.Generic;
 using System.Web.Mvc;
@@ -10,6 +11,12 @@ namespace BusinessLogicLayer.Interface.BulkFGT
         MockupOven_ViewModel GetMockupOven(MockupOven_Request MockupOven);
 
         List<SelectListItem> GetAccessoryRefNo(AccessoryRefNo_Request Request);
+
+        List<SelectListItem> GetArtworkTypeID(StyleArtwork_Request Request);
+
+        List<Orders> GetOrders(Orders Orders);
+
+        List<Order_Qty> GetDistinctArticle(Order_Qty Orders);
 
         MockupOven_ViewModel Create(MockupOven_ViewModel MockupOven);
 

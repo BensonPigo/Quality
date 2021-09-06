@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DatabaseObject.Public;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,6 +33,7 @@ namespace DatabaseObject.ResultModel
 
     public class FabricCrkShrkTest_Detail
     {
+        public long ID { get; set; }
         public string Seq { get; set; }
         public string WKNo { get; set; }
         public DateTime? WhseArrival { get; set; }
@@ -60,13 +62,14 @@ namespace DatabaseObject.ResultModel
 
     public class FabricCrkShrkTestCrocking_Result
     {
-        public bool CrockingTestOption { get; set; }
+        public long ID { get; set; }
+        public int CrockingTestOption { get; set; }
 
         public List<string> ScaleIDs { get; set; }
 
-        FabricCrkShrkTestCrocking_Main Crocking_Main { get; set; }
+        public FabricCrkShrkTestCrocking_Main Crocking_Main { get; set; }
 
-        List<FabricCrkShrkTestCrocking_Detail> Crocking_Detail { get; set; }
+        public List<FabricCrkShrkTestCrocking_Detail> Crocking_Detail { get; set; }
     }
 
     public class FabricCrkShrkTestCrocking_Main
@@ -89,9 +92,11 @@ namespace DatabaseObject.ResultModel
         public string DescDetail { get; set; }
         public string CrockingRemark { get; set; }
         public bool CrockingEncdoe { get; set; }
+        public byte[] CrockingTestBeforePicture { get; set; }
+        public byte[] CrockingTestAfterPicture { get; set; }
     }
 
-    public class FabricCrkShrkTestCrocking_Detail
+    public class FabricCrkShrkTestCrocking_Detail : CompareBase
     {
         public string Roll { get;set; }
         public string Dyelot { get; set; }
@@ -113,9 +118,10 @@ namespace DatabaseObject.ResultModel
 
     public class FabricCrkShrkTestHeat_Result
     {
-        FabricCrkShrkTestHeat_Main Heat_Main { get; set; }
+        public long ID { get; set; }
+        public FabricCrkShrkTestHeat_Main Heat_Main { get; set; }
 
-        List<FabricCrkShrkTestHeat_Detail> Heat_Detail { get; set; }
+        public List<FabricCrkShrkTestHeat_Detail> Heat_Detail { get; set; }
     }
 
     public class FabricCrkShrkTestHeat_Main
@@ -138,9 +144,11 @@ namespace DatabaseObject.ResultModel
         public string DescDetail { get; set; }
         public string HeatRemark { get; set; }
         public bool HeatEncode { get; set; }
+        public byte[] HeatTestBeforePicture { get; set; }
+        public byte[] HeatTestAfterPicture { get; set; }
     }
 
-    public class FabricCrkShrkTestHeat_Detail
+    public class FabricCrkShrkTestHeat_Detail : CompareBase
     {
         public string Roll { get; set; }
         public string Dyelot { get; set; }
@@ -166,9 +174,10 @@ namespace DatabaseObject.ResultModel
 
     public class FabricCrkShrkTestWash_Result
     {
-        FabricCrkShrkTestWash_Main Wash_Main { get; set; }
+        public long ID { get; set; }
+        public FabricCrkShrkTestWash_Main Wash_Main { get; set; }
 
-        List<FabricCrkShrkTestWash_Detail> Wash_Detail { get; set; }
+        public List<FabricCrkShrkTestWash_Detail> Wash_Detail { get; set; }
     }
 
     public class FabricCrkShrkTestWash_Main
@@ -191,6 +200,8 @@ namespace DatabaseObject.ResultModel
         public string SkewnessOptionID { get; set; }
         public string DescDetail { get; set; }
         public string WashRemark { get; set; }
+        public byte[] WashTestBeforePicture { get; set; }
+        public byte[] WashTestAfterPicture { get; set; }
     }
 
     public class FabricCrkShrkTestWash_Detail

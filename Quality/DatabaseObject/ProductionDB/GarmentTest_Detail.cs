@@ -120,7 +120,7 @@ namespace DatabaseObject.ProductionDB
 
         /// <summary></summary>
         [Display(Name = "")]
-        public string LOtoFactory { get; set; }
+        public string LOtoFactory { get; set; } = "";
 
         /// <summary></summary>
         [Display(Name = "")]

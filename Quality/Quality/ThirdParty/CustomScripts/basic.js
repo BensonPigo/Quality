@@ -293,5 +293,8 @@ MessagerAlert.prototype =
         },
         WithWarningCheck: function (msg, agreeFunction) {
             $.Message.alertDialog(msg, "warning", agreeFunction);
+        },
+        WithErrorCheck: function (msg, agreeFunction) {
+            $.Message.alertDialog(msg, "error", agreeFunction);
         }
     }

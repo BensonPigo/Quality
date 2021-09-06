@@ -8,6 +8,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Newtonsoft.Json;
+using Sci;
+using System.IO;
+using Excel = Microsoft.Office.Interop.Excel;
+using System.Runtime.InteropServices;
 
 namespace BusinessLogicLayer.Service.SampleRFT
 {
@@ -45,13 +49,18 @@ namespace BusinessLogicLayer.Service.SampleRFT
                     {
                         foreach (var item in diffArry)
                         {
+                            if (dr[item.ToString()] == DBNull.Value || string.IsNullOrEmpty(dr[item.ToString()].ToString()))
+                            {
+                                continue;
+                            }
+
+                            if (string.IsNullOrEmpty(dr["Tol(-)"].ToString()) || string.IsNullOrEmpty(dr["Tol(+)"].ToString()))
+                            {
+                                continue;
+                            }
+
                             if (measurement.Unit.ToString().ToUpper() == "INCH")
                             {
-                                if (dr[item.ToString()] == DBNull.Value)
-                                {
-                                    continue;
-                                }
-
                                 string num;
                                 if (dr[item.ToString()].ToString().Contains("-"))
                                 {
@@ -68,10 +77,6 @@ namespace BusinessLogicLayer.Service.SampleRFT
                             }
                             else
                             {
-                                if (dr[item.ToString()] == DBNull.Value)
-                                {
-                                    continue;
-                                }
                                 double d = Convert.ToDouble(dr[item.ToString()]);
                                 double num;
                                 if (d < 0)
@@ -153,10 +158,101 @@ namespace BusinessLogicLayer.Service.SampleRFT
             return measurement_Request;
         }
 
-        public void MeasurementToExcel(Measurement_Request measurement)
+        public Measurement_Request MeasurementToExcel(string OrderID, string FactoryID, bool test = false)
         {
-            
-            throw new NotImplementedException();
+            Measurement_Request result = new Measurement_Request()
+            {
+                Result = false,
+                ErrMsg = "eff",
+            };
+
+            _IMeasurementProvider = new MeasurementProvider(Common.ManufacturingExecutionDataAccessLayer);
+            Measurement_Request measurement_Request = MeasurementGetPara(OrderID, FactoryID);
+            DataTable dt = _IMeasurementProvider.Get_Measured_Detail(measurement_Request);
+
+            if (dt == null || dt.Rows.Count <= 0)
+            {
+                result.Result = false;
+                result.ErrMsg = "Data not found!";
+                return result;
+            }
+
+            string basefileName = "Measurement";
+            string openfilepath;
+            if (test)
+            {
+                openfilepath = "C:\\Willy_Repository\\Quality_KPI\\Quality\\Quality\\bin\\XLT\\Measurement.xlsx";
+            }
+            else
+            {
+                openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xlsx";
+            }
+
+            Microsoft.Office.Interop.Excel.Application objApp = MyUtility.Excel.ConnectExcel(openfilepath);
+
+            objApp.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
+            Microsoft.Office.Interop.Excel.Worksheet worksheet = objApp.ActiveWorkbook.Worksheets[1]; // 取得工作表
+
+            int ColumnIndex = 1;
+
+            // 新增header
+            foreach (DataColumn dc in dt.Columns)
+            {
+                string column = dc.ColumnName;
+                if (dc.ColumnName.IndexOf("_aa") > -1)
+                {
+                    column = dc.ColumnName.Replace(dc.ColumnName.Substring(dc.ColumnName.IndexOf("_aa"), dc.ColumnName.Length - dc.ColumnName.IndexOf("_aa")), "");
+                }
+
+                if (dc.ColumnName.IndexOf("diff") > -1)
+                {
+                    var index = dc.ColumnName.Replace("diff", "");
+                    column = dc.ColumnName.Replace(index, "");
+                }
+
+                worksheet.Cells[1, ColumnIndex] = column;
+                ColumnIndex++;
+            }
+
+            int ttlcolumn = dt.Columns.Count;
+            int rowCnt = 2;
+
+            foreach (DataRow dr in dt.Rows)
+            {
+                for (int i = 1; i <= ttlcolumn; i++)
+                {
+                    worksheet.Cells[rowCnt, i] = dr[i - 1];
+                }
+
+                rowCnt++;
+            }
+
+            worksheet.Columns.AutoFit();
+
+            // Save Excel
+            string fileName = $"{basefileName}_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+            string filepath;
+            if (test)
+            {
+                filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", fileName);
+            }
+            else
+            {
+                filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
+            }
+
+            Excel.Workbook workbook = objApp.ActiveWorkbook;
+            workbook.SaveAs(filepath);
+            workbook.Close();
+            objApp.Quit();
+            Marshal.ReleaseComObject(worksheet);
+            Marshal.ReleaseComObject(workbook);
+            Marshal.ReleaseComObject(objApp);
+
+            result.Result = true;
+            result.FileName = fileName;
+
+            return result;
         }
     }
 }

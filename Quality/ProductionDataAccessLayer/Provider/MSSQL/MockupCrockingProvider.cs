@@ -11,16 +11,6 @@ using System.Text;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
-    /*(MockupCrockingProvider) 詳細敘述如下*/
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <info>Author: Admin; Date: 2021/08/19  </info>
-    /// <history>
-    /// xx.  YYYY/MM/DD   Ver   Author      Comments
-    /// ===  ==========  ====  ==========  ==========
-    /// 01.  2021/08/19  1.00    Admin        Create
-    /// </history>
     public class MockupCrockingProvider : SQLDAL, IMockupCrockingProvider
     {
         #region 底層連線
@@ -29,18 +19,6 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         #endregion
 
         #region CRUD Base
-        /*回傳(Get) 詳細敘述如下*/
-        /// <summary>
-        /// 回傳
-        /// </summary>
-        /// <param name="Item">成員</param>
-        /// <returns>回傳</returns>
-        /// <info>Author: Admin; Date: 2021/08/19  </info>
-        /// <history>
-        /// xx.  YYYY/MM/DD   Ver   Author      Comments
-        /// ===  ==========  ====  ==========  ==========
-        /// 01.  2021/08/19  1.00    Admin        Create
-        /// </history>
         public IList<MockupCrocking> Get(MockupCrocking Item)
         {
             StringBuilder SbSql = new StringBuilder();
@@ -80,18 +58,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 
             return ExecuteList<MockupCrocking>(CommandType.Text, SbSql.ToString(), objParameter);
         }
-        /*建立(Create) 詳細敘述如下*/
-        /// <summary>
-        /// 建立
-        /// </summary>
-        /// <param name="Item">成員</param>
-        /// <returns>回傳異動筆數</returns>
-        /// <info>Author: Admin; Date: 2021/08/19  </info>
-        /// <history>
-        /// xx.  YYYY/MM/DD   Ver   Author      Comments
-        /// ===  ==========  ====  ==========  ==========
-        /// 01.  2021/08/19  1.00    Admin        Create
-        /// </history>
+
         public int Create(MockupCrocking Item)
         {
             StringBuilder SbSql = new StringBuilder();
@@ -158,18 +125,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
-        /*更新(Update) 詳細敘述如下*/
-        /// <summary>
-        /// 更新
-        /// </summary>
-        /// <param name="Item">成員</param>
-        /// <returns>回傳異動筆數</returns>
-        /// <info>Author: Admin; Date: 2021/08/19  </info>
-        /// <history>
-        /// xx.  YYYY/MM/DD   Ver   Author      Comments
-        /// ===  ==========  ====  ==========  ==========
-        /// 01.  2021/08/19  1.00    Admin        Create
-        /// </history>
+
         public int Update(MockupCrocking Item)
         {
             StringBuilder SbSql = new StringBuilder();
@@ -213,18 +169,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
-        /*刪除(Delete) 詳細敘述如下*/
-        /// <summary>
-        /// 刪除
-        /// </summary>
-        /// <param name="Item">成員</param>
-        /// <returns>回傳異動筆數</returns>
-        /// <info>Author: Admin; Date: 2021/08/19  </info>
-        /// <history>
-        /// xx.  YYYY/MM/DD   Ver   Author      Comments
-        /// ===  ==========  ====  ==========  ==========
-        /// 01.  2021/08/19  1.00    Admin        Create
-        /// </history>
+
         public int Delete(MockupCrocking Item)
         {
             StringBuilder SbSql = new StringBuilder();
@@ -282,13 +227,17 @@ FROM [MockupCrocking] m
             return ExecuteList<MockupCrocking_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
         }
 
-
-        public IList<MockupCrocking_ViewModel> GetMockupCrocking(MockupCrocking_Request Item)
+        public IList<MockupCrocking_ViewModel> GetMockupCrocking(MockupCrocking_Request Item, bool istop1)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append(@"
-SELECT top 1
+            string top1 = string.Empty;
+            if (istop1)
+            {
+                top1 = "top 1";
+            }
+            SbSql.Append($@"
+SELECT {top1}
          ReportNo
         ,POID
         ,StyleID
@@ -298,15 +247,17 @@ SELECT top 1
         ,ArtworkTypeID
         ,Remark
         ,T1Subcon
-		,T1SubconName = Concat (T1Subcon,'-'+(select Abb from LocalSupp where ID = T1Subcon))
+		,T1SubconAbb = (select Abb from LocalSupp where ID = T1Subcon)
         ,TestDate
         ,ReceivedDate
         ,ReleasedDate
         ,Result
         ,Technician
-        ,TechnicianName = TechnicianName.Name_Extno
+        ,TechnicianName = Technician_ne.Name
+        ,TechnicianExtNo = Technician_ne.ExtNo
         ,MR
-		,MRName = MRName.Name_Extno
+		,MRName = MR_ne.Name
+		,MRExtNo = MR_ne.Extno
         ,Type
         ,TestBeforePicture
         ,TestAfterPicture
@@ -317,8 +268,8 @@ SELECT top 1
         ,SignaturePic = (select PicPath from system) + (select t.SignaturePic from Technician t where t.ID = Technician)
 		,LastEditName = iif(EditName <> '', Concat (EditName, '-', EditName.Name, ' ', Format(EditDate,'yyyy/MM/dd HH:mm:ss')), Concat (AddName, '-', AddName.Name, ' ', Format(AddDate,'yyyy/MM/dd HH:mm:ss')))
 FROM [MockupCrocking] m
-outer apply (select Name_Extno from View_ShowName where id = m.Technician) TechnicianName
-outer apply (select Name_Extno from View_ShowName where id = m.MR) MRName
+outer apply (select Name, ExtNo from pass1 p inner join Technician t on t.ID = p.ID where t.id = m.Technician) Technician_ne
+outer apply (select Name, ExtNo from pass1 where id = m.MR) MR_ne
 outer apply (select Name from Pass1 where id = m.AddName) AddName
 outer apply (select Name from Pass1 where id = m.EditName) EditName
 ");

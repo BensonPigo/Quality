@@ -55,8 +55,8 @@
                                 <th>Group Name</th>
                                 <th>To Address</th>
                                 <th>Cc Address</th>
-                                <th></th>
-                                <th></th>
+                                <th> </th>
+                                <th> </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -81,7 +81,7 @@
                                         <img onclick="Edit_Pic_Click('@item.FactoryID','@item.GroupName')" style="width:1.2vw;cursor:pointer;" src="~/Image/Icon/Edit.png" />
                                     </td>
                                     <td>
-                                        <img style="width:1.2vw;cursor:pointer;" src="~/Image/Icon/Delete.png" />
+                                        <img onclick="Delete_Pic_Click('@item.FactoryID','@item.GroupName')" style="width:1.2vw;cursor:pointer;" src="~/Image/Icon/Delete.png" />
                                     </td>
                                 </tr>
                             }
@@ -172,14 +172,13 @@
                 { width: '5%', targets: 4, orderable: false },
                 { width: '5%', targets: 5, orderable: false },
             ]
-            
+
         });
 
     });
 
-        function New_Click() {
-
-            $.ajax({
+    function New_Click() {
+        $.ajax({
             url: '@Url.Action("GetDetail")',
             data: { Factory: '', GroupName: ''},
             type: 'POST',
@@ -223,10 +222,6 @@
                             }
 
                         }
-
-
-
-
                     },
                     "class": "site-btn btn-red btn-lg",
                     "ID": "dialogEdit"
@@ -253,7 +248,6 @@
 
 
     function Link_Click(Factory, GroupName) {
-
         $.ajax({
             url: '@Url.Action("GetDetail")',
             data: { Factory: Factory, GroupName: GroupName},
@@ -315,7 +309,6 @@
 
 
     function Edit_Pic_Click(Factory, GroupName) {
-
         $.ajax({
             url: '@Url.Action("GetDetail")',
             data: { Factory: Factory, GroupName: GroupName},
@@ -375,7 +368,32 @@
 
     }
 
+    function Delete_Pic_Click(Factory, GroupName) {
+        var quality_Mail = {
+            FactoryID: Factory,
+            GroupName: GroupName,
+        };
 
+        $.ajax({
+            url: '@Url.Action("SaveDetail")',
+            data: { quality_Mail: quality_Mail, Action: "Delete" },
+            type: 'POST',
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data.Result) {
+                    msg.WithSuccesCheck("Succes", function () {
+                        location.reload();
+                    });
+                }
+                else {
+                    msg.WithErrorCheck(data.ErrMsg, function () {
+                        location.reload();
+                    });
+                }
+            }
+        });
+    }
 
     //初始化Detail的表格
     function InitDetailDataTable(res) {
@@ -390,7 +408,6 @@
     }
 
     function Dialog_Edit_Click() {
-
         //按下Edit
         $('#dialogEdit').text('Save');
         InputToggle();
@@ -400,24 +417,46 @@
 
         // User Detail 修改
     function Dialog_Save_Click(Action) {
-
-        InputToggle();
-
         var Factory = document.getElementById("Factory").value;
-        var GroupName = $("#GroupName").text()
-        var ToAddress = $("#ToAddress").text()
+        var GroupName = $("#GroupName").text();
+        if (Action == "Create") {
+            GroupName = $("#input_GroupName").val();
+        }
+        var ToAddress = $("#input_ToAddress").val();
+        var CcAddress = $("#input_CcAddress").val();
 
-        if (Factory == "" || GroupName == "" || ToAddress =="")
-        {
+        if (Factory == "" || GroupName == "" || ToAddress == "") {
             msg.WithWarning("Factory, Group Name and To Address cannot be empty.");
             return;
         }
 
-        $('#dialogEdit').text('Edit');
-        EditMode = false;
-        HeadToggle('Update');
-    }
+        var quality_Mail = {
+            FactoryID: Factory,
+            GroupName: GroupName,
+            ToAddress: ToAddress,
+            CcAddress: CcAddress,
+        };
 
+        $.ajax({
+            url: '@Url.Action("SaveDetail")',
+            data: { quality_Mail: quality_Mail, Action: Action},
+            type: 'POST',
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data.Result) { 
+                    msg.WithSuccesCheck("Succes", function () {
+                        location.reload();
+                    });
+                }
+                else {
+                    msg.WithErrorCheck(data.ErrMsg, function () {
+                        location.reload();
+                    });
+                }
+            }
+        });
+    }
 
     function InputToggle() {
 

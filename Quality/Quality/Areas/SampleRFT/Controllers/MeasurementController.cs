@@ -149,5 +149,13 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             return null;
         }
+
+        [HttpPost]
+        public JsonResult ToExcel(string OrderID)
+        {
+            Measurement_Request result = _MeasurementService.MeasurementToExcel(OrderID, this.FactoryID);
+            result.FileName = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + result.FileName;
+            return Json(new { result.Result, result.ErrMsg, result.FileName });
+        }
     }
 }

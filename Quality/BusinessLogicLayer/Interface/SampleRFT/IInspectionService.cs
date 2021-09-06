@@ -27,6 +27,8 @@ namespace BusinessLogicLayer.Interface
 
         InspectionSave_ViewModel SaveRFTInspection(InspectionSave_ViewModel inspections);
 
+        InspectionSave_ViewModel ChkInspQty(InspectionSave_ViewModel inspections);
+
         IList<ReworkCard> GetReworkCards(ReworkCard rework);
 
         List<ReworkList_ViewModel> GetReworkList(ReworkList_ViewModel reworkList);

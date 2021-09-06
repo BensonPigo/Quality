@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Transactions;
+using System.Web.Mvc;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace BusinessLogicLayer.Service
@@ -20,25 +21,79 @@ namespace BusinessLogicLayer.Service
     {
         private IMockupCrockingProvider _MockupCrockingProvider;
         private IMockupCrockingDetailProvider _MockupCrockingDetailProvider;
+        private IStyleArtworkProvider _IStyleArtworkProvider;
+        private IOrdersProvider _OrdersProvider;
+        private IOrderQtyProvider _OrderQtyProvider;
 
         public MockupCrocking_ViewModel GetMockupCrocking(MockupCrocking_Request MockupCrocking)
         {
+            MockupCrocking.Type = "B";
             MockupCrocking_ViewModel mockupCrocking_model = new MockupCrocking_ViewModel();
             try
             {
                 _MockupCrockingProvider = new MockupCrockingProvider(Common.ProductionDataAccessLayer);
                 _MockupCrockingDetailProvider = new MockupCrockingDetailProvider(Common.ProductionDataAccessLayer);
-                mockupCrocking_model = _MockupCrockingProvider.GetMockupCrocking(MockupCrocking).ToList().First();
-                mockupCrocking_model.ReportNo_Source = _MockupCrockingProvider.GetMockupCrockingReportNoList(MockupCrocking).Select(s => s.ReportNo).ToList();
-                MockupCrocking_Detail mockupCrocking_Detail = new MockupCrocking_Detail() { ReportNo = mockupCrocking_model.ReportNo };
-                mockupCrocking_model.MockupCrocking_Detail = _MockupCrockingDetailProvider.GetMockupCrocking_Detail(mockupCrocking_Detail).ToList();
+                mockupCrocking_model = _MockupCrockingProvider.GetMockupCrocking(MockupCrocking, istop1: true).ToList().FirstOrDefault();
+                if (mockupCrocking_model != null)
+                {
+                    mockupCrocking_model.ReportNo_Source = _MockupCrockingProvider.GetMockupCrockingReportNoList(MockupCrocking).Select(s => s.ReportNo).ToList();
+                    MockupCrocking_Detail mockupCrocking_Detail = new MockupCrocking_Detail() { ReportNo = mockupCrocking_model.ReportNo };
+                    mockupCrocking_model.MockupCrocking_Detail = _MockupCrockingDetailProvider.GetMockupCrocking_Detail(mockupCrocking_Detail).ToList();
+                }
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
-
+                throw ex;
             }
 
             return mockupCrocking_model;
+        }
+
+        public List<SelectListItem> GetArtworkTypeID(StyleArtwork_Request Request)
+        {
+            List<SelectListItem> selectListItems = new List<SelectListItem>();
+            try
+            {
+                _IStyleArtworkProvider = new StyleArtworkProvider(Common.ProductionDataAccessLayer);
+                var ArtworkTypeID = _IStyleArtworkProvider.GetArtworkTypeID(Request).ToList();
+                foreach (var item in ArtworkTypeID)
+                {
+                    selectListItems.Add(new SelectListItem { Value = item.ArtworkTypeID, Text = item.ArtworkTypeID });
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return selectListItems;
+        }
+
+        public List<Orders> GetOrders(Orders orders)
+        {
+            _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
+            try
+            {
+                orders.Category = "B";
+                return _OrdersProvider.Get(orders).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public List<Order_Qty> GetDistinctArticle(Order_Qty order_Qty)
+        {
+            _OrderQtyProvider = new OrderQtyProvider(Common.ProductionDataAccessLayer);
+            try
+            {
+                return _OrderQtyProvider.GetDistinctArticle(order_Qty).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public MockupCrocking_ViewModel GetPDF(MockupCrocking_ViewModel mockupCrocking, bool test = false)
@@ -90,7 +145,7 @@ namespace BusinessLogicLayer.Service
 
                 // 設定表頭資料
                 worksheet.Cells[4, 2] = mockupCrocking.ReportNo;
-                worksheet.Cells[5, 2] = mockupCrocking.T1SubconName;
+                worksheet.Cells[5, 2] = mockupCrocking.T1Subcon + "-" + mockupCrocking.T1SubconAbb;
 
                 worksheet.Cells[6, 2] = mockupCrocking.BrandID;
                 worksheet.Cells[4, 6] = mockupCrocking.ReleasedDate;
@@ -190,7 +245,7 @@ namespace BusinessLogicLayer.Service
                     result.ReportResult = false;
                 }
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 throw ex;
             }

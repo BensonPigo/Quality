@@ -194,9 +194,16 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             if (Item.AddName != null) { SbSql.Append(",AddName=@AddName" + Environment.NewLine); objParameter.Add("@AddName", DbType.String, Item.AddName); }
             if (Item.EditDate != null) { SbSql.Append(",EditDate=@EditDate" + Environment.NewLine); objParameter.Add("@EditDate", DbType.DateTime, Item.EditDate); }
             if (Item.EditName != null) { SbSql.Append(",EditName=@EditName" + Environment.NewLine); objParameter.Add("@EditName", DbType.String, Item.EditName); }
-            if (Item.OtherMethod != null) { SbSql.Append(",OtherMethod=@OtherMethod" + Environment.NewLine); objParameter.Add("@OtherMethod", DbType.Boolean, Item.OtherMethod); }
-            if (Item.MethodID != null) { SbSql.Append(",MethodID=@MethodID" + Environment.NewLine); objParameter.Add("@MethodID", DbType.String, Item.MethodID); }
-            if (Item.TestingMethod != null) { SbSql.Append(",TestingMethod=@TestingMethod" + Environment.NewLine); objParameter.Add("@TestingMethod", DbType.String, Item.TestingMethod); }
+
+            SbSql.Append($@"
+,OtherMethod=@OtherMethod
+,MethodID=iif(@OtherMethod = 0, '', @MethodID)
+,TestingMethod=iif(@OtherMethod = 0, @TestingMethod, '')
+");
+            objParameter.Add("@OtherMethod", DbType.Boolean, Item.OtherMethod);
+            objParameter.Add("@MethodID", DbType.String, Item.MethodID);
+            objParameter.Add("@TestingMethod", DbType.String, Item.TestingMethod);
+
             if (Item.HTPlate != null) { SbSql.Append(",HTPlate=@HTPlate" + Environment.NewLine); objParameter.Add("@HTPlate", DbType.Int32, Item.HTPlate); }
             if (Item.HTFlim != null) { SbSql.Append(",HTFlim=@HTFlim" + Environment.NewLine); objParameter.Add("@HTFlim", DbType.Int32, Item.HTFlim); }
             if (Item.HTTime != null) { SbSql.Append(",HTTime=@HTTime" + Environment.NewLine); objParameter.Add("@HTTime", DbType.Int32, Item.HTTime); }
@@ -289,12 +296,17 @@ FROM MockupWash m
             return ExecuteList<MockupWash_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
         }
 
-        public IList<MockupWash_ViewModel> GetMockupWash(MockupWash_Request Item)
+        public IList<MockupWash_ViewModel> GetMockupWash(MockupWash_Request Item, bool istop1)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append(@"
-SELECT
+            string top1 = string.Empty;
+            if (istop1)
+            {
+                top1 = "top 1";
+            }
+            SbSql.Append($@"
+SELECT {top1}
          ReportNo
         ,POID
         ,StyleID
@@ -304,20 +316,23 @@ SELECT
         ,ArtworkTypeID
         ,Remark
         ,T1Subcon
-		,T1SubconName = Concat (T1Subcon,'-'+(select Abb from LocalSupp where ID = T1Subcon))
+		,T1SubconAbb = (select Abb from LocalSupp where ID = T1Subcon)
         ,T2Supplier
-		,T2SupplierName = Concat (T2Supplier,'-'+ (select top 1 Abb from (select Abb from LocalSupp where ID = m.T2Supplier and Junk = 0 union select AbbEN from Supp where ID = m.T2Supplier and Junk = 0)x))
+		,T2SupplierAbb = (select top 1 Abb from (select Abb from LocalSupp where ID = m.T2Supplier and Junk = 0 union select AbbEN from Supp where ID = m.T2Supplier and Junk = 0)x)
         ,TestDate
         ,ReceivedDate
         ,ReleasedDate
         ,Result
         ,Technician
-        ,TechnicianName = TechnicianName.Name_Extno
+        ,TechnicianName = Technician_ne.Name
+        ,TechnicianExtNo = Technician_ne.ExtNo
         ,MR
-		,MRName = MRName.Name_Extno
+		,MRName = MR_ne.Name
+		,MRExtNo = MR_ne.Extno
 		,LastEditName = iif(EditName <> '', Concat (EditName, '-', EditName.Name, ' ', Format(EditDate,'yyyy/MM/dd HH:mm:ss')), Concat (AddName, '-', AddName.Name, ' ', Format(AddDate,'yyyy/MM/dd HH:mm:ss')))
 		,m.OtherMethod
-		,TestingMethodDescription = iif(m.OtherMethod = 0, m.TestingMethod, (select Description from DropdownList where Type = 'PMS_MockupWashMethod' and ID = m.TestingMethod))
+        ,m.MethodID
+        ,m.TestingMethod
 		,m.HTPlate
 		,m.HTPellOff
 		,m.HTFlim
@@ -335,8 +350,8 @@ SELECT
         ,EditName
         ,SignaturePic = (select PicPath from system) + (select t.SignaturePic from Technician t where t.ID = Technician)
 FROM MockupWash m
-outer apply (select Name_Extno from View_ShowName where id = m.Technician) TechnicianName
-outer apply (select Name_Extno from View_ShowName where id = m.MR) MRName
+outer apply (select Name, ExtNo from pass1 p inner join Technician t on t.ID = p.ID where t.id = m.Technician) Technician_ne
+outer apply (select Name, ExtNo from pass1 where id = m.MR) MR_ne
 outer apply (select Name from Pass1 where id = m.AddName) AddName
 outer apply (select Name from Pass1 where id = m.EditName) EditName
 ");
@@ -375,34 +390,6 @@ outer apply (select Name from Pass1 where id = m.EditName) EditName
 
             SbSql.Append("Order by ReportNo");
             return ExecuteList<MockupWash_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
-        }
-
-        public IList<AccessoryRefNo> GetAccessoryRefNo(AccessoryRefNo_Request Item)
-        {
-            StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append(@"
-select sb.Refno
-from Style_BOA sb
-inner join Fabric f on sb.SCIRefno = f.SCIRefno
-");
-            SbSql.Append("Where 1 = 1" + Environment.NewLine);
-
-            if (Item.StyleUkey != null)
-            {
-                SbSql.Append("And sb.StyleUkey = @StyleUkey" + Environment.NewLine);
-                objParameter.Add("@StyleUkey", DbType.Int64, Item.StyleUkey);
-            }
-
-            if (!string.IsNullOrEmpty(Item.BrandID) && !string.IsNullOrEmpty(Item.SeasonID) && !string.IsNullOrEmpty(Item.StyleID))
-            {
-                SbSql.Append("And sb.StyleUkey = (select styleukey from Style where ID = @StyleID and SeasonID = @SeasonID and BrandID = @BrandID)" + Environment.NewLine);
-                objParameter.Add("@StyleID", DbType.String, Item.StyleID);
-                objParameter.Add("@SeasonID", DbType.String, Item.SeasonID);
-                objParameter.Add("@BrandID", DbType.String, Item.BrandID);
-            }
-
-            return ExecuteList<AccessoryRefNo>(CommandType.Text, SbSql.ToString(), objParameter);
         }
         #endregion
     }

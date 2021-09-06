@@ -89,22 +89,40 @@
                                     <label class="fontColor">Factory</label>
                                 </td>
                                 <td class="queryPadding">
-                                    @Html.DropDownList("Factory", (List<SelectListItem>)ViewBag.FactoryList, null, new { @class = "form-control inputStyle" })
+                                    <select class="form-control inputStyle" id="Factory" name="Factory">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.FactoryList)
+                                        {
+                                            string selected = item.Text.Equals(ViewBag.Factory) ? "selected" : "";
+                                            <option value="@item.Value" @selected>@item.Text</option>
+                                        }
+                                    </select>
                                 </td>
                                 <td class="queryPadding">
                                     <label class="fontColor">Year</label>
                                 </td>
                                 <td class="queryPadding">
-                                    @Html.DropDownList("Years", (List<SelectListItem>)ViewBag.YearsList, null, new { @class = "form-control inputStyle" })
+                                    <select class="form-control inputStyle" id="Years" name="Years">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.YearsList)
+                                        {
+                                            string selected = item.Text.Equals(ViewBag.Year) ? "selected" : "";
+                                            <option value="@item.Value" @selected>@item.Text</option>
+                                        }
+                                    </select>                                    
                                 </td>
                                 <td class="queryPadding">
                                     <label class="fontColor">Month</label>
                                 </td>
                                 <td class="queryPadding">
-                                    @Html.DropDownList("Month", (List<SelectListItem>)ViewBag.MonthList, null, new { @class = "form-control inputStyle" })
+                                    <select class="form-control inputStyle" id="Month" name="Month">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.MonthList)
+                                        {
+                                            string selected = item.Value.Equals(ViewBag.Month) ? "selected" : "";
+                                            <option value="@item.Value" @selected>@item.Text</option>
+                                        }
+                                    </select>                                    
                                 </td>
                                 <td class="queryPadding">
-                                    <input type="submit" name="name" id="btnQuery" value="Query" />
+                                    <input class="site-btn btn-gy btn-sm" type="submit" name="name" id="btnQuery" value="Query" />
                                 </td>
                             </tr>
                         </table>
@@ -116,13 +134,13 @@
             <br />
             <div style=" padding-right: 2.5vw">
                 <div class="inner-scroll" style="float: left; height: 13vh; overflow-y: hidden">
-                    <table cellspacing="100" class="table-striped">
+                    <table cellspacing="100" class="table-striped" style="width:550%;">
                         <thead>
                             <tr>
                                 @foreach (DataColumn item in Model.MonthlyData.Columns)
                                 {
 
-                                    <th>@item.ColumnName</th>
+                                    <th style="width:10vw">@item.ColumnName</th>
                                 }
                             </tr>
                         </thead>
@@ -149,8 +167,9 @@
             <h3 class="fontColor">Daily RFT</h3>
             <br />
             <div style=" padding-right: 2.5vw">
-                <div class="inner-scroll" style="float: left ;height: 42vh;">
-                    <table cellspacing="100" class="table-striped">
+
+            <div class="inner-scroll" style="float: left ;height: 40vh;">
+                    <table cellspacing="100" class="table-striped" style="width:550%;">
                         <thead>
                             <tr>
                                 @foreach (DataColumn item in Model.DailyData.Columns)

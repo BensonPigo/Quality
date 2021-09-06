@@ -21,6 +21,8 @@ namespace BusinessLogicLayer.Interface.BulkFGT
 
         List<string> Get_SizeCode(string OrderID, string Article);
 
+        List<string> Get_SizeCode(string StyleID, string SeasonID, string BrandID);
+
         bool CheckOrderID(string OrderID, string BrandID, string SeasonID, string StyleID);
 
         GarmentTest_ViewModel SendMail(string ID, string No, string UserID);
@@ -58,8 +60,6 @@ namespace BusinessLogicLayer.Interface.BulkFGT
         GarmentTest_Detail_Result Encode_Detail(string ID, string No, DetailStatus status);
 
         GarmentTest_Result SentMail(string ID, string No, List<Quality_MailGroup> mailGroups);
-
-        GarmentTest_Result DetailPictureSave(GarmentTest_Detail garmentTest_Detail);
 
         GarmentTest_Detail_Result ToReport(string ID, string No, ReportType type, bool IsToPDF, bool test = false);
 

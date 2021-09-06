@@ -1,6 +1,7 @@
 ﻿using BusinessLogicLayer.Interface.BulkFGT;
 using BusinessLogicLayer.Service.BulkFGT;
 using DatabaseObject.ManufacturingExecutionDB;
+using DatabaseObject.ResultModel;
 using FactoryDashBoardWeb.Helper;
 using Quality.Controllers;
 using System;
@@ -25,71 +26,38 @@ namespace Quality.Areas.BulkFGT.Controllers
         // GET: BulkFGT/BulkFGTMailGroup
         public ActionResult Index()
         {
-            List<Quality_MailGroup> quality_MailGroups = _BulkFGTMailGroup_Service.MailGroupGet(new Quality_MailGroup() { Type = "BulkFGT" }).ToList();
-
-            Quality_MailGroup quality_Mail = new Quality_MailGroup()
-            {
-                FactoryID = "ESP",
-                Type = "BulkFGT",
-                GroupName = "ttttTest",
-                ToAddress = "jack.hsu@sportscity.com.tw",
-                CcAddress = "",
-            };
-
-            Quality_MailGroup quality_MailTest = new Quality_MailGroup()
-            {
-                FactoryID = "VSR",
-                Type = "BulkFGT",
-                GroupName = "ABC",
-                ToAddress = "ABC@sportscity.com.tw",
-                CcAddress = "DEF@sportscity.com.tw",
-            };
-
+            List<Quality_MailGroup> quality_MailGroups = _BulkFGTMailGroup_Service.MailGroupGet(new Quality_MailGroup() { Type = "BulkFGT", FactoryID = this.FactoryID }).ToList();
             List<SelectListItem> FactoryList = new SetListItem().ItemListBinding(this.Factorys);
-            ViewBag.FactoryList = FactoryList;
-
-            _BulkFGTMailGroup_Service.MailGroupSave(quality_Mail, BulkFGTMailGroup_Service.SaveType.Insert);
-
-
-            quality_Mail.ToAddress = "jack.hsujack.hsu@sportscity.com.tw";
-            _BulkFGTMailGroup_Service.MailGroupSave(quality_Mail, BulkFGTMailGroup_Service.SaveType.Update);
-
-
-            _BulkFGTMailGroup_Service.MailGroupSave(quality_Mail, BulkFGTMailGroup_Service.SaveType.Delete);
-            quality_MailGroups.Add(quality_Mail);
-            quality_MailGroups.Add(quality_MailTest);
+            ViewBag.FactoryList = FactoryList; 
             return View(quality_MailGroups);
         }
-
 
         [HttpPost]
         public ActionResult GetDetail(string Factory, string GroupName)
         {
+            Quality_MailGroup quality_MailGroups = _BulkFGTMailGroup_Service.MailGroupGet(new Quality_MailGroup() { Type = "BulkFGT", FactoryID = Factory, GroupName = GroupName }).ToList().FirstOrDefault();
+            return Json(quality_MailGroups);
+        }
 
-            Quality_MailGroup quality_Mail = new Quality_MailGroup();
-
-            if (!string.IsNullOrEmpty(Factory))
+        [HttpPost]
+        public ActionResult SaveDetail(Quality_MailGroup quality_Mail, string Action)
+        {
+            quality_Mail.Type = "BulkFGT";
+            Quality_MailGroup_ResultModel result = new Quality_MailGroup_ResultModel();
+            switch (Action)
             {
-                if (Factory == "ESP")
-                {
-                    quality_Mail.FactoryID = "ESP";
-                    quality_Mail.Type = "BulkFGT";
-                    quality_Mail.GroupName = "ttttTest";
-                    quality_Mail.ToAddress = "jack.hsu@sportscity.com.tw";
-                    quality_Mail.CcAddress = "";
-                }
-                else
-                {
-                    quality_Mail.FactoryID = "VSR";
-                    quality_Mail.Type = "BulkFGT";
-                    quality_Mail.GroupName = "ABC";
-                    quality_Mail.ToAddress = "ABC@sportscity.com.tw";
-                    quality_Mail.CcAddress = "DEF@sportscity.com.tw";
-                }
-
+                case "Create":
+                    result = _BulkFGTMailGroup_Service.MailGroupSave(quality_Mail, BulkFGTMailGroup_Service.SaveType.Insert);
+                    break;
+                case "Update":
+                    result = _BulkFGTMailGroup_Service.MailGroupSave(quality_Mail, BulkFGTMailGroup_Service.SaveType.Update);
+                    break;
+                case "Delete":
+                    result = _BulkFGTMailGroup_Service.MailGroupSave(quality_Mail, BulkFGTMailGroup_Service.SaveType.Delete);
+                    break;
             }
 
-            return Json(quality_Mail);
+            return Json(new { result.Result , result.ErrMsg });
         }
     }
 }

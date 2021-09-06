@@ -3,6 +3,7 @@
 @{
     Layout = null;
     string title = ViewData["Title"] == null ? "Pass1" : ViewData["Title"].ToString();
+    string TargetID = ViewData["TargetID"] == null ? string.Empty : ViewData["TargetID"].ToString();
 
 }
 
@@ -109,7 +110,7 @@
             }
 
             // 呼叫父視窗的GetTestFailMail Function，把值傳回去
-            window.opener.GetTestFailMailList(Mails);
+            window.opener.GetTestFailMailList(Mails, '@TargetID');
             window.close();
         });
 

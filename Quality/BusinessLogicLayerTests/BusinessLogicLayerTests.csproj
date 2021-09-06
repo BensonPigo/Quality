@@ -48,6 +48,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Web.Mvc, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -60,8 +61,10 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\BulkFGT\FabricColorFastness_ServiceTests.cs" />
+    <Compile Include="Service\BulkFGT\FabricCrkShrkTest_ServiceTests.cs" />
     <Compile Include="Service\BulkFGT\FabricOvenTestServiceTests.cs" />
     <Compile Include="Service\BulkFGT\GarmentTest_ServiceTests.cs" />
+    <Compile Include="Service\BulkFGT\MockupWashTests.cs" />
     <Compile Include="Service\FinalInspection\FinalInspectionAddDefectServiceTests.cs" />
     <Compile Include="Service\FinalInspection\FinalInspectionBeautifulProductAuditServiceTests.cs" />
     <Compile Include="Service\FinalInspection\FinalInspectionMeasurementServiceTests.cs" />
@@ -72,7 +75,7 @@
     <Compile Include="Service\FinalInspection\FinalInspectionServiceTests.cs" />
     <Compile Include="Service\FinalInspection\FinalInspectionSettingServiceTests.cs" />
     <Compile Include="Service\InspectionServiceTests.cs" />
-    <Compile Include="Service\CFTCommentsTests.cs" />
+    <Compile Include="Service\SampleRFT\CFTCommentsTests.cs" />
     <Compile Include="Service\SendmailTests.cs" />
     <Compile Include="Service\RFTPerLineServiceTests.cs" />
     <Compile Include="Service\BulkFGT\BulkFGTMailGroupTest.cs" />
@@ -105,6 +108,18 @@
     <None Include="XLT\CFT Comments.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Content Include="XLT\FabricCrockingTestWeftWarp.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\FabricCrockingTestPDFWeftWarp.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\FabricCrockingTestPDF.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\FabricCrockingTest.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="XLT\FabricOvenTestDetailReport.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -23,16 +23,22 @@ namespace DatabaseObject.ViewModel.BulkFGT
         }
 
         [Display(Name = "T1 廠商 名稱")]
-        public string T1SubconName { get; set; }
+        public string T1SubconAbb { get; set; }
 
         [Display(Name = "T2 廠商 名稱")]
-        public string T2SupplierName { get; set; }
+        public string T2SupplierAbb { get; set; }
 
         [Display(Name = "技術人員 名稱")]
         public string TechnicianName { get; set; }
 
+        [Display(Name = "技術人員 ExtNo")]
+        public string TechnicianExtNo { get; set; }
+
         [Display(Name = "業務 名稱")]
         public string MRName { get; set; }
+
+        [Display(Name = "業務 ExtNo")]
+        public string MRExtNo { get; set; }
 
         [Display(Name = "LastEditName")]
         public string LastEditName { get; set; }
@@ -54,6 +60,19 @@ namespace DatabaseObject.ViewModel.BulkFGT
 
     public class MockupOven_Detail_ViewModel : MockupOven_Detail
     {
+        public List<SelectListItem> Result_Source
+        {
+            get
+            {
+                return new List<SelectListItem>()
+                {
+                    new SelectListItem(){ Text="Pass",Value="Pass"},
+                    new SelectListItem(){ Text="Fail",Value="Fail"},
+                };
+            }
+            set { }
+        }
+
         public string ArtworkColorName { get; set; }
         public string FabricColorName { get; set; }
         public string LastUpdate { get; set; }

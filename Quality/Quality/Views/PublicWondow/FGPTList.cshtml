@@ -2,6 +2,7 @@
 
 @{
     Layout = null;
+    string TargetID = ViewData["TargetID"] == null ? string.Empty : ViewData["TargetID"].ToString();
 }
 
 @model List<Window_FGPT>
@@ -45,6 +46,7 @@
     {
         <input type="text" name="Code" value="" />
         @Html.Hidden("VersionID", ViewData["VersionID"]);
+        @Html.Hidden("TargetID", TargetID)
         <input type="submit" value="Query" />
         <input id="btnExit" type="button" value="Exit" />
     }
@@ -94,7 +96,7 @@
             }
 
             // 呼叫父視窗的GetFGPT Function，把物件傳回去
-            window.opener.GetFGPT(FGPT);
+            window.opener.GetFGPT(FGPT, '@TargetID');
 
             window.close();
         });
