@@ -79,7 +79,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             if (string.IsNullOrEmpty(Brand))
             {
                 viewModel.Result = false;
-                viewModel.Brand = this.Brand;
+                viewModel.Brand = string.Empty;
                 return Json(viewModel);
             }
 

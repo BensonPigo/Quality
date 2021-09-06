@@ -32,13 +32,13 @@ select
 into #tmpRft
 from RFT_Inspection rft
 where rft.FactoryID = @FactoryID
-and Year(rft.AddDate) = @Year
-and Month(rft.AddDate) = @Month
+and Year(rft.InspectionDate) = @Year
+and Month(rft.InspectionDate) = @Month
 
 select
 	Month = DateName(Month, DateAdd(Month, @Month, -1)),
 	Line = s.ID,
-	RFT = cast(iif(exist.Line is null, null ,iif(ttl.ct = 0, 0, round(isnull(pass.ct, 0) * 1.0 / ttl.ct, 2))) as decimal(5,2)) * 100
+	RFT = cast(iif(exist.Line is null, null ,iif(ttl.ct = 0, 0, round((isnull(pass.ct, 0) * 1.0 / ttl.ct) * 100, 2))) as decimal(5,2)) 
 from SciProduction_SewingLine s
 outer apply(select ct = count(1) from #tmpRft where Line = s.ID )ttl
 outer apply(select ct = count(1) from #tmpRft where Line = s.ID and Status = 'Pass')pass
@@ -77,19 +77,19 @@ FROM cte
 
 select
 	 rft.Line,
-	 Date = DAY(rft.AddDate),
+	 Date = DAY(rft.InspectionDate),
 	 rft.Status
 into #tmpRft
 from RFT_Inspection rft
 where rft.FactoryID = @FactoryID
-and Year(rft.AddDate) = @Year
-and Month(rft.AddDate) = @Month
+and Year(rft.InspectionDate) = @Year
+and Month(rft.InspectionDate) = @Month
 
 select
 	Date = d.date,
 	Month = DateName(Month, DateAdd(Month, @Month, -1)),
 	Line = s.ID,
-	RFT = cast(iif(exist.Line is null, null ,iif(ttl.ct = 0, 0, round(isnull(pass.ct, 0) * 1.0 / ttl.ct, 2))) as decimal(5,2)) * 100
+	RFT = cast(iif(exist.Line is null, null ,iif(ttl.ct = 0, 0, round((isnull(pass.ct, 0) * 1.0 / ttl.ct) * 100, 2))) as decimal(5,2))
 from SciProduction_SewingLine s
 cross join #tmpAllday d
 outer apply(select ct = count(1) from #tmpRft where Line = s.ID and Date = d.date)ttl

@@ -1635,6 +1635,12 @@
                 $("#SelectItemBackground, .SelectItem").addClass('display-None');
             });
         });
+
+        $('#SaveFactory').on('click', function () {
+            if ($('#Brand').val() == "") {
+                return false;
+            }
+        });
     }
 
     function AddDefectBindEvent() {
@@ -3194,11 +3200,14 @@
         $(".SelectItemV2>li>a").on('click', function () {
             var idx = $(this).parent().parent().attr('idx');
             // $("#" + idx).val($(this).html()).trigger("change");
-            $("#" + idx).val($(this).html())
+            $("#" + idx).val($(this).html()).trigger("blur");
             $('.SelectItemV2').addClass('display-None');
         });
 
-        $("#Brand").on("change", function () {
+        $("#Brand").on("blur", function () {
+            if ($(this).val() == "") {
+                return;
+            }
             BrandCheck($(this).val());
         });
     }

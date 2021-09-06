@@ -45,13 +45,18 @@ namespace BusinessLogicLayer.Service.SampleRFT
                     {
                         foreach (var item in diffArry)
                         {
+                            if (dr[item.ToString()] == DBNull.Value || string.IsNullOrEmpty(dr[item.ToString()].ToString()))
+                            {
+                                continue;
+                            }
+
+                            if (string.IsNullOrEmpty(dr["Tol(-)"].ToString()) || string.IsNullOrEmpty(dr["Tol(+)"].ToString()))
+                            {
+                                continue;
+                            }
+
                             if (measurement.Unit.ToString().ToUpper() == "INCH")
                             {
-                                if (dr[item.ToString()] == DBNull.Value)
-                                {
-                                    continue;
-                                }
-
                                 string num;
                                 if (dr[item.ToString()].ToString().Contains("-"))
                                 {
@@ -68,10 +73,6 @@ namespace BusinessLogicLayer.Service.SampleRFT
                             }
                             else
                             {
-                                if (dr[item.ToString()] == DBNull.Value)
-                                {
-                                    continue;
-                                }
                                 double d = Convert.ToDouble(dr[item.ToString()]);
                                 double num;
                                 if (d < 0)
