@@ -148,7 +148,7 @@ namespace DatabaseObject.ResultModel
         public byte[] HeatTestAfterPicture { get; set; }
     }
 
-    public class FabricCrkShrkTestHeat_Detail
+    public class FabricCrkShrkTestHeat_Detail : CompareBase
     {
         public string Roll { get; set; }
         public string Dyelot { get; set; }
