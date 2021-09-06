@@ -82,6 +82,45 @@ namespace BusinessLogicLayer.Service.Tests
         }
 
         [TestMethod()]
+        public void GetOrders()
+        {
+            try
+            {
+                IMockupWashService _MockupWashService = new MockupWashService();
+                Orders Orders = new Orders()
+                {
+                    ID = "21080085IE044",
+                };
+                var x = _MockupWashService.GetOrders(Orders);
+                Assert.IsTrue(x[0].BrandID == "LLL" && x[0].StyleID == "LW4BTPS" && x[0].SeasonID == "21WI");
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.ToString());
+            }
+        }
+
+
+        [TestMethod()]
+        public void GetDistinctArticle()
+        {
+            try
+            {
+                IMockupWashService _MockupWashService = new MockupWashService();
+                Order_Qty Order_Qty = new Order_Qty()
+                {
+                    ID = "21080085IE044",
+                };
+                var x = _MockupWashService.GetDistinctArticle(Order_Qty);
+                Assert.IsTrue(x.Count > 0 && x[0].Article == "0001");
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.ToString());
+            }
+        }
+
+        [TestMethod()]
         public void GetPDF()
         {
             try

@@ -1,4 +1,5 @@
-﻿using DatabaseObject.RequestModel;
+﻿using DatabaseObject.ProductionDB;
+using DatabaseObject.RequestModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using System.Collections.Generic;
 using System.Web.Mvc;
@@ -10,6 +11,10 @@ namespace BusinessLogicLayer.Interface.BulkFGT
         MockupCrocking_ViewModel GetMockupCrocking(MockupCrocking_Request MockupCrocking);
 
         List<SelectListItem> GetArtworkTypeID(StyleArtwork_Request Request);
+
+        List<Orders> GetOrders(Orders Orders);
+
+        List<Order_Qty> GetDistinctArticle(Order_Qty Orders);
 
         MockupCrocking_ViewModel Create(MockupCrocking_ViewModel MockupCrocking);
 
