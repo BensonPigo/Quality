@@ -66,6 +66,8 @@
   <ItemGroup>
     <Compile Include="Interface\IAdidasFGWTProvider.cs" />
     <Compile Include="Interface\IBrandProvider.cs" />
+    <Compile Include="Interface\IColorFastnessDetailProvider.cs" />
+    <Compile Include="Interface\IColorFastnessProvider.cs" />
     <Compile Include="Interface\IDropDownListProvider.cs" />
     <Compile Include="Interface\IFactoryProvider.cs" />
     <Compile Include="Interface\IFabricOvenTestProvider.cs" />
@@ -109,6 +111,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Provider\MSSQL\AdidasFGWTProvider.cs" />
     <Compile Include="Provider\MSSQL\BrandProvider.cs" />
+    <Compile Include="Provider\MSSQL\ColorFastnessDetailProvider.cs" />
+    <Compile Include="Provider\MSSQL\ColorFastnessProvider.cs" />
     <Compile Include="Provider\MSSQL\DropDownListProvider.cs" />
     <Compile Include="Provider\MSSQL\FactoryProvider.cs" />
     <Compile Include="Provider\MSSQL\FabricOvenTestProvider.cs" />
