@@ -100,6 +100,7 @@ outer apply(
 )PMS_FGPT_TestName
 where t.ID = @ID
 and t.No = @No
+order by PMS_FGPT_TestName.Description,t.[Seq]
 ";
             return ExecuteList<GarmentTest_Detail_FGPT_ViewModel>(CommandType.Text, sqlcmd, objParameter);
         }
