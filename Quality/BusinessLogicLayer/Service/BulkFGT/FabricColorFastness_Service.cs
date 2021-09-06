@@ -33,6 +33,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         {
             _IColorFastnessProvider = new ColorFastnessProvider(Common.ProductionDataAccessLayer);
             FabricColorFastness_ViewModel result = new FabricColorFastness_ViewModel();
+            result.Result = true;
             try
             {
                 if (string.IsNullOrEmpty(PoID))
@@ -42,17 +43,17 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     return result;
                 }
 
-                var list = _IColorFastnessProvider.GetMain(PoID);
-                if (!list.Any() || list.Count() == 0)
+                var source = _IColorFastnessProvider.GetMain(PoID);
+                if (string.IsNullOrEmpty(source.PoID ))
                 {
                     result.Result = false;
                     result.ErrorMessage = "Data not found!";
                     return result;
                 }
 
-                result = list.FirstOrDefault();
-                result.TargetLeadTime = _IColorFastnessProvider.Get_Target_LeadTime(result.EarliestDate, result.EarliestSCIDel);
-                result.CompletionDate = (list.FirstOrDefault().ArticlePercent >= 100) ? list.FirstOrDefault().CompletionDate : null;
+                result = source;
+                result.TargetLeadTime = _IColorFastnessProvider.Get_Target_LeadTime(result.CutInLine, result.MinSciDelivery);
+                result.CompletionDate = (source.ArticlePercent >= 100) ? source.CompletionDate : null;
             }
             catch (Exception ex)
             {
@@ -63,30 +64,36 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public FabricColorFastness_ViewModel GetDetailHeader(string ID)
+        public ColorFastness_Result GetDetailHeader(string ID)
         {
             _IColorFastnessProvider = new ColorFastnessProvider(Common.ProductionDataAccessLayer);
-            FabricColorFastness_ViewModel result = new FabricColorFastness_ViewModel();
+            ColorFastness_Result result = new ColorFastness_Result();
             try
             {
                 if (string.IsNullOrEmpty(ID))
                 {
-                    result.Result = false;
-                    result.ErrorMessage = "ID cannot be empty!";
+                    result.baseResult.Result = false;
+                    result.baseResult.ErrorMessage = "ID cannot be empty!";
                     return result;
                 }
+
                 var list = _IColorFastnessProvider.Get(ID);
                 if (!list.Any() || list.Count() == 0)
                 {
-                    result.Result = false;
-                    result.ErrorMessage = "Data not found!";
+                    result.baseResult.Result = false;
+                    result.baseResult.ErrorMessage = "Data not found!";
                     return result;
                 }
+
+                result = list.FirstOrDefault();
+                result.baseResult = new DatabaseObject.BaseResult();
+                result.baseResult.Result = true;
+                result.baseResult.ErrorMessage = "";
             }
             catch (Exception ex)
             {
-                result.Result = false;
-                result.ErrorMessage = ex.Message.ToString();
+                result.baseResult.Result = false;
+                result.baseResult.ErrorMessage = ex.Message.ToString();
             }
 
             return result;

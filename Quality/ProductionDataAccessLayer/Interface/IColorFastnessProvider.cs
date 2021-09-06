@@ -9,10 +9,10 @@ namespace MICS.DataAccessLayer.Interface
     {
         List<string> GetScales();
 
-        IList<FabricColorFastness_ViewModel> GetMain(string PoID);
+        FabricColorFastness_ViewModel GetMain(string PoID);
 
         DateTime? Get_Target_LeadTime(object CUTINLINE, object MinSciDelivery);
 
-        IList<ColorFastness> Get(string ID);
+        IList<ColorFastness_Result> Get(string ID);
     }
 }

@@ -28,7 +28,7 @@ namespace MICS.DataAccessLayer.Provider.MSSQL
             return dt.Rows.OfType<DataRow>().Select(dr => dr.Field<string>("ID")).ToList();
         }
 
-        public IList<FabricColorFastness_ViewModel> GetMain(string PoID)
+        public FabricColorFastness_ViewModel GetMain(string PoID)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
@@ -36,20 +36,16 @@ namespace MICS.DataAccessLayer.Provider.MSSQL
             };
 
             string sqlcmd = @"
-select a.ID,b.StyleID,b.SeasonID,b.BrandID,b.CutInLine
+select PoID = a.ID,b.StyleID,b.SeasonID,b.BrandID
+,b.CutInLine
 ,a.MinSciDelivery
-,a.ColorFastnessLaboratoryRemark,b.factoryid 
+,a.OvenLaboratoryRemark
 ,[ArticlePercent] = a.LabColorFastnessPercent
-,c.TestNo,c.InspDate,c.Article,c.Result
-,c.Inspector,c.Remark
-,[LastUpdate] = IIF(c.EditName != '',Concat((select Name from Pass1 where id = c.EditName),' ',c.EditDate)
-	,Concat((select Name from Pass1 where id = c.AddName),' ',c.AddDate))
 ,[CompletionDate] = MaxInspDate.value
 ,[CreateBy] = CONCAT(a.AddName,'-',(select Name from Pass1 where id = a.AddName),' ', a.AddDate)
 ,[EditBy] = CONCAT(a.AddName,'-',(select Name from Pass1 where id = a.EditName),' ',a.EditDate)
 from po a WITH (NOLOCK) 
 left join Orders b WITH (NOLOCK) on a.ID = b.POID
-left join ColorFastness c WITH (NOLOCK) on a.ID=c.POID
 outer apply(
 	select value = MAX(InspDate)
 	from ColorFastness cf
@@ -57,8 +53,37 @@ outer apply(
 )MaxInspDate
 where a.id= @PoID
 ";
-            return ExecuteList<FabricColorFastness_ViewModel>(CommandType.Text, sqlcmd, objParameter);
+            var source = ExecuteList<FabricColorFastness_ViewModel>(CommandType.Text, sqlcmd, objParameter);
+
+            string sqlcmd2 = @"
+select *,[LastUpdate] = IIF(c.EditName != '',Concat((select Name from Pass1 where id = c.EditName),' ',c.EditDate)
+	,Concat((select Name from Pass1 where id = c.AddName),' ',c.AddDate))
+from ColorFastness c
+where POID=@PoID
+";
+            var source2 = ExecuteList<ColorFastness_Result>(CommandType.Text, sqlcmd2, objParameter);
+
+            FabricColorFastness_ViewModel result = new FabricColorFastness_ViewModel()
+            {
+                PoID = source.First().PoID,
+                StyleID = source.First().StyleID,
+                BrandID = source.First().BrandID,
+                SeasonID = source.First().SeasonID,
+                CutInLine = source.First().CutInLine,
+                MinSciDelivery = source.First().MinSciDelivery,
+                OvenLaboratoryRemark = source.First().OvenLaboratoryRemark,
+                EarliestDate = source.First().CutInLine,
+                EarliestSCIDel = source.First().MinSciDelivery,
+                ArticlePercent = source.First().ArticlePercent,
+                CompletionDate = source.First().CompletionDate,
+                CreateBy = source.First().CreateBy,
+                EditBy = source.First().EditBy,
+                ColorFastness_MainList = source2.ToList(),
+            };
+
+            return result;
         }
+       
 
         public DateTime? Get_Target_LeadTime(object CUTINLINE, object MinSciDelivery)
         {
@@ -84,7 +109,9 @@ where a.id= @PoID
 
             DateTime? targetSciDel;
 
-            double mtlLeadT = Convert.ToDouble(ExecuteDataTableByServiceConn(CommandType.Text, "Select MtlLeadTime from System WITH (NOLOCK)", null).Rows[0]["MtlLeadTime"]);
+            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, @"Select MtlLeadTime from Production.dbo.System WITH (NOLOCK)", new SQLParameterCollection());
+
+            double mtlLeadT = Convert.ToDouble(dt.Rows[0]["MtlLeadTime"]);
             if (sciDelv == null)
             {
                 return null;
@@ -109,7 +136,7 @@ where a.id= @PoID
             }
         }
 
-        public IList<ColorFastness> Get(string ID)
+        public IList<ColorFastness_Result> Get(string ID)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
@@ -141,7 +168,7 @@ where a.id= @PoID
             SbSql.Append("FROM [ColorFastness]"+ Environment.NewLine);
             SbSql.Append("where ID = @ID" + Environment.NewLine);
 
-            return ExecuteList<ColorFastness>(CommandType.Text, SbSql.ToString(), objParameter);
+            return ExecuteList<ColorFastness_Result>(CommandType.Text, SbSql.ToString(), objParameter);
         }
 
         public int Create(ColorFastness Item)

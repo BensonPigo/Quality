@@ -8,21 +8,27 @@ using System.Web.Mvc;
 
 namespace DatabaseObject.ViewModel.BulkFGT
 {
-    public class FabricColorFastness_ViewModel : ResultModelBase<Fabric_ColorFastness>
+    public class FabricColorFastness_ViewModel: BaseResult
     {
         public string PoID { get; set; }
         public string StyleID { get; set; }
         public string BrandID { get; set; }
         public string SeasonID { get; set; }
+        public DateTime? CutInLine { get; set; }
+        public DateTime? MinSciDelivery { get; set; }
         public DateTime? EarliestDate { get; set; }
         public DateTime? EarliestSCIDel { get; set; }
         public DateTime? TargetLeadTime { get; set; }
         public DateTime? CompletionDate { get; set; }
         public decimal ArticlePercent { get; set; }
-        public string Remark { get; set; }
+        public string OvenLaboratoryRemark { get; set; }
         public string CreateBy { get; set; }
         public string EditBy { get; set; }
+        public string InspectorName { get; set; }
 
+        public List<ColorFastness_Result> ColorFastness_MainList { get; set; }
+
+        // 下拉式選單 List
         public List<SelectListItem> Result_Source
         {
             get
@@ -36,7 +42,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
             set { }
         }
 
-        public List<SelectListItem> Temperature
+        public List<SelectListItem> Temperature_List
         {
             get
             {
@@ -52,7 +58,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
             set { }
         }
 
-        public List<SelectListItem> Cycle
+        public List<SelectListItem> Cycle_List
         {
             get
             {
@@ -69,7 +75,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
             set { }
         }
 
-        public List<SelectListItem> Detergent
+        public List<SelectListItem> Detergent_List
         {
             get
             {
@@ -85,7 +91,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
             set { }
         }
 
-        public List<SelectListItem> Machine
+        public List<SelectListItem> Machine_List
         {
             get
             {
@@ -100,7 +106,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
             set { }
         }
 
-        public List<SelectListItem> Drying
+        public List<SelectListItem> Drying_List
         {
             get
             {
@@ -116,11 +122,11 @@ namespace DatabaseObject.ViewModel.BulkFGT
         }
     }
 
-    public class Fabric_ColorFastness: ColorFastness
+    public class ColorFastness_Result : ColorFastness
     {
         public string LastUpdate { get; set; }
 
-        public string InspectorName { get; set; }
+        public BaseResult baseResult { get; set; }
     }
 
     public class Fabirc_ColorFastness_Detail_ViewModel : ColorFastness_Detail

@@ -14,7 +14,7 @@ namespace BusinessLogicLayer.Interface.BulkFGT
 
         FabricColorFastness_ViewModel Get_Main(string PoID);
 
-        FabricColorFastness_ViewModel GetDetailHeader(string ID);
+        ColorFastness_Result GetDetailHeader(string ID);
 
         IList<Fabirc_ColorFastness_Detail_ViewModel> GetDetailBody(string ID);
 

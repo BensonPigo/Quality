@@ -26,7 +26,8 @@ namespace MICS.DataAccessLayer.Provider.MSSQL
             };
 
             string sqlcmd = @"
-select SubmitDate
+select cd.ID
+, SubmitDate
 ,cd.ColorFastnessGroup
 ,Seq = CONCAT(cd.SEQ1,'-',cd.SEQ2)
 ,cd.SEQ1,cd.SEQ2
@@ -51,14 +52,15 @@ where cd.ID = @ID
         {
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
-                { "@ID", DbType.String, POID } ,
+                { "@POID", DbType.String, POID } ,
                 { "@Seq1", DbType.String, Seq1 } ,
                 { "@Seq2", DbType.String, Seq2 } ,
             };
 
             string sqlcmd = @"
-select SEQ = CONCAT(SEQ1,'-',SEQ2) 
-,SEQ1,SEQ2
+select POID = ID
+,SEQ = CONCAT(SEQ1,'-',SEQ2) 
+,Seq1,Seq2
 ,SCIRefno
 ,Refno
 ,ColorID
@@ -246,10 +248,9 @@ and Seq2 = @Seq2
 
         public class FtyInventory
         {
-            public string ID { get; set; }
+            public string POID { get; set; }
             public string Seq1 { get; set; }
             public string Seq2 { get; set; }
-            public string SCIRefno { get; set; }
             public string Roll { get; set; }
             public string Dyelot { get; set; }
         }
