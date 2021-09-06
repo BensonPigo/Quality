@@ -19,6 +19,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
     public class CartonItem
     {
         public long FinalInspection_OrderCartonUkey { get; set; }
+        public string Article { get; set; }
         public string OrderID { get; set; }
         public string PackinglistID { get; set; }
         public string CTNNo { get; set; }

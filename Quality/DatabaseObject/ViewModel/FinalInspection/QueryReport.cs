@@ -25,5 +25,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string MeasurementUnit { get; set; }
 
         public List<MeasurementViewItem> ListMeasurementViewItem { get; set; }
+
+        public List<SelectOrderShipSeq> ListShipModeSeq { get; set; }
     }
 }
