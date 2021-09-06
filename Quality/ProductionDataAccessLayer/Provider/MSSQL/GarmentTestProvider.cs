@@ -67,8 +67,9 @@ and SeasonID = @SeasonID";
             {
                 { "@BrandID", DbType.String, filter.Brand } ,
                 { "@StyleID", DbType.String, filter.Style } ,
-                { "@SeasonID", DbType.String, filter.Season} ,
-                { "@Article", DbType.String, filter.Article} ,
+                { "@SeasonID", DbType.String, filter.Season } ,
+                { "@Article", DbType.String, filter.Article } ,
+                { "@ID", DbType.String, filter.ID } ,
             };
             string sqlcmd = @"
 select g.ID
@@ -123,14 +124,36 @@ outer apply(
 	and r.Name in ('MATCH TEAMWEAR','BASEBALL ON FIELD','SOFTBALL ON FIELD','TRAINING TEAMWEAR','LACROSSE ONFIELD','AMERIC. FOOT. ON-FIELD','TIRO','BASEBALL OFF FIELD','NCAA ON ICE','ON-COURT','BBALL PERFORMANCE','BRANDED BLANKS','SLD ON-FIELD','NHL ON ICE','SLD ON-COURT')
 )WashName
 where 1=1
-and g.BrandID = @BrandID
-and g.StyleID = @StyleID
-and g.SeasonID = @SeasonID
-and g.Article = @Article" + Environment.NewLine;
+";
             if (!string.IsNullOrEmpty(filter.MDivisionid))
             {
                 objParameter.Add("@MDivisionid", DbType.String, filter.MDivisionid);
-                sqlcmd += " and MDivisionid = @MDivisionid";
+                sqlcmd += " and g.MDivisionid = @MDivisionid" + Environment.NewLine;
+            }
+
+            if (!string.IsNullOrEmpty(filter.Brand))
+            {   
+                sqlcmd += " and g.BrandID = @BrandID" + Environment.NewLine;
+            }
+
+            if (!string.IsNullOrEmpty(filter.Style))
+            {
+                sqlcmd += " and g.StyleID = @StyleID" + Environment.NewLine;
+            }
+
+            if (!string.IsNullOrEmpty(filter.Season))
+            {
+                sqlcmd += " and g.SeasonID = @SeasonID" + Environment.NewLine;
+            }
+
+            if (!string.IsNullOrEmpty(filter.Article))
+            {
+                sqlcmd += " and g.Article = @Article" + Environment.NewLine;
+            }
+
+            if (!string.IsNullOrEmpty(filter.ID))
+            {
+                sqlcmd += " and g.ID = @ID" + Environment.NewLine;
             }
 
             return ExecuteList<GarmentTest_ViewModel>(CommandType.Text, sqlcmd, objParameter);
@@ -139,27 +162,6 @@ and g.Article = @Article" + Environment.NewLine;
         public bool Save_GarmentTest(GarmentTest_ViewModel master, List<GarmentTest_Detail> detail, string UserID)
         {
             bool result = true;
-            // 判斷 no存不存在原本DB
-            //    DB存在    資料存在    update
-            //    DB不存在  資料存在    insert   // NO 直接抓最新一筆新增。
-            //    DB存在    資料不存在  delete
-
-            // GarmentTest 需一並連動 EditName 與 EditDate
-
-
-            #region 產生新的No
-            string sql_MaxNo = $@"select MaxNo = isnull(max(No),0) from GarmentTest_Detail with(nolock) where  id = '{master.ID}'";
-            DataTable dtMaxNo = ExecuteDataTableByServiceConn(CommandType.Text, sql_MaxNo, new SQLParameterCollection());
-            int maxno = Convert.ToInt32(dtMaxNo.Rows[0]["MaxNo"]);
-            foreach (var item in detail)
-            {
-                if (item.No == 0 || item.No == null)
-                {
-                    maxno++;
-                    item.No = maxno;
-                }
-            }
-            #endregion
 
             foreach (var item in detail)
             {
@@ -458,7 +460,11 @@ INSERT INTO GarmentTest_Detail_FGPT
 
                 string inspDate = (item.inspdate == null) ? "Null" : "'" + ((DateTime)item.inspdate).ToString("d") + "'";
 
-                string sqlcmd = string.Empty;
+                string sqlcmd = @"
+update GarmentTest
+set EditDate = GetDate(), EditName = @UserID
+where ID = @ID
+";
                 if (dtDetail.Rows.Count > 0)
                 {
                     sqlcmd += $@"
@@ -481,6 +487,8 @@ and No = @No
                 else
                 {
                     sqlcmd += $@"
+declare @MaxNo int = (select MaxNo = isnull(max(No),0) from GarmentTest_Detail with(nolock) where  id = '{master.ID}')
+
 insert into GarmentTest_Detail(
     ID,No,SizeCode,MtlTypeID,Result,NonSeamBreakageTest,SeamBreakageResult,OdourResult
     ,OrderID
@@ -492,7 +500,9 @@ insert into GarmentTest_Detail(
     ,Status
 )
 values(
-    @ID,@No,@SizeCode,@MtlTypeID,@Result,@NonSeamBreakageTest,@SeamBreakageResult,@OdourResult
+    @ID
+    , @MaxNo +1
+    , @SizeCode,@MtlTypeID,@Result,@NonSeamBreakageTest,@SeamBreakageResult,@OdourResult
     ,@OrderID
     ,@WashResult
     ,@inspector
