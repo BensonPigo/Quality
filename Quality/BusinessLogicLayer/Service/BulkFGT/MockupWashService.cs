@@ -407,10 +407,16 @@ namespace BusinessLogicLayer.Service
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             _MockupWashProvider = new MockupWashProvider(_ISQLDataTransaction);
+            _MockupWashDetailProvider = new MockupWashDetailProvider(_ISQLDataTransaction);
             int count;
             try
             {
                 count = _MockupWashProvider.Delete(MockupWash);
+                foreach (var MockupWash_Detail in MockupWash.MockupWash_Detail)
+                {
+                    count = _MockupWashDetailProvider.Delete(MockupWash_Detail);
+                }
+
                 result.Result = true;
                 _ISQLDataTransaction.Commit();
             }

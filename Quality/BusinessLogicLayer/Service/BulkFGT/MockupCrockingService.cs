@@ -340,10 +340,16 @@ namespace BusinessLogicLayer.Service
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             _MockupCrockingProvider = new MockupCrockingProvider(_ISQLDataTransaction);
+            _MockupCrockingDetailProvider = new MockupCrockingDetailProvider(_ISQLDataTransaction);
             int count;
             try
             {
                 count = _MockupCrockingProvider.Delete(MockupCrocking);
+                foreach (var MockupCrocking_Detail in MockupCrocking.MockupCrocking_Detail)
+                {
+                    count = _MockupCrockingDetailProvider.Delete(MockupCrocking_Detail);
+                }
+
                 result.Result = true;
                 _ISQLDataTransaction.Commit();
             }

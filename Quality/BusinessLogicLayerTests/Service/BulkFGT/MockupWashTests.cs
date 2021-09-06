@@ -220,7 +220,15 @@ namespace BusinessLogicLayer.Service.Tests
             try
             {
                 IMockupWashService _MockupWashService = new MockupWashService();
-                MockupWash_ViewModel MockupWash = new MockupWash_ViewModel() { ReportNo = "T1" };
+                MockupWash_ViewModel MockupWash = new MockupWash_ViewModel()
+                {
+                    ReportNo = "T1",
+                    MockupWash_Detail = new System.Collections.Generic.List<MockupWash_Detail_ViewModel>()
+                    {
+                        new MockupWash_Detail_ViewModel(){Ukey=21860},
+                        new MockupWash_Detail_ViewModel(){Ukey=21861},
+                    }
+                };
 
                 var mockupWash = _MockupWashService.Delete(MockupWash);
                 Assert.IsTrue(true);
