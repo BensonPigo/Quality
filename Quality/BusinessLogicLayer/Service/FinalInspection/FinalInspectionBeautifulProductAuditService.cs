@@ -33,7 +33,6 @@ namespace BusinessLogicLayer.Service
             try
             {
                 _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
-                _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
 
                 DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection =
                     _FinalInspectionProvider.GetFinalInspection(finalInspectionID);
@@ -53,7 +52,6 @@ namespace BusinessLogicLayer.Service
                 }
 
                 beautifulProductAudit.ListBACriteria = _FinalInspectionProvider.GetBeautifulProductAuditForInspection(finalInspectionID).ToList();
-
             }
             catch (Exception ex)
             {

@@ -479,7 +479,7 @@ where   ID = @FinalInspectionID
                             SQLParameterCollection imgParameter = new SQLParameterCollection() {
                             { "@FinalInspectionID", DbType.String, addDefect.FinalInspectionID },
                             { "@FinalInspection_DetailUkey", DbType.Int64, defectItem.Ukey },
-                            { "@Image", image}
+                            { "@Image", image == null ? System.Data.SqlTypes.SqlBinary.Null : image}
                         };
 
                             ExecuteNonQuery(CommandType.Text, sqlInsertFinalInspection_DetailImage, imgParameter);
@@ -507,7 +507,8 @@ order by Seq
 select  [Ukey] = isnull(fn.Ukey, -1),
         [BACriteria] = bac.ID,
         [BACriteriaDesc] = bac.Description,
-        [Qty] = isnull(fn.Qty, 0)
+        [Qty] = isnull(fn.Qty, 0),		
+		[RowIndex]=ROW_NUMBER() OVER(ORDER BY bac.ID) -1
     from #baseBACriteria bac with (nolock)
     left join   FinalInspection_NonBACriteria fn on    fn.ID = @finalInspectionID and
                                                             fn.BACriteria = bac.ID

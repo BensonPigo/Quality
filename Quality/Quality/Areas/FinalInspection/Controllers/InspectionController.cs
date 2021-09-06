@@ -336,9 +336,12 @@ msg.WithInfo('{ex.Message}');
         #endregion
 
         #region AddDefect頁面
-        #endregion
+        //暫存圖片用
+        public static List<FinalInspectionDefectItem> TmpFinalInspectionDefectItem_List;
+
         public ActionResult AddDefect(string FinalInspectionID)
         {
+            TmpFinalInspectionDefectItem_List = new List<FinalInspectionDefectItem>();
             FinalInspectionSettingService SettingService = new FinalInspectionSettingService();
             FinalInspectionAddDefectService Addsevice = new FinalInspectionAddDefectService();
 
@@ -356,9 +359,7 @@ msg.WithInfo('{ex.Message}');
             return View(addDefct);
         }
 
-
-
-        public ActionResult DefectPicture(string DetailUkey)
+        public ActionResult DefectPicture(string DetailUkey, string RowIndex)
         {
             AddDefect MainData = new AddDefect();
             if (TempData["Model"] != null)
@@ -369,82 +370,222 @@ msg.WithInfo('{ex.Message}');
 
             DetailUkey = DetailUkey == null || DetailUkey == string.Empty ? "0" : DetailUkey;
             long FinalInspection_DetailUkey = Convert.ToInt64(DetailUkey);
+            long FinalInspection_RowIndex = Convert.ToInt64(RowIndex);
             FinalInspectionAddDefectService Addsevice = new FinalInspectionAddDefectService();
+
+            //取得該Detail在DB現有的圖片
             List<byte[]> model = Addsevice.GetDefectImage(FinalInspection_DetailUkey);
 
             // 把畫面上User拍的照片加進去，一起顯示
-            List<FinalInspectionDefectItem> currentDetail = MainData.ListFinalInspectionDefectItem.Where(o => o.Ukey == FinalInspection_DetailUkey).ToList();
 
-            if (currentDetail.Any())
+            // DB有的就用Ukey
+            if (FinalInspection_DetailUkey != 0)
             {
-                foreach (var item in currentDetail.FirstOrDefault().ListFinalInspectionDefectImage)
+                foreach (var item in TmpFinalInspectionDefectItem_List.Where(o => o.Ukey == FinalInspection_DetailUkey))
                 {
-                    model.Add(item);
+                    model.Add(item.TempImage);
+                }
+            }
+            else
+            {
+                // DB沒有的就用RowIndex
+                foreach (var item in TmpFinalInspectionDefectItem_List.Where(o => o.RowIndex == FinalInspection_RowIndex))
+                {
+                    model.Add(item.TempImage);
                 }
             }
 
+            return View("FinalInspection_Picture", model);
+        }
+
+        public ActionResult AddDefectTakePicture(string DetailUkey, string RowIndex)
+        {
+            ViewData["DetailUkey"] = DetailUkey;
+            ViewData["RowIndex"] = RowIndex;
+            return View("TakePicture");
+        }
+
+        [HttpPost]
+        public ActionResult AddDefectPicturesTempSave(FinalInspectionDefectItem data)
+        {
+            TmpFinalInspectionDefectItem_List.Add(data);
+            return Json(true);
+        }
+
+        [HttpPost]
+        public ActionResult AddDefect(AddDefect addDefct, string goPage)
+        {
+
+            AddDefect latestModel = new AddDefect();
+            UpdateModel(latestModel);
+
+            addDefct.FinalInspectionID = latestModel.FinalInspectionID;
+            addDefct.RejectQty = latestModel.RejectQty;
+            addDefct.SampleSize = latestModel.SampleSize;
+
+            if (goPage == "Back")
+            {
+                return RedirectToAction("CheckList", new { FinalInspectionID = addDefct.FinalInspectionID });
+            }
+            else if (goPage == "Next")
+            {
+                addDefct.RejectQty = addDefct.RejectQty.HasValue ? addDefct.RejectQty : 0;
+                // 本次新增的圖片全面加入
+                foreach (var item in addDefct.ListFinalInspectionDefectItem)
+                {
+                    long FinalInspection_DetailUkey = item.Ukey;
+                    long RowIndex = item.RowIndex;
+
+                    if (item.Ukey > 0)
+                    {                        var sameUkeyImg = TmpFinalInspectionDefectItem_List.Where(o => o.Ukey == FinalInspection_DetailUkey);
+                        foreach (var data in sameUkeyImg)
+                        {
+                            item.ListFinalInspectionDefectImage.Add(data.TempImage);
+                        }
+                    }
+                    else
+                    {
+                        var sameUkeyImg = TmpFinalInspectionDefectItem_List.Where(o => o.RowIndex == RowIndex);
+                        foreach (var data in sameUkeyImg)
+                        {
+                            item.ListFinalInspectionDefectImage.Add(data.TempImage);
+                        }
+                    }
+                }
+
+                addDefct.InspectionStep = "Insp-AddDefect";
+                FinalInspectionAddDefectService Addsevice = new FinalInspectionAddDefectService();
+                Addsevice.UpdateFinalInspectionDetail(addDefct, this.UserID);
+
+                return RedirectToAction("BeautifulProductAudit", new { FinalInspectionID = addDefct.FinalInspectionID });
+            }
+            return View(addDefct);
+
+        }
+
+        #endregion
+
+        #region Beautiful Product Audit頁面
+        public static List<BACriteriaItem> TmpBACriteriaItem_List;
+        public ActionResult BeautifulProductAudit(string FinalInspectionID)
+        {
+            TmpBACriteriaItem_List = new List<BACriteriaItem>();
+            FinalInspectionBeautifulProductAuditService Service = new FinalInspectionBeautifulProductAuditService();
+
+            BeautifulProductAudit model = new BeautifulProductAudit() { ListBACriteria = new List<BACriteriaItem>() };
+            model = Service.GetBeautifulProductAuditForInspection(FinalInspectionID);
+
+
+            TempData["Model"] = model;
             return View(model);
         }
 
-        public ActionResult TakePicture()
+        public ActionResult BATakePicture(string DetailUkey, string RowIndex)
         {
-            return View();
+            ViewData["DetailUkey"] = DetailUkey;
+            ViewData["RowIndex"] = RowIndex;
+            return View("TakePicture");
+        }
+
+        public ActionResult BAPicture(string DetailUkey, string RowIndex)
+        {
+            BeautifulProductAudit MainData = new BeautifulProductAudit();
+            if (TempData["Model"] != null)
+            {
+                MainData = (BeautifulProductAudit)TempData["Model"];
+            }
+            TempData["Model"] = MainData;
+
+            DetailUkey = DetailUkey == null || DetailUkey == string.Empty ? "0" : DetailUkey;
+            long FinalInspection_DetailUkey = Convert.ToInt64(DetailUkey);
+            long FinalInspection_RowIndex = Convert.ToInt64(RowIndex);
+
+            FinalInspectionBeautifulProductAuditService Service = new FinalInspectionBeautifulProductAuditService();
+
+
+            //取得該Detail在DB現有的圖片
+            List<byte[]> model = Service.GetBACriteriaImage(FinalInspection_DetailUkey);
+
+            // 把畫面上User拍的照片加進去，一起顯示
+
+            // DB有的就用Ukey
+            if (FinalInspection_DetailUkey != 0)
+            {
+                foreach (var item in TmpBACriteriaItem_List.Where(o => o.Ukey == FinalInspection_DetailUkey))
+                {
+                    model.Add(item.TempImage);
+                }
+            }
+            else
+            {
+                // DB沒有的就用RowIndex
+                foreach (var item in TmpBACriteriaItem_List.Where(o => o.RowIndex == FinalInspection_RowIndex))
+                {
+                    model.Add(item.TempImage);
+                }
+            }
+
+            return View("FinalInspection_Picture", model);
         }
 
         [HttpPost]
-        public ActionResult AddDefect(DatabaseObject.ViewModel.FinalInspection.AddDefect addDefct, string goPage)
+        public ActionResult AddBaPicturesTempSave(BACriteriaItem data)
         {
-            if (goPage == "Back")
-            {
-                return RedirectToAction("CheckList");
-            }
-            else if (goPage == "Next")
-            {
-                return RedirectToAction("BeautifulProductAudit");
-            }
-            return View();
-
-        }
-
-        public ActionResult BeautifulProductAudit()
-        {
-            DatabaseObject.ViewModel.FinalInspection.BeautifulProductAudit beautifulProductAudit = new DatabaseObject.ViewModel.FinalInspection.BeautifulProductAudit();
-            beautifulProductAudit.FinalInspectionID = "1";
-            beautifulProductAudit.BAQty = 10;
-            beautifulProductAudit.SampleSize = 2;
-            beautifulProductAudit.ListBACriteria = new List<DatabaseObject.ViewModel.FinalInspection.BACriteriaItem>();
-            DatabaseObject.ViewModel.FinalInspection.BACriteriaItem test1 = new DatabaseObject.ViewModel.FinalInspection.BACriteriaItem();
-            test1.Ukey = 1;
-            test1.BACriteria = "C1";
-            test1.BACriteriaDesc = "Delights consumers";
-            beautifulProductAudit.ListBACriteria.Add(test1);
-
-            DatabaseObject.ViewModel.FinalInspection.BACriteriaItem test2 = new DatabaseObject.ViewModel.FinalInspection.BACriteriaItem();
-            test2.Ukey = 2;
-            test2.BACriteria = "C9";
-            test2.BACriteriaDesc = "Well finished and presented";
-            test2.Qty = 3;
-            beautifulProductAudit.ListBACriteria.Add(test2);
-
-            return View(beautifulProductAudit);
+            TmpBACriteriaItem_List.Add(data);
+            return Json(true);
         }
 
         [HttpPost]
-        public ActionResult BeautifulProductAudit(DatabaseObject.ViewModel.FinalInspection.BeautifulProductAudit beautifulProductAudit, string goPage)
+        public ActionResult BeautifulProductAudit(BeautifulProductAudit Req, string goPage)
         {
+            BeautifulProductAudit latestModel = new BeautifulProductAudit();
+            UpdateModel(latestModel);
+
+            Req.BAQty = latestModel.BAQty;
+            Req.FinalInspectionID = latestModel.FinalInspectionID;
 
             if (goPage == "Back")
             {
-                return RedirectToAction("AddDefect");
+                return RedirectToAction("AddDefect", new { FinalInspectionID = Req.FinalInspectionID });
             }
             else if (goPage == "Next")
             {
-                return RedirectToAction("Moisture");
+                Req.BAQty = Req.BAQty.HasValue ? Req.BAQty.Value: 0;
+                // 本次新增的圖片全面加入
+                foreach (var item in Req.ListBACriteria)
+                {
+                    long FinalInspection_DetailUkey = item.Ukey;
+                    long RowIndex = item.RowIndex;
+
+                    if (item.Ukey > 0)
+                    {
+                        var sameUkeyImg = TmpBACriteriaItem_List.Where(o => o.Ukey == FinalInspection_DetailUkey);
+                        foreach (var data in sameUkeyImg)
+                        {
+                            item.ListBACriteriaImage.Add(data.TempImage);
+                        }
+                    }
+                    else
+                    {
+                        var sameUkeyImg = TmpBACriteriaItem_List.Where(o => o.RowIndex == RowIndex);
+                        foreach (var data in sameUkeyImg)
+                        {
+                            item.ListBACriteriaImage.Add(data.TempImage);
+                        }
+                    }
+                }
+
+                Req.InspectionStep = "Insp-BA";
+                FinalInspectionBeautifulProductAuditService Service = new FinalInspectionBeautifulProductAuditService();
+                Service.UpdateBeautifulProductAudit(Req, this.UserID);
+
+                return RedirectToAction("Moisture", new { FinalInspectionID = Req.FinalInspectionID });
             }
-            return View();
+            return View(Req);
 
         }
 
+        #endregion
         public List<SelectListItem> ItemListBinding(Dictionary<string, string> Options)
         {
             List<SelectListItem> result_itemList = new List<SelectListItem>();

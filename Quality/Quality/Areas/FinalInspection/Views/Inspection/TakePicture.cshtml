@@ -2,7 +2,8 @@
 
 @{
     Layout = null;
-
+    Int64 DetailUkey = ViewData["DetailUkey"] == null ? 0 : Convert.ToInt64(ViewData["DetailUkey"]);
+    Int64 RowIndex = ViewData["RowIndex"] == null ? 0 : Convert.ToInt64(ViewData["RowIndex"]);
 
 }
 
@@ -54,17 +55,21 @@
 <br />
 <header>
     <h3 style="width:85%;float:left;margin:0"></h3>
-    <input id="btnKeep" type="button" value="Keep" />
+    <input id="btnSave" type="button" value="Save" />
     <input id="btnExit" type="button" value="Exit" />
 </header>
 <br />
 <div class="outerDiv" style="margin-right:2%;">
-    <div class="grayDiv">
-        <img Type="Pic"  class="OpenCamera pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Camera.png" />
-        <img id="BeforeDel" class="pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Delete.png" />
 
-    </div>
-    <img id="ImgPic" Type="Pic" style="width:100%;" />
+    @using (Html.BeginForm("TakePicture", "Inspection", FormMethod.Post, new { @id = "TakePictureForm", onsubmit = "return checkValue(this.submitted)" }))
+    {
+        <div class="grayDiv">
+            <img Type="Pic" class="OpenCamera pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Camera.png" />
+            <img id="Del" class="pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Delete.png" />
+
+        </div>
+        <img id="ImgPic" Type="Pic" style="width:100%;" />
+    }
 </div>
 
 @{
@@ -85,15 +90,17 @@
         });
 
 
-        $("#btnKeep").click(function () {
+        $("#btnSave").click(function () {
 
-            var before = document.querySelector("#BeforePic");
+            var Pic = document.querySelector("#ImgPic");
 
             var Picture = {
-                BeforePicture: before.src,
+                DetailUkey: '@DetailUkey',
+                RowIndex : '@RowIndex',
+                Img: Pic.src,
             }
 
-            window.opener.GetPicture(Picture);
+            window.opener.GetImage(Picture);
             window.close();
         });
 
@@ -102,12 +109,9 @@
             window.close();
         });
 
-        $("#BeforeDel").click(function () {
+        $("#Del").click(function () {
 
-            ImgPic
-            // User拍下的圖片
-            const Setting = document.querySelector("#BeforePic");
-
+            $("#ImgPic").removeAttr("src");
         });
 
         CamInit();
@@ -117,7 +121,7 @@
 
     function CamInit() {
         $('.OpenCamera').on('click', function () {
-            debugger
+
             var Type = $(this).attr('Type');
             var sentID = "ImgPic";
             switch (Type) {
