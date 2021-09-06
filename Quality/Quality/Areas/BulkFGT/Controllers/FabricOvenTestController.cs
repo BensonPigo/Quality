@@ -47,6 +47,15 @@ namespace Quality.Areas.BulkFGT.Controllers
             return View(model);
         }
 
+        public ActionResult IndexBack(string POID)
+        {
+
+            FabricOvenTest_Result model = _FabricOvenTestService.GetFabricOvenTest_Result("21051739BB");
+
+            ViewBag.POID = POID;
+            return View("Index",model);
+        }
+
         public ActionResult Detail(string POID, string TestNo,string EditMode)
         {
 
@@ -97,7 +106,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             FabricOvenTest_Detail_Detail detail = new FabricOvenTest_Detail_Detail();
             string html = "";
             html += "<tr>";
-            html += "<td> <input id ='Seq' idx= " + i + " type ='hidden'></input> <input class='date-picker hasDatepicker' data-val='true' data-val-date='欄位 檢驗日期 必須是日期。'  type='text' value=''></td>";
+            html += "<td> <input id ='Seq' idx= " + i + " type ='hidden'></input> <input class='form-control date-picker' type='text' value=''></td>";
             html += "<td><input type='text'></td>"; // group
             html += "<td><input type='text'></td>"; // seq
             html += "<td><input type='text'></td>"; // roll
@@ -105,7 +114,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "<td><input type='text'></td>"; // Refno
             html += "<td><input type='text'></td>"; // SCIRefno
             html += "<td><input type='text'></td>"; // ColorID
-            html += "<td><input  id='Details_" + i + "__Result' name='Details[" + i + "].Result'  class='detailResultColor' type='text'></td>"; // Result
+            html += "<td><input   readonly='readonly'  id='Details_" + i + "__Result' name='Details[" + i + "].Result'  class='detailResultColor' type='text'></td>"; // Result
 
             html += "<td><select ><option value=''></option>"; // ChangeScale
             foreach (string val in model.ScaleIDs)

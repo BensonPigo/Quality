@@ -340,7 +340,7 @@
             $(".rowHeader input[type='text']").attr("disabled", "disabled");
             $(".rowHeader input[type='button']").unbind('click').addClass("IsEditModeQuery");
             $('#btnQuery').addClass("IsEditModeQuery");
-            $("#Edit, #New").removeClass("IsEditMode");
+            $("#Edit, #New").unbind('click').removeClass("IsEditMode");
             $('#Save, #Undo').addClass("IsEditMode");
             $(".DataTable input[type='text']").removeAttr("disabled");
             $(".DetailTable img").addClass('display-None');
@@ -408,7 +408,10 @@
             data: JSON.stringify({ main: main, }),
             async: false,
             success: function (data) {
-                document.getElementById("QueryForm").submit();
+
+
+                location.href = '@Url.Action("IndexBack")?POID=' + document.getElementById("Main_POID").value.trim();
+
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 console.log(xhr.responseText);
@@ -419,7 +422,7 @@
         $('#Undo').on('click', function () {
             EditMode = false;
             IsEditModeChange();
-            $('#btnQuery').click();
+       location.href = '@Url.Action("IndexBack")?POID=' + document.getElementById("Main_POID").value.trim();
         });
 
 
