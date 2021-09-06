@@ -31,8 +31,14 @@ namespace DatabaseObject.ViewModel.BulkFGT
         [Display(Name = "技術人員 名稱")]
         public string TechnicianName { get; set; }
 
+        [Display(Name = "技術人員 ExtNo")]
+        public string TechnicianExtNo { get; set; }
+
         [Display(Name = "業務 名稱")]
         public string MRName { get; set; }
+
+        [Display(Name = "業務 ExtNo")]
+        public string MRExtNo { get; set; }
 
         [Display(Name = "LastEditName")]
         public string LastEditName { get; set; }
