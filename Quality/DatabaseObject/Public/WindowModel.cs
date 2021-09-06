@@ -166,4 +166,6 @@ namespace DatabaseObject.Public
 
         public string CcAddress { get; set; }
     }
+
+
 }

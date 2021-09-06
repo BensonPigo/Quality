@@ -63,8 +63,16 @@ left join (
     and r.Article = oq.Article
     and r.Size = oq.SizeCode
     and r.Location = ol.Location
-where 1=1
-and isnull(r.InspectionQty,0) < oq.Qty
+outer apply (
+	select SizeBalanceQty = count(*)
+	from RFT_Inspection r with(nolock)
+	where r.OrderID = o.ID
+	and r.Article = oq.Article
+	and r.Size = oq.SizeCode
+	and r.Location = ol.Location
+	and Status in ('Pass', 'Fixed')
+)r_Size
+where r_Size.SizeBalanceQty < oq.Qty
 and o.Category = 'S'
 and o.OnSiteSample != 1
 and o.Junk = 0
