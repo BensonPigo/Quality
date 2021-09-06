@@ -13,5 +13,10 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             return View();
         }
+
+        public ActionResult Detail()
+        {
+            return View();
+        }
     }
 }
