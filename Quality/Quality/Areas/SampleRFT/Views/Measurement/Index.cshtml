@@ -249,6 +249,12 @@
         if ('@Model.ErrMsg' != '') {
             msg.WithError('@Model.ErrMsg');
         }
+
+        $('#Find').on('click', function () {
+            if ($('#OrderID').val() == "") {
+                return false;
+            }
+        });
     });
 
 
