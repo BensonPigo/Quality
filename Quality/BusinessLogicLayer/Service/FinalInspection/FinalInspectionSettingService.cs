@@ -53,10 +53,20 @@ namespace BusinessLogicLayer.Service
                 result.AcceptQty = finalInspection.AcceptQty;
 
                 result.SelectedPO = _FinalInspFromPMSProvider.GetSelectedPOForInspection(finalInspectionID).ToList();
+                result.SelectOrderShipSeq = _FinalInspFromPMSProvider.GetSelectOrderShipSeqForSetting(finalInspectionID).ToList();
                 result.SelectCarton = _FinalInspFromPMSProvider.GetSelectedCartonForSetting(finalInspectionID).ToList();
 
                 foreach (SelectedPO selectedPOItem in result.SelectedPO)
                 {
+                    var selectedOrderShipSeq = result.SelectOrderShipSeq.Where(s => s.Selected && s.OrderID == selectedPOItem.OrderID);
+                    if (!selectedOrderShipSeq.Any())
+                    {
+                        continue;
+                    }
+
+                    selectedPOItem.Qty = selectedOrderShipSeq.Sum(s => s.Qty);
+                    selectedPOItem.Article = selectedOrderShipSeq.Select(s => s.Article).JoinToString(",").Split(',').Distinct().JoinToString(",");
+
                     var selectedCartons = result.SelectCarton.Where(s => s.Selected && s.OrderID == selectedPOItem.OrderID);
                     if (!selectedCartons.Any())
                     {
@@ -87,6 +97,7 @@ namespace BusinessLogicLayer.Service
 
                 result.InspectionTimes = _FinalInspectionProvider.GetInspectionTimes(POID);
                 result.SelectedPO = _FinalInspFromPMSProvider.GetSelectedPOForInspection(listOrderID).ToList();
+                result.SelectOrderShipSeq = _FinalInspFromPMSProvider.GetSelectOrderShipSeqForSetting(listOrderID).ToList();
                 result.SelectCarton = _FinalInspFromPMSProvider.GetSelectedCartonForSetting(listOrderID).ToList();
                 result.AcceptableQualityLevels = _FinalInspFromPMSProvider.GetAcceptableQualityLevelsForSetting().ToList();
             }
@@ -197,6 +208,9 @@ namespace BusinessLogicLayer.Service
 
                 var selecedCarton = setting.SelectCarton.Where(s => s.Selected);
                 setting.SelectCarton = selecedCarton.Any() ? selecedCarton.ToList() : new List<SelectCarton>();
+
+                var selectOrderShipSeq = setting.SelectOrderShipSeq.Where(s => s.Selected);
+                setting.SelectOrderShipSeq = selectOrderShipSeq.Any() ? selectOrderShipSeq.ToList() : new List<SelectOrderShipSeq>();
 
                 finalInspectionID = _FinalInspectionProvider.UpdateFinalInspection(setting, UserID, factoryID, MDivisionid);
                 result.Result = true;

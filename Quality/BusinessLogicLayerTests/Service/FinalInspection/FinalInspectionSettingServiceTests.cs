@@ -78,7 +78,7 @@ namespace BusinessLogicLayer.Service.FinalInspectionTests
                 IFinalInspectionSettingService finalInspectionSettingService = new FinalInspectionSettingService();
 
                 Setting setting = finalInspectionSettingService.GetSettingForInspection(this.POID, this.listOrders, factory);
-                setting.AcceptQty = 995;
+                setting.AcceptQty = 0;
                 setting.AcceptableQualityLevelsUkey = "50";
                 setting.AuditDate = DateTime.Now;
                 setting.InspectionStage = "Final";
@@ -86,6 +86,7 @@ namespace BusinessLogicLayer.Service.FinalInspectionTests
                 setting.SewingLineID = "05";
                 setting.SelectCarton[0].Selected = true;
                 setting.SelectCarton[1].Selected = true;
+                setting.SelectOrderShipSeq[0].Selected = true;
                 string result = string.Empty;
                 BaseResult baseResult = finalInspectionSettingService.UpdateFinalInspection(setting, "SCIMIS", this.factory, this.Mdivision, out result);
                 if (!baseResult)
@@ -94,7 +95,8 @@ namespace BusinessLogicLayer.Service.FinalInspectionTests
                 }
 
                 setting = finalInspectionSettingService.GetSettingForInspection("ESPCH21080001");
-                setting.SampleSize = 9527;
+                setting.SampleSize = 0;
+                setting.SelectedPO[0].AvailableQty = 20;
                 setting.SelectCarton[0].Selected = false;
                 setting.SelectCarton[2].Selected = true;
                 baseResult = finalInspectionSettingService.UpdateFinalInspection(setting, "SCIMIS", this.factory, this.Mdivision, out result);
