@@ -66,10 +66,10 @@ namespace DatabaseObject.ProductionDB
         public string EditName { get; set; }
 
         [Display(Name = "TestTemperature")]
-        public decimal TestTemperature { get; set; }
+        public decimal? TestTemperature { get; set; }
 
         [Display(Name = "TestTime")]
-        public decimal TestTime { get; set; }
+        public decimal? TestTime { get; set; }
 
         [Display(Name = "HTPlate")]
         public int? HTPlate { get; set; }
@@ -81,7 +81,7 @@ namespace DatabaseObject.ProductionDB
         public int? HTTime { get; set; }
 
         [Display(Name = "HTPressure")]
-        public decimal HTPressure { get; set; }
+        public decimal? HTPressure { get; set; }
 
         [StringLength(5)]
         [Display(Name = "HTPellOff")]

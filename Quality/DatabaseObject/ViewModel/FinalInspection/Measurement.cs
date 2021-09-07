@@ -12,7 +12,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
 
         public List<SelectListItem> ListArticle { get; set; }
 
-        public List<SelectListItem> ListSize { get; set; }
+        public List<ArticleSize> ListSize { get; set; }
 
         public List<SelectListItem> ListProductType { get; set; }
 
@@ -39,6 +39,12 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string Code { get; set; }
         public long MeasurementUkey { get; set; }
         public bool CanEdit { get; set; }
+    }
+
+    public class ArticleSize
+    {
+        public string Article { get; set; }
+        public string SizeCode { get; set; }
     }
 
     //public class MeasurementView

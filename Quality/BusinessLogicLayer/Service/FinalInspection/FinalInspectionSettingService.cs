@@ -53,10 +53,20 @@ namespace BusinessLogicLayer.Service
                 result.AcceptQty = finalInspection.AcceptQty;
 
                 result.SelectedPO = _FinalInspFromPMSProvider.GetSelectedPOForInspection(finalInspectionID).ToList();
+                result.SelectOrderShipSeq = _FinalInspFromPMSProvider.GetSelectOrderShipSeqForSetting(finalInspectionID).ToList();
                 result.SelectCarton = _FinalInspFromPMSProvider.GetSelectedCartonForSetting(finalInspectionID).ToList();
 
                 foreach (SelectedPO selectedPOItem in result.SelectedPO)
                 {
+                    var selectedOrderShipSeq = result.SelectOrderShipSeq.Where(s => s.Selected && s.OrderID == selectedPOItem.OrderID);
+                    if (!selectedOrderShipSeq.Any())
+                    {
+                        continue;
+                    }
+
+                    selectedPOItem.Qty = selectedOrderShipSeq.Sum(s => s.Qty);
+                    selectedPOItem.Article = selectedOrderShipSeq.Select(s => s.Article).JoinToString(",").Split(',').Distinct().JoinToString(",");
+
                     var selectedCartons = result.SelectCarton.Where(s => s.Selected && s.OrderID == selectedPOItem.OrderID);
                     if (!selectedCartons.Any())
                     {
@@ -87,6 +97,7 @@ namespace BusinessLogicLayer.Service
 
                 result.InspectionTimes = _FinalInspectionProvider.GetInspectionTimes(POID);
                 result.SelectedPO = _FinalInspFromPMSProvider.GetSelectedPOForInspection(listOrderID).ToList();
+                result.SelectOrderShipSeq = _FinalInspFromPMSProvider.GetSelectOrderShipSeqForSetting(listOrderID).ToList();
                 result.SelectCarton = _FinalInspFromPMSProvider.GetSelectedCartonForSetting(listOrderID).ToList();
                 result.AcceptableQualityLevels = _FinalInspFromPMSProvider.GetAcceptableQualityLevelsForSetting().ToList();
             }
@@ -107,6 +118,14 @@ namespace BusinessLogicLayer.Service
             finalInspectionID = string.Empty;
             try
             {
+                // 每個OrderID至少要選擇一個 OrderShipSeq
+                var listNotSelectShipSeq = setting.SelectOrderShipSeq.GroupBy(s => s.OrderID).Where(groupItem => !groupItem.Any(s => s.Selected));
+                if (listNotSelectShipSeq.Any())
+                {
+                    result.Result = false;
+                    result.ErrorMessage = "The following SP has not yet selected Shipmode Seq" + Environment.NewLine + listNotSelectShipSeq.Select(s => s.Key).JoinToString(",");
+                    return result;
+                }
 
                 #region 檢查AQLPlan 重抓Sample Plan Qty
                 if (setting.InspectionStage == "Final" ||
@@ -197,6 +216,9 @@ namespace BusinessLogicLayer.Service
 
                 var selecedCarton = setting.SelectCarton.Where(s => s.Selected);
                 setting.SelectCarton = selecedCarton.Any() ? selecedCarton.ToList() : new List<SelectCarton>();
+
+                var selectOrderShipSeq = setting.SelectOrderShipSeq.Where(s => s.Selected);
+                setting.SelectOrderShipSeq = selectOrderShipSeq.Any() ? selectOrderShipSeq.ToList() : new List<SelectOrderShipSeq>();
 
                 finalInspectionID = _FinalInspectionProvider.UpdateFinalInspection(setting, UserID, factoryID, MDivisionid);
                 result.Result = true;

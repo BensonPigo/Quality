@@ -34,7 +34,9 @@ select  [OrderID] = o.id,
         o.BrandID,
         o.Qty,
         [AvailableQty] = 0,
-        [Cartons] = ''
+        [Cartons] = '',
+        [Seq] = '',
+        [Article] = ''
   from  Orders o with (nolock)
  where  o.id in ({whereOrderID})
 ";
@@ -58,7 +60,7 @@ select  [OrderID] = o.id,
         o.StyleID,
         o.SeasonID,
         o.BrandID,
-        o.Qty,
+        [Qty] = 0,
         [AvailableQty] = fo.AvailableQty,
         [Cartons] = ''
 from  Orders o with (nolock)
@@ -75,7 +77,8 @@ inner join  #FinalInspection_Order fo on fo.OrderID = o.ID
 select  [Selected] = Cast(0 as bit),
         pld.OrderID,
         [PackingListID] = pld.id, 
-        [CTNNo] = CTNStartNo
+        [CTNNo] = CTNStartNo,
+        [Seq] = pld.OrderShipmodeSeq
  from PackingList_Detail pld
  where  pld.OrderID in ({whereOrderID}) and
         CTNQty = 1
@@ -92,7 +95,8 @@ select  [Selected] = Cast(0 as bit),
 select  [Selected] = 1,
         OrderID,
         PackinglistID,
-        CTNNo
+        CTNNo,
+        Seq
 into    #FinalInspection_OrderCarton
 from    [ExtendServer].ManufacturingExecution.dbo.FinalInspection_OrderCarton with (nolock)
 where   ID  =   @finalInspectionID
@@ -105,16 +109,54 @@ where   ID  =   @finalInspectionID
 select  [Selected] = cast(isnull(fc.Selected, 0) as bit),
         pld.OrderID,
         [PackingListID] = pld.id, 
-        [CTNNo] = CTNStartNo
+        [CTNNo] = CTNStartNo,
+        [Seq] = pld.OrderShipmodeSeq
 from PackingList_Detail pld
 left join   #FinalInspection_OrderCarton fc on  fc.OrderID = pld.OrderID and 
                                                 fc.PackinglistID = pld.ID and 
-                                                fc.CTNNo = pld.CTNStartNo
+                                                fc.CTNNo = pld.CTNStartNo and
+                                                fc.Seq = pld.OrderShipmodeSeq
 where   pld.OrderID in (select OrderID from #FinalInspection_Order) and
         pld.CTNQty = 1
 
 ";
             return ExecuteList<SelectCarton>(CommandType.Text, sqlGetData, listPar);
+        }
+
+        public IList<SelectOrderShipSeq> GetSelectOrderShipSeqForSetting(string finalInspectionID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@finalInspectionID", finalInspectionID);
+
+            string sqlGetData = $@"
+select  [Selected] = 1,
+        OrderID,
+        Seq,
+        ShipmodeID
+into    #FinalInspection_Order_QtyShip
+from    [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order_QtyShip with (nolock)
+where   ID  =   @finalInspectionID
+
+select  OrderID
+into    #FinalInspection_Order
+from    [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order with (nolock)
+where   ID  =   @finalInspectionID
+
+select  [Selected] = cast(isnull(foq.Selected, 0) as bit),
+        [OrderID] = oqs.ID,
+        [Seq] = oqs.Seq, 
+        [ShipmodeID] = oqs.ShipmodeID,
+        [Article] = (SELECT Stuff((select distinct concat( ',',Article)   
+                                    from Order_QtyShip_Detail with (nolock) 
+                                    where ID = oqs.ID and Seq = oqs.Seq FOR XML PATH('')),1,1,'') ),
+        [Qty] = oqs.Qty
+from Order_QtyShip oqs with (nolock)
+left join   #FinalInspection_Order_QtyShip foq on   foq.OrderID = oqs.ID and 
+                                                    foq.Seq = oqs.Seq 
+where   oqs.ID in (select OrderID from #FinalInspection_Order)
+
+";
+            return ExecuteList<SelectOrderShipSeq>(CommandType.Text, sqlGetData, listPar);
         }
 
         public IList<AcceptableQualityLevels> GetAcceptableQualityLevelsForSetting()
@@ -176,14 +218,14 @@ select  [Ukey] = isnull(fd.Ukey, -1),
             listPar.Add("@finalInspectionID", finalInspectionID);
 
             string sqlGetMoistureArticleList = @"
-select  OrderID
-into #FinalInspection_Order
-from [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order with (nolock)
+select  OrderID, Seq
+into #FinalInspection_Order_QtyShip
+from [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order_QtyShip with (nolock)
 where ID = @finalInspectionID
 
-select distinct Article 
-from Order_Article with (nolock)
-where id in (select OrderID from #FinalInspection_Order)
+select distinct oqd.Article 
+from Order_QtyShip_Detail oqd with (nolock)
+where exists (select 1 from #FinalInspection_Order_QtyShip where OrderID = oqd.ID and Seq = oqd.Seq )
 ";
 
             DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetMoistureArticleList, listPar);
@@ -214,33 +256,24 @@ type='PMS_MoistureAction'
             return ExecuteList<SelectListItem>(CommandType.Text, sqlGetActionSelectListItem, listPar);
         }
 
-        public List<string> GetSizeList(string finalInspectionID)
+        public IList<ArticleSize> GetArticleSizeList(string finalInspectionID)
         {
             SQLParameterCollection listPar = new SQLParameterCollection();
 
             listPar.Add("@finalInspectionID", finalInspectionID);
 
             string sqlGetMoistureArticleList = @"
-select  OrderID
-into #FinalInspection_Order
-from [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order with (nolock)
+select  OrderID, Seq
+into #FinalInspection_Order_QtyShip
+from [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order_QtyShip with (nolock)
 where ID = @finalInspectionID
 
-select distinct SizeCode 
-from Order_Qty with (nolock)
-where id in (select OrderID from #FinalInspection_Order)
+select distinct oqd.Article, oqd.SizeCode 
+from Order_QtyShip_Detail oqd with (nolock)
+where exists (select 1 from #FinalInspection_Order_QtyShip where OrderID = oqd.ID and Seq = oqd.Seq )
 ";
 
-            DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetMoistureArticleList, listPar);
-
-            if (dtResult.Rows.Count == 0)
-            {
-                return new List<string>();
-            }
-            else
-            {
-                return dtResult.AsEnumerable().Select(s => s["SizeCode"].ToString()).ToList();
-            }
+            return ExecuteList<ArticleSize>(CommandType.Text, sqlGetMoistureArticleList, listPar);
         }
 
         public List<string> GetProductTypeList(string finalInspectionID)
@@ -270,6 +303,25 @@ where OrderId in (select OrderID from #FinalInspection_Order)
             {
                 return dtResult.AsEnumerable().Select(s => s["Location"].ToString()).ToList();
             }
+        }
+
+        public IList<SelectOrderShipSeq> GetSelectOrderShipSeqForSetting(List<string> listOrderID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            string whereOrderID = listOrderID.Select(s => $"'{s}'").JoinToString(",");
+            string sqlGetData = $@"
+select  [Selected] = cast(0 as bit),
+        [OrderID] = oqs.ID,
+        [Seq] = oqs.Seq, 
+        [ShipmodeID] = oqs.ShipmodeID,
+        [Article] = (SELECT Stuff((select distinct concat( ',',Article)   
+                                    from Order_QtyShip_Detail with (nolock) 
+                                    where ID = oqs.ID and Seq = oqs.Seq FOR XML PATH('')),1,1,'') ),
+        [Qty] = oqs.Qty
+from Order_QtyShip oqs with (nolock)
+where   oqs.id in ({whereOrderID})
+";
+            return ExecuteList<SelectOrderShipSeq>(CommandType.Text, sqlGetData, listPar);
         }
     }
 }

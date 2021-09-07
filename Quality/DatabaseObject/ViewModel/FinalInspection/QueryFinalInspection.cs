@@ -14,6 +14,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string StyleID { get; set; }
         public string Season { get; set; }
         public string BrandID { get; set; }
+        public string Article { get; set; }
         public string InspectionTimes { get; set; }
         public string InspectionStage { get; set; }
         public string InspectionResult { get; set; }

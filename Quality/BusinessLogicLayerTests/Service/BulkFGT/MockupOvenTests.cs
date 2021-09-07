@@ -11,20 +11,20 @@ using DatabaseObject.ViewModel.BulkFGT;
 namespace BusinessLogicLayer.Service.Tests
 {
     [TestClass()]
-    public class MockupWashTests
+    public class MockupOvenTests
     {
         [TestMethod()]
-        public void GetMockupWash()
+        public void GetMockupOven()
         {
             try
             {
-                IMockupWashService _MockupWashService = new MockupWashService();
-                MockupWash_Request MockupWash = new MockupWash_Request()
-                { ReportNo = "PHWA190900003" };
-                //{ BrandID = "ADIDAS", SeasonID = "20SS", StyleID = "S201CSPM108", Article = "FL0237" };
-                var mockupWash = _MockupWashService.GetMockupWash(MockupWash);
+                IMockupOvenService _MockupOvenService = new MockupOvenService();
+                MockupOven_Request MockupOven = new MockupOven_Request()
+                //{ ReportNo = "PHOV210900008" };
+                { BrandID = "ADIDAS", SeasonID = "20SS", StyleID = "S201CSPM108", Article = "FL0237" };
+                var mockupOven = _MockupOvenService.GetMockupOven(MockupOven);
 
-                Assert.IsTrue(mockupWash.POID == "TESTPOID233");
+                Assert.IsTrue(mockupOven.POID == "TESTPOID233");
             }
             catch (Exception ex)
             {
@@ -37,7 +37,7 @@ namespace BusinessLogicLayer.Service.Tests
         {
             try
             {
-                IMockupWashService _MockupWashService = new MockupWashService();
+                IMockupOvenService _MockupOvenService = new MockupOvenService();
                 AccessoryRefNo_Request accessoryRefNo_Request = new AccessoryRefNo_Request()
                 {
                     BrandID = "U.ARMOUR",
@@ -45,7 +45,7 @@ namespace BusinessLogicLayer.Service.Tests
                     StyleID = "1342962",
                     //StyleUkey =75468,
                 };
-                var selectListItems = _MockupWashService.GetAccessoryRefNo(accessoryRefNo_Request);
+                var selectListItems = _MockupOvenService.GetAccessoryRefNo(accessoryRefNo_Request);
                 Assert.IsTrue(true);
             }
             catch (Exception ex)
@@ -59,7 +59,7 @@ namespace BusinessLogicLayer.Service.Tests
         {
             try
             {
-                IMockupWashService _MockupWashService = new MockupWashService();
+                IMockupOvenService _MockupOvenService = new MockupOvenService();
                 StyleArtwork_Request StyleArtwork_Request = new StyleArtwork_Request()
                 {
                     BrandID = "U.ARMOUR",
@@ -67,7 +67,7 @@ namespace BusinessLogicLayer.Service.Tests
                     StyleID = "1342962",
                     //StyleUkey =75468,
                 };
-                var selectListItems = _MockupWashService.GetArtworkTypeID(StyleArtwork_Request);
+                var selectListItems = _MockupOvenService.GetArtworkTypeID(StyleArtwork_Request);
                 Assert.IsTrue(selectListItems.Count == 1);
             }
             catch (Exception ex)
@@ -81,8 +81,8 @@ namespace BusinessLogicLayer.Service.Tests
         {
             try
             {
-                IMockupWashService _MockupWashService = new MockupWashService();
-                var orders = _MockupWashService.GetOrders(new Orders() { ID = "21090101IE022" });
+                IMockupOvenService _MockupOvenService = new MockupOvenService();
+                var orders = _MockupOvenService.GetOrders(new Orders() { ID = "21090101IE022" });
                 Assert.IsTrue(orders.Count == 1);
             }
             catch (Exception ex)
@@ -96,12 +96,12 @@ namespace BusinessLogicLayer.Service.Tests
         {
             try
             {
-                IMockupWashService _MockupWashService = new MockupWashService();
+                IMockupOvenService _MockupOvenService = new MockupOvenService();
                 Order_Qty Order_Qty = new Order_Qty()
                 {
                     ID = "21080085IE044",
                 };
-                var x = _MockupWashService.GetDistinctArticle(Order_Qty);
+                var x = _MockupOvenService.GetDistinctArticle(Order_Qty);
                 Assert.IsTrue(x.Count > 0 && x[0].Article == "0001");
             }
             catch (Exception ex)
@@ -115,8 +115,8 @@ namespace BusinessLogicLayer.Service.Tests
         {
             try
             {
-                IMockupWashService _MockupWashService = new MockupWashService();
-                MockupWash_ViewModel MockupWash = new MockupWash_ViewModel()
+                IMockupOvenService _MockupOvenService = new MockupOvenService();
+                MockupOven_ViewModel MockupOven = new MockupOven_ViewModel()
                 {
                     ReportNo = "T1",
                     POID = "TP",
@@ -135,9 +135,7 @@ namespace BusinessLogicLayer.Service.Tests
                     Technician = "SCIMIS",
                     MR = "SCIMIS",
                     AddName = "SCIMIS",
-                    OtherMethod = true,
-                    MethodID = "a",
-                    TestingMethod = "TESTWTF",
+
                     HTPlate = 9,
                     HTFlim = 6,
                     HTTime = 3,
@@ -145,15 +143,15 @@ namespace BusinessLogicLayer.Service.Tests
                     HTPellOff = "POFF",
                     HT2ndPressnoreverse = 2,
                     HT2ndPressreversed = 3,
-                    HTCoolingTime = "66TT",
-                    MockupWash_Detail = new System.Collections.Generic.List<MockupWash_Detail_ViewModel>()
+                    HTCoolingTime = 6,
+                    MockupOven_Detail = new System.Collections.Generic.List<MockupOven_Detail_ViewModel>()
                     {
-                        new MockupWash_Detail_ViewModel(){ReportNo = "T1",TypeofPrint="TTTT1",Design="d100",ArtworkColor="0001",FabricRefNo="RF",AccessoryRefno="AF",FabricColor  = "FCC",Result="Pass",Remark="RRRK",EditName = "SCIMIS"},
-                        new MockupWash_Detail_ViewModel(){ReportNo = "T1",TypeofPrint="TTT22",Design="d200",ArtworkColor="0001",FabricRefNo="RF",AccessoryRefno="AF",FabricColor  = "FCC",Result="Pass",Remark="2RRRK",EditName = "SCIMIS"},
+                        new MockupOven_Detail_ViewModel(){ReportNo = "T1",TypeofPrint="TTTT1",Design="d100",ArtworkColor="0001",FabricRefNo="RF",AccessoryRefno="AF",FabricColor  = "FCC",Result="Pass",Remark="RRRK",EditName = "SCIMIS"},
+                        new MockupOven_Detail_ViewModel(){ReportNo = "T1",TypeofPrint="TTT22",Design="d200",ArtworkColor="0001",FabricRefNo="RF",AccessoryRefno="AF",FabricColor  = "FCC",Result="Pass",Remark="2RRRK",EditName = "SCIMIS"},
                     }
                 };
 
-                var mockupWash = _MockupWashService.Create(MockupWash);
+                var mockupOven = _MockupOvenService.Create(MockupOven);
                 Assert.IsTrue(true);
             }
             catch (Exception ex)
@@ -167,8 +165,8 @@ namespace BusinessLogicLayer.Service.Tests
         {
             try
             {
-                IMockupWashService _MockupWashService = new MockupWashService();
-                MockupWash_ViewModel MockupWash = new MockupWash_ViewModel()
+                IMockupOvenService _MockupOvenService = new MockupOvenService();
+                MockupOven_ViewModel MockupOven = new MockupOven_ViewModel()
                 {
                     ReportNo = "T1",
                     POID = "up",
@@ -187,9 +185,7 @@ namespace BusinessLogicLayer.Service.Tests
                     Technician = "up",
                     MR = "up",
                     EditName = "up",
-                    OtherMethod = false,
-                    MethodID = "b",
-                    TestingMethod = "up",
+
                     HTPlate = 1,
                     HTFlim = 1,
                     HTTime = 1,
@@ -197,15 +193,15 @@ namespace BusinessLogicLayer.Service.Tests
                     HTPellOff = "up",
                     HT2ndPressnoreverse = 1,
                     HT2ndPressreversed = 1,
-                    HTCoolingTime = "up",
-                    MockupWash_Detail = new System.Collections.Generic.List<MockupWash_Detail_ViewModel>()
+                    HTCoolingTime = 77,
+                    MockupOven_Detail = new System.Collections.Generic.List<MockupOven_Detail_ViewModel>()
                     {
-                        new MockupWash_Detail_ViewModel(){TypeofPrint="up",Design="up",ArtworkColor="up",FabricRefNo="up",AccessoryRefno="up",FabricColor  = "up",Result="up",Remark="up",EditName = "up",Ukey=21860},
-                        new MockupWash_Detail_ViewModel(){TypeofPrint="up",Design="up",ArtworkColor="up",FabricRefNo="up",AccessoryRefno="up",FabricColor  = "up",Result="up",Remark="up",EditName = "up",Ukey=21861},
+                        new MockupOven_Detail_ViewModel(){TypeofPrint="up",Design="up",ArtworkColor="up",FabricRefNo="up",AccessoryRefno="up",FabricColor  = "up",Result="up",Remark="up",EditName = "up",Ukey=21860},
+                        new MockupOven_Detail_ViewModel(){TypeofPrint="up",Design="up",ArtworkColor="up",FabricRefNo="up",AccessoryRefno="up",FabricColor  = "up",Result="up",Remark="up",EditName = "up",Ukey=21861},
                     }
                 };
 
-                var mockupWash = _MockupWashService.Update(MockupWash);
+                var mockupOven = _MockupOvenService.Update(MockupOven);
                 Assert.IsTrue(true);
             }
             catch (Exception ex)
@@ -219,18 +215,18 @@ namespace BusinessLogicLayer.Service.Tests
         {
             try
             {
-                IMockupWashService _MockupWashService = new MockupWashService();
-                MockupWash_ViewModel MockupWash = new MockupWash_ViewModel()
+                IMockupOvenService _MockupOvenService = new MockupOvenService();
+                MockupOven_ViewModel MockupOven = new MockupOven_ViewModel()
                 {
                     ReportNo = "T1",
-                    MockupWash_Detail = new System.Collections.Generic.List<MockupWash_Detail_ViewModel>()
+                    MockupOven_Detail = new System.Collections.Generic.List<MockupOven_Detail_ViewModel>()
                     {
-                        new MockupWash_Detail_ViewModel(){Ukey=21860},
-                        new MockupWash_Detail_ViewModel(){Ukey=21861},
+                        new MockupOven_Detail_ViewModel(){Ukey=21860},
+                        new MockupOven_Detail_ViewModel(){Ukey=21861},
                     }
                 };
 
-                var mockupWash = _MockupWashService.Delete(MockupWash);
+                var mockupOven = _MockupOvenService.Delete(MockupOven);
                 Assert.IsTrue(true);
             }
             catch (Exception ex)
@@ -245,14 +241,14 @@ namespace BusinessLogicLayer.Service.Tests
         {
             try
             {
-                IMockupWashService _MockupWashService = new MockupWashService();
-                System.Collections.Generic.List<MockupWash_Detail_ViewModel> MockupWash_Detail = new System.Collections.Generic.List<MockupWash_Detail_ViewModel>()
+                IMockupOvenService _MockupOvenService = new MockupOvenService();
+                System.Collections.Generic.List<MockupOven_Detail_ViewModel> MockupOven_Detail = new System.Collections.Generic.List<MockupOven_Detail_ViewModel>()
                 {
-                    new MockupWash_Detail_ViewModel(){Ukey=21858},
-                    new MockupWash_Detail_ViewModel(){Ukey=21859},
+                    new MockupOven_Detail_ViewModel(){Ukey=21858},
+                    new MockupOven_Detail_ViewModel(){Ukey=21859},
                 };
 
-                var mockupWash = _MockupWashService.DeleteDetail(MockupWash_Detail);
+                var mockupOven = _MockupOvenService.DeleteDetail(MockupOven_Detail);
                 Assert.IsTrue(true);
             }
             catch (Exception ex)
@@ -266,12 +262,12 @@ namespace BusinessLogicLayer.Service.Tests
         {
             try
             {
-                IMockupWashService _MockupWashService = new MockupWashService();
-                MockupWash_Request MockupWash = new MockupWash_Request()
-                { ReportNo = "PHWA190900003" };
+                IMockupOvenService _MockupOvenService = new MockupOvenService();
+                MockupOven_Request MockupOven = new MockupOven_Request()
+                { ReportNo = "PHOV210900008" };
                 //{ BrandID = "ADIDAS", SeasonID = "20SS", StyleID = "S201CSPM108", Article = "FL0237" };
-                var mockupWash = _MockupWashService.GetMockupWash(MockupWash);
-                var result = _MockupWashService.GetPDF(mockupWash, true);
+                var mockupOven = _MockupOvenService.GetMockupOven(MockupOven);
+                _MockupOvenService.GetPDF(mockupOven, true);
             }
             catch (Exception ex)
             {
