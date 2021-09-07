@@ -28,7 +28,6 @@ namespace Quality.Areas.BulkFGT.Controllers
         // GET: BulkFGT/FabricOvenTest
         public ActionResult Index()
         {
-
             FabricOvenTest_Result model = new FabricOvenTest_Result()
             {
                 Main = new FabricOvenTest_Main(),
@@ -41,26 +40,22 @@ namespace Quality.Areas.BulkFGT.Controllers
         [HttpPost]
         public ActionResult Index(string POID)
         {
-
-            FabricOvenTest_Result model = _FabricOvenTestService.GetFabricOvenTest_Result("21051739BB");
-
+            // 21051739BB
+            FabricOvenTest_Result model = _FabricOvenTestService.GetFabricOvenTest_Result(POID);
             ViewBag.POID = POID;
             return View(model);
         }
 
         public ActionResult IndexBack(string POID)
         {
-
-            FabricOvenTest_Result model = _FabricOvenTestService.GetFabricOvenTest_Result("21051739BB");
-
+            FabricOvenTest_Result model = _FabricOvenTestService.GetFabricOvenTest_Result(POID);
             ViewBag.POID = POID;
-            return View("Index",model);
+            return View("Index", model);
         }
 
         public ActionResult Detail(string POID, string TestNo,string EditMode)
         {
-
-            FabricOvenTest_Detail_Result model = _FabricOvenTestService.GetFabricOvenTest_Detail_Result("21051739BB", TestNo);
+            FabricOvenTest_Detail_Result model = _FabricOvenTestService.GetFabricOvenTest_Detail_Result(POID, TestNo);
 
             List<SelectListItem> ScaleIDList = new SetListItem().ItemListBinding(model.ScaleIDs);
             List<SelectListItem> ResultChangeList = new SetListItem().ItemListBinding(Results);
@@ -83,7 +78,36 @@ namespace Quality.Areas.BulkFGT.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        public ActionResult Detail(FabricOvenTest_Detail_Result req)
+        {
+            BaseResult result = _FabricOvenTestService.SaveFabricOvenTestDetail(req, this.UserID);
 
+            FabricOvenTest_Detail_Result model = _FabricOvenTestService.GetFabricOvenTest_Detail_Result(req.Main.POID, req.Main.TestNo);
+
+            List<SelectListItem> ScaleIDList = new SetListItem().ItemListBinding(model.ScaleIDs);
+            List<SelectListItem> ResultChangeList = new SetListItem().ItemListBinding(Results);
+            List<SelectListItem> ResultStainList = new SetListItem().ItemListBinding(Results);
+            List<SelectListItem> TemperatureList = new SetListItem().ItemListBinding(Temperatures);
+            List<SelectListItem> TimeList = new SetListItem().ItemListBinding(Times); 
+            ViewBag.ChangeScaleList = ScaleIDList;
+            ViewBag.ResultChangeList = ResultChangeList;
+            ViewBag.StainingScaleList = ScaleIDList;
+            ViewBag.ResultStainList = ResultStainList;
+            ViewBag.TemperatureList = TemperatureList;
+            ViewBag.TimeList = TimeList;
+            ViewBag.EditMode = false;
+            ViewBag.FactoryID = this.FactoryID;
+
+            return View(model);
+        }
+
+        public JsonResult MainDetailDelete(string ID, string No)
+        {
+            BaseResult result = _FabricOvenTestService.DeleteOven(ID, No);
+
+            return Json(result);
+        }
 
         [HttpPost]
         public JsonResult SaveMaster(FabricOvenTest_Main Main)
@@ -91,8 +115,6 @@ namespace Quality.Areas.BulkFGT.Controllers
             var result = _FabricOvenTestService.SaveFabricOvenTestMain(Main);       
 
             return Json(result);
-
-
         }
 
         [HttpPost]
@@ -174,18 +196,45 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Content(html);
         }
 
-
         [HttpPost]
         public JsonResult Encode_Detail(string POID, string TestNo)
         {
             string ovenTestResult = string.Empty;
-            //BaseResult result = _FabricOvenTestService.EncodeFabricOvenTestDetail(POID, TestNo,out ovenTestResult);
-
-             BaseResult result = new BaseResult();
-            result.Result = true;
-            ovenTestResult = "Fail";
+            BaseResult result = _FabricOvenTestService.EncodeFabricOvenTestDetail(POID, TestNo,out ovenTestResult);
             return Json(new { result.Result, result.ErrorMessage, ovenTestResult });  
         }
 
+        [HttpPost]
+        public JsonResult FailMail(string ID, string No, string TO, string CC)
+        {
+            SendMail_Result result = _FabricOvenTestService.SendFailResultMail(TO, CC, ID, No, false);
+            return Json(result);
+        }
+
+        [HttpPost]
+        public JsonResult Amend_Detail(string POID, string TestNo)
+        {
+            BaseResult result = _FabricOvenTestService.AmendFabricOvenTestDetail(POID, TestNo);
+            return Json(new { result.Result, result.ErrorMessage });
+        }
+
+
+        [HttpPost]
+        public JsonResult Report(string ID, string No, bool IsToPDF)
+        {
+            BaseResult result;
+            string FileName;
+            if (IsToPDF)
+            {
+                result = _FabricOvenTestService.ToPdfFabricOvenTestDetail(ID, No, out FileName, false);
+            }
+            else
+            {
+                result = _FabricOvenTestService.ToExcelFabricOvenTestDetail(ID, No, out FileName, false);
+            }
+
+            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
+            return Json(new { result.Result, result.ErrorMessage, reportPath });
+        }
     }
 }

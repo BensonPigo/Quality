@@ -1216,7 +1216,7 @@
         });
 
         $.ajax({
-            url: "@Url.Action("FailMain", "GarmentTest", new { Area = "BulkFGT" })",
+            url: "@Url.Action("FailMail", "GarmentTest", new { Area = "BulkFGT" })",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({ ID: $('#Detail_ID').val(), No: $('#Detail_No').val(), TO: to, CC: cc }),
