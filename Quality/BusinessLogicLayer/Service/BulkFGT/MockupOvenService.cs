@@ -15,7 +15,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Transactions;
 using System.Web.Mvc;
 
 namespace BusinessLogicLayer.Service
@@ -28,6 +27,7 @@ namespace BusinessLogicLayer.Service
         private IStyleArtworkProvider _IStyleArtworkProvider;
         private IOrdersProvider _OrdersProvider;
         private IOrderQtyProvider _OrderQtyProvider;
+        List<SelectListItem> x = new List<SelectListItem>();
 
         public MockupOven_ViewModel GetMockupOven(MockupOven_Request MockupOven)
         {

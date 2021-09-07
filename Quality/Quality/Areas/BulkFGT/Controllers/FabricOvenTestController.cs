@@ -1,5 +1,6 @@
 ﻿using BusinessLogicLayer.Interface.BulkFGT;
 using BusinessLogicLayer.Service;
+using DatabaseObject;
 using DatabaseObject.ResultModel;
 using FactoryDashBoardWeb.Helper;
 using Quality.Controllers;
@@ -78,6 +79,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.TemperatureList = TemperatureList;
             ViewBag.TimeList = TimeList;
             ViewBag.EditMode = EditMode;
+            ViewBag.FactoryID = this.FactoryID;
             return View(model);
         }
 
@@ -86,9 +88,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         [HttpPost]
         public JsonResult SaveMaster(FabricOvenTest_Main Main)
         {
-            var result = _FabricOvenTestService.SaveFabricOvenTestMain(Main);
-           
-
+            var result = _FabricOvenTestService.SaveFabricOvenTestMain(Main);       
 
             return Json(result);
 
@@ -150,7 +150,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             html += "<td><input type='text'></td>"; // remark
 
-            html += "<td><input type='text'></td>"; // LastUpdate
+            html += "<td></td>"; // LastUpdate
 
 
             html += "<td><select ><option value=''></option>"; // Temperature
@@ -172,6 +172,19 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "</tr>";
 
             return Content(html);
+        }
+
+
+        [HttpPost]
+        public JsonResult Encode_Detail(string POID, string TestNo)
+        {
+            string ovenTestResult = string.Empty;
+            //BaseResult result = _FabricOvenTestService.EncodeFabricOvenTestDetail(POID, TestNo,out ovenTestResult);
+
+             BaseResult result = new BaseResult();
+            result.Result = true;
+            ovenTestResult = "Fail";
+            return Json(new { result.Result, result.ErrorMessage, ovenTestResult });  
         }
 
     }

@@ -668,7 +668,7 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
             {
                 GarmentTest_Detail_Result all_Data = new GarmentTest_Detail_Result();
                 IGarmentTest_Service _Service = new GarmentTest_Service();
-                all_Data = _Service.ToReport("16608", "2", GarmentTest_Service.ReportType.Physical_Test, true);
+                all_Data = _Service.ToReport("16608", "2", GarmentTest_Service.ReportType.Wash_Test_2018, true);
                 Assert.IsTrue(!string.IsNullOrEmpty(all_Data.reportPath));
             }
             catch (Exception ex)
@@ -695,6 +695,54 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
 
                 IGarmentTest_Service _Service = new GarmentTest_Service();
                 Assert.IsTrue(all_Data.Result);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail();
+                throw ex;
+            }
+        }
+
+        [TestMethod()]
+        public void Save_GarmentTestTest1()
+        {
+            try
+            {
+                IGarmentTest_Service _Service = new GarmentTest_Service();
+                GarmentTest_ViewModel result = new GarmentTest_ViewModel();
+                GarmentTest_ViewModel garmentTest_ViewModel =
+                   new GarmentTest_ViewModel
+                   {
+                       ID = 16615,
+                       OrderID = "20032069WW001",
+                       StyleID = "ARWPF20178",
+                       SeasonID = "20FW",
+                       BrandID = "REEBOK",
+                       Article = "FT0FU2340964",
+                       MDivisionid = "VM2",
+                   };
+
+                GarmentTest_Detail detail = new GarmentTest_Detail
+                {
+                    ID = 16615,
+                    No = 3,
+                    Result = "P",
+                    inspdate = Convert.ToDateTime("2021-07-01"),
+                    Remark = "test",
+                    AddName = "EE04284",
+                    AddDate = Convert.ToDateTime("2021-07-08 12:46:35.343"),
+                    EditName = "EE04284",
+                    EditDate = Convert.ToDateTime("2021-07-08 00:00:00.000"),
+                    Status = "New",
+                    SizeCode = "36",
+                    MtlTypeID = "WOVEN",
+                };
+
+                List<GarmentTest_Detail> details = new List<GarmentTest_Detail>();
+                details.Add(detail);
+
+                result = _Service.Save_GarmentTest(garmentTest_ViewModel, details, "SCIMIS");
+                Assert.IsTrue(result.SaveResult);
             }
             catch (Exception ex)
             {

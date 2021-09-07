@@ -7,10 +7,12 @@ namespace MICS.DataAccessLayer.Interface
 {  
     public interface IColorFastnessDetailProvider
     {
-        IList<Fabirc_ColorFastness_Detail_ViewModel> Get_DetailBody(string ID);
+        IList<Fabric_ColorFastness_Detail_Result> Get_DetailBody(string ID);
 
         IList<PO_Supp_Detail> Get_Seq(string POID, string Seq1, string Seq2);
 
         IList<FtyInventory> Get_Roll(string POID, string Seq1, string Seq2);
+
+        bool Save_ColorFastness(Fabric_ColorFastness_Detail_ViewModel source, string Mdivision, string UserID);
     }
 }

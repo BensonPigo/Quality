@@ -50,7 +50,7 @@ select
 ,[Criteria2]
 ,[SystemType]
 ,[EditType] = case 
-	when (Criteria is not null  or Criteria is not null) and IsInPercentage.value !=1 then '1'
+	when (Criteria is not null  or Criteria2 is not null) and IsInPercentage.value !=1 then '1'
 	when Scale is not null and IsInPercentage.value !=1 then '2'
 	else '3' end
 ,[IsInPercentage] = IsInPercentage.value

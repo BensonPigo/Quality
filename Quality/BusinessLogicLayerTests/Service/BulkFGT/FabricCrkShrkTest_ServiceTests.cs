@@ -257,5 +257,171 @@ namespace BusinessLogicLayer.Service.Tests
                 Assert.Fail(ex.ToString());
             }
         }
+
+        [TestMethod()]
+        public void GetFabricCrkShrkTestHeat_ResultTest()
+        {
+            try
+            {
+                IFabricCrkShrkTest_Service fabricCrkShrkTest_Service = new FabricCrkShrkTest_Service();
+                FabricCrkShrkTestHeat_Result result;
+                result = fabricCrkShrkTest_Service.GetFabricCrkShrkTestHeat_Result(this.ID);
+                fabricCrkShrkTest_Service.GetFabricCrkShrkTestHeat_Result(-1);
+
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("No data found"))
+                {
+                    Assert.IsTrue(true);
+                    return;
+                }
+
+                Assert.Fail(ex.ToString());
+            }
+        }
+
+        [TestMethod()]
+        public void SaveFabricCrkShrkTestHeatDetailTest()
+        {
+            try
+            {
+                IFabricCrkShrkTest_Service fabricCrkShrkTest_Service = new FabricCrkShrkTest_Service();
+
+                long testID = this.ID;
+
+                FabricCrkShrkTestHeat_Result fabricCrkShrkTestHeat_Result;
+                fabricCrkShrkTestHeat_Result = fabricCrkShrkTest_Service.GetFabricCrkShrkTestHeat_Result(testID);
+
+                fabricCrkShrkTestHeat_Result.Heat_Detail[0].HorizontalTest1 = 9;
+                fabricCrkShrkTestHeat_Result.Heat_Detail[0].HorizontalTest2 = 9;
+                fabricCrkShrkTestHeat_Result.Heat_Detail[0].HorizontalTest3 = 5;
+                fabricCrkShrkTestHeat_Result.Heat_Detail[0].VerticalTest1 = 9;
+                fabricCrkShrkTestHeat_Result.Heat_Detail[0].VerticalTest2 = 9;
+                fabricCrkShrkTestHeat_Result.Heat_Detail[0].VerticalTest3 = 5;
+                fabricCrkShrkTestHeat_Result.Heat_Detail[0].Remark = "9527";
+
+                BaseResult baseResult = fabricCrkShrkTest_Service.SaveFabricCrkShrkTestHeatDetail(fabricCrkShrkTestHeat_Result, "SCIMIS");
+
+                FabricCrkShrkTestHeat_Result fabricCrkShrkTestHeat_Result2 = fabricCrkShrkTest_Service.GetFabricCrkShrkTestHeat_Result(testID);
+                fabricCrkShrkTestHeat_Result.Heat_Detail.Add(fabricCrkShrkTestHeat_Result2.Heat_Detail[0]);
+                fabricCrkShrkTestHeat_Result.Heat_Detail[fabricCrkShrkTestHeat_Result.Heat_Detail.Count - 1].Roll = "995";
+
+                baseResult = fabricCrkShrkTest_Service.SaveFabricCrkShrkTestHeatDetail(fabricCrkShrkTestHeat_Result, "SCIMIS");
+
+                fabricCrkShrkTestHeat_Result.Heat_Detail.RemoveAt(0);
+
+                baseResult = fabricCrkShrkTest_Service.SaveFabricCrkShrkTestHeatDetail(fabricCrkShrkTestHeat_Result, "SCIMIS");
+
+                if (!baseResult)
+                {
+                    Assert.Fail(baseResult.ErrorMessage);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.ToString());
+            }
+        }
+
+        [TestMethod()]
+        public void EncodeFabricCrkShrkTestHeatDetailTest()
+        {
+            try
+            {
+                IFabricCrkShrkTest_Service fabricCrkShrkTest_Service = new FabricCrkShrkTest_Service();
+                string testResult;
+                BaseResult baseResult = fabricCrkShrkTest_Service.EncodeFabricCrkShrkTestHeatDetail(this.ID, "SCIMIS", out testResult);
+
+                if (!baseResult)
+                {
+                    Assert.Fail(baseResult.ErrorMessage);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.ToString());
+            }
+        }
+
+        [TestMethod()]
+        public void SendHeatFailResultMailTest()
+        {
+            try
+            {
+                IFabricCrkShrkTest_Service fabricCrkShrkTest_Service = new FabricCrkShrkTest_Service();
+
+                SendMail_Result result = fabricCrkShrkTest_Service.SendHeatFailResultMail("aaron.shie@sportscity.com.tw", "aaron.shie@sportscity.com.tw", this.ID, true);
+
+                if (!result.result)
+                {
+                    Assert.Fail(result.resultMsg);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.ToString());
+            }
+        }
+
+        [TestMethod()]
+        public void AmendFabricCrkShrkTestHeatDetailTest()
+        {
+            try
+            {
+                IFabricCrkShrkTest_Service fabricCrkShrkTest_Service = new FabricCrkShrkTest_Service();
+
+                BaseResult baseResult = fabricCrkShrkTest_Service.AmendFabricCrkShrkTestHeatDetail(this.ID);
+
+                if (!baseResult)
+                {
+                    Assert.Fail(baseResult.ErrorMessage);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.ToString());
+            }
+        }
+
+        [TestMethod()]
+        public void ToExcelFabricCrkShrkTestHeatDetailTest()
+        {
+            try
+            {
+                IFabricCrkShrkTest_Service fabricCrkShrkTest_Service = new FabricCrkShrkTest_Service();
+                string excelName;
+                BaseResult baseResult = fabricCrkShrkTest_Service.ToExcelFabricCrkShrkTestHeatDetail(this.ID, out excelName, true);
+
+                if (!baseResult)
+                {
+                    Assert.Fail(baseResult.ErrorMessage);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.ToString());
+            }
+        }
+
+        [TestMethod()]
+        public void GetScaleIDsTest()
+        {
+            try
+            {
+                IFabricCrkShrkTest_Service fabricCrkShrkTest_Service = new FabricCrkShrkTest_Service();
+                List<string> result = fabricCrkShrkTest_Service.GetScaleIDs();
+
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.ToString());
+            }
+        }
     }
 }

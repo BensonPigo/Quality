@@ -200,11 +200,12 @@ namespace DatabaseObject.ResultModel
         public string SkewnessOptionID { get; set; }
         public string DescDetail { get; set; }
         public string WashRemark { get; set; }
+        public bool WashEncode { get; set; }
         public byte[] WashTestBeforePicture { get; set; }
         public byte[] WashTestAfterPicture { get; set; }
     }
 
-    public class FabricCrkShrkTestWash_Detail
+    public class FabricCrkShrkTestWash_Detail : CompareBase
     {
         public string Roll { get; set; }
         public string Dyelot { get; set; }
