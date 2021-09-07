@@ -21,7 +21,8 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public DateTime? TargetLeadTime { get; set; }
         public DateTime? CompletionDate { get; set; }
         public decimal ArticlePercent { get; set; }
-        public string OvenLaboratoryRemark { get; set; }
+        public string ColorFastnessLaboratoryRemark { get; set; }
+
         public string CreateBy { get; set; }
         public string EditBy { get; set; }
         public string InspectorName { get; set; }
@@ -129,11 +130,16 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public BaseResult baseResult { get; set; }
     }
 
-    public class Fabirc_ColorFastness_Detail_ViewModel : ColorFastness_Detail
+    public class Fabric_ColorFastness_Detail_ViewModel
     {
         // 第三層表頭
         public ColorFastness Main { get; set; }
 
+        public List<Fabric_ColorFastness_Detail_Result> Detail { get; set; }
+    }
+
+    public class Fabric_ColorFastness_Detail_Result : ColorFastness_Detail
+    {
         public string Seq { get; set; }
 
         public string Refno { get; set; }

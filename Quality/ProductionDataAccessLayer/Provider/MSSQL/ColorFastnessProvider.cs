@@ -8,6 +8,7 @@ using MICS.DataAccessLayer.Interface;
 using DatabaseObject.ProductionDB;
 using System.Linq;
 using DatabaseObject.ViewModel.BulkFGT;
+using System.Data.SqlClient;
 
 namespace MICS.DataAccessLayer.Provider.MSSQL
 {
@@ -39,7 +40,7 @@ namespace MICS.DataAccessLayer.Provider.MSSQL
 select PoID = a.ID,b.StyleID,b.SeasonID,b.BrandID
 ,b.CutInLine
 ,a.MinSciDelivery
-,a.OvenLaboratoryRemark
+,a.ColorFastnessLaboratoryRemark
 ,[ArticlePercent] = a.LabColorFastnessPercent
 ,[CompletionDate] = MaxInspDate.value
 ,[CreateBy] = CONCAT(a.AddName,'-',(select Name from Pass1 where id = a.AddName),' ', a.AddDate)
@@ -71,7 +72,7 @@ where POID=@PoID
                 SeasonID = source.First().SeasonID,
                 CutInLine = source.First().CutInLine,
                 MinSciDelivery = source.First().MinSciDelivery,
-                OvenLaboratoryRemark = source.First().OvenLaboratoryRemark,
+                ColorFastnessLaboratoryRemark = source.First().ColorFastnessLaboratoryRemark,
                 EarliestDate = source.First().CutInLine,
                 EarliestSCIDel = source.First().MinSciDelivery,
                 ArticlePercent = source.First().ArticlePercent,
@@ -83,7 +84,46 @@ where POID=@PoID
 
             return result;
         }
-       
+
+        public bool Save_PO(string PoID, string Remark)
+        {   
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@PoID", PoID } ,
+                { "@Remark", Remark } ,
+            };
+
+            string sqlcmd = @"
+update PO
+set ColorFastnessLaboratoryRemark = @Remark
+where ID = @PoID
+
+exec UpdateInspPercent 'LabColorFastness',@PoID
+";
+            return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
+        }
+
+        public bool Delete_ColorFastness(string PoID, List<ColorFastness_Result> source)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            FabricColorFastness_ViewModel dbSource = GetMain(PoID);
+            string sqlcmd = string.Empty;
+
+            int idx = 1;
+            foreach (var item in dbSource.ColorFastness_MainList)
+            {
+                if (!source.Where(x => x.ID.Equals(item.ID)).Any())
+                {
+                    objParameter.Add(new SqlParameter($"@ID{idx}", item.ID));
+                    sqlcmd += $@"
+delete from ColorFastness_Detail where id = @ID{idx} 
+delete from ColorFastness where id = @ID{idx} ";
+                    idx++;
+                }
+            }
+
+            return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
+        }
 
         public DateTime? Get_Target_LeadTime(object CUTINLINE, object MinSciDelivery)
         {
