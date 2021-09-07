@@ -15,7 +15,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Transactions;
 using System.Web.Mvc;
 
 namespace BusinessLogicLayer.Service
@@ -29,6 +28,7 @@ namespace BusinessLogicLayer.Service
         private IDropDownListProvider _DropDownListProvider;
         private IOrdersProvider _OrdersProvider;
         private IOrderQtyProvider _OrderQtyProvider;
+        List<SelectListItem> x = new List<SelectListItem>();
 
         public MockupWash_ViewModel GetMockupWash(MockupWash_Request MockupWash)
         {
