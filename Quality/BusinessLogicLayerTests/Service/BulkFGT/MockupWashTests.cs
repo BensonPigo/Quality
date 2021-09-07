@@ -271,7 +271,7 @@ namespace BusinessLogicLayer.Service.Tests
                 { ReportNo = "PHWA190900003" };
                 //{ BrandID = "ADIDAS", SeasonID = "20SS", StyleID = "S201CSPM108", Article = "FL0237" };
                 var mockupWash = _MockupWashService.GetMockupWash(MockupWash);
-                _MockupWashService.GetPDF(mockupWash, true);
+                var result = _MockupWashService.GetPDF(mockupWash, true);
             }
             catch (Exception ex)
             {

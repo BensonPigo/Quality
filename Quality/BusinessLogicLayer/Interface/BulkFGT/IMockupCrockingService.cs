@@ -1,6 +1,7 @@
 ﻿using DatabaseObject;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
+using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using System.Collections.Generic;
 using System.Web.Mvc;
@@ -25,6 +26,6 @@ namespace BusinessLogicLayer.Interface.BulkFGT
 
         BaseResult DeleteDetail(List<MockupCrocking_Detail_ViewModel> MockupWashDetail);
 
-        MockupCrocking_ViewModel GetPDF(MockupCrocking_ViewModel MockupCrocking, bool test = false);
+        Report_Result GetPDF(MockupCrocking_ViewModel MockupCrocking, bool test = false);
     }
 }

@@ -3,6 +3,7 @@ using BusinessLogicLayer.Interface.BulkFGT;
 using DatabaseObject;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
+using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using Library;
 using Microsoft.Office.Interop.Excel;
@@ -130,13 +131,13 @@ namespace BusinessLogicLayer.Service
             }
         }
 
-        public MockupWash_ViewModel GetPDF(MockupWash_ViewModel mockupWash, bool test = false)
+        public Report_Result GetPDF(MockupWash_ViewModel mockupWash, bool test = false)
         {
-            MockupWash_ViewModel result = new MockupWash_ViewModel();
+            Report_Result result = new Report_Result();
             if (mockupWash == null)
             {
-                result.ReportResult = false;
-                result.ReportErrorMessage = "Get Data Fail!";
+                result.Result = false;
+                result.ErrorMessage = "Get Data Fail!";
                 return result;
             }
 
@@ -299,12 +300,12 @@ namespace BusinessLogicLayer.Service
                 if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
                 {
                     result.TempFileName = filepathpdf;
-                    result.ReportResult = true;
+                    result.Result = true;
                 }
                 else
                 {
-                    result.ReportErrorMessage = "Convert To PDF Fail";
-                    result.ReportResult = false;
+                    result.ErrorMessage = "Convert To PDF Fail";
+                    result.Result = false;
                 }
             }
             catch (Exception ex)
