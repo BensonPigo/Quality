@@ -1,7 +1,399 @@
-﻿
+﻿@using DatabaseObject.ViewModel.BulkFGT;
+
 @{
     ViewBag.Title = "Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<link href="~/ThirdParty/plugins/Tabs/nicepage.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/Tabs/nicepage.js"></script>
 
-<h2>Detail</h2>
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+<link href="~/ThirdParty/plugins/jquery-ui/jquery-ui.css" rel="stylesheet" />
 
+@model Fabirc_ColorFastness_Detail_ViewModel
+
+<style type="text/css">
+    .content-scroll {
+        height: calc( 100vh - 110px );
+        overflow: hidden;
+        position: relative;
+        margin-top: 15px;
+    }
+
+    .inner-scroll {
+        height: calc(100vh - 110px);
+        overflow-y: scroll;
+        padding-right: 30px;
+        width: calc(100% + 30px);
+    }
+
+
+    .DataTable {
+        font-size: 1rem;
+        font-weight: bold;
+        border: solid 1px black;
+        background-color: white;
+    }
+
+        .DataTable > tbody > tr:nth-of-type(odd) {
+            background-color: #ffffff;
+        }
+
+        .DataTable > tbody > tr:nth-of-type(even) {
+            background-color: #F0F2F2;
+        }
+
+        .DataTable > tbody > tr > td {
+            border: solid 1px gray;
+            padding: 1em;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+    .White {
+        color: white !important;
+    }
+
+    .Black {
+        color: black !important;
+    }
+
+    .IsEditMode {
+        color: white !important;
+        cursor: pointer;
+    }
+
+    .IsEditModeQuery {
+        color: gray !important;
+        cursor: no-drop;
+    }
+
+    .bigSize {
+        width: 3em;
+        height: 2em;
+    }
+
+    .ReportAction {
+        width: 29vw;
+        height: 29vh;
+        position: absolute;
+        left: 30vw;
+        top: 19vh;
+        z-index: 1042;
+        background-color: #c8eac8;
+        border: solid 1px black;
+        font-size: 1.4em;
+        font-weight: bold;
+    }
+
+        .ReportAction > table > tbody > tr > td {
+            padding: 0.5em;
+        }
+
+            .ReportAction > table > tbody > tr > td > input[type=button] {
+                cursor: pointer;
+            }
+</style>
+
+
+<div class="main-content">
+    <header class="page-header">
+        <h3>
+            <i class="icon-users"></i><span>Fabric Oven Test</span>
+        </h3>
+    </header>
+
+    <div class="main-area">
+        <div class="content-scroll">
+            <div class="inner-scroll">
+                @using (Html.BeginForm("Detail", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { id = "DetailForm" }))
+                {
+                    <div style="margin-top: 1em;">
+                        <table id="ButtonMode">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <h4 id="Exit" style=" margin-right: 1em;width:5vw ">
+                                            <a href="@Url.Action("IndexBack", "FabricColorFastness", new { POID = Model.Main.POID})">
+                                                <img src="~/Image/Icon/Exit.png" width="30" />
+                                                Exit
+                                            </a>
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 id="Edit" style=" margin-right: 1em;; width: 5vw">
+                                            <img src="~/Image/Icon/Edit.png" width="30" />
+                                            Edit
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 id="Save" style=" margin-right: 1em; width: 6vw">
+                                            <img src="~/Image/Icon/Save.png" width="30" />
+                                            Save
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 id="Encode" style=" margin-right: 1em; width: 7vw;">
+                                            <img src="~/Image/Icon/Lock.png" width="30" />
+                                            Encode
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 id="Amend" style=" margin-right: 1em; width: 7vw;">
+                                            <img src="~/Image/Icon/Unlock.png" width="30" />
+                                            Amend
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 id="Excel" style=" margin-right: 1em; width: 6vw;">
+                                            <img src="~/Image/Icon/XLS.png" width="30" />
+                                            Excel
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 id="PDF" style=" margin-right: 1em; width: 5vw;">
+                                            <img src="~/Image/Icon/PDF.png" width="30" />
+                                            PDF
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 id="Picture" style=" margin-right: 1em; width: 7vw;">
+                                            <img src="~/Image/Icon/Camera.png" width="30" />
+                                            Picture
+                                        </h4>
+                                    </td>
+                                    <td style="width: 14vw;">
+                                    </td>
+                                    <td align="right">
+                                        <h4 id="New">
+                                            <img src="~/Image/Icon/New.png" width="30" />
+                                            New Item
+                                        </h4>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="margin-top: 1em;">
+                        <table class="DataTable">
+                            <tbody>
+                                <tr>
+                                    <td style="width: 10vw;"><h5>No of Test#</h5></td>
+                                    <td style="width: 20vw;">
+                                        @Html.DisplayFor(o => o.Main.TestNo, "", "")
+                                        @Html.HiddenFor(o => o.Main.TestNo)
+                                    </td>
+                                    <td style="width: 10vw;"><h5>SP#</h5></td>
+                                    <td style="width: 28vw;">
+                                        @Html.DisplayFor(o => o.Main.POID, "", "")
+                                        @Html.HiddenFor(o => o.Main.POID)
+                                    </td>
+
+                                    <td style="width: 10vw;"><h5>TestDate</h5></td>
+
+                                    <td style="width: 15vw;">
+                                        @Html.TextBoxFor(o => Model.Main.InspDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><h5>Article</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => Model.Main.Article, "", new { @style = "width: 12vw" })
+                                        <input id="btnDetailArticleSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                    </td>
+                                    <td><h5>Inspector</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => Model.Main.Inspector, "", new { @style = "width: 7vw" })
+                                        @*    @Html.TextBoxFor(o => Model.Main.InspectorName, "", new { @readonly = "readonly", @style = "width: 8vw" })*@
+
+                                        <input id="btnDetailInspectorSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                    </td>
+
+                                    <td><h5>Temperature(˚C)</h5></td>
+                                    <td>
+                                        @Html.DropDownListFor(o => o.Main.Temperature, (List<SelectListItem>)ViewBag.Temperature_List, null, null)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><h5>Cycle</h5></td>
+                                    <td>
+                                        @Html.DropDownListFor(o => o.Main.Cycle, (List<SelectListItem>)ViewBag.Cycle_List, null, null)
+                                    </td>
+                                    <td><h5>Detergent</h5></td>
+                                    <td>
+                                        @Html.DropDownListFor(o => o.Main.Detergent, (List<SelectListItem>)ViewBag.Detergent_List, null, null)
+                                    </td>
+
+                                    <td><h5>Machine Used</h5></td>
+                                    <td>
+                                        @Html.DropDownListFor(o => o.Main.Machine, (List<SelectListItem>)ViewBag.Machine_List, null, new { @class = "form-control", id = "dropArticle" })
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><h5>Drying Process</h5></td>
+                                    <td>
+                                        @Html.DropDownListFor(o => o.Main.Drying, (List<SelectListItem>)ViewBag.Drying_List, null, null)
+                                    </td>
+                                    @{
+                                        string ResultColor = Model.Main.Result == "Pass" ? "blue" : "red";
+                                    }
+                                    <td><h5>Result</h5></td>
+                                    <td class="@ResultColor">
+                                        @Html.DisplayFor(o => o.Main.Result, "", "")
+                                    </td>
+                                    <td><h5>Remark</h5></td>
+                                    <td colspan="5">
+                                        @Html.TextBoxFor(o => o.Main.Remark, "", "")
+                                        @Html.HiddenFor(o => o.Main.TestBeforePicture)
+                                        @Html.HiddenFor(o => o.Main.TestAfterPicture)
+                                        @Html.HiddenFor(o => o.Main.Status)
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var msg;
+
+    var EditMode;
+    $(function () {
+        msg = new MessagerAlert();
+        EditMode = ('@ViewBag.EditMode' == 'True');
+        IsEditModeChange();
+    });
+
+    function IsEditModeChange() {
+        EditModeButtionBind();
+
+        if (EditMode) {
+            $("#Edit,#Encode").removeClass("IsEditMode");
+            $('#Save, #New').addClass("IsEditMode");
+            $(".DataTable input[type='text'], .DetailTable select").removeAttr("disabled");
+            $('#Encode').unbind('click');
+            $(".DetailTable img").removeClass('display-None');
+            DetailButtonBind();
+
+        }
+        else {
+            $(".DetailTable img").addClass('display-None');
+            $('#Save').unbind('click').removeClass("IsEditMode");
+            $(".DataTable input[type='text'], .DetailTable select").attr("disabled", "disabled");
+
+
+            $('#Edit, #Encode').addClass("IsEditMode");
+
+            //if ($('#Main_Status').val() == "New") {
+            //    $('#Edit, #Encode').addClass("IsEditMode");
+            //}
+            //else
+            //{
+            //    $('#Edit, #Encode').unbind('click');
+
+            //}
+
+            if ($('#Main_Status').val() == "Confirmed") {
+                $('#Amend').addClass("IsEditMode");
+            }
+        }
+
+        $('#Picture').addClass("IsEditMode");
+    }
+
+
+        function DetailButtonBind() {
+            $('#btnDetailArticleSelectItem').on('click', function () {
+                var para = "?OrderID=" + $('#Main_POID').val() + "&StyleUkey=0";
+                 window.open('@Url.Action("ArticleList","PublicWondow",new{Area=""})' + para,'Article',config='toolbar=no,status=no,location=no,width=400,height=650');
+            });
+
+              $('#btnDetailInspectorSelectItem').on('click', function () {
+                window.open('@Url.Action("Pass1List","PublicWondow",new{Area=""})','Inspector',config='toolbar=no,status=no,location=no,width=1000,height=650');
+              });
+
+
+
+            $('#Main_Article').blur(function () {
+
+            var OrderID = $('#Main_POID').val();
+
+            $.ajax({
+                url: "@Url.Action("ArticleList", "PublicWondow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ OrderID: OrderID, StyleUkey: 0, Article: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Main_Article").val('');
+                        msg.WithError('Article Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+    });
+
+
+          $('#Main_Inspector').blur(function () {
+
+            $.ajax({
+                url: "@Url.Action("Pass1List", "PublicWondow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Main_Inspector").val('');
+                        $("#Main_InspectorName").val('');
+                        msg.WithError('Inspector Not Found');
+                    }
+                    else
+                    {
+                        $("#Main_InspectorName").val(data[0].Name);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+    }
+
+
+      function EditModeButtionBind() {
+
+          $('#Edit').on('click', function () {
+                  EditMode = true;
+                  IsEditModeChange();
+              
+          });
+
+             }
+
+
+
+
+
+            function GetArticleList(data) {
+                $('#Main_Article').val(data);
+            }
+
+            function GetPass1(data) {
+
+                $('#Main_Inspector').val(data.ID);
+                $('#Main_InspectorName').val(data.Name );
+            }
+
+
+</script>
