@@ -10,6 +10,7 @@ using MICS.DataAccessLayer.Interface;
 using MICS.DataAccessLayer.Provider.MSSQL;
 using DatabaseObject.ViewModel.BulkFGT;
 using DatabaseObject;
+using DatabaseObject.ProductionDB;
 
 namespace BusinessLogicLayer.Service.BulkFGT.Tests
 {
@@ -128,12 +129,39 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
                 List<ColorFastness_Result> _ColorFastness = new List<ColorFastness_Result>();
                 ColorFastness_Result s = new ColorFastness_Result
                 {
-                    ID= "VM2CF21090002",
+                    ID = "VM2CF21090002",
                 };
 
                 _ColorFastness.Add(s);
                 BaseResult result = service.Save_ColorFastness_1stPage("21041712BB", "Test", _ColorFastness);
                 Assert.IsTrue(result.Result);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.ToString());
+            }
+        }
+
+        [TestMethod()]
+        public void Save_ColorFastness_2ndPageTest1()
+        {
+            try
+            {
+                IFabricColorFastness_Service service = new FabricColorFastness_Service();
+                Fabric_ColorFastness_Detail_ViewModel ss = new Fabric_ColorFastness_Detail_ViewModel();
+                ColorFastness s1 = new ColorFastness
+                {
+                    POID= "21041712BB",
+                };
+
+                ColorFastness_Result s = new ColorFastness_Result
+                {
+                    ID = "VM2CF21090002",
+                };
+
+                //_ColorFastness.Add(s);
+                //BaseResult result = service.Save_ColorFastness_1stPage("21041712BB", "Test",);
+                //Assert.IsTrue(result.Result);
             }
             catch (Exception ex)
             {
