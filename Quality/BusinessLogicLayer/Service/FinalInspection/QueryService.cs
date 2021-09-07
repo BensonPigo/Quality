@@ -83,6 +83,8 @@ namespace BusinessLogicLayer.Service.FinalInspection
 
                 queryReport.ListCartonInfo = _FinalInspectionProvider.GetListCartonInfo(finalInspectionID).ToList();
 
+                queryReport.ListShipModeSeq = _FinalInspectionProvider.GetListShipModeSeq(finalInspectionID).ToList();
+
                 queryReport.ListViewMoistureResult = _FinalInspectionProvider.GetViewMoistureResult(finalInspectionID).ToList();
 
                 queryReport.ListMeasurementViewItem = _FinalInspectionProvider.GetMeasurementViewItem(finalInspectionID).ToList();

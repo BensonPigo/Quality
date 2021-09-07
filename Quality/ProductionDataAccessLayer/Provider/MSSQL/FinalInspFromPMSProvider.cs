@@ -219,14 +219,14 @@ select  [Ukey] = isnull(fd.Ukey, -1),
             listPar.Add("@finalInspectionID", finalInspectionID);
 
             string sqlGetMoistureArticleList = @"
-select  OrderID
-into #FinalInspection_Order
-from [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order with (nolock)
+select  OrderID, Seq
+into #FinalInspection_Order_QtyShip
+from [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order_QtyShip with (nolock)
 where ID = @finalInspectionID
 
-select distinct Article 
-from Order_Article with (nolock)
-where id in (select OrderID from #FinalInspection_Order)
+select distinct oqd.Article 
+from Order_QtyShip_Detail oqd with (nolock)
+where exists (select 1 from #FinalInspection_Order_QtyShip where OrderID = oqd.ID and Seq = oqd.Seq )
 ";
 
             DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetMoistureArticleList, listPar);
@@ -264,14 +264,14 @@ type='PMS_MoistureAction'
             listPar.Add("@finalInspectionID", finalInspectionID);
 
             string sqlGetMoistureArticleList = @"
-select  OrderID
-into #FinalInspection_Order
-from [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order with (nolock)
+select  OrderID, Seq
+into #FinalInspection_Order_QtyShip
+from [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order_QtyShip with (nolock)
 where ID = @finalInspectionID
 
-select distinct SizeCode 
-from Order_Qty with (nolock)
-where id in (select OrderID from #FinalInspection_Order)
+select distinct oqd.SizeCode 
+from Order_QtyShip_Detail oqd with (nolock)
+where exists (select 1 from #FinalInspection_Order_QtyShip where OrderID = oqd.ID and Seq = oqd.Seq )
 ";
 
             DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetMoistureArticleList, listPar);

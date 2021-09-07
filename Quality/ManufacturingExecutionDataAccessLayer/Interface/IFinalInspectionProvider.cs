@@ -54,5 +54,7 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         DataTable GetQueryReportInfo(string finalInspectionID);
 
         IList<FinalInspection_OrderCarton> GetListCartonInfo(string finalInspectionID);
+
+        IList<SelectOrderShipSeq> GetListShipModeSeq(string finalInspectionID);
     }
 }

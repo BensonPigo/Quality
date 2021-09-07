@@ -1,4 +1,5 @@
-﻿using DatabaseObject.ProductionDB;
+﻿using DatabaseObject;
+using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using System.Collections.Generic;
@@ -18,11 +19,13 @@ namespace BusinessLogicLayer.Interface.BulkFGT
 
         List<Order_Qty> GetDistinctArticle(Order_Qty Orders);
 
-        MockupOven_ViewModel Create(MockupOven_ViewModel MockupOven);
+        BaseResult Create(MockupOven_ViewModel MockupOven);
 
-        MockupOven_ViewModel Update(MockupOven_ViewModel MockupOven);
+        BaseResult Update(MockupOven_ViewModel MockupOven);
 
-        MockupOven_ViewModel Delete(MockupOven_ViewModel MockupOven);
+        BaseResult Delete(MockupOven_ViewModel MockupOven);
+
+        BaseResult DeleteDetail(List<MockupOven_Detail_ViewModel> MockupWashDetail);
 
         MockupOven_ViewModel GetPDF(MockupOven_ViewModel MockupOven, bool test = false);
     }

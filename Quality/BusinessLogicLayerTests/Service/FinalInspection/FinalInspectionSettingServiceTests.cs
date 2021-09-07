@@ -97,8 +97,9 @@ namespace BusinessLogicLayer.Service.FinalInspectionTests
                 setting = finalInspectionSettingService.GetSettingForInspection("ESPCH21080001");
                 setting.SampleSize = 0;
                 setting.SelectedPO[0].AvailableQty = 20;
-                setting.SelectCarton[0].Selected = false;
+                setting.SelectCarton[0].Selected = true;
                 setting.SelectCarton[2].Selected = true;
+                setting.SelectOrderShipSeq[0].Selected = true;
                 baseResult = finalInspectionSettingService.UpdateFinalInspection(setting, "SCIMIS", this.factory, this.Mdivision, out result);
                 if (!baseResult)
                 {
