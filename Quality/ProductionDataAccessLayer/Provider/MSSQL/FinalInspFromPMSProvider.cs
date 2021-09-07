@@ -256,7 +256,7 @@ type='PMS_MoistureAction'
             return ExecuteList<SelectListItem>(CommandType.Text, sqlGetActionSelectListItem, listPar);
         }
 
-        public List<string> GetSizeList(string finalInspectionID)
+        public IList<ArticleSize> GetArticleSizeList(string finalInspectionID)
         {
             SQLParameterCollection listPar = new SQLParameterCollection();
 
@@ -268,21 +268,12 @@ into #FinalInspection_Order_QtyShip
 from [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order_QtyShip with (nolock)
 where ID = @finalInspectionID
 
-select distinct oqd.SizeCode 
+select distinct oqd.Article, oqd.SizeCode 
 from Order_QtyShip_Detail oqd with (nolock)
 where exists (select 1 from #FinalInspection_Order_QtyShip where OrderID = oqd.ID and Seq = oqd.Seq )
 ";
 
-            DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetMoistureArticleList, listPar);
-
-            if (dtResult.Rows.Count == 0)
-            {
-                return new List<string>();
-            }
-            else
-            {
-                return dtResult.AsEnumerable().Select(s => s["SizeCode"].ToString()).ToList();
-            }
+            return ExecuteList<ArticleSize>(CommandType.Text, sqlGetMoistureArticleList, listPar);
         }
 
         public List<string> GetProductTypeList(string finalInspectionID)
