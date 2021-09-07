@@ -793,7 +793,7 @@
                 msg.WithError("＜Accepted Qty＞ cannot be empty.");
                 return false;
             }
-
+            ShowLoading();
             //*保存前檢查[Choose Inspection Stage]選擇 Final或3rd Party時，若AQL Plan為空白則顯示
             //<AQL Plan>thiscannot be empty.
             //var inspectionStage = $("#InspectionStage").val();

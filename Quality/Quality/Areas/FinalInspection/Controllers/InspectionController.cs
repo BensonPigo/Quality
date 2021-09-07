@@ -251,7 +251,7 @@ msg.WithInfo('{ex.Message}');
             if (!setting.AcceptQty.HasValue)
             {
                 setting.ErrorMessage = $@"
-msg.WithError('Accepted Qty cnt't be empty.');
+msg.WithError(""Accepted Qty cant't be empty."");
 ";
                 return View("Setting", setting);
             }
@@ -259,7 +259,7 @@ msg.WithError('Accepted Qty cnt't be empty.');
             if (setting.SelectedPO != null &&  setting.SelectedPO.Where(o => string.IsNullOrEmpty(o.Seq)).Any())
             {
                 setting.ErrorMessage = $@"
-msg.WithError('Shipmode Seq cnt't be empty.');
+msg.WithError(""Shipmode Seq cant't be empty."");
 ";
                 return View("Setting", setting);
             }
