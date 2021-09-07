@@ -86,7 +86,10 @@ namespace BusinessLogicLayer.Service.FinalInspectionTests
                 setting.SewingLineID = "05";
                 setting.SelectCarton[0].Selected = true;
                 setting.SelectCarton[1].Selected = true;
-                setting.SelectOrderShipSeq[0].Selected = true;
+                foreach (var item in setting.SelectOrderShipSeq)
+                {
+                    item.Selected = true;
+                }
                 string result = string.Empty;
                 BaseResult baseResult = finalInspectionSettingService.UpdateFinalInspection(setting, "SCIMIS", this.factory, this.Mdivision, out result);
                 if (!baseResult)
@@ -99,7 +102,10 @@ namespace BusinessLogicLayer.Service.FinalInspectionTests
                 setting.SelectedPO[0].AvailableQty = 20;
                 setting.SelectCarton[0].Selected = true;
                 setting.SelectCarton[2].Selected = true;
-                setting.SelectOrderShipSeq[0].Selected = true;
+                foreach (var item in setting.SelectOrderShipSeq)
+                {
+                    item.Selected = true;
+                }
                 baseResult = finalInspectionSettingService.UpdateFinalInspection(setting, "SCIMIS", this.factory, this.Mdivision, out result);
                 if (!baseResult)
                 {

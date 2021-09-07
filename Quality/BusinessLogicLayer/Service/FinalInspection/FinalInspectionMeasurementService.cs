@@ -44,12 +44,7 @@ namespace BusinessLogicLayer.Service
                                 Text = s,
                                 Value = s,
                             }).ToList();
-                measurement.ListSize = _FinalInspFromPMSProvider.GetSizeList(finalInspectionID)
-                            .Select(s => new SelectListItem()
-                            {
-                                Text = s,
-                                Value = s,
-                            }).ToList();
+                measurement.ListSize = _FinalInspFromPMSProvider.GetArticleSizeList(finalInspectionID).ToList();
                 measurement.ListProductType = _FinalInspFromPMSProvider.GetProductTypeList(finalInspectionID)
                             .Select(s => new SelectListItem()
                             {
