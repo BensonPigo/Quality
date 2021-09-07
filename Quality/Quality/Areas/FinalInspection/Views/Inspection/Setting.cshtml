@@ -280,6 +280,11 @@
         }
 
         $(function () {
+
+            @Html.Raw(Model.ErrorMessage);
+
+
+
             $("#SewingLineID").on('click', function () {
                 window.open('@Url.Action("SewingLineList", "PublicWondow",new { Area=""})' + '?FactoryID=@ViewBag.FactoryID', 'SewingLineList', config = 'toolbar=no,status=no,location=no,width=400,height=650' );
             });
@@ -768,7 +773,8 @@
         }
 
         function checkSubmitValue() {
-            if (onSampleSizeChange(document.getElArticleArArticleiclerticlerticlementById("InspectionStage").value) == false) {
+            
+            if (onSampleSizeChange(document.getElementById("InspectionStage").value) == false) {
                 return false;
             }
 
@@ -784,7 +790,7 @@
             //*保存前檢查[Accepted Qty]是否有輸入，若沒有則顯示
             //<Accepted Qty> cannot be empty.
             if ($("#AcceptQty").val() == "") {
-                msg.WithError("<Accepted Qty> cannot be empty.");
+                msg.WithError("＜Accepted Qty＞ cannot be empty.");
                 return false;
             }
 

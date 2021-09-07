@@ -36,7 +36,7 @@ select  [OrderID] = o.id,
         [AvailableQty] = 0,
         [Cartons] = '',
         [Seq] = '',
-        [Article] = ''
+        [Article] = (SELECT Stuff((select concat( ',',Article)   from Order_Article where ID = o.ID FOR XML PATH('')),1,1,'') )
   from  Orders o with (nolock)
  where  o.id in ({whereOrderID})
 ";

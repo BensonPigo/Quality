@@ -229,16 +229,7 @@ msg.WithInfo('{ex.Message}');
 
             string finalInspectionID = string.Empty;
 
-            // Setting存檔，並取得 finalInspectionID
-            BaseResult result = sevice.UpdateFinalInspection(setting, this.UserID, this.FactoryID, this.MDivisionID, out finalInspectionID);
-
-            // 錯誤回到Setting頁
-            if (!result)
-            {
-                setting.ErrorMessage = result.ErrorMessage;
-
-
-                ViewBag.InspectionStageList = new List<SelectListItem>()
+            ViewBag.InspectionStageList = new List<SelectListItem>()
                 {
                     new SelectListItem(){Text="Inline",Value="Inline"},
                     new SelectListItem(){Text="Stagger",Value="Stagger"},
@@ -246,7 +237,7 @@ msg.WithInfo('{ex.Message}');
                     new SelectListItem(){Text="3rd Party",Value="3rd Party"},
                 };
 
-                ViewBag.AQLPlanList = new List<SelectListItem>()
+            ViewBag.AQLPlanList = new List<SelectListItem>()
                 {
                     new SelectListItem(){Text="",Value=""},
                     new SelectListItem(){Text="1.0 Level I",Value="1.0 Level I"},
@@ -255,6 +246,31 @@ msg.WithInfo('{ex.Message}');
                     new SelectListItem(){Text="2.5 Level I",Value="2.5 Level I"},
                     new SelectListItem(){Text="100% Inspection",Value="100% Inspection"},
                 };
+
+
+            if (!setting.AcceptQty.HasValue)
+            {
+                setting.ErrorMessage = $@"
+msg.WithError('Accepted Qty cnt't be empty.');
+";
+                return View("Setting", setting);
+            }
+
+            if (setting.SelectedPO != null &&  setting.SelectedPO.Where(o => string.IsNullOrEmpty(o.Seq)).Any())
+            {
+                setting.ErrorMessage = $@"
+msg.WithError('Shipmode Seq cnt't be empty.');
+";
+                return View("Setting", setting);
+            }
+
+            // Setting存檔，並取得 finalInspectionID
+            BaseResult result = sevice.UpdateFinalInspection(setting, this.UserID, this.FactoryID, this.MDivisionID, out finalInspectionID);
+
+            // 錯誤回到Setting頁
+            if (!result)
+            {
+                setting.ErrorMessage = result.ErrorMessage;
 
                 return View("Setting", setting);
             }
