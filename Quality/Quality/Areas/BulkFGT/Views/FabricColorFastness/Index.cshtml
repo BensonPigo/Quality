@@ -1,7 +1,179 @@
-﻿
+﻿@using DatabaseObject.ViewModel.BulkFGT;
 @{
     ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Index</h2>
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+<link href="~/ThirdParty/plugins/jquery-ui/jquery-ui.css" rel="stylesheet" />
 
+@model FabricColorFastness_ViewModel
+
+<style type="text/css">
+    .content-scroll {
+        height: calc( 100vh - 180px );
+    }
+
+    .inner-scroll {
+        height: calc(100vh - 180px);
+    }
+
+    .row {
+        --bs-gutter-x: 1.5rem;
+        --bs-gutter-y: 0;
+        display: flex;
+        flex-wrap: wrap;
+        width: 95vw;
+        margin-top: calc(var(--bs-gutter-y) * -1);
+        margin-right: calc(var(--bs-gutter-x)/ -2);
+        margin-left: calc(var(--bs-gutter-x)/ -2);
+    }
+
+        .row > * {
+            flex-shrink: 0;
+            width: 100%;
+            max-width: 100%;
+            padding-left: calc(var(--bs-gutter-x)/ 2);
+        }
+
+    .rowHeader {
+        font-size: 1.1vw;
+        font-weight: bold;
+    }
+
+        .rowHeader input[type="text"] {
+            width: 12vw;
+        }
+
+    .col-auto {
+        width: auto;
+    }
+
+        .col-auto > p {
+            padding: 0
+        }
+
+    .White {
+        color: white !important;
+    }
+
+    .Black {
+        color: black !important;
+    }
+
+    .IsEditMode {
+        color: white !important;
+        cursor: pointer;
+    }
+
+    .IsEditModeQuery {
+        color: gray !important;
+        cursor: no-drop;
+    }
+
+    #ButtonMode {
+        width: 92vw;
+    }
+
+    .DataTable {
+        width: 92vw;
+        font-size: 1rem;
+        font-weight: bold;
+        border: solid 1px black;
+        background-color: white;
+    }
+
+        .DataTable > tbody img {
+            cursor: pointer;
+        }
+
+        .DataTable > tbody > tr:nth-of-type(odd) {
+            background-color: #ffffff;
+        }
+
+        .DataTable > tbody > tr:nth-of-type(even) {
+            background-color: #F0F2F2;
+        }
+
+        .DataTable > tbody > tr > td {
+            border: solid 1px gray;
+            padding: 0.5em;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+    .DetailTable > tbody > tr > td {
+        text-align: center;
+    }
+</style>
+
+
+<div class="main-content">
+    <header class="page-header">
+        <h3>
+            <i class="icon-users"></i><span>Fabric Oven Test</span>
+        </h3>
+    </header>
+
+    <div class="main-area">
+        <div class="content-scroll">
+            <div class="inner-scroll">
+                @using (Html.BeginForm("Index", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { id = "QueryForm" }))
+                {
+                    <div class="row rowHeader">
+                        <div class="col-auto">
+                            <p class="InfoTitle White">SP# </p>
+                        </div>
+                        <div class="col-auto">
+                            <input id="POID" name="POID" type="text" value=@ViewBag.POID />
+                        </div>
+
+                        <div class="col-auto">
+                            <button id="btnQuery" type="submit" class="site-btn btn-gy font1rem Black" style="padding: 0.4em;">Query</button>
+                        </div>
+                    </div>
+                }
+
+                <div style="margin-top: 1em;">
+                    <table id="ButtonMode">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <h4 id="Edit" style=" margin-right: 1em;">
+                                        <img src="~/Image/Icon/Edit.png" width="30" />
+                                        Edit
+                                    </h4>
+                                </td>
+                                <td>
+                                    <h4 id="Save" style=" margin-right: 1em;">
+                                        <img src="~/Image/Icon/Save.png" width="30" />
+                                        Save
+                                    </h4>
+                                </td>
+                                <td>
+                                    <h4 id="Undo" style=" margin-right: 1em;">
+                                        <img src="~/Image/Icon/Undo.png" width="30" />
+                                        Undo
+                                    </h4>
+                                </td>
+                                <td style="width: 36%;">
+                                </td>
+                                <td>
+                                    <h4 id="New" style=" margin-right: 10em;">
+                                        <img src="~/Image/Icon/New.png" width="30" />
+                                        New Test No
+                                    </h4>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+        
+      
+            </div>
+        </div>
+    </div>
+</div>
