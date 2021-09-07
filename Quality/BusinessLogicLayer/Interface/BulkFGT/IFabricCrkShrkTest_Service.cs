@@ -18,6 +18,8 @@ namespace BusinessLogicLayer.Interface
         // Crocking
         FabricCrkShrkTestCrocking_Result GetFabricCrkShrkTestCrocking_Result(long ID);
 
+        List<string> GetScaleIDs();
+
         BaseResult SaveFabricCrkShrkTestCrockingDetail(FabricCrkShrkTestCrocking_Result fabricCrkShrkTestCrocking_Result, string userID);
 
         BaseResult EncodeFabricCrkShrkTestCrockingDetail(long ID, string userID, out string testResult);
@@ -41,20 +43,18 @@ namespace BusinessLogicLayer.Interface
 
         BaseResult ToExcelFabricCrkShrkTestHeatDetail(long ID, out string excelFileName, bool isTest);
 
-        BaseResult ToPdfFabricCrkShrkTestHeatDetail(long ID, out string pdfFileName, bool isTest);
-
         // Wash
         FabricCrkShrkTestWash_Result GetFabricCrkShrkTestWash_Result(long ID);
 
         BaseResult SaveFabricCrkShrkTestWashDetail(FabricCrkShrkTestWash_Result fabricCrkShrkTestWash_Result, string userID);
 
-        BaseResult EncodeFabricCrkShrkTestWashDetail(long ID, string userID, out string ovenTestResult);
+        BaseResult EncodeFabricCrkShrkTestWashDetail(long ID, string userID, out string testResult);
+
+        SendMail_Result SendWashFailResultMail(string toAddress, string ccAddress, long ID, bool isTest);
 
         BaseResult AmendFabricCrkShrkTestWashDetail(long ID);
 
         BaseResult ToExcelFabricCrkShrkTestWashDetail(long ID, out string excelFileName, bool isTest);
-
-        BaseResult ToPdfFabricCrkShrkTestWashDetail(long ID, out string pdfFileName, bool isTest);
 
 
     }
