@@ -107,7 +107,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             Fabric_ColorFastness_Detail_ViewModel result = new Fabric_ColorFastness_Detail_ViewModel();
             try
             {
-                result.Detail = _IColorFastnessDetailProvider.Get_DetailBody(ID).ToList();
+                result = _IColorFastnessDetailProvider.Get_DetailBody(ID);
             }
             catch (Exception ex)
             {
@@ -174,11 +174,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
             try
             {
                 _IColorFastnessDetailProvider = new ColorFastnessDetailProvider(_ISQLDataTransaction);
-                _IColorFastnessDetailProvider.Save_ColorFastness(source, Mdivision, UserID);
-                //baseResult.Result = _IColorFastnessProvider.Save_PO(PoID, Remark);
-                var resultS = new FabricColorFastness_ViewModel();
-                
+                _IColorFastnessDetailProvider.Save_ColorFastness(source, Mdivision, UserID);                
                 _ISQLDataTransaction.Commit();
+
+                // 比對前端資料, 沒有的再刪除DB資料
+                _IColorFastnessDetailProvider.Delete_ColorFastness_Detail(source.Main.ID, source.Detail);
             }
             catch (Exception ex)
             {

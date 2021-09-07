@@ -9,6 +9,7 @@ using DatabaseObject.ProductionDB;
 using DatabaseObject.ViewModel.BulkFGT;
 using Sci;
 using System.Data.SqlClient;
+using System.Linq;
 
 namespace MICS.DataAccessLayer.Provider.MSSQL
 {
@@ -20,7 +21,7 @@ namespace MICS.DataAccessLayer.Provider.MSSQL
         #endregion
 
         #region CRUD Base
-        public IList<Fabric_ColorFastness_Detail_Result> Get_DetailBody(string ID)
+        public Fabric_ColorFastness_Detail_ViewModel Get_DetailBody(string ID)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
@@ -28,6 +29,16 @@ namespace MICS.DataAccessLayer.Provider.MSSQL
             };
 
             string sqlcmd = @"
+select c.* 
+,[Name] = p.Name
+,[InspectionName] = Concat (Inspector, ' ', p.Name)
+from ColorFastness c
+left join pass1 p on c.Inspector = p.ID
+where c.id = @ID
+";
+            var main = ExecuteList<ColorFastness_Result>(CommandType.Text, sqlcmd, objParameter);
+
+            string sqlcmd2 = @"
 select cd.ID
 , SubmitDate
 ,cd.ColorFastnessGroup
@@ -47,7 +58,15 @@ left join PO_Supp_Detail po3 on c.POID = po3.ID
 left join Pass1 p on p.ID = cd.EditName
 where cd.ID = @ID
 ";
-            return ExecuteList<Fabric_ColorFastness_Detail_Result>(CommandType.Text, sqlcmd, objParameter);
+            var detail = ExecuteList<Fabric_ColorFastness_Detail_Result>(CommandType.Text, sqlcmd2, objParameter);
+
+            Fabric_ColorFastness_Detail_ViewModel result = new Fabric_ColorFastness_Detail_ViewModel
+            {
+                Main = main.FirstOrDefault(),
+                Detail = detail.ToList(),
+            };
+
+            return result;
         }
 
         public IList<PO_Supp_Detail> Get_Seq(string POID, string Seq1,string Seq2)
@@ -270,21 +289,40 @@ and SEQ2 = @Seq2{idx}
             return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
         }
 
-        //public bool Delete_ColorFastness_Detail(string ID ,List<Fabirc_ColorFastness_Detail_ViewModel> details)
-        //{
-        //    SQLParameterCollection objParameter = new SQLParameterCollection();
-        //    IList<Fabirc_ColorFastness_Detail_ViewModel> dbDetail = Get_DetailBody(ID);
-        //    string sqlcmd = string.Empty;
+        public bool Delete_ColorFastness_Detail(string ID, List<Fabric_ColorFastness_Detail_Result> source)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            IList<Fabric_ColorFastness_Detail_Result> dbDetail = Get_DetailBody(ID).Detail;
+            string sqlcmd = string.Empty;
 
-        //    int idx = 1;
-        //    foreach (var item in dbDetail)
-        //    {
-        //        if (!details.wh)
-        //        {
+            int idx = 1;
+            foreach (var item in dbDetail)
+            {
+                objParameter.Add(new SqlParameter($"@ID{idx}", item.ID));
+                objParameter.Add(new SqlParameter($"@ColorFastnessGroup{idx}", item.ColorFastnessGroup));
+                objParameter.Add(new SqlParameter($"@SEQ1{idx}", item.SEQ1));
+                objParameter.Add(new SqlParameter($"@SEQ2{idx}", item.SEQ2));
 
-        //        }
-        //    }
-        //}
+
+                if (!source.Where(x => x.ID.Equals(item.ID) 
+                    && x.ColorFastnessGroup.Equals(item.ColorFastnessGroup)
+                    && x.SEQ1.Equals(item.SEQ1)
+                    && x.SEQ2.Equals(item.SEQ2)
+                ).Any())
+                {   
+                    sqlcmd += $@"
+delete from ColorFastness_Detail 
+where id = @ID{idx} 
+and ColorFastnessGroup = @ColorFastnessGroup{idx}
+and SEQ1 = @SEQ1{idx} 
+and SEQ2 = @SEQ2{idx} 
+" + Environment.NewLine;
+                    idx++;
+                }
+            }
+
+            return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
+        }
 
         public IList<ColorFastness_Detail> Get(ColorFastness_Detail Item)
         {

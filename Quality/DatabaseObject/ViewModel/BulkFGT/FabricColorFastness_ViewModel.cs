@@ -25,7 +25,6 @@ namespace DatabaseObject.ViewModel.BulkFGT
 
         public string CreateBy { get; set; }
         public string EditBy { get; set; }
-        public string InspectorName { get; set; }
 
         public List<ColorFastness_Result> ColorFastness_MainList { get; set; }
 
@@ -127,6 +126,10 @@ namespace DatabaseObject.ViewModel.BulkFGT
     {
         public string LastUpdate { get; set; }
 
+        public string Name { get; set; }
+
+        public string InspectionName { get; set; }
+
         public BaseResult baseResult { get; set; }
     }
 
@@ -135,7 +138,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string InspectorName { get; set; }
 
         // 第三層表頭
-        public ColorFastness Main { get; set; }
+        public ColorFastness_Result Main { get; set; }
 
         public List<Fabric_ColorFastness_Detail_Result> Detail { get; set; }
     }
