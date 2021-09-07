@@ -2490,6 +2490,12 @@
                 var rCount = Object.keys(data).length;
                 var content = "";
 
+                if (rCount == 1 && datat.No == "") {
+                    msg.WithErrorCheck("TimeOut", function () {
+                        location.reload(); 
+                    });
+                }
+
                 $.each(data, function (index, value) {
                     content += "<input id='ReworkCardNo" + padLeft(value.No.toString(), 2) + "' idx='" + value.Status + "' type='button' class='site-btn ReworkCardNo font1rem' name='ReworkCardNo' value='" + padLeft(value.No.toString(), 2) + "' />";
                 });
@@ -2914,7 +2920,7 @@
                     tbody += "<td class='bg-lightblue'><p idx='Tol-'>" + value.Tol1 + "</p></td>";
                     tbody += "<td class='bg-lightgray'><p idx='standard'>" + value.SizeSpec + "</p></td>";
 
-                    if (value.SizeCode == "INCH") {
+                    if (value.SizeCode.toUpperCase() == "INCH") {
                         tbody += "<td class='" + bgColor + "'><input type='text' idx='SizeSpec' placeholder= '__ __/__' class='" + bgColor + "' " + readonly + "></td>";
                     }
                     else {
@@ -2945,14 +2951,14 @@
                         return;
                     }
 
-                    if (unit == "INCH" && !bol) {
+                    if (unit.toUpperCase() == "INCH" && !bol) {
                         msg.WithError("Format incorrect");
                         $(this).val("");
                         return;
                     }
 
                     // 計算Diff
-                    if (unit == "INCH") {
+                    if (unit.toUpperCase() == "INCH") {
                         if (standard.indexOf('.') > -1) {
                             return;
                         }

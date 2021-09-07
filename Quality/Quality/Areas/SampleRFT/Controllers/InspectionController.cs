@@ -55,9 +55,11 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public ActionResult Index(Inspection_ViewModel request)
         {
+            this.CheckSession();
             this.FactoryID = request.FactoryID;
             this.Line = request.Line;
             this.WorkDate = request.InspectionDate = CheckWorkDate.Check(request.InspectionDate);
+            this.Brand = request.Brand;
             this.SelectItemData = _InspectionService.GetSelectItemData(new Inspection_ViewModel() { FactoryID = this.FactoryID, Brand = this.Brand }).ToList();
             List<SelectListItem> FactoryitemList = new SetListItem().ItemListBinding(this.Factorys);
             List<SelectListItem> LineList = new SetListItem().ItemListBinding(this.Lines);
@@ -115,7 +117,12 @@ namespace Quality.Areas.SampleRFT.Controllers
             }
 
             var query = _InspectionService
-                            .CheckSelectItemData(new Inspection_ViewModel() { FactoryID = this.FactoryID, StyleID = StyleID }, InspectionService.SelectType.StyleID)
+                            .CheckSelectItemData(new Inspection_ViewModel() 
+                                                { 
+                                                    FactoryID = this.FactoryID, 
+                                                    StyleID = StyleID ,
+                                                    Brand = this.Brand,
+                                                }, InspectionService.SelectType.StyleID)
                             .ToList();
 
             viewModel.Result = query.Any();
@@ -148,7 +155,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                 return Json(viewModel);
             }
 
-            List<Inspection_ViewModel> result = _InspectionService.CheckSelectItemData(new Inspection_ViewModel() { FactoryID = this.FactoryID, StyleID = StyleID, OrderID = OrderID }
+            List<Inspection_ViewModel> result = _InspectionService.CheckSelectItemData(new Inspection_ViewModel() { FactoryID = this.FactoryID, StyleID = StyleID, OrderID = OrderID, Brand = this.Brand, }
                                                                                     , InspectionService.SelectType.OrderID)
                                                                    .ToList();
             viewModel = result.Any() ? result.FirstOrDefault() : viewModel;
@@ -181,7 +188,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                 return Json(viewModel);
             }
 
-            List<Inspection_ViewModel> result = _InspectionService.CheckSelectItemData(new Inspection_ViewModel() { FactoryID = this.FactoryID, StyleID = StyleID, OrderID = OrderID, Article = Article }
+            List<Inspection_ViewModel> result = _InspectionService.CheckSelectItemData(new Inspection_ViewModel() { FactoryID = this.FactoryID, StyleID = StyleID, OrderID = OrderID, Article = Article, Brand = this.Brand, }
                                                                                     , InspectionService.SelectType.Article)
                                                                    .ToList();
             viewModel = result.Any() ? result.FirstOrDefault() : viewModel;
@@ -214,7 +221,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                 return Json(viewModel);
             }
 
-            List<Inspection_ViewModel> result = _InspectionService.CheckSelectItemData(new Inspection_ViewModel() { FactoryID = this.FactoryID, StyleID = StyleID, OrderID = OrderID, Article = Article, Size = Size }
+            List<Inspection_ViewModel> result = _InspectionService.CheckSelectItemData(new Inspection_ViewModel() { FactoryID = this.FactoryID, StyleID = StyleID, OrderID = OrderID, Article = Article, Size = Size, Brand = this.Brand, }
                                                                                     , InspectionService.SelectType.Size)
                                                                    .ToList();
             viewModel = result.Any() ? result.FirstOrDefault() : viewModel;
@@ -247,7 +254,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                 return Json(viewModel);
             }
 
-            List<Inspection_ViewModel> result = _InspectionService.CheckSelectItemData(new Inspection_ViewModel() { FactoryID = this.FactoryID, StyleID = StyleID, OrderID = OrderID, Article = Article, Size = Size, ProductType = ProductType }
+            List<Inspection_ViewModel> result = _InspectionService.CheckSelectItemData(new Inspection_ViewModel() { FactoryID = this.FactoryID, StyleID = StyleID, OrderID = OrderID, Article = Article, Size = Size, ProductType = ProductType, Brand = this.Brand, }
                                                                                     , InspectionService.SelectType.ProductType)
                                                                    .ToList();
             viewModel = result.Any() ? result.FirstOrDefault() : viewModel;
@@ -322,6 +329,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             return Json(viewModel);
         }
 
+        [HttpPost]
         public JsonResult ChkInspQty(string OrderID, string Size)
         {
             InspectionSave_ViewModel inspectionSave_View = new InspectionSave_ViewModel();
@@ -421,6 +429,11 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public ActionResult GetReworkCard(string fixType)
         {
+            if (string.IsNullOrEmpty(this.FactoryID) || string.IsNullOrEmpty(this.Line))
+            {
+                return Json(new { No = "", Status = "" });
+            }
+
             ReworkCard rework = new ReworkCard()
             {
                 FactoryID = this.FactoryID,

@@ -43,12 +43,16 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 
 
                 sqlcmd += $@"
-update GarmentTest_Detail_FGPT set
-    [TestResult]    = @TestResult{idx},
+update g 
+set
+    [TestResult]    = isnull(@TestResult{idx}, ''),
     [TestUnit]	    = @TestUnit{idx},
     [TypeSelection_Seq]	= @TypeSelection_Seq{idx}
-where ID = @ID{idx} and No = @No{idx} and Type = @Type{idx} and Location = @Location{idx}
-and Seq = @Seq{idx} and TestName = @TestName{idx}
+from GarmentTest_Detail_FGPT g
+left join DropDownList d on d.ID = g.TestName and d.Type = 'PMS_FGPT_TestName' 
+where g.ID = @ID{idx} and g.No = @No{idx} and g.Type = @Type{idx} and g.Location = @Location{idx} 
+and g.Seq = @Seq{idx} 
+and isnull(d.Description, g.TestName) = @TestName{idx} 
 " + Environment.NewLine;
 
                 idx++;
@@ -100,6 +104,7 @@ outer apply(
 )PMS_FGPT_TestName
 where t.ID = @ID
 and t.No = @No
+order by PMS_FGPT_TestName.Description,t.[Seq]
 ";
             return ExecuteList<GarmentTest_Detail_FGPT_ViewModel>(CommandType.Text, sqlcmd, objParameter);
         }

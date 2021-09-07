@@ -19,6 +19,8 @@ namespace DatabaseObject.RequestModel
         public string Factory { get; set; }
 
         public string MDivisionid { get; set; }
+
+        public string ID { get; set; }
     }
 
     public class P04Data

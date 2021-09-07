@@ -1,4 +1,5 @@
-﻿using DatabaseObject.ViewModel.BulkFGT;
+﻿using DatabaseObject;
+using DatabaseObject.ViewModel.BulkFGT;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,10 +17,12 @@ namespace BusinessLogicLayer.Interface.BulkFGT
 
         ColorFastness_Result GetDetailHeader(string ID);
 
-        IList<Fabirc_ColorFastness_Detail_ViewModel> GetDetailBody(string ID);
+        Fabric_ColorFastness_Detail_ViewModel GetDetailBody(string ID);
 
         IList<PO_Supp_Detail> GetSeq(string POID, string Seq1 = "", string Seq2 = "");
 
         IList<FtyInventory> GetRoll(string POID, string Seq1, string Seq2);
+
+        BaseResult Save_ColorFastness_1stPage(string PoID, string Remark, List<ColorFastness_Result> _ColorFastness);
     }
 }

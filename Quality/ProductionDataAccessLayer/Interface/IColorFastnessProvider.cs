@@ -14,5 +14,9 @@ namespace MICS.DataAccessLayer.Interface
         DateTime? Get_Target_LeadTime(object CUTINLINE, object MinSciDelivery);
 
         IList<ColorFastness_Result> Get(string ID);
+
+        bool Save_PO(string PoID, string Remark);
+
+        bool Delete_ColorFastness(string PoID, List<ColorFastness_Result> source);
     }
 }

@@ -296,11 +296,26 @@
                                         </tr>
                                         <tr>
                                             <td><h4>Line Dry</h4></td>
-                                            <td>@Html.RadioButtonFor(o => Model.Detail.DrySelect, "LineDry", new { @class = "bigSize", @checked = Model.Detail.LineDry })</td>
+                                            <td>
+                                                @{ 
+                                                    string chkLineDry = Model.Detail.LineDry.HasValue ? Model.Detail.LineDry.Value ?  "checked" : string.Empty : string.Empty;
+                                                } 
+                                                <input class="bigSize" id="Detail_DrySelect" name="Detail.DrySelect" type="radio" value="LineDry" @chkLineDry>
+                                            </td>
                                             <td><h4>Tumble Dry</h4></td>
-                                            <td>@Html.RadioButtonFor(o => Model.Detail.DrySelect, "TumbleDry", new { @class = "bigSize", @checked = Model.Detail.TumbleDry })</td>
+                                            <td>
+                                                @{
+                                                    string chkTumbleDry = Model.Detail.TumbleDry.HasValue ? Model.Detail.TumbleDry.Value ? "checked" : string.Empty : string.Empty;
+                                                }
+                                                <input class="bigSize" id="Detail_DrySelect" name="Detail.DrySelect" type="radio" value="TumbleDry" @chkTumbleDry>
+                                            </td>
                                             <td><h4>Hand Wash</h4></td>
-                                            <td>@Html.RadioButtonFor(o => Model.Detail.DrySelect, "HandWash", new { @class = "bigSize", @checked = Model.Detail.HandWash })</td>
+                                            <td>
+                                                @{
+                                                    string chkHandWash = Model.Detail.HandWash.HasValue ? Model.Detail.HandWash.Value ? "checked" : string.Empty : string.Empty;
+                                                }
+                                                <input class="bigSize" id="Detail_DrySelect" name="Detail.DrySelect" type="radio" value="HandWash" @chkHandWash>
+                                            </td>
                                         </tr>
                                         <tr>
                                             <td><h4>Temperature(oC)</h4></td>
@@ -357,7 +372,7 @@
                                                 <select id="Detail_Neck" name="Detail.Neck">
                                                     @foreach (var item in (List<SelectListItem>)ViewBag.NeckList)
                                                     {
-                                                        string selected = item.Text.Equals(Model.Detail.Neck.ToString()) ? "selected" : "";
+                                                        string selected = item.Value.ToLower().Equals(Model.Detail.Neck.ToString().ToLower()) ? "selected" : "";
                                                         <option value="@item.Value" @selected>@item.Text</option>
                                                     }
                                                 </select>
@@ -480,32 +495,32 @@
                                             </td>
                                             <td><h4>Method A</h4></td>
                                             <td>
-                                                <input id="Spiralities_@{@i}__MethodA" name="Spiralities[@i].MethodA" type="number" min="0" step="0.1" value="@Model.Spiralities[i].MethodA">
+                                                <input id="Spiralities_@{@i}__MethodA" name="Spiralities[@i].MethodA" class="MethodA" type="number" min="0" step="0.1" value="@Model.Spiralities[i].MethodA" readonly="readonly">
                                             </td>
                                             <td><h4>FOR @Location</h4></td>
                                             <td>AA'</td>
                                             <td>
-                                                <input id="Spiralities_@{@i}__MethodA_AAPrime" name="Spiralities[@i].MethodA_AAPrime" type="number" min="0" step="0.1" value="@Model.Spiralities[i].MethodA_AAPrime">
+                                                <input id="Spiralities_@{@i}__MethodA_AAPrime" name="Spiralities[@i].MethodA_AAPrime" class="MethodA_AAPrime" type="number" min="0" step="0.1" value="@Model.Spiralities[i].MethodA_AAPrime">
                                             </td>
                                             <td>A'B</td>
                                             <td>
-                                                <input id="Spiralities_@{@i}__MethodA_APrimeB" name="Spiralities[@i].MethodA_APrimeB" type="number" min="0" step="0.1" value="@Model.Spiralities[i].MethodA_APrimeB">
+                                                <input id="Spiralities_@{@i}__MethodA_APrimeB" name="Spiralities[@i].MethodA_APrimeB" class="MethodA_APrimeB" type="number" min="0" step="0.1" value="@Model.Spiralities[i].MethodA_APrimeB">
                                             </td>
                                         </tr>
                                         <tr>
                                             <td></td>
                                             <td><h4>Method B</h4></td>
                                             <td>
-                                                <input id="Spiralities_@{@i}__MethodB" name="Spiralities[@i].MethodB" type="number" min="0" step="0.1" value="@Model.Spiralities[i].MethodB">
+                                                <input id="Spiralities_@{@i}__MethodB" name="Spiralities[@i].MethodB" class="MethodB" type="number" min="0" step="0.1" value="@Model.Spiralities[i].MethodB" readonly="readonly">
                                             </td>
                                             <td></td>
                                             <td>AA'</td>
                                             <td>
-                                                <input id="Spiralities_@{@i}__MethodB_AAPrime" name="Spiralities[@i].MethodB_AAPrime" type="number" min="0" step="0.1" value="@Model.Spiralities[i].MethodB_AAPrime">
+                                                <input id="Spiralities_@{@i}__MethodB_AAPrime" name="Spiralities[@i].MethodB_AAPrime" class="MethodB_AAPrime" type="number" min="0" step="0.1" value="@Model.Spiralities[i].MethodB_AAPrime">
                                             </td>
                                             <td>A'B</td>
                                             <td>
-                                                <input id="Spiralities_@{@i}__MethodB_AB" name="Spiralities[@i].MethodB_AB" type="number" min="0" step="0.1" value="@Model.Spiralities[i].MethodB_AB">
+                                                <input id="Spiralities_@{@i}__MethodB_AB" name="Spiralities[@i].MethodB_AB" class="MethodB_AB" type="number" min="0" step="0.1" value="@Model.Spiralities[i].MethodB_AB">
                                             </td>
                                         </tr>
                                         <tr>
@@ -590,13 +605,7 @@
                                                     </td>
                                                 }
                                                 <td>
-                                                    <select id="Apperance_@{@i}__Comment" name="Apperance[@i].Comment" style="width:100%;">
-                                                        @foreach (var item in (List<SelectListItem>)ViewBag.WashList)
-                                                        {
-                                                            string selected = Model.Apperance[i].Comment != null && item.Text.Equals(Model.Apperance[i].Comment.ToString()) ? "selected" : "";
-                                                            <option value="@item.Value" @selected>@item.Text</option>
-                                                        }
-                                                    </select>
+                                                    @Html.TextBoxFor(o => Model.Apperance[i].Comment, new { @style = "width:100%;" })
                                                 </td>
                                             </tr>
                                         }
@@ -638,17 +647,17 @@
                                             <td>
                                                 @if (bolWash)
                                                 {
-                                                    <input id="FGWT_@{@i}__BeforeWash" name="FGWT[@i].BeforeWash" type="number" min="0" step="0.1" value="@Model.FGWT[i].BeforeWash">
+                                                    <input id="FGWT_@{@i}__BeforeWash" name="FGWT[@i].BeforeWash" class="BeforeWash" type="number" min="0" step="0.1" value="@Model.FGWT[i].BeforeWash">
                                                 }
                                             </td>
                                             <td>
                                                 @if (bolWash)
                                                 {
-                                                    <input id="FGWT_@{@i}__AfterWash" name="FGWT[@i].AfterWash" type="number" min="0" step="0.1" value="@Model.FGWT[i].AfterWash">
+                                                    <input id="FGWT_@{@i}__AfterWash" name="FGWT[@i].AfterWash" class="AfterWash" type="number" min="0" step="0.1" value="@Model.FGWT[i].AfterWash">
                                                 }
                                             </td>
                                             <td>
-                                                @Html.TextBoxFor(o => Model.FGWT[i].Shrinkage, new { @readonly = "readonly", @style = "width:6vw;" })
+                                                @Html.TextBoxFor(o => Model.FGWT[i].Shrinkage, new { @readonly = "readonly", @style = "width:6vw;", @class = "Shrinkage" })
                                             </td>
                                             <td>
                                                 @if (bolScale)
@@ -825,7 +834,9 @@
 
         IsEditModeChange();
         ShrinkagesEventBind();
+        SpiralityEventBind();
         ApperanceEventBind();
+        FGWTEventBind();
         FGPTEventBind();
         ReportEventBind();
         tabChange();
@@ -955,26 +966,31 @@
 
         if ($('#FGWT > tbody > tr').length == 1) {
             $('#btnGenerateFGWT').on('click', function () {
-                $.ajax({
-                    url: "@Url.Action("GenerateFGWT", "GarmentTest", new { Area = "BulkFGT" })",
-                    type: 'POST',
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify({ ID: $('#Detail_ID').val(), No: $('#Detail_No').val() }),
-                    async: false,
-                    success: function (data) {
-                        if (data.Result) {
-                            msg.WithSuccesCheck("Success", function () {
-                                location.reload();
-                            });
+                if ($("#Detail_DrySelect:checked").length == 1 && $('#Detail_Above50:checked').length == 1) {
+                    $.ajax({
+                        url: "@Url.Action("GenerateFGWT", "GarmentTest", new { Area = "BulkFGT" })",
+                        type: 'POST',
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify({ ID: $('#Detail_ID').val(), No: $('#Detail_No').val() }),
+                        async: false,
+                        success: function (data) {
+                            if (data.Result) {
+                                msg.WithSuccesCheck("Success", function () {
+                                    location.reload();
+                                });
+                            }
+                            else {
+                                msg.WithError(data.ErrMsg);
+                            }
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            console.log(xhr.responseText);
                         }
-                        else {
-                            msg.WithError(data.ErrMsg);
-                        }
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        console.log(xhr.responseText);
-                    }
-                });
+                    });
+                }
+                else {
+                    return false;
+                }
             });
         }
 
@@ -1034,6 +1050,9 @@
         });
 
         $('.AfterWash1').on('blur', function () {
+            if ($(this).val() == "") {
+                return;
+            }
             var tr = $(this).parent().parent();
             var wash = $(this).val();
             var before = tr.find("input[class='BeforeWash']").val();
@@ -1042,6 +1061,9 @@
         });
 
         $('.AfterWash2').on('blur', function () {
+            if ($(this).val() == "") {
+                return;
+            }
             var tr = $(this).parent().parent();
             var wash = $(this).val();
             var before = tr.find("input[class='BeforeWash']").val();
@@ -1050,6 +1072,9 @@
         });
 
         $('.AfterWash3').on('blur', function () {
+            if ($(this).val() == "") {
+                return;
+            }
             var tr = $(this).parent().parent();
             var wash = $(this).val();
             var before = tr.find("input[class='BeforeWash']").val();
@@ -1060,6 +1085,52 @@
 
     function AfterWashCal(Wash, Before) {
         return Round(accMul(accDiv(accSubtr(Wash, Before), Before), 100));
+    }
+
+    function SpiralityEventBind() {
+        $('.MethodA_AAPrime').on('blur', function () {
+            var tr = $(this).parent().parent();
+            var AA = $(this).val();
+            var AB = tr.find("input[class='MethodA_APrimeB']").val();
+            if (AB == null || AB == 0) {
+                return;
+            }
+            tr.find("input[class='MethodA']").val(MethodCal(AA, AB));
+        });
+
+        $('.MethodA_APrimeB').on('blur', function () {
+            var tr = $(this).parent().parent();
+            var AB = $(this).val();
+            var AA = tr.find("input[class='MethodA_AAPrime']").val();
+            if (AB == null || AB == 0) {
+                return;
+            }
+            tr.find("input[class='MethodA']").val(MethodCal(AA, AB));
+        });
+
+        $('.MethodB_AAPrime').on('blur', function () {
+            var tr = $(this).parent().parent();
+            var AA = $(this).val();
+            var AB = tr.find("input[class='MethodB_AB']").val();
+            if (AB == null || AB == 0) {
+                return;
+            }
+            tr.find("input[class='MethodB']").val(MethodCal(AA, AB));
+        });
+
+        $('.MethodB_AB').on('blur', function () {
+            var tr = $(this).parent().parent();
+            var AB = $(this).val();
+            var AA = tr.find("input[class='MethodB_AAPrime']").val();
+            if (AB == null || AB == 0) {
+                return;
+            }
+            tr.find("input[class='MethodB']").val(MethodCal(AA, AB));
+        });
+    }
+
+    function MethodCal(AA, AB) {
+        return Round(accMul(accDiv(AA, AB), 100));
     }
 
     function ApperanceEventBind() {
@@ -1083,6 +1154,32 @@
         });
         $('#Appearance .selected .ApperanceType').val(newVal);
         $('#Appearance .selected').removeClass('selected');
+    }
+
+    function FGWTEventBind() {
+        $('.BeforeWash').on('blur', function () {
+            var tr = $(this).parent().parent();
+            var before = $(this).val();
+            var after = tr.find("input[class='AfterWash']").val();
+            if (before == null || before == 0) {
+                return;
+            }
+            tr.find("input[class='Shrinkage']").val(ShrinkageCal(after, before));
+        });
+
+        $('.AfterWash').on('blur', function () {
+            var tr = $(this).parent().parent();
+            var after= $(this).val();
+            var before = tr.find("input[class='BeforeWash']").val();
+            if (before == null || before == 0) {
+                return;
+            }
+            tr.find("input[class='Shrinkage']").val(ShrinkageCal(after, before));
+        });
+    }
+
+    function ShrinkageCal(after, before) {
+        return Round(accMul(accDiv(accSubtr(after, before), before), 100.0));
     }
 
     function FGPTEventBind() {

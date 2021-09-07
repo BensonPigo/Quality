@@ -115,6 +115,7 @@
         });
 
         $("#btnExit").click(function () {
+            window.opener.document.location.reload();
             window.close();
         });
 
