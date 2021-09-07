@@ -76,6 +76,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public JsonResult CheckBrand(string Brand)
         {
+            this.CheckSession();
             Inspection_ViewModel viewModel = new Inspection_ViewModel();
 
             if (string.IsNullOrEmpty(Brand))
@@ -95,6 +96,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public ActionResult GetStyle(string OrderID)
         {
+            this.CheckSession();
             List<string> styles = this.SelectItemData.Where(x => string.IsNullOrEmpty(OrderID) || x.OrderID.Equals(OrderID))
                                     .GroupBy(x => x.StyleID)
                                     .Select(x => x.Key).ToList();
@@ -110,6 +112,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public JsonResult CheckStyle(string StyleID)
         {
+            this.CheckSession();
             Inspection_ViewModel viewModel = new Inspection_ViewModel();
             if (string.IsNullOrEmpty(StyleID))
             {
@@ -133,6 +136,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public ActionResult GetSP(string StyleID)
         {
+            this.CheckSession();
             List<string> orderIDs = SelectItemData.Where(x => string.IsNullOrEmpty(StyleID) || x.StyleID.Equals(StyleID))
                                     .GroupBy(x => x.OrderID)
                                     .Select(x => x.Key).ToList();
@@ -149,6 +153,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public JsonResult CheckSP(string StyleID, string OrderID)
         {
+            this.CheckSession();
             Inspection_ViewModel viewModel = new Inspection_ViewModel();
             if (string.IsNullOrEmpty(OrderID))
             {
@@ -166,6 +171,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public ActionResult GetArticle(string StyleID, string OrderID)
         {
+            this.CheckSession();
             List<string> articles = _InspectionService
                                     .GetSelectItemData(new Inspection_ViewModel() { StyleID = StyleID, OrderID = OrderID })
                                     .GroupBy(x => x.Article)
@@ -182,6 +188,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public JsonResult CheckArticle(string StyleID, string OrderID, string Article)
         {
+            this.CheckSession();
             Inspection_ViewModel viewModel = new Inspection_ViewModel();
             if (string.IsNullOrEmpty(Article))
             {
@@ -199,6 +206,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public ActionResult GetSize(string StyleID, string OrderID, string Article)
         {
+            this.CheckSession();
             List<string> sizes = _InspectionService
                                     .GetSelectItemData(new Inspection_ViewModel() { StyleID = StyleID, OrderID = OrderID, Article = Article })
                                     .GroupBy(x => x.Size)
@@ -215,6 +223,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public JsonResult CheckSize(string StyleID, string OrderID, string Article, string Size)
         {
+            this.CheckSession();
             Inspection_ViewModel viewModel = new Inspection_ViewModel();
             if (string.IsNullOrEmpty(Size))
             {
@@ -232,6 +241,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public ActionResult GetProductType(string StyleID, string OrderID, string Article, string Size)
         {
+            this.CheckSession();
             List<string> productTypes = _InspectionService
                                     .GetSelectItemData(new Inspection_ViewModel() { StyleID = StyleID, OrderID = OrderID, Article = Article, Size = Size })
                                     .GroupBy(x => x.ProductType)
@@ -248,6 +258,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public JsonResult CheckProductType(string StyleID, string OrderID, string Article, string Size, string ProductType)
         {
+            this.CheckSession();
             Inspection_ViewModel viewModel = new Inspection_ViewModel();
             if (string.IsNullOrEmpty(ProductType))
             {
@@ -265,6 +276,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public JsonResult RefreshQty(string StyleID, string OrderID, string Article, string Size, string ProductType)
         {
+            this.CheckSession();
             Inspection_ViewModel result = _InspectionService
                     .GetTop3(new Inspection_ViewModel() { FactoryID = this.FactoryID, Line = this.Line, InspectionDate = this.WorkDate });
 
@@ -299,6 +311,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public JsonResult Pass(string StyleID, string OrderID, string Article, string Size, string ProductType)
         {
+            this.CheckSession();
             Inspection_ViewModel viewModel = new Inspection_ViewModel();
             InspectionSave_ViewModel inspectionSave_View = new InspectionSave_ViewModel()
             {
@@ -332,6 +345,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public JsonResult ChkInspQty(string OrderID, string Size)
         {
+            this.CheckSession();
             InspectionSave_ViewModel inspectionSave_View = new InspectionSave_ViewModel();
             inspectionSave_View.rft_Inspection = new RFT_Inspection();
             if (string.IsNullOrEmpty(OrderID) || string.IsNullOrEmpty(Size))
@@ -348,6 +362,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public ActionResult GetDefectType()
         {
+            this.CheckSession();
             List<GarmentDefectType> garmentDefectTypes = _InspectionService.GetGarmentDefectType().ToList();
             //List<GarmentDefectType> result = garmentDefectTypes.OrderBy(x => x.Seq)
             //            .Select(x => new GarmentDefectType  { ID = x.ID, Description = x.Description }).ToList();
@@ -364,6 +379,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public ActionResult GetDefectCode(string DefectTypeID)
         {
+            this.CheckSession();
             List<GarmentDefectCode> garmentDefectCodes = _InspectionService.GetGarmentDefectCode(new GarmentDefectCode { GarmentDefectTypeID = DefectTypeID } ).ToList();
 
             string html = "";
@@ -382,7 +398,8 @@ namespace Quality.Areas.SampleRFT.Controllers
 
         [HttpPost]
         public ActionResult GetArea(string Type, string Location)
-        {            
+        {
+            this.CheckSession();
             List<Area> areas = _InspectionService.GetArea(new Area() 
                                 { 
                                     Type = Type ,
@@ -410,6 +427,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public ActionResult GetDropDownList(string Type, string defectType)
         {
+            this.CheckSession();
             List<DropDownList> downLists = _InspectionService.GetDropDownList(new DropDownList() { Type = Type, }).ToList();
 
 
@@ -429,6 +447,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public ActionResult GetReworkCard(string fixType)
         {
+            this.CheckSession();
             if (string.IsNullOrEmpty(this.FactoryID) || string.IsNullOrEmpty(this.Line))
             {
                 return Json(new { No = "", Status = "" });
@@ -450,6 +469,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public JsonResult ReworkCardSave(InspectionSave_ViewModel saveView)
         {
+            this.CheckSession();
             Inspection_ViewModel viewModel = new Inspection_ViewModel();
             InspectionSave_ViewModel inspectionSave_View = new InspectionSave_ViewModel()
             {
@@ -475,6 +495,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public JsonResult GetReworkList()
         {
+            this.CheckSession();
             List<ReworkList_ViewModel> reworkList_View = _InspectionService.GetReworkList(new ReworkList_ViewModel() 
             { 
                 FactoryID = this.FactoryID, 
@@ -487,6 +508,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public ActionResult ReworkListSaveAction(List<RFT_Inspection> reworkLists, InspectionService.ReworkListType type)
         {
+            this.CheckSession();
             foreach (RFT_Inspection item in reworkLists)
             {                               
                 item.EditName = this.UserID;
@@ -500,6 +522,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public ActionResult ReworkListAddReject(RFT_Inspection_Detail detail)
         {
+            this.CheckSession();
             InspectionSave_ViewModel result = _InspectionService.SaveReworkListAddReject(detail);
             return Json(new { Result = result.Result, ErrMsg = result.ErrMsg });
         }
@@ -507,6 +530,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public ActionResult SaveReworkListDelete(LogIn_Request logIn, List<RFT_Inspection> datas)
         {
+            this.CheckSession();
             InspectionSave_ViewModel result = _InspectionService.SaveReworkListDelete(logIn, datas);
             return Json(new { Result = result.Result, ErrMsg = result.ErrMsg });
         }
@@ -514,6 +538,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public ActionResult DQSReasonGet()
         {
+            this.CheckSession();
             List<DQSReason> dQSReasons = _InspectionService.GetDQSReason(new DQSReason() { Type = "DP", Junk = false }) ;
             string html = "";
             foreach (DQSReason reason in dQSReasons)
@@ -527,6 +552,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public JsonResult MeasurementGet(string OrderID, string SizeCode)
         {
+            this.CheckSession();
             List<RFT_Inspection_Measurement_ViewModel> rFT_Inspection_Measurements = _InspectionService.GetMeasurement(OrderID, SizeCode, this.UserID);
             return Json(rFT_Inspection_Measurements);
         }
@@ -534,6 +560,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public JsonResult MeasurementSave(List<RFT_Inspection_Measurement> measurement)
         {
+            this.CheckSession();
             foreach (RFT_Inspection_Measurement item in measurement)
             {
                 item.FactoryID = this.FactoryID;
@@ -547,6 +574,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public ActionResult CFTCommentsGet(string OrderID, string StyleID, string Season, string SampleStage)
         {
+            this.CheckSession();
             List<RFT_OrderComments_ViewModel> viewModel = new List<RFT_OrderComments_ViewModel>();
             if (string.IsNullOrEmpty(OrderID))
             {
@@ -573,6 +601,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public JsonResult CFTCommentsSave(List<RFT_OrderComments> duringDummyFitting)
         {
+            this.CheckSession();
             RFT_OrderComments_ViewModel rFT_PicDuringDummyFitting_ViewModel = _InspectionService.SaveRFT_OrderComments(duringDummyFitting);
 
             return Json(rFT_PicDuringDummyFitting_ViewModel);
@@ -581,6 +610,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public JsonResult CFTCommentsSend(string OrderID)
         {
+            this.CheckSession();
             RFT_OrderComments_ViewModel rFT_PicDuringDummyFitting_ViewModel = _InspectionService.SendMailRFT_OrderComments(new RFT_OrderComments { OrderID = OrderID });
             return Json(rFT_PicDuringDummyFitting_ViewModel);
         }
@@ -588,6 +618,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public JsonResult PicturesGet(string OrderID, string StyleID, string Article, string Size)
         {
+            this.CheckSession();
             Inspection_ViewModel viewModel = new Inspection_ViewModel();
             if (string.IsNullOrEmpty(OrderID))
             {
@@ -606,6 +637,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         [HttpPost]
         public JsonResult PicturesSave(RFT_PicDuringDummyFitting duringDummyFitting)
         {
+            this.CheckSession();
             RFT_PicDuringDummyFitting_ViewModel rFT_PicDuringDummyFitting_ViewModel = _InspectionService.SaveRFT_PicDuringDummyFitting(duringDummyFitting);
 
             return Json(rFT_PicDuringDummyFitting_ViewModel);
