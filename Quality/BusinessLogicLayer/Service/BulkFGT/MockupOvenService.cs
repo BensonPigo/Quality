@@ -1,6 +1,9 @@
-﻿using BusinessLogicLayer.Interface.BulkFGT;
+﻿using ADOHelper.Utility;
+using BusinessLogicLayer.Interface.BulkFGT;
+using DatabaseObject;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
+using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using Library;
 using Microsoft.Office.Interop.Excel;
@@ -118,13 +121,13 @@ namespace BusinessLogicLayer.Service
             }
         }
 
-        public MockupOven_ViewModel GetPDF(MockupOven_ViewModel mockupOven, bool test = false)
+        public Report_Result GetPDF(MockupOven_ViewModel mockupOven, bool test = false)
         {
-            MockupOven_ViewModel result = new MockupOven_ViewModel();
+            Report_Result result = new Report_Result();
             if (mockupOven == null)
             {
-                result.ReportResult = false;
-                result.ReportErrorMessage = "Get Data Fail!";
+                result.Result = false;
+                result.ErrorMessage = "Get Data Fail!";
                 return result;
             }
 
@@ -287,12 +290,12 @@ namespace BusinessLogicLayer.Service
                 if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
                 {
                     result.TempFileName = filepathpdf;
-                    result.ReportResult = true;
+                    result.Result = true;
                 }
                 else
                 {
-                    result.ReportErrorMessage = "Convert To PDF Fail";
-                    result.ReportResult = false;
+                    result.ErrorMessage = "Convert To PDF Fail";
+                    result.Result = false;
                 }
             }
             catch (Exception ex)
@@ -303,115 +306,141 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public MockupOven_ViewModel Create(MockupOven_ViewModel MockupOven)
+        public BaseResult Create(MockupOven_ViewModel MockupOven)
         {
-            MockupOven_ViewModel model = new MockupOven_ViewModel();
-            _MockupOvenProvider = new MockupOvenProvider(Common.ProductionDataAccessLayer);
-            _MockupOvenDetailProvider = new MockupOvenDetailProvider(Common.ProductionDataAccessLayer);
-            int insertCt;
+            MockupOven.Type = "B";
+            BaseResult result = new BaseResult();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            _MockupOvenProvider = new MockupOvenProvider(_ISQLDataTransaction);
+            _MockupOvenDetailProvider = new MockupOvenDetailProvider(_ISQLDataTransaction);
+            int count;
             try
             {
-                using (TransactionScope scope = new TransactionScope())
+                count = _MockupOvenProvider.Create(MockupOven);
+                if (count == 0)
                 {
-                    insertCt = _MockupOvenProvider.Create(MockupOven);
-                    if (insertCt == 0)
-                    {
-                        return model;
-                    }
-
-                    foreach (var MockupOven_Detail in MockupOven.MockupOven_Detail)
-                    {
-                        insertCt = _MockupOvenDetailProvider.Create(MockupOven_Detail);
-                        if (insertCt == 0)
-                        {
-                            return model;
-                        }
-                    }
-
-                    scope.Complete();
+                    result.Result = false;
+                    result.ErrorMessage = "Create MockupOven Fail. 0 Count";
+                    return result;
                 }
 
+                foreach (var MockupOven_Detail in MockupOven.MockupOven_Detail)
+                {
+                    count = _MockupOvenDetailProvider.Create(MockupOven_Detail);
+                    if (count == 0)
+                    {
+                        result.Result = false;
+                        result.ErrorMessage = "Create MockupOven_Detail Fail. 0 Count";
+                        return result;
+                    }
+                }
+
+                result.Result = true;
+                _ISQLDataTransaction.Commit();
             }
             catch (Exception ex)
             {
+                result.Result = false;
+                result.ErrorMessage = "Create MockupOven Fail";
+                result.Exception = ex;
+                _ISQLDataTransaction.RollBack();
                 throw ex;
             }
-
-            return model;
+            finally { _ISQLDataTransaction.CloseConnection(); }
+            return result;
         }
 
-        public MockupOven_ViewModel Update(MockupOven_ViewModel MockupOven)
+        public BaseResult Update(MockupOven_ViewModel MockupOven)
         {
-            MockupOven_ViewModel model = new MockupOven_ViewModel();
-            _MockupOvenProvider = new MockupOvenProvider(Common.ProductionDataAccessLayer);
-            _MockupOvenDetailProvider = new MockupOvenDetailProvider(Common.ProductionDataAccessLayer);
-            int insertCt;
+            BaseResult result = new BaseResult();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            _MockupOvenProvider = new MockupOvenProvider(_ISQLDataTransaction);
+            _MockupOvenDetailProvider = new MockupOvenDetailProvider(_ISQLDataTransaction);
+            int count;
             try
             {
-                using (TransactionScope scope = new TransactionScope())
+                count = _MockupOvenProvider.Update(MockupOven);
+                foreach (var MockupOven_Detail in MockupOven.MockupOven_Detail)
                 {
-                    insertCt = _MockupOvenProvider.Update(MockupOven);
-                    if (insertCt == 0)
+                    count = _MockupOvenDetailProvider.Update(MockupOven_Detail);
+                    if (count == 0)
                     {
-                        return model;
+                        result.Result = false;
+                        result.ErrorMessage = "Update MockupOven_Detail Fail. 0 Count";
+                        return result;
                     }
-
-                    foreach (var MockupOven_Detail in MockupOven.MockupOven_Detail)
-                    {
-                        insertCt = _MockupOvenDetailProvider.Update(MockupOven_Detail);
-                        if (insertCt == 0)
-                        {
-                            return model;
-                        }
-                    }
-
-                    scope.Complete();
                 }
 
+                result.Result = true;
+                _ISQLDataTransaction.Commit();
             }
             catch (Exception ex)
             {
+                result.Result = false;
+                result.ErrorMessage = "Update MockupOven Fail";
+                result.Exception = ex;
+                _ISQLDataTransaction.RollBack();
                 throw ex;
             }
-
-            return model;
+            finally { _ISQLDataTransaction.CloseConnection(); }
+            return result;
         }
 
-        public MockupOven_ViewModel Delete(MockupOven_ViewModel MockupOven)
+        public BaseResult Delete(MockupOven_ViewModel MockupOven)
         {
-            MockupOven_ViewModel model = new MockupOven_ViewModel();
-            _MockupOvenProvider = new MockupOvenProvider(Common.ProductionDataAccessLayer);
-            _MockupOvenDetailProvider = new MockupOvenDetailProvider(Common.ProductionDataAccessLayer);
-            int insertCt;
+            BaseResult result = new BaseResult();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            _MockupOvenProvider = new MockupOvenProvider(_ISQLDataTransaction);
+            _MockupOvenDetailProvider = new MockupOvenDetailProvider(_ISQLDataTransaction);
+            int count;
             try
             {
-                using (TransactionScope scope = new TransactionScope())
+                count = _MockupOvenProvider.Delete(MockupOven);
+                foreach (var MockupOven_Detail in MockupOven.MockupOven_Detail)
                 {
-                    insertCt = _MockupOvenProvider.Delete(MockupOven);
-                    if (insertCt == 0)
-                    {
-                        return model;
-                    }
-
-                    foreach (var MockupOven_Detail in MockupOven.MockupOven_Detail)
-                    {
-                        insertCt = _MockupOvenDetailProvider.Delete(MockupOven_Detail);
-                        if (insertCt == 0)
-                        {
-                            return model;
-                        }
-                    }
-
-                    scope.Complete();
+                    count = _MockupOvenDetailProvider.Delete(MockupOven_Detail);
                 }
 
+                result.Result = true;
+                _ISQLDataTransaction.Commit();
             }
             catch (Exception ex)
             {
+                result.Result = false;
+                result.ErrorMessage = "Delete MockupOven Fail";
+                result.Exception = ex;
+                _ISQLDataTransaction.RollBack();
                 throw ex;
             }
+            finally { _ISQLDataTransaction.CloseConnection(); }
+            return result;
+        }
 
-            return model;
+        public BaseResult DeleteDetail(List<MockupOven_Detail_ViewModel> MockupOvenDetail)
+        {
+            BaseResult result = new BaseResult();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            _MockupOvenDetailProvider = new MockupOvenDetailProvider(_ISQLDataTransaction);
+            try
+            {
+                foreach (var MockupOven_Detail in MockupOvenDetail)
+                {
+                    _MockupOvenDetailProvider.Delete(MockupOven_Detail);
+                }
+
+                result.Result = true;
+                _ISQLDataTransaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                result.Result = false;
+                result.ErrorMessage = "Delete MockupOven Detail Fail";
+                result.Exception = ex;
+                _ISQLDataTransaction.RollBack();
+                throw ex;
+            }
+            finally { _ISQLDataTransaction.CloseConnection(); }
+            return result;
         }
     }
 }

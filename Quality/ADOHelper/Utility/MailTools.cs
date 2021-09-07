@@ -101,6 +101,18 @@ namespace ADOHelper.Utility
                     }
                 }
 
+                // 夾檔(在server上的檔案)
+                if (SendMail_Request.FileonServer != null && SendMail_Request.FileonServer.Count > 0)
+                {
+                    foreach (string file in SendMail_Request.FileonServer)
+                    {
+                        if (!string.IsNullOrEmpty(file))
+                        {
+                            message.Attachments.Add(new Attachment(file));
+                        }
+                    }
+                }
+
                 client.Send(message);
 
                 sendMail_Result.result = true;

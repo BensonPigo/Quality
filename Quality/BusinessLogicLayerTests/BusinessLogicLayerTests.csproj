@@ -64,6 +64,7 @@
     <Compile Include="Service\BulkFGT\FabricCrkShrkTest_ServiceTests.cs" />
     <Compile Include="Service\BulkFGT\FabricOvenTestServiceTests.cs" />
     <Compile Include="Service\BulkFGT\GarmentTest_ServiceTests.cs" />
+    <Compile Include="Service\BulkFGT\MockupOvenTests.cs" />
     <Compile Include="Service\BulkFGT\MockupWashTests.cs" />
     <Compile Include="Service\FinalInspection\FinalInspectionAddDefectServiceTests.cs" />
     <Compile Include="Service\FinalInspection\FinalInspectionBeautifulProductAuditServiceTests.cs" />
