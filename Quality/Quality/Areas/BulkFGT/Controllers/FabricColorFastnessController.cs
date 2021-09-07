@@ -64,7 +64,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             //{
             //    Main = modelMaster,
             //};
-            Fabirc_ColorFastness_Detail_ViewModel model = new Fabirc_ColorFastness_Detail_ViewModel();
+            Fabric_ColorFastness_Detail_ViewModel model = new Fabric_ColorFastness_Detail_ViewModel();
 
             ColorFastness_Result modelMaster = new ColorFastness_Result();
             modelMaster.POID = "21051739BB";
