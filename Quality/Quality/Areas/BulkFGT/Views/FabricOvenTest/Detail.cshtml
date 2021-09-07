@@ -208,7 +208,7 @@
                                     <td style="width: 14vw;">
                                     </td>
                                     <td align="right">
-                                        <h4 id="New" >
+                                        <h4 id="New">
                                             <img src="~/Image/Icon/New.png" width="30" />
                                             New Item
                                         </h4>
@@ -445,7 +445,7 @@
         if (EditMode) {
             $("#Edit,#Encode").removeClass("IsEditMode");
             $('#Save, #New').addClass("IsEditMode");
-            $(".DataTable input[type='text'], .DetailTable select").removeAttr("disabled");        
+            $(".DataTable input[type='text'], .DetailTable select").removeAttr("disabled");
             $('#Encode').unbind('click');
             $(".DetailTable img").removeClass('display-None');
             DetailButtonBind();
@@ -470,6 +470,8 @@
                 $('#Amend').addClass("IsEditMode");
             }
         }
+
+        $('#Picture').addClass("IsEditMode");
     }
 
 
@@ -684,10 +686,20 @@
             //var Details = null;
             //var POID = $('#Main_POID').val();
             //var Remark = $('#Main_Remark').val();
-            //SaveData(main);            
+            //SaveData(main);
 
             location.href = '@Url.Action("Detail")?POID=' + document.getElementById("Main_POID").value.trim() + '&TestNo=' + document.getElementById("Main_TestNo").value.trim() + '&EditMode=False';
 
+        });
+
+           $('#Picture').on('click', function () {
+            var para = "?Title=" + $('.page-header span').html() + "&EditMode=" + EditMode;
+            para += "&" + "Table=Oven";
+            para += "&" + "BrforeColumn=TestBeforePicture";
+            para += "&" + "AfterColumn=TestAfterPicture";
+            para += "&" + "PKey_1=ID";
+            para += "&" + "PKey_1_Val=" + $('#Detail_ID').val();
+            window.open('@Url.Action("PictureList", "PublicWondow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1024,height=750');
         });
 
 
@@ -770,7 +782,12 @@
 
                   detail.push({
                       OvenGroup: OvenGroup,
-                      SEQ: SEQ
+                      SEQ: SEQ,
+                      Result: Result,
+                      ChangeScale: ChangeScale,
+                      ResultChange: ResultChange,
+                      StainingScale: StainingScale,
+                      ResultStain: ResultStain
                   });
 
 
@@ -784,9 +801,41 @@
                   msg.WithError(ErrMsg);
                   return;
               }
-            });
 
+
+                $.ajax({
+                    url: "@Url.Action("Encode_Detail", "FabricOvenTest", new { Area = "BulkFGT" })",
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ POID: $('#Main_POID').val(), TestNo: $('#Detail_No').val()}),
+                    async: false,
+                    success: function (data) {
+                        if (data.Result) {
+                            if (data.ovenTestResult == "Fail") {
+                                FailMail();
+                            }
+                            else {
+                                msg.WithSuccesCheck("Success", function () {
+                                    location.reload();
+                                });
+                            }
+                        }
+                        else {
+                            msg.WithError(data.ErrMsg);
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                              });
+
+            });
              }
+
+            function FailMail() {
+            var para = "?Title=" + $('.page-header span').html() + "&FactoryID=@ViewBag.FactoryID&Type=BulkFGT";
+            window.open('@Url.Action("TestFailMailList", "PublicWondow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
+              }
 
             function SaveData(main) {
                 @*$.ajax({
@@ -854,7 +903,7 @@
                 var detailResultColor = document.getElementById("Details_" + key + "__Result").value == "Pass" ? "blue" : "red";
                 $("#Details_" + key + "__Result").addClass(detailResultColor);
 
-    }
+            }
 
 
 
