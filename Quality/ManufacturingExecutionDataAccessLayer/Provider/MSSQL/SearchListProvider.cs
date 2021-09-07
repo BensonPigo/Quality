@@ -40,11 +40,17 @@ and p.ID='{Pass1ID}'
 
         public IList<SearchList_Result> Get_SearchList(SearchList_ViewModel Req)
         {
-            SQLParameterCollection objParameter = new SQLParameterCollection();
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@BrandID", DbType.String, Req.BrandID },
+                { "@SeasonID", DbType.String, Req.SeasonID },
+                { "@StyleID", DbType.String, Req.StyleID },
+                { "@Article", DbType.String, Req.Article }
+            };
 
             StringBuilder SbSql = new StringBuilder();
 
-            #region
+            #region Fabric Crocking & Shrinkage Test (504, 405)
             string type1 = $@"
 select DISTINCT Type = 'Fabric Crocking & Shrinkage Test (504, 405)'
         , ReportNo=''
@@ -66,53 +72,60 @@ select DISTINCT Type = 'Fabric Crocking & Shrinkage Test (504, 405)'
 		)
 
 from PO p
-inner join Orders o ON o.POIDID= p.ID
+inner join Orders o ON o.ID = p.ID
 INNER JOIN FIR_Laboratory f ON f.POID = p.ID
-WHERE 1=1
+WHERE 1=1 
 ";
             if (!string.IsNullOrEmpty(Req.BrandID))
             {
-                type1 += $@"AND o.BrandID = @BrandID";
-                objParameter.Add("@BrandID", DbType.String, Req.BrandID);
+                type1 += "AND o.BrandID = @BrandID ";
             }
             if (!string.IsNullOrEmpty(Req.SeasonID))
             {
-                type1 += $@"AND o.SeasonID = @SeasonID";
-                objParameter.Add("@SeasonID", DbType.String, Req.SeasonID);
+                type1 += "AND o.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                type1 += "AND o.StyleID = @StyleID ";
             }
             #endregion
 
-            #region
+            #region Garment Test (450, 451, 701, 710)
             string type2 = $@"
 select  Type = 'Garment Test (450, 451, 701, 710)'
-        ,ReportNo=gd.No
+        ,ReportNo = cast(gd.No as varchar(50))
 		,gd.OrderID
 		,StyleID
 		,BrandID
 		,SeasonID
-		,Article = ''
+		,Article
 		,Artwork = ''
 		,Result= IIF(gd.Result='P','Pass', IIF(gd.Result='F','Fail',''))
 		,TestDate = gd.InspDate
-		,g.OrderID
 from GarmentTest g
 inner join GarmentTest_Detail gd ON g.ID= gd.ID
-WHERE 1=1
+WHERE 1=1 
 ";
 
             if (!string.IsNullOrEmpty(Req.BrandID))
             {
-                type2 += ($@"AND BrandID = @BrandID");
-                objParameter.Add("@BrandID", DbType.String, Req.BrandID);
+                type2 += "AND BrandID = @BrandID ";
             }
             if (!string.IsNullOrEmpty(Req.SeasonID))
             {
-                type2 += ($@"AND SeasonID = @SeasonID");
-                objParameter.Add("@SeasonID", DbType.String, Req.SeasonID);
+                type2 += "AND SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                type2 += "AND StyleID = @StyleID ";
+            }
+            if (!string.IsNullOrEmpty(Req.Article))
+            {
+                type2 += "AND Article = @Article ";
             }
             #endregion
 
-            #region
+            #region Mockup Crocking Test  (504)
             string type3 = $@"
 select DISTINCT  Type = 'Mockup Crocking Test  (504)'
         ,ReportNo
@@ -125,81 +138,139 @@ select DISTINCT  Type = 'Mockup Crocking Test  (504)'
 		,Result
 		,TestDate 
 from MockupCrocking 
-WHERE 1=1
+WHERE 1=1 
 ";
 
             if (!string.IsNullOrEmpty(Req.BrandID))
             {
-                type3 += ($@"AND BrandID = @BrandID");
-                objParameter.Add("@BrandID", DbType.String, Req.BrandID);
+                type3 += "AND BrandID = @BrandID ";
             }
             if (!string.IsNullOrEmpty(Req.SeasonID))
             {
-                type3 += ($@"AND SeasonID = @SeasonID");
-                objParameter.Add("@SeasonID", DbType.String, Req.SeasonID);
+                type3 += "AND SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                type3 += "AND StyleID = @StyleID ";
             }
             if (!string.IsNullOrEmpty(Req.Article))
             {
-                type3 += ($@"AND ArtworkTypeID = @Article");
-                objParameter.Add("@Article", DbType.String, Req.Article);
+                type3 += "AND Article = @Article ";
             }
             #endregion
 
-            // Mockup Oven Test (514)
-            string type4 = $@"";
-            string type5 = $@"";
-            string type6 = $@"";
-            string type7 = $@"";
-            string type8 = $@"";
-            string type9 = $@"";
+            #region Mockup Oven Test (514)
+            string type4 = $@"
+select DISTINCT Type = 'Mockup Oven Test (514)'
+	, m.ReportNo
+	, m.POID
+	, m.StyleID
+	, m.BrandID
+	, m.SeasonID
+	, m.Article
+	, m.ArtworkTypeID
+	, m.Result
+	, m.TestDate
+from MockupOven m
+where m.Type = 'B'
+";
 
-            switch (Req.Type)
+            if (!string.IsNullOrEmpty(Req.BrandID))
             {
-                case "Mockup Oven Test (514)":
-                    break;
-                case "Mockup Wash Test (701)":
-                    break;
-                case "Fabric Oven Test (515)":
-                    SbSql.Append($@"
-select DISTINCT  ReportNo =f.TestNo
+                type4 += "AND BrandID = @BrandID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                type4 += "AND SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                type4 += "AND StyleID = @StyleID ";
+            }
+            if (!string.IsNullOrEmpty(Req.Article))
+            {
+                type4 += "AND Article = @Article ";
+            }
+            #endregion
+
+            #region Mockup Wash Test (701)
+            string type5 = $@"
+select DISTINCT Type = 'Mockup Wash Test (701)'
+	, m.ReportNo
+	, m.POID
+	, m.StyleID
+	, m.BrandID
+	, m.SeasonID
+	, m.Article
+	, m.ArtworkTypeID
+	, m.Result
+	, m.TestDate
+from MockupWash m
+where m.Type = 'B' 
+";
+
+            if (!string.IsNullOrEmpty(Req.BrandID))
+            {
+                type5 += "AND BrandID = @BrandID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                type5 += "AND SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                type5 += "AND StyleID = @StyleID ";
+            }
+            if (!string.IsNullOrEmpty(Req.Article))
+            {
+                type5 += "AND Article = @Article ";
+            }
+            #endregion
+
+            #region Fabric Oven Test (515) 
+            string type6 = $@"
+select DISTINCT type= 'Fabric Oven Test (515)'
+        ,ReportNo = cast(f.TestNo as varchar(50))
 		,OrderID = o.POID
 		,o.StyleID
 		,o.BrandID
 		,o.SeasonID
-		,Article 
+		,f.Article  
 		,Artwork = ''
 		,Result=f.Result
 		,TestDate = f.InspDate
-
 from PO p
 inner join Orders o ON o.POID = p.ID
-INNER JOIN Oven f ON f.POID = p.ID
-WHERE 1=1
-");
-                    if (!string.IsNullOrEmpty(Req.BrandID))
-                    {
-                        SbSql.Append($@"AND o.BrandID = @BrandID");
-                        objParameter.Add("@BrandID", DbType.String, Req.BrandID);
-                    }
-                    if (!string.IsNullOrEmpty(Req.SeasonID))
-                    {
-                        SbSql.Append($@"AND o.SeasonID = @SeasonID");
-                        objParameter.Add("@SeasonID", DbType.String, Req.SeasonID);
-                    }
-                    if (!string.IsNullOrEmpty(Req.Article))
-                    {
-                        SbSql.Append($@"AND Article = @Article");
-                        objParameter.Add("@Article", DbType.String, Req.Article);
-                    }
-                    break;
-                case "Fabric Color Fastness (501)":
-                    SbSql.Append($@"
-select DISTINCT  ReportNo =f.TestNo
+inner join Oven f ON f.POID = p.ID
+where 1=1 
+";
+            if (!string.IsNullOrEmpty(Req.BrandID))
+            {
+                type6 += "AND o.BrandID = @BrandID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                type6 += "AND o.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                type6 += "AND o.StyleID = @StyleID ";
+            }
+            if (!string.IsNullOrEmpty(Req.Article))
+            {
+                type6 += "AND Article = @Article ";
+            }
+            #endregion
+
+            #region Fabric Color Fastness (501)
+            string type7 = $@"
+select DISTINCT Type= 'Fabric Color Fastness (501)'
+        ,ReportNo = cast(f.TestNo as varchar(50))
 		,OrderID = o.POID
 		,o.StyleID
 		,o.BrandID
 		,o.SeasonID
-		,Article 
+		,f.Article 
 		,Artwork = ''
 		,Result=f.Result
 		,TestDate = f.InspDate
@@ -207,27 +278,30 @@ select DISTINCT  ReportNo =f.TestNo
 from PO p
 inner join Orders o ON o.POID = p.ID
 INNER JOIN ColorFastness f ON f.POID = p.ID
-WHERE 1=1
-");
-                    if (!string.IsNullOrEmpty(Req.BrandID))
-                    {
-                        SbSql.Append($@"AND o.BrandID = @BrandID");
-                        objParameter.Add("@BrandID", DbType.String, Req.BrandID);
-                    }
-                    if (!string.IsNullOrEmpty(Req.SeasonID))
-                    {
-                        SbSql.Append($@"AND o.SeasonID = @SeasonID");
-                        objParameter.Add("@SeasonID", DbType.String, Req.SeasonID);
-                    }
-                    if (!string.IsNullOrEmpty(Req.Article))
-                    {
-                        SbSql.Append($@"AND Article = @Article");
-                        objParameter.Add("@Article", DbType.String, Req.Article);
-                    }
-                    break;
-                case "Accessory Oven Test & Wash (515, 701)":
-                    SbSql.Append($@"
-select DISTINCT  ReportNo=''
+WHERE 1=1 
+";
+            if (!string.IsNullOrEmpty(Req.BrandID))
+            {
+                type7 += "AND o.BrandID = @BrandID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                type7 += "AND o.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                type7 += "AND o.StyleID = @StyleID ";
+            }
+            if (!string.IsNullOrEmpty(Req.Article))
+            {
+                type7 += "AND Article = @Article ";
+            }
+            #endregion
+
+            #region Accessory Oven Test & Wash (515, 701)
+            string type8 = $@"
+select DISTINCT Type = 'Accessory Oven Test & Wash (515, 701)'
+        ,ReportNo=''
 		,OrderID = o.POID
 		,o.StyleID
 		,o.BrandID
@@ -246,23 +320,98 @@ select DISTINCT  ReportNo=''
 from PO p
 inner join Orders o ON o.POID = p.ID
 INNER JOIN AIR_Laboratory f ON f.POID = p.ID
-WHERE 1=1
+WHERE 1=1 
+";
+            if (!string.IsNullOrEmpty(Req.BrandID))
+            {
+                type8 += "AND o.BrandID = @BrandID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                type8 += "AND o.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                type8 += "AND o.StyleID = @StyleID ";
+            }
 
-");
-                    if (!string.IsNullOrEmpty(Req.BrandID))
-                    {
-                        SbSql.Append($@"AND o.BrandID = @BrandID");
-                        objParameter.Add("@BrandID", DbType.String, Req.BrandID);
-                    }
-                    if (!string.IsNullOrEmpty(Req.SeasonID))
-                    {
-                        SbSql.Append($@"AND o.SeasonID = @SeasonID");
-                        objParameter.Add("@SeasonID", DbType.String, Req.SeasonID);
-                    }
+            #endregion
+
+            #region Pulling test for Snap/Botton/Rivet (437)
+            string type9 = $@"
+select DISTINCT Type = 'Pulling test for Snap/Botton/Rivet (437)'
+	, m.ReportNo
+	, m.POID
+	, m.StyleID
+	, m.BrandID
+	, m.SeasonID
+	, m.Article
+	, [ArtworkTypeID] = ''
+	, m.Result
+	, m.TestDate
+from [ExtendServer].ManufacturingExecution.dbo.PullingTest m 
+where 1=1 
+";
+            if (!string.IsNullOrEmpty(Req.BrandID))
+            {
+                type9 += "AND BrandID = @BrandID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                type9 += "AND SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID)) 
+            {
+                type9 += "AND StyleID = @StyleID ";
+            }
+            if (!string.IsNullOrEmpty(Req.Article))
+            {
+                type9 += "AND Article = @Article ";
+            }
+
+            #endregion
+
+
+            switch (Req.Type)
+            {
+                case "Fabric Crocking & Shrinkage Test":
+                    SbSql.Append(type1);
                     break;
-                case "Pulling test for Snap/Botton/Rivet (437)":
+                case "Garment Test":
+                    SbSql.Append(type2);
+                    break;
+                case "Mockup Crocking Test":
+                    SbSql.Append(type3);
+                    break;
+                case "Mockup Oven Test":
+                    SbSql.Append(type4);
+                    break;
+                case "Mockup Wash Test":
+                    SbSql.Append(type5);
+                    break;
+                case "Fabric Oven Test":
+                    SbSql.Append(type6);
+                    break;
+                case "Fabric Color Fastness":
+                    SbSql.Append(type7);
+                    break;
+                case "Accessory Oven Test & Wash":
+                    SbSql.Append(type8);
+                    break;
+                case "Pulling test for Snap/Button/Rivet":
+                    SbSql.Append(type9);
                     break;
                 default:
+                    SbSql.Append(
+                        type1 + " union all " + 
+                        type2 + " union all " +
+                        type3 + " union all " +
+                        type4 + " union all " +
+                        type5 + " union all " +
+                        type6 + " union all " +
+                        type7 + " union all " +
+                        type8 + " union all " +
+                        type9);
                     break;
             }
 

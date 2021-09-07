@@ -19,7 +19,8 @@
 
 <style>
     .DataTable {
-        width: 92vw;
+        width: 100%
+        ;
         font-size: 1rem;
         font-weight: bold;
         border: solid 1px black;
@@ -47,13 +48,13 @@
 </style>
 @using (@Html.BeginForm("SendMailer", "SendMailAttachfiles", FormMethod.Post, new { @id = "form1", @enctype = "multipart/form-data" }))
 {
-    <table class="dataTable">
+    <table class="DataTable">
         <tr>
             <td>
                 To:
             </td>
             <td>
-                @Html.TextBoxFor(m => m.To)
+                @Html.TextBoxFor(m => m.To, new { @style = "width:100%;" })
             </td>
         </tr>
         <tr>
@@ -61,7 +62,7 @@
                 CC:
             </td>
             <td>
-                @Html.TextBoxFor(m => m.CC)
+                @Html.TextBoxFor(m => m.CC, new { @style = "width:100%;" })
             </td>
         </tr>
         <tr>
@@ -69,7 +70,7 @@
                 Subject:
             </td>
             <td>
-                @Html.TextBoxFor(m => m.Subject)
+                @Html.TextBoxFor(m => m.Subject, new { @style = "width:100%;" })
             </td>
         </tr>
         <tr>
@@ -77,7 +78,7 @@
                 Description:
             </td>
             <td>
-                @Html.TextBoxFor(m => m.Body)
+                @Html.TextBoxFor(m => m.Body, new { @style = "width:100%;" })
             </td>
         </tr>
         <tr>
