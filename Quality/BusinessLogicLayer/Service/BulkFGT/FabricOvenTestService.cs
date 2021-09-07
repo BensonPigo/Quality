@@ -744,5 +744,22 @@ namespace BusinessLogicLayer.Service
 
             return result;
         }
+
+        public BaseResult DeleteOven(string poID, string TestNo)
+        {
+            BaseResult baseResult = new BaseResult();
+            try
+            {
+                _FabricOvenTestProvider = new FabricOvenTestProvider(Common.ProductionDataAccessLayer);
+                _FabricOvenTestProvider.DeleteOven(poID, TestNo);
+            }
+            catch (Exception ex)
+            {
+                baseResult.Result = false;
+                baseResult.ErrorMessage = ex.ToString();
+            }
+
+            return baseResult;
+        }
     }
 }

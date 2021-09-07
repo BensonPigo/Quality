@@ -593,6 +593,23 @@ where   ov.POID = @poID and ov.TestNo = @TestNo
             return ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, listPar);
         }
 
+        public void DeleteOven(string poID, string TestNo)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@poID", poID);
+            listPar.Add("@TestNo", TestNo);
+
+            string sqlDeleteOven = @"
+delete  Oven_Detail where ID = (select ID from Oven where POID = @poID and TestNo = @TestNo)
+delete  Oven where POID = @poID and TestNo = @TestNo
+";
+            using (TransactionScope transaction = new TransactionScope())
+            {
+                ExecuteNonQuery(CommandType.Text, sqlDeleteOven, listPar);
+                transaction.Complete();
+            }
+        }
+
         #endregion
 
     }

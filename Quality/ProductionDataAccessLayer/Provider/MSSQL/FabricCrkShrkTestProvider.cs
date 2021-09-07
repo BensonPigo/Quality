@@ -339,9 +339,13 @@ where   BrandID = (select BrandID from orders with (nolock) where ID = (select P
             SQLParameterCollection listPar = new SQLParameterCollection();
             listPar.Add("@ID", fabricCrkShrkTestCrocking_Result.ID);
             listPar.Add("@CrockingRemark", fabricCrkShrkTestCrocking_Result.Crocking_Main.CrockingRemark);
+            listPar.Add("@CrockingTestBeforePicture", fabricCrkShrkTestCrocking_Result.Crocking_Main.CrockingTestBeforePicture);
+            listPar.Add("@CrockingTestAfterPicture", fabricCrkShrkTestCrocking_Result.Crocking_Main.CrockingTestAfterPicture);
 
             string sqlUpdateCrocking = @"
-update  FIR_Laboratory set CrockingRemark = @CrockingRemark
+update  FIR_Laboratory set  CrockingRemark = @CrockingRemark,
+                            CrockingTestBeforePicture = @CrockingTestBeforePicture,
+                            CrockingTestAfterPicture = @CrockingTestAfterPicture
 where   ID = @ID 
 ";
 
@@ -733,12 +737,12 @@ select	[Roll] = flc.Roll,
         [HorizontalTest2] = flc.HorizontalTest2,
         [HorizontalTest3] = flc.HorizontalTest3,
         [HorizontalRate] = flc.HorizontalRate,
-        [HorizontalAverage] = (isnull(flc.HorizontalTest1, 0) + isnull(flc.HorizontalTest2, 0)  + isnull(flc.Horizontal3, 0)) / 3.0,
+        [HorizontalAverage] = Round((isnull(flc.HorizontalTest1, 0) + isnull(flc.HorizontalTest2, 0)  + isnull(flc.HorizontalTest3, 0)) / 3.0, 2),
         [VerticalTest1] = flc.VerticalTest1,
         [VerticalTest2] = flc.VerticalTest2,
         [VerticalTest3] = flc.VerticalTest3,
         [VerticalRate] = flc.VerticalRate,
-        [VerticalAverage] = (isnull(flc.VerticalTest1, 0) + isnull(flc.VerticalTest2, 0)  + isnull(flc.VerticalTest3, 0)) / 3.0,
+        [VerticalAverage] = Round((isnull(flc.VerticalTest1, 0) + isnull(flc.VerticalTest2, 0)  + isnull(flc.VerticalTest3, 0)) / 3.0, 2),
         [Inspdate] = flc.Inspdate,
         [Inspector] = flc.Inspector,
         [Name] = (select Name from pass1 where ID = flc.Inspector),
@@ -757,9 +761,13 @@ where flc.ID = @ID
             SQLParameterCollection listPar = new SQLParameterCollection();
             listPar.Add("@ID", fabricCrkShrkTestHeat_Result.ID);
             listPar.Add("@HeatRemark", fabricCrkShrkTestHeat_Result.Heat_Main.HeatRemark);
+            listPar.Add("@HeatTestBeforePicture", fabricCrkShrkTestHeat_Result.Heat_Main.HeatTestBeforePicture);
+            listPar.Add("@HeatTestAfterPicture", fabricCrkShrkTestHeat_Result.Heat_Main.HeatTestAfterPicture);
 
             string sqlUpdateCrocking = @"
-update  FIR_Laboratory set HeatRemark = @HeatRemark
+update  FIR_Laboratory set  HeatRemark = @HeatRemark,
+                            HeatTestBeforePicture = @HeatTestBeforePicture,
+                            HeatTestAfterPicture = @HeatTestAfterPicture
 where   ID = @ID 
 ";
 
@@ -1102,12 +1110,12 @@ select	[Roll] = flc.Roll,
         [HorizontalTest1] = flc.HorizontalTest1,
         [HorizontalTest2] = flc.HorizontalTest2,
         [HorizontalTest3] = flc.HorizontalTest3,
-        [HorizontalAverage] = (isnull(flc.HorizontalTest1, 0) + isnull(flc.HorizontalTest2, 0)  + isnull(flc.Horizontal3, 0)) / 3.0,
+        [HorizontalAverage] = Round((isnull(flc.HorizontalTest1, 0) + isnull(flc.HorizontalTest2, 0)  + isnull(flc.HorizontalTest3, 0)) / 3.0, 2),
         [HorizontalRate] = flc.HorizontalRate,
         [VerticalTest1] = flc.VerticalTest1,
         [VerticalTest2] = flc.VerticalTest2,
         [VerticalTest3] = flc.VerticalTest3,
-        [VerticalAverage] = (isnull(flc.VerticalTest1, 0) + isnull(flc.VerticalTest2, 0)  + isnull(flc.VerticalTest3, 0)) / 3.0,
+        [VerticalAverage] = Round((isnull(flc.VerticalTest1, 0) + isnull(flc.VerticalTest2, 0)  + isnull(flc.VerticalTest3, 0)) / 3.0, 2),
         [VerticalRate] = flc.VerticalRate,
         [SkewnessTest1] = flc.SkewnessTest1,
         [SkewnessTest2] = flc.SkewnessTest2,
@@ -1133,9 +1141,14 @@ where flc.ID = @ID
             listPar.Add("@ID", fabricCrkShrkTestWash_Result.ID);
             listPar.Add("@WashRemark", fabricCrkShrkTestWash_Result.Wash_Main.WashRemark);
             listPar.Add("@SkewnessOptionID", fabricCrkShrkTestWash_Result.Wash_Main.SkewnessOptionID);
+            listPar.Add("@WashTestBeforePicture", fabricCrkShrkTestWash_Result.Wash_Main.WashTestBeforePicture);
+            listPar.Add("@WashTestAfterPicture", fabricCrkShrkTestWash_Result.Wash_Main.WashTestAfterPicture);
 
             string sqlUpdateCrocking = @"
-update  FIR_Laboratory set WashRemark = @WashRemark, SkewnessOptionID = @SkewnessOptionID
+update  FIR_Laboratory set  WashRemark = @WashRemark, 
+                            SkewnessOptionID = @SkewnessOptionID, 
+                            WashTestBeforePicture = @WashTestBeforePicture, 
+                            WashTestAfterPicture = @WashTestAfterPicture
 where   ID = @ID 
 ";
 
@@ -1320,22 +1333,124 @@ update  FIR_Laboratory_Wash set Inspdate            = @Inspdate             ,
 
         public void EncodeFabricWash(long ID, string testResult, DateTime? WashDate, string userID)
         {
-            throw new NotImplementedException();
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@ID", ID);
+            listPar.Add("@testResult", testResult);
+            listPar.Add("@WashDate", WashDate);
+            listPar.Add("@userID", userID);
+
+            string sqlUpdateFIR_Laboratory = $@"
+update  FIR_Laboratory  set Wash = @testResult,
+                            WashDate = @WashDate,
+                            WashEncode  = 1,
+                            WashInspector = @userID
+     where  ID = @ID
+
+{FIR_Laboratory_Utility.UpdateResultSql}
+";
+
+            using (TransactionScope transaction = new TransactionScope())
+            {
+                ExecuteNonQuery(CommandType.Text, sqlUpdateFIR_Laboratory, listPar);
+                transaction.Complete();
+            }
         }
 
         public DataTable GetWashFailMailContentData(long ID)
         {
-            throw new NotImplementedException();
+
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@ID", ID);
+
+            string sqlGetData = @"
+select	[SP#] = f.POID,
+        [Style] = o.StyleID,
+        [Brand] = o.BrandID,
+        [Season] = o.SeasonID,
+        [SEQ] = Concat(f.Seq1, ' ', f.Seq2),
+        [WK#] = r.ExportID,
+        [Arrive WH Date] = Format(r.WhseArrival, 'yyyy/MM/dd'),
+        [SCI Refno] = f.SCIRefno,
+        [Refno] = f.Refno,
+        [Color] = psd.ColorID,
+        [Supplier] = Concat(f.SuppID, s.AbbEn),
+        [Arrive Qty] = f.ArriveQty,
+        [Wash Result] = fl.Wash,
+        [Wash Last Test Date] = Format(fl.WashDate, 'yyyy/MM/dd'),
+        [Wash Remark] = fl.WashRemark
+from FIR f with (nolock)
+left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
+left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
+left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
+left join Supp s with (nolock) on s.ID = f.SuppID
+left join Orders o with (nolock) on o.ID = f.POID
+left join Fabric fab with (nolock) on fab.SCIRefno = f.SCIRefno
+where f.ID = @ID
+";
+
+            return ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, listPar);
         }
 
         public void AmendFabricWash(long ID)
         {
-            throw new NotImplementedException();
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@ID", ID);
+
+            string sqlUpdateFIR_Laboratory = $@"
+update  FIR_Laboratory  set Wash = '',
+                            WashDate = null,
+                            WashEncode = 0,
+                            WashInspector = ''
+     where  ID = @ID
+
+{FIR_Laboratory_Utility.UpdateResultSql}
+";
+
+            using (TransactionScope transaction = new TransactionScope())
+            {
+                ExecuteNonQuery(CommandType.Text, sqlUpdateFIR_Laboratory, listPar);
+                transaction.Complete();
+            }
         }
 
         public DataTable GetWashDetailForReport(long ID)
         {
-            throw new NotImplementedException();
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@ID", ID);
+
+            string sqlGetFabricCrkShrkTestWash_Detail = @"
+
+select	[Roll] = flc.Roll,
+        [Dyelot] = flc.Dyelot,
+        [HorizontalOriginal] = flc.HorizontalOriginal,
+        [VerticalOriginal] = flc.VerticalOriginal,
+        [Result] = flc.Result,
+        [HorizontalTest1] = flc.HorizontalTest1,
+        [HorizontalTest2] = flc.HorizontalTest2,
+        [HorizontalTest3] = flc.HorizontalTest3,
+        [HorizontalRate] = flc.HorizontalRate,
+        [HorizontalAverage] = (isnull(flc.HorizontalTest1, 0) + isnull(flc.HorizontalTest2, 0)  + isnull(flc.HorizontalTest3, 0)) / 3.0,
+        [VerticalTest1] = flc.VerticalTest1,
+        [VerticalTest2] = flc.VerticalTest2,
+        [VerticalTest3] = flc.VerticalTest3,
+        [VerticalRate] = flc.VerticalRate,
+        [VerticalAverage] = (isnull(flc.VerticalTest1, 0) + isnull(flc.VerticalTest2, 0)  + isnull(flc.VerticalTest3, 0)) / 3.0,
+        [SkewnessTest1] = flc.SkewnessTest1,
+        [SkewnessTest2] = flc.SkewnessTest2,
+        [SkewnessTest3] = flc.SkewnessTest3,
+        [SkewnessTest4] = flc.SkewnessTest4,
+        [SkewnessRate] = flc.SkewnessRate,
+        [Inspdate] = flc.Inspdate,
+        [Inspector] = flc.Inspector,
+        [Name] = (select Name from pass1 where ID = flc.Inspector),
+        [Remark] = flc.Remark,
+        [LastUpdate] = Concat(LastUpdateName.val, ' - ', isnull(Format(flc.EditDate, 'yyyy/MM/dd HH:mm:ss'), Format(flc.AddDate, 'yyyy/MM/dd HH:mm:ss')))
+from FIR_Laboratory_Wash flc with (nolock)
+outer apply (select [val] = Name_Extno from View_ShowName where ID = iif(isnull(flc.EditName, '') = '', flc.AddName, flc.EditName)) LastUpdateName
+where flc.ID = @ID
+";
+
+            return ExecuteDataTableByServiceConn(CommandType.Text, sqlGetFabricCrkShrkTestWash_Detail, listPar);
         }
 
         #endregion
