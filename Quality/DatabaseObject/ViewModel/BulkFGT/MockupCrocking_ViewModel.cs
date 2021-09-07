@@ -22,7 +22,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
             set { }
         }
 
-        public List<SelectListItem> Scale
+        public List<SelectListItem> Scale_Source
         {
             get
             {
