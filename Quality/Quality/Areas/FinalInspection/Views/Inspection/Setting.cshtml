@@ -61,6 +61,7 @@
         #CartonTable_wrapper, #CartonTable_wrapper > .dataTables_scrollHeadInner {
             width: 100%
         }
+
         #ShipmodeSeqTable_info {
             color: white
         }
@@ -72,7 +73,7 @@
         #ShipmodeSeqTable_wrapper, #ShipmodeSeqTable_wrapper > .dataTables_scrollHeadInner {
             width: 100%
         }
-        
+
         table.dataTable.cell-border table tbody tr td:not(:first-child) {
             text-align: center;
         }
@@ -170,7 +171,6 @@
                         {
                             <tr class="row-content" style="vertical-align: middle; text-align: center;">
                                 <td>
-                                    @{ string Ischecked = Model.SelectCarton[i].Selected ? "checked" : ""; }
                                     @*@Html.CheckBox($"Carton_Select_[{i}]", Model.SelectCarton[i].Selected, new { @class = "messageCheckbox", @Idx = i, @CTNNo = Model.SelectCarton[i].CTNNo, @PackingListID = Model.SelectCarton[i].PackingListID, @OrderID = Model.SelectCarton[i].OrderID, @onclick = "SelectCartonChange(this)" })*@
                                     <input type="checkbox" ID="Carton_Select_[@i]" class="messageCheckbox" Idx=@i CTNNo=@Model.SelectCarton[i].CTNNo PackingListID=@Model.SelectCarton[i].PackingListID OrderID=@Model.SelectCarton[i].OrderID onclick="SelectCartonChange(this)" />
                                 </td>
@@ -196,34 +196,39 @@
 
         <!--Shipmode Seq彈出視窗-->
         <input type="hidden" id="currnetSelectedShipmodeSeq" />
-        <div class="detail-dialog to-ShipmodeSeq-detail" title="Detail">
+        <div class="detail-dialog to-ShipmodeSeq-detail" title="Ship Mode">
             <div class="detail-dialog-content dialog-content-w-icon" style="height:40vh">
                 <table cellspacing="100" id="ShipmodeSeqTable" class="table table-striped display">
                     <thead>
                         <tr class="row-name">
                             <th>Select</th>
-                            <th>Packing List ID</th>
-                            <th>CTN No</th>
-                            <th>SP</th>
+                            <th>Seq</th>
+                            <th>Ship Mode</th>
+                            <th>Article</th>
+                            <th>Qty</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @for (int i = 0; i < Model.SelectCarton.Count; i++)
+                        @for (int i = 0; i < Model.SelectOrderShipSeq.Count; i++)
                         {
                             <tr class="row-content" style="vertical-align: middle; text-align: center;">
                                 <td>
-                                    @{ string Ischecked = Model.SelectCarton[i].Selected ? "checked" : ""; }
-                                    @*@Html.CheckBox($"Carton_Select_[{i}]", Model.SelectCarton[i].Selected, new { @class = "messageCheckbox", @Idx = i, @CTNNo = Model.SelectCarton[i].CTNNo, @PackingListID = Model.SelectCarton[i].PackingListID, @OrderID = Model.SelectCarton[i].OrderID, @onclick = "SelectCartonChange(this)" })*@
-                                    <input type="checkbox" ID="Carton_Select_[@i]" class="messageCheckbox" Idx=@i CTNNo=@Model.SelectCarton[i].CTNNo PackingListID=@Model.SelectCarton[i].PackingListID OrderID=@Model.SelectCarton[i].OrderID onclick="SelectCartonChange(this)" />
+                                    <input type="checkbox" ID="ShipmodeSeq_Select_[@i]" class="messageCheckbox" Idx=@i Seq=@Model.SelectOrderShipSeq[i].Seq OrderID=@Model.SelectOrderShipSeq[i].OrderID onclick="SelectOrderShipSeqChange(this)" />
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(o => Model.SelectCarton[i].PackingListID)
+                                    @Html.DisplayFor(o => Model.SelectOrderShipSeq[i].Seq)
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(o => Model.SelectCarton[i].CTNNo)
+                                    @Html.DisplayFor(o => Model.SelectOrderShipSeq[i].ShipmodeID)
                                 </td>
                                 <td>
-                                    @Model.SelectCarton[i].OrderID-
+                                    @Html.DisplayFor(o => Model.SelectOrderShipSeq[i].Article)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(o => Model.SelectOrderShipSeq[i].Qty)
+                                </td>
+                                <td>
+                                    @Model.SelectOrderShipSeq[i].OrderID-
                                 </td>
                             </tr>
                         }
@@ -245,6 +250,16 @@
             @Html.Hidden($"SelectCarton[{i}].CTNNo", Model.SelectCarton[i].CTNNo)
             @Html.Hidden($"SelectCarton[{i}].OrderID", Model.SelectCarton[i].OrderID)
         }
+        //Model.SelectOrderShipSeq
+        for (int i = 0; i < Model.SelectOrderShipSeq.Count; i++)
+        {
+            @Html.Hidden($"SelectOrderShipSeq[{i}].Selected", Model.SelectOrderShipSeq[i].Selected)
+            @Html.Hidden($"SelectOrderShipSeq[{i}].OrderID", Model.SelectOrderShipSeq[i].OrderID)
+            @Html.Hidden($"SelectOrderShipSeq[{i}].Seq", Model.SelectOrderShipSeq[i].Seq)
+            @Html.Hidden($"SelectOrderShipSeq[{i}].ShipmodeID", Model.SelectOrderShipSeq[i].ShipmodeID)
+            @Html.Hidden($"SelectOrderShipSeq[{i}].Article", Model.SelectOrderShipSeq[i].Article)
+            @Html.Hidden($"SelectOrderShipSeq[{i}].Qty", Model.SelectOrderShipSeq[i].Qty)
+        }
     }
 
 </div>
@@ -260,7 +275,7 @@
         var table;
         @foreach (var item in Model.SelectedPO)
         {
-            @:adata.push([null, '@item.OrderID', index,'@item.POID', '@item.StyleID', '@item.SeasonID', '@item.BrandID', @item.Qty, '@item.Cartons',@item.AvailableQty]);
+            @:adata.push([null, '@item.OrderID', index, '@item.POID', '@item.StyleID', '@item.SeasonID', '@item.BrandID', @item.Qty, '@item.Cartons',@item.AvailableQty, '@item.SeasonID', '@item.Seq', '@item.Article']);
             @:index = index + 1;
         }
 
@@ -269,32 +284,33 @@
                 window.open('@Url.Action("SewingLineList", "PublicWondow",new { Area=""})' + '?FactoryID=@ViewBag.FactoryID', 'SewingLineList', config = 'toolbar=no,status=no,location=no,width=400,height=650' );
             });
 
-            table = $('#SelectedPOTable').DataTable({
-                data: adata,
-                autoWidth: false,
-                destroy: true,
-                columnDefs: [
-                    { targets: 0, width: "2%", orderable: false },
-                    { targets: 1, width: "98%", orderable: false },
-                ],
-                columns: [
-                    {
-                        "className": "details-control",
-                    }
-                ],
-                "filter": false,
-                "paging": false,
-                "info": false,
-                "ordering": false,
-                "pageLength": 10,
-                "scrollY": "30vh",
-                "scrollCollapse": true,
-                "createdRow": function (row, data, index) {
 
-                    $('td', row).css('background-color', '#FAA7A7');
-                    $('td', row).attr('ID','SelectPO_'+ data[1]);
-            }
-        });
+            table = $('#SelectedPOTable').DataTable({
+                    data: adata,
+                    autoWidth: false,
+                    destroy: true,
+                    columnDefs: [
+                        { targets: 0, width: "2%", orderable: false },
+                        { targets: 1, width: "98%", orderable: false },
+                    ],
+                    columns: [
+                        {
+                            "className": "details-control",
+                        }
+                    ],
+                    "filter": false,
+                    "paging": false,
+                    "info": false,
+                    "ordering": false,
+                    "pageLength": 10,
+                    "scrollY": "30vh",
+                    "scrollCollapse": true,
+                    "createdRow": function (row, data, index) {
+
+                        $('td', row).css('background-color', '#FAA7A7');
+                        $('td', row).attr('ID','SelectPO_'+ data[1]);
+                }
+            });
 
             $("#SelectedPOTable tbody").on("click", "td.details-control", function () {
 
@@ -307,7 +323,6 @@
                 }
                 else {
                     var orderID = row.data()[1];
-                    
                     row.child(format(row.data(), orderID)).show();
                     tr.addClass('shown');
                 }
@@ -337,9 +352,7 @@
                 }
                 if (Column == "ShipmodeSeq") {
 
-                    table.row($("#SelectPO_" + orderID).closest('tr')).data()[9] = $(this).find("input").val();
-                    Order_AvailableQty[orderID] = $(this).find("input").val();
-                    Cacu_AvailableQty();
+                    table.row($("#SelectPO_" + orderID).closest('tr')).data()[11] = $(this).find("input").val();
                 }
             });
 
@@ -372,13 +385,16 @@
                 "scrollY": "40vh",
                 "scrollCollapse": true,
                 columnDefs: [
-                    { targets: 0, width: "30%" },
-                    { targets: 1, width: "30%" },
-                    { targets: 2, width: "30%" },
-                    { targets: 3, visible: false },
+                    { targets: 0 },
+                    { targets: 1 },
+                    { targets: 2 },
+                    { targets: 3 },
+                    { targets: 4 },
+                    { targets: 5, visible: false },
                 ]
             });
 
+            // dialog 共用
             $(".detail-dialog").dialog({
                 autoOpen: false,
                 modal: true,
@@ -431,7 +447,6 @@
                 },
             });
 
-
             $(".to-ShipmodeSeq-detail").dialog({
                 width: "70%",
                 dialogClass: "add-contact-box",
@@ -442,16 +457,21 @@
 
                             var checkedList = [];
 
-                            $('[id^=Carton_Select_]').each(function () {
+                            $('[id^=ShipmodeSeq_Select_]').each(function () {
 
                                 if ($(this).prop('checked')) {
                                     //checkedList.push($(this).val());
-                                    checkedList.push($(this).attr("ctnno"));
+                                    checkedList.push($(this).attr("seq"));
                                 }
                             });
+                            var index = $("#currnetSelectedShipmodeSeq").val();
+                            
+                            //判斷Shipmode Seq是否改變，如果改變清空Carton
+                            if (document.getElementById("SelectedPO[" + index + "].Seq").value != checkedList.join(',')) {
+                                document.getElementById("SelectedPO[" + index + "].Cartons").value = "";
+                            }
 
-                            var index = $("#currnetSelectedPO").val();
-                            document.getElementById("SelectedPO[" + index + "].Cartons").value = checkedList.join(',');
+                            document.getElementById("SelectedPO[" + index + "].Seq").value = checkedList.join(',');
                             $(this).dialog("close");
                         }
                         , "class": "button"
@@ -547,9 +567,17 @@
         }
 
         function open_cartonsDetail(pkey) {
+
             var findValue = pkey.split(',');
             var rowIndex;
             var sp = findValue[0];
+
+            //Shipmode Seq 不為空才能後續
+            if ($(`input[orderID=${sp}][col=ShipmodeSeq]`).val() == '') {
+                msg.WithWarning("Please select ＜Shipmode Seq＞ first.");
+                return true;
+            }
+
             $(".to-edit-detail").dialog("open");
             ShowLoading();
             $("#CartonTable").DataTable({
@@ -604,13 +632,13 @@
             NonLoading();
         }
 
-
         function open_ShipmodeSeq(pkey) {
             var findValue = pkey.split(',');
             var rowIndex;
             var sp = findValue[0];
             $(".to-ShipmodeSeq-detail").dialog("open");
             ShowLoading();
+
             $("#ShipmodeSeqTable").DataTable({
                 "pageLength": 10,
                 "autoWidth": false,
@@ -625,10 +653,12 @@
                     "search": sp + '-'
                 },
                 columnDefs: [
-                    { targets: 0, width: "30%" },
-                    { targets: 1, width: "30%" },
-                    { targets: 2, width: "30%" },
-                    { targets: 3, visible: false },
+                    { targets: 0 },
+                    { targets: 1 },
+                    { targets: 2 },
+                    { targets: 3 },
+                    { targets: 4 },
+                    { targets: 5, visible: false },
                 ]
             })/*.columns.adjust()*/;
 
@@ -643,25 +673,24 @@
                 var poID = element[3];
                 if (orderID == findValue[0] && poID == findValue[1]) {
                     rowIndex = element[2];
-
                 }
             });
 
-            var cartonValues = document.getElementById("SelectedPO[" + rowIndex + "].Cartons").value;
-            var cartonList = cartonValues.split(',');
+            var SeqValues = document.getElementById("SelectedPO[" + rowIndex + "].Seq").value;
+            var SeqList = SeqValues.split(',');
 
-            if (cartonValues != '') {
+            if (SeqValues != '') {
 
-                $(cartonList).each(function () {
+                $(SeqList).each(function () {
 
-                    //$('#carton_select_' + this).prop('checked', true);
-                    $('input[Type=checkbox][CTNNo=' + this + ']').prop('checked', true);
+                    $('input[Type=checkbox][Seq=' + this + ']').prop('checked', true);
                 });
             }
-            $("#currnetSelectedPO").val(rowIndex);
+            $("#currnetSelectedShipmodeSeq").val(rowIndex);
 
             NonLoading();
         }
+
         function format(d, orderID) {
             return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
                 '<tr><td style="width:90%">PO#:</td><td style="width:10%">' +
@@ -674,11 +703,11 @@
                 '<tr><td>Brand:</td><td>' + d[6] + '</td></tr>' +
 
                 '<tr><td>Shipmode Seq:</td><td class="OpenDetail" >' +
-                '<input type="text" style="width:60px" readonly="readonly" onclick="open_ShipmodeSeq(\'' + d[1] + ',' + d[3] + '\');" name="SelectedPO[' + d[2] + '].ShipmodeSeq" id="SelectedPO[' + d[2] + '].ShipmodeSeq" value="' + d[8] + '" OrderID="' + orderID + '" Col="ShipmodeSeq"/>' +
+                '<input type="text" style="width:60px" readonly="readonly" onclick="open_ShipmodeSeq(\'' + d[1] + ',' + d[3] + '\');" name="SelectedPO[' + d[2] + '].Seq" id="SelectedPO[' + d[2] + '].Seq" value="' + d[11] + '" OrderID="' + orderID + '" Col="ShipmodeSeq"/>' +
                 '</td></tr>' +
 
-                '<tr><td>Article:</td><td>' + 'd[9]' + '</td></tr>' +
-                '<tr><td>SP# Qty:</td><td>' + d[7] + '</td></tr>' +
+                '<tr><td>Article:</td><td>' + d[12] + '</td></tr>' +
+                '<tr><td>SP# Qty By Seq:</td><td>' + d[7] + '</td></tr>' +
                 '<tr><td>Cartons:</td><td class="OpenDetail" >' +
                 '<input type="text" style="width:60px" readonly="readonly" onclick="open_cartonsDetail(\'' + d[1] + ',' + d[3] + '\');" name="SelectedPO[' + d[2] + '].Cartons" id="SelectedPO[' + d[2] + '].Cartons" value="' + d[8] + '" OrderID="' + orderID +'" Col="Cartons"/>' +
                 '</td></tr>'+
@@ -712,6 +741,17 @@
             $("input[Type=hidden][ID=SelectCarton_" + Idx + "__Selected]").val(icChecked);
         }
 
+        //選擇Seq時，將資料同步到Model的標籤
+        function SelectOrderShipSeqChange(self) {
+
+            var Idx = $(self).attr("Idx");
+            var OrderID = $(self).attr("orderID");
+            var PackingListID = $(self).attr("PackingListID");
+            var Seq = $(self).attr("Seq");
+            var icChecked = $(self).prop("checked");
+            $("input[Type=hidden][ID=SelectOrderShipSeq_" + Idx + "__Selected]").val(icChecked);
+        }
+
         function onSampleSizeChange(value) {
             // 不可大於 [Total Available Qty]
             if ($("#SampleSize").prop("disabled") == false) {
@@ -728,7 +768,7 @@
         }
 
         function checkSubmitValue() {
-            if (onSampleSizeChange(document.getElementById("InspectionStage").value) == false) {
+            if (onSampleSizeChange(document.getElArticleArArticleiclerticlerticlementById("InspectionStage").value) == false) {
                 return false;
             }
 

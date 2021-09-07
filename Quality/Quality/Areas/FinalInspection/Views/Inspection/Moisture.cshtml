@@ -27,8 +27,8 @@
         }
 
         .table_div tr td:nth-child(2n+1) {
-            font-size:1.2em;
-            font-weight:bold;            
+            font-size: 1.2em;
+            font-weight: bold;
         }
 
         #myCartons_previous, #myCartons_next,
@@ -61,7 +61,7 @@
                 <table class="col-auto table_div" style="width:100%">
                     <tr>
                         <td><label>Article</label></td>
-                        <td>@Html.DropDownList("Article", (List<SelectListItem>)ViewBag.ListArticle, null, new { @class = "form-control", @style= "width:80%", @onchange = "onInspectionStageChange(this.value)" })</td>
+                        <td>@Html.DropDownList("Article", (List<SelectListItem>)ViewBag.ListArticle, null, new { @class = "form-control", @style = "width:80%", @onchange = "onInspectionStageChange(this.value)" })</td>
                     </tr>
                     <tr>
                         <td><label class="cartonData">carton#</label></td>
@@ -87,7 +87,7 @@
                         </tr>
                         <tr>
                             <td style="text-align: right;"><label>Fabrication</label></td>
-                            <td>@Html.TextBoxFor(o => o.Fabrication, new { @disabled = "@disabled" })</td>
+                            <td>@Html.TextBoxFor(o => o.Fabrication, new { @disabled = "disabled" })</td>
                         </tr>
                     </table>
                 </div>
@@ -196,7 +196,7 @@
                 </tr>
             </thead>
             <tbody>
-                @for (int i = 0; i < @ViewBag.ListEndlineMoisture.Count; i++)
+                @for (int i = 0; i < ViewBag.ListEndlineMoisture.Count; i++)
                 {
                     <tr class="row-content" style="vertical-align: middle; text-align: center;">
                         <td>
@@ -219,7 +219,7 @@
     </div>
 </div>
 
-<div class="detail-dialog to-edit-detail-myView" title="Detail">
+<div class="detail-dialog to-edit-detail-myView" title="View">
     <div class="detail-dialog-content dialog-content-w-icon" style="height:70vh">
         <table cellspacing="100" id="myView" class="table table-striped display">
             <thead>
@@ -423,7 +423,7 @@
                     {
                         "orderable": false
                         ,render: function (data, type) {
-                            return '<button class="button" style="padding:0;position:static" value="' + data + '">Delete</button>';
+                            return '<button class="button ViewDelete" style="padding:0;position:static" value="' + data + '">Delete</button>';
                         }}
                     ],
             });
@@ -451,6 +451,71 @@
                         msg.WithError("Get View fail:" + xhr.responseText + " " + xhr.status);
                     }
                 });
+            });
+
+            $("#Save").click(function () {
+
+                var data =
+                {
+                    FinalInspectionID: $("#FinalInspectionID").val(),
+                    Article: $("#Article").val(),
+                    FinalInspection_OrderCartonUkey: $("#FinalInspection_OrderCartonUkey").val(),
+                    Instrument: $("#Instrument").val(),
+                    Fabrication: $("#Fabrication").val(),
+                    GarmentTop: $("#GarmentTop").val(),
+                    GarmentMiddle: $("#GarmentMiddle").val(),
+                    GarmentBottom: $("#GarmentBottom").val(),
+                    CTNInside: $("#CTNInside").val(),
+                    CTNOutside: $("#CTNOutside").val(),
+                    Action: $("#Action").val(),
+                    Result: $("#Result").val(),
+                    Remark: $("#Remark").val(),
+                };
+
+                $.ajax({
+                    url: '@Url.Action("MoistureSingleSave", "Inspection")',
+                    type: 'POST',
+                    data: jQuery.param({ Req: data }),
+                    global: false,
+                    success: function (response) {
+                        if (response.Result) {
+                            msg.WithSuccess("Success!");
+                        }
+                        else {
+                            msg.WithError(response.ErrorMessage);
+                        }
+                    },
+                    error: function (xhr, status) {
+                        msg.WithError("Get View fail:" + xhr.responseText + " " + xhr.status);
+                    }
+                });
+
+            });
+
+
+
+            $(".ViewDelete").click(function () {
+
+                var UKey = $(this).val();
+                debugger
+                $.ajax({
+                    url: '@Url.Action("MoistureDelete", "Inspection")',
+                    type: 'POST',
+                    data: jQuery.param({ UKey: UKey }),
+                    global: false,
+                    success: function (response) {
+                        if (response.Result) {
+                            msg.WithSuccess("Success!");
+                        }
+                        else {
+                            msg.WithError(response.ErrorMessage);
+                        }
+                    },
+                    error: function (xhr, status) {
+                        msg.WithError("Get View fail:" + xhr.responseText + " " + xhr.status);
+                    }
+                });
+
             });
         });
 

@@ -1,11 +1,8 @@
 ﻿using BusinessLogicLayer.Interface;
-using BusinessLogicLayer.Interface.SampleRFT;
 using BusinessLogicLayer.Service;
-using BusinessLogicLayer.Service.SampleRFT;
 using DatabaseObject;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
-using DatabaseObject.ResultModel;
 using DatabaseObject.ResultModel.FinalInspection;
 using DatabaseObject.ViewModel.FinalInspection;
 using FactoryDashBoardWeb.Helper;
@@ -14,7 +11,6 @@ using Quality.Controllers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace Quality.Areas.FinalInspection.Controllers
@@ -39,7 +35,8 @@ namespace Quality.Areas.FinalInspection.Controllers
         {
             this.CheckSession();
 
-            FinalInspection_Request finalInspection_Request = new FinalInspection_Request() {
+            FinalInspection_Request finalInspection_Request = new FinalInspection_Request()
+            {
                 SP = Req.SP,
                 POID = Req.POID,
                 StyleID = Req.StyleID,
@@ -239,7 +236,7 @@ msg.WithInfo('{ex.Message}');
             if (!result)
             {
                 setting.ErrorMessage = result.ErrorMessage;
-                
+
 
                 ViewBag.InspectionStageList = new List<SelectListItem>()
                 {
@@ -262,7 +259,7 @@ msg.WithInfo('{ex.Message}');
                 return View("Setting", setting);
             }
 
-            return RedirectToAction("General", new { FinalInspectionID= finalInspectionID });
+            return RedirectToAction("General", new { FinalInspectionID = finalInspectionID });
         }
 
         #endregion
@@ -437,7 +434,8 @@ msg.WithInfo('{ex.Message}');
                     long RowIndex = item.RowIndex;
 
                     if (item.Ukey > 0)
-                    {                        var sameUkeyImg = TmpFinalInspectionDefectItem_List.Where(o => o.Ukey == FinalInspection_DetailUkey);
+                    {
+                        var sameUkeyImg = TmpFinalInspectionDefectItem_List.Where(o => o.Ukey == FinalInspection_DetailUkey);
                         foreach (var data in sameUkeyImg)
                         {
                             item.ListFinalInspectionDefectImage.Add(data.TempImage);
@@ -467,6 +465,7 @@ msg.WithInfo('{ex.Message}');
 
         #region Beautiful Product Audit頁面
         public static List<BACriteriaItem> TmpBACriteriaItem_List;
+
         public ActionResult BeautifulProductAudit(string FinalInspectionID)
         {
             TmpBACriteriaItem_List = new List<BACriteriaItem>();
@@ -550,7 +549,7 @@ msg.WithInfo('{ex.Message}');
             }
             else if (goPage == "Next")
             {
-                Req.BAQty = Req.BAQty.HasValue ? Req.BAQty.Value: 0;
+                Req.BAQty = Req.BAQty.HasValue ? Req.BAQty.Value : 0;
                 // 本次新增的圖片全面加入
                 foreach (var item in Req.ListBACriteria)
                 {
@@ -586,6 +585,7 @@ msg.WithInfo('{ex.Message}');
         }
 
         #endregion
+
         public List<SelectListItem> ItemListBinding(Dictionary<string, string> Options)
         {
             List<SelectListItem> result_itemList = new List<SelectListItem>();
@@ -602,30 +602,24 @@ msg.WithInfo('{ex.Message}');
             return result_itemList;
         }
 
-        public ActionResult Moisture()
+        public ActionResult Moisture(string FinalInspectionID)
         {
-            DatabaseObject.ViewModel.FinalInspection.Moisture moisture = new DatabaseObject.ViewModel.FinalInspection.Moisture();
-            moisture.FinalInspectionID = "ESPCH21080001";
-            moisture.FinalInspection_CTNMoisureStandard = 7.5m;
-            moisture.ListArticle = new List<string>();
-            for (int i= 10;i<60;i=i+10)
-            {
-                moisture.ListArticle.Add("00" + i.ToString());
-            }
-            moisture.ListCartonItem = new List<DatabaseObject.ViewModel.FinalInspection.CartonItem>();
-            //for (int i = 1; i < 10; i++)
+            DatabaseObject.ViewModel.FinalInspection.Moisture model = new DatabaseObject.ViewModel.FinalInspection.Moisture();
+            FinalInspectionMoistureService service = new FinalInspectionMoistureService();
+
+
+            //model.FinalInspectionID = "ESPCH21080001";
+            //model.FinalInspection_CTNMoisureStandard = 7.5m;
+            //model.ListArticle = new List<string>();
+            //for (int i = 10; i < 60; i = i + 10)
             //{
-            //    DatabaseObject.ViewModel.FinalInspection.CartonItem cartonItem = new DatabaseObject.ViewModel.FinalInspection.CartonItem();
-            //    cartonItem.FinalInspection_OrderCartonUkey = i + 1;
-            //    cartonItem.OrderID = "A001";
-            //    cartonItem.CTNNo = i.ToString();
-            //    cartonItem.PackinglistID = i.ToString();
-
-            //    moisture.ListCartonItem.Add(cartonItem);
+            //    model.ListArticle.Add("00" + i.ToString());
             //}
+            //model.ListCartonItem = new List<DatabaseObject.ViewModel.FinalInspection.CartonItem>();
 
-            moisture.ListEndlineMoisture = new List<DatabaseObject.ManufacturingExecutionDB.EndlineMoisture>();
+            //model.ListEndlineMoisture = new List<DatabaseObject.ManufacturingExecutionDB.EndlineMoisture>();
 
+            #region
             string jsonString = @"
 [
   {
@@ -784,33 +778,37 @@ msg.WithInfo('{ex.Message}');
     'Standard': 4.5
   }
 ]";
-            List<ListEndlineMoistureClass> objectList = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ListEndlineMoistureClass>>(jsonString);
-            foreach (ListEndlineMoistureClass item in objectList)
-            {
-                DatabaseObject.ManufacturingExecutionDB.EndlineMoisture endlineMoisture = new DatabaseObject.ManufacturingExecutionDB.EndlineMoisture();
-                endlineMoisture.Instrument = item.Instrument;
-                endlineMoisture.Fabrication = item.Fabrication;
-                endlineMoisture.Standard = item.Standard;
 
-                moisture.ListEndlineMoisture.Add(endlineMoisture);
-            }
+            #endregion
+            //List<ListEndlineMoistureClass> objectList = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ListEndlineMoistureClass>>(jsonString);
+            //foreach (ListEndlineMoistureClass item in objectList)
+            //{
+            //    DatabaseObject.ManufacturingExecutionDB.EndlineMoisture endlineMoisture = new DatabaseObject.ManufacturingExecutionDB.EndlineMoisture();
+            //    endlineMoisture.Instrument = item.Instrument;
+            //    endlineMoisture.Fabrication = item.Fabrication;
+            //    endlineMoisture.Standard = item.Standard;
 
-            moisture.ActionSelectListItem = new List<SelectListItem>();
-            jsonString = @"[{'name':''},{'name':'Change carton'},{'name':'Drying garment+change carton'},{'name':'Open carton with drying garment'},{'name':'Others'}]";
-            List<ActionClass> actionList = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ActionClass>>(jsonString);
-            foreach (ActionClass item in actionList)
-            {
-                SelectListItem i = new SelectListItem { Text = item.name, Value = item.name };
-                moisture.ActionSelectListItem.Add(i);
-            }
+            //    model.ListEndlineMoisture.Add(endlineMoisture);
+            //}
 
-            ViewBag.ListArticle = new SetListItem().ItemListBinding(moisture.ListArticle);
-            ViewBag.ListCartonItem = moisture.ListCartonItem;
-            ViewBag.ListEndlineMoisture = moisture.ListEndlineMoisture;
-            ViewBag.ActionSelectListItem = moisture.ActionSelectListItem;
+            //model.ActionSelectListItem = new List<SelectListItem>();
+            //jsonString = @"[{'name':''},{'name':'Change carton'},{'name':'Drying garment+change carton'},{'name':'Open carton with drying garment'},{'name':'Others'}]";
+            //List<ActionClass> actionList = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ActionClass>>(jsonString);
+            //foreach (ActionClass item in actionList)
+            //{
+            //    SelectListItem i = new SelectListItem { Text = item.name, Value = item.name };
+            //    model.ActionSelectListItem.Add(i);
+            //}
 
-            ViewBag.FinalInspectionID = moisture.FinalInspectionID;
-            ViewBag.FinalInspection_CTNMoisureStandard = moisture.FinalInspection_CTNMoisureStandard;
+            model = service.GetMoistureForInspection(FinalInspectionID);
+
+            ViewBag.ListArticle = new SetListItem().ItemListBinding(model.ListArticle);
+            ViewBag.ListCartonItem = model.ListCartonItem;
+            ViewBag.ListEndlineMoisture = model.ListEndlineMoisture;
+            ViewBag.ActionSelectListItem = model.ActionSelectListItem;
+
+            ViewBag.FinalInspectionID = model.FinalInspectionID;
+            ViewBag.FinalInspection_CTNMoisureStandard = model.FinalInspection_CTNMoisureStandard;
 
             DatabaseObject.ViewModel.FinalInspection.MoistureResult moistureResult = new DatabaseObject.ViewModel.FinalInspection.MoistureResult();
 
@@ -825,6 +823,26 @@ msg.WithInfo('{ex.Message}');
 
             return Json(viewMoistureResultsList);
         }
+
+        [HttpPost]
+        public ActionResult MoistureSingleSave(MoistureResult Req)
+        {
+            FinalInspectionMoistureService service = new FinalInspectionMoistureService();
+            BaseResult result = service.UpdateMoistureBySave(Req);
+
+            return Json(result);
+        }
+
+
+        [HttpPost]
+        public ActionResult MoistureDelete(long UKey)
+        {
+            FinalInspectionMoistureService service = new FinalInspectionMoistureService();
+            BaseResult result = service.DeleteMoisture(UKey);
+
+            return Json(result);
+        }
+
         [HttpPost]
         public ActionResult Moisture(DatabaseObject.ViewModel.FinalInspection.MoistureResult moistureResult, string goPage)
         {
