@@ -213,9 +213,11 @@
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="Image\Icon\Accessory.png" />
+    <Content Include="Image\Icon\add.png" />
     <Content Include="Image\Icon\Back.png" />
     <Content Include="Image\Icon\Back2.png" />
     <Content Include="Image\Icon\Barcode.png" />
+    <Content Include="Image\Icon\Camara_White.png" />
     <Content Include="Image\Icon\Camera.png" />
     <Content Include="Image\Icon\Checking.png" />
     <Content Include="Image\Icon\CheckList.png" />
@@ -226,6 +228,7 @@
     <Content Include="Image\Icon\Cutting.png" />
     <Content Include="Image\Icon\DateRange.png" />
     <Content Include="Image\Icon\Delete.png" />
+    <Content Include="Image\Icon\Delete_White.png" />
     <Content Include="Image\Icon\DOC.png" />
     <Content Include="Image\Icon\Document.png" />
     <Content Include="Image\Icon\Download.png" />
@@ -234,7 +237,10 @@
     <Content Include="Image\Icon\Dryer.png" />
     <Content Include="Image\Icon\East.png" />
     <Content Include="Image\Icon\Edit.png" />
+    <Content Include="Image\Icon\Edit_White.png" />
+    <Content Include="Image\Icon\Excel_White.png" />
     <Content Include="Image\Icon\Exit.png" />
+    <Content Include="Image\Icon\Exit_White.png" />
     <Content Include="Image\Icon\Fabric.png" />
     <Content Include="Image\Icon\Factory.png" />
     <Content Include="Image\Icon\Import.png" />
@@ -243,27 +249,40 @@
     <Content Include="Image\Icon\List3.png" />
     <Content Include="Image\Icon\List4.png" />
     <Content Include="Image\Icon\Lock.png" />
+    <Content Include="Image\Icon\Lock_White.png" />
     <Content Include="Image\Icon\Mail.png" />
+    <Content Include="Image\Icon\Mail_White.png" />
     <Content Include="Image\Icon\Measure.png" />
     <Content Include="Image\Icon\Measure2.png" />
     <Content Include="Image\Icon\Measure3.png" />
     <Content Include="Image\Icon\New.png" />
+    <Content Include="Image\Icon\New_White.png" />
     <Content Include="Image\Icon\PDF.png" />
+    <Content Include="Image\Icon\PDF_White.png" />
     <Content Include="Image\Icon\Picture.png" />
     <Content Include="Image\Icon\Print.png" />
+    <Content Include="Image\Icon\Print_White.png" />
     <Content Include="Image\Icon\QRCode.png" />
     <Content Include="Image\Icon\Quality.png" />
     <Content Include="Image\Icon\Query.png" />
+    <Content Include="Image\Icon\Receive.png" />
     <Content Include="Image\Icon\Refresh.png" />
+    <Content Include="Image\Icon\Remove.png" />
     <Content Include="Image\Icon\Save.png" />
+    <Content Include="Image\Icon\Save_White.png" />
+    <Content Include="Image\Icon\SendMail.png" />
+    <Content Include="Image\Icon\Setting.png" />
     <Content Include="Image\Icon\Sewing.png" />
     <Content Include="Image\Icon\Sewing2.png" />
     <Content Include="Image\Icon\Sewing3.png" />
     <Content Include="Image\Icon\Style.png" />
+    <Content Include="Image\Icon\Tick.png" />
     <Content Include="Image\Icon\Translate.png" />
     <Content Include="Image\Icon\UnConfirm.png" />
     <Content Include="Image\Icon\Undo.png" />
+    <Content Include="Image\Icon\Undo_White.png" />
     <Content Include="Image\Icon\Unlock.png" />
+    <Content Include="Image\Icon\UnLock_White.png" />
     <Content Include="Image\Icon\View.png" />
     <Content Include="Image\Icon\Washing.png" />
     <Content Include="Image\Icon\XLS.png" />
@@ -346,6 +365,7 @@
     <Content Include="Areas\BulkFGT\Views\FabricCrkShrkTest\HeatTest.cshtml" />
     <Content Include="Areas\BulkFGT\Views\FabricCrkShrkTest\WashTest.cshtml" />
     <Content Include="Areas\BulkFGT\Views\FabricColorFastness\Detail.cshtml" />
+    <Content Include="Image\Icon\Thumbs.db" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -815,6 +835,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="XLT\FabricCrockingTestWeftWarp.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\FabricHeatTest.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

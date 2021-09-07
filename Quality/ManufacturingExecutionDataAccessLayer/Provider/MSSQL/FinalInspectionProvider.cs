@@ -12,6 +12,7 @@ using DatabaseObject.ViewModel.FinalInspection;
 using System.Transactions;
 using System.Linq;
 using DatabaseObject.RequestModel;
+using System.Threading;
 
 namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 {
@@ -187,6 +188,7 @@ set     InspectionStage = @InspectionStage                         ,
 where   ID = @FinalInspectionID
 
 delete  FinalInspection_Order where ID = @FinalInspectionID
+delete  FinalInspection_Order_QtyShip where ID = @FinalInspectionID
 delete  FinalInspection_OrderCarton where ID = @FinalInspectionID
 ";
             }
@@ -214,11 +216,19 @@ insert into FinalInspection_Order(ID, OrderID, AvailableQty)
 ";
             }
 
+            foreach (SelectOrderShipSeq selectOrderShipSeq in setting.SelectOrderShipSeq)
+            {
+                sqlUpdCmd += $@"
+insert into FinalInspection_Order_QtyShip(ID, OrderID, Seq, ShipmodeID)
+            values(@FinalInspectionID, '{selectOrderShipSeq.OrderID}', '{selectOrderShipSeq.Seq}', '{selectOrderShipSeq.ShipmodeID}')
+";
+            }
+
             foreach (SelectCarton selectCartonItem in setting.SelectCarton)
             {
                 sqlUpdCmd += $@"
-insert into FinalInspection_OrderCarton(ID, OrderID, PackingListID, CTNNo)
-            values(@FinalInspectionID, '{selectCartonItem.OrderID}', '{selectCartonItem.PackingListID}', '{selectCartonItem.CTNNo}')
+insert into FinalInspection_OrderCarton(ID, OrderID, PackingListID, CTNNo, Seq)
+            values(@FinalInspectionID, '{selectCartonItem.OrderID}', '{selectCartonItem.PackingListID}', '{selectCartonItem.CTNNo}', '{selectCartonItem.Seq}')
 ";
             }
             using (TransactionScope transaction = new TransactionScope())
@@ -636,12 +646,19 @@ select  Image
             };
 
             string sqlGetMoistureListCartonItem = @"
-select  [FinalInspection_OrderCartonUkey] = Ukey,
-        OrderID,
-        PackinglistID,
-        CTNNo
-from    FinalInspection_OrderCarton with (nolock)
-where ID = @finalInspectionID
+select distinct ID, Seq, Article
+into    #Order_QtyShip_Detail
+from    [MainServer].Production.dbo.Order_QtyShip_Detail
+where   ID in (select OrderID from FinalInspection_Order with (nolock) where ID = @finalInspectionID)
+
+select  [FinalInspection_OrderCartonUkey] = foc.Ukey,
+        foc.OrderID,
+        foc.PackinglistID,
+        foc.CTNNo,
+        [Article] = isnull(oqd.Article, '')
+from    FinalInspection_OrderCarton foc with (nolock)
+left join #Order_QtyShip_Detail oqd on oqd.ID = foc.OrderID and oqd.Seq = foc.Seq 
+where foc.ID = @finalInspectionID
 
 ";
             return ExecuteList<CartonItem>(CommandType.Text, sqlGetMoistureListCartonItem, objParameter);
@@ -1152,6 +1169,11 @@ into    #tmpOrders
 from    SciProduction_Orders with (nolock)
 where   1 = 1 {whereOrder}
 
+select  ID, Article
+into    #tmpOrderArticle
+from    [MainServer].Production.dbo.Order_Article with (nolock)
+where   ID in (select ID from #tmpOrders)
+
 select  [FinalInspectionID] = f.ID,
         [SP] = fo.OrderID,
         f.POID,
@@ -1159,6 +1181,7 @@ select  [FinalInspectionID] = f.ID,
         [StyleID] = o.StyleID,
         [Season] = o.SeasonID,
         [BrandID] = o.BrandID,
+        [Article] = (SELECT Stuff((select concat( ',',Article)   from #tmpOrderArticle where ID = fo.OrderID FOR XML PATH('')),1,1,'') ),
         [InspectionTimes] = cast(f.InspectionTimes as varchar),
         f.InspectionStage,
         f.InspectionResult
@@ -1188,6 +1211,23 @@ where   ID = @FinalInspectionID
 ";
 
             return ExecuteList<FinalInspection_OrderCarton>(CommandType.Text, sqlGetData, parameter);
+        }
+
+        public IList<SelectOrderShipSeq> GetListShipModeSeq(string finalInspectionID)
+        {
+            SQLParameterCollection parameter = new SQLParameterCollection() {
+                            { "@FinalInspectionID", DbType.String, finalInspectionID }
+                        };
+
+            string sqlGetData = @"
+select  OrderID
+        ,Seq
+        ,ShipmodeID
+from    FinalInspection_Order_QtyShip with (nolock)
+where   ID = @FinalInspectionID
+";
+
+            return ExecuteList<SelectOrderShipSeq>(CommandType.Text, sqlGetData, parameter);
         }
 
         #endregion

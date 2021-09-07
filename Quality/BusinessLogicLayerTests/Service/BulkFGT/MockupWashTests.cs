@@ -6,6 +6,7 @@ using System.Linq;
 using DatabaseObject.ProductionDB;
 using BusinessLogicLayer.Interface.BulkFGT;
 using DatabaseObject.RequestModel;
+using DatabaseObject.ViewModel.BulkFGT;
 
 namespace BusinessLogicLayer.Service.Tests
 {
@@ -53,7 +54,6 @@ namespace BusinessLogicLayer.Service.Tests
             }
         }
 
-
         [TestMethod()]
         public void GetArtworkTypeID()
         {
@@ -68,7 +68,7 @@ namespace BusinessLogicLayer.Service.Tests
                     //StyleUkey =75468,
                 };
                 var selectListItems = _MockupWashService.GetArtworkTypeID(StyleArtwork_Request);
-                Assert.IsTrue(true);
+                Assert.IsTrue(selectListItems.Count == 1);
             }
             catch (Exception ex)
             {
@@ -91,7 +91,6 @@ namespace BusinessLogicLayer.Service.Tests
             }
         }
 
-
         [TestMethod()]
         public void GetDistinctArticle()
         {
@@ -112,11 +111,167 @@ namespace BusinessLogicLayer.Service.Tests
         }
 
         [TestMethod()]
+        public void Create()
+        {
+            try
+            {
+                IMockupWashService _MockupWashService = new MockupWashService();
+                MockupWash_ViewModel MockupWash = new MockupWash_ViewModel()
+                {
+                    ReportNo = "T1",
+                    POID = "TP",
+                    StyleID = "SS",
+                    SeasonID = "20SS",
+                    BrandID = "bb",
+                    Article = "aa",
+                    ArtworkTypeID = "attt",
+                    Remark = "remmmm",
+                    T1Subcon = "SCIMIS",
+                    T2Supplier = "SCIMIS",
+                    TestDate = DateTime.Now,
+                    ReceivedDate = DateTime.Now,
+                    ReleasedDate = DateTime.Now,
+                    Result = "Pass",
+                    Technician = "SCIMIS",
+                    MR = "SCIMIS",
+                    AddName = "SCIMIS",
+                    OtherMethod = true,
+                    MethodID = "a",
+                    TestingMethod = "TESTWTF",
+                    HTPlate = 9,
+                    HTFlim = 6,
+                    HTTime = 3,
+                    HTPressure = (decimal)22.1,
+                    HTPellOff = "POFF",
+                    HT2ndPressnoreverse = 2,
+                    HT2ndPressreversed = 3,
+                    HTCoolingTime = "66TT",
+                    MockupWash_Detail = new System.Collections.Generic.List<MockupWash_Detail_ViewModel>()
+                    {
+                        new MockupWash_Detail_ViewModel(){ReportNo = "T1",TypeofPrint="TTTT1",Design="d100",ArtworkColor="0001",FabricRefNo="RF",AccessoryRefno="AF",FabricColor  = "FCC",Result="Pass",Remark="RRRK",EditName = "SCIMIS"},
+                        new MockupWash_Detail_ViewModel(){ReportNo = "T1",TypeofPrint="TTT22",Design="d200",ArtworkColor="0001",FabricRefNo="RF",AccessoryRefno="AF",FabricColor  = "FCC",Result="Pass",Remark="2RRRK",EditName = "SCIMIS"},
+                    }
+                };
+
+                var mockupWash = _MockupWashService.Create(MockupWash);
+                Assert.IsTrue(true);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.ToString());
+            }
+        }
+
+        [TestMethod()]
+        public void Update()
+        {
+            try
+            {
+                IMockupWashService _MockupWashService = new MockupWashService();
+                MockupWash_ViewModel MockupWash = new MockupWash_ViewModel()
+                {
+                    ReportNo = "T1",
+                    POID = "up",
+                    StyleID = "up",
+                    SeasonID = "up",
+                    BrandID = "up",
+                    Article = "up",
+                    ArtworkTypeID = "up",
+                    Remark = "up",
+                    T1Subcon = "up",
+                    T2Supplier = "up",
+                    TestDate = DateTime.Now,
+                    ReceivedDate = DateTime.Now,
+                    ReleasedDate = DateTime.Now,
+                    Result = "up",
+                    Technician = "up",
+                    MR = "up",
+                    EditName = "up",
+                    OtherMethod = false,
+                    MethodID = "b",
+                    TestingMethod = "up",
+                    HTPlate = 1,
+                    HTFlim = 1,
+                    HTTime = 1,
+                    HTPressure = (decimal)11.1,
+                    HTPellOff = "up",
+                    HT2ndPressnoreverse = 1,
+                    HT2ndPressreversed = 1,
+                    HTCoolingTime = "up",
+                    MockupWash_Detail = new System.Collections.Generic.List<MockupWash_Detail_ViewModel>()
+                    {
+                        new MockupWash_Detail_ViewModel(){TypeofPrint="up",Design="up",ArtworkColor="up",FabricRefNo="up",AccessoryRefno="up",FabricColor  = "up",Result="up",Remark="up",EditName = "up",Ukey=21860},
+                        new MockupWash_Detail_ViewModel(){TypeofPrint="up",Design="up",ArtworkColor="up",FabricRefNo="up",AccessoryRefno="up",FabricColor  = "up",Result="up",Remark="up",EditName = "up",Ukey=21861},
+                    }
+                };
+
+                var mockupWash = _MockupWashService.Update(MockupWash);
+                Assert.IsTrue(true);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.ToString());
+            }
+        }
+
+        [TestMethod()]
+        public void Delete()
+        {
+            try
+            {
+                IMockupWashService _MockupWashService = new MockupWashService();
+                MockupWash_ViewModel MockupWash = new MockupWash_ViewModel()
+                {
+                    ReportNo = "T1",
+                    MockupWash_Detail = new System.Collections.Generic.List<MockupWash_Detail_ViewModel>()
+                    {
+                        new MockupWash_Detail_ViewModel(){Ukey=21860},
+                        new MockupWash_Detail_ViewModel(){Ukey=21861},
+                    }
+                };
+
+                var mockupWash = _MockupWashService.Delete(MockupWash);
+                Assert.IsTrue(true);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.ToString());
+            }
+
+        }
+
+        [TestMethod()]
+        public void DeleteDetail()
+        {
+            try
+            {
+                IMockupWashService _MockupWashService = new MockupWashService();
+                System.Collections.Generic.List<MockupWash_Detail_ViewModel> MockupWash_Detail = new System.Collections.Generic.List<MockupWash_Detail_ViewModel>()
+                {
+                    new MockupWash_Detail_ViewModel(){Ukey=21858},
+                    new MockupWash_Detail_ViewModel(){Ukey=21859},
+                };
+
+                var mockupWash = _MockupWashService.DeleteDetail(MockupWash_Detail);
+                Assert.IsTrue(true);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.ToString());
+            }
+        }
+
+        [TestMethod()]
         public void GetPDF()
         {
             try
             {
                 IMockupWashService _MockupWashService = new MockupWashService();
+                MockupWash_Request MockupWash = new MockupWash_Request()
+                { ReportNo = "PHWA190900003" };
+                //{ BrandID = "ADIDAS", SeasonID = "20SS", StyleID = "S201CSPM108", Article = "FL0237" };
+                var mockupWash = _MockupWashService.GetMockupWash(MockupWash);
+                var result = _MockupWashService.GetPDF(mockupWash, true);
             }
             catch (Exception ex)
             {

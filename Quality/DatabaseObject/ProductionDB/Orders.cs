@@ -632,5 +632,6 @@ namespace DatabaseObject.ProductionDB
 
         public bool Checked { get; set; }
 
+        public string Article { get; set; }
     }
 }

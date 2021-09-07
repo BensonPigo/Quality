@@ -60,7 +60,6 @@ namespace BusinessLogicLayer.Service.FinalInspectionTests
             try
             {
                 IFinalInspectionBeautifulProductAuditService finalInspectionBeautifulProductAuditService = new FinalInspectionBeautifulProductAuditService();
-
                 BeautifulProductAudit beautifulProductAudit = finalInspectionBeautifulProductAuditService.GetBeautifulProductAuditForInspection("ESPCH21080001");
 
                 beautifulProductAudit.BAQty = 99;
@@ -77,6 +76,13 @@ namespace BusinessLogicLayer.Service.FinalInspectionTests
                 if (!result)
                 {
                     Assert.Fail(result.ErrorMessage);
+                }
+                
+                beautifulProductAudit = finalInspectionBeautifulProductAuditService.GetBeautifulProductAuditForInspection("ESPCH21080001");
+
+                if (!beautifulProductAudit)
+                {
+                    Assert.Fail(beautifulProductAudit.ErrorMessage);
                 }
 
                 Assert.IsTrue(true);

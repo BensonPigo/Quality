@@ -1,4 +1,6 @@
-﻿using BusinessLogicLayer.Interface.BulkFGT;
+﻿using ADOHelper.Utility;
+using BusinessLogicLayer.Interface.BulkFGT;
+using DatabaseObject;
 using DatabaseObject.ViewModel.BulkFGT;
 using MICS.DataAccessLayer.Interface;
 using MICS.DataAccessLayer.Provider.MSSQL;
@@ -99,13 +101,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public IList<Fabirc_ColorFastness_Detail_ViewModel> GetDetailBody(string ID)
+        public Fabric_ColorFastness_Detail_ViewModel GetDetailBody(string ID)
         {
             _IColorFastnessDetailProvider = new ColorFastnessDetailProvider(Common.ProductionDataAccessLayer);
-            IList<Fabirc_ColorFastness_Detail_ViewModel> result = new List<Fabirc_ColorFastness_Detail_ViewModel>();
+            Fabric_ColorFastness_Detail_ViewModel result = new Fabric_ColorFastness_Detail_ViewModel();
             try
             {
-                result = _IColorFastnessDetailProvider.Get_DetailBody(ID);
+                result.Detail = _IColorFastnessDetailProvider.Get_DetailBody(ID).ToList();
             }
             catch (Exception ex)
             {
@@ -139,6 +141,54 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 throw ex;
             }
+        }
+
+        public BaseResult Save_ColorFastness_1stPage(string PoID, string Remark, List<ColorFastness_Result> _ColorFastness)
+        {
+            BaseResult baseResult = new BaseResult();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            try
+            {
+                _IColorFastnessProvider = new ColorFastnessProvider(_ISQLDataTransaction);
+                baseResult.Result = _IColorFastnessProvider.Save_PO(PoID, Remark);
+                
+                // 刪除前端傳來卻"不存在"DB的資料
+                baseResult.Result = _IColorFastnessProvider.Delete_ColorFastness(PoID, _ColorFastness);
+                _ISQLDataTransaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                _ISQLDataTransaction.RollBack();
+                baseResult.Result = false;
+                baseResult.ErrorMessage = ex.Message.ToString();
+            }
+            finally { _ISQLDataTransaction.CloseConnection(); }
+
+            return baseResult;
+        }
+
+        public BaseResult Save_ColorFastness_2ndPage(Fabric_ColorFastness_Detail_ViewModel source , string Mdivision, string UserID)
+        {
+            BaseResult baseResult = new BaseResult();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            try
+            {
+                _IColorFastnessDetailProvider = new ColorFastnessDetailProvider(_ISQLDataTransaction);
+                _IColorFastnessDetailProvider.Save_ColorFastness(source, Mdivision, UserID);
+                //baseResult.Result = _IColorFastnessProvider.Save_PO(PoID, Remark);
+                var resultS = new FabricColorFastness_ViewModel();
+                
+                _ISQLDataTransaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                _ISQLDataTransaction.RollBack();
+                baseResult.Result = false;
+                baseResult.ErrorMessage = ex.Message.ToString();
+            }
+            finally { _ISQLDataTransaction.CloseConnection(); }
+
+            return baseResult;
         }
     }
 }

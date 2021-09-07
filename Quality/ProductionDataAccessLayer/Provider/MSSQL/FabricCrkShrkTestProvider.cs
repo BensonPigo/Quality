@@ -732,13 +732,13 @@ select	[Roll] = flc.Roll,
         [HorizontalTest1] = flc.HorizontalTest1,
         [HorizontalTest2] = flc.HorizontalTest2,
         [HorizontalTest3] = flc.HorizontalTest3,
-        [HorizontalAverage] = flc.HorizontalAverage,
         [HorizontalRate] = flc.HorizontalRate,
+        [HorizontalAverage] = (isnull(flc.HorizontalTest1, 0) + isnull(flc.HorizontalTest2, 0)  + isnull(flc.Horizontal3, 0)) / 3.0,
         [VerticalTest1] = flc.VerticalTest1,
         [VerticalTest2] = flc.VerticalTest2,
         [VerticalTest3] = flc.VerticalTest3,
-        [VerticalAverage] = flc.VerticalAverage,
         [VerticalRate] = flc.VerticalRate,
+        [VerticalAverage] = (isnull(flc.VerticalTest1, 0) + isnull(flc.VerticalTest2, 0)  + isnull(flc.VerticalTest3, 0)) / 3.0,
         [Inspdate] = flc.Inspdate,
         [Inspector] = flc.Inspector,
         [Name] = (select Name from pass1 where ID = flc.Inspector),
@@ -950,7 +950,36 @@ update  FIR_Laboratory  set Heat = @testResult,
 
         public DataTable GetHeatFailMailContentData(long ID)
         {
-            throw new NotImplementedException();
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@ID", ID);
+
+            string sqlGetData = @"
+select	[SP#] = f.POID,
+        [Style] = o.StyleID,
+        [Brand] = o.BrandID,
+        [Season] = o.SeasonID,
+        [SEQ] = Concat(f.Seq1, ' ', f.Seq2),
+        [WK#] = r.ExportID,
+        [Arrive WH Date] = Format(r.WhseArrival, 'yyyy/MM/dd'),
+        [SCI Refno] = f.SCIRefno,
+        [Refno] = f.Refno,
+        [Color] = psd.ColorID,
+        [Supplier] = Concat(f.SuppID, s.AbbEn),
+        [Arrive Qty] = f.ArriveQty,
+        [Heat Result] = fl.Heat,
+        [Heat Last Test Date] = Format(fl.HeatDate, 'yyyy/MM/dd'),
+        [Heat Remark] = fl.HeatRemark
+from FIR f with (nolock)
+left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
+left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
+left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
+left join Supp s with (nolock) on s.ID = f.SuppID
+left join Orders o with (nolock) on o.ID = f.POID
+left join Fabric fab with (nolock) on fab.SCIRefno = f.SCIRefno
+where f.ID = @ID
+";
+
+            return ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, listPar);
         }
 
         public void AmendFabricHeat(long ID)
@@ -977,10 +1006,334 @@ update  FIR_Laboratory  set Heat = '',
 
         public DataTable GetHeatDetailForReport(long ID)
         {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@ID", ID);
+
+            string sqlGetFabricCrkShrkTestHeat_Detail = @"
+
+select	[Roll] = flc.Roll,
+        [Dyelot] = flc.Dyelot,
+        [HorizontalOriginal] = flc.HorizontalOriginal,
+        [VerticalOriginal] = flc.VerticalOriginal,
+        [Result] = flc.Result,
+        [HorizontalTest1] = flc.HorizontalTest1,
+        [HorizontalTest2] = flc.HorizontalTest2,
+        [HorizontalTest3] = flc.HorizontalTest3,
+        [HorizontalRate] = flc.HorizontalRate,
+        [HorizontalAverage] = (isnull(flc.HorizontalTest1, 0) + isnull(flc.HorizontalTest2, 0)  + isnull(flc.HorizontalTest3, 0)) / 3.0,
+        [VerticalTest1] = flc.VerticalTest1,
+        [VerticalTest2] = flc.VerticalTest2,
+        [VerticalTest3] = flc.VerticalTest3,
+        [VerticalRate] = flc.VerticalRate,
+        [VerticalAverage] = (isnull(flc.VerticalTest1, 0) + isnull(flc.VerticalTest2, 0)  + isnull(flc.VerticalTest3, 0)) / 3.0,
+        [Inspdate] = flc.Inspdate,
+        [Inspector] = flc.Inspector,
+        [Name] = (select Name from pass1 where ID = flc.Inspector),
+        [Remark] = flc.Remark,
+        [LastUpdate] = Concat(LastUpdateName.val, ' - ', isnull(Format(flc.EditDate, 'yyyy/MM/dd HH:mm:ss'), Format(flc.AddDate, 'yyyy/MM/dd HH:mm:ss')))
+from FIR_Laboratory_Heat flc with (nolock)
+outer apply (select [val] = Name_Extno from View_ShowName where ID = iif(isnull(flc.EditName, '') = '', flc.AddName, flc.EditName)) LastUpdateName
+where flc.ID = @ID
+";
+
+            return ExecuteDataTableByServiceConn(CommandType.Text, sqlGetFabricCrkShrkTestHeat_Detail, listPar);
+        }
+
+        public FabricCrkShrkTestWash_Main GetFabricWashTest_Main(long ID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@ID", ID);
+
+            string sqlGetFabricCrkShrkTestWash_Main = @"
+
+select	[POID] = f.POID,
+        [SEQ] = Concat(f.Seq1, ' ', f.Seq2),
+        [ColorID] = psd.ColorID,
+        [ArriveQty] = f.ArriveQty,
+        [WhseArrival] = r.WhseArrival,
+        [ExportID] = r.ExportID,
+        [Supp] = Concat(f.SuppID, s.AbbEn),
+        [Wash] = fl.Wash,
+        [WashDate] = fl.WashDate,
+        [StyleID] = o.StyleID,
+        [SCIRefno] = f.SCIRefno,
+        [Name] = (select Name from pass1 where ID = fl.CrockingInspector),
+        [BrandID] = o.BrandID,
+        [Refno] = f.Refno,
+        [NonWash] = fl.NonWash,
+        [SkewnessOptionID] = fl.SkewnessOptionID,
+        [DescDetail] = fab.DescDetail,
+        [WashRemark] = fl.WashRemark,
+        [WashEncode] = fl.WashEncode,
+        [WashTestBeforePicture] = fl.WashTestBeforePicture,
+        [WashTestAfterPicture] = fl.WashTestAfterPicture
+from FIR f with (nolock)
+left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
+left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
+left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
+left join Supp s with (nolock) on s.ID = f.SuppID
+left join Orders o with (nolock) on o.ID = f.POID
+left join Fabric fab with (nolock) on fab.SCIRefno = f.SCIRefno
+where f.ID = @ID
+";
+
+            IList<FabricCrkShrkTestWash_Main> listResult = ExecuteList<FabricCrkShrkTestWash_Main>(CommandType.Text, sqlGetFabricCrkShrkTestWash_Main, listPar);
+
+            if (listResult.Count == 0)
+            {
+                throw new Exception("No data found");
+            }
+
+            return listResult[0];
+        }
+
+        public List<FabricCrkShrkTestWash_Detail> GetFabricWashTest_Detail(long ID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@ID", ID);
+
+            string sqlGetFabricCrkShrkTestWash_Detail = @"
+
+select	[Roll] = flc.Roll,
+        [Dyelot] = flc.Dyelot,
+        [HorizontalOriginal] = flc.HorizontalOriginal,
+        [VerticalOriginal] = flc.VerticalOriginal,
+        [Result] = flc.Result,
+        [HorizontalTest1] = flc.HorizontalTest1,
+        [HorizontalTest2] = flc.HorizontalTest2,
+        [HorizontalTest3] = flc.HorizontalTest3,
+        [HorizontalAverage] = (isnull(flc.HorizontalTest1, 0) + isnull(flc.HorizontalTest2, 0)  + isnull(flc.Horizontal3, 0)) / 3.0,
+        [HorizontalRate] = flc.HorizontalRate,
+        [VerticalTest1] = flc.VerticalTest1,
+        [VerticalTest2] = flc.VerticalTest2,
+        [VerticalTest3] = flc.VerticalTest3,
+        [VerticalAverage] = (isnull(flc.VerticalTest1, 0) + isnull(flc.VerticalTest2, 0)  + isnull(flc.VerticalTest3, 0)) / 3.0,
+        [VerticalRate] = flc.VerticalRate,
+        [SkewnessTest1] = flc.SkewnessTest1,
+        [SkewnessTest2] = flc.SkewnessTest2,
+        [SkewnessTest3] = flc.SkewnessTest3,
+        [SkewnessTest4] = flc.SkewnessTest4,
+        [SkewnessRate] = flc.SkewnessRate,
+        [Inspdate] = flc.Inspdate,
+        [Inspector] = flc.Inspector,
+        [Name] = (select Name from pass1 where ID = flc.Inspector),
+        [Remark] = flc.Remark,
+        [LastUpdate] = Concat(LastUpdateName.val, ' - ', isnull(Format(flc.EditDate, 'yyyy/MM/dd HH:mm:ss'), Format(flc.AddDate, 'yyyy/MM/dd HH:mm:ss')))
+from FIR_Laboratory_Wash flc with (nolock)
+outer apply (select [val] = Name_Extno from View_ShowName where ID = iif(isnull(flc.EditName, '') = '', flc.AddName, flc.EditName)) LastUpdateName
+where flc.ID = @ID
+";
+
+            return ExecuteList<FabricCrkShrkTestWash_Detail>(CommandType.Text, sqlGetFabricCrkShrkTestWash_Detail, listPar).ToList();
+        }
+
+        public void UpdateFabricWashTestDetail(FabricCrkShrkTestWash_Result fabricCrkShrkTestWash_Result, string userID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@ID", fabricCrkShrkTestWash_Result.ID);
+            listPar.Add("@WashRemark", fabricCrkShrkTestWash_Result.Wash_Main.WashRemark);
+            listPar.Add("@SkewnessOptionID", fabricCrkShrkTestWash_Result.Wash_Main.SkewnessOptionID);
+
+            string sqlUpdateCrocking = @"
+update  FIR_Laboratory set WashRemark = @WashRemark, SkewnessOptionID = @SkewnessOptionID
+where   ID = @ID 
+";
+
+
+            List<FabricCrkShrkTestWash_Detail> oldWashData = GetFabricWashTest_Detail(fabricCrkShrkTestWash_Result.ID);
+
+            List<FabricCrkShrkTestWash_Detail> needUpdateDetailList =
+                PublicClass.CompareListValue<FabricCrkShrkTestWash_Detail>(
+                    fabricCrkShrkTestWash_Result.Wash_Detail,
+                    oldWashData,
+                    "Roll,Dyelot",
+                    "HorizontalOriginal,VerticalOriginal,Result,HorizontalTest1,HorizontalTest2,HorizontalTest3,VerticalTest1,VerticalTest2,VerticalTest3,SkewnessTest1,SkewnessTest2,SkewnessTest3,SkewnessTest4,Inspdate,Inspector,Remark");
+
+
+
+            string sqlInsertDetail = @"
+insert into FIR_Laboratory_Wash(
+ID                   ,
+Roll                 ,
+Dyelot               ,
+Inspdate             ,
+Inspector            ,
+Result               ,
+Remark               ,
+AddName              ,
+AddDate              ,
+HorizontalRate       ,
+HorizontalOriginal   ,
+HorizontalTest1      ,
+HorizontalTest2      ,
+HorizontalTest3      ,
+VerticalRate         ,
+VerticalOriginal     ,
+VerticalTest1        ,
+VerticalTest2        ,
+VerticalTest3       ,
+SkewnessTest1       ,
+SkewnessTest2       ,
+SkewnessTest3       ,
+SkewnessTest4       
+)
+values
+(
+@ID                   ,
+@Roll                 ,
+@Dyelot               ,
+@Inspdate             ,
+@Inspector            ,
+@Result               ,
+@Remark               ,
+@AddName              ,
+getDate()              ,
+@HorizontalRate       ,
+@HorizontalOriginal   ,
+@HorizontalTest1      ,
+@HorizontalTest2      ,
+@HorizontalTest3      ,
+@VerticalRate         ,
+@VerticalOriginal     ,
+@VerticalTest1        ,
+@VerticalTest2        ,
+@VerticalTest3      ,
+@SkewnessTest1       ,
+@SkewnessTest2       ,
+@SkewnessTest3       ,
+@SkewnessTest4       
+)
+
+";
+
+            string sqlDeleteDetail = @"
+delete  FIR_Laboratory_Wash
+where   ID = @ID and
+        Roll = @Roll and
+        Dyelot = @Dyelot
+";
+
+            string sqlUpdateDetail = @"
+update  FIR_Laboratory_Wash set Inspdate            = @Inspdate             ,
+                                Inspector           = @Inspector            ,
+                                Result              = @Result               ,
+                                Remark              = @Remark               ,
+                                EditName            = @EditName             ,
+                                EditDate            = getDate()             ,
+                                HorizontalRate      = @HorizontalRate       ,
+                                HorizontalOriginal  = @HorizontalOriginal   ,
+                                HorizontalTest1     = @HorizontalTest1      ,
+                                HorizontalTest2     = @HorizontalTest2      ,
+                                HorizontalTest3     = @HorizontalTest3      ,
+                                VerticalRate        = @VerticalRate         ,
+                                VerticalOriginal    = @VerticalOriginal     ,
+                                VerticalTest1       = @VerticalTest1        ,
+                                VerticalTest2       = @VerticalTest2        ,
+                                VerticalTest3       = @VerticalTest3         ,
+                                SkewnessTest1       = @SkewnessTest1,
+                                SkewnessTest2       = @SkewnessTest2,
+                                SkewnessTest3       = @SkewnessTest3,
+                                SkewnessTest4       = @SkewnessTest4
+        where   ID = @ID and
+                Roll = @Roll and
+                Dyelot = @Dyelot
+";
+
+            using (TransactionScope transaction = new TransactionScope())
+            {
+                ExecuteDataTableByServiceConn(CommandType.Text, sqlUpdateCrocking, listPar);
+                foreach (FabricCrkShrkTestWash_Detail detailItem in needUpdateDetailList)
+                {
+                    SQLParameterCollection listDetailPar = new SQLParameterCollection();
+
+                    switch (detailItem.StateType)
+                    {
+                        case DatabaseObject.Public.CompareStateType.Add:
+                            listDetailPar.Add("@ID", fabricCrkShrkTestWash_Result.ID);
+                            listDetailPar.Add("@Roll", detailItem.Roll);
+                            listDetailPar.Add("@Dyelot", detailItem.Dyelot);
+                            listDetailPar.Add("@Inspdate", detailItem.Inspdate);
+                            listDetailPar.Add("@Inspector", detailItem.Inspector);
+                            listDetailPar.Add("@Result", detailItem.Result);
+                            listDetailPar.Add("@Remark", detailItem.Remark);
+                            listDetailPar.Add("@AddName", userID);
+                            listDetailPar.Add("@HorizontalRate", detailItem.HorizontalRate);
+                            listDetailPar.Add("@HorizontalOriginal", detailItem.HorizontalOriginal);
+                            listDetailPar.Add("@HorizontalTest1", detailItem.HorizontalTest1);
+                            listDetailPar.Add("@HorizontalTest2", detailItem.HorizontalTest2);
+                            listDetailPar.Add("@HorizontalTest3", detailItem.HorizontalTest3);
+                            listDetailPar.Add("@VerticalRate", detailItem.VerticalRate);
+                            listDetailPar.Add("@VerticalOriginal", detailItem.VerticalOriginal);
+                            listDetailPar.Add("@VerticalTest1", detailItem.VerticalTest1);
+                            listDetailPar.Add("@VerticalTest2", detailItem.VerticalTest2);
+                            listDetailPar.Add("@VerticalTest3", detailItem.VerticalTest3);
+                            listDetailPar.Add("@SkewnessTest1", detailItem.SkewnessTest1);
+                            listDetailPar.Add("@SkewnessTest2", detailItem.SkewnessTest2);
+                            listDetailPar.Add("@SkewnessTest3", detailItem.SkewnessTest3);
+                            listDetailPar.Add("@SkewnessTest4", detailItem.SkewnessTest4);
+
+                            ExecuteNonQuery(CommandType.Text, sqlInsertDetail, listDetailPar);
+                            break;
+                        case DatabaseObject.Public.CompareStateType.Edit:
+                            listDetailPar.Add("@ID", fabricCrkShrkTestWash_Result.ID);
+                            listDetailPar.Add("@Roll", detailItem.Roll);
+                            listDetailPar.Add("@Dyelot", detailItem.Dyelot);
+                            listDetailPar.Add("@Inspdate", detailItem.Inspdate);
+                            listDetailPar.Add("@Inspector", detailItem.Inspector);
+                            listDetailPar.Add("@Result", detailItem.Result);
+                            listDetailPar.Add("@Remark", detailItem.Remark);
+                            listDetailPar.Add("@EditName", userID);
+                            listDetailPar.Add("@HorizontalRate", detailItem.HorizontalRate);
+                            listDetailPar.Add("@HorizontalOriginal", detailItem.HorizontalOriginal);
+                            listDetailPar.Add("@HorizontalTest1", detailItem.HorizontalTest1);
+                            listDetailPar.Add("@HorizontalTest2", detailItem.HorizontalTest2);
+                            listDetailPar.Add("@HorizontalTest3", detailItem.HorizontalTest3);
+                            listDetailPar.Add("@VerticalRate", detailItem.VerticalRate);
+                            listDetailPar.Add("@VerticalOriginal", detailItem.VerticalOriginal);
+                            listDetailPar.Add("@VerticalTest1", detailItem.VerticalTest1);
+                            listDetailPar.Add("@VerticalTest2", detailItem.VerticalTest2);
+                            listDetailPar.Add("@VerticalTest3", detailItem.VerticalTest3);
+                            listDetailPar.Add("@SkewnessTest1", detailItem.SkewnessTest1);
+                            listDetailPar.Add("@SkewnessTest2", detailItem.SkewnessTest2);
+                            listDetailPar.Add("@SkewnessTest3", detailItem.SkewnessTest3);
+                            listDetailPar.Add("@SkewnessTest4", detailItem.SkewnessTest4);
+
+                            ExecuteNonQuery(CommandType.Text, sqlUpdateDetail, listDetailPar);
+                            break;
+                        case DatabaseObject.Public.CompareStateType.Delete:
+                            listDetailPar.Add("@ID", fabricCrkShrkTestWash_Result.ID);
+                            listDetailPar.Add("@Roll", detailItem.Roll);
+                            listDetailPar.Add("@Dyelot", detailItem.Dyelot);
+
+                            ExecuteNonQuery(CommandType.Text, sqlDeleteDetail, listDetailPar);
+                            break;
+                        case DatabaseObject.Public.CompareStateType.None:
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                transaction.Complete();
+            }
+        }
+
+        public void EncodeFabricWash(long ID, string testResult, DateTime? WashDate, string userID)
+        {
             throw new NotImplementedException();
         }
 
-        public DataTable GetHeatArticleForPdfReport(long ID)
+        public DataTable GetWashFailMailContentData(long ID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AmendFabricWash(long ID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public DataTable GetWashDetailForReport(long ID)
         {
             throw new NotImplementedException();
         }
