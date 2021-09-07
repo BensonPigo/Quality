@@ -63,15 +63,6 @@ namespace DatabaseObject.ViewModel.BulkFGT
         [Display(Name = "報表電子簽章圖檔完整路徑")]
         public string SignaturePic { get; set; }
 
-        [Display(Name = "報表Result")]
-        public bool ReportResult { get; set; }
-
-        [Display(Name = "報表Msg")]
-        public string ReportErrorMessage { get; set; }
-
-        [Display(Name = "報表暫存檔名")]
-        public string TempFileName { get; set; }
-
         public List<MockupCrocking_Detail_ViewModel> MockupCrocking_Detail { get; set; }
     }
 
