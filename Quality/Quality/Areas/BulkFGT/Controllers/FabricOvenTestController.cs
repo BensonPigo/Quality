@@ -112,8 +112,8 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "<tr>";
             html += "<td> <input id ='Seq' idx= " + i + " type ='hidden'></input> <input class='form-control date-picker' type='text' value=''></td>";
             html += "<td><input type='text'></td>"; // group
-            html += "<td style='width: 10vw;'><div style='width:9vw;'><input id='Details_" + i + "__SEQ' type='text' readonly='readonly' style = 'width: 6vw'><input id='btnDetailSEQSelectItem'  idv='" + i.ToString() + "' type='button' class='btnDetailSEQSelectItem OnlyEdit site-btn btn-blue' style='margin: 0; border: 0; ' value='...' /></div></td>"; // seq
-            html += "<td style='width: 10vw;'><div style='width:9vw;'><input id='Details_" + i + "__Roll' type='text' readonly='readonly' style = 'width: 6vw'><input id='btnDetailRollSelectItem' idv='" + i.ToString() + "' type='button' class='btnDetailRollSelectItem OnlyEdit site-btn btn-blue' style='margin: 0; border: 0; ' value='...' /></div></td>"; // roll
+            html += "<td style='width: 11vw;'><div style='width:10vw;'><input id='Details_" + i + "__SEQ' idv='" + i.ToString() + "' class ='InputDetailSEQSelectItem' type='text'  style = 'width: 6vw'><input id='btnDetailSEQSelectItem'  idv='" + i.ToString() + "' type='button' class='btnDetailSEQSelectItem OnlyEdit site-btn btn-blue' style='margin: 0; border: 0; ' value='...' /></div></td>"; // seq
+            html += "<td style='width: 11vw;'><div style='width:10vw;'><input id='Details_" + i + "__Roll'idv='" + i.ToString() + "' class ='InputDetailRollSelectItem' type='text' style = 'width: 6vw'><input id='btnDetailRollSelectItem' idv='" + i.ToString() + "' type='button' class='btnDetailRollSelectItem OnlyEdit site-btn btn-blue' style='margin: 0; border: 0; ' value='...' /></div></td>"; // roll
             html += "<td><input id='Details_" + i + "__Dyelot' type='text' readonly='readonly'></td>"; // dyelot
             html += "<td><input id='Details_" + i + "__Refno' type='text' readonly='readonly'></td>"; // Refno
             html += "<td><input id='Details_" + i + "__SCIRefno' type='text' readonly='readonly'></td>"; // SCIRefno
@@ -168,7 +168,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
             html += "</select></td>";
 
-            html += "<td><img class='detailDelete display-None' src='/Image/Icon/Delete.png' width='30'></td>";
+            html += "<td><img  class='detailDelete' src='/Image/Icon/Delete.png' width='30'></td>";
             html += "</tr>";
 
             return Content(html);
