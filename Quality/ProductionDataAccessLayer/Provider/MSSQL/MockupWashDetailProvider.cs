@@ -10,16 +10,6 @@ using System.Text;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
-    /*(MockupWashDetailProvider) 詳細敘述如下*/
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <info>Author: Admin; Date: 2021/08/31  </info>
-    /// <history>
-    /// xx.  YYYY/MM/DD   Ver   Author      Comments
-    /// ===  ==========  ====  ==========  ==========
-    /// 01.  2021/08/31  1.00    Admin        Create
-    /// </history>
     public class MockupWashDetailProvider : SQLDAL, IMockupWashDetailProvider
     {
         #region 底層連線
@@ -67,6 +57,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,Design" + Environment.NewLine);
             SbSql.Append("        ,ArtworkColor" + Environment.NewLine);
             SbSql.Append("        ,FabricRefNo" + Environment.NewLine);
+            SbSql.Append("        ,AccessoryRefno" + Environment.NewLine);
             SbSql.Append("        ,FabricColor" + Environment.NewLine);
             SbSql.Append("        ,Result" + Environment.NewLine);
             SbSql.Append("        ,Remark" + Environment.NewLine);
@@ -80,11 +71,12 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,@Design"); objParameter.Add("@Design", DbType.String, Item.Design);
             SbSql.Append("        ,@ArtworkColor"); objParameter.Add("@ArtworkColor", DbType.String, Item.ArtworkColor);
             SbSql.Append("        ,@FabricRefNo"); objParameter.Add("@FabricRefNo", DbType.String, Item.FabricRefNo);
+            SbSql.Append("        ,@AccessoryRefno"); objParameter.Add("@AccessoryRefno", DbType.String, Item.AccessoryRefno);
             SbSql.Append("        ,@FabricColor"); objParameter.Add("@FabricColor", DbType.String, Item.FabricColor);
             SbSql.Append("        ,@Result"); objParameter.Add("@Result", DbType.String, Item.Result);
             SbSql.Append("        ,@Remark"); objParameter.Add("@Remark", DbType.String, Item.Remark);
             SbSql.Append("        ,@EditName"); objParameter.Add("@EditName", DbType.String, Item.EditName);
-            SbSql.Append("        ,@EditDate"); objParameter.Add("@EditDate", DbType.DateTime, Item.EditDate);
+            SbSql.Append("        ,GETDATE()");
             SbSql.Append(")" + Environment.NewLine);
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
@@ -95,9 +87,8 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
             SbSql.Append("UPDATE [MockupWash_Detail]" + Environment.NewLine);
-            SbSql.Append("SET" + Environment.NewLine);
-            if (Item.ReportNo != null) { SbSql.Append("ReportNo=@ReportNo" + Environment.NewLine); objParameter.Add("@ReportNo", DbType.String, Item.ReportNo); }
-            if (Item.TypeofPrint != null) { SbSql.Append(",TypeofPrint=@TypeofPrint" + Environment.NewLine); objParameter.Add("@TypeofPrint", DbType.String, Item.TypeofPrint); }
+            SbSql.Append("SET TypeofPrint=@TypeofPrint" + Environment.NewLine);
+            objParameter.Add("@TypeofPrint", DbType.String, Item.TypeofPrint);
             if (Item.Design != null) { SbSql.Append(",Design=@Design" + Environment.NewLine); objParameter.Add("@Design", DbType.String, Item.Design); }
             if (Item.ArtworkColor != null) { SbSql.Append(",ArtworkColor=@ArtworkColor" + Environment.NewLine); objParameter.Add("@ArtworkColor", DbType.String, Item.ArtworkColor); }
             if (Item.FabricRefNo != null) { SbSql.Append(",FabricRefNo=@FabricRefNo" + Environment.NewLine); objParameter.Add("@FabricRefNo", DbType.String, Item.FabricRefNo); }
@@ -105,25 +96,14 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             if (Item.Result != null) { SbSql.Append(",Result=@Result" + Environment.NewLine); objParameter.Add("@Result", DbType.String, Item.Result); }
             if (Item.Remark != null) { SbSql.Append(",Remark=@Remark" + Environment.NewLine); objParameter.Add("@Remark", DbType.String, Item.Remark); }
             if (Item.EditName != null) { SbSql.Append(",EditName=@EditName" + Environment.NewLine); objParameter.Add("@EditName", DbType.String, Item.EditName); }
-            if (Item.EditDate != null) { SbSql.Append(",EditDate=@EditDate" + Environment.NewLine); objParameter.Add("@EditDate", DbType.DateTime, Item.EditDate); }
+            SbSql.Append(",EditDate=GETDATE()" + Environment.NewLine);
             SbSql.Append("WHERE 1 = 1" + Environment.NewLine);
             SbSql.Append("And Ukey = @Ukey" + Environment.NewLine);
             objParameter.Add("@Ukey", DbType.Int64, Item.Ukey);
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
-        /*刪除(Delete) 詳細敘述如下*/
-        /// <summary>
-        /// 刪除
-        /// </summary>
-        /// <param name="Item">成員</param>
-        /// <returns>回傳異動筆數</returns>
-        /// <info>Author: Admin; Date: 2021/08/31  </info>
-        /// <history>
-        /// xx.  YYYY/MM/DD   Ver   Author      Comments
-        /// ===  ==========  ====  ==========  ==========
-        /// 01.  2021/08/31  1.00    Admin        Create
-        /// </history>
+
         public int Delete(MockupWash_Detail Item)
         {
             StringBuilder SbSql = new StringBuilder();

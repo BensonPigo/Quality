@@ -646,12 +646,19 @@ select  Image
             };
 
             string sqlGetMoistureListCartonItem = @"
-select  [FinalInspection_OrderCartonUkey] = Ukey,
-        OrderID,
-        PackinglistID,
-        CTNNo
-from    FinalInspection_OrderCarton with (nolock)
-where ID = @finalInspectionID
+select distinct ID, Seq, Article
+into    #Order_QtyShip_Detail
+from    [MainServer].Production.dbo.Order_QtyShip_Detail
+where   ID in (select OrderID from FinalInspection_Order with (nolock) where ID = @finalInspectionID)
+
+select  [FinalInspection_OrderCartonUkey] = foc.Ukey,
+        foc.OrderID,
+        foc.PackinglistID,
+        foc.CTNNo,
+        [Article] = isnull(oqd.Article, '')
+from    FinalInspection_OrderCarton foc with (nolock)
+left join #Order_QtyShip_Detail oqd on oqd.ID = foc.OrderID and oqd.Seq = foc.Seq 
+where foc.ID = @finalInspectionID
 
 ";
             return ExecuteList<CartonItem>(CommandType.Text, sqlGetMoistureListCartonItem, objParameter);
@@ -1204,6 +1211,23 @@ where   ID = @FinalInspectionID
 ";
 
             return ExecuteList<FinalInspection_OrderCarton>(CommandType.Text, sqlGetData, parameter);
+        }
+
+        public IList<SelectOrderShipSeq> GetListShipModeSeq(string finalInspectionID)
+        {
+            SQLParameterCollection parameter = new SQLParameterCollection() {
+                            { "@FinalInspectionID", DbType.String, finalInspectionID }
+                        };
+
+            string sqlGetData = @"
+select  OrderID
+        ,Seq
+        ,ShipmodeID
+from    FinalInspection_Order_QtyShip with (nolock)
+where   ID = @FinalInspectionID
+";
+
+            return ExecuteList<SelectOrderShipSeq>(CommandType.Text, sqlGetData, parameter);
         }
 
         #endregion

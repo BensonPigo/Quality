@@ -1,4 +1,6 @@
-﻿using BusinessLogicLayer.Interface.BulkFGT;
+﻿using ADOHelper.Utility;
+using BusinessLogicLayer.Interface.BulkFGT;
+using DatabaseObject;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ViewModel.BulkFGT;
@@ -253,50 +255,141 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public MockupCrocking_ViewModel Create(MockupCrocking_ViewModel MockupCrocking)
+        public BaseResult Create(MockupCrocking_ViewModel MockupCrocking)
         {
-            MockupCrocking_ViewModel model = new MockupCrocking_ViewModel();
-            _MockupCrockingProvider = new MockupCrockingProvider(Common.ProductionDataAccessLayer);
-            _MockupCrockingDetailProvider = new MockupCrockingDetailProvider(Common.ProductionDataAccessLayer);
-            int insertCt;
+            MockupCrocking.Type = "B";
+            BaseResult result = new BaseResult();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            _MockupCrockingProvider = new MockupCrockingProvider(_ISQLDataTransaction);
+            _MockupCrockingDetailProvider = new MockupCrockingDetailProvider(_ISQLDataTransaction);
+            int count;
             try
             {
-                using (TransactionScope scope = new TransactionScope())
+                count = _MockupCrockingProvider.Create(MockupCrocking);
+                if (count == 0)
                 {
-                    insertCt = _MockupCrockingProvider.Create(MockupCrocking);
-                    if (insertCt == 0)
-                    {
-                        return model;
-                    }
-
-                    foreach (var MockupCrocking_Detail in MockupCrocking.MockupCrocking_Detail)
-                    {
-                        insertCt = _MockupCrockingDetailProvider.Create(MockupCrocking_Detail);
-                        if (insertCt == 0)
-                        {
-                            return model;
-                        }
-                    }
-
-                    scope.Complete();
+                    result.Result = false;
+                    result.ErrorMessage = "Create MockupCrocking Fail. 0 Count";
+                    return result;
                 }
+
+                foreach (var MockupCrocking_Detail in MockupCrocking.MockupCrocking_Detail)
+                {
+                    count = _MockupCrockingDetailProvider.Create(MockupCrocking_Detail);
+                    if (count == 0)
+                    {
+                        result.Result = false;
+                        result.ErrorMessage = "Create MockupCrocking_Detail Fail. 0 Count";
+                        return result;
+                    }
+                }
+
+                result.Result = true;
+                _ISQLDataTransaction.Commit();
             }
             catch (Exception ex)
             {
+                result.Result = false;
+                result.ErrorMessage = "Create MockupCrocking Fail";
+                result.Exception = ex;
+                _ISQLDataTransaction.RollBack();
                 throw ex;
             }
-
-            return model;
+            finally { _ISQLDataTransaction.CloseConnection(); }
+            return result;
         }
 
-        public MockupCrocking_ViewModel Update(MockupCrocking_ViewModel MockupCrocking)
+        public BaseResult Update(MockupCrocking_ViewModel MockupCrocking)
         {
-            throw new NotImplementedException();
+            BaseResult result = new BaseResult();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            _MockupCrockingProvider = new MockupCrockingProvider(_ISQLDataTransaction);
+            _MockupCrockingDetailProvider = new MockupCrockingDetailProvider(_ISQLDataTransaction);
+            int count;
+            try
+            {
+                count = _MockupCrockingProvider.Update(MockupCrocking);
+                foreach (var MockupCrocking_Detail in MockupCrocking.MockupCrocking_Detail)
+                {
+                    count = _MockupCrockingDetailProvider.Update(MockupCrocking_Detail);
+                    if (count == 0)
+                    {
+                        result.Result = false;
+                        result.ErrorMessage = "Update MockupCrocking_Detail Fail. 0 Count";
+                        return result;
+                    }
+                }
+
+                result.Result = true;
+                _ISQLDataTransaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                result.Result = false;
+                result.ErrorMessage = "Update MockupCrocking Fail";
+                result.Exception = ex;
+                _ISQLDataTransaction.RollBack();
+                throw ex;
+            }
+            finally { _ISQLDataTransaction.CloseConnection(); }
+            return result;
         }
 
-        public MockupCrocking_ViewModel Delete(MockupCrocking_ViewModel MockupCrocking)
+        public BaseResult Delete(MockupCrocking_ViewModel MockupCrocking)
         {
-            throw new NotImplementedException();
+            BaseResult result = new BaseResult();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            _MockupCrockingProvider = new MockupCrockingProvider(_ISQLDataTransaction);
+            _MockupCrockingDetailProvider = new MockupCrockingDetailProvider(_ISQLDataTransaction);
+            int count;
+            try
+            {
+                count = _MockupCrockingProvider.Delete(MockupCrocking);
+                foreach (var MockupCrocking_Detail in MockupCrocking.MockupCrocking_Detail)
+                {
+                    count = _MockupCrockingDetailProvider.Delete(MockupCrocking_Detail);
+                }
+
+                result.Result = true;
+                _ISQLDataTransaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                result.Result = false;
+                result.ErrorMessage = "Delete MockupCrocking Fail";
+                result.Exception = ex;
+                _ISQLDataTransaction.RollBack();
+                throw ex;
+            }
+            finally { _ISQLDataTransaction.CloseConnection(); }
+            return result;
+        }
+
+        public BaseResult DeleteDetail(List<MockupCrocking_Detail_ViewModel> MockupCrockingDetail)
+        {
+            BaseResult result = new BaseResult();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            _MockupCrockingDetailProvider = new MockupCrockingDetailProvider(_ISQLDataTransaction);
+            try
+            {
+                foreach (var MockupCrocking_Detail in MockupCrockingDetail)
+                {
+                    _MockupCrockingDetailProvider.Delete(MockupCrocking_Detail);
+                }
+
+                result.Result = true;
+                _ISQLDataTransaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                result.Result = false;
+                result.ErrorMessage = "Delete MockupCrocking Detail Fail";
+                result.Exception = ex;
+                _ISQLDataTransaction.RollBack();
+                throw ex;
+            }
+            finally { _ISQLDataTransaction.CloseConnection(); }
+            return result;
         }
     }
 }

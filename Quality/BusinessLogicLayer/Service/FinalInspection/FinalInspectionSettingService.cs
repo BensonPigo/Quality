@@ -118,6 +118,14 @@ namespace BusinessLogicLayer.Service
             finalInspectionID = string.Empty;
             try
             {
+                // 每個OrderID至少要選擇一個 OrderShipSeq
+                var listNotSelectShipSeq = setting.SelectOrderShipSeq.GroupBy(s => s.OrderID).Where(groupItem => !groupItem.Any(s => s.Selected));
+                if (listNotSelectShipSeq.Any())
+                {
+                    result.Result = false;
+                    result.ErrorMessage = "The following SP has not yet selected Shipmode Seq" + Environment.NewLine + listNotSelectShipSeq.Select(s => s.Key).JoinToString(",");
+                    return result;
+                }
 
                 #region 檢查AQLPlan 重抓Sample Plan Qty
                 if (setting.InspectionStage == "Final" ||
