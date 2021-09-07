@@ -10,6 +10,7 @@ using DatabaseObject.ViewModel.BulkFGT;
 using Sci;
 using System.Data.SqlClient;
 using System.Linq;
+using ADOHelper.DBToolKit;
 
 namespace MICS.DataAccessLayer.Provider.MSSQL
 {
@@ -185,7 +186,7 @@ where ID = @ID
             }
             else
             {
-                string NewID = MyUtility.GetValue.GetID(Mdivision + "CF", "ColorFastness", DateTime.Today, 2, "ID", null);
+                string NewID = MyUtility.GetValue.GetID(Mdivision + "CF", "ColorFastness", DateTime.Today, 2, "ID", connectionName: Common.ProductionDataAccessLayer);
                 objParameter.Add(new SqlParameter($"@ID", NewID));
                 sqlcmd += @"
 insert into ColorFastness(ID,POID,TestNo,InspDate,Article,Status,Inspector,Remark,addName,addDate,Temperature,Cycle,Detergent,Machine,Drying)

@@ -179,6 +179,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 // 比對前端資料, 沒有的再刪除DB資料
                 _IColorFastnessDetailProvider.Delete_ColorFastness_Detail(source.Main.ID, source.Detail);
+                baseResult.Result = true;
             }
             catch (Exception ex)
             {

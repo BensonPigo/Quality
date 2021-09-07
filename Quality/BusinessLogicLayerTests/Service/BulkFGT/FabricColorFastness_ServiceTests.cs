@@ -148,20 +148,47 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
             try
             {
                 IFabricColorFastness_Service service = new FabricColorFastness_Service();
+                BaseResult result = new BaseResult();
                 Fabric_ColorFastness_Detail_ViewModel ss = new Fabric_ColorFastness_Detail_ViewModel();
-                ColorFastness s1 = new ColorFastness
+                ColorFastness_Result s1 = new ColorFastness_Result
                 {
                     POID= "21041712BB",
+                    Inspector = "SCIMIS",
+                    Detergent = "Woolite",
+                    Article = "h42514",
+                    Temperature = 40,
+                    Machine="Top Load",
+                    Cycle = 5,
+                    Drying = "Line dry",
                 };
 
-                ColorFastness_Result s = new ColorFastness_Result
+                ss.Main = s1;
+
+                Fabric_ColorFastness_Detail_Result s = new Fabric_ColorFastness_Detail_Result
                 {
-                    ID = "VM2CF21090002",
+                    SubmitDate = DateTime.Now,
+                    ColorFastnessGroup = "131",
+                    SEQ1 = "02",
+                    SEQ2 = "01",
+                    Roll = "0001",
+                    Dyelot = "1010",
+                    Refno = "62550918",
+                    SCIRefno = "RB-62550918-F00001",
+                    ColorID = "095A",
+                    Result = "Pass",
+                    changeScale = "1",
+                    ResultChange = "Pass",
+                    StainingScale = "1",
+                    Remark = "test",
                 };
 
-                //_ColorFastness.Add(s);
-                //BaseResult result = service.Save_ColorFastness_1stPage("21041712BB", "Test",);
-                //Assert.IsTrue(result.Result);
+                List<Fabric_ColorFastness_Detail_Result> sss = new List<Fabric_ColorFastness_Detail_Result>();
+                sss.Add(s);
+
+                ss.Detail = sss;
+                result = service.Save_ColorFastness_2ndPage(ss, "VM2", "SCIMIS");
+                
+                Assert.IsTrue(result.Result);
             }
             catch (Exception ex)
             {
