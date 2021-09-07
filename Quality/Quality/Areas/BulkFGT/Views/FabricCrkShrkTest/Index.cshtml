@@ -7,8 +7,8 @@
 @model DatabaseObject.ResultModel.FabricCrkShrkTest_Result
 <link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
 <link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
-<link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
 <script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+<link href="~/ThirdParty/plugins/jquery-ui/jquery-ui.css" rel="stylesheet" />
 <style type="text/css">
 
     tr.row-name {
@@ -197,7 +197,7 @@
                             <tr>
                                 <td style="width: 10vw;"><h5>SP#</h5></td>
                                 <td style="width: 20vw;">
-                                    @Html.TextBoxFor(o => o.Main.POID, new { @readonly="readonly"})
+                                    @Html.TextBoxFor(o => o.Main.POID, new { @readonly = "readonly" })
                                 </td>
                                 <td style="width: 10vw;"><h5>Style</h5></td>
                                 <td style="width: 20vw;">
@@ -243,7 +243,7 @@
                                 </td>
                                 <td><h5>Remark</h5></td>
                                 <td colspan="3">
-                                    @Html.TextBoxFor(o => o.Main.FirLaboratoryRemark, new {@style="width:40vw" })
+                                    @Html.TextBoxFor(o => o.Main.FirLaboratoryRemark, new { @style = "width:40vw" })
                                 </td>
                             </tr>
                             <tr>
@@ -344,7 +344,7 @@
                                     <font color="@styleColor">@Html.DisplayFor(modelItem => Model.Details[i].AllResult)</font>
                                 </td>
                                 <td class="CheckBoxColor">
-                                    @Html.CheckBox("Details["+i+"].NonCrocking", Convert.ToBoolean(Model.Details[i].NonCrocking))
+                                    @Html.CheckBox("Details[" + i + "].NonCrocking", Convert.ToBoolean(Model.Details[i].NonCrocking))
                                 </td>
                                 <td class="CrockingColor">
                                     @{
@@ -414,7 +414,7 @@
                                 <td>
                                     @Html.DisplayFor(modelItem => Model.Details[i].ReceivingID)
                                 </td>
-                                @{ 
+                                @{
                                     string controllerName = ViewContext.RouteData.GetRequiredString("Controller");
                                 }
 
@@ -504,13 +504,14 @@
                     data: JSON.stringify({ main: main, detail: detail }),
                     async: false,
                     success: function (data) {
-                        if (data.SaveResult) {
-                            msg.WithSuccess("Success");
-                            $('#btnQuery').click();
-                        }
-                        else {
-                            msg.WithError(data.ErrMsg);
-                        }
+                        $('#btnQuery').click();
+                        //if (data.SaveResult) {
+                        //    msg.WithSuccess("Success");
+                        //    $('#btnQuery').click();
+                        //}
+                        //else {
+                        //    msg.WithError(data.ErrMsg);
+                        //}
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
                         console.log(xhr.responseText);

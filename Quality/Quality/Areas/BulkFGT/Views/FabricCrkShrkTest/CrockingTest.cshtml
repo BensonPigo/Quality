@@ -7,9 +7,21 @@
 
 <link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
 <link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
-<link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
 <script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+<link href="~/ThirdParty/plugins/jquery-ui/jquery-ui.css" rel="stylesheet" />
 <style type="text/css">
+
+    .input-group {
+        display: flex
+    }
+
+    .input-group > input:nth-child(1) {
+        flex-grow: 2
+    }
+
+    .input-group > input:nth-child(2) {
+        flex-grow: 1
+    }
 
     tr.row-name {
         color: black;
@@ -20,9 +32,9 @@
         color: blue;
     }
 
-    .resultList option {
-        color: black;
-    }
+        .resultList option {
+            color: black;
+        }
 
     .row {
         --bs-gutter-x: 1.5rem;
@@ -57,9 +69,9 @@
         width: auto;
     }
 
-    .col-auto > p {
-        padding: 0
-    }
+        .col-auto > p {
+            padding: 0
+        }
 
     .White {
         color: white !important;
@@ -80,7 +92,7 @@
     }
 
     #ButtonMode {
-        width:82vw;
+        width: 82vw;
     }
 
     #myCartons_info, #myEndlineMoisture_info, #myView_info {
@@ -101,23 +113,23 @@
         background-color: white;
     }
 
-    .DataTable > tbody img {
-        cursor: pointer;
-    }
+        .DataTable > tbody img {
+            cursor: pointer;
+        }
 
-    .DataTable > tbody > tr:nth-of-type(odd) {
-        background-color: #ffffff;
-    }
+        .DataTable > tbody > tr:nth-of-type(odd) {
+            background-color: #ffffff;
+        }
 
-    .DataTable > tbody > tr:nth-of-type(even) {
-        background-color: #F0F2F2;
-    }
+        .DataTable > tbody > tr:nth-of-type(even) {
+            background-color: #F0F2F2;
+        }
 
-    .DataTable > tbody > tr > td {
-        border: solid 1px gray;
-        padding: 0.5em;
-        vertical-align: middle;
-    }
+        .DataTable > tbody > tr > td {
+            border: solid 1px gray;
+            padding: 0.5em;
+            vertical-align: middle;
+        }
 
     .CheckBoxColor {
         background-color: rgb(255, 228, 225);
@@ -173,12 +185,6 @@
                                         </h4>
                                     </td>
                                     <td>
-                                        <h4 id="Undo" style="margin-right: 1em;">
-                                            <img src="~/Image/Icon/Undo.png" width="30" />
-                                            Undo
-                                        </h4>
-                                    </td>
-                                    <td>
                                         <h4 id="Encode" style="margin-right: 1em;">
                                             <img src="~/Image/Icon/Lock.png" width="30" />
                                             Encode
@@ -195,6 +201,12 @@
                                         <h4 id="Excel" style="margin-right: 1em;">
                                             <img src="~/Image/Icon/XLS.png" width="40" />
                                             Excel
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 id="PDF" style="margin-right: 1em;">
+                                            <img src="~/Image/Icon/PDF.png" width="30" />
+                                            PDF
                                         </h4>
                                     </td>
                                     <td>
@@ -287,11 +299,11 @@
                                     </td>
                                     <td><h5>SCI Refno</h5></td>
                                     <td>
-                                        @Html.TextBoxFor(o => o.Crocking_Main.SCIRefno)
+                                        @Html.DisplayFor(o => o.Crocking_Main.SCIRefno)
                                     </td>
                                     <td><h5>Crocking Inspector</h5></td>
                                     <td>
-                                        @Html.TextBoxFor(o => o.Crocking_Main.Name)
+                                        @Html.DisplayFor(o => o.Crocking_Main.Name)
                                     </td>
                                 </tr>
                                 <tr>
@@ -305,7 +317,7 @@
                                     </td>
                                     <td><h5>N/A</h5></td>
                                     <td>
-                                        @Html.CheckBox("Crocking_Main.NonCrocking", Convert.ToBoolean(Model.Crocking_Main.NonCrocking))
+                                        @Html.CheckBox("Crocking_Main.NonCrocking", Convert.ToBoolean(Model.Crocking_Main.NonCrocking), new { @disabled = "disabled" })
                                     </td>
                                 </tr>
                                 <tr>
@@ -332,14 +344,30 @@
                                 <th style="width:5vw">Roll#</th>
                                 <th style="width:5vw">Dyelot</th>
                                 <th style="width:5vw">Result</th>
-                                <th style="width:5vw">Dry Scale (Warp)</th>
-                                <th style="width:5vw">Dry Result (Warp)</th>
-                                <th style="width:5vw">Dry Scale (Weft)</th>
-                                <th style="width:5vw">Dry Result (Waft)</th>
-                                <th style="width:5vw">Wet Scale (Warp)</th>
-                                <th style="width:5vw">Wet Result (Warp)</th>
-                                <th style="width:5vw">Wet Scale (Weft)</th>
-                                <th style="width:5vw">Wet Result (Weft)</th>
+                                @if (Model.CrockingTestOption == 0)
+                                {
+                                    <th style="width:5vw">Dry Scale</th>
+                                    <th style="width:5vw">Result(Dry)</th>
+                                    <th style="width:5vw" notShow="testOption">Dry Scale (Weft)</th>
+                                    <th style="width:5vw" notShow="testOption">Dry Result (Waft)</th>
+                                    <th style="width:5vw">Wet Scale</th>
+                                    <th style="width:5vw">Result(Wet)</th>
+                                    <th style="width:5vw" notShow="testOption">Wet Scale (Weft)</th>
+                                    <th style="width:5vw" notShow="testOption">Wet Result (Weft)</th>
+                                }
+                                else
+                                {
+                                    // 使用testOption，決定是否隱藏
+                                    <th style="width:5vw">Dry Scale (Warp)</th>
+                                    <th style="width:5vw">Dry Result (Warp)</th>
+                                    <th style="width:5vw">Dry Scale (Weft)</th>
+                                    <th style="width:5vw">Dry Result (Waft)</th>
+                                    <th style="width:5vw">Wet Scale (Warp)</th>
+                                    <th style="width:5vw">Wet Result (Warp)</th>
+                                    <th style="width:5vw">Wet Scale (Weft)</th>
+                                    <th style="width:5vw">Wet Result (Weft)</th>
+                                }
+
                                 <th style="width:5vw">Insp. Date</th>
                                 <th style="width:5vw">Lab Tech</th>
                                 <th style="width:5vw">Name</th>
@@ -353,11 +381,16 @@
                             {
                                 <tr idx="@i" class="row-content" style="vertical-align: middle; text-align: center;">
                                     <td>
-                                        @Html.TextBoxFor(modelItem => Model.Crocking_Detail[i].Roll, new {@class="rollItem" })
-                                        <input id="btnDetailRollSelectItem" type="button" class="site-btn btn-blue rollItem" style="margin:0;border:0;" value="..." />
+                                        <div class="input-group">
+                                            @Html.TextBoxFor(modelItem => Model.Crocking_Detail[i].Roll, new { @class = "inputRollSelectItem" })
+                                            <input type="button" class="site-btn btn-blue btnRollSelectItem" style="margin:0;border:0;" value="..." />
+                                        </div>
                                     </td>
                                     <td>
-                                        @Html.TextBoxFor(modelItem => Model.Crocking_Detail[i].Dyelot)
+                                        <div class="input-group">
+                                            @Html.TextBoxFor(modelItem => Model.Crocking_Detail[i].Dyelot, new { @class = "inputRollSelectItem" })
+                                            <input type="button" class="site-btn btn-blue btnRollSelectItem" style="margin:0;border:0;" value="..." />
+                                        </div>
                                     </td>
                                     <td>
                                         @{
@@ -373,7 +406,7 @@
                                         @Html.TextBoxFor(modelItem => Model.Crocking_Detail[i].Result, new { @readonly = "readonly", @style = "color:" + styleColor })
                                     </td>
                                     <td style="color:red">
-                                        <select id="Model_Crocking_Detail_Details_@{@i} __DryScale" name="Model.Crocking_Detail[@i].DryScale" disabled="disabled" style="width:157px">
+                                        <select id="Crocking_Detail_@{@i}__DryScale" name="Model.Crocking_Detail[@i].DryScale" disabled="disabled" style="width:157px">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ScaleIDsList)
                                             {
                                                 string selected = item.Text.Equals(Model.Crocking_Detail[i].DryScale) ? "selected" : "";
@@ -392,7 +425,7 @@
                                                 styleColor = "red";
                                             }
                                         }
-                                        <select id="Model_Crocking_Detail_Details_@{@i} __ResultDry" name="Model.Crocking_Detail[@i].ResultDry" disabled="disabled" style="width:157px;color:@styleColor" onchange="changeResultColor(this)">
+                                        <select id="Crocking_Detail_@{@i}__ResultDry" name="Model.Crocking_Detail[@i].ResultDry" disabled="disabled" style="width:157px;color:@styleColor" onchange="changeResultColor(this)">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ResultList)
                                             {
                                                 string selected = item.Text.Equals(Model.Crocking_Detail[i].ResultDry) ? "selected" : "";
@@ -401,7 +434,7 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <select id="Model_Crocking_Detail_Details_@{@i} __DryScale_Weft" name="Model.Crocking_Detail[@i].DryScale_Weft" disabled="disabled" style="width:157px">
+                                        <select id="Crocking_Detail_@{@i}__DryScale_Weft" name="Model.Crocking_Detail[@i].DryScale_Weft" disabled="disabled" style="width:157px">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ScaleIDsList)
                                             {
                                                 string selected = item.Text.Equals(Model.Crocking_Detail[i].DryScale_Weft) ? "selected" : "";
@@ -420,7 +453,7 @@
                                                 styleColor = "red";
                                             }
                                         }
-                                        <select id="Model_Crocking_Detail_Details_@{@i} __ResultDry_Weft" name="Model.Crocking_Detail[@i].ResultDry_Weft" disabled="disabled" style="width:157px;color:@styleColor" onchange="changeResultColor(this)">
+                                        <select id="Crocking_Detail_@{@i}__ResultDry_Weft" name="Model.Crocking_Detail[@i].ResultDry_Weft" disabled="disabled" style="width:157px;color:@styleColor" onchange="changeResultColor(this)">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ResultList)
                                             {
                                                 string selected = item.Text.Equals(Model.Crocking_Detail[i].ResultDry_Weft) ? "selected" : "";
@@ -429,7 +462,7 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <select id="Model_Crocking_Detail_Details_@{@i} __WetScale" name="Model.Crocking_Detail[@i].WetScale" disabled="disabled" style="width:157px">
+                                        <select id="Crocking_Detail_@{@i}__WetScale" name="Model.Crocking_Detail[@i].WetScale" disabled="disabled" style="width:157px">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ScaleIDsList)
                                             {
                                                 string selected = item.Text.Equals(Model.Crocking_Detail[i].WetScale) ? "selected" : "";
@@ -448,7 +481,7 @@
                                                 styleColor = "red";
                                             }
                                         }
-                                        <select id="Model_Crocking_Detail_Details_@{@i} __ResultWet" name="Model.Crocking_Detail[@i].ResultWet" disabled="disabled" style="width:157px;color:@styleColor" onchange="changeResultColor(this)">
+                                        <select id="Crocking_Detail__@{@i}__ResultWet" name="Model.Crocking_Detail[@i].ResultWet" disabled="disabled" style="width:157px;color:@styleColor" onchange="changeResultColor(this)">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ResultList)
                                             {
                                                 string selected = item.Text.Equals(Model.Crocking_Detail[i].ResultWet) ? "selected" : "";
@@ -457,7 +490,7 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <select id="Model_Crocking_Detail_Details_@{@i} __WetScale_Weft" name="Model.Crocking_Detail[@i].WetScale_Weft" disabled="disabled" style="width:157px">
+                                        <select id="Crocking_Detail_@{@i}__WetScale_Weft" name="Model.Crocking_Detail[@i].WetScale_Weft" disabled="disabled" style="width:157px">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ScaleIDsList)
                                             {
                                                 string selected = item.Text.Equals(Model.Crocking_Detail[i].WetScale_Weft) ? "selected" : "";
@@ -476,7 +509,7 @@
                                                 styleColor = "red";
                                             }
                                         }
-                                        <select id="Model_Crocking_Detail_Details_@{@i} __ResultWet_Weft" name="Model.Crocking_Detail[@i].ResultWet_Weft" disabled="disabled" style="width:157px;color:@styleColor" onchange="changeResultColor(this)">
+                                        <select id="Crocking_Detail_@{@i}__ResultWet_Weft" name="Model.Crocking_Detail[@i].ResultWet_Weft" disabled="disabled" style="width:157px;color:@styleColor" onchange="changeResultColor(this)">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ResultList)
                                             {
                                                 string selected = item.Text.Equals(Model.Crocking_Detail[i].ResultWet_Weft) ? "selected" : "";
@@ -488,8 +521,10 @@
                                         @Html.TextBoxFor(modelItem => Model.Crocking_Detail[i].Inspdate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
                                     </td>
                                     <td>
-                                        @Html.TextBoxFor(modelItem => Model.Crocking_Detail[i].Inspector)
-                                        <input id="btnDetailInspectorSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                        <div class="input-group">
+                                            @Html.TextBoxFor(modelItem => Model.Crocking_Detail[i].Inspector, new { @class = "inputInspectorSelectItem" })
+                                            <input id="btnDetailInspectorSelectItem" type="button" class="site-btn btn-blue btnInspectorSelectItem" style="margin:0;border:0;" value="..." />
+                                        </div>
                                     </td>
                                     <td>
                                         @Html.TextBoxFor(modelItem => Model.Crocking_Detail[i].Name, new { @readonly = "readonly" })
@@ -514,36 +549,61 @@
     </div>
 }
 <script type="text/javascript">
-        var msg;
-        var EditMode;
+    var msg;
+    var EditMode;
+    var True = true;
+    var False = false;
+    var poid = '@Model.Crocking_Main.POID';
+    var seq1 = '@Model.Crocking_Main.SEQ'.split(' ')[0];
+    var seq2 = '@Model.Crocking_Main.SEQ'.split(' ')[0];
+    var hiddenColumns = [];
+
         $(function () {
             msg = new MessagerAlert();
-
             EditMode = false;
+
+            if (@Model.CrockingTestOption == 0) {
+                $('.DetailTable th').each(function (index, data) {
+                    if ($(this).attr('notShow') == 'testOption') {
+                        hiddenColumns.push(index);
+                        $('.DetailTable th:nth-child(' + index + ')').hide();
+                        $('.DetailTable td:nth-child(' + index + ')').hide();
+                    }
+                });
+            }
             IsEditModeChange();
         });
 
         function IsEditModeChange() {
             EditModeButtionBind();
-
+            $('#Picture').addClass("IsEditMode");
             // 按編輯為控制disabled，如果是編輯模式下不給使用者操作，請在元件身上加上readonly
             if (EditMode) {
-                $('#btnQuery').addClass("IsEditModeQuery");
 
-                $("#Edit").removeClass("IsEditMode");
-                $('#Save, #Undo, #New').addClass("IsEditMode");
-                $(".DataTable:not(.DetailTable) input").removeAttr("disabled", "disabled");
+                $("#Edit,#Encode,#Amend").removeClass("IsEditMode");
+                $('#Encode,#Amend').unbind('click');
+
+                $('#Save, #New').addClass("IsEditMode");
+                $(".DataTable:not(.DetailTable) textarea").removeAttr("disabled", "disabled");
                 $(".DetailTable input,.DetailTable select").removeAttr("disabled", "disabled");
 
                 DetailButtonBind();
             }
             else {
-                $('#Save, #Undo, #New').unbind('click').removeClass("IsEditMode");
-                $(".DataTable:not(.DetailTable) input").attr("disabled", "disabled");
+                $('#Save, #New').unbind('click').removeClass("IsEditMode");
+                $(".DataTable:not(.DetailTable) textarea").attr("disabled", "disabled");
                 $(".DetailTable input,.DetailTable select").attr("disabled", "disabled");
 
                 if ('@Model.ID' != '') {
                     $("#Edit").addClass("IsEditMode");
+                }
+
+                if (@Model.Crocking_Main.CrockingEncdoe == false) {
+                    $("#Encode").addClass("IsEditMode");
+                }
+
+                if (@Model.Crocking_Main.CrockingEncdoe == true) {
+                    $("#Amend").addClass("IsEditMode");
                 }
             }
         }
@@ -560,71 +620,113 @@
                 var detail = [];
                 var ErrMsg = "";
 
-// 明細
-//存檔前檢查
-//1.        Roll, Dyelot 是否有輸入
-//Msg : Roll and Dyelot cannot be empty.
-//2.        確認所有的 Scale 與 Result 是否皆為空值
-//Msg : Scale and Result cannot be empty.
-//3.        檢查表身的 Lab Tech 是否有輸入
-//Msg : Lab Tech cannot be empty.
+                $('.DetailTable > tbody > tr').each(function (index, data) {
+                    var idx = $(this).closest('tr').attr('idx');
+                    var roll = $('#Crocking_Detail_' + idx + '__Roll').val();
+                    var dyelot = $('#Crocking_Detail_' + idx + '__Dyelot').val();
+                    var inspector = $('#Crocking_Detail_' + idx + '__Inspector').val();
 
-                //if ($('#Detail_BrandID').val() == '' || $('#Detail_SeasonID').val() == '' || $('#Detail_StyleID').val() == '' || $('#Detail_Article').val() == ''
-                //    || $('#Detail_BrandID').val() == undefined || $('#Detail_SeasonID').val() == undefined || $('#Detail_StyleID').val() == undefined || $('#Detail_Article').val() == undefined) {
-                //    ErrMsg += "Style, Brand, Season and Article cannot be empty<br/>";
-                //}
+                    if (roll == "" || dyelot == "" ) {
+                        ErrMsg += "Roll and Dyelot cannot be empty";
+                        return false;
+                    }
+
+                    var checkValue = [];
+                    checkValue.push($('#Crocking_Detail_' + idx + '__DryScale').val());
+                    checkValue.push($('#Crocking_Detail_' + idx + '__ResultDry').val());
+                    checkValue.push($('#Crocking_Detail_' + idx + '__WetScale').val());
+                    checkValue.push($('#Crocking_Detail_' + idx + '__ResultWet').val());
+
+                    @if (Model.CrockingTestOption != 0)
+                    {
+                        @:checkValue.push($('#Crocking_Detail_' + idx + '__DryScale_Weft').val());
+                        @:checkValue.push($('#Crocking_Detail_' + idx + '__ResultDry_Weft').val());
+                        @:checkValue.push($('#Crocking_Detail_' + idx + '__WetScale_Weft').val());
+                        @:checkValue.push($('#Crocking_Detail_' + idx + '__ResultWet_Weft').val());
+                    }
+
+                    if (checkValue.includes("")) {
+                        ErrMsg += "Scale and Result cannot be empty";
+                        return false;
+                    }
+
+
+                    if (inspector == "") {
+                        ErrMsg += "Lab Tech cannot be empty";
+                        return false;
+                    }
+                });
 
                 if (ErrMsg != "") {
                     msg.WithError(ErrMsg);
                     return;
                 }
 
-                // ajax call save
                 document.getElementById("DetailForm").submit();
             });
 
-            $('#Encode').on('click', function (e) {
-                var detail = [];
-                var ErrMsg = "";
-
-//FabricCrkShrkTestCrocking_Main.CrockingEncdoe = false 才可以使用
-//點擊後判斷
-//1.        表身是否至少有一列資料
-//Msg : Please test one Roll least.
-
-//Crocking 為 Fail
-//彈跳出 Mail Group 寄信。(PublicWondowController.TestFailMailList)
-
-                //if ($('#Detail_BrandID').val() == '' || $('#Detail_SeasonID').val() == '' || $('#Detail_StyleID').val() == '' || $('#Detail_Article').val() == ''
-                //    || $('#Detail_BrandID').val() == undefined || $('#Detail_SeasonID').val() == undefined || $('#Detail_StyleID').val() == undefined || $('#Detail_Article').val() == undefined) {
-                //    ErrMsg += "Style, Brand, Season and Article cannot be empty<br/>";
-                //}
-
-                if (ErrMsg != "") {
-                    msg.WithError(ErrMsg);
-                    return;
+            $('#Picture').on('click', function () {
+                if ($('#Detail_ReportNo').val() != null && $('#Detail_ReportNo').val() != "") {
+                    var para = "?EditMode=" + EditMode + "&Table=FIR_Laboratory&BrforeColumn=@Model.Crocking_Main.CrockingTestBeforePicture&AfterColumn=@Model.Crocking_Main.CrockingTestAfterPicture&PKey_1=ReportNo&PKey_1_Val=" + '@Model.ID';
+                    window.open('@Url.Action("PictureList","PublicWondow",new{Area=""})' + para, 'Picture', config = 'toolbar=no,status=no,location=no,width=400,height=650');
                 }
-
-                // ajax call save
-                $('#btnQuery').click();
-            });
-
-            $('#Undo').on('click', function () {
-                EditMode = false;
-                IsEditModeChange();
-                $('#btnQuery').click();
             });
 
             $('#New').on('click', function () {
                 AddDetailRow($('#garmentTest_OrderID').val(), $('#garmentTest_Article').val(), $('#garmentTest_BrandID').val(), $('#garmentTest_SeasonID').val(), $('#garmentTest_StyleID').val());
             });
-    }
+
+            // 程式需再修改
+            //FabricCrkShrkTestCrocking_Main.CrockingEncdoe = false 才可以使用
+            if (@Model.Crocking_Main.CrockingEncdoe == false) {
+                $('#Encode').on('click', function (e) {
+                    var detail = [];
+                    var ErrMsg = "";
+
+                    // 表身是否至少有一列資料
+                    var rowCount = $('.DetailTable tbody tr').length;
+                    if (rowCount == 0) {
+                        msg.WithError('Please test one Roll least.');
+                        return;
+                    }
+
+                    //Crocking 為 Fail??
+                    //彈跳出 Mail Group 寄信。(PublicWondowController.TestFailMailList)
+                    @*$.ajax({
+                        url: "@Url.Action("Encode_Detail", "GarmentTest", new { Area = "BulkFGT" })",
+                        type: 'POST',
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify({ ID: $('#Detail_ID').val(), No: $('#Detail_No').val(), status: "Encode" }),
+                        async: false,
+                        success: function (data) {
+                            if (data.Result) {
+                                if (data.sentMail) {
+                                    FailMail();
+                                }
+                                else {
+                                    msg.WithSuccesCheck("Success", function () {
+                                        location.reload();
+                                    });
+                                }
+                            }
+                            else {
+                                msg.WithError(data.ErrMsg);
+                            }
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            console.log(xhr.responseText);
+                        }
+                    });*@
+                });
+            }
+
+            if (@Model.Crocking_Main.CrockingEncdoe  == true) {
+                $('#Amend').on('click', function (e) {
+                });
+            }
+        }
 
         function AddDetailRow(obj) {
-            //if ($('#garmentTest_ID').val() == "") {
-            //    return;
-            //}
-
             var lastNO;
             if ($('.DetailTable > tbody > tr').length > 0) {
                 lastNO = parseInt($('.DetailTable > tbody > tr:last-child').attr('idx'));
@@ -642,8 +744,14 @@
                 success: function (data) {
                     $('.DetailTable > thead > tr').show();
                     $('.DetailTable > tbody').append(data);
-                //    DetailDynamicBind();
-                 //   $('.date-picker').datepicker({ changeYear: true, changeMonth: true, currentText: "Now" });
+
+                    if (@Model.CrockingTestOption == 0) {
+                        $(hiddenColumns).each(function () {
+                            $('.DetailTable td:nth-child(' + this + ')').hide();
+                        });
+                    }
+                    DetailButtonBind();
+                    $('.date-picker').datepicker({ changeYear: true, changeMonth: true, currentText: "Now" });
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     console.log(xhr.responseText);
@@ -679,11 +787,107 @@
             }
         }
 
-        function DetailButtonBind(type) {
-            $('.rollItem').on('click', function{
-                var idx = $(this).parent('tr').attr('idx');
+    function DetailButtonBind() {
+        // 卸掉重新綁定
+        $('.inputRollSelectItem').unbind('blur').on('blur', function () {
+            var targetID = $(this).closest('tr').attr('idx');
+            var checkValue = $("#Crocking_Detail_" + targetID + "__Roll").val();
 
-                window.open('@Url.Action("FtyInventoryList", "PublicWondow",new{Area=""})', 'Roll', config = 'toolbar=no,status=no,location=no,width=400,height=650');
-            });
+            if (checkValue == "") {
+                $("#Crocking_Detail_" + targetID + "__Dyelot").val('');
+                return;
             }
+
+            $.ajax({
+                url: "@Url.Action("FtyInventoryList", "PublicWondow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ POID: poid, Seq1: seq1, Seq2: seq2, Roll: checkValue, ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Crocking_Detail_" + targetID + "__Roll").val('');
+                        $("#Crocking_Detail_" + targetID + "__Dyelot").val('');
+                        msg.WithError('Roll# Not Found');
+                    }
+                    else
+                    {
+                        $("#Crocking_Detail_" + targetID + "__Roll").val(data[0].Roll);
+                        $("#Crocking_Detail_" + targetID + "__Dyelot").val(data[0].Dyelot);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $('.btnRollSelectItem').unbind('click').on('click', function () {
+            var targetID = $(this).closest('tr').attr('idx');
+                var para = "?POID=" + poid + "&Seq1=" + seq1 + "&Seq1=" + seq2+"&TargetID=" + targetID;
+                window.open('@Url.Action("FtyInventoryList", "PublicWondow",new{Area=""})' + para, 'Roll', config = 'toolbar=no,status=no,location=no,width=950,height=650');
+        });
+
+        $('.inputInspectorSelectItem').unbind('blur').on('blur', function () {
+            var targetID = $(this).closest('tr').attr('idx');
+
+            if ($(this).val() == "") {
+                $("#Crocking_Detail_" + targetID + "__Name").val('');
+                $("#Crocking_Detail_" + targetID + "__Remark").val('');
+                return;
+            }
+
+            $.ajax({
+                url: "@Url.Action("Pass1List", "PublicWondow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID:$(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Crocking_Detail_" + targetID + "__Inspector").val('');
+                        $("#Crocking_Detail_" + targetID + "__Name").val('');
+                        $("#Crocking_Detail_" + targetID + "__Remark").val('');
+                        msg.WithError('Lab Tech Not Found');
+                    }
+                    else
+                    {
+                        $("#Crocking_Detail_" + targetID + "__Inspector").val(data[0].ID);
+                        $("#Crocking_Detail_" + targetID + "__Name").val(data[0].Name);
+                        $("#Crocking_Detail_" + targetID + "__Remark").val(data[0].ExtNo);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $('.btnInspectorSelectItem').unbind('click').on('click', function () {
+            var targetID = $(this).closest('tr').attr('idx');
+            var para = "?TargetID=" + targetID;
+            window.open('@Url.Action("Pass1List", "PublicWondow",new{Area=""})' + para, 'Roll', config = 'toolbar=no,status=no,location=no,width=950,height=650');
+        });
+
+        $('.detailDelete').unbind('click').on('click', function () {
+            var t = $(this).closest('tr');
+
+            msg.WithConfirm('Do you want to delete the data ?',
+                function () {
+                    t.remove();
+                    msg.WithSuccess("Delete Success");
+                }, null);
+        });
+    }
+
+    function GetFtyInventory(data, targetID) {
+        $("#Crocking_Detail_" + targetID + "__Roll").val(data.Roll);
+        $("#Crocking_Detail_" + targetID + "__Dyelot").val(data.Dyelot);
+    }
+
+    function GetPass1(data, targetID) {
+        $("#Crocking_Detail_" + targetID + "__Inspector").val(data.ID);
+        $("#Crocking_Detail_" + targetID + "__Name").val(data.Name);
+        $("#Crocking_Detail_" + targetID + "__Remark").val(data.ExtNo);
+    }
 </script>
