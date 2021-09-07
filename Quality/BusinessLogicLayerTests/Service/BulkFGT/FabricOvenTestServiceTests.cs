@@ -141,6 +141,8 @@ namespace BusinessLogicLayer.Service.Tests
                 fabricOvenTest_Detail_Result.Details.RemoveAt(fabricOvenTest_Detail_Result.Details.Count - 1);
                 baseResult = fabricOvenTestService.SaveFabricOvenTestDetail(fabricOvenTest_Detail_Result, "SCIMIS");
 
+                fabricOvenTestService.DeleteOven(fabricOvenTest_Result.Main.POID, fabricOvenTest_Result.Details[fabricOvenTest_Result.Details.Count - 1].TestNo);
+
                 if (!baseResult)
                 {
                     Assert.Fail(baseResult.ErrorMessage);

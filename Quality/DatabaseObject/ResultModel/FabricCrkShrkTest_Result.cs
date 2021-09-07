@@ -222,10 +222,10 @@ namespace DatabaseObject.ResultModel
         public decimal VerticalTest3 { get; set; }
         public decimal VerticalAverage { get; set; }
         public decimal VerticalRate { get; set; }
-        public decimal SkewnessTest1 { get; set; }
-        public decimal SkewnessTest2 { get; set; }
-        public decimal SkewnessTest3 { get; set; }
-        public decimal SkewnessTest4 { get; set; }
+        public decimal SkewnessTest1 { get; set; } = 0;
+        public decimal SkewnessTest2 { get; set; } = 0;
+        public decimal SkewnessTest3 { get; set; } = 0;
+        public decimal SkewnessTest4 { get; set; } = 0;
         public decimal SkewnessRate { get; set; }
         public DateTime? Inspdate { get; set; }
         public string Inspector { get; set; }
