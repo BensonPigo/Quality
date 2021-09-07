@@ -52,6 +52,19 @@ namespace ProductionDataAccessLayer.Interface
 
         DataTable GetHeatDetailForReport(long ID);
 
-        DataTable GetHeatArticleForPdfReport(long ID);
+        // Wash
+        FabricCrkShrkTestWash_Main GetFabricWashTest_Main(long ID);
+
+        List<FabricCrkShrkTestWash_Detail> GetFabricWashTest_Detail(long ID);
+
+        void UpdateFabricWashTestDetail(FabricCrkShrkTestWash_Result fabricCrkShrkTestWash_Result, string userID);
+
+        void EncodeFabricWash(long ID, string testResult, DateTime? WashDate, string userID);
+
+        DataTable GetWashFailMailContentData(long ID);
+
+        void AmendFabricWash(long ID);
+
+        DataTable GetWashDetailForReport(long ID);
     }
 }
