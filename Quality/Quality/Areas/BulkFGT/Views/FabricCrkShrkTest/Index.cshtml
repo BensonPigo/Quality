@@ -4,16 +4,11 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+@model DatabaseObject.ResultModel.FabricCrkShrkTest_Result
 <link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
 <link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
 <link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
 <script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
-
-@model DatabaseObject.ResultModel.FabricCrkShrkTest_Result
-@using (Html.BeginForm("Index", "PullingTest", new { }, FormMethod.Post))
-{
-}
-
 <style type="text/css">
 
     tr.row-name {
@@ -149,18 +144,21 @@
     <div class="main-area">
         <div class="content-scroll" style="height: calc( 100vh - 110px );">
             <div>
-                @*查詢*@
-                <div class="row rowHeader">
-                    <div class="col-auto">
-                        <p class="InfoTitle White">SP</p>
+                @using (Html.BeginForm("Index", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post))
+                {
+                    @*查詢*@
+                    <div class="row rowHeader">
+                        <div class="col-auto">
+                            <p class="InfoTitle White">SP</p>
+                        </div>
+                        <div class="col-auto">
+                            <input id="POID" name="POID" type="text" value="@ViewBag.POID" />
+                        </div>
+                        <div class="col-auto">
+                            <button id="btnQuery" type="submit" class="site-btn btn-gy font1rem Black" style="padding: 0.4em;">Query</button>
+                        </div>
                     </div>
-                    <div class="col-auto">
-                        <input id="POID" name="POID" type="text" value="@ViewBag.POID" />
-                    </div>
-                    <div class="col-auto">
-                        <button id="btnQuery" type="submit" name="Action:Query" class="site-btn btn-gy font1rem Black" style="padding: 0.4em;">Query</button>
-                    </div>
-                </div>
+                }
 
                 @*按鈕*@
                 <div style="margin-top: 1em;">
@@ -199,7 +197,7 @@
                             <tr>
                                 <td style="width: 10vw;"><h5>SP#</h5></td>
                                 <td style="width: 20vw;">
-                                    @Html.DisplayFor(o => o.Main.POID)
+                                    @Html.TextBoxFor(o => o.Main.POID, new { @readonly="readonly"})
                                 </td>
                                 <td style="width: 10vw;"><h5>Style</h5></td>
                                 <td style="width: 20vw;">
@@ -245,7 +243,7 @@
                                 </td>
                                 <td><h5>Remark</h5></td>
                                 <td colspan="3">
-                                    @Html.TextBoxFor(o => o.Main.FirLaboratoryRemark)
+                                    @Html.TextBoxFor(o => o.Main.FirLaboratoryRemark, new {@style="width:40vw" })
                                 </td>
                             </tr>
                             <tr>
@@ -263,8 +261,8 @@
                 </div>
             </div>
 
-            <div class="inner-scroll" style="margin-top: 1em; height: 40vh;width:92vw">
-                <table cellspacing="100" class="DataTable table table-striped display;" style="width: 250vw">
+            <div class="inner-scroll" style="margin-top: 1em; height: 40vh">
+                <table cellspacing="100" class="DataTable DetailTable table table-striped display;" style="width: 250vw">
                     <thead>
                         <tr class="row-name" id="row-name">
                             <th style="width:5vw">Seq</th>
@@ -297,43 +295,44 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in Model.Details)
+                        @for (int i = 0; i < Model.Details.Count; i++)
                         {
                             string styleColor = string.Empty;
                             <tr class="row-content" style="vertical-align: middle; text-align: center;">
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.Seq)
+                                    @Html.HiddenFor(modelItem => Model.Details[i].ID)
+                                    @Html.DisplayFor(modelItem => Model.Details[i].Seq)
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.WKNo)
+                                    @Html.DisplayFor(modelItem => Model.Details[i].WKNo)
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.WhseArrival)
+                                    @Html.ValueFor(modelItem => Model.Details[i].WhseArrival, "{0:yyyy/MM/dd}")
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.SCIRefno)
+                                    @Html.DisplayFor(modelItem => Model.Details[i].SCIRefno)
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.Refno)
+                                    @Html.DisplayFor(modelItem => Model.Details[i].Refno)
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.ColorID)
+                                    @Html.DisplayFor(modelItem => Model.Details[i].ColorID)
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.Supplier)
+                                    @Html.DisplayFor(modelItem => Model.Details[i].Supplier)
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.ArriveQty)
+                                    @Html.DisplayFor(modelItem => Model.Details[i].ArriveQty)
                                 </td>
                                 <td style="background-color:rgb(255, 228, 225)">
-                                    @Html.TextBoxFor(modelItem => item.ReceiveSampleDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
+                                    @Html.TextBoxFor(modelItem => Model.Details[i].ReceiveSampleDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
                                 </td>
                                 <td>
-                                    @Html.ValueFor(modelItem => item.InspDeadline, "{0:yyyy/MM/dd}")
+                                    @Html.ValueFor(modelItem => Model.Details[i].InspDeadline, "{0:yyyy/MM/dd}")
                                 </td>
                                 <td>
                                     @{
-                                        if (item.AllResult == "Pass")
+                                        if (Model.Details[i].AllResult == "Pass")
                                         {
                                             styleColor = "blue";
                                         }
@@ -342,82 +341,86 @@
                                             styleColor = "red";
                                         }
                                     }
-                                    <font color="@styleColor">@Html.DisplayFor(modelItem => item.AllResult)</font>
+                                    <font color="@styleColor">@Html.DisplayFor(modelItem => Model.Details[i].AllResult)</font>
                                 </td>
                                 <td class="CheckBoxColor">
-                                    @Html.CheckBox("item.NonCrocking", Convert.ToBoolean(item.NonCrocking))
+                                    @Html.CheckBox("Details["+i+"].NonCrocking", Convert.ToBoolean(Model.Details[i].NonCrocking))
                                 </td>
                                 <td class="CrockingColor">
                                     @{
-                                        if (item.Crocking == "Pass")
-                                        {
-                                            styleColor = "blue";
-                                        }
-                                        else
-                                        {
-                                            styleColor = "red";
-                                        }
-                                    }
-                                    <font color="@styleColor">@Html.DisplayFor(modelItem => item.Crocking)</font>
-                                </td>
-                                <td class="CrockingColor">
-                                    @Html.ValueFor(modelItem => item.CrockingDate, "{0:yyyy/MM/dd}")
-                                </td>
-                                <td class="CrockingColor">
-                                    @Html.DisplayFor(modelItem => item.CrockingRemark)
-                                </td>
-                                <td class="CheckBoxColor">
-                                    @Html.CheckBox("item.NonHeat", Convert.ToBoolean(item.NonHeat))
-                                </td>
-                                <td class="HeatColor">
-                                    @{
-                                        if (item.Heat == "Pass")
-                                        {
-                                            styleColor = "blue";
-                                        }
-                                        else
-                                        {
-                                            styleColor = "red";
-                                        }
-                                    }
-                                    <font color="@styleColor">@Html.DisplayFor(modelItem => item.Heat)</font>
-                                </td>
-                                <td class="HeatColor">
-                                    @Html.ValueFor(modelItem => item.HeatDate, "{0:yyyy/MM/dd}")
-                                </td>
-                                <td class="HeatColor">
-                                    @Html.DisplayFor(modelItem => item.HeatRemark)
-                                </td>
-                                <td class="CheckBoxColor">
-                                    @Html.CheckBox("item.NonWash", Convert.ToBoolean(item.NonWash))
-                                </td>
-                                <td class="WashColor">
-                                    @{
-                                        if (item.Wash == "Pass")
-                                        {
-                                            styleColor = "blue";
-                                        }
-                                        else
-                                        {
-                                            styleColor = "red";
-                                        }
-                                    }
-                                    <font color="@styleColor">@Html.DisplayFor(modelItem => item.Wash)</font>
-                                </td>
-                                <td class="WashColor">
-                                    @Html.ValueFor(modelItem => item.WashDate, "{0:yyyy/MM/dd}")
-                                </td>
-                                <td class="WashColor">
-                                    @Html.DisplayFor(modelItem => item.WashRemark)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.ReceivingID)
-                                </td>
+                                        if (Model.Details[i].Crocking == "Pass")
 
-                                <td>1</td>
-                                <td>2</td>
-                                <td>3</td>
+                                        {
+                                            styleColor = "blue";
+                                        }
+                                        else
+                                        {
+                                            styleColor = "red";
+                                        }
+                                    }
+                                    <font color="@styleColor">@Html.DisplayFor(modelItem => Model.Details[i].Crocking)</font>
+                                </td>
+                                <td class="CrockingColor">
+                                    @Html.ValueFor(modelItem => Model.Details[i].CrockingDate, "{0:yyyy/MM/dd}")
+                                </td>
+                                <td class="CrockingColor">
+                                    @Html.DisplayFor(modelItem => Model.Details[i].CrockingRemark)
+                                </td>
+                                <td class="CheckBoxColor">
+                                    @Html.CheckBox("Details[" + i + "].NonHeat", Convert.ToBoolean(Model.Details[i].NonHeat))
+                                </td>
+                                <td class="HeatColor">
+                                    @{
+                                        if (Model.Details[i].Heat == "Pass")
 
+                                        {
+                                            styleColor = "blue";
+                                        }
+                                        else
+                                        {
+                                            styleColor = "red";
+                                        }
+                                    }
+                                    <font color="@styleColor">@Html.DisplayFor(modelItem => Model.Details[i].Heat)</font>
+                                </td>
+                                <td class="HeatColor">
+                                    @Html.ValueFor(modelItem => Model.Details[i].HeatDate, "{0:yyyy/MM/dd}")
+                                </td>
+                                <td class="HeatColor">
+                                    @Html.DisplayFor(modelItem => Model.Details[i].HeatRemark)
+                                </td>
+                                <td class="CheckBoxColor">
+                                    @Html.CheckBox("Details[" + i + "].NonWash", Convert.ToBoolean(Model.Details[i].NonWash))
+                                </td>
+                                <td class="WashColor">
+                                    @{
+                                        if (Model.Details[i].Wash == "Pass")
+                                        {
+                                            styleColor = "blue";
+                                        }
+                                        else
+                                        {
+                                            styleColor = "red";
+                                        }
+                                    }
+                                    <font color="@styleColor">@Html.DisplayFor(modelItem => Model.Details[i].Wash)</font>
+                                </td>
+                                <td class="WashColor">
+                                    @Html.ValueFor(modelItem => Model.Details[i].WashDate, "{0:yyyy/MM/dd}")
+                                </td>
+                                <td class="WashColor">
+                                    @Html.DisplayFor(modelItem => Model.Details[i].WashRemark)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => Model.Details[i].ReceivingID)
+                                </td>
+                                @{ 
+                                    string controllerName = ViewContext.RouteData.GetRequiredString("Controller");
+                                }
+
+                                <td><a href="@Url.Action("CrockingTest", @controllerName)?ID=@Model.Details[i].ID">CrockingTest</a></td>
+                                <td><a href="@Url.Action("HeatTest", @controllerName)?ID=@Model.Details[i].ID">HeatTest</a></td>
+                                <td><a href="@Url.Action("WashTest", @controllerName)?ID=@Model.Details[i].ID">WashTest</a></td>
                             </tr>
                         }
                     </tbody>
@@ -472,18 +475,47 @@
                 var detail = [];
                 var ErrMsg = "";
 
-                if ($('#Detail_BrandID').val() == '' || $('#Detail_SeasonID').val() == '' || $('#Detail_StyleID').val() == '' || $('#Detail_Article').val() == ''
-                    || $('#Detail_BrandID').val() == undefined || $('#Detail_SeasonID').val() == undefined || $('#Detail_StyleID').val() == undefined || $('#Detail_Article').val() == undefined) {
-                    ErrMsg += "Style, Brand, Season and Article cannot be empty<br/>";
-                }
-
                 if (ErrMsg != "") {
                     msg.WithError(ErrMsg);
                     return;
                 }
 
-                // ajax call save
-                $('#btnQuery').click();
+                var main = {
+                    POID: $('#Main_POID').val(),
+                    FirLaboratoryRemark: $('#Main_FirLaboratoryRemark').val(),
+                };
+
+                var detail = [];
+                var ErrMsg = "";
+                $('.DetailTable > tbody > tr').each(function (index, value) {
+                    detail.push({
+                        ID: parseInt($('#Details_'+ index + '__ID').val()),
+                        ReceiveSampleDate: $('#Details_' + index +'__ReceiveSampleDate').val(),
+                        NonCrocking: $('#Details_' + index + '__NonCrocking').prop("checked"),
+                        NonHeat: $('#Details_' + index + '__NonHeat').prop("checked"),
+                        NonWash: $('#Details_' + index + '__NonWash').prop("checked"),
+                    });
+                });
+
+                $.ajax({
+                    url: "@Url.Action("SaveIndex", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ main: main, detail: detail }),
+                    async: false,
+                    success: function (data) {
+                        if (data.SaveResult) {
+                            msg.WithSuccess("Success");
+                            $('#btnQuery').click();
+                        }
+                        else {
+                            msg.WithError(data.ErrMsg);
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                });
             });
 
             $('#Undo').on('click', function () {

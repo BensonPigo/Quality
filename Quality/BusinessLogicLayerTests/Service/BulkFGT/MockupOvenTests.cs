@@ -20,8 +20,8 @@ namespace BusinessLogicLayer.Service.Tests
             {
                 IMockupOvenService _MockupOvenService = new MockupOvenService();
                 MockupOven_Request MockupOven = new MockupOven_Request()
-                { ReportNo = "PHOV210900008" };
-                //{ BrandID = "ADIDAS", SeasonID = "20SS", StyleID = "S201CSPM108", Article = "FL0237" };
+                //{ ReportNo = "PHOV210900008" };
+                { BrandID = "ADIDAS", SeasonID = "20SS", StyleID = "S201CSPM108", Article = "FL0237" };
                 var mockupOven = _MockupOvenService.GetMockupOven(MockupOven);
 
                 Assert.IsTrue(mockupOven.POID == "TESTPOID233");
