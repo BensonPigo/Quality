@@ -16,7 +16,7 @@ namespace ProductionDataAccessLayer.Interface
 
         int Create(MockupCrocking Item);
 
-        int Update(MockupCrocking Item);
+        void Update(MockupCrocking_ViewModel Item);
 
         int Delete(MockupCrocking Item);
     }

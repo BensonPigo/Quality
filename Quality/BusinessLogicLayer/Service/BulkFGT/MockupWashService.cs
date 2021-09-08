@@ -318,6 +318,15 @@ namespace BusinessLogicLayer.Service
 
         public BaseResult Create(MockupWash_ViewModel MockupWash)
         {
+            if (MockupWash.MockupWash_Detail.Any(a => a.Result.ToUpper() == "Fail".ToUpper()))
+            {
+                MockupWash.Result = "Fail";
+            }
+            else
+            {
+                MockupWash.Result = "Pass";
+            }
+
             MockupWash.Type = "B";
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
@@ -363,32 +372,22 @@ namespace BusinessLogicLayer.Service
 
         public BaseResult Update(MockupWash_ViewModel MockupWash)
         {
+            if (MockupWash.MockupWash_Detail.Any(a => a.Result.ToUpper() == "Fail".ToUpper()))
+            {
+                MockupWash.Result = "Fail";
+            }
+            else
+            {
+                MockupWash.Result = "Pass";
+            }
+
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             _MockupWashProvider = new MockupWashProvider(_ISQLDataTransaction);
             _MockupWashDetailProvider = new MockupWashDetailProvider(_ISQLDataTransaction);
-            int count;
             try
             {
-                count = _MockupWashProvider.Update(MockupWash);
-                if (count == 0)
-                {
-                    result.Result = false;
-                    result.ErrorMessage = "Update MockupWash Fail. 0 Count";
-                    return result;
-                }
-
-                foreach (var MockupWash_Detail in MockupWash.MockupWash_Detail)
-                {
-                    count = _MockupWashDetailProvider.Update(MockupWash_Detail);
-                    if (count == 0)
-                    {
-                        result.Result = false;
-                        result.ErrorMessage = "Update MockupWash_Detail Fail. 0 Count";
-                        return result;
-                    }
-                }
-
+                _MockupWashProvider.Update(MockupWash);
                 result.Result = true;
                 _ISQLDataTransaction.Commit();
             }

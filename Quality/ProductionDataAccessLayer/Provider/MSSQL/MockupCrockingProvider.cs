@@ -1,3 +1,4 @@
+using ADOHelper.DBToolKit;
 using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
 using DatabaseObject.ProductionDB;
@@ -7,12 +8,15 @@ using ProductionDataAccessLayer.Interface;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Text;
+using ToolKit;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
     public class MockupCrockingProvider : SQLDAL, IMockupCrockingProvider
     {
+        private IMockupCrockingDetailProvider _MockupCrockingDetailProvider;
         #region 底層連線
         public MockupCrockingProvider(string ConString) : base(ConString) { }
         public MockupCrockingProvider(SQLDataTransaction tra) : base(tra) { }
@@ -122,7 +126,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
 
-        public int Update(MockupCrocking Item)
+        public void Update(MockupCrocking_ViewModel Item)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
@@ -160,7 +164,108 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("WHERE ReportNo = @ReportNo" + Environment.NewLine);
             objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
 
-            return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
+
+            _MockupCrockingDetailProvider = new MockupCrockingDetailProvider(Common.ProductionDataAccessLayer);
+            var oldCrockingData = _MockupCrockingDetailProvider.GetMockupCrocking_Detail(new MockupCrocking_Detail() { ReportNo = Item.ReportNo }).ToList();
+
+            List<MockupCrocking_Detail_ViewModel> needUpdateDetailList =
+                PublicClass.CompareListValue<MockupCrocking_Detail_ViewModel>(
+                    Item.MockupCrocking_Detail,
+                    oldCrockingData,
+                    "Ukey",
+                    "Design,ArtworkColor,FabricRefNo,FabricColor,DryScale,WetScale,Result,Remark");
+
+            string insertDetail = @"
+INSERT INTO [dbo].[MockupCrocking_Detail]
+           (ReportNo
+           ,Design
+           ,ArtworkColor
+           ,FabricRefNo
+           ,FabricColor
+           ,DryScale
+           ,WetScale
+           ,Result
+           ,Remark
+           ,EditName
+           ,EditDate
+		   )
+     VALUES
+           (@ReportNo
+           ,@Design
+           ,@ArtworkColor
+           ,@FabricRefNo
+           ,@FabricColor
+           ,@DryScale
+           ,@WetScale
+           ,@Result
+           ,@Remark
+           ,@EditName
+           ,GETDATE()
+		   )
+";
+            string deleteDetail = @"
+delete MockupCrocking_Detail where Ukey = @Ukey
+";
+            string updateDetail = @"
+UPDATE [dbo].[MockupCrocking_Detail]
+   SET [Design] =       @Design
+      ,[ArtworkColor] = @ArtworkColor
+      ,[FabricRefNo] =  @FabricRefNo
+      ,[FabricColor] =  @FabricColor
+      ,[DryScale] =     @DryScale
+      ,[WetScale] =     @WetScale
+      ,[Result] =       @Result
+      ,[Remark] =       @Remark
+      ,[EditName] =     @EditName
+      ,[EditDate] = GETDATE()
+WHERE UKey = @Ukey
+";
+
+            DataTable dtResult = ExecuteDataTable(CommandType.Text, SbSql.ToString(), objParameter);
+            foreach (var detailItem in needUpdateDetailList)
+            {
+                SQLParameterCollection listDetailPar = new SQLParameterCollection();
+                switch (detailItem.StateType)
+                {
+                    case DatabaseObject.Public.CompareStateType.Add:
+                        listDetailPar.Add("@ReportNo", DbType.String, Item.ReportNo);
+                        listDetailPar.Add("@Design", DbType.String, detailItem.Design ?? string.Empty);
+                        listDetailPar.Add("@ArtworkColor", DbType.String, detailItem.ArtworkColor ?? string.Empty);
+                        listDetailPar.Add("@FabricRefNo", DbType.String, detailItem.FabricRefNo ?? string.Empty);
+                        listDetailPar.Add("@FabricColor", DbType.String, detailItem.FabricColor ?? string.Empty);
+                        listDetailPar.Add("@DryScale", DbType.String, detailItem.DryScale ?? string.Empty);
+                        listDetailPar.Add("@WetScale", DbType.String, detailItem.WetScale ?? string.Empty);
+                        listDetailPar.Add("@Result", DbType.String, detailItem.Result ?? string.Empty);
+                        listDetailPar.Add("@Remark", DbType.String, detailItem.Remark ?? string.Empty);
+                        listDetailPar.Add("@EditName", DbType.String, detailItem.EditName ?? string.Empty);
+
+                        ExecuteNonQuery(CommandType.Text, insertDetail, listDetailPar);
+                        break;
+                    case DatabaseObject.Public.CompareStateType.Edit:
+                        listDetailPar.Add("@Design", DbType.String, detailItem.Design ?? string.Empty);
+                        listDetailPar.Add("@ArtworkColor", DbType.String, detailItem.ArtworkColor ?? string.Empty);
+                        listDetailPar.Add("@FabricRefNo", DbType.String, detailItem.FabricRefNo ?? string.Empty);
+                        listDetailPar.Add("@FabricColor", DbType.String, detailItem.FabricColor ?? string.Empty);
+                        listDetailPar.Add("@DryScale", DbType.String, detailItem.DryScale ?? string.Empty);
+                        listDetailPar.Add("@WetScale", DbType.String, detailItem.WetScale ?? string.Empty);
+                        listDetailPar.Add("@Result", DbType.String, detailItem.Result ?? string.Empty);
+                        listDetailPar.Add("@Remark", DbType.String, detailItem.Remark ?? string.Empty);
+                        listDetailPar.Add("@EditName", DbType.String, detailItem.EditName ?? string.Empty);
+                        listDetailPar.Add("@ukey", detailItem.Ukey);
+
+                        ExecuteNonQuery(CommandType.Text, updateDetail, listDetailPar);
+                        break;
+                    case DatabaseObject.Public.CompareStateType.Delete:
+                        listDetailPar.Add("@ukey", detailItem.Ukey);
+
+                        ExecuteNonQuery(CommandType.Text, deleteDetail, listDetailPar);
+                        break;
+                    case DatabaseObject.Public.CompareStateType.None:
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
 
         public int Delete(MockupCrocking Item)
