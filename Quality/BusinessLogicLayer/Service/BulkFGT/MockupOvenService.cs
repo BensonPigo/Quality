@@ -326,6 +326,7 @@ namespace BusinessLogicLayer.Service
 
                 foreach (var MockupOven_Detail in MockupOven.MockupOven_Detail)
                 {
+                    MockupOven_Detail.ReportNo = MockupOven.ReportNo;
                     count = _MockupOvenDetailProvider.Create(MockupOven_Detail);
                     if (count == 0)
                     {
@@ -392,15 +393,10 @@ namespace BusinessLogicLayer.Service
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             _MockupOvenProvider = new MockupOvenProvider(_ISQLDataTransaction);
             _MockupOvenDetailProvider = new MockupOvenDetailProvider(_ISQLDataTransaction);
-            int count;
             try
             {
-                count = _MockupOvenProvider.Delete(MockupOven);
-                foreach (var MockupOven_Detail in MockupOven.MockupOven_Detail)
-                {
-                    count = _MockupOvenDetailProvider.Delete(MockupOven_Detail);
-                }
-
+                _MockupOvenProvider.Delete(MockupOven);
+                _MockupOvenDetailProvider.Delete(new MockupOven_Detail_ViewModel() { ReportNo = MockupOven.ReportNo });
                 result.Result = true;
                 _ISQLDataTransaction.Commit();
             }
@@ -425,6 +421,7 @@ namespace BusinessLogicLayer.Service
             {
                 foreach (var MockupOven_Detail in MockupOvenDetail)
                 {
+                    MockupOven_Detail.ReportNo = null;
                     _MockupOvenDetailProvider.Delete(MockupOven_Detail);
                 }
 

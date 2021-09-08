@@ -115,8 +115,6 @@ namespace BusinessLogicLayer.Service.Tests
                 MockupWash_ViewModel MockupWash = new MockupWash_ViewModel()
                 {
                     ReportNo = "T1",
-                    POID = "TP",
-                    StyleID = "SS",
                     SeasonID = "20SS",
                     BrandID = "bb",
                     Article = "aa",
@@ -216,16 +214,7 @@ namespace BusinessLogicLayer.Service.Tests
             try
             {
                 IMockupWashService _MockupWashService = new MockupWashService();
-                MockupWash_ViewModel MockupWash = new MockupWash_ViewModel()
-                {
-                    ReportNo = "T1",
-                    MockupWash_Detail = new System.Collections.Generic.List<MockupWash_Detail_ViewModel>()
-                    {
-                        new MockupWash_Detail_ViewModel(){Ukey=21860},
-                        new MockupWash_Detail_ViewModel(){Ukey=21861},
-                    }
-                };
-
+                MockupWash_ViewModel MockupWash = new MockupWash_ViewModel() { ReportNo = "T1" };
                 var mockupWash = _MockupWashService.Delete(MockupWash);
                 Assert.IsTrue(true);
             }
@@ -244,8 +233,8 @@ namespace BusinessLogicLayer.Service.Tests
                 IMockupWashService _MockupWashService = new MockupWashService();
                 System.Collections.Generic.List<MockupWash_Detail_ViewModel> MockupWash_Detail = new System.Collections.Generic.List<MockupWash_Detail_ViewModel>()
                 {
-                    new MockupWash_Detail_ViewModel(){Ukey=21858},
-                    new MockupWash_Detail_ViewModel(){Ukey=21859},
+                    new MockupWash_Detail_ViewModel(){Ukey=21896},
+                    new MockupWash_Detail_ViewModel(){Ukey=21897},
                 };
 
                 var mockupWash = _MockupWashService.DeleteDetail(MockupWash_Detail);

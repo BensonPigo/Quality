@@ -88,22 +88,22 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append(")" + Environment.NewLine);
             SbSql.Append("VALUES" + Environment.NewLine);
             SbSql.Append("(" + Environment.NewLine);
-            SbSql.Append("         @ReportNo"); objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
-            SbSql.Append("        ,@POID"); objParameter.Add("@POID", DbType.String, Item.POID);
-            SbSql.Append("        ,@StyleID"); objParameter.Add("@StyleID", DbType.String, Item.StyleID);
-            SbSql.Append("        ,@SeasonID"); objParameter.Add("@SeasonID", DbType.String, Item.SeasonID);
-            SbSql.Append("        ,@BrandID"); objParameter.Add("@BrandID", DbType.String, Item.BrandID);
-            SbSql.Append("        ,@Article"); objParameter.Add("@Article", DbType.String, Item.Article);
-            SbSql.Append("        ,@ArtworkTypeID"); objParameter.Add("@ArtworkTypeID", DbType.String, Item.ArtworkTypeID);
-            SbSql.Append("        ,@Remark"); objParameter.Add("@Remark", DbType.String, Item.Remark);
-            SbSql.Append("        ,@T1Subcon"); objParameter.Add("@T1Subcon", DbType.String, Item.T1Subcon);
+            SbSql.Append("         @ReportNo"); objParameter.Add("@ReportNo", DbType.String, Item.ReportNo ?? string.Empty);
+            SbSql.Append("        ,@POID"); objParameter.Add("@POID", DbType.String, Item.POID ?? string.Empty);
+            SbSql.Append("        ,@StyleID"); objParameter.Add("@StyleID", DbType.String, Item.StyleID ?? string.Empty);
+            SbSql.Append("        ,@SeasonID"); objParameter.Add("@SeasonID", DbType.String, Item.SeasonID ?? string.Empty);
+            SbSql.Append("        ,@BrandID"); objParameter.Add("@BrandID", DbType.String, Item.BrandID ?? string.Empty);
+            SbSql.Append("        ,@Article"); objParameter.Add("@Article", DbType.String, Item.Article ?? string.Empty);
+            SbSql.Append("        ,@ArtworkTypeID"); objParameter.Add("@ArtworkTypeID", DbType.String, Item.ArtworkTypeID ?? string.Empty);
+            SbSql.Append("        ,@Remark"); objParameter.Add("@Remark", DbType.String, Item.Remark ?? string.Empty);
+            SbSql.Append("        ,@T1Subcon"); objParameter.Add("@T1Subcon", DbType.String, Item.T1Subcon ?? string.Empty);
             SbSql.Append("        ,@TestDate"); objParameter.Add("@TestDate", DbType.Date, Item.TestDate);
             SbSql.Append("        ,@ReceivedDate"); objParameter.Add("@ReceivedDate", DbType.Date, Item.ReceivedDate);
             SbSql.Append("        ,@ReleasedDate"); objParameter.Add("@ReleasedDate", DbType.Date, Item.ReleasedDate);
-            SbSql.Append("        ,@Result"); objParameter.Add("@Result", DbType.String, Item.Result);
-            SbSql.Append("        ,@Technician"); objParameter.Add("@Technician", DbType.String, Item.Technician);
-            SbSql.Append("        ,@MR"); objParameter.Add("@MR", DbType.String, Item.MR);
-            SbSql.Append("        ,@Type"); objParameter.Add("@Type", DbType.String, Item.Type);
+            SbSql.Append("        ,@Result"); objParameter.Add("@Result", DbType.String, Item.Result ?? string.Empty);
+            SbSql.Append("        ,@Technician"); objParameter.Add("@Technician", DbType.String, Item.Technician ?? string.Empty);
+            SbSql.Append("        ,@MR"); objParameter.Add("@MR", DbType.String, Item.MR ?? string.Empty);
+            SbSql.Append("        ,@Type"); objParameter.Add("@Type", DbType.String, Item.Type ?? string.Empty);
 
             SbSql.Append("        ,@TestBeforePicture");
             if (Item.TestBeforePicture != null) { objParameter.Add("@TestBeforePicture", Item.TestBeforePicture); }
@@ -113,7 +113,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             else { objParameter.Add("@TestAfterPicture", System.Data.SqlTypes.SqlBinary.Null); }
 
             SbSql.Append("        ,GETDATE()");
-            SbSql.Append("        ,@AddName"); objParameter.Add("@AddName", DbType.String, Item.AddName);
+            SbSql.Append("        ,@AddName"); objParameter.Add("@AddName", DbType.String, Item.AddName ?? string.Empty);
             SbSql.Append(")" + Environment.NewLine);
 
 
@@ -127,8 +127,10 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
             SbSql.Append("UPDATE [MockupCrocking]" + Environment.NewLine);
-            SbSql.Append("SET POID=@POID" + Environment.NewLine);
-            objParameter.Add("@POID", DbType.String, Item.POID);
+            SbSql.Append("SET EditDate=GETDATE()" + Environment.NewLine);
+            if (Item.EditName != null) { SbSql.Append(",EditName=@EditName" + Environment.NewLine); objParameter.Add("@EditName", DbType.String, Item.EditName); }
+
+            if (Item.POID != null) { SbSql.Append(",POID=@POID" + Environment.NewLine); objParameter.Add("@POID", DbType.String, Item.POID); }
             if (Item.StyleID != null) { SbSql.Append(",StyleID=@StyleID" + Environment.NewLine); objParameter.Add("@StyleID", DbType.String, Item.StyleID); }
             if (Item.SeasonID != null) { SbSql.Append(",SeasonID=@SeasonID" + Environment.NewLine); objParameter.Add("@SeasonID", DbType.String, Item.SeasonID); }
             if (Item.BrandID != null) { SbSql.Append(",BrandID=@BrandID" + Environment.NewLine); objParameter.Add("@BrandID", DbType.String, Item.BrandID); }
@@ -143,8 +145,6 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             if (Item.Technician != null) { SbSql.Append(",Technician=@Technician" + Environment.NewLine); objParameter.Add("@Technician", DbType.String, Item.Technician); }
             if (Item.MR != null) { SbSql.Append(",MR=@MR" + Environment.NewLine); objParameter.Add("@MR", DbType.String, Item.MR); }
             if (Item.Type != null) { SbSql.Append(",Type=@Type" + Environment.NewLine); objParameter.Add("@Type", DbType.String, Item.Type); }
-            SbSql.Append(",EditDate=GETDATE()" + Environment.NewLine);
-            if (Item.EditName != null) { SbSql.Append(",EditName=@EditName" + Environment.NewLine); objParameter.Add("@EditName", DbType.String, Item.EditName); }
 
             // 圖檔
             SbSql.Append(@"
