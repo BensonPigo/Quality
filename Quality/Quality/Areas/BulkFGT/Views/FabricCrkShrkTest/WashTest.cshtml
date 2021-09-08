@@ -232,14 +232,14 @@
 
                                     <tr>
                                         <td style="width: 10vw;"><h5>SP#</h5></td>
-                                        <td style="width: 20vw;">
+                                        <td style="width: 15vw;">
                                             @Html.DisplayFor(o => o.Wash_Main.POID)
                                         </td>
-                                        <td style="width: 10vw;"><h5>SEQ#</h5></td>
+                                        <td style="        width: 15vw;"><h5>SEQ#</h5></td>
                                         <td style="width: 20vw;">
                                             @Html.DisplayFor(o => o.Wash_Main.SEQ)
                                         </td>
-                                        <td style="width: 10vw;"><h5>Color</h5></td>
+                                        <td style="width: 15vw;"><h5>Color</h5></td>
                                         <td style="width: 20vw;">
                                             @Html.DisplayFor(o => o.Wash_Main.ColorID)
                                         </td>
@@ -349,8 +349,8 @@
                         </div>
                     </div>
 
-                    <div class="inner-scroll" style="margin-top: 1em; height: 10vh">
-                        <table cellspacing="100" id="wash_Detail" class="DataTable DetailTable table table-striped display;" style="width: 250vw">
+                    <div style="margin-top: 1em; overflow:auto">
+                        <table cellspacing="100" id="wash_Detail" class="DataTable DetailTable table table-striped display;">
                             <thead>
                                 <tr class="row-name" id="row-name">
                                     <th style="width:5vw">Roll#</th>
