@@ -2968,7 +2968,7 @@
 
                     // 計算Diff
                     if (unit.toUpperCase() == "INCH") {
-                        if (standard.indexOf('.') > -1) {
+                        if (standard.toString().indexOf('.') > -1) {
                             return;
                         }
 
@@ -2980,7 +2980,7 @@
 
                         var diffTolh = String(FractionDiff(sTolh, val));
                         var diffToll = String(FractionDiff(val, sToll));
-                        if (diffTolh.indexOf('-') > -1 || diffToll.indexOf('-') > -1) {
+                        if (diffTolh.toString().indexOf('-') > -1 || diffToll.toString().indexOf('-') > -1) {
                             $(this).parent().parent().children().find("p[class='Diff']").parent().addClass("bg-lightred");
                         }
                         else {
@@ -2988,7 +2988,7 @@
                         }
                     }
                     else {
-                        if (standard.indexOf('/') > -1) {
+                        if (standard.toString().indexOf('/') > -1) {
                             return;
                         }
 

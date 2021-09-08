@@ -285,19 +285,18 @@
                     $(this).css('background-color', 'rgb(234, 234, 113);');
                 }
 
-                if (tdName.indexOf('_aa') > -1) {
+                if (tdName.toString().indexOf('_aa') > -1) {
                     standard = $(this).html();
                     $(this).css('background-color', 'rgb(211, 211, 211);');
                 }
 
-                if (tdName.indexOf('diff') > -1) {
+                if (tdName.toString().indexOf('diff') > -1) {
                     $(this).css('background-color', 'rgb(234, 234, 113);');
 
                     if (standard == null || val == null || tolh == null || toll == null) {
                         return;
                     }
-                    else {
-                        cal(unit, standard, val, tolh, toll, $(this));
+                    else {                        // 避免standard出現文字                        if (parseInt(standard.toString()) >= 0) {                            cal(unit, standard.toString(), val.toString(), tolh.toString(), toll.toString(), $(this));                        }
                     }
                 }
             });
@@ -306,7 +305,7 @@
 
     function cal(unit, standard, val, tolh, toll, obj) {
         if (unit == "INCH") {
-            if (standard.indexOf('.') > -1) {
+            if (standard.toString().indexOf('.') > -1) {
                 return;
             }
             var sTolh = FractionAdd(standard, tolh);
@@ -314,7 +313,7 @@
             var diffTolh = String(FractionDiff(sTolh, val));
             var diffToll = String(FractionDiff(val, sToll));
 
-            if (diffTolh.indexOf('-') > -1 || diffToll.indexOf('-') > -1) {
+            if (diffTolh.toString().indexOf('-') > -1 || diffToll.toString().indexOf('-') > -1) {
                 obj.addClass("red");
             }
             else {
@@ -322,7 +321,7 @@
             }
         }
         else {
-            if (standard.indexOf('/') > -1) {
+            if (standard.toString().indexOf('/') > -1) {
                 return;
             }
 
