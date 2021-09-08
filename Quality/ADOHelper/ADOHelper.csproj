@@ -50,7 +50,6 @@
     <Compile Include="Template\MSSQL\SQLParameterCollection.cs" />
     <Compile Include="Utility\Interface\ISQLDataTransaction.cs" />
     <Compile Include="Utility\MailTools.cs" />
-    <Compile Include="Utility\PMSUtility.cs" />
     <Compile Include="Utility\SQLDataTransaction.cs" />
   </ItemGroup>
   <ItemGroup>

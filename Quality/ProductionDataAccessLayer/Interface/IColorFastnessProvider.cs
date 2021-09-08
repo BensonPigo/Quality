@@ -2,6 +2,7 @@ using DatabaseObject.ProductionDB;
 using DatabaseObject.ViewModel.BulkFGT;
 using System;
 using System.Collections.Generic;
+using System.Data;
 
 namespace MICS.DataAccessLayer.Interface
 {
@@ -18,5 +19,15 @@ namespace MICS.DataAccessLayer.Interface
         bool Save_PO(string PoID, string Remark);
 
         bool Delete_ColorFastness(string PoID, List<ColorFastness_Result> source);
+
+        bool Encode_ColorFastness(string ID, string Status, string Result, string UserID);
+
+        DataTable Get_Mail_Content(string POID, string ID);
+
+        string Get_InspectName(string Inspector);
+
+        DataTable Get_PO_DataTable(string PoID);
+
+        string Get_Supplier(string PoID, string Seq1);
     }
 }

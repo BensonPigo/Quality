@@ -135,7 +135,13 @@ namespace DatabaseObject.ViewModel.BulkFGT
 
     public class Fabric_ColorFastness_Detail_ViewModel
     {
-        public string InspectorName { get; set; }
+        public bool? Result { get; set; }
+
+        public string ErrMsg { get; set; }
+
+        public bool sentMail { get; set; }
+
+        public string reportPath { get; set; }
 
         // 第三層表頭
         public ColorFastness_Result Main { get; set; }

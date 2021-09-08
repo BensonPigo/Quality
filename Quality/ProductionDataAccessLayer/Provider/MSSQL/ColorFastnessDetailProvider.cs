@@ -133,6 +133,21 @@ and Seq2 = @Seq2
             return ExecuteList<FtyInventory>(CommandType.Text, sqlcmd, objParameter);
         }
 
+        public DataTable Get_SubmitDate(string ID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.String, ID } ,
+            };
+
+            string sqlcmd = @"
+select distinct CONVERT(varchar(100), SubmitDate, 111) as SubmitDate 
+from ColorFastness_Detail WITH (NOLOCK) 
+where id = @ID
+";
+            return ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
+        }
+
         public bool Save_ColorFastness(Fabric_ColorFastness_Detail_ViewModel sources, string Mdivision,string UserID)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection
@@ -150,10 +165,14 @@ and Seq2 = @Seq2
                 { "@Detergent", sources.Main.Detergent } ,
                 { "@Machine", sources.Main.Machine } ,
                 { "@Drying", sources.Main.Drying } ,
-                { "@TestBeforePicture", sources.Main.TestBeforePicture } ,
-                { "@TestAfterPicture", sources.Main.TestAfterPicture } ,
                 { "@UserID", UserID } ,
             };
+
+            if (sources.Main.TestBeforePicture != null) { objParameter.Add("@TestBeforePicture", sources.Main.TestBeforePicture); }
+            else { objParameter.Add("@TestBeforePicture", System.Data.SqlTypes.SqlBinary.Null); }
+
+            if (sources.Main.TestAfterPicture != null) { objParameter.Add("@TestAfterPicture", sources.Main.TestAfterPicture); }
+            else { objParameter.Add("@TestAfterPicture", System.Data.SqlTypes.SqlBinary.Null); }
 
             string sqlcmd = string.Empty;
             int idx = 1;
@@ -186,11 +205,11 @@ where ID = @ID
             }
             else
             {
-                string NewID = MyUtility.GetValue.GetID(Mdivision + "CF", "ColorFastness", DateTime.Today, 2, "ID", connectionName: Common.ProductionDataAccessLayer);
+                string NewID = GetID(Mdivision + "CF", "ColorFastness", DateTime.Today, 2, "ID");
                 objParameter.Add(new SqlParameter($"@ID", NewID));
                 sqlcmd += @"
-insert into ColorFastness(ID,POID,TestNo,InspDate,Article,Status,Inspector,Remark,addName,addDate,Temperature,Cycle,Detergent,Machine,Drying)
-values(@ID ,@POID,@TestNo,GETDATE(),@Article,'New',@UserID,@Remark,@UserID,GETDATE(),@Temperature,@Cycle,@Detergent,@Machine,@Drying)
+insert into ColorFastness(ID,POID,TestNo,InspDate,Article,Status,Inspector,Remark,addName,addDate,Temperature,Cycle,Detergent,Machine,Drying,TestBeforePicture,TestAfterPicture)
+values(@ID ,@POID,@TestNo,GETDATE(),@Article,'New',@UserID,@Remark,@UserID,GETDATE(),@Temperature,@Cycle,@Detergent,@Machine,@Drying,@TestBeforePicture,@TestAfterPicture)
 ";
             }
             #endregion
@@ -208,7 +227,7 @@ values(@ID ,@POID,@TestNo,GETDATE(),@Article,'New',@UserID,@Remark,@UserID,GETDA
                 objParameter.Add(new SqlParameter($"@changeScale{idx}", item.changeScale));
                 objParameter.Add(new SqlParameter($"@StainingScale{idx}", item.StainingScale));
                 objParameter.Add(new SqlParameter($"@Remark{idx}", item.Remark));
-                objParameter.Add(new SqlParameter($"@SubmitDate{idx}", item.SubmitDate));
+                objParameter.Add($"@SubmitDate{idx}", DbType.Date, item.SubmitDate);
                 objParameter.Add(new SqlParameter($"@ResultChange{idx}", item.ResultChange));
                 objParameter.Add(new SqlParameter($"@ResultStain{idx}", item.ResultStain));
 
