@@ -181,8 +181,26 @@ namespace BusinessLogicLayer.Service
                 //再檢查一次Result
                 foreach (FabricOvenTest_Detail_Detail fabricOvenTest_Detail_Detail in fabricOvenTest_Detail_Result.Details)
                 {
+                    if (fabricOvenTest_Detail_Detail.ResultChange == null)
+                    {
+                        fabricOvenTest_Detail_Detail.ResultChange = string.Empty;
+                    }
+
+                    if (fabricOvenTest_Detail_Detail.ResultStain == null)
+                    {
+                        fabricOvenTest_Detail_Detail.ResultStain = string.Empty;
+                    }
+
+                    if (MyUtility.Check.Empty(fabricOvenTest_Detail_Detail.ResultChange + fabricOvenTest_Detail_Detail.ResultStain))
+                    {
+                        fabricOvenTest_Detail_Detail.Result = string.Empty;
+                        continue;
+                    }
+
                     if (fabricOvenTest_Detail_Detail.ResultChange.ToUpper() == "FAIL" ||
-                        fabricOvenTest_Detail_Detail.ResultStain.ToUpper() == "FAIL" 
+                        fabricOvenTest_Detail_Detail.ResultStain.ToUpper() == "FAIL"  ||
+                        fabricOvenTest_Detail_Detail.ResultChange == string.Empty ||
+                        fabricOvenTest_Detail_Detail.ResultStain == string.Empty
                         )
                     {
                         fabricOvenTest_Detail_Detail.Result = "Fail";
