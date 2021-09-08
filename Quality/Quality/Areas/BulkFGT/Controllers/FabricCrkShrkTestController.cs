@@ -455,7 +455,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             fabricCrkShrkTestHeat_Result = new FabricCrkShrkTestHeat_Result()
             {
-                ID = ID,
+                ID = 99998,
                 Heat_Main = new FabricCrkShrkTestHeat_Main
                 {
                     POID = "21051318BB",
