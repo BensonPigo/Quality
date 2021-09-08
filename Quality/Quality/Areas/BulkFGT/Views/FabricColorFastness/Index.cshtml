@@ -127,11 +127,11 @@
                             <p class="InfoTitle White">SP# </p>
                         </div>
                         <div class="col-auto">
-                            <input id="POID" name="POID" type="text" value=@ViewBag.POID />
+                            <input id="QueryPoID" name="QueryPoID" type="text" value=@ViewBag.QueryPoID />
                         </div>
 
                         <div class="col-auto">
-                            <button id="btnQuery" type="submit" class="site-btn btn-gy font1rem Black" style="padding: 0.4em;">Query</button>
+                            <button id="btnQuery" type="submit"  name="Action:Query" class="site-btn btn-gy font1rem Black" style="padding: 0.4em;">Query</button>
                         </div>
                     </div>
                 }
@@ -227,7 +227,7 @@
                             <tr>
                                 <td><h5>Remark</h5></td>
                                 <td colspan="5">
-                                    @Html.TextBoxFor(o => o.OvenLaboratoryRemark, "", new { @readonly = "readonly", @class = "OnlyEdit" })
+                                    @Html.TextBoxFor(o => o.ColorFastnessLaboratoryRemark, "", new { @readonly = "readonly" ,@style="width:50vw" })
                                 </td>
                             </tr>
                             <tr>
@@ -274,7 +274,7 @@
 
                                         @if (Model.ColorFastness_MainList[i].TestNo > 0)
                                         {
-                                            aHref = Url.Action("Detail", "FabricColorFastness", new { POID = Model.PoID, TestNo = Model.ColorFastness_MainList[i].TestNo, EditMode = false });
+                                            aHref = Url.Action("Detail", "FabricColorFastness", new { PoID = Model.PoID, TestNo = Model.ColorFastness_MainList[i].TestNo, EditMode = false });
                                         }
 
                                         <a href="@aHref" idx="@Model.PoID ," idv="@Model.ColorFastness_MainList[i].TestNo">
@@ -285,11 +285,11 @@
                                     @{
                                         string InspDate = Model.ColorFastness_MainList[i].InspDate.HasValue ? Model.ColorFastness_MainList[i].InspDate.Value.ToString("yyyy/MM/dd") : string.Empty;
                                         string ResultColor = Model.ColorFastness_MainList[i].Result == "Pass" ? "blue" : "red";
-                                        string showPic = Model.ColorFastness_MainList[i].Status == "New" ? string.Empty : "display: none";
+                              
                                     }
 
                                     <td style="width:10vw;">
-                                        InspDate
+                                        @InspDate
                                     </td>
                                     <td style="width:10vw;">
                                         @Html.DisplayFor(o => Model.ColorFastness_MainList[i].Article, "", "")
@@ -308,10 +308,10 @@
                                         @Html.DisplayFor(o => Model.ColorFastness_MainList[i].LastUpdate, "", "")
                                     </td>
                                     <td style="width:10vw;">
-                                        <img class="detailEdit" style="@showPic" onclick="DetailView('@Model.ColorFastness_MainList[i].TestNo')" src="~/Image/Icon/Edit.png" width="30" />
+                                        <img class="detailEdit"  onclick="DetailView('@Model.ColorFastness_MainList[i].TestNo')" src="~/Image/Icon/Edit.png" width="30" />
                                     </td>
                                     <td style="width:10vw;">
-                                        <img class="detailDelete" style="@showPic" onclick="DetailDelete('@Model.ColorFastness_MainList[i].TestNo')" src="~/Image/Icon/Delete.png" width="30" />
+                                        <img class="detailDelete"  onclick="DetailDelete('@Model.ColorFastness_MainList[i].TestNo')" src="~/Image/Icon/Delete.png" width="30" />
                                     </td>
                                 </tr>
                             }
@@ -356,7 +356,7 @@
             $(".rowHeader input[type='button']").removeClass("IsEditModeQuery");
             $('#btnQuery').unbind('click').removeClass("IsEditModeQuery");
 
-            if ($('#POID').val() != undefined && $('#POID').val() != '')
+            if ($('#PoID').val() != undefined && $('#PoID').val() != '')
             {
                 $("#Edit, #New").addClass("IsEditMode");
             }
@@ -367,7 +367,7 @@
 
 
             $('#btnQuery').on('click', function () {
-                if ($('#POID').val() == '') {
+                if ($('#QueryPoID').val() == '') {
                     msg.WithError("SP# cannot be empty");
                     return false;
                 }
@@ -391,7 +391,7 @@
         $('#Save').on('click', function () {
 
             var main = {
-                POID: $('#PoID').val(),
+                PoID: $('#PoID').val(),
                 Remark: $('#Remark').val()
             };
 
@@ -407,7 +407,7 @@
             async: false,
             success: function (data) {
 
-                location.href = '@Url.Action("IndexBack")?POID=' + document.getElementById("PoID").value.trim();
+                location.href = '@Url.Action("IndexBack")?PoID=' + document.getElementById("PoID").value.trim();
 
             },
             error: function (xhr, ajaxOptions, thrownError) {
@@ -419,7 +419,7 @@
         $('#Undo').on('click', function () {
             EditMode = false;
             IsEditModeChange();
-            location.href = '@Url.Action("IndexBack")?POID=' + document.getElementById("PoID").value.trim();
+            location.href = '@Url.Action("IndexBack")?PoID=' + document.getElementById("PoID").value.trim();
         });
 
 
