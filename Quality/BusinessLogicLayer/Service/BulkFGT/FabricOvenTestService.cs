@@ -48,7 +48,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 baseResult.Result = false;
-                baseResult.ErrorMessage = ex.ToString();
+                baseResult.ErrorMessage = ex.Message.ToString();
             }
 
             return baseResult;
@@ -111,7 +111,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 baseResult.Result = false;
-                baseResult.ErrorMessage = ex.ToString();
+                baseResult.ErrorMessage = ex.Message.ToString();
                 return baseResult;
             }
         }
@@ -138,16 +138,20 @@ namespace BusinessLogicLayer.Service
 
         public FabricOvenTest_Result GetFabricOvenTest_Result(string POID)
         {
+            FabricOvenTest_Result result = new FabricOvenTest_Result();
             try
             {
                 _FabricOvenTestProvider = new FabricOvenTestProvider(Common.ProductionDataAccessLayer);
-
-                return _FabricOvenTestProvider.GetFabricOvenTest_Main(POID);
+                result = _FabricOvenTestProvider.GetFabricOvenTest_Main(POID);
+                result.Result = true;
             }
             catch (Exception ex)
             {
-                throw ex;
+                result.Result = false;
+                result.ErrorMessage = ex.Message.ToString();
             }
+
+            return result;
         }
 
         public BaseResult SaveFabricOvenTestDetail(FabricOvenTest_Detail_Result fabricOvenTest_Detail_Result, string userID)
@@ -223,17 +227,20 @@ namespace BusinessLogicLayer.Service
 
                 if (string.IsNullOrEmpty(fabricOvenTest_Detail_Result.Main.TestNo))
                 {
-                    _FabricOvenTestProvider.AddFabricOvenTestDetail(fabricOvenTest_Detail_Result, userID);
+                    _FabricOvenTestProvider.AddFabricOvenTestDetail(fabricOvenTest_Detail_Result, userID, out string TestNo);
+                    baseResult.ErrorMessage = TestNo;
                 }
                 else
                 {
                     _FabricOvenTestProvider.EditFabricOvenTestDetail(fabricOvenTest_Detail_Result, userID);
                 }
+
+                
             }
             catch (Exception ex)
             {
                 baseResult.Result = false;
-                baseResult.ErrorMessage = ex.ToString();
+                baseResult.ErrorMessage = ex.Message.ToString();
             }
 
             return baseResult;
@@ -250,7 +257,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 baseResult.Result = false;
-                baseResult.ErrorMessage = ex.ToString();
+                baseResult.ErrorMessage = ex.Message.ToString();
             }
 
             return baseResult;
@@ -774,7 +781,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 baseResult.Result = false;
-                baseResult.ErrorMessage = ex.ToString();
+                baseResult.ErrorMessage = ex.Message.ToString();
             }
 
             return baseResult;

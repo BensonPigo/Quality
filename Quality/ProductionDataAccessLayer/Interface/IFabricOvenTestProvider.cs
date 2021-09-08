@@ -17,7 +17,7 @@ namespace ProductionDataAccessLayer.Interface
 
         void SaveFabricOvenTestMain(FabricOvenTest_Main fabricOvenTest_Main);
 
-        void AddFabricOvenTestDetail(FabricOvenTest_Detail_Result fabricOvenTest_Detail_Result, string userID);
+        void AddFabricOvenTestDetail(FabricOvenTest_Detail_Result fabricOvenTest_Detail_Result, string userID, out string TestNo);
 
         void EditFabricOvenTestDetail(FabricOvenTest_Detail_Result fabricOvenTest_Detail_Result, string userID);
 

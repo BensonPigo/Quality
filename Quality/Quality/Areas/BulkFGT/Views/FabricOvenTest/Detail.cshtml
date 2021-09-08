@@ -321,7 +321,7 @@
                                             @Html.TextBoxFor(o => Model.Details[i].SubmitDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
                                         </td>
                                         <td style="width:10vw;">
-                                            @Html.TextBoxFor(o => Model.Details[i].OvenGroup, "", "")
+                                            @Html.TextBoxFor(o => Model.Details[i].OvenGroup, "", new { @maxlength = "2" })
                                         </td>
                                         <td style="width:11vw;">
                                             <div style="width:10vw;">
@@ -444,7 +444,7 @@
     $(function () {
         msg = new MessagerAlert();
         EditMode = ('@ViewBag.EditMode' == 'True');
-        @Html.Raw(ViewBag.ErrorMessage);
+        @Html.Raw(ViewBag.ErrorMessage)
         IsEditModeChange();
     });
 

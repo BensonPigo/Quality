@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DatabaseObject.ResultModel
 {
-    public class FabricOvenTest_Result
+    public class FabricOvenTest_Result : BaseResult
     {
         public FabricOvenTest_Main Main { get; set; }
         public List<FabricOvenTest_Detail> Details { get; set; } = new List<FabricOvenTest_Detail>();
