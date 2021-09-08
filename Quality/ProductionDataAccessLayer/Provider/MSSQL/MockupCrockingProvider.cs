@@ -426,12 +426,12 @@ SELECT
         ,[Artwork] = ArtworkTypeID
         ,[Remark] = Remark
         ,[T1 Subcon Name] = Concat(T1Subcon, '-' + (select Abb from LocalSupp where ID = T1Subcon))
-        ,[Test Date] = TestDate
-        ,[Received Date] = ReceivedDate
-        ,[Released Date] = ReleasedDate
+        ,[Test Date] = format(TestDate,'yyyy/MM/dd')
+        ,[Received Date] = format(ReceivedDate,'yyyy/MM/dd')
+        ,[Released Date] = format(ReleasedDate,'yyyy/MM/dd')
         ,[Result] = Result
-        ,[Technician] = Concat(Technician, '-', Technician_ne.Name, ' ', Technician_ne.ExtNo)
-        ,[MR] = Concat(MR, '-', MR_ne.Name, ' ', MR_ne.ExtNo)
+        ,[Technician] = Concat(Technician, '-', Technician_ne.Name, ' Ext.', Technician_ne.ExtNo)
+        ,[MR] = Concat(MR, '-', MR_ne.Name, ' Ext.', MR_ne.ExtNo)
 FROM MockupCrocking m
 outer apply (select Name, ExtNo from pass1 p inner join Technician t on t.ID = p.ID where t.id = m.Technician) Technician_ne
 outer apply (select Name, ExtNo from pass1 where id = m.MR) MR_ne

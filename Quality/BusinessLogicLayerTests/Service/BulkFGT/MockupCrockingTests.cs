@@ -222,5 +222,26 @@ namespace BusinessLogicLayer.Service.Tests
                 Assert.Fail(ex.ToString());
             }
         }
+
+        [TestMethod()]
+        public void FailSendMail()
+        {
+            try
+            {
+                IMockupCrockingService _MockupCrockingService = new MockupCrockingService();
+                MockupFailMail_Request MockupCrocking = new MockupFailMail_Request()
+                {
+                    ReportNo = "T1",
+                    To = "jeff.yeh@sportscity.com.tw",
+                };
+
+                var mockupCrocking = _MockupCrockingService.FailSendMail(MockupCrocking);
+                Assert.IsTrue(true);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.ToString());
+            }
+        }
     }
 }

@@ -197,7 +197,7 @@ namespace BusinessLogicLayer.Service.Tests
                     MockupOven_Detail = new System.Collections.Generic.List<MockupOven_Detail_ViewModel>()
                     {
                         new MockupOven_Detail_ViewModel(){ReportNo = "T1",TypeofPrint="TTTT8",Design="d100",ArtworkColor="0001",FabricRefNo="RF",AccessoryRefno="AF",FabricColor  = "FCC",Result="Pass",Remark="RRR7K",EditName = "SCIMIS",Ukey = 18653},
-                        //new MockupOven_Detail_ViewModel(){ReportNo = "T1",TypeofPrint="TTT29",Design="d200",ArtworkColor="0001",FabricRefNo="RF",AccessoryRefno="AF",FabricColor  = "FCC",Result="Pass",Remark="2RRRK",EditName = "SCIMIS",Ukey=18662},
+                        new MockupOven_Detail_ViewModel(){ReportNo = "T1",TypeofPrint="TTT29",Design="d200",ArtworkColor="0001",FabricRefNo="RF",AccessoryRefno="AF",FabricColor  = "FCC",Result="Fail",Remark="2RRRK",EditName = "SCIMIS",Ukey=18662},
                     }
                     //ReportNo = "T1",
                     //POID = "up",
@@ -292,6 +292,27 @@ namespace BusinessLogicLayer.Service.Tests
                 //{ BrandID = "ADIDAS", SeasonID = "20SS", StyleID = "S201CSPM108", Article = "FL0237" };
                 var mockupOven = _MockupOvenService.GetMockupOven(MockupOven);
                 _MockupOvenService.GetPDF(mockupOven, true);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.ToString());
+            }
+        }
+
+        [TestMethod()]
+        public void FailSendMail()
+        {
+            try
+            {
+                IMockupOvenService _MockupOvenService = new MockupOvenService();
+                MockupFailMail_Request MockupOven = new MockupFailMail_Request()
+                {
+                    ReportNo = "T1",
+                    To = "jeff.yeh@sportscity.com.tw",
+                };
+
+                var mockupOven = _MockupOvenService.FailSendMail(MockupOven);
+                Assert.IsTrue(true);
             }
             catch (Exception ex)
             {
