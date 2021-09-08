@@ -346,7 +346,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
-        public JsonResult FailMain(string ID, string No, string TO, string CC)
+        public JsonResult FailMail(string ID, string No, string TO, string CC)
         {
             List<Quality_MailGroup> mailGroups = new List<Quality_MailGroup>() {
                 new Quality_MailGroup() { ToAddress = TO, CcAddress = CC, }

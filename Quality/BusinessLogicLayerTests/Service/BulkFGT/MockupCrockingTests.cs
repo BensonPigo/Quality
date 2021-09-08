@@ -114,8 +114,8 @@ namespace BusinessLogicLayer.Service.Tests
                     AddName = "SCIMIS",
                     MockupCrocking_Detail = new System.Collections.Generic.List<MockupCrocking_Detail_ViewModel>()
                     {
-                        new MockupCrocking_Detail_ViewModel(){ReportNo = "T1",Design="d100",ArtworkColor="0001",FabricRefNo="RF",FabricColor  = "FCC",Result="Pass",Remark="RRRK",EditName = "SCIMIS"},
-                        new MockupCrocking_Detail_ViewModel(){ReportNo = "T1",Design="d200",ArtworkColor="0001",FabricRefNo="RF",FabricColor  = "FCC",Result="Pass",Remark="2RRRK",EditName = "SCIMIS"},
+                        new MockupCrocking_Detail_ViewModel(){ReportNo = "T1",Design="d100",ArtworkColor="0001",FabricRefNo="RF",FabricColor  = "FCC",Result="Pass",Remark="RRRK",EditName = "SCIMIS",WetScale="1",DryScale="2-2"},
+                        new MockupCrocking_Detail_ViewModel(){ReportNo = "T1",Design="d200",ArtworkColor="0001",FabricRefNo="RF",FabricColor  = "FCC",Result="Pass",Remark="2RRRK",EditName = "SCIMIS",WetScale="1",DryScale="2-2"},
                     }
                 };
 
@@ -154,8 +154,8 @@ namespace BusinessLogicLayer.Service.Tests
                     EditName = "up",
                     MockupCrocking_Detail = new System.Collections.Generic.List<MockupCrocking_Detail_ViewModel>()
                     {
-                        new MockupCrocking_Detail_ViewModel(){Design="up",ArtworkColor="up",FabricRefNo="up",FabricColor  = "up",Result="up",Remark="up",EditName = "up",Ukey=18617},
-                        new MockupCrocking_Detail_ViewModel(){Design="up",ArtworkColor="up",FabricRefNo="up",FabricColor  = "up",Result="up",Remark="up",EditName = "up",Ukey=18618},
+                        new MockupCrocking_Detail_ViewModel(){Design="up",ArtworkColor="up",FabricRefNo="up",FabricColor  = "up",Result="up",Remark="up",EditName = "up",Ukey=76},
+                        new MockupCrocking_Detail_ViewModel(){Design="up",ArtworkColor="up",FabricRefNo="up",FabricColor  = "up",Result="up",Remark="up",EditName = "up",Ukey=77},
                     }
                 };
 
@@ -179,8 +179,10 @@ namespace BusinessLogicLayer.Service.Tests
                     ReportNo = "T1",
                     MockupCrocking_Detail = new System.Collections.Generic.List<MockupCrocking_Detail_ViewModel>()
                     {
-                        new MockupCrocking_Detail_ViewModel(){Ukey=18617},
-                        new MockupCrocking_Detail_ViewModel(){Ukey=21861},
+                        new MockupCrocking_Detail_ViewModel(){Ukey=72},
+                        new MockupCrocking_Detail_ViewModel(){Ukey=73},
+                        new MockupCrocking_Detail_ViewModel(){Ukey=74},
+                        new MockupCrocking_Detail_ViewModel(){Ukey=75},
                     }
                 };
 
@@ -203,7 +205,7 @@ namespace BusinessLogicLayer.Service.Tests
                 System.Collections.Generic.List<MockupCrocking_Detail_ViewModel> MockupCrocking_Detail = new System.Collections.Generic.List<MockupCrocking_Detail_ViewModel>()
                 {
                     //new MockupCrocking_Detail_ViewModel(){Ukey=21858},
-                    new MockupCrocking_Detail_ViewModel(){Ukey=18618},
+                    new MockupCrocking_Detail_ViewModel(){Ukey=77},
                 };
 
                 var mockupCrocking = _MockupCrockingService.DeleteDetail(MockupCrocking_Detail);

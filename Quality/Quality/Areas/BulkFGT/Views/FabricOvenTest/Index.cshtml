@@ -253,7 +253,9 @@
                     <table class="DetailTable DataTable" style="text-align:center;">
                         <thead style="text-align: center">
                             @{
-                                <tr>
+                                string trClass = Model.Details == null || Model.Details.Count == 0 ? "display-None" : "";
+
+                                <tr class="@trClass">
                                     <th><h4>No. of Test</h4></th>
                                     <th><h4>Test Date</h4></th>
                                     <th><h4>Article</h4></th>
@@ -279,7 +281,7 @@
                                             aHref = Url.Action("Detail", "FabricOvenTest", new { POID = Model.Main.POID, TestNo = Model.Details[i].TestNo,  EditMode = false});
                                         }
 
-                                        <a href="@aHref" idx="@Model.Main.POID ," idv="@Model.Details[i].TestNo">
+                                        <a href="@aHref" idx="@Model.Main.POID ," idv="@Model.Details[i].TestNo" class="TestNo">
                                             @Html.DisplayFor(o => Model.Details[i].TestNo, "", "")
                                         </a>
                                     </td>
@@ -313,7 +315,7 @@
                                         <img class="detailEdit" style="@showPic" onclick="DetailView('@Model.Details[i].TestNo')" src="~/Image/Icon/Edit.png" width="30" />
                                     </td>
                                     <td style="width:10vw;">
-                                        <img class="detailDelete"  style="@showPic" onclick="DetailDelete('@Model.Details[i].TestNo')" src="~/Image/Icon/Delete.png" width="30" />
+                                        <img class="detailDelete"  style="@showPic" onclick="DetailDelete('@Model.Main.POID','@Model.Details[i].TestNo')" src="~/Image/Icon/Delete.png" width="30" />
                                     </td>
                                 </tr>
                             }
@@ -334,8 +336,6 @@
         IsEditModeChange();
 
     });
-
-
 
     function IsEditModeChange() {
         EditModeButtionBind();
@@ -398,35 +398,13 @@
                 POID: $('#Main_POID').val(),
                 Remark: $('#Main_Remark').val()
             };
-            var Details = null;
-            var POID = $('#Main_POID').val();
-            var Remark = $('#Main_Remark').val();
             SaveData(main);
         });
-
-        function SaveData(main) {
-        $.ajax({
-            url: "@Url.Action("SaveMaster", "FabricOvenTest", new { Area = "BulkFGT" })",
-            type: 'POST',
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify({ main: main, }),
-            async: false,
-            success: function (data) {
-
-
-                location.href = '@Url.Action("IndexBack")?POID=' + document.getElementById("Main_POID").value.trim();
-
-            },
-            error: function (xhr, ajaxOptions, thrownError) {
-                console.log(xhr.responseText);
-            }
-        });
-    }
 
         $('#Undo').on('click', function () {
             EditMode = false;
             IsEditModeChange();
-       location.href = '@Url.Action("IndexBack")?POID=' + document.getElementById("Main_POID").value.trim();
+            location.href = '@Url.Action("IndexBack")?POID=' + document.getElementById("Main_POID").value.trim();
         });
 
 
@@ -436,20 +414,56 @@
             }
             location.href = '@Url.Action("Detail")?POID=' + document.getElementById("Main_POID").value.trim() + '&TestNo=&EditMode=True';
         });
+    }
 
-
+    function SaveData(main) {
+        $.ajax({
+            url: "@Url.Action("SaveMaster", "FabricOvenTest", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ main: main, }),
+            async: false,
+            success: function (data) {
+                if (data.Result) {
+                    msg.WithSuccesCheck("Success", function () {
+                        location.href = '@Url.Action("IndexBack")?POID=' + document.getElementById("Main_POID").value.trim();
+                    });
+                }
+                else {
+                    msg.WithError(data.ErrorMessage)
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
     }
 
     function DetailView(TestNo) {
         location.href = '@Url.Action("Detail")?POID=' + document.getElementById("Main_POID").value.trim() + '&TestNo=' + TestNo + '&EditMode=True' ;
     }
 
-
-    function DetailDelete(TestNo) {
-
-                msg.WithConfirm('Do you want to delete the data ?',
-                function ()
-                {
+    function DetailDelete(ID, TestNo) {
+        msg.WithConfirm('Do you want to delete the data ?',
+                function ()  {
+                    $.ajax({
+                        url: "@Url.Action("MainDetailDelete", "FabricOvenTest", new { Area = "BulkFGT" })",
+                        type: 'POST',
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify({ ID: ID, No: TestNo }),
+                        async: false,
+                        success: function (data) {
+                            if (data.Result) {
+                                location.reload();
+                            }
+                            else {
+                                msg.WithError(data.ErrorMessage);
+                            }
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            console.log(xhr.responseText);
+                        }
+                    });
                 }, null);
 
             }

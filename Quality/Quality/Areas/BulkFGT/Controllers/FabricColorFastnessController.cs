@@ -84,7 +84,6 @@ namespace Quality.Areas.BulkFGT.Controllers
             List<string> Scales = _FabricColorFastness_Service.Get_Scales();
             List<SelectListItem> ScalesList = new SetListItem().ItemListBinding(Scales);
 
-
             ViewBag.Temperature_List = FabricColorFastnessModel.Temperature_List;
             ViewBag.Cycle_List = FabricColorFastnessModel.Cycle_List;
             ViewBag.Detergent_List = FabricColorFastnessModel.Detergent_List;
