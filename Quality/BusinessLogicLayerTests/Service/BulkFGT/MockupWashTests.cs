@@ -263,5 +263,27 @@ namespace BusinessLogicLayer.Service.Tests
                 Assert.Fail(ex.ToString());
             }
         }
+
+        [TestMethod()]
+        public void FailSendMail()
+        {
+            try
+            {
+                IMockupWashService _MockupWashService = new MockupWashService();
+                MockupFailMail_Request MockupWash = new MockupFailMail_Request()
+                {
+                    ReportNo = "T1",
+                    To = "jeff.yeh@sportscity.com.tw",
+                };
+
+                var mockupWash = _MockupWashService.FailSendMail(MockupWash);
+                Assert.IsTrue(true);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.ToString());
+            }
+
+        }
     }
 }

@@ -457,5 +457,16 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
+        public SendMail_Result FailSendMail(MockupFailMail_Request mail_Request)
+        {
+            _MockupWashProvider = new MockupWashProvider(Common.ProductionDataAccessLayer);
+            string mailBody = MailTools.DataTableChangeHtml(_MockupWashProvider.GetMockupWashFailMailContentData(mail_Request.ReportNo));
+            SendMail_Request sendMail_Request = new SendMail_Request();
+            sendMail_Request.Subject = "Mockup Wash – Test Fail";
+            sendMail_Request.To = mail_Request.To;
+            sendMail_Request.CC = mail_Request.CC;
+            sendMail_Request.Body = mailBody;
+            return MailTools.SendMail(sendMail_Request);
+        }
     }
 }

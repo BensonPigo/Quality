@@ -352,6 +352,38 @@ outer apply (select Name from Pass1 where id = m.EditName) EditName
             SbSql.Append("Order by ReportNo");
             return ExecuteList<MockupOven_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
         }
+
+        public DataTable GetMockupOvenFailMailContentData(string ReportNo)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            objParameter.Add("@ReportNo", DbType.String, ReportNo);
+
+            SbSql.Append($@"
+SELECT 
+         [Report No] = ReportNo
+        ,[SP#] = POID
+        ,[Style] = StyleID
+        ,[Brand] = BrandID
+        ,[Season] = SeasonID
+        ,[Article] = Article
+        ,[Artwork] = ArtworkTypeID
+        ,[Remark] = Remark
+        ,[T1 Subcon Name] = Concat(T1Subcon, '-' + (select Abb from LocalSupp where ID = T1Subcon))
+        ,[T2 Supplier Name] = Concat(T2Supplier, '-' + (select top 1 Abb from (select Abb from LocalSupp where ID = m.T2Supplier and Junk = 0 union select AbbEN from Supp where ID = m.T2Supplier and Junk = 0)x))
+        ,[Test Date] = TestDate
+        ,[Received Date] = ReceivedDate
+        ,[Released Date] = ReleasedDate
+        ,[Result] = Result
+        ,[Technician] = Concat(Technician, '-', Technician_ne.Name, ' ', Technician_ne.ExtNo)
+        ,[MR] = Concat(MR, '-', MR_ne.Name, ' ', MR_ne.ExtNo)
+FROM MockupOven m
+outer apply (select Name, ExtNo from pass1 p inner join Technician t on t.ID = p.ID where t.id = m.Technician) Technician_ne
+outer apply (select Name, ExtNo from pass1 where id = m.MR) MR_ne
+where ReportNo = @ReportNo
+");
+            return ExecuteDataTableByServiceConn(CommandType.Text, SbSql.ToString(), objParameter);
+        }
         #endregion
     }
 }
