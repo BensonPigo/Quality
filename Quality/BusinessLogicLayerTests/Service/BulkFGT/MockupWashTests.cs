@@ -283,7 +283,6 @@ namespace BusinessLogicLayer.Service.Tests
             {
                 Assert.Fail(ex.ToString());
             }
-
         }
     }
 }

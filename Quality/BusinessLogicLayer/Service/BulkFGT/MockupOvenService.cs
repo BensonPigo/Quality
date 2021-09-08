@@ -316,6 +316,15 @@ namespace BusinessLogicLayer.Service
             int count;
             try
             {
+                if(MockupOven.MockupOven_Detail.Any(a  => a.Result.ToUpper() == "Fail".ToUpper()))
+                {
+                    MockupOven.Result = "Fail";
+                }
+                else
+                {
+                    MockupOven.Result = "Pass";
+                }
+
                 count = _MockupOvenProvider.Create(MockupOven);
                 if (count == 0)
                 {
@@ -353,25 +362,21 @@ namespace BusinessLogicLayer.Service
 
         public BaseResult Update(MockupOven_ViewModel MockupOven)
         {
+            if (MockupOven.MockupOven_Detail.Any(a => a.Result.ToUpper() == "Fail".ToUpper()))
+            {
+                MockupOven.Result = "Fail";
+            }
+            else
+            {
+                MockupOven.Result = "Pass";
+            }
+
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             _MockupOvenProvider = new MockupOvenProvider(_ISQLDataTransaction);
-            _MockupOvenDetailProvider = new MockupOvenDetailProvider(_ISQLDataTransaction);
-            int count;
             try
             {
-                count = _MockupOvenProvider.Update(MockupOven);
-                foreach (var MockupOven_Detail in MockupOven.MockupOven_Detail)
-                {
-                    count = _MockupOvenDetailProvider.Update(MockupOven_Detail);
-                    if (count == 0)
-                    {
-                        result.Result = false;
-                        result.ErrorMessage = "Update MockupOven_Detail Fail. 0 Count";
-                        return result;
-                    }
-                }
-
+                _MockupOvenProvider.Update(MockupOven);
                 result.Result = true;
                 _ISQLDataTransaction.Commit();
             }

@@ -259,6 +259,15 @@ namespace BusinessLogicLayer.Service
 
         public BaseResult Create(MockupCrocking_ViewModel MockupCrocking)
         {
+            if (MockupCrocking.MockupCrocking_Detail.Any(a => a.Result.ToUpper() == "Fail".ToUpper()))
+            {
+                MockupCrocking.Result = "Fail";
+            }
+            else
+            {
+                MockupCrocking.Result = "Pass";
+            }
+
             MockupCrocking.Type = "B";
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
@@ -304,25 +313,22 @@ namespace BusinessLogicLayer.Service
 
         public BaseResult Update(MockupCrocking_ViewModel MockupCrocking)
         {
+            if (MockupCrocking.MockupCrocking_Detail.Any(a => a.Result.ToUpper() == "Fail".ToUpper()))
+            {
+                MockupCrocking.Result = "Fail";
+            }
+            else
+            {
+                MockupCrocking.Result = "Pass";
+            }
+
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             _MockupCrockingProvider = new MockupCrockingProvider(_ISQLDataTransaction);
             _MockupCrockingDetailProvider = new MockupCrockingDetailProvider(_ISQLDataTransaction);
-            int count;
             try
             {
-                count = _MockupCrockingProvider.Update(MockupCrocking);
-                foreach (var MockupCrocking_Detail in MockupCrocking.MockupCrocking_Detail)
-                {
-                    count = _MockupCrockingDetailProvider.Update(MockupCrocking_Detail);
-                    if (count == 0)
-                    {
-                        result.Result = false;
-                        result.ErrorMessage = "Update MockupCrocking_Detail Fail. 0 Count";
-                        return result;
-                    }
-                }
-
+                _MockupCrockingProvider.Update(MockupCrocking);
                 result.Result = true;
                 _ISQLDataTransaction.Commit();
             }
