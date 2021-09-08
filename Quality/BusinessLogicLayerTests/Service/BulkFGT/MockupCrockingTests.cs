@@ -174,18 +174,7 @@ namespace BusinessLogicLayer.Service.Tests
             try
             {
                 IMockupCrockingService _MockupCrockingService = new MockupCrockingService();
-                MockupCrocking_ViewModel MockupCrocking = new MockupCrocking_ViewModel()
-                {
-                    ReportNo = "T1",
-                    MockupCrocking_Detail = new System.Collections.Generic.List<MockupCrocking_Detail_ViewModel>()
-                    {
-                        new MockupCrocking_Detail_ViewModel(){Ukey=72},
-                        new MockupCrocking_Detail_ViewModel(){Ukey=73},
-                        new MockupCrocking_Detail_ViewModel(){Ukey=74},
-                        new MockupCrocking_Detail_ViewModel(){Ukey=75},
-                    }
-                };
-
+                MockupCrocking_ViewModel MockupCrocking = new MockupCrocking_ViewModel() { ReportNo = "T1" };
                 var mockupCrocking = _MockupCrockingService.Delete(MockupCrocking);
                 Assert.IsTrue(true);
             }
@@ -193,7 +182,6 @@ namespace BusinessLogicLayer.Service.Tests
             {
                 Assert.Fail(ex.ToString());
             }
-
         }
 
         [TestMethod()]

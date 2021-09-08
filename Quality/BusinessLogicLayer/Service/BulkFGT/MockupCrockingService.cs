@@ -277,6 +277,7 @@ namespace BusinessLogicLayer.Service
 
                 foreach (var MockupCrocking_Detail in MockupCrocking.MockupCrocking_Detail)
                 {
+                    MockupCrocking_Detail.ReportNo = MockupCrocking.ReportNo;
                     count = _MockupCrockingDetailProvider.Create(MockupCrocking_Detail);
                     if (count == 0)
                     {
@@ -343,15 +344,10 @@ namespace BusinessLogicLayer.Service
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             _MockupCrockingProvider = new MockupCrockingProvider(_ISQLDataTransaction);
             _MockupCrockingDetailProvider = new MockupCrockingDetailProvider(_ISQLDataTransaction);
-            int count;
             try
             {
-                count = _MockupCrockingProvider.Delete(MockupCrocking);
-                foreach (var MockupCrocking_Detail in MockupCrocking.MockupCrocking_Detail)
-                {
-                    count = _MockupCrockingDetailProvider.Delete(MockupCrocking_Detail);
-                }
-
+                _MockupCrockingProvider.Delete(MockupCrocking);
+                _MockupCrockingDetailProvider.Delete(new MockupCrocking_Detail_ViewModel() { ReportNo = MockupCrocking.ReportNo });
                 result.Result = true;
                 _ISQLDataTransaction.Commit();
             }
@@ -376,6 +372,7 @@ namespace BusinessLogicLayer.Service
             {
                 foreach (var MockupCrocking_Detail in MockupCrockingDetail)
                 {
+                    MockupCrocking_Detail.ReportNo = null;
                     _MockupCrockingDetailProvider.Delete(MockupCrocking_Detail);
                 }
 
