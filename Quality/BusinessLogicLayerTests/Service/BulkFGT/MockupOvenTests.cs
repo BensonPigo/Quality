@@ -217,16 +217,7 @@ namespace BusinessLogicLayer.Service.Tests
             try
             {
                 IMockupOvenService _MockupOvenService = new MockupOvenService();
-                MockupOven_ViewModel MockupOven = new MockupOven_ViewModel()
-                {
-                    ReportNo = "T1",
-                    MockupOven_Detail = new System.Collections.Generic.List<MockupOven_Detail_ViewModel>()
-                    {
-                        new MockupOven_Detail_ViewModel(){Ukey=18617},
-                        new MockupOven_Detail_ViewModel(){Ukey=21861},
-                    }
-                };
-
+                MockupOven_ViewModel MockupOven = new MockupOven_ViewModel() { ReportNo = "T1" };
                 var mockupOven = _MockupOvenService.Delete(MockupOven);
                 Assert.IsTrue(true);
             }

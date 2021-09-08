@@ -336,6 +336,7 @@ namespace BusinessLogicLayer.Service
 
                 foreach (var MockupWash_Detail in MockupWash.MockupWash_Detail)
                 {
+                    MockupWash_Detail.ReportNo = MockupWash.ReportNo;
                     count = _MockupWashDetailProvider.Create(MockupWash_Detail);
                     if (count == 0)
                     {
@@ -409,15 +410,10 @@ namespace BusinessLogicLayer.Service
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             _MockupWashProvider = new MockupWashProvider(_ISQLDataTransaction);
             _MockupWashDetailProvider = new MockupWashDetailProvider(_ISQLDataTransaction);
-            int count;
             try
             {
-                count = _MockupWashProvider.Delete(MockupWash);
-                foreach (var MockupWash_Detail in MockupWash.MockupWash_Detail)
-                {
-                    count = _MockupWashDetailProvider.Delete(MockupWash_Detail);
-                }
-
+                _MockupWashProvider.Delete(MockupWash);
+                _MockupWashDetailProvider.Delete(new MockupWash_Detail_ViewModel() { ReportNo = MockupWash.ReportNo });
                 result.Result = true;
                 _ISQLDataTransaction.Commit();
             }
@@ -442,6 +438,7 @@ namespace BusinessLogicLayer.Service
             {
                 foreach (var MockupWash_Detail in MockupWashDetail)
                 {
+                    MockupWash_Detail.ReportNo = null;
                     _MockupWashDetailProvider.Delete(MockupWash_Detail);
                 }
 
@@ -460,5 +457,16 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
+        public SendMail_Result FailSendMail(MockupFailMail_Request mail_Request)
+        {
+            _MockupWashProvider = new MockupWashProvider(Common.ProductionDataAccessLayer);
+            string mailBody = MailTools.DataTableChangeHtml(_MockupWashProvider.GetMockupWashFailMailContentData(mail_Request.ReportNo));
+            SendMail_Request sendMail_Request = new SendMail_Request();
+            sendMail_Request.Subject = "Mockup Wash – Test Fail";
+            sendMail_Request.To = mail_Request.To;
+            sendMail_Request.CC = mail_Request.CC;
+            sendMail_Request.Body = mailBody;
+            return MailTools.SendMail(sendMail_Request);
+        }
     }
 }

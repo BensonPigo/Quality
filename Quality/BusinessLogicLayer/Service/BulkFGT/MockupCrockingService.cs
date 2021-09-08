@@ -277,6 +277,7 @@ namespace BusinessLogicLayer.Service
 
                 foreach (var MockupCrocking_Detail in MockupCrocking.MockupCrocking_Detail)
                 {
+                    MockupCrocking_Detail.ReportNo = MockupCrocking.ReportNo;
                     count = _MockupCrockingDetailProvider.Create(MockupCrocking_Detail);
                     if (count == 0)
                     {
@@ -343,15 +344,10 @@ namespace BusinessLogicLayer.Service
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             _MockupCrockingProvider = new MockupCrockingProvider(_ISQLDataTransaction);
             _MockupCrockingDetailProvider = new MockupCrockingDetailProvider(_ISQLDataTransaction);
-            int count;
             try
             {
-                count = _MockupCrockingProvider.Delete(MockupCrocking);
-                foreach (var MockupCrocking_Detail in MockupCrocking.MockupCrocking_Detail)
-                {
-                    count = _MockupCrockingDetailProvider.Delete(MockupCrocking_Detail);
-                }
-
+                _MockupCrockingProvider.Delete(MockupCrocking);
+                _MockupCrockingDetailProvider.Delete(new MockupCrocking_Detail_ViewModel() { ReportNo = MockupCrocking.ReportNo });
                 result.Result = true;
                 _ISQLDataTransaction.Commit();
             }
@@ -376,6 +372,7 @@ namespace BusinessLogicLayer.Service
             {
                 foreach (var MockupCrocking_Detail in MockupCrockingDetail)
                 {
+                    MockupCrocking_Detail.ReportNo = null;
                     _MockupCrockingDetailProvider.Delete(MockupCrocking_Detail);
                 }
 
@@ -392,6 +389,18 @@ namespace BusinessLogicLayer.Service
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
             return result;
+        }
+
+        public SendMail_Result FailSendMail(MockupFailMail_Request mail_Request)
+        {
+            _MockupCrockingProvider = new MockupCrockingProvider(Common.ProductionDataAccessLayer);
+            string mailBody = MailTools.DataTableChangeHtml(_MockupCrockingProvider.GetMockupCrockingFailMailContentData(mail_Request.ReportNo));
+            SendMail_Request sendMail_Request = new SendMail_Request();
+            sendMail_Request.Subject = "Mockup Crocking – Test Fail";
+            sendMail_Request.To = mail_Request.To;
+            sendMail_Request.CC = mail_Request.CC;
+            sendMail_Request.Body = mailBody;
+            return MailTools.SendMail(sendMail_Request);
         }
     }
 }

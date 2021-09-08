@@ -1,6 +1,7 @@
 using DatabaseObject.ProductionDB;
 using DatabaseObject.ViewModel.BulkFGT;
 using System.Collections.Generic;
+using System.Data;
 using static MICS.DataAccessLayer.Provider.MSSQL.ColorFastnessDetailProvider;
 
 namespace MICS.DataAccessLayer.Interface
@@ -16,5 +17,7 @@ namespace MICS.DataAccessLayer.Interface
         bool Save_ColorFastness(Fabric_ColorFastness_Detail_ViewModel source, string Mdivision, string UserID);
 
         bool Delete_ColorFastness_Detail(string ID, List<Fabric_ColorFastness_Detail_Result> source);
+
+        DataTable Get_SubmitDate(string ID);
     }
 }

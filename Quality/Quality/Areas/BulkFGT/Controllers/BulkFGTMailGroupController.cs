@@ -26,7 +26,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         // GET: BulkFGT/BulkFGTMailGroup
         public ActionResult Index()
         {
-            List<Quality_MailGroup> quality_MailGroups = _BulkFGTMailGroup_Service.MailGroupGet(new Quality_MailGroup() { Type = "BulkFGT", FactoryID = this.FactoryID }).ToList();
+            List<Quality_MailGroup> quality_MailGroups = _BulkFGTMailGroup_Service.MailGroupGet(new Quality_MailGroup() { Type = "BulkFGT" }).ToList();
             List<SelectListItem> FactoryList = new SetListItem().ItemListBinding(this.Factorys);
             ViewBag.FactoryList = FactoryList; 
             return View(quality_MailGroups);
@@ -35,6 +35,11 @@ namespace Quality.Areas.BulkFGT.Controllers
         [HttpPost]
         public ActionResult GetDetail(string Factory, string GroupName)
         {
+            if (string.IsNullOrEmpty(Factory) && string.IsNullOrEmpty(GroupName))
+            {
+                return Json(new Quality_MailGroup());
+            }
+
             Quality_MailGroup quality_MailGroups = _BulkFGTMailGroup_Service.MailGroupGet(new Quality_MailGroup() { Type = "BulkFGT", FactoryID = Factory, GroupName = GroupName }).ToList().FirstOrDefault();
             return Json(quality_MailGroups);
         }

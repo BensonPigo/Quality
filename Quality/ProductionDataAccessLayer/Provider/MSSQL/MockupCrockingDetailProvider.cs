@@ -71,15 +71,15 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("VALUES" + Environment.NewLine);
             SbSql.Append("(" + Environment.NewLine);
             SbSql.Append("         @ReportNo"); objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
-            SbSql.Append("        ,@Design"); objParameter.Add("@Design", DbType.String, Item.Design);
-            SbSql.Append("        ,@ArtworkColor"); objParameter.Add("@ArtworkColor", DbType.String, Item.ArtworkColor);
-            SbSql.Append("        ,@FabricRefNo"); objParameter.Add("@FabricRefNo", DbType.String, Item.FabricRefNo);
-            SbSql.Append("        ,@FabricColor"); objParameter.Add("@FabricColor", DbType.String, Item.FabricColor);
-            SbSql.Append("        ,@DryScale"); objParameter.Add("@DryScale", DbType.String, Item.DryScale);
-            SbSql.Append("        ,@WetScale"); objParameter.Add("@WetScale", DbType.String, Item.WetScale);
-            SbSql.Append("        ,@Result"); objParameter.Add("@Result", DbType.String, Item.Result);
-            SbSql.Append("        ,@Remark"); objParameter.Add("@Remark", DbType.String, Item.Remark);
-            SbSql.Append("        ,@EditName"); objParameter.Add("@EditName", DbType.String, Item.EditName);
+            SbSql.Append("        ,@Design"); objParameter.Add("@Design", DbType.String, Item.Design ?? string.Empty);
+            SbSql.Append("        ,@ArtworkColor"); objParameter.Add("@ArtworkColor", DbType.String, Item.ArtworkColor ?? string.Empty);
+            SbSql.Append("        ,@FabricRefNo"); objParameter.Add("@FabricRefNo", DbType.String, Item.FabricRefNo ?? string.Empty);
+            SbSql.Append("        ,@FabricColor"); objParameter.Add("@FabricColor", DbType.String, Item.FabricColor ?? string.Empty);
+            SbSql.Append("        ,@DryScale"); objParameter.Add("@DryScale", DbType.String, Item.DryScale ?? string.Empty);
+            SbSql.Append("        ,@WetScale"); objParameter.Add("@WetScale", DbType.String, Item.WetScale ?? string.Empty);
+            SbSql.Append("        ,@Result"); objParameter.Add("@Result", DbType.String, Item.Result ?? string.Empty);
+            SbSql.Append("        ,@Remark"); objParameter.Add("@Remark", DbType.String, Item.Remark ?? string.Empty);
+            SbSql.Append("        ,@EditName"); objParameter.Add("@EditName", DbType.String, Item.EditName ?? string.Empty);
             SbSql.Append("        ,GETDATE()");
             SbSql.Append(")" + Environment.NewLine);
 
@@ -93,6 +93,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SQLParameterCollection objParameter = new SQLParameterCollection();
             SbSql.Append("UPDATE [MockupCrocking_Detail]" + Environment.NewLine);
             SbSql.Append("SET EditDate=GETDATE()" + Environment.NewLine);
+            if (Item.EditName != null) { SbSql.Append(",EditName=@EditName" + Environment.NewLine); objParameter.Add("@EditName", DbType.String, Item.EditName); }
             if (Item.Design != null) { SbSql.Append(",Design=@Design" + Environment.NewLine); objParameter.Add("@Design", DbType.String, Item.Design); }
             if (Item.ArtworkColor != null) { SbSql.Append(",ArtworkColor=@ArtworkColor" + Environment.NewLine); objParameter.Add("@ArtworkColor", DbType.String, Item.ArtworkColor); }
             if (Item.FabricRefNo != null) { SbSql.Append(",FabricRefNo=@FabricRefNo" + Environment.NewLine); objParameter.Add("@FabricRefNo", DbType.String, Item.FabricRefNo); }
@@ -101,7 +102,6 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             if (Item.WetScale != null) { SbSql.Append(",WetScale=@WetScale" + Environment.NewLine); objParameter.Add("@WetScale", DbType.String, Item.WetScale); }
             if (Item.Result != null) { SbSql.Append(",Result=@Result" + Environment.NewLine); objParameter.Add("@Result", DbType.String, Item.Result); }
             if (Item.Remark != null) { SbSql.Append(",Remark=@Remark" + Environment.NewLine); objParameter.Add("@Remark", DbType.String, Item.Remark); }
-            if (Item.EditName != null) { SbSql.Append(",EditName=@EditName" + Environment.NewLine); objParameter.Add("@EditName", DbType.String, Item.EditName); }
             SbSql.Append("WHERE 1 = 1" + Environment.NewLine);
             SbSql.Append("And Ukey = @Ukey" + Environment.NewLine);
             objParameter.Add("@Ukey", DbType.Int64, Item.Ukey);
@@ -115,8 +115,16 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
             SbSql.Append("DELETE FROM [MockupCrocking_Detail]" + Environment.NewLine);
-            SbSql.Append("Where Ukey = @Ukey" + Environment.NewLine);
-            objParameter.Add("@Ukey", DbType.Int64, Item.Ukey);
+            if (string.IsNullOrEmpty(Item.ReportNo))
+            {
+                SbSql.Append("Where Ukey = @Ukey" + Environment.NewLine);
+                objParameter.Add("@Ukey", DbType.Int64, Item.Ukey);
+            }
+            else
+            {
+                SbSql.Append("Where ReportNo = @ReportNo" + Environment.NewLine);
+                objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
+            }
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
