@@ -1,4 +1,5 @@
 ﻿using DatabaseObject.ProductionDB;
+using DatabaseObject.RequestModel;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
@@ -62,6 +63,8 @@ namespace DatabaseObject.ViewModel.BulkFGT
 
         [Display(Name = "報表電子簽章圖檔完整路徑")]
         public string SignaturePic { get; set; }
+
+        public MockupCrocking_Request Request { get; set; }
 
         public List<MockupCrocking_Detail_ViewModel> MockupCrocking_Detail { get; set; }
     }
