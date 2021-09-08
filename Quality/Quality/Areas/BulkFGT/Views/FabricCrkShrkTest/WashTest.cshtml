@@ -692,7 +692,7 @@
 
         var needHidden = false;
         var dict = {
-            ".SkewnessTest1": { 1:"AC", 2:"AA'", 3:"AA"},
+            ".SkewnessTest1": { 1:"AC", 2:"AA'", 3:"AA'"},
             ".SkewnessTest2": { 1:"BD", 2: "DD'", 3: "AB" },
             ".SkewnessTest3": { 1: null, 2: "AB", 3: null },
             ".SkewnessTest4": { 1: null, 2: "CD", 3: null },
@@ -877,7 +877,7 @@
                 return;
             }
             // (HorizontalAverage - HorizontalOriginal) / HorizontalOriginal * 100
-            var rate = (avg + original) / original * 100;
+            var rate = (avg - original) / original * 100;
             rate = Math.round(rate * 100) / 100;
             $('#Wash_Detail_' + idx + '__HorizontalRate').val(rate);
         });
@@ -901,7 +901,7 @@
             }
 
             // (VerticalAverage - VerticalOriginal) / VerticalOriginal * 100
-            var rate = (avg + original) / original * 100;
+            var rate = (avg - original) / original * 100;
             rate = Math.round(rate * 100) / 100;
             $('#Wash_Detail_' + idx + '__VerticalRate').val(rate);
         });

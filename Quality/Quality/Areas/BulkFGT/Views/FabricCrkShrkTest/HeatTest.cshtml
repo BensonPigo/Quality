@@ -772,7 +772,7 @@
                 return;
             }
             // (HorizontalAverage - HorizontalOriginal) / HorizontalOriginal * 100
-            var rate = (avg + original) / original * 100;
+            var rate = (avg - original) / original * 100;
             rate = Math.round(rate * 100) / 100;            
             $('#Heat_Detail_' + idx + '__HorizontalRate').val(rate);
         });
@@ -796,7 +796,7 @@
             }
 
             // (VerticalAverage - VerticalOriginal) / VerticalOriginal * 100
-            var rate = (avg + original) / original * 100;
+            var rate = (avg - original) / original * 100;
             rate = Math.round(rate * 100) / 100;            
             $('#Heat_Detail_' + idx + '__VerticalRate').val(rate);
         });
