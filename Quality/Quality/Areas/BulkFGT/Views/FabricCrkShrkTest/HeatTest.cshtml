@@ -1,7 +1,815 @@
-﻿
-@{
-    ViewBag.Title = "HeatTest";
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>HeatTest</h2>
+@model DatabaseObject.ResultModel.FabricCrkShrkTestHeat_Result
 
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+<link href="~/ThirdParty/plugins/jquery-ui/jquery-ui.css" rel="stylesheet" />
+<style type="text/css">
+
+    .input-group {
+        display: flex
+    }
+
+    .input-group > input:nth-child(1) {
+        flex-grow: 2
+    }
+
+    .input-group > input:nth-child(2) {
+        flex-grow: 1
+    }
+
+    tr.row-name {
+        color: black;
+    }
+
+    /*第一個選擇為Pass*/
+    .resultList {
+        color: blue;
+    }
+
+    .resultList option {
+        color: black;
+    }
+
+    .row {
+        --bs-gutter-x: 1.5rem;
+        --bs-gutter-y: 0;
+        display: flex;
+        flex-wrap: wrap;
+        width: 95vw;
+        margin-top: calc(var(--bs-gutter-y) * -1);
+        margin-right: calc(var(--bs-gutter-x)/ -2);
+        margin-left: calc(var(--bs-gutter-x)/ -2);
+    }
+
+    .button {
+        background-color: #E00000; /* Red */
+        border: none;
+        color: white;
+        padding: 6px 16px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+    }
+
+    .row > * {
+        flex-shrink: 0;
+        width: 100%;
+        max-width: 100%;
+        padding-left: calc(var(--bs-gutter-x)/ 2);
+    }
+
+    .col-auto {
+        width: auto;
+    }
+
+        .col-auto > p {
+            padding: 0
+        }
+
+    .White {
+        color: white !important;
+    }
+
+    .Black {
+        color: black !important;
+    }
+
+    .IsEditMode {
+        color: white !important;
+        cursor: pointer;
+    }
+
+    .IsEditModeQuery {
+        color: gray !important;
+        cursor: no-drop;
+    }
+
+    #ButtonMode {
+        width: 82vw;
+    }
+
+    #myCartons_info, #myEndlineMoisture_info, #myView_info {
+        color: white
+    }
+
+    .table_div tr td:nth-child(2n+1) {
+        font-size: 1.2em;
+        font-weight: bold;
+    }
+
+
+    .DataTable {
+        width: 82vw;
+        font-size: 1rem;
+        font-weight: bold;
+        border: solid 1px black;
+        background-color: white;
+    }
+
+    .DataTable > tbody img {
+        cursor: pointer;
+    }
+
+    .DataTable > tbody > tr:nth-of-type(odd) {
+        background-color: #ffffff;
+    }
+
+    .DataTable > tbody > tr:nth-of-type(even) {
+        background-color: #F0F2F2;
+    }
+
+    .DataTable > tbody > tr > td {
+        border: solid 1px gray;
+        padding: 0.5em;
+        vertical-align: middle;
+    }
+</style>
+@using (Html.BeginForm("HeatTest", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { id = "DetailForm" }))
+{
+    <div class="main-content">
+        <header class="page-header">
+            <h3>
+                <span>Fabric Crocking & Shrinkage Test</span>
+            </h3>
+            <div class="breadcrumb">
+                <div>Home</div>
+                <div>Fabric Crocking & Shrinkage Test</div>
+                <div class="current">HeatTest</div>
+            </div>
+        </header>
+        <div class="main-area">
+            <div class="content-scroll" style="height: calc( 100vh - 110px );">
+                <div class="inner-scroll" style="height: calc( 100vh - 150px );">
+                    <div>
+                        @*按鈕*@
+                        <div>
+                            <table id="ButtonMode">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <h4 id="Exit" style="margin-right: 1em;">
+                                                <a href="@Url.Action("IndexBack", ViewContext.RouteData.GetRequiredString("Controller"), new { POID = Model.Heat_Main.POID })">
+                                                    <img src="~/Image/Icon/Exit.png" width="30" />
+                                                    Exit
+                                                </a>
+                                            </h4>
+                                        </td>
+
+                                        <td>
+                                            <h4 id="Edit" style="margin-right: 1em;">
+                                                <img src="~/Image/Icon/Edit.png" width="30" />
+                                                Edit
+                                            </h4>
+                                        </td>
+                                        <td>
+                                            <h4 id="Save" style="margin-right: 1em;">
+                                                <img src="~/Image/Icon/Save.png" width="30" />
+                                                Save
+                                            </h4>
+                                        </td>
+                                        <td>
+                                            <h4 id="Encode" style="margin-right: 1em;">
+                                                <img src="~/Image/Icon/Lock.png" width="30" />
+                                                Encode
+                                            </h4>
+                                        </td>
+
+                                        <td>
+                                            <h4 id="Amend" style="margin-right: 1em;">
+                                                <img src="~/Image/Icon/Unlock.png" width="30" />
+                                                Amend
+                                            </h4>
+                                        </td>
+                                        <td>
+                                            <h4 id="Excel" style="margin-right: 1em;">
+                                                <img src="~/Image/Icon/XLS.png" width="40" />
+                                                Excel
+                                            </h4>
+                                        </td>
+                                        <td>
+                                            <h4 id="PDF" style="margin-right: 1em;">
+                                                <img src="~/Image/Icon/PDF.png" width="30" />
+                                                PDF
+                                            </h4>
+                                        </td>
+                                        <td>
+                                            <h4 id="Picture" style="margin-right: 1em;">
+                                                <img src="~/Image/Icon/Camera.png" width="30" />
+                                                Picture
+                                            </h4>
+                                        </td>
+                                        <td style="width: 20%;">
+                                        </td>
+                                        <td align="right">
+                                            <h4 id="New" style=" margin-right: 1em;">
+                                                <img src="~/Image/Icon/New.png" width="30" />
+                                                New Item
+                                            </h4>
+                                        </td>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div>
+                        @*主-明細*@
+                        <div style="margin-top: 1em;">
+                            <table class="DataTable MainTable">
+                                <tbody>
+                                    @if (Model != null)
+                                    {
+                                        @Html.HiddenFor(o => o.ID)
+                                        @Html.HiddenFor(o => o.Heat_Main.HeatTestBeforePicture)
+                                        @Html.HiddenFor(o => o.Heat_Main.HeatTestAfterPicture)
+                                    }
+
+                                    <tr>
+                                        <td style="width: 10vw;"><h5>SP#</h5></td>
+                                        <td style="width: 20vw;">
+                                            @Html.DisplayFor(o => o.Heat_Main.POID)
+                                        </td>
+                                        <td style="width: 10vw;"><h5>SEQ#</h5></td>
+                                        <td style="width: 20vw;">
+                                            @Html.DisplayFor(o => o.Heat_Main.SEQ)
+                                        </td>
+                                        <td style="width: 10vw;"><h5>Color</h5></td>
+                                        <td style="width: 20vw;">
+                                            @Html.DisplayFor(o => o.Heat_Main.ColorID)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><h5>Arrive Qty</h5></td>
+                                        <td>
+                                            @Html.DisplayFor(o => o.Heat_Main.ArriveQty)
+                                        </td>
+                                        <td><h5>Arrive W/H Date</h5></td>
+                                        <td>
+                                            @Html.ValueFor(o => o.Heat_Main.WhseArrival, "{0:yyyy/MM/dd}")
+                                        </td>
+                                        <td><h5>WK#</h5></td>
+                                        <td>
+                                            @Html.DisplayFor(o => o.Heat_Main.ExportID)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><h5>Supp</h5></td>
+                                        <td>
+                                            @Html.DisplayFor(o => o.Heat_Main.Supp)
+                                        </td>
+                                        <td><h5>Result</h5></td>
+                                        <td>
+                                            @{
+                                                string styleColor = "";
+                                                if (Model.Heat_Main.Heat == "Pass")
+                                                {
+                                                    styleColor = "blue";
+                                                }
+                                                else
+                                                {
+                                                    styleColor = "red";
+                                                }
+                                            }
+                                            <font color="@styleColor">@Html.DisplayFor(o => o.Heat_Main.Heat)</font>
+                                        </td>
+                                        <td><h5>Last Inspeciton Date</h5></td>
+                                        <td>
+                                            @Html.ValueFor(o => o.Heat_Main.HeatDate, "{0:yyyy/MM/dd}")
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><h5>Style#</h5></td>
+                                        <td>
+                                            @Html.DisplayFor(o => o.Heat_Main.StyleID)
+                                        </td>
+                                        <td><h5>SCI Refno</h5></td>
+                                        <td>
+                                            @Html.DisplayFor(o => o.Heat_Main.SCIRefno)
+                                        </td>
+                                        <td><h5>Heat Inspector</h5></td>
+                                        <td>
+                                            @Html.DisplayFor(o => o.Heat_Main.Name)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><h5>Brand</h5></td>
+                                        <td>
+                                            @Html.DisplayFor(o => o.Heat_Main.BrandID)
+                                        </td>
+                                        <td><h5>Brand Refno</h5></td>
+                                        <td>
+                                            @Html.DisplayFor(o => o.Heat_Main.Refno)
+                                        </td>
+                                        <td><h5>N/A</h5></td>
+                                        <td>
+                                            @Html.CheckBox("Heat_Main.NonHeat", Convert.ToBoolean(Model.Heat_Main.NonHeat), new { @disabled = "disabled" })
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><h5>Description</h5></td>
+                                        <td colspan="5">
+                                            @Html.DisplayFor(o => o.Heat_Main.DescDetail)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><h5>Remark</h5></td>
+                                        <td colspan="5">
+                                            @Html.TextBoxFor(o => o.Heat_Main.HeatRemark, new { @style = "width:100%" })
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="inner-scroll" style="margin-top: 1em; height: 20vh">
+                        <table cellspacing="100" id="heat_Detail" class="DataTable DetailTable table table-striped display;" style="width: 250vw">
+                            <thead>
+                                <tr class="row-name" id="row-name">
+                                    <th style="width:5vw">Roll#</th>
+                                    <th style="width:5vw">Dyelot</th>
+                                    <th style="width:5vw">Original Horizontal</th>
+                                    <th style="width:5vw"> Original Vertical</th>
+                                    <th style="width:5vw">Result</th>
+                                    <th style="width:5vw">Horizontal 1</th>
+                                    <th style="width:5vw">Horizontal 2</th>
+                                    <th style="width:5vw">Horizontal 3</th>
+                                    <th style="width:5vw">Horizontal Average</th>
+
+                                    <th style="width:5vw">Horizontal Shrinkage Rate</th>
+                                    <th style="width:5vw">Vertical 1</th>
+                                    <th style="width:5vw">Vertical 2</th>
+                                    <th style="width:5vw">Vertical 3</th>
+                                    <th style="width:5vw">Vertical Average</th>
+                                    <th style="width:5vw">Vertical Shrinkage Rate</th>
+                                    <th style="width:5vw">Test Date</th>
+                                    <th style="width:5vw">Lab Tech</th>
+                                    <th style="width:5vw">Name</th>
+                                    <th style="width:5vw">Remark</th>
+                                    <th style="width:5vw">Last update</th>
+                                    <th style="width:5vw"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < Model.Heat_Detail.Count; i++)
+                                {
+                                    <tr idx="@i" class="row-content" style="vertical-align: middle; text-align: center;">
+                                        <td>
+                                            <div class="input-group">
+                                                @Html.TextBoxFor(modelItem => Model.Heat_Detail[i].Roll, new { @class = "inputRollSelectItem" })
+                                                <input type="button" class="site-btn btn-blue btnRollSelectItem" style="margin:0;border:0;" value="..." />
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="input-group">
+                                                @Html.TextBoxFor(modelItem => Model.Heat_Detail[i].Dyelot, new { @class = "inputRollSelectItem" })
+                                                <input type="button" class="site-btn btn-blue btnRollSelectItem" style="margin:0;border:0;" value="..." />
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Heat_Detail[i].HorizontalOriginal, new { @class = "HorizontalTest", @type = "number", @step = "0.01" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Heat_Detail[i].VerticalOriginal, new { @class = "VerticalTest", @type = "number", @step = "0.01" })
+                                        </td>
+                                        <td>
+                                            @{
+                                                if (Model.Heat_Detail[i].Result == "Pass")
+                                                {
+                                                    styleColor = "blue";
+                                                }
+                                                else
+                                                {
+                                                    styleColor = "red";
+                                                }
+                                            }
+                                            <select id="Heat_Detail_@{@i}_Result" class="resultList" name="Model.Heat_Detail[@i].Result" disabled="disabled" style="width:157px;color:@styleColor" onchange="changeResultColor(this)">
+                                                @foreach (var item in (List<SelectListItem>)ViewBag.ResultList)
+                                                {
+                                                    string selected = item.Text.Equals(Model.Heat_Detail[i].Result) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Heat_Detail[i].HorizontalTest1, new { @class= "HorizontalTest", @type = "number", @step = "0.01" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Heat_Detail[i].HorizontalTest2, new { @class = "HorizontalTest", @type = "number", @step = "0.01" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Heat_Detail[i].HorizontalTest3, new { @class = "HorizontalTest", @type = "number", @step = "0.01" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Heat_Detail[i].HorizontalAverage, new { @type = "number", @step = "0.01", @readonly="readonly" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Heat_Detail[i].HorizontalRate, new { @type = "number", @step = "0.01", @readonly = "readonly" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Heat_Detail[i].VerticalTest1, new { @class = "VerticalTest", @type = "number", @step = "0.01" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Heat_Detail[i].VerticalTest2, new { @class = "VerticalTest", @type = "number", @step = "0.01" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Heat_Detail[i].VerticalTest3, new { @class = "VerticalTest", @type = "number", @step = "0.01" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Heat_Detail[i].VerticalAverage, new { @type = "number", @step = "0.01", @readonly = "readonly" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Heat_Detail[i].VerticalRate, new { @type = "number", @step = "0.01", @readonly = "readonly" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Heat_Detail[i].Inspdate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
+                                        </td>
+                                        <td>
+                                            <div class="input-group">
+                                                @Html.TextBoxFor(modelItem => Model.Heat_Detail[i].Inspector, new { @class = "inputInspectorSelectItem" })
+                                                <input id="btnDetailInspectorSelectItem" type="button" class="site-btn btn-blue btnInspectorSelectItem" style="margin:0;border:0;" value="..." />
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Heat_Detail[i].Name, new { @readonly = "readonly" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Heat_Detail[i].Remark, new { @readonly = "readonly" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Heat_Detail[i].LastUpdate, new { @readonly = "readonly" })
+                                        </td>
+                                        <td>
+                                            <img class='detailDelete' src="~/Image/Icon/Delete.png" style="min-width:30px">
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+         </div>
+    </div>
+}
+<script type="text/javascript">
+    var msg;
+    var EditMode;
+    var True = true;
+    var False = false;
+    var poid = '@Model.Heat_Main.POID';
+    var seq1 = '@Model.Heat_Main.SEQ'.split(' ')[0];
+    var seq2 = '@Model.Heat_Main.SEQ'.split(' ')[0];
+
+        $(function () {
+            msg = new MessagerAlert();
+            EditMode = false;
+            IsEditModeChange();
+        });
+
+        function IsEditModeChange() {
+            EditModeButtionBind();
+            $('#Picture').addClass("IsEditMode");
+            // 按編輯為控制disabled，如果是編輯模式下不給使用者操作，請在元件身上加上readonly
+            if (EditMode) {
+
+                $("#Edit,#Encode,#Amend").removeClass("IsEditMode");
+                $('#Encode,#Amend').unbind('click');
+
+                $('#Save, #New').addClass("IsEditMode");
+                $(".DataTable:not(.DetailTable) textarea").removeAttr("disabled", "disabled");
+                $(".DetailTable input,.DetailTable select").removeAttr("disabled", "disabled");
+
+                DetailButtonBind();
+            }
+            else {
+                $('#Save, #New').unbind('click').removeClass("IsEditMode");
+                $(".DataTable:not(.DetailTable) textarea").attr("disabled", "disabled");
+                $(".DetailTable input,.DetailTable select").attr("disabled", "disabled");
+
+                if ('@Model.ID' != '') {
+                    $("#Edit").addClass("IsEditMode");
+                }
+
+                if (@Model.Heat_Main.HeatEncode == false) {
+                    $("#Encode").addClass("IsEditMode");
+                }
+
+                if (@Model.Heat_Main.HeatEncode == true) {
+                    $("#Amend").addClass("IsEditMode");
+                }
+            }
+        }
+
+        function EditModeButtionBind() {
+            $('#Edit').on('click', function () {
+                if ('@Model.ID' != '') {
+                    EditMode = true;
+                    IsEditModeChange();
+                }
+            });
+
+            $('#Save').on('click', function (e) {
+                var detail = [];
+                var ErrMsg = "";
+
+                $('.DetailTable > tbody > tr').each(function (index, data) {
+                    var idx = $(this).closest('tr').attr('idx');
+                    var roll = $('Heat_Detail__' + idx + '__Roll').val();
+                    var dyelot = $('#Heat_Detail_' + idx + '__Dyelot').val();
+                    var inspector = $('#Heat_Detail_' + idx + '__Inspector').val();
+                    var restult = $('#Heat_Detail_' + idx + '__Result').val();
+
+                    if (roll == "" || dyelot == "" ) {
+                        ErrMsg += "Roll and Dyelot cannot be empty";
+                        return false;
+                    }
+
+                    var checkValue = [];
+                    checkValue.push($('#Heat_Detail_' + idx + '__HorizontalOriginal').val());
+                    checkValue.push($('#Heat_Detail_' + idx + '__VerticalOriginal').val());
+
+                    checkValue.push($('#Heat_Detail_' + idx + '__HorizontalTest1').val());
+                    checkValue.push($('#Heat_Detail_' + idx + '__HorizontalTest2').val());
+                    checkValue.push($('#Heat_Detail_' + idx + '__HorizontalTest3').val());
+                    checkValue.push($('#Heat_Detail_' + idx + '__VerticalTest1').val());
+                    checkValue.push($('#Heat_Detail_' + idx + '__VerticalTest2').val());
+                    checkValue.push($('#Heat_Detail_' + idx + '__VerticalTest3').val());
+
+                    if (checkValue.includes("") || checkValue.includes(null)) {
+                        ErrMsg += "Horizontal and Vertical cannot be empty.";
+                        return false;
+                    }
+
+                    if (inspector == "") {
+                        ErrMsg += "Lab Tech cannot be empty";
+                        return false;
+                    }
+
+                    if (restult == "") {
+                        ErrMsg += "Result cannot be empty";
+                        return false;
+                    }
+                });
+
+                if (ErrMsg != "") {
+                    msg.WithError(ErrMsg);
+                    return;
+                }
+
+                document.getElementById("DetailForm").submit();
+            });
+
+            $('#Picture').on('click', function () {
+                var para = "?EditMode=" + EditMode + "&Table=FIR_Laboratory&BrforeColumn=@Model.Heat_Main.HeatTestBeforePicture&AfterColumn=@Model.Heat_Main.HeatTestAfterPicture&PKey_1=ReportNo&PKey_1_Val=" + '@Model.ID';
+                    window.open('@Url.Action("PictureList","PublicWondow",new{Area=""})' + para, 'Picture', config = 'toolbar=no,status=no,location=no,width=400,height=650');            });
+
+            $('#New').on('click', function () {
+                AddDetailRow($('#garmentTest_OrderID').val(), $('#garmentTest_Article').val(), $('#garmentTest_BrandID').val(), $('#garmentTest_SeasonID').val(), $('#garmentTest_StyleID').val());
+            });
+
+            // 程式需再修改
+            //HeatEncode = false 才可以使用
+            if (@Model.Heat_Main.HeatEncode == false) {
+                $('#Encode').on('click', function (e) {
+                    var detail = [];
+                    var ErrMsg = "";
+
+                    // 表身是否至少有一列資料
+                    var rowCount = $('.DetailTable tbody tr').length;
+                    if (rowCount == 0) {
+                        msg.WithError('Please test one Roll least.');
+                        return;
+                    }
+
+                    //heat 為 Fail??
+                    //彈跳出 Mail Group 寄信。(PublicWondowController.TestFailMailList)
+                    @*$.ajax({
+                        url: "@Url.Action("Encode_Detail", "GarmentTest", new { Area = "BulkFGT" })",
+                        type: 'POST',
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify({ ID: $('#Detail_ID').val(), No: $('#Detail_No').val(), status: "Encode" }),
+                        async: false,
+                        success: function (data) {
+                            if (data.Result) {
+                                if (data.sentMail) {
+                                    FailMail();
+                                }
+                                else {
+                                    msg.WithSuccesCheck("Success", function () {
+                                        location.reload();
+                                    });
+                                }
+                            }
+                            else {
+                                msg.WithError(data.ErrMsg);
+                            }
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            console.log(xhr.responseText);
+                        }
+                    });*@
+                });
+            }
+
+            if (@Model.Heat_Main.HeatEncode  == true) {
+                $('#Amend').on('click', function (e) {
+                });
+            }
+        }
+
+        function AddDetailRow(obj) {
+            var lastNO;
+            if ($('.DetailTable > tbody > tr').length > 0) {
+                lastNO = parseInt($('.DetailTable > tbody > tr:last-child').attr('idx'));
+            }
+            else {
+                lastNO = 1;
+            }
+
+            $.ajax({
+                url: "@Url.Action("AddHeatDetailRow", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ lastNO: lastNO}),
+                async: false,
+                success: function (data) {
+                    $('.DetailTable > thead > tr').show();
+                    $('.DetailTable > tbody').append(data);
+
+                    DetailButtonBind();
+                    $('.date-picker').datepicker({ changeYear: true, changeMonth: true, currentText: "Now" });
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        }
+
+        function changeResultColor(obj) {
+            var result = $(obj).val();
+            if (result == "Pass") {
+                $(obj).css('color', 'blue');
+            }
+            else {
+                $(obj).css('color', 'red');
+            }
+        }
+
+    function DetailButtonBind() {
+        // 卸掉重新綁定
+        $('.inputRollSelectItem').unbind('blur').on('blur', function () {
+            var targetID = $(this).closest('tr').attr('idx');
+            var checkValue = $("#Heat_Detail_" + targetID + "__Roll").val();
+
+            if (checkValue == "") {
+                $("#Heat_Detail_" + targetID + "__Dyelot").val('');
+                return;
+            }
+
+            $.ajax({
+                url: "@Url.Action("FtyInventoryList", "PublicWondow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ POID: poid, Seq1: seq1, Seq2: seq2, Roll: checkValue, ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Heat_Detail_" + targetID + "__Roll").val('');
+                        $("#Heat_Detail_" + targetID + "__Dyelot").val('');
+                        msg.WithError('Roll# Not Found');
+                    }
+                    else
+                    {
+                        $("#Heat_Detail_" + targetID + "__Roll").val(data[0].Roll);
+                        $("#Heat_Detail_" + targetID + "__Dyelot").val(data[0].Dyelot);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $('.btnRollSelectItem').unbind('click').on('click', function () {
+            var targetID = $(this).closest('tr').attr('idx');
+                var para = "?POID=" + poid + "&Seq1=" + seq1 + "&Seq1=" + seq2+"&TargetID=" + targetID;
+                window.open('@Url.Action("FtyInventoryList", "PublicWondow",new{Area=""})' + para, 'Roll', config = 'toolbar=no,status=no,location=no,width=950,height=650');
+        });
+
+        $('.inputInspectorSelectItem').unbind('blur').on('blur', function () {
+            var targetID = $(this).closest('tr').attr('idx');
+
+            if ($(this).val() == "") {
+                $("#Heat_Detail_" + targetID + "__Name").val('');
+                $("#Heat_Detail_" + targetID + "__Remark").val('');
+                return;
+            }
+
+            $.ajax({
+                url: "@Url.Action("Pass1List", "PublicWondow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID:$(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Heat_Detail_" + targetID + "__Inspector").val('');
+                        $("#Heat_Detail_" + targetID + "__Name").val('');
+                        $("#Heat_Detail_" + targetID + "__Remark").val('');
+                        msg.WithError('Lab Tech Not Found');
+                    }
+                    else
+                    {
+                        $("#Heat_Detail_" + targetID + "__Inspector").val(data[0].ID);
+                        $("#Heat_Detail_" + targetID + "__Name").val(data[0].Name);
+                        $("#Heat_Detail_" + targetID + "__Remark").val(data[0].ExtNo);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $('.btnInspectorSelectItem').unbind('click').on('click', function () {
+            var targetID = $(this).closest('tr').attr('idx');
+            var para = "?TargetID=" + targetID;
+            window.open('@Url.Action("Pass1List", "PublicWondow",new{Area=""})' + para, 'Roll', config = 'toolbar=no,status=no,location=no,width=950,height=650');
+        });
+
+        $('.detailDelete').unbind('click').on('click', function () {
+            var t = $(this).closest('tr');
+
+            msg.WithConfirm('Do you want to delete the data ?',
+                function () {
+                    t.remove();
+                    msg.WithSuccess("Delete Success");
+                }, null);
+        });
+
+        $('.HorizontalTest').unbind('blur').on('blur', function () {
+            var idx = $(this).closest('tr').attr('idx');
+            var value1 = parseFloat($('#Heat_Detail_' + idx + '__HorizontalTest1').val());
+            var value2 = parseFloat($('#Heat_Detail_' + idx + '__HorizontalTest2').val());
+            var value3 = parseFloat($('#Heat_Detail_' + idx + '__HorizontalTest3').val());
+            var original = parseFloat($('#Heat_Detail_' + idx + '__HorizontalOriginal').val());
+
+            // 四折五入到第二位
+            // ( HorizontalTest1 + HorizontalTest2  + HorizontalTest3 ) / 3
+            var avg = (value1 + value2 + value3) / 3;
+            avg = Math.round(avg * 100) / 100;
+            $('#Heat_Detail_' + idx + '__HorizontalAverage').val(avg);
+
+            if (original == 0) {
+                $('#Heat_Detail_' + idx + '__HorizontalRate').val(0);
+                return;
+            }
+            // (HorizontalAverage - HorizontalOriginal) / HorizontalOriginal * 100
+            var rate = (avg + original) / original * 100;
+            rate = Math.round(rate * 100) / 100;            
+            $('#Heat_Detail_' + idx + '__HorizontalRate').val(rate);
+        });
+
+        $('.VerticalTest').unbind('blur').on('blur', function () {
+            var idx = $(this).closest('tr').attr('idx');
+            var value1 = parseFloat($('#Heat_Detail_' + idx + '__VerticalTest1').val());
+            var value2 = parseFloat($('#Heat_Detail_' + idx + '__VerticalTest2').val());
+            var value3 = parseFloat($('#Heat_Detail_' + idx + '__VerticalTest3').val());
+            var original = parseFloat($('#Heat_Detail_' + idx + '__VerticalOriginal').val());
+
+            // 四折五入到第二位
+            // ( VerticalTest1 + VerticalTest2 + VerticalTest3 ) / 3
+            var avg = (value1 + value2 + value3) / 3;
+            avg = Math.round(avg * 100) / 100;
+            $('#Heat_Detail_' + idx + '__VerticalAverage').val(avg);
+
+            if (original == 0) {
+                $('#Heat_Detail_' + idx + '__VerticalRate').val(0);
+                return;
+            }
+
+            // (VerticalAverage - VerticalOriginal) / VerticalOriginal * 100
+            var rate = (avg + original) / original * 100;
+            rate = Math.round(rate * 100) / 100;            
+            $('#Heat_Detail_' + idx + '__VerticalRate').val(rate);
+        });
+    }
+
+    function GetFtyInventory(data, targetID) {
+        $("#Heat_Detail_" + targetID + "__Roll").val(data.Roll);
+        $("#Heat_Detail_" + targetID + "__Dyelot").val(data.Dyelot);
+    }
+
+    function GetPass1(data, targetID) {
+        $("#Heat_Detail_" + targetID + "__Inspector").val(data.ID);
+        $("#Heat_Detail_" + targetID + "__Name").val(data.Name);
+        $("#Heat_Detail_" + targetID + "__Remark").val(data.ExtNo);
+    }
+</script>
