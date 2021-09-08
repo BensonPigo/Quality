@@ -569,6 +569,9 @@
                 data: JSON.stringify({ POID: POID, FabricType: 'F', Seq: $(this).val(), ReturnType: "JSON" }),
                 async: true,
                 success: function (data) {
+
+                    var val = $("#Details_" + TargetID + "__SEQ").val();
+
                     if (data.length == 0) {
 
                         $("#Details_" + TargetID + "__SEQ").val('');
@@ -578,9 +581,18 @@
                         msg.WithError('SEQ# Not Found');
                     }
                     else {
-                        $("#Details_" + TargetID + "__Refno").val(data[0].Refno);
-                        $("#Details_" + TargetID + "__SCIRefno").val(data[0].SCIRefno);
-                        $("#Details_" + TargetID + "__ColorID").val(data[0].ColorID);
+                        if (val == "")
+                        {
+                            $("#Details_" + TargetID + "__Refno").val('');
+                            $("#Details_" + TargetID + "__SCIRefno").val('');
+                            $("#Details_" + TargetID + "__ColorID").val('');
+                        }
+                        else
+                        {
+                            $("#Details_" + TargetID + "__Refno").val(data[0].Refno);
+                            $("#Details_" + TargetID + "__SCIRefno").val(data[0].SCIRefno);
+                            $("#Details_" + TargetID + "__ColorID").val(data[0].ColorID);
+                        }
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
@@ -612,6 +624,9 @@
                 data: JSON.stringify({ POID: POID, Seq1: SEQ1, Seq2: SEQ2, Roll: $(this).val(), ReturnType: "JSON" }),
                 async: true,
                 success: function (data) {
+
+                    var val = $("#Details_" + TargetID + "__Roll").val();
+
                     if (data.length == 0) {
 
                         $("#Details_" + TargetID + "__Roll").val('');
@@ -620,8 +635,18 @@
                         msg.WithError('Roll# Not Found');
                     }
                     else {
-                        $("#Details_" + TargetID + "__Roll").val(data[0].Roll);
-                        $("#Details_" + TargetID + "__Dyelot").val(data[0].Dyelot);
+
+                        if (val == "")
+                        {
+                            $("#Details_" + TargetID + "__Roll").val('');
+                            $("#Details_" + TargetID + "__Dyelot").val('');
+                        }
+                        else
+                        {
+                            $("#Details_" + TargetID + "__Roll").val(data[0].Roll);
+                            $("#Details_" + TargetID + "__Dyelot").val(data[0].Dyelot);
+                        }
+
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {

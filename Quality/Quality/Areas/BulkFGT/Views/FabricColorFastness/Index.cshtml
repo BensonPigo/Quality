@@ -115,6 +115,10 @@
         <h3>
             <i class="icon-users"></i><span>Fabric Color Fastness</span>
         </h3>
+        <div class="breadcrumb">
+            <div>Home</div>
+            <div class="current">Fabric Color Fastness</div>
+        </div>
     </header>
 
     <div class="main-area">
@@ -158,10 +162,10 @@
                                         Undo
                                     </h4>
                                 </td>
-                                <td style="width: 36%;">
+                                <td style="width: 65%;">
                                 </td>
                                 <td>
-                                    <h4 id="New" style=" margin-right: 10em;">
+                                    <h4 id="New">
                                         <img src="~/Image/Icon/New.png" width="30" />
                                         New Test No
                                     </h4>
@@ -210,14 +214,14 @@
                                 </td>
                             </tr>
                             <tr>
-
                                 <td><h5>Target Lead Time</h5></td>
                                 <td>
                                     @TargetLeadTime
                                 </td>
                                 <td><h5>Completion Date</h5></td>
-                                    @CompletionDate
+                              
                                 <td>
+                                    @CompletionDate
                                 </td>
                                 <td><h5>Article % of Inspection</h5></td>
                                 <td>
@@ -227,7 +231,7 @@
                             <tr>
                                 <td><h5>Remark</h5></td>
                                 <td colspan="5">
-                                    @Html.TextBoxFor(o => o.ColorFastnessLaboratoryRemark, "", new { @readonly = "readonly" ,@style="width:50vw" })
+                                    @Html.TextBoxFor(o => o.ColorFastnessLaboratoryRemark, "", new {@style="width:50vw" })
                                 </td>
                             </tr>
                             <tr>
@@ -278,7 +282,8 @@
                                         }
 
                                         <a href="@aHref" idx="@Model.PoID ," idv="@Model.ColorFastness_MainList[i].TestNo">
-                                            @Html.DisplayFor(o => Model.ColorFastness_MainList[i].TestNo, "", "")
+  
+                                          <label>  @Model.ColorFastness_MainList[i].TestNo</label>
                                         </a>
                                     </td>
 
@@ -375,7 +380,6 @@
         }
     }
 
-
     function EditModeButtionBind() {
         $('#Edit').on('click', function () {
             if ($('#PoID').val() == "") {
@@ -392,10 +396,24 @@
 
             var main = {
                 PoID: $('#PoID').val(),
-                Remark: $('#Remark').val()
+                ColorFastnessLaboratoryRemark: $('#ColorFastnessLaboratoryRemark').val()
             };
 
             SaveData(main);
+        });
+
+        $('#Undo').on('click', function () {
+            EditMode = false;
+            IsEditModeChange();
+            location.href = '@Url.Action("IndexBack")?PoID=' + document.getElementById("PoID").value.trim();
+        });
+
+
+        $('#New').on('click', function () {
+            if ($('#PoID').val() == "") {
+                return;
+            }
+            location.href = '@Url.Action("Detail")?PoID=' + document.getElementById("PoID").value.trim() + '&TestNo=&EditMode=True';
         });
 
         function SaveData(main) {
@@ -416,19 +434,7 @@
         });
     }
 
-        $('#Undo').on('click', function () {
-            EditMode = false;
-            IsEditModeChange();
-            location.href = '@Url.Action("IndexBack")?PoID=' + document.getElementById("PoID").value.trim();
-        });
 
-
-        $('#New').on('click', function () {
-            if ($('#PoID').val() == "") {
-                return;
-            }
-            location.href = '@Url.Action("Detail")?PoID=' + document.getElementById("PoID").value.trim() + '&TestNo=&EditMode=True';
-        });
 
 
     }
@@ -436,7 +442,6 @@
     function DetailView(TestNo) {
         location.href = '@Url.Action("Detail")?PoID=' + document.getElementById("PoID").value.trim() + '&TestNo=' + TestNo + '&EditMode=True' ;
     }
-
 
     function DetailDelete(TestNo) {
 
