@@ -349,7 +349,7 @@
                         </div>
                     </div>
 
-                    <div class="inner-scroll" style="margin-top: 1em; height: 20vh">
+                    <div class="inner-scroll" style="margin-top: 1em; height: 10vh">
                         <table cellspacing="100" id="wash_Detail" class="DataTable DetailTable table table-striped display;" style="width: 250vw">
                             <thead>
                                 <tr class="row-name" id="row-name">
@@ -714,6 +714,12 @@
                 if ($(this).attr('notShow') == 'SkewnessTest') {
                     var i = index + 1;
                     hiddenColumns.push(i);
+
+                    var inputObj = $('.DetailTable td:nth-child(' + i + ')').children();
+                    inputObj.val(0);
+                    var idx = $(inputObj).closest('tr').attr('idx');
+                    changeSkewnessTest(idx);
+
                     $('.DetailTable th:nth-child(' + i + ')').hide();
                     $('.DetailTable td:nth-child(' + i + ')').hide();
                 }
@@ -745,6 +751,11 @@
                     $('.DetailTable > tbody').append(data);
 
                     $(hiddenColumns).each(function () {
+                        var inputObj = $('.DetailTable td:nth-child(' + this + ')').children();
+                        inputObj.val(0);
+                        var idx = $(inputObj).closest('tr').attr('idx');
+                        changeSkewnessTest(idx);
+
                         $('.DetailTable td:nth-child(' + this + ')').hide();
                     });
 
@@ -908,22 +919,26 @@
 
         $('.SkewnessTest').unbind('blur').on('blur', function () {
             var idx = $(this).closest('tr').attr('idx');
-            var value1 = parseFloat($('#Wash_Detail_' + idx + '__SkewnessTest1').val());
-            var value2 = parseFloat($('#Wash_Detail_' + idx + '__SkewnessTest2').val());
-            var value3 = parseFloat($('#Wash_Detail_' + idx + '__SkewnessTest3').val());
-            var value4 = parseFloat($('#Wash_Detail_' + idx + '__SkewnessTest4').val());
-
-            if (value3 + value4 == 0) {
-                $('#Wash_Detail_' + idx + '__SkewnessRate').val(0);
-                return;
-            }
-
-            //(SkewnessTest1 + SkewnessTest2) / (SkewnessTest3 + SkewnessTest4) * 100
-            //四捨五入小數第2位
-            var rate = (value1 + value2) / (value3 + value4) * 100
-            rate = Math.round(rate * 100) / 100;
-            $('#Wash_Detail_' + idx + '__SkewnessRate').val(rate);
+            changeSkewnessTest(idx);
         });
+    }
+
+    function changeSkewnessTest(idx) {        
+        var value1 = parseFloat($('#Wash_Detail_' + idx + '__SkewnessTest1').val());
+        var value2 = parseFloat($('#Wash_Detail_' + idx + '__SkewnessTest2').val());
+        var value3 = parseFloat($('#Wash_Detail_' + idx + '__SkewnessTest3').val());
+        var value4 = parseFloat($('#Wash_Detail_' + idx + '__SkewnessTest4').val());
+
+        if (value3 + value4 == 0) {
+            $('#Wash_Detail_' + idx + '__SkewnessRate').val(0);
+            return;
+        }
+
+        //(SkewnessTest1 + SkewnessTest2) / (SkewnessTest3 + SkewnessTest4) * 100
+        //四捨五入小數第2位
+        var rate = (value1 + value2) / (value3 + value4) * 100
+        rate = Math.round(rate * 100) / 100;
+        $('#Wash_Detail_' + idx + '__SkewnessRate').val(rate);
     }
 
     function GetFtyInventory(data, targetID) {
