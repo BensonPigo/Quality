@@ -496,7 +496,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
             GarmentTest_Detail_Result result = new GarmentTest_Detail_Result();
             result.sentMail = false;
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
-            IBulkFGTMailGroupProvider _BulkFGTMailGroupProvider = new BulkFGTMailGroupProvider(Common.ManufacturingExecutionDataAccessLayer);
             try
             {
                 switch (status)
@@ -2198,7 +2197,7 @@ and t.GarmentTest=1
 
                         #region Save & Show Excel
 
-                        string fileName_2018 = $"{basefileName_2018}{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+                        string fileName_2018 = $"{basefileName_2018}_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
                         string filexlsx_2018 = fileName_2018 + ".xlsx";
                         string fileNamePDF_2018 = fileName_2018 + ".pdf";
 
@@ -2406,7 +2405,7 @@ and t.GarmentTest=1
 
 
                  
-                    string fileName_2020 = $"{basefileName_2020}{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+                    string fileName_2020 = $"{basefileName_2020}_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
                     string filexlsx_2020 = fileName_2020 + ".xlsx";
                     string fileNamePDF_2020 = fileName_2020 + ".pdf";
 
@@ -2651,7 +2650,7 @@ and t.GarmentTest=1
                     string fileProcessName_Physical = "FGWT" + "_"
                       + all_Data.Main.SeasonID.ToString() + "_" + all_Data.Main.StyleID.ToString() + "_" + all_Data.Main.Article.ToString();
 
-                    string fileName_Physical = $"WashTest_Physical{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+                    string fileName_Physical = $"WashTest_Physical_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
                     string filexlsx_Physical = fileName_Physical + ".xlsx";
                     string fileNamePDF_Physical = fileName_Physical + ".pdf";
 
