@@ -1,8 +1,9 @@
+using DatabaseObject.Public;
 using System;
 using System.ComponentModel.DataAnnotations;
 namespace DatabaseObject.ProductionDB
 {
-    public class MockupCrocking_Detail
+    public class MockupCrocking_Detail : CompareBase
     {
         [Display(Name = "測試單號")]
         public string ReportNo { get; set; }

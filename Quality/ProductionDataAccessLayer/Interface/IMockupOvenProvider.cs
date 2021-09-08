@@ -16,7 +16,7 @@ namespace ProductionDataAccessLayer.Interface
 
         int Create(MockupOven Item);
 
-        int Update(MockupOven Item);
+        void Update(MockupOven_ViewModel Item);
 
         int Delete(MockupOven Item);
     }

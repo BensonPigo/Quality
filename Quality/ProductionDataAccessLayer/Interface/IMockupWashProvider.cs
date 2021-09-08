@@ -16,7 +16,7 @@ namespace ProductionDataAccessLayer.Interface
 
         int Create(MockupWash Item);
 
-        int Update(MockupWash Item);
+        void Update(MockupWash_ViewModel Item);
 
         int Delete(MockupWash Item);
     }
