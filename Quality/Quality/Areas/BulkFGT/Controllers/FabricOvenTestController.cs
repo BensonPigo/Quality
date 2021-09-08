@@ -75,14 +75,19 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.TimeList = TimeList;
             ViewBag.EditMode = EditMode;
             ViewBag.FactoryID = this.FactoryID;
+            ViewBag.ErrorMessage = string.Empty;
             return View(model);
         }
 
         [HttpPost]
         public ActionResult Detail(FabricOvenTest_Detail_Result req)
         {
+            string ErrorMessage = string.Empty;
             BaseResult result = _FabricOvenTestService.SaveFabricOvenTestDetail(req, this.UserID);
-
+            if (!result.Result)
+            {
+                ErrorMessage = $"msg.WithInfo('{result.ErrorMessage.Replace("'", string.Empty)}')";
+            }
             FabricOvenTest_Detail_Result model = _FabricOvenTestService.GetFabricOvenTest_Detail_Result(req.Main.POID, req.Main.TestNo);
 
             List<SelectListItem> ScaleIDList = new SetListItem().ItemListBinding(model.ScaleIDs);
@@ -98,6 +103,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.TimeList = TimeList;
             ViewBag.EditMode = false;
             ViewBag.FactoryID = this.FactoryID;
+            ViewBag.ErrorMessage = ErrorMessage;
 
             return View(model);
         }

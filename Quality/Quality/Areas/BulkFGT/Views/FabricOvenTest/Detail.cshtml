@@ -396,10 +396,10 @@
                                             @Html.DisplayFor(o => Model.Details[i].LastUpdate, "", "")
                                         </td>
                                         <td style="width:10vw;">
-                                            <select id="Details_@{@i}__ResultStain" name="Details[@{@i}].ResultStain">
+                                            <select id="Details_@{@i}__Temperature" name="Details[@{@i}].Temperature">
                                                 @foreach (var item in (List<SelectListItem>)ViewBag.TemperatureList)
                                                 {
-                                                    string selected = item.Text.Equals(Model.Details[i].ResultStain) ? "selected" : "";
+                                                    string selected = item.Text.Equals(Model.Details[i].Temperature) ? "selected" : "";
                                                     <option value="@item.Value" @selected>@item.Text</option>
                                                 }
                                             </select>
@@ -439,6 +439,7 @@
     $(function () {
         msg = new MessagerAlert();
         EditMode = ('@ViewBag.EditMode' == 'True');
+        @Html.Raw(ViewBag.ErrorMessage);
         IsEditModeChange();
     });
 

@@ -169,8 +169,7 @@ where o.POID = @POID
             listPar.Add("@TestNo", fabricOvenTest_Detail_Result.Main.TestNo);
             listPar.Add("@InspDate", fabricOvenTest_Detail_Result.Main.InspDate);
             listPar.Add("@Article", fabricOvenTest_Detail_Result.Main.Article);
-            listPar.Add("@Inspector", fabricOvenTest_Detail_Result.Main.Inspector);
-            listPar.Add("@Result", fabricOvenTest_Detail_Result.Main.Result);
+            listPar.Add("@Inspector", fabricOvenTest_Detail_Result.Main.Inspector);            
             listPar.Add("@Remark", fabricOvenTest_Detail_Result.Main.Remark);
             listPar.Add("@editName", userID);
             listPar.Add("@TestBeforePicture", fabricOvenTest_Detail_Result.Main.TestBeforePicture);
@@ -179,7 +178,6 @@ where o.POID = @POID
             string sqlUpdateOven = @"
 update  Oven set    InspDate = @InspDate,
                     Article = @Article,
-                    Result = @Result,
                     Inspector = @Inspector,
                     Remark = @Remark,
                     EditName = @editName,
