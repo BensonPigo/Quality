@@ -31,5 +31,8 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public int Qty { get; set; }
 
         public List<byte[]> ListFinalInspectionDefectImage { get; set; } = new List<byte[]>();
+
+        public byte[] TempImage { get; set; }
+        public Int64 RowIndex { get; set; }
     }
 }

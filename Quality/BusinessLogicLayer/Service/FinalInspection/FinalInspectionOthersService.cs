@@ -34,7 +34,7 @@ namespace BusinessLogicLayer.Service
 
                 others.FinalInspectionID = finalInspectionID;
                 others.CFA = finalInspection.CFA;
-                others.ProductionStatus = others.ProductionStatus;
+                others.ProductionStatus = finalInspection.ProductionStatus;
                 if (finalInspection.SubmitDate == null)
                 {
                     others.InspectionResult = "On-going";
@@ -51,6 +51,8 @@ namespace BusinessLogicLayer.Service
 
                 others.OthersRemark = finalInspection.OthersRemark;
 
+                others.ListOthersImageItem = _FinalInspectionProvider.GetOthersImageList(finalInspectionID).ToList();
+
             }
             catch (Exception ex)
             {
@@ -61,11 +63,11 @@ namespace BusinessLogicLayer.Service
             return others;
         }
 
-        public List<byte[]> GetOthersImage(string finalInspectionID)
+        public List<OtherImage> GetOthersImage(string finalInspectionID)
         {
             _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
 
-            return _FinalInspectionProvider.GetOthersImage(finalInspectionID).ToList();
+            return _FinalInspectionProvider.GetOthersImageList(finalInspectionID).ToList();
         }
 
         public BaseResult UpdateOthersBack(Others others, string UserID)
@@ -83,14 +85,14 @@ namespace BusinessLogicLayer.Service
 
                     if (others.ProductionStatus != null)
                     {
-                        finalInspection.ProductionStatus =  decimal.Parse(others.ProductionStatus);
+                        finalInspection.ProductionStatus = others.ProductionStatus;
                     }
 
                     finalInspection.OthersRemark = others.OthersRemark;
                     finalInspection.CFA = UserID;
 
                     _FinalInspectionProvider.UpdateFinalInspectionByStep(finalInspection, "Insp-Others", UserID);
-                    _FinalInspectionProvider.UpdateFinalInspection_OtherImage(others.FinalInspectionID, others.ListOthersImageItem);
+                    _FinalInspectionProvider.UpdateFinalInspection_OtherImage(others.FinalInspectionID, others.ListOthersImageItem.Select(o=>o.Image).ToList());
 
                     transactionScope.Complete();
                     transactionScope.Dispose();
@@ -128,7 +130,7 @@ namespace BusinessLogicLayer.Service
 
                     if (others.ProductionStatus != null)
                     {
-                        finalInspection.ProductionStatus = decimal.Parse(others.ProductionStatus);
+                        finalInspection.ProductionStatus = others.ProductionStatus;
                     }
 
                     finalInspection.OthersRemark = others.OthersRemark;
@@ -137,7 +139,7 @@ namespace BusinessLogicLayer.Service
                     finalInspection.InspectionResult = others.InspectionResult;
 
                     _FinalInspectionProvider.UpdateFinalInspectionByStep(finalInspection, "Submit", UserID);
-                    _FinalInspectionProvider.UpdateFinalInspection_OtherImage(others.FinalInspectionID, others.ListOthersImageItem);
+                    _FinalInspectionProvider.UpdateFinalInspection_OtherImage(others.FinalInspectionID, others.ListOthersImageItem.Select(o => o.Image).ToList());
                     transactionScope.Complete();
                     transactionScope.Dispose();
                 }

@@ -135,5 +135,38 @@ namespace BusinessLogicLayer.Service
 
             return result;
         }
+
+        public BaseResult Single_UpdateMeasurement(Measurement Head, MeasurementItem Body, string userID)
+        {
+            BaseResult result = new BaseResult();
+
+            try
+            {
+                _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection =
+                    _FinalInspectionProvider.GetFinalInspection(Head.FinalInspectionID);
+
+
+                if (finalInspection.InspectionStage == "Final" || finalInspection.InspectionStage == "3rd Party")                    
+                {
+                    result.Result = false;
+                    result.ErrorMessage = "Please input the measurement data if <Inspection Stage> is Final or 3rd Party";
+                    return result;
+                }
+
+                Head.ListMeasurementItem = new List<MeasurementItem>() { Body };
+
+                _FinalInspectionProvider.UpdateMeasurement(Head, userID);
+
+            }
+            catch (Exception ex)
+            {
+                result.Result = false;
+                result.ErrorMessage = ex.ToString();
+            }
+
+            return result;
+        }
     }
 }

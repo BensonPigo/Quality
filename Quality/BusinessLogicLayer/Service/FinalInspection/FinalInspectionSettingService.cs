@@ -66,6 +66,7 @@ namespace BusinessLogicLayer.Service
 
                     selectedPOItem.Qty = selectedOrderShipSeq.Sum(s => s.Qty);
                     selectedPOItem.Article = selectedOrderShipSeq.Select(s => s.Article).JoinToString(",").Split(',').Distinct().JoinToString(",");
+                    selectedPOItem.Seq = selectedOrderShipSeq.Select(s => s.Seq).JoinToString(",");
 
                     var selectedCartons = result.SelectCarton.Where(s => s.Selected && s.OrderID == selectedPOItem.OrderID);
                     if (!selectedCartons.Any())
@@ -214,7 +215,7 @@ namespace BusinessLogicLayer.Service
                     return result;
                 }
 
-                var selecedCarton = setting.SelectCarton.Where(s => s.Selected);
+                var selecedCarton = setting.SelectCarton != null ? setting.SelectCarton.Where(s => s.Selected) : new List<SelectCarton>();
                 setting.SelectCarton = selecedCarton.Any() ? selecedCarton.ToList() : new List<SelectCarton>();
 
                 var selectOrderShipSeq = setting.SelectOrderShipSeq.Where(s => s.Selected);

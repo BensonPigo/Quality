@@ -72,14 +72,27 @@ namespace BusinessLogicLayer.Service.StyleManagement
             }
         }
 
-        public IList<StyleResult_ViewModel> Get_StyleResult_Browse(StyleManagement_Request styleResult_Request)
+        public StyleResult_ViewModel Get_StyleResult_Browse(StyleManagement_Request styleResult_Request)
         {
             _StyleManagementProvider = new StyleManagementProvider(Common.ProductionDataAccessLayer);
 
             styleResult_Request.CallType = StyleManagement_Request.EnumCallType.PrintBarcode;
-            IList<StyleResult_ViewModel> styleResults = _StyleManagementProvider.Get_StyleInfo(styleResult_Request);
 
-            return styleResults;
+            IList<StyleResult_ViewModel> listStyleResult = _StyleManagementProvider.Get_StyleInfo(styleResult_Request);
+            StyleResult_ViewModel styleResult = new StyleResult_ViewModel();
+
+            if (listStyleResult.Count > 0)
+            {
+                styleResult = listStyleResult[0];
+            }
+
+            long styleUkey = -1;
+
+            long.TryParse(styleResult.StyleUkey, out styleUkey);
+
+            styleResult.SampleRFT = _StyleManagementProvider.Get_StyleResult_SampleRFT(styleUkey).ToList();
+
+            return styleResult;
         }
     }
 }

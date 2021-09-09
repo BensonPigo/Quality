@@ -40,10 +40,10 @@ namespace DatabaseObject.ViewModel
         public string Factory { get; set; }
         public DateTime? Delivery { get; set; }
         public DateTime? SCIDelivery { get; set; }
-        public int Qty { get; set; }
         public int InspectedQty { get; set; }
+        public decimal RFT { get; set; }
         public int BAProduct { get; set; }
-        public int BAAuditCriteria { get; set; }
+        public decimal BAAuditCriteria { get; set; }
     }
 
     public class StyleResult_SampleTesting

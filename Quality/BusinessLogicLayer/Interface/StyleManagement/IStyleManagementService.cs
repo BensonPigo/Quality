@@ -15,7 +15,7 @@ namespace BusinessLogicLayer.Interface
         IList<SelectListItem> GetBrands();
         IList<SelectListItem> GetSeasons(string brandID);
 
-        IList<StyleResult_ViewModel> Get_StyleResult_Browse(StyleManagement_Request styleResult_Request);
+        StyleResult_ViewModel Get_StyleResult_Browse(StyleManagement_Request styleResult_Request);
         IList<StyleResult_ViewModel> Get_PrintBarcodeStyleInfo(StyleManagement_Request styleResult_Request);
     }
 }

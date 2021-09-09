@@ -185,17 +185,17 @@ namespace Quality.Controllers
 
         public ActionResult LocalSuppList(string Title, string TargetID)
         {
-            var model = _PublicWindowService.Get_LocalSupp( string.Empty, false);
+            var model = _PublicWindowService.Get_LocalSupp(string.Empty, string.Empty, false);
             ViewData["Title"] = Title;
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
 
         [HttpPost]
-        public ActionResult LocalSuppList(string Title, string TargetID, string Name, string ReturnType = "")
+        public ActionResult LocalSuppList(string Title, string TargetID, string SuppID, string Name, string ReturnType = "")
         {
             bool IsExact = ReturnType.ToUpper() == "JSON";
-            var model = _PublicWindowService.Get_LocalSupp(Name, IsExact);
+            var model = _PublicWindowService.Get_LocalSupp(SuppID, Name, IsExact);
             ViewData["Title"] = Title;
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             if (ReturnType.ToUpper() == "JSON")
@@ -207,17 +207,17 @@ namespace Quality.Controllers
 
         public ActionResult TPESuppList(string Title, string TargetID)
         {
-            var model = _PublicWindowService.Get_TPESupp(string.Empty, false);
+            var model = _PublicWindowService.Get_TPESupp(string.Empty, string.Empty, false);
             ViewData["Title"] = Title;
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
 
         [HttpPost]
-        public ActionResult TPESuppList(string Title, string TargetID, string Name, string ReturnType = "")
+        public ActionResult TPESuppList(string Title, string TargetID, string SuppID, string Name, string ReturnType = "")
         {
             bool IsExact = ReturnType.ToUpper() == "JSON";
-            var model = _PublicWindowService.Get_TPESupp(Name, IsExact);
+            var model = _PublicWindowService.Get_TPESupp(SuppID, Name, IsExact);
             ViewData["Title"] = Title;
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             if (ReturnType.ToUpper() == "JSON")
