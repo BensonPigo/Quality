@@ -149,6 +149,7 @@ namespace BusinessLogicLayer.Service
                     {
                         FactoryID = inspection_ViewModel.FactoryID,
                         Line = inspection_ViewModel.Line,
+                        InspectionDate = inspection_ViewModel.InspectionDate,
                     })
                     .ToList();
 
@@ -156,7 +157,6 @@ namespace BusinessLogicLayer.Service
                     {
                         FactoryID = inspection_ViewModel.FactoryID,
                         Line = inspection_ViewModel.Line,
-                        InspectionDate = inspection_ViewModel.InspectionDate,
                     })
                     .ToList();
 

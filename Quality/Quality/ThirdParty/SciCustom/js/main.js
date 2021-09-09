@@ -224,7 +224,7 @@ function ByteArrayToBase64(d, a, e, b, c, f) {
 };
 
 function onlyUnique(value, index, self) {
-    return self.indexOf(value) === index;
+    return self.toString().indexOf(value) === index;
 }
 
 function gcd(a, b) {
@@ -241,23 +241,23 @@ function FractionDiff(standard, val) {
     var sm, m
     var sd, d
     var finVal = "";
-    if (standard.indexOf(' ') > -1) {
-        si = standard.substr(0, standard.indexOf(' '));
+    if (standard.toString().indexOf(' ') > -1) {
+        si = standard.substr(0, standard.toString().indexOf(' '));
     }
-    else if (standard.indexOf(" ") < 0 && standard.indexOf('/') < 0) {
+    else if (standard.toString().indexOf(" ") < 0 && standard.toString().indexOf('/') < 0) {
         si = standard;
     }
 
-    if (val.indexOf(" ") > -1) {
-        i = val.substr(0, val.indexOf(' '));
+    if (val.toString().indexOf(" ") > -1) {
+        i = val.substr(0, val.toString().indexOf(' '));
     }
-    else if (val.indexOf(" ") < 0 && val.indexOf('/') < 0) {
+    else if (val.toString().indexOf(" ") < 0 && val.toString().indexOf('/') < 0) {
         i = val;
     }
 
-    if (standard.indexOf('/') > -1) {
-        sd = standard.substr(standard.indexOf(' ') + 1, standard.indexOf('/') - 1 - standard.indexOf(' '));
-        sm = standard.substr(standard.indexOf('/') + 1, standard.length - 1 - standard.indexOf('/'));
+    if (standard.toString().indexOf('/') > -1) {
+        sd = standard.substr(standard.toString().indexOf(' ') + 1, standard.toString().indexOf('/') - 1 - standard.toString().indexOf(' '));
+        sm = standard.substr(standard.toString().indexOf('/') + 1, standard.length - 1 - standard.toString().indexOf('/'));
     }
     else {
         sd = 1;
@@ -265,9 +265,9 @@ function FractionDiff(standard, val) {
         si = si - 1;
     }
 
-    if (val.indexOf('/') > -1) {
-        d = val.substr(val.indexOf(' ') + 1, val.indexOf('/') - 1 - val.indexOf(' '));
-        m = val.substr(val.indexOf('/') + 1, val.length - 1 - val.indexOf('/'));
+    if (val.toString().indexOf('/') > -1) {
+        d = val.substr(val.toString().indexOf(' ') + 1, val.toString().indexOf('/') - 1 - val.toString().indexOf(' '));
+        m = val.substr(val.toString().indexOf('/') + 1, val.length - 1 - val.toString().indexOf('/'));
     }
     else {
         d = 1;
@@ -348,23 +348,23 @@ function FractionAdd(standard, val) {
     var sm, m
     var sd, d
     var finVal = "";
-    if (standard.indexOf(' ') > -1) {
-        si = standard.substr(0, standard.indexOf(' '));
+    if (standard.toString().indexOf(' ') > -1) {
+        si = standard.substr(0, standard.toString().indexOf(' '));
     }
-    else if (standard.indexOf(" ") < 0 && standard.indexOf('/') < 0) {
+    else if (standard.toString().indexOf(" ") < 0 && standard.toString().indexOf('/') < 0) {
         si = standard;
     }
 
-    if (val.indexOf(" ") > -1) {
-        i = val.substr(0, val.indexOf(' '));
+    if (val.toString().indexOf(" ") > -1) {
+        i = val.substr(0, val.toString().indexOf(' '));
     }
-    else if (val.indexOf(" ") < 0 && val.indexOf('/') < 0) {
+    else if (val.toString().indexOf(" ") < 0 && val.toString().indexOf('/') < 0) {
         i = val;
     }
 
-    if (standard.indexOf('/') > -1) {
-        sd = standard.substr(standard.indexOf(' ') + 1, standard.indexOf('/') - 1 - standard.indexOf(' '));
-        sm = standard.substr(standard.indexOf('/') + 1, standard.length - 1 - standard.indexOf('/'));
+    if (standard.toString().indexOf('/') > -1) {
+        sd = standard.substr(standard.toString().indexOf(' ') + 1, standard.toString().indexOf('/') - 1 - standard.toString().indexOf(' '));
+        sm = standard.substr(standard.toString().indexOf('/') + 1, standard.length - 1 - standard.toString().indexOf('/'));
     }
     else {
         sd = 1;
@@ -372,9 +372,9 @@ function FractionAdd(standard, val) {
         si = si - 1;
     }
 
-    if (val.indexOf('/') > -1) {
-        d = val.substr(val.indexOf(' ') + 1, val.indexOf('/') - 1 - val.indexOf(' '));
-        m = val.substr(val.indexOf('/') + 1, val.length - 1 - val.indexOf('/'));
+    if (val.toString().indexOf('/') > -1) {
+        d = val.substr(val.toString().indexOf(' ') + 1, val.toString().indexOf('/') - 1 - val.toString().indexOf(' '));
+        m = val.substr(val.toString().indexOf('/') + 1, val.length - 1 - val.toString().indexOf('/'));
     }
     else {
         d = 1;
@@ -481,11 +481,11 @@ function generateTable(jArray, type) {
     Object.keys(jArray[0]).forEach(header => {
         let th = document.createElement('th')
         var newheader = header;
-        if (header.indexOf("_aa") > -1 && type == "Measurement") {
-            newheader = header.replace(header.substr(header.indexOf("_aa"), header.length - header.indexOf("_aa")), "");
+        if (header.toString().indexOf("_aa") > -1 && type == "Measurement") {
+            newheader = header.replace(header.substr(header.toString().indexOf("_aa"), header.length - header.toString().indexOf("_aa")), "");
         }
 
-        if (header.indexOf("diff") > -1 && type == "Measurement" ) {
+        if (header.toString().indexOf("diff") > -1 && type == "Measurement" ) {
             var index = header.replace("diff", "");
             newheader = header.replace(index, "") ;
         }
@@ -515,3 +515,4 @@ function decodeHtml(html) {
 const isDate = (date) => {
     return (new Date(date) !== "Invalid Date") && !isNaN(new Date(date));
 }
+

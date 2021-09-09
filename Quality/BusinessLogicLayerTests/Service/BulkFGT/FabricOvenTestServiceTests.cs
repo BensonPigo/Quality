@@ -125,21 +125,64 @@ namespace BusinessLogicLayer.Service.Tests
                 fabricOvenTest_Detail_Result.Details[0].Roll = "3";
                 fabricOvenTest_Detail_Result.Details[0].ChangeScale = "5";
                 fabricOvenTest_Detail_Result.Details[0].StainingScale = "6";
-                fabricOvenTest_Detail_Result.Details[0].ResultChange = "test";
-                fabricOvenTest_Detail_Result.Details[0].ResultStain = "test";
+                fabricOvenTest_Detail_Result.Details[0].ResultChange = null;
+                fabricOvenTest_Detail_Result.Details[0].ResultStain = null;
                 fabricOvenTest_Detail_Result.Details[0].Temperature = "87";
                 fabricOvenTest_Detail_Result.Details[0].Time = "7";
 
                 baseResult = fabricOvenTestService.SaveFabricOvenTestDetail(fabricOvenTest_Detail_Result, "SCIMIS");
+
+                if (!baseResult)
+                {
+                    Assert.Fail(baseResult.ErrorMessage);
+                }
+
+                fabricOvenTest_Detail_Result.Details[0].ResultChange = "Pass";
+                fabricOvenTest_Detail_Result.Details[0].ResultStain = null;
+                baseResult = fabricOvenTestService.SaveFabricOvenTestDetail(fabricOvenTest_Detail_Result, "SCIMIS");
+                if (!baseResult)
+                {
+                    Assert.Fail(baseResult.ErrorMessage);
+                }
+
+                fabricOvenTest_Detail_Result.Details[0].ResultChange = "Fail";
+                fabricOvenTest_Detail_Result.Details[0].ResultStain = null;
+                baseResult = fabricOvenTestService.SaveFabricOvenTestDetail(fabricOvenTest_Detail_Result, "SCIMIS");
+                if (!baseResult)
+                {
+                    Assert.Fail(baseResult.ErrorMessage);
+                }
+
+                fabricOvenTest_Detail_Result.Details[0].ResultChange = "Fail";
+                fabricOvenTest_Detail_Result.Details[0].ResultStain = "Pass";
+                baseResult = fabricOvenTestService.SaveFabricOvenTestDetail(fabricOvenTest_Detail_Result, "SCIMIS");
+                if (!baseResult)
+                {
+                    Assert.Fail(baseResult.ErrorMessage);
+                }
+
+                fabricOvenTest_Detail_Result.Details[0].ResultChange = "Pass";
+                fabricOvenTest_Detail_Result.Details[0].ResultStain = "Pass";
+                baseResult = fabricOvenTestService.SaveFabricOvenTestDetail(fabricOvenTest_Detail_Result, "SCIMIS");
+                if (!baseResult)
+                {
+                    Assert.Fail(baseResult.ErrorMessage);
+                }
 
                 FabricOvenTest_Detail_Result fabricOvenTest_Detail_Result2 = fabricOvenTestService.GetFabricOvenTest_Detail_Result(fabricOvenTest_Result.Main.POID, fabricOvenTest_Result.Details[0].TestNo);
 
                 fabricOvenTest_Detail_Result.Details.Add(fabricOvenTest_Detail_Result2.Details[0]);
                 fabricOvenTest_Detail_Result.Details[fabricOvenTest_Detail_Result.Details.Count - 1].SEQ = "99-95";
                 baseResult = fabricOvenTestService.SaveFabricOvenTestDetail(fabricOvenTest_Detail_Result, "SCIMIS");
+                if (!baseResult)
+                {
+                    Assert.Fail(baseResult.ErrorMessage);
+                }
 
                 fabricOvenTest_Detail_Result.Details.RemoveAt(fabricOvenTest_Detail_Result.Details.Count - 1);
                 baseResult = fabricOvenTestService.SaveFabricOvenTestDetail(fabricOvenTest_Detail_Result, "SCIMIS");
+
+                fabricOvenTestService.DeleteOven(fabricOvenTest_Result.Main.POID, fabricOvenTest_Result.Details[fabricOvenTest_Result.Details.Count - 1].TestNo);
 
                 if (!baseResult)
                 {

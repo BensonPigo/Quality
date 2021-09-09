@@ -20,12 +20,14 @@ namespace Quality.Controllers
             _SendMail = new MailTools();
         }
 
-        public ActionResult SendMailer(string TO, string CC)
+        public ActionResult SendMailer(string TO, string CC, string subject, string body)
         {
             SendMail_Request request = new SendMail_Request() 
             {
                 To = TO,
                 CC = CC,
+                Subject = subject,
+                Body = body,
             };
 
             ViewBag.JS = "";

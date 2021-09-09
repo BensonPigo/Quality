@@ -436,7 +436,11 @@
                                             @Html.DisplayFor(o => Model.garmentTest_Details[i].Sender, "", "")
                                         </td>
                                         <td class="SendDate" style="width:10vw;">
-                                            @Html.DisplayFor(o => Model.garmentTest_Details[i].SendDate, "", "")
+                                            @{
+                                                var SendDateVal = Model.garmentTest_Details[i].SendDate.HasValue ? Model.garmentTest_Details[i].SendDate.Value.ToString("yyyy/MM/dd HH:mm:ss") : "";
+                                            }
+
+                                            @SendDateVal
                                         </td>
                                         <td style="width:10vw;">
                                             <img class="ReceiveMail" src="~/Image/Icon/Mail.png" width="30" />
@@ -445,7 +449,11 @@
                                             @Html.DisplayFor(o => Model.garmentTest_Details[i].Receiver, "", "")
                                         </td>
                                         <td class="ReceiveDate" style="width:10vw;">
-                                            @Html.DisplayFor(o => Model.garmentTest_Details[i].ReceiveDate, "", "")
+                                            @{ 
+                                                var ReceiveDateVal = Model.garmentTest_Details[i].ReceiveDate.HasValue ? Model.garmentTest_Details[i].ReceiveDate.Value.ToString("yyyy/MM/dd HH:mm:ss") : "";
+                                            }
+
+                                            @ReceiveDateVal
                                         </td>
                                         <td style="width:10vw;">
                                             @Html.DisplayFor(o => Model.garmentTest_Details[i].GarmentTest_Detail_AddName, "", "")
@@ -454,7 +462,10 @@
                                             @Html.DisplayFor(o => Model.garmentTest_Details[i].GarmentTest_Detail_EditName, "", "")
                                         </td>
                                         <td style="width:10vw;">
-                                            <img class="detailEdit" src="~/Image/Icon/Edit.png" width="30" />
+                                            @if (Model.garmentTest_Details[i].Status == "New")
+                                            {
+                                                <img class="detailEdit" src="~/Image/Icon/Edit.png" width="30" />
+                                            }
                                         </td>
                                         <td style="width:10vw;">
                                             <img class="detailDelete" src="~/Image/Icon/Delete.png" width="30" />
@@ -480,7 +491,7 @@
         IsEditModeChange();
         DetailDynamicBind();
 
-        if ('@Model.Result' == 'False') {
+        if ('@Model.ErrMsg' != '') {
             msg.WithError('@Model.ErrMsg');
         }
 
@@ -814,6 +825,10 @@
                     if (data.SaveResult) {
                         tr.find("td[class='Sender']").html(data.Sender);
                         tr.find("td[class='SendDate']").html(data.SendDate);
+                        var subject = "Garment Test - Style:" + $('#garmentTest_StyleID').val() + ", Season:" + $('#garmentTest_SeasonID').val();
+                        var body = "Garment Test - Style:" + $('#garmentTest_StyleID').val() + ", Season:" + $('#garmentTest_SeasonID').val() + " had been sent, please receive and confirm";
+                        var para = "?subject=" + subject + "&body=" + body;
+                        window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=400');
                     }
                     else {
                         msg.WithError(data.ErrMsg);
@@ -901,9 +916,15 @@
             data: JSON.stringify({ main: main, details: detail }),
             async: false,
             success: function (data) {
-                if (data.SaveResult) {
-                    msg.WithSuccess("Success");
-                    document.getElementById("QueryForm").submit();
+                if (data.Result) {
+                    $('#Brand').val(data.req.Brand);
+                    $('#Season').val(data.req.Season);
+                    $('#Style').val(data.req.Style);
+                    $('#Article').val(data.req.Article);
+                    $(".rowHeader input[type='text']").removeAttr("disabled");
+                    msg.WithSuccesCheck("Success", function () {
+                        document.getElementById("QueryForm").submit();
+                    });
                 }
                 else {
                     msg.WithError(data.ErrMsg);

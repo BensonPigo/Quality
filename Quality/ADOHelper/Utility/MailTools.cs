@@ -133,33 +133,16 @@ namespace ADOHelper.Utility
 
             html += @"
 <style>
-    .DataTable {
-        width: 92vw;
-        font-size: 1rem;
-        font-weight: bold;
-        border: solid 1px black;
-        background-color: white;
-    }
-        .DataTable > tbody > tr:nth-of-type(odd) {
-            background-color: #ffffff;
-        }
-
-        .DataTable > tbody > tr:nth-of-type(even) {
-            background-color: #F0F2F2;
-        }
-
-        .DataTable > tbody > tr > td {
-            border: solid 1px gray;
-            padding: 1em;
-            text-align: left;
-            vertical-align: middle;
+    .tg {border-collapse:collapse;border-spacing:0;}
+.tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
         }
 </style>
 ";
 
             html += "<body> ";
-            html += "<table class='DataTable'> ";
-            html += "<thead><tr> ";
+            html += "<table class='tg'> ";
+            html += "<thead><tr bgcolor=\"#FFDEA1\" > ";
             for (int i = 0; i <= dt.Columns.Count - 1; i++)
             {
                 html += "<th>" + dt.Columns[i].ColumnName + "</th> ";

@@ -31,20 +31,9 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             List<SelectListItem> data = _SearchListService.GetTypeDatasource(this.UserID);
             SearchList_ViewModel model = new SearchList_ViewModel()
-           {
-               TypeDatasource = data,
-           };
-
-            List<SearchList_Result> detailList = new List<SearchList_Result>();
-            SearchList_Result detail = new SearchList_Result();
-            detail.Type = "Fabirc Crocking & Test";
-            detail.StyleID = "S2106GHTT203";
-            detail.BrandID = "Adidas";
-            detail.SeasonID = "20FW";
-            detail.Article = "GC8429";
-            detailList.Add(detail);
-            model.DataList = detailList;
-
+            {
+                TypeDatasource = data,
+            };
             if (TempData["Model"] != null)
             {
                 model = (SearchList_ViewModel)TempData["Model"];
@@ -61,49 +50,51 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             this.CheckSession();
 
-//            // 必填條件
-//            if ((Req.BrandID == "" || Req.SeasonID == "") || Req.StyleID == "")
-//            {
-//                Req.ErrorMessage = $@"
-//msg.WithInfo('[Style] or [Brand, Season] can't be cmpty. ');
-//";
-//                TempData["Model"] = Req;
-//                return RedirectToAction("Index");
-//            }
+            // 必填條件
+            if ((Req.BrandID == "" || Req.SeasonID == "") || Req.StyleID == "")
+            {
+                Req.ErrorMessage = $@"
+msg.WithInfo('[Style] or [Brand, Season] can't be cmpty. ');
+";
+                TempData["Model"] = Req;
+                return RedirectToAction("Index");
+            }
 
-//            SearchList_ViewModel model = new SearchList_ViewModel();
-//            Req.DataList = new List<SearchList_Result>();
 
-//            List<SelectListItem> data = _SearchListService.GetTypeDatasource(this.UserID);
+            List<SelectListItem> data = _SearchListService.GetTypeDatasource(this.UserID);
 
-//            model.TypeDatasource = data;
-//            // Query
-//            model = _SearchListService.Get_SearchList(model);
+            // Query
+            Req.DataList = new List<SearchList_Result>();
+            Req = _SearchListService.Get_SearchList(Req);
+            Req.TypeDatasource = data;
 
-//            if (!model.Result)
-//            {
-//                model.ErrorMessage = $@"
-//msg.WithInfo('{model.ErrorMessage.Replace("'", string.Empty)}');
-//";
-//            }
+            if (!Req.Result)
+            {
+                Req.ErrorMessage = $@"
+msg.WithInfo('{Req.ErrorMessage.Replace("'", string.Empty)}');
+";
+            }
 
-//            TempData["Model"] = model;
+            TempData["Model"] = Req;
 
             return RedirectToAction("Index");
         }
 
         [HttpPost]
-        [MultipleButton(Name = "action", Argument = "ToExcel")]
         public ActionResult ToExcel(SearchList_ViewModel Req)
         {
             this.CheckSession();
 
+            SearchList_ViewModel result = _SearchListService.ToExcel(Req);
+            result.TempFileName = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + result.TempFileName;
+            return Json(new { result.Result, result.ErrorMessage, result.TempFileName });
+            #region other
+            /*
             try
             {
 
                 SearchList_ViewModel model = new SearchList_ViewModel();
                 Req.DataList = new List<SearchList_Result>();
-
 
                 // 取得資料
                 model = _SearchListService.Get_SearchList(model);
@@ -162,6 +153,9 @@ namespace Quality.Areas.BulkFGT.Controllers
                 throw ex;
             }
             return View();
+            */
+            #endregion
+
         }
     }
 }

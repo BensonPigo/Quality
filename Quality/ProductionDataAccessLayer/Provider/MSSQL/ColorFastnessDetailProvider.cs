@@ -7,6 +7,10 @@ using ADOHelper.Utility;
 using MICS.DataAccessLayer.Interface;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.ViewModel.BulkFGT;
+using Sci;
+using System.Data.SqlClient;
+using System.Linq;
+using ADOHelper.DBToolKit;
 
 namespace MICS.DataAccessLayer.Provider.MSSQL
 {
@@ -18,7 +22,7 @@ namespace MICS.DataAccessLayer.Provider.MSSQL
         #endregion
 
         #region CRUD Base
-        public IList<Fabirc_ColorFastness_Detail_ViewModel> Get_DetailBody(string ID)
+        public Fabric_ColorFastness_Detail_ViewModel Get_DetailBody(string ID)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
@@ -26,6 +30,16 @@ namespace MICS.DataAccessLayer.Provider.MSSQL
             };
 
             string sqlcmd = @"
+select c.* 
+,[Name] = p.Name
+,[InspectionName] = Concat (Inspector, ' ', p.Name)
+from ColorFastness c
+left join pass1 p on c.Inspector = p.ID
+where c.id = @ID
+";
+            var main = ExecuteList<ColorFastness_Result>(CommandType.Text, sqlcmd, objParameter);
+
+            string sqlcmd2 = @"
 select cd.ID
 , SubmitDate
 ,cd.ColorFastnessGroup
@@ -45,7 +59,15 @@ left join PO_Supp_Detail po3 on c.POID = po3.ID
 left join Pass1 p on p.ID = cd.EditName
 where cd.ID = @ID
 ";
-            return ExecuteList<Fabirc_ColorFastness_Detail_ViewModel>(CommandType.Text, sqlcmd, objParameter);
+            var detail = ExecuteList<Fabric_ColorFastness_Detail_Result>(CommandType.Text, sqlcmd2, objParameter);
+
+            Fabric_ColorFastness_Detail_ViewModel result = new Fabric_ColorFastness_Detail_ViewModel
+            {
+                Main = main.FirstOrDefault(),
+                Detail = detail.ToList(),
+            };
+
+            return result;
         }
 
         public IList<PO_Supp_Detail> Get_Seq(string POID, string Seq1,string Seq2)
@@ -109,6 +131,217 @@ and Seq2 = @Seq2
             }
 
             return ExecuteList<FtyInventory>(CommandType.Text, sqlcmd, objParameter);
+        }
+
+        public DataTable Get_SubmitDate(string ID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.String, ID } ,
+            };
+
+            string sqlcmd = @"
+select distinct CONVERT(varchar(100), SubmitDate, 111) as SubmitDate 
+from ColorFastness_Detail WITH (NOLOCK) 
+where id = @ID
+";
+            return ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
+        }
+
+        public bool Save_ColorFastness(Fabric_ColorFastness_Detail_ViewModel sources, string Mdivision,string UserID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@POID", sources.Main.POID } ,
+                { "@TestNo", sources.Main.TestNo } ,
+                { "@InspDate", sources.Main.InspDate } ,
+                { "@Article", sources.Main.Article } ,
+                { "@Result", sources.Main.Result } ,
+                { "@Status", sources.Main.Status } ,
+                { "@Inspector", sources.Main.Inspector } ,
+                { "@Remark", sources.Main.Remark } ,
+                { "@Temperature", sources.Main.Temperature } ,
+                { "@Cycle", sources.Main.Cycle } ,
+                { "@Detergent", sources.Main.Detergent } ,
+                { "@Machine", sources.Main.Machine } ,
+                { "@Drying", sources.Main.Drying } ,
+                { "@UserID", UserID } ,
+            };
+
+            if (sources.Main.TestBeforePicture != null) { objParameter.Add("@TestBeforePicture", sources.Main.TestBeforePicture); }
+            else { objParameter.Add("@TestBeforePicture", System.Data.SqlTypes.SqlBinary.Null); }
+
+            if (sources.Main.TestAfterPicture != null) { objParameter.Add("@TestAfterPicture", sources.Main.TestAfterPicture); }
+            else { objParameter.Add("@TestAfterPicture", System.Data.SqlTypes.SqlBinary.Null); }
+
+            string sqlcmd = string.Empty;
+            int idx = 1;
+
+            #region save Main
+            if (sources.Main.ID != null && !string.IsNullOrEmpty(sources.Main.ID))
+            {
+                objParameter.Add(new SqlParameter($"@ID", sources.Main.ID));
+                // update 
+                sqlcmd += @"
+update ColorFastness
+set	   [POID] = @POID
+      ,[TestNo] = @TestNo
+      ,[InspDate] = @InspDate
+      ,[Article] = @Article
+      ,[Status] = @Status
+      ,[Inspector] = @Inspector
+      ,[Remark] = @Remark
+      ,[EditName] = @UserID
+      ,[EditDate] = GetDate()
+      ,[Temperature] = @Temperature
+      ,[Cycle] = @Cycle
+      ,[Detergent] = @Detergent
+      ,[Machine] = @Machine
+      ,[Drying] = @Drying
+      ,[TestBeforePicture] = @TestBeforePicture
+      ,[TestAfterPicture] = @TestAfterPicture
+where ID = @ID
+" + Environment.NewLine;
+            }
+            else
+            {
+                string NewID = GetID(Mdivision + "CF", "ColorFastness", DateTime.Today, 2, "ID");
+                objParameter.Add(new SqlParameter($"@ID", NewID));
+                sqlcmd += @"
+insert into ColorFastness(ID,POID,TestNo,InspDate,Article,Status,Inspector,Remark,addName,addDate,Temperature,Cycle,Detergent,Machine,Drying,TestBeforePicture,TestAfterPicture)
+values(@ID ,@POID,@TestNo,GETDATE(),@Article,'New',@UserID,@Remark,@UserID,GETDATE(),@Temperature,@Cycle,@Detergent,@Machine,@Drying,@TestBeforePicture,@TestAfterPicture)
+";
+            }
+            #endregion
+
+            #region save Details
+            foreach (var item in sources.Detail)
+            {
+                // add sql Parameter
+                objParameter.Add(new SqlParameter($"@ColorFastnessGroup{idx}", item.ColorFastnessGroup));
+                objParameter.Add(new SqlParameter($"@Seq1{idx}", item.SEQ1));
+                objParameter.Add(new SqlParameter($"@Seq2{idx}", item.SEQ2));
+                objParameter.Add(new SqlParameter($"@Roll{idx}", item.Roll));
+                objParameter.Add(new SqlParameter($"@Dyelot{idx}", item.Dyelot));
+                objParameter.Add(new SqlParameter($"@Result{idx}", item.Result));
+                objParameter.Add(new SqlParameter($"@changeScale{idx}", item.changeScale));
+                objParameter.Add(new SqlParameter($"@StainingScale{idx}", item.StainingScale));
+                objParameter.Add(new SqlParameter($"@Remark{idx}", item.Remark));
+                objParameter.Add($"@SubmitDate{idx}", DbType.Date, item.SubmitDate);
+                objParameter.Add(new SqlParameter($"@ResultChange{idx}", item.ResultChange));
+                objParameter.Add(new SqlParameter($"@ResultStain{idx}", item.ResultStain));
+
+                string sql_detail = $@"
+select 1 from ColorFastness_Detail with(nolock) 
+where id = @ID
+and ColorFastnessGroup = @ColorFastnessGroup{idx}
+and Seq1 = @Seq1{idx}
+and Seq2 = @Seq2{idx}
+";
+                DataTable dtDetail = ExecuteDataTableByServiceConn(CommandType.Text, sql_detail, objParameter);
+
+                // 代表是新增的資料
+                if (dtDetail.Rows.Count == 0)
+                {
+                    sqlcmd += $@"
+insert into ColorFastness_Detail 
+(      [ID]
+      ,[ColorFastnessGroup]
+      ,[SEQ1]
+      ,[SEQ2]
+      ,[Roll]
+      ,[Dyelot]
+      ,[Result]
+      ,[changeScale]
+      ,[StainingScale]
+      ,[Remark]
+      ,[AddName]
+      ,[AddDate]
+      ,[SubmitDate]
+      ,[ResultChange]
+      ,[ResultStain]
+) 
+values
+(
+       @ID
+      ,@ColorFastnessGroup{idx}
+      ,@Seq1{idx}
+      ,@Seq2{idx}
+      ,@Roll{idx}
+      ,@Dyelot{idx}
+      ,@Result{idx}
+      ,@changeScale{idx}
+      ,@StainingScale{idx}
+      ,@Remark{idx}
+      ,@UserID
+      ,GetDate()      
+      ,@SubmitDate{idx}
+      ,@ResultChange{idx}
+      ,@ResultStain{idx}
+)
+" + Environment.NewLine;
+                }
+                else
+                {
+                    sqlcmd += $@"
+update
+       [Roll] = @Roll{idx}
+      ,[Dyelot] = @Dyelot{idx}
+      ,[Result] = @Result{idx}
+      ,[changeScale] = @changeScale{idx}
+      ,[StainingScale] = @StainingScale{idx}
+      ,[Remark] = @Remark{idx}
+      ,[EditName] = @UserID
+      ,[EditDate] = GetDate()
+      ,[SubmitDate] = @SubmitDate{idx}
+      ,[ResultChange] = @ResultChange{idx}
+      ,[ResultStain] = @ResultStain{idx}
+where ID = @ID
+and ColorFastnessGroup = @ColorFastnessGroup{idx}
+and SEQ1 = @Seq1{idx}
+and SEQ2 = @Seq2{idx}
+" + Environment.NewLine;
+                }
+                idx++;
+            }
+            #endregion
+
+            return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
+        }
+
+        public bool Delete_ColorFastness_Detail(string ID, List<Fabric_ColorFastness_Detail_Result> source)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            IList<Fabric_ColorFastness_Detail_Result> dbDetail = Get_DetailBody(ID).Detail;
+            string sqlcmd = string.Empty;
+
+            int idx = 1;
+            foreach (var item in dbDetail)
+            {
+                objParameter.Add(new SqlParameter($"@ID{idx}", item.ID));
+                objParameter.Add(new SqlParameter($"@ColorFastnessGroup{idx}", item.ColorFastnessGroup));
+                objParameter.Add(new SqlParameter($"@SEQ1{idx}", item.SEQ1));
+                objParameter.Add(new SqlParameter($"@SEQ2{idx}", item.SEQ2));
+
+
+                if (!source.Where(x => x.ID.Equals(item.ID) 
+                    && x.ColorFastnessGroup.Equals(item.ColorFastnessGroup)
+                    && x.SEQ1.Equals(item.SEQ1)
+                    && x.SEQ2.Equals(item.SEQ2)
+                ).Any())
+                {   
+                    sqlcmd += $@"
+delete from ColorFastness_Detail 
+where id = @ID{idx} 
+and ColorFastnessGroup = @ColorFastnessGroup{idx}
+and SEQ1 = @SEQ1{idx} 
+and SEQ2 = @SEQ2{idx} 
+" + Environment.NewLine;
+                    idx++;
+                }
+            }
+
+            return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
         }
 
         public IList<ColorFastness_Detail> Get(ColorFastness_Detail Item)

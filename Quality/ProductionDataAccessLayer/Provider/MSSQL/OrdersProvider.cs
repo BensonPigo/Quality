@@ -23,6 +23,209 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         #endregion
 
         #region CRUD Base
+        public DataTable Get_Orders_DataTable(string ID,string PoID)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection objParameter = new SQLParameterCollection()
+            {
+                { "@ID", DbType.String, ID },
+                { "@POID", DbType.String, PoID },
+            };
+
+            #region Sql Command
+            SbSql.Append("SELECT" + Environment.NewLine);
+            SbSql.Append("         ID" + Environment.NewLine);
+            SbSql.Append("        ,BrandID" + Environment.NewLine);
+            SbSql.Append("        ,ProgramID" + Environment.NewLine);
+            SbSql.Append("        ,StyleID" + Environment.NewLine);
+            SbSql.Append("        ,SeasonID" + Environment.NewLine);
+            SbSql.Append("        ,ProjectID" + Environment.NewLine);
+            SbSql.Append("        ,Category" + Environment.NewLine);
+            SbSql.Append("        ,OrderTypeID" + Environment.NewLine);
+            SbSql.Append("        ,BuyMonth" + Environment.NewLine);
+            SbSql.Append("        ,Dest" + Environment.NewLine);
+            SbSql.Append("        ,Model" + Environment.NewLine);
+            SbSql.Append("        ,HsCode1" + Environment.NewLine);
+            SbSql.Append("        ,HsCode2" + Environment.NewLine);
+            SbSql.Append("        ,PayTermARID" + Environment.NewLine);
+            SbSql.Append("        ,ShipTermID" + Environment.NewLine);
+            SbSql.Append("        ,ShipModeList" + Environment.NewLine);
+            SbSql.Append("        ,CdCodeID" + Environment.NewLine);
+            SbSql.Append("        ,CPU" + Environment.NewLine);
+            SbSql.Append("        ,Qty" + Environment.NewLine);
+            SbSql.Append("        ,StyleUnit" + Environment.NewLine);
+            SbSql.Append("        ,PoPrice" + Environment.NewLine);
+            SbSql.Append("        ,CFMPrice" + Environment.NewLine);
+            SbSql.Append("        ,CurrencyID" + Environment.NewLine);
+            SbSql.Append("        ,Commission" + Environment.NewLine);
+            SbSql.Append("        ,FactoryID" + Environment.NewLine);
+            SbSql.Append("        ,BrandAreaCode" + Environment.NewLine);
+            SbSql.Append("        ,BrandFTYCode" + Environment.NewLine);
+            SbSql.Append("        ,CTNQty" + Environment.NewLine);
+            SbSql.Append("        ,CustCDID" + Environment.NewLine);
+            SbSql.Append("        ,CustPONo" + Environment.NewLine);
+            SbSql.Append("        ,Customize1" + Environment.NewLine);
+            SbSql.Append("        ,Customize2" + Environment.NewLine);
+            SbSql.Append("        ,Customize3" + Environment.NewLine);
+            SbSql.Append("        ,CFMDate" + Environment.NewLine);
+            SbSql.Append("        ,BuyerDelivery" + Environment.NewLine);
+            SbSql.Append("        ,SciDelivery" + Environment.NewLine);
+            SbSql.Append("        ,SewInLine" + Environment.NewLine);
+            SbSql.Append("        ,SewOffLine" + Environment.NewLine);
+            SbSql.Append("        ,CutInLine" + Environment.NewLine);
+            SbSql.Append("        ,CutOffLine" + Environment.NewLine);
+            SbSql.Append("        ,PulloutDate" + Environment.NewLine);
+            SbSql.Append("        ,CMPUnit" + Environment.NewLine);
+            SbSql.Append("        ,CMPPrice" + Environment.NewLine);
+            SbSql.Append("        ,CMPQDate" + Environment.NewLine);
+            SbSql.Append("        ,CMPQRemark" + Environment.NewLine);
+            SbSql.Append("        ,EachConsApv" + Environment.NewLine);
+            SbSql.Append("        ,MnorderApv" + Environment.NewLine);
+            SbSql.Append("        ,CRDDate" + Environment.NewLine);
+            SbSql.Append("        ,InitialPlanDate" + Environment.NewLine);
+            SbSql.Append("        ,PlanDate" + Environment.NewLine);
+            SbSql.Append("        ,FirstProduction" + Environment.NewLine);
+            SbSql.Append("        ,FirstProductionLock" + Environment.NewLine);
+            SbSql.Append("        ,OrigBuyerDelivery" + Environment.NewLine);
+            SbSql.Append("        ,ExCountry" + Environment.NewLine);
+            SbSql.Append("        ,InDCDate" + Environment.NewLine);
+            SbSql.Append("        ,CFMShipment" + Environment.NewLine);
+            SbSql.Append("        ,PFETA" + Environment.NewLine);
+            SbSql.Append("        ,PackLETA" + Environment.NewLine);
+            SbSql.Append("        ,LETA" + Environment.NewLine);
+            SbSql.Append("        ,MRHandle" + Environment.NewLine);
+            SbSql.Append("        ,SMR" + Environment.NewLine);
+            SbSql.Append("        ,ScanAndPack" + Environment.NewLine);
+            SbSql.Append("        ,VasShas" + Environment.NewLine);
+            SbSql.Append("        ,SpecialCust" + Environment.NewLine);
+            SbSql.Append("        ,TissuePaper" + Environment.NewLine);
+            SbSql.Append("        ,Junk" + Environment.NewLine);
+            SbSql.Append("        ,Packing" + Environment.NewLine);
+            SbSql.Append("        ,MarkFront" + Environment.NewLine);
+            SbSql.Append("        ,MarkBack" + Environment.NewLine);
+            SbSql.Append("        ,MarkLeft" + Environment.NewLine);
+            SbSql.Append("        ,MarkRight" + Environment.NewLine);
+            SbSql.Append("        ,Label" + Environment.NewLine);
+            SbSql.Append("        ,OrderRemark" + Environment.NewLine);
+            SbSql.Append("        ,ArtWorkCost" + Environment.NewLine);
+            SbSql.Append("        ,StdCost" + Environment.NewLine);
+            SbSql.Append("        ,CtnType" + Environment.NewLine);
+            SbSql.Append("        ,FOCQty" + Environment.NewLine);
+            SbSql.Append("        ,SMnorderApv" + Environment.NewLine);
+            SbSql.Append("        ,FOC" + Environment.NewLine);
+            SbSql.Append("        ,MnorderApv2" + Environment.NewLine);
+            SbSql.Append("        ,Packing2" + Environment.NewLine);
+            SbSql.Append("        ,SampleReason" + Environment.NewLine);
+            SbSql.Append("        ,RainwearTestPassed" + Environment.NewLine);
+            SbSql.Append("        ,SizeRange" + Environment.NewLine);
+            SbSql.Append("        ,MTLComplete" + Environment.NewLine);
+            SbSql.Append("        ,SpecialMark" + Environment.NewLine);
+            SbSql.Append("        ,OutstandingRemark" + Environment.NewLine);
+            SbSql.Append("        ,OutstandingInCharge" + Environment.NewLine);
+            SbSql.Append("        ,OutstandingDate" + Environment.NewLine);
+            SbSql.Append("        ,OutstandingReason" + Environment.NewLine);
+            SbSql.Append("        ,StyleUkey" + Environment.NewLine);
+            SbSql.Append("        ,POID" + Environment.NewLine);
+            SbSql.Append("        ,OrderComboID" + Environment.NewLine);
+            SbSql.Append("        ,IsNotRepeatOrMapping" + Environment.NewLine);
+            SbSql.Append("        ,SplitOrderId" + Environment.NewLine);
+            SbSql.Append("        ,FtyKPI" + Environment.NewLine);
+            SbSql.Append("        ,AddName" + Environment.NewLine);
+            SbSql.Append("        ,AddDate" + Environment.NewLine);
+            SbSql.Append("        ,EditName" + Environment.NewLine);
+            SbSql.Append("        ,EditDate" + Environment.NewLine);
+            SbSql.Append("        ,SewLine" + Environment.NewLine);
+            SbSql.Append("        ,ActPulloutDate" + Environment.NewLine);
+            SbSql.Append("        ,ProdSchdRemark" + Environment.NewLine);
+            SbSql.Append("        ,IsForecast" + Environment.NewLine);
+            SbSql.Append("        ,LocalOrder" + Environment.NewLine);
+            SbSql.Append("        ,GMTClose" + Environment.NewLine);
+            SbSql.Append("        ,TotalCTN" + Environment.NewLine);
+            SbSql.Append("        ,ClogCTN" + Environment.NewLine);
+            SbSql.Append("        ,FtyCTN" + Environment.NewLine);
+            SbSql.Append("        ,PulloutComplete" + Environment.NewLine);
+            SbSql.Append("        ,ReadyDate" + Environment.NewLine);
+            SbSql.Append("        ,PulloutCTNQty" + Environment.NewLine);
+            SbSql.Append("        ,Finished" + Environment.NewLine);
+            SbSql.Append("        ,PFOrder" + Environment.NewLine);
+            SbSql.Append("        ,SDPDate" + Environment.NewLine);
+            SbSql.Append("        ,InspDate" + Environment.NewLine);
+            SbSql.Append("        ,InspResult" + Environment.NewLine);
+            SbSql.Append("        ,InspHandle" + Environment.NewLine);
+            SbSql.Append("        ,KPILETA" + Environment.NewLine);
+            SbSql.Append("        ,MTLETA" + Environment.NewLine);
+            SbSql.Append("        ,SewETA" + Environment.NewLine);
+            SbSql.Append("        ,PackETA" + Environment.NewLine);
+            SbSql.Append("        ,MTLExport" + Environment.NewLine);
+            SbSql.Append("        ,DoxType" + Environment.NewLine);
+            SbSql.Append("        ,FtyGroup" + Environment.NewLine);
+            SbSql.Append("        ,MDivisionID" + Environment.NewLine);
+            SbSql.Append("        ,CutReadyDate" + Environment.NewLine);
+            SbSql.Append("        ,SewRemark" + Environment.NewLine);
+            SbSql.Append("        ,WhseClose" + Environment.NewLine);
+            SbSql.Append("        ,SubconInSisterFty" + Environment.NewLine);
+            SbSql.Append("        ,MCHandle" + Environment.NewLine);
+            SbSql.Append("        ,LocalMR" + Environment.NewLine);
+            SbSql.Append("        ,KPIChangeReason" + Environment.NewLine);
+            SbSql.Append("        ,MDClose" + Environment.NewLine);
+            SbSql.Append("        ,MDEditName" + Environment.NewLine);
+            SbSql.Append("        ,MDEditDate" + Environment.NewLine);
+            SbSql.Append("        ,ClogLastReceiveDate" + Environment.NewLine);
+            SbSql.Append("        ,CPUFactor" + Environment.NewLine);
+            SbSql.Append("        ,SizeUnit" + Environment.NewLine);
+            SbSql.Append("        ,CuttingSP" + Environment.NewLine);
+            SbSql.Append("        ,IsMixMarker" + Environment.NewLine);
+            SbSql.Append("        ,EachConsSource" + Environment.NewLine);
+            SbSql.Append("        ,KPIEachConsApprove" + Environment.NewLine);
+            SbSql.Append("        ,KPICmpq" + Environment.NewLine);
+            SbSql.Append("        ,KPIMNotice" + Environment.NewLine);
+            SbSql.Append("        ,GMTComplete" + Environment.NewLine);
+            SbSql.Append("        ,GFR" + Environment.NewLine);
+            SbSql.Append("        ,CfaCTN" + Environment.NewLine);
+            SbSql.Append("        ,DRYCTN" + Environment.NewLine);
+            SbSql.Append("        ,PackErrCTN" + Environment.NewLine);
+            SbSql.Append("        ,ForecastSampleGroup" + Environment.NewLine);
+            SbSql.Append("        ,DyeingLoss" + Environment.NewLine);
+            SbSql.Append("        ,SubconInType" + Environment.NewLine);
+            SbSql.Append("        ,LastProductionDate" + Environment.NewLine);
+            SbSql.Append("        ,EstPODD" + Environment.NewLine);
+            SbSql.Append("        ,AirFreightByBrand" + Environment.NewLine);
+            SbSql.Append("        ,AllowanceComboID" + Environment.NewLine);
+            SbSql.Append("        ,ChangeMemoDate" + Environment.NewLine);
+            SbSql.Append("        ,BuyBack" + Environment.NewLine);
+            SbSql.Append("        ,BuyBackOrderID" + Environment.NewLine);
+            SbSql.Append("        ,ForecastCategory" + Environment.NewLine);
+            SbSql.Append("        ,OnSiteSample" + Environment.NewLine);
+            SbSql.Append("        ,PulloutCmplDate" + Environment.NewLine);
+            SbSql.Append("        ,NeedProduction" + Environment.NewLine);
+            SbSql.Append("        ,IsBuyBack" + Environment.NewLine);
+            SbSql.Append("        ,KeepPanels" + Environment.NewLine);
+            SbSql.Append("        ,BuyBackReason" + Environment.NewLine);
+            SbSql.Append("        ,IsBuyBackCrossArticle" + Environment.NewLine);
+            SbSql.Append("        ,IsBuyBackCrossSizeCode" + Environment.NewLine);
+            SbSql.Append("        ,KpiEachConsCheck" + Environment.NewLine);
+            SbSql.Append("        ,NonRevenue" + Environment.NewLine);
+            SbSql.Append("        ,CAB" + Environment.NewLine);
+            SbSql.Append("        ,FinalDest" + Environment.NewLine);
+            SbSql.Append("        ,Customer_PO" + Environment.NewLine);
+            SbSql.Append("        ,AFS_STOCK_CATEGORY" + Environment.NewLine);
+            SbSql.Append("        ,CMPLTDATE" + Environment.NewLine);
+            SbSql.Append("        ,DelayCode" + Environment.NewLine);
+            SbSql.Append("        ,DelayDesc" + Environment.NewLine);
+            SbSql.Append("        ,HangerPack" + Environment.NewLine);
+            SbSql.Append("        ,CDCodeNew" + Environment.NewLine);
+            SbSql.Append("        ,SizeUnitWeight" + Environment.NewLine);
+            SbSql.Append("FROM [Orders]" + Environment.NewLine);
+            SbSql.Append("Where 1 = 1" + Environment.NewLine);
+            #endregion
+
+            if (!string.IsNullOrEmpty(ID)) { SbSql.Append("And ID = @ID" + Environment.NewLine); }
+            if (!string.IsNullOrEmpty(PoID)) { SbSql.Append("And PoID = @POID" + Environment.NewLine); }
+
+
+            return ExecuteDataTableByServiceConn(CommandType.Text, SbSql.ToString(), objParameter);
+        }
+
         /*回傳Order(Get) 詳細敘述如下*/
         /// <summary>
         /// 回傳Order

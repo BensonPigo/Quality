@@ -31,5 +31,7 @@ namespace ProductionDataAccessLayer.Interface
 
         DataTable GetOven(string poID, string TestNo);
 
+        void DeleteOven(string poID, string TestNo);
+
     }
 }

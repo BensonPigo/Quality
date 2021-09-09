@@ -200,11 +200,12 @@ namespace DatabaseObject.ResultModel
         public string SkewnessOptionID { get; set; }
         public string DescDetail { get; set; }
         public string WashRemark { get; set; }
+        public bool WashEncode { get; set; }
         public byte[] WashTestBeforePicture { get; set; }
         public byte[] WashTestAfterPicture { get; set; }
     }
 
-    public class FabricCrkShrkTestWash_Detail
+    public class FabricCrkShrkTestWash_Detail : CompareBase
     {
         public string Roll { get; set; }
         public string Dyelot { get; set; }
@@ -221,10 +222,10 @@ namespace DatabaseObject.ResultModel
         public decimal VerticalTest3 { get; set; }
         public decimal VerticalAverage { get; set; }
         public decimal VerticalRate { get; set; }
-        public decimal SkewnessTest1 { get; set; }
-        public decimal SkewnessTest2 { get; set; }
-        public decimal SkewnessTest3 { get; set; }
-        public decimal SkewnessTest4 { get; set; }
+        public decimal SkewnessTest1 { get; set; } = 0;
+        public decimal SkewnessTest2 { get; set; } = 0;
+        public decimal SkewnessTest3 { get; set; } = 0;
+        public decimal SkewnessTest4 { get; set; } = 0;
         public decimal SkewnessRate { get; set; }
         public DateTime? Inspdate { get; set; }
         public string Inspector { get; set; }

@@ -12,8 +12,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string StyleID { get; set; }
         public string Article { get; set; }
         public string Type { get; set; }
-        public string TempFileName { get; set; }        
-
+        public string TempFileName { get; set; }
         public List<SelectListItem> TypeDatasource { get; set; }
     }
 
@@ -30,6 +29,6 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string Artwork { get; set; }
         public string Result { get; set; }
         public DateTime? TestDate { get; set; }
-
+        
     }
 }

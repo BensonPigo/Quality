@@ -185,5 +185,59 @@ where   1 = 1 {sqlWhere}
 ";
             return ExecuteList<StyleResult_ViewModel>(CommandType.Text, sqlGet_StyleResult_Browse, listPar);
         }
+
+        public IList<StyleResult_SampleRFT> Get_StyleResult_SampleRFT(long styleUkey)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("StyleUkey", styleUkey);
+
+            SbSql.Append($@"
+select  o.ID
+        into    #baseOrders
+from    Orders o with (nolock)
+where   o.StyleUkey = @StyleUkey and
+        o.Category = 'S' and
+        o.OnSiteSample = 0
+
+select  ID,
+        OrderID,
+        Status
+into #RFT_Inspection
+from    [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection with (nolock)
+where   OrderID in (select ID from #baseOrders)
+        
+select  distinct ID
+into #NotBAProductIDs   
+from    [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection_Detail with (nolock)
+where   ID in (select ID from #RFT_Inspection)  and PMS_RFTBACriteriaID <> ''
+
+select  ri.OrderID,
+        [InspectedQty] = count(*),
+        [RFT] = Round(sum(iif(ri.Status = 'Pass', 1, 0)) / count(*) * 100.0, 2),
+        [BAProduct] = sum(iif(nbp.ID is not null, 0, 1))
+into    #RFT_InspectionGroup
+from    #RFT_Inspection ri
+left join #NotBAProductIDs nbp on nbp.ID = ri.ID
+group by    OrderID
+
+SELECT  [SP] = o.ID,
+        [SampleStage] = o.OrderTypeID,
+        [Factory] = o.FactoryID,
+        [Delivery] = o.BuyerDelivery,
+        [SCIDelivery] = o.SCIDelivery,
+        [InspectedQty] = isnull(rig.InspectedQty, 0),
+        [RFT] = isnull(rig.RFT, 0),
+        [BAProduct] = isnull(rig.BAProduct, 0),
+        [BAAuditCriteria] = Round(iif(isnull(rig.InspectedQty, 0) = 0, 0, isnull(rig.BAProduct, 0) / rig.InspectedQty * 5.0), 1)
+FROM    Orders o with (nolock)
+left join #RFT_InspectionGroup rig on o.ID = rig.OrderID
+WHERE   ID in (select ID from #baseOrders)
+
+");
+
+
+            return ExecuteList<StyleResult_SampleRFT>(CommandType.Text, SbSql.ToString(), listPar);
+        }
     }
 }
