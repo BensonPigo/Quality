@@ -284,22 +284,30 @@
                             <tr>
                                 <td><h5>Technician</h5></td>
                                 <td>
+                                    @{
+                                        string Technicianname = string.Empty;
+                                        if (!string.IsNullOrWhiteSpace(Model.TechnicianName))
+                                        {
+                                            Technicianname = Model.TechnicianName + " Ext. " + Model.TechnicianExtNo;
+                                        }
+
+                                    }
                                     @Html.TextBoxFor(o => o.Technician, "", new { @class = "OnlyEdit", @readonly = "readonly" })
-                                    <input id="TechnicianName" readonly="readonly" value="@Model.TechnicianName @Model.TechnicianExtNo">                                 
+                                    <input id="TechnicianName" readonly="readonly" value='@Technicianname'>
                                     <input id="btnDetailTechnicianSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
                                 </td>
                                 <td><h5>MR</h5></td>
                                 <td>
                                     @{
                                         string MRname=string.Empty;
-                                        if (!string.IsNullOrWhiteSpace(Model.MR))
+                                        if (!string.IsNullOrWhiteSpace(Model.MRName))
                                         {
-                                            MRname = Model.Technician + " Ext. " + Model.MR;
+                                            MRname = Model.MRName + " Ext. " + Model.MRExtNo;
                                         }
 
                                     }
                                     @Html.TextBoxFor(o => o.MR, "", new { @class = "OnlyEdit", @readonly = "readonly" })
-                                    <input id="MRName" readonly="readonly" value="">
+                                    <input id="MRName" readonly="readonly" value='@MRname'>
                                     <input id="btnDetailMRSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
                                 </td>
                                 <td><h5>Last Edit Name</h5></td>
@@ -382,8 +390,6 @@
 }
 
 <script type="text/javascript">
-
-    @*document.getElementById("MRName").value = @Model.Technician + " Ext. " + @Model.MR;;*@
 
         var msg;
         var EditMode;
@@ -677,6 +683,7 @@
 
             $("#T1Subcon").unbind('blur').blur(function () {
                 if ($(this).val() == '') {
+                    $("#T1SubconAbb").val('');
                     return;
                 }
 
@@ -684,11 +691,12 @@
                     url: "@Url.Action("LocalSuppList","PublicWondow",new{Area=""})",
                     type: 'POST',
                     contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify({ Name: $(this).val(), ReturnType: "JSON" }),
+                    data: JSON.stringify({ SuppID: $(this).val(), ReturnType: "JSON" }),
                     async: true,
                     success: function (data) {
                         if (data.length == 0) {
                             $("#T1Subcon").val('');
+                            $("#T1SubconAbb").val('');
                             msg.WithError('T1/SubconName');
                         }
                     },
@@ -700,6 +708,7 @@
 
             $("#T2Supplier").unbind('blur').blur(function () {
                 if ($(this).val() == '') {
+                    $("#T2SupplierAbb").val('');
                     return;
                 }
 
@@ -711,7 +720,8 @@
                     async: true,
                     success: function (data) {
                         if (data.length == 0) {
-                            $("T2Supplier").val('');
+                            $("#T2Supplier").val('');
+                            $("#T2SupplierAbb").val('');
                             msg.WithError('T2/SupplierName');
                         }
                     },
@@ -786,7 +796,7 @@
             });
 
             $('#btnDetailSubconNameSelectItem').on('click', function () {
-                window.open('@Url.Action("LocalSuppList","PublicWondow",new{Area=""})','T1/SubconName',config='toolbar=no,status=no,location=no,width=800,height=650');
+                window.open('@Url.Action("LocalSuppList","PublicWondow",new{Area=""})','T1/SubconName',config='toolbar=no,status=no,location=no,width=900,height=650');
             });
 
             $('#btnDetailSupplierNameSelectItem').on('click', function () {
@@ -885,7 +895,7 @@
 
         function GetTechnician(data) {
             $('#Technicain').val(data.ID);
-            $('#T2SupplierAbb').val(data.Name);
+            $('#TechnicianName').val(data.Name + " Ext. " + data.ExtNo);
         }
 
         function GetPass1(data) {
