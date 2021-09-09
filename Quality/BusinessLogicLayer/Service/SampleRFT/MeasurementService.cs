@@ -34,8 +34,8 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 List<string> columnListsp = new List<string>(); // 用來記錄幾筆有問題
                 if (dt != null && dt.Rows.Count > 0)
                 {
+                    // 超出值變紅底
                     bool bolCal;
-
                     List<string> diffArry = new List<string>();
                     foreach (var itemCol in dt.Columns)
                     {
