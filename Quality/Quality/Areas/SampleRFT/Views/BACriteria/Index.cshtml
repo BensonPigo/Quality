@@ -105,7 +105,7 @@
                     }
                 </div>
                 <br />
-                <h3>BA Criteria：@Model.SummaryBACriteria</h3>
+                <h3>BA Criteria：@Math.Round(Model.SummaryBACriteria, 1)</h3>
                 <br />
                 <div>
 
@@ -140,7 +140,7 @@
                                         @Html.DisplayFor(modelItem => item.BAProduct)
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.BACriteria)
+                                        @Math.Round(item.BACriteria, 1)
                                     </td>
                                 </tr>
                             }

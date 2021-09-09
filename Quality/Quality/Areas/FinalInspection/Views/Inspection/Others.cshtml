@@ -52,6 +52,7 @@
                 <td class="ColumnStype ColunTD"><label class="Font">CFA</label></td>
                 <td class="ValueTD">
                     <div class="textFont"> @Html.DisplayFor(o => o.CFA)   </div>
+                    @Html.HiddenFor(o => o.CFA)
                 </td>
 
                 <td class="ColumnStype ColunTD"><label class="Font">Inspection Result</label></td>
@@ -70,7 +71,7 @@
                         </div>
 
                     }
-
+                    @Html.HiddenFor(o=>o.InspectionResult)
                 </td>
             </tr>
 
@@ -95,6 +96,7 @@
                         </div>
                     }
 
+                    @Html.HiddenFor(o => o.ShipmentStatus)
 
                 </td>
             </tr>
@@ -128,7 +130,6 @@
         @Html.HiddenFor(o=>o.FinalInspectionID)
     }
 </div>
-
 
 <script>
 

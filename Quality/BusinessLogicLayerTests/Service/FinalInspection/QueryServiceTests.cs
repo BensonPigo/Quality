@@ -22,7 +22,7 @@ namespace BusinessLogicLayer.Service.FinalInspection.Tests
             {
                 IQueryService _QueryService = new QueryService();
 
-                BaseResult result = _QueryService.SendMail("ESPCH21080001", true);
+                BaseResult result = _QueryService.SendMail("ESPCH21080001","XX", true);
 
                 if (!result)
                 {

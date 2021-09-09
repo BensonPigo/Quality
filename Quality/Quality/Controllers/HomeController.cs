@@ -2,6 +2,7 @@
 using BusinessLogicLayer.Service;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
+using Quality.Helper;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -15,6 +16,7 @@ namespace Quality.Controllers
     {
         private readonly ILoginService _LoginService;
         private string WebPortalURL = ConfigurationManager.AppSettings["WebPortalURL"];
+        private static readonly string CryptoKey = ConfigurationManager.AppSettings["CryptoKey"].ToString();
 
         public HomeController()
         {
@@ -76,6 +78,25 @@ namespace Quality.Controllers
                 this.Line = this.Lines.FirstOrDefault();
                 this.Brands = result.Brands;
                 this.Brand = this.Brands.Where(x => x.Equals("ADIDAS")).Select(x => x).FirstOrDefault();
+
+                if (!string.IsNullOrEmpty(this.TargetArea) && !string.IsNullOrEmpty(this.TargetController) && !string.IsNullOrEmpty(this.TargetAction) 
+                    && !string.IsNullOrEmpty(this.TargetPKey_Parameter) && !string.IsNullOrEmpty(this.TargetPKey_Value))
+                {
+                    string area = this.TargetArea;
+                    string controller = this.TargetController;
+                    string action = this.TargetAction;
+                    string Parameter = this.TargetPKey_Parameter;
+                    string value = this.TargetPKey_Value;
+
+                    this.TargetArea = string.Empty;
+                    this.TargetController = string.Empty;
+                    this.TargetAction = string.Empty;
+                    this.TargetPKey_Parameter = string.Empty;
+                    this.TargetPKey_Value = string.Empty;
+
+                    return RedirectToAction(action, controller, new { Area = area, Parameter = value });
+                }
+
                 return RedirectToAction("Index");
             }
             else
@@ -158,6 +179,20 @@ namespace Quality.Controllers
                 ViewData["Msg"] = info.ErrorMessage;
                 return View("Login");
             }
+        }
+
+
+        public ActionResult RedirectToPage(string Code)
+        {
+            string OriInfo = StringEncryptHelper.AesDecryptBase64(Code, CryptoKey);
+
+            this.TargetArea = OriInfo.Split('+')[0];
+            this.TargetController = OriInfo.Split('+')[1];
+            this.TargetAction = OriInfo.Split('+')[2];
+            this.TargetPKey_Parameter = OriInfo.Split('+')[3];
+            this.TargetPKey_Value = OriInfo.Split('+')[4];
+
+            return RedirectToAction("Login");
         }
     }
 }

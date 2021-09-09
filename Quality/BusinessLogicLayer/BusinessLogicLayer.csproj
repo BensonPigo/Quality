@@ -62,6 +62,7 @@
       <HintPath>..\..\_Dll\Sci.Proj.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Transactions" />
@@ -93,6 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common.cs" />
+    <Compile Include="Helper\StringEncryptHelper.cs" />
     <Compile Include="Interface\Authority\IAuthorityService.cs" />
     <Compile Include="Interface\BulkFGT\IFabricColorFastness_Service.cs" />
     <Compile Include="Interface\BulkFGT\IFabricCrkShrkTest_Service.cs" />
@@ -178,7 +180,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="app.config" />
     <None Include="packages.config" />
+    <Content Include="Web.Debug.config">
+      <DependentUpon>app.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>app.config</DependentUpon>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />

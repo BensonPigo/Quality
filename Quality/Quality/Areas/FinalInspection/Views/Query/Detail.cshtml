@@ -100,6 +100,7 @@
         #Detail_ShipmodeSeq_wrapper, #Detail_ShipmodeSeq_wrapper > .dataTables_scrollHeadInner {
             width: 100%
         }
+
         textarea {
             height: 20px;
         }
@@ -126,8 +127,8 @@
                     </tr>
                     <tr>
                         <td>SP#</td>
-                        <td class="valueColor" colspan="5" >
-                            <input  type="text" value="@Model.SP" style="width:100%" readonly/>
+                        <td class="valueColor" colspan="5">
+                            <input type="text" value="@Model.SP" style="width:100%" readonly />
                         </td>
                     </tr>
                     <tr>
@@ -220,8 +221,18 @@
                     <td class="valueColor" style="width:5%">@Model.FinalInspection.PassQty</td>
                     <td style="width:15%">Inpection Result</td>
                     <td class="valueColor" style="width:10%">@Model.FinalInspection.InspectionResult</td>
-                    <td style="width:10%" rowspan="2"><button type="button" class="site-btn btn-red">Go On Inspect</button></td>
-                    <td style="width:10%" rowspan="2"><button type="button" class="site-btn btn-blue">Send Mail</button></td>
+                    <td style="width:10%" rowspan="2">
+                        @if (Model.FinalInspection.InspectionResult == "On-going")
+                        {
+                            <button type="button" onclick="GoOnInspect()" class="site-btn btn-red">Go On Inspect</button>
+                        }
+                    </td>
+                    <td style="width:10%" rowspan="2">
+                        @if (Model.FinalInspection.InspectionResult != "On-going")
+                        {
+                            <button type="button" onclick="SendMail()" class="site-btn btn-blue">Send Mail</button>
+                        }
+                    </td>
                 </tr>
                 <tr>
                     <td>Submit Date</td>
@@ -458,7 +469,34 @@
         }
 
         function ClickDownload() {
-            window
+            window.location.href = '@Url.Action("Download")';
+        }
+
+        function GoOnInspect() {
+            ShowLoading();
+            window.location.href = '@Url.Action(Model.GoOnInspectURL,"Inspection",new { FinalInspectionID = Model.FinalInspection.ID})';
+        }
+
+        function SendMail() {            
+            $.ajax({
+                url: "@Url.Action("SendMail")",
+                type: 'POST',
+                dataType: "json",
+                async: false,
+                success: function (data) {
+
+                    if (data.Result) {
+                        msg.WithSuccess("Success!!");
+                    }
+                    else {
+                        msg.WithError(data.ErrorMessage);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+
         }
     </script>
 }

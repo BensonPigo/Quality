@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using Quality.Controllers;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web.Mvc;
 
@@ -18,18 +19,8 @@ namespace Quality.Areas.FinalInspection.Controllers
 {
     public class InspectionController : BaseController
     {
-        // 測試前端假資料格式
-        public class ListEndlineMoistureClass
-        {
-            public string Instrument;
-            public string Fabrication;
-            public decimal Standard;
-        }
-
-        public class ActionClass
-        {
-            public string name;
-        }
+        private string WebHost = ConfigurationManager.AppSettings["WebHost"];
+        private string IsTest = ConfigurationManager.AppSettings["IsTest"];
 
         #region 查詢SP#
         public ActionResult Index(PoSelect Req)
@@ -780,7 +771,7 @@ msg.WithInfo('{MoistureResult.ErrorMessage}');
                 fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
                 {
                     ID = model.FinalInspectionID,
-                    InspectionStep = "Insp-Measurement"
+                    InspectionStep = "Insp-Others"
                 }, "Insp-Measurement", this.UserID);
             }
 
@@ -844,7 +835,6 @@ msg.WithInfo('{MoistureResult.ErrorMessage}');
         }
 
         #endregion
-
 
         #region Others頁面
 
@@ -929,7 +919,14 @@ msg.WithInfo('{MoistureResult.ErrorMessage}');
 
                 if (model.InspectionResult == "Fail")
                 {
-                    Qservice.SendMail(model.FinalInspectionID, true);
+                    bool test = IsTest.ToLower() == "true";
+
+                    if (test)
+                    {
+                        // 如果是測試則抓local host
+                        WebHost = Request.Url.Scheme + @"://" + Request.Url.Authority + "/";
+                    }
+                    Qservice.SendMail(model.FinalInspectionID, WebHost, test);
                 }
                 else
                 {
@@ -943,14 +940,16 @@ msg.WithInfo('{MoistureResult.ErrorMessage}');
 
                     if (r.Result)
                     {
-                        model.ErrorMessage = $@"
-msg.WithSucces('Success');
+                        model.ErrorMessage = @"
+msg.WithSuccesCheck('Success, redirect to top page.',function() {                        
+     window.location.href = '/FinalInspection/Inspection';
+});
 ";
                     }
                     else
                     {
                         model.ErrorMessage = $@"
-msg.WithSucces('{r.ErrorMessage}');
+msg.WithError('{r.ErrorMessage}');
 ";
                     }
                 }

@@ -7,6 +7,7 @@ using DatabaseObject.RequestModel;
 using DatabaseObject.ViewModel.FinalInspection;
 using ManufacturingExecutionDataAccessLayer.Interface;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
+using Newtonsoft.Json;
 using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
 using System;
@@ -17,6 +18,8 @@ using System.Net;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
+using BusinessLogicLayer.Helper;
+using System.Configuration;
 
 namespace BusinessLogicLayer.Service.FinalInspection
 {
@@ -26,6 +29,7 @@ namespace BusinessLogicLayer.Service.FinalInspection
         private IFinalInspectionProvider _FinalInspectionProvider;
         private IFinalInspFromPMSProvider _FinalInspFromPMSProvider;
         private IStyleProvider _StyleProvider;
+        private static readonly string CryptoKey = ConfigurationManager.AppSettings["CryptoKey"].ToString();
 
         public List<QueryFinalInspection> GetFinalinspectionQueryList(QueryFinalInspection_ViewModel request)
         {
@@ -88,6 +92,15 @@ namespace BusinessLogicLayer.Service.FinalInspection
                 queryReport.ListViewMoistureResult = _FinalInspectionProvider.GetViewMoistureResult(finalInspectionID).ToList();
 
                 queryReport.ListMeasurementViewItem = _FinalInspectionProvider.GetMeasurementViewItem(finalInspectionID).ToList();
+
+                queryReport.GoOnInspectURL = this.GetCurrentAction(queryReport.FinalInspection.InspectionStep);
+
+                _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+                foreach (MeasurementViewItem measurementViewItem in queryReport.ListMeasurementViewItem)
+                {
+                    DataTable dtMeasurementData = _FinalInspectionProvider.GetMeasurement(finalInspectionID, measurementViewItem.Article, measurementViewItem.Size, measurementViewItem.ProductType);
+                    measurementViewItem.MeasurementDataByJson = JsonConvert.SerializeObject(dtMeasurementData);
+                }
             }
             catch (Exception ex)
             {
@@ -98,8 +111,48 @@ namespace BusinessLogicLayer.Service.FinalInspection
             return queryReport;
         }
 
+        private string GetCurrentAction(string InspectionStep)
+        {
+            string ActionName = string.Empty;
+
+            switch (InspectionStep)
+            {
+                case "Setting":
+                    ActionName = "Setting";
+                    break;
+                case "Insp-General":
+                    ActionName = "General";
+                    break;
+                case "Insp-CheckList":
+                    ActionName = "CheckList";
+                    break;
+                case "Insp-AddDefect":
+                    ActionName = "AddDefect";
+                    break;
+                case "Insp-BA":
+                    ActionName = "BeautifulProductAudit";
+                    break;
+                case "Insp-Moisture":
+                    ActionName = "Moisture";
+                    break;
+                case "Insp-Measurement":
+                    ActionName = "Measurement";
+                    break;
+                case "Insp-Others":
+                    ActionName = "Others";
+                    break;
+                case "Submit":
+                    ActionName = "Others";
+                    break;
+                default:
+                    break;
+            }
+
+            return ActionName;
+        }
+
         //寄信
-        public BaseResult SendMail(string finalInspectionID, bool isTest)
+        public BaseResult SendMail(string finalInspectionID,string WebHost, bool isTest)
         {
             BaseResult baseResult = new BaseResult();
             // 取得資料
@@ -110,12 +163,22 @@ namespace BusinessLogicLayer.Service.FinalInspection
 
             try
             {
+                DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection = _FinalInspectionProvider.GetFinalInspection(finalInspectionID);
+
                 DataRow drReportMailInfo = _FinalInspectionProvider.GetReportMailInfo(finalInspectionID).Rows[0];
 
                 List<MailTo> mailTos = _IMailToProvider.Get(new MailTo() { ID = "401" }).ToList();
                 string toAddress = mailTos.Select(s => s.ToAddress).FirstOrDefault();
                 string ccAddress = mailTos.Select(s => s.CcAddress).FirstOrDefault();
                 string subject = $"Final Inspection Report(PO#: {drReportMailInfo["POID"]})-{drReportMailInfo["InspectionResult"]}";
+
+                //對照HomeController的RedirectToPage Action裡面的順序設定
+                string action = this.GetCurrentAction(finalInspection.InspectionStep);
+
+                string OriInfo = $"FinalInspection+Inspection+{action}+FinalInspectionID+{finalInspectionID}";
+
+                string code = StringEncryptHelper.AesEncryptBase64(OriInfo, CryptoKey);
+
                 StringBuilder content = new StringBuilder();
                 content.Append($@"
 Hi all,<br/>
@@ -128,7 +191,11 @@ Hi all,<br/>
 <b>[CFA]:</b><font style='color: blue'>  {drReportMailInfo["CFA"]}</font><br/>
 <b>[Submit Date]:</b><font style='color: blue'>  {drReportMailInfo["SubmitDate"]}</font><br/>
 <b>[Audit Date]:</b><font style='color: blue'>  {drReportMailInfo["AuditDate"]}</font><br/>
-More detail please click here<br/>
+<a href='{WebHost}/Home/RedirectToPage?Code={code}'>
+More detail please click here
+</a>
+
+<br/>
 <br/>
 NOTE: This is an automated reply from a system mailbox. Please do not reply to this email.<br/>
 ");
@@ -171,6 +238,7 @@ NOTE: This is an automated reply from a system mailbox. Please do not reply to t
                     }
                 }
 
+                message.To.Add("benson.chung@sportscity.com.tw");
                 foreach (var cc in ccAddress.Split(';'))
                 {
                     if (!string.IsNullOrEmpty(cc))

@@ -16,6 +16,9 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public int AvailableQty { get; set; }
         public string AQLPlan  { get; set; }
 
+
+        public string GoOnInspectURL { get; set; }
+
         public List<FinalInspectionDefectItem> ListDefectItem { get; set; }
 
         public List<BACriteriaItem> ListBACriteriaItem { get; set; }

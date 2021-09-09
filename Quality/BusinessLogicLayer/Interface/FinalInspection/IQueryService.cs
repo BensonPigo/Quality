@@ -9,7 +9,7 @@ namespace BusinessLogicLayer.Interface
 {
     public interface IQueryService
     {
-        BaseResult SendMail(string finalInspectionID, bool isTest);
+        BaseResult SendMail(string finalInspectionID, string WebHost, bool isTest);
 
         List<QueryFinalInspection> GetFinalinspectionQueryList(QueryFinalInspection_ViewModel request);
 
