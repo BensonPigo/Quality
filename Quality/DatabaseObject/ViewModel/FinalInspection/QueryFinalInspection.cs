@@ -5,6 +5,17 @@ using System.Collections.Generic;
 
 namespace DatabaseObject.ViewModel.FinalInspection
 {
+    public class QueryFinalInspection_ViewModel : ResultModelBase<QueryFinalInspection>
+    {
+        public string SP { get; set; }
+        public string POID { get; set; }
+        public string StyleID { get; set; }
+        public string InspectionResult { get; set; }
+
+        public DateTime? SciDeliveryStart { get; set; }
+        public DateTime? SciDeliveryEnd { get; set; }
+    }
+
     public class QueryFinalInspection
     {
         public string FinalInspectionID { get; set; }

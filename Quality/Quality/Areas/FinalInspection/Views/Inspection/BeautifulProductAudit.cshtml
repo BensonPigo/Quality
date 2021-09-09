@@ -6,9 +6,9 @@
 @model DatabaseObject.ViewModel.FinalInspection.BeautifulProductAudit
 @section FinalInspection_head{
     <style type="text/css">
-        tr > td{
-            vertical-align:middle;
-            font-size:1.2em;
+        tr > td {
+            vertical-align: middle;
+            font-size: 1.2em;
         }
     </style>
 }
@@ -21,7 +21,9 @@
         <div style="padding:2em 3em 2em 3em;width:80%;float:left;position: absolute;transform: translate(-50%, 20%);left: 50%">
             <div style="width:100%;margin-bottom:2em">
                 <div style="display:inline-block"><h1 style="font-size:2em">Beautiful Product Qty</h1></div>
-                <div style="display:inline-block;margin-left:5%">@Html.TextBoxFor(o => o.BAQty, new { @type = "number", @style = "width:80px", @onchange="checkQty(this)" })</div>
+                <div style="display:inline-block;margin-left:5%">
+                    @Html.TextBoxFor(o => o.BAQty, new { @type = "number", @style = "width:80px", @onchange = "checkQty(this)" })
+                </div>
             </div>
             <div>
                 <div><h1 style="font-size:2em;margin-bottom:1em">Non Beautiful Product</h1></div>
@@ -31,7 +33,6 @@
                         {
                             <tr>
                                 <td>
-                                    @Html.HiddenFor(model => Model.ListBACriteria[i].Ukey)
                                     @Html.DisplayFor(model => Model.ListBACriteria[i].BACriteria):@Html.DisplayFor(model => Model.ListBACriteria[i].BACriteriaDesc)
                                 </td>
                                 @if (Model.ListBACriteria[i].Qty == null)
@@ -42,9 +43,20 @@
                                 }
                                 else
                                 {
-                                    <td>@Html.TextBoxFor(model => Model.ListBACriteria[i].Qty, new { @type = "number", @style="width:80px"})</td>
-                                    <td> <img src="~/Image/Icon/Camera.png" width="30" height="30" /></td>
-                                    <td><img src="~/Image/Icon/Picture.png" width="30" height="30" /></td>
+                                    <td>
+                                        @*@Html.TextBoxFor(model => Model.ListBACriteria[i].Qty, new { @type = "number", @style = "width:80px" })*@
+
+                                        <input type='number' style = "width:80px" id='Req.ListBACriteria[@Model.ListBACriteria[i].RowIndex].Qty' name='Req.ListBACriteria[@Model.ListBACriteria[i].RowIndex].Qty' value='@Model.ListBACriteria[i].Qty'>
+
+                                        <input type='hidden' id='Req.ListBACriteria[@Model.ListBACriteria[i].RowIndex].Ukey' name='Req.ListBACriteria[@Model.ListBACriteria[i].RowIndex].Ukey' value='@Model.ListBACriteria[i].Ukey'>
+
+                                        <input type='hidden' id='Req.ListBACriteria[@Model.ListBACriteria[i].RowIndex].RowIndex' name='Req.ListBACriteria[@Model.ListBACriteria[i].RowIndex].RowIndex' value='@Model.ListBACriteria[i].RowIndex'>
+                                        
+                                        <input type='hidden' id='Req.ListBACriteria[@Model.ListBACriteria[i].RowIndex].BACriteria' name='Req.ListBACriteria[@Model.ListBACriteria[i].RowIndex].BACriteria' value='@Model.ListBACriteria[i].BACriteria'>
+                                    </td>
+
+                                    <td> <img src="~/Image/Icon/Camera.png" style="cursor: pointer;" onclick="ScreenShot(@Model.ListBACriteria[i].Ukey, @Model.ListBACriteria[i].RowIndex)" width="30" height="30" /></td>
+                                    <td><img src="~/Image/Icon/Picture.png" style="cursor: pointer;" onclick="OpenPicture(@Model.ListBACriteria[i].Ukey, @Model.ListBACriteria[i].RowIndex)" width="30" height="30" /></td>
                                 }
                             </tr>
                         }
@@ -80,9 +92,61 @@
             if (checkQty($("#BAQty")) == false) {
                 return false;
             }
-            
+
+            ShowLoading();
+
             document.getElementById("goPage").value = self;
             return true;
+        }
+
+        function OpenPicture(DetailUkey, RowIndex) {
+
+            // Ukey = -1代表還沒有這筆Detail紀錄
+            if (DetailUkey == -1) {
+                window.open('@Url.Action("BAPicture")?RowIndex=' + RowIndex, "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
+            }
+            else {
+                window.open('@Url.Action("BAPicture")?DetailUkey=' + DetailUkey, "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
+            }
+        }
+
+        function ScreenShot(DetailUkey, RowIndex) {
+
+            if (DetailUkey == -1) {
+                window.open('@Url.Action("BATakePicture")?RowIndex=' + RowIndex, "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
+            }
+            else {
+                window.open('@Url.Action("BATakePicture")?DetailUkey=' + DetailUkey, "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
+            }
+        }
+
+        function GetImage(Data) {
+            //透過AJAX暫存成Temp Data
+
+            var Ukey = Data.DetailUkey;
+            var RowIndex = Data.RowIndex;
+            var Picture = Data.Img.replace("data:image/webp;base64,", "");
+
+            var data =
+            {
+                Ukey: Ukey,
+                RowIndex: RowIndex,
+                TempImage: Picture,
+            };
+
+            $.ajax({
+                url: "@Url.Action("AddBaPicturesTempSave", "Inspection", new { Area = "FinalInspection" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ data: data }),
+                async: true,
+                success: function (data) {
+                    //msg.WithSuccess("Image OK!!");
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
         }
     </script>
 }

@@ -167,7 +167,7 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public List<Window_LocalSupp> Get_LocalSupp(string Name, bool IsExact)
+        public List<Window_LocalSupp> Get_LocalSupp(string SuppID , string Name, bool IsExact)
         {
             List<Window_LocalSupp> result = new List<Window_LocalSupp>();
 
@@ -176,7 +176,7 @@ namespace BusinessLogicLayer.Service
                 _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
 
                 //取得登入資訊
-                result = _Provider.Get_LocalSupp(Name, IsExact).ToList();
+                result = _Provider.Get_LocalSupp(SuppID, Name, IsExact).ToList();
 
             }
             catch (Exception ex)
@@ -187,7 +187,7 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public List<Window_TPESupp> Get_TPESupp(string Name, bool IsExact)
+        public List<Window_TPESupp> Get_TPESupp(string SuppID, string Name, bool IsExact)
         {
             List<Window_TPESupp> result = new List<Window_TPESupp>();
 
@@ -196,7 +196,7 @@ namespace BusinessLogicLayer.Service
                 _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
 
                 //取得登入資訊
-                result = _Provider.Get_TPESupp(Name, IsExact).ToList();
+                result = _Provider.Get_TPESupp(SuppID, Name, IsExact).ToList();
 
             }
             catch (Exception ex)

@@ -1,4 +1,4 @@
-﻿
+﻿@using DatabaseObject.ViewModel.FinalInspection
 @{
     ViewBag.Title = "Index";
 }
@@ -29,7 +29,7 @@
     .searchFont {
         font-size: 1.5em;
         font-weight: 900;
-        padding-right:1vw;
+        padding-right: 1vw;
     }
 
     .center {
@@ -46,72 +46,71 @@
         padding: 0.4vw;
     }
 
-   .dataTables_scroll {
+    .dataTables_scroll {
         height: 56.4vh
     }
 
     .dataTables_wrapper .dataTables_paginate .paginate_button {
         color: black !important;
     }
-
 </style>
 
-@model List<DatabaseObject.ViewModel.FinalInspection.QueryFinalInspection>
+@model QueryFinalInspection_ViewModel
 
 
 @using (Html.BeginForm("Index", "Query", FormMethod.Post, new { onsubmit = "return checkvalue()" }))
 {
-<div class="search-condition">
+    <div class="search-condition">
 
-    <div class="UpWhiteBackgrond" style="height:14vh">
+        <div class="UpWhiteBackgrond" style="height:14vh">
 
-        <table class="center" style="width: 100%;  height: 3vh ">
-            <tr>
-                <td style="width:5%" align="right">
-                    <p style=" width: 11vw" class="searchFont">SP#</p>
-                </td>
-                <td style="width:10%">
-                    @Html.TextBox("SP", string.Empty, new { @class = "inputStyle" })
-                </td>
-                <td style="width:5%;padding-left:1vw" align="right">
-                    <p class="searchFont ">PO#</p>
-                </td>
-                <td style="width:7%">
-                    @Html.TextBox("POID", string.Empty, new { @class = "inputStyle" })
-                </td>
+            <table class="center" style="width: 100%;  height: 3vh ">
+                <tr>
+                    <td style="width:5%" align="right">
+                        <p style=" width: 11vw" class="searchFont">SP#</p>
+                    </td>
+                    <td style="width:10%">
+                        @Html.TextBox("SP", string.Empty, new { @class = "inputStyle" })
+                    </td>
+                    <td style="width:5%;padding-left:1vw" align="right">
+                        <p class="searchFont ">PO#</p>
+                    </td>
+                    <td style="width:7%">
+                        @Html.TextBox("POID", string.Empty, new { @class = "inputStyle" })
+                    </td>
 
-                <td style="width:9%" align="right">
-                    <p style=" width: 16vw" class="searchFont">Style#</p>
-                </td>
-                <td style="width: 7%">
-                    @Html.TextBox("StyleID", string.Empty, new { @class = "inputStyle" })
-                </td>
-                <td rowspan="2" style="width: 8%; vertical-align: middle" align="right">
+                    <td style="width:9%" align="right">
+                        <p style=" width: 16vw" class="searchFont">Style#</p>
+                    </td>
+                    <td style="width: 7%">
+                        @Html.TextBox("StyleID", string.Empty, new { @class = "inputStyle" })
+                    </td>
+                    <td rowspan="2" style="width: 8%; vertical-align: middle" align="right">
 
-                    <button type="submit" style="border: 0; background: transparent;">
-                        <img src="~/Image/Icon/Query.png" width="40" height="40" alt="submit" />
-                    </button>
-                </td>
-            </tr>
-            <tr>
-                <td align="right">
-                    <p class="searchFont">SCI Delivery</p>
-                </td>
-                <td colspan="3">
-                    @Html.TextBox("SciDeliveryStart", string.Empty, new { @class = "form-control date-picker inputStyle" })
-                    <label style="font-size: 2em">~</label>  @Html.TextBox("SciDeliveryEnd", string.Empty, new { @class = "form-control date-picker inputStyle" })
-                </td>
-                <td align="right">
-                    <p class="searchFont">Inspection Result</p>
-                </td>
-                <td>
-                    @Html.DropDownList("InspectionResult", (List<SelectListItem>)ViewBag.inspectionResultList, null, new { @class = "form-control inputStyle" })
+                        <button type="submit" style="border: 0; background: transparent;">
+                            <img src="~/Image/Icon/Query.png" width="40" height="40" alt="submit" />
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right">
+                        <p class="searchFont">SCI Delivery</p>
+                    </td>
+                    <td colspan="3">
+                        @Html.TextBox("SciDeliveryStart", string.Empty, new { @class = "form-control date-picker inputStyle" })
+                        <label style="font-size: 2em">~</label>  @Html.TextBox("SciDeliveryEnd", string.Empty, new { @class = "form-control date-picker inputStyle" })
+                    </td>
+                    <td align="right">
+                        <p class="searchFont">Inspection Result</p>
+                    </td>
+                    <td>
+                        @Html.DropDownList("InspectionResult", (List<SelectListItem>)ViewBag.inspectionResultList, null, new { @class = "form-control inputStyle" })
 
-                </td>
-            </tr>
-        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
     </div>
-</div>
 }
 
 
@@ -132,12 +131,13 @@
                                 <th>Style</th>
                                 <th>Season</th>
                                 <th>Brand</th>
+                                <th>Article</th>
                                 <th>Inspection <br>Times</th>
                                 <th>Inspection Stage</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var item in Model)
+                            @foreach (var item in Model.DataList)
                             {
                                 string color = string.Empty;
 
@@ -153,42 +153,48 @@
                                         color = "#0000FF";
                                         break;
                                 }
-                            <tr class="row-content" style="vertical-align: middle; text-align: center;">
-                                <td>
-                                    <img src="~/Image/Icon/Document.png" width="20" height="20" />
-                                </td>
-                                <td>
-                                    <div style="color:@color">
-                                        @Html.DisplayFor(modelItem => item.InspectionResult)
-                                    </div>
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.SP)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.POID)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.SPQty)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.StyleID)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.Season)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.BrandID)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.InspectionTimes)
-                                </td>
+                                <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                                    <td>
+                                        <a href="@Url.Action("Detail",new { FinalInspectionID = item.FinalInspectionID })">
+                                            <img src="~/Image/Icon/Document.png" width="20" height="20" />
+                                        </a>
 
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.InspectionStage)
-                                </td>
+                                    </td>
+                                    <td>
+                                        <div style="color:@color">
+                                            @Html.DisplayFor(modelItem => item.InspectionResult)
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SP)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.POID)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SPQty)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.StyleID)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Season)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.BrandID)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Article)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.InspectionTimes)
+                                    </td>
 
-                            </tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.InspectionStage)
+                                    </td>
+
+                                </tr>
                             }
                         </tbody>
 
@@ -219,21 +225,20 @@
 
 
     function checkvalue() {
-        if ($("#SP").val() == "" || $("#POID").val() == "" || $("#StyleID").val() == "" || $("#SciDeliveryStart").val() == "" || $("#SciDeliveryEnd").val() == "") {
+        //if ($("#SP").val() == "" || $("#POID").val() == "" || $("#StyleID").val() == "" || $("#SciDeliveryStart").val() == "" || $("#SciDeliveryEnd").val() == "")
+        //{
 
-            msg.WithError('Please input ＜SP#＞，＜PO#＞，＜Style#＞ and ＜SCI Delivery＞　first!');
-            return false;
-        }
+        //    msg.WithError('Please input ＜SP#＞，＜PO#＞，＜Style#＞ and ＜SCI Delivery＞　first!');
+        //    return false;
+        //}
 
         return true;
     }
-
-
-        $(function () {
+    $(function () {
         $("#Download").click(function () {
             location.href = '@Url.Action("DownLoad")';
         });
-        });
+    });
 
 </script>
 

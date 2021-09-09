@@ -42,6 +42,7 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         void DeleteMoisture(long ukey);
 
         void UpdateMeasurement(DatabaseObject.ViewModel.FinalInspection.Measurement measurement, string userID);
+
         IList<MeasurementViewItem> GetMeasurementViewItem(string finalInspectionID);
         DataTable GetMeasurement(string finalInspectionID, string article, string size, string productType);
 
@@ -49,12 +50,14 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
 
         DataTable GetReportMailInfo(string finalInspectionID);
 
-        IList<QueryFinalInspection> GetFinalinspectionQueryList(FinalInspection_Query request);
+        IList<QueryFinalInspection> GetFinalinspectionQueryList(QueryFinalInspection_ViewModel request);
 
         DataTable GetQueryReportInfo(string finalInspectionID);
 
         IList<FinalInspection_OrderCarton> GetListCartonInfo(string finalInspectionID);
 
         IList<SelectOrderShipSeq> GetListShipModeSeq(string finalInspectionID);
+
+        IList<OtherImage> GetOthersImageList(string finalInspectionID);
     }
 }

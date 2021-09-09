@@ -189,7 +189,10 @@
         }
 
         function checkSubmitValue(self) {
+
             document.getElementById("goPage").value = self;
+
+            ShowLoading();
 
             var trlist = $("#CheckListTable tbody td.details-control");
 

@@ -28,6 +28,10 @@
             color: wheat;
         }
 
+        #Detail_ShipmodeSeq_wrapper tr.row-name {
+            color: wheat;
+        }
+
         #tab-Change {
             width: 100%;
         }
@@ -84,6 +88,21 @@
         #Detail_Cartons_wrapper, #Detail_Cartons_wrapper > .dataTables_scrollHeadInner {
             width: 100%
         }
+
+        #Detail_ShipmodeSeq_info {
+            color: white
+        }
+
+        #Detail_ShipmodeSeq_previous, #Detail_ShipmodeSeq_next {
+            color: white !important;
+        }
+
+        #Detail_ShipmodeSeq_wrapper, #Detail_ShipmodeSeq_wrapper > .dataTables_scrollHeadInner {
+            width: 100%
+        }
+        textarea {
+            height: 20px;
+        }
     </style>
 }
 
@@ -91,7 +110,7 @@
     <div style="padding:1em">
         <div>
             <h1 style="font-size:2em">Inspection Report</h1>
-            <button class="site-btn btn-blue" style="position:absolute;top:1em;right:0">Download</button>
+            <button class="site-btn btn-blue" style="position:absolute;top:1em;right:0" onclick="ClickDownload()">Download</button>
         </div>
         <div style="display:inline-block;border:1px solid gray;width:38%;height:15vh;padding-left:5px">
             <div><h1 style="font-size:1.5em">PO information</h1></div>
@@ -101,13 +120,15 @@
                         <td>PO#</td>
                         <td class="valueColor" style="width:20%">@Model.FinalInspection.POID</td>
                         <td>Style</td>
-                        <td class="valueColor" style="width:20%">@Model.SP</td>
+                        <td class="valueColor" style="width:20%">@Model.StyleID</td>
                         <td>Brand</td>
                         <td class="valueColor">@Model.BrandID</td>
                     </tr>
                     <tr>
                         <td>SP#</td>
-                        <td class="valueColor" colspan="5">@Model.SP</td>
+                        <td class="valueColor" colspan="5" >
+                            <input  type="text" value="@Model.SP" style="width:100%" readonly/>
+                        </td>
                     </tr>
                     <tr>
                         <td>Factory</td>
@@ -127,8 +148,13 @@
                         <td>Inspection Stage</td>
                         <td class="valueColor">@Model.FinalInspection.InspectionStage</td>
                         <td>Carton</td>
-                        <td colspan="2"><button type="button" style="min-width:50%" onclick="open_cartonsDetail()" class="site-btn btn-blue">...</button></td>
-                        <td colspan="2"></td>
+                        <td style="width:4vw">
+                            <button type="button" style="min-width:50%" onclick="open_cartonsDetail()" class="site-btn btn-blue">...</button>
+                        </td>
+                        <td>Shipmode Seq</td>
+                        <td style="width:4vw">
+                            <button type="button" style="min-width:50%" onclick="open_ShipmodeSeqDetail()" class="site-btn btn-blue">...</button>
+                        </td>
                     </tr>
                     <tr>
                         <td>Audit Date</td>
@@ -252,6 +278,40 @@
         </div>
     </div>
 </div>
+
+<div class="detail-dialog-ShipmodeSeq to-edit-detail-ShipmodeSeq">
+    <div class="detail-dialog-content dialog-content-w-icon" style="height:60vh">
+        <table cellspacing="100" id="Detail_ShipmodeSeq" class="table table-striped display">
+            <thead>
+                <tr class="row-name">
+                    <th>SP</th>
+                    <th>Seq</th>
+                    <th>Shipmode</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.ListShipModeSeq.Count; i++)
+                {
+                    <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                        <td>
+                            @Html.DisplayFor(o => Model.ListShipModeSeq[i].OrderID)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(o => Model.ListShipModeSeq[i].Seq)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(o => Model.ListShipModeSeq[i].ShipmodeID)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+        <br />
+        <div>
+        </div>
+    </div>
+</div>
 @section FinalInspection_script
 {
     <script>
@@ -261,6 +321,21 @@
             tabChange();
 
             $('#Detail_Cartons').DataTable({
+                "autoWidth": false,
+                "info": false,
+                "filter": false,
+                "paging": false,
+                "info": false,
+                "scrollY": "50vh",
+                "scrollCollapse": true,
+                columnDefs: [
+                    { targets: 0, width: "30%" },
+                    { targets: 1, width: "30%" },
+                    { targets: 2, width: "30%" },
+                ]
+            });
+
+            $('#Detail_ShipmodeSeq').DataTable({
                 "autoWidth": false,
                 "info": false,
                 "filter": false,
@@ -303,6 +378,35 @@
                 width: "70%",
                 dialogClass: "add-contact-box",
             });
+
+            $(".detail-dialog-ShipmodeSeq").dialog({
+                autoOpen: false,
+                modal: true,
+                closeText: ' ',
+                width: 500,
+                minHeight: 400,
+                position: {
+                    my: "center top",
+                    at: "center top",
+                    of: window
+                },
+                dialogClass: "site-box",
+                open: function (event, ui) {
+                    $('.ui-widget-overlay').bind('click', function () {
+                        //location.reload();//強制Refresh頁面 Benson
+                        $(".ui-dialog-content").dialog('close');
+                    });
+                    $(this).parent().siblings().find(".ui-dialog-content").dialog('close');
+
+                },
+                close: function () {
+                },
+            });
+
+            $(".to-edit-detail-ShipmodeSeq").dialog({
+                width: "70%",
+                dialogClass: "add-contact-box",
+            });
         });
 
         function tabChange() {
@@ -319,6 +423,42 @@
         function open_cartonsDetail() {
             $(".to-edit-detail-cartons").dialog("open");
             $("#Detail_Cartons").DataTable().columns.adjust();
+        }
+
+        function open_ShipmodeSeqDetail() {
+            $(".to-edit-detail-ShipmodeSeq").dialog("open");
+            $("#Detail_ShipmodeSeq").DataTable().columns.adjust();
+        }
+
+        function OpenDefectPicture(DetailUkey, RowIndex) {
+
+            // Ukey = -1代表還沒有這筆Detail紀錄
+            if (DetailUkey == -1) {
+                //msg.WithInfo("No Picture");
+                window.open('@Url.Action("DefectPicture", "Inspection")?RowIndex=' + RowIndex, "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
+            }
+            else {
+                window.open('@Url.Action("DefectPicture", "Inspection")?DetailUkey=' + DetailUkey, "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
+            }
+        }
+
+        function OpenBAPicture(DetailUkey, RowIndex) {
+
+            // Ukey = -1代表還沒有這筆Detail紀錄
+            if (DetailUkey == -1) {
+                window.open('@Url.Action("BAPicture", "Inspection")?RowIndex=' + RowIndex, "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
+            }
+            else {
+                window.open('@Url.Action("BAPicture", "Inspection")?DetailUkey=' + DetailUkey, "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
+            }
+        }
+
+        function OpenOthersPicture() {
+            window.open('@Url.Action("OthersPicture", "Inspection")?FinalInspectionID=@Model.FinalInspection.ID', "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
+        }
+
+        function ClickDownload() {
+            window
         }
     </script>
 }
