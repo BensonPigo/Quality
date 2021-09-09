@@ -143,7 +143,7 @@ namespace BusinessLogicLayer.Service
                     if (!isMoistureExists)
                     {
                         result.Result = false;
-                        result.ErrorMessage = "Please input the moisture fields if <Inspection Stage> is Stagger or Final.";
+                        result.ErrorMessage = "Please input the moisture fields if ＜Inspection Stage＞ is Stagger or Final.";
                         return result;
                     }
                 }

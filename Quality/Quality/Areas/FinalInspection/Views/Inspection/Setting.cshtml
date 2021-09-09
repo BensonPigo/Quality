@@ -1,5 +1,8 @@
 ﻿@{
     ViewBag.Title = "Setting";
+
+    bool AQLPlanDisabled = Model.InspectionStage == "Inline" || Model.InspectionStage == "Stagger";
+    bool SampleQtyDisabled = Model.InspectionStage == "Final" || Model.InspectionStage == "3rd Party";
 }
 
 @model DatabaseObject.ViewModel.FinalInspection.Setting
@@ -84,6 +87,7 @@
     @using (Html.BeginForm("GoGeneral", "Inspection", FormMethod.Post, new { @id = "settingForm", onsubmit = "return checkSubmitValue();" }))
     {
         @Html.HiddenFor(o => o.FinalInspectionID)
+        @Html.HiddenFor(o=> o.AcceptableQualityLevelsUkey)
         <div style="padding:2em 3em 2em 3em">
             <div class="col-auto"><h1 style="font-size:2em">Inspection Setting</h1></div>
 
@@ -128,7 +132,16 @@
                 <table class="col-auto table_div" style="width:100%">
                     <tr>
                         <td><label>AQL Plan</label></td>
-                        <td>@Html.DropDownListFor(o => o.AQLPlan, (List<SelectListItem>)ViewBag.AQLPlanList, null, new { @class = "form-control", @disabled = "disabled" })</td>
+                        <td>
+                            @if (AQLPlanDisabled)
+                            {
+                                @Html.DropDownListFor(o => o.AQLPlan, (List<SelectListItem>)ViewBag.AQLPlanList, null, new { @class = "form-control", @disabled = "@disabled" })
+                            }
+                            else
+                            {
+                                @Html.DropDownListFor(o => o.AQLPlan, (List<SelectListItem>)ViewBag.AQLPlanList, null, new { @class = "form-control"})
+                            }
+                        </td>
                     </tr>
                     <tr>
                         <td colspan="2" style="text-align:center">
@@ -137,7 +150,16 @@
                     </tr>
                     <tr>
                         <td><label>Sample Plan Qty</label></td>
-                        <td>@Html.TextBoxFor(o => o.SampleSize, new { @type = "number", @min = "0", @class = "form-control center-block", @onchange = "onSampleSizeChange(this.value)" })</td>
+                        <td>
+                            @if (SampleQtyDisabled)
+                            {
+                                @Html.TextBoxFor(o => o.SampleSize, new { @type = "number", @min = "0", @class = "form-control center-block", @onchange = "onSampleSizeChange(this.value)" , @disabled = "disabled" })
+                            }
+                            else
+                            {
+                                @Html.TextBoxFor(o => o.SampleSize, new { @type = "number", @min = "0", @class = "form-control center-block", @onchange = "onSampleSizeChange(this.value)" })
+                            }
+                        </td>
                     </tr>
                     <tr>
                         <td><label>Accepted Qty</label></td>
@@ -249,6 +271,7 @@
             @Html.Hidden($"SelectCarton[{i}].PackingListID", Model.SelectCarton[i].PackingListID)
             @Html.Hidden($"SelectCarton[{i}].CTNNo", Model.SelectCarton[i].CTNNo)
             @Html.Hidden($"SelectCarton[{i}].OrderID", Model.SelectCarton[i].OrderID)
+            @Html.Hidden($"SelectCarton[{i}].Seq", Model.SelectCarton[i].Seq)
         }
         //Model.SelectOrderShipSeq
         for (int i = 0; i < Model.SelectOrderShipSeq.Count; i++)
@@ -333,6 +356,8 @@
                 }
             });
 
+
+            // 把開窗點到的資料，寫入DataTable的Datasource
             $("#SelectedPOTable tbody").on("blur", "td.OpenDetail", function () {
 
 
@@ -829,6 +854,7 @@
                 }
             });
 
+            $("#AQLPlan").removeAttr("disabled");
             return true;
         }
     </script>

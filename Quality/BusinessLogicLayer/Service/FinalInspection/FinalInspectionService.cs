@@ -95,7 +95,13 @@ namespace BusinessLogicLayer.Service
             }
         }
 
-
+        /// <summary>
+        /// FinalInspection 進度紀錄
+        /// </summary>
+        /// <param name="finalInspection">FinalInspection.InspectionStep 存 「要去的Step」</param>
+        /// <param name="currentStep">當下的Step</param>
+        /// <param name="userID">登入者</param>
+        /// <returns></returns>
         public BaseResult UpdateFinalInspectionByStep(DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection, string currentStep, string userID)
         {
             BaseResult result = new BaseResult();

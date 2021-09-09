@@ -1,5 +1,6 @@
 ﻿using BusinessLogicLayer.Interface;
 using BusinessLogicLayer.Service;
+using BusinessLogicLayer.Service.FinalInspection;
 using DatabaseObject;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
@@ -225,6 +226,7 @@ msg.WithInfo('{ex.Message}');
         [HttpPost]
         public ActionResult GoGeneral(Setting setting)
         {
+            FinalInspectionService fsevice = new FinalInspectionService();
             FinalInspectionSettingService sevice = new FinalInspectionSettingService();
 
             string finalInspectionID = string.Empty;
@@ -256,7 +258,7 @@ msg.WithError(""Accepted Qty cant't be empty."");
                 return View("Setting", setting);
             }
 
-            if (setting.SelectedPO != null &&  setting.SelectedPO.Where(o => string.IsNullOrEmpty(o.Seq)).Any())
+            if (setting.SelectedPO != null && setting.SelectedPO.Where(o => string.IsNullOrEmpty(o.Seq)).Any())
             {
                 setting.ErrorMessage = $@"
 msg.WithError(""Shipmode Seq cant't be empty."");
@@ -274,6 +276,12 @@ msg.WithError(""Shipmode Seq cant't be empty."");
 
                 return View("Setting", setting);
             }
+
+            fsevice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
+            {
+                ID = finalInspectionID,
+                InspectionStep = "Insp-General"
+            }, "Setting", this.UserID);
 
             return RedirectToAction("General", new { FinalInspectionID = finalInspectionID });
         }
@@ -299,17 +307,18 @@ msg.WithError(""Shipmode Seq cant't be empty."");
         [HttpPost]
         public ActionResult GoCheckList(DatabaseObject.ManufacturingExecutionDB.FinalInspection model, string goPage)
         {
+            FinalInspectionService sevice = new FinalInspectionService();
             string FinalInspectionID = model.ID;
 
             if (goPage == "Back")
             {
+                model.InspectionStep = "Setting";
+                sevice.UpdateFinalInspectionByStep(model, "Insp-General", this.UserID);
                 return RedirectToAction("Setting", new { finalInspectionID = FinalInspectionID });
             }
             else if (goPage == "Next")
             {
-
-                FinalInspectionService sevice = new FinalInspectionService();
-                model.InspectionStep = "Insp-General";
+                model.InspectionStep = "Insp-CheckList";
                 sevice.UpdateFinalInspectionByStep(model, "Insp-General", this.UserID);
 
                 return RedirectToAction("CheckList", new { FinalInspectionID = FinalInspectionID });
@@ -332,14 +341,17 @@ msg.WithError(""Shipmode Seq cant't be empty."");
         [HttpPost]
         public ActionResult CheckList(DatabaseObject.ManufacturingExecutionDB.FinalInspection finalinspection, string goPage)
         {
+            FinalInspectionService sevice = new FinalInspectionService();
             if (goPage == "Back")
             {
+                finalinspection.InspectionStep = "Insp-General";
+                sevice.UpdateFinalInspectionByStep(finalinspection, "Insp-CheckList", this.UserID);
+
                 return RedirectToAction("General", new { FinalInspectionID = finalinspection.ID });
             }
             else if (goPage == "Next")
             {
-                FinalInspectionService sevice = new FinalInspectionService();
-                finalinspection.InspectionStep = "Insp-CheckList";
+                finalinspection.InspectionStep = "Insp-AddDefect";
                 sevice.UpdateFinalInspectionByStep(finalinspection, "Insp-CheckList", this.UserID);
 
                 return RedirectToAction("AddDefect", new { FinalInspectionID = finalinspection.ID });
@@ -367,20 +379,11 @@ msg.WithError(""Shipmode Seq cant't be empty."");
 
             addDefct.SampleSize = model.SampleSize;
 
-
-            TempData["Model"] = addDefct;
             return View(addDefct);
         }
 
         public ActionResult DefectPicture(string DetailUkey, string RowIndex)
         {
-            AddDefect MainData = new AddDefect();
-            if (TempData["Model"] != null)
-            {
-                MainData = (AddDefect)TempData["Model"];
-            }
-            TempData["Model"] = MainData;
-
             DetailUkey = DetailUkey == null || DetailUkey == string.Empty ? "0" : DetailUkey;
             long FinalInspection_DetailUkey = Convert.ToInt64(DetailUkey);
             long FinalInspection_RowIndex = Convert.ToInt64(RowIndex);
@@ -390,21 +393,23 @@ msg.WithError(""Shipmode Seq cant't be empty."");
             List<byte[]> model = Addsevice.GetDefectImage(FinalInspection_DetailUkey);
 
             // 把畫面上User拍的照片加進去，一起顯示
-
-            // DB有的就用Ukey
-            if (FinalInspection_DetailUkey != 0)
+            if (TmpFinalInspectionDefectItem_List != null)
             {
-                foreach (var item in TmpFinalInspectionDefectItem_List.Where(o => o.Ukey == FinalInspection_DetailUkey))
+                // DB有的就用Ukey
+                if (FinalInspection_DetailUkey != 0)
                 {
-                    model.Add(item.TempImage);
+                    foreach (var item in TmpFinalInspectionDefectItem_List.Where(o => o.Ukey == FinalInspection_DetailUkey))
+                    {
+                        model.Add(item.TempImage);
+                    }
                 }
-            }
-            else
-            {
-                // DB沒有的就用RowIndex
-                foreach (var item in TmpFinalInspectionDefectItem_List.Where(o => o.RowIndex == FinalInspection_RowIndex))
+                else
                 {
-                    model.Add(item.TempImage);
+                    // DB沒有的就用RowIndex
+                    foreach (var item in TmpFinalInspectionDefectItem_List.Where(o => o.RowIndex == FinalInspection_RowIndex))
+                    {
+                        model.Add(item.TempImage);
+                    }
                 }
             }
 
@@ -429,6 +434,7 @@ msg.WithError(""Shipmode Seq cant't be empty."");
         public ActionResult AddDefect(AddDefect addDefct, string goPage)
         {
 
+            FinalInspectionService fservice = new FinalInspectionService();
             AddDefect latestModel = new AddDefect();
             UpdateModel(latestModel);
 
@@ -438,6 +444,12 @@ msg.WithError(""Shipmode Seq cant't be empty."");
 
             if (goPage == "Back")
             {
+                fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
+                {
+                    ID = addDefct.FinalInspectionID,
+                    InspectionStep = "Insp-CheckList"
+                }, "Insp-AddDefect", this.UserID);
+
                 return RedirectToAction("CheckList", new { FinalInspectionID = addDefct.FinalInspectionID });
             }
             else if (goPage == "Next")
@@ -467,9 +479,14 @@ msg.WithError(""Shipmode Seq cant't be empty."");
                     }
                 }
 
-                addDefct.InspectionStep = "Insp-AddDefect";
                 FinalInspectionAddDefectService Addsevice = new FinalInspectionAddDefectService();
                 Addsevice.UpdateFinalInspectionDetail(addDefct, this.UserID);
+
+                fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
+                {
+                    ID = addDefct.FinalInspectionID,
+                    InspectionStep = "Insp-BA"
+                }, "Insp-AddDefect", this.UserID);
 
                 return RedirectToAction("BeautifulProductAudit", new { FinalInspectionID = addDefct.FinalInspectionID });
             }
@@ -490,8 +507,6 @@ msg.WithError(""Shipmode Seq cant't be empty."");
             BeautifulProductAudit model = new BeautifulProductAudit() { ListBACriteria = new List<BACriteriaItem>() };
             model = Service.GetBeautifulProductAuditForInspection(FinalInspectionID);
 
-
-            TempData["Model"] = model;
             return View(model);
         }
 
@@ -504,13 +519,6 @@ msg.WithError(""Shipmode Seq cant't be empty."");
 
         public ActionResult BAPicture(string DetailUkey, string RowIndex)
         {
-            BeautifulProductAudit MainData = new BeautifulProductAudit();
-            if (TempData["Model"] != null)
-            {
-                MainData = (BeautifulProductAudit)TempData["Model"];
-            }
-            TempData["Model"] = MainData;
-
             DetailUkey = DetailUkey == null || DetailUkey == string.Empty ? "0" : DetailUkey;
             long FinalInspection_DetailUkey = Convert.ToInt64(DetailUkey);
             long FinalInspection_RowIndex = Convert.ToInt64(RowIndex);
@@ -522,21 +530,23 @@ msg.WithError(""Shipmode Seq cant't be empty."");
             List<byte[]> model = Service.GetBACriteriaImage(FinalInspection_DetailUkey);
 
             // 把畫面上User拍的照片加進去，一起顯示
-
-            // DB有的就用Ukey
-            if (FinalInspection_DetailUkey != 0)
+            if (TmpBACriteriaItem_List != null)
             {
-                foreach (var item in TmpBACriteriaItem_List.Where(o => o.Ukey == FinalInspection_DetailUkey))
+                // DB有的就用Ukey
+                if (FinalInspection_DetailUkey != 0)
                 {
-                    model.Add(item.TempImage);
+                    foreach (var item in TmpBACriteriaItem_List.Where(o => o.Ukey == FinalInspection_DetailUkey))
+                    {
+                        model.Add(item.TempImage);
+                    }
                 }
-            }
-            else
-            {
-                // DB沒有的就用RowIndex
-                foreach (var item in TmpBACriteriaItem_List.Where(o => o.RowIndex == FinalInspection_RowIndex))
+                else
                 {
-                    model.Add(item.TempImage);
+                    // DB沒有的就用RowIndex
+                    foreach (var item in TmpBACriteriaItem_List.Where(o => o.RowIndex == FinalInspection_RowIndex))
+                    {
+                        model.Add(item.TempImage);
+                    }
                 }
             }
 
@@ -553,6 +563,7 @@ msg.WithError(""Shipmode Seq cant't be empty."");
         [HttpPost]
         public ActionResult BeautifulProductAudit(BeautifulProductAudit Req, string goPage)
         {
+            FinalInspectionService fservice = new FinalInspectionService();
             BeautifulProductAudit latestModel = new BeautifulProductAudit();
             UpdateModel(latestModel);
 
@@ -561,6 +572,12 @@ msg.WithError(""Shipmode Seq cant't be empty."");
 
             if (goPage == "Back")
             {
+                fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
+                {
+                    ID = latestModel.FinalInspectionID,
+                    InspectionStep = "Insp-AddDefect"
+                }, "Insp-BA", this.UserID);
+
                 return RedirectToAction("AddDefect", new { FinalInspectionID = Req.FinalInspectionID });
             }
             else if (goPage == "Next")
@@ -590,9 +607,14 @@ msg.WithError(""Shipmode Seq cant't be empty."");
                     }
                 }
 
-                Req.InspectionStep = "Insp-BA";
                 FinalInspectionBeautifulProductAuditService Service = new FinalInspectionBeautifulProductAuditService();
                 Service.UpdateBeautifulProductAudit(Req, this.UserID);
+
+                fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
+                {
+                    ID = latestModel.FinalInspectionID,
+                    InspectionStep = "Insp-Moisture"
+                }, "Insp-BA", this.UserID);
 
                 return RedirectToAction("Moisture", new { FinalInspectionID = Req.FinalInspectionID });
             }
@@ -602,6 +624,7 @@ msg.WithError(""Shipmode Seq cant't be empty."");
 
         #endregion
 
+        #region Moisture頁面
         public List<SelectListItem> ItemListBinding(Dictionary<string, string> Options)
         {
             List<SelectListItem> result_itemList = new List<SelectListItem>();
@@ -622,199 +645,6 @@ msg.WithError(""Shipmode Seq cant't be empty."");
         {
             DatabaseObject.ViewModel.FinalInspection.Moisture model = new DatabaseObject.ViewModel.FinalInspection.Moisture();
             FinalInspectionMoistureService service = new FinalInspectionMoistureService();
-
-
-            //model.FinalInspectionID = "ESPCH21080001";
-            //model.FinalInspection_CTNMoisureStandard = 7.5m;
-            //model.ListArticle = new List<string>();
-            //for (int i = 10; i < 60; i = i + 10)
-            //{
-            //    model.ListArticle.Add("00" + i.ToString());
-            //}
-            //model.ListCartonItem = new List<DatabaseObject.ViewModel.FinalInspection.CartonItem>();
-
-            //model.ListEndlineMoisture = new List<DatabaseObject.ManufacturingExecutionDB.EndlineMoisture>();
-
-            #region
-            string jsonString = @"
-[
-  {
-    'Instrument': 'Aqua Boy',
-    'Fabrication': '100% Cotton',
-    'Standard': 56
-  },
-  {
-    'Instrument': 'Aqua Boy',
-    'Fabrication': '100% Linen',
-    'Standard': 67
-  },
-  {
-    'Instrument': 'Aqua Boy',
-    'Fabrication': '100% Polyacrylic',
-    'Standard': 83
-  },
-  {
-    'Instrument': 'Aqua Boy',
-    'Fabrication': '100% Polyamide',
-    'Standard': 67
-  },
-  {
-    'Instrument': 'Aqua Boy',
-    'Fabrication': '100% Polyester',
-    'Standard': 57
-  },
-  {
-    'Instrument': 'Aqua Boy',
-    'Fabrication': '100% Viscose',
-    'Standard': 59
-  },
-  {
-    'Instrument': 'Aqua Boy',
-    'Fabrication': '30% Viscose 70% Polyester',
-    'Standard': 62
-  },
-  {
-    'Instrument': 'Aqua Boy',
-    'Fabrication': '50% Cotton 50% Polyacrylic',
-    'Standard': 62
-  },
-  {
-    'Instrument': 'Aqua Boy',
-    'Fabrication': '50% Cotton 50% Polyester',
-    'Standard': 37
-  },
-  {
-    'Instrument': 'Aqua Boy',
-    'Fabrication': '50% Viscose 50% Cotton',
-    'Standard': 48
-  },
-  {
-    'Instrument': 'Aqua Boy',
-    'Fabrication': '50% Viscose 50% Polyester',
-    'Standard': 57
-  },
-  {
-    'Instrument': 'Aqua Boy',
-    'Fabrication': '60% Cotton 40% Polyester',
-    'Standard': 45
-  },
-  {
-    'Instrument': 'Aqua Boy',
-    'Fabrication': '60% Linen 40% Cotton',
-    'Standard': 47
-  },
-  {
-    'Instrument': 'Aqua Boy',
-    'Fabrication': '70% Cotton 30% Polyamide',
-    'Standard': 59
-  },
-  {
-    'Instrument': 'Aqua Boy',
-    'Fabrication': '70% Cotton 30% Polyester',
-    'Standard': 53
-  },
-  {
-    'Instrument': 'Aqua Boy',
-    'Fabrication': '80% Cotton 20% Polyester',
-    'Standard': 59
-  },
-  {
-    'Instrument': 'Aqua Boy',
-    'Fabrication': '80% Viscose 20% Polyamide',
-    'Standard': 59
-  },
-  {
-    'Instrument': 'Aqua Boy',
-    'Fabrication': '90% Cotton 10% Elastane/Spandex',
-    'Standard': 56
-  },
-  {
-    'Instrument': 'Aqua Boy',
-    'Fabrication': '90% Viscose 10% Elastane/Spandex',
-    'Standard': 59
-  },
-  {
-    'Instrument': 'B Machine',
-    'Fabrication': 'Acetate',
-    'Standard': 7.5
-  },
-  {
-    'Instrument': 'B Machine',
-    'Fabrication': 'Acrylic',
-    'Standard': 5.5
-  },
-  {
-    'Instrument': 'B Machine',
-    'Fabrication': 'Cotton',
-    'Standard': 8
-  },
-  {
-    'Instrument': 'B Machine',
-    'Fabrication': 'Leather',
-    'Standard': 4.6
-  },
-  {
-    'Instrument': 'B Machine',
-    'Fabrication': 'Linen/Flax',
-    'Standard': 9.5
-  },
-  {
-    'Instrument': 'B Machine',
-    'Fabrication': 'Nylon',
-    'Standard': 8
-  },
-  {
-    'Instrument': 'B Machine',
-    'Fabrication': 'Paper/Straw',
-    'Standard': 6.6
-  },
-  {
-    'Instrument': 'B Machine',
-    'Fabrication': 'Polyester',
-    'Standard': 5.5
-  },
-  {
-    'Instrument': 'B Machine',
-    'Fabrication': 'PU',
-    'Standard': 4.6
-  },
-  {
-    'Instrument': 'B Machine',
-    'Fabrication': 'Silk',
-    'Standard': 6
-  },
-  {
-    'Instrument': 'B Machine',
-    'Fabrication': 'Viscose',
-    'Standard': 6
-  },
-  {
-    'Instrument': 'B Machine',
-    'Fabrication': 'Wool',
-    'Standard': 4.5
-  }
-]";
-
-            #endregion
-            //List<ListEndlineMoistureClass> objectList = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ListEndlineMoistureClass>>(jsonString);
-            //foreach (ListEndlineMoistureClass item in objectList)
-            //{
-            //    DatabaseObject.ManufacturingExecutionDB.EndlineMoisture endlineMoisture = new DatabaseObject.ManufacturingExecutionDB.EndlineMoisture();
-            //    endlineMoisture.Instrument = item.Instrument;
-            //    endlineMoisture.Fabrication = item.Fabrication;
-            //    endlineMoisture.Standard = item.Standard;
-
-            //    model.ListEndlineMoisture.Add(endlineMoisture);
-            //}
-
-            //model.ActionSelectListItem = new List<SelectListItem>();
-            //jsonString = @"[{'name':''},{'name':'Change carton'},{'name':'Drying garment+change carton'},{'name':'Open carton with drying garment'},{'name':'Others'}]";
-            //List<ActionClass> actionList = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ActionClass>>(jsonString);
-            //foreach (ActionClass item in actionList)
-            //{
-            //    SelectListItem i = new SelectListItem { Text = item.name, Value = item.name };
-            //    model.ActionSelectListItem.Add(i);
-            //}
 
             model = service.GetMoistureForInspection(FinalInspectionID);
 
@@ -846,9 +676,19 @@ msg.WithError(""Shipmode Seq cant't be empty."");
             FinalInspectionMoistureService service = new FinalInspectionMoistureService();
             BaseResult result = service.UpdateMoistureBySave(Req);
 
+            if (result)
+            {
+                FinalInspectionService fservice = new FinalInspectionService();
+
+                fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
+                {
+                    ID = Req.FinalInspectionID,
+                    InspectionStep = "Insp-Moisture"
+                }, "Insp-Moisture", this.UserID);
+            }
+
             return Json(result);
         }
-
 
         [HttpPost]
         public ActionResult MoistureDelete(long UKey)
@@ -862,164 +702,263 @@ msg.WithError(""Shipmode Seq cant't be empty."");
         [HttpPost]
         public ActionResult Moisture(DatabaseObject.ViewModel.FinalInspection.MoistureResult moistureResult, string goPage)
         {
+            FinalInspectionService fservice = new FinalInspectionService();
             if (goPage == "Back")
             {
-                return RedirectToAction("BeautifulProductAudit");
+                fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
+                {
+                    ID = moistureResult.FinalInspectionID,
+                    InspectionStep = "Insp-BA"
+                }, "Insp-Moisture", this.UserID);
+
+                return RedirectToAction("BeautifulProductAudit", new { FinalInspectionID = moistureResult.FinalInspectionID });
             }
             else if (goPage == "Next")
             {
-                return RedirectToAction("Measurement");
+                FinalInspectionMoistureService service = new FinalInspectionMoistureService();
+                var MoistureResult = service.UpdateMoistureByNext(moistureResult);
+
+                // 完成資料才可以進入下一步
+                if (MoistureResult.Result)
+                {
+                    fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
+                    {
+                        ID = moistureResult.FinalInspectionID,
+                        InspectionStep = "Insp-Measurement"
+                    }, "Insp-Moisture", this.UserID);
+
+                    return RedirectToAction("Measurement", new { FinalInspectionID = moistureResult.FinalInspectionID });
+                }
+                else
+                {
+                    ViewData["ErrorMessage"] = $@"
+msg.WithInfo('{MoistureResult.ErrorMessage}');
+";
+                }
             }
-            return View();
+            return View(moistureResult);
         }
 
-        public ActionResult Measurement()
+        #endregion
+
+        #region Measurement頁面
+        public ActionResult Measurement(string FinalInspectionID)
         {
+            FinalInspectionMeasurementService service = new FinalInspectionMeasurementService();
+            Measurement model = service.GetMeasurementForInspection(FinalInspectionID, this.UserID);
 
-            List<string> listArticle = new List<string>() {
-                 "0050","0049"
-            };
-
-            List<SelectListItem> articleList = new SetListItem().ItemListBinding(listArticle);
-            ViewBag.ListArticle = articleList;
-
-            List<string> listSize = new List<string>() {
-                 "S","M","L","XL"
-            };
+            List<string> listSize = model.ListSize.Select(O => O.SizeCode).Distinct().ToList();
 
             List<SelectListItem> sizeList = new SetListItem().ItemListBinding(listSize);
             ViewBag.ListSize = sizeList;
 
+            TempData["AllSize"] = model.ListSize;
 
-            List<string> listProductType = new List<string>() {
-                 "Bottom","Top"
-            };
+            return View(model);
+        }
 
-            List<SelectListItem> productTypeList = new SetListItem().ItemListBinding(listProductType);
-            ViewBag.ListProductType = productTypeList;
+        /// <summary>
+        /// 右上角Save按鈕
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult MeasurementSingleSave(Measurement model)
+        {
+            if (model.ListMeasurementItem != null && !model.ListMeasurementItem.Where(o => o.ResultSizeSpec != null && o.ResultSizeSpec != "").Any())
+            {
+                return Json(true);
+            }
 
-            DatabaseObject.ViewModel.FinalInspection.Measurement Measurement = new DatabaseObject.ViewModel.FinalInspection.Measurement();
+            FinalInspectionMeasurementService service = new FinalInspectionMeasurementService();
+            BaseResult result = service.UpdateMeasurement(model, this.UserID);
 
-            Measurement.SizeUnit = "INCH";
+            if (result)
+            {
+                FinalInspectionService fservice = new FinalInspectionService();
 
-            DatabaseObject.ViewModel.FinalInspection.MeasurementItem MeasurementItem = new DatabaseObject.ViewModel.FinalInspection.MeasurementItem();
-            MeasurementItem.Description = "AAA";
-            MeasurementItem.Tol1 = "444 15/26";
-            MeasurementItem.Tol2 = "999 13/26";
-            MeasurementItem.SizeSpec = "44";
-            MeasurementItem.Size = "M";
-            MeasurementItem.ResultSizeSpec = "";
-            MeasurementItem.CanEdit = true;
-            Measurement.ListMeasurementItem = new List<DatabaseObject.ViewModel.FinalInspection.MeasurementItem>();
-            Measurement.ListMeasurementItem.Add(MeasurementItem);
+                fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
+                {
+                    ID = model.FinalInspectionID,
+                    InspectionStep = "Insp-Measurement"
+                }, "Insp-Measurement", this.UserID);
+            }
 
-            DatabaseObject.ViewModel.FinalInspection.MeasurementItem MeasurementItem2 = new DatabaseObject.ViewModel.FinalInspection.MeasurementItem();
-            MeasurementItem2.Description = "BBB";
-            MeasurementItem2.Tol1 = "11";
-            MeasurementItem2.Tol2 = "22";
-            MeasurementItem2.SizeSpec = "12.6";
-            MeasurementItem2.Size = "L";
-            MeasurementItem2.ResultSizeSpec = "";
-            MeasurementItem2.CanEdit = false;
-
-            Measurement.ListMeasurementItem.Add(MeasurementItem2);
-
-            DatabaseObject.ViewModel.FinalInspection.MeasurementItem MeasurementItem3 = new DatabaseObject.ViewModel.FinalInspection.MeasurementItem();
-            MeasurementItem3.Description = "CCC";
-            MeasurementItem3.Tol1 = "11";
-            MeasurementItem3.Tol2 = "22";
-            MeasurementItem3.SizeSpec = "12";
-            MeasurementItem3.Size = "L";
-            MeasurementItem3.ResultSizeSpec = "";
-            MeasurementItem3.CanEdit = true;
-
-            Measurement.ListMeasurementItem.Add(MeasurementItem3);
-
-            return View(Measurement);
+            return Json(result);
         }
 
         [HttpPost]
-        public ActionResult Measurement(DatabaseObject.ViewModel.FinalInspection.Measurement Measurement, string goPage)
+        public ActionResult GetNewSizeByArticle(string Article)
         {
+            List<ArticleSize> ListSize = (List<ArticleSize>)TempData["AllSize"];
+
+            var listSize = ListSize.Where(o => o.Article == Article).Select(O => O.SizeCode).Distinct().ToList();
+            List<SelectListItem> result = new SetListItem().ItemListBinding(listSize);
+
+            // 保存原資料
+            TempData["AllSize"] = ListSize;
+
+            return Json(result);
+        }
+
+        [HttpPost]
+        public ActionResult OpenView(string FinalInspectionID)
+        {
+            FinalInspectionMeasurementService service = new FinalInspectionMeasurementService();
+            List<MeasurementViewItem> result = service.GetMeasurementViewItem(FinalInspectionID);
+
+            //string someJson = "[  {    \"Code\": \"S021\",    \"Description\": \"A Chest width ( meas. 2cm below armhole )\",    \"Tol(+)\": \"2\",    \"Tol(-)\": \"1\",    \"50_aa\": \"103\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S03\",    \"Description\": \"B WAIST WIDTH\",    \"Tol(+)\": \"2\",    \"Tol(-)\": \"1\",    \"50_aa\": \"99\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S04\",    \"Description\": \"B1 WAIST MEAS. POINT FROM CHEST MEAS. POINT\",    \"Tol(+)\": \"0\",    \"Tol(-)\": \"0\",    \"50_aa\": \"19\",    \"2021/08/20 16:25:38\": \"1\",    \"diff1\": \"-18\"  },  {    \"Code\": \"S05\",    \"Description\": \"D HEM OPENING  (MEAS. STRAIGHT)\",    \"Tol(+)\": \"2\",    \"Tol(-)\": \"1\",    \"50_aa\": \"102\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S06\",    \"Description\": \"E Front zip length (zipend 0,5cm before collar edge) (tolerance +/- 1%)\",    \"Tol(+)\": \"0\",    \"Tol(-)\": \"0\",    \"50_aa\": \"26\",    \"2021/08/20 16:25:38\": \"2\",    \"diff1\": \"-24\"  },  {    \"Code\": \"S07\",    \"Description\": \"F FRONT TO BACK\",    \"Tol(+)\": \"0.5\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"3\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S08\",    \"Description\": \"H 1/2 ZIP - Shoulder length\",    \"Tol(+)\": \"0.8\",    \"Tol(-)\": \"0.4\",    \"50_aa\": \"14.6\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S09\",    \"Description\": \"I 2 PIECE - PRESHAPE  sleeve - Sleeve length\",    \"Tol(+)\": \"1\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"67\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S10\",    \"Description\": \"J Sleeve width ( meas. 2cm below armhole )\",    \"Tol(+)\": \"1\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"39.5\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S11\",    \"Description\": \"K LONG + PRESHAPE SLEEVE -Ellbow width (meas. 32,0cm above sleeve opening)\",    \"Tol(+)\": \"1\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"28.5\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S14\",    \"Description\": \"M LONG + PRESHAPE sleeve - Sleeve opening\",    \"Tol(+)\": \"1\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"21\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S15\",    \"Description\": \"O1 1/2 ZIP - Front neck drop (HPS to c.f. neck seam)\",    \"Tol(+)\": \"0.5\",    \"Tol(-)\": \"0\",    \"50_aa\": \"10.5\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S16\",    \"Description\": \"O2 1/2 ZIP - Back neck drop (HPS to c.b. neck seam) pattern meas.\",    \"Tol(+)\": \"0.5\",    \"Tol(-)\": \"0\",    \"50_aa\": \"2\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S17\",    \"Description\": \"N 1/2 ZIP - Back neck width (HPS to HPS)\",    \"Tol(+)\": \"1\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"14.4\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S18\",    \"Description\": \"Q1 COLLAR LENGTH OUTER EDGE\",    \"Tol(+)\": \"1\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"41.6\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S19\",    \"Description\": \"Q2 Collar height (center front) (tolerance +/- 10%)\",    \"Tol(+)\": \"0\",    \"Tol(-)\": \"0\",    \"50_aa\": \"6\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S20\",    \"Description\": \"Q3 COLLAR HEIGHT (CENTER BACK) (TOLERANCE +/- 10%)\",    \"Tol(+)\": \"0\",    \"Tol(-)\": \"0\",    \"50_aa\": \"4.5\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S21\",    \"Description\": \"S MINIMUM NECK OPENING STRETCHED\",    \"Tol(+)\": \"0\",    \"Tol(-)\": \"0\",    \"50_aa\": \"63\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S22\",    \"Description\": \"Y1 Logo meas.: top edge of logo meas. to HPS\",    \"Tol(+)\": \"0.5\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"17.5\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S23\",    \"Description\": \"Y2 LOGO MEAS.: EDGE OF LOGO TO CENTER FRONT\",    \"Tol(+)\": \"0.5\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"7\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S24\",    \"Description\": \"Z 1/2 ZIP - Back length\",    \"Tol(+)\": \"1.5\",    \"Tol(-)\": \"1\",    \"50_aa\": \"74\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S25\",    \"Description\": \"DEC LABEL\",    \"Tol(+)\": \"\",    \"Tol(-)\": \"\",    \"50_aa\": \"50\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S27\",    \"Description\": \"POLYBAG SIZE (WXL)\",    \"Tol(+)\": \"\",    \"Tol(-)\": \"\",    \"50_aa\": \"30X40\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  }]";
+
+            return Json(result);
+        }
+
+        [HttpPost]
+        public ActionResult Measurement(Measurement model, string goPage)
+        {
+            // model的ListMeasurementItem一定會是空的
+
+            FinalInspectionService fservice = new FinalInspectionService();
+
             if (goPage == "Back")
             {
-                return RedirectToAction("Moisture");
+                fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
+                {
+                    ID = model.FinalInspectionID,
+                    InspectionStep = "Insp-Moisture"
+                }, "Insp-Measurement", this.UserID);
+                return RedirectToAction("Moisture", new { FinalInspectionID = model.FinalInspectionID });
             }
             else if (goPage == "Next")
             {
-                return RedirectToAction("Others");
+
+                fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
+                {
+                    ID = model.FinalInspectionID,
+                    InspectionStep = "Insp-Others"
+                }, "Insp-Measurement", this.UserID);
+
+                return RedirectToAction("Others", new { FinalInspectionID = model.FinalInspectionID });
             }
 
             return View();
         }
 
-        [HttpPost]
-        public ActionResult OpenView()
+        #endregion
+
+
+        #region Others頁面
+
+        public static List<OtherImage> TmpListOthersImageItem_List;
+        public ActionResult Others(string FinalInspectionID)
         {
-            List<DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem> listMeasurementViewItem = new List<DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem>();
+            TmpListOthersImageItem_List = new List<OtherImage>();
+            FinalInspectionOthersService service = new FinalInspectionOthersService();
+            Others model = new Others();
 
-            DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem MeasurementViewItem1 = new DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem();
-            MeasurementViewItem1.Article = "0050";
-            MeasurementViewItem1.Size = "L";
-            MeasurementViewItem1.ProductType = "Top";
+            model = service.GetOthersForInspection(FinalInspectionID);
 
-            listMeasurementViewItem.Add(MeasurementViewItem1);
-
-            DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem MeasurementViewItem2 = new DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem();
-            MeasurementViewItem2.Article = "0050";
-            MeasurementViewItem2.Size = "XL";
-            MeasurementViewItem2.ProductType = "Bottom";
-
-            listMeasurementViewItem.Add(MeasurementViewItem2);
-
-            DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem MeasurementViewItem3 = new DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem();
-            MeasurementViewItem3.Article = "0049";
-            MeasurementViewItem3.Size = "S";
-            MeasurementViewItem3.ProductType = "Top";
-
-
-            DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem MeasurementViewItem4 = new DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem();
-            MeasurementViewItem4.Article = "0049";
-            MeasurementViewItem4.Size = "M";
-            MeasurementViewItem4.ProductType = "Top";
-
-            listMeasurementViewItem.Add(MeasurementViewItem4);
-
-
-
-
-            //string someJson = "[  {    \"Code\": \"S021\",    \"Description\": \"A Chest width ( meas. 2cm below armhole )\",    \"Tol(+)\": \"2\",    \"Tol(-)\": \"1\",    \"50_aa\": \"103\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S03\",    \"Description\": \"B WAIST WIDTH\",    \"Tol(+)\": \"2\",    \"Tol(-)\": \"1\",    \"50_aa\": \"99\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S04\",    \"Description\": \"B1 WAIST MEAS. POINT FROM CHEST MEAS. POINT\",    \"Tol(+)\": \"0\",    \"Tol(-)\": \"0\",    \"50_aa\": \"19\",    \"2021/08/20 16:25:38\": \"1\",    \"diff1\": \"-18\"  },  {    \"Code\": \"S05\",    \"Description\": \"D HEM OPENING  (MEAS. STRAIGHT)\",    \"Tol(+)\": \"2\",    \"Tol(-)\": \"1\",    \"50_aa\": \"102\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S06\",    \"Description\": \"E Front zip length (zipend 0,5cm before collar edge) (tolerance +/- 1%)\",    \"Tol(+)\": \"0\",    \"Tol(-)\": \"0\",    \"50_aa\": \"26\",    \"2021/08/20 16:25:38\": \"2\",    \"diff1\": \"-24\"  },  {    \"Code\": \"S07\",    \"Description\": \"F FRONT TO BACK\",    \"Tol(+)\": \"0.5\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"3\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S08\",    \"Description\": \"H 1/2 ZIP - Shoulder length\",    \"Tol(+)\": \"0.8\",    \"Tol(-)\": \"0.4\",    \"50_aa\": \"14.6\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S09\",    \"Description\": \"I 2 PIECE - PRESHAPE  sleeve - Sleeve length\",    \"Tol(+)\": \"1\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"67\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S10\",    \"Description\": \"J Sleeve width ( meas. 2cm below armhole )\",    \"Tol(+)\": \"1\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"39.5\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S11\",    \"Description\": \"K LONG + PRESHAPE SLEEVE -Ellbow width (meas. 32,0cm above sleeve opening)\",    \"Tol(+)\": \"1\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"28.5\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S14\",    \"Description\": \"M LONG + PRESHAPE sleeve - Sleeve opening\",    \"Tol(+)\": \"1\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"21\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S15\",    \"Description\": \"O1 1/2 ZIP - Front neck drop (HPS to c.f. neck seam)\",    \"Tol(+)\": \"0.5\",    \"Tol(-)\": \"0\",    \"50_aa\": \"10.5\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S16\",    \"Description\": \"O2 1/2 ZIP - Back neck drop (HPS to c.b. neck seam) pattern meas.\",    \"Tol(+)\": \"0.5\",    \"Tol(-)\": \"0\",    \"50_aa\": \"2\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S17\",    \"Description\": \"N 1/2 ZIP - Back neck width (HPS to HPS)\",    \"Tol(+)\": \"1\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"14.4\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S18\",    \"Description\": \"Q1 COLLAR LENGTH OUTER EDGE\",    \"Tol(+)\": \"1\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"41.6\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S19\",    \"Description\": \"Q2 Collar height (center front) (tolerance +/- 10%)\",    \"Tol(+)\": \"0\",    \"Tol(-)\": \"0\",    \"50_aa\": \"6\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S20\",    \"Description\": \"Q3 COLLAR HEIGHT (CENTER BACK) (TOLERANCE +/- 10%)\",    \"Tol(+)\": \"0\",    \"Tol(-)\": \"0\",    \"50_aa\": \"4.5\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S21\",    \"Description\": \"S MINIMUM NECK OPENING STRETCHED\",    \"Tol(+)\": \"0\",    \"Tol(-)\": \"0\",    \"50_aa\": \"63\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S22\",    \"Description\": \"Y1 Logo meas.: top edge of logo meas. to HPS\",    \"Tol(+)\": \"0.5\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"17.5\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S23\",    \"Description\": \"Y2 LOGO MEAS.: EDGE OF LOGO TO CENTER FRONT\",    \"Tol(+)\": \"0.5\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"7\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S24\",    \"Description\": \"Z 1/2 ZIP - Back length\",    \"Tol(+)\": \"1.5\",    \"Tol(-)\": \"1\",    \"50_aa\": \"74\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S25\",    \"Description\": \"DEC LABEL\",    \"Tol(+)\": \"\",    \"Tol(-)\": \"\",    \"50_aa\": \"50\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S27\",    \"Description\": \"POLYBAG SIZE (WXL)\",    \"Tol(+)\": \"\",    \"Tol(-)\": \"\",    \"50_aa\": \"30X40\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  }]";
-
-            return Json(listMeasurementViewItem);
+            return View(model);
         }
 
-
-        public ActionResult Others()
+        public ActionResult OthersPicture(string FinalInspectionID)
         {
-            DatabaseObject.ViewModel.FinalInspection.Others Others = new DatabaseObject.ViewModel.FinalInspection.Others();
-            Others.CFA = "Hello";
-            Others.OthersRemark = "remark";
-            Others.InspectionResult = "Fail";
-            Others.ShipmentStatus = "Pass";
+            FinalInspectionOthersService Service = new FinalInspectionOthersService();
 
-            return View(Others);
+            // 取得該DB現有的圖片
+            List<OtherImage> list = Service.GetOthersImage(FinalInspectionID);
+            List<byte[]> model = list.Select(o => o.Image).ToList();
+
+            // 把畫面上User拍的照片加進去，一起顯示
+            if (TmpListOthersImageItem_List != null)
+            {
+                foreach (var item in TmpListOthersImageItem_List)
+                {
+                    model.Add(item.TempImage);
+                }
+            }
+
+            return View("FinalInspection_Picture", model);
         }
 
+        public ActionResult OthersTakePicture(string FinalInspectionID)
+        {
+            ViewData["DetailUkey"] = FinalInspectionID;
+
+            return View("Others_TakePicture");
+        }
 
         [HttpPost]
-        public ActionResult Others(DatabaseObject.ViewModel.FinalInspection.Others others, string goPage)
+        public ActionResult AddthersTPicturesTempSave(OtherImage data)
         {
+            TmpListOthersImageItem_List.Add(data);
+            return Json(true);
+        }
+
+        [HttpPost]
+        public ActionResult Others(Others model, string goPage)
+        {
+            FinalInspectionService fservice = new FinalInspectionService();
+            FinalInspectionOthersService oService = new FinalInspectionOthersService();
+            QueryService Qservice = new QueryService();
+
             if (goPage == "Back")
             {
-                return RedirectToAction("Measurement");
+                oService.UpdateOthersBack(model, this.UserID);
+
+                fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
+                {
+                    ID = model.FinalInspectionID,
+                    InspectionStep = "Insp-Measurement"
+                }, "Insp-Others", this.UserID);
+
+                return RedirectToAction("Measurement", new { FinalInspectionID = model.FinalInspectionID });
             }
             else if (goPage == "Submit")
             {
-                return RedirectToAction("Others");
-            }
-            return View(); ;
-        }
 
+                // 本次新增的圖片全面加入
+                model.ListOthersImageItem = new List<OtherImage>();
+                foreach (var item in TmpListOthersImageItem_List)
+                {
+                    OtherImage o = new OtherImage();
+                    o.ID = model.FinalInspectionID;
+                    o.Image = item.TempImage;
+                    model.ListOthersImageItem.Add(o);
+                }
+
+
+                if (model.InspectionResult == "Fail")
+                {
+                    Qservice.SendMail(model.FinalInspectionID, true);
+                }
+                else
+                {
+                    fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
+                    {
+                        ID = model.FinalInspectionID,
+                        InspectionStep = "Submit"
+                    }, "Insp-Others", this.UserID);
+
+                    BaseResult r = oService.UpdateOthersSubmit(model, this.UserID);
+
+                    if (r.Result)
+                    {
+                        model.ErrorMessage = $@"
+msg.WithSucces('Success');
+";
+                    }
+                    else
+                    {
+                        model.ErrorMessage = $@"
+msg.WithSucces('{r.ErrorMessage}');
+";
+                    }
+                }
+            }
+
+            return View(model);
+        }
+        #endregion
 
     }
 }

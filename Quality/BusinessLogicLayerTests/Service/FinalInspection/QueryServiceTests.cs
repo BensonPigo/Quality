@@ -44,7 +44,7 @@ namespace BusinessLogicLayer.Service.FinalInspection.Tests
             {
                 IQueryService _QueryService = new QueryService();
 
-                FinalInspection_Query queryFinalInspection = new FinalInspection_Query();
+                QueryFinalInspection_ViewModel queryFinalInspection = new QueryFinalInspection_ViewModel();
 
                 queryFinalInspection.POID = "21010007IR";
 

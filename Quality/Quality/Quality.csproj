@@ -366,6 +366,7 @@
     <Content Include="Areas\BulkFGT\Views\FabricCrkShrkTest\WashTest.cshtml" />
     <Content Include="Areas\BulkFGT\Views\FabricColorFastness\Detail.cshtml" />
     <Content Include="Image\Icon\Thumbs.db" />
+    <Content Include="Areas\FinalInspection\Views\Inspection\Others_TakePicture.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />

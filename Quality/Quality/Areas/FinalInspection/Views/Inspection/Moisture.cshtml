@@ -1,5 +1,9 @@
-﻿@{
+﻿@using DatabaseObject.ViewModel.FinalInspection;
+
+@{
     ViewBag.Title = "Moisture";
+    List<CartonItem> ListCartonItem = ViewBag.ListCartonItem == null ? new List<CartonItem>() : (List<CartonItem>)ViewBag.ListCartonItem;
+    string ErrorMessage = ViewData["ErrorMessage"] == null ? string.Empty : ViewData["ErrorMessage"].ToString();
 }
 
 @model DatabaseObject.ViewModel.FinalInspection.MoistureResult
@@ -61,7 +65,7 @@
                 <table class="col-auto table_div" style="width:100%">
                     <tr>
                         <td><label>Article</label></td>
-                        <td>@Html.DropDownList("Article", (List<SelectListItem>)ViewBag.ListArticle, null, new { @class = "form-control", @style = "width:80%", @onchange = "onInspectionStageChange(this.value)" })</td>
+                        <td>@Html.DropDownList("Article", (List<SelectListItem>)ViewBag.ListArticle, null, new { @class = "form-control", @style = "width:80%" })</td>
                     </tr>
                     <tr>
                         <td><label class="cartonData">carton#</label></td>
@@ -145,7 +149,7 @@
 
 <!--Detail-Cartons彈出視窗-->
 <!--多個Table forA001-->
-<div class="detail-dialog to-edit-detail-myCartons" title="Detail">
+<div class="detail-dialog to-edit-detail-myCartons" title="Carton">
     <div class="detail-dialog-content dialog-content-w-icon" style="height:70vh">
         <table cellspacing="100" id="myCartons" class="table table-striped display">
             <thead>
@@ -156,23 +160,27 @@
                     <th>SP#</th>
                     <th>Packing List ID</th>
                     <th>CTN No</th>
+                    <th>Article</th>
                 </tr>
             </thead>
             <tbody>
-                @for (int i = 0; i < @ViewBag.ListCartonItem.Count; i++)
+                @for (int i = 0; i < ListCartonItem.Count; i++)
                 {
                     <tr class="row-content" style="vertical-align: middle; text-align: center;">
                         <td style="display:none">
-                            @ViewBag.ListCartonItem[i].FinalInspection_OrderCartonUkey
+                            @ListCartonItem[i].FinalInspection_OrderCartonUkey
                         </td>
                         <td>
-                            @ViewBag.ListCartonItem[i].OrderID
+                            @ListCartonItem[i].OrderID
                         </td>
                         <td>
-                            @ViewBag.ListCartonItem[i].PackinglistID
+                            @ListCartonItem[i].PackinglistID
                         </td>
                         <td>
-                            @ViewBag.ListCartonItem[i].CTNNo
+                            @ListCartonItem[i].CTNNo
+                        </td>
+                        <td>
+                            @ListCartonItem[i].Article-
                         </td>
                     </tr>
                 }
@@ -257,6 +265,9 @@
         var myView;
 
         $(function () {
+
+            @Html.Raw(ErrorMessage);
+
             if (@ViewBag.ListCartonItem.Count == 0) {
                 $('.cartonData').each(function (){
                     $(this).attr('disabled', 'disabled');
@@ -291,6 +302,7 @@
             myCartons = $('#myCartons').DataTable({
                 "pageLength": 10,
                 "autoWidth": false,
+                destroy: true, // 設定這個才能重新初始化Datatables
                 "info": false,
                 "filter": false,
                 "paging": true,
@@ -301,6 +313,7 @@
                     { targets: 1, width: "30%" },
                     { targets: 2, width: "30%" },
                     { targets: 3, width: "30%" },
+                    { targets: 4, visible: false},
                 ],
             });
 
@@ -578,7 +591,31 @@
 
         function open_cartonsDetail() {
             $(".to-edit-detail-myCartons").dialog("open");
-            $("#myCartons").DataTable().columns.adjust();
+            //$("#myCartons").DataTable().columns.adjust();
+            var article = $("#Article").val();
+
+            myCartons = $('#myCartons').DataTable({
+                "pageLength": 10,
+                "autoWidth": false,
+                "info": false,
+                //"filter": false,
+                "paging": false,
+                destroy: true, // 設定這個才能重新初始化Datatables
+                "info": false,
+                "scrollY": "50vh",
+                "scrollCollapse": true,
+                "search": {
+                    "search": article + '-'
+                },
+                columnDefs: [
+                    { targets: 1, width: "30%" },
+                    { targets: 2, width: "30%" },
+                    { targets: 3, width: "30%" },
+                    { targets: 4, visible: false },
+                ],
+            });
+
+            $("#myCartons_filter").hide();
         }
 
         function open_EndlineMoistureDetail() {
@@ -606,21 +643,22 @@
                 return;
             }
             else {
-                garmentStandardValue = parseInt(garmentStandard);
+
+                garmentStandardValue = parseFloat(garmentStandard);
                 if (@ViewBag.ListCartonItem.Count == 0) {
-                    if (garmentStandardValue >= parseInt($("#GarmentTop").val()) &&
-                        garmentStandardValue >= parseInt($("#GarmentMiddle").val()) &&
-                        garmentStandardValue >= parseInt($("#GarmentBottom").val())) {
+                    if (garmentStandardValue >= parseFloat($("#GarmentTop").val()) &&
+                        garmentStandardValue >= parseFloat($("#GarmentMiddle").val()) &&
+                        garmentStandardValue >= parseFloat($("#GarmentBottom").val())) {
                         $("#Result").text("Pass");
                         $("#Result").css("color", "#00CC00");
                     }
                 }
                 else {
-                    if (garmentStandardValue >= parseInt($("#GarmentTop").val()) &&
-                        garmentStandardValue >= parseInt($("#GarmentMiddle").val()) &&
-                        garmentStandardValue >= parseInt($("#GarmentBottom").val()) &&
-                        cartonsValue >= parseInt($("#CTNInside").val()) &&
-                        cartonsValue >= parseInt($("#CTNOutside").val())) {
+                    if (garmentStandardValue >= parseFloat($("#GarmentTop").val()) &&
+                        garmentStandardValue >= parseFloat($("#GarmentMiddle").val()) &&
+                        garmentStandardValue >= parseFloat($("#GarmentBottom").val()) &&
+                        cartonsValue >= parseFloat($("#CTNInside").val()) &&
+                        cartonsValue >= parseFloat($("#CTNOutside").val())) {
                         $("#Result").text("Pass");
                         $("#Result").css("color", "#00CC00");
                     }
@@ -630,6 +668,9 @@
 
         function checkSubmitValue(self) {
             document.getElementById("goPage").value = self;
+
+            ShowLoading();
+
             return true;
         }
     </script>

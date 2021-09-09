@@ -76,7 +76,10 @@
 
             <tr>
                 <td class="ColumnStype"><label class="Font">Production Status</label></td>
-                <td> @Html.TextBoxFor(o => o.ProductionStatus, new { @class = "form-control center-block" })</td>
+                <td>
+                    @Html.TextBoxFor(o => o.ProductionStatus, new { @class = "form-control center-block", @type = "number", @step = "0.01", @placeholder = "0.00", @max = "100", @oninput = "if(parseInt(value) > 100)value=100" })
+                    <label class="Font">%</label>
+                </td>
                 <td class="ColumnStype"><label class="Font">Shipment Status</label></td>
                 <td>
                     @if (Model != null)
@@ -99,8 +102,8 @@
             <tr>
                 <td class="ColumnStype"><label class="Font">Other Photo</label></td>
                 <td>
-                    <img src="~/Image/Icon/Camera.png" width="30" height="30" />
-                    <img src="~/Image/Icon/Picture.png" width="30" height="30" />
+                    <img src="~/Image/Icon/Camera.png" width="30" height="30" style="cursor: pointer;" onclick="ScreenShot()"/>
+                    <img src="~/Image/Icon/Picture.png" width="30" height="30" style="cursor: pointer;" onclick="OpenPicture()"  />
                 </td>
                 <td></td>
                 <td></td>
@@ -121,6 +124,8 @@
         <input type="hidden" id="goPage" name="goPage">
         <button id="btnBack" onclick="this.form.submitted=this.value;" type="submit" value="Back" style="right: 7em;" class="button">Back</button>
         <button d="btnSubmit" onclick="this.form.submitted=this.value;" type="submit" value="Submit" style="right: 0; padding: 12px 25px" class="button">Submit</button>
+
+        @Html.HiddenFor(o=>o.FinalInspectionID)
     }
 </div>
 
@@ -129,10 +134,52 @@
 
     var msg = new MessagerAlert();
 
+    $(function () {
+        @Html.Raw(Model.ErrorMessage)
+    });
+
     function checkValue(self) {
         document.getElementById("goPage").value = self;
+
+        ShowLoading();
 
         return true;
     }
 
+    function OpenPicture() {
+        window.open('@Url.Action("OthersPicture")?FinalInspectionID=@Model.FinalInspectionID', "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
+    }
+    
+
+    function ScreenShot() {
+        window.open('@Url.Action("OthersTakePicture")?FinalInspectionID=@Model.FinalInspectionID', "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
+    }
+    
+
+    function GetImage(Data) {
+        //透過AJAX暫存成Temp Data
+
+        var FinalInspectionID = Data.FinalInspectionID;
+        var Picture = Data.Img.replace("data:image/webp;base64,", "");
+
+        var data =
+        {
+            ID: FinalInspectionID,
+            TempImage: Picture,
+        };
+
+        $.ajax({
+            url: "@Url.Action("AddthersTPicturesTempSave", "Inspection", new { Area = "FinalInspection" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ data: data }),
+            async: true,
+            success: function (data) {
+                //msg.WithSuccess("Image OK!!");
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
 </script>

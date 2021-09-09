@@ -1,18 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Data;
-using ManufacturingExecutionDataAccessLayer.Interface;
 using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
 using DatabaseObject.ManufacturingExecutionDB;
-using Newtonsoft.Json;
-using DatabaseObject;
-using DatabaseObject.ViewModel.FinalInspection;
-using System.Transactions;
-using System.Linq;
 using DatabaseObject.RequestModel;
-using System.Threading;
+using DatabaseObject.ViewModel.FinalInspection;
+using ManufacturingExecutionDataAccessLayer.Interface;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Transactions;
 
 namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 {
@@ -248,6 +244,16 @@ insert into FinalInspection_OrderCarton(ID, OrderID, PackingListID, CTNNo, Seq)
             switch (currentStep)
             {
                 case "Setting":
+                    sqlUpdCmd += $@"
+update FinalInspection
+ set    InspectionStep = @InspectionStep,
+        EditName= @userID,
+        EditDate= getdate()
+where   ID = @FinalInspectionID
+";
+                    objParameter.Add("@FinalInspectionID", finalInspection.ID);
+                    objParameter.Add("@userID", userID);
+                    objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
                     break;
                 case "Insp-General":
                     sqlUpdCmd += $@"
@@ -315,8 +321,28 @@ where   ID = @FinalInspectionID
                     objParameter.Add("@CheckHangtag", finalInspection.CheckHangtag);
                     break;
                 case "Insp-AddDefect":
+                    sqlUpdCmd += $@"
+update FinalInspection
+ set    InspectionStep = @InspectionStep,
+        EditName= @userID,
+        EditDate= getdate()
+where   ID = @FinalInspectionID
+";
+                    objParameter.Add("@FinalInspectionID", finalInspection.ID);
+                    objParameter.Add("@userID", userID);
+                    objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
                     break;
                 case "Insp-BA":
+                    sqlUpdCmd += $@"
+update FinalInspection
+ set    InspectionStep = @InspectionStep,
+        EditName= @userID,
+        EditDate= getdate()
+where   ID = @FinalInspectionID
+";
+                    objParameter.Add("@FinalInspectionID", finalInspection.ID);
+                    objParameter.Add("@userID", userID);
+                    objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
                     break;
                 case "Insp-Moisture":
                     sqlUpdCmd += $@"
@@ -420,17 +446,12 @@ select  Image
                 SQLParameterCollection objParameter = new SQLParameterCollection() {
                     { "@FinalInspectionID", DbType.String, addDefect.FinalInspectionID },
                     { "@RejectQty", DbType.Int32, addDefect.RejectQty },
-                    { "@UserID", DbType.String, UserID },
-                    { "@InspectionStep", DbType.String, addDefect.InspectionStep }
                 };
 
                 string sqlUpdFinalInspection = @"
 update  FinalInspection
         set PassQty = SampleSize - @RejectQty,
-            RejectQty = @RejectQty,
-            InspectionStep = @InspectionStep,
-            EditName = @UserID,
-            EditDate = getdate()
+            RejectQty = @RejectQty
 where   ID = @FinalInspectionID
 ";
                 ExecuteNonQuery(CommandType.Text, sqlUpdFinalInspection, objParameter);
@@ -535,16 +556,11 @@ select  [Ukey] = isnull(fn.Ukey, -1),
                 SQLParameterCollection objParameter = new SQLParameterCollection() {
                     { "@FinalInspectionID", DbType.String, beautifulProductAudit.FinalInspectionID },
                     { "@BAQty", DbType.Int32, beautifulProductAudit.BAQty },
-                    { "@UserID", DbType.String, UserID },
-                    { "@InspectionStep", DbType.String, beautifulProductAudit.InspectionStep }
                 };
 
                 string sqlUpdFinalInspection = @"
 update  FinalInspection
-        set BAQty = @BAQty,
-            InspectionStep = @InspectionStep,
-            EditName = @UserID,
-            EditDate = getdate()
+        set BAQty = @BAQty
 where   ID = @FinalInspectionID
 ";
                 ExecuteNonQuery(CommandType.Text, sqlUpdFinalInspection, objParameter);
@@ -809,7 +825,7 @@ values
                 where += " and FinalInspection_OrderCartonUkey = @finalInspection_OrderCartonUkey";
                 objParameter.Add("@finalInspection_OrderCartonUkey", finalInspection_OrderCartonUkey);
             }
-                
+
 
             string sqlCheckMoistureExists = $@"
 select  [result] = 1 
@@ -873,7 +889,7 @@ values
                 transactionScope.Complete();
             }
         }
-
+        
         public IList<MeasurementViewItem> GetMeasurementViewItem(string finalInspectionID)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();
@@ -995,6 +1011,24 @@ drop table #tmp
             return dt;
         }
 
+
+        public IList<OtherImage> GetOthersImageList(string finalInspectionID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            objParameter.Add("@finalInspectionID", finalInspectionID);
+
+            string sqlGetEndlineMoisture = @"
+select  Ukey
+    , ID
+    , Image
+    ,[RowIndex]=ROW_NUMBER() OVER(ORDER BY Ukey) -1
+from FinalInspection_OtherImage with (nolock)
+where   ID = @finalInspectionID
+
+";
+            return ExecuteList<OtherImage>(CommandType.Text, sqlGetEndlineMoisture, objParameter);
+        }
+
         public List<byte[]> GetOthersImage(string finalInspectionID)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection() {
@@ -1110,7 +1144,7 @@ where ID = @FinalInspectionID
             return ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, parameter);
         }
 
-        public IList<QueryFinalInspection> GetFinalinspectionQueryList(FinalInspection_Query request)
+        public IList<QueryFinalInspection> GetFinalinspectionQueryList(QueryFinalInspection_ViewModel request)
         {
             SQLParameterCollection parameter = new SQLParameterCollection();
 
