@@ -1,5 +1,6 @@
 ﻿using BusinessLogicLayer.Interface;
 using BusinessLogicLayer.Service;
+using DatabaseObject;
 using DatabaseObject.ResultModel;
 using FactoryDashBoardWeb.Helper;
 using Quality.Controllers;
@@ -13,8 +14,11 @@ namespace Quality.Areas.BulkFGT.Controllers
 {
     public class FabricCrkShrkTestController : BaseController
     {
+        private IFabricCrkShrkTest_Service _FabricCrkShrkTest_Service;
+
         public FabricCrkShrkTestController()
         {
+            _FabricCrkShrkTest_Service = new FabricCrkShrkTest_Service();
             this.SelectedMenu = "Bulk FGT";
             ViewBag.OnlineHelp = this.OnlineHelp + "BulkFGT.FabricCrkShrkTest,,";
         }
@@ -22,10 +26,10 @@ namespace Quality.Areas.BulkFGT.Controllers
         // GET: BulkFGT/FabricCrkShrkTest
         public ActionResult Index()
         {
-            DatabaseObject.ResultModel.FabricCrkShrkTest_Result fabricCrkShrkTest_Result = new DatabaseObject.ResultModel.FabricCrkShrkTest_Result()
+            FabricCrkShrkTest_Result fabricCrkShrkTest_Result = new FabricCrkShrkTest_Result()
             {
-                Main = new DatabaseObject.ResultModel.FabricCrkShrkTest_Main(),
-                Details = new List<DatabaseObject.ResultModel.FabricCrkShrkTest_Detail>()
+                Main = new FabricCrkShrkTest_Main(),
+                Details = new List<FabricCrkShrkTest_Detail>()
             };
 
             return View(fabricCrkShrkTest_Result);
@@ -35,87 +39,55 @@ namespace Quality.Areas.BulkFGT.Controllers
         public ActionResult Index(string POID)
         {
             ViewBag.POID = POID;
-            IFabricCrkShrkTest_Service fabricOvenTestService = new FabricCrkShrkTest_Service();
-            DatabaseObject.ResultModel.FabricCrkShrkTest_Result fabricCrkShrkTest_Result =  fabricOvenTestService.GetFabricCrkShrkTest_Result(POID);
+            FabricCrkShrkTest_Result fabricCrkShrkTest_Result = _FabricCrkShrkTest_Service.GetFabricCrkShrkTest_Result(POID);
+            if (!fabricCrkShrkTest_Result.Result)
+            {
+                fabricCrkShrkTest_Result = new FabricCrkShrkTest_Result() 
+                {
+                    Main = new FabricCrkShrkTest_Main(),
+                    Details = new List<FabricCrkShrkTest_Detail>(),
+                    Result = false,
+                    ErrorMessage = $"msg.WithInfo('{fabricCrkShrkTest_Result.ErrorMessage }');",
+                };
+            }
             return View(fabricCrkShrkTest_Result);
         }
 
         [HttpPost]
-        public ActionResult SaveIndex(DatabaseObject.ResultModel.FabricCrkShrkTest_Main main, List<DatabaseObject.ResultModel.FabricCrkShrkTest_Detail> detail)
+        public ActionResult SaveIndex(FabricCrkShrkTest_Main main, List<FabricCrkShrkTest_Detail> detail)
         {
-            return Json(main);
+            FabricCrkShrkTest_Result result = new FabricCrkShrkTest_Result()
+                                              {
+                                                  Main = main,
+                                                  Details = detail,
+                                              };
+
+            BaseResult saveResult = _FabricCrkShrkTest_Service.SaveFabricCrkShrkTestMain(result);
+            return Json(saveResult);
         }
 
         [HttpGet]
         public ActionResult IndexBack(string POID)
         {
             ViewBag.POID = POID;
-            IFabricCrkShrkTest_Service fabricOvenTestService = new FabricCrkShrkTest_Service();
-            DatabaseObject.ResultModel.FabricCrkShrkTest_Result fabricCrkShrkTest_Result = fabricOvenTestService.GetFabricCrkShrkTest_Result(POID);
+            FabricCrkShrkTest_Result fabricCrkShrkTest_Result = _FabricCrkShrkTest_Service.GetFabricCrkShrkTest_Result(POID);
             return View("Index", fabricCrkShrkTest_Result);
-        }
-
-        [HttpPost]
-        public ActionResult SaveMain()
-        {
-            return View();
         }
 
         public ActionResult CrockingTest(long ID)
         {
-            DatabaseObject.ResultModel.FabricCrkShrkTestCrocking_Result fabricCrkShrkTestCrocking_Result = new DatabaseObject.ResultModel.FabricCrkShrkTestCrocking_Result()
+            List<string> resultType = new List<string>() { "Pass", "Fail" }; 
+            FabricCrkShrkTestCrocking_Result fabricCrkShrkTestCrocking_Result = _FabricCrkShrkTest_Service.GetFabricCrkShrkTestCrocking_Result(ID);
+            if (!fabricCrkShrkTestCrocking_Result.Result)
             {
-                ID = ID,
-                ScaleIDs = new List<string>() { "a", "b" },
-                CrockingTestOption = 0, // 0 會隱藏明細欄位
-                Crocking_Main = new DatabaseObject.ResultModel.FabricCrkShrkTestCrocking_Main
+                fabricCrkShrkTestCrocking_Result = new FabricCrkShrkTestCrocking_Result()
                 {
-                    Crocking = "Fail",
-                    NonCrocking = true,
-                    POID = "21051318BB",
-                    SEQ = "01 01",
-                    ColorID = "1",
-                    ArriveQty = 2,
-                    WhseArrival = System.DateTime.Now,
-                    ExportID = "3",
-                    Supp = "4",
-                    CrockingDate = System.DateTime.Now.AddDays(-1),
-                    StyleID = "5",
-                    SCIRefno = "6",
-                    Name = "7",
-                    BrandID = "8",
-                    Refno = "9",
-                    DescDetail = "10",
-                    CrockingRemark = "11",
-                    CrockingEncdoe = false
-                },
-                Crocking_Detail = new List<DatabaseObject.ResultModel.FabricCrkShrkTestCrocking_Detail>(),
-            };
-
-            FabricCrkShrkTestCrocking_Detail test1 = new FabricCrkShrkTestCrocking_Detail()
-            {
-                Roll = "1",
-                Dyelot = "2",
-                Result = "Fail",
-                DryScale = "a",
-                ResultDry = "Fail",
-                DryScale_Weft = "b",
-                ResultDry_Weft = "Pass",
-                WetScale = "a",
-                ResultWet = "Fail",
-                WetScale_Weft = "b",
-                ResultWet_Weft = "Fail",
-                Inspdate = System.DateTime.Now,
-                Inspector = "3",
-                Name = "3",
-                Remark = "3",
-                LastUpdate = "3"
-            };
-            fabricCrkShrkTestCrocking_Result.Crocking_Detail.Add(test1);
-
-            List<string> resultType = new List<string>() {
-                 "Pass","Fail"
-            };
+                    ScaleIDs = new List<string>(),
+                    Crocking_Main = new FabricCrkShrkTestCrocking_Main(),
+                    Crocking_Detail = new List<FabricCrkShrkTestCrocking_Detail>(),
+                    ErrorMessage = $"msg.WithInfo('{fabricCrkShrkTestCrocking_Result.ErrorMessage }');",
+                };
+            }
 
             ViewBag.ResultList= new SetListItem().ItemListBinding(resultType);
             ViewBag.ScaleIDsList = new SetListItem().ItemListBinding(fabricCrkShrkTestCrocking_Result.ScaleIDs);
@@ -126,12 +98,10 @@ namespace Quality.Areas.BulkFGT.Controllers
         [HttpPost]
         public ActionResult AddCrockingDetailRow(int lastNO)
         {
+            List<string> scaleIDs = _FabricCrkShrkTest_Service.GetScaleIDs();
             lastNO = lastNO + 1;
 
-            // 假資料，因為清單來源目前沒有            
-            string testTemp = "<option value='a'>a</option ><option value='b'>b</option>";
-
-             string html = string.Empty;
+            string html = string.Empty;
             html += $"<tr idx='{lastNO}' class='row-content' style='vertical-align:middle;text-align:center;'>";
             html += "<td><div class='input-group'>";
             html += $"<input id='Crocking_Detail_{lastNO}__Roll' name='Crocking_Detail[{lastNO}].Roll' class='inputRollSelectItem' type='text' value=''>";
@@ -146,9 +116,10 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "</td>";
             html += "<td style='color:blue'>";
             html += $"<select id='Crocking_Detail_{lastNO}__DryScale' name='Crocking_Detail[{lastNO}].DryScale' style='width:157px'>";
-
-            html += testTemp;
-
+            foreach (string val in scaleIDs)
+            {
+                html += "<option value='" + val + "'>" + val + "</option>";
+            }
             html += "</select>";
             html += "</td>";
             html += "<td>";
@@ -159,9 +130,10 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "</td>";
             html += "<td>";
             html += $"<select id='Crocking_Detail_{lastNO}__DryScale_Weft' name='Crocking_Detail[{lastNO}].DryScale_Weft' style='width:157px'>";
-
-            html += testTemp;
-
+            foreach (string val in scaleIDs)
+            {
+                html += "<option value='" + val + "'>" + val + "</option>";
+            }
             html += "</select>";
             html += "</td>";
             html += "<td>";
@@ -172,9 +144,10 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "</td>";
             html += "<td>";
             html += $"<select id='Crocking_Detail_{lastNO}__WetScale' name='Crocking_Detail[{lastNO}].WetScale' style='width:157px'>";
-
-            html += testTemp;
-
+            foreach (string val in scaleIDs)
+            {
+                html += "<option value='" + val + "'>" + val + "</option>";
+            }
             html += "</select>";
             html += "</td>";
             html += "<td>";
@@ -185,9 +158,10 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "</td>";
             html += "<td>";
             html += $"<select id='Crocking_Detail_{lastNO}__WetScale_Weft' name='Crocking_Detail[{lastNO}].WetScale_Weft' style='width:157px'>";
-
-            html += testTemp;
-
+            foreach (string val in scaleIDs)
+            {
+                html += "<option value='" + val + "'>" + val + "</option>";
+            }
             html += "</select>";
             html += "</td>";
             html += "<td>";
@@ -200,8 +174,8 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += $"<input class='date-picker' data-val='true' data-val-date='欄位 Inspdate 必須是日期。' id='Crocking_Detail_{lastNO}__Inspdate' name='Crocking_Detail[{lastNO}].Inspdate' type='text' value=''>";
             html += "</td>";
             html += "<td><div class='input-group'>";
-            html += $"<input id='Crocking_Detail_{lastNO}__Inspector' name='Crocking_Detail[{lastNO}].Inspector' type='text' value=''>";
-            html += $"<input id='btnDetailInspectorSelectItem' type='button' class='site-btn btn-blue' style='margin:0;border:0;' value='...'>";
+            html += $"<input id='Crocking_Detail_{lastNO}__Inspector' name='Crocking_Detail[{lastNO}].Inspector' type='text' value='' class='inputInspectorSelectItem'>";
+            html += $"<input id='btnDetailInspectorSelectItem' type='button' class='site-btn btn-blue btnInspectorSelectItem' style='margin:0;border:0;' value='...'>";
             html += "</div></td>";
             html += "<td>";
             html += $"<input id='Crocking_Detail_{lastNO}__Name' name='Crocking_Detail[{lastNO}].Name' type='text' value=''>";
@@ -218,92 +192,35 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
-        public ActionResult CrockingTest(DatabaseObject.ResultModel.FabricCrkShrkTestCrocking_Result fabricCrkShrkTestCrocking_Result)
+        public ActionResult CrockingTest(FabricCrkShrkTestCrocking_Result Result)
         {
-            fabricCrkShrkTestCrocking_Result = new DatabaseObject.ResultModel.FabricCrkShrkTestCrocking_Result()
+            BaseResult saveResult = _FabricCrkShrkTest_Service.SaveFabricCrkShrkTestCrockingDetail(Result, this.UserID);
+            FabricCrkShrkTestCrocking_Result fabricCrkShrkTestCrocking_Result = _FabricCrkShrkTest_Service.GetFabricCrkShrkTestCrocking_Result(Result.ID);
+            if (!fabricCrkShrkTestCrocking_Result.Result)
             {
-                ID = 999999,
-                ScaleIDs = new List<string>() { "a", "b" },
-                CrockingTestOption = 1, // 0 會隱藏明細欄位
-                Crocking_Main = new DatabaseObject.ResultModel.FabricCrkShrkTestCrocking_Main
+                fabricCrkShrkTestCrocking_Result = new FabricCrkShrkTestCrocking_Result()
                 {
-                    Crocking = "Fail",
-                    NonCrocking = true,
-                    POID = "21051318BB",
-                    SEQ = "01 01",
-                    ColorID = "1",
-                    ArriveQty = 2,
-                    WhseArrival = System.DateTime.Now,
-                    ExportID = "3",
-                    Supp = "4",
-                    CrockingDate = System.DateTime.Now.AddDays(-1),
-                    StyleID = "5",
-                    SCIRefno = "6",
-                    Name = "7",
-                    BrandID = "8",
-                    Refno = "9",
-                    DescDetail = "10",
-                    CrockingRemark = "11",
-                    CrockingEncdoe = true
-                },
-                Crocking_Detail = new List<DatabaseObject.ResultModel.FabricCrkShrkTestCrocking_Detail>(),
-            };
+                    ScaleIDs = new List<string>(),
+                    Crocking_Main = new FabricCrkShrkTestCrocking_Main(),
+                    Crocking_Detail = new List<FabricCrkShrkTestCrocking_Detail>(),
+                    ErrorMessage = $"msg.WithInfo('{fabricCrkShrkTestCrocking_Result.ErrorMessage }');",
+                };
+            }
 
-            FabricCrkShrkTestCrocking_Detail test1 = new FabricCrkShrkTestCrocking_Detail()
+            if (!saveResult.Result)
             {
-                Roll = "1",
-                Dyelot = "2",
-                Result = "Fail",
-                DryScale = "a",
-                ResultDry = "Fail",
-                DryScale_Weft = "b",
-                ResultDry_Weft = "Pass",
-                WetScale = "a",
-                ResultWet = "Fail",
-                WetScale_Weft = "b",
-                ResultWet_Weft = "Fail",
-                Inspdate = System.DateTime.Now,
-                Inspector = "3",
-                Name = "3",
-                Remark = "3",
-                LastUpdate = "3"
-            };
-            fabricCrkShrkTestCrocking_Result.Crocking_Detail.Add(test1);
+                fabricCrkShrkTestCrocking_Result.ErrorMessage = $"msg.WithInfo('{saveResult.ErrorMessage }');";
+            }
 
-            FabricCrkShrkTestCrocking_Detail test2 = new FabricCrkShrkTestCrocking_Detail()
-            {
-                Roll = "2",
-                Dyelot = "2",
-                Result = "Fail",
-                DryScale = "a",
-                ResultDry = "Fail",
-                DryScale_Weft = "b",
-                ResultDry_Weft = "Pass",
-                WetScale = "a",
-                ResultWet = "Fail",
-                WetScale_Weft = "b",
-                ResultWet_Weft = "Fail",
-                Inspdate = System.DateTime.Now,
-                Inspector = "3",
-                Name = "3",
-                Remark = "3",
-                LastUpdate = "3"
-            };
-            fabricCrkShrkTestCrocking_Result.Crocking_Detail.Add(test2);
-
-            List<string> resultType = new List<string>() {
-                 "Pass","Fail"
-            };
-
+            List<string> resultType = new List<string>() { "Pass", "Fail" };
             ViewBag.ResultList = new SetListItem().ItemListBinding(resultType);
             ViewBag.ScaleIDsList = new SetListItem().ItemListBinding(fabricCrkShrkTestCrocking_Result.ScaleIDs);
-
             return View(fabricCrkShrkTestCrocking_Result);
         }
 
         public ActionResult HeatTest(long ID)
         {
-            DatabaseObject.ResultModel.FabricCrkShrkTestHeat_Result fabricCrkShrkTestHeat_Result = new FabricCrkShrkTestHeat_Result()
+            FabricCrkShrkTestHeat_Result fabricCrkShrkTestHeat_Result = new FabricCrkShrkTestHeat_Result()
             {
                 ID = ID,
                 Heat_Main = new FabricCrkShrkTestHeat_Main
@@ -451,7 +368,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
-        public ActionResult HeatTest(DatabaseObject.ResultModel.FabricCrkShrkTestHeat_Result fabricCrkShrkTestHeat_Result)
+        public ActionResult HeatTest(FabricCrkShrkTestHeat_Result fabricCrkShrkTestHeat_Result)
         {
             fabricCrkShrkTestHeat_Result = new FabricCrkShrkTestHeat_Result()
             {
@@ -516,7 +433,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         public ActionResult WashTest(long ID)
         {
-            DatabaseObject.ResultModel.FabricCrkShrkTestWash_Result fabricCrkShrkTestWash_Result = new FabricCrkShrkTestWash_Result()
+            FabricCrkShrkTestWash_Result fabricCrkShrkTestWash_Result = new FabricCrkShrkTestWash_Result()
             {
                 ID = 9997,
                 Wash_Main = new FabricCrkShrkTestWash_Main
@@ -706,7 +623,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
-        public ActionResult WashTest(DatabaseObject.ResultModel.FabricCrkShrkTestWash_Result fabricCrkShrkTestWash_Result)
+        public ActionResult WashTest(FabricCrkShrkTestWash_Result fabricCrkShrkTestWash_Result)
         {
             fabricCrkShrkTestWash_Result = new FabricCrkShrkTestWash_Result()
             {

@@ -334,7 +334,7 @@
         msg = new MessagerAlert();
         EditMode = false;
         IsEditModeChange();
-
+        @Html.Raw(Model.ErrorMessage);
     });
 
     function IsEditModeChange() {
