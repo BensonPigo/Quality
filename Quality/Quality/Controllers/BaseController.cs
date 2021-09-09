@@ -149,6 +149,59 @@ namespace Quality.Controllers
             }
             set { System.Web.HttpContext.Current.Session["SelectItemData"] = value; }
         }
+
+        public string TargetArea
+        {
+            get
+            {
+                if (System.Web.HttpContext.Current.Session["TargetArea"] == null) { return string.Empty; }
+                else { return System.Web.HttpContext.Current.Session["TargetArea"].ToString(); }
+            }
+            set { System.Web.HttpContext.Current.Session["TargetArea"] = value; }
+        }
+
+        public string TargetController
+        {
+            get
+            {
+                if (System.Web.HttpContext.Current.Session["TargetController"] == null) { return string.Empty; }
+                else { return System.Web.HttpContext.Current.Session["TargetController"].ToString(); }
+            }
+            set { System.Web.HttpContext.Current.Session["TargetController"] = value; }
+        }
+
+        public string TargetAction
+        {
+            get
+            {
+                if (System.Web.HttpContext.Current.Session["TargetAction"] == null) { return string.Empty; }
+                else { return System.Web.HttpContext.Current.Session["TargetAction"].ToString(); }
+            }
+            set { System.Web.HttpContext.Current.Session["TargetAction"] = value; }
+        }
+
+
+        public string TargetPKey_Parameter
+        {
+            get
+            {
+                if (System.Web.HttpContext.Current.Session["TargetPKey_Parameter"] == null) { return string.Empty; }
+                else { return System.Web.HttpContext.Current.Session["TargetPKey_Parameter"].ToString(); }
+            }
+            set { System.Web.HttpContext.Current.Session["TargetPKey_Parameter"] = value; }
+        }
+
+        public string TargetPKey_Value
+        {
+            get
+            {
+                if (System.Web.HttpContext.Current.Session["TargetPKey_Value"] == null) { return string.Empty; }
+                else { return System.Web.HttpContext.Current.Session["TargetPKey_Value"].ToString(); }
+            }
+            set { System.Web.HttpContext.Current.Session["TargetPKey_Value"] = value; }
+        }
+
+
         #endregion
 
         // 檢查是否登入

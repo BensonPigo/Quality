@@ -22,6 +22,7 @@ using Quality.Controllers;
 using Sci;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -36,6 +37,8 @@ namespace Quality.Areas.FinalInspection.Controllers
         private QueryService Service = new QueryService();
         private IOrdersProvider _IOrdersProvider;
         public IFinalInspection_MeasurementProvider _FinalInspection_MeasurementProvider { get; set; }
+        private string WebHost = ConfigurationManager.AppSettings["WebHost"];
+        private string IsTest = ConfigurationManager.AppSettings["IsTest"];
 
         // GET: FinalInspection/Query
         public ActionResult Index()
@@ -71,127 +74,14 @@ namespace Quality.Areas.FinalInspection.Controllers
             return View(model);
         }
 
-
-
-
         public ActionResult Detail(string FinalInspectionID)
         {
             QueryReport model = Service.GetFinalInspectionReport(FinalInspectionID);
 
-            /*
-            DatabaseObject.ViewModel.FinalInspection.QueryReport queryReport = new QueryReport();
-            DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection = new DatabaseObject.ManufacturingExecutionDB.FinalInspection();
-
-            finalInspection.FabricApprovalDoc = true;
-            finalInspection.SealingSampleDoc = true;
-            finalInspection.MetalDetectionDoc = true;
-            finalInspection.GarmentWashingDoc = true;
-
-            finalInspection.CheckHandfeel = true;
-            queryReport.ListDefectItem = new List<FinalInspectionDefectItem>();
-            DatabaseObject.ViewModel.FinalInspection.FinalInspectionDefectItem data = new DatabaseObject.ViewModel.FinalInspection.FinalInspectionDefectItem();
-            data.DefectTypeDesc = "Accessories";
-            data.DefectCodeDesc = "Accessories broken/damage";
-            data.Qty = 2;
-            data.Ukey = 0;
-            queryReport.ListDefectItem.Add(data);
-
-            DatabaseObject.ViewModel.FinalInspection.FinalInspectionDefectItem data2 = new DatabaseObject.ViewModel.FinalInspection.FinalInspectionDefectItem();
-            data2.DefectTypeDesc = "Accessories";
-            data2.DefectCodeDesc = "Accessories missing/uncompleted";
-            data2.Qty = 0;
-            data.Ukey = 1;
-            queryReport.ListDefectItem.Add(data2);
-
-            finalInspection.ProductionStatus = 100;
-            finalInspection.OthersRemark = @"OthersRemark";
-            queryReport.FinalInspection = finalInspection;
-            queryReport.ListViewMoistureResult = new List<ViewMoistureResult>();
-            IFinalInspectionMoistureService finalInspectionMoistureService = new FinalInspectionMoistureService();
-            List<DatabaseObject.ViewModel.FinalInspection.ViewMoistureResult> viewMoistureResultsList = finalInspectionMoistureService.GetViewMoistureResult("ESPCH21080001");
-            queryReport.ListViewMoistureResult = viewMoistureResultsList;
-
-            queryReport.MeasurementUnit = "CM";
-            List<DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem> listMeasurementViewItem = new List<DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem>();
-
-            DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem MeasurementViewItem1 = new DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem();
-            MeasurementViewItem1.Article = "0050";
-            MeasurementViewItem1.Size = "L";
-            MeasurementViewItem1.ProductType = "Top";
-
-            listMeasurementViewItem.Add(MeasurementViewItem1);
-
-            DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem MeasurementViewItem2 = new DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem();
-            MeasurementViewItem2.Article = "0050";
-            MeasurementViewItem2.Size = "XL";
-            MeasurementViewItem2.ProductType = "Bottom";
-
-            listMeasurementViewItem.Add(MeasurementViewItem2);
-
-            DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem MeasurementViewItem3 = new DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem();
-            MeasurementViewItem3.Article = "0049";
-            MeasurementViewItem3.Size = "S";
-            MeasurementViewItem3.ProductType = "Top";
-
-
-            DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem MeasurementViewItem4 = new DatabaseObject.ViewModel.FinalInspection.MeasurementViewItem();
-            MeasurementViewItem4.Article = "0049";
-            MeasurementViewItem4.Size = "M";
-            MeasurementViewItem4.ProductType = "Top";
-
-            listMeasurementViewItem.Add(MeasurementViewItem4);
-            queryReport.ListMeasurementViewItem = listMeasurementViewItem;
-
-
-            queryReport.FinalInspection.BAQty = 10;
-            queryReport.ListBACriteriaItem = new List<BACriteriaItem>();
-            DatabaseObject.ViewModel.FinalInspection.BACriteriaItem test1 = new DatabaseObject.ViewModel.FinalInspection.BACriteriaItem();
-            test1.Ukey = 1;
-            test1.BACriteria = "C1";
-            test1.BACriteriaDesc = "Delights consumers";
-            queryReport.ListBACriteriaItem.Add(test1);
-
-            DatabaseObject.ViewModel.FinalInspection.BACriteriaItem test2 = new DatabaseObject.ViewModel.FinalInspection.BACriteriaItem();
-            test2.Ukey = 2;
-            test2.BACriteria = "C9";
-            test2.BACriteriaDesc = "Well finished and presented";
-            test2.Qty = 3;
-            queryReport.ListBACriteriaItem.Add(test2);
-
-            // base
-            queryReport.FinalInspection.POID = "A";
-            queryReport.SP = "A001,A002";
-            queryReport.StyleID = "110555";
-            queryReport.BrandID = "Adidas";
-            queryReport.FinalInspection.FactoryID = "MAI";
-            queryReport.TotalSPQty = 200;
-            queryReport.FinalInspection.InspectionStage = "Inline";            
-            queryReport.FinalInspection.AuditDate = new DateTime(2021, 7, 26);
-            queryReport.AvailableQty = 150;
-            queryReport.AQLPlan = "1.0 Level I";
-            queryReport.FinalInspection.SampleSize = 8;
-            queryReport.FinalInspection.AcceptQty = 0;
-            queryReport.FinalInspection.RejectQty = 1;
-            queryReport.FinalInspection.CFA = "Lawrence";
-            queryReport.FinalInspection.SubmitDate = new DateTime(2021, 7, 25);
-            queryReport.FinalInspection.PassQty = 100;
-            queryReport.FinalInspection.RejectQty = 8;
-            queryReport.FinalInspection.InspectionResult = "On-Going";
-            queryReport.FinalInspection.ShipmentStatus = "N/A";
-
-            queryReport.ListCartonInfo = new List<FinalInspection_OrderCarton>();
-            for (int i = 1; i < 11; i++)
-            {
-                FinalInspection_OrderCarton item = new FinalInspection_OrderCarton();
-                item.OrderID = "A00" + i.ToString();
-                item.PackinglistID = "1";                
-                item.CTNNo = i.ToString();
-                queryReport.ListCartonInfo.Add(item);
-            }
-            */
             TempData["Model"] = model;
             return View(model);
         }
+
         public ActionResult DownLoad()
         {
             bool test = false;
@@ -528,6 +418,25 @@ namespace Quality.Areas.FinalInspection.Controllers
             #endregion
 
             return null;
+        }
+
+        [HttpPost]
+        public ActionResult SendMail()
+        {
+            bool test = IsTest.ToLower() == "true";
+
+            QueryReport model = (QueryReport)TempData["Model"];
+            TempData["Model"] = model;
+
+            if (test)
+            {
+                // 如果是測試則抓local host
+                WebHost = Request.Url.Scheme + @"://" + Request.Url.Authority + "/";
+            }
+
+            var result = Service.SendMail(model.FinalInspection.ID, WebHost, test);
+
+            return Json(result);
         }
     }
 }

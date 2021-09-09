@@ -201,6 +201,7 @@
     <Compile Include="Helper\Attribute.cs" />
     <Compile Include="Helper\CheckWorkDate.cs" />
     <Compile Include="Helper\SetListItem.cs" />
+    <Compile Include="Helper\StringEncryptHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

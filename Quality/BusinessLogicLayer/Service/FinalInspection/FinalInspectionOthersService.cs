@@ -125,7 +125,12 @@ namespace BusinessLogicLayer.Service
                 {
                     _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
 
-                    DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection = new DatabaseObject.ManufacturingExecutionDB.FinalInspection();
+                    //DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection = new DatabaseObject.ManufacturingExecutionDB.FinalInspection();
+
+
+                    DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection =
+                        _FinalInspectionProvider.GetFinalInspection(others.FinalInspectionID);
+
                     finalInspection.ID = others.FinalInspectionID;
 
                     if (others.ProductionStatus != null)
@@ -136,7 +141,7 @@ namespace BusinessLogicLayer.Service
                     finalInspection.OthersRemark = others.OthersRemark;
                     finalInspection.CFA = UserID;
                     finalInspection.ShipmentStatus = others.ShipmentStatus;
-                    finalInspection.InspectionResult = others.InspectionResult;
+                    finalInspection.InspectionResult = finalInspection.AcceptQty <= finalInspection.RejectQty ? "Fail" : "Pass";
 
                     _FinalInspectionProvider.UpdateFinalInspectionByStep(finalInspection, "Submit", UserID);
                     _FinalInspectionProvider.UpdateFinalInspection_OtherImage(others.FinalInspectionID, others.ListOthersImageItem.Select(o => o.Image).ToList());
