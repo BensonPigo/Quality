@@ -13,7 +13,7 @@ namespace DatabaseObject.ResultModel
         public int Qty { get; set; }
         public int InspectedQty { get; set; }
         public int BAProduct { get; set; }
-        public int BACriteria { get; set; }
+        public decimal BACriteria { get; set; }
 
     }
 }

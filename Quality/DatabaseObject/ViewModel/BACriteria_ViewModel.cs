@@ -15,6 +15,6 @@ namespace DatabaseObject.ViewModel
         public string BrandID { get; set; }
         public string SeasonID { get; set; }
 
-        public int SummaryBACriteria { get; set; }
+        public decimal SummaryBACriteria { get; set; }
     }
 }

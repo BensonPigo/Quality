@@ -120,7 +120,7 @@ msg.WithInfo('{model.ErrorMessage}');
                     cell4.SetCellValue(data.BAProduct);
 
                     var cell5 = row.GetCell(5);
-                    cell5.SetCellValue(data.BACriteria);
+                    cell5.SetCellValue(Convert.ToDouble(data.BACriteria));
 
                     RowIndex++;
                 }
