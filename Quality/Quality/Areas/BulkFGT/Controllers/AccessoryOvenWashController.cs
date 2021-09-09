@@ -147,7 +147,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         [HttpPost]
         public ActionResult AccessorySave(Accessory_ViewModel Req)
         {
-            return View();
+            return View("Index");
         }
         #endregion
 
@@ -174,21 +174,51 @@ namespace Quality.Areas.BulkFGT.Controllers
         [MultipleButton(Name = "action", Argument = "OvenSave")]
         public ActionResult OvenSave(Accessory_Oven Req)
         {
-            return View();
+            List<string> resultType = new List<string>() {
+                 "Pass","Fail"
+            };
+            ViewBag.ResultList = new SetListItem().ItemListBinding(resultType);
+
+            List<string> tempResult = new List<string>() {
+                 "a","b", "c"
+            };
+            ViewBag.ScaleData = new SetListItem().ItemListBinding(tempResult);
+
+            return View("OvenTest", Req);
         }
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "OvenEncode")]
         public ActionResult OvenEncode(Accessory_Oven Req)
         {
-            return View();
+            List<string> resultType = new List<string>() {
+                 "Pass","Fail"
+            };
+            ViewBag.ResultList = new SetListItem().ItemListBinding(resultType);
+
+            List<string> tempResult = new List<string>() {
+                 "a","b", "c"
+            };
+            ViewBag.ScaleData = new SetListItem().ItemListBinding(tempResult);
+
+            return View("OvenTest", Req);
         }
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "OvenAmend")]
-        public ActionResult OvenAmend()
+        public ActionResult OvenAmend(Accessory_Oven Req)
         {
-            return View();
+            List<string> resultType = new List<string>() {
+                 "Pass","Fail"
+            };
+            ViewBag.ResultList = new SetListItem().ItemListBinding(resultType);
+
+            List<string> tempResult = new List<string>() {
+                 "a","b", "c"
+            };
+            ViewBag.ScaleData = new SetListItem().ItemListBinding(tempResult);
+
+            return View("OvenTest", Req);
         }
         #endregion
 
@@ -214,21 +244,50 @@ namespace Quality.Areas.BulkFGT.Controllers
         [MultipleButton(Name = "action", Argument = "WashSave")]
         public ActionResult WashSave(Accessory_Wash Req)
         {
-            return View();
+            List<string> resultType = new List<string>() {
+                 "Pass","Fail"
+            };
+            ViewBag.ResultList = new SetListItem().ItemListBinding(resultType);
+
+            List<string> tempResult = new List<string>() {
+                 "a","b", "c"
+            };
+            ViewBag.ScaleData = new SetListItem().ItemListBinding(tempResult);
+
+            return View("WashTest", Req);
         }
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "WashEncode")]
         public ActionResult WashEncode(Accessory_Wash Req)
         {
-            return View();
+            List<string> resultType = new List<string>() {
+                 "Pass","Fail"
+            };
+            ViewBag.ResultList = new SetListItem().ItemListBinding(resultType);
+
+            List<string> tempResult = new List<string>() {
+                 "a","b", "c"
+            };
+            ViewBag.ScaleData = new SetListItem().ItemListBinding(tempResult);
+
+            return View("WashTest", Req);
         }
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "WashAmend")]
         public ActionResult WashAmend(Accessory_Wash Req)
         {
-            return View();
+            List<string> resultType = new List<string>() {
+                 "Pass","Fail"
+            };
+            ViewBag.ResultList = new SetListItem().ItemListBinding(resultType);
+
+            List<string> tempResult = new List<string>() {
+                 "a","b", "c"
+            };
+            ViewBag.ScaleData = new SetListItem().ItemListBinding(tempResult);
+            return View("WashTest", Req);
         }
         #endregion
 

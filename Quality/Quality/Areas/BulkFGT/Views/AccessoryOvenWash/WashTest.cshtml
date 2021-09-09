@@ -229,6 +229,7 @@
                                         <td colspan="3">
                                             <div class="input-group">
                                                 @Html.TextBoxFor(o => o.WashInspector, new { @class = "inputInspectorSelectItem" })
+                                                @Html.TextBox("WashInspectorName", string.Empty, new { @class = "inputInspectorSelectItem", @readonly="readonly" })
                                                 <input id="btnDetailInspectorSelectItem" type="button" class="site-btn btn-blue btnInspectorSelectItem" style="margin:0;border:0;" value="..." />
                                             </div>
                                         </td>
@@ -266,7 +267,6 @@
 
                 $("#Edit,#Encode,#Amend").removeClass("IsEditMode");
                 $('#Encode,#Amend').unbind('click');
-
                 $('#Save').addClass("IsEditMode");
                 $(".DataTable input[type='text'],.DataTable select").removeAttr("disabled", "disabled");
 
@@ -280,11 +280,13 @@
                     $("#Edit").addClass("IsEditMode");
                 }
 
-                if (@Model.WashEncode == false) {
+                if (@Model.OvenEncode == false) {
+                    $('#Amend').unbind('click');
                     $("#Encode").addClass("IsEditMode");
                 }
 
-                if (@Model.WashEncode == true) {
+                if (@Model.OvenEncode == true) {
+                    $('#Encode').unbind('click');
                     $("#Amend").addClass("IsEditMode");
                 }
             }
@@ -296,6 +298,18 @@
                     EditMode = true;
                     IsEditModeChange();
                 }
+            });
+
+            $('#Save').on('click', function (e) {
+                document.getElementById("DetailForm").submit();
+            });
+
+            $('#Encode').on('click', function (e) {
+                document.getElementById("DetailForm").submit();
+            });
+
+            $('#Amend').on('click', function (e) {
+                document.getElementById("DetailForm").submit();
             });
 
             $('#Picture').on('click', function () {
@@ -312,6 +326,8 @@
 
     function DetailButtonBind() {
         $('.inputInspectorSelectItem').unbind('blur').on('blur', function () {
+
+            $("#WashInspectorName").val('');
             if ($('#WashInspector').val() == "") {
                 return;
             }
@@ -329,7 +345,8 @@
                     }
                     else
                     {
-                        $("#WashInspector").val(data[0].Name + ' ' + data[0].ExtNo);
+                        $("#WashInspector").val(data[0].ID);
+                        $("#WashInspectorName").val(data[0].Name);
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
@@ -346,6 +363,7 @@
 
 
     function GetPass1(data, targetID) {
-        $("#WashInspector").val(data.Name + ' ' + data.ExtNo);
+        $("#WashInspector").val(data.ID);
+        $("#WashInspectorName").val(data.Name);
     }
 </script>

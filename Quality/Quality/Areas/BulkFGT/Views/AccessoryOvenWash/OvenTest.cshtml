@@ -77,8 +77,8 @@
             </div>
         </header>
         <div class="main-area">
-            <div class="content-scroll" style="height: calc( 100vh - 110px );">
-                <div class="inner-scroll" style="height: calc( 100vh - 150px );">
+            <div class="content-scroll" style="height: calc( 100vh - 160px );">
+                <div class="inner-scroll" style="height: calc( 100vh - 180px );">
                     <div>
                         @*按鈕*@
                         <div>
@@ -102,7 +102,7 @@
                                         </td>
                                         <td>
                                             <h4 style="margin-right: 1em;">
-                                                <button id="Save" type="submit" name="Action:WashSave" style="margin:0;min-width:0;background-color:transparent">
+                                                <button id="Save" type="submit" name="Action:OvenSave" style="margin:0;min-width:0;background-color:transparent">
                                                     <img src="~/Image/Icon/Save.png" width="30" />
                                                     Save
                                                 </button>
@@ -110,7 +110,7 @@
                                         </td>
                                         <td>
                                             <h4 style="margin-right: 1em;">
-                                                <button id="Encode" type="submit" name="Action:WashEncode" style="margin:0;min-width:0;background-color:transparent">
+                                                <button id="Encode" type="submit" name="Action:OvenEncode" style="margin:0;min-width:0;background-color:transparent">
                                                     <img src="~/Image/Icon/Lock.png" width="30" />
                                                     Encode
                                                 </button>
@@ -119,7 +119,7 @@
 
                                         <td>
                                             <h4 style="margin-right: 1em;">
-                                                <button id="Amend" type="submit" name="Action:WashAmend" style="margin:0;min-width:0;background-color:transparent">
+                                                <button id="Amend" type="submit" name="Action:OvenAmend" style="margin:0;min-width:0;background-color:transparent">
                                                     <img src="~/Image/Icon/Unlock.png" width="30" />
                                                     Amend
                                                 </button>
@@ -229,6 +229,7 @@
                                         <td colspan="3">
                                             <div class="input-group">
                                                 @Html.TextBoxFor(o => o.OvenInspector, new { @class = "inputInspectorSelectItem" })
+                                                @Html.TextBox("OvenInspectorName", string.Empty, new { @class = "inputInspectorSelectItem", @readonly = "readonly" })
                                                 <input id="btnDetailInspectorSelectItem" type="button" class="site-btn btn-blue btnInspectorSelectItem" style="margin:0;border:0;" value="..." />
                                             </div>
                                         </td>
@@ -266,7 +267,6 @@
 
                 $("#Edit,#Encode,#Amend").removeClass("IsEditMode");
                 $('#Encode,#Amend').unbind('click');
-
                 $('#Save').addClass("IsEditMode");
                 $(".DataTable input[type='text'],.DataTable select").removeAttr("disabled", "disabled");
 
@@ -281,10 +281,12 @@
                 }
 
                 if (@Model.OvenEncode == false) {
+                    $('#Amend').unbind('click');
                     $("#Encode").addClass("IsEditMode");
                 }
 
                 if (@Model.OvenEncode == true) {
+                    $('#Encode').unbind('click');
                     $("#Amend").addClass("IsEditMode");
                 }
             }
@@ -296,6 +298,18 @@
                     EditMode = true;
                     IsEditModeChange();
                 }
+            });
+
+            $('#Save').on('click', function (e) {
+                document.getElementById("DetailForm").submit();
+            });
+
+            $('#Encode').on('click', function (e) {
+                document.getElementById("DetailForm").submit();
+            });
+
+            $('#Amend').on('click', function (e) {
+                document.getElementById("DetailForm").submit();
             });
 
             $('#Picture').on('click', function () {
@@ -312,6 +326,7 @@
 
     function DetailButtonBind() {
         $('.inputInspectorSelectItem').unbind('blur').on('blur', function () {
+            $('#OvenInspectorName').val('');
             if ($('#OvenInspector').val() == "") {
                 return;
             }
@@ -329,7 +344,8 @@
                     }
                     else
                     {
-                        $("#OvenInspector").val(data[0].Name + ' ' + data[0].ExtNo);
+                        $("#OvenInspector").val(data[0].ID);
+                        $("#OvenInspectorName").val(data[0].Name);
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
@@ -346,6 +362,7 @@
 
 
     function GetPass1(data, targetID) {
-        $("#OvenInspector").val(data.Name + ' ' + data.ExtNo);
+        $("#OvenInspector").val(data.ID);
+        $("#OvenInspectorName").val(data.Name);
     }
 </script>

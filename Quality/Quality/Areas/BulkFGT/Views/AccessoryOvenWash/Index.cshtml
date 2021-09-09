@@ -142,10 +142,10 @@
         </div>
     </header>
     <div class="main-area">
-        <div class="content-scroll" style="height: calc( 100vh - 110px );">
-            <div class="inner-scroll" style="height: calc( 100vh - 150px );">
+        <div class="content-scroll" style="height: calc( 100vh - 160px );">
+            <div class="inner-scroll" style="height: calc( 100vh - 180px );">
                 <div>
-                    @using (Html.BeginForm("Index", ViewContext.RouteData.GetRequiredString("Controller"), new { @name= "action:Query" }, FormMethod.Post))
+                    @using (Html.BeginForm("Index", ViewContext.RouteData.GetRequiredString("Controller"), new { @name = "action:Query" }, FormMethod.Post))
                     {
                         @*查詢*@
                         <div class="row rowHeader">
@@ -190,78 +190,75 @@
                         </table>
                     </div>
                 </div>
-                <div>
-                    @*明細*@
-                    <div style="margin-top: 1em;">
-                        <table class="DataTable MainTable">
-                            <tbody>
-                                <tr>
-                                    <td style="width: 10vw;"><h5>SP#</h5></td>
-                                    <td style="width: 20vw;">
-                                        @Html.TextBoxFor(o => o.OrderID, new { @readonly = "readonly" })
-                                    </td>
-                                    <td style="width: 10vw;"><h5>Style#</h5></td>
-                                    <td style="width: 20vw;">
-                                        @Html.DisplayFor(o => o.StyleID)
-                                    </td>
-                                    <td style="width: 10vw;"><h5>Brand</h5></td>
-                                    <td style="width: 20vw;">
-                                        @Html.DisplayFor(o => o.BrandID)
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><h5>Season</h5></td>
-                                    <td>
-                                        @Html.DisplayFor(o => o.SeasonID)
-                                    </td>
-                                    <td><h5>Earliest Est. Cutting Date</h5></td>
-                                    <td>
-                                        @Html.ValueFor(o => o.EarliestDate, "{0:yyyy/MM/dd}")
-                                    </td>
-                                    <td><h5>Earliest SCI Del</h5></td>
-                                    <td>
-                                        @Html.ValueFor(o => o.EarliestSCIDel, "{0:yyyy/MM/dd}")
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><h5>Target Lead Time</h5></td>
-                                    <td>
-                                        @Html.ValueFor(o => o.TargetLeadTime, "{0:yyyy/MM/dd}")
-                                    </td>
-                                    <td><h5>Completion Date</h5></td>
-                                    <td>
-                                        @Html.ValueFor(o => o.CompletionDate, "{0:yyyy/MM/dd}")
-                                    </td>
-                                    <td><h5>Article % of Inspection</h5></td>
-                                    <td>
-                                        @Html.DisplayFor(o => o.ArticlePercent)
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><h5>Mtl Cmplt (SP)</h5></td>
-                                    <td>
-                                        @Html.DisplayFor(o => o.MtlCmplt)
-                                    </td>
-                                    <td><h5>Remark</h5></td>
-                                    <td colspan="3">
-                                        @Html.TextBoxFor(o => o.Remark, new { @style = "width:40vw" })
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><h5>Create By</h5></td>
-                                    <td colspan="2">
-                                        @Html.DisplayFor(o => o.CreateBy)
-                                    </td>
-                                    <td><h5>Edit By</h5></td>
-                                    <td colspan="2">
-                                        @Html.DisplayFor(o => o.EditBy)
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                @*明細*@
+                <div style="margin-top: 1em;">
+                    <table class="DataTable MainTable">
+                        <tbody>
+                            <tr>
+                                <td style="width: 10vw;"><h5>SP#</h5></td>
+                                <td style="width: 20vw;">
+                                    @Html.TextBoxFor(o => o.OrderID, new { @readonly = "readonly" })
+                                </td>
+                                <td style="width: 10vw;"><h5>Style#</h5></td>
+                                <td style="width: 20vw;">
+                                    @Html.DisplayFor(o => o.StyleID)
+                                </td>
+                                <td style="width: 10vw;"><h5>Brand</h5></td>
+                                <td style="width: 20vw;">
+                                    @Html.DisplayFor(o => o.BrandID)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><h5>Season</h5></td>
+                                <td>
+                                    @Html.DisplayFor(o => o.SeasonID)
+                                </td>
+                                <td><h5>Earliest Est. Cutting Date</h5></td>
+                                <td>
+                                    @Html.ValueFor(o => o.EarliestDate, "{0:yyyy/MM/dd}")
+                                </td>
+                                <td><h5>Earliest SCI Del</h5></td>
+                                <td>
+                                    @Html.ValueFor(o => o.EarliestSCIDel, "{0:yyyy/MM/dd}")
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><h5>Target Lead Time</h5></td>
+                                <td>
+                                    @Html.ValueFor(o => o.TargetLeadTime, "{0:yyyy/MM/dd}")
+                                </td>
+                                <td><h5>Completion Date</h5></td>
+                                <td>
+                                    @Html.ValueFor(o => o.CompletionDate, "{0:yyyy/MM/dd}")
+                                </td>
+                                <td><h5>Article % of Inspection</h5></td>
+                                <td>
+                                    @Html.DisplayFor(o => o.ArticlePercent)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><h5>Mtl Cmplt (SP)</h5></td>
+                                <td>
+                                    @Html.DisplayFor(o => o.MtlCmplt)
+                                </td>
+                                <td><h5>Remark</h5></td>
+                                <td colspan="3">
+                                    @Html.TextBoxFor(o => o.Remark, new { @style = "width:40vw" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><h5>Create By</h5></td>
+                                <td colspan="2">
+                                    @Html.DisplayFor(o => o.CreateBy)
+                                </td>
+                                <td><h5>Edit By</h5></td>
+                                <td colspan="2">
+                                    @Html.DisplayFor(o => o.EditBy)
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-
                 <div style="margin-top: 1em;overflow:auto">
                     <table cellspacing="100" class="DataTable DetailTable table table-striped display;" style="width: 200vw">
                         <thead>
@@ -298,123 +295,123 @@
                             @for (int i = 0; i < Model.DataList.Count; i++)
                             {
                                 string styleColor = string.Empty;
-                            <tr class="row-content" style="vertical-align: middle; text-align: center;">
-                                <td>
-                                    @Html.HiddenFor(modelItem => Model.DataList[i].AIR_LaboratoryID)
-                                    @Html.DisplayFor(modelItem => Model.DataList[i].Seq)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => Model.DataList[i].WKNo)
-                                </td>
-                                <td>
-                                    @Html.ValueFor(modelItem => Model.DataList[i].WhseArrival, "{0:yyyy/MM/dd}")
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => Model.DataList[i].SCIRefno)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => Model.DataList[i].Refno)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => Model.DataList[i].Supplier)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => Model.DataList[i].Color)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => Model.DataList[i].Size)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => Model.DataList[i].ArriveQty)
-                                </td>
-                                <td>
-                                    @Html.ValueFor(modelItem => Model.DataList[i].InspDeadline, "{0:yyyy/MM/dd}")
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => Model.DataList[i].Result)
-                                </td>
-                                <td class="CheckBoxColor">
-                                    @Html.CheckBox("DataList[" + i + "].NonOven", Convert.ToBoolean(Model.DataList[i].NonOven))
-                                </td>
-                                <td class="CrockingColor">
+                                <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                                    <td>
+                                        @Html.HiddenFor(modelItem => Model.DataList[i].AIR_LaboratoryID)
+                                        @Html.DisplayFor(modelItem => Model.DataList[i].Seq)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => Model.DataList[i].WKNo)
+                                    </td>
+                                    <td>
+                                        @Html.ValueFor(modelItem => Model.DataList[i].WhseArrival, "{0:yyyy/MM/dd}")
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => Model.DataList[i].SCIRefno)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => Model.DataList[i].Refno)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => Model.DataList[i].Supplier)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => Model.DataList[i].Color)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => Model.DataList[i].Size)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => Model.DataList[i].ArriveQty)
+                                    </td>
+                                    <td>
+                                        @Html.ValueFor(modelItem => Model.DataList[i].InspDeadline, "{0:yyyy/MM/dd}")
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => Model.DataList[i].Result)
+                                    </td>
+                                    <td class="CheckBoxColor">
+                                        @Html.CheckBox("DataList[" + i + "].NonOven", Convert.ToBoolean(Model.DataList[i].NonOven))
+                                    </td>
+                                    <td class="CrockingColor">
+                                        @{
+                                            if (Model.DataList[i].OvenResult == "Pass")
+
+                                            {
+                                                styleColor = "blue";
+                                            }
+                                            else
+                                            {
+                                                styleColor = "red";
+                                            }
+                                        }
+                                        <font color="@styleColor">@Html.DisplayFor(modelItem => Model.DataList[i].OvenResult)</font>
+                                    </td>
+                                    <td class="OvenColor">
+                                        @Html.DisplayFor(modelItem => Model.DataList[i].OvenScale)
+                                    </td>
+                                    <td class="OvenColor">
+                                        @Html.ValueFor(modelItem => Model.DataList[i].OvenDate, "{0:yyyy/MM/dd}")
+                                    </td>
+                                    <td class="OvenColor">
+                                        @Html.DisplayFor(modelItem => Model.DataList[i].OvenInspector)
+                                    </td>
+                                    <td class="OvenColor">
+                                        @Html.DisplayFor(modelItem => Model.DataList[i].OvenRemark)
+                                    </td>
+                                    <td class="CheckBoxColor">
+                                        @Html.CheckBox("DataList[" + i + "].NonWash", Convert.ToBoolean(Model.DataList[i].NonWash))
+                                    </td>
+                                    <td class="HeatColor">
+                                        @{
+                                            if (Model.DataList[i].WashResult == "Pass")
+
+                                            {
+                                                styleColor = "blue";
+                                            }
+                                            else
+                                            {
+                                                styleColor = "red";
+                                            }
+                                        }
+                                        <font color="@styleColor">@Html.DisplayFor(modelItem => Model.DataList[i].WashResult)</font>
+                                    </td>
+                                    <td class="HeatColor">
+                                        @Html.DisplayFor(modelItem => Model.DataList[i].WashScale)
+                                    </td>
+                                    <td class="WashColor">
+                                        @Html.ValueFor(modelItem => Model.DataList[i].WashDate, "{0:yyyy/MM/dd}")
+                                    </td>
+                                    <td class="WashColor">
+                                        @Html.DisplayFor(modelItem => Model.DataList[i].WashInspector)
+                                    </td>
+                                    <td class="WashColor">
+                                        @Html.DisplayFor(modelItem => Model.DataList[i].WashRemark)
+                                    </td>
+                                    <td class="WashColor">
+                                        @Html.DisplayFor(modelItem => Model.DataList[i].Receiving)
+                                    </td>
                                     @{
-                                        if (Model.DataList[i].OvenResult == "Pass")
-
+                                        string controllerName = ViewContext.RouteData.GetRequiredString("Controller");
+                                        DatabaseObject.ViewModel.BulkFGT.Accessory_Oven accessory_Oven = new DatabaseObject.ViewModel.BulkFGT.Accessory_Oven()
                                         {
-                                            styleColor = "blue";
-                                        }
-                                        else
+                                            POID = Model.OrderID,
+                                            AIR_LaboratoryID = Model.DataList[i].AIR_LaboratoryID,
+                                            Seq1 = Model.DataList[i].Seq1,
+                                            Seq2 = Model.DataList[i].Seq2,
+                                        };
+                                        DatabaseObject.ViewModel.BulkFGT.Accessory_Wash accessory_wash = new DatabaseObject.ViewModel.BulkFGT.Accessory_Wash()
                                         {
-                                            styleColor = "red";
-                                        }
+                                            POID = Model.OrderID,
+                                            AIR_LaboratoryID = Model.DataList[i].AIR_LaboratoryID,
+                                            Seq1 = Model.DataList[i].Seq1,
+                                            Seq2 = Model.DataList[i].Seq2,
+                                        };
                                     }
-                                    <font color="@styleColor">@Html.DisplayFor(modelItem => Model.DataList[i].OvenResult)</font>
-                                </td>
-                                <td class="OvenColor">
-                                    @Html.DisplayFor(modelItem => Model.DataList[i].OvenScale)
-                                </td>
-                                <td class="OvenColor">
-                                    @Html.ValueFor(modelItem => Model.DataList[i].OvenDate, "{0:yyyy/MM/dd}")
-                                </td>
-                                <td class="OvenColor">
-                                    @Html.DisplayFor(modelItem => Model.DataList[i].OvenInspector)
-                                </td>
-                                <td class="OvenColor">
-                                    @Html.DisplayFor(modelItem => Model.DataList[i].OvenRemark)
-                                </td>
-                                <td class="CheckBoxColor">
-                                    @Html.CheckBox("DataList[" + i + "].NonWash", Convert.ToBoolean(Model.DataList[i].NonWash))
-                                </td>
-                                <td class="HeatColor">
-                                    @{
-                                        if (Model.DataList[i].WashResult == "Pass")
 
-                                        {
-                                            styleColor = "blue";
-                                        }
-                                        else
-                                        {
-                                            styleColor = "red";
-                                        }
-                                    }
-                                    <font color="@styleColor">@Html.DisplayFor(modelItem => Model.DataList[i].WashResult)</font>
-                                </td>
-                                <td class="HeatColor">
-                                    @Html.DisplayFor(modelItem => Model.DataList[i].WashScale)
-                                </td>
-                                <td class="WashColor">
-                                    @Html.ValueFor(modelItem => Model.DataList[i].WashDate, "{0:yyyy/MM/dd}")
-                                </td>
-                                <td class="WashColor">
-                                    @Html.DisplayFor(modelItem => Model.DataList[i].WashInspector)
-                                </td>
-                                <td class="WashColor">
-                                    @Html.DisplayFor(modelItem => Model.DataList[i].WashRemark)
-                                </td>
-                                <td class="WashColor">
-                                    @Html.DisplayFor(modelItem => Model.DataList[i].Receiving)
-                                </td>
-                                @{
-                                    string controllerName = ViewContext.RouteData.GetRequiredString("Controller");
-                                    DatabaseObject.ViewModel.BulkFGT.Accessory_Oven accessory_Oven = new DatabaseObject.ViewModel.BulkFGT.Accessory_Oven()
-                                    {
-                                        POID = Model.OrderID,
-                                        AIR_LaboratoryID = Model.DataList[i].AIR_LaboratoryID,
-                                        Seq1 = Model.DataList[i].Seq1,
-                                        Seq2 = Model.DataList[i].Seq2,
-                                    };
-                                    DatabaseObject.ViewModel.BulkFGT.Accessory_Wash accessory_wash = new DatabaseObject.ViewModel.BulkFGT.Accessory_Wash()
-                                    {
-                                        POID = Model.OrderID,
-                                        AIR_LaboratoryID = Model.DataList[i].AIR_LaboratoryID,
-                                        Seq1 = Model.DataList[i].Seq1,
-                                        Seq2 = Model.DataList[i].Seq2,
-                                    };
-                                }
-
-                                <td><a class="link" href="@Url.Action("OvenTest", @controllerName, accessory_Oven)">OvenTest</a></td>
-                                <td><a class="link" href="@Url.Action("WashTest", @controllerName, accessory_wash)">WashTest</a></td>
-                            </tr>
+                                    <td><a class="link" href="@Url.Action("OvenTest", @controllerName, accessory_Oven)">OvenTest</a></td>
+                                    <td><a class="link" href="@Url.Action("WashTest", @controllerName, accessory_wash)">WashTest</a></td>
+                                </tr>
                             }
                         </tbody>
 
