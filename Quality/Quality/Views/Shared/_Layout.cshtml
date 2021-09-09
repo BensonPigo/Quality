@@ -190,13 +190,33 @@
         <nav style="overflow-y: auto;max-height: 90%;">
             @if (menus.Count > 0)
             {
+                int i = 0;
                 foreach (string moduleName in menus.OrderBy(x => x.ModuleSeq).GroupBy(x => x.ModuleName).Select(x => x.Key))
                 {
                     string IsOpen = moduleName == SelectedMenu ? "current" : "";
                     var subFunction = menus.Where(x => x.ModuleName.Equals(moduleName)).OrderBy(x => x.FunctionSeq);
+                    string icon = "icon-box";
+                    switch(i)
+                    {
+                        case 1:
+                            icon = "icon-pol";
+                            break;
+                        case 2:
+                            icon = "icon-calendar";
+                            break;
+                        case 3:
+                            icon = "icon-vcard";
+                            break;
+                        case 4:
+                            icon = "icon-users";
+                            break;
+                        case 5:
+                            icon = "icon-download";
+                            break;
+                    }
                     <ul class="sidebar-nav pointer">
                         <li class="RootLi @Html.Raw(IsOpen)">
-                            <h6><i class="icon-box"></i><span>@moduleName</span></h6>
+                            <h6><i class="@icon"></i><span>@moduleName</span></h6>
                             <ul class="sidebar-menu">
                                 @foreach (Quality_Menu r in subFunction)
                                 {
@@ -207,6 +227,7 @@
                             </ul>
                         </li>
                     </ul>
+                    i++;
                 }
             }
         </nav>

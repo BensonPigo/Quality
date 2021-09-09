@@ -2,6 +2,7 @@ using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using System.Collections.Generic;
+using System.Data;
 
 namespace ProductionDataAccessLayer.Interface
 {
@@ -11,9 +12,11 @@ namespace ProductionDataAccessLayer.Interface
 
         IList<MockupCrocking_ViewModel> GetMockupCrocking(MockupCrocking_Request Item, bool istop1 = false);
 
+        DataTable GetMockupCrockingFailMailContentData(string ReportNo);
+
         int Create(MockupCrocking Item);
 
-        int Update(MockupCrocking Item);
+        void Update(MockupCrocking_ViewModel Item);
 
         int Delete(MockupCrocking Item);
     }

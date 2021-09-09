@@ -12,6 +12,8 @@ namespace BusinessLogicLayer.Interface.BulkFGT
 
         BaseResult SaveFabricOvenTestMain(FabricOvenTest_Main fabricOvenTest_Main);
 
+        BaseResult DeleteOven(string poID, string TestNo);
+
         FabricOvenTest_Detail_Result GetFabricOvenTest_Detail_Result(string poID, string TestNo);
 
         BaseResult SaveFabricOvenTestDetail(FabricOvenTest_Detail_Result fabricOvenTest_Detail_Result, string userID);

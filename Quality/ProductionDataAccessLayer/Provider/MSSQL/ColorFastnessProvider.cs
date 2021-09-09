@@ -8,6 +8,7 @@ using MICS.DataAccessLayer.Interface;
 using DatabaseObject.ProductionDB;
 using System.Linq;
 using DatabaseObject.ViewModel.BulkFGT;
+using System.Data.SqlClient;
 
 namespace MICS.DataAccessLayer.Provider.MSSQL
 {
@@ -19,6 +20,111 @@ namespace MICS.DataAccessLayer.Provider.MSSQL
         #endregion
 
         #region CRUD Base
+
+        public bool Encode_ColorFastness(string ID, string Status, string Result, string UserID)
+        {
+            // 若是Amend則Result 為空白
+            string strResult = (Status == "Confirmed") ? Result : "";
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.String, ID } ,
+                { "@Status", DbType.String, Status } ,
+                { "@result", DbType.String, strResult } ,
+                { "@UserID", DbType.String, UserID } ,
+            };
+
+            string sqlcmd = @"
+Update ColorFastness set Status = @Status
+, result = @result
+, EditName = @UserID, EditDate = GetDate()
+where id = @ID
+";
+            return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
+        }
+
+        public DataTable Get_PO_DataTable(string PoID)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection objParameter = new SQLParameterCollection()
+            {
+                { "@POID", DbType.String, PoID },
+            };
+
+            #region Sql Command
+            SbSql.Append("SELECT" + Environment.NewLine);
+            SbSql.Append("         ID" + Environment.NewLine);
+            SbSql.Append("        ,BrandID" + Environment.NewLine);
+            SbSql.Append("        ,StyleID" + Environment.NewLine);
+            SbSql.Append("        ,SeasonID" + Environment.NewLine);
+            SbSql.Append("FROM [PO]" + Environment.NewLine);
+            SbSql.Append("Where 1 = 1" + Environment.NewLine);
+            #endregion
+
+            if (!string.IsNullOrEmpty(PoID)) { SbSql.Append("And ID = @POID" + Environment.NewLine); }
+            return ExecuteDataTableByServiceConn(CommandType.Text, SbSql.ToString(), objParameter);
+        }
+
+        public DataTable Get_Mail_Content(string POID, string ID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@POID", DbType.String, POID } ,
+                { "@ID", DbType.String, ID } ,
+            };
+
+            string sqlcmd = @"
+select a.ID
+,b.StyleID
+,b.BrandID
+,b.SeasonID
+,c.TestNo
+,[TestDate] = Format(c.InspDate, 'yyyy/MM/dd')
+,c.Article
+,c.Result
+,c.Inspector
+,c.Remark
+from po a WITH (NOLOCK) 
+left join Orders b WITH (NOLOCK) on a.ID = b.POID
+left join ColorFastness c WITH (NOLOCK) on a.ID=c.POID
+where a.id= @POID
+and c.ID = @ID
+";
+            return ExecuteDataTable(CommandType.Text, sqlcmd, objParameter);
+        }
+
+        public string Get_InspectName(string Inspector)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@Inspector", DbType.String, Inspector } ,
+            };
+
+            string sqlcmd = @"
+select Name from Pass1 where ID = @Inspector
+";
+            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
+            return dt.Rows[0]["Name"].ToString();
+        }
+
+        public string Get_Supplier(string PoID, string Seq1)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@PoID", DbType.String, PoID } ,
+                { "@Seq1", DbType.String, Seq1 } ,
+            };
+
+            string sqlcmd = @"
+SELECT a.ID,a.SuppID,a.SEQ1
+,[supplier] = a.SuppID+'-'+b.AbbEN 
+from PO_Supp a WITH (NOLOCK) 
+left join supp b WITH (NOLOCK) on a.SuppID=b.ID
+where a.ID = @PoID
+and a.seq1 = @Seq1
+";
+            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
+            return dt.Rows[0]["supplier"].ToString();
+        }
 
         public List<string> GetScales()
         {
@@ -39,7 +145,7 @@ namespace MICS.DataAccessLayer.Provider.MSSQL
 select PoID = a.ID,b.StyleID,b.SeasonID,b.BrandID
 ,b.CutInLine
 ,a.MinSciDelivery
-,a.OvenLaboratoryRemark
+,a.ColorFastnessLaboratoryRemark
 ,[ArticlePercent] = a.LabColorFastnessPercent
 ,[CompletionDate] = MaxInspDate.value
 ,[CreateBy] = CONCAT(a.AddName,'-',(select Name from Pass1 where id = a.AddName),' ', a.AddDate)
@@ -71,7 +177,7 @@ where POID=@PoID
                 SeasonID = source.First().SeasonID,
                 CutInLine = source.First().CutInLine,
                 MinSciDelivery = source.First().MinSciDelivery,
-                OvenLaboratoryRemark = source.First().OvenLaboratoryRemark,
+                ColorFastnessLaboratoryRemark = source.First().ColorFastnessLaboratoryRemark,
                 EarliestDate = source.First().CutInLine,
                 EarliestSCIDel = source.First().MinSciDelivery,
                 ArticlePercent = source.First().ArticlePercent,
@@ -83,7 +189,46 @@ where POID=@PoID
 
             return result;
         }
-       
+
+        public bool Save_PO(string PoID, string Remark)
+        {   
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@PoID", PoID } ,
+                { "@Remark", Remark } ,
+            };
+
+            string sqlcmd = @"
+update PO
+set ColorFastnessLaboratoryRemark = @Remark
+where ID = @PoID
+
+exec UpdateInspPercent 'LabColorFastness',@PoID
+";
+            return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
+        }
+
+        public bool Delete_ColorFastness(string PoID, List<ColorFastness_Result> source)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            FabricColorFastness_ViewModel dbSource = GetMain(PoID);
+            string sqlcmd = string.Empty;
+
+            int idx = 1;
+            foreach (var item in dbSource.ColorFastness_MainList)
+            {
+                if (!source.Where(x => x.ID.Equals(item.ID)).Any())
+                {
+                    objParameter.Add(new SqlParameter($"@ID{idx}", item.ID));
+                    sqlcmd += $@"
+delete from ColorFastness_Detail where id = @ID{idx} 
+delete from ColorFastness where id = @ID{idx} ";
+                    idx++;
+                }
+            }
+
+            return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
+        }
 
         public DateTime? Get_Target_LeadTime(object CUTINLINE, object MinSciDelivery)
         {

@@ -169,8 +169,7 @@ where o.POID = @POID
             listPar.Add("@TestNo", fabricOvenTest_Detail_Result.Main.TestNo);
             listPar.Add("@InspDate", fabricOvenTest_Detail_Result.Main.InspDate);
             listPar.Add("@Article", fabricOvenTest_Detail_Result.Main.Article);
-            listPar.Add("@Inspector", fabricOvenTest_Detail_Result.Main.Inspector);
-            listPar.Add("@Result", fabricOvenTest_Detail_Result.Main.Result);
+            listPar.Add("@Inspector", fabricOvenTest_Detail_Result.Main.Inspector);            
             listPar.Add("@Remark", fabricOvenTest_Detail_Result.Main.Remark);
             listPar.Add("@editName", userID);
             listPar.Add("@TestBeforePicture", fabricOvenTest_Detail_Result.Main.TestBeforePicture);
@@ -179,7 +178,6 @@ where o.POID = @POID
             string sqlUpdateOven = @"
 update  Oven set    InspDate = @InspDate,
                     Article = @Article,
-                    Result = @Result,
                     Inspector = @Inspector,
                     Remark = @Remark,
                     EditName = @editName,
@@ -591,6 +589,23 @@ where   ov.POID = @poID and ov.TestNo = @TestNo
 ";
 
             return ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, listPar);
+        }
+
+        public void DeleteOven(string poID, string TestNo)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@poID", poID);
+            listPar.Add("@TestNo", TestNo);
+
+            string sqlDeleteOven = @"
+delete  Oven_Detail where ID = (select ID from Oven where POID = @poID and TestNo = @TestNo)
+delete  Oven where POID = @poID and TestNo = @TestNo
+";
+            using (TransactionScope transaction = new TransactionScope())
+            {
+                ExecuteNonQuery(CommandType.Text, sqlDeleteOven, listPar);
+                transaction.Complete();
+            }
         }
 
         #endregion

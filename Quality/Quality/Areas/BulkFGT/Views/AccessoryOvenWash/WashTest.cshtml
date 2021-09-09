@@ -1,7 +1,369 @@
-﻿
-@{
-    ViewBag.Title = "WashTest";
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>WashTest</h2>
+@model DatabaseObject.ViewModel.BulkFGT.Accessory_Wash
 
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+<link href="~/ThirdParty/plugins/jquery-ui/jquery-ui.css" rel="stylesheet" />
+<style type="text/css">
+
+    .input-group {
+        display: flex
+    }
+
+        .input-group > input:nth-child(1) {
+            flex-grow: 2
+        }
+
+        .input-group > input:nth-child(2) {
+            flex-grow: 1
+        }
+
+    .IsEditMode {
+        color: white !important;
+        cursor: pointer;
+    }
+
+    .IsEditModeQuery {
+        color: gray !important;
+        cursor: no-drop;
+    }
+
+    #ButtonMode {
+        width: 92vw;
+    }
+
+    .DataTable {
+        width: 82vw;
+        font-size: 1rem;
+        font-weight: bold;
+        border: solid 1px black;
+        background-color: white;
+    }
+
+        .DataTable > tbody img {
+            cursor: pointer;
+        }
+
+        .DataTable > tbody > tr:nth-of-type(odd) {
+            background-color: #ffffff;
+        }
+
+        .DataTable > tbody > tr:nth-of-type(even) {
+            background-color: #F0F2F2;
+        }
+
+        .DataTable > tbody > tr > td {
+            border: solid 1px gray;
+            padding: 0.5em;
+            vertical-align: middle;
+        }
+</style>
+@using (Html.BeginForm("WashTest", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { id = "DetailForm" }))
+{
+    <div class="main-content">
+        <header class="page-header">
+            <h3>
+                <span>Accessory Oven Test & Wash</span>
+            </h3>
+            <div class="breadcrumb">
+                <div>Home</div>
+                <div>Accessory Oven Test & Wash</div>
+                <div class="current">WashTest</div>
+            </div>
+        </header>
+        <div class="main-area">
+            <div class="content-scroll" style="height: calc( 100vh - 110px );">
+                <div class="inner-scroll" style="height: calc( 100vh - 150px );">
+                    <div>
+                        @*按鈕*@
+                        <div>
+                            <table id="ButtonMode">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <h4 id="Exit" style="margin-right: 1em;">
+                                                <a href="@Url.Action("IndexBack", ViewContext.RouteData.GetRequiredString("Controller"), new { POID = Model.POID })">
+                                                    <img src="~/Image/Icon/Exit.png" width="30" />
+                                                    Exit
+                                                </a>
+                                            </h4>
+                                        </td>
+
+                                        <td>
+                                            <h4 id="Edit" style="margin-right: 1em;">
+                                                <img src="~/Image/Icon/Edit.png" width="30" />
+                                                Edit
+                                            </h4>
+                                        </td>
+                                        <td>
+                                            <h4 style="margin-right: 1em;">
+                                                <button id="Save" type="submit" name="Action:WashSave" style="margin:0;min-width:0;background-color:transparent">
+                                                    <img src="~/Image/Icon/Save.png" width="30" />
+                                                    Save
+                                                </button>
+                                            </h4>
+                                        </td>
+                                        <td>
+                                            <h4 style="margin-right: 1em;">
+                                                <button id="Encode" type="submit" name="Action:WashEncode" style="margin:0;min-width:0;background-color:transparent">
+                                                    <img src="~/Image/Icon/Lock.png" width="30" />
+                                                    Encode
+                                                </button>
+                                            </h4>
+                                        </td>
+
+                                        <td>
+                                            <h4 style="margin-right: 1em;">
+                                                <button id="Amend" type="submit" name="Action:WashAmend" style="margin:0;min-width:0;background-color:transparent">
+                                                    <img src="~/Image/Icon/Unlock.png" width="30" />
+                                                    Amend
+                                                </button>
+                                            </h4>
+                                        </td>
+                                        <td>
+                                            <h4 id="Picture" style="margin-right: 1em;">
+                                                <img src="~/Image/Icon/Camera.png" width="30" />
+                                                Picture
+                                            </h4>
+                                        </td>
+                                        <td style="width: 50%;">
+                                        </td>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div>
+                        @*主-明細*@
+                        <div style="margin-top: 1em;">
+                            <table class="DataTable MainTable">
+                                <tbody>
+                                    @if (Model != null)
+                                    {
+                                        @Html.HiddenFor(o => o.WashEncode)
+                                        @Html.HiddenFor(o => o.AIR_LaboratoryID)
+                                        @Html.HiddenFor(o => o.Seq1)
+                                        @Html.HiddenFor(o => o.Seq2)
+                                    }
+                                    <tr>
+                                        <td style="width: 10vw;"><h5>SP#</h5></td>
+                                        <td style="width: 20vw;">
+                                            @Html.DisplayFor(o => o.POID)
+                                        </td>
+                                        <td style="width: 10vw;"><h5>SCI Refno</h5></td>
+                                        <td style="width: 20vw;">
+                                            @Html.DisplayFor(o => o.SCIRefno)
+                                        </td>
+                                        <td style="width: 10vw;"><h5>WK#</h5></td>
+                                        <td style="width: 20vw;">
+                                            @Html.DisplayFor(o => o.WKNo)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><h5>Refno</h5></td>
+                                        <td>
+                                            @Html.DisplayFor(o => o.Refno)
+                                        </td>
+                                        <td><h5>Active Qty</h5></td>
+                                        <td>
+                                            @Html.DisplayFor(o => o.ArriveQty)
+                                        </td>
+                                        <td><h5>Supplier</h5></td>
+                                        <td>
+                                            @Html.DisplayFor(o => o.Supplier)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><h5>Unit</h5></td>
+                                        <td>
+                                            @Html.DisplayFor(o => o.Unit)
+                                        </td>
+                                        <td><h5>Color</h5></td>
+                                        <td>
+                                            @Html.DisplayFor(o => o.Color)
+                                        </td>
+                                        <td><h5>Size</h5></td>
+                                        <td>
+                                            @Html.DisplayFor(o => o.Size)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="6"></td>
+                                    </tr>
+                                    <tr>
+                                        <td><h5>Scale</h5></td>
+                                        <td>
+                                            <select id="Scale" name="Scale" disabled="disabled" style="width:157px;">
+                                                @foreach (var item in (List<SelectListItem>)ViewBag.ScaleData)
+                                                {
+                                                    string selected = item.Text.Equals(Model.Scale) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>
+                                        </td>
+                                        <td><h5>Result</h5></td>
+                                        <td>
+                                            <select id="Result" name="Result" disabled="disabled" style="width:157px;">
+                                                @foreach (var item in (List<SelectListItem>)ViewBag.ResultList)
+                                                {
+                                                    string selected = item.Text.Equals(Model.Result) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td><h5>Remark</h5></td>
+                                        <td colspan="3"></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td><h5>Lab Tech</h5></td>
+                                        <td colspan="3">
+                                            <div class="input-group">
+                                                @Html.TextBoxFor(o => o.WashInspector, new { @class = "inputInspectorSelectItem" })
+                                                @Html.TextBox("WashInspectorName", string.Empty, new { @class = "inputInspectorSelectItem", @readonly="readonly" })
+                                                <input id="btnDetailInspectorSelectItem" type="button" class="site-btn btn-blue btnInspectorSelectItem" style="margin:0;border:0;" value="..." />
+                                            </div>
+                                        </td>
+                                        <td><h5>Inspect Date</h5></td>
+                                        <td>
+                                            @Html.TextBoxFor(o => o.WashDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<script type="text/javascript">
+    var msg;
+    var EditMode;
+    var True = true;
+    var False = false;
+
+        $(function () {
+            msg = new MessagerAlert();
+            EditMode = false;
+            IsEditModeChange();
+        });
+
+        function IsEditModeChange() {
+            EditModeButtionBind();
+            $('#Picture').addClass("IsEditMode");
+            // 按編輯為控制disabled，如果是編輯模式下不給使用者操作，請在元件身上加上readonly
+            if (EditMode) {
+
+                $("#Edit,#Encode,#Amend").removeClass("IsEditMode");
+                $('#Encode,#Amend').unbind('click');
+                $('#Save').addClass("IsEditMode");
+                $(".DataTable input[type='text'],.DataTable select").removeAttr("disabled", "disabled");
+
+                DetailButtonBind();
+            }
+            else {
+                $('#Save').unbind('click').removeClass("IsEditMode");
+                $(".DataTable input[type='text'],.DataTable select").attr("disabled", "disabled");
+
+                if ('@Model.AIR_LaboratoryID' != '') {
+                    $("#Edit").addClass("IsEditMode");
+                }
+
+                if (@Model.WashEncode == false) {
+                    $('#Amend').unbind('click');
+                    $("#Encode").addClass("IsEditMode");
+                }
+
+                if (@Model.WashEncode == true) {
+                    $('#Encode').unbind('click');
+                    $("#Amend").addClass("IsEditMode");
+                }
+            }
+        }
+
+        function EditModeButtionBind() {
+            $('#Edit').on('click', function () {
+                if ('@Model.AIR_LaboratoryID' != '') {
+                    EditMode = true;
+                    IsEditModeChange();
+                }
+            });
+
+            $('#Save').on('click', function (e) {
+                document.getElementById("DetailForm").submit();
+            });
+
+            $('#Encode').on('click', function (e) {
+                document.getElementById("DetailForm").submit();
+            });
+
+            $('#Amend').on('click', function (e) {
+                document.getElementById("DetailForm").submit();
+            });
+
+            $('#Picture').on('click', function () {
+                var key1 = 'PKey_1=ID&PKey_1_Val=' + '@Model.AIR_LaboratoryID';
+                var key2 = 'PKey_2=POID&PKey_2_Val=' + '@Model.POID';
+                var key3 = 'PKey_3=Seq1&PKey_3_Val=' + '@Model.Seq1';
+                var key4 = 'PKey_4=Seq2&PKey_4_Val=' + '@Model.Seq2';
+
+                var para = "?EditMode=" + EditMode + "&Table=AIR_Laboratory&BrforeColumn=OvenTestBeforePicture&AfterColumn=WashTestBeforePicture&" + key1 + "&" + key2 + "&" + key3 + "&" + key4;
+
+                window.open('@Url.Action("PictureList","PublicWondow",new{Area=""})' + para, 'Picture', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+            });
+    }
+
+    function DetailButtonBind() {
+        $('.inputInspectorSelectItem').unbind('blur').on('blur', function () {
+
+            $("#WashInspectorName").val('');
+            if ($('#WashInspector').val() == "") {
+                return;
+            }
+
+            $.ajax({
+                url: "@Url.Action("Pass1List", "PublicWondow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID:$(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#WashInspector").val('');
+                        msg.WithError('Lab Tech Not Found');
+                    }
+                    else
+                    {
+                        $("#WashInspector").val(data[0].ID);
+                        $("#WashInspectorName").val(data[0].Name);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $('.btnInspectorSelectItem').unbind('click').on('click', function () {
+            var para = "?Title=Lab Tech";
+            window.open('@Url.Action("Pass1List", "PublicWondow",new{Area=""})' + para, 'Lab Tech', config = 'toolbar=no,status=no,location=no,width=950,height=650');
+        });
+    }
+
+
+    function GetPass1(data, targetID) {
+        $("#WashInspector").val(data.ID);
+        $("#WashInspectorName").val(data.Name);
+    }
+</script>

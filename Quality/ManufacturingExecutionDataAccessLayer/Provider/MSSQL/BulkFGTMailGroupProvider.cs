@@ -28,8 +28,12 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 select q.FactoryID, q.Type, q.GroupName, q.ToAddress, q.CcAddress 
 from Quality_MailGroup q 
 where q.Type = @Type 
-and q.FactoryID = @FactoryID 
 ");
+
+            if (!string.IsNullOrEmpty(quality_Mail.FactoryID))
+            {
+                SbSql.Append(" and q.FactoryID = @FactoryID  ");
+            }
 
             if (!string.IsNullOrEmpty(quality_Mail.GroupName))
             {

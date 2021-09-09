@@ -27,5 +27,7 @@ namespace BusinessLogicLayer.Interface.BulkFGT
         BaseResult DeleteDetail(List<MockupCrocking_Detail_ViewModel> MockupWashDetail);
 
         Report_Result GetPDF(MockupCrocking_ViewModel MockupCrocking, bool test = false);
+
+        SendMail_Result FailSendMail(MockupFailMail_Request mail_Request);
     }
 }

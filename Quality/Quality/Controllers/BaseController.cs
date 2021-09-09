@@ -156,10 +156,16 @@ namespace Quality.Controllers
         {
             if (Session == null || Session.Keys.Count == 1)
             {
-                Response.Write("Please login again。</br></br>");
-                //Response.Write($@"<a href=""{WebPortalURL}"">Login</a>");
-
-                Response.End();
+                if (Request.IsAjaxRequest())//是Ajax的話
+                {
+                    Response.StatusCode = 440;//Login timeout
+                    Response.End();
+                }
+                else
+                {
+                    Response.Write("Please login again。</br></br>");
+                    Response.End();
+                }       
                 return false;
             }
             return true;

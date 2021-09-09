@@ -279,7 +279,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
             _IGarmentTestProvider = new GarmentTestProvider(Common.ProductionDataAccessLayer);
             try
             {
-                return _IGarmentTestProvider.Get(ID).First();
+                GarmentTest_Request garment = new GarmentTest_Request
+                {
+                    ID = ID,
+                };
+                return _IGarmentTestProvider.Get_GarmentTest(garment).First();
             }
             catch (Exception ex)
             {
@@ -376,12 +380,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 throw ex;
             }
         }
-        public GarmentTest_ViewModel Save_GarmentTest(GarmentTest_ViewModel garmentTest_ViewModel,List<GarmentTest_Detail> detail, string UserID)
+        public GarmentTest_ViewModel Save_GarmentTest(GarmentTest_ViewModel garmentTest_ViewModel, List<GarmentTest_Detail> detail, string UserID)
         {
             // 僅傳入 List<GarmentTest_Detail> detail
 
             GarmentTest_ViewModel result = new GarmentTest_ViewModel();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            _IGarmentTestDetailProvider = new GarmentTestDetailProvider(Common.ProductionDataAccessLayer);
             try
             {
                 #region 判斷是否空值
@@ -409,9 +414,28 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 #endregion
 
-                _IGarmentTestProvider = new GarmentTestProvider(_ISQLDataTransaction);
+                _IGarmentTestProvider = new GarmentTestProvider(_ISQLDataTransaction);                
                 result.SaveResult = _IGarmentTestProvider.Save_GarmentTest(garmentTest_ViewModel, detail, UserID);
                 _ISQLDataTransaction.Commit();
+
+                // 刪除 前端資料不存在但DB存在的資料
+                // Detail
+                var detailDB = _IGarmentTestDetailProvider.Get_GarmentTestDetail(
+                    new GarmentTest_ViewModel
+                    {
+                        ID = garmentTest_ViewModel.ID
+                    }).ToList();
+
+                foreach (var item in detailDB)
+                {
+                    // 刪除不存在前端detail的資料
+                    if (!detail.Where(x => x.ID.Equals(item.ID) && x.No.Equals(item.No)).Any())
+                    {
+                        _IGarmentTestDetailProvider.Delete_GarmentTestDetail(item.ID.ToString(), item.No.ToString());
+                    }   
+                }
+
+
             }
             catch (Exception ex)
             {
@@ -472,7 +496,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
             GarmentTest_Detail_Result result = new GarmentTest_Detail_Result();
             result.sentMail = false;
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
-            IBulkFGTMailGroupProvider _BulkFGTMailGroupProvider = new BulkFGTMailGroupProvider(Common.ManufacturingExecutionDataAccessLayer);
             try
             {
                 switch (status)
@@ -611,6 +634,24 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 // Detail Save
                 _IGarmentTestDetailProvider = new GarmentTestDetailProvider(_ISQLDataTransaction);
+
+                // 檢查必輸欄位
+                if (source.Detail.LineDry == false && source.Detail.TumbleDry == false && source.Detail.HandWash == false)
+                {
+                    _ISQLDataTransaction.RollBack();
+                    result.Result = false;
+                    result.ErrMsg = "<Line Dry>, <Tumble Dry>, <Hand Wash> have to select one!";
+                    return result;
+                }
+
+                if (source.Detail.Above50NaturalFibres == false && source.Detail.Above50SyntheticFibres == false)
+                {
+                    _ISQLDataTransaction.RollBack();
+                    result.Result = false;
+                    result.ErrMsg = "<50% natural fibres>, <50% synthetic fibres(ex. polyester)> have to select one!";
+                    return result;
+                }
+
                 if (_IGarmentTestDetailProvider.Update_GarmentTestDetail(source.Detail) == false)
                 {
                     _ISQLDataTransaction.RollBack();
@@ -645,13 +686,16 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 // Spirality Save
                 _IGarmentDetailSpiralityProvider = new GarmentDetailSpiralityProvider(_ISQLDataTransaction);
-                if (_IGarmentDetailSpiralityProvider.Update_Spirality(source.Spiralities) == false)
+                if (source.Spiralities != null || source.Spiralities.Count > 0)
                 {
-                    _ISQLDataTransaction.RollBack();
-                    result.Result = false;
-                    result.ErrMsg = "Update Spirality is empty.";
-                    return result;
-                }
+                    if (_IGarmentDetailSpiralityProvider.Update_Spirality(source.Spiralities) == false)
+                    {
+                        _ISQLDataTransaction.RollBack();
+                        result.Result = false;
+                        result.ErrMsg = "Update Spirality is empty.";
+                        return result;
+                    }
+                }            
 
                 // Apperance Save 
                 _IGarmentTestDetailApperanceProvider = new GarmentTestDetailApperanceProvider(_ISQLDataTransaction);
@@ -2153,7 +2197,7 @@ and t.GarmentTest=1
 
                         #region Save & Show Excel
 
-                        string fileName_2018 = $"{basefileName_2018}{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+                        string fileName_2018 = $"{basefileName_2018}_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
                         string filexlsx_2018 = fileName_2018 + ".xlsx";
                         string fileNamePDF_2018 = fileName_2018 + ".pdf";
 
@@ -2361,7 +2405,7 @@ and t.GarmentTest=1
 
 
                  
-                    string fileName_2020 = $"{basefileName_2020}{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+                    string fileName_2020 = $"{basefileName_2020}_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
                     string filexlsx_2020 = fileName_2020 + ".xlsx";
                     string fileNamePDF_2020 = fileName_2020 + ".pdf";
 
@@ -2606,7 +2650,7 @@ and t.GarmentTest=1
                     string fileProcessName_Physical = "FGWT" + "_"
                       + all_Data.Main.SeasonID.ToString() + "_" + all_Data.Main.StyleID.ToString() + "_" + all_Data.Main.Article.ToString();
 
-                    string fileName_Physical = $"WashTest_Physical{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+                    string fileName_Physical = $"WashTest_Physical_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
                     string filexlsx_Physical = fileName_Physical + ".xlsx";
                     string fileNamePDF_Physical = fileName_Physical + ".pdf";
 

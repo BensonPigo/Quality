@@ -124,7 +124,7 @@
                                 @Html.DropDownListFor(o => o.Type, Model.TypeDatasource)
                             </td>
                             <td style="padding: 0vw;">
-                                <input type="submit" class="site-btn btn-gy font1rem Black" onclick="this.form.submitted=this.value;" style="width: 7vw;" name="action:ToExcel" id="btnExcel" value="To Excel" />
+                                <input type="button" class="site-btn btn-gy font1rem Black" style="width: 7vw;" name="action:ToExcel" id="btnExcel" value="To Excel" />
                             </td>
                         </tr>
                     </table>
@@ -149,42 +149,46 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var item in Model.DataList)
+                            @if (Model.DataList != null && Model.DataList.Count > 0)
                             {
-                                <tr class="row-content">
-                                    <td>
-                                        <a href="/Quality/StyleManagement/StyleResult/Result?BrandID=@Html.DisplayFor(modelItem => item.BrandID)&amp;SeasonID=@Html.DisplayFor(modelItem => item.SeasonID)&amp;StyleID=@Html.DisplayFor(modelItem => item.StyleID)">  @Html.DisplayFor(modelItem => item.Type)</a>
+                                foreach (var item in Model.DataList)
+                                {
+                                    <tr class="row-content">
+                                        <td>
+                                            <a href="/Quality/StyleManagement/StyleResult/Result?BrandID=@Html.DisplayFor(modelItem => item.BrandID)&amp;SeasonID=@Html.DisplayFor(modelItem => item.SeasonID)&amp;StyleID=@Html.DisplayFor(modelItem => item.StyleID)">  @Html.DisplayFor(modelItem => item.Type)</a>
 
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.ReportNo)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.OrderID)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.StyleID)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.BrandID)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.SeasonID)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Article)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Artwork)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Result)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.TestDate)
-                                    </td>
-                                </tr>
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.ReportNo)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.OrderID)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.StyleID)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.BrandID)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.SeasonID)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Article)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Artwork)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Result)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.TestDate)
+                                        </td>
+                                    </tr>
+                                }
                             }
+
                         </tbody>
                     </table>
                 </div>
@@ -202,7 +206,7 @@
     var msg = new MessagerAlert();
 
     $(function () {
-
+        QueryButtonBind();
 
         @Html.Raw(Model.ErrorMessage);
 
@@ -218,12 +222,36 @@
         });
 
 
-
+        $("#btnExcel").click(function () {
+            var Req = {
+                BrandID: $('#BrandID').val(),
+                SeasonID: $('#SeasonID').val(),
+                StyleID: $('#StyleID').val(),
+                Article: $('#Article').val(),
+                Type: $('#Type').val(),
+            };
+            $.ajax({
+                url: "@Url.Action("ToExcel", "SearchList", new { Area = "BulkFGT" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ Req }),
+                async: false,
+                success: function (data) {
+                    if (data.Result) {
+                        window.location.href = data.TempFileName;
+                    }
+                    else {
+                        msg.WithError(data.ErrMsg);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
     });
 
     function OpenWindow(WindowType) {
-
-
         if (WindowType == "BrandID") {
             window.open('@Url.Action("BrandList", "PublicWondow",new { Area=""})', WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
         }
@@ -244,7 +272,6 @@
         $("#BrandID").val(BrandID);
         // 在這邊取得開窗選擇的Brand，進行後續動作
     }
-
     function GetSeasonList(SeasonID) {
         $("#SeasonID").val(SeasonID);
         // 在這邊取得開窗選擇的Brand，進行後續動作
@@ -258,6 +285,89 @@
         // 在這邊取得開窗選擇的Brand，進行後續動作
     }
 
+    function QueryButtonBind() {
+        $("#BrandID").blur(function () {
+            $.ajax({
+                url: "@Url.Action("BrandList", "PublicWondow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#BrandID").val('');
+                        msg.WithError('Brand Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $("#SeasonID").blur(function () {
+            var BrandID = $('#BrandID').val();
+            $.ajax({
+                url: "@Url.Action("SeasonList", "PublicWondow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: BrandID, SeasonID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#SeasonID").val('');
+                        msg.WithError('Season Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $("#StyleID").blur(function () {
+            var BrandID = $('#BrandID').val();
+            var SeasonID = $('#SeasonID').val();
+            $.ajax({
+                url: "@Url.Action("StyleList", "PublicWondow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: BrandID, SeasonID: SeasonID, StyleID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#StyleID").val('');
+                        msg.WithError('Style Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $('#Article').blur(function () {
+            var BrandID = $('#BrandID').val();
+            var SeasonID = $('#SeasonID').val();
+            var StyleID = $('#StyleID').val();
+            $.ajax({
+                url: "@Url.Action("ArticleList", "PublicWondow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: BrandID, StyleUkey : 0, SeasonID: SeasonID, StyleID: StyleID, ArticleID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Article").val('');
+                        msg.WithError('Article Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    }
 
     function checkvalue(buttonName) {
 
@@ -273,6 +383,7 @@
 
         return true;
     }
+
 
 </script>
 

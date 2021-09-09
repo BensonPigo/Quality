@@ -113,8 +113,12 @@
 <div class="main-content">
     <header class="page-header">
         <h3>
-            <i class="icon-users"></i><span>Fabric Oven Test</span>
+            <i class="icon-users"></i><span>Fabric Color Fastness</span>
         </h3>
+        <div class="breadcrumb">
+            <div>Home</div>
+            <div class="current">Fabric Color Fastness</div>
+        </div>
     </header>
 
     <div class="main-area">
@@ -127,11 +131,11 @@
                             <p class="InfoTitle White">SP# </p>
                         </div>
                         <div class="col-auto">
-                            <input id="POID" name="POID" type="text" value=@ViewBag.POID />
+                            <input id="QueryPoID" name="QueryPoID" type="text" value=@ViewBag.QueryPoID />
                         </div>
 
                         <div class="col-auto">
-                            <button id="btnQuery" type="submit" class="site-btn btn-gy font1rem Black" style="padding: 0.4em;">Query</button>
+                            <button id="btnQuery" type="submit"  name="Action:Query" class="site-btn btn-gy font1rem Black" style="padding: 0.4em;">Query</button>
                         </div>
                     </div>
                 }
@@ -158,10 +162,10 @@
                                         Undo
                                     </h4>
                                 </td>
-                                <td style="width: 36%;">
+                                <td style="width: 65%;">
                                 </td>
                                 <td>
-                                    <h4 id="New" style=" margin-right: 10em;">
+                                    <h4 id="New">
                                         <img src="~/Image/Icon/New.png" width="30" />
                                         New Test No
                                     </h4>
@@ -171,9 +175,282 @@
                     </table>
                 </div>
 
-        
-      
+                <div style="margin-top: 1em;">
+                    <table class="DataTable">
+                        <tbody>
+                            <tr>
+                                <td style="width: 10vw;"><h5>SP#</h5></td>
+                                <td style="width: 20vw;">
+                                    @Html.TextBoxFor(o => o.PoID, "", new { @readonly = "readonly" })
+                                </td>
+                                <td style="width: 10vw;"><h5>Style#</h5></td>
+                                <td style="width: 20vw;">
+                                    @Html.DisplayFor(o => o.StyleID, "", "")
+                                </td>
+                                <td style="width: 10vw;"><h5>Brand</h5></td>
+                                <td style="width: 20vw;">
+                                    @Html.DisplayFor(o => o.BrandID, "", "")
+                                </td>
+                            </tr>
+                            <tr>
+                                @{
+                                    string EarliestDate = Model.EarliestDate.HasValue ? Model.EarliestDate.Value.ToString("yyyy/MM/dd") : string.Empty;
+                                    string EarliestSCIDel = Model.EarliestSCIDel.HasValue ? Model.EarliestSCIDel.Value.ToString("yyyy/MM/dd") : string.Empty;
+                                    string TargetLeadTime = Model.TargetLeadTime.HasValue ? Model.TargetLeadTime.Value.ToString("yyyy/MM/dd") : string.Empty;
+                                    string CompletionDate = Model.CompletionDate.HasValue ? Model.CompletionDate.Value.ToString("yyyy/MM/dd") : string.Empty;
+
+                                }
+                                <td><h5>Season</h5></td>
+                                <td>
+                                    @Html.DisplayFor(o => o.SeasonID, "", "")
+                                </td>
+                                <td><h5>Earliest Est. Cutting Date</h5></td>
+                                <td>
+                                    @EarliestDate
+                                </td>
+                                <td><h5>Earliest SCI Del</h5></td>
+                                <td>
+                                    @EarliestSCIDel
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><h5>Target Lead Time</h5></td>
+                                <td>
+                                    @TargetLeadTime
+                                </td>
+                                <td><h5>Completion Date</h5></td>
+                              
+                                <td>
+                                    @CompletionDate
+                                </td>
+                                <td><h5>Article % of Inspection</h5></td>
+                                <td>
+                                    @Html.DisplayFor(o => o.ArticlePercent, "", "")
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><h5>Remark</h5></td>
+                                <td colspan="5">
+                                    @Html.TextBoxFor(o => o.ColorFastnessLaboratoryRemark, "", new {@style="width:50vw" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><h5>Create By</h5></td>
+                                <td colspan="2">
+                                    @Html.DisplayFor(o => o.CreateBy, "", "")
+                                </td>
+
+                                <td>
+                                    <h5>Edit By</h5>
+                                </td>
+                                <td colspan="2">
+                                    @Html.DisplayFor(o => o.EditBy, "", "")
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="margin-top: 1em; width: 92vw; overflow:auto;">
+                    <table class="DetailTable DataTable" style="text-align:center;">
+                        <thead style="text-align: center">
+                            @{
+                                <tr>
+                                    <th><h4>No. of Test</h4></th>
+                                    <th><h4>Test Date</h4></th>
+                                    <th><h4>Article</h4></th>
+                                    <th><h4>Result</h4></th>
+                                    <th><h4>Inspector</h4></th>
+                                    <th><h4>Remark</h4></th>
+                                    <th><h4>Last Update</h4></th>
+                                    <th><h4></h4></th>
+                                    <th><h4></h4></th>
+
+                                </tr>
+                            }
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i <= Model.ColorFastness_MainList.Count - 1; i++)
+                            {
+                                string aHref = "";
+                                <tr>
+                                    <td style="width:10vw;">
+
+                                        @if (Model.ColorFastness_MainList[i].TestNo > 0)
+                                        {
+                                            aHref = Url.Action("Detail", "FabricColorFastness", new { PoID = Model.PoID, TestNo = Model.ColorFastness_MainList[i].TestNo, EditMode = false });
+                                        }
+
+                                        <a href="@aHref" idx="@Model.PoID ," idv="@Model.ColorFastness_MainList[i].TestNo">
+  
+                                          <label>  @Model.ColorFastness_MainList[i].TestNo</label>
+                                        </a>
+                                    </td>
+
+                                    @{
+                                        string InspDate = Model.ColorFastness_MainList[i].InspDate.HasValue ? Model.ColorFastness_MainList[i].InspDate.Value.ToString("yyyy/MM/dd") : string.Empty;
+                                        string ResultColor = Model.ColorFastness_MainList[i].Result == "Pass" ? "blue" : "red";
+                              
+                                    }
+
+                                    <td style="width:10vw;">
+                                        @InspDate
+                                    </td>
+                                    <td style="width:10vw;">
+                                        @Html.DisplayFor(o => Model.ColorFastness_MainList[i].Article, "", "")
+                                    </td>
+                                    <td class="@ResultColor" style="width:10vw;">
+                                        @Html.DisplayFor(o => Model.ColorFastness_MainList[i].Result, "", "")
+                                    </td>
+
+                                    <td style="width:10vw;">
+                                        @Html.DisplayFor(o => Model.ColorFastness_MainList[i].Inspector, "", "")
+                                    </td>
+                                    <td style="width:10vw;">
+                                        @Html.DisplayFor(o => Model.ColorFastness_MainList[i].Remark, "", "")
+                                    </td>
+                                    <td style="width:10vw;">
+                                        @Html.DisplayFor(o => Model.ColorFastness_MainList[i].LastUpdate, "", "")
+                                    </td>
+                                    <td style="width:10vw;">
+                                        <img class="detailEdit"  onclick="DetailView('@Model.ColorFastness_MainList[i].TestNo')" src="~/Image/Icon/Edit.png" width="30" />
+                                    </td>
+                                    <td style="width:10vw;">
+                                        <img class="detailDelete"  onclick="DetailDelete('@Model.ColorFastness_MainList[i].TestNo')" src="~/Image/Icon/Delete.png" width="30" />
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<script type="text/javascript">
+    var msg;
+    var EditMode;
+    $(function () {
+        msg = new MessagerAlert();
+        EditMode = false;
+        IsEditModeChange();
+
+    });
+
+    function IsEditModeChange() {
+        EditModeButtionBind();
+
+        if (EditMode) {
+            $(".rowHeader input[type='text']").attr("disabled", "disabled");
+            $(".rowHeader input[type='button']").unbind('click').addClass("IsEditModeQuery");
+            $('#btnQuery').addClass("IsEditModeQuery");
+            $("#Edit, #New").unbind('click').removeClass("IsEditMode");
+            $('#Save, #Undo').addClass("IsEditMode");
+            $(".DataTable input[type='text']").removeAttr("disabled");
+            $(".DetailTable img").addClass('display-None');
+
+            $(".OnlyEdit").removeAttr("disabled").removeAttr("readonly");
+
+            $('#btnQuery').on('click', function () {
+                return false;
+            });
+        }
+        else {
+            $(".rowHeader input[type='text']").removeAttr("disabled");
+            $(".rowHeader input[type='button']").removeClass("IsEditModeQuery");
+            $('#btnQuery').unbind('click').removeClass("IsEditModeQuery");
+
+            if ($('#PoID').val() != undefined && $('#PoID').val() != '')
+            {
+                $("#Edit, #New").addClass("IsEditMode");
+            }
+
+            $('#Save, #Undo').unbind('click').removeClass("IsEditMode");
+            $(".DataTable input[type='text']").attr("disabled", "disabled");
+            $(".DetailTable img").removeClass('display-None');
+
+
+            $('#btnQuery').on('click', function () {
+                if ($('#QueryPoID').val() == '') {
+                    msg.WithError("SP# cannot be empty");
+                    return false;
+                }
+            });
+        }
+    }
+
+    function EditModeButtionBind() {
+        $('#Edit').on('click', function () {
+            if ($('#PoID').val() == "") {
+                return;
+            }
+
+            if ($('#PoID').val() != "") {
+                EditMode = true;
+                IsEditModeChange();
+            }
+        });
+
+        $('#Save').on('click', function () {
+
+            var main = {
+                PoID: $('#PoID').val(),
+                ColorFastnessLaboratoryRemark: $('#ColorFastnessLaboratoryRemark').val()
+            };
+
+            SaveData(main);
+        });
+
+        $('#Undo').on('click', function () {
+            EditMode = false;
+            IsEditModeChange();
+            location.href = '@Url.Action("IndexBack")?PoID=' + document.getElementById("PoID").value.trim();
+        });
+
+
+        $('#New').on('click', function () {
+            if ($('#PoID').val() == "") {
+                return;
+            }
+            location.href = '@Url.Action("Detail")?PoID=' + document.getElementById("PoID").value.trim() + '&TestNo=&EditMode=True';
+        });
+
+        function SaveData(main) {
+        $.ajax({
+            url: "@Url.Action("SaveMaster", "FabricColorFastness", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ main: main, }),
+            async: false,
+            success: function (data) {
+
+                location.href = '@Url.Action("IndexBack")?PoID=' + document.getElementById("PoID").value.trim();
+
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+
+
+
+    }
+
+    function DetailView(TestNo) {
+        location.href = '@Url.Action("Detail")?PoID=' + document.getElementById("PoID").value.trim() + '&TestNo=' + TestNo + '&EditMode=True' ;
+    }
+
+    function DetailDelete(TestNo) {
+
+        msg.WithConfirm('Do you want to delete the data ?',
+        function ()
+        {
+        }, null);
+
+     }
+
+
+</script>
