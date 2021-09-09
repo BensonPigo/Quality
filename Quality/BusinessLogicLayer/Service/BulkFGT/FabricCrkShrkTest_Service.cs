@@ -47,7 +47,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 baseResult.Result = false;
-                baseResult.ErrorMessage = ex.ToString();
+                baseResult.ErrorMessage = ex.Message.ToString();
             }
 
             return baseResult;
@@ -73,7 +73,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 baseResult.Result = false;
-                baseResult.ErrorMessage = ex.ToString();
+                baseResult.ErrorMessage = ex.Message.ToString();
             }
 
             return baseResult;
@@ -99,7 +99,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 baseResult.Result = false;
-                baseResult.ErrorMessage = ex.ToString();
+                baseResult.ErrorMessage = ex.Message.ToString();
             }
 
             return baseResult;
@@ -146,7 +146,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 baseResult.Result = false;
-                baseResult.ErrorMessage = ex.ToString();
+                baseResult.ErrorMessage = ex.Message.ToString();
                 return baseResult;
             }
         }
@@ -192,7 +192,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 baseResult.Result = false;
-                baseResult.ErrorMessage = ex.ToString();
+                baseResult.ErrorMessage = ex.Message.ToString();
                 return baseResult;
             }
         }
@@ -238,16 +238,16 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 baseResult.Result = false;
-                baseResult.ErrorMessage = ex.ToString();
+                baseResult.ErrorMessage = ex.Message.ToString();
                 return baseResult;
             }
         }
 
         public FabricCrkShrkTestCrocking_Result GetFabricCrkShrkTestCrocking_Result(long ID)
         {
+            FabricCrkShrkTestCrocking_Result fabricCrkShrkTestCrocking_Result = new FabricCrkShrkTestCrocking_Result();
             try
-            {
-                FabricCrkShrkTestCrocking_Result fabricCrkShrkTestCrocking_Result = new FabricCrkShrkTestCrocking_Result();
+            {                
                 _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
 
                 _ScaleProvider = new ScaleProvider(Common.ProductionDataAccessLayer);
@@ -262,19 +262,22 @@ namespace BusinessLogicLayer.Service
 
                 fabricCrkShrkTestCrocking_Result.ScaleIDs = _ScaleProvider.Get().Select(s => s.ID).ToList();
 
-                return fabricCrkShrkTestCrocking_Result;
+                fabricCrkShrkTestCrocking_Result.Result = true;
             }
             catch (Exception ex)
             {
-                throw ex;
+                fabricCrkShrkTestCrocking_Result.Result = false;
+                fabricCrkShrkTestCrocking_Result.ErrorMessage = ex.Message.ToString();
             }
+
+            return fabricCrkShrkTestCrocking_Result;
         }
 
         public FabricCrkShrkTestHeat_Result GetFabricCrkShrkTestHeat_Result(long ID)
         {
+            FabricCrkShrkTestHeat_Result fabricCrkShrkTestHeat_Result = new FabricCrkShrkTestHeat_Result();
             try
             {
-                FabricCrkShrkTestHeat_Result fabricCrkShrkTestHeat_Result = new FabricCrkShrkTestHeat_Result();
                 _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
 
                 _ScaleProvider = new ScaleProvider(Common.ProductionDataAccessLayer);
@@ -285,19 +288,23 @@ namespace BusinessLogicLayer.Service
 
                 fabricCrkShrkTestHeat_Result.ID = ID;
 
-                return fabricCrkShrkTestHeat_Result;
+                fabricCrkShrkTestHeat_Result.Result = true;
             }
             catch (Exception ex)
             {
-                throw ex;
+                fabricCrkShrkTestHeat_Result.Result = false;
+
+                fabricCrkShrkTestHeat_Result.ErrorMessage = ex.Message.ToString();
             }
+
+            return fabricCrkShrkTestHeat_Result;
         }
 
         public FabricCrkShrkTestWash_Result GetFabricCrkShrkTestWash_Result(long ID)
         {
+            FabricCrkShrkTestWash_Result fabricCrkShrkTestWash_Result = new FabricCrkShrkTestWash_Result();
             try
             {
-                FabricCrkShrkTestWash_Result fabricCrkShrkTestWash_Result = new FabricCrkShrkTestWash_Result();
                 _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
 
                 _ScaleProvider = new ScaleProvider(Common.ProductionDataAccessLayer);
@@ -308,26 +315,33 @@ namespace BusinessLogicLayer.Service
 
                 fabricCrkShrkTestWash_Result.ID = ID;
 
-                return fabricCrkShrkTestWash_Result;
+                fabricCrkShrkTestWash_Result.Result = true;
             }
             catch (Exception ex)
             {
-                throw ex;
+                fabricCrkShrkTestWash_Result.Result = false;
+                fabricCrkShrkTestWash_Result.ErrorMessage = ex.Message.ToString();
             }
+
+            return fabricCrkShrkTestWash_Result;
         }
 
         public FabricCrkShrkTest_Result GetFabricCrkShrkTest_Result(string POID)
         {
+            FabricCrkShrkTest_Result result = new FabricCrkShrkTest_Result();
             try
             {
                 _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
-
-                return _FabricCrkShrkTestProvider.GetFabricCrkShrkTest_Main(POID);
+                result = _FabricCrkShrkTestProvider.GetFabricCrkShrkTest_Main(POID);
+                result.Result = true;
             }
             catch (Exception ex)
             {
-                throw ex;
+                result.Result = false;
+                result.ErrorMessage = ex.Message.ToString();
             }
+
+            return result;
         }
 
         public BaseResult SaveFabricCrkShrkTestCrockingDetail(FabricCrkShrkTestCrocking_Result fabricCrkShrkTestCrocking_Result, string userID)
@@ -404,7 +418,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 baseResult.Result = false;
-                baseResult.ErrorMessage = ex.ToString();
+                baseResult.ErrorMessage = ex.Message.ToString();
             }
 
             return baseResult;
@@ -481,7 +495,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 baseResult.Result = false;
-                baseResult.ErrorMessage = ex.ToString();
+                baseResult.ErrorMessage = ex.Message.ToString();
             }
 
             return baseResult;
@@ -498,7 +512,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 baseResult.Result = false;
-                baseResult.ErrorMessage = ex.ToString();
+                baseResult.ErrorMessage = ex.Message.ToString();
             }
 
             return baseResult;
@@ -581,7 +595,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 baseResult.Result = false;
-                baseResult.ErrorMessage = ex.ToString();
+                baseResult.ErrorMessage = ex.Message.ToString();
             }
 
             return baseResult;
@@ -608,7 +622,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 result.result = false;
-                result.resultMsg = ex.ToString();
+                result.resultMsg = ex.Message.ToString();
             }
 
             return result;
@@ -727,7 +741,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 result.Result = false;
-                result.ErrorMessage = ex.ToString();
+                result.ErrorMessage = ex.Message.ToString();
             }
 
             return result;
@@ -836,7 +850,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 result.Result = false;
-                result.ErrorMessage = ex.ToString();
+                result.ErrorMessage = ex.Message.ToString();
             }
 
             return result;
@@ -973,7 +987,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 result.Result = false;
-                result.ErrorMessage = ex.ToString();
+                result.ErrorMessage = ex.Message.ToString();
             }
 
             return result;
@@ -1003,7 +1017,7 @@ namespace BusinessLogicLayer.Service
             {
 
                 result.Result = false;
-                result.ErrorMessage = ex.ToString();
+                result.ErrorMessage = ex.Message.ToString();
             }
 
             return result;
@@ -1504,7 +1518,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 result.result = false;
-                result.resultMsg = ex.ToString();
+                result.resultMsg = ex.Message.ToString();
             }
 
             return result;
@@ -1531,7 +1545,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 result.result = false;
-                result.resultMsg = ex.ToString();
+                result.resultMsg = ex.Message.ToString();
             }
 
             return result;

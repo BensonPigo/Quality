@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DatabaseObject.ResultModel
 {
-    public class FabricCrkShrkTest_Result
+    public class FabricCrkShrkTest_Result : BaseResult
     {
         public FabricCrkShrkTest_Main Main { get; set; }
 
@@ -60,7 +60,7 @@ namespace DatabaseObject.ResultModel
         public string ReceivingID { get; set; }
     }
 
-    public class FabricCrkShrkTestCrocking_Result
+    public class FabricCrkShrkTestCrocking_Result : BaseResult
     {
         public long ID { get; set; }
         public int CrockingTestOption { get; set; }
@@ -116,7 +116,7 @@ namespace DatabaseObject.ResultModel
         public string LastUpdate { get; set; }
     }
 
-    public class FabricCrkShrkTestHeat_Result
+    public class FabricCrkShrkTestHeat_Result : BaseResult
     {
         public long ID { get; set; }
         public FabricCrkShrkTestHeat_Main Heat_Main { get; set; }
@@ -172,7 +172,7 @@ namespace DatabaseObject.ResultModel
         public string LastUpdate { get; set; }
     }
 
-    public class FabricCrkShrkTestWash_Result
+    public class FabricCrkShrkTestWash_Result : BaseResult
     {
         public long ID { get; set; }
         public FabricCrkShrkTestWash_Main Wash_Main { get; set; }

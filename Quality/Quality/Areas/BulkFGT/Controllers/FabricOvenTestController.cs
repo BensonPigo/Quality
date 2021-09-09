@@ -42,6 +42,15 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             // 21051739BB
             FabricOvenTest_Result model = _FabricOvenTestService.GetFabricOvenTest_Result(POID);
+            if (!model.Result)
+            {
+                model = new FabricOvenTest_Result()
+                        {
+                            Main = new FabricOvenTest_Main(),
+                            Details = new List<FabricOvenTest_Detail>(),
+                            ErrorMessage = $"msg.WithInfo('{model.ErrorMessage}');" ,
+                        };
+            }
             ViewBag.POID = POID;
             return View(model);
         }
@@ -86,7 +95,12 @@ namespace Quality.Areas.BulkFGT.Controllers
             BaseResult result = _FabricOvenTestService.SaveFabricOvenTestDetail(req, this.UserID);
             if (!result.Result)
             {
-                ErrorMessage = $"msg.WithInfo('{result.ErrorMessage.Replace("'", string.Empty)}')";
+                ErrorMessage = $"msg.WithInfo('{result.ErrorMessage.Replace("'", string.Empty)}');";
+            }
+            else
+            {
+                // 找地方寫入 TestNo
+                req.Main.TestNo = result.ErrorMessage;
             }
             FabricOvenTest_Detail_Result model = _FabricOvenTestService.GetFabricOvenTest_Detail_Result(req.Main.POID, req.Main.TestNo);
 
@@ -126,7 +140,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         [HttpPost]
         public ActionResult AddDetailRow(string POID, int lastNO)
         {
-            FabricOvenTest_Detail_Result model = _FabricOvenTestService.GetFabricOvenTest_Detail_Result("21051739BB", "");
+            FabricOvenTest_Detail_Result model = _FabricOvenTestService.GetFabricOvenTest_Detail_Result(POID, "");
 
 
             List<SelectListItem> ResultChangeList = new SetListItem().ItemListBinding(Results);
@@ -138,17 +152,17 @@ namespace Quality.Areas.BulkFGT.Controllers
             FabricOvenTest_Detail_Detail detail = new FabricOvenTest_Detail_Detail();
             string html = "";
             html += "<tr>";
-            html += "<td> <input id ='Seq' idx= " + i + " type ='hidden'></input> <input class='form-control date-picker' type='text' value=''></td>";
-            html += "<td><input type='text'></td>"; // group
-            html += "<td style='width: 11vw;'><div style='width:10vw;'><input id='Details_" + i + "__SEQ' idv='" + i.ToString() + "' class ='InputDetailSEQSelectItem' type='text'  style = 'width: 6vw'> <input id='btnDetailSEQSelectItem'  idv='" + i.ToString() + "' type='button' class='btnDetailSEQSelectItem OnlyEdit site-btn btn-blue' style='margin: 0; border: 0; ' value='...' /></div></td>"; // seq
-            html += "<td style='width: 11vw;'><div style='width:10vw;'><input id='Details_" + i + "__Roll'idv='" + i.ToString() + "' class ='InputDetailRollSelectItem' type='text' style = 'width: 6vw'> <input id='btnDetailRollSelectItem' idv='" + i.ToString() + "' type='button' class='btnDetailRollSelectItem OnlyEdit site-btn btn-blue' style='margin: 0; border: 0; ' value='...' /></div></td>"; // roll
-            html += "<td><input id='Details_" + i + "__Dyelot' type='text' readonly='readonly'></td>"; // dyelot
-            html += "<td><input id='Details_" + i + "__Refno' type='text' readonly='readonly'></td>"; // Refno
-            html += "<td><input id='Details_" + i + "__SCIRefno' type='text' readonly='readonly'></td>"; // SCIRefno
-            html += "<td><input id='Details_" + i + "__ColorID' type='text' readonly='readonly'></td>"; // ColorID
+            html += "<td><input id='Seq' idx=" + i + " type ='hidden'></input> <input id='Details_" + i + "__SubmitDate' name='Details[" + i + "].SubmitDate' class='form-control date-picker' type='text' value=''></td>";
+            html += "<td><input id='Details_" + i + "__OvenGroup' name='Details[" + i + "].OvenGroup' type='text' maxlength='2'></td>"; // group
+            html += "<td style='width: 11vw;'><div style='width:10vw;'><input id='Details_" + i + "__SEQ' name='Details[" + i + "].SEQ' idv='" + i.ToString() + "' class ='InputDetailSEQSelectItem' type='text'  style = 'width: 6vw'> <input id='btnDetailSEQSelectItem'  idv='" + i.ToString() + "' type='button' class='btnDetailSEQSelectItem OnlyEdit site-btn btn-blue' style='margin: 0; border: 0; ' value='...' /></div></td>"; // seq
+            html += "<td style='width: 11vw;'><div style='width:10vw;'><input id='Details_" + i + "__Roll' name='Details[" + i + "].Roll' idv='" + i.ToString() + "' class ='InputDetailRollSelectItem' type='text' style = 'width: 6vw'> <input id='btnDetailRollSelectItem' idv='" + i.ToString() + "' type='button' class='btnDetailRollSelectItem OnlyEdit site-btn btn-blue' style='margin: 0; border: 0; ' value='...' /></div></td>"; // roll
+            html += "<td><input id='Details_" + i + "__Dyelot' name='Details[" + i + "].Dyelot' type='text' readonly='readonly'></td>"; // dyelot
+            html += "<td><input id='Details_" + i + "__Refno' name='Details[" + i + "].Refno' type='text' readonly='readonly'></td>"; // Refno
+            html += "<td><input id='Details_" + i + "__SCIRefno' name='Details[" + i + "].SCIRefno' type='text' readonly='readonly'></td>"; // SCIRefno
+            html += "<td><input id='Details_" + i + "__ColorID' name='Details[" + i + "].ColorID' type='text' readonly='readonly'></td>"; // ColorID
             html += "<td><input  readonly='readonly'  id='Details_" + i + "__Result' name='Details[" + i + "].Result'  class='detailResultColor' type='text'></td>"; // Result
 
-            html += "<td><select ><option value=''></option>"; // ChangeScale
+            html += "<td><select id='Details_" + i + "__ChangeScale' name='Details[" + i + "].ChangeScale'><option value=''></option>"; // ChangeScale
             foreach (string val in model.ScaleIDs)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
@@ -162,7 +176,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
             html += "</select></td>";
 
-            html += "<td><select ><option value=''></option>"; // StainingScale
+            html += "<td><select id='Details_" + i + "__StainingScale' name='Details[" + i + "].StainingScale'><option value=''></option>"; // StainingScale
             foreach (string val in model.ScaleIDs)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
@@ -176,12 +190,12 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
             html += "</select></td>";
 
-            html += "<td><input type='text'></td>"; // remark
+            html += "<td><input id='Details_" + i + "__Remark' name='Details[" + i + "].Remark' type='text'></td>"; // remark
 
             html += "<td></td>"; // LastUpdate
 
 
-            html += "<td><select ><option value=''></option>"; // Temperature
+            html += "<td><select id='Details_" + i + "__Temperature' name='Details[" + i + "].Temperature' ><option value=''></option>"; // Temperature
             foreach (string val in Temperatures)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
@@ -189,7 +203,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "</select></td>";
 
 
-            html += "<td><select ><option value=''></option>"; // Time
+            html += "<td><select id='Details_" + i + "__Time' name='Details[" + i + "].Time' ><option value=''></option>"; // Time
             foreach (string val in Times)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";

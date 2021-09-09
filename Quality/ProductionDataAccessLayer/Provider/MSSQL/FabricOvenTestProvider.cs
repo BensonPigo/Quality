@@ -343,14 +343,13 @@ update  Oven_Detail set Roll           =  @Roll         ,
             }
         }
 
-        public void AddFabricOvenTestDetail(FabricOvenTest_Detail_Result fabricOvenTest_Detail_Result, string userID)
+        public void AddFabricOvenTestDetail(FabricOvenTest_Detail_Result fabricOvenTest_Detail_Result, string userID, out string TestNo)
         {
             SQLParameterCollection listPar = new SQLParameterCollection();
             listPar.Add("@POID", fabricOvenTest_Detail_Result.Main.POID);
             listPar.Add("@InspDate", fabricOvenTest_Detail_Result.Main.InspDate);
             listPar.Add("@Article", fabricOvenTest_Detail_Result.Main.Article);
             listPar.Add("@Inspector", fabricOvenTest_Detail_Result.Main.Inspector);
-            listPar.Add("@Result", fabricOvenTest_Detail_Result.Main.Result);
             listPar.Add("@Remark", fabricOvenTest_Detail_Result.Main.Remark);
             listPar.Add("@addName", userID);
             listPar.Add("@TestBeforePicture", fabricOvenTest_Detail_Result.Main.TestBeforePicture);
@@ -358,17 +357,17 @@ update  Oven_Detail set Roll           =  @Roll         ,
 
             string sqlInsertOven = @"
 declare @TestNo numeric(2,0)
-DECLARE @OvenID table (ID bigint)
+DECLARE @OvenID table (ID bigint, TestNo numeric(2, 0))
 
 select  @TestNo = isnull(Max(TestNo), 0) + 1
 from    Oven 
 where POID = @POID
 
-insert into Oven(POID, TestNo, InspDate, Article, Result, Status, Inspector, Remark, addName, addDate, TestBeforePicture, TestAfterPicture)
-        OUTPUT INSERTED.ID into @OvenID
-        values(@POID, @TestNo, @InspDate, @Article, @Result, 'New', @Inspector, @Remark, @addName, getdate(), @TestBeforePicture, @TestAfterPicture)
+insert into Oven(POID, TestNo, InspDate, Article, Status, Inspector, Remark, addName, addDate, TestBeforePicture, TestAfterPicture)
+        OUTPUT INSERTED.ID, INSERTED.TestNo into @OvenID
+        values(@POID, @TestNo, @InspDate, @Article, 'New', @Inspector, @Remark, @addName, getdate(), @TestBeforePicture, @TestAfterPicture)
 
-select  [OvenID] = ID
+select  [OvenID] = ID, TestNo
 from @OvenID
 ";
 
@@ -419,6 +418,7 @@ getdate()        ,
             {
                 DataTable dtResult = ExecuteDataTable(CommandType.Text, sqlInsertOven, listPar);
                 long ovenID = (long)dtResult.Rows[0]["OvenID"];
+                TestNo = dtResult.Rows[0]["TestNo"].ToString();
                 foreach (FabricOvenTest_Detail_Detail detailItem in fabricOvenTest_Detail_Result.Details)
                 {
                     SQLParameterCollection listDetailPar = new SQLParameterCollection();

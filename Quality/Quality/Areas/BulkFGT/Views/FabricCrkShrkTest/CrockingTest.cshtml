@@ -566,85 +566,86 @@
     var hiddenColumns = [];
 
     $(function () {
-      //  $('.date-picker').datepicker({ changeYear: true, changeMonth: true, currentText: "Now" });
-            msg = new MessagerAlert();
-            EditMode = false;
+        //  $('.date-picker').datepicker({ changeYear: true, changeMonth: true, currentText: "Now" });
+        msg = new MessagerAlert();
+        EditMode = false;
 
-            if (@Model.CrockingTestOption == 0) {
-                $('.DetailTable th').each(function (index, data) {
-                    if ($(this).attr('notShow') == 'testOption') {
-                        var i = index + 1;
-                        hiddenColumns.push(i);
-                        $('.DetailTable th:nth-child(' + i + ')').hide();
-                        $('.DetailTable td:nth-child(' + i + ')').hide();
-                    }
-                });
-            }
-            IsEditModeChange();
-        });
-
-        function IsEditModeChange() {
-            EditModeButtionBind();
-            $('#Picture').addClass("IsEditMode");
-            // 按編輯為控制disabled，如果是編輯模式下不給使用者操作，請在元件身上加上readonly
-            if (EditMode) {
-
-                $("#Edit,#Encode,#Amend").removeClass("IsEditMode");
-                $('#Encode,#Amend').unbind('click');
-
-                $('#Save, #New').addClass("IsEditMode");
-                $(".DataTable:not(.DetailTable) textarea").removeAttr("disabled", "disabled");
-                $(".DetailTable input,.DetailTable select").removeAttr("disabled", "disabled");
-                $(".detailDelete").show();
-                DetailButtonBind();
-            }
-            else {
-                $('#Save, #New').unbind('click').removeClass("IsEditMode");
-                $(".DataTable:not(.DetailTable) textarea").attr("disabled", "disabled");
-                $(".DetailTable input,.DetailTable select").attr("disabled", "disabled");
-                $(".detailDelete").hide();
-                if ('@Model.ID' != '') {
-                    $("#Edit").addClass("IsEditMode");
-                }
-
-                if (@Model.Crocking_Main.CrockingEncdoe == false) {
-                    $("#Encode").addClass("IsEditMode");
-                }
-
-                if (@Model.Crocking_Main.CrockingEncdoe == true) {
-                    $("#Amend").addClass("IsEditMode");
-                }
-            }
-        }
-
-        function EditModeButtionBind() {
-            $('#Edit').on('click', function () {
-                if ('@Model.ID' != '') {
-                    EditMode = true;
-                    IsEditModeChange();
+        if (@Model.CrockingTestOption == 0) {
+            $('.DetailTable th').each(function (index, data) {
+                if ($(this).attr('notShow') == 'testOption') {
+                    var i = index + 1;
+                    hiddenColumns.push(i);
+                    $('.DetailTable th:nth-child(' + i + ')').hide();
+                    $('.DetailTable td:nth-child(' + i + ')').hide();
                 }
             });
+        }
+        IsEditModeChange();
+        @Html.Raw(Model.ErrorMessage);
+    });
 
-            $('#Save').on('click', function (e) {
-                var detail = [];
-                var ErrMsg = "";
+    function IsEditModeChange() {
+        EditModeButtionBind();
+        $('#Picture').addClass("IsEditMode");
+        // 按編輯為控制disabled，如果是編輯模式下不給使用者操作，請在元件身上加上readonly
+        if (EditMode) {
 
-                $('.DetailTable > tbody > tr').each(function (index, data) {
-                    var idx = $(this).closest('tr').attr('idx');
-                    var roll = $('#Crocking_Detail_' + idx + '__Roll').val();
-                    var dyelot = $('#Crocking_Detail_' + idx + '__Dyelot').val();
-                    var inspector = $('#Crocking_Detail_' + idx + '__Inspector').val();
+            $("#Edit,#Encode,#Amend").removeClass("IsEditMode");
+            $('#Encode,#Amend').unbind('click');
 
-                    if (roll == "" || dyelot == "" ) {
-                        ErrMsg += "Roll and Dyelot cannot be empty";
-                        return false;
-                    }
+            $('#Save, #New').addClass("IsEditMode");
+            $(".DataTable:not(.DetailTable) textarea").removeAttr("disabled", "disabled");
+            $(".DetailTable input,.DetailTable select").removeAttr("disabled", "disabled");
+            $(".detailDelete").show();
+            DetailButtonBind();
+        }
+        else {
+            $('#Save, #New').unbind('click').removeClass("IsEditMode");
+            $(".DataTable:not(.DetailTable) textarea").attr("disabled", "disabled");
+            $(".DetailTable input,.DetailTable select").attr("disabled", "disabled");
+            $(".detailDelete").hide();
+            if ('@Model.ID' != '') {
+                $("#Edit").addClass("IsEditMode");
+            }
 
-                    var checkValue = [];
-                    checkValue.push($('#Crocking_Detail_' + idx + '__DryScale').val());
-                    checkValue.push($('#Crocking_Detail_' + idx + '__ResultDry').val());
-                    checkValue.push($('#Crocking_Detail_' + idx + '__WetScale').val());
-                    checkValue.push($('#Crocking_Detail_' + idx + '__ResultWet').val());
+            if (@Model.Crocking_Main.CrockingEncdoe == false) {
+                $("#Encode").addClass("IsEditMode");
+            }
+
+            if (@Model.Crocking_Main.CrockingEncdoe == true) {
+                $("#Amend").addClass("IsEditMode");
+            }
+        }
+    }
+
+    function EditModeButtionBind() {
+        $('#Edit').on('click', function () {
+            if ('@Model.ID' != '') {
+                EditMode = true;
+                IsEditModeChange();
+            }
+        });
+
+        $('#Save').on('click', function (e) {
+            var detail = [];
+            var ErrMsg = "";
+
+            $('.DetailTable > tbody > tr').each(function (index, data) {
+                var idx = $(this).closest('tr').attr('idx');
+                var roll = $('#Crocking_Detail_' + idx + '__Roll').val();
+                var dyelot = $('#Crocking_Detail_' + idx + '__Dyelot').val();
+                var inspector = $('#Crocking_Detail_' + idx + '__Inspector').val();
+
+                if (roll == "" || dyelot == "") {
+                    ErrMsg += "Roll and Dyelot cannot be empty";
+                    return false;
+                }
+
+                var checkValue = [];
+                checkValue.push($('#Crocking_Detail_' + idx + '__DryScale').val());
+                checkValue.push($('#Crocking_Detail_' + idx + '__ResultDry').val());
+                checkValue.push($('#Crocking_Detail_' + idx + '__WetScale').val());
+                checkValue.push($('#Crocking_Detail_' + idx + '__ResultWet').val());
 
                     @if (Model.CrockingTestOption != 0)
                     {
@@ -654,50 +655,50 @@
                         @:checkValue.push($('#Crocking_Detail_' + idx + '__ResultWet_Weft').val());
                     }
 
-                    if (checkValue.includes("") || checkValue.includes(null)) {
-                        ErrMsg += "Scale and Result cannot be empty";
-                        return false;
-                    }
+                if (checkValue.includes("") || checkValue.includes(null)) {
+                    ErrMsg += "Scale and Result cannot be empty";
+                    return false;
+                }
 
-                    if (inspector == "") {
-                        ErrMsg += "Lab Tech cannot be empty";
-                        return false;
-                    }
-                });
+                if (inspector == "") {
+                    ErrMsg += "Lab Tech cannot be empty";
+                    return false;
+                }
+            });
 
-                if (ErrMsg != "") {
-                    msg.WithError(ErrMsg);
+            if (ErrMsg != "") {
+                msg.WithError(ErrMsg);
+                return;
+            }
+
+            document.getElementById("DetailForm").submit();
+        });
+
+        $('#Picture').on('click', function () {
+            var para = "?EditMode=" + EditMode + "&Table=FIR_Laboratory&BrforeColumn=@Model.Crocking_Main.CrockingTestBeforePicture&AfterColumn=@Model.Crocking_Main.CrockingTestAfterPicture&PKey_1=ReportNo&PKey_1_Val=" + '@Model.ID';
+            window.open('@Url.Action("PictureList","PublicWondow",new{Area=""})' + para, 'Picture', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        });
+
+        $('#New').on('click', function () {
+            AddDetailRow($('#garmentTest_OrderID').val(), $('#garmentTest_Article').val(), $('#garmentTest_BrandID').val(), $('#garmentTest_SeasonID').val(), $('#garmentTest_StyleID').val());
+        });
+
+        // 程式需再修改
+        //FabricCrkShrkTestCrocking_Main.CrockingEncdoe = false 才可以使用
+        if (@Model.Crocking_Main.CrockingEncdoe == false) {
+            $('#Encode').on('click', function (e) {
+                var detail = [];
+                var ErrMsg = "";
+
+                // 表身是否至少有一列資料
+                var rowCount = $('.DetailTable tbody tr').length;
+                if (rowCount == 0) {
+                    msg.WithError('Please test one Roll least.');
                     return;
                 }
 
-                document.getElementById("DetailForm").submit();
-            });
-
-            $('#Picture').on('click', function () {
-                var para = "?EditMode=" + EditMode + "&Table=FIR_Laboratory&BrforeColumn=@Model.Crocking_Main.CrockingTestBeforePicture&AfterColumn=@Model.Crocking_Main.CrockingTestAfterPicture&PKey_1=ReportNo&PKey_1_Val=" + '@Model.ID';
-                window.open('@Url.Action("PictureList","PublicWondow",new{Area=""})' + para, 'Picture', config = 'toolbar=no,status=no,location=no,width=400,height=650');
-            });
-
-            $('#New').on('click', function () {
-                AddDetailRow($('#garmentTest_OrderID').val(), $('#garmentTest_Article').val(), $('#garmentTest_BrandID').val(), $('#garmentTest_SeasonID').val(), $('#garmentTest_StyleID').val());
-            });
-
-            // 程式需再修改
-            //FabricCrkShrkTestCrocking_Main.CrockingEncdoe = false 才可以使用
-            if (@Model.Crocking_Main.CrockingEncdoe == false) {
-                $('#Encode').on('click', function (e) {
-                    var detail = [];
-                    var ErrMsg = "";
-
-                    // 表身是否至少有一列資料
-                    var rowCount = $('.DetailTable tbody tr').length;
-                    if (rowCount == 0) {
-                        msg.WithError('Please test one Roll least.');
-                        return;
-                    }
-
-                    //Crocking 為 Fail??
-                    //彈跳出 Mail Group 寄信。(PublicWondowController.TestFailMailList)
+                //Crocking 為 Fail??
+                //彈跳出 Mail Group 寄信。(PublicWondowController.TestFailMailList)
                     @*$.ajax({
                         url: "@Url.Action("Encode_Detail", "GarmentTest", new { Area = "BulkFGT" })",
                         type: 'POST',
@@ -723,65 +724,65 @@
                             console.log(xhr.responseText);
                         }
                     });*@
-                });
-            }
-
-            if (@Model.Crocking_Main.CrockingEncdoe  == true) {
-                $('#Amend').on('click', function (e) {
-                });
-            }
-        }
-
-        function AddDetailRow(obj) {
-            var lastNO;
-            if ($('.DetailTable > tbody > tr').length > 0) {
-                lastNO = parseInt($('.DetailTable > tbody > tr:last-child').attr('idx'));
-            }
-            else {
-                lastNO = 1;
-            }
-
-            $.ajax({
-                url: "@Url.Action("AddCrockingDetailRow", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
-                type: 'POST',
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({ lastNO: lastNO}),
-                async: false,
-                success: function (data) {
-                    $('.DetailTable > thead > tr').show();
-                    $('.DetailTable > tbody').append(data);
-                    $('.date-picker').datepicker({ changeYear: true, changeMonth: true, currentText: "Now" });
-                    if (@Model.CrockingTestOption == 0) {
-                        $(hiddenColumns).each(function () {
-                            $('.DetailTable td:nth-child(' + this + ')').hide();
-                        });
-                    }
-                    DetailButtonBind();
-                    $('.date-picker').datepicker({ changeYear: true, changeMonth: true, currentText: "Now" });
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    console.log(xhr.responseText);
-                }
             });
         }
 
-        function changeResultColor(obj) {
-            var result = $(obj).val();
-            if (result == "Pass") {
-                $(obj).css('color', 'blue');
-            }
-            else {
-                $(obj).css('color', 'red');
-            }
+        if (@Model.Crocking_Main.CrockingEncdoe  == true) {
+            $('#Amend').on('click', function (e) {
+            });
+        }
+    }
 
-            // checkAllResult
-            var idx = $(obj).closest("tr").attr("idx");
-            var result=true;
-            $(".result" + idx).each(function () {
-                var id = $(this).attr('id');
+    function AddDetailRow(obj) {
+        var lastNO;
+        if ($('.DetailTable > tbody > tr').length > 0) {
+            lastNO = parseInt($('.DetailTable > tbody > tr:last-child').attr('idx'));
+        }
+        else {
+            lastNO = 1;
+        }
+
+        $.ajax({
+            url: "@Url.Action("AddCrockingDetailRow", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ lastNO: lastNO }),
+            async: false,
+            success: function (data) {
+                $('.DetailTable > thead > tr').show();
+                $('.DetailTable > tbody').append(data);
+                $('.date-picker').datepicker({ changeYear: true, changeMonth: true, currentText: "Now" });
+                if (@Model.CrockingTestOption == 0) {
+                    $(hiddenColumns).each(function () {
+                        $('.DetailTable td:nth-child(' + this + ')').hide();
+                    });
+                }
+                DetailButtonBind();
+                $('.date-picker').datepicker({ changeYear: true, changeMonth: true, currentText: "Now" });
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function changeResultColor(obj) {
+        var result = $(obj).val();
+        if (result == "Pass") {
+            $(obj).css('color', 'blue');
+        }
+        else {
+            $(obj).css('color', 'red');
+        }
+
+        // checkAllResult
+        var idx = $(obj).closest("tr").attr("idx");
+        var result = true;
+        $(".result" + idx).each(function () {
+            var id = $(this).attr('id');
                 @{
                     int testOption = Model.CrockingTestOption;
-                    @:if(id.includes('ResultDry_Weft')) {
+                    @:if (id.includes('ResultDry_Weft')) {
                         @:return;
                     @:}
                     @:else if (id.includes('ResultWet_Weft')) {
@@ -789,20 +790,20 @@
                     @:}
                 }
 
-                if ($(this).val() != "Pass") {
-                    result = false;
-                }
-            });
-
-            var resultItem = $("#Crocking_Detail_"+idx+"__Result");
-
-            if (result) {
-                resultItem.val("Pass").css("color", "blue");
+            if ($(this).val() != "Pass") {
+                result = false;
             }
-            else {
-                resultItem.val("Fail").css("color", "red");
-            }
+        });
+
+        var resultItem = $("#Crocking_Detail_" + idx + "__Result");
+
+        if (result) {
+            resultItem.val("Pass").css("color", "blue");
         }
+        else {
+            resultItem.val("Fail").css("color", "red");
+        }
+    }
 
     function DetailButtonBind() {
         // 卸掉重新綁定
@@ -827,8 +828,7 @@
                         $("#Crocking_Detail_" + targetID + "__Dyelot").val('');
                         msg.WithError('Roll# Not Found');
                     }
-                    else
-                    {
+                    else {
                         $("#Crocking_Detail_" + targetID + "__Roll").val(data[0].Roll);
                         $("#Crocking_Detail_" + targetID + "__Dyelot").val(data[0].Dyelot);
                     }
@@ -841,8 +841,8 @@
 
         $('.btnRollSelectItem').unbind('click').on('click', function () {
             var targetID = $(this).closest('tr').attr('idx');
-                var para = "?POID=" + poid + "&Seq1=" + seq1 + "&Seq1=" + seq2+"&TargetID=" + targetID;
-                window.open('@Url.Action("FtyInventoryList", "PublicWondow",new{Area=""})' + para, 'Roll', config = 'toolbar=no,status=no,location=no,width=950,height=650');
+            var para = "?POID=" + poid + "&Seq1=" + seq1 + "&Seq1=" + seq2 + "&TargetID=" + targetID;
+            window.open('@Url.Action("FtyInventoryList", "PublicWondow",new{Area=""})' + para, 'Roll', config = 'toolbar=no,status=no,location=no,width=950,height=650');
         });
 
         $('.inputInspectorSelectItem').unbind('blur').on('blur', function () {
@@ -858,7 +858,7 @@
                 url: "@Url.Action("Pass1List", "PublicWondow",new { Area=""})",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({ ID:$(this).val(), ReturnType: "JSON" }),
+                data: JSON.stringify({ ID: $(this).val(), ReturnType: "JSON" }),
                 async: true,
                 success: function (data) {
                     if (data.length == 0) {
@@ -867,8 +867,7 @@
                         $("#Crocking_Detail_" + targetID + "__Remark").val('');
                         msg.WithError('Lab Tech Not Found');
                     }
-                    else
-                    {
+                    else {
                         $("#Crocking_Detail_" + targetID + "__Inspector").val(data[0].ID);
                         $("#Crocking_Detail_" + targetID + "__Name").val(data[0].Name);
                         $("#Crocking_Detail_" + targetID + "__Remark").val(data[0].ExtNo);
