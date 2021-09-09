@@ -149,7 +149,7 @@
         <div class="content-scroll" style="height: calc( 100vh - 110px );">
             <div class="inner-scroll" style="height: calc( 100vh - 150px );">
                 <div>
-                    @using (Html.BeginForm("Index", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post))
+                    @using (Html.BeginForm("Index", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { id = "QueryForm" }))
                     {
                         @*查詢*@
                         <div class="row rowHeader">
@@ -244,11 +244,11 @@
                                 <tr>
                                     <td><h5>Mtl Cmplt (SP)</h5></td>
                                     <td>
-                                        @Html.DisplayFor(o => o.Main.complete)
+                                        @Model.Main.complete
                                     </td>
                                     <td><h5>Remark</h5></td>
                                     <td colspan="3">
-                                        @Html.TextBoxFor(o => o.Main.FirLaboratoryRemark, new { @style = "width:40vw" })
+                                        @Html.TextBoxFor(o => o.Main.FirLaboratoryRemark, new { @style = "width:100%" })
                                     </td>
                                 </tr>
                                 <tr>
@@ -437,101 +437,105 @@
     </div>
 </div>
 <script type="text/javascript">
-        var msg;
-        var EditMode;
-        $(function () {
-            msg = new MessagerAlert();
+    var msg;
+    var EditMode;
+    $(function () {
+        msg = new MessagerAlert();
+        EditMode = false;
+        IsEditModeChange();
+        @Html.Raw(Model.ErrorMessage)
 
-            EditMode = false;
-            IsEditModeChange();
+        if (!$("body").hasClass("sidebar-collapse")) {
+            $(".menu-trigger").click();
+        }
+    });
+
+    function IsEditModeChange() {
+        EditModeButtionBind();
+
+        if (EditMode) {
+            $(".rowHeader input[type='text']").attr("disabled", "disabled");
+            $(".rowHeader input[type='button']").unbind('click').addClass("IsEditModeQuery");
+            $('#btnQuery').addClass("IsEditModeQuery");
+
+            $("#Edit").removeClass("IsEditMode");
+            $('#Save, #Undo, #New').addClass("IsEditMode");
+            $(".DataTable input").removeAttr("disabled", "disabled");
+            $(".link").hide();
+        }
+        else {
+            $(".rowHeader input[type='text']").removeAttr("disabled");
+            $(".rowHeader input[type='button']").removeClass("IsEditModeQuery");
+            $('#Save, #Undo, #New').unbind('click').removeClass("IsEditMode");
+            $(".DataTable input").attr("disabled", "disabled");
+            $(".link").show();
+            if ('@Model.Main.POID' != '') {
+                $("#Edit").addClass("IsEditMode");
+            }
+        }
+    }
+
+    function EditModeButtionBind() {
+        $('#Edit').on('click', function () {
+            if ('@Model.Main.POID' != '') {
+                EditMode = true;
+                IsEditModeChange();
+            }
         });
 
-        function IsEditModeChange() {
-            EditModeButtionBind();
+        $('#Save').on('click', function (e) {
+            var detail = [];
+            var ErrMsg = "";
 
-            if (EditMode) {
-                $(".rowHeader input[type='text']").attr("disabled", "disabled");
-                $(".rowHeader input[type='button']").unbind('click').addClass("IsEditModeQuery");
-                $('#btnQuery').addClass("IsEditModeQuery");
-
-                $("#Edit").removeClass("IsEditMode");
-                $('#Save, #Undo, #New').addClass("IsEditMode");
-                $(".DataTable input").removeAttr("disabled", "disabled");
-                $(".link").hide();
+            if (ErrMsg != "") {
+                msg.WithError(ErrMsg);
+                return;
             }
-            else {
-                $(".rowHeader input[type='text']").removeAttr("disabled");
-                $(".rowHeader input[type='button']").removeClass("IsEditModeQuery");
-                $('#Save, #Undo, #New').unbind('click').removeClass("IsEditMode");
-                $(".DataTable input").attr("disabled", "disabled");
-                $(".link").show();
-                if ('@Model.Main.POID' != '') {
-                    $("#Edit").addClass("IsEditMode");
-                }
-            }
-        }
 
-        function EditModeButtionBind() {
-            $('#Edit').on('click', function () {
-                if ('@Model.Main.POID' != '') {
-                    EditMode = true;
-                    IsEditModeChange();
-                }
+            var main = {
+                POID: $('#Main_POID').val(),
+                FirLaboratoryRemark: $('#Main_FirLaboratoryRemark').val(),
+            };
+
+            var detail = [];
+            var ErrMsg = "";
+            $('.DetailTable > tbody > tr').each(function (index, value) {
+                detail.push({
+                    ID: parseInt($('#Details_' + index + '__ID').val()),
+                    ReceiveSampleDate: $('#Details_' + index + '__ReceiveSampleDate').val(),
+                    NonCrocking: $('#Details_' + index + '__NonCrocking').prop("checked"),
+                    NonHeat: $('#Details_' + index + '__NonHeat').prop("checked"),
+                    NonWash: $('#Details_' + index + '__NonWash').prop("checked"),
+                });
             });
 
-            $('#Save').on('click', function (e) {
-                var detail = [];
-                var ErrMsg = "";
-
-                if (ErrMsg != "") {
-                    msg.WithError(ErrMsg);
-                    return;
-                }
-
-                var main = {
-                    POID: $('#Main_POID').val(),
-                    FirLaboratoryRemark: $('#Main_FirLaboratoryRemark').val(),
-                };
-
-                var detail = [];
-                var ErrMsg = "";
-                $('.DetailTable > tbody > tr').each(function (index, value) {
-                    detail.push({
-                        ID: parseInt($('#Details_'+ index + '__ID').val()),
-                        ReceiveSampleDate: $('#Details_' + index +'__ReceiveSampleDate').val(),
-                        NonCrocking: $('#Details_' + index + '__NonCrocking').prop("checked"),
-                        NonHeat: $('#Details_' + index + '__NonHeat').prop("checked"),
-                        NonWash: $('#Details_' + index + '__NonWash').prop("checked"),
-                    });
-                });
-
-                $.ajax({
-                    url: "@Url.Action("SaveIndex", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
-                    type: 'POST',
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify({ main: main, detail: detail }),
-                    async: false,
-                    success: function (data) {
-                        IsEditModeChange();
-                        $('#btnQuery').click();
-                        //if (data.SaveResult) {
-                        //    msg.WithSuccess("Success");
-                        //    $('#btnQuery').click();
-                        //}
-                        //else {
-                        //    msg.WithError(data.ErrMsg);
-                        //}
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        console.log(xhr.responseText);
+            $.ajax({
+                url: "@Url.Action("SaveIndex", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ main: main, detail: detail }),
+                async: false,
+                success: function (data) {
+                    if (data.Result) {
+                        msg.WithSuccesCheck("Success", function () {
+                            $(".rowHeader input[type='text']").removeAttr("disabled");
+                            document.getElementById("QueryForm").submit();
+                        });
                     }
-                });
+                    else {
+                        msg.WithError(data.ErrorMessage);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
             });
+        });
 
-            $('#Undo').on('click', function () {
-                EditMode = false;
-                IsEditModeChange();
-                $('#btnQuery').click();
-            });
-        }
+        $('#Undo').on('click', function () {
+            EditMode = false;
+            IsEditModeChange();
+            $('#btnQuery').click();
+        });
+    }
 </script>

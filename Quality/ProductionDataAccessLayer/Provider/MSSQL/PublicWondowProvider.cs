@@ -428,7 +428,7 @@ Where Junk = 0
 Select ID
 		, Abb 
 		, Name
-From Production.dbo.Supp 
+From Production.dbo.LocalSupp 
 Where Junk = 0
 {whereLocal}
 UNION
