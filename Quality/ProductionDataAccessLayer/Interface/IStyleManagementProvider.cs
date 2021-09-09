@@ -16,5 +16,7 @@ namespace ProductionDataAccessLayer.Interface
         IList<SelectListItem> GetSeasons(string brandID);
 
         IList<StyleResult_ViewModel> Get_StyleInfo(StyleManagement_Request styleResult_Request);
+
+        IList<StyleResult_SampleRFT> Get_StyleResult_SampleRFT(long styleUkey);
     }
 }
