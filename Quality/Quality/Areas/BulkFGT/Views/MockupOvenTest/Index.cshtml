@@ -136,7 +136,7 @@
                     <div class="col-auto">
                         <p class="InfoTitle White">Brand</p>
                     </div>
-                    <div class="col-auto">  
+                    <div class="col-auto">
                         @Html.TextBoxFor(o => o.Request.BrandID, "", "")
                         <input id="btnBrandSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
                     </div>
@@ -199,6 +199,12 @@
                                 </td>
                                 <td style="width: 50%;">
                                 </td>
+                                <td>
+                                    <h4 id="New">
+                                        <img src="~/Image/Icon/New.png" width="30" />
+                                        New Item
+                                    </h4>
+                                </td>
                         </tbody>
                     </table>
                 </div>
@@ -259,7 +265,7 @@
                                 <td>
                                     @Html.TextBoxFor(o => o.T2Supplier, "", new { @class = "OnlyEdit", @readonly = "readonly" })
                                     @Html.TextBoxFor(o => o.T2SupplierAbb, "", new { @class = "OnlyEdit", @readonly = "readonly" })
-                  
+
                                     <input id="btnDetailSupplierNameSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
                                 </td>
                                 <td><h5>Test Date</h5></td>
@@ -278,7 +284,7 @@
                                 </td>
                                 <td><h5>Result</h5></td>
                                 <td>
-                                    @Html.TextBoxFor(o => o.Remark ,"", new { @class = "OnlyEdit", @readonly = "readonly", @type = "number" })
+                                    @Html.TextBoxFor(o => o.Remark, "", new { @class = "OnlyEdit", @readonly = "readonly", @type = "number" })
                                 </td>
                             </tr>
                             <tr>
@@ -299,7 +305,7 @@
                                 <td><h5>MR</h5></td>
                                 <td>
                                     @{
-                                        string MRname=string.Empty;
+                                        string MRname = string.Empty;
                                         if (!string.IsNullOrWhiteSpace(Model.MRName))
                                         {
                                             MRname = Model.MRName + " Ext. " + Model.MRExtNo;
@@ -321,12 +327,12 @@
                             <tr>
                                 <td><h5>Temperature (oC)</h5></td>
                                 <td>
-                                    @Html.TextBoxFor(o => o.TestTemperature, "", new { @class = "OnlyEdit", @readonly = "readonly" })
+                                    @Html.TextBoxFor(o => o.TestTemperature, "", new { @type = "number", @class = "OnlyEdit", @readonly = "readonly", @step = "0.01" })
 
                                 </td>
                                 <td><h5>Time (hrs)</h5></td>
                                 <td>
-                                    @Html.TextBoxFor(o => o.TestTime, "", new { @class = "OnlyEdit", @readonly = "readonly" })
+                                    @Html.TextBoxFor(o => o.TestTime, "", new { @type = "number", @class = "OnlyEdit", @readonly = "readonly", @step = "0.01" })
                                 </td>
                                 <td></td>
                                 <td>
@@ -366,13 +372,13 @@
                                 </td>
                                 <td colspan="2"><h5>2nd Press (reversed)(sec.)</h5></td>
                                 <td>
-                                    @Html.TextBoxFor(o => o.HT2ndPressreversed, "", new { @class = "OnlyEdit", @readonly = "readonly" })
+                                    @Html.TextBoxFor(o => o.HT2ndPressreversed, "", new { @class = "OnlyEdit", @readonly = "readonly", @step = "0.1" })
                                 </td>
                             </tr>
                             <tr>
                                 <td colspan="2"><h5>Pressure(kg/cm2)</h5></td>
                                 <td>
-                                    @Html.TextBoxFor(o => o.HTPressure, "", new { @class = "OnlyEdit", @readonly = "readonly" })
+                                    @Html.TextBoxFor(o => o.HTPressure, "", new { @type = "number", @class = "OnlyEdit", @readonly = "readonly", @step = "0.1" })
 
                                 </td>
                                 <td colspan="2"><h5>Cooling Time (min)</h5></td>
@@ -380,6 +386,72 @@
                                     @Html.TextBoxFor(o => o.HTCoolingTime, "", new { @class = "OnlyEdit", @readonly = "readonly" })
                                 </td>
                             </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="margin-top: 1em; width: 92vw; overflow:auto;">
+                    <table class="DetailTable DataTable" style='width:271vw'>
+                        <thead>
+                            <tr>
+
+                                <th><h4>TypeofPrint</h4></th>
+                                <th><h4>Design</h4></th>
+                                <th><h4>Artwork Color</h4></th>
+                                <th><h4>Accessory Ref No.</h4></th>
+                                <th><h4>Fabric Ref No.</h4></th>
+                                <th><h4>Fabric Color</h4></th>
+                                <th><h4>Result</h4></th>
+                                <th><h4>Remark</h4></th>
+                                <th><h4>Last Update</h4></th>
+                                <th><h4></h4></th>
+                            </tr>
+
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i <= Model.MockupOven_Detail.Count - 1; i++)
+                            {
+                            <tr>
+                                <td style="width:10vw;">
+                                    @Html.Hidden("Seq", "", new { @idx = i })
+                                    @Html.TextBoxFor(o => Model.MockupOven_Detail[i].TypeofPrint, "", "")
+                                </td>
+                                <td style="width:10vw;">
+                                    @Html.TextBoxFor(o => Model.MockupOven_Detail[i].Design, "", "")
+                                </td>
+                                <td style="width:11vw;">
+                                    <div style="width:10vw;">
+                                        @Html.TextBoxFor(o => Model.MockupOven_Detail[i].ArtworkColorName, "", new { @style = "width:6vw", @idv = (i.ToString()), @class = "InputDetailArtworkColorNameSelectItem" })
+                                        <input id="btnDetailArtworkColorNameSelectItem" idv=@(i.ToString()) type="button" class="btnDetailSEQSelectItem OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                    </div>
+                                </td>
+                                <td style="width:10vw;">
+                                    @Html.TextBoxFor(o => Model.MockupOven_Detail[i].AccessoryRefno, "", "")
+                                </td>
+                                <td style="width:10vw;">
+                                    @Html.TextBoxFor(o => Model.MockupOven_Detail[i].FabricRefNo, "", "")
+                                </td>
+                                <td style="width:10vw;">
+                                    @Html.TextBoxFor(o => Model.MockupOven_Detail[i].FabricColorName, "", "")
+                                </td>
+                                <td style="width:10vw;">
+                                    @Html.TextBoxFor(o => Model.MockupOven_Detail[i].Result, "", "")
+                                </td>
+                                <td style="width:10vw;">
+                                    @Html.TextBoxFor(o => Model.MockupOven_Detail[i].Remark, "", "")
+                                </td>
+                                <td style="width:10vw;">
+                                    @Html.TextBoxFor(o => Model.MockupOven_Detail[i].LastUpdate, "", "")
+                                </td>
+                                <td style="width:10vw;">
+                                    <div style="width:5vw;">
+                                        <img class="detailDelete" src="~/Image/Icon/Delete.png" width="30" />
+                                    </div>
+
+                                </td>
+
+                            </tr>
+                            }
                         </tbody>
                     </table>
                 </div>
@@ -486,8 +558,8 @@
                 var detail = [];
                 var ErrMsg = "";
 
-                if ($('#Detail_BrandID').val() == '' || $('#Detail_SeasonID').val() == '' || $('#Detail_StyleID').val() == '' || $('#Detail_Article').val() == ''
-                    || $('#Detail_BrandID').val() == undefined || $('#Detail_SeasonID').val() == undefined || $('#Detail_StyleID').val() == undefined || $('#Detail_Article').val() == undefined) {
+                if ($('#BrandID').val() == '' || $('#SeasonID').val() == '' || $('#StyleID').val() == '' || $('#Article').val() == ''
+                    || $('#BrandID').val() == undefined || $('#SeasonID').val() == undefined || $('#StyleID').val() == undefined || $('#Article').val() == undefined) {
                     ErrMsg += "Style, Brand, Season and Article cannot be empty<br/>";
                 }
 
@@ -566,7 +638,52 @@
             blurEvent('Request_');
         }
 
-        function blurEvent(name) {
+    function blurEvent(name) {
+
+        $("#POID").unbind('blur').blur(function () {
+                if ($(this).val() == '') {
+                    return;
+                }
+
+                $.ajax({
+                    url: "@Url.Action("SPBlur", "MockupOvenTest", new{Area= "BulkFGT" })",
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ POID: $(this).val(), ReturnType: "JSON" }),
+                    async: true,
+                    success: function (data) {
+                        if (data.ErrMsg != "") {
+                            $("#" + name + "BrandID").val('');
+                            msg.WithError(data.ErrMsg);
+                        }
+                        else
+                        {
+                            if (data.BrandID != "") {
+                                $('#BrandID').val(data.BrandID);
+                            }
+
+                            if (data.SeasonID != "") {
+                                $('#SeasonID').val(data.SeasonID);
+                            }
+
+                            if (data.StyleID != "") {
+                                $('#StyleID').val(data.StyleID);
+                            }
+
+
+                            if (data.Article != "") {
+                                $('#Article').val(data.Article);
+                            }
+
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                });
+                    });
+
+
             $("#" + name + "BrandID").blur(function () {
                 if ($(this).val() == '') {
                     return;
@@ -699,6 +816,10 @@
                             $("#T1SubconAbb").val('');
                             msg.WithError('T1/SubconName');
                         }
+                        else {
+                            $("#T1Subcon").val(data[0].ID);
+                            $("#T1SubconAbb").val(data[0].Name);
+                        }
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
                         console.log(xhr.responseText);
@@ -716,13 +837,17 @@
                     url: "@Url.Action("TPESuppList","PublicWondow",new{Area=""})",
                     type: 'POST',
                     contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify({ Name: $(this).val(), ReturnType: "JSON" }),
+                    data: JSON.stringify({ SuppID: $(this).val(), ReturnType: "JSON" }),
                     async: true,
                     success: function (data) {
                         if (data.length == 0) {
                             $("#T2Supplier").val('');
                             $("#T2SupplierAbb").val('');
                             msg.WithError('T2/SupplierName');
+                        }
+                        else {
+                            $("#T2Supplier").val(data[0].ID);
+                            $("#T2SupplierAbb").val(data[0].Name);
                         }
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
@@ -733,6 +858,7 @@
 
             $("#Technician").unbind('blur').blur(function () {
                 if ($(this).val() == '') {
+                    $('#TechnicianName').val('');
                     return;
                 }
 
@@ -744,9 +870,15 @@
                     async: true,
                     success: function (data) {
                         if (data.length == 0) {
-                            $("Technicain").val('');
+                            $("#Technicain").val('');
+                            $('#TechnicianName').val('');
                             msg.WithError('Technician');
                         }
+                        else {
+                            $("#Technicain").val(data[0].ID);
+                            $('#TechnicianName').val(data[0].Name + " Ext. " + data[0].ExtNo);
+                        }
+
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
                         console.log(xhr.responseText);
@@ -811,7 +943,7 @@
 
             $('#btnDetailMRSelectItem').on('click', function () {
                 window.open('@Url.Action("Pass1List", "PublicWondow",new{Area=""})','MR',config='toolbar=no,status=no,location=no,width=800,height=650');
-            });            
+            });
 
 
             blurEvent("");
@@ -901,7 +1033,7 @@
         function GetPass1(data) {
             $('#MR').val(data.ID);
             $('#MRName').val(data.Name + " Ext. " + data.ExtNo);
-            
+
         }
 
 
