@@ -44,7 +44,7 @@ namespace BusinessLogicLayer.Service.Tests
             {
                 IFinalInspectionOthersService finalInspectionOthersService = new FinalInspectionOthersService();
 
-                List<byte[]> result = finalInspectionOthersService.GetOthersImage("ESPCH21080001");
+                List<byte[]> result = finalInspectionOthersService.GetOthersImage("ESPCH21080001").Select(o => o.Image).ToList();
 
                 Assert.IsTrue(true);
             }
@@ -69,7 +69,7 @@ namespace BusinessLogicLayer.Service.Tests
                 ImageConverter converter = new ImageConverter();
                 byte[] testImgByte = (byte[])converter.ConvertTo(bitmap, typeof(byte[]));
 
-                others.ListOthersImageItem.Add(testImgByte);
+                others.ListOthersImageItem.Add(new OtherImage() { Image = testImgByte, ID= "ESPCH21080001" });
                 BaseResult result = finalInspectionOthersService.UpdateOthersBack(others, "SCIMIS");
 
                 if (!result)
@@ -100,7 +100,7 @@ namespace BusinessLogicLayer.Service.Tests
                 ImageConverter converter = new ImageConverter();
                 byte[] testImgByte = (byte[])converter.ConvertTo(bitmap, typeof(byte[]));
 
-                others.ListOthersImageItem.Add(testImgByte);
+                others.ListOthersImageItem.Add(new OtherImage() { Image = testImgByte, ID = "ESPCH21080001" });
                 BaseResult result = finalInspectionOthersService.UpdateOthersSubmit(others, "SCIMIS");
 
                 if (!result)

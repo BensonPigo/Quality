@@ -107,13 +107,14 @@
                 <div>
                     <table cellspacing="100" id="DetailTable" class="table table-striped display">
                         <thead>
-                            <tr id="row-name" class="row-name" >
+                            <tr id="row-name" class="row-name">
                                 <th>SP#</th>
                                 <th>PO#</th>
                                 <th>SP# Qty</th>
                                 <th>Style</th>
                                 <th>Season</th>
                                 <th>Brand</th>
+                                <th>Article</th>
                                 <th>Select</th>
                             </tr>
                         </thead>
@@ -145,6 +146,10 @@
                                     <td>
                                         @Html.DisplayFor(modelItem => item.BrandID)
                                         @Html.Hidden($"model[{idx}].BrandID", item.BrandID)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Article)
+                                        @Html.Hidden($"model[{idx}].Article", item.Article)
                                     </td>
                                     <td>
                                         @Html.CheckBox($"model[{idx}].Selected", item.Selected ,new { @class= "messageCheckbox" })

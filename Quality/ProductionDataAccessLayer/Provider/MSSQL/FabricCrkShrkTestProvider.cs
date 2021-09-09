@@ -122,7 +122,7 @@ select	[POID] = p.ID,
 		[CompletionDate] = iif(p.LabOvenPercent >= 100, FIR_CompletionDate.val, null),
 		[FIRLabInspPercent] = p.FIRLabInspPercent,
         [complete] = p.complete,
-		[Remark] = p.FirLaboratoryRemark,
+		[FirLaboratoryRemark] = p.FirLaboratoryRemark,
 		[CreateBy] = Concat(p.AddName, '-', pass1AddName.Name, ' ', Format(p.AddDate, 'yyyy/MM/dd HH:mm:ss')),
 		[EditBy] = Concat(p.EditName, '-', pass1EditName.Name, ' ', Format(p.EditDate, 'yyyy/MM/dd HH:mm:ss'))
 from PO p with (nolock)

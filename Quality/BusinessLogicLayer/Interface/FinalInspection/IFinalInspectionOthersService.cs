@@ -16,6 +16,6 @@ namespace BusinessLogicLayer.Interface
 
         BaseResult UpdateOthersSubmit(Others others, string UserID);
 
-        List<byte[]> GetOthersImage(string finalInspectionID);
+        List<OtherImage> GetOthersImage(string finalInspectionID);
     }
 }

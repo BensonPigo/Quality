@@ -36,7 +36,7 @@ select  [OrderID] = o.id,
         [AvailableQty] = 0,
         [Cartons] = '',
         [Seq] = '',
-        [Article] = ''
+        [Article] = (SELECT Stuff((select concat( ',',Article)   from Order_Article where ID = o.ID FOR XML PATH('')),1,1,'') )
   from  Orders o with (nolock)
  where  o.id in ({whereOrderID})
 ";
@@ -198,7 +198,8 @@ select  [Ukey] = isnull(fd.Ukey, -1),
         [DefectCode] = gdc.ID,
         [DefectTypeDesc] = gdt.ID +'-'+gdt.Description,
         [DefectCodeDesc] = gdc.ID +'-'+gdc.Description,
-        [Qty] = isnull(fd.Qty, 0)
+        [Qty] = isnull(fd.Qty, 0),
+		[RowIndex]=ROW_NUMBER() OVER(ORDER BY gdt.id,gdc.id) -1
     from GarmentDefectType gdt with (nolock)
     inner join GarmentDefectCode gdc with (nolock) on gdt.id=gdc.GarmentDefectTypeID
     left join   #FinalInspection_Detail fd on fd.GarmentDefectTypeID = gdt.ID and fd.GarmentDefectCodeID = gdc.ID

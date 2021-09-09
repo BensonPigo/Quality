@@ -141,13 +141,13 @@
     <Compile Include="Public\CompareBase.cs" />
     <Compile Include="Public\WindowModel.cs" />
     <Compile Include="RequestModel\MockupFailMail_Request.cs" />
-    <Compile Include="RequestModel\StyleArtwork_Request.cs" />
     <Compile Include="RequestModel\FinalInspection_Query.cs" />
+    <Compile Include="RequestModel\FinalInspection_Request.cs" />
+    <Compile Include="RequestModel\StyleArtwork_Request.cs" />
     <Compile Include="RequestModel\MockupOven_Request.cs" />
     <Compile Include="RequestModel\AccessoryRefNo_Request.cs" />
     <Compile Include="RequestModel\MockupWash_Request.cs" />
     <Compile Include="RequestModel\MockupCrocking_Request.cs" />
-    <Compile Include="RequestModel\FinalInspection_Request.cs" />
     <Compile Include="RequestModel\GarmentTest_Request.cs" />
     <Compile Include="RequestModel\SendMail_Request.cs" />
     <Compile Include="RequestModel\LogIn_Request.cs" />

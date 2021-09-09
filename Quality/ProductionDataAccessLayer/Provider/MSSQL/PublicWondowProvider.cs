@@ -346,7 +346,7 @@ Where 1=1
             return ExecuteList<Window_Pass1>(CommandType.Text, SbSql.ToString(), paras);
         }
 
-        public IList<Window_LocalSupp> Get_LocalSupp(string Name, bool IsExact)
+        public IList<Window_LocalSupp> Get_LocalSupp(string SuppID, string Name, bool IsExact)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -375,10 +375,24 @@ Where Junk = 0
                 }
             }
 
+            if (!string.IsNullOrEmpty(SuppID))
+            {
+                if (IsExact)
+                {
+                    SbSql.Append($@"AND ID = @SuppID ");
+                    paras.Add("@SuppID", DbType.String, SuppID);
+                }
+                else
+                {
+                    SbSql.Append($@"AND ID LIKE @SuppID ");
+                    paras.Add("@SuppID", DbType.String, SuppID + "%");
+                }
+            }
+
             return ExecuteList<Window_LocalSupp>(CommandType.Text, SbSql.ToString(), paras);
         }
 
-        public IList<Window_TPESupp> Get_TPESupp(string Name, bool IsExact)
+        public IList<Window_TPESupp> Get_TPESupp(string SuppID, string Name, bool IsExact)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -402,6 +416,24 @@ Where Junk = 0
                     where = $@"AND NameEN LIKE @Name ";
 
                     paras.Add("@Name", DbType.String, Name + "%");
+                }
+            }
+
+            if (!string.IsNullOrEmpty(SuppID))
+            {
+                if (IsExact)
+                {
+                    whereLocal = $@"AND ID = @SuppID ";
+                    where = $@"AND ID = @SuppID ";
+
+                    paras.Add("@SuppID", DbType.String, SuppID);
+                }
+                else
+                {
+                    whereLocal = $@"AND ID LIKE @SuppID ";
+                    where = $@"AND ID LIKE @SuppID ";
+
+                    paras.Add("@SuppID", DbType.String, SuppID + "%");
                 }
             }
             /*
@@ -428,7 +460,7 @@ Where Junk = 0
 Select ID
 		, Abb 
 		, Name
-From Production.dbo.Supp 
+From Production.dbo.LocalSupp 
 Where Junk = 0
 {whereLocal}
 UNION

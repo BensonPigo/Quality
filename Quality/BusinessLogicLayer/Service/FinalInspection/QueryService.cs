@@ -27,7 +27,7 @@ namespace BusinessLogicLayer.Service.FinalInspection
         private IFinalInspFromPMSProvider _FinalInspFromPMSProvider;
         private IStyleProvider _StyleProvider;
 
-        public List<QueryFinalInspection> GetFinalinspectionQueryList(FinalInspection_Query request)
+        public List<QueryFinalInspection> GetFinalinspectionQueryList(QueryFinalInspection_ViewModel request)
         {
             _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
 

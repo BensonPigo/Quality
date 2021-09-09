@@ -356,7 +356,7 @@
     <Content Include="Areas\BulkFGT\Views\MockupOvenTest\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\FabricColorFastness\Index.cshtml" />
     <Content Include="Areas\FinalInspection\Views\Shared\PictureList.cshtml" />
-    <Content Include="Areas\FinalInspection\Views\Inspection\DefectPicture.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Inspection\FinalInspection_Picture.cshtml" />
     <Content Include="Areas\FinalInspection\Views\Inspection\TakePicture.cshtml" />
     <Content Include="Areas\FinalInspection\Views\Shared\ScreenShot.cshtml" />
     <Content Include="Areas\StyleManagement\Views\PrintBarcode\Index.cshtml" />
@@ -366,6 +366,7 @@
     <Content Include="Areas\BulkFGT\Views\FabricCrkShrkTest\WashTest.cshtml" />
     <Content Include="Areas\BulkFGT\Views\FabricColorFastness\Detail.cshtml" />
     <Content Include="Image\Icon\Thumbs.db" />
+    <Content Include="Areas\FinalInspection\Views\Inspection\Others_TakePicture.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
