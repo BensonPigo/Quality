@@ -307,23 +307,22 @@ declare @time nvarchar(5)
 declare @diffno int='1'
 declare @orderid nvarchar(16) = @_OrderID
 declare @MDivision nvarchar(5) = (select MDivisionID from Production.dbo.Factory where id = @Factory)
---declare @shiftTabele table(MDivision varchar(8),Shift varchar(5),StartDate date,BeginTime time,EndTime time,ActualBeginTime datetime,ActualEndTime datetime)
---declare @workStartDatetime datetime
---declare @workEndDatetime datetime
+declare @shiftTabele table(MDivision varchar(8),Shift varchar(5),StartDate date,BeginTime time,EndTime time,ActualBeginTime datetime,ActualEndTime datetime)
+declare @workStartDatetime datetime
+declare @workEndDatetime datetime
 
 --
---INSERT INTO @shiftTabele
---SELECT * FROM [dbo].[GetWorkShiftTable](@MDivision,GETDATE(),@factory)
+INSERT INTO @shiftTabele
+SELECT * FROM [dbo].[GetWorkShiftTable](@MDivision,GETDATE(),@factory)
 
---SELECT  @workStartDatetime=ActualBeginTime,@workEndDatetime=ActualEndTime
---FROM @shiftTabele
-
+SELECT  @workStartDatetime=ActualBeginTime,@workEndDatetime=ActualEndTime
+FROM @shiftTabele
 
 select *
 into #tmp_Inspection_Measurement
 from RFT_Inspection_Measurement im
 where im.StyleUkey = @styleukey 
---and (@workStartDatetime <= im.AddDate AND im.AddDate <= @workEndDatetime)
+and (@workStartDatetime <= im.AddDate AND im.AddDate <= @workEndDatetime)
 --and im.Team = @team
 --and im.Line = @line
 and im.FactoryID = @factory 
