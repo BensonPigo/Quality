@@ -1172,6 +1172,7 @@
             if (EditMode) {
                 $('#BrandID').val(data);
                 GetArtworkTypeIDList();
+                GetAccessoryRefNoList();
                 ClearColor();
             }
             else {
@@ -1183,6 +1184,7 @@
             if (EditMode) {
                 $('#SeasonID').val(data);
                 GetArtworkTypeIDList();
+                GetAccessoryRefNoList();
             }
             else {
                 $('#Request_SeasonID').val(data);
@@ -1193,6 +1195,7 @@
             if (EditMode) {
                 $('#StyleID').val(data);
                 GetArtworkTypeIDList();
+                GetAccessoryRefNoList();
             }
             else {
                 $('#Request_StyleID').val(data);
@@ -1280,12 +1283,6 @@
              return;
          }
 
-         $('.DetailTable > tbody > tr').each(function (index, value) {
-
-            $("#MockupOven_Detail_" + index + "__AccessoryRefNo_Source").empty();
-
-         });
-
 
         $.ajax({
             url: '@Url.Action("GetAccessoryRefNo_Source", "MockupOvenTest")',
@@ -1293,6 +1290,12 @@
             data: jQuery.param({ BrandID: BrandID, SeasonID: SeasonID, StyleID: StyleID }),
             global: false,
             success: function (response) {
+                $('.DetailTable > tbody > tr').each(function (index, value) {
+
+                    $("#MockupOven_Detail_" + index + "__AccessoryRefNo_Source").empty();
+
+                });
+
                 if (response) {
 
                     $('.DetailTable > tbody > tr').each(function (index, value) {
