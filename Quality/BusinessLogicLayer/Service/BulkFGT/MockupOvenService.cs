@@ -33,6 +33,7 @@ namespace BusinessLogicLayer.Service
         {
             MockupOven.Type = "B";
             MockupOven_ViewModel mockupOven_model = new MockupOven_ViewModel();
+            mockupOven_model.Request = MockupOven;
             try
             {
                 _MockupOvenProvider = new MockupOvenProvider(Common.ProductionDataAccessLayer);

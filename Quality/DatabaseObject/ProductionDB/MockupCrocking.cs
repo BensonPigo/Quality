@@ -45,11 +45,9 @@ namespace DatabaseObject.ProductionDB
         /// <summary>測試日期</summary>
         [Display(Name = "測試日期")]
         public DateTime? TestDate { get; set; }
-        /// <summary></summary>
-        [Display(Name = "")]
+
         public DateTime? ReceivedDate { get; set; }
-        /// <summary></summary>
-        [Display(Name = "")]
+
         public DateTime? ReleasedDate { get; set; }
         /// <summary>檢驗結果</summary>
         [Display(Name = "檢驗結果")]

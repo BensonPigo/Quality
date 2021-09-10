@@ -37,10 +37,8 @@ namespace DatabaseObject.ProductionDB
         [Display(Name = "測試日期")]
         public DateTime? TestDate { get; set; }
 
-        [Display(Name = "")]
         public DateTime? ReceivedDate { get; set; }
 
-        [Display(Name = "")]
         public DateTime? ReleasedDate { get; set; }
 
         [Display(Name = "檢驗結果")]

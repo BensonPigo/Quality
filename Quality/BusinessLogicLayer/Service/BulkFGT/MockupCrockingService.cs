@@ -33,6 +33,7 @@ namespace BusinessLogicLayer.Service
         {
             MockupCrocking.Type = "B";
             MockupCrocking_ViewModel mockupCrocking_model = new MockupCrocking_ViewModel();
+            mockupCrocking_model.Request = MockupCrocking;
             try
             {
                 _MockupCrockingProvider = new MockupCrockingProvider(Common.ProductionDataAccessLayer);
