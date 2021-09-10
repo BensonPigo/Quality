@@ -114,351 +114,384 @@
 </style>
 @using (Html.BeginForm("Index", "MockupOvenTest", new { }, FormMethod.Post))
 {
-<div class="main-content">
-    <header class="page-header">
-        <h3>
-            <i class="icon-users"></i><span>Mockup Oven Test</span>
-        </h3>
-        <div class="breadcrumb">
-            <div>Home</div>
-            <div class="current">Fabric Oven Test</div>
-        </div>
-        <div class="breadcrumb queryHeader" style="justify-content: flex-end;">
-            <h4 style="margin-right: 1em;color:white">Report No</h4>
-            @Html.DropDownList("ReportNo", (List<SelectListItem>)ViewBag.ReportNo_Source, null, new { @class = "form-control" })
-            <input id="btnNew" type="button" class="button" style="margin-left:1em;border:0;" name="New" value="New">
-        </div>
-    </header>
-    <div class="main-area">
-        <div class="content-scroll">
-            <div class="inner-scroll">
-                <div class="row rowHeader">
-                    <div class="col-auto">
-                        <p class="InfoTitle White">Brand</p>
-                    </div>
-                    <div class="col-auto">
-                        @Html.TextBoxFor(o => o.Request.BrandID, "", "")
-                        <input id="btnBrandSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
-                    </div>
-                    <div class="col-auto"><p class="InfoTitle White">Season</p></div>
-                    <div class="col-auto">
-                        @Html.TextBoxFor(o => o.Request.SeasonID, "", "")
-                        <input id="btnSeasonSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
-                    </div>
-                    <div class="col-auto"><p class="InfoTitle White">Style</p></div>
-                    <div class="col-auto">
-                        @Html.TextBoxFor(o => o.Request.StyleID, "", "")
-                        <input id="btnStyleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
-                    </div>
-                    <div class="col-auto"><p class="InfoTitle White">Article</p></div>
-                    <div class="col-auto">
-                        @Html.TextBoxFor(o => o.Request.Article, "", "")
-                        <input id="btnArticleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
-                    </div>
-
-                    <div class="col-auto">
-                        <button id="btnQuery" type="submit" name="Action:Query" class="site-btn btn-gy font1rem Black" style="padding: 0.4em;">Query</button>
-                    </div>
+    <div class="main-content">
+        <header class="page-header">
+            <div style="float:left">
+                <h3>
+                    <span>Mockup Oven Test</span>
+                </h3>
+                <div class="breadcrumb">
+                    <div>Home</div>
+                    <div class="current">Fabric Oven Test</div>
                 </div>
+            </div>
+            <div class="breadcrumb queryHeader" style="justify-content: flex-end;">
+                <h4 style="margin-right: 1em;color:white">Report No</h4>
+                @Html.DropDownList("ReportNo", (List<SelectListItem>)ViewBag.ReportNo_Source, null, new { @class = "form-control" })
+                <input id="btnNew" type="button" class="button" style="margin-left:1em;border:0;" name="New" value="New">
+            </div>
+        </header>
+        <div class="main-area">
+            <div class="content-scroll">
+                <div class="inner-scroll">
+                    <div class="row rowHeader">
+                        <div class="col-auto">
+                            <p class="InfoTitle White">Brand</p>
+                        </div>
+                        <div class="col-auto">
+                            @Html.TextBoxFor(o => o.Request.BrandID, "", "")
+                            <input id="btnBrandSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                        </div>
+                        <div class="col-auto"><p class="InfoTitle White">Season</p></div>
+                        <div class="col-auto">
+                            @Html.TextBoxFor(o => o.Request.SeasonID, "", "")
+                            <input id="btnSeasonSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                        </div>
+                        <div class="col-auto"><p class="InfoTitle White">Style</p></div>
+                        <div class="col-auto">
+                            @Html.TextBoxFor(o => o.Request.StyleID, "", "")
+                            <input id="btnStyleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                        </div>
+                        <div class="col-auto"><p class="InfoTitle White">Article</p></div>
+                        <div class="col-auto">
+                            @Html.TextBoxFor(o => o.Request.Article, "", "")
+                            <input id="btnArticleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                        </div>
 
-                <div style="margin-top: 1em;">
-                    <table id="ButtonMode">
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <h4 id="Edit" style="margin-right: 1em;">
-                                        <img src="~/Image/Icon/Edit.png" width="30" />
-                                        Edit
-                                    </h4>
-                                </td>
-                                <td>
-                                    <h4 style="margin-right: 1em;">
-                                        <button id="Save" type="submit" style="margin:0;min-width:0;background-color:transparent">
-                                            <img src="~/Image/Icon/Save.png" width="30" />
-                                            Save
-                                        </button>
-                                    </h4>
-                                </td>
-                                <td>
-                                    <h4 id="Undo" style="margin-right: 1em;">
-                                        <img src="~/Image/Icon/Undo.png" width="30" />
-                                        Undo
-                                    </h4>
-                                </td>
-                                <td>
-                                    <h4 id="Delete" style=" margin-right: 1em;">
-                                        <img src="~/Image/Icon/Delete.png" width="30" />
-                                        Delete
-                                    </h4>
-                                </td>
-                                <td>
-                                    <h4 id="Picture" style=" margin-right: 1em;">
-                                        <img src="~/Image/Icon/Camera.png" width="30" />
-                                        Picture
-                                    </h4>
-                                </td>
-                                <td style="width: 50%;">
-                                </td>
-                                <td>
-                                    <h4 id="New">
-                                        <img src="~/Image/Icon/New.png" width="30" />
-                                        New Item
-                                    </h4>
-                                </td>
-                        </tbody>
-                    </table>
-                </div>
+                        <div class="col-auto">
+                            <button id="btnQuery" type="submit" name="Action:Query" class="site-btn btn-gy font1rem Black" style="padding: 0.4em;">Query</button>
+                        </div>
+                    </div>
 
-                <div style="margin-top: 1em;">
-                    <table class="DataTable DetailTable">
-                        <tbody>
-                            <tr>
-                                <td style="width: 10vw;"><h5>Report No</h5></td>
-                                <td style="width: 20vw;">
-                                    @Html.TextBoxFor(o => o.ReportNo, "", new { @readonly = "readonly" })
-                                </td>
-                                <td style="width: 10vw;"><h5>SP#</h5></td>
-                                <td style="width: 20vw;">
-                                    @Html.TextBoxFor(o => o.POID, "")
-                                </td>
-                                <td style="width: 10vw;"><h5>Brand</h5></td>
-                                <td style="width: 20vw;">
-                                    @Html.TextBoxFor(o => o.BrandID, "")
-                                    <input id="btnDetailBrandSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><h5>Season</h5></td>
-                                <td>
-                                    @Html.TextBoxFor(o => o.SeasonID, "", new { @readonly = "readonly" })
-                                    <input id="btnDetailSeasonSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
-                                </td>
-                                <td><h5>Style#</h5></td>
-                                <td>
-                                    @Html.TextBoxFor(o => o.StyleID, "", new { @readonly = "readonly" })
-                                    <input id="btnDetailStyleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
-                                </td>
-                                <td><h5>Article</h5></td>
-                                <td>
-                                    @Html.TextBoxFor(o => o.Article, "", new { @class = "OnlyEdit", @readonly = "readonly" })
-                                    <input id="btnDetailArticleSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><h5>Artwork</h5></td>
-                                <td>
-                                    @Html.TextBoxFor(o => o.ArtworkTypeID, "", new { @class = "OnlyEdit", @readonly = "readonly" })
-                                </td>
-                                <td><h5>Remark</h5></td>
-                                <td colspan="3">
-                                    @Html.TextBoxFor(o => o.Remark, "", new { @class = "OnlyEdit", @readonly = "readonly" })
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><h5>T1/SubconName</h5></td>
-                                <td>
-                                    @Html.TextBoxFor(o => o.T1Subcon, "", new { @class = "OnlyEdit", @readonly = "readonly" })
-                                    @Html.TextBoxFor(o => o.T1SubconAbb, "", new { @class = "OnlyEdit", @readonly = "readonly" })
-                                    <input id="btnDetailSubconNameSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
-                                </td>
-                                <td><h5>T2/SupplierName</h5></td>
-                                <td>
-                                    @Html.TextBoxFor(o => o.T2Supplier, "", new { @class = "OnlyEdit", @readonly = "readonly" })
-                                    @Html.TextBoxFor(o => o.T2SupplierAbb, "", new { @class = "OnlyEdit", @readonly = "readonly" })
+                    <div style="margin-top: 1em;">
+                        <table id="ButtonMode">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <h4 id="Edit" style="margin-right: 1em;">
+                                            <img src="~/Image/Icon/Edit.png" width="30" />
+                                            Edit
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 style="margin-right: 1em;">
+                                            <button id="Save" type="submit" style="margin:0;min-width:0;background-color:transparent">
+                                                <img src="~/Image/Icon/Save.png" width="30" />
+                                                Save
+                                            </button>
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 id="Undo" style="margin-right: 1em;">
+                                            <img src="~/Image/Icon/Undo.png" width="30" />
+                                            Undo
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 id="Delete" style=" margin-right: 1em;">
+                                            <img src="~/Image/Icon/Delete.png" width="30" />
+                                            Delete
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 id="SendMail" style="margin-right: 1em;">
+                                            <img src="~/Image/Icon/SendMail.png" width="30" />
+                                            Send to MR
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 id="PDF" style="margin-right: 1em;">
+                                            <img src="~/Image/Icon/PDF.png" width="30" />
+                                            PDF
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 id="Picture" style=" margin-right: 1em;">
+                                            <img src="~/Image/Icon/Camera.png" width="30" />
+                                            Picture
+                                        </h4>
+                                    </td>
+                                    <td style="width: 30%;">
+                                    </td>
+                                    <td align="right">
+                                        <h4 id="New">
+                                            <img src="~/Image/Icon/New.png" width="30" />
+                                            New Item
+                                        </h4>
+                                    </td>
+                            </tbody>
+                        </table>
+                    </div>
 
-                                    <input id="btnDetailSupplierNameSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
-                                </td>
-                                <td><h5>Test Date</h5></td>
-                                <td>
-                                    @Html.TextBoxFor(o => o.TestDate, "{0:yyyy/MM/dd}", new { @readonly = "readonly", @class = "date-picker OnlyEdit" })
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><h5>Receive Date</h5></td>
-                                <td>
-                                    @Html.TextBoxFor(o => o.ReceivedDate, "{0:yyyy/MM/dd}", new { @readonly = "readonly", @class = "date-picker OnlyEdit" })
-                                </td>
-                                <td><h5>Released Date</h5></td>
-                                <td>
-                                    @Html.TextBoxFor(o => o.ReleasedDate, "{0:yyyy/MM/dd}", new { @readonly = "readonly", @class = "date-picker OnlyEdit" })
-                                </td>
-                                <td><h5>Result</h5></td>
-                                <td>
-                                    @Html.TextBoxFor(o => o.Remark, "", new { @class = "OnlyEdit", @readonly = "readonly", @type = "number" })
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><h5>Technician</h5></td>
-                                <td>
-                                    @{
-                                        string Technicianname = string.Empty;
-                                        if (!string.IsNullOrWhiteSpace(Model.TechnicianName))
-                                        {
-                                            Technicianname = Model.TechnicianName + " Ext. " + Model.TechnicianExtNo;
+                    <div style="margin-top: 1em;">
+                        <table class="DataTable">
+                            <tbody>
+                                <tr>
+                                    <td style="width: 10vw;"><h5>Report No</h5></td>
+                                    <td style="width: 20vw;">
+                                        @Html.TextBoxFor(o => o.ReportNo, "", new { @readonly = "readonly" })
+                                    </td>
+                                    <td style="width: 10vw;"><h5>SP#</h5></td>
+                                    <td style="width: 20vw;">
+                                        @Html.TextBoxFor(o => o.POID, "")
+                                    </td>
+                                    <td style="width: 10vw;"><h5>Brand</h5></td>
+                                    <td style="width: 20vw;">
+                                        @Html.TextBoxFor(o => o.BrandID, "")
+                                        <input id="btnDetailBrandSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><h5>Season</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.SeasonID, "", new { @readonly = "readonly" })
+                                        <input id="btnDetailSeasonSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                    </td>
+                                    <td><h5>Style#</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.StyleID, "", new { @readonly = "readonly" })
+                                        <input id="btnDetailStyleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                    </td>
+                                    <td><h5>Article</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.Article, "", new { @class = "OnlyEdit", @readonly = "readonly" })
+                                        <input id="btnDetailArticleSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><h5>Artwork</h5></td>
+                                    <td>
+                                        <select class = "OnlyEdit" id="ArtworkTypeID" name="ArtworkTypeID" style="width:157px;">
+                                            @foreach (var item in (List<SelectListItem>)ViewBag.ArtworkTypeID_Source)
+                                            {
+                                                string selected = item.Text.Equals(Model.ArtworkTypeID) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td><h5>Remark</h5></td>
+                                    <td colspan="3">
+                                        @Html.TextBoxFor(o => o.Remark, "", new { @class = "OnlyEdit", @readonly = "readonly" })
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><h5>T1/SubconName</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.T1Subcon, "", new { @class = "OnlyEdit", @readonly = "readonly" })
+                                        @Html.TextBoxFor(o => o.T1SubconAbb, "", new { @class = "OnlyEdit", @readonly = "readonly" })
+                                        <input id="btnDetailSubconNameSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                    </td>
+                                    <td><h5>T2/SupplierName</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.T2Supplier, "", new { @class = "OnlyEdit", @readonly = "readonly" })
+                                        @Html.TextBoxFor(o => o.T2SupplierAbb, "", new { @class = "OnlyEdit", @readonly = "readonly" })
+
+                                        <input id="btnDetailSupplierNameSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                    </td>
+                                    <td><h5>Test Date</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.TestDate, "{0:yyyy/MM/dd}", new { @readonly = "readonly", @class = "date-picker OnlyEdit" })
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><h5>Receive Date</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.ReceivedDate, "{0:yyyy/MM/dd}", new { @readonly = "readonly", @class = "date-picker OnlyEdit" })
+                                    </td>
+                                    <td><h5>Released Date</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.ReleasedDate, "{0:yyyy/MM/dd}", new { @readonly = "readonly", @class = "date-picker OnlyEdit" })
+                                    </td>
+                                    <td><h5>Result</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.Remark, "", new { @class = "OnlyEdit", @readonly = "readonly", @type = "number" })
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><h5>Technician</h5></td>
+                                    <td>
+                                        @{
+                                            string Technicianname = string.Empty;
+                                            if (!string.IsNullOrWhiteSpace(Model.TechnicianName))
+                                            {
+                                                Technicianname = Model.TechnicianName + " Ext. " + Model.TechnicianExtNo;
+                                            }
+
                                         }
+                                        @Html.TextBoxFor(o => o.Technician, "", new { @class = "OnlyEdit", @readonly = "readonly" })
+                                        <input id="TechnicianName" readonly="readonly" value='@Technicianname'>
+                                        <input id="btnDetailTechnicianSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                    </td>
+                                    <td><h5>MR</h5></td>
+                                    <td>
+                                        @{
+                                            string MRname = string.Empty;
+                                            if (!string.IsNullOrWhiteSpace(Model.MRName))
+                                            {
+                                                MRname = Model.MRName + " Ext. " + Model.MRExtNo;
+                                            }
 
-                                    }
-                                    @Html.TextBoxFor(o => o.Technician, "", new { @class = "OnlyEdit", @readonly = "readonly" })
-                                    <input id="TechnicianName" readonly="readonly" value='@Technicianname'>
-                                    <input id="btnDetailTechnicianSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
-                                </td>
-                                <td><h5>MR</h5></td>
-                                <td>
-                                    @{
-                                        string MRname = string.Empty;
-                                        if (!string.IsNullOrWhiteSpace(Model.MRName))
-                                        {
-                                            MRname = Model.MRName + " Ext. " + Model.MRExtNo;
                                         }
+                                        @Html.TextBoxFor(o => o.MR, "", new { @class = "OnlyEdit", @readonly = "readonly" })
+                                        <input id="MRName" readonly="readonly" value='@MRname'>
+                                        <input id="btnDetailMRSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                    </td>
+                                    <td><h5>Last Edit Name</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.LastEditName, "", new { @readonly = "readonly" })
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="6"><h5 style="font-weight: 900;">Testing Method</h5></td>
+                                </tr>
+                                <tr>
+                                    <td><h5>Temperature (oC)</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.TestTemperature, "", new { @type = "number", @class = "OnlyEdit", @readonly = "readonly", @step = "0.01" })
 
-                                    }
-                                    @Html.TextBoxFor(o => o.MR, "", new { @class = "OnlyEdit", @readonly = "readonly" })
-                                    <input id="MRName" readonly="readonly" value='@MRname'>
-                                    <input id="btnDetailMRSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
-                                </td>
-                                <td><h5>Last Edit Name</h5></td>
-                                <td>
-                                    @Html.TextBoxFor(o => o.LastEditName, "", new { @readonly = "readonly" })
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="6"><h5 style="font-weight: 900;">Testing Method</h5></td>
-                            </tr>
-                            <tr>
-                                <td><h5>Temperature (oC)</h5></td>
-                                <td>
-                                    @Html.TextBoxFor(o => o.TestTemperature, "", new { @type = "number", @class = "OnlyEdit", @readonly = "readonly", @step = "0.01" })
+                                    </td>
+                                    <td><h5>Time (hrs)</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.TestTime, "", new { @type = "number", @class = "OnlyEdit", @readonly = "readonly", @step = "0.01" })
+                                    </td>
+                                    <td colspan="2"></td>
 
-                                </td>
-                                <td><h5>Time (hrs)</h5></td>
-                                <td>
-                                    @Html.TextBoxFor(o => o.TestTime, "", new { @type = "number", @class = "OnlyEdit", @readonly = "readonly", @step = "0.01" })
-                                </td>
-                                <td></td>
-                                <td>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="6"><h5>Manufacturer Test Condition (For Heat Transfer)</h5></td>
-                            </tr>
-                            <tr>
-                                <td colspan="2"><h5>Actual Plate Tempereture (˚C)</h5></td>
-                                <td>
-                                    @Html.TextBoxFor(o => o.HTPlate, "", new { @class = "OnlyEdit", @readonly = "readonly" })
+                                </tr>
+                                <tr>
+                                    <td colspan="6"><h5>Manufacturer Test Condition (For Heat Transfer)</h5></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2"><h5>Actual Plate Tempereture (˚C)</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.HTPlate, "", new { @class = "OnlyEdit", @readonly = "readonly" })
 
-                                </td>
-                                <td colspan="2"><h5>Pell Off (hot/cold)(peel)</h5></td>
-                                <td>
-                                    @Html.TextBoxFor(o => o.HTPellOff, "", new { @class = "OnlyEdit", @readonly = "readonly" })
-                                </td>
+                                    </td>
+                                    <td colspan="2"><h5>Pell Off (hot/cold)(peel)</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.HTPellOff, "", new { @class = "OnlyEdit", @readonly = "readonly" })
+                                    </td>
 
-                            </tr>
-                            <tr>
-                                <td colspan="2"><h5>Actual Flim Tempereture (˚C)</h5></td>
-                                <td>
-                                    @Html.TextBoxFor(o => o.HTFlim, "", new { @class = "OnlyEdit", @readonly = "readonly" })
+                                </tr>
+                                <tr>
+                                    <td colspan="2"><h5>Actual Flim Tempereture (˚C)</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.HTFlim, "", new { @class = "OnlyEdit", @readonly = "readonly" })
 
-                                </td>
-                                <td colspan="2"><h5>2nd Press (no reverse) (sec.)</h5></td>
-                                <td>
-                                    @Html.TextBoxFor(o => o.HT2ndPressnoreverse, "", new { @class = "OnlyEdit", @readonly = "readonly" })
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="2"><h5>Time (sec.)</h5></td>
-                                <td>
-                                    @Html.TextBoxFor(o => o.HTTime, "", new { @class = "OnlyEdit", @readonly = "readonly" })
+                                    </td>
+                                    <td colspan="2"><h5>2nd Press (no reverse) (sec.)</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.HT2ndPressnoreverse, "", new { @class = "OnlyEdit", @readonly = "readonly" })
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2"><h5>Time (sec.)</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.HTTime, "", new { @class = "OnlyEdit", @readonly = "readonly" })
 
-                                </td>
-                                <td colspan="2"><h5>2nd Press (reversed)(sec.)</h5></td>
-                                <td>
-                                    @Html.TextBoxFor(o => o.HT2ndPressreversed, "", new { @class = "OnlyEdit", @readonly = "readonly", @step = "0.1" })
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="2"><h5>Pressure(kg/cm2)</h5></td>
-                                <td>
-                                    @Html.TextBoxFor(o => o.HTPressure, "", new { @type = "number", @class = "OnlyEdit", @readonly = "readonly", @step = "0.1" })
+                                    </td>
+                                    <td colspan="2"><h5>2nd Press (reversed)(sec.)</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.HT2ndPressreversed, "", new { @class = "OnlyEdit", @readonly = "readonly", @step = "0.1" })
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2"><h5>Pressure(kg/cm2)</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.HTPressure, "", new { @type = "number", @class = "OnlyEdit", @readonly = "readonly", @step = "0.1" })
 
-                                </td>
-                                <td colspan="2"><h5>Cooling Time (min)</h5></td>
-                                <td>
-                                    @Html.TextBoxFor(o => o.HTCoolingTime, "", new { @class = "OnlyEdit", @readonly = "readonly" })
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                                    </td>
+                                    <td colspan="2"><h5>Cooling Time (min)</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.HTCoolingTime, "", new { @class = "OnlyEdit", @readonly = "readonly" })
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
 
-                <div style="margin-top: 1em; width: 92vw; overflow:auto;">
-                    <table class="DetailTable DataTable" style='width:271vw'>
-                        <thead>
-                            <tr>
+                    <div style="margin-top: 1em; width: 92vw; overflow:auto;">
+                        <table class="DetailTable DataTable" style='width:271vw'>
+                            <thead>
+                                <tr>
 
-                                <th><h4>TypeofPrint</h4></th>
-                                <th><h4>Design</h4></th>
-                                <th><h4>Artwork Color</h4></th>
-                                <th><h4>Accessory Ref No.</h4></th>
-                                <th><h4>Fabric Ref No.</h4></th>
-                                <th><h4>Fabric Color</h4></th>
-                                <th><h4>Result</h4></th>
-                                <th><h4>Remark</h4></th>
-                                <th><h4>Last Update</h4></th>
-                                <th><h4></h4></th>
-                            </tr>
+                                    <th><h4>TypeofPrint</h4></th>
+                                    <th><h4>Design</h4></th>
+                                    <th><h4>Artwork Color</h4></th>
+                                    <th><h4>Accessory Ref No.</h4></th>
+                                    <th><h4>Fabric Ref No.</h4></th>
+                                    <th><h4>Fabric Color</h4></th>
+                                    <th><h4>Result</h4></th>
+                                    <th><h4>Remark</h4></th>
+                                    <th><h4>Last Update</h4></th>
+                                    <th><h4></h4></th>
+                                </tr>
 
-                        </thead>
-                        <tbody>
-                            @for (int i = 0; i <= Model.MockupOven_Detail.Count - 1; i++)
-                            {
-                            <tr>
-                                <td style="width:10vw;">
-                                    @Html.Hidden("Seq", "", new { @idx = i })
-                                    @Html.TextBoxFor(o => Model.MockupOven_Detail[i].TypeofPrint, "", "")
-                                </td>
-                                <td style="width:10vw;">
-                                    @Html.TextBoxFor(o => Model.MockupOven_Detail[i].Design, "", "")
-                                </td>
-                                <td style="width:11vw;">
-                                    <div style="width:10vw;">
-                                        @Html.TextBoxFor(o => Model.MockupOven_Detail[i].ArtworkColorName, "", new { @style = "width:6vw", @idv = (i.ToString()), @class = "InputDetailArtworkColorNameSelectItem" })
-                                        <input id="btnDetailArtworkColorNameSelectItem" idv=@(i.ToString()) type="button" class="btnDetailSEQSelectItem OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
-                                    </div>
-                                </td>
-                                <td style="width:10vw;">
-                                    @Html.TextBoxFor(o => Model.MockupOven_Detail[i].AccessoryRefno, "", "")
-                                </td>
-                                <td style="width:10vw;">
-                                    @Html.TextBoxFor(o => Model.MockupOven_Detail[i].FabricRefNo, "", "")
-                                </td>
-                                <td style="width:10vw;">
-                                    @Html.TextBoxFor(o => Model.MockupOven_Detail[i].FabricColorName, "", "")
-                                </td>
-                                <td style="width:10vw;">
-                                    @Html.TextBoxFor(o => Model.MockupOven_Detail[i].Result, "", "")
-                                </td>
-                                <td style="width:10vw;">
-                                    @Html.TextBoxFor(o => Model.MockupOven_Detail[i].Remark, "", "")
-                                </td>
-                                <td style="width:10vw;">
-                                    @Html.TextBoxFor(o => Model.MockupOven_Detail[i].LastUpdate, "", "")
-                                </td>
-                                <td style="width:10vw;">
-                                    <div style="width:5vw;">
-                                        <img class="detailDelete" src="~/Image/Icon/Delete.png" width="30" />
-                                    </div>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i <= Model.MockupOven_Detail.Count - 1; i++)
+                                {
+                                    <tr>
+                                        <td style="width:10vw;">
+                                            @Html.Hidden("Seq", "", new { @idx = i })
+                                            @Html.TextBoxFor(o => Model.MockupOven_Detail[i].TypeofPrint, "", new { @class = "OnlyEdit", @readonly = "readonly" })
+                                        </td>
+                                        <td style="width:10vw;">
+                                            @Html.TextBoxFor(o => Model.MockupOven_Detail[i].Design, "", new { @class = "OnlyEdit", @readonly = "readonly" })
+                                        </td>
+                                        <td style="width:11vw;">
+                                            <div style="width:10vw;">
+                                                @Html.HiddenFor(o => Model.MockupOven_Detail[i].ArtworkColor)
+                                                @Html.TextBoxFor(o => Model.MockupOven_Detail[i].ArtworkColorName, "", new { @style = "width:10vw", @idv = (i.ToString()), @class = "InputDetailArtworkColorSelectItem" })
+                                                <input id="btnDetailArtworkColorSelectItem" idv=@(i.ToString()) type="button" class="btnDetailArtworkColorSelectItem OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                            </div>
+                                        </td>
+                                        <td style="width:10vw;">
+                                            <select class="OnlyEdit">
+                                                @foreach (var item in (List<SelectListItem>)ViewBag.AccessoryRefNo_Source)
+                                                {
+                                                    string selected = item.Text.Equals(Model.MockupOven_Detail[i].AccessoryRefno) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>
+                                        </td>
+                                        <td style="width:10vw;">
+                                            @Html.TextBoxFor(o => Model.MockupOven_Detail[i].FabricRefNo, "", new { @class = "OnlyEdit", @readonly = "readonly" })
+                                        </td>
+                                        <td style="width:10vw;">
+                                            @Html.TextBoxFor(o => Model.MockupOven_Detail[i].FabricColorName, "", new { @class = "OnlyEdit", @readonly = "readonly" })
+                                        </td>
+                                        <td style="width:10vw;">
+                                            <select class="OnlyEdit">
+                                                @foreach (var item in (List<SelectListItem>)ViewBag.ResultList)
+                                                {
+                                                    string selected = item.Text.Equals(Model.MockupOven_Detail[i].Result) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>
 
-                                </td>
+                                        </td>
+                                        <td style="width:10vw;">
+                                            @Html.TextBoxFor(o => Model.MockupOven_Detail[i].Remark, "", new { @class = "OnlyEdit", @readonly = "readonly" })
+                                        </td>
+                                        <td style="width:10vw;">
+                                            @Html.DisplayFor(o => Model.MockupOven_Detail[i].LastUpdate, "","")
+                                        </td>
+                                        <td style="width:10vw;">
+                                            <div style="width:5vw;">
+                                                <img class="detailDelete" src="~/Image/Icon/Delete.png" width="30" />
+                                            </div>
 
-                            </tr>
-                            }
-                        </tbody>
-                    </table>
+                                        </td>
+
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 }
 
 <script type="text/javascript">
@@ -485,20 +518,21 @@
             $(".rowHeader input[type='button']").unbind('click').addClass("IsEditModeQuery");
             $('#btnQuery').addClass("IsEditModeQuery");
 
-            $("#Edit, #Delete, #Picture").removeClass("IsEditMode");
+            $("#Edit, #Delete, #Picture, #SendMail, #PDF").removeClass("IsEditMode");
             $('#Save, #Undo, #New').addClass("IsEditMode");
 
             if (EditType == "New") {
-                $(".DetailTable input:not(#Detail_ReportNo,#Detail_LastEditName), .DetailTable select").removeAttr("disabled");
-                $(".DetailTable input:not(#Detail_ReportNo,#Detail_LastEditName), .DetailTable select").removeAttr("readonly");
+                $(".DataTable input:not(#Detail_ReportNo,#Detail_LastEditName), .DataTable select").removeAttr("disabled");
+                $(".DataTable input:not(#Detail_ReportNo,#Detail_LastEditName), .DataTable select").removeAttr("readonly");
             }
             else {
                 $(".OnlyEdit").removeAttr("disabled").removeAttr("readonly");
             }
+            $(".DetailTable img").removeClass('display-None');
 
-            $(".DetailTable img").addClass('display-None');
 
             DetailButtonBind();
+            DetailDetailButtonBind();
             $('#btnQuery').on('click', function () {
                 return false;
             });
@@ -509,15 +543,18 @@
             $(".rowHeader input[type='button']").removeClass("IsEditModeQuery");
 
             if ($('#ReportNo').val() != undefined && $('#ReportNo').val() != '') {
-                $("#Edit, #Delete, #Picture").addClass("IsEditMode");
+                $("#Edit, #Delete, #Picture, #PDF").addClass("IsEditMode");
             }
 
             $('#btnNew').removeClass("IsEditModeQuery");
             $('#btnQuery').unbind('click').removeClass("IsEditModeQuery");
             $('#Save, #Undo, #New').unbind('click').removeClass("IsEditMode");
-            $(".DetailTable input, .DetailTable select").attr("disabled", "disabled");
-            $(".DetailTable img").removeClass('display-None');
+            $(".DataTable input, .DataTable select").attr("disabled", "disabled");
+
+            $(".DetailTable img").addClass('display-None');
             QueryButtonBind();
+
+            $("#SendMail").addClass("IsEditMode");
 
             $('#btnQuery').on('click', function () {
                 if (EditType != "New") {
@@ -533,7 +570,7 @@
 
         function Clear() {
             if (EditType == "New") {
-                $(".DetailTable input[type='text'], .DetailTable select").val('');
+                $(".DataTable input[type='text'], .DataTable select").val('');
             }
         }
 
@@ -552,6 +589,8 @@
                 EditType = "New";
                 $("#Save").attr("name", "Action:New");
                 IsEditModeChange();
+                GetArtworkTypeIDList();
+
             });
 
             $('#Save').on('click', function (e) {
@@ -563,13 +602,6 @@
                     ErrMsg += "Style, Brand, Season and Article cannot be empty<br/>";
                 }
 
-                //檢查TestDate, {PullForceUnit}, Sec, Fabric Ref#, Accessory Ref# 不可為空
-                if ($('#Detail_TestDate').val() == '' || $('#Detail_PullForceUnit').val() == '' || $('#Detail_Time').val() == ''
-                    || $('#Detail_FabricRefno').val() == '' || $('#Detail_AccRefno').val() == ''
-                    || $('#Detail_TestDate').val() == undefined || $('#Detail_PullForceUnit').val() == undefined || $('#Detail_Time').val() == undefined
-                    || $('#Detail_FabricRefno').val() == undefined || $('#Detail_AccRefno').val() == undefined) {
-                    ErrMsg += "TestDate, Newton, Sec, Fabric Ref# and Accessory Ref# cannot be empty<br/>";
-                }
 
                 if (ErrMsg != "") {
                     e.preventDefault();
@@ -602,13 +634,30 @@
                 }
             });
 
+           $('#SendMail').click(function () {
+            var para = "?TO=jeff.Yeh@sportscity.com.tw";
+            window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=650,height=400');
+                    });
+
+
             $('#Picture').on('click', function () {
                 if ($('#Detail_ReportNo').val() != null && $('#Detail_ReportNo').val() != "") {
                     var para = "?EditMode=" + EditMode + "&Table=PullingTest&BrforeColumn=TestBeforePicture&AfterColumn=TestAfterPicture&PKey_1=ReportNo&PKey_1_Val=" + $('#Detail_ReportNo').val();
                     window.open('@Url.Action("PictureList","PublicWondow",new{Area=""})' + para, 'Article', config = 'toolbar=no,status=no,location=no,width=400,height=650');
                 }
             });
+
+            $('#New').unbind('click').on('click', function () {
+
+                if (!EditMode) {
+                    return;
+                }
+
+
+                AddDetailRow();
+            });
         }
+
 
         function QueryButtonBind() {
             $('#btnBrandSelectItem').on('click', function () {
@@ -653,7 +702,7 @@
                     async: true,
                     success: function (data) {
                         if (data.ErrMsg != "") {
-                            $("#" + name + "BrandID").val('');
+                            $("#POID").val('');
                             msg.WithError(data.ErrMsg);
                         }
                         else
@@ -686,6 +735,11 @@
 
             $("#" + name + "BrandID").blur(function () {
                 if ($(this).val() == '') {
+
+                    if (name == '') {
+                        GetArtworkTypeIDList();
+                    }
+
                     return;
                 }
 
@@ -700,6 +754,11 @@
                             $("#" + name +"BrandID").val('');
                             msg.WithError('Brand Not Found');
                         }
+
+                        if (name == '') {
+                            GetArtworkTypeIDList();
+                            GetAccessoryRefNoList();
+                        }
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
                         console.log(xhr.responseText);
@@ -709,6 +768,11 @@
 
             $("#" + name + "SeasonID").blur(function () {
                 if ($(this).val() == '') {
+
+                    if (name == '') {
+                        GetArtworkTypeIDList();
+                    }
+
                     return;
                 }
 
@@ -729,6 +793,11 @@
                             $("#" + name+"SeasonID").val('');
                             msg.WithError('Season Not Found');
                         }
+
+                        if (name == '') {
+                            GetArtworkTypeIDList();
+                            GetAccessoryRefNoList();
+                        }
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
                         console.log(xhr.responseText);
@@ -738,6 +807,11 @@
 
             $("#" + name + "StyleID").blur(function () {
                 if ($(this).val() == '') {
+
+                    if (name == '') {
+                        GetArtworkTypeIDList();
+                    }
+
                     return;
                 }
 
@@ -758,6 +832,11 @@
                         if (data.length == 0) {
                             $("#" + name+"StyleID").val('');
                             msg.WithError('Style Not Found');
+                        }
+
+                        if (name == '') {
+                            GetArtworkTypeIDList();
+                            GetAccessoryRefNoList();
                         }
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
@@ -948,7 +1027,27 @@
 
             blurEvent("");
         }
+        function DetailDetailButtonBind() {
 
+            $('.btnDetailArtworkColorSelectItem').unbind('click').on('click', function () {
+                var TargetID = $(this).attr("idv");
+                var para = "?BrandID=" + $('#BrandID').val() + "&TargetID=" + TargetID;
+                window.open('@Url.Action("ColorList", "PublicWondow",new{Area=""})' + para, '', config = 'toolbar=no,status=no,location=no,width=1000,height=650');
+            });
+
+            $('.detailDelete').unbind('click').on('click', function () {
+                var t = $(this);
+
+                msg.WithConfirm('Do you want to delete the data ?',
+                    function () {
+                        t.parents().parents('tr').remove();
+                        msg.WithSuccess("Delete Success");
+                    }, null);
+            });
+
+
+
+         }
         function checkValue(type,name) {
             switch (type) {
                 case 'season': //查詢明細共用
@@ -977,6 +1076,42 @@
                     break;
             }
 
+    }
+
+     function AddDetailRow() {
+
+        var BrandID = $('#BrandID').val();
+        var SeasonID = $('#SeasonID').val();
+        var StyleID = $('#StyleID').val();
+
+        if (BrandID == "" || SeasonID== "" || StyleID=="")
+        {
+            return;
+        }
+
+
+            var lastNO;
+            if ($('.DetailTable > tbody > tr').length > 0) {
+                lastNO = parseInt($('.DetailTable > tbody > tr:last-child > td > input[type="hidden"] ').attr('idx')) + 1;
+            }
+            else {
+                lastNO = 0;
+            }
+
+            $.ajax({
+                url: "@Url.Action("AddDetailRow", "MockupOvenTest", new { Area = "BulkFGT" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ lastNO: lastNO, BrandID: BrandID, SeasonID: SeasonID, StyleID: StyleID}),
+                async: false,
+                success: function (data) {
+                    $('.DetailTable > tbody').append(data);
+                    DetailDetailButtonBind();
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
         }
 
         function GetBrandList(data) {
@@ -1034,8 +1169,82 @@
             $('#MR').val(data.ID);
             $('#MRName').val(data.Name + " Ext. " + data.ExtNo);
 
-        }
+    }
 
+        function GetColor(data, TargetID) {
+
+            $("#MockupOven_Detail_" + TargetID +"__ArtworkColorName").val(data[0].ID);
+                }
+
+
+
+        function GetArtworkTypeIDList() {
+        $('#ArtworkTypeID').empty();
+
+            var BrandID = $('#BrandID').val();
+            var SeasonID = $('#SeasonID').val();
+            var StyleID = $('#StyleID').val();
+
+        $.ajax({
+            url: '@Url.Action("GetArtworkTypeID_Source", "MockupOvenTest")',
+            type: 'POST',
+            data: jQuery.param({ BrandID: BrandID, SeasonID: SeasonID, StyleID: StyleID }),
+            global: false,
+            success: function (response) {
+                if (response) {
+                    $.each(response, function (idx, obj) {
+                        $('#ArtworkTypeID').append($('<option></option>').val(obj.Value).html(obj.Text));
+                    });
+                }
+            },
+            error: function (xhr, status) {
+                msg.WithError("Get View fail:" + xhr.responseText + " " + xhr.status);
+            }
+        });
+    }
+
+     function GetAccessoryRefNoList() {
+        $('#ArtworkTypeID').empty();
+
+        var BrandID = $('#BrandID').val();
+        var SeasonID = $('#SeasonID').val();
+        var StyleID = $('#StyleID').val();
+
+         if (BrandID == "" || SeasonID == "" || StyleID == "") {
+             return;
+         }
+
+         $('.DetailTable > tbody > tr').each(function (index, value) {
+
+
+                 $("#MockupOven_Detail_" + index + "__AccessoryRefNo_Source").empty();
+
+         });
+
+
+        $.ajax({
+            url: '@Url.Action("GetAccessoryRefNo_Source", "MockupOvenTest")',
+            type: 'POST',
+            data: jQuery.param({ BrandID: BrandID, SeasonID: SeasonID, StyleID: StyleID }),
+            global: false,
+            success: function (response) {
+                if (response) {
+
+                    $('.DetailTable > tbody > tr').each(function (index, value) {
+                        $.each(response, function (idx, obj) {
+
+                            $("#MockupOven_Detail_" + index + "__AccessoryRefNo_Source").append($('<option></option>').val(obj.Value).html(obj.Text));
+                        });
+                    });
+
+
+                }
+            },
+            error: function (xhr, status) {
+                msg.WithError("Get View fail:" + xhr.responseText + " " + xhr.status);
+            }
+        });
+    }
 
 
 

@@ -37,6 +37,9 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(model.ReportNo_Source);
             ViewBag.ResultList = model.Result_Source;
+            ViewBag.ArtworkTypeID_Source = new SetListItem().ItemListBinding(new List<string>());
+            ViewBag.AccessoryRefNo_Source = new SetListItem().ItemListBinding(new List<string>());
+
             return View(model);
         }
 
@@ -45,13 +48,19 @@ namespace Quality.Areas.BulkFGT.Controllers
         [MultipleButton(Name = "action", Argument = "Query")]
         public ActionResult Query(MockupOven_ViewModel Req)
         {
+            //MockupOven_Request MockupOven = new MockupOven_Request()
+            //{ ReportNo = "PHOV180800003" };
+
+
             MockupOven_Request MockupOven = new MockupOven_Request()
-            { ReportNo = "PHOV180800003" };
+            { BrandID = Req.Request.BrandID, SeasonID = Req.Request.SeasonID, StyleID = Req.Request.StyleID };
 
             var model = _MockupOvenService.GetMockupOven(MockupOven);
             model.Request = new MockupOven_Request();
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(model.ReportNo_Source);
             ViewBag.ResultList = model.Result_Source; ;
+            ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(Req.Request.BrandID, Req.Request.SeasonID, Req.Request.StyleID);
+            ViewBag.AccessoryRefNo_Source = GetAccessoryRefNoList(Req.Request.BrandID, Req.Request.SeasonID, Req.Request.StyleID);
             return View("Index", model);
         }
 
@@ -61,7 +70,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             string BrandID = string.Empty;
             string SeasonID = string.Empty;
             string StyleID = string.Empty;
-            string Article =string.Empty;
+            string Article = string.Empty;
 
             Orders order = new Orders();
             order.ID = POID;
@@ -89,7 +98,80 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             }
 
-            return Json(new { ErrMsg = "", BrandID= BrandID, SeasonID= SeasonID, StyleID= StyleID, Article= Article });
+            return Json(new { ErrMsg = "", BrandID = BrandID, SeasonID = SeasonID, StyleID = StyleID, Article = Article });
+        }
+
+
+        [HttpPost]
+        public ActionResult GetArtworkTypeID_Source(string BrandID, string SeasonID, string StyleID)
+        {
+            return Json(GetArtworkTypeIDList(BrandID, SeasonID, StyleID));
+        }
+
+        private List<SelectListItem> GetArtworkTypeIDList(string BrandID, string SeasonID, string StyleID)
+        {
+            StyleArtwork_Request styleArtwork_Request = new StyleArtwork_Request()
+            {
+                BrandID = BrandID,
+                SeasonID = SeasonID,
+                StyleID = StyleID,
+            };
+            return _MockupOvenService.GetArtworkTypeID(styleArtwork_Request);
+        }
+
+
+        public ActionResult GetAccessoryRefNo_Source(string BrandID, string SeasonID, string StyleID)
+        {
+            return Json(GetAccessoryRefNoList(BrandID, SeasonID, StyleID));
+        }
+
+        private List<SelectListItem> GetAccessoryRefNoList(string BrandID, string SeasonID, string StyleID)
+        {
+            AccessoryRefNo_Request AccessoryRefNo_Request = new AccessoryRefNo_Request()
+            {
+                BrandID = BrandID,
+                SeasonID = SeasonID,
+                StyleID = StyleID,
+            };
+            return _MockupOvenService.GetAccessoryRefNo(AccessoryRefNo_Request);
+        }
+
+
+        [HttpPost]
+        public ActionResult AddDetailRow(int lastNO,string BrandID, string SeasonID, string StyleID)
+        {
+            List<SelectListItem>  AccessoryRefNo_Source = GetAccessoryRefNoList(BrandID, SeasonID, StyleID);
+            MockupOven_ViewModel model = new MockupOven_ViewModel();
+
+            int i = lastNO;
+            string html = "";
+            html += "<tr>";
+            html += "<td><input id='Seq' idx=" + i + " type ='hidden'></input> <input id='MockupOven_Detail_" + i + "__TypeofPrint' name='MockupOven_Detail[" + i + "].TypeofPrint' class='OnlyEdit' type='text' value=''></td>";
+            html += "<td><input id='MockupOven_Detail_" + i + "__Design' name='MockupOven_Detail[" + i + "].Design' type='text' ></td>"; 
+            html += "<td style='width: 11vw;'><div style='width:10vw;'><input id='MockupOven_Detail_" + i + "__ArtworkColor' name='MockupOven_Detail[" + i + "].ArtworkColor' idv='" + i.ToString() + "' class ='InputDetailArtworkColorSelectItem' type='text'  style = 'width: 10vw'> <input id='btnDetailArtworkColorSelectItem'  idv='" + i.ToString() + "' type='button' class='btnDetailArtworkColorSelectItem OnlyEdit site-btn btn-blue' style='margin: 0; border: 0; ' value='...' /></div></td>";
+            html += "<td><select id='MockupOven_Detail_" + i + "__AccessoryRefNo_Source' name='MockupOven_Detail[" + i + "].AccessoryRefNo_Source'><option value=''></option>"; 
+            foreach (var val in AccessoryRefNo_Source)
+            {
+                html += "<option value='" + val.Value + "'>" + val.Text + "</option>";
+            }
+            html += "</select></td>";
+            html += "<td><input id='MockupOven_Detail_" + i + "__FabricRefNo' name='MockupOven_Detail[" + i + "].FabricRefNo' type='text' ></td>"; 
+            html += "<td><input id='MockupOven_Detail_" + i + "__FabricColorName' name='MockupOven_Detail[" + i + "].FabricColorName' type='text' ></td>";
+
+            html += "<td><select  id='MockupOven_Detail_" + i + "__Result' name='MockupOven_Detail[" + i + "].Result' ><option value=''></option>"; 
+            foreach (var val in model.Result_Source)
+            {
+                html += "<option value='" + val.Value + "'>" + val.Text + "</option>";
+            }
+            html += "</select></td>";
+
+            html += "<td><input id='MockupOven_Detail_" + i + "__SCIRefno' name='MockupOven_Detail[" + i + "].Remark' type='text' ></td>"; 
+            html += "<td><input id='MockupOven_Detail_" + i + "__ColorID' name='MockupOven_Detail[" + i + "].LastUpdate' type='text'  readonly='readonly' ></td>";
+
+            html += "<td><img  class='detailDelete' src='/Image/Icon/Delete.png' width='30'></td>";
+            html += "</tr>";
+
+            return Content(html);
         }
     }
 }
