@@ -205,7 +205,14 @@ namespace Quality.Areas.BulkFGT.Controllers
         [HttpPost]
         public ActionResult AddDetailRow(int lastNO,string BrandID, string SeasonID, string StyleID)
         {
-            List<SelectListItem>  AccessoryRefNo_Source = GetAccessoryRefNoList(BrandID, SeasonID, StyleID);
+            List<SelectListItem> AccessoryRefNo_Source= new SetListItem().ItemListBinding(new List<string>()); 
+
+            if (!string.IsNullOrWhiteSpace(BrandID) && !string.IsNullOrWhiteSpace(SeasonID) && !string.IsNullOrWhiteSpace(StyleID))
+            {
+              AccessoryRefNo_Source = GetAccessoryRefNoList(BrandID, SeasonID, StyleID);
+            }
+
+ 
             MockupOven_ViewModel model = new MockupOven_ViewModel();
 
             int i = lastNO;
@@ -226,7 +233,15 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "<td><select  id='MockupOven_Detail_" + i + "__Result' name='MockupOven_Detail[" + i + "].Result' class='OnlyEdit result' onchange='changeResult()' style='width: 157px;' ><option value=''></option>"; 
             foreach (var val in model.Result_Source)
             {
-                html += "<option value='" + val.Value + "'>" + val.Text + "</option>";
+                if (val.Value == "Pass")
+                {
+                    html += "<option value='" + val.Value + "' SELECTED>" + val.Text + "</option>";
+                }
+                else
+                {
+                    html += "<option value='" + val.Value + "'>" + val.Text + "</option>";
+                }
+
             }
             html += "</select></td>";
 

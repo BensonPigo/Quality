@@ -147,7 +147,7 @@
             </div>
             <div class="breadcrumb queryHeader" style="justify-content: flex-end;">
                 <h4 style="margin-right: 1em;color:white">Report No</h4>
-                @Html.DropDownList("ReportNo", (List<SelectListItem>)ViewBag.ReportNo_Source, null, new { @class = "form-control" })
+                @Html.DropDownList("QueryReportNo", (List<SelectListItem>)ViewBag.ReportNo_Source, null, new { @class = "form-control" })
                 <input id="btnNew" type="button" class="button" style="margin-left:1em;border:0;" name="New" value="New">
             </div>
         </header>
@@ -298,7 +298,7 @@
                                     <td><h5>T1/SubconName</h5></td>
                                     <td>
                                         <div class="input-group">
-                                            @Html.TextBoxFor(o => o.T1Subcon, "", new { @class = "OnlyEdit" })
+                                            @Html.TextBoxFor(o => o.T1Subcon, "", new { @class = "OnlyEdit" ,@style= "width: 5vw" })
                                             @Html.TextBoxFor(o => o.T1SubconAbb, "", new { @readonly = "readonly" })
                                             <input id="btnDetailSubconNameSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
                                         </div>
@@ -306,7 +306,7 @@
                                     <td><h5>T2/SupplierName</h5></td>
                                     <td>
                                         <div class="input-group">
-                                            @Html.TextBoxFor(o => o.T2Supplier, "", new { @class = "OnlyEdit"})
+                                            @Html.TextBoxFor(o => o.T2Supplier, "", new { @class = "OnlyEdit", @style = "width: 5vw" })
                                             @Html.TextBoxFor(o => o.T2SupplierAbb, "", new { @class = "OnlyEdit" })
 
                                             <input id="btnDetailSupplierNameSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
@@ -557,6 +557,7 @@
             }
             else {
                 $(".OnlyEdit").removeAttr("disabled").removeAttr("readonly");
+                $("#ArtworkTypeID").attr("disabled", "disabled");
             }
 
             $(".DetailTable img").removeClass('display-None');
@@ -581,11 +582,9 @@
             QueryButtonBind();
 
             if ($('#ReportNo').val() != undefined && $('#ReportNo').val() != '') {
-                $("#Edit, #Delete, #Picture, #PDF").addClass("IsEditMode");
+                $("#Edit, #Delete, #Picture, #PDF,#SendMail").addClass("IsEditMode");
             }
 
-
-            $("#SendMail").addClass("IsEditMode");
             $(".DataTable input, .DataTable select").attr("disabled", "disabled");
             $('.DetailTable input,.DetailTable select').attr("disabled");
             $(".DetailTable img").addClass('display-None');
@@ -1143,10 +1142,6 @@
         var SeasonID = $('#SeasonID').val();
         var StyleID = $('#StyleID').val();
 
-        if (BrandID == "" || SeasonID== "" || StyleID=="")
-        {
-            return;
-        }
 
 
             var lastNO;
