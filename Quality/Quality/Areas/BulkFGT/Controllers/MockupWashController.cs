@@ -31,7 +31,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 MockupWash_Detail = new List<MockupWash_Detail_ViewModel>(),
                 ReportNo_Source = new List<string>(),
                 Request = new MockupWash_Request(),
-
+                TestingMethod_Source = new List<SelectListItem>()
             };
 
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(model.ReportNo_Source);

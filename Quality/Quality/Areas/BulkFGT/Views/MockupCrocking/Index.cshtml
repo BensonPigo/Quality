@@ -11,6 +11,11 @@
 <link href="~/ThirdParty/plugins/jquery-ui/jquery-ui.css" rel="stylesheet" />
 
 <style type="text/css">
+    tr.row-name
+    {
+        color:black;
+    }
+
     .input-group {
         display: flex
     }
@@ -305,7 +310,7 @@
                                     <td><h5>T1/SubconName</h5></td>
                                     <td>
                                         <div class="input-group">
-                                            @Html.TextBoxFor(o => o.T1Subcon, "", new { @class = "OnlyEdit" })
+                                            @Html.TextBoxFor(o => o.T1Subcon, "", new { @class = "OnlyEdit", style="width:5vw" })
                                             @Html.TextBoxFor(o => o.T1SubconAbb, "", new { @readonly = "readonly" })
                                             <input id="btnT1SubconSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
                                         </div>
@@ -342,7 +347,7 @@
                                             }
                                         }
                                         <div class="input-group">
-                                            @Html.TextBoxFor(o => o.Technician, "", new { @class = "OnlyEdit" })
+                                            @Html.TextBoxFor(o => o.Technician, "", new { @class = "OnlyEdit", style = "width:5vw" })
                                             <input type="text" id="TechnicianDesc" readonly="readonly" value="@nameValue" />
                                             <input id="btnTechnicianSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
                                         </div>
@@ -358,7 +363,7 @@
 
                                         }
                                         <div class="input-group">
-                                            @Html.TextBoxFor(o => o.MR, "", new { @class = "OnlyEdit" })
+                                            @Html.TextBoxFor(o => o.MR, "", new { @class = "OnlyEdit", style = "width:5vw" })
                                             <input type="text" id="MRDesc" readonly="readonly" value="@nameValue" />
                                             <input id="btnMRSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
                                         </div>
@@ -416,7 +421,7 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <select id="MockupCrocking_Detail_@{@i}__DryScale" name="Model.MockupCrocking_Detail[@i].DryScale" class="NotEdit" style="width:157px;">
+                                        <select id="MockupCrocking_Detail_@{@i}__DryScale" name="Model.MockupCrocking_Detail[@i].DryScale" style="width:157px;">
                                             @foreach (var item in (List<SelectListItem>)Model.Scale_Source)
                                             {
                                                 string selected = item.Text.Equals(Model.MockupCrocking_Detail[i].DryScale) ? "selected" : "";
@@ -425,7 +430,7 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <select id="MockupCrocking_Detail_@{@i}__WetScale" name="Model.MockupCrocking_Detail[@i].WetScale" class="NotEdit" style="width:157px;">
+                                        <select id="MockupCrocking_Detail_@{@i}__WetScale" name="Model.MockupCrocking_Detail[@i].WetScale" style="width:157px;">
                                             @foreach (var item in (List<SelectListItem>)Model.Scale_Source)
                                             {
                                                 string selected = item.Text.Equals(Model.MockupCrocking_Detail[i].WetScale) ? "selected" : "";
@@ -494,7 +499,7 @@
 
             $("#Edit, #Delete, #Picture, #SendMail, #PDF").unbind('click').removeClass("IsEditMode");
             $('#Save, #Undo, #New').addClass("IsEditMode");
-            $('.DetailTable input,.DetailTable select:not(.NotEdit)').removeAttr("disabled");
+            $('.DetailTable input,.DetailTable select').removeAttr("disabled");
 
             if (EditType == "New") {
                 $(".DataTable input:not(#ReportNo,#LastEditName), .DataTable select").removeAttr("disabled");
@@ -521,10 +526,8 @@
             QueryButtonBind();
 
             if ($('#ReportNo').val() != undefined && $('#ReportNo').val() != '') {
-                $("#Edit, #Delete, #Picture, #PDF").addClass("IsEditMode");
+                $("#Edit, #Delete, #Picture, #PDF, #SendMail").addClass("IsEditMode");
             }
-
-            $("#SendMail").addClass("IsEditMode");
 
             $(".DataTable input, .DataTable select").attr("disabled", "disabled");
             $('.DetailTable input,.DetailTable select').attr("disabled");
@@ -1023,7 +1026,7 @@
     }
 
     function GetLocalSupp(data) {
-        $('#T1SubconA').val(data.ID);
+        $('#T1Subcon').val(data.ID);
         $('#T1SubconAbb').val(data.Name);
     }
 
@@ -1113,7 +1116,7 @@
                 $('.DetailTable > tbody').append(data);
 
                 DetailButtonBind();
-                $('.date-picker').datepicker({ changeYear: true, changeMonth: true, currentText: "Now" });
+                changeResult();
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 console.log(xhr.responseText);

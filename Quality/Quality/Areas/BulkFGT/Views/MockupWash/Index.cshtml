@@ -370,7 +370,18 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td colspan="6"><h5 style="font-weight: 900;">Testing Method</h5></td>
+                                    <td><h5>Other Method</h5></td>
+                                    <td>@Html.CheckBoxFor(o => o.OtherMethod, new { @onchange= "changeOtherMethod()" })</td>
+                                    <td colspan="4">
+                                        @Html.TextBoxFor(o => o.TestingMethod)
+                                        <select id="MethodID" name="MethodID" style="width:70%;">
+                                            @foreach (var item in (List<SelectListItem>)Model.TestingMethod_Source)
+                                            {
+                                                string selected = item.Text.Equals(Model.MethodID) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        </select>
+                                    </td>
                                 </tr>
 
                                 <tr>
@@ -521,6 +532,7 @@
 
             EditMode = false;
             IsEditModeChange();
+            changeOtherMethod();
         });
 
     function IsEditModeChange() {
@@ -1149,6 +1161,7 @@
                 success: function (data) {
                     $('.DetailTable > tbody').append(data);
                     DetailDetailButtonBind();
+                    changeResult();
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     console.log(xhr.responseText);
@@ -1313,7 +1326,19 @@
             $('#Result').val(result);
         }
 
-
+    function changeOtherMethod() {
+        var isChecked = $('#OtherMethod').is(":checked");
+        $('#TestingMethod').hide();
+        $('#MethodID').hide();
+        if (isChecked) {
+            $('#TestingMethod').val('');
+            $('#MethodID').show();
+        }
+        else {
+            $('#MethodID').val('');
+            $('#TestingMethod').show();
+        }
+    }
 
 
 </script>

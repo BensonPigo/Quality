@@ -1161,6 +1161,7 @@
                 success: function (data) {
                     $('.DetailTable > tbody').append(data);
                     DetailDetailButtonBind();
+                    changeResult();
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     console.log(xhr.responseText);
