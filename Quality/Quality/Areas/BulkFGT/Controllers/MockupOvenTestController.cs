@@ -147,28 +147,28 @@ namespace Quality.Areas.BulkFGT.Controllers
             string html = "";
             html += "<tr>";
             html += "<td><input id='Seq' idx=" + i + " type ='hidden'></input> <input id='MockupOven_Detail_" + i + "__TypeofPrint' name='MockupOven_Detail[" + i + "].TypeofPrint' class='OnlyEdit' type='text' value=''></td>";
-            html += "<td><input id='MockupOven_Detail_" + i + "__Design' name='MockupOven_Detail[" + i + "].Design' type='text' ></td>"; 
-            html += "<td style='width: 11vw;'><div style='width:10vw;'><input id='MockupOven_Detail_" + i + "__ArtworkColor' name='MockupOven_Detail[" + i + "].ArtworkColor' idv='" + i.ToString() + "' class ='InputDetailArtworkColorSelectItem' type='text'  style = 'width: 10vw'> <input id='btnDetailArtworkColorSelectItem'  idv='" + i.ToString() + "' type='button' class='btnDetailArtworkColorSelectItem OnlyEdit site-btn btn-blue' style='margin: 0; border: 0; ' value='...' /></div></td>";
-            html += "<td><select id='MockupOven_Detail_" + i + "__AccessoryRefNo_Source' name='MockupOven_Detail[" + i + "].AccessoryRefNo_Source'><option value=''></option>"; 
+            html += "<td><input id='MockupOven_Detail_" + i + "__Design' name='MockupOven_Detail[" + i + "].Design' class='OnlyEdit' type='text' ></td>"; 
+            html += "<td><div class='input-group'><input id='MockupOven_Detail_" + i + "__ArtworkColor' name='MockupOven_Detail[" + i + "].ArtworkColor'  class ='AFColor' type='hidden'><input id='MockupOven_Detail_" + i + "__ArtworkColorName' name='MockupOven_Detail[" + i + "].ArtworkColorName'  class ='AFColor' type='text' readonly='readonly'> <input  idv='" + i.ToString() + "' type='button' class='btnArtworkColorItem  site-btn btn-blue' style='margin: 0; border: 0; ' value='...' /></div></td>";
+            html += "<td><select id='MockupOven_Detail_" + i + "__AccessoryRefNo_Source' name='MockupOven_Detail[" + i + "].AccessoryRefNo_Source'  class='OnlyEdit' style='width: 157px;'><option value=''></option>"; 
             foreach (var val in AccessoryRefNo_Source)
             {
                 html += "<option value='" + val.Value + "'>" + val.Text + "</option>";
             }
             html += "</select></td>";
-            html += "<td><input id='MockupOven_Detail_" + i + "__FabricRefNo' name='MockupOven_Detail[" + i + "].FabricRefNo' type='text' ></td>"; 
-            html += "<td><input id='MockupOven_Detail_" + i + "__FabricColorName' name='MockupOven_Detail[" + i + "].FabricColorName' type='text' ></td>";
+            html += "<td><input id='MockupOven_Detail_" + i + "__FabricRefNo' name='MockupOven_Detail[" + i + "].FabricRefNo' type='text' ></td>";
+            html += "<td><div class='input-group'><input id='MockupOven_Detail_" + i + "__FabricColor' name='MockupOven_Detail[" + i + "].FabricColor'  class ='AFColor' type='hidden'><input id='MockupOven_Detail_" + i + "__FabricColorName' name='MockupOven_Detail[" + i + "].FabricColorName'  class ='AFColor' type='text' readonly='readonly'> <input  idv='" + i.ToString() + "' type='button' class='btnFabricColorItem  site-btn btn-blue' style='margin: 0; border: 0; ' value='...' /></div></td>";
 
-            html += "<td><select  id='MockupOven_Detail_" + i + "__Result' name='MockupOven_Detail[" + i + "].Result' ><option value=''></option>"; 
+            html += "<td><select  id='MockupOven_Detail_" + i + "__Result' name='MockupOven_Detail[" + i + "].Result' class='OnlyEdit result' onchange='changeResult()' style='width: 157px;' ><option value=''></option>"; 
             foreach (var val in model.Result_Source)
             {
                 html += "<option value='" + val.Value + "'>" + val.Text + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><input id='MockupOven_Detail_" + i + "__SCIRefno' name='MockupOven_Detail[" + i + "].Remark' type='text' ></td>"; 
+            html += "<td><input id='MockupOven_Detail_" + i + "__SCIRefno' name='MockupOven_Detail[" + i + "].Remark' type='text' class='OnlyEdit'></td>"; 
             html += "<td><input id='MockupOven_Detail_" + i + "__ColorID' name='MockupOven_Detail[" + i + "].LastUpdate' type='text'  readonly='readonly' ></td>";
 
-            html += "<td><img  class='detailDelete' src='/Image/Icon/Delete.png' width='30'></td>";
+            html += "<td> <div style='width: 5vw;'><img  class='detailDelete' src='/Image/Icon/Delete.png' width='30'> </div></td>";
             html += "</tr>";
 
             return Content(html);
