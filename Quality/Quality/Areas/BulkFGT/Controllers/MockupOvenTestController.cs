@@ -48,9 +48,6 @@ namespace Quality.Areas.BulkFGT.Controllers
         [MultipleButton(Name = "action", Argument = "Query")]
         public ActionResult Query(MockupOven_ViewModel Req)
         {
-            //MockupOven_Request MockupOven = new MockupOven_Request()
-            //{ ReportNo = "PHOV180800003" };
-
 
             MockupOven_Request MockupOven = new MockupOven_Request()
             { BrandID = Req.Request.BrandID, SeasonID = Req.Request.SeasonID, StyleID = Req.Request.StyleID };
@@ -63,6 +60,74 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.AccessoryRefNo_Source = GetAccessoryRefNoList(Req.Request.BrandID, Req.Request.SeasonID, Req.Request.StyleID);
             return View("Index", model);
         }
+
+
+        [HttpPost]
+        [MultipleButton(Name = "action", Argument = "New")]
+        public ActionResult NewSave(MockupOven_ViewModel Req)
+        {
+
+            MockupOven_Request MockupOven = new MockupOven_Request()
+            { BrandID = Req.BrandID, SeasonID = Req.SeasonID, StyleID = Req.StyleID };
+
+            var model = _MockupOvenService.GetMockupOven(MockupOven);
+            model.Request = new MockupOven_Request();
+            ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(model.ReportNo_Source);
+            ViewBag.ResultList = model.Result_Source; ;
+            ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(Req.BrandID, Req.SeasonID, Req.StyleID);
+            ViewBag.AccessoryRefNo_Source = GetAccessoryRefNoList(Req.BrandID, Req.SeasonID, Req.StyleID);
+            return View("Index", model);
+        }
+
+
+        [HttpPost]
+        [MultipleButton(Name = "action", Argument = "Edit")]
+        public ActionResult EditSave(MockupOven_ViewModel Req)
+        {
+            MockupOven_Request MockupOven = new MockupOven_Request()
+            { BrandID = Req.BrandID, SeasonID = Req.SeasonID, StyleID = Req.StyleID };
+
+            var model = _MockupOvenService.GetMockupOven(MockupOven);
+            model.Request = new MockupOven_Request();
+            ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(model.ReportNo_Source);
+            ViewBag.ResultList = model.Result_Source; ;
+            ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(Req.BrandID, Req.SeasonID, Req.StyleID);
+            ViewBag.AccessoryRefNo_Source = GetAccessoryRefNoList(Req.BrandID, Req.SeasonID, Req.StyleID);
+            return View("Index", model);
+        }
+
+        [HttpPost]
+        [MultipleButton(Name = "action", Argument = "Delete")]
+        public ActionResult DeleteReportNo(MockupOven_ViewModel Req)
+        {
+            MockupOven_Request MockupOven = new MockupOven_Request()
+            { BrandID = Req.BrandID, SeasonID = Req.SeasonID, StyleID = Req.StyleID };
+
+            var model = _MockupOvenService.GetMockupOven(MockupOven);
+            model.Request = new MockupOven_Request();
+            ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(model.ReportNo_Source);
+            ViewBag.ResultList = model.Result_Source; ;
+            ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(Req.BrandID, Req.SeasonID, Req.StyleID);
+            ViewBag.AccessoryRefNo_Source = GetAccessoryRefNoList(Req.BrandID, Req.SeasonID, Req.StyleID);
+            return View("Index", model);
+        }
+
+        /// <summary>
+        /// 使用Microsoft.Office.Interop.Excel的寫法
+        /// </summary>
+        /// <param name="Req"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [MultipleButton(Name = "action", Argument = "ToPDF")]
+        public ActionResult ToPDF()
+        {
+            this.CheckSession();
+
+            return RedirectToAction("Index");
+        }
+
+
+
 
         [HttpPost]
         public JsonResult SPBlur(string POID)

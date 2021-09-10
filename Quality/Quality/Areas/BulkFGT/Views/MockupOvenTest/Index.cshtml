@@ -344,7 +344,7 @@
                                         }
                                         <div class="input-group">
                                             @Html.TextBoxFor(o => o.Technician, "", new { @class = "OnlyEdit" })
-                                            <input id="TechnicianDesc" readonly="readonly" value='@nameValue'>
+                                            <input id="TechnicianDesc" type="text" readonly="readonly" value='@nameValue'>
                                             <input id="btnDetailTechnicianSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
                                         </div>
                                     </td>
@@ -360,7 +360,7 @@
                                         }
                                         <div class="input-group">
                                             @Html.TextBoxFor(o => o.MR, "", new { @class = "OnlyEdit"})
-                                            <input id="MRDesc" readonly="readonly" value='@nameValue'>
+                                            <input id="MRDesc" type="text"  readonly="readonly" value='@nameValue'>
                                             <input id="btnDetailMRSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
                                         </div>
                                     </td>
@@ -598,6 +598,10 @@
                         return false;
                     }
                 }
+            });
+
+            $('#Save').on('click', function () {
+                return false;
             });
         }
     }
@@ -1025,7 +1029,7 @@
 
 
             $('#Picture').on('click', function () {
-                if ($('#Detail_ReportNo').val() != null && $('#Detail_ReportNo').val() != "") {
+                if ($('#ReportNo').val() != null && $('#ReportNo').val() != "") {
                     var para = "?EditMode=" + EditMode + "&Table=PullingTest&BrforeColumn=TestBeforePicture&AfterColumn=TestAfterPicture&PKey_1=ReportNo&PKey_1_Val=" + $('#Detail_ReportNo').val();
                     window.open('@Url.Action("PictureList","PublicWondow",new{Area=""})' + para, 'Article', config = 'toolbar=no,status=no,location=no,width=400,height=650');
                 }
