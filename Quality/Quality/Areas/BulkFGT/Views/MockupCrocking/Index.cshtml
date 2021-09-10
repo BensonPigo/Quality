@@ -149,7 +149,7 @@
             </div>
             <div class="breadcrumb queryHeader" style="justify-content: flex-end;">
                 <h4 style="margin-right: 1em;color:white">Report No</h4>
-                @Html.DropDownList("ReportNo", (List<SelectListItem>)ViewBag.ReportNo_Source, null, new { @class = "form-control" })
+                @Html.DropDownList("QueryReportNo", (List<SelectListItem>)ViewBag.ReportNo_Source, null, new { @class = "form-control" })
                 <input id="btnNew" type="button" class="button" style="margin-left:1em;border:0;" name="New" value="New">
             </div>
         </header>
@@ -492,7 +492,7 @@
             $(".rowHeader input[type='button']").unbind('click').addClass("IsEditModeQuery");
             $('#btnQuery').addClass("IsEditModeQuery");
 
-            $("#Edit, #Delete, #Picture, #SendMail, #PDF").removeClass("IsEditMode");
+            $("#Edit, #Delete, #Picture, #SendMail, #PDF").unbind('click').removeClass("IsEditMode");
             $('#Save, #Undo, #New').addClass("IsEditMode");
             $('.DetailTable input,.DetailTable select:not(.NotEdit)').removeAttr("disabled");
 
@@ -506,6 +506,10 @@
             $(".DetailTable img").removeClass('display-None');
 
             DetailButtonBind();
+
+            $('#btnQuery').on('click', function () {
+                return false;
+            });
         }
         else {
             $(".queryHeader select").removeAttr("disabled");
@@ -874,6 +878,11 @@
         });
 
         $('#Save').on('click', function (e) {
+            e.preventDefault();
+            if (EditMode == false) {
+                return;
+            }
+
             var detail = [];
             var ErrMsg = "";
             $("#Save").attr("name", "Action:Edit");
@@ -908,8 +917,8 @@
         });
 
         $('#Delete').on('click', function (e) {
-            if ($('#ReportNo').val() != null && $('#ReportNo').val() != "") {
-                e.preventDefault();
+            e.preventDefault();
+            if (EditMode == false && $('#ReportNo').val() != null && $('#ReportNo').val() != "") {                
                 msg.WithConfirm('Do you want to delete the data ?',
                     function () {
                         document.getElementById('DetailForm').submit();
