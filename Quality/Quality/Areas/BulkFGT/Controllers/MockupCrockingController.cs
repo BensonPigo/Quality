@@ -67,6 +67,20 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [MultipleButton(Name = "action", Argument = "New")]
+        public ActionResult NewSave(MockupCrocking_ViewModel Req)
+        {
+            BusinessLogicLayer.Interface.BulkFGT.IMockupCrockingService _MockupCrockingService = new MockupCrockingService();
+            MockupCrocking_ViewModel mockupCrocking_ViewModel = _MockupCrockingService.GetMockupCrocking(Req.Request);
+
+            //若沒錯誤訊息 且 MockupCrocking_ViewModel == null, 則是沒資料
+
+            ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(mockupCrocking_ViewModel.ReportNo_Source);
+            ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(Req.Request.BrandID, Req.Request.SeasonID, Req.Request.StyleID);
+            return View("Index", mockupCrocking_ViewModel);
+        }
+
+        [HttpPost]
         [MultipleButton(Name = "action", Argument = "Edit")]
         public ActionResult EditSave(MockupCrocking_ViewModel Req)
         {
@@ -78,6 +92,16 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(mockupCrocking_ViewModel.ReportNo_Source);
             ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(Req.Request.BrandID, Req.Request.SeasonID, Req.Request.StyleID);
             return View("Index", mockupCrocking_ViewModel);
+        }
+
+        [HttpPost]
+        [MultipleButton(Name = "action", Argument = "Delete")]
+        public ActionResult DeleteReportNo(MockupCrocking_ViewModel Req)
+        {
+            ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(Req.ReportNo_Source);
+            ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(Req.Request.BrandID, Req.Request.SeasonID, Req.Request.StyleID);
+
+            return View("Index", Req);
         }
 
         /// <summary>

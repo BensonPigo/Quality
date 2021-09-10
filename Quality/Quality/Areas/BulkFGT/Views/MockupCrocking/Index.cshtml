@@ -134,7 +134,7 @@
             width: 70%;
         }
 </style>
-@using (Html.BeginForm("Index", ViewContext.RouteData.GetRequiredString("Controller"), new { @id = "DataForm" }, FormMethod.Post))
+@using (Html.BeginForm("Index", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { @id = "DetailForm" }))
 {
     <div class="main-content">
         <header class="page-header">
@@ -212,9 +212,11 @@
                                         </h4>
                                     </td>
                                     <td>
-                                        <h4 id="Delete" style=" margin-right: 1em;">
-                                            <img src="~/Image/Icon/Delete.png" width="30" />
-                                            Delete
+                                        <h4 style=" margin-right: 1em;">
+                                            <button id="Delete" name="Action:Delete" type="submit" style="margin:0;min-width:0;background-color:transparent">
+                                                <img src="~/Image/Icon/Delete.png" width="30" />
+                                                Delete
+                                            </button>
                                         </h4>
                                     </td>
                                     <td>
@@ -833,6 +835,16 @@
                 }
             });
         });
+
+        $('.detailDelete').unbind('click').on('click', function () {
+            var t = $(this).closest('tr');
+
+            msg.WithConfirm('Do you want to delete the data ?',
+                function () {
+                    t.remove();
+                    msg.WithSuccess("Delete Success");
+                }, null);
+        });
     }
 
     function EditModeButtionBind() {
@@ -858,12 +870,13 @@
         });
 
         $('#New').on('click', function () {
-            AddDetailRow($('#garmentTest_OrderID').val(), $('#garmentTest_Article').val(), $('#garmentTest_BrandID').val(), $('#garmentTest_SeasonID').val(), $('#garmentTest_StyleID').val());
+            AddDetailRow();
         });
 
         $('#Save').on('click', function (e) {
             var detail = [];
             var ErrMsg = "";
+            $("#Save").attr("name", "Action:Edit");
 
             if ($('#BrandID').val() == '' || $('#SeasonID').val() == '' || $('#StyleID').val() == '' || $('#Article').val() == ''
                 || $('#BrandID').val() == undefined || $('#SeasonID').val() == undefined || $('#StyleID').val() == undefined || $('#Article').val() == undefined) {
@@ -876,7 +889,7 @@
                 return;
             }
 
-            //document.getElementById("DataForm").submit();
+            document.getElementById("DetailForm").submit();
         });
 
         $('#Undo').on('click', function () {
@@ -894,10 +907,12 @@
             EditType = "";
         });
 
-        $('#Delete').on('click', function () {
+        $('#Delete').on('click', function (e) {
             if ($('#ReportNo').val() != null && $('#ReportNo').val() != "") {
+                e.preventDefault();
                 msg.WithConfirm('Do you want to delete the data ?',
                     function () {
+                        document.getElementById('DetailForm').submit();
                     }, null);
             }
         });
@@ -1069,7 +1084,7 @@
         $('#Result').val(result);
     }
 
-    function AddDetailRow(obj) {
+    function AddDetailRow() {
         var lastNO;
         if ($('.DetailTable > tbody > tr').length > 0) {
             lastNO = parseInt($('.DetailTable > tbody > tr:last-child').attr('idx'));
