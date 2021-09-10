@@ -273,7 +273,7 @@ msg.WithInfo('SP# cannot be emptry');
                         return View("Index", Req);
                     }
 
-                    model = _ICFTCommentsService.Get_CFT_Orders(new CFTComments_ViewModel() { OrderID = Req.OrderID });
+                    model = _ICFTCommentsService.Get_CFT_Orders(new CFTComments_ViewModel() { OrderID = Req.OrderID, QueryType = Req.QueryType });
 
                     if (model.OrderID == null)
                     {
