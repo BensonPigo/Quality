@@ -239,7 +239,7 @@ from (
 -- 等於 Find 後下方 Diff 出現的次數
 select [ttlCnt] = count (1) 
 from (
-    select styleukey, sizecode, no
+    select distinct styleukey, sizecode, no
     from RFT_Inspection_Measurement
     where OrderID = @OrderID
         and Article = @Article
