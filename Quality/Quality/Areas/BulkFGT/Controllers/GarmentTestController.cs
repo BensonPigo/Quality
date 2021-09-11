@@ -24,7 +24,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         private Dictionary<string, object> Necks = new Dictionary<string, object>() {{ "Yes", true }, { "No", false }};
         private List<string> Washs = new List<string>() { "N/A", "Accepted", "Rejected" };
         private List<string> TestResultPass = new List<string>() { "Pass", "Fail" };
-        private List<string> TestResultmm = new List<string>() { "<=4", ">4" };
+        private List<string> TestResultmm = new List<string>()  { "<=4", ">4" };
         public GarmentTestController()
         {
             _GarmentTest_Service = new GarmentTest_Service();

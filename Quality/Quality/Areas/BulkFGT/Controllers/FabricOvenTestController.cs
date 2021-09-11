@@ -100,7 +100,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             else
             {
                 // 找地方寫入 TestNo
-                req.Main.TestNo = result.ErrorMessage;
+                req.Main.TestNo = string.IsNullOrEmpty(result.ErrorMessage) ? req.Main.TestNo : result.ErrorMessage;
             }
             FabricOvenTest_Detail_Result model = _FabricOvenTestService.GetFabricOvenTest_Detail_Result(req.Main.POID, req.Main.TestNo);
 

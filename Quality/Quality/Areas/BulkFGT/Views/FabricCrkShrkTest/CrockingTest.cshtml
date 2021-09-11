@@ -412,7 +412,7 @@
                                             @Html.TextBoxFor(modelItem => Model.Crocking_Detail[i].Result, new { @readonly = "readonly", @style = "color:" + styleColor })
                                         </td>
                                         <td style="color:red">
-                                            <select id="Crocking_Detail_@{@i}__DryScale" name="Model.Crocking_Detail[@i].DryScale" disabled="disabled" style="width:157px">
+                                            <select id="Crocking_Detail_@{@i}__DryScale" name="Crocking_Detail[@i].DryScale" disabled="disabled" style="width:157px">
                                                 @foreach (var item in (List<SelectListItem>)ViewBag.ScaleIDsList)
                                                 {
                                                     string selected = item.Text.Equals(Model.Crocking_Detail[i].DryScale) ? "selected" : "";
@@ -431,7 +431,7 @@
                                                     styleColor = "red";
                                                 }
                                             }
-                                            <select class="resultList result@{@i}" id="Crocking_Detail_@{@i}__ResultDry" name="Model.Crocking_Detail[@i].ResultDry" disabled="disabled" style="width:157px;color:@styleColor" onchange="changeResultColor(this)">
+                                            <select class="resultList result@{@i}" id="Crocking_Detail_@{@i}__ResultDry" name="Crocking_Detail[@i].ResultDry" disabled="disabled" style="width:157px;color:@styleColor" onchange="changeResultColor(this)">
                                                 @foreach (var item in (List<SelectListItem>)ViewBag.ResultList)
                                                 {
                                                     string selected = item.Text.Equals(Model.Crocking_Detail[i].ResultDry) ? "selected" : "";
@@ -440,7 +440,7 @@
                                             </select>
                                         </td>
                                         <td>
-                                            <select id="Crocking_Detail_@{@i}__DryScale_Weft" name="Model.Crocking_Detail[@i].DryScale_Weft" disabled="disabled" style="width:157px">
+                                            <select id="Crocking_Detail_@{@i}__DryScale_Weft" name="Crocking_Detail[@i].DryScale_Weft" disabled="disabled" style="width:157px">
                                                 @foreach (var item in (List<SelectListItem>)ViewBag.ScaleIDsList)
                                                 {
                                                     string selected = item.Text.Equals(Model.Crocking_Detail[i].DryScale_Weft) ? "selected" : "";
@@ -459,7 +459,7 @@
                                                     styleColor = "red";
                                                 }
                                             }
-                                            <select class="resultList result@{@i}" id="Crocking_Detail_@{@i}__ResultDry_Weft" name="Model.Crocking_Detail[@i].ResultDry_Weft" disabled="disabled" style="width:157px;color:@styleColor" onchange="changeResultColor(this)">
+                                            <select class="resultList result@{@i}" id="Crocking_Detail_@{@i}__ResultDry_Weft" name="Crocking_Detail[@i].ResultDry_Weft" disabled="disabled" style="width:157px;color:@styleColor" onchange="changeResultColor(this)">
                                                 @foreach (var item in (List<SelectListItem>)ViewBag.ResultList)
                                                 {
                                                     string selected = item.Text.Equals(Model.Crocking_Detail[i].ResultDry_Weft) ? "selected" : "";
@@ -468,7 +468,7 @@
                                             </select>
                                         </td>
                                         <td>
-                                            <select id="Crocking_Detail_@{@i}__WetScale" name="Model.Crocking_Detail[@i].WetScale" disabled="disabled" style="width:157px">
+                                            <select id="Crocking_Detail_@{@i}__WetScale" name="Crocking_Detail[@i].WetScale" disabled="disabled" style="width:157px">
                                                 @foreach (var item in (List<SelectListItem>)ViewBag.ScaleIDsList)
                                                 {
                                                     string selected = item.Text.Equals(Model.Crocking_Detail[i].WetScale) ? "selected" : "";
@@ -487,7 +487,7 @@
                                                     styleColor = "red";
                                                 }
                                             }
-                                            <select class="resultList result@{@i}" id="Crocking_Detail__@{@i}__ResultWet" name="Model.Crocking_Detail[@i].ResultWet" disabled="disabled" style="width:157px;color:@styleColor" onchange="changeResultColor(this)">
+                                            <select class="resultList result@{@i}" id="Crocking_Detail__@{@i}__ResultWet" name="Crocking_Detail[@i].ResultWet" disabled="disabled" style="width:157px;color:@styleColor" onchange="changeResultColor(this)">
                                                 @foreach (var item in (List<SelectListItem>)ViewBag.ResultList)
                                                 {
                                                     string selected = item.Text.Equals(Model.Crocking_Detail[i].ResultWet) ? "selected" : "";
@@ -496,7 +496,7 @@
                                             </select>
                                         </td>
                                         <td>
-                                            <select id="Crocking_Detail_@{@i}__WetScale_Weft" name="Model.Crocking_Detail[@i].WetScale_Weft" disabled="disabled" style="width:157px">
+                                            <select id="Crocking_Detail_@{@i}__WetScale_Weft" name="Crocking_Detail[@i].WetScale_Weft" disabled="disabled" style="width:157px">
                                                 @foreach (var item in (List<SelectListItem>)ViewBag.ScaleIDsList)
                                                 {
                                                     string selected = item.Text.Equals(Model.Crocking_Detail[i].WetScale_Weft) ? "selected" : "";
@@ -515,7 +515,7 @@
                                                     styleColor = "red";
                                                 }
                                             }
-                                            <select class="resultList result@{@i}" id="Crocking_Detail_@{@i}__ResultWet_Weft" name="Model.Crocking_Detail[@i].ResultWet_Weft" disabled="disabled" style="width:157px;color:@styleColor" onchange="changeResultColor(this)">
+                                            <select class="resultList result@{@i}" id="Crocking_Detail_@{@i}__ResultWet_Weft" name="Crocking_Detail[@i].ResultWet_Weft" disabled="disabled" style="width:157px;color:@styleColor" onchange="changeResultColor(this)">
                                                 @foreach (var item in (List<SelectListItem>)ViewBag.ResultList)
                                                 {
                                                     string selected = item.Text.Equals(Model.Crocking_Detail[i].ResultWet_Weft) ? "selected" : "";
@@ -589,9 +589,8 @@
         $('#Picture').addClass("IsEditMode");
         // 按編輯為控制disabled，如果是編輯模式下不給使用者操作，請在元件身上加上readonly
         if (EditMode) {
-
-            $("#Edit,#Encode,#Amend").removeClass("IsEditMode");
-            $('#Encode,#Amend').unbind('click');
+            $("#Edit, #Encode, #Amend, #Excel, #PDF").removeClass("IsEditMode");
+            $('#Encode, #Amend, #Excel, #PDF').unbind('click');
 
             $('#Save, #New').addClass("IsEditMode");
             $(".DataTable:not(.DetailTable) textarea").removeAttr("disabled", "disabled");
@@ -604,16 +603,15 @@
             $(".DataTable:not(.DetailTable) textarea").attr("disabled", "disabled");
             $(".DetailTable input,.DetailTable select").attr("disabled", "disabled");
             $(".detailDelete").hide();
-            if ('@Model.ID' != '') {
-                $("#Edit").addClass("IsEditMode");
-            }
-
+            $('#Excel, #PDF').addClass("IsEditMode");
             if (@Model.Crocking_Main.CrockingEncdoe == false) {
-                $("#Encode").addClass("IsEditMode");
+                $("#Edit, #Encode").addClass("IsEditMode");
+                $("#Amend").unbind('click');
             }
 
             if (@Model.Crocking_Main.CrockingEncdoe == true) {
                 $("#Amend").addClass("IsEditMode");
+                $("#Edit, #Encode").unbind('click');
             }
         }
     }
@@ -671,20 +669,51 @@
                 return;
             }
 
+            // 重新調整index 順序。
+            $('.DetailTable > tbody > tr').each(function (index, data) {
+                var idx = $(this).closest('tr').attr('idx');
+                if (idx != index) {
+                    $.each($(this).find("input[id^='Crocking_Detail']"), function () {
+                        var tableName = $(this).attr('name').substr(0, $(this).attr('name').indexOf("["));
+                        var rollName = $(this).attr('name').substr($(this).attr('name').indexOf("]") + 2, $(this).attr('name').length - $(this).attr('name').indexOf("]"));
+                        $(this).attr("id", tableName + "_" + index.toString() + "__" + rollName);
+                        $(this).attr("name", tableName + "[" + index.toString() + "]." + rollName);
+                    });
+
+                    $.each($(this).find("select[id^='Crocking_Detail']"), function () {
+                        var tableName = $(this).attr('name').substr(0, $(this).attr('name').indexOf("["));
+                        var rollName = $(this).attr('name').substr($(this).attr('name').indexOf("]") + 2, $(this).attr('name').length - $(this).attr('name').indexOf("]"));
+                        $(this).attr("id", tableName + "_" + index.toString() + "__" + rollName);
+                        $(this).attr("name", tableName + "[" + index.toString() + "]." + rollName);
+                    });
+                }
+            });
+
             document.getElementById("DetailForm").submit();
         });
 
         $('#Picture').on('click', function () {
-            var para = "?EditMode=" + EditMode + "&Table=FIR_Laboratory&BrforeColumn=@Model.Crocking_Main.CrockingTestBeforePicture&AfterColumn=@Model.Crocking_Main.CrockingTestAfterPicture&PKey_1=ReportNo&PKey_1_Val=" + '@Model.ID';
-            window.open('@Url.Action("PictureList","PublicWondow",new{Area=""})' + para, 'Picture', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+            var para = "?Title=" + $('.page-header span').html() + "&EditMode=" + EditMode;
+            para += "&" + "Table=FIR_Laboratory";
+            para += "&" + "BrforeColumn=CrockingTestBeforePicture";
+            para += "&" + "AfterColumn=CrockingTestAfterPicture";
+            para += "&" + "PKey_1=ID";
+            para += "&" + "PKey_1_Val=" + $('#ID').val();
+            window.open('@Url.Action("PictureList", "PublicWondow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1024,height=750');
         });
 
         $('#New').on('click', function () {
-            AddDetailRow($('#garmentTest_OrderID').val(), $('#garmentTest_Article').val(), $('#garmentTest_BrandID').val(), $('#garmentTest_SeasonID').val(), $('#garmentTest_StyleID').val());
+            AddDetailRow();
         });
 
-        // 程式需再修改
-        //FabricCrkShrkTestCrocking_Main.CrockingEncdoe = false 才可以使用
+        $('#Excel').unbind('click').on('click', function () {
+            ToReport(0);
+        });
+
+        $('#PDF').unbind('click').on('click', function () {
+            ToReport(1);
+        });
+
         if (@Model.Crocking_Main.CrockingEncdoe == false) {
             $('#Encode').on('click', function (e) {
                 var detail = [];
@@ -697,49 +726,127 @@
                     return;
                 }
 
-                //Crocking 為 Fail??
-                //彈跳出 Mail Group 寄信。(PublicWondowController.TestFailMailList)
-                    @*$.ajax({
-                        url: "@Url.Action("Encode_Detail", "GarmentTest", new { Area = "BulkFGT" })",
-                        type: 'POST',
-                        contentType: "application/json; charset=utf-8",
-                        data: JSON.stringify({ ID: $('#Detail_ID').val(), No: $('#Detail_No').val(), status: "Encode" }),
-                        async: false,
-                        success: function (data) {
-                            if (data.Result) {
-                                if (data.sentMail) {
-                                    FailMail();
-                                }
-                                else {
-                                    msg.WithSuccesCheck("Success", function () {
-                                        location.reload();
-                                    });
-                                }
+                $.ajax({
+                    url: "@Url.Action("Encode_Crocking", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ ID: $('#ID').val() }),
+                    async: false,
+                    success: function (data) {
+                        if (data.Result) {
+                            if (data.testResult == "Fail") {
+                                FailMail();
                             }
                             else {
-                                msg.WithError(data.ErrMsg);
+                                msg.WithSuccesCheck("Success", function () {
+                                    location.reload();
+                                });
                             }
-                        },
-                        error: function (xhr, ajaxOptions, thrownError) {
-                            console.log(xhr.responseText);
                         }
-                    });*@
+                        else {
+                            msg.WithError(data.ErrorMessage);
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                });
             });
         }
 
         if (@Model.Crocking_Main.CrockingEncdoe  == true) {
             $('#Amend').on('click', function (e) {
+                $.ajax({
+                    url: "@Url.Action("Amend_Crocking", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ ID: $('#ID').val() }),
+                    async: false,
+                    success: function (data) {
+                        if (data.Result) {
+                            msg.WithSuccesCheck("Success", function () {
+                                location.reload();
+                            });
+                        }
+                        else {
+                            msg.WithError(data.ErrorMessage);
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                });
             });
         }
     }
 
-    function AddDetailRow(obj) {
+    function ToReport(IsToPDF) {
+        $.ajax({
+            url: "@Url.Action("Report_Crocking", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ ID: $('#ID').val(), IsToPDF: IsToPDF }),
+            async: false,
+            success: function (data) {
+                if (data.Result) {
+                    window.location.href = data.reportPath;
+                }
+                else {
+                    msg.WithError(data.ErrorMessage);
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function FailMail() {
+        var para = "?Title=" + $('.page-header span').html() + "&FactoryID=@ViewBag.FactoryID&Type=BulkFGT";
+        window.open('@Url.Action("TestFailMailList", "PublicWondow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
+    }
+
+    function GetTestFailMailList(data) {
+        var to = "";
+        var cc = "";
+        $.each(data, function (index, value) {
+            to += value.To + ';';
+            cc += value.CC + ';';
+        });
+
+        $.ajax({
+            url: "@Url.Action("FailMail_Crocking", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ ID: $('#ID').val(), TO: to, CC: cc }),
+            async: false,
+            success: function (data) {
+                if (data.result) {
+                    msg.WithSuccesCheck("Success", function () {
+                        location.reload();
+                    });
+                }
+                else {
+                    msg.WithWarningCheck(data.resultMsg, function () {
+                        location.reload();
+                    });
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                msg.WithWarningCheck(xhr.responseText, function () {
+                    location.reload();
+                });
+            }
+        });
+    }
+
+    function AddDetailRow() {
         var lastNO;
         if ($('.DetailTable > tbody > tr').length > 0) {
-            lastNO = parseInt($('.DetailTable > tbody > tr:last-child').attr('idx'));
+            lastNO = parseInt($('.DetailTable > tbody > tr:last-child').attr('idx')) + 1;
         }
         else {
-            lastNO = 1;
+            lastNO = 0;
         }
 
         $.ajax({
@@ -905,5 +1012,10 @@
         $("#Crocking_Detail_" + targetID + "__Inspector").val(data.ID);
         $("#Crocking_Detail_" + targetID + "__Name").val(data.Name);
         $("#Crocking_Detail_" + targetID + "__Remark").val(data.ExtNo);
+    }
+
+    function GetPicture(data) {
+        $('#Crocking_Main_CrockingTestBeforePicture').val(data.BeforePicture.replace("data:image/webp;base64,", ""));
+        $('#Crocking_Main_CrockingTestAfterPicture').val(data.AfterPicture.replace("data:image/webp;base64,", ""));
     }
 </script>

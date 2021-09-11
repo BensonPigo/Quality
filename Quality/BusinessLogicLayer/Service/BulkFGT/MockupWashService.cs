@@ -34,6 +34,7 @@ namespace BusinessLogicLayer.Service
         {
             MockupWash.Type = "B";
             MockupWash_ViewModel mockupWash_model = new MockupWash_ViewModel();
+            mockupWash_model.Request = MockupWash;
             try
             {
                 _MockupWashProvider = new MockupWashProvider(Common.ProductionDataAccessLayer);

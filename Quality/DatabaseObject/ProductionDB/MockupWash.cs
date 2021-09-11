@@ -37,10 +37,8 @@ namespace DatabaseObject.ProductionDB
         [Display(Name = "測試日期")]
         public DateTime? TestDate { get; set; }
 
-        [Display(Name = "")]
         public DateTime? ReceivedDate { get; set; }
 
-        [Display(Name = "")]
         public DateTime? ReleasedDate { get; set; }
 
         [Display(Name = "檢驗結果")]
@@ -64,13 +62,10 @@ namespace DatabaseObject.ProductionDB
         [Display(Name = "編輯人員")]
         public string EditName { get; set; }
 
-        [Display(Name = "")]
         public bool OtherMethod { get; set; }
 
-        [Display(Name = "")]
         public string MethodID { get; set; }
 
-        [Display(Name = "")]
         public string TestingMethod { get; set; }
 
         [Display(Name = "HTPlate")]

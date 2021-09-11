@@ -210,12 +210,17 @@ where o.ID = @OrderID
         {
             int rtQty = 0;
             string sqlcmd = @"
-select cnt = count(*) from RFT_Inspection_Measurement
+select [ttlCnt] = count (1)
+from (
+    select distinct styleukey, sizecode, no
+    from RFT_Inspection_Measurement
+    where format (adddate, 'yyyy/MM/dd') = format (getdate(), 'yyyy/MM/dd')
+) rim
 ";
             DataTable dt = ExecuteDataTable(CommandType.Text, sqlcmd, new SQLParameterCollection());
             if (dt != null)
             {
-                rtQty = Convert.ToInt32(dt.Rows[0]["cnt"]);
+                rtQty = Convert.ToInt32(dt.Rows[0]["ttlCnt"]);
             }
 
             return rtQty;
@@ -231,15 +236,19 @@ select cnt = count(*) from RFT_Inspection_Measurement
 
             int rtQty = 0;
             string sqlcmd = @"
-select cnt = count(*) 
-from RFT_Inspection_Measurement 
-where OrderID = @OrderID 
-and Article = @Article
+-- 等於 Find 後下方 Diff 出現的次數
+select [ttlCnt] = count (1) 
+from (
+    select distinct styleukey, sizecode, no
+    from RFT_Inspection_Measurement
+    where OrderID = @OrderID
+        and Article = @Article
+) rim
 ";
             DataTable dt = ExecuteDataTable(CommandType.Text, sqlcmd, objParameter);
             if (dt != null)
             {
-                rtQty = Convert.ToInt32(dt.Rows[0]["cnt"]);
+                rtQty = Convert.ToInt32(dt.Rows[0]["ttlCnt"]);
             }
 
             return rtQty;
@@ -308,7 +317,6 @@ declare @MDivision nvarchar(5) = (select MDivisionID from Production.dbo.Factory
 
 --SELECT  @workStartDatetime=ActualBeginTime,@workEndDatetime=ActualEndTime
 --FROM @shiftTabele
-
 
 select *
 into #tmp_Inspection_Measurement

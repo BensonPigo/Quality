@@ -8,10 +8,8 @@ namespace DatabaseObject.ProductionDB
         [Display(Name = "測試單號")]
         public string ReportNo { get; set; }
 
-        [Display(Name = "")]
         public Int64 Ukey { get; set; }
 
-        [Display(Name = "")]
         public string Design { get; set; }
 
         [Display(Name = "工段顏色")]

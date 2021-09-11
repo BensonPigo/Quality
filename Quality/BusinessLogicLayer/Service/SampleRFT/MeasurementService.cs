@@ -34,8 +34,8 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 List<string> columnListsp = new List<string>(); // 用來記錄幾筆有問題
                 if (dt != null && dt.Rows.Count > 0)
                 {
+                    // 超出值變紅底
                     bool bolCal;
-
                     List<string> diffArry = new List<string>();
                     foreach (var itemCol in dt.Columns)
                     {
@@ -65,12 +65,12 @@ namespace BusinessLogicLayer.Service.SampleRFT
                                 if (dr[item.ToString()].ToString().Contains("-"))
                                 {
                                     string d = dr[item.ToString()].ToString().Replace("-", string.Empty);
-                                    num = _IMeasurementProvider.Get_CalculateSizeSpec(d, dr["Tol(-)"].ToString()).Rows[0]["Vaule"].ToString();
+                                    num = _IMeasurementProvider.Get_CalculateSizeSpec(d, dr["Tol(-)"].ToString()).Rows[0]["value"].ToString();
                                 }
                                 else
                                 {
                                     string d = dr[item.ToString()].ToString();
-                                    num = _IMeasurementProvider.Get_CalculateSizeSpec(d, dr["Tol(+)"].ToString()).Rows[0]["Vaule"].ToString();
+                                    num = _IMeasurementProvider.Get_CalculateSizeSpec(d, dr["Tol(+)"].ToString()).Rows[0]["value"].ToString();
                                 }
 
                                 bolCal = num.Contains("-") && !string.IsNullOrEmpty(dr[item.ToString()].ToString());

@@ -473,7 +473,6 @@
             else
             {
                 $('#Edit, #Encode').unbind('click');
-
             }
 
             if ($('#Main_Status').val() == "Confirmed") {
@@ -697,6 +696,26 @@
                 return false;
             }
 
+
+            $('.DetailTable > tbody > tr').each(function (index, data) {
+                var idx = $(this).closest('tr').attr('idx');
+                if (idx != index) {
+                    $.each($(this).find("input[id^='Details']"), function () {
+                        var tableName = $(this).attr('name').substr(0, $(this).attr('name').indexOf("["));
+                        var rollName = $(this).attr('name').substr($(this).attr('name').indexOf("]") + 2, $(this).attr('name').length - $(this).attr('name').indexOf("]"));
+                        $(this).attr("id", tableName + "_" + index.toString() + "__" + rollName);
+                        $(this).attr("name", tableName + "[" + index.toString() + "]." + rollName);
+                    });
+
+                    $.each($(this).find("select[id^='Details']"), function () {
+                        var tableName = $(this).attr('name').substr(0, $(this).attr('name').indexOf("["));
+                        var rollName = $(this).attr('name').substr($(this).attr('name').indexOf("]") + 2, $(this).attr('name').length - $(this).attr('name').indexOf("]"));
+                        $(this).attr("id", tableName + "_" + index.toString() + "__" + rollName);
+                        $(this).attr("name", tableName + "[" + index.toString() + "]." + rollName);
+                    });
+                }
+            });
+
             document.getElementById("DetailForm").submit();
         });
 
@@ -825,7 +844,7 @@
                         }
                     }
                     else {
-                        msg.WithError(data.ErrMsg);
+                        msg.WithError(data.ErrorMessage );
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
@@ -849,7 +868,7 @@
                         });
                     }
                     else {
-                        msg.WithError(data.ErrMsg);
+                        msg.WithError(data.ErrorMessage);
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
@@ -908,13 +927,13 @@
             data: JSON.stringify({ ID: $('#Main_POID').val(), No: $('#Main_TestNo').val(), TO: to, CC: cc }),
             async: false,
             success: function (data) {
-                if (data.Result) {
+                if (data.result) {
                     msg.WithSuccesCheck("Success", function () {
                         location.reload();
                     });
                 }
                 else {
-                    msg.WithWarningCheck(data.ErrMsg, function () {
+                    msg.WithWarningCheck(data.resultMsg, function () {
                         location.reload();
                     });
                 }
