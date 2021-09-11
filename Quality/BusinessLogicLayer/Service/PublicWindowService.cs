@@ -107,9 +107,9 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public List<Window_Article> Get_Size(string OrderID, Int64? StyleUkey, string BrandID, string SeasonID, string StyleID, string Article, string Size, bool IsExact)
+        public List<Window_Size> Get_Size(string OrderID, Int64? StyleUkey, string BrandID, string SeasonID, string StyleID, string Article, string Size, bool IsExact)
         {
-            List<Window_Article> result = new List<Window_Article>();
+            List<Window_Size> result = new List<Window_Size>();
 
             try
             {

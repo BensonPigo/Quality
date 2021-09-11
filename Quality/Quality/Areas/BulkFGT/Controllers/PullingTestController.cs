@@ -12,96 +12,244 @@ using BusinessLogicLayer.Service.BulkFGT;
 using DatabaseObject.ViewModel.BulkFGT;
 using FactoryDashBoardWeb.Helper;
 using System.Linq;
+using DatabaseObject.ProductionDB;
 
 namespace Quality.Areas.BulkFGT.Controllers
 {
     public class PullingTestController : BaseController
     {
+        public PullingTestService Service;
+
+        public PullingTestController()
+        {
+            Service = new PullingTestService();
+        }
+
         // GET: BulkFGT/PullingTest
         public ActionResult Index()
         {
-            PullingTest_ViewModel Result = new PullingTest_ViewModel()
+            PullingTest_ViewModel model = new PullingTest_ViewModel()
             {
                 BrandID = string.Empty,
                 SeasonID = string.Empty,
                 StyleID = string.Empty,
                 Article = string.Empty,
-                ReportNo_Source = new List<string>(),
+                ReportNo_Source = new List<SelectListItem>(),
                 Detail = new PullingTest_Result(),
             };
 
-            ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(Result.ReportNo_Source);
-            ViewBag.ResultList = new SetListItem().ItemListBinding("Pass,Fail".Split(',').ToList());
-            return View(Result);
+            ViewBag.FactoryID = this.FactoryID;
+            return View(model);
         }
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "Query")]
         public ActionResult Query(PullingTest_ViewModel Req)
         {
-            PullingTest_ViewModel Result = new PullingTest_ViewModel()
+            PullingTest_ViewModel model = Service.GetReportNoList(Req);
+
+            if (model.ReportNo_Source != null && model.ReportNo_Source.Any())
             {
-                BrandID = Req.BrandID,
-                SeasonID = Req.SeasonID,
-                StyleID = Req.StyleID,
-                Article = Req.Article,
-                ReportNo_Source = "5,6,7".Split(',').ToList(),
-                Detail = new PullingTest_Result()
+                if (model.ReportNo_Source.Count == 1)
                 {
-                    ReportNo = "PHOV190100039",
-                    POID = "1234",
-                    BrandID = "ADIDAS",
-                    SeasonID = "19FW",
-                    StyleID = "S1953WTR342",
-                    Article = "FJ5381",
-                    Result = "Fail",
-                    TestItem = "Snaps",
-                    Time = 10,
-                    LastEditName = "PC8000068-JESSIE BALISBIS 2019/07/11 10:43:18"
+                    model.ReportNo_Query = model.ReportNo_Source.FirstOrDefault().Value;
+                }
 
-                },
-            };
+                model.Detail = Service.GetData(model.ReportNo_Query).Detail;
+            }
 
-            ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(Result.ReportNo_Source);
-            ViewBag.ResultList = new SetListItem().ItemListBinding("Pass,Fail".Split(',').ToList());
-            return View("Index", Result);
+            ViewBag.FactoryID = this.FactoryID;
+            return View("Index", model);
+        }
+
+        [HttpPost]
+        public ActionResult CheckSP(string POID)
+        {
+            PullingTest_Result o = new PullingTest_Result();
+            try
+            {
+                o = Service.CheckSP(POID);
+
+            }
+            catch (Exception ex)
+            {
+                return Json(ex);
+            }
+
+            return Json(o);
+        }
+
+        [HttpPost]
+        public ActionResult GetStandard(string BrandID, string TestItem, string PullForceUnit)
+        {
+            PullingTest_Result o = new PullingTest_Result();
+            try
+            {
+                o = Service.GetStandard(BrandID, TestItem, PullForceUnit);
+
+            }
+            catch (Exception ex)
+            {
+                return Json(ex);
+            }
+
+            return Json(o);
+        }
+
+        [HttpPost]
+        public ActionResult GetDetail(string ReportNo)
+        {
+            PullingTest_ViewModel model = new PullingTest_ViewModel();
+            try
+            {
+                model = Service.GetData(ReportNo);
+
+
+                var BeforeImage = model.Detail.TestBeforePicture is null ? new byte[1] : model.Detail.TestBeforePicture;
+                var base64_Before = Convert.ToBase64String(BeforeImage);
+                var imgSrc_Before = String.Format("data:image/webp;base64,{0}", base64_Before);
+
+                var AfterImage = model.Detail.TestAfterPicture is null ? new byte[1] : model.Detail.TestAfterPicture;
+                var base64_After = Convert.ToBase64String(AfterImage);
+                var imgSrc_After = String.Format("data:image/webp;base64,{0}", base64_After);
+
+                model.Detail.TestBeforePicture_Base64 = imgSrc_Before;
+                model.Detail.TestAfterPicture_Base64 = imgSrc_After;
+
+                model.Result = true;
+
+            }
+            catch (Exception ex)
+            {
+                model.Result = false;
+                model.ErrorMessage = ex.Message;
+
+            }
+            return Json(model);
         }
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "Edit")]
         public ActionResult EditSave(PullingTest_ViewModel Req)
         {
-            PullingTest_ViewModel Result = new PullingTest_ViewModel()
+            Req.Detail.EditName = this.UserID;
+
+            bool IsSendMail = Req.Detail.Result == "Fail";
+            string ToAddress = Req.ToAddress;
+            string CcAddress = Req.CcAddress;
+            string PullForceUnit = Req.Detail.PullForceUnit;
+
+            //準備回傳的model
+            PullingTest_ViewModel model = new PullingTest_ViewModel()
             {
-                BrandID = Req.BrandID,
-                SeasonID = Req.SeasonID,
-                StyleID = Req.StyleID,
-                Article = Req.Article,
-                ReportNo_Source = "1,2,3,4".Split(',').ToList(),
                 Detail = new PullingTest_Result(),
+                TestItem_Source = new List<SelectListItem>(),
             };
 
-            ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(Result.ReportNo_Source);
-            ViewBag.ResultList = new SetListItem().ItemListBinding("Pass,Fail".Split(',').ToList());
-            return View("Index", Result);
+            // 更新
+            model = Service.Update(Req.Detail);
+
+            if (model.Result)
+            {
+                //model = Service.GetReportNoList(Req);
+                //存檔後重新取得ReportNo清單
+                model.Detail = Service.GetData(Req.Detail.ReportNo).Detail;
+
+                model.ReportNo_Query = Req.Detail.ReportNo;
+
+                model.BrandID = model.Detail.BrandID;
+                model.SeasonID = model.Detail.SeasonID;
+                model.StyleID = model.Detail.StyleID;
+                model.Article = model.Detail.Article;
+
+                model = Service.GetReportNoList(model);
+            }
+
+            if (IsSendMail)
+            {
+                var mailResult = Service.SendMail(model.Detail.ReportNo, PullForceUnit, ToAddress, CcAddress);
+            }
+
+            ViewBag.FactoryID = this.FactoryID;
+            return View("Index", model);
         }
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "New")]
         public ActionResult NewSave(PullingTest_ViewModel Req)
         {
+            bool IsSendMail = Req.Detail.Result == "Fail";
+            string ToAddress = Req.ToAddress;
+            string CcAddress = Req.CcAddress;
+            string PullForceUnit = Req.Detail.PullForceUnit;
+
+            //M (3 碼) + PT + 年 (2 碼) + 月 (2 碼) + 流水號 (4 碼)
+            Req.Detail.ReportNo = this.MDivisionID + "PT" + DateTime.Now.ToString("yyyyyMM").Substring(3, 4);
+            Req.Detail.AddName = this.UserID;
+
+            //準備回傳的model
+            PullingTest_ViewModel model = new PullingTest_ViewModel()
+            {
+                BrandID = Req.Detail.BrandID,
+                SeasonID = Req.Detail.SeasonID,
+                StyleID = Req.Detail.StyleID,
+                Article = Req.Detail.Article,
+                Detail = new PullingTest_Result(),
+                TestItem_Source = new List<SelectListItem>(),
+            };
+
+            // 新增
+            model = Service.Insert(Req.Detail);
+
+            if (model.Result)
+            {
+                //存檔後搜尋結果
+                model = Service.GetReportNoList(Req);
+                model.ReportNo_Source.FirstOrDefault().Selected = true;
+
+                model.Detail = Service.GetData(model.ReportNo_Source.FirstOrDefault().Value).Detail;
+            }
+
+            if (IsSendMail)
+            {
+                var mailResult = Service.SendMail(model.Detail.ReportNo, PullForceUnit, ToAddress, CcAddress);
+            }
+
+            model.ReportNo_Query = model.Detail.ReportNo;
+
+            ViewBag.FactoryID = this.FactoryID;
+            return View("Index", model);
+
+        }
+
+        [HttpPost]
+        [MultipleButton(Name = "action", Argument = "Delete")]
+        public ActionResult Delete(PullingTest_ViewModel Req)
+        {
+            string ReportNo = Req.Detail.ReportNo;
+
+            //準備回傳的model
             PullingTest_ViewModel Result = new PullingTest_ViewModel()
             {
                 BrandID = Req.BrandID,
                 SeasonID = Req.SeasonID,
                 StyleID = Req.StyleID,
                 Article = Req.Article,
-                ReportNo_Source = "1,2,3,4".Split(',').ToList(),
-                Detail = new PullingTest_Result(),
+                TestItem_Source = new List<SelectListItem>(),
             };
 
-            ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(Result.ReportNo_Source);
-            ViewBag.ResultList = new SetListItem().ItemListBinding("Pass,Fail".Split(',').ToList());
+            // 刪除
+            Result = Service.Delete(ReportNo);
+
+            if (Result.Result)
+            {
+                //刪除後重新取得ReportNo清單
+                Result = Service.GetReportNoList(Req);
+                Result.ReportNo_Query = "";
+                Result.Detail = new PullingTest_Result();
+            }
+
+            ViewBag.FactoryID = this.FactoryID;
             return View("Index", Result);
         }
     }

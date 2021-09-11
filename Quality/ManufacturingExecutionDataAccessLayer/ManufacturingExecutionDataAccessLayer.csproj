@@ -106,6 +106,7 @@
     <Compile Include="Provider\MSSQL\MailToProvider.cs" />
     <Compile Include="Provider\MSSQL\MeasurementProvider.cs" />
     <Compile Include="Provider\MSSQL\Pass1Provider.cs" />
+    <Compile Include="Provider\MSSQL\PullingTestProvider.cs" />
     <Compile Include="Provider\MSSQL\QualityMenuDetailProvider.cs" />
     <Compile Include="Provider\MSSQL\QualityMenuProvider.cs" />
     <Compile Include="Provider\MSSQL\QualityPass1Provider.cs" />

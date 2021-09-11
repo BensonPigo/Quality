@@ -205,7 +205,7 @@ AND StyleUkey in (
             return ExecuteList<Window_Article>(CommandType.Text, SbSql.ToString(), paras);
         }
 
-        public IList<Window_Article> Get_Size(string OrderID, Int64? StyleUkey, string BrandID, string SeasonID, string StyleID, string Article, string Size, bool IsExact)
+        public IList<Window_Size> Get_Size(string OrderID, Int64? StyleUkey, string BrandID, string SeasonID, string StyleID, string Article, string Size, bool IsExact)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -236,11 +236,7 @@ from Production.dbo.Style_SizeCode
 where 1=1
 
 ");
-                if (StyleUkey.HasValue)
-                {
-                    SbSql.Append($@"AND StyleUkey = @StyleUkey ");
-                    paras.Add("@StyleUkey ", DbType.Int64, StyleUkey);
-                }
+
                 if (!string.IsNullOrEmpty(StyleID) && !string.IsNullOrEmpty(BrandID) && !string.IsNullOrEmpty(SeasonID))
                 {
                     SbSql.Append($@"
@@ -258,7 +254,7 @@ AND StyleUkey in (
             else
             {
                 //其餘則回傳空
-                return new List<Window_Article>();
+                return new List<Window_Size>();
             }
 
 
@@ -277,7 +273,7 @@ AND StyleUkey in (
             }
 
 
-            return ExecuteList<Window_Article>(CommandType.Text, SbSql.ToString(), paras);
+            return ExecuteList<Window_Size>(CommandType.Text, SbSql.ToString(), paras);
         }
 
         public IList<Window_Technician> Get_Technician(string CallFunction, string ID, bool IsExact)
@@ -514,7 +510,7 @@ AND psd.ID = @POID
 
             //台北
             SbSql.Append($@"
-Select Roll, Dyelot
+Select DISTINCT Roll, Dyelot
 From Production.dbo.FtyInventory --工廠
 Where 1=1
 ");

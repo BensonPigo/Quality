@@ -55,9 +55,9 @@
         width: auto;
     }
 
-    .col-auto > p {
-        padding: 0
-    }
+        .col-auto > p {
+            padding: 0
+        }
 
     .White {
         color: white !important;
@@ -89,30 +89,30 @@
         background-color: white;
     }
 
-    .DataTable > tbody img {
-        cursor: pointer;
-    }
+        .DataTable > tbody img {
+            cursor: pointer;
+        }
 
-    .DataTable > tbody > tr:nth-of-type(odd) {
-        background-color: #ffffff;
-    }
+        .DataTable > tbody > tr:nth-of-type(odd) {
+            background-color: #ffffff;
+        }
 
-    .DataTable > tbody > tr:nth-of-type(even) {
-        background-color: #F0F2F2;
-    }
+        .DataTable > tbody > tr:nth-of-type(even) {
+            background-color: #F0F2F2;
+        }
 
-    .DataTable > tbody > tr > td {
-        border: solid 1px gray;
-        padding: 0.5em;
-        text-align: left;
-        vertical-align: middle;
-    }
+        .DataTable > tbody > tr > td {
+            border: solid 1px gray;
+            padding: 0.5em;
+            text-align: left;
+            vertical-align: middle;
+        }
 
         .DataTable input[type='text'], .DataTable input[type='number'] {
             width: 70%;
         }
 </style>
-@using (Html.BeginForm("Index", "PullingTest", new { }, FormMethod.Post))
+@using (Html.BeginForm("Index", "PullingTest", new { }, FormMethod.Post, new { @ID = "mainForm", onsubmit = "return checkSubmitValue();" }))
 {
     <div class="main-content">
         <header class="page-header">
@@ -125,7 +125,7 @@
             </div>
             <div class="breadcrumb queryHeader" style="justify-content: flex-end;">
                 <h4 style="margin-right: 1em;color:white">Report No</h4>
-                @Html.DropDownList("ReportNo", (List<SelectListItem>)ViewBag.ReportNo_Source, null, new { @class = "form-control" })
+                @Html.DropDownList("ReportNo_Query", Model.ReportNo_Source, null, new { @value = Model.ReportNo_Query, @onchange = "ReloadDetail(this)", @class = "form-control" })
                 <input id="btnNew" type="button" class="button" style="margin-left:1em;border:0;" name="New" value="New">
             </div>
         </header>
@@ -172,11 +172,10 @@
                                         </h4>
                                     </td>
                                     <td>
-                                        <h4 style="margin-right: 1em;">
-                                            <button id="Save" type="submit" style="margin:0;min-width:0;background-color:transparent">
-                                                <img src="~/Image/Icon/Save.png" width="30" />
-                                                Save
-                                            </button>
+                                        <input id="SaveSubmit" type="submit" name="Action:Save" style="display:none" />
+                                        <h4 id="Save" style="margin-right: 1em;">
+                                            <img src="~/Image/Icon/Save.png" width="30" />
+                                            Save
                                         </h4>
                                     </td>
                                     <td>
@@ -186,6 +185,7 @@
                                         </h4>
                                     </td>
                                     <td>
+                                        <input id="DeleteSubmit" type="submit" name="Action:Delete" style="display:none" />
                                         <h4 id="Delete" style=" margin-right: 1em;">
                                             <img src="~/Image/Icon/Delete.png" width="30" />
                                             Delete
@@ -197,8 +197,7 @@
                                             Picture
                                         </h4>
                                     </td>
-                                    <td style="width: 50%;">
-                                    </td>
+                                    <td style="width: 50%;"></td>
                             </tbody>
                         </table>
                     </div>
@@ -209,11 +208,13 @@
                                 <tr>
                                     <td style="width: 10vw;"><h5>Report No</h5></td>
                                     <td style="width: 20vw;">
-                                        @Html.TextBoxFor(o => o.Detail.ReportNo, "", new { @readonly = "readonly" })
+                                        @Html.TextBox("ReportNoText", Model.Detail.ReportNo, new { @readonly = "readonly" })
+                                        @*@Html.Hidden("Detail_ReportNo", Model.Detail.ReportNo,new { @name= "Detail.ReportNo" })*@
+                                        <input type="hidden" id="Detail_ReportNo" name="Detail.ReportNo" value="@Model.Detail.ReportNo" />
                                     </td>
                                     <td style="width: 10vw;"><h5>SP#</h5></td>
                                     <td style="width: 20vw;">
-                                        @Html.TextBoxFor(o => o.Detail.POID, "")
+                                        @Html.TextBoxFor(o => o.Detail.POID, "", new { @onblur = "CheckSP(this)" })
                                     </td>
                                     <td style="width: 10vw;"><h5>Brand</h5></td>
                                     <td style="width: 20vw;">
@@ -246,7 +247,7 @@
                                     </td>
                                     <td><h5>Remark</h5></td>
                                     <td colspan="3">
-                                        @Html.TextBoxFor(o => o.Detail.Remark, "", new {@class = "OnlyEdit",  @readonly = "readonly" })
+                                        @Html.TextBoxFor(o => o.Detail.Remark, "", new { @class = "OnlyEdit", @readonly = "readonly" })
                                     </td>
                                 </tr>
                                 <tr>
@@ -256,32 +257,46 @@
                                     </td>
                                     <td><h5>Result</h5></td>
                                     <td>
-                                        @Html.DropDownListFor(o => o.Detail.Result, (List<SelectListItem>)ViewBag.ResultList, null, new { @class = "OnlyEdit"})
+                                        @Html.HiddenFor(o => o.Detail.Result, new { @class = "OnlyEdit" })
+                                        @{
+                                            string color = "red";
+                                            if (Model.Detail != null && Model.Detail.Result == "Pass")
+                                            {
+                                                color = "blue";
+                                            }
+                                        }
+                                        @Html.TextBox("ResultText", Model.Detail.Result, new { @readonly = "readonly", @style = $"color:{color}" })
                                     </td>
                                     <td><h5>Inspector</h5></td>
                                     <td>
-                                        @Html.TextBoxFor(o => o.Detail.Inspector, "", new { @readonly = "readonly" })
+                                        @Html.TextBoxFor(o => o.Detail.Inspector, "", new { @style = "width:35%", @readonly = "readonly" })
+                                        @Html.TextBoxFor(o => o.Detail.InspectorName, "", new { @style = "width:50%", @readonly = "readonly" })
                                         <input id="btnDetailInspectorSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
                                     </td>
                                 </tr>
                                 <tr>
                                     <td><h5>Test Item</h5></td>
                                     <td>
-                                        @Html.DropDownListFor(o => o.Detail.TestItem, Model.TestItem_Source, null, new { @class = "OnlyEdit" })
+                                        @Html.DropDownListFor(o => o.Detail.TestItem, Model.TestItem_Source, null, new { @onchange = "TestItemChange(this)", @class = "OnlyEdit" })
                                     </td>
-                                    <td><h5>Newton</h5></td>
                                     <td>
-                                        @Html.TextBoxFor(o => o.Detail.PullForceUnit, "", new { @class = "OnlyEdit", @readonly = "readonly", @type = "number", @step = "0.01" })
+                                        <h5>
+                                            @Html.HiddenFor(o => o.Detail.PullForceUnit, new { @class = "OnlyEdit" })
+                                            @Html.TextBox("PullForceUnitText", Model.Detail.PullForceUnit, new { @readonly = "readonly" })
+                                        </h5>
+                                    </td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.Detail.PullForce, "", new { @onblur = "ResultCheck()", @class = "OnlyEdit", @readonly = "readonly", @type = "number", @step = "0.01" })
                                     </td>
                                     <td><h5>Sec</h5></td>
                                     <td>
-                                        @Html.TextBoxFor(o => o.Detail.Time, "", new { @class = "OnlyEdit", @readonly = "readonly", @type = "number" })
+                                        @Html.TextBoxFor(o => o.Detail.Time, "", new { @onblur = "ResultCheck()", @class = "OnlyEdit", @readonly = "readonly", @type = "number" })
                                     </td>
                                 </tr>
                                 <tr>
                                     <td><h5>Fabric Ref#</h5></td>
                                     <td>
-                                        @Html.TextBoxFor(o => o.Detail.FabricRefno, "", new { @class = "OnlyEdit", @readonly = "readonly"})
+                                        @Html.TextBoxFor(o => o.Detail.FabricRefno, "", new { @class = "OnlyEdit", @readonly = "readonly" })
                                     </td>
                                     <td><h5>Accessory</h5></td>
                                     <td>
@@ -305,6 +320,14 @@
             </div>
         </div>
     </div>
+    @Html.HiddenFor(o => o.Detail.PullForce_Standard)
+    @Html.HiddenFor(o => o.Detail.Time_Standard)
+    @Html.HiddenFor(o => Model.Detail.TestBeforePicture)
+    @Html.HiddenFor(o => Model.Detail.TestAfterPicture)
+    @Html.HiddenFor(o => o.ToAddress)
+    @Html.HiddenFor(o => o.CcAddress)
+
+    <input type="hidden" id="needSendMail" value="@Model.Detail.Result" />
 }
 <script type="text/javascript">
         var msg;
@@ -329,12 +352,12 @@
             $(".rowHeader input[type='button']").unbind('click').addClass("IsEditModeQuery");
             $('#btnQuery').addClass("IsEditModeQuery");
 
-            $("#Edit, #Delete, #Picture").removeClass("IsEditMode");
+            $("#Edit, #Delete").removeClass("IsEditMode");
             $('#Save, #Undo, #New').addClass("IsEditMode");
 
             if (EditType == "New") {
-                $(".DetailTable input:not(#Detail_ReportNo,#Detail_LastEditName), .DetailTable select").removeAttr("disabled");
-                $(".DetailTable input:not(#Detail_ReportNo,#Detail_LastEditName), .DetailTable select").removeAttr("readonly");
+                $(".DetailTable input:not(#ReportNoText,#Detail_LastEditName,#ResultText,#PullForceUnitText,#Detail_InspectorName), .DetailTable select").removeAttr("disabled");
+                $(".DetailTable input:not(#ReportNoText,#Detail_LastEditName,#ResultText,#PullForceUnitText,#Detail_InspectorName), .DetailTable select").removeAttr("readonly");
             }
             else {
                 $(".OnlyEdit").removeAttr("disabled").removeAttr("readonly");
@@ -359,13 +382,15 @@
             $('#btnNew').removeClass("IsEditModeQuery");
             $('#btnQuery').unbind('click').removeClass("IsEditModeQuery");
             $('#Save, #Undo, #New').unbind('click').removeClass("IsEditMode");
-            $(".DetailTable input, .DetailTable select").attr("disabled", "disabled");
+            $(".DetailTable input:not(#Detail_ReportNo), .DetailTable select").attr("disabled", "disabled");
             $(".DetailTable img").removeClass('display-None');
+
             QueryButtonBind();
 
             $('#btnQuery').on('click', function () {
                 if (EditType != "New") {
-                    if ($('#BrandID').val() == '' || $('#SeasonID').val() == '' || $('#StyleID').val() == '' || $('#Article').val() == '') {
+
+                    if ($("#ReportNo_Query").val()  == '' && ($('#BrandID').val() == '' || $('#SeasonID').val() == '' || $('#StyleID').val() == '' || $('#Article').val() == '')) {
                         msg.WithError("Style, Brand, Season and Article cannot be empty");
                         return false;
                     }
@@ -374,73 +399,20 @@
         }
     }
 
-        //function IsEditModeChange() {
-        //    EditModeButtionBind();
-        //    Clear();
-
-        //    if (EditMode) {
-        //        $(".queryHeader select").attr("disabled", "disabled");
-        //        $('#btnNew').unbind('click').addClass("IsEditModeQuery");
-
-        //        $(".rowHeader input[type='text']").attr("readonly", "readonly").addClass("readonly");
-        //        $(".rowHeader input[type='button']").unbind('click').addClass("IsEditModeQuery");
-        //        $('#btnQuery').addClass("IsEditModeQuery");
-
-        //        $("#Edit, #Delete, #Picture").unbind('click').removeClass("IsEditMode");
-        //        $('#Save, #Undo, #New').addClass("IsEditMode");
-
-        //        if (EditType == "New") {
-        //            $(".DetailTable input:not(#Detail_ReportNo,#Detail_LastEditName)").removeAttr("readonly").addClass("readonly");
-        //        }
-        //        else {
-        //            $(".OnlyEdit").removeAttr("readonly").removeClass("readonly");
-        //        }
-
-        //        DetailButtonBind();
-        //        $('#btnQuery').on('click', function () {
-        //            return false;
-        //        });
-        //    }
-        //    else {
-        //        $(".queryHeader select").removeAttr("disabled");
-        //        $(".rowHeader input[type='text']").removeAttr("readonly").removeClass("readonly");
-        //        $(".rowHeader input[type='button']").removeClass("IsEditModeQuery");
-
-        //        $("#Edit, #Delete, #Picture").removeClass("IsEditMode");
-        //        if ($('#Detail_ReportNo').val() != undefined && $('#Detail_ReportNo').val() !='') {
-        //            $("#Edit, #Delete, #Picture").addClass("IsEditMode");
-        //        }
-
-        //        $('#btnNew').removeClass("IsEditModeQuery");
-        //        $('#btnQuery').unbind('click').removeClass("IsEditModeQuery");
-        //        $('#Save, #Undo, #New').unbind('click').removeClass("IsEditMode");
-        //        $(".DetailTable select").attr("disabled", "disabled");
-        //        $(".DetailTable input").attr("readonly", "readonly").addClass("readonly");
-        //        QueryButtonBind();
-
-        //        $('#btnQuery').on('click', function () {
-        //            if (EditType != "New") {
-        //                if ($('#BrandID').val() == '' || $('#SeasonID').val() == '' || $('#StyleID').val() == '' || $('#Article').val() == '') {
-        //                    msg.WithError("Style, Brand, Season and Article cannot be empty");
-        //                    return false;
-        //                }
-        //            }
-        //        });
-        //    }
-        //}
 
         function Clear() {
             if (EditType == "New") {
                 $(".DetailTable input[type='text'], .DetailTable select").val('');
             }
-        }
+    }
+
 
         function EditModeButtionBind() {
             $('#Edit').on('click', function () {
                 if ($('#Detail_ReportNo').val() != null && $('#Detail_ReportNo').val() != "") {
                     EditMode = true;
                     EditType = "";
-                    $("#Save").attr("name", "Action:Edit");
+                    $("#SaveSubmit").attr("name", "Action:Edit"); //**
                     IsEditModeChange();
                 }
             });
@@ -448,7 +420,7 @@
             $('#btnNew').on('click', function () {
                 EditMode = true;
                 EditType = "New";
-                $("#Save").attr("name", "Action:New");
+                $("#SaveSubmit").attr("name", "Action:New"); //--
                 IsEditModeChange();
             });
 
@@ -474,6 +446,10 @@
                     msg.WithError(ErrMsg);
                     return;
                 }
+                else {
+                    $("#ReportNoText").removeAttr("disabled");
+                    $("#SaveSubmit").click();
+                }
 
             });
 
@@ -494,16 +470,19 @@
 
             $('#Delete').on('click', function () {
                 if ($('#Detail_ReportNo').val() != null && $('#Detail_ReportNo').val() != "") {
-                    msg.WithConfirm('Do you want to delete the data ?',
-                        function () {
-                        }, null);
+                    msg.WithConfirm('Do you want to delete the data ?', function ()
+                    {
+                        $("#ReportNoText").removeAttr("disabled");
+                        $("#DeleteSubmit").click();
+                    }, null);
                 }
+
             });
 
             $('#Picture').on('click', function () {
                 if ($('#Detail_ReportNo').val() != null && $('#Detail_ReportNo').val() != "") {
-                    var para = "?EditMode=" + EditMode + "&Table=PullingTest&BrforeColumn=TestBeforePicture&AfterColumn=TestAfterPicture&PKey_1=ReportNo&PKey_1_Val=" + $('#Detail_ReportNo').val();
-                    window.open('@Url.Action("PictureList","PublicWondow",new{Area=""})' + para, 'Article', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+                    var para = "?EditMode=" + EditMode + "&Title=PullingTest&Table=ManufacturingExecution.dbo.PullingTest&BrforeColumn=TestBeforePicture&AfterColumn=TestAfterPicture&PKey_1=ReportNo&PKey_1_Val=" + $('#Detail_ReportNo').val();
+                    window.open('@Url.Action("PictureList","PublicWondow",new{Area=""})' + para, 'Article', config = 'toolbar=no,status=no,location=no,width=1000,height=650');
                 }
             });
         }
@@ -681,6 +660,30 @@
                     }
                 });
             });
+
+
+            $("#" + name + "Inspector").blur(function () {
+                if ($(this).val() == '') {
+                    return;
+                }
+
+                $.ajax({
+                    url: "@Url.Action("Pass1List","PublicWondow",new{Area=""})",
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ ID: $(this).val(), ReturnType: "JSON" }),
+                    async: true,
+                    success: function (data) {
+                        if (data.length == 0) {
+                            $("#" + name +"Inspector").val('');
+                            msg.WithError('Inspector Not Found');
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            });
         }
 
         function DetailButtonBind() {
@@ -742,91 +745,344 @@
             });
 
             blurEvent("Detail_");
-        }
-
-        function checkValue(type,name) {
-            switch (type) {
-                case 'season': //查詢明細共用
-                    if ($('#'+name+'BrandID').val() == '') {
-                        msg.WithError('Please input brand before choose season.');
-                        return 0;
-                    }
-                    break;
-                case 'style': //查詢明細共用
-                    if ($('#' + name + 'BrandID').val() == '' || $('#' + name +'SeasonID').val() == '') {
-                        msg.WithError('Please input brand, season before choose style.');
-                        return 0;
-                    }
-                    break;
-                case 'article': //查詢明細共用
-                    if (name == "Detail_" && $('#Detail_POID').val() != '') {
-                        return 1;
-                    }
-                    else if ($('#' + name + 'BrandID').val() != '' && $('#' + name + 'SeasonID').val() != '' && $('#' + name + 'StyleID').val() != '') {
-                        return 2;
-                    }
-                    else {
-                        msg.WithError('Please input sp# or style, brand and season before choose article.');
-                        return 0;
-                    }
-                    break;
-                case 'sizecode':
-                    if ($('#Detail_POID').val() != '' && $('#Detail_Article').val() != '') {
-                        return 1;
-                    }
-                    else if ($('#Detail_BrandID').val() != '' && $('#Detail_SeasonID').val() != '' && $('#Detail_StyleID').val() != '') {
-                        return 2;
-                    }
-                    else {
-                        msg.WithError('Please input sp#, article or style, brand and season before choose size.');
-                        return 0;
-                    }
-                    break;
-            }
-
-        }
-
-        function GetBrandList(data) {
-            if (EditMode) {
-                $('#Detail_BrandID').val(data);
-            }
-            else {
-                $('#BrandID').val(data);
-            }
-        }
-
-        function GetSeasonList(data) {
-            if (EditMode) {
-                $('#Detail_SeasonID').val(data);
-            }
-            else {
-                $('#SeasonID').val(data);
-            }
-        }
-
-        function GetStyleList(data) {
-            if (EditMode) {
-                $('#Detail_StyleID').val(data);
-            }
-            else {
-                $('#StyleID').val(data);
-            }
-        }
-
-        function GetArticleList(data) {
-            if (EditMode) {
-                $('#Detail_Article').val(data);
-            }
-            else {
-                $('#Article').val(data);
-            }
     }
 
-        function GetSizeList(data) {
-            $('#Detail_SizeCode').val(data);
+    function CheckSP(obj) {
+        var poid = $(obj).val();
+
+        if (poid!='') {
+            $.ajax({
+                url: '@Url.Action("CheckSP")',
+                data: { POID: poid },
+                type: 'POST',
+                dataType: "json",
+                async: false,
+                success: function (res) {
+
+                    if (res.POID != '' && res.POID != undefined) {
+                        // 表頭塞值
+                        $(obj).val(res.POID);
+                        $("#Detail_SeasonID").val(res.SeasonID);
+                        $("#Detail_BrandID").val(res.BrandID);
+                        $("#Detail_StyleID").val(res.StyleID);
+                        $("#Detail_Article").val(res.Article);
+                        $("#Detail_PullForceUnit").val(res.PullForceUnit);
+                        $("#PullForceUnitText").val(res.PullForceUnit);
+
+                    }
+                    else if (res.POID == '' || res.POID == null) {
+                        $(obj).val('');
+                        $("#Detail_SeasonID").val('');
+                        $("#Detail_BrandID").val('');
+                        $("#Detail_StyleID").val('');
+                        $("#Detail_Article").val('');
+                        $("#Detail_PullForceUnit").val('');
+                        $("#PullForceUnitText").val('');
+
+                        msg.WithError('Cannot found SP# ' + poid + '.');
+                    }
+                    else {
+                        $(obj).val('');
+                        $("#Detail_SeasonID").val('');
+                        $("#Detail_BrandID").val('');
+                        $("#Detail_StyleID").val('');
+                        $("#Detail_Article").val('');
+                        $("#Detail_PullForceUnit").val('');
+                        $("#PullForceUnitText").val('');
+                        msg.WithError(res.Message);
+                    }
+
+                }
+            });
+        }
+    }
+
+    function ReloadDetail(obj) {
+        var reportNo = $(obj).val();
+
+        $("#btnQuery").click();
+
+        @*if (reportNo != '') {
+            $.ajax({
+                url: '@Url.Action("GetDetail")',
+                data: { ReportNo: reportNo },
+                type: 'POST',
+                dataType: "json",
+                async: false,
+                success: function (res) {
+                    if (res.Result) {
+                        var idPre = 'Detail_';
+                        $(`#${idPre}ReportNo`).val(res.Detail.ReportNo);
+                        $(`#${idPre}ReportNo_Text`).val(res.Detail.ReportNo);
+                        $(`#${idPre}POID`).val(res.Detail.POID);
+                        $(`#${idPre}BrandID`).val(res.Detail.BrandID);
+                        $(`#${idPre}SeasonID`).val(res.Detail.SeasonID);
+                        $(`#${idPre}StyleID`).val(res.Detail.StyleID);
+                        $(`#${idPre}Article`).val(res.Detail.Article);
+                        $(`#${idPre}SizeCode`).val(res.Detail.SizeCode);
+                        $(`#${idPre}Remark`).val(res.Detail.Remark);
+                        $(`#${idPre}TestDate`).val(res.Detail.TestDateText);
+                        $(`#${idPre}Result`).val(res.Detail.Result);
+                        $(`#ResultText`).val(res.Detail.Result);
+                        $(`#${idPre}Inspector`).val(res.Detail.Inspector);
+                        $(`#${idPre}InspectorName`).val(res.Detail.InspectorName);
+                        $(`#${idPre}TestItem`).val(res.Detail.TestItem);
+                        $(`#${idPre}PullForce`).val(res.Detail.PullForce);
+                        $(`#${idPre}PullForceUnit`).val(res.Detail.PullForceUnit);
+                        $(`#${idPre}Time`).val(res.Detail.Time);
+                        $(`#${idPre}FabricRefno`).val(res.Detail.FabricRefno);
+                        $(`#${idPre}AccRefno`).val(res.Detail.AccRefno);
+                        $(`#${idPre}SnapOperator`).val(res.Detail.SnapOperator);
+                        $(`#${idPre}LastEditName`).val(res.Detail.LastEditName);
+
+                        $(`#${idPre}TestBeforePicture`).val(res.Detail.TestBeforePicture_Base64);
+                        $(`#${idPre}TestAfterPicture`).val(res.Detail.TestAfterPicture_Base64);
+
+                        //const Setting = document.querySelector("#testPic");
+                        //Setting.src = res.Detail.TestBeforePicture_Base64;
+
+                        $("#needSendMail").val(res.Detail.Result);
+
+                        $(`#${idPre}PullForce_Standard`).val(res.Detail.PullForce_Standard);
+                        $(`#${idPre}Time_Standard`).val(res.Detail.Time_Standard);
+                        IsEditModeChange();
+                        ResultCheck();
+                    }
+                    else {
+                        msg.WithError(res.ErrorMessage);
+                    }
+                }
+            });
+        }*@
+    }
+
+    function TestItemChange(obj) {
+
+        var idPre = 'Detail_';
+
+        var testitem = $(obj).val();
+        var brand = $(`#${idPre}BrandID`).val();
+        var pullForceUnit = $(`#${idPre}PullForceUnit`).val();
+
+        if (testitem != '') {
+            $.ajax({
+                url: '@Url.Action("GetStandard")',
+                data: { BrandID: brand, TestItem: testitem, PullForceUnit: pullForceUnit},
+                type: 'POST',
+                dataType: "json",
+                async: false,
+                success: function (res) {
+
+                    //$(obj).val(testitem);
+                    if (res.PullForce_Standard != '' && res.PullForce_Standard != undefined) {
+
+                        // 因為標準改變，把現有的值清空
+                        $(`#${idPre}PullForce`).val(0);
+                        $(`#${idPre}Time`).val(0);
+
+                        // 標準值塞值
+                        $(`#${idPre}PullForce_Standard`).val(res.PullForce_Standard);
+                        $(`#${idPre}Time_Standard`).val(res.Time_Standard);
+
+                        ResultCheck();
+                    }
+                    else if (res.PullForce_Standard == '' || res.PullForce_Standard == null) {
+
+                        $(`#${idPre}PullForce_Standard`).val('');
+                        $(`#${idPre}Time_Standard`).val('');
+                        msg.WithError('Cannot found TestItem ' + testitem + '.');
+                    }
+                    else {
+
+                        $(`#${idPre}PullForce_Standard`).val('');
+                        $(`#${idPre}Time_Standard`).val('');
+                        msg.WithError(res.Message);
+                    }
+                }
+            });
+        }
+    }
+
+    function ResultCheck() {
+        var result = true;
+
+        var PullForceVal = $('#Detail_PullForce').val();
+        var TimeVal = $(`#Detail_Time`).val();
+
+        if (PullForceVal == '') {
+            PullForceVal = 0;
+        }
+        if (TimeVal == '') {
+            TimeVal = 0;
         }
 
-        function GetPass1(data) {
-            $('#Detail_Inspector').val(data.ID);
+        var PullForce_Standard = $(`#Detail_PullForce_Standard`).val();
+        var Time_Standard = $(`#Detail_Time_Standard`).val();
+
+        if (PullForce_Standard == '') {
+            PullForce_Standard = 0;
         }
+        if (Time_Standard == '') {
+            Time_Standard = 0;
+        }
+
+
+        if (parseFloat(PullForceVal) < parseFloat(PullForce_Standard) || parseFloat(TimeVal) < parseFloat(Time_Standard)) {
+            result = false;
+        }
+        else {
+
+        }
+
+        if (result) {
+            $("#Detail_Result").val('Pass');
+            $("#ResultText").val('Pass');
+            $("#ResultText").css('color', 'blue');
+            $("#needSendMail").val(false);
+        }
+        else {
+            $("#Detail_Result").val('Fail');
+            $("#ResultText").val('Fail');
+            $("#ResultText").css('color', 'red');
+            $("#needSendMail").val(true);
+        }
+    }
+
+    function checkValue(type, name) {
+        switch (type) {
+            case 'season': //查詢明細共用
+                if ($('#'+name+'BrandID').val() == '') {
+                    msg.WithError('Please input brand before choose season.');
+                    $('#' + name + 'SeasonID').val('');
+                    return 0;
+                }
+                break;
+            case 'style': //查詢明細共用
+                if ($('#' + name + 'BrandID').val() == '' || $('#' + name +'SeasonID').val() == '') {
+                    msg.WithError('Please input brand, season before choose style.');
+                    $('#' + name + 'StyleID').val('');
+                    return 0;
+                }
+                break;
+            case 'article': //查詢明細共用
+                if (name == "Detail_" && $('#Detail_POID').val() != '') {
+                    return 1;
+                }
+                else if ($('#' + name + 'BrandID').val() != '' && $('#' + name + 'SeasonID').val() != '' && $('#' + name + 'StyleID').val() != '') {
+                    return 2;
+                }
+                else {
+                    msg.WithError('Please input sp# or style, brand and season before choose article.');
+                    $('#' + name + 'Article').val('');
+                    return 0;
+                }
+                break;
+            case 'sizecode':
+                if ($('#Detail_POID').val() != '' && $('#Detail_Article').val() != '') {
+                    return 1;
+                }
+                else if ($('#Detail_BrandID').val() != '' && $('#Detail_SeasonID').val() != '' && $('#Detail_StyleID').val() != '') {
+                    return 2;
+                }
+                else {
+                    msg.WithError('Please input sp#, article or style, brand and season before choose size.');
+                    $('#' + name + 'Sizecode').val('');
+                    return 0;
+                }
+                break;
+        }
+
+    }
+
+    function checkSubmitValue() {
+
+        var needSendMail = $("#needSendMail").val();
+
+        if (needSendMail === 'false') {
+            return true;
+        }
+        else {
+            if ($('#Detail_Result').val() == 'Fail' && EditMode) {
+                FailMail();
+                return false;
+            }
+        }
+
+
+    }
+
+    function FailMail() {
+        var para = "?Title=Pulling&FactoryID=@ViewBag.FactoryID&Type=BulkFGT";
+        window.open('@Url.Action("TestFailMailList", "PublicWondow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
+    }
+
+    function GetTestFailMailList(data) {
+        var to = "";
+        var cc = "";
+        $.each(data, function (index, value) {
+            to += value.To + ';';
+            cc += value.CC + ';';
+        });
+
+        if (to != "") {
+            $("#ToAddress").val(to);
+            $("#CcAddress").val(cc);
+            $("#needSendMail").val(false);
+            $("#SaveSubmit").click();
+        }
+        else {
+            msg.WithError("Please choose the mail group.");
+            e.preventDefault();
+        }
+    }
+
+    function GetBrandList(data) {
+        if (EditMode) {
+            $('#Detail_BrandID').val(data);
+        }
+        else {
+            $('#BrandID').val(data);
+        }
+    }
+
+    function GetSeasonList(data) {
+        if (EditMode) {
+            $('#Detail_SeasonID').val(data);
+        }
+        else {
+            $('#SeasonID').val(data);
+        }
+    }
+
+    function GetStyleList(data) {
+        if (EditMode) {
+            $('#Detail_StyleID').val(data);
+        }
+        else {
+            $('#StyleID').val(data);
+        }
+    }
+
+    function GetArticleList(data) {
+        if (EditMode) {
+            $('#Detail_Article').val(data);
+        }
+        else {
+            $('#Article').val(data);
+        }
+    }
+
+    function GetSizeList(data) {
+        $('#Detail_SizeCode').val(data);
+    }
+
+    function GetPass1(data) {
+        $('#Detail_Inspector').val(data.ID);
+        $('#Detail_InspectorName').val(data.Name);
+    }
+
+    function GetPicture(data) {
+        $('#Detail_TestBeforePicture').val(data.BeforePicture.replace("data:image/webp;base64,", ""));
+        $('#Detail_TestAfterPicture').val(data.AfterPicture.replace("data:image/webp;base64,", ""));
+    }
 </script>
