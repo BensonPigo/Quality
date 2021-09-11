@@ -96,61 +96,6 @@ namespace Quality.Areas.FinalInspection.Controllers
             QueryReport model = (QueryReport)TempData["Model"];
             TempData["Model"] = model;
 
-            #region Test data
-            if (test)
-            {
-                model = new QueryReport()
-                {
-                    SP = "21060448HH003",
-                    StyleID = "22256",
-                    BrandID = "REI",
-                    AQLPlan = "qewr",
-                    //Carton="ff9999",
-                    TotalSPQty = 666,
-                    AvailableQty = 22,
-                    FinalInspection = new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
-                    {
-                        POID = "21060448HH",
-                        FactoryID = "ES2",
-                        CFA = "AAA",
-                        SubmitDate = DateTime.Now,
-                        AuditDate = DateTime.Now,
-                        InspectionResult = "Pass",
-                        RejectQty = 6,
-                        ProductionStatus = 1,
-                        OthersRemark = "OtherreKKK",
-                        ShipmentStatus = "AWER@#$R",
-                        PassQty = 897987,
-                        BAQty = 999,
-                        InspectionStage = "???",
-                        AcceptQty = 16,
-                        FabricApprovalDoc = true,
-                        SealingSampleDoc = true,
-                        CheckHangtag = true,
-                    },
-                    ListDefectItem = new List<FinalInspectionDefectItem>()
-                    {
-                        new FinalInspectionDefectItem(){DefectType = "B-Accessories",DefectCode="DefectCode11",Qty = 9},
-                        new FinalInspectionDefectItem(){DefectType = "B-Accessories",DefectCode="Dc22",Qty = 3},
-                        new FinalInspectionDefectItem(){DefectType = "B-Accessories",DefectCode="Dc22",Qty = 4},
-                    },
-                    ListBACriteriaItem = new List<BACriteriaItem>()
-                    {
-                        new BACriteriaItem(){BACriteria = "C1",BACriteriaDesc="SSS",Qty=2},
-                        new BACriteriaItem(){BACriteria = "C2",BACriteriaDesc="f6",Qty=3},
-                        new BACriteriaItem(){BACriteria = "C3",BACriteriaDesc="y9",Qty=3},
-                    },
-                    ListViewMoistureResult = new List<ViewMoistureResult>()
-                    {
-                        new ViewMoistureResult(){Article="ar1",CTNNo="ctn11",Instrument="BMM",Fabrication="nonono",GarmentTop=4,GarmentMiddle=2,GarmentBottom=6,
-                        GarmentStandard=69,CTNStandard=77,CTNInside=66,CTNOutside=88,Result="Pass",Action="WTF",Remark="www"},
-                        new ViewMoistureResult(){Article="a22",CTNNo="ctn11",Instrument="BMM",Fabrication="YYY",GarmentTop=4,GarmentMiddle=2,GarmentBottom=6,
-                        GarmentStandard=69,CTNStandard=77,CTNInside=66,CTNOutside=88,Result="Pass",Action="ggg",Remark="wfffww"},
-                    }
-                };
-            }
-            #endregion
-
             // GetForFinalInspection 取得 SeasonID
             _IOrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
             FinalInspection_Request requestItem = new FinalInspection_Request() { SP = model.SP, POID = model.FinalInspection.POID, FactoryID = model.FinalInspection.FactoryID, StyleID = model.StyleID };
@@ -236,15 +181,6 @@ namespace Quality.Areas.FinalInspection.Controllers
             // 使用 FinalInspection.ID = FinalInspection_Measurement.ID 找到資料，直接展開 FinalInspection_Measurement
             _FinalInspection_MeasurementProvider = new FinalInspectionMeasurementProvider(Common.ManufacturingExecutionDataAccessLayer);
             List<QueryReport_Measurement> MeasurementList = _FinalInspection_MeasurementProvider.GetQuery_FinalInspection_Measurement(model.FinalInspection.ID, model.SP).ToList();
-            if (test)
-            {
-                MeasurementList.Add(new QueryReport_Measurement() { Time = "10:00", Article = "001", SizeCode = "M", Location = "TOP", Description = "descccc", Tol2 = "0", Tol1 = "1", SizeSpec = "55", SizeSpec2 = "56", diff = "1" });
-                MeasurementList.Add(new QueryReport_Measurement() { Time = "10:00", Article = "001", SizeCode = "XL", Location = "TOP", Description = "descccc", Tol2 = "6", Tol1 = "1", SizeSpec = "55", SizeSpec2 = "56", diff = "1" });
-                MeasurementList.Add(new QueryReport_Measurement() { Time = "10:00", Article = "001", SizeCode = "XL", Location = "TOP", Description = "desscccc", Tol2 = "2", Tol1 = "2", SizeSpec = "55", SizeSpec2 = "56", diff = "1" });
-                MeasurementList.Add(new QueryReport_Measurement() { Time = "11:00", Article = "001", SizeCode = "XL", Location = "TOP", Description = "descccc", Tol2 = "0", Tol1 = "1", SizeSpec = "55", SizeSpec2 = "56", diff = "1" });
-                MeasurementList.Add(new QueryReport_Measurement() { Time = "11:00", Article = "001", SizeCode = "XL", Location = "TOP", Description = "descccc", Tol2 = "7", Tol1 = "1", SizeSpec = "55", SizeSpec2 = "57", diff = "2" });
-                MeasurementList.Add(new QueryReport_Measurement() { Time = "11:00", Article = "001", SizeCode = "XL", Location = "TOP", Description = "descccc", Tol2 = "0", Tol1 = "1", SizeSpec = "55", SizeSpec2 = "57", diff = "3" });
-            }
 
             if (MeasurementList == null || MeasurementList.Count == 0)
             {

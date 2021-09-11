@@ -1,8 +1,8 @@
 ﻿
 @{
-                /**/
+    /**/
 
-                ViewBag.Title = "Add Defect";
+    ViewBag.Title = "Add Defect";
 }
 
 @model DatabaseObject.ViewModel.FinalInspection.AddDefect
@@ -24,6 +24,10 @@
         td.details-control {
             background: url('/Image/Icon/ChildRowOpen.png') no-repeat center center;
         }
+
+        #CheckListTable {
+            font-size: 1.4em;
+        }
     </style>
 }
 @Html.Partial("~/Areas/FinalInspection/Views/Shared/_Inspection_Layout.cshtml")
@@ -33,8 +37,10 @@
 
         <div style="padding:2em 3em 2em 3em;width:80%;float:left;position: absolute;transform: translate(-50%, 0%);left: 50%">
             <div>
-            <h1 style="font-size: 2vh; font-weight: 900; ">How many reject Qty(pcs) 
-                @Html.TextBox("RejectQty", Model.RejectQty, new { @type = "number", @style = "width:10vw", @class = "form-control center-block" })</h1> 
+                <h1 style="font-size: 2vh; font-weight: 900; ">
+                    How many reject Qty(pcs)
+                    @Html.TextBox("RejectQty", Model.RejectQty, new { @type = "number", @style = "width:10vw", @class = "form-control center-block" })
+                </h1>
             </div>
             <table id="CheckListTable" class="cell-border" style="width:100%"></table>
         </div>
@@ -43,7 +49,7 @@
             <button id="btnBack" onclick="this.form.submitted=this.value;" type="submit" value="Back" class="button" style="right:7em;">Back</button>
             <button id="btnNext" onclick="this.form.submitted=this.value;" type="submit" value="Next" style="right:0;" class="button">Next</button>
         </div>
-        
+
         @Html.Hidden("FinalInspectionID", Model.FinalInspectionID)
         @Html.Hidden("SampleSize", Model.SampleSize)
 
@@ -152,7 +158,7 @@
             var sTr = "";
 
             $(list).each(function (index, value) {
-                
+
                 var RowIndex = value[4];
                 sTr = sTr + "<tr><td style='width:70%'>" + value[1] + "</td>";
                 sTr = sTr + `<td style='vertical-align: middle'>
@@ -211,7 +217,7 @@
                     tr.addClass('shown');
                 }
             });
-            
+
             return true;
         }
 
@@ -228,7 +234,7 @@
         }
 
         function ScreenShot(DetailUkey, RowIndex) {
-            
+
             if (DetailUkey == -1) {
                 window.open('@Url.Action("AddDefectTakePicture")?RowIndex=' + RowIndex, "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
             }
@@ -238,7 +244,7 @@
         }
         function GetImage(Data) {
             //透過AJAX暫存成Temp Data
-            
+
             var Ukey = Data.DetailUkey;
             var RowIndex = Data.RowIndex;
             var Picture = Data.Img.replace("data:image/webp;base64,", "");
@@ -251,7 +257,7 @@
             };
 
             $.ajax({
-                url: "@Url.Action("PicturesTempSave", "Inspection", new { Area = "FinalInspection" })",
+                url: "@Url.Action("AddDefectPicturesTempSave", "Inspection", new { Area = "FinalInspection" })",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ data: data }),

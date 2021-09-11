@@ -725,6 +725,16 @@ msg.WithError(""Shipmode Seq cant't be empty."");
                     ViewData["ErrorMessage"] = $@"
 msg.WithInfo('{MoistureResult.ErrorMessage}');
 ";
+
+                    Moisture model= service.GetMoistureForInspection(moistureResult.FinalInspectionID);
+
+                    ViewBag.ListArticle = new SetListItem().ItemListBinding(model.ListArticle);
+                    ViewBag.ListCartonItem = model.ListCartonItem;
+                    ViewBag.ListEndlineMoisture = model.ListEndlineMoisture;
+                    ViewBag.ActionSelectListItem = model.ActionSelectListItem;
+
+                    ViewBag.FinalInspectionID = model.FinalInspectionID;
+                    ViewBag.FinalInspection_CTNMoisureStandard = model.FinalInspection_CTNMoisureStandard;
                 }
             }
             return View(moistureResult);

@@ -80,6 +80,12 @@
         table.dataTable.cell-border table tbody tr td:not(:first-child) {
             text-align: center;
         }
+        label{
+            font-size:1.4em;
+        }
+        #SelectedPOTable {
+            font-size: 1.4em;
+        }
     </style>
 }
 
@@ -94,7 +100,7 @@
             @*Basic*@
             <div style="width:50%;height:25vh;float:left;">
                 <div class="col-auto"><h2 class="sub_title">Basic</h2></div>
-                <table class="col-auto table_div" style="width:100%">
+                <table class="col-auto table_div" @*style="width:100%"*@>
                     <tr>
                         <td><label>Choose Inspection Stage</label></td>
                         <td>@Html.DropDownListFor(o => o.InspectionStage, (List<SelectListItem>)ViewBag.InspectionStageList, null, new { @class = "form-control", @style = "width:157px", @onchange = "onInspectionStageChange(this.value)" })</td>
@@ -123,13 +129,13 @@
                 <div class="col-auto">
                     <table id="SelectedPOTable" class="cell-border " style="width:100%"></table>
                 </div>
-                <div class="col-auto" style="text-align:right"><p style="font-weight:bold;padding:10px 0">Total Available Qty <label id="totalAvailableQty" style="font-size:1.2em">@ViewData["TotalAvailableQty"]</label></p></div>
+                <div class="col-auto" style="text-align:right"><p style="font-weight:bold;padding:10px 0;font-size:1.4em;">Total Available Qty <label id="totalAvailableQty" style="font-size:1.2em">@ViewData["TotalAvailableQty"]</label></p></div>
             </div>
 
             @*AQL Plan*@
             <div style="width:50%;height:40vh;float:left;">
                 <div class="col-auto"><h2 class="sub_title">AQL Plan</h2></div>
-                <table class="col-auto table_div" style="width:100%">
+                <table class="col-auto table_div" style="margin-left: 4em;">
                     <tr>
                         <td><label>AQL Plan</label></td>
                         <td>
@@ -177,7 +183,7 @@
         <!--Detail-Cartons彈出視窗-->
         <!--多個Table forA001-->
         <input type="hidden" id="currnetSelectedPO" />
-        <div class="detail-dialog to-edit-detail" title="Cartons">
+        <div class="detail-dialog to-edit-detail" title="Select Carton">
             <div class="detail-dialog-content dialog-content-w-icon" style="height:40vh">
                 <table cellspacing="100" id="CartonTable" class="table table-striped display">
                     <thead>
@@ -193,8 +199,7 @@
                         {
                             <tr class="row-content" style="vertical-align: middle; text-align: center;">
                                 <td>
-                                    @*@Html.CheckBox($"Carton_Select_[{i}]", Model.SelectCarton[i].Selected, new { @class = "messageCheckbox", @Idx = i, @CTNNo = Model.SelectCarton[i].CTNNo, @PackingListID = Model.SelectCarton[i].PackingListID, @OrderID = Model.SelectCarton[i].OrderID, @onclick = "SelectCartonChange(this)" })*@
-                                    <input type="checkbox" ID="Carton_Select_[@i]" class="messageCheckbox" Idx=@i CTNNo=@Model.SelectCarton[i].CTNNo PackingListID=@Model.SelectCarton[i].PackingListID OrderID=@Model.SelectCarton[i].OrderID onclick="SelectCartonChange(this)" />
+                                    <input type="checkbox" ID="Carton_Select_[@i]" class="messageCheckbox" Idx=@i CTNNo=@Model.SelectCarton[i].CTNNo PackingListID=@Model.SelectCarton[i].PackingListID OrderID=@Model.SelectCarton[i].OrderID onclick="SelectCartonChange(this)" style="width: 1.4em;" />
                                 </td>
                                 <td>
                                     @Html.DisplayFor(o => Model.SelectCarton[i].PackingListID)
@@ -210,15 +215,13 @@
                     </tbody>
                 </table>
                 <br />
-                <div>
-                </div>
             </div>
         </div>
 
 
         <!--Shipmode Seq彈出視窗-->
         <input type="hidden" id="currnetSelectedShipmodeSeq" />
-        <div class="detail-dialog to-ShipmodeSeq-detail" title="Ship Mode">
+        <div class="detail-dialog to-ShipmodeSeq-detail" title="Select Shipmode Seq">
             <div class="detail-dialog-content dialog-content-w-icon" style="height:40vh">
                 <table cellspacing="100" id="ShipmodeSeqTable" class="table table-striped display">
                     <thead>
@@ -235,7 +238,7 @@
                         {
                             <tr class="row-content" style="vertical-align: middle; text-align: center;">
                                 <td>
-                                    <input type="checkbox" ID="ShipmodeSeq_Select_[@i]" class="messageCheckbox" Idx=@i Seq=@Model.SelectOrderShipSeq[i].Seq OrderID=@Model.SelectOrderShipSeq[i].OrderID onclick="SelectOrderShipSeqChange(this)" />
+                                    <input type="checkbox" ID="ShipmodeSeq_Select_[@i]" class="messageCheckbox" Idx=@i Seq=@Model.SelectOrderShipSeq[i].Seq OrderID=@Model.SelectOrderShipSeq[i].OrderID onclick="SelectOrderShipSeqChange(this)" style="width: 1.4em;" />
                                 </td>
                                 <td>
                                     @Html.DisplayFor(o => Model.SelectOrderShipSeq[i].Seq)
@@ -257,8 +260,7 @@
                     </tbody>
                 </table>
                 <br />
-                <div>
-                </div>
+
             </div>
         </div>
 
@@ -423,7 +425,7 @@
                     { targets: 5, visible: false },
                 ]
             });
-
+            
             // dialog 共用
             $(".detail-dialog").dialog({
                 autoOpen: false,
@@ -436,6 +438,7 @@
                     at: "center top",
                     of: window
                 },
+                closeOnEscape: false,
                 dialogClass: "site-box",
                 open: function (event, ui) {
                     $('.ui-widget-overlay').bind('click', function () {
@@ -444,6 +447,9 @@
                     });
                     $(this).parent().siblings().find(".ui-dialog-content").dialog('close');
 
+                    //XX 藏起來
+                    $(".ui-dialog-titlebar-close").hide();
+                    $(".ui-dialog-title").css("width", "100%");
                 },
                 close: function () {
                 },
@@ -472,7 +478,7 @@
                             $(this).dialog("close");
                         }
                         , "class": "button"
-                        , "style": "bottom:0;background-color:#E00000"
+                        , "style": "bottom:0;background-color:#E00000;border-radius: 21px;"
                     },
                 },
             });
@@ -505,7 +511,7 @@
                             $(this).dialog("close");
                         }
                         , "class": "button"
-                        , "style": "bottom:0;background-color:#E00000"
+                        , "style": "bottom:0;background-color:#E00000;border-radius: 21px;"
                     },
                 },
             });
@@ -742,9 +748,23 @@
                 '<input type="text" style="width:60px" readonly="readonly" onclick="open_cartonsDetail(\'' + d[1] + ',' + d[3] + '\');" name="SelectedPO[' + d[2] + '].Cartons" id="SelectedPO[' + d[2] + '].Cartons" value="' + d[8] + '" OrderID="' + orderID +'" Col="Cartons"/>' +
                 '</td></tr>'+
                 '<tr><td>Available Qty:</td><td class="OpenDetail" >' +
-                '<input type="number" style="width:60px" name="SelectedPO[' + d[2] + '].AvailableQty" id="SelectedPO[' + d[2] + '].AvailableQty" value="' + d[9] + '" OrderID="' + orderID +'" min="0" Col="AvailableQty"/>' +
+                '<input type="number" style="width:60px" name="SelectedPO[' + d[2] + '].AvailableQty" id="SelectedPO[' + d[2] + '].AvailableQty" value="' + d[9] + '" OrderID="' + orderID + '" oninput="value=AvailableQtyChk(' + d[7] + ',value)" max="' + d[7] + '" min="0" Col="AvailableQty"/>' +
                 '</td></tr>' +
                 '</table>';
+        }
+        function AvailableQtyChk(max, value) {
+            if (value == "") {
+                value = 0;
+            }
+            value = parseInt(value);
+
+            if (value > max) {
+                value = max;
+            }
+            else if (value == "") {
+                value = 0;
+            }
+            return value;
         }
 
         function onInspectionStageChange(value) {

@@ -68,7 +68,7 @@
                         <td>@Html.DropDownList("Article", (List<SelectListItem>)ViewBag.ListArticle, null, new { @class = "form-control", @style = "width:80%" })</td>
                     </tr>
                     <tr>
-                        <td><label class="cartonData">carton#</label></td>
+                        <td><label class="cartonData">Carton#</label></td>
                         <td>@Html.TextBox("Cartons", string.Empty, new { @class = "cartonData", @readonly = "readonly", @style = "width:80%", @onclick = "open_cartonsDetail()" })</td>
                         @Html.HiddenFor(o => o.FinalInspection_OrderCartonUkey)
                     </tr>
@@ -100,8 +100,11 @@
             <div style="margin:1em">
                 <table class="col-auto table_div" style="width:100%">
                     <tr>
-                        <td colspan="2"><label>Garment Moisture</label></td>
-                        <td colspan="4"><label>(Standard:<label id="GarmentStandard"></label>)</label></td>
+                        <td colspan="6">
+                            <label>Garment Moisture</label>
+                            <label style="font-weight: normal;">(Standard:<label id="GarmentStandard"></label>)</label>
+                        </td>
+                        @*<td colspan="4"><label>(Standard:<label id="GarmentStandard"></label>)</label></td>*@
                     </tr>
                     <tr>
                         <td style="text-align:right"><label>Top</label></td>
@@ -112,13 +115,16 @@
                         <td>@Html.TextBoxFor(o => o.GarmentBottom, new { @type = "number", @step = "0.1", @onchange = "setColor();", @style = "width:100px" })</td>
                     </tr>
                     <tr>
-                        <td colspan="2"><label>Carton Moisture</label></td>
-                        <td colspan="4"><label>(Standard:@ViewBag.FinalInspection_CTNMoisureStandard)</label></td>
+                        <td colspan="6">
+                            <label>Carton Moisture</label>
+                            <label style="font-weight: normal;">(Standard:@ViewBag.FinalInspection_CTNMoisureStandard)</label>
+                        </td>
+                        @*<td colspan="4"><label>(Standard:@ViewBag.FinalInspection_CTNMoisureStandard)</label></td>*@
                     </tr>
                     <tr>
                         <td style="text-align:right"><label class="cartonData">Inside</label></td>
                         <td>@Html.TextBoxFor(o => o.CTNInside, new { @class = "cartonData", @type = "number", @step = "0.1", @onchange = "setColor();", @style = "width:100px" })</td>
-                        <td><label>Outside</label></td>
+                        <td  style="text-align:right"><label>Outside</label></td>
                         <td>@Html.TextBoxFor(o => o.CTNOutside, new { @class = "cartonData", @type = "number", @step = "0.1", @onchange = "setColor();", @style = "width:100px" })</td>
                         <td colspan="2"></td>
                     </tr>
@@ -266,7 +272,7 @@
 
         $(function () {
 
-            @Html.Raw(ErrorMessage);
+            @Html.Raw(ErrorMessage)
 
             if (@ViewBag.ListCartonItem.Count == 0) {
                 $('.cartonData').each(function (){
@@ -293,6 +299,9 @@
                     });
                     $(this).parent().siblings().find(".ui-dialog-content").dialog('close');
 
+                    //XX 藏起來
+                    $(".ui-dialog-titlebar-close").hide();
+                    $(".ui-dialog-title").css("width", "100%");
                 },
                 close: function () {
                 },
@@ -436,7 +445,7 @@
                     {
                         "orderable": false
                         ,render: function (data, type) {
-                            return '<button class="button ViewDelete" style="padding:0;position:static" value="' + data + '">Delete</button>';
+                            return '<button class="button" onclick="ViewDelete(this)" style="padding:0;position:static" value="' + data + '">Delete</button>';
                         }}
                     ],
             });
@@ -505,32 +514,31 @@
 
             });
 
-
-
-            $(".ViewDelete").click(function () {
-
-                var UKey = $(this).val();
-                debugger
-                $.ajax({
-                    url: '@Url.Action("MoistureDelete", "Inspection")',
-                    type: 'POST',
-                    data: jQuery.param({ UKey: UKey }),
-                    global: false,
-                    success: function (response) {
-                        if (response.Result) {
-                            msg.WithSuccess("Success!");
-                        }
-                        else {
-                            msg.WithError(response.ErrorMessage);
-                        }
-                    },
-                    error: function (xhr, status) {
-                        msg.WithError("Get View fail:" + xhr.responseText + " " + xhr.status);
-                    }
-                });
-
-            });
         });
+
+        function ViewDelete(obj) {
+            var UKey = $(obj).val();
+
+            $.ajax({
+                url: '@Url.Action("MoistureDelete", "Inspection")',
+                type: 'POST',
+                data: jQuery.param({ UKey: UKey }),
+                global: false,
+                success: function (response) {
+                    if (response.Result) {
+                        msg.WithSuccesCheck("Success!", function () {
+                            window.location.reload();
+                        });
+                    }
+                    else {
+                        msg.WithError(response.ErrorMessage);
+                    }
+                },
+                error: function (xhr, status) {
+                    msg.WithError("Get View fail:" + xhr.responseText + " " + xhr.status);
+                }
+            });
+        }
 
         function setData(data) {
             var adata = [];

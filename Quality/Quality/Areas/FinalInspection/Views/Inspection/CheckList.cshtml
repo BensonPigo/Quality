@@ -22,6 +22,9 @@
         td.details-control {
             background: url('/Image/Icon/ChildRowOpen.png') no-repeat center center;
         }
+        #CheckListTable {
+            font-size: 1.4em;
+        }
     </style>
 }
 @Html.Partial("~/Areas/FinalInspection/Views/Shared/_Inspection_Layout.cshtml")
@@ -38,42 +41,6 @@
                 <button id="btnBack" onclick="this.form.submitted=this.value;" type="submit" value="Back" class="button" style="right:7em;">Back</button>
                 <button id="btnNext" onclick="this.form.submitted=this.value;" type="submit" value="Next" style="right:0;" class="button">Next</button>
             </div>
-            @*@Html.CheckBox("CheckCloseShade",false)*@
-            @*<input name="CheckCloseShade" type="hidden" value="true">
-            <input name="CheckHandfeel" type="hidden" value="@Model.CheckHandfeel">
-            <input name="CheckAppearance" type="hidden" value="@Model.CheckAppearance">
-            <input name="CheckPrintEmbDecorations" type="hidden" value="@Model.CheckPrintEmbDecorations">
-            <input name="CheckFiberContent" type="hidden" value="@Model.CheckFiberContent">
-
-            <input name="CheckCareInstructions" type="hidden" value="@Model.CheckCareInstructions">
-            <input name="CheckDecorativeLabel" type="hidden" value="@Model.CheckDecorativeLabel">
-            <input name="CheckAdicomLabel" type="hidden" value="@Model.CheckAdicomLabel">
-            <input name="CheckCountryofOrigion" type="hidden" value="@Model.CheckCountryofOrigion">
-            <input name="CheckSizeKey" type="hidden" value="@Model.CheckSizeKey">
-
-            <input name="Check8FlagLabel" type="hidden" value="@Model.Check8FlagLabel">
-            <input name="CheckAdditionalLabel" type="hidden" value="@Model.CheckAdditionalLabel">
-            <input name="CheckShippingMark" type="hidden" value="@Model.CheckShippingMark">
-            <input name="CheckPolytagMarketing" type="hidden" value="@Model.CheckPolytagMarketing">
-            <input name="CheckColorSizeQty" type="hidden" value="@Model.CheckColorSizeQty">
-            <input name="CheckHangtag" type="hidden" value="@Model.CheckHangtag">*@
-            @*@Html.HiddenFor(o => o.CheckCloseShade)
-            @Html.HiddenFor(o => o.CheckHandfeel)
-            @Html.HiddenFor(o => o.CheckAppearance)
-            @Html.HiddenFor(o => o.CheckPrintEmbDecorations)
-            @Html.HiddenFor(o => o.CheckFiberContent)
-            @Html.HiddenFor(o => o.CheckCareInstructions)
-            @Html.HiddenFor(o => o.CheckDecorativeLabel)
-            @Html.HiddenFor(o => o.CheckAdicomLabel)
-            @Html.HiddenFor(o => o.CheckCountryofOrigion)
-            @Html.HiddenFor(o => o.CheckSizeKey)
-
-            @Html.HiddenFor(o => o.Check8FlagLabel)
-            @Html.HiddenFor(o => o.CheckAdditionalLabel)
-            @Html.HiddenFor(o => o.CheckShippingMark)
-            @Html.HiddenFor(o => o.CheckPolytagMarketing)
-            @Html.HiddenFor(o => o.CheckColorSizeQty)
-            @Html.HiddenFor(o => o.CheckHangtag)*@
         }
 
     </div>
@@ -149,6 +116,8 @@
                 "scrollCollapse": true,
                 "createdRow": function (row, data, index) {
                     $('td', row).css('background-color', '#FAA7A7');
+                    
+                    $('td', row).attr('ID', 'CheckList_' + data[1].replaceAll(' ',''));
                 }
             });
 
@@ -165,22 +134,42 @@
                     tr.addClass('shown');
                 }
             });
+
+            // 把開窗點到的資料，寫入DataTable的Datasource
+            $("#CheckListTable tbody").on("click", "td.OpenDetail", function () {
+
+
+                // 取得修改了哪個Code底下的資料
+                var Code = $(this).find("input").attr("Code");
+
+                //取得勾選的子項目ID
+                var id = $(this).find("input").attr("id");
+
+                var partentTd = $("#CheckList_" + Code);
+                var tr = $(partentTd).closest('tr');
+                var row = table.row(tr);
+
+                $.each(row.data()[2], function () {
+                    if (this[0] == id) {
+                        this[2] = $(this).find("input").val();
+                    }
+                })
+            });
         });
 
         function format(d) {
+            var parentID = d[1].replaceAll(' ', '');
             var list = d[2];
             var sTr = "";
             $(list).each(function (index, value) {
 
                 sTr = sTr + '<tr><td style="width:95%">' + value[1] + '</td>';
                 if (value[2]) {
-                    //sTr = sTr + '<td style="vertical-align: middle"><input type="checkbox" id="' + value[0] + '" name="' + value[0] + '" checked /></td></tr>';
-                    sTr = sTr + '<td style="vertical-align: middle"><input checked="checked" data-val="true" id="' + value[0] + '" name="' + value[0] +'" type="checkbox" value="true"></td></tr>';
 
+                    sTr = sTr + `<td class="OpenDetail" style="vertical-align: middle"><input checked="checked" data-val="true" id="${value[0]}" name="${value[0]}" code="${parentID}" type="checkbox" value="true"></td></tr>`;
                 }
                 else {
-                    //sTr = sTr + '<td style="vertical-align: middle"><input type="checkbox" id="' + value[0] + '" name="' + value[0] + '"/></td></tr>';
-                    sTr = sTr + '<td style="vertical-align: middle"><input data-val="true"  id="' + value[0] + '" name="' + value[0] + '" type="checkbox" value="true"><input name="' + value[0] + '" type="hidden" value="false"></td></tr>';
+                    sTr = sTr + `<td class="OpenDetail" style="vertical-align: middle"><input data-val="true"  id="${value[0]}" " name="${value[0]}" type="checkbox" code="${parentID}" value="true"><input name="${value[0]}" " type="hidden" value="false"></td></tr>`;
                 }
             });
             return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
@@ -210,7 +199,7 @@
                     tr.addClass('shown');
                 }
             });
-
+            
             return true;
         }
     </script>
