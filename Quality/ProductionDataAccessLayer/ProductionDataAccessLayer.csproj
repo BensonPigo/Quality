@@ -121,6 +121,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Provider\MSSQL\AdidasFGWTProvider.cs" />
     <Compile Include="Provider\MSSQL\BrandProvider.cs" />
+    <Compile Include="Provider\MSSQL\BukkFGT\AccessoryOvenWashProvider.cs" />
     <Compile Include="Provider\MSSQL\ColorFastnessDetailProvider.cs" />
     <Compile Include="Provider\MSSQL\ColorFastnessProvider.cs" />
     <Compile Include="Provider\MSSQL\DropDownListProvider.cs" />
