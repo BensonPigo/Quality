@@ -145,7 +145,7 @@
         <div class="content-scroll" style="height: calc( 100vh - 160px );">
             <div class="inner-scroll" style="height: calc( 100vh - 180px );">
                 <div>
-                    @using (Html.BeginForm("Index", ViewContext.RouteData.GetRequiredString("Controller"), new { @name = "action:Query" }, FormMethod.Post))
+                    @using (Html.BeginForm("Index", ViewContext.RouteData.GetRequiredString("Controller"), new {  }, FormMethod.Post))
                     {
                         @*查詢*@
                         <div class="row rowHeader">
@@ -153,10 +153,10 @@
                                 <p class="InfoTitle White">SP</p>
                             </div>
                             <div class="col-auto">
-                                @Html.TextBoxFor(o => o.OrderID)
+                                @Html.TextBoxFor(o => o.ReqOrderID)
                             </div>
                             <div class="col-auto">
-                                <button id="btnQuery" type="submit" class="site-btn btn-gy font1rem Black" style="padding: 0.4em;">Query</button>
+                                <button id="btnQuery" type="submit" name = "Action:Query" class="site-btn btn-gy font1rem Black" style="padding: 0.4em;">Query</button>
                             </div>
                         </div>
                     }
@@ -215,7 +215,7 @@
                                 </td>
                                 <td><h5>Earliest Est. Cutting Date</h5></td>
                                 <td>
-                                    @Html.ValueFor(o => o.EarliestDate, "{0:yyyy/MM/dd}")
+                                    @Html.ValueFor(o => o.EarliestCutDate, "{0:yyyy/MM/dd}")
                                 </td>
                                 <td><h5>Earliest SCI Del</h5></td>
                                 <td>
@@ -239,7 +239,8 @@
                             <tr>
                                 <td><h5>Mtl Cmplt (SP)</h5></td>
                                 <td>
-                                    @Html.DisplayFor(o => o.MtlCmplt)
+                                    @*@Html.DisplayFor(o => o.MtlCmplt,new { @id= "Cmplt" })*@
+                                    @Html.CheckBoxFor(o=>o.MtlCmplt)
                                 </td>
                                 <td><h5>Remark</h5></td>
                                 <td colspan="3">
@@ -297,11 +298,13 @@
                                 string styleColor = string.Empty;
                                 <tr class="row-content" style="vertical-align: middle; text-align: center;">
                                     <td>
-                                        @Html.HiddenFor(modelItem => Model.DataList[i].AIR_LaboratoryID)
+                                        @Html.HiddenFor(modelItem => Model.DataList[i].AIR_LaboratoryID, new { @class = "required" })
+                                        @Html.HiddenFor(modelItem => Model.DataList[i].Seq1, new { @class="required"})
+                                        @Html.HiddenFor(modelItem => Model.DataList[i].Seq2, new { @class = "required" })
                                         @Html.DisplayFor(modelItem => Model.DataList[i].Seq)
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => Model.DataList[i].WKNo)
+                                        @Html.DisplayFor(modelItem => Model.DataList[i].ExportID)
                                     </td>
                                     <td>
                                         @Html.ValueFor(modelItem => Model.DataList[i].WhseArrival, "{0:yyyy/MM/dd}")
@@ -316,10 +319,10 @@
                                         @Html.DisplayFor(modelItem => Model.DataList[i].Supplier)
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => Model.DataList[i].Color)
+                                        @Html.DisplayFor(modelItem => Model.DataList[i].ColorID)
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => Model.DataList[i].Size)
+                                        @Html.DisplayFor(modelItem => Model.DataList[i].SizeSpec)
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => Model.DataList[i].ArriveQty)
@@ -389,7 +392,7 @@
                                         @Html.DisplayFor(modelItem => Model.DataList[i].WashRemark)
                                     </td>
                                     <td class="WashColor">
-                                        @Html.DisplayFor(modelItem => Model.DataList[i].Receiving)
+                                        @Html.DisplayFor(modelItem => Model.DataList[i].ReceivingID)
                                     </td>
                                     @{
                                         string controllerName = ViewContext.RouteData.GetRequiredString("Controller");
@@ -441,14 +444,14 @@
 
                 $("#Edit").removeClass("IsEditMode");
                 $('#Save, #Undo, #New').addClass("IsEditMode");
-                $(".DataTable input").removeAttr("disabled", "disabled");
+                $(".DataTable input:not(#MtlCmplt)").removeAttr("disabled", "disabled");
                 $(".link").hide();
             }
             else {
                 $(".rowHeader input[type='text']").removeAttr("disabled");
                 $(".rowHeader input[type='button']").removeClass("IsEditModeQuery");
                 $('#Save, #Undo, #New').unbind('click').removeClass("IsEditMode");
-                $(".DataTable input").attr("disabled", "disabled");
+                $(".DataTable input:not(.required)").attr("disabled", "disabled");
                 $(".link").show();
                 if ('@Model.OrderID' != '') {
                     $("#Edit").addClass("IsEditMode");
@@ -481,7 +484,7 @@
                         // poid
                         AIR_LaboratoryID: parseInt($('#DataList_' + index + '__AIR_LaboratoryID').val()),
                         Seq1: $('#DataList_' + index + '__Seq1').val(),
-                        Seq2: $('#DataList_' + index + '__Seq1').val(),
+                        Seq2: $('#DataList_' + index + '__Seq2').val(),
                         NonOven: $('#DataList_' + index + '__NonOven').prop("checked"),
                         NonWash: $('#DataList_' + index + '__NonWash').prop("checked"),
                     });

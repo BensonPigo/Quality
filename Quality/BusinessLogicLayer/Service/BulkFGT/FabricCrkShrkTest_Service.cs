@@ -384,6 +384,24 @@ namespace BusinessLogicLayer.Service
                     return baseResult;
                 }
 
+                var listKeyDuplicateItems = fabricCrkShrkTestCrocking_Result
+                    .Crocking_Detail.GroupBy(s => new
+                    {
+                        s.Roll,
+                        s.Dyelot,
+                    })
+                    .Where(groupItem => groupItem.Count() > 1);
+
+                if (listKeyDuplicateItems.Any())
+                {
+                    baseResult.Result = false;
+                    baseResult.ErrorMessage = $@"The following data is duplicated
+{listKeyDuplicateItems.Select(s => $"<Roll>{s.Key.Roll}, <Dyelot>{s.Key.Dyelot}").JoinToString(Environment.NewLine)}
+";
+                    return baseResult;
+                }
+
+
                 //再檢查一次Result
                 foreach (FabricCrkShrkTestCrocking_Detail fabricCrkShrkTestCrocking_Detail in fabricCrkShrkTestCrocking_Result.Crocking_Detail)
                 {
@@ -471,11 +489,31 @@ namespace BusinessLogicLayer.Service
                     return baseResult;
                 }
 
+                var listKeyDuplicateItems = fabricCrkShrkTestHeat_Result
+                    .Heat_Detail.GroupBy(s => new
+                    {
+                        s.Roll,
+                        s.Dyelot,
+                    })
+                    .Where(groupItem => groupItem.Count() > 1);
+
+                if (listKeyDuplicateItems.Any())
+                {
+                    baseResult.Result = false;
+                    baseResult.ErrorMessage = $@"The following data is duplicated
+{listKeyDuplicateItems.Select(s => $"<Roll>{s.Key.Roll}, <Dyelot>{s.Key.Dyelot}").JoinToString(Environment.NewLine)}
+";
+                    return baseResult;
+                }
+
                 // 重算HorizontalRate, VerticalRate
                 foreach (FabricCrkShrkTestHeat_Detail fabricCrkShrkTestHeat_Detail in fabricCrkShrkTestHeat_Result.Heat_Detail)
                 {
-                    fabricCrkShrkTestHeat_Detail.VerticalRate = Math.Round(((fabricCrkShrkTestHeat_Detail.VerticalTest1 + fabricCrkShrkTestHeat_Detail.VerticalTest2 + fabricCrkShrkTestHeat_Detail.VerticalTest3 / 3) - fabricCrkShrkTestHeat_Detail.VerticalOriginal) / fabricCrkShrkTestHeat_Detail.VerticalOriginal * 100, 2);
-                    fabricCrkShrkTestHeat_Detail.HorizontalRate = Math.Round(((fabricCrkShrkTestHeat_Detail.HorizontalTest1 + fabricCrkShrkTestHeat_Detail.HorizontalTest2 + fabricCrkShrkTestHeat_Detail.HorizontalTest3 / 3) - fabricCrkShrkTestHeat_Detail.HorizontalOriginal) / fabricCrkShrkTestHeat_Detail.HorizontalOriginal * 100, 2);
+                    fabricCrkShrkTestHeat_Detail.HorizontalAverage = (fabricCrkShrkTestHeat_Detail.HorizontalTest1 + fabricCrkShrkTestHeat_Detail.HorizontalTest2 + fabricCrkShrkTestHeat_Detail.HorizontalTest3) / 3;
+                    fabricCrkShrkTestHeat_Detail.HorizontalRate = Math.Round((fabricCrkShrkTestHeat_Detail.HorizontalAverage - fabricCrkShrkTestHeat_Detail.HorizontalOriginal) / fabricCrkShrkTestHeat_Detail.HorizontalOriginal * 100, 2);
+
+                    fabricCrkShrkTestHeat_Detail.VerticalAverage = (fabricCrkShrkTestHeat_Detail.VerticalTest1 + fabricCrkShrkTestHeat_Detail.VerticalTest2 + fabricCrkShrkTestHeat_Detail.VerticalTest3) / 3;
+                    fabricCrkShrkTestHeat_Detail.VerticalRate = Math.Round((fabricCrkShrkTestHeat_Detail.VerticalAverage - fabricCrkShrkTestHeat_Detail.VerticalOriginal) / fabricCrkShrkTestHeat_Detail.VerticalOriginal * 100, 2);
                 }
 
                 _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
@@ -565,19 +603,52 @@ namespace BusinessLogicLayer.Service
                     return baseResult;
                 }
 
+                var listKeyDuplicateItems = fabricCrkShrkTestWash_Result
+                    .Wash_Detail.GroupBy(s => new
+                    {
+                        s.Roll,
+                        s.Dyelot,
+                    })
+                    .Where(groupItem => groupItem.Count() > 1);
+
+                if (listKeyDuplicateItems.Any())
+                {
+                    baseResult.Result = false;
+                    baseResult.ErrorMessage = $@"The following data is duplicated
+{listKeyDuplicateItems.Select(s => $"<Roll>{s.Key.Roll}, <Dyelot>{s.Key.Dyelot}").JoinToString(Environment.NewLine)}
+";
+                    return baseResult;
+                }
+
                 _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
 
                 // 重算HorizontalRate, VerticalRate
                 foreach (FabricCrkShrkTestWash_Detail fabricCrkShrkTestWash_Detail in fabricCrkShrkTestWash_Result.Wash_Detail)
                 {
-                    fabricCrkShrkTestWash_Detail.VerticalRate = MyUtility.Check.Empty(fabricCrkShrkTestWash_Detail.VerticalOriginal) ? 0 :
-                        Math.Round(((fabricCrkShrkTestWash_Detail.VerticalTest1 + fabricCrkShrkTestWash_Detail.VerticalTest2 + fabricCrkShrkTestWash_Detail.VerticalTest3 / 3) - fabricCrkShrkTestWash_Detail.VerticalOriginal) / fabricCrkShrkTestWash_Detail.VerticalOriginal * 100, 2);
+                    fabricCrkShrkTestWash_Detail.HorizontalAverage = (fabricCrkShrkTestWash_Detail.HorizontalTest1 + fabricCrkShrkTestWash_Detail.HorizontalTest2 + fabricCrkShrkTestWash_Detail.HorizontalTest3) / 3;
+                    fabricCrkShrkTestWash_Detail.HorizontalRate = Math.Round((fabricCrkShrkTestWash_Detail.HorizontalAverage - fabricCrkShrkTestWash_Detail.HorizontalOriginal) / fabricCrkShrkTestWash_Detail.HorizontalOriginal * 100, 2);
 
-                    fabricCrkShrkTestWash_Detail.HorizontalRate = MyUtility.Check.Empty(fabricCrkShrkTestWash_Detail.HorizontalOriginal) ? 0 :
-                        Math.Round(((fabricCrkShrkTestWash_Detail.HorizontalTest1 + fabricCrkShrkTestWash_Detail.HorizontalTest2 + fabricCrkShrkTestWash_Detail.HorizontalTest3 / 3) - fabricCrkShrkTestWash_Detail.HorizontalOriginal) / fabricCrkShrkTestWash_Detail.HorizontalOriginal * 100, 2);
+                    fabricCrkShrkTestWash_Detail.VerticalAverage = (fabricCrkShrkTestWash_Detail.VerticalTest1 + fabricCrkShrkTestWash_Detail.VerticalTest2 + fabricCrkShrkTestWash_Detail.VerticalTest3) / 3;
+                    fabricCrkShrkTestWash_Detail.VerticalRate = Math.Round((fabricCrkShrkTestWash_Detail.VerticalAverage - fabricCrkShrkTestWash_Detail.VerticalOriginal) / fabricCrkShrkTestWash_Detail.VerticalOriginal * 100, 2);
 
-                    fabricCrkShrkTestWash_Detail.SkewnessRate = (fabricCrkShrkTestWash_Detail.SkewnessTest3 + fabricCrkShrkTestWash_Detail.SkewnessTest4) == 0 ? 0 :
+                    if (fabricCrkShrkTestWash_Result.Wash_Main.SkewnessOptionID == "1")
+                    {
+                        fabricCrkShrkTestWash_Detail.SkewnessRate = MyUtility.Check.Empty(fabricCrkShrkTestWash_Detail.SkewnessTest1 + fabricCrkShrkTestWash_Detail.SkewnessTest2) ? 0 :
+                            (fabricCrkShrkTestWash_Detail.SkewnessTest1 - fabricCrkShrkTestWash_Detail.SkewnessTest2) / (fabricCrkShrkTestWash_Detail.SkewnessTest1 + fabricCrkShrkTestWash_Detail.SkewnessTest2) * 200;
+                    }
+
+                    if (fabricCrkShrkTestWash_Result.Wash_Main.SkewnessOptionID == "2")
+                    {
+                        fabricCrkShrkTestWash_Detail.SkewnessRate = MyUtility.Check.Empty(fabricCrkShrkTestWash_Detail.SkewnessTest3 + fabricCrkShrkTestWash_Detail.SkewnessTest4) ? 0 :
                         (fabricCrkShrkTestWash_Detail.SkewnessTest1 + fabricCrkShrkTestWash_Detail.SkewnessTest2) / (fabricCrkShrkTestWash_Detail.SkewnessTest3 + fabricCrkShrkTestWash_Detail.SkewnessTest4) * 100;
+                    }
+
+                    if (fabricCrkShrkTestWash_Result.Wash_Main.SkewnessOptionID == "3")
+                    {
+                        fabricCrkShrkTestWash_Detail.SkewnessRate = MyUtility.Check.Empty(fabricCrkShrkTestWash_Detail.SkewnessTest2) ? 0 :
+                        (fabricCrkShrkTestWash_Detail.SkewnessTest1 / fabricCrkShrkTestWash_Detail.SkewnessTest2) * 100;
+                    }
+                    
                 }
 
                 if (fabricCrkShrkTestWash_Result.Wash_Main.WashTestBeforePicture == null)
@@ -932,6 +1003,19 @@ namespace BusinessLogicLayer.Service
                 excelSheets.Cells[4, 6] = fabricCrkShrkTestWash_Main.WhseArrival == null ? string.Empty : ((DateTime)fabricCrkShrkTestWash_Main.WhseArrival).ToString("yyyy/MM/dd");
                 excelSheets.Cells[4, 8] = fabricCrkShrkTestWash_Main.Supp;
                 excelSheets.Cells[4, 10] = fabricCrkShrkTestWash_Main.NonWash;
+
+                int RowIdx = 0;
+                foreach (DataRow dr in dtWashDetail.Rows)
+                {
+                    int colIndex = 1;
+                    foreach (string col in columnNames)
+                    {
+                        excelSheets.Cells[RowIdx + 6, colIndex] = dtWashDetail.Rows[RowIdx][col].ToString();
+                        colIndex++;
+                    }
+
+                    RowIdx++;
+                }
 
                 // SkewnessOption欄位名稱改變
                 switch (skewnessOption)
