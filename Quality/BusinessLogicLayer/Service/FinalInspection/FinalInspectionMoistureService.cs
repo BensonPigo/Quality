@@ -188,16 +188,16 @@ namespace BusinessLogicLayer.Service
                         moistureResult.GarmentMiddle > GMTMoisureStandard ||
                         moistureResult.GarmentBottom > GMTMoisureStandard ||
                         moistureResult.CTNInside > CTNMoisureStandard ||
-                        moistureResult.CTNOutside > CTNMoisureStandard ? "Fail" : "Pass";
+                        moistureResult.CTNOutside > CTNMoisureStandard ? "F" : "P";
                 }
                 else
                 {
                     result = moistureResult.GarmentTop > GMTMoisureStandard ||
                             moistureResult.GarmentMiddle > GMTMoisureStandard ||
-                            moistureResult.GarmentBottom > GMTMoisureStandard  ? "Fail" : "Pass";
+                            moistureResult.GarmentBottom > GMTMoisureStandard  ? "F" : "P";
                 }
 
-                if (result == "Fail" && string.IsNullOrEmpty(moistureResult.Action))
+                if (result == "F" && string.IsNullOrEmpty(moistureResult.Action))
                 {
                     baseResult.Result = false;
                     baseResult.ErrorMessage = "[Action] can not be empty";

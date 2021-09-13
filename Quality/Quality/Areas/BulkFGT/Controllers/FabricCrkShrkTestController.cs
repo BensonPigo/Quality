@@ -48,9 +48,10 @@ namespace Quality.Areas.BulkFGT.Controllers
                     Main = new FabricCrkShrkTest_Main(),
                     Details = new List<FabricCrkShrkTest_Detail>(),
                     Result = false,
-                    ErrorMessage = $"msg.WithInfo('{fabricCrkShrkTest_Result.ErrorMessage }');",
+                    ErrorMessage = $"msg.WithInfo('{fabricCrkShrkTest_Result.ErrorMessage.Replace("\r\n", "<br />") }');",
                 };
             }
+            UpdateModel(fabricCrkShrkTest_Result);
             return View(fabricCrkShrkTest_Result);
         }
 
@@ -86,8 +87,17 @@ namespace Quality.Areas.BulkFGT.Controllers
                     ScaleIDs = new List<string>(),
                     Crocking_Main = new FabricCrkShrkTestCrocking_Main(),
                     Crocking_Detail = new List<FabricCrkShrkTestCrocking_Detail>(),
-                    ErrorMessage = $"msg.WithInfo('{fabricCrkShrkTestCrocking_Result.ErrorMessage }');",
+                    ErrorMessage = $"msg.WithInfo('{fabricCrkShrkTestCrocking_Result.ErrorMessage.Replace("\r\n", "<br />") }');",
                 };
+            }
+
+            if (TempData["Model"] != null)
+            {
+                FabricCrkShrkTestCrocking_Result saveResult = (FabricCrkShrkTestCrocking_Result)TempData["Model"];
+                fabricCrkShrkTestCrocking_Result.Crocking_Main.CrockingRemark = saveResult.Crocking_Main.CrockingRemark;
+                fabricCrkShrkTestCrocking_Result.Crocking_Detail = saveResult.Crocking_Detail;
+                fabricCrkShrkTestCrocking_Result.Result = saveResult.Result;
+                fabricCrkShrkTestCrocking_Result.ErrorMessage = $"msg.WithInfo('{saveResult.ErrorMessage.ToString().Replace("\r\n", "<br />") }');";
             }
 
             ViewBag.ResultList = new SetListItem().ItemListBinding(resultType);
@@ -191,7 +201,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
-        public ActionResult CrockingTest(FabricCrkShrkTestCrocking_Result Result)
+        public ActionResult CrockingTestSave(FabricCrkShrkTestCrocking_Result Result)
         {
             if (Result.Crocking_Detail == null)
             {
@@ -199,27 +209,14 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
 
             BaseResult saveResult = _FabricCrkShrkTest_Service.SaveFabricCrkShrkTestCrockingDetail(Result, this.UserID);
-            FabricCrkShrkTestCrocking_Result fabricCrkShrkTestCrocking_Result = _FabricCrkShrkTest_Service.GetFabricCrkShrkTestCrocking_Result(Result.ID);
-            if (!fabricCrkShrkTestCrocking_Result.Result)
+            if (saveResult.Result)
             {
-                fabricCrkShrkTestCrocking_Result = new FabricCrkShrkTestCrocking_Result()
-                {
-                    ScaleIDs = new List<string>(),
-                    Crocking_Main = new FabricCrkShrkTestCrocking_Main(),
-                    Crocking_Detail = new List<FabricCrkShrkTestCrocking_Detail>(),
-                    ErrorMessage = $"msg.WithInfo('{fabricCrkShrkTestCrocking_Result.ErrorMessage }');",
-                };
+                return RedirectToAction("CrockingTest", new { ID = Result.ID });
             }
-
-            if (!saveResult.Result)
-            {
-                fabricCrkShrkTestCrocking_Result.ErrorMessage = $"msg.WithInfo('{saveResult.ErrorMessage }');";
-            }
-
-            ViewBag.ResultList = new SetListItem().ItemListBinding(resultType);
-            ViewBag.ScaleIDsList = new SetListItem().ItemListBinding(fabricCrkShrkTestCrocking_Result.ScaleIDs);
-            ViewBag.FactoryID = this.FactoryID;
-            return View(fabricCrkShrkTestCrocking_Result);
+            Result.Result = saveResult.Result;
+            Result.ErrorMessage = saveResult.ErrorMessage;
+            TempData["Model"] = Result;
+            return RedirectToAction("CrockingTest", new { ID = Result.ID });
         }
 
         [HttpPost]
@@ -272,8 +269,17 @@ namespace Quality.Areas.BulkFGT.Controllers
                 {
                     Heat_Main = new FabricCrkShrkTestHeat_Main(),
                     Heat_Detail = new List<FabricCrkShrkTestHeat_Detail>(),
-                    ErrorMessage = $"msg.WithInfo('{fabricCrkShrkTestHeat_Result.ErrorMessage }');",
+                    ErrorMessage = $"msg.WithInfo('{fabricCrkShrkTestHeat_Result.ErrorMessage.Replace("\r\n", "<br />") }');",
                 };
+            }
+
+            if (TempData["Model"] != null)
+            {
+                FabricCrkShrkTestHeat_Result saveResult = (FabricCrkShrkTestHeat_Result)TempData["Model"];
+                fabricCrkShrkTestHeat_Result.Heat_Main.HeatRemark = saveResult.Heat_Main.HeatRemark;
+                fabricCrkShrkTestHeat_Result.Heat_Detail = saveResult.Heat_Detail;
+                fabricCrkShrkTestHeat_Result.Result = saveResult.Result;
+                fabricCrkShrkTestHeat_Result.ErrorMessage = $"msg.WithInfo('{saveResult.ErrorMessage.ToString().Replace("\r\n", "<br />") }');";
             }
 
             ViewBag.ResultList = new SetListItem().ItemListBinding(resultType);
@@ -298,10 +304,10 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "</div>";
             html += "</td>";
             html += "<td>";
-            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalOriginal 必須是數字。' data-val-required='HorizontalOriginal 欄位是必要項。' id='Heat_Detail_{lastNO}__HorizontalOriginal' name='Heat_Detail[{lastNO}].HorizontalOriginal' step='0.01' type='number' value='0' >";
+            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalOriginal 必須是數字。' data-val-required='HorizontalOriginal 欄位是必要項。' id='Heat_Detail_{lastNO}__HorizontalOriginal' name='Heat_Detail[{lastNO}].HorizontalOriginal' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
-            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalOriginal 必須是數字。' data-val-required='VerticalOriginal 欄位是必要項。' id='Heat_Detail_{lastNO}__VerticalOriginal' name='Heat_Detail[{lastNO}].VerticalOriginal' step='0.01' type='number' value='0' >";
+            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalOriginal 必須是數字。' data-val-required='VerticalOriginal 欄位是必要項。' id='Heat_Detail_{lastNO}__VerticalOriginal' name='Heat_Detail[{lastNO}].VerticalOriginal' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
             html += "</td>";
 
             html += "<td>";
@@ -312,13 +318,13 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "</td>";
 
             html += "<td>";
-            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalTest1 必須是數字。' data-val-required='HorizontalTest1 欄位是必要項。' id='Heat_Detail_{lastNO}__HorizontalTest1' name='Heat_Detail[{lastNO}].HorizontalTest1' step='0.01' type='number' value='0' >";
+            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalTest1 必須是數字。' data-val-required='HorizontalTest1 欄位是必要項。' id='Heat_Detail_{lastNO}__HorizontalTest1' name='Heat_Detail[{lastNO}].HorizontalTest1' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
-            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalTest2 必須是數字。' data-val-required='HorizontalTest2 欄位是必要項。' id='Heat_Detail_{lastNO}__HorizontalTest2' name='Heat_Detail[{lastNO}].HorizontalTest2' step='0.01' type='number' value='0' >";
+            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalTest2 必須是數字。' data-val-required='HorizontalTest2 欄位是必要項。' id='Heat_Detail_{lastNO}__HorizontalTest2' name='Heat_Detail[{lastNO}].HorizontalTest2' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
-            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalTest3 必須是數字。' data-val-required='HorizontalTest3 欄位是必要項。' id='Heat_Detail_{lastNO}__HorizontalTest3' name='Heat_Detail[{lastNO}].HorizontalTest3' step='0.01' type='number' value='0' >";
+            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalTest3 必須是數字。' data-val-required='HorizontalTest3 欄位是必要項。' id='Heat_Detail_{lastNO}__HorizontalTest3' name='Heat_Detail[{lastNO}].HorizontalTest3' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
             html += $"<input data-val='true' data-val-number='欄位 HorizontalAverage 必須是數字。' data-val-required='HorizontalAverage 欄位是必要項。' id='Heat_Detail_{lastNO}__HorizontalAverage' name='Heat_Detail[{lastNO}].HorizontalAverage' readonly='readonly' step='0.01' type='number' value='0' >";
@@ -327,13 +333,13 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += $"<input data-val='true' data-val-number='欄位 HorizontalRate 必須是數字。' data-val-required='HorizontalRate 欄位是必要項。' id='Heat_Detail_{lastNO}__HorizontalRate' name='Heat_Detail[{lastNO}].HorizontalRate' readonly='readonly' step='0.01' type='number' value='0' >";
             html += "</td>";
             html += "<td>";
-            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalTest1 必須是數字。' data-val-required='VerticalTest1 欄位是必要項。' id='Heat_Detail_{lastNO}__VerticalTest1' name='Heat_Detail[{lastNO}].VerticalTest1' step='0.01' type='number' value='0' >";
+            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalTest1 必須是數字。' data-val-required='VerticalTest1 欄位是必要項。' id='Heat_Detail_{lastNO}__VerticalTest1' name='Heat_Detail[{lastNO}].VerticalTest1' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
-            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalTest2 必須是數字。' data-val-required='VerticalTest2 欄位是必要項。' id='Heat_Detail_{lastNO}__VerticalTest2' name='Heat_Detail[{lastNO}].VerticalTest2' step='0.01' type='number' value='0' >";
+            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalTest2 必須是數字。' data-val-required='VerticalTest2 欄位是必要項。' id='Heat_Detail_{lastNO}__VerticalTest2' name='Heat_Detail[{lastNO}].VerticalTest2' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
-            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalTest3 必須是數字。' data-val-required='VerticalTest3 欄位是必要項。' id='Heat_Detail_{lastNO}__VerticalTest3' name='Heat_Detail[{lastNO}].VerticalTest3' step='0.01' type='number' value='0' >";
+            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalTest3 必須是數字。' data-val-required='VerticalTest3 欄位是必要項。' id='Heat_Detail_{lastNO}__VerticalTest3' name='Heat_Detail[{lastNO}].VerticalTest3' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
             html += $"<input data-val='true' data-val-number='欄位 VerticalAverage 必須是數字。' data-val-required='VerticalAverage 欄位是必要項。' id='Heat_Detail_{lastNO}__VerticalAverage' name='Heat_Detail[{lastNO}].VerticalAverage' readonly='readonly' step='0.01' type='number' value='0' >";
@@ -367,7 +373,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
-        public ActionResult HeatTest(FabricCrkShrkTestHeat_Result Result)
+        public ActionResult HeatTestSave(FabricCrkShrkTestHeat_Result Result)
         {
             if (Result.Heat_Detail == null)
             {
@@ -375,26 +381,15 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
 
             BaseResult saveResult = _FabricCrkShrkTest_Service.SaveFabricCrkShrkTestHeatDetail(Result, this.UserID);
-            FabricCrkShrkTestHeat_Result fabricCrkShrkTestHeat_Result = _FabricCrkShrkTest_Service.GetFabricCrkShrkTestHeat_Result(Result.ID);
-            if (!fabricCrkShrkTestHeat_Result.Result)
+
+            if (saveResult.Result)
             {
-                fabricCrkShrkTestHeat_Result = new FabricCrkShrkTestHeat_Result()
-                {
-                    Heat_Main = new FabricCrkShrkTestHeat_Main(),
-                    Heat_Detail = new List<FabricCrkShrkTestHeat_Detail>(),
-                    ErrorMessage = $"msg.WithInfo('{fabricCrkShrkTestHeat_Result.ErrorMessage }');",
-                };
+                return RedirectToAction("HeatTest", new { ID = Result.ID });
             }
-
-            if (!saveResult.Result)
-            {
-                fabricCrkShrkTestHeat_Result.ErrorMessage = $"msg.WithInfo('{saveResult.ErrorMessage }');";
-            }
-
-
-            ViewBag.ResultList = new SetListItem().ItemListBinding(resultType);
-            ViewBag.FactoryID = this.FactoryID;
-            return View(fabricCrkShrkTestHeat_Result);
+            Result.Result = saveResult.Result;
+            Result.ErrorMessage = saveResult.ErrorMessage;
+            TempData["Model"] = Result;
+            return RedirectToAction("HeatTest", new { ID = Result.ID });
         }
 
         [HttpPost]
@@ -438,8 +433,18 @@ namespace Quality.Areas.BulkFGT.Controllers
                 {
                     Wash_Main = new FabricCrkShrkTestWash_Main(),
                     Wash_Detail = new List<FabricCrkShrkTestWash_Detail>(),
-                    ErrorMessage = $"msg.WithInfo('{fabricCrkShrkTestWash_Result.ErrorMessage }');",
+                    ErrorMessage = $"msg.WithInfo('{fabricCrkShrkTestWash_Result.ErrorMessage.Replace("\r\n", "<br />") }');",
                 };
+            }
+
+            if (TempData["Model"] != null)
+            {
+                FabricCrkShrkTestWash_Result saveResult = (FabricCrkShrkTestWash_Result)TempData["Model"];
+                fabricCrkShrkTestWash_Result.Wash_Main.SkewnessOptionID = saveResult.Wash_Main.SkewnessOptionID;
+                fabricCrkShrkTestWash_Result.Wash_Main.WashRemark = saveResult.Wash_Main.WashRemark;
+                fabricCrkShrkTestWash_Result.Wash_Detail = saveResult.Wash_Detail;
+                fabricCrkShrkTestWash_Result.Result = saveResult.Result;
+                fabricCrkShrkTestWash_Result.ErrorMessage = $"msg.WithInfo('{saveResult.ErrorMessage.ToString().Replace("\r\n", "<br />") }');";
             }
 
             List<SelectListItem> skewnessOptionList = new SetListItem().ItemListBinding(skewnessOption);
@@ -467,10 +472,10 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "</div>";
             html += "</td>";
             html += "<td>";
-            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalOriginal 必須是數字。' data-val-required='HorizontalOriginal 欄位是必要項。' id='Wash_Detail_{lastNO}__HorizontalOriginal' name='Wash_Detail[{lastNO}].HorizontalOriginal' step='0.01' type='number' value='0'>";
+            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalOriginal 必須是數字。' data-val-required='HorizontalOriginal 欄位是必要項。' id='Wash_Detail_{lastNO}__HorizontalOriginal' name='Wash_Detail[{lastNO}].HorizontalOriginal' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
-            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalOriginal 必須是數字。' data-val-required='VerticalOriginal 欄位是必要項。' id='Wash_Detail_{lastNO}__VerticalOriginal' name='Wash_Detail[{lastNO}].VerticalOriginal' step='0.01' type='number' value='0'>";
+            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalOriginal 必須是數字。' data-val-required='VerticalOriginal 欄位是必要項。' id='Wash_Detail_{lastNO}__VerticalOriginal' name='Wash_Detail[{lastNO}].VerticalOriginal' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
             html += $"<select id='Wash_Main_{lastNO}__Result' class='resultList' name='Wash_Detail[{lastNO}].Result' style='width:157px;color:blue' onchange='changeResultColor(this)'>";
@@ -480,13 +485,13 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "</td>";
 
             html += "<td>";
-            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalTest1 必須是數字。' data-val-required='HorizontalTest1 欄位是必要項。' id='Wash_Detail_{lastNO}__HorizontalTest1' name='Wash_Detail[{lastNO}].HorizontalTest1' step='0.01' type='number' value='0'>";
+            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalTest1 必須是數字。' data-val-required='HorizontalTest1 欄位是必要項。' id='Wash_Detail_{lastNO}__HorizontalTest1' name='Wash_Detail[{lastNO}].HorizontalTest1' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
-            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalTest2 必須是數字。' data-val-required='HorizontalTest2 欄位是必要項。' id='Wash_Detail_{lastNO}__HorizontalTest2' name='Wash_Detail[{lastNO}].HorizontalTest2' step='0.01' type='number' value='0'>";
+            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalTest2 必須是數字。' data-val-required='HorizontalTest2 欄位是必要項。' id='Wash_Detail_{lastNO}__HorizontalTest2' name='Wash_Detail[{lastNO}].HorizontalTest2' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
-            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalTest3 必須是數字。' data-val-required='HorizontalTest3 欄位是必要項。' id='Wash_Detail_{lastNO}__HorizontalTest3' name='Wash_Detail[{lastNO}].HorizontalTest3' step='0.01' type='number' value='0'>";
+            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalTest3 必須是數字。' data-val-required='HorizontalTest3 欄位是必要項。' id='Wash_Detail_{lastNO}__HorizontalTest3' name='Wash_Detail[{lastNO}].HorizontalTest3' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
             html += $"<input data-val='true' data-val-number='欄位 HorizontalAverage 必須是數字。' data-val-required='HorizontalAverage 欄位是必要項。' id='Wash_Detail_{lastNO}__HorizontalAverage' name='Wash_Detail[{lastNO}].HorizontalAverage' readonly='readonly' step='0.01' type='number' value='0'>";
@@ -496,13 +501,13 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "</td>";
 
             html += "<td>";
-            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalTest1 必須是數字。' data-val-required='VerticalTest1 欄位是必要項。' id='Wash_Detail_{lastNO}__VerticalTest1' name='Wash_Detail[{lastNO}].VerticalTest1' step='0.01' type='number' value='0'>";
+            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalTest1 必須是數字。' data-val-required='VerticalTest1 欄位是必要項。' id='Wash_Detail_{lastNO}__VerticalTest1' name='Wash_Detail[{lastNO}].VerticalTest1' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
-            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalTest2 必須是數字。' data-val-required='VerticalTest2 欄位是必要項。' id='Wash_Detail_{lastNO}__VerticalTest2' name='Wash_Detail[{lastNO}].VerticalTest2' step='0.01' type='number' value='0'>";
+            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalTest2 必須是數字。' data-val-required='VerticalTest2 欄位是必要項。' id='Wash_Detail_{lastNO}__VerticalTest2' name='Wash_Detail[{lastNO}].VerticalTest2' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
-            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalTest3 必須是數字。' data-val-required='VerticalTest3 欄位是必要項。' id='Wash_Detail_{lastNO}__VerticalTest3' name='Wash_Detail[{lastNO}].VerticalTest3' step='0.01' type='number' value='0'>";
+            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalTest3 必須是數字。' data-val-required='VerticalTest3 欄位是必要項。' id='Wash_Detail_{lastNO}__VerticalTest3' name='Wash_Detail[{lastNO}].VerticalTest3' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
             html += $"<input data-val='true' data-val-number='欄位 VerticalAverage 必須是數字。' data-val-required='VerticalAverage 欄位是必要項。' id='Wash_Detail_{lastNO}__VerticalAverage' name='Wash_Detail[{lastNO}].VerticalAverage' readonly='readonly' step='0.01' type='number' value='0'>";
@@ -512,16 +517,16 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "</td>";
 
             html += "<td>";
-            html += $"<input class='SkewnessTest' data-val='true' data-val-number='欄位 SkewnessTest1 必須是數字。' data-val-required='SkewnessTest1 欄位是必要項。' id='Wash_Detail_{lastNO}__SkewnessTest1' name='Wash_Detail[{lastNO}].SkewnessTest1' step='0.01' type='number' value='0'>";
+            html += $"<input class='SkewnessTest' data-val='true' data-val-number='欄位 SkewnessTest1 必須是數字。' data-val-required='SkewnessTest1 欄位是必要項。' id='Wash_Detail_{lastNO}__SkewnessTest1' name='Wash_Detail[{lastNO}].SkewnessTest1' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
-            html += $"<input class='SkewnessTest' data-val='true' data-val-number='欄位 SkewnessTest2 必須是數字。' data-val-required='SkewnessTest2 欄位是必要項。' id='Wash_Detail_{lastNO}__SkewnessTest2' name='Wash_Detail[{lastNO}].SkewnessTest2' step='0.01' type='number' value='0'>";
+            html += $"<input class='SkewnessTest' data-val='true' data-val-number='欄位 SkewnessTest2 必須是數字。' data-val-required='SkewnessTest2 欄位是必要項。' id='Wash_Detail_{lastNO}__SkewnessTest2' name='Wash_Detail[{lastNO}].SkewnessTest2' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td style=''>";
-            html += $"<input class='SkewnessTest' data-val='true' data-val-number='欄位 SkewnessTest3 必須是數字。' data-val-required='SkewnessTest3 欄位是必要項。' id='Wash_Detail_{lastNO}__SkewnessTest3' name='Wash_Detail[{lastNO}].SkewnessTest3' step='0.01' type='number' value='0'>";
+            html += $"<input class='SkewnessTest' data-val='true' data-val-number='欄位 SkewnessTest3 必須是數字。' data-val-required='SkewnessTest3 欄位是必要項。' id='Wash_Detail_{lastNO}__SkewnessTest3' name='Wash_Detail[{lastNO}].SkewnessTest3' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td style=''>";
-            html += $"<input class='SkewnessTest' data-val='true' data-val-number='欄位 SkewnessTest4 必須是數字。' data-val-required='SkewnessTest4 欄位是必要項。' id='Wash_Detail_{lastNO}__SkewnessTest4' name='Wash_Detail[{lastNO}].SkewnessTest4' step='0.01' type='number' value='0'>";
+            html += $"<input class='SkewnessTest' data-val='true' data-val-number='欄位 SkewnessTest4 必須是數字。' data-val-required='SkewnessTest4 欄位是必要項。' id='Wash_Detail_{lastNO}__SkewnessTest4' name='Wash_Detail[{lastNO}].SkewnessTest4' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
             html += $"<input data-val='true' data-val-number='欄位 SkewnessRate 必須是數字。' data-val-required='SkewnessRate 欄位是必要項。' id='Wash_Detail_{lastNO}__SkewnessRate' name='Wash_Detail[{lastNO}].SkewnessRate' readonly='readonly' step='0.01' type='number' value='0'>";
@@ -553,7 +558,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
-        public ActionResult WashTest(FabricCrkShrkTestWash_Result Result)
+        public ActionResult WashTestSave(FabricCrkShrkTestWash_Result Result)
         {
             if (Result.Wash_Detail == null)
             {
@@ -561,27 +566,15 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
 
             BaseResult saveResult = _FabricCrkShrkTest_Service.SaveFabricCrkShrkTestWashDetail(Result, this.UserID);
-            FabricCrkShrkTestWash_Result fabricCrkShrkTestWash_Result = _FabricCrkShrkTest_Service.GetFabricCrkShrkTestWash_Result(Result.ID);
-            if (!fabricCrkShrkTestWash_Result.Result)
+            if (saveResult.Result)
             {
-                fabricCrkShrkTestWash_Result = new FabricCrkShrkTestWash_Result()
-                {
-                    Wash_Main = new FabricCrkShrkTestWash_Main(),
-                    Wash_Detail = new List<FabricCrkShrkTestWash_Detail>(),
-                    ErrorMessage = $"msg.WithInfo('{fabricCrkShrkTestWash_Result.ErrorMessage }');",
-                };
+                return RedirectToAction("WashTest", new { ID = Result.ID });
             }
 
-            if (!saveResult.Result)
-            {
-                fabricCrkShrkTestWash_Result.ErrorMessage = $"msg.WithInfo('{saveResult.ErrorMessage }');";
-            }
-
-            List<SelectListItem> skewnessOptionList = new SetListItem().ItemListBinding(skewnessOption);
-            ViewBag.ResultList = new SetListItem().ItemListBinding(resultType);
-            ViewBag.SkewnessOptionList = skewnessOptionList;
-            ViewBag.FactoryID = this.FactoryID;
-            return View(fabricCrkShrkTestWash_Result);
+            Result.Result = saveResult.Result;
+            Result.ErrorMessage = saveResult.ErrorMessage;
+            TempData["Model"] = Result;
+            return RedirectToAction("WashTest", new { ID = Result.ID });
         }
 
         [HttpPost]

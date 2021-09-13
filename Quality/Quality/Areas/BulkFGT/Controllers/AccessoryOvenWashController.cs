@@ -14,10 +14,10 @@ namespace Quality.Areas.BulkFGT.Controllers
     public class AccessoryOvenWashController : BaseController
     {
         private AccessoryOvenWashService _Service;
-
         public AccessoryOvenWashController()
         {
             _Service = new AccessoryOvenWashService();
+            ViewBag.OnlineHelp = this.OnlineHelp + "BulkFGT.AccessoryOvenWash,,";
         }
 
         #region AccessoryOvenWash頁面

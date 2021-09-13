@@ -18,6 +18,7 @@ namespace Quality.Areas.Authority.Controllers
         public AuthoritybyPositionController()
         {
             _AuthorityService = new AuthorityService();
+            ViewBag.OnlineHelp = this.OnlineHelp + "Authority.AuthoritybyPosition,,";
         }
         // GET: Authority/AuthoritybyPosition
         public ActionResult Index()

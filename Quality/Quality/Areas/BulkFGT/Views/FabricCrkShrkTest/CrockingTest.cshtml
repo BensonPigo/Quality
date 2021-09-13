@@ -147,7 +147,7 @@
         background-color: rgb(173, 216, 230);
     }
 </style>
-@using (Html.BeginForm("CrockingTest", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { id = "DetailForm" }))
+@using (Html.BeginForm("CrockingTestSave", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { id = "DetailForm" }))
 {
     <div class="main-content">
         <header class="page-header">
@@ -335,7 +335,7 @@
                                     <tr>
                                         <td><h5>Remark</h5></td>
                                         <td colspan="5">
-                                            @Html.TextBoxFor(o => o.Crocking_Main.CrockingRemark, new { @style = "width:100%" })
+                                            @Html.TextBoxFor(o => o.Crocking_Main.CrockingRemark, new { @style = "width:100%", @disabled = "disabled" })
                                         </td>
                                     </tr>
                                 </tbody>
@@ -594,14 +594,14 @@
 
             $('#Save, #New').addClass("IsEditMode");
             $(".DataTable:not(.DetailTable) textarea").removeAttr("disabled", "disabled");
-            $(".DetailTable input,.DetailTable select").removeAttr("disabled", "disabled");
+            $(".DetailTable input,.DetailTable select, #Crocking_Main_CrockingRemark").removeAttr("disabled", "disabled");
             $(".detailDelete").show();
             DetailButtonBind();
         }
         else {
             $('#Save, #New').unbind('click').removeClass("IsEditMode");
             $(".DataTable:not(.DetailTable) textarea").attr("disabled", "disabled");
-            $(".DetailTable input,.DetailTable select").attr("disabled", "disabled");
+            $(".DetailTable input,.DetailTable select, #Crocking_Main_CrockingRemark").attr("disabled", "disabled");
             $(".detailDelete").hide();
             $('#Excel, #PDF').addClass("IsEditMode");
             if (@Model.Crocking_Main.CrockingEncdoe == false) {
@@ -881,7 +881,8 @@
         else {
             $(obj).css('color', 'red');
         }
-
+        console.log(obj);
+        console.log(result);
         // checkAllResult
         var idx = $(obj).closest("tr").attr("idx");
         var result = true;
@@ -889,12 +890,15 @@
             var id = $(this).attr('id');
                 @{
                     int testOption = Model.CrockingTestOption;
-                    @:if (id.includes('ResultDry_Weft')) {
-                        @:return;
-                    @:}
-                    @:else if (id.includes('ResultWet_Weft')) {
-                       @:return;
-                    @:}
+                    if (testOption == 0)
+                    {
+                        @:if (id.includes('ResultDry_Weft')) {
+                            @:return;
+                        @:}
+                        @:else if (id.includes('ResultWet_Weft')) {
+                           @:return;
+                        @:}
+                    }
                 }
 
             if ($(this).val() != "Pass") {

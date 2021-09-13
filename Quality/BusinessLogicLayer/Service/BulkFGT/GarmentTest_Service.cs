@@ -842,6 +842,47 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         Excel.Application objApp = MyUtility.Excel.ConnectExcel(openfilepath);
                         objApp.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
                         Microsoft.Office.Interop.Excel.Worksheet worksheet = objApp.ActiveWorkbook.Worksheets[1]; // 取得工作表
+
+                        // WashName 調整次數 710(1,10,15), 701(1,3)
+                        string WashName = all_Data.Main.WashName;
+                        if (WashName == "710" || true)
+                        {
+                            // Actual Shrinkage % 
+                            // Top
+                            worksheet.Cells[16, 8] = "10.wash";
+                            worksheet.Cells[16, 10] = "15.wash";
+                            // INNER
+                            worksheet.Cells[24, 8] = "10.wash";
+                            worksheet.Cells[24, 10] = "15.wash";
+                            // OUTER
+                            worksheet.Cells[32, 8] = "10.wash";
+                            worksheet.Cells[32, 10] = "15.wash";
+                            // BOTTOM
+                            worksheet.Cells[42, 8] = "10.wash";
+                            worksheet.Cells[42, 10] = "15.wash";
+
+                            //After Wash Appearance Check list
+                            worksheet.Cells[61, 6] = "10.wash";
+                            worksheet.Cells[61, 8] = "15.wash";
+                        }
+                        else if (WashName == "701")
+                        {
+                            // Actual Shrinkage % 
+                            // Top
+                            worksheet.Cells[16, 10] = "";
+                            // INNER
+                            worksheet.Cells[24, 10] = "";
+                            // OUTER
+                            worksheet.Cells[32, 10] = "";
+                            // BOTTOM
+                            worksheet.Cells[42, 10] = "";
+
+                            //After Wash Appearance Check list
+                            worksheet.Cells[61, 8] = "";
+                        }
+                        
+
+
                         if (data.DateSubmit.HasValue)
                         {
                             worksheet.Cells[4, 4] = MyUtility.Convert.GetDate(data.DateSubmit.Value).Value.Year + "/" + MyUtility.Convert.GetDate(data.DateSubmit.Value).Value.Month + "/" + MyUtility.Convert.GetDate(data.DateSubmit.Value).Value.Day;
@@ -2371,7 +2412,7 @@ and t.GarmentTest=1
 
                         // Test Results
                         // 若[GarmentTest_Detail_FGWT.Scale]非null則帶入Scale，若為null則帶入 [GarmentTest_Detail_FGWT.AfterWash - GarmentTest_Detail_FGWT.BeforeWash.]
-                        if (string.IsNullOrEmpty(dr.Scale))
+                        if (!string.IsNullOrEmpty(dr.Scale))
                         {
                             worksheet_2020.Cells[startRowIndex, 4] = MyUtility.Convert.GetString(dr.Scale);
                         }

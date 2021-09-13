@@ -26,7 +26,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         {
             _PicturesDummyService = new PicturesDummyService();
             this.SelectedMenu = "Sample RFT";
-
+            ViewBag.OnlineHelp = this.OnlineHelp + "SampleRFT.PicturesDummy,,";
         }
 
         // GET: SampleRFT/PicturesDummy
@@ -59,7 +59,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             if (!model.Result)
             {
                 model.ErrorMessage = $@"
-msg.WithInfo('{model.ErrorMessage}');
+msg.WithInfo('{model.ErrorMessage.Replace("\r\n", "<br />")}');
 ";
             }
 

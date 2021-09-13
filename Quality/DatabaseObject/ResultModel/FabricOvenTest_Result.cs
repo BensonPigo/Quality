@@ -41,7 +41,7 @@ namespace DatabaseObject.ResultModel
         public string Status { get; set; }
     }
 
-    public class FabricOvenTest_Detail_Result
+    public class FabricOvenTest_Detail_Result : BaseResult
     {
         public List<string> ScaleIDs { get; set; }
         public FabricOvenTest_Detail_Main Main { get; set; } = new FabricOvenTest_Detail_Main();

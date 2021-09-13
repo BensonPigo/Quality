@@ -135,15 +135,15 @@
                 }
             });
 
-            // 把開窗點到的資料，寫入DataTable的Datasource
-            $("#CheckListTable tbody").on("click", "td.OpenDetail", function () {
+            // 把開窗點到的資料，寫入DataTable的Datasource，請注意必須限定在Check box的標籤才需要觸發事件
+            $("#CheckListTable tbody").on("click", "td.OpenDetail input", function () {
 
 
                 // 取得修改了哪個Code底下的資料
-                var Code = $(this).find("input").attr("Code");
+                var Code = $(this).attr("Code");
 
                 //取得勾選的子項目ID
-                var id = $(this).find("input").attr("id");
+                var id = $(this).attr("id");
 
                 var partentTd = $("#CheckList_" + Code);
                 var tr = $(partentTd).closest('tr');

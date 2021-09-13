@@ -115,10 +115,13 @@ where ID = @ID{idx} and No = @No{idx} and Type = @Type{idx} and Location = @Loca
             };
             string sqlcmd = @"
 
-select *
+select [ID],[No]
+,[Location]
+,[Type],[BeforeWash],[SizeSpec],[AfterWash1],[Shrinkage1],[AfterWash2],[Shrinkage2],[AfterWash3],[Shrinkage3]
 from GarmentTest_Detail_Shrinkage
 where ID = @ID
 and No = @No
+order by Location desc, seq
 ";
             return ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
         }
