@@ -1,4 +1,5 @@
-﻿using DatabaseObject.ViewModel.BulkFGT;
+﻿using BusinessLogicLayer.Service.BulkFGT;
+using DatabaseObject.ViewModel.BulkFGT;
 using FactoryDashBoardWeb.Helper;
 using Quality.Controllers;
 using System;
@@ -12,6 +13,12 @@ namespace Quality.Areas.BulkFGT.Controllers
 {
     public class AccessoryOvenWashController : BaseController
     {
+        private AccessoryOvenWashService _Service;
+
+        public AccessoryOvenWashController()
+        {
+            _Service = new AccessoryOvenWashService();
+        }
 
         #region AccessoryOvenWash頁面
         public ActionResult Index()
@@ -23,131 +30,35 @@ namespace Quality.Areas.BulkFGT.Controllers
             return View(accessory_ViewModel);
         }
 
-        [HttpGet]
-        public ActionResult IndexBack(string OrderID)
+        [HttpPost]
+        [MultipleButton(Name = "action", Argument = "Query")]
+        public ActionResult Query(Accessory_ViewModel Req)
         {
-            Accessory_ViewModel accessory_ViewModel = new Accessory_ViewModel()
+            Accessory_ViewModel model = new Accessory_ViewModel();
+            if (TempData["Req"] != null)
             {
-                OrderID = OrderID,
-                StyleID = "",
-                SeasonID = "",
-                EarliestDate = System.DateTime.Now,
-                EarliestSCIDel = System.DateTime.Now,
-                TargetLeadTime = System.DateTime.Now,
-                CompletionDate = System.DateTime.Now,
-                ArticlePercent = 1,
-                MtlCmplt = "",
-                Remark = "",
-                CreateBy = "",
-                EditBy = "",
+                Req = (Accessory_ViewModel)TempData["Req"];
+            }
+            model = _Service.GetMainData(Req);
+            model.ReqOrderID = Req.ReqOrderID;
 
-                DataList = new List<Accessory_Result>(),
-            };
-
-            Accessory_Result accessory_Result = new Accessory_Result()
-            {
-                AIR_LaboratoryID = "aaa",
-                Seq1 = "01",
-                Seq2 = "01",
-                Seq = "",
-
-                WKNo = "",
-                WhseArrival = System.DateTime.Now,
-                SCIRefno = "",
-                Refno = "",
-                SuppID = "",
-                Supplier = "",
-                Color = "",
-                Size = "",
-                ArriveQty = 123,
-                InspDeadline = System.DateTime.Now,
-                Result = 22,
-
-                NonOven = false,
-                OvenResult = "aa",
-                OvenScale = "bb",
-                OvenDate = System.DateTime.Now,
-                OvenInspector = "cc",
-                OvenRemark = "dd",
-
-                NonWash = true,
-                WashResult = "gg",
-                WashScale = "bba",
-                WashDate = System.DateTime.Now,
-                WashInspector = "ttt",
-                WashRemark = "a",
-                Receiving = "b",
-            };
-
-            accessory_ViewModel.DataList.Add(accessory_Result);
-            return View("Index", accessory_ViewModel);
+            return View("Index", model);
         }
 
 
-        [HttpPost]
-        public ActionResult Index(string OrderID)
-        {
-            Accessory_ViewModel accessory_ViewModel = new Accessory_ViewModel()
-            {
-                OrderID = OrderID,
-                StyleID = "",
-                SeasonID = "",
-                EarliestDate = System.DateTime.Now,
-                EarliestSCIDel = System.DateTime.Now,
-                TargetLeadTime = System.DateTime.Now,
-                CompletionDate = System.DateTime.Now,
-                ArticlePercent = 1,
-                MtlCmplt = "",
-                Remark = "",
-                CreateBy = "",
-                EditBy = "",
-
-                DataList = new List<Accessory_Result>(),
-            };
-
-            Accessory_Result accessory_Result = new Accessory_Result()
-            {
-                AIR_LaboratoryID = "abc",
-                Seq1 = "01",
-                Seq2 = "02",
-                Seq = "",
-
-                WKNo = "",
-                WhseArrival = System.DateTime.Now,
-                SCIRefno = "",
-                Refno = "",
-                SuppID = "",
-                Supplier = "",
-                Color = "",
-                Size = "",
-                ArriveQty = 123,
-                InspDeadline = System.DateTime.Now,
-                Result = 22,
-
-                NonOven = false,
-                OvenResult = "aa",
-                OvenScale = "bb",
-                OvenDate = System.DateTime.Now,
-                OvenInspector = "cc",
-                OvenRemark = "dd",
-
-                NonWash = true,
-                WashResult = "gg",
-                WashScale = "bba",
-                WashDate = System.DateTime.Now,
-                WashInspector = "ttt",
-                WashRemark = "a",
-                Receiving = "b",
-            };
-
-            accessory_ViewModel.DataList.Add(accessory_Result);
-            return View(accessory_ViewModel);
-        }
 
         [HttpPost]
+        //[MultipleButton(Name = "action", Argument = "AccessorySave")]
         public ActionResult AccessorySave(Accessory_ViewModel Req)
         {
-            return View("Index");
+            Accessory_ViewModel model = new Accessory_ViewModel();
+            _Service.Update(Req);
+            Req.ReqOrderID = Req.OrderID;
+            //model = _Service.GetMainData(Req);
+
+            TempData["Req"] = Req;
+
+            return Json(Req);
         }
         #endregion
 
