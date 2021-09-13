@@ -21,6 +21,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         public MockupOvenTestController()
         {
             _MockupOvenService = new MockupOvenService();
+            ViewBag.OnlineHelp = this.OnlineHelp + "BulkFGT.MockupOvenTest,,";
         }
 
         // GET: BulkFGT/MockupOvenTest

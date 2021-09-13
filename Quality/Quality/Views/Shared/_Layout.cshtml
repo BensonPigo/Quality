@@ -247,18 +247,7 @@
 
             // F1 開啟Online Help
             document.onkeydown = function (evt) {
-
-                if (navigator.userAgent.indexOf("Chrome") == -1) {
-                    evt = evt || window.event;
-                }
-
-                if (evt.keyCode == 112) {
-
-                    var now = new Date();
-                    var NoeDate = now.getFullYear() + "/" + (now.getMonth() + 1) + "/" + now.getDate();
-
-                    evt.preventDefault();
-                }
+                openHelp(evt, '@ViewBag.OnlineHelp');
             };
 
             ZoomGlleryBind();
@@ -290,7 +279,17 @@
             });
         }
 
-        function ShowLoading() {            // 開啟Loading物件，避免亂按            $('#loaderBackground, #page_loader_gif').removeClass('display-None');        }        function NonLoading() {            // 關閉物件            $('#loaderBackground, #page_loader_gif').addClass('display-None');        }
+
+
+        function ShowLoading() {
+            // 開啟Loading物件，避免亂按
+            $('#loaderBackground, #page_loader_gif').removeClass('display-None');
+        }
+
+        function NonLoading() {
+            // 關閉物件
+            $('#loaderBackground, #page_loader_gif').addClass('display-None');
+        }
     </script>
 
     @RenderSection("scripts", required: false)

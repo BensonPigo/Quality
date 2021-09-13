@@ -18,6 +18,7 @@ namespace Quality.Areas.Authority.Controllers
         public UserListController()
         {
             _AuthorityService = new AuthorityService();
+            ViewBag.OnlineHelp = this.OnlineHelp + "Authority.UserList,,";
         }
 
         public ActionResult Index()

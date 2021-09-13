@@ -138,7 +138,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
-        public ActionResult AddDetailRow(string POID, int lastNO)
+        public ActionResult AddDetailRow(string POID, int lastNO, string GroupNO)
         {
             FabricOvenTest_Detail_Result model = _FabricOvenTestService.GetFabricOvenTest_Detail_Result(POID, "");
 
@@ -153,7 +153,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             string html = "";
             html += "<tr>";
             html += "<td><input id='Seq' idx=" + i + " type ='hidden'></input> <input id='Details_" + i + "__SubmitDate' name='Details[" + i + "].SubmitDate' class='form-control date-picker' type='text' value=''></td>";
-            html += "<td><input id='Details_" + i + "__OvenGroup' name='Details[" + i + "].OvenGroup' type='text' maxlength='2'></td>"; // group
+            html += "<td><input id='Details_" + i + "__OvenGroup' name='Details[" + i + "].OvenGroup' type='number' max='99' maxlength='2' min='0' step='1' oninput='value=OvenGroupCheck(value)' value='" + GroupNO + "'></td>"; // group
             html += "<td style='width: 11vw;'><div style='width:10vw;'><input id='Details_" + i + "__SEQ' name='Details[" + i + "].SEQ' idv='" + i.ToString() + "' class ='InputDetailSEQSelectItem' type='text'  style = 'width: 6vw'> <input id='btnDetailSEQSelectItem'  idv='" + i.ToString() + "' type='button' class='btnDetailSEQSelectItem OnlyEdit site-btn btn-blue' style='margin: 0; border: 0; ' value='...' /></div></td>"; // seq
             html += "<td style='width: 11vw;'><div style='width:10vw;'><input id='Details_" + i + "__Roll' name='Details[" + i + "].Roll' idv='" + i.ToString() + "' class ='InputDetailRollSelectItem' type='text' style = 'width: 6vw'> <input id='btnDetailRollSelectItem' idv='" + i.ToString() + "' type='button' class='btnDetailRollSelectItem OnlyEdit site-btn btn-blue' style='margin: 0; border: 0; ' value='...' /></div></td>"; // roll
             html += "<td><input id='Details_" + i + "__Dyelot' name='Details[" + i + "].Dyelot' type='text' readonly='readonly'></td>"; // dyelot

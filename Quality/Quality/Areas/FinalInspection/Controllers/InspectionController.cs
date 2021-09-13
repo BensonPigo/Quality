@@ -22,6 +22,11 @@ namespace Quality.Areas.FinalInspection.Controllers
         private string WebHost = ConfigurationManager.AppSettings["WebHost"];
         private string IsTest = ConfigurationManager.AppSettings["IsTest"];
 
+        public InspectionController()
+        {
+            ViewBag.OnlineHelp = this.OnlineHelp + "FinalInspection.Inspection,,";
+        }
+
         #region 查詢SP#
         public ActionResult Index(PoSelect Req)
         {

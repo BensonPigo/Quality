@@ -18,6 +18,7 @@ namespace Quality.Areas.StyleManagement
         public PrintBarcodeController()
         {
             _StyleManagementService = new StyleManagementService();
+            ViewBag.OnlineHelp = this.OnlineHelp + "StyleManagement.PrintBarcode,,";
         }
 
         // GET: StyleManagement/PrintBarcode
