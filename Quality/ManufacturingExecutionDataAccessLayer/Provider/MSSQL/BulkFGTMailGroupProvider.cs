@@ -59,12 +59,6 @@ where q.Type = @Type
             if (type == 0)
             {
                 SbSql.Append(@"
-if not exists(
-    select 1 from Quality_MailGroup 
-    where FactoryID = @FactoryID
-    and Type = @Type
-    and GroupName = @GroupName )
-Begin
 INSERT INTO [dbo].[Quality_MailGroup]
            ([FactoryID]
            ,[Type]
@@ -77,20 +71,22 @@ INSERT INTO [dbo].[Quality_MailGroup]
            ,@GroupName
            ,@ToAddress
            ,@CcAddress)
-End
-else
-Begin
-    update Quality_MailGroup
-    Set
-        ToAddress = @ToAddress,
-        CcAddress = @CcAddress
-    where FactoryID = @FactoryID
-    and Type = @Type
-    and GroupName = @GroupName
-End
 ");
             }
             else if (type == 1)
+            {
+                SbSql.Append(@"
+update Quality_MailGroup
+Set
+    ToAddress = @ToAddress,
+    CcAddress = @CcAddress
+where FactoryID = @FactoryID
+and Type = @Type
+and GroupName = @GroupName
+");
+
+            }
+            else if (type == 2)
             {
                 SbSql.Append(@"
 delete Quality_MailGroup 

@@ -11,6 +11,7 @@
         font-size: 1em;
         font-weight: bold;
         padding: 1em;
+        overflow-y:scroll;
     }
 
     .display-None {
@@ -31,7 +32,7 @@
 
     <div class="videoScreen">
         <div>
-            <video autoplay muted playsinline style="padding:1em; width:30vw;"></video>
+            <video autoplay muted playsinline style="padding:1em; width:100%;"></video>
             <img id="screenshot-img" style="width:30vw;">
         </div>
     </div>
@@ -50,7 +51,7 @@
         videoSelect.onchange = getStream;
         getStream().then(getDevices).then(gotDevices);
 
-        $("#screenshot-img").width(0);
+        $("#screenshot-img").width("100%");
 
         screenshotButton.onclick = videoElement.onclick = function () {
             canvas.width = videoElement.videoWidth;
@@ -63,7 +64,7 @@
                 img.src = src;
                 imgSet.src = src;
                 OtherSetting(ImgID, 'a' + ImgID);
-                $("#screenshot-img").width("30vw");
+                $("#screenshot-img").width("100%");
             }
         };
 

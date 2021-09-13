@@ -94,7 +94,7 @@ namespace Quality.Controllers
                     this.TargetPKey_Parameter = string.Empty;
                     this.TargetPKey_Value = string.Empty;
 
-                    return RedirectToAction(action, controller, new { Area = area, Parameter = value });
+                    return RedirectToAction(action, controller, new { Area = area, FinalInspectionID = value });
                 }
 
                 return RedirectToAction("Index");

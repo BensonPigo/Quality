@@ -6,6 +6,9 @@
 @model DatabaseObject.ViewModel.FinalInspection.BeautifulProductAudit
 @section FinalInspection_head{
     <style type="text/css">
+        .productTable {
+            font-size: 1.4em;
+        }
         tr > td {
             vertical-align: middle;
             font-size: 1.2em;
@@ -46,7 +49,7 @@
                                     <td>
                                         @*@Html.TextBoxFor(model => Model.ListBACriteria[i].Qty, new { @type = "number", @style = "width:80px" })*@
 
-                                        <input type='number' style = "width:80px" id='Req.ListBACriteria[@Model.ListBACriteria[i].RowIndex].Qty' name='Req.ListBACriteria[@Model.ListBACriteria[i].RowIndex].Qty' value='@Model.ListBACriteria[i].Qty'>
+                                        <input type='number' style = "width:80px" id='Req.ListBACriteria[@Model.ListBACriteria[i].RowIndex].Qty' name='Req.ListBACriteria[@Model.ListBACriteria[i].RowIndex].Qty' oninput="value=QtyChk(@Model.SampleSize, value)" max="@Model.SampleSize" value='@Model.ListBACriteria[i].Qty'>
 
                                         <input type='hidden' id='Req.ListBACriteria[@Model.ListBACriteria[i].RowIndex].Ukey' name='Req.ListBACriteria[@Model.ListBACriteria[i].RowIndex].Ukey' value='@Model.ListBACriteria[i].Ukey'>
 
@@ -88,6 +91,20 @@
             return true;
         }
 
+        function QtyChk(max, value) {
+            if (value == "") {
+                value = 0;
+            }
+            value = parseInt(value);
+
+            if (value > max) {
+                value = max;
+            }
+            else if (value == "") {
+                value = 0;
+            }
+            return value;
+        }
         function checkSubmitValue(self) {
             if (checkQty($("#BAQty")) == false) {
                 return false;

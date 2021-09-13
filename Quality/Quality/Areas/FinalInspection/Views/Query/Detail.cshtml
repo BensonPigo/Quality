@@ -110,7 +110,7 @@
 <div class="whiteBackgrond" style="height:86vh">
     <div style="padding:1em">
         <div>
-            <h1 style="font-size:2em">Inspection Report</h1>
+            <h1 style="font-size:2em;color: #999999;">Inspection Report</h1>
             <button class="site-btn btn-blue" style="position:absolute;top:1em;right:0" onclick="ClickDownload()">Download</button>
         </div>
         <div style="display:inline-block;border:1px solid gray;width:38%;height:15vh;padding-left:5px">
@@ -120,7 +120,7 @@
                     <tr>
                         <td>PO#</td>
                         <td class="valueColor" style="width:20%">@Model.FinalInspection.POID</td>
-                        <td>Style</td>
+                        <td style="padding-left:10px;">Style</td>
                         <td class="valueColor" style="width:20%">@Model.StyleID</td>
                         <td>Brand</td>
                         <td class="valueColor">@Model.BrandID</td>
@@ -147,8 +147,8 @@
                 <table>
                     <tr>
                         <td>Inspection Stage</td>
-                        <td class="valueColor">@Model.FinalInspection.InspectionStage</td>
-                        <td>Carton</td>
+                        <td class="valueColor" style="padding-left:10px;">@Model.FinalInspection.InspectionStage</td>
+                        <td style="padding-left:10px;">Carton</td>
                         <td style="width:4vw">
                             <button type="button" style="min-width:50%" onclick="open_cartonsDetail()" class="site-btn btn-blue">...</button>
                         </td>
@@ -160,19 +160,19 @@
                     <tr>
                         <td>Audit Date</td>
                         <td class="valueColor">@Convert.ToDateTime(Model.FinalInspection.AuditDate).ToString("yyyy/MM/dd")</td>
-                        <td>Available Qty</td>
+                        <td style="padding-left:10px;">Available Qty</td>
                         <td class="valueColor">@Model.AvailableQty</td>
                         <td colspan="4"></td>
                     </tr>
                     <tr>
                         <td>AQL Plan</td>
                         <td class="valueColor">@Model.AQLPlan</td>
-                        <td>Sample Plan Qty</td>
-                        <td class="valueColor">@Model.FinalInspection.SampleSize</td>
+                        <td style="padding-left:10px;">Sample Plan Qty</td>
+                        <td class="valueColor" style="padding-left:10px;">@Model.FinalInspection.SampleSize</td>
                         <td>Accepted</td>
                         <td class="valueColor">@Model.FinalInspection.AcceptQty</td>
                         <td>Rejected</td>
-                        <td class="valueColor">@Model.FinalInspection.RejectQty</td>
+                        <td class="valueColor" style="padding-left:10px;">@Model.FinalInspection.RejectQty</td>
                     </tr>
                 </table>
             </div>
@@ -215,19 +215,19 @@
         <div>
             <table style="width:100%">
                 <tr>
-                    <td style="width:12%">CFA</td>
+                    <td style="width:7%">CFA</td>
                     <td class="valueColor" style="width:10%">@Model.FinalInspection.CFA</td>
-                    <td style="width:15%">Pass Qty(pcs)</td>
+                    <td style="width:7%">Pass Qty(pcs)</td>
                     <td class="valueColor" style="width:5%">@Model.FinalInspection.PassQty</td>
-                    <td style="width:15%">Inpection Result</td>
+                    <td style="width:7%">Inpection Result</td>
                     <td class="valueColor" style="width:10%">@Model.FinalInspection.InspectionResult</td>
-                    <td style="width:10%" rowspan="2">
+                    <td style="width:7%" rowspan="2">
                         @if (Model.FinalInspection.InspectionResult == "On-going")
                         {
                             <button type="button" onclick="GoOnInspect()" class="site-btn btn-red">Go On Inspect</button>
                         }
                     </td>
-                    <td style="width:10%" rowspan="2">
+                    <td style="width:7%" rowspan="2">
                         @if (Model.FinalInspection.InspectionResult != "On-going")
                         {
                             <button type="button" onclick="SendMail()" class="site-btn btn-blue">Send Mail</button>
@@ -469,7 +469,9 @@
         }
 
         function ClickDownload() {
+
             window.location.href = '@Url.Action("Download")';
+
         }
 
         function GoOnInspect() {
