@@ -145,6 +145,10 @@ namespace BusinessLogicLayer.Service.Tests
                 fabricCrkShrkTestCrocking_Result.Crocking_Detail[fabricCrkShrkTestCrocking_Result.Crocking_Detail.Count - 1].Roll = "995";
 
                 baseResult = fabricCrkShrkTest_Service.SaveFabricCrkShrkTestCrockingDetail(fabricCrkShrkTestCrocking_Result, "SCIMIS");
+                if (!baseResult)
+                {
+                    Assert.Fail(baseResult.ErrorMessage);
+                }
 
                 fabricCrkShrkTestCrocking_Result.Crocking_Detail.RemoveAt(0);
 
@@ -253,7 +257,7 @@ namespace BusinessLogicLayer.Service.Tests
             {
                 IFabricCrkShrkTest_Service fabricCrkShrkTest_Service = new FabricCrkShrkTest_Service();
                 string excelName;
-                BaseResult baseResult = fabricCrkShrkTest_Service.ToPdfFabricCrkShrkTestCrockingDetail(ID, out excelName, true);
+                BaseResult baseResult = fabricCrkShrkTest_Service.ToPdfFabricCrkShrkTestCrockingDetail(364797, out excelName, true);
 
                 if (!baseResult)
                 {
@@ -302,12 +306,12 @@ namespace BusinessLogicLayer.Service.Tests
                 FabricCrkShrkTestHeat_Result fabricCrkShrkTestHeat_Result;
                 fabricCrkShrkTestHeat_Result = fabricCrkShrkTest_Service.GetFabricCrkShrkTestHeat_Result(testID);
 
-                fabricCrkShrkTestHeat_Result.Heat_Detail[0].HorizontalTest1 = 9;
-                fabricCrkShrkTestHeat_Result.Heat_Detail[0].HorizontalTest2 = 9;
-                fabricCrkShrkTestHeat_Result.Heat_Detail[0].HorizontalTest3 = 5;
-                fabricCrkShrkTestHeat_Result.Heat_Detail[0].VerticalTest1 = 9;
-                fabricCrkShrkTestHeat_Result.Heat_Detail[0].VerticalTest2 = 9;
-                fabricCrkShrkTestHeat_Result.Heat_Detail[0].VerticalTest3 = 5;
+                fabricCrkShrkTestHeat_Result.Heat_Detail[0].HorizontalTest1 = 0.02M;
+                fabricCrkShrkTestHeat_Result.Heat_Detail[0].HorizontalTest2 = 0.01M;
+                fabricCrkShrkTestHeat_Result.Heat_Detail[0].HorizontalTest3 = 0.02M;
+                fabricCrkShrkTestHeat_Result.Heat_Detail[0].VerticalTest1 = 0.02M;
+                fabricCrkShrkTestHeat_Result.Heat_Detail[0].VerticalTest2 = 0.02M;
+                fabricCrkShrkTestHeat_Result.Heat_Detail[0].VerticalTest3 = -0.01M;
                 fabricCrkShrkTestHeat_Result.Heat_Detail[0].Remark = "9527";
                 Bitmap bitmap = new Bitmap(Image.FromFile(@"TestResource\001.jpg"));
                 ImageConverter converter = new ImageConverter();
@@ -476,13 +480,18 @@ namespace BusinessLogicLayer.Service.Tests
                 FabricCrkShrkTestWash_Result fabricCrkShrkTestWash_Result;
                 fabricCrkShrkTestWash_Result = fabricCrkShrkTest_Service.GetFabricCrkShrkTestWash_Result(testID);
 
-                fabricCrkShrkTestWash_Result.Wash_Detail[0].HorizontalTest1 = 9;
-                fabricCrkShrkTestWash_Result.Wash_Detail[0].HorizontalTest2 = 9;
-                fabricCrkShrkTestWash_Result.Wash_Detail[0].HorizontalTest3 = 5;
-                fabricCrkShrkTestWash_Result.Wash_Detail[0].VerticalTest1 = 9;
-                fabricCrkShrkTestWash_Result.Wash_Detail[0].VerticalTest2 = 9;
-                fabricCrkShrkTestWash_Result.Wash_Detail[0].VerticalTest3 = 5;
+                fabricCrkShrkTestWash_Result.Wash_Detail[0].HorizontalTest1 = 0.02M;
+                fabricCrkShrkTestWash_Result.Wash_Detail[0].HorizontalTest2 = 0.01M;
+                fabricCrkShrkTestWash_Result.Wash_Detail[0].HorizontalTest3 = 0.02M;
+                fabricCrkShrkTestWash_Result.Wash_Detail[0].VerticalTest1 = 0.02M;
+                fabricCrkShrkTestWash_Result.Wash_Detail[0].VerticalTest2 = 0.02M;
+                fabricCrkShrkTestWash_Result.Wash_Detail[0].VerticalTest3 = -0.01M;
                 fabricCrkShrkTestWash_Result.Wash_Detail[0].Remark = "9527";
+                fabricCrkShrkTestWash_Result.Wash_Main.SkewnessOptionID = "3";
+                fabricCrkShrkTestWash_Result.Wash_Detail[0].SkewnessTest1 = 5;
+                fabricCrkShrkTestWash_Result.Wash_Detail[0].SkewnessTest2 = 0;
+                fabricCrkShrkTestWash_Result.Wash_Detail[0].SkewnessTest3 = 6;
+                fabricCrkShrkTestWash_Result.Wash_Detail[0].SkewnessTest4 = 2;
                 Bitmap bitmap = new Bitmap(Image.FromFile(@"TestResource\001.jpg"));
                 ImageConverter converter = new ImageConverter();
                 byte[] testImgByte = (byte[])converter.ConvertTo(bitmap, typeof(byte[]));
@@ -586,7 +595,7 @@ namespace BusinessLogicLayer.Service.Tests
             {
                 IFabricCrkShrkTest_Service fabricCrkShrkTest_Service = new FabricCrkShrkTest_Service();
                 string excelName;
-                BaseResult baseResult = fabricCrkShrkTest_Service.ToExcelFabricCrkShrkTestWashDetail(this.ID, out excelName, true);
+                BaseResult baseResult = fabricCrkShrkTest_Service.ToExcelFabricCrkShrkTestWashDetail(364797, out excelName, true);
 
                 if (!baseResult)
                 {

@@ -180,6 +180,23 @@ namespace BusinessLogicLayer.Service
                     return baseResult;
                 }
 
+                var listKeyDuplicateItems = fabricOvenTest_Detail_Result
+                   .Details.GroupBy(s => new
+                   {
+                       s.OvenGroup,
+                       s.SEQ,
+                   })
+                   .Where(groupItem => groupItem.Count() > 1);
+
+                if (listKeyDuplicateItems.Any())
+                {
+                    baseResult.Result = false;
+                    baseResult.ErrorMessage = $@"The following data is duplicated
+{listKeyDuplicateItems.Select(s => $"<OvenGroup>{s.Key.OvenGroup}, <SEQ>{s.Key.SEQ}").JoinToString(Environment.NewLine)}
+";
+                    return baseResult;
+                }
+
                 _FabricOvenTestProvider = new FabricOvenTestProvider(Common.ProductionDataAccessLayer);
 
                 //再檢查一次Result
