@@ -456,23 +456,7 @@
             });
 
             $('#View').on('click', function () {
-               $.ajax({
-                    url: '@Url.Action("GetViewMoistureResult", "Inspection")',
-                    type: 'POST',
-                   data: jQuery.param({ finalInspectionID: "@ViewBag.FinalInspectionID" }),
-                    global: false,
-                   success: function (response) {
-                       var adata = setData(response);
-                       myView.clear();
-                       myView.rows.add(adata).draw();
-
-                       $(".to-edit-detail-myView").dialog("open");
-                       myView.columns.adjust();
-                    },
-                   error: function (xhr, status) {
-                        msg.WithError("Get View fail:" + xhr.responseText + " " + xhr.status);
-                    }
-                });
+                OpenViewDialog();
             });
 
             $("#Save").click(function () {
@@ -490,7 +474,7 @@
                     CTNInside: $("#CTNInside").val(),
                     CTNOutside: $("#CTNOutside").val(),
                     Action: $("#Action").val(),
-                    Result: $("#Result").val(),
+                    Result: $("#Result").text(),
                     Remark: $("#Remark").val(),
                 };
 
@@ -516,6 +500,26 @@
 
         });
 
+        function OpenViewDialog() {            
+               $.ajax({
+                    url: '@Url.Action("GetViewMoistureResult", "Inspection")',
+                    type: 'POST',
+                   data: jQuery.param({ finalInspectionID: "@ViewBag.FinalInspectionID" }),
+                    global: false,
+                   success: function (response) {
+                       var adata = setData(response);
+                       myView.clear();
+                       myView.rows.add(adata).draw();
+
+                       $(".to-edit-detail-myView").dialog("open");
+                       myView.columns.adjust();
+                    },
+                   error: function (xhr, status) {
+                        msg.WithError("Get View fail:" + xhr.responseText + " " + xhr.status);
+                    }
+                });
+        }
+
         function ViewDelete(obj) {
             var UKey = $(obj).val();
 
@@ -527,7 +531,8 @@
                 success: function (response) {
                     if (response.Result) {
                         msg.WithSuccesCheck("Success!", function () {
-                            window.location.reload();
+                            $(".to-edit-detail-myView").dialog("close");
+                            OpenViewDialog();
                         });
                     }
                     else {
@@ -573,6 +578,23 @@
                 if (data[i].Result != "Pass") {
                     resultColor = "#E62513";
                 }
+                var CTNInside;
+                var CTNOutside;
+
+                if (data[i].CTNInside == null) {
+                    CTNInside = '';
+                }
+                else {
+                    CTNInside = parseFloat(data[i].CTNInside);
+                }
+
+                if (data[i].CTNOutside == null) {
+                    CTNOutside = '';
+                }
+                else {
+                    CTNOutside = parseFloat(data[i].CTNOutside);
+                }
+
 
                 var tmp = [];
                 tmp.push(data[i].Article);
@@ -585,8 +607,8 @@
                 tmp.push(` <div style="color:${garmentMiddleColor}">${data[i].GarmentMiddle}</div>`);
                 tmp.push(` <div style="color:${garmentBottomColor}">${data[i].GarmentBottom}</div>`);
                 tmp.push(data[i].CTNStandard);
-                tmp.push(` <div style="color:${ctnInsideColor}">${data[i].CTNInside}</div>`);
-                tmp.push(` <div style="color:${ctnOutsideColor}">${data[i].CTNOutside}</div>`);
+                tmp.push(` <div style="color:${ctnInsideColor}">${CTNInside}</div>`);
+                tmp.push(` <div style="color:${ctnOutsideColor}">${CTNOutside}</div>`);
                 tmp.push(` <div style="color:${resultColor}">${data[i].Result}</div>`);
                 tmp.push(data[i].Action);
                 tmp.push(data[i].Remark);

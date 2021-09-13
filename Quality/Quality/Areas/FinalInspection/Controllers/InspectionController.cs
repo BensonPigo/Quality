@@ -69,6 +69,8 @@ msg.WithInfo('{ex.Message}');
         [HttpPost]
         public ActionResult Setting(List<PoSelect_Result> model, string finalInspectionID)
         {
+            this.CheckSession();
+
             ViewBag.FactoryID = this.FactoryID;
             //string finalInspectionID = "";
             DatabaseObject.ViewModel.FinalInspection.Setting setting = new DatabaseObject.ViewModel.FinalInspection.Setting();
@@ -167,7 +169,7 @@ msg.WithInfo('{ex.Message}');
         }
 
         [HttpPost]
-        public ActionResult AQL_AJAX(string AQLPlan)
+        public ActionResult AQL_AJAX(string AQLPlan, int TotalAvailableQty)
         {
             Setting setting = new Setting();
             if (TempData["Setting"] != null)
@@ -182,22 +184,22 @@ msg.WithInfo('{ex.Message}');
             switch (AQLPlan)
             {
                 case "1.0 Level I":
-                    tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "1" && o.LotSize_Start <= o.LotSize_End).FirstOrDefault();
+                    tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "1" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
                     SamplePlanQty = tmp.SampleSize.Value;
                     AcceptedQty = tmp.AcceptedQty.Value;
                     break;
                 case "1.0 Level II":
-                    tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "2" && o.LotSize_Start <= o.LotSize_End).FirstOrDefault();
+                    tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "2" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
                     SamplePlanQty = tmp.SampleSize.Value;
                     AcceptedQty = tmp.AcceptedQty.Value;
                     break;
                 case "1.5 Level I":
-                    tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(1.5) && o.InspectionLevels == "1" && o.LotSize_Start <= o.LotSize_End).FirstOrDefault();
+                    tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(1.5) && o.InspectionLevels == "1" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
                     SamplePlanQty = tmp.SampleSize.Value;
                     AcceptedQty = tmp.AcceptedQty.Value;
                     break;
                 case "2.5 Level I":
-                    tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(2.5) && o.InspectionLevels == "1" && o.LotSize_Start <= o.LotSize_End).FirstOrDefault();
+                    tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(2.5) && o.InspectionLevels == "1" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
                     SamplePlanQty = tmp.SampleSize.Value;
                     AcceptedQty = tmp.AcceptedQty.Value;
                     break;
@@ -248,10 +250,7 @@ msg.WithInfo('{ex.Message}');
 
             if (!setting.AcceptQty.HasValue)
             {
-                setting.ErrorMessage = $@"
-msg.WithError(""Accepted Qty cant't be empty."");
-";
-                return View("Setting", setting);
+                setting.AcceptQty = 0;
             }
 
             if (setting.SelectedPO != null && setting.SelectedPO.Where(o => string.IsNullOrEmpty(o.Seq)).Any())
@@ -661,7 +660,7 @@ msg.WithError(""Shipmode Seq cant't be empty."");
         public ActionResult GetViewMoistureResult(string finalInspectionID)
         {
             IFinalInspectionMoistureService finalInspectionMoistureService = new FinalInspectionMoistureService();
-            List<DatabaseObject.ViewModel.FinalInspection.ViewMoistureResult> viewMoistureResultsList = finalInspectionMoistureService.GetViewMoistureResult(finalInspectionID);
+            List<ViewMoistureResult> viewMoistureResultsList = finalInspectionMoistureService.GetViewMoistureResult(finalInspectionID);
 
             return Json(viewMoistureResultsList);
         }
@@ -670,6 +669,16 @@ msg.WithError(""Shipmode Seq cant't be empty."");
         public ActionResult MoistureSingleSave(MoistureResult Req)
         {
             FinalInspectionMoistureService service = new FinalInspectionMoistureService();
+
+            if (Req.Result != null && Req.Result.ToUpper() == "PASS")
+            {
+                Req.Result = "P";
+            }
+            else
+            {
+                Req.Result = "F";
+            }
+
             BaseResult result = service.UpdateMoistureBySave(Req);
 
             if (result)
@@ -861,7 +870,7 @@ msg.WithInfo('{MoistureResult.ErrorMessage}');
             Others model = new Others();
 
             model = service.GetOthersForInspection(FinalInspectionID);
-
+            model.CFA = this.UserID;
             return View(model);
         }
 
