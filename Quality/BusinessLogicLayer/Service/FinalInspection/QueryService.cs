@@ -175,7 +175,7 @@ namespace BusinessLogicLayer.Service.FinalInspection
                 //對照HomeController的RedirectToPage Action裡面的順序設定
                 string action = this.GetCurrentAction(finalInspection.InspectionStep);
 
-                string OriInfo = $"FinalInspection+Inspection+{action}+FinalInspectionID+{finalInspectionID}";
+                string OriInfo = $"FinalInspection+Query+Detail+FinalInspectionID+{finalInspectionID}";
 
                 string code = StringEncryptHelper.AesEncryptBase64(OriInfo, CryptoKey);
 

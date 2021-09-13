@@ -111,7 +111,10 @@
                     </tr>
                     <tr>
                         <td><label>What's sewing line you audit?</label></td>
-                        <td>@Html.TextBoxFor(o => o.SewingLineID, new { @readonly = "readonly" })</td>
+                        <td>
+                            @Html.TextBoxFor(o => o.SewingLineID, new { @readonly = "readonly",@style="width:40%;float:left;" })
+                            <input type="button" onclick="ClearSewing(this)" name="name" value="Clear" style="float:left;" />
+                        </td>
                     </tr>
                 </table>
             </div>
@@ -159,22 +162,40 @@
                         <td>
                             @if (SampleQtyDisabled)
                             {
-                                @Html.TextBoxFor(o => o.SampleSize, new { @type = "number", @min = "0", @class = "form-control center-block", @onchange = "onSampleSizeChange(this.value)" , @disabled = "disabled" })
+                                @Html.TextBoxFor(o => o.SampleSize, new { @type = "number", @min = "0", @class = "form-control center-block", @onchange = "onSampleSizeChange(this.value)" , @disabled = "disabled" , @style = "width:49%;" })
                             }
                             else
                             {
-                                @Html.TextBoxFor(o => o.SampleSize, new { @type = "number", @min = "0", @class = "form-control center-block", @onchange = "onSampleSizeChange(this.value)" })
+                                @Html.TextBoxFor(o => o.SampleSize, new { @type = "number", @min = "0", @class = "form-control center-block", @onchange = "onSampleSizeChange(this.value)", @style = "width:49%;" })
                             }
                         </td>
                     </tr>
                     <tr>
                         <td><label>Accepted Qty</label></td>
-                        <td>@Html.TextBoxFor(o => o.AcceptQty, new { @type = "number", @style = "width:49%;", @min = "0", @class = "form-control center-block" })</td>
+                        <td>
+
+                            @if (SampleQtyDisabled)
+                            {
+                                @Html.TextBoxFor(o => o.AcceptQty, new { @type = "number", @style = "width:49%;", @min = "0", @class = "form-control center-block" , @disabled = "disabled" })
+                            }
+                            else
+                            {
+                                @Html.TextBoxFor(o => o.AcceptQty, new { @type = "number", @style = "width:49%;", @min = "0", @class = "form-control center-block" })
+                            }
+                        </td>
                     </tr>
                     <tr>
                         <td><label>Reject Qty</label></td>
                         <td>
-                            <input id="RejectQty" type="number" class="form-control center-block" min="0" value="@ViewData["RejectQty"]" />
+
+                            @if (SampleQtyDisabled)
+                            {
+                                <input id="RejectQty" type="number" class="form-control center-block" min="0" value="@ViewData["RejectQty"]" style = "width:49%;" disabled />
+                            }
+                            else
+                            {
+                                <input id="RejectQty" type="number" class="form-control center-block" min="0" value="@ViewData["RejectQty"]" style = "width:49%;"/>
+                            }
                         </td>
                     </tr>
                 </table>
@@ -529,12 +550,14 @@
             // AQLPlan選單變化事件
             $("#AQLPlan").change(function () {
                 var aql = $(this).val()
+                var TotalAvailableQty = $("#totalAvailableQty").text();
+
 
                 // 若不是100% Inspection，則AJAX回去取資料
                 if (aql != "100% Inspection") {
                     $.ajax({
                         url: '@Url.Action("AQL_AJAX")',
-                        data: { AQLPlan: aql },
+                        data: { AQLPlan: aql, TotalAvailableQty: TotalAvailableQty},
                         type: 'POST',
                         dataType: "json",
                         async: false,
@@ -594,6 +617,12 @@
                 $("#AcceptQty").val(0);
                 $("#AcceptQty").removeAttr("max");
                 $("#AcceptQty").attr("max", total);
+            }
+            else {
+                // 如果不是100% Inspection，需要重新計算Sample Plan、Accepted Qry
+                $("#AQLPlan").val('');
+                $("#SampleSize").val(0);
+                $("#AcceptQty").val(0);
             }
 
         }
@@ -771,13 +800,21 @@
             //選擇 Final或3rd Party時，會把[AQL Plan]變成可編輯，而[Sample Plan Qty]唯讀
             if (value == "Final" || value == "3rd Party") {
                 $('#SampleSize').prop('disabled', true);
+                $('#AcceptQty').prop('disabled', true);
+                $('#RejectQty').prop('disabled', true);
             }
 
             //選擇Inline或Stagger時，會把[AQL Plan]變成唯讀並將內容變為空白，而[Sample Plan Qty]可編輯"
             if (value == "Inline" || value == "Stagger")
             {
                 $('#SampleSize').prop('disabled', false);
+                $('#AcceptQty').prop('disabled', false);
+                $('#RejectQty').prop('disabled', false);
             }
+        }
+
+        function ClearSewing(obj) {
+            $("#SewingLineID").val("");
         }
 
         //選擇箱子時，將資料同步到Model的標籤
@@ -824,7 +861,7 @@
             }
 
             //保存前檢查[Basic]部分都有輸入，若沒有則顯示
-            if ($("#InspectionStage").val() == "" || $("#AuditDate").val() == "" || $("#SewingLineID").val() == "") {
+            if ($("#InspectionStage").val() == "" || $("#AuditDate").val() == "") {
                 msg.WithError("＜Basic＞ part cannot be empty.");
                 return false;
             }
