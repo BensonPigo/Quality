@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Mvc;
 
 namespace DatabaseObject.ViewModel.BulkFGT
 {
@@ -77,19 +78,47 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string SCIRefno { get; set; }
         public string WKNo { get; set; }
         public string Refno { get; set; }
-        public int ArriveQty { get; set; }
-        public string SuppID { get; set; }
+        public decimal ArriveQty { get; set; }
         public string Supplier { get; set; }
         public string Unit { get; set; }
         public string Color { get; set; }
         public string Size { get; set; }
         public string Scale { get; set; }
-        public string Result { get; set; }
+        public string OvenResult { get; set; }
         public string Remark { get; set; }
         public string OvenInspector { get; set; }
+        public string OvenInspectorName { get; set; }
         public DateTime? OvenDate { get; set; }
+        public string EditName { get; set; }
 
         public bool OvenEncode { get; set; }
+
+
+        public Byte[] OvenTestBeforePicture { get; set; }
+        public Byte[] OvenTestAfterPicture { get; set; }
+
+        public List<SelectListItem> ScaleData { get; set; }
+        public List<SelectListItem> ResultData
+        {
+            get
+            {
+                return new List<SelectListItem>()
+                {
+                    new SelectListItem(){ Text="",Value=""},
+                    new SelectListItem(){ Text="Pass",Value="Pass"},
+                    new SelectListItem(){ Text="Fail",Value="Fail"},
+                };
+            }
+            set { }
+        }
+
+        public bool Result { get; set; } = true;
+        public string ErrorMessage { get; set; }
+
+
+        // Result = Fail時，要收信的人
+        public string ToAddress { get; set; }
+        public string CcAddress { get; set; }
     }
 
     public class Accessory_Wash
@@ -99,21 +128,50 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string Seq2 { get; set; }
         public string Seq { get; set; }
         public string POID { get; set; }
+
         public string SCIRefno { get; set; }
         public string WKNo { get; set; }
         public string Refno { get; set; }
-        public int ArriveQty { get; set; }
+
+        public decimal ArriveQty { get; set; }
         public string SuppID { get; set; }
         public string Supplier { get; set; }
         public string Unit { get; set; }
         public string Color { get; set; }
         public string Size { get; set; }
         public string Scale { get; set; }
-        public string Result { get; set; }
+        public string WashResult { get; set; }
         public string Remark { get; set; }
         public string WashInspector { get; set; }
+        public string WashInspectorName { get; set; }
         public DateTime? WashDate { get; set; }
+        public string EditName { get; set; }
 
         public bool WashEncode { get; set; }
+
+        public bool Result { get; set; } = true;
+        public string ErrorMessage { get; set; }
+
+        public Byte[] WashTestBeforePicture { get; set; }
+        public Byte[] WashTestAfterPicture { get; set; }
+
+        public List<SelectListItem> ScaleData { get; set; }
+        public List<SelectListItem> ResultData
+        {
+            get
+            {
+                return new List<SelectListItem>()
+                {
+                    new SelectListItem(){ Text="",Value=""},
+                    new SelectListItem(){ Text="Pass",Value="Pass"},
+                    new SelectListItem(){ Text="Fail",Value="Fail"},
+                };
+            }
+            set { }
+        }
+
+        // Result = Fail時，要收信的人
+        public string ToAddress { get; set; }
+        public string CcAddress { get; set; }
     }
 }

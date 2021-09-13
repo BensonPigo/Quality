@@ -931,7 +931,7 @@
 
         $('#Picture').on('click', function () {
             if ($('#Detail_ReportNo').val() != null && $('#Detail_ReportNo').val() != "") {
-                var para = "?EditMode=" + EditMode + "&Table=PullingTest&BrforeColumn=TestBeforePicture&AfterColumn=TestAfterPicture&PKey_1=ReportNo&PKey_1_Val=" + $('#ReportNo').val();
+                var para = "?EditMode=" + EditMode + "&Table=PullingTest&BeforeColumn=TestBeforePicture&AfterColumn=TestAfterPicture&PKey_1=ReportNo&PKey_1_Val=" + $('#ReportNo').val();
                 window.open('@Url.Action("PictureList","PublicWondow",new{Area=""})' + para, 'Article', config = 'toolbar=no,status=no,location=no,width=400,height=650');
             }
         });
