@@ -26,6 +26,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             _MockupCrockingService = new MockupCrockingService();
             _SendMail = new MailTools();
+            ViewBag.OnlineHelp = this.OnlineHelp + "BulkFGT.MockupCrocking,,";
         }
 
         // GET: BulkFGT/MockupCrocking

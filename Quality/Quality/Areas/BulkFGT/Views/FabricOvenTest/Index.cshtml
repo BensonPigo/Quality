@@ -335,6 +335,10 @@
         EditMode = false;
         IsEditModeChange();
         @Html.Raw(Model.ErrorMessage);
+
+        if (!$("body").hasClass("sidebar-collapse")) {
+            $(".menu-trigger").click();
+        }
     });
 
     function IsEditModeChange() {

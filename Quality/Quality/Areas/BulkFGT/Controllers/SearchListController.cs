@@ -21,6 +21,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             _SearchListService = new SearchListService();
             this.SelectedMenu = "Bulk FGT";
+            ViewBag.OnlineHelp = this.OnlineHelp + "BulkFGT.SearchList,,";
 
         }
 

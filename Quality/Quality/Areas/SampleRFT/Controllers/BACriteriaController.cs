@@ -27,7 +27,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         {
             _BACriteriaService = new BACriteriaService();
             this.SelectedMenu = "Sample RFT";
-
+            ViewBag.OnlineHelp = this.OnlineHelp + "SampleRFT.BACriteria,,";
         }
 
 

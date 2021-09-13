@@ -12,6 +12,10 @@ namespace Quality.Areas.BulkFGT.Controllers
 {
     public class AccessoryOvenWashController : BaseController
     {
+        public AccessoryOvenWashController()
+        {
+            ViewBag.OnlineHelp = this.OnlineHelp + "BulkFGT.AccessoryOvenWash,,";
+        }
 
         #region AccessoryOvenWash頁面
         public ActionResult Index()
