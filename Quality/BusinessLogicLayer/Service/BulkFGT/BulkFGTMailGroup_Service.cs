@@ -18,8 +18,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
         public enum SaveType
         {
             Insert = 0,
-            Update = 0,
-            Delete = 1,
+            Update = 1,
+            Delete = 2,
         }
 
         public List<Quality_MailGroup> MailGroupGet(Quality_MailGroup quality_Mail)
@@ -46,8 +46,20 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             try
             {
+                if ((int)type == 0)
+                {
+                    var mailGroup = _BulkFGTMailGroupProvider.MailGroupGet(quality_Mail);
+                    if (_BulkFGTMailGroupProvider.MailGroupGet(quality_Mail).Count > 0)
+                    {
+                        quality_MailGroup_Result.Result = false;
+                        quality_MailGroup_Result.ErrMsg = $"The data is duplicated. Factory: {quality_Mail.FactoryID}, Group: {quality_Mail.GroupName}";
+                        return quality_MailGroup_Result;
+                    }
+                }
+
                 _BulkFGTMailGroupProvider.MailGroupSave(quality_Mail, (int)type);
                 quality_MailGroup_Result.Result = true;
+
             }
             catch (Exception ex)
             {
