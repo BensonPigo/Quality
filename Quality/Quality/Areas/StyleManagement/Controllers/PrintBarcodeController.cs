@@ -66,7 +66,7 @@ msg.WithInfo('Data not found.');
             catch (Exception ex)
             {
                 model.MsgScript = $@"
-msg.WithInfo('Error : {ex.Message}');
+msg.WithInfo('Error : {ex.Message.Replace("\r\n", "<br />")}');
 ";
             }
             return View("index", model);

@@ -48,9 +48,10 @@ namespace Quality.Areas.BulkFGT.Controllers
                     Main = new FabricCrkShrkTest_Main(),
                     Details = new List<FabricCrkShrkTest_Detail>(),
                     Result = false,
-                    ErrorMessage = $"msg.WithInfo('{fabricCrkShrkTest_Result.ErrorMessage }');",
+                    ErrorMessage = $"msg.WithInfo('{fabricCrkShrkTest_Result.ErrorMessage.Replace("\r\n", "<br />") }');",
                 };
             }
+            UpdateModel(fabricCrkShrkTest_Result);
             return View(fabricCrkShrkTest_Result);
         }
 
@@ -86,8 +87,17 @@ namespace Quality.Areas.BulkFGT.Controllers
                     ScaleIDs = new List<string>(),
                     Crocking_Main = new FabricCrkShrkTestCrocking_Main(),
                     Crocking_Detail = new List<FabricCrkShrkTestCrocking_Detail>(),
-                    ErrorMessage = $"msg.WithInfo('{fabricCrkShrkTestCrocking_Result.ErrorMessage }');",
+                    ErrorMessage = $"msg.WithInfo('{fabricCrkShrkTestCrocking_Result.ErrorMessage.Replace("\r\n", "<br />") }');",
                 };
+            }
+
+            if (TempData["Model"] != null)
+            {
+                FabricCrkShrkTestCrocking_Result saveResult = (FabricCrkShrkTestCrocking_Result)TempData["Model"];
+                fabricCrkShrkTestCrocking_Result.Crocking_Main.CrockingRemark = saveResult.Crocking_Main.CrockingRemark;
+                fabricCrkShrkTestCrocking_Result.Crocking_Detail = saveResult.Crocking_Detail;
+                fabricCrkShrkTestCrocking_Result.Result = saveResult.Result;
+                fabricCrkShrkTestCrocking_Result.ErrorMessage = $"msg.WithInfo('{saveResult.ErrorMessage.ToString().Replace("\r\n", "<br />") }');";
             }
 
             ViewBag.ResultList = new SetListItem().ItemListBinding(resultType);
@@ -191,7 +201,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
-        public ActionResult CrockingTest(FabricCrkShrkTestCrocking_Result Result)
+        public ActionResult CrockingTestSave(FabricCrkShrkTestCrocking_Result Result)
         {
             if (Result.Crocking_Detail == null)
             {
@@ -199,32 +209,14 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
 
             BaseResult saveResult = _FabricCrkShrkTest_Service.SaveFabricCrkShrkTestCrockingDetail(Result, this.UserID);
-            FabricCrkShrkTestCrocking_Result fabricCrkShrkTestCrocking_Result;
             if (saveResult.Result)
             {
-                fabricCrkShrkTestCrocking_Result = _FabricCrkShrkTest_Service.GetFabricCrkShrkTestCrocking_Result(Result.ID);
-                if (!fabricCrkShrkTestCrocking_Result.Result)
-                {
-                    fabricCrkShrkTestCrocking_Result = new FabricCrkShrkTestCrocking_Result()
-                    {
-                        ScaleIDs = new List<string>(),
-                        Crocking_Main = new FabricCrkShrkTestCrocking_Main(),
-                        Crocking_Detail = new List<FabricCrkShrkTestCrocking_Detail>(),
-                        ErrorMessage = $"msg.WithInfo('{fabricCrkShrkTestCrocking_Result.ErrorMessage }');",
-                    };
-                }
+                return RedirectToAction("CrockingTest", new { ID = Result.ID });
             }
-            else
-            {
-                fabricCrkShrkTestCrocking_Result = Result;
-                fabricCrkShrkTestCrocking_Result.Result = saveResult.Result;
-                fabricCrkShrkTestCrocking_Result.ErrorMessage = $"msg.WithInfo('{saveResult.ErrorMessage }');";
-            }
-
-            ViewBag.ResultList = new SetListItem().ItemListBinding(resultType);
-            ViewBag.ScaleIDsList = new SetListItem().ItemListBinding(fabricCrkShrkTestCrocking_Result.ScaleIDs);
-            ViewBag.FactoryID = this.FactoryID;
-            return View(fabricCrkShrkTestCrocking_Result);
+            Result.Result = saveResult.Result;
+            Result.ErrorMessage = saveResult.ErrorMessage;
+            TempData["Model"] = Result;
+            return RedirectToAction("CrockingTest", new { ID = Result.ID });
         }
 
         [HttpPost]
@@ -277,8 +269,17 @@ namespace Quality.Areas.BulkFGT.Controllers
                 {
                     Heat_Main = new FabricCrkShrkTestHeat_Main(),
                     Heat_Detail = new List<FabricCrkShrkTestHeat_Detail>(),
-                    ErrorMessage = $"msg.WithInfo('{fabricCrkShrkTestHeat_Result.ErrorMessage }');",
+                    ErrorMessage = $"msg.WithInfo('{fabricCrkShrkTestHeat_Result.ErrorMessage.Replace("\r\n", "<br />") }');",
                 };
+            }
+
+            if (TempData["Model"] != null)
+            {
+                FabricCrkShrkTestHeat_Result saveResult = (FabricCrkShrkTestHeat_Result)TempData["Model"];
+                fabricCrkShrkTestHeat_Result.Heat_Main.HeatRemark = saveResult.Heat_Main.HeatRemark;
+                fabricCrkShrkTestHeat_Result.Heat_Detail = saveResult.Heat_Detail;
+                fabricCrkShrkTestHeat_Result.Result = saveResult.Result;
+                fabricCrkShrkTestHeat_Result.ErrorMessage = $"msg.WithInfo('{saveResult.ErrorMessage.ToString().Replace("\r\n", "<br />") }');";
             }
 
             ViewBag.ResultList = new SetListItem().ItemListBinding(resultType);
@@ -372,7 +373,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
-        public ActionResult HeatTest(FabricCrkShrkTestHeat_Result Result)
+        public ActionResult HeatTestSave(FabricCrkShrkTestHeat_Result Result)
         {
             if (Result.Heat_Detail == null)
             {
@@ -380,30 +381,15 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
 
             BaseResult saveResult = _FabricCrkShrkTest_Service.SaveFabricCrkShrkTestHeatDetail(Result, this.UserID);
-            FabricCrkShrkTestHeat_Result fabricCrkShrkTestHeat_Result;
+
             if (saveResult.Result)
             {
-                fabricCrkShrkTestHeat_Result = _FabricCrkShrkTest_Service.GetFabricCrkShrkTestHeat_Result(Result.ID);
-                if (!fabricCrkShrkTestHeat_Result.Result)
-                {
-                    fabricCrkShrkTestHeat_Result = new FabricCrkShrkTestHeat_Result()
-                    {
-                        Heat_Main = new FabricCrkShrkTestHeat_Main(),
-                        Heat_Detail = new List<FabricCrkShrkTestHeat_Detail>(),
-                        ErrorMessage = $"msg.WithInfo('{fabricCrkShrkTestHeat_Result.ErrorMessage }');",
-                    };
-                }
+                return RedirectToAction("HeatTest", new { ID = Result.ID });
             }
-            else
-            {
-                fabricCrkShrkTestHeat_Result = Result;
-                fabricCrkShrkTestHeat_Result.Result = saveResult.Result;
-                fabricCrkShrkTestHeat_Result.ErrorMessage = $"msg.WithInfo('{saveResult.ErrorMessage }');";
-            }
-
-            ViewBag.ResultList = new SetListItem().ItemListBinding(resultType);
-            ViewBag.FactoryID = this.FactoryID;
-            return View(fabricCrkShrkTestHeat_Result);
+            Result.Result = saveResult.Result;
+            Result.ErrorMessage = saveResult.ErrorMessage;
+            TempData["Model"] = Result;
+            return RedirectToAction("HeatTest", new { ID = Result.ID });
         }
 
         [HttpPost]
@@ -447,8 +433,18 @@ namespace Quality.Areas.BulkFGT.Controllers
                 {
                     Wash_Main = new FabricCrkShrkTestWash_Main(),
                     Wash_Detail = new List<FabricCrkShrkTestWash_Detail>(),
-                    ErrorMessage = $"msg.WithInfo('{fabricCrkShrkTestWash_Result.ErrorMessage }');",
+                    ErrorMessage = $"msg.WithInfo('{fabricCrkShrkTestWash_Result.ErrorMessage.Replace("\r\n", "<br />") }');",
                 };
+            }
+
+            if (TempData["Model"] != null)
+            {
+                FabricCrkShrkTestWash_Result saveResult = (FabricCrkShrkTestWash_Result)TempData["Model"];
+                fabricCrkShrkTestWash_Result.Wash_Main.SkewnessOptionID = saveResult.Wash_Main.SkewnessOptionID;
+                fabricCrkShrkTestWash_Result.Wash_Main.WashRemark = saveResult.Wash_Main.WashRemark;
+                fabricCrkShrkTestWash_Result.Wash_Detail = saveResult.Wash_Detail;
+                fabricCrkShrkTestWash_Result.Result = saveResult.Result;
+                fabricCrkShrkTestWash_Result.ErrorMessage = $"msg.WithInfo('{saveResult.ErrorMessage.ToString().Replace("\r\n", "<br />") }');";
             }
 
             List<SelectListItem> skewnessOptionList = new SetListItem().ItemListBinding(skewnessOption);
@@ -562,7 +558,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
-        public ActionResult WashTest(FabricCrkShrkTestWash_Result Result)
+        public ActionResult WashTestSave(FabricCrkShrkTestWash_Result Result)
         {
             if (Result.Wash_Detail == null)
             {
@@ -570,32 +566,15 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
 
             BaseResult saveResult = _FabricCrkShrkTest_Service.SaveFabricCrkShrkTestWashDetail(Result, this.UserID);
-            FabricCrkShrkTestWash_Result fabricCrkShrkTestWash_Result;
-            if (saveResult)
+            if (saveResult.Result)
             {
-                fabricCrkShrkTestWash_Result = _FabricCrkShrkTest_Service.GetFabricCrkShrkTestWash_Result(Result.ID);
-                if (!fabricCrkShrkTestWash_Result.Result)
-                {
-                    fabricCrkShrkTestWash_Result = new FabricCrkShrkTestWash_Result()
-                    {
-                        Wash_Main = new FabricCrkShrkTestWash_Main(),
-                        Wash_Detail = new List<FabricCrkShrkTestWash_Detail>(),
-                        ErrorMessage = $"msg.WithInfo('{fabricCrkShrkTestWash_Result.ErrorMessage }');",
-                    };
-                }
-            }
-            else
-            {
-                fabricCrkShrkTestWash_Result = Result;
-                fabricCrkShrkTestWash_Result.Result = saveResult.Result;
-                fabricCrkShrkTestWash_Result.ErrorMessage = $"msg.WithInfo('{saveResult.ErrorMessage }');";
+                return RedirectToAction("WashTest", new { ID = Result.ID });
             }
 
-            List<SelectListItem> skewnessOptionList = new SetListItem().ItemListBinding(skewnessOption);
-            ViewBag.ResultList = new SetListItem().ItemListBinding(resultType);
-            ViewBag.SkewnessOptionList = skewnessOptionList;
-            ViewBag.FactoryID = this.FactoryID;
-            return View(fabricCrkShrkTestWash_Result);
+            Result.Result = saveResult.Result;
+            Result.ErrorMessage = saveResult.ErrorMessage;
+            TempData["Model"] = Result;
+            return RedirectToAction("WashTest", new { ID = Result.ID });
         }
 
         [HttpPost]

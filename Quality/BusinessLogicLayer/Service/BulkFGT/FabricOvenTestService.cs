@@ -192,7 +192,7 @@ namespace BusinessLogicLayer.Service
                 {
                     baseResult.Result = false;
                     baseResult.ErrorMessage = $@"The following data is duplicated
-{listKeyDuplicateItems.Select(s => $"<OvenGroup>{s.Key.OvenGroup}, <SEQ>{s.Key.SEQ}").JoinToString(Environment.NewLine)}
+{listKeyDuplicateItems.Select(s => $"[OvenGroup]{s.Key.OvenGroup}, [SEQ]{s.Key.SEQ}").JoinToString(Environment.NewLine)}
 ";
                     return baseResult;
                 }

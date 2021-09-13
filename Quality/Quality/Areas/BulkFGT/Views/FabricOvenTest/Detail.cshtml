@@ -159,7 +159,7 @@
     <div class="main-area">
         <div class="content-scroll">
             <div class="inner-scroll">
-                @using (Html.BeginForm("Detail", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { id = "DetailForm" }))
+                @using (Html.BeginForm("DetailSave", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { id = "DetailForm" }))
                 {
                     <div style="margin-top: 1em;">
                         <table id="ButtonMode">
@@ -444,7 +444,7 @@
     $(function () {
         msg = new MessagerAlert();
         EditMode = ('@ViewBag.EditMode' == 'True');
-        @Html.Raw(ViewBag.ErrorMessage)
+        @Html.Raw(Model.ErrorMessage)
         IsEditModeChange();
     });
 

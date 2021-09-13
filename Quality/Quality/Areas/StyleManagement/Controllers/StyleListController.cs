@@ -48,7 +48,7 @@ msg.WithInfo('Style, Brand and Season cannot be empty.');
             if (!model.Result)
             {
                 model.MsgScript = $@"
-msg.WithInfo('{model.ErrorMessage}');
+msg.WithInfo('{model.ErrorMessage.Replace("\r\n", "<br />")}');
 ";
             }
 

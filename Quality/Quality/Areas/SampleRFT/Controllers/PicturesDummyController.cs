@@ -59,7 +59,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             if (!model.Result)
             {
                 model.ErrorMessage = $@"
-msg.WithInfo('{model.ErrorMessage}');
+msg.WithInfo('{model.ErrorMessage.Replace("\r\n", "<br />")}');
 ";
             }
 

@@ -48,10 +48,11 @@ namespace Quality.Areas.BulkFGT.Controllers
                         {
                             Main = new FabricOvenTest_Main(),
                             Details = new List<FabricOvenTest_Detail>(),
-                            ErrorMessage = $"msg.WithInfo('{model.ErrorMessage}');" ,
+                            ErrorMessage = $"msg.WithInfo('{model.ErrorMessage.Replace("\r\n", "<br />")}');" ,
                         };
             }
             ViewBag.POID = POID;
+            UpdateModel(model);
             return View(model);
         }
 
@@ -76,6 +77,20 @@ namespace Quality.Areas.BulkFGT.Controllers
             {
                 model.Main.Status = "New";
             }
+
+            if (TempData["Model"] != null)
+            {
+                FabricOvenTest_Detail_Result saveResult = (FabricOvenTest_Detail_Result)TempData["Model"];
+                model.Main.InspDate = saveResult.Main.InspDate;
+                model.Main.Article = saveResult.Main.Article;
+                model.Main.Inspector = saveResult.Main.Inspector;
+                model.Main.InspectorName = saveResult.Main.InspectorName;
+                model.Main.Remark = saveResult.Main.Remark;
+                model.Details = saveResult.Details;
+                model.Result = saveResult.Result;
+                model.ErrorMessage = $"msg.WithInfo('{saveResult.ErrorMessage.ToString().Replace("\r\n", "<br />") }');";
+            }
+
             ViewBag.ChangeScaleList = ScaleIDList;
             ViewBag.ResultChangeList = ResultChangeList;
             ViewBag.StainingScaleList = ScaleIDList;
@@ -89,37 +104,20 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
-        public ActionResult Detail(FabricOvenTest_Detail_Result req)
+        public ActionResult DetailSave(FabricOvenTest_Detail_Result req)
         {
-            string ErrorMessage = string.Empty;
             BaseResult result = _FabricOvenTestService.SaveFabricOvenTestDetail(req, this.UserID);
-            if (!result.Result)
-            {
-                ErrorMessage = $"msg.WithInfo('{result.ErrorMessage.Replace("'", string.Empty)}');";
-            }
-            else
+            if (result.Result)
             {
                 // 找地方寫入 TestNo
                 req.Main.TestNo = string.IsNullOrEmpty(result.ErrorMessage) ? req.Main.TestNo : result.ErrorMessage;
+                return RedirectToAction("Detail", new { POID = req.Main.POID, TestNo = req.Main.TestNo, EditMode = false });
             }
-            FabricOvenTest_Detail_Result model = _FabricOvenTestService.GetFabricOvenTest_Detail_Result(req.Main.POID, req.Main.TestNo);
 
-            List<SelectListItem> ScaleIDList = new SetListItem().ItemListBinding(model.ScaleIDs);
-            List<SelectListItem> ResultChangeList = new SetListItem().ItemListBinding(Results);
-            List<SelectListItem> ResultStainList = new SetListItem().ItemListBinding(Results);
-            List<SelectListItem> TemperatureList = new SetListItem().ItemListBinding(Temperatures);
-            List<SelectListItem> TimeList = new SetListItem().ItemListBinding(Times); 
-            ViewBag.ChangeScaleList = ScaleIDList;
-            ViewBag.ResultChangeList = ResultChangeList;
-            ViewBag.StainingScaleList = ScaleIDList;
-            ViewBag.ResultStainList = ResultStainList;
-            ViewBag.TemperatureList = TemperatureList;
-            ViewBag.TimeList = TimeList;
-            ViewBag.EditMode = false;
-            ViewBag.FactoryID = this.FactoryID;
-            ViewBag.ErrorMessage = ErrorMessage;
-
-            return View(model);
+            req.Result = result.Result;
+            req.ErrorMessage = result.ErrorMessage;
+            TempData["Model"] = req;
+            return RedirectToAction("Detail", new { POID = req.Main.POID, TestNo = req.Main.TestNo, EditMode = false });
         }
 
         public JsonResult MainDetailDelete(string ID, string No)
