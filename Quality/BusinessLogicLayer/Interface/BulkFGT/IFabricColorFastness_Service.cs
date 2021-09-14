@@ -36,5 +36,7 @@ namespace BusinessLogicLayer.Interface.BulkFGT
         Fabric_ColorFastness_Detail_ViewModel ToPDF(string ID, bool test);
 
         Fabric_ColorFastness_Detail_ViewModel ToExcel(string ID, bool test);
+
+        BaseResult DeleteColorFastnessDetail(string ID, string No);
     }
 }

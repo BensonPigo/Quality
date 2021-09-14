@@ -170,7 +170,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 baseResult.Result = _IColorFastnessProvider.Save_PO(PoID, Remark);
                 
                 // 刪除前端傳來卻"不存在"DB的資料
-                baseResult.Result = _IColorFastnessProvider.Delete_ColorFastness(PoID, _ColorFastness);
+                // baseResult.Result = _IColorFastnessProvider.Delete_ColorFastness(PoID, _ColorFastness);
                 _ISQLDataTransaction.Commit();
             }
             catch (Exception ex)
@@ -625,6 +625,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
             #endregion
 
             return result;
+        }
+
+        public BaseResult DeleteColorFastnessDetail(string ID, string No)
+        {
+            throw new NotImplementedException();
         }
     }
 }
