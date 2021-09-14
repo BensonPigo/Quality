@@ -389,6 +389,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             _IGarmentTestDetailProvider = new GarmentTestDetailProvider(Common.ProductionDataAccessLayer);
             try
             {
+                result.SaveResult = true;
                 #region 判斷是否空值
                 string emptyMsg = string.Empty;
                 if (garmentTest_ViewModel.ID == 0) { emptyMsg += "Master ID cannot be 0." + Environment.NewLine; }
@@ -414,8 +415,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 #endregion
 
-                _IGarmentTestProvider = new GarmentTestProvider(_ISQLDataTransaction);                
-                result.SaveResult = _IGarmentTestProvider.Save_GarmentTest(garmentTest_ViewModel, detail, UserID);
+                _IGarmentTestProvider = new GarmentTestProvider(_ISQLDataTransaction);
+
+                // 存檔GarmentTest and 更新當前所有Result資料
+                if (_IGarmentTestProvider.Save_GarmentTest(garmentTest_ViewModel, detail, UserID) == false ||
+                    _IGarmentTestProvider.Update_GarmentTest_Result(garmentTest_ViewModel.ID.ToString()) == false)
+                {
+                    result.SaveResult = false;
+                }
                 _ISQLDataTransaction.Commit();
 
                 // 刪除 前端資料不存在但DB存在的資料
@@ -496,6 +503,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         {
             GarmentTest_Detail_Result result = new GarmentTest_Detail_Result();
             result.sentMail = false;
+            result.Result = true;
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             try
             {
@@ -503,14 +511,29 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     case DetailStatus.Encode:
                         _IGarmentTestDetailProvider = new GarmentTestDetailProvider(_ISQLDataTransaction);
+                        _IGarmentTestProvider = new GarmentTestProvider(_ISQLDataTransaction);
 
                         // all result 有任一個是Fail 就寄信
                         result.sentMail = !_IGarmentTestDetailProvider.Chk_AllResult(ID, No);
-                        result.Result = _IGarmentTestDetailProvider.Encode_GarmentTestDetail(ID, "Confirmed");
+                        // 重新判斷Result
+                        if (_IGarmentTestDetailProvider.Encode_GarmentTestDetail(ID, No, "Confirmed") == false ||
+                            _IGarmentTestDetailProvider.Update_GarmentTestDetail_Result(ID, No) == false ||
+                            _IGarmentTestProvider.Update_GarmentTest_Result(ID) == false)
+                        {
+                            result.Result = false;
+                        }
                         break;
                     case DetailStatus.Amend:
                         _IGarmentTestDetailProvider = new GarmentTestDetailProvider(_ISQLDataTransaction);
-                        result.Result = _IGarmentTestDetailProvider.Encode_GarmentTestDetail(ID, "New");
+                        _IGarmentTestProvider = new GarmentTestProvider(_ISQLDataTransaction);
+
+                        // 重新判斷Result
+                        if (_IGarmentTestDetailProvider.Encode_GarmentTestDetail(ID, No, "New") == false ||
+                            _IGarmentTestDetailProvider.Update_GarmentTestDetail_Result(ID, No) == false ||
+                            _IGarmentTestProvider.Update_GarmentTest_Result(ID) == false)
+                        {
+                            result.Result = false;
+                        }
                         break;
                     default:
                         break;
@@ -633,37 +656,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 result.Result = true;
                 string errMsg = string.Empty;
 
-                // Detail Save
-                _IGarmentTestDetailProvider = new GarmentTestDetailProvider(_ISQLDataTransaction);
-
-                // 檢查必輸欄位
-                if (source.Detail.LineDry == false && source.Detail.TumbleDry == false && source.Detail.HandWash == false)
-                {
-                    _ISQLDataTransaction.RollBack();
-                    result.Result = false;
-                    result.ErrMsg = "<Line Dry>, <Tumble Dry>, <Hand Wash> have to select one!";
-                    return result;
-                }
-
-                /*
-                if (source.Detail.Above50NaturalFibres == false && source.Detail.Above50SyntheticFibres == false)
-                {
-                    _ISQLDataTransaction.RollBack();
-                    result.Result = false;
-                    result.ErrMsg = "<50% natural fibres>, <50% synthetic fibres(ex. polyester)> have to select one!";
-                    return result;
-                }
-                */
-
-                if (_IGarmentTestDetailProvider.Update_GarmentTestDetail(source.Detail) == false)
-                {
-                    _ISQLDataTransaction.RollBack();
-                    result.Result = false;
-                    result.ErrMsg = "Update detail is empty.";
-                    return result;
-                }
-
-                // Shrinkage Save
+                #region Shrinkage save
                 _IGarmentTestDetailShrinkageProvider = new GarmentTestDetailShrinkageProvider(_ISQLDataTransaction);
                 #region 檢查空值
                 foreach (var item in source.Shrinkages)
@@ -686,8 +679,9 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     result.ErrMsg = "Update Shrinkage is empty.";
                     return result;
                 }
+                #endregion
 
-                // Spirality Save
+                #region Spirality Save
                 _IGarmentDetailSpiralityProvider = new GarmentDetailSpiralityProvider(_ISQLDataTransaction);
                 if (source.Spiralities != null && source.Spiralities.Count > 0)
                 {
@@ -698,9 +692,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         result.ErrMsg = "Update Spirality is empty.";
                         return result;
                     }
-                }            
+                }
+                #endregion
 
-                // Apperance Save 
+                #region Apperance Save 
                 _IGarmentTestDetailApperanceProvider = new GarmentTestDetailApperanceProvider(_ISQLDataTransaction);
                 if (_IGarmentTestDetailApperanceProvider.Update_Apperance(source.Apperance) == false)
                 {
@@ -709,8 +704,9 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     result.ErrMsg = "Update Apperance is empty.";
                     return result;
                 }
+                #endregion
 
-                // FGPT Save
+                #region FGPT Save
                 _IGarmentTestDetailFGPTProvider = new GarmentTestDetailFGPTProvider(_ISQLDataTransaction);
                 if (_IGarmentTestDetailFGPTProvider.Update_FGPT(source.FGPT) == false)
                 {
@@ -719,8 +715,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     result.ErrMsg = "Update FGPT is empty.";
                     return result;
                 }
+                #endregion
 
-                // FGWT Save
+                #region FGWT Save
+
                 if (source.FGWT != null)
                 {
                     _IGarmentTestDetailFGWTProvider = new GarmentTestDetailFGWTProvider(_ISQLDataTransaction);
@@ -732,6 +730,27 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         return result;
                     }
                 }
+                #endregion
+
+                #region Detail Save
+                _IGarmentTestDetailProvider = new GarmentTestDetailProvider(_ISQLDataTransaction);
+                // 檢查必輸欄位
+                if (source.Detail.LineDry == false && source.Detail.TumbleDry == false && source.Detail.HandWash == false)
+                {
+                    _ISQLDataTransaction.RollBack();
+                    result.Result = false;
+                    result.ErrMsg = "<Line Dry>, <Tumble Dry>, <Hand Wash> have to select one!";
+                    return result;
+                }
+
+                if (_IGarmentTestDetailProvider.Update_GarmentTestDetail(source.Detail) == false)
+                {
+                    _ISQLDataTransaction.RollBack();
+                    result.Result = false;
+                    result.ErrMsg = "Update detail is empty.";
+                    return result;
+                }
+                #endregion
 
                 _ISQLDataTransaction.Commit();
             }
@@ -784,10 +803,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 TxtSize = all_Data.Detail.SizeCode,
                 RdbtnLine = all_Data.Detail.LineDry,
                 RdbtnHand = all_Data.Detail.HandWash,
+                RdbtnTumble = all_Data.Detail.TumbleDry,
                 ComboTemperature = all_Data.Detail.Temperature.ToString(),
                 ComboMachineModel = all_Data.Detail.Machine,
                 TxtFibreComposition = all_Data.Detail.Composition,
-                ComboNeck = all_Data.Detail.Neck == true ? "Yest" : "No",
+                ComboNeck = all_Data.Detail.Neck == true ? "Yes" : "No",
                 TxtLotoFactory = all_Data.Detail.LOtoFactory,
             };
 
