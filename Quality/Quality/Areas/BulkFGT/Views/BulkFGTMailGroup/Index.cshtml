@@ -450,9 +450,7 @@
                     });
                 }
                 else {
-                    msg.WithErrorCheck(data.ErrMsg, function () {
-                        location.reload();
-                    });
+                    msg.WithError(data.ErrMsg);
                 }
             }
         });
