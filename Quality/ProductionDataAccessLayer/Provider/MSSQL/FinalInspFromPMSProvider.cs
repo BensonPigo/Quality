@@ -289,6 +289,14 @@ into #FinalInspection_Order
 from [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order with (nolock)
 where ID = @finalInspectionID
 
+----避免沒有Order_Location資料，預先塞入
+INSERT into  Order_Location(OrderId,Location,Rate,AddName,AddDate,EditName,EditDate)
+SELECT o.id,sl.Location,sl.Rate,sl.AddName,sl.AddDate,sl.EditName,sl.EditDate
+FROM orders o
+inner join Style_Location sl WITH (NOLOCK) on o.StyleUkey = sl.StyleUkey
+WHERE o.ID IN (select OrderID from #FinalInspection_Order)
+AND  o.ID NOT IN (select OrderID from Order_Location)
+
 select distinct Location 
 from Order_Location with (nolock)
 where OrderId in (select OrderID from #FinalInspection_Order)

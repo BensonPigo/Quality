@@ -118,6 +118,13 @@ namespace BusinessLogicLayer.Service
                     return result;
                 }
 
+                if (moistureResult.Instrument != null && moistureResult.Fabrication != null && ( moistureResult.GarmentBottom == null || moistureResult.GarmentMiddle == null || moistureResult.GarmentTop == null))
+                {
+                    result.Result = false;
+                    result.ErrorMessage = "Garment Moisture can not be empty.";
+                    return result;
+                }
+
                 bool isMoistureExists = _FinalInspectionProvider.CheckMoistureExists(moistureResult.FinalInspectionID, moistureResult.Article, moistureResult.FinalInspection_OrderCartonUkey);
 
                 if (!isMoistureExists && 
