@@ -392,7 +392,103 @@ outer apply(
 )SpecialMark
 where gd.ID = @ID and gd.No = @No
 ";
-            return ExecuteDataTable(CommandType.Text, sqlcmd, objParameter);
+            return ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
+        }
+
+        public bool Update_GarmentTestDetail_Result(string ID, string No)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@_ID", DbType.String, ID } ,
+                { "@_No", DbType.String, No } ,
+            };
+
+            string sqlcmd = @"
+Declare @ID bigint = @_ID
+Declare @No int = @_No
+
+-- FGPT
+select TestName,Result,ResultCnt = count(*)
+into #tmpFGPTResult
+from (
+select s1.*,Result =  
+	CASE WHEN  s1.TestUnit = 'N' AND s1.[TestResult] !='' THEN IIF( Cast( s1.[TestResult] as float) >= cast( s1.Criteria as float) ,'Pass' ,'Fail')
+		 WHEN  s1.TestUnit = 'mm' THEN IIF(  s1.[TestResult] = '<=4' OR s1.[TestResult] = '≦4','Pass' , IIF( s1.[TestResult]='>4','Fail','')  )
+		 WHEN  s1.TestUnit = 'Pass/Fail'  THEN s1.[TestResult]
+		 ELSE '' 
+	END 
+	From GarmentTest_Detail_FGPT s1
+	left join DropDownList ddl with (nolock) on  ddl.Type = 'PMS_FGPT_TestName' and ddl.ID = s1.TestName
+	where s1.ID = @ID and No = @No
+) a
+group by TestName,Result
+order by TestName
+
+--FGWT
+select Result,ResultCnt = count(*)
+into #tmpFGWTResult
+from (
+select s1.*,Result =  
+	IIF(Scale IS NOT NULL
+    ,IIF(Scale='4-5' OR Scale ='5','Pass',IIF(Scale='','','Fail'))
+    ,IIF( (BeforeWash IS NOT NULL AND AfterWash IS NOT NULL AND Criteria IS NOT NULL AND Shrinkage IS NOT NULL)
+          or (Type = 'spirality: Garment - in percentage (average)')
+          or (Type = 'spirality: Garment - in percentage (average) (Top Method A)')
+          or (Type = 'spirality: Garment - in percentage (average) (Top Method B)')
+          or (Type = 'spirality: Garment - in percentage (average) (Bottom Method A)')
+          or (Type = 'spirality: Garment - in percentage (average) (Bottom Method B)')
+   ,( IIF( TestDetail = '%' OR TestDetail = 'Range%'   
+   -- % 為ISP20201331舊資料、Range% 為ISP20201606加上的新資料，兩者都視作百分比
+      ---- 百分比 判斷方式
+      ,IIF( ISNULL(Criteria,0)  <= ISNULL(Shrinkage,0) AND ISNULL(Shrinkage,0) <= ISNULL(Criteria2,0)
+       , 'Pass'
+       , 'Fail'
+      )
+      ---- 非百分比 判斷方式
+      ,IIF( ISNULL(AfterWash,0) - ISNULL(BeforeWash,0) <= ISNULL(Criteria,0)
+       ,'Pass'
+       ,'Fail'
+      )
+    )
+   )
+   ,''
+ )
+)
+	From GarmentTest_Detail_FGWT s1
+	where s1.ID = @ID and No = @No
+) a
+group by Result
+
+update gd
+set Result = case 
+	when gd.SeamBreakageResult = 'F' or gd.OdourResult = 'F' or gd.WashResult = 'F' then 'F'
+	when OdourResult = '' or WashResult = '' then '' 
+	when (NonSeamBreakageTest = 0 and SeamBreakageResult = '') then ''
+	when OdourResult = 'P' and WashResult = 'P' and (NonSeamBreakageTest = 1 and (NonSeamBreakageTest = 0 and SeamBreakageResult = 'P')) then 'P'
+	else '' end
+,SeamBreakageResult = case
+	when NonSeamBreakageTest = 1 then ''
+	when NonSeamBreakageTest = 0 and (select count(1) from #tmpFGPTResult where TestName = 'PHX-AP0450' and Result = 'Fail') > 0 then 'F'
+	when NonSeamBreakageTest = 0 and (select count(1) from #tmpFGPTResult where TestName = 'PHX-AP0450' and Result = 'Pass') > 0 then 'P'
+	when NonSeamBreakageTest = 0 and (select count(1) from #tmpFGPTResult where TestName = 'PHX-AP0450' and Result = '') > 0 then ''
+	else ''  End
+,OdourResult = case
+	when  (select count(1) from #tmpFGPTResult where TestName = 'PHX-AP0451' and Result = 'Fail') > 0 then 'F'
+	when  (select count(1) from #tmpFGPTResult where TestName = 'PHX-AP0451' and Result = 'Pass') > 0 then 'P'
+	when  (select count(1) from #tmpFGPTResult where TestName = 'PHX-AP0451' and Result = '') > 0 then ''
+	else ''  End
+,WashResult = case
+	when  (select count(1) from #tmpFGWTResult where Result = 'Fail') > 0 then 'F'
+	when  (select count(1) from #tmpFGWTResult where Result = 'Pass') > 0 then 'P'
+	when  (select count(1) from #tmpFGWTResult where Result = '') > 0 then ''
+	else ''  End
+from GarmentTest_Detail gd 
+where gd.id=@ID and No=@No
+
+drop table #tmpFGPTResult,#tmpFGWTResult
+
+";
+            return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
         }
 
         /*回傳Garment Test(Get) 詳細敘述如下*/

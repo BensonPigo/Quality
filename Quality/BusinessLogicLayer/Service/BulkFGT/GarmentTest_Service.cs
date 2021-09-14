@@ -414,8 +414,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 #endregion
 
-                _IGarmentTestProvider = new GarmentTestProvider(_ISQLDataTransaction);                
-                result.SaveResult = _IGarmentTestProvider.Save_GarmentTest(garmentTest_ViewModel, detail, UserID);
+                _IGarmentTestProvider = new GarmentTestProvider(_ISQLDataTransaction);
+
+                // 存檔GarmentTest and 更新當前所有Result資料
+                if (_IGarmentTestProvider.Save_GarmentTest(garmentTest_ViewModel, detail, UserID) == false ||
+                    _IGarmentTestProvider.Update_GarmentTest_Result(garmentTest_ViewModel.ID.ToString()) == false)
+                {
+                    result.SaveResult = false;
+                }
                 _ISQLDataTransaction.Commit();
 
                 // 刪除 前端資料不存在但DB存在的資料
@@ -458,6 +464,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 #region 判斷空值
                 string emptyMsg = string.Empty;
                 if (string.IsNullOrEmpty(Detail.MtlTypeID)) { emptyMsg += "MtlTypeID cannot be empty" + Environment.NewLine; }
+                if (Detail.Above50NaturalFibres == false && Detail.Above50SyntheticFibres == false) { emptyMsg += "MtlTypeID cannot be empty" + Environment.NewLine; }
                 if (_IGarmentTestDetailFGWTProvider.Chk_FGWTExists(Detail) == true) { emptyMsg += "Data already exists!!"; }
                 #endregion
 
@@ -502,14 +509,29 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     case DetailStatus.Encode:
                         _IGarmentTestDetailProvider = new GarmentTestDetailProvider(_ISQLDataTransaction);
+                        _IGarmentTestProvider = new GarmentTestProvider(_ISQLDataTransaction);
 
                         // all result 有任一個是Fail 就寄信
                         result.sentMail = !_IGarmentTestDetailProvider.Chk_AllResult(ID, No);
-                        result.Result = _IGarmentTestDetailProvider.Encode_GarmentTestDetail(ID, No, "Confirmed");
+                        // 重新判斷Result
+                        if (_IGarmentTestDetailProvider.Encode_GarmentTestDetail(ID, No, "Confirmed") == false ||
+                            _IGarmentTestDetailProvider.Update_GarmentTestDetail_Result(ID, No) == false ||
+                            _IGarmentTestProvider.Update_GarmentTest_Result(ID) == false)
+                        {
+                            result.Result = false;
+                        }
                         break;
                     case DetailStatus.Amend:
                         _IGarmentTestDetailProvider = new GarmentTestDetailProvider(_ISQLDataTransaction);
-                        result.Result = _IGarmentTestDetailProvider.Encode_GarmentTestDetail(ID, No, "New");
+                        _IGarmentTestProvider = new GarmentTestProvider(_ISQLDataTransaction);
+
+                        // 重新判斷Result
+                        if (_IGarmentTestDetailProvider.Encode_GarmentTestDetail(ID, No, "New") == false ||
+                            _IGarmentTestDetailProvider.Update_GarmentTestDetail_Result(ID, No) == false ||
+                            _IGarmentTestProvider.Update_GarmentTest_Result(ID) == false)
+                        {
+                            result.Result = false;
+                        }
                         break;
                     default:
                         break;
@@ -632,9 +654,84 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 result.Result = true;
                 string errMsg = string.Empty;
 
-                // Detail Save
-                _IGarmentTestDetailProvider = new GarmentTestDetailProvider(_ISQLDataTransaction);
+                #region Shrinkage Save
+                _IGarmentTestDetailShrinkageProvider = new GarmentTestDetailShrinkageProvider(_ISQLDataTransaction);
+                #region 檢查空值
+                foreach (var item in source.Shrinkages)
+                {
+                    bool isAllEmpty = (item.AfterWash1 == 0) && (item.AfterWash2 == 0) && (item.AfterWash3 == 0);
 
+                    if (item.BeforeWash == 0 && isAllEmpty == false)
+                    {
+                        result.Result = false;
+                        result.ErrMsg = @"<BeforeWash> can not be empty or 0 !!";
+                        return result;
+                    }
+                }
+                #endregion
+
+                if (_IGarmentTestDetailShrinkageProvider.Update_GarmentTestShrinkage(source.Shrinkages) == false)
+                {
+                    _ISQLDataTransaction.RollBack();
+                    result.Result = false;
+                    result.ErrMsg = "Update Shrinkage is empty.";
+                    return result;
+                }
+                #endregion
+
+                #region Spirality Save
+                _IGarmentDetailSpiralityProvider = new GarmentDetailSpiralityProvider(_ISQLDataTransaction);
+                if (source.Spiralities != null || source.Spiralities.Count > 0)
+                {
+                    if (_IGarmentDetailSpiralityProvider.Update_Spirality(source.Spiralities) == false)
+                    {
+                        _ISQLDataTransaction.RollBack();
+                        result.Result = false;
+                        result.ErrMsg = "Update Spirality is empty.";
+                        return result;
+                    }
+                }
+                #endregion
+
+                #region Apperance Save 
+                _IGarmentTestDetailApperanceProvider = new GarmentTestDetailApperanceProvider(_ISQLDataTransaction);
+                if (_IGarmentTestDetailApperanceProvider.Update_Apperance(source.Apperance) == false)
+                {
+                    _ISQLDataTransaction.RollBack();
+                    result.Result = false;
+                    result.ErrMsg = "Update Apperance is empty.";
+                    return result;
+                }
+                #endregion
+
+                #region FGPT Save
+                _IGarmentTestDetailFGPTProvider = new GarmentTestDetailFGPTProvider(_ISQLDataTransaction);
+                if (_IGarmentTestDetailFGPTProvider.Update_FGPT(source.FGPT) == false)
+                {
+                    _ISQLDataTransaction.RollBack();
+                    result.Result = false;
+                    result.ErrMsg = "Update FGPT is empty.";
+                    return result;
+                }
+                #endregion
+
+                #region FGWT Save
+
+                if (source.FGWT != null)
+                {
+                    _IGarmentTestDetailFGWTProvider = new GarmentTestDetailFGWTProvider(_ISQLDataTransaction);
+                    if (_IGarmentTestDetailFGWTProvider.Update_FGWT(source.FGWT) == false)
+                    {
+                        _ISQLDataTransaction.RollBack();
+                        result.Result = false;
+                        result.ErrMsg = "Update FGWT is empty.";
+                        return result;
+                    }
+                }
+                #endregion
+
+                #region Detail Save & Update All Result 
+                _IGarmentTestDetailProvider = new GarmentTestDetailProvider(_ISQLDataTransaction);
                 // 檢查必輸欄位
                 if (source.Detail.LineDry == false && source.Detail.TumbleDry == false && source.Detail.HandWash == false)
                 {
@@ -659,76 +756,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     result.ErrMsg = "Update detail is empty.";
                     return result;
                 }
-
-                // Shrinkage Save
-                _IGarmentTestDetailShrinkageProvider = new GarmentTestDetailShrinkageProvider(_ISQLDataTransaction);
-                #region 檢查空值
-                foreach (var item in source.Shrinkages)
-                {
-                    bool isAllEmpty = (item.AfterWash1 == 0) && (item.AfterWash2 == 0) && (item.AfterWash3 == 0);
-
-                    if (item.BeforeWash == 0 && isAllEmpty == false)
-                    {
-                        result.Result = false;
-                        result.ErrMsg = @"<BeforeWash> can not be empty or 0 !!";
-                        return result;
-                    }
-                }
                 #endregion
-
-                if (_IGarmentTestDetailShrinkageProvider.Update_GarmentTestShrinkage(source.Shrinkages) == false)
-                {
-                    _ISQLDataTransaction.RollBack();
-                    result.Result = false;
-                    result.ErrMsg = "Update Shrinkage is empty.";
-                    return result;
-                }
-
-                // Spirality Save
-                _IGarmentDetailSpiralityProvider = new GarmentDetailSpiralityProvider(_ISQLDataTransaction);
-                if (source.Spiralities != null || source.Spiralities.Count > 0)
-                {
-                    if (_IGarmentDetailSpiralityProvider.Update_Spirality(source.Spiralities) == false)
-                    {
-                        _ISQLDataTransaction.RollBack();
-                        result.Result = false;
-                        result.ErrMsg = "Update Spirality is empty.";
-                        return result;
-                    }
-                }            
-
-                // Apperance Save 
-                _IGarmentTestDetailApperanceProvider = new GarmentTestDetailApperanceProvider(_ISQLDataTransaction);
-                if (_IGarmentTestDetailApperanceProvider.Update_Apperance(source.Apperance) == false)
-                {
-                    _ISQLDataTransaction.RollBack();
-                    result.Result = false;
-                    result.ErrMsg = "Update Apperance is empty.";
-                    return result;
-                }
-
-                // FGPT Save
-                _IGarmentTestDetailFGPTProvider = new GarmentTestDetailFGPTProvider(_ISQLDataTransaction);
-                if (_IGarmentTestDetailFGPTProvider.Update_FGPT(source.FGPT) == false)
-                {
-                    _ISQLDataTransaction.RollBack();
-                    result.Result = false;
-                    result.ErrMsg = "Update FGPT is empty.";
-                    return result;
-                }
-
-                // FGWT Save
-                if (source.FGWT != null)
-                {
-                    _IGarmentTestDetailFGWTProvider = new GarmentTestDetailFGWTProvider(_ISQLDataTransaction);
-                    if (_IGarmentTestDetailFGWTProvider.Update_FGWT(source.FGWT) == false)
-                    {
-                        _ISQLDataTransaction.RollBack();
-                        result.Result = false;
-                        result.ErrMsg = "Update FGWT is empty.";
-                        return result;
-                    }
-                }
 
                 _ISQLDataTransaction.Commit();
             }

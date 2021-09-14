@@ -750,5 +750,31 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
                 throw ex;
             }
         }
+
+        [TestMethod()]
+        public void Save_GarmentTestDetailTest1()
+        {
+            Assert.Fail();
+        }
+
+        [TestMethod()]
+        public void Generate_FGWTTest1()
+        {
+            try
+            {
+                IGarmentTest_Service _Service = new GarmentTest_Service();
+                GarmentTest_ViewModel main = _Service.Get_Main("19301");
+                GarmentTest_Detail_ViewModel detail = _Service.Get_Detail("19301", "9");
+                GarmentTest_Result result = _Service.Generate_FGWT(main, detail);
+
+                Assert.IsTrue(result.Result);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message.ToString());
+                throw ex;
+            }
+
+        }
     }
 }

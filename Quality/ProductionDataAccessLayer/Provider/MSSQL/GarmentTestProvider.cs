@@ -711,6 +711,33 @@ values(
             return defaultFGPTList.OrderBy(o => o.Type).ToList();
         }
 
+        public bool Update_GarmentTest_Result(string ID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.String, ID } ,
+            };
+
+            string sqlcmd = @"
+update g 
+set g.SeamBreakageResult = All_Result.SeamBreakageResult
+,g.SeamBreakageLastTestDate  = All_Result.inspdate
+,g.OdourResult = All_Result.OdourResult
+,g.WashResult = All_Result.WashResult
+,g.Result = All_Result.Result
+,g.Date = All_Result.inspdate
+from GarmentTest g
+outer apply(
+	select top 1 SeamBreakageResult,gd1.inspdate ,gd1.OdourResult,gd1.WashResult,gd1.Result
+	from GarmentTest_Detail gd1
+	where gd1.id=g.ID and gd1.NonSeamBreakageTest = 0
+	order by gd1.inspdate desc , gd1.EditDate desc , gd1.AddDate desc
+)All_Result
+where ID = @ID
+";
+            return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
+        }
+
         /*回傳Garment Test(Get) 詳細敘述如下*/
         /// <summary>
         /// 回傳Garment Test
