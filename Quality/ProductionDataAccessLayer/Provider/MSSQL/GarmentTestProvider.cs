@@ -447,12 +447,8 @@ INSERT INTO GarmentTest_Detail_FGPT
                 objParameterDetail.Add($"@WashResult", string.IsNullOrEmpty(item.WashResult) ? string.Empty : item.WashResult);
                 objParameterDetail.Add($"@inspector", string.IsNullOrEmpty(item.inspector) ? string.Empty : item.inspector);                
                 objParameterDetail.Add($"@Remark", string.IsNullOrEmpty(item.Remark) ? string.Empty : item.Remark);
-                // objParameterDetail.Add($"@EditName", string.IsNullOrEmpty(item.EditName) ? string.Empty : item.EditName);
-                // objParameterDetail.Add($"@AddName", string.IsNullOrEmpty(item.AddName) ? string.Empty : item.AddName);
                 objParameterDetail.Add($"@UserID", string.IsNullOrEmpty(UserID) ? string.Empty : UserID);
                 objParameterDetail.Add($"@OrderID", string.IsNullOrEmpty(item.OrderID) ? string.Empty : item.OrderID);
-
-                //objParameterDetail.Add($"@inspdate", item.inspdate == null ? DBNull.Value : ((DateTime)item.inspdate).ToString("d"));
 
                 string inspDate = (item.inspdate == null) ? "Null" : "'" + ((DateTime)item.inspdate).ToString("d") + "'";
 
@@ -468,12 +464,8 @@ update GarmentTest_Detail
 set SizeCode = @SizeCode
 ,OrderID = @OrderID
 ,MtlTypeID = @MtlTypeID
-,Result = @Result
-,NonSeamBreakageTest = @NonSeamBreakageTest
-,SeamBreakageResult = @SeamBreakageResult
-,OdourResult = @OdourResult
-,WashResult = @WashResult
-,inspector = @inspector,inspdate = {inspDate}
+,inspector = @inspector
+,inspdate = {inspDate}
 ,Remark = @Remark
 ,EditName = @UserID, EditDate = GetDate()
 where ID = @ID

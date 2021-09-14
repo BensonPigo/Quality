@@ -65,7 +65,12 @@ where s.ID = @StyleID and s.SeasonID = @SeasonID and s.BrandID = @BrandID
 
         public List<string> GetScales()
         {
-            string sqlcmd = @"select ID from Scale  WHERE Junk=0 order by ID";
+            string sqlcmd = @"
+select ID = ''
+union all
+select ID from Scale  WHERE Junk=0 
+order by ID
+";
             DataTable dt = ExecuteDataTable(CommandType.Text, sqlcmd, new SQLParameterCollection());
 
             return dt.Rows.OfType<DataRow>().Select(dr => dr.Field<string>("ID")).ToList();

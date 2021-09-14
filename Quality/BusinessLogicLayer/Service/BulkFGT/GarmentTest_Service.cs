@@ -389,6 +389,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             _IGarmentTestDetailProvider = new GarmentTestDetailProvider(Common.ProductionDataAccessLayer);
             try
             {
+                result.SaveResult = true;
                 #region 判斷是否空值
                 string emptyMsg = string.Empty;
                 if (garmentTest_ViewModel.ID == 0) { emptyMsg += "Master ID cannot be 0." + Environment.NewLine; }
@@ -502,6 +503,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         {
             GarmentTest_Detail_Result result = new GarmentTest_Detail_Result();
             result.sentMail = false;
+            result.Result = true;
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             try
             {
