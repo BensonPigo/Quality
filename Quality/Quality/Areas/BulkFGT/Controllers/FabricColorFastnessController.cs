@@ -16,7 +16,6 @@ namespace Quality.Areas.BulkFGT.Controllers
     public class FabricColorFastnessController : BaseController
     {
         private IFabricColorFastness_Service _FabricColorFastness_Service;
-        // GET: BulkFGT/FabricColorFastness
 
         public FabricColorFastnessController()
         {
@@ -24,10 +23,8 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.OnlineHelp = this.OnlineHelp + "BulkFGT.FabricColorFastness,,";
         }
 
-
         public ActionResult Index()
         {
-
             FabricColorFastness_ViewModel model = new FabricColorFastness_ViewModel()
             {
                 ColorFastness_MainList = new List<ColorFastness_Result>()
@@ -41,8 +38,8 @@ namespace Quality.Areas.BulkFGT.Controllers
         [MultipleButton(Name = "action", Argument = "Query")]
         public ActionResult Query(string QueryPoID)
         {
-            FabricColorFastness_ViewModel model = _FabricColorFastness_Service.Get_Main("21051739BB");
-
+            // 21051739BB
+            FabricColorFastness_ViewModel model = _FabricColorFastness_Service.Get_Main(QueryPoID);
             ViewBag.QueryPoID = QueryPoID;
             return View("Index", model);
         }
@@ -50,17 +47,23 @@ namespace Quality.Areas.BulkFGT.Controllers
         [HttpPost]
         public JsonResult SaveMaster(FabricColorFastness_ViewModel Main)
         {
-            var result = _FabricColorFastness_Service.Save_ColorFastness_1stPage(Main.PoID,Main.ColorFastnessLaboratoryRemark,null);
-
+            var result = _FabricColorFastness_Service.Save_ColorFastness_1stPage(Main.PoID, Main.ColorFastnessLaboratoryRemark);
+            ViewBag.QueryPoID = Main.PoID;
             return Json(result);
         }
 
         public ActionResult IndexBack(string PoID)
         {
-            FabricColorFastness_ViewModel model = _FabricColorFastness_Service.Get_Main("21051739BB");
-
+            FabricColorFastness_ViewModel model = _FabricColorFastness_Service.Get_Main(PoID);
             ViewBag.QueryPoID = PoID;
             return View("Index", model);
+        }
+
+        public JsonResult MainDetailDelete(string ID, string No)
+        {
+            BaseResult result = _FabricColorFastness_Service.DeleteColorFastness(ID);
+
+            return Json(result);
         }
 
         public ActionResult Detail(string PoID, string TestNo, string EditMode)
