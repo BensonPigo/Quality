@@ -18,7 +18,7 @@ namespace BusinessLogicLayer.Interface.BulkFGT
 
         List<Order_Qty> GetDistinctArticle(Order_Qty Orders);
 
-        BaseResult Create(MockupCrocking_ViewModel MockupCrocking);
+        BaseResult Create(MockupCrocking_ViewModel MockupCrocking, string Mdivision);
 
         BaseResult Update(MockupCrocking_ViewModel MockupCrocking);
 

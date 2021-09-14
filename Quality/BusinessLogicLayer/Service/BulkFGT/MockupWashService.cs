@@ -300,7 +300,8 @@ namespace BusinessLogicLayer.Service
 
                 if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
                 {
-                    result.TempFileName = filepathpdf;
+                    result.TempFileFullPath = filepathpdf;
+                    result.TempFileName = fileNamePDF;
                     result.Result = true;
                 }
                 else
@@ -317,7 +318,7 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public BaseResult Create(MockupWash_ViewModel MockupWash)
+        public BaseResult Create(MockupWash_ViewModel MockupWash, string Mdivision)
         {
             if (MockupWash.MockupWash_Detail.Any(a => a.Result.ToUpper() == "Fail".ToUpper()))
             {
@@ -336,7 +337,7 @@ namespace BusinessLogicLayer.Service
             int count;
             try
             {
-                count = _MockupWashProvider.Create(MockupWash);
+                count = _MockupWashProvider.Create(MockupWash, Mdivision, out string NewReportNo);
                 if (count == 0)
                 {
                     result.Result = false;
@@ -344,6 +345,7 @@ namespace BusinessLogicLayer.Service
                     return result;
                 }
 
+                MockupWash.ReportNo = NewReportNo;
                 foreach (var MockupWash_Detail in MockupWash.MockupWash_Detail)
                 {
                     MockupWash_Detail.ReportNo = MockupWash.ReportNo;

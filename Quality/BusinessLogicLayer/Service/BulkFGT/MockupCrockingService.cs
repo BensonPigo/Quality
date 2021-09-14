@@ -1,4 +1,5 @@
-﻿using ADOHelper.Utility;
+﻿using ADOHelper.Template.MSSQL;
+using ADOHelper.Utility;
 using BusinessLogicLayer.Interface.BulkFGT;
 using DatabaseObject;
 using DatabaseObject.ProductionDB;
@@ -14,7 +15,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Transactions;
 using System.Web.Mvc;
 using Excel = Microsoft.Office.Interop.Excel;
 
@@ -241,7 +241,8 @@ namespace BusinessLogicLayer.Service
 
                 if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
                 {
-                    result.TempFileName = filepathpdf;
+                    result.TempFileFullPath = filepathpdf;
+                    result.TempFileName = fileNamePDF;
                     result.Result = true;
                 }
                 else
@@ -258,7 +259,7 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public BaseResult Create(MockupCrocking_ViewModel MockupCrocking)
+        public BaseResult Create(MockupCrocking_ViewModel MockupCrocking, string Mdivision)
         {
             if (MockupCrocking.MockupCrocking_Detail.Any(a => a.Result.ToUpper() == "Fail".ToUpper()))
             {
@@ -277,7 +278,7 @@ namespace BusinessLogicLayer.Service
             int count;
             try
             {
-                count = _MockupCrockingProvider.Create(MockupCrocking);
+                count = _MockupCrockingProvider.Create(MockupCrocking, Mdivision, out string NewReportNo);
                 if (count == 0)
                 {
                     result.Result = false;
@@ -285,6 +286,7 @@ namespace BusinessLogicLayer.Service
                     return result;
                 }
 
+                MockupCrocking.ReportNo = NewReportNo;
                 foreach (var MockupCrocking_Detail in MockupCrocking.MockupCrocking_Detail)
                 {
                     MockupCrocking_Detail.ReportNo = MockupCrocking.ReportNo;

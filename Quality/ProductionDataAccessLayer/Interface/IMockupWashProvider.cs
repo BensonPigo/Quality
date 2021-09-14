@@ -14,7 +14,7 @@ namespace ProductionDataAccessLayer.Interface
 
         DataTable GetMockupWashFailMailContentData(string ReportNo);
 
-        int Create(MockupWash Item);
+        int Create(MockupWash Item, string Mdivision, out string NewReportNo);
 
         void Update(MockupWash_ViewModel Item);
 

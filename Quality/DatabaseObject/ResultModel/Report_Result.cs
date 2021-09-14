@@ -9,5 +9,6 @@ namespace DatabaseObject.ResultModel
     public class Report_Result: BaseResult
     {
         public string TempFileName { get; set; }
+        public string TempFileFullPath { get; set; }        
     }
 }

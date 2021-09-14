@@ -74,8 +74,9 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             return ExecuteList<MockupOven>(CommandType.Text, SbSql.ToString(), objParameter);
         }
 
-        public int Create(MockupOven Item)
+        public int Create(MockupOven Item, string Mdivision, out string NewReportNo)
         {
+            NewReportNo = GetID(Mdivision + "OV", "MockupOven", DateTime.Today, 2, "ReportNo");
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
             SbSql.Append("INSERT INTO [MockupOven]" + Environment.NewLine);
@@ -114,7 +115,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append(")" + Environment.NewLine);
             SbSql.Append("VALUES" + Environment.NewLine);
             SbSql.Append("(" + Environment.NewLine);
-            SbSql.Append("         @ReportNo"); objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
+            SbSql.Append("         @ReportNo"); objParameter.Add("@ReportNo", DbType.String, NewReportNo);
             SbSql.Append("        ,@POID"); objParameter.Add("@POID", DbType.String, Item.POID ?? string.Empty);
             SbSql.Append("        ,@StyleID"); objParameter.Add("@StyleID", DbType.String, Item.StyleID ?? string.Empty);
             SbSql.Append("        ,@SeasonID"); objParameter.Add("@SeasonID", DbType.String, Item.SeasonID ?? string.Empty);
