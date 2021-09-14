@@ -23,6 +23,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         public PullingTestController()
         {
             Service = new PullingTestService();
+            ViewBag.OnlineHelp = this.OnlineHelp + "BulkFGT.PullingTest,,";
         }
 
         // GET: BulkFGT/PullingTest

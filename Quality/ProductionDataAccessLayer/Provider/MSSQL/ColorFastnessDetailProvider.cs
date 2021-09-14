@@ -240,6 +240,8 @@ and Seq2 = @Seq2{idx}
 ";
                 DataTable dtDetail = ExecuteDataTableByServiceConn(CommandType.Text, sql_detail, objParameter);
 
+                string DetailResult = (item.ResultChange.EqualString("Pass") && item.ResultStain.EqualString("Pass")) ? "Pass" : "Fail";
+
                 // 代表是新增的資料
                 if (dtDetail.Rows.Count == 0)
                 {
@@ -269,7 +271,7 @@ values
       ,@Seq2{idx}
       ,@Roll{idx}
       ,@Dyelot{idx}
-      ,@Result{idx}
+      ,{DetailResult}
       ,@changeScale{idx}
       ,@StainingScale{idx}
       ,@Remark{idx}
@@ -284,7 +286,7 @@ values
                 else
                 {
                     sqlcmd += $@"
-update
+update ColorFastness_Detail
        [Roll] = @Roll{idx}
       ,[Dyelot] = @Dyelot{idx}
       ,[Result] = @Result{idx}

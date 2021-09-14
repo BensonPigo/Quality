@@ -20,6 +20,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         public MockupWashController()
         {
             _MockupWashService = new MockupWashService();
+            ViewBag.OnlineHelp = this.OnlineHelp + "BulkFGT.MockupWash,,";
         }
 
         // GET: BulkFGT/MockupWash

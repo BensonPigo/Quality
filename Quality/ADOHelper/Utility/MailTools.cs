@@ -101,6 +101,7 @@ namespace ADOHelper.Utility
                     }
                 }
 
+
                 // 夾檔(在server上的檔案)
                 if (SendMail_Request.FileonServer != null && SendMail_Request.FileonServer.Count > 0)
                 {
@@ -108,7 +109,9 @@ namespace ADOHelper.Utility
                     {
                         if (!string.IsNullOrEmpty(file))
                         {
-                            message.Attachments.Add(new Attachment(file));
+                            // 找到server 上的檔案
+                            string filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", file);
+                            message.Attachments.Add(new Attachment(filepath));
                         }
                     }
                 }

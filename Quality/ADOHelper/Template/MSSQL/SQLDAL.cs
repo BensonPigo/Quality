@@ -569,9 +569,19 @@ namespace ADOHelper.Template.MSSQL
             string sqlCmd = string.Format("SELECT TOP 1 {0} FROM {1} WHERE {2} LIKE '{3}%' ORDER BY {4} DESC", checkColumn, tableName, checkColumn, keyWord.Trim(), checkColumn);
 
             DataTable dtID = ExecuteDataTableByServiceConn(CommandType.Text, sqlCmd, new SQLParameterCollection());
-            int columnTypeLength = dtID.Columns[checkColumn].MaxLength;
 
-            if (dtID.Rows.Count > 0)
+			sqlCmd = $@"
+select s.max_length
+from sys.tables t
+inner join sys.columns s on s.object_id = t.object_id
+where t.name = '{tableName}'
+and s.name = '{checkColumn}'
+";
+
+			DataTable dtKey = ExecuteDataTableByServiceConn(CommandType.Text, sqlCmd, new SQLParameterCollection());
+			int columnTypeLength = int.Parse(dtKey.Rows[0][0].ToString());
+
+			if (dtID.Rows.Count > 0)
             {
                 string lastID = dtID.Rows[0][checkColumn].ToString();
                 returnID = keyWord + GetNextValue(lastID.Substring(keyWord.Length), sequenceMode, addNum);

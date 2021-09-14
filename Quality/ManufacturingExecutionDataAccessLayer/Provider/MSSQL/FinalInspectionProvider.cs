@@ -198,7 +198,7 @@ delete  FinalInspection_OrderCarton where ID = @FinalInspectionID
             objParameter.Add("@FactoryID", factoryID);
             objParameter.Add("@MDivisionid", MDivisionid);
             objParameter.Add("@AuditDate", setting.AuditDate);
-            objParameter.Add("@SewingLineID", setting.SewingLineID);
+            objParameter.Add("@SewingLineID", (setting.SewingLineID == null ? string.Empty : setting.SewingLineID));
             objParameter.Add("@AcceptableQualityLevelsUkey", setting.AcceptableQualityLevelsUkey);
             objParameter.Add("@SampleSize", setting.SampleSize);
             objParameter.Add("@AcceptQty", setting.AcceptQty);
@@ -706,7 +706,7 @@ select  fm.Ukey,
         [CTNStandard] = @FinalInspection_CTNMoisureStandard,
         fm.CTNInside,
         fm.CTNOutside,
-        fm.Result,
+        Result = IIF(fm.Result = 'P','Pass','Fail'),
         fm.Action,
         fm.Remark
 from    FinalInspection_Moisture fm with (nolock)
@@ -752,7 +752,7 @@ from    EndlineMoisture with (nolock)
             objParameter.Add("@GarmentBottom", moistureResult.GarmentBottom);
             objParameter.Add("@CTNInside", moistureResult.CTNInside);
             objParameter.Add("@CTNOutside", moistureResult.CTNOutside);
-            objParameter.Add("@Result", moistureResult.Result);
+            objParameter.Add("@Result",DbType.String, moistureResult.Result);
             objParameter.Add("@Action", moistureResult.Action);
             objParameter.Add("@Remark", moistureResult.Remark);
             objParameter.Add("@AddName", moistureResult.AddName);
@@ -788,7 +788,7 @@ values
 ,@GarmentBottom
 ,@CTNInside
 ,@CTNOutside
-,iif(@Result = 'Pass', '1', '0')
+,@Result
 ,@Action
 ,@Remark
 ,@AddName

@@ -18,6 +18,7 @@ namespace Quality.Areas.StyleManagement
         public PrintBarcodeController()
         {
             _StyleManagementService = new StyleManagementService();
+            ViewBag.OnlineHelp = this.OnlineHelp + "StyleManagement.PrintBarcode,,";
         }
 
         // GET: StyleManagement/PrintBarcode
@@ -65,7 +66,7 @@ msg.WithInfo('Data not found.');
             catch (Exception ex)
             {
                 model.MsgScript = $@"
-msg.WithInfo('Error : {ex.Message}');
+msg.WithInfo('Error : {ex.Message.Replace("\r\n", "<br />")}');
 ";
             }
             return View("index", model);

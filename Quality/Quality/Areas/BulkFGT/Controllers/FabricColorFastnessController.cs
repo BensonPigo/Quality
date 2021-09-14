@@ -16,18 +16,15 @@ namespace Quality.Areas.BulkFGT.Controllers
     public class FabricColorFastnessController : BaseController
     {
         private IFabricColorFastness_Service _FabricColorFastness_Service;
-        // GET: BulkFGT/FabricColorFastness
 
         public FabricColorFastnessController()
         {
             _FabricColorFastness_Service = new FabricColorFastness_Service();
-
+            ViewBag.OnlineHelp = this.OnlineHelp + "BulkFGT.FabricColorFastness,,";
         }
-
 
         public ActionResult Index()
         {
-
             FabricColorFastness_ViewModel model = new FabricColorFastness_ViewModel()
             {
                 ColorFastness_MainList = new List<ColorFastness_Result>()
@@ -41,8 +38,8 @@ namespace Quality.Areas.BulkFGT.Controllers
         [MultipleButton(Name = "action", Argument = "Query")]
         public ActionResult Query(string QueryPoID)
         {
-            FabricColorFastness_ViewModel model = _FabricColorFastness_Service.Get_Main("21051739BB");
-
+            // 21051739BB
+            FabricColorFastness_ViewModel model = _FabricColorFastness_Service.Get_Main(QueryPoID);
             ViewBag.QueryPoID = QueryPoID;
             return View("Index", model);
         }
@@ -50,26 +47,30 @@ namespace Quality.Areas.BulkFGT.Controllers
         [HttpPost]
         public JsonResult SaveMaster(FabricColorFastness_ViewModel Main)
         {
-            var result = _FabricColorFastness_Service.Save_ColorFastness_1stPage(Main.PoID,Main.ColorFastnessLaboratoryRemark,null);
-
+            var result = _FabricColorFastness_Service.Save_ColorFastness_1stPage(Main.PoID, Main.ColorFastnessLaboratoryRemark);
+            ViewBag.QueryPoID = Main.PoID;
             return Json(result);
         }
 
         public ActionResult IndexBack(string PoID)
         {
-            FabricColorFastness_ViewModel model = _FabricColorFastness_Service.Get_Main("21051739BB");
-
+            FabricColorFastness_ViewModel model = _FabricColorFastness_Service.Get_Main(PoID);
             ViewBag.QueryPoID = PoID;
             return View("Index", model);
         }
 
-        public ActionResult Detail(string PoID, string TestNo, string EditMode)
+        public JsonResult MainDetailDelete(string ID, string No)
+        {
+            BaseResult result = _FabricColorFastness_Service.DeleteColorFastness(ID);
+
+            return Json(result);
+        }
+
+        public ActionResult Detail(string PoID, string ID, string EditMode)
         {
             FabricColorFastness_ViewModel FabricColorFastnessModel = new FabricColorFastness_ViewModel();
-
             Fabric_ColorFastness_Detail_ViewModel model = new Fabric_ColorFastness_Detail_ViewModel();
-
-            if (Convert.ToBoolean(EditMode) && string.IsNullOrEmpty(TestNo))
+            if (Convert.ToBoolean(EditMode) && string.IsNullOrEmpty(ID))
             {
                 model.Main = new ColorFastness_Result();
                 model.Detail = new List<Fabric_ColorFastness_Detail_Result>();
@@ -78,35 +79,20 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
             else
             {
-                //VM2CF21060177
-                //ESPO2Jm13H4PK
-
-                ColorFastness_Result modelMaster = _FabricColorFastness_Service.GetDetailHeader("ESPO2Jm13H4PK");
-                Fabric_ColorFastness_Detail_ViewModel modelDetail = _FabricColorFastness_Service.GetDetailBody("VM2CF21060177");
-                Fabric_ColorFastness_Detail_ViewModel modelDetail1 = _FabricColorFastness_Service.GetDetailBody("VM2CF21060177");
-                List<Fabric_ColorFastness_Detail_Result> list = new List<Fabric_ColorFastness_Detail_Result>();
-                list.AddRange(modelDetail.Detail);
-                list.AddRange(modelDetail1.Detail);
-                model.Main = modelMaster;
-                model.Detail = list;
+                model = _FabricColorFastness_Service.GetDetailBody(ID);
             }
 
             List<string> Scales = _FabricColorFastness_Service.Get_Scales();
             List<SelectListItem> ScalesList = new SetListItem().ItemListBinding(Scales);
-
-
             ViewBag.Temperature_List = FabricColorFastnessModel.Temperature_List;
             ViewBag.Cycle_List = FabricColorFastnessModel.Cycle_List;
             ViewBag.Detergent_List = FabricColorFastnessModel.Detergent_List;
             ViewBag.Machine_List = FabricColorFastnessModel.Machine_List;
             ViewBag.Drying_List = FabricColorFastnessModel.Drying_List;
-
             ViewBag.ChangeScaleList = ScalesList;
             ViewBag.ResultChangeList = FabricColorFastnessModel.Result_Source;
             ViewBag.StainingScaleList = ScalesList;
             ViewBag.ResultStainList = FabricColorFastnessModel.Result_Source;
-
-
             ViewBag.EditMode = EditMode;
             ViewBag.FactoryID = this.FactoryID;
             return View(model);

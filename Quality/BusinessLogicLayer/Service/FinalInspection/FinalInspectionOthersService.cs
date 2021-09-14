@@ -44,10 +44,7 @@ namespace BusinessLogicLayer.Service
                     others.InspectionResult = finalInspection.AcceptQty <= finalInspection.RejectQty ? "Fail" : "Pass";
                 }
 
-                if (finalInspection.SubmitDate != null)
-                {
-                    others.ShipmentStatus = finalInspection.AcceptQty <= finalInspection.RejectQty ? "On Hold" : "Ship";
-                }
+                others.ShipmentStatus = finalInspection.AcceptQty <= finalInspection.RejectQty ? "On Hold" : "Ship";
 
                 others.OthersRemark = finalInspection.OthersRemark;
 

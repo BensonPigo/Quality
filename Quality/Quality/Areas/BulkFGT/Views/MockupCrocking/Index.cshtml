@@ -155,7 +155,7 @@
             <div class="breadcrumb queryHeader" style="justify-content: flex-end;">
                 <h4 style="margin-right: 1em;color:white">Report No</h4>
                 @Html.DropDownList("QueryReportNo", (List<SelectListItem>)ViewBag.ReportNo_Source, null, new { @class = "form-control" })
-                <input id="btnNew" type="button" class="button" style="margin-left:1em;border:0;" name="New" value="New">
+                <input id="btnNew" type="button" class="button" style="margin-left:1em;border:0;cursor:pointer;" name="New" value="New">
             </div>
         </header>
         <div class="main-area">
@@ -218,7 +218,7 @@
                                     </td>
                                     <td>
                                         <h4 style=" margin-right: 1em;">
-                                            <button id="Delete" name="Action:Delete" type="submit" style="margin:0;min-width:0;background-color:transparent">
+                                            <button id="Delete" name="action:Delete" type="submit" style="margin:0;min-width:0;background-color:transparent">
                                                 <img src="~/Image/Icon/Delete.png" width="30" />
                                                 Delete
                                             </button>
@@ -262,6 +262,8 @@
                                     <td style="width: 10vw;"><h5>Report No</h5></td>
                                     <td style="width: 20vw;">
                                         @Html.TextBoxFor(o => o.ReportNo, "", new { @readonly = "readonly" })
+                                        @Html.HiddenFor(o => o.TestBeforePicture)
+                                        @Html.HiddenFor(o => o.TestAfterPicture)
                                     </td>
                                     <td style="width: 10vw;"><h5>SP#</h5></td>
                                     <td style="width: 20vw;">
@@ -421,7 +423,7 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <select id="MockupCrocking_Detail_@{@i}__DryScale" name="Model.MockupCrocking_Detail[@i].DryScale" style="width:157px;">
+                                        <select id="MockupCrocking_Detail_@{@i}__DryScale" name="MockupCrocking_Detail[@i].DryScale" style="width:157px;">
                                             @foreach (var item in (List<SelectListItem>)Model.Scale_Source)
                                             {
                                                 string selected = item.Text.Equals(Model.MockupCrocking_Detail[i].DryScale) ? "selected" : "";
@@ -430,7 +432,7 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <select id="MockupCrocking_Detail_@{@i}__WetScale" name="Model.MockupCrocking_Detail[@i].WetScale" style="width:157px;">
+                                        <select id="MockupCrocking_Detail_@{@i}__WetScale" name="MockupCrocking_Detail[@i].WetScale" style="width:157px;">
                                             @foreach (var item in (List<SelectListItem>)Model.Scale_Source)
                                             {
                                                 string selected = item.Text.Equals(Model.MockupCrocking_Detail[i].WetScale) ? "selected" : "";
@@ -439,7 +441,7 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <select id="MockupCrocking_Detail_@{@i}__Result" class="result" name="Model.MockupCrocking_Detail[@i].Result" style="width:157px;" onchange="changeResult()">
+                                        <select id="MockupCrocking_Detail_@{@i}__Result" class="result" name="MockupCrocking_Detail[@i].Result" style="width:157px;" onchange="changeResult()">
                                             @foreach (var item in (List<SelectListItem>)Model.Result_Source)
                                             {
                                                 string selected = item.Text.Equals(Model.MockupCrocking_Detail[i].Result) ? "selected" : "";
@@ -473,22 +475,19 @@
     var EditMode;
     var EditType;
     $(function () {
-        $('#SendMail').click(function () {
-            var para = "?TO=jeff.Yeh@sportscity.com.tw";
-            window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=650,height=400');
-        });
-
         msg = new MessagerAlert();
-
         EditMode = false;
         IsEditModeChange();
+        @Html.Raw(Model.ErrorMessage)
+
+        if (!$("body").hasClass("sidebar-collapse")) {
+            $(".menu-trigger").click();
+        }
     });
 
     function IsEditModeChange() {
         EditModeButtionBind();
         Clear();
-        $('#btnQuery').unbind('click').removeClass("IsEditModeQuery");
-
         if (EditMode) {
             $(".queryHeader select").attr("disabled", "disabled");
             $('#btnNew').unbind('click').addClass("IsEditModeQuery");
@@ -497,8 +496,8 @@
             $(".rowHeader input[type='button']").unbind('click').addClass("IsEditModeQuery");
             $('#btnQuery').addClass("IsEditModeQuery");
 
-            $("#Edit, #Delete, #Picture, #SendMail, #PDF").unbind('click').removeClass("IsEditMode");
-            $('#Save, #Undo, #New').addClass("IsEditMode");
+            $("#Edit, #Delete, #SendMail, #PDF").unbind('click').removeClass("IsEditMode");
+            $('#Save, #Undo, #New, #Picture').addClass("IsEditMode");
             $('.DetailTable input,.DetailTable select').removeAttr("disabled");
 
             if (EditType == "New") {
@@ -521,17 +520,21 @@
             $(".rowHeader input[type='text']").removeAttr("disabled");
             $(".rowHeader input[type='button']").removeClass("IsEditModeQuery");
             $('#btnNew').removeClass("IsEditModeQuery");
-            $('#Save, #Undo, #New').unbind('click').removeClass("IsEditMode");
-            $('#btnQuery').removeClass("IsEditModeQuery");
+            $('#Save').removeClass("IsEditMode");
+            $('#Undo, #New').unbind('click').removeClass("IsEditMode");
+            $('#btnQuery').unbind('click').removeClass("IsEditModeQuery");
             QueryButtonBind();
 
             if ($('#ReportNo').val() != undefined && $('#ReportNo').val() != '') {
                 $("#Edit, #Delete, #Picture, #PDF, #SendMail").addClass("IsEditMode");
             }
+            else {
+                $("#Edit, #Picture, #PDF, #SendMail").unbind('click').removeClass("IsEditMode");
+                $("#Delete").removeClass("IsEditMode");
+            }
 
             $(".DataTable input, .DataTable select").attr("disabled", "disabled");
             $('.DetailTable input,.DetailTable select').attr("disabled");
-
             $(".DetailTable img").addClass('display-None');
 
             $('#btnQuery').on('click', function () {
@@ -717,7 +720,7 @@
                     else
                     {
                         if (data.BrandID != "") {
-                            $('#BrandID').val(data.BrandID);
+                            $('#BrandID').val(data.BrandID).trigger('blur');
                         }
 
                         if (data.SeasonID != "") {
@@ -859,7 +862,7 @@
             if ($('#ReportNo').val() != null && $('#Detail').val() != "") {
                 EditMode = true;
                 EditType = "";
-                $("#Save").attr("name", "Action:Edit");
+                $("#Save").attr("name", "action:Edit");
                 IsEditModeChange();
             }
         });
@@ -867,7 +870,7 @@
         $('#btnNew').on('click', function () {
             EditMode = true;
             EditType = "New";
-            $("#Save").attr("name", "Action:New");
+            $("#Save").attr("name", "action:New");
             IsEditModeChange();
             GetArtworkTypeIDList();
 
@@ -881,14 +884,12 @@
         });
 
         $('#Save').on('click', function (e) {
-            e.preventDefault();
             if (EditMode == false) {
-                return;
+                return false;
             }
 
             var detail = [];
             var ErrMsg = "";
-            $("#Save").attr("name", "Action:Edit");
 
             if ($('#BrandID').val() == '' || $('#SeasonID').val() == '' || $('#StyleID').val() == '' || $('#Article').val() == ''
                 || $('#BrandID').val() == undefined || $('#SeasonID').val() == undefined || $('#StyleID').val() == undefined || $('#Article').val() == undefined) {
@@ -896,23 +897,23 @@
             }
 
             if (ErrMsg != "") {
-                e.preventDefault();
                 msg.WithError(ErrMsg);
-                return;
+                return false;
             }
 
-            document.getElementById("DetailForm").submit();
+            $(".rowHeader input[type='text']").removeAttr("disabled");
+            $(".DataTable input, .DataTable select").removeAttr("disabled");
         });
 
         $('#Undo').on('click', function () {
             EditMode = false;
             IsEditModeChange();
             if (EditType != "New") {
-                $('#btnQuery').click();
+                $('#btnQuery').unbind('click').click();
             }
             else {
                 if ($('#BrandID').val() != '' || $('#SeasonID').val() != '' || $('#StyleID').val() != '' || $('#Article').val() != '') {
-                    $('#btnQuery').click();
+                    $('#btnQuery').unbind('click').click();
                 }
             }
 
@@ -921,19 +922,102 @@
 
         $('#Delete').on('click', function (e) {
             e.preventDefault();
-            if (EditMode == false && $('#ReportNo').val() != null && $('#ReportNo').val() != "") {                
+            if (EditMode == false && $('#ReportNo').val() != null && $('#ReportNo').val() != "") {
                 msg.WithConfirm('Do you want to delete the data ?',
                     function () {
                         document.getElementById('DetailForm').submit();
-                    }, null);
+                    }, function () {
+                        return false;
+                    });
+            }
+            else {
+                return false;
             }
         });
 
         $('#Picture').on('click', function () {
-            if ($('#Detail_ReportNo').val() != null && $('#Detail_ReportNo').val() != "") {
-                var para = "?EditMode=" + EditMode + "&Table=PullingTest&BrforeColumn=TestBeforePicture&AfterColumn=TestAfterPicture&PKey_1=ReportNo&PKey_1_Val=" + $('#ReportNo').val();
-                window.open('@Url.Action("PictureList","PublicWondow",new{Area=""})' + para, 'Article', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+            var para = "?Title=" + $('.page-header span').html() + "&EditMode=" + EditMode;
+            para += "&" + "Table=MockupCrocking";
+            para += "&" + "BeforeColumn=TestBeforePicture";
+            para += "&" + "AfterColumn=TestAfterPicture";
+            para += "&" + "PKey_1=ReportNo";
+            para += "&" + "PKey_1_Val=" + $('#ReportNo').val();
+            window.open('@Url.Action("PictureList", "PublicWondow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1024,height=750');
+        });
+
+        $('#PDF').on('click', function () {
+            if ($('#ReportNo').val() == ""
+                || $('#Request_BrandID').val() == ""
+                || $('#Request_SeasonID').val() == ""
+                || $('#Request_StyleID').val() == ""
+                || $('#Request_Article').val() == "") {
+
+                return false;
             }
+
+            var mockupCrocking_Request = {
+                ReportNo: $('#ReportNo').val(),
+                BrandID: $('#Request_BrandID').val(),
+                SeasonID: $('#Request_SeasonID').val(),
+                StyleID: $('#Request_StyleID').val(),
+                Article: $('#Request_Article').val(),
+            };
+            $.ajax({
+                url: "@Url.Action("ToPDF", "MockupCrocking", new { Area = "BulkFGT" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ mockupCrocking_Request }),
+                async: false,
+                success: function (data) {
+                    if (data.Result) {
+                        window.location.href = data.reportPath;
+                    }
+                    else {
+                        msg.WithError(data.ErrorMessage);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $('#SendMail').on('click', function () {
+            if ($('#ReportNo').val() == ""
+                || $('#Request_BrandID').val() == ""
+                || $('#Request_SeasonID').val() == ""
+                || $('#Request_StyleID').val() == ""
+                || $('#Request_Article').val() == "") {
+
+                return false;
+            }
+
+            var mockupCrocking_Request = {
+                ReportNo: $('#ReportNo').val(),
+                BrandID: $('#Request_BrandID').val(),
+                SeasonID: $('#Request_SeasonID').val(),
+                StyleID: $('#Request_StyleID').val(),
+                Article: $('#Request_Article').val(),
+            };
+            $.ajax({
+                url: "@Url.Action("ToPDF", "MockupCrocking", new { Area = "BulkFGT" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ mockupCrocking_Request }),
+                async: false,
+                success: function (data) {
+                    if (data.Result) {
+                        var para = "?file=" + data.FileName;
+                        window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=600');
+                    }
+                    else {
+                        msg.WithError(data.ErrorMessage);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
         });
     }
 
@@ -1099,10 +1183,10 @@
     function AddDetailRow() {
         var lastNO;
         if ($('.DetailTable > tbody > tr').length > 0) {
-            lastNO = parseInt($('.DetailTable > tbody > tr:last-child').attr('idx'));
+            lastNO = parseInt($('.DetailTable > tbody > tr:last-child').attr('idx')) + 1;
         }
         else {
-            lastNO = 1;
+            lastNO = 0;
         }
 
         $.ajax({
@@ -1120,6 +1204,47 @@
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function GetPicture(data) {
+        $('#TestBeforePicture').val(data.BeforePicture.replace("data:image/webp;base64,", ""));
+        $('#TestAfterPicture').val(data.AfterPicture.replace("data:image/webp;base64,", ""));
+    }
+
+    function FailMail() {
+        var para = "?Title=" + $('.page-header span').html() + "&FactoryID=@ViewBag.FactoryID&Type=BulkFGT&ExitReload=False";
+        window.open('@Url.Action("TestFailMailList", "PublicWondow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
+    }
+
+    function GetTestFailMailList(data) {
+        var to = "";
+        var cc = "";
+        $.each(data, function (index, value) {
+            to += value.To + ';';
+            cc += value.CC + ';';
+        });
+
+        $.ajax({
+            url: "@Url.Action("FailMail", "MockupCrocking", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ ReportNo: $('#ReportNo').val(), TO: to, CC: cc }),
+            async: false,
+            success: function (data) {
+                if (data.result) {
+                    msg.WithSucces("Success");
+                }
+                else {
+                    msg.WithWarning(data.resultMsg);
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                // console.log(xhr.responseText);
+                msg.WithWarningCheck(xhr.responseText, function () {
+                    location.reload();
+                });
             }
         });
     }

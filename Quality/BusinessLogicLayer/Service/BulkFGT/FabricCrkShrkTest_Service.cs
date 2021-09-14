@@ -396,7 +396,7 @@ namespace BusinessLogicLayer.Service
                 {
                     baseResult.Result = false;
                     baseResult.ErrorMessage = $@"The following data is duplicated
-{listKeyDuplicateItems.Select(s => $"<Roll>{s.Key.Roll}, <Dyelot>{s.Key.Dyelot}").JoinToString(Environment.NewLine)}
+{listKeyDuplicateItems.Select(s => $"[Roll]{s.Key.Roll}, [Dyelot]{s.Key.Dyelot}").JoinToString(Environment.NewLine)}
 ";
                     return baseResult;
                 }
@@ -501,7 +501,7 @@ namespace BusinessLogicLayer.Service
                 {
                     baseResult.Result = false;
                     baseResult.ErrorMessage = $@"The following data is duplicated
-{listKeyDuplicateItems.Select(s => $"<Roll>{s.Key.Roll}, <Dyelot>{s.Key.Dyelot}").JoinToString(Environment.NewLine)}
+{listKeyDuplicateItems.Select(s => $"[Roll]{s.Key.Roll}, [Dyelot]{s.Key.Dyelot}").JoinToString(Environment.NewLine)}
 ";
                     return baseResult;
                 }
@@ -615,7 +615,7 @@ namespace BusinessLogicLayer.Service
                 {
                     baseResult.Result = false;
                     baseResult.ErrorMessage = $@"The following data is duplicated
-{listKeyDuplicateItems.Select(s => $"<Roll>{s.Key.Roll}, <Dyelot>{s.Key.Dyelot}").JoinToString(Environment.NewLine)}
+{listKeyDuplicateItems.Select(s => $"[Roll]{s.Key.Roll}, [Dyelot]{s.Key.Dyelot}").JoinToString(Environment.NewLine)}
 ";
                     return baseResult;
                 }

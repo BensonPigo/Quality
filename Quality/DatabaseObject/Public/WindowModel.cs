@@ -147,7 +147,7 @@ namespace DatabaseObject.Public
         public string PKey_3_val { get; set; }
 
         public string Table { get; set; }
-        public string BrforeColumn { get; set; }
+        public string BeforeColumn { get; set; }
         public string AfterColumn { get; set; }
 
 

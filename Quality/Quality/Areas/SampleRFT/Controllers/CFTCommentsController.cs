@@ -25,7 +25,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         {
             _ICFTCommentsService = new CFTCommentsService();
             this.SelectedMenu = "Sample RFT";
-
+            ViewBag.OnlineHelp = this.OnlineHelp + "SampleRFT.CFTComments,,";
         }
 
 

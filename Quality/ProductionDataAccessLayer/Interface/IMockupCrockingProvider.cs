@@ -14,7 +14,7 @@ namespace ProductionDataAccessLayer.Interface
 
         DataTable GetMockupCrockingFailMailContentData(string ReportNo);
 
-        int Create(MockupCrocking Item);
+        int Create(MockupCrocking Item, string Mdivision, out string NewReportNo);
 
         void Update(MockupCrocking_ViewModel Item);
 

@@ -1,4 +1,5 @@
-﻿using ADOHelper.Utility;
+﻿using ADOHelper.Template.MSSQL;
+using ADOHelper.Utility;
 using BusinessLogicLayer.Interface.BulkFGT;
 using DatabaseObject;
 using DatabaseObject.ProductionDB;
@@ -14,7 +15,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Transactions;
 using System.Web.Mvc;
 using Excel = Microsoft.Office.Interop.Excel;
 
@@ -27,7 +27,6 @@ namespace BusinessLogicLayer.Service
         private IStyleArtworkProvider _IStyleArtworkProvider;
         private IOrdersProvider _OrdersProvider;
         private IOrderQtyProvider _OrderQtyProvider;
-        List<SelectListItem> x = new List<SelectListItem>();
 
         public MockupCrocking_ViewModel GetMockupCrocking(MockupCrocking_Request MockupCrocking)
         {
@@ -241,7 +240,7 @@ namespace BusinessLogicLayer.Service
 
                 if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
                 {
-                    result.TempFileName = filepathpdf;
+                    result.TempFileName = fileNamePDF;
                     result.Result = true;
                 }
                 else
@@ -252,13 +251,14 @@ namespace BusinessLogicLayer.Service
             }
             catch (Exception ex)
             {
-                throw ex;
+                result.ErrorMessage = ex.ToString();
+                result.Result = false;
             }
 
             return result;
         }
 
-        public BaseResult Create(MockupCrocking_ViewModel MockupCrocking)
+        public BaseResult Create(MockupCrocking_ViewModel MockupCrocking, string Mdivision, out string ReportNo)
         {
             if (MockupCrocking.MockupCrocking_Detail.Any(a => a.Result.ToUpper() == "Fail".ToUpper()))
             {
@@ -268,7 +268,7 @@ namespace BusinessLogicLayer.Service
             {
                 MockupCrocking.Result = "Pass";
             }
-
+            ReportNo = string.Empty;
             MockupCrocking.Type = "B";
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
@@ -277,7 +277,8 @@ namespace BusinessLogicLayer.Service
             int count;
             try
             {
-                count = _MockupCrockingProvider.Create(MockupCrocking);
+                count = _MockupCrockingProvider.Create(MockupCrocking, Mdivision, out string NewReportNo);
+                ReportNo = NewReportNo;
                 if (count == 0)
                 {
                     result.Result = false;
@@ -285,6 +286,7 @@ namespace BusinessLogicLayer.Service
                     return result;
                 }
 
+                MockupCrocking.ReportNo = NewReportNo;
                 foreach (var MockupCrocking_Detail in MockupCrocking.MockupCrocking_Detail)
                 {
                     MockupCrocking_Detail.ReportNo = MockupCrocking.ReportNo;
@@ -306,7 +308,6 @@ namespace BusinessLogicLayer.Service
                 result.ErrorMessage = "Create MockupCrocking Fail";
                 result.Exception = ex;
                 _ISQLDataTransaction.RollBack();
-                throw ex;
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
             return result;
@@ -339,7 +340,6 @@ namespace BusinessLogicLayer.Service
                 result.ErrorMessage = "Update MockupCrocking Fail";
                 result.Exception = ex;
                 _ISQLDataTransaction.RollBack();
-                throw ex;
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
             return result;
@@ -364,7 +364,6 @@ namespace BusinessLogicLayer.Service
                 result.ErrorMessage = "Delete MockupCrocking Fail";
                 result.Exception = ex;
                 _ISQLDataTransaction.RollBack();
-                throw ex;
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
             return result;
@@ -392,7 +391,6 @@ namespace BusinessLogicLayer.Service
                 result.ErrorMessage = "Delete MockupCrocking Detail Fail";
                 result.Exception = ex;
                 _ISQLDataTransaction.RollBack();
-                throw ex;
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
             return result;

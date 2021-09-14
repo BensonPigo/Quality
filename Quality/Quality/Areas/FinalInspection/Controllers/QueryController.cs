@@ -32,13 +32,18 @@ using Excel = Microsoft.Office.Interop.Excel;
 
 namespace Quality.Areas.FinalInspection.Controllers
 {
-    public class QueryController : Controller
+    public class QueryController : BaseController
     {
         private QueryService Service = new QueryService();
         private IOrdersProvider _IOrdersProvider;
         public IFinalInspection_MeasurementProvider _FinalInspection_MeasurementProvider { get; set; }
         private string WebHost = ConfigurationManager.AppSettings["WebHost"];
         private string IsTest = ConfigurationManager.AppSettings["IsTest"];
+
+        public QueryController()
+        {
+            ViewBag.OnlineHelp = this.OnlineHelp + "FinalInspection.Query,,";
+        }
 
         // GET: FinalInspection/Query
         public ActionResult Index()

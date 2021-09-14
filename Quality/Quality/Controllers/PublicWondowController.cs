@@ -395,9 +395,9 @@ namespace Quality.Controllers
             return View(model);
         }
 
-        public ActionResult PictureList(string Title, bool EditMode, string TargetID, string Table, string BrforeColumn, string AfterColumn, string PKey_1, string PKey_2, string PKey_3, string PKey_4, string PKey_1_Val, string PKey_2_Val, string PKey_3_Val, string PKey_4_Val)
+        public ActionResult PictureList(string Title, bool EditMode, string TargetID, string Table, string BeforeColumn, string AfterColumn, string PKey_1, string PKey_2, string PKey_3, string PKey_4, string PKey_1_Val, string PKey_2_Val, string PKey_3_Val, string PKey_4_Val)
         {
-            var model = _PublicWindowService.Get_Picture(Table, BrforeColumn, AfterColumn, PKey_1, PKey_2, PKey_3, PKey_4, PKey_1_Val, PKey_2_Val, PKey_3_Val, PKey_4_Val);
+            var model = _PublicWindowService.Get_Picture(Table, BeforeColumn, AfterColumn, PKey_1, PKey_2, PKey_3, PKey_4, PKey_1_Val, PKey_2_Val, PKey_3_Val, PKey_4_Val);
             ViewData["Title"] = Title;
             ViewData["EditMode"] = EditMode;
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
@@ -405,26 +405,26 @@ namespace Quality.Controllers
         }
 
 
-        public ActionResult TestFailMailList(string Title, string FactoryID, string Type, string TargetID)
+        public ActionResult TestFailMailList(string Title, string FactoryID, string Type, string TargetID, bool ExitReload = true)
         {
             var model = _PublicWindowService.Get_TestFailMail(FactoryID, Type, string.Empty);
             ViewData["Title"] = Title;
             ViewData["Type"] = Type;
             ViewData["FactoryID"] = FactoryID;
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            ViewBag.ExitReload = ExitReload ? "window.opener.document.location.reload();" : string.Empty;
             return View(model);
         }
 
         [HttpPost]
-        public ActionResult TestFailMailList(string Title, string FactoryID, string Type, string GroupNameList, string TargetID)
+        public ActionResult TestFailMailList(string Title, string FactoryID, string Type, string GroupNameList, string TargetID, bool ExitReload = true)
         {
             var model = _PublicWindowService.Get_TestFailMail(FactoryID, Type, GroupNameList);
-
-
             ViewData["Type"] = Type;
             ViewData["Title"] = Title;
             ViewData["FactoryID"] = FactoryID;
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            ViewBag.ExitReload = ExitReload ? "window.opener.document.location.reload();" : string.Empty;
             return View(model);
         }
     }

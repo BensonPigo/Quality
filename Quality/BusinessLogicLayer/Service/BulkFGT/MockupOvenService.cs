@@ -290,7 +290,7 @@ namespace BusinessLogicLayer.Service
 
                 if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
                 {
-                    result.TempFileName = filepathpdf;
+                    result.TempFileName = fileNamePDF;
                     result.Result = true;
                 }
                 else
@@ -301,13 +301,14 @@ namespace BusinessLogicLayer.Service
             }
             catch (Exception ex)
             {
-                throw ex;
+                result.ErrorMessage = ex.ToString();
+                result.Result = false;
             }
 
             return result;
         }
 
-        public BaseResult Create(MockupOven_ViewModel MockupOven)
+        public BaseResult Create(MockupOven_ViewModel MockupOven, string Mdivision)
         {
             MockupOven.Type = "B";
             BaseResult result = new BaseResult();
@@ -326,7 +327,7 @@ namespace BusinessLogicLayer.Service
                     MockupOven.Result = "Pass";
                 }
 
-                count = _MockupOvenProvider.Create(MockupOven);
+                count = _MockupOvenProvider.Create(MockupOven, Mdivision, out string NewReportNo);
                 if (count == 0)
                 {
                     result.Result = false;
@@ -334,6 +335,7 @@ namespace BusinessLogicLayer.Service
                     return result;
                 }
 
+                MockupOven.ReportNo = NewReportNo;
                 foreach (var MockupOven_Detail in MockupOven.MockupOven_Detail)
                 {
                     MockupOven_Detail.ReportNo = MockupOven.ReportNo;
@@ -355,7 +357,6 @@ namespace BusinessLogicLayer.Service
                 result.ErrorMessage = "Create MockupOven Fail";
                 result.Exception = ex;
                 _ISQLDataTransaction.RollBack();
-                throw ex;
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
             return result;
@@ -387,7 +388,6 @@ namespace BusinessLogicLayer.Service
                 result.ErrorMessage = "Update MockupOven Fail";
                 result.Exception = ex;
                 _ISQLDataTransaction.RollBack();
-                throw ex;
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
             return result;
@@ -412,7 +412,6 @@ namespace BusinessLogicLayer.Service
                 result.ErrorMessage = "Delete MockupOven Fail";
                 result.Exception = ex;
                 _ISQLDataTransaction.RollBack();
-                throw ex;
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
             return result;
@@ -440,7 +439,6 @@ namespace BusinessLogicLayer.Service
                 result.ErrorMessage = "Delete MockupOven Detail Fail";
                 result.Exception = ex;
                 _ISQLDataTransaction.RollBack();
-                throw ex;
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
             return result;

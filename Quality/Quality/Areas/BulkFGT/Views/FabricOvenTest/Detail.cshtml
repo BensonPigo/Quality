@@ -159,7 +159,7 @@
     <div class="main-area">
         <div class="content-scroll">
             <div class="inner-scroll">
-                @using (Html.BeginForm("Detail", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { id = "DetailForm" }))
+                @using (Html.BeginForm("DetailSave", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { id = "DetailForm" }))
                 {
                     <div style="margin-top: 1em;">
                         <table id="ButtonMode">
@@ -321,7 +321,7 @@
                                             @Html.TextBoxFor(o => Model.Details[i].SubmitDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
                                         </td>
                                         <td style="width:10vw;">
-                                            @Html.TextBoxFor(o => Model.Details[i].OvenGroup, "", new { @maxlength = "2" })
+                                            @Html.TextBoxFor(o => Model.Details[i].OvenGroup, "", new { @maxlength = "2", @type = "number", @step = "1", @min = "0", @max = "99", @oninput = "value=OvenGroupCheck(value)" })
                                         </td>
                                         <td style="width:11vw;">
                                             <div style="width:10vw;">
@@ -444,7 +444,7 @@
     $(function () {
         msg = new MessagerAlert();
         EditMode = ('@ViewBag.EditMode' == 'True');
-        @Html.Raw(ViewBag.ErrorMessage)
+        @Html.Raw(Model.ErrorMessage)
         IsEditModeChange();
     });
 
@@ -722,7 +722,7 @@
         $('#Picture').on('click', function () {
             var para = "?Title=" + $('.page-header span').html() + "&EditMode=" + EditMode;
             para += "&" + "Table=Oven";
-            para += "&" + "BrforeColumn=TestBeforePicture";
+            para += "&" + "BeforeColumn=TestBeforePicture";
             para += "&" + "AfterColumn=TestAfterPicture";
             para += "&" + "PKey_1=POID";
             para += "&" + "PKey_2=TestNo";
@@ -950,11 +950,14 @@
     function AddDetailRow() {
         var ID;
         var lastNO;
+        var GroupNO;
         if ($('.DetailTable > tbody > tr').length > 0) {
             lastNO = parseInt($('.DetailTable > tbody > tr:last-child > td > input[type="hidden"] ').attr('idx')) + 1;
+            GroupNO = OvenGroupCheck($('.DetailTable>tbody>tr').length + 1);
         }
         else {
             lastNO = 0;
+            GroupNO = "01";
         }
 
         var POID = $('#Main_POID').val();
@@ -962,7 +965,7 @@
             url: "@Url.Action("AddDetailRow", "FabricOvenTest", new { Area = "BulkFGT" })",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
-            data: JSON.stringify({ POID: POID, lastNO: lastNO }),
+            data: JSON.stringify({ POID: POID, lastNO: lastNO, GroupNO: GroupNO }),
             async: false,
             success: function (data) {
                 $('.DetailTable > tbody').append(data);
@@ -1021,5 +1024,13 @@
     function GetPicture(data) {
         $('#Main_TestBeforePicture').val(data.BeforePicture.replace("data:image/webp;base64,", ""));
         $('#Main_TestAfterPicture').val(data.AfterPicture.replace("data:image/webp;base64,", ""));
+    }
+
+    function OvenGroupCheck(value) {
+        if (parseInt(value) >= 99) {
+            return 99;
+        }
+
+        return padLeft(parseInt(value).toString(), 2);
     }
 </script>

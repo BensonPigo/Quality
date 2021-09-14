@@ -135,7 +135,7 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
                 };
 
                 _ColorFastness.Add(s);
-                BaseResult result = service.Save_ColorFastness_1stPage("21041712BB", "Test", _ColorFastness);
+                BaseResult result = service.Save_ColorFastness_1stPage("21041712BB", "Test");
                 Assert.IsTrue(result.Result);
             }
             catch (Exception ex)
