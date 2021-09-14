@@ -125,6 +125,11 @@ where gd.ID = @ID
             return ExecuteList<GarmentTest_Detail_ViewModel>(CommandType.Text, sqlcmd, objParameter);
         }
 
+        public bool Recalculate_Result()
+        {
+            return true;
+        }
+
         public int Delete_GarmentTestDetail(string ID, string No)
         {  
             SQLParameterCollection objParameter = new SQLParameterCollection
@@ -336,7 +341,7 @@ where ID = @ID and No = @No
             return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
         }
 
-        public bool Encode_GarmentTestDetail(string ID, string Status)
+        public bool Encode_GarmentTestDetail(string ID, string No, string Status)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection
             {

@@ -505,11 +505,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                         // all result 有任一個是Fail 就寄信
                         result.sentMail = !_IGarmentTestDetailProvider.Chk_AllResult(ID, No);
-                        result.Result = _IGarmentTestDetailProvider.Encode_GarmentTestDetail(ID, "Confirmed");
+                        result.Result = _IGarmentTestDetailProvider.Encode_GarmentTestDetail(ID, No, "Confirmed");
                         break;
                     case DetailStatus.Amend:
                         _IGarmentTestDetailProvider = new GarmentTestDetailProvider(_ISQLDataTransaction);
-                        result.Result = _IGarmentTestDetailProvider.Encode_GarmentTestDetail(ID, "New");
+                        result.Result = _IGarmentTestDetailProvider.Encode_GarmentTestDetail(ID, No, "New");
                         break;
                     default:
                         break;
@@ -781,10 +781,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 TxtSize = all_Data.Detail.SizeCode,
                 RdbtnLine = all_Data.Detail.LineDry,
                 RdbtnHand = all_Data.Detail.HandWash,
+                RdbtnTumble = all_Data.Detail.TumbleDry,
                 ComboTemperature = all_Data.Detail.Temperature.ToString(),
                 ComboMachineModel = all_Data.Detail.Machine,
                 TxtFibreComposition = all_Data.Detail.Composition,
-                ComboNeck = all_Data.Detail.Neck == true ? "Yest" : "No",
+                ComboNeck = all_Data.Detail.Neck == true ? "Yes" : "No",
                 TxtLotoFactory = all_Data.Detail.LOtoFactory,
             };
 
