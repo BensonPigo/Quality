@@ -835,7 +835,7 @@ namespace BusinessLogicLayer.Service
                 string[] columnNames = new string[]
                 {
                 "Roll", "Dyelot", "HorizontalOriginal", "VerticalOriginal", "Result", "HorizontalTest1", "HorizontalTest2", "HorizontalTest3", "HorizontalAverage", "HorizontalRate",
-                "VerticalTest1", "VerticalTest2", "VerticalTest3", "VerticalAverage", "VerticalRate", "InspDate", "Inspector", "Remark", "LastUpdate",
+                "VerticalTest1", "VerticalTest2", "VerticalTest3", "VerticalAverage", "VerticalRate", "InspDate", "Inspector", "Name", "Remark", "LastUpdate",
                 };
 
                 var ret = Array.CreateInstance(typeof(object), dtHeatDetail.Rows.Count, columnNames.Length) as object[,];
@@ -948,7 +948,7 @@ namespace BusinessLogicLayer.Service
                 string[] columnNames = new string[]
                 {
                 "Roll", "Dyelot", "HorizontalOriginal", "VerticalOriginal", "Result", "HorizontalTest1", "HorizontalTest2", "HorizontalTest3", "HorizontalAverage", "HorizontalRate",
-                "VerticalTest1", "VerticalTest2", "VerticalTest3", "VerticalAverage", "VerticalRate", "SkewnessTest1", "SkewnessTest2", "SkewnessTest3", "SkewnessTest4", "SkewnessRate", "InspDate", "Inspector", "Inspector", "Remark", "LastUpdate",
+                "VerticalTest1", "VerticalTest2", "VerticalTest3", "VerticalAverage", "VerticalRate", "SkewnessTest1", "SkewnessTest2", "SkewnessTest3", "SkewnessTest4", "SkewnessRate", "InspDate", "Inspector", "Name", "Remark", "LastUpdate",
                 };
 
                 string skewnessOption = fabricCrkShrkTestWash_Main.SkewnessOptionID;

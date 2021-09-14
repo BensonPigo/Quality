@@ -145,6 +145,7 @@ update  FIR_Laboratory set  Result = case when  (Crocking = 'Pass' or nonCrockin
                                                 (Wash = '' and nonWash = 0) then ''
                                           else  'Fail' end
 where   ID = @ID
+
 ";
     }
 }

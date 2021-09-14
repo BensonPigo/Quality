@@ -67,16 +67,19 @@ namespace BusinessLogicLayer.Service.Tests
                 IFabricCrkShrkTest_Service fabricCrkShrkTest_Service = new FabricCrkShrkTest_Service();
 
                 FabricCrkShrkTest_Result fabricCrkShrkTest_Result;
-                fabricCrkShrkTest_Result = fabricCrkShrkTest_Service.GetFabricCrkShrkTest_Result(this.POID);
+                fabricCrkShrkTest_Result = fabricCrkShrkTest_Service.GetFabricCrkShrkTest_Result("21041716WW");
 
                 fabricCrkShrkTest_Result.Main.FirLaboratoryRemark = "995";
 
                 fabricCrkShrkTest_Result.Details[0].ReceiveSampleDate = DateTime.Now;
 
-                fabricCrkShrkTest_Result.Details[1].ReceiveSampleDate = DateTime.Now;
-                fabricCrkShrkTest_Result.Details[1].NonCrocking = true;
-                fabricCrkShrkTest_Result.Details[1].NonHeat = true;
-                fabricCrkShrkTest_Result.Details[1].NonWash = false;
+                fabricCrkShrkTest_Result.Details[0].ReceiveSampleDate = DateTime.Now;
+                fabricCrkShrkTest_Result.Details[0].NonCrocking = false;
+                fabricCrkShrkTest_Result.Details[0].NonHeat = false;
+                fabricCrkShrkTest_Result.Details[0].NonWash = false;
+                fabricCrkShrkTest_Result.Details[0].Wash = "";
+                fabricCrkShrkTest_Result.Details[0].Heat = "";
+                fabricCrkShrkTest_Result.Details[0].Crocking = "";
 
                 BaseResult baseResult = fabricCrkShrkTest_Service.SaveFabricCrkShrkTestMain(fabricCrkShrkTest_Result);
 
@@ -489,7 +492,7 @@ namespace BusinessLogicLayer.Service.Tests
                 fabricCrkShrkTestWash_Result.Wash_Detail[0].Remark = "9527";
                 fabricCrkShrkTestWash_Result.Wash_Main.SkewnessOptionID = "3";
                 fabricCrkShrkTestWash_Result.Wash_Detail[0].SkewnessTest1 = 5;
-                fabricCrkShrkTestWash_Result.Wash_Detail[0].SkewnessTest2 = 0;
+                fabricCrkShrkTestWash_Result.Wash_Detail[0].SkewnessTest2 = 3;
                 fabricCrkShrkTestWash_Result.Wash_Detail[0].SkewnessTest3 = 6;
                 fabricCrkShrkTestWash_Result.Wash_Detail[0].SkewnessTest4 = 2;
                 Bitmap bitmap = new Bitmap(Image.FromFile(@"TestResource\001.jpg"));
