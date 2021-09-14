@@ -208,25 +208,16 @@ exec UpdateInspPercent 'LabColorFastness',@PoID
             return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
         }
 
-        public bool Delete_ColorFastness(string PoID, List<ColorFastness_Result> source)
+        public bool Delete_ColorFastness(string ID)
         {
-            SQLParameterCollection objParameter = new SQLParameterCollection();
-            FabricColorFastness_ViewModel dbSource = GetMain(PoID);
-            string sqlcmd = string.Empty;
-
-            int idx = 1;
-            foreach (var item in dbSource.ColorFastness_MainList)
+            SQLParameterCollection objParameter = new SQLParameterCollection()
             {
-                if (!source.Where(x => x.ID.Equals(item.ID)).Any())
-                {
-                    objParameter.Add(new SqlParameter($"@ID{idx}", item.ID));
-                    sqlcmd += $@"
-delete from ColorFastness_Detail where id = @ID{idx} 
-delete from ColorFastness where id = @ID{idx} ";
-                    idx++;
-                }
-            }
-
+                 { "@ID", DbType.String, ID } ,
+            };
+            
+            string sqlcmd = $@"
+delete from ColorFastness_Detail where id = @ID
+delete from ColorFastness where id = @ID";
             return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
         }
 

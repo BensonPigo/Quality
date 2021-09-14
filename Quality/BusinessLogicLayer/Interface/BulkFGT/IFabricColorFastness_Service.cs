@@ -25,7 +25,7 @@ namespace BusinessLogicLayer.Interface.BulkFGT
 
         IList<FtyInventory> GetRoll(string POID, string Seq1, string Seq2);
 
-        BaseResult Save_ColorFastness_1stPage(string PoID, string Remark, List<ColorFastness_Result> _ColorFastness);
+        BaseResult Save_ColorFastness_1stPage(string PoID, string Remark);
 
         BaseResult Save_ColorFastness_2ndPage(Fabric_ColorFastness_Detail_ViewModel source, string Mdivision, string UserID);
 
@@ -37,6 +37,6 @@ namespace BusinessLogicLayer.Interface.BulkFGT
 
         Fabric_ColorFastness_Detail_ViewModel ToExcel(string ID, bool test);
 
-        BaseResult DeleteColorFastnessDetail(string ID, string No);
+        BaseResult DeleteColorFastness(string ID);
     }
 }

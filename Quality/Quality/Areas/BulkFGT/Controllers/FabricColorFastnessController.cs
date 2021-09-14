@@ -47,7 +47,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         [HttpPost]
         public JsonResult SaveMaster(FabricColorFastness_ViewModel Main)
         {
-            var result = _FabricColorFastness_Service.Save_ColorFastness_1stPage(Main.PoID,Main.ColorFastnessLaboratoryRemark,null);
+            var result = _FabricColorFastness_Service.Save_ColorFastness_1stPage(Main.PoID, Main.ColorFastnessLaboratoryRemark);
             ViewBag.QueryPoID = Main.PoID;
             return Json(result);
         }
@@ -61,7 +61,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         public JsonResult MainDetailDelete(string ID, string No)
         {
-            BaseResult result = _FabricColorFastness_Service.DeleteColorFastnessDetail(ID, No);
+            BaseResult result = _FabricColorFastness_Service.DeleteColorFastness(ID);
 
             return Json(result);
         }
