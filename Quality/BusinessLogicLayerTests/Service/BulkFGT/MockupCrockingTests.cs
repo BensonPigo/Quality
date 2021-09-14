@@ -96,7 +96,6 @@ namespace BusinessLogicLayer.Service.Tests
                 IMockupCrockingService _MockupCrockingService = new MockupCrockingService();
                 MockupCrocking_ViewModel MockupCrocking = new MockupCrocking_ViewModel()
                 {
-                    ReportNo = "T1",
                     POID = "TP",
                     StyleID = "SS",
                     SeasonID = "20SS",
@@ -119,7 +118,7 @@ namespace BusinessLogicLayer.Service.Tests
                     }
                 };
 
-                var mockupCrocking = _MockupCrockingService.Create(MockupCrocking,"");
+                var mockupCrocking = _MockupCrockingService.Create(MockupCrocking,"PM1");
                 Assert.IsTrue(true);
             }
             catch (Exception ex)
