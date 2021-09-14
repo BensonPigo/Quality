@@ -464,7 +464,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 #region 判斷空值
                 string emptyMsg = string.Empty;
                 if (string.IsNullOrEmpty(Detail.MtlTypeID)) { emptyMsg += "MtlTypeID cannot be empty" + Environment.NewLine; }
-                if (Detail.Above50NaturalFibres == false && Detail.Above50SyntheticFibres == false) { emptyMsg += "MtlTypeID cannot be empty" + Environment.NewLine; }
+                if (Detail.Above50NaturalFibres == false && Detail.Above50SyntheticFibres == false) { emptyMsg += " < 50% natural fibres>, <50% synthetic fibres(ex. polyester)> have to select one!" + Environment.NewLine; }
                 if (_IGarmentTestDetailFGWTProvider.Chk_FGWTExists(Detail) == true) { emptyMsg += "Data already exists!!"; }
                 #endregion
 
@@ -654,7 +654,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 result.Result = true;
                 string errMsg = string.Empty;
 
-                #region Shrinkage Save
+                #region Shrinkage save
                 _IGarmentTestDetailShrinkageProvider = new GarmentTestDetailShrinkageProvider(_ISQLDataTransaction);
                 #region 檢查空值
                 foreach (var item in source.Shrinkages)
@@ -681,7 +681,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 #region Spirality Save
                 _IGarmentDetailSpiralityProvider = new GarmentDetailSpiralityProvider(_ISQLDataTransaction);
-                if (source.Spiralities != null || source.Spiralities.Count > 0)
+                if (source.Spiralities != null && source.Spiralities.Count > 0)
                 {
                     if (_IGarmentDetailSpiralityProvider.Update_Spirality(source.Spiralities) == false)
                     {
@@ -730,7 +730,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
                 #endregion
 
-                #region Detail Save & Update All Result 
+                #region Detail Save
                 _IGarmentTestDetailProvider = new GarmentTestDetailProvider(_ISQLDataTransaction);
                 // 檢查必輸欄位
                 if (source.Detail.LineDry == false && source.Detail.TumbleDry == false && source.Detail.HandWash == false)
@@ -738,14 +738,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     _ISQLDataTransaction.RollBack();
                     result.Result = false;
                     result.ErrMsg = "<Line Dry>, <Tumble Dry>, <Hand Wash> have to select one!";
-                    return result;
-                }
-
-                if (source.Detail.Above50NaturalFibres == false && source.Detail.Above50SyntheticFibres == false)
-                {
-                    _ISQLDataTransaction.RollBack();
-                    result.Result = false;
-                    result.ErrMsg = "<50% natural fibres>, <50% synthetic fibres(ex. polyester)> have to select one!";
                     return result;
                 }
 

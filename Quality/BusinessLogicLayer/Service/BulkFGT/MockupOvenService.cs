@@ -290,7 +290,7 @@ namespace BusinessLogicLayer.Service
 
                 if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
                 {
-                    result.TempFileName = filepathpdf;
+                    result.TempFileName = fileNamePDF;
                     result.Result = true;
                 }
                 else
@@ -301,14 +301,16 @@ namespace BusinessLogicLayer.Service
             }
             catch (Exception ex)
             {
-                throw ex;
+                result.ErrorMessage = ex.ToString();
+                result.Result = false;
             }
 
             return result;
         }
 
-        public BaseResult Create(MockupOven_ViewModel MockupOven)
+        public BaseResult Create(MockupOven_ViewModel MockupOven, string Mdivision, out string NewReportNo)
         {
+            NewReportNo = string.Empty;
             MockupOven.Type = "B";
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
@@ -317,16 +319,23 @@ namespace BusinessLogicLayer.Service
             int count;
             try
             {
-                if(MockupOven.MockupOven_Detail.Any(a  => a.Result.ToUpper() == "Fail".ToUpper()))
+                if (MockupOven.MockupOven_Detail != null || MockupOven.MockupOven_Detail.Count > 0)
                 {
-                    MockupOven.Result = "Fail";
+                    if (MockupOven.MockupOven_Detail.Any(a => a.Result.ToUpper() == "Fail".ToUpper()))
+                    {
+                        MockupOven.Result = "Fail";
+                    }
+                    else
+                    {
+                        MockupOven.Result = "Pass";
+                    }
                 }
                 else
                 {
-                    MockupOven.Result = "Pass";
+                    MockupOven.Result = string.Empty;
                 }
 
-                count = _MockupOvenProvider.Create(MockupOven);
+                count = _MockupOvenProvider.Create(MockupOven, Mdivision, out NewReportNo);
                 if (count == 0)
                 {
                     result.Result = false;
@@ -334,6 +343,7 @@ namespace BusinessLogicLayer.Service
                     return result;
                 }
 
+                MockupOven.ReportNo = NewReportNo;
                 foreach (var MockupOven_Detail in MockupOven.MockupOven_Detail)
                 {
                     MockupOven_Detail.ReportNo = MockupOven.ReportNo;
@@ -355,7 +365,6 @@ namespace BusinessLogicLayer.Service
                 result.ErrorMessage = "Create MockupOven Fail";
                 result.Exception = ex;
                 _ISQLDataTransaction.RollBack();
-                throw ex;
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
             return result;
@@ -387,7 +396,6 @@ namespace BusinessLogicLayer.Service
                 result.ErrorMessage = "Update MockupOven Fail";
                 result.Exception = ex;
                 _ISQLDataTransaction.RollBack();
-                throw ex;
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
             return result;
@@ -412,7 +420,6 @@ namespace BusinessLogicLayer.Service
                 result.ErrorMessage = "Delete MockupOven Fail";
                 result.Exception = ex;
                 _ISQLDataTransaction.RollBack();
-                throw ex;
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
             return result;
@@ -440,7 +447,6 @@ namespace BusinessLogicLayer.Service
                 result.ErrorMessage = "Delete MockupOven Detail Fail";
                 result.Exception = ex;
                 _ISQLDataTransaction.RollBack();
-                throw ex;
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
             return result;

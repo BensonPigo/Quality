@@ -54,11 +54,11 @@
                         <td><input type="checkbox" name="name" value="" GroupName="@item.GroupName" /></td>
                         <td>
                             @item.GroupName
-                        <input type="hidden" addrType="To" GroupName="@item.GroupName" value="@item.ToAddress" />
-                        <input type="hidden" addrType="CC" GroupName="@item.GroupName" value="@item.CcAddress" />
-                    </td>
-                </tr>
-            }
+                            <input type="hidden" addrType="To" GroupName="@item.GroupName" value="@item.ToAddress" />
+                            <input type="hidden" addrType="CC" GroupName="@item.GroupName" value="@item.CcAddress" />
+                        </td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>
@@ -70,8 +70,6 @@
 
 
     $(function () {
-
-
         var table = $('#MyTable').DataTable({
             "filter": false,
             "paging": false,
@@ -109,13 +107,19 @@
                 Mails.push(Mail);
             }
 
-            // 呼叫父視窗的GetTestFailMail Function，把值傳回去
-            window.opener.GetTestFailMailList(Mails, '@TargetID');
-            window.close();
+            if (Mails.length > 0) {
+                // 呼叫父視窗的GetTestFailMail Function，把值傳回去
+                window.opener.GetTestFailMailList(Mails, '@TargetID');
+                window.close();
+            }
+            else {
+                alert("Please choose the mail group.");
+            }
+
         });
 
         $("#btnExit").click(function () {
-            window.opener.document.location.reload();
+            @Html.Raw(ViewBag.ExitReload);
             window.close();
         });
 

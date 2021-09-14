@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Web;
 using ToolKit;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
@@ -84,8 +85,9 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             return ExecuteList<MockupWash>(CommandType.Text, SbSql.ToString(), objParameter);
         }
 
-        public int Create(MockupWash Item)
+        public int Create(MockupWash Item, string Mdivision, out string NewReportNo)
         {
+            NewReportNo = GetID(Mdivision + "WA", "MockupWash", DateTime.Today, 2, "ReportNo");
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
             SbSql.Append("INSERT INTO [MockupWash]" + Environment.NewLine);
@@ -125,35 +127,35 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append(")" + Environment.NewLine);
             SbSql.Append("VALUES" + Environment.NewLine);
             SbSql.Append("(" + Environment.NewLine);
-            SbSql.Append("         @ReportNo"); objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
-            SbSql.Append("        ,@POID"); objParameter.Add("@POID", DbType.String, Item.POID ?? string.Empty);
-            SbSql.Append("        ,@StyleID"); objParameter.Add("@StyleID", DbType.String, Item.StyleID ?? string.Empty);
-            SbSql.Append("        ,@SeasonID"); objParameter.Add("@SeasonID", DbType.String, Item.SeasonID ?? string.Empty);
-            SbSql.Append("        ,@BrandID"); objParameter.Add("@BrandID", DbType.String, Item.BrandID ?? string.Empty);
-            SbSql.Append("        ,@Article"); objParameter.Add("@Article", DbType.String, Item.Article ?? string.Empty);
-            SbSql.Append("        ,@ArtworkTypeID"); objParameter.Add("@ArtworkTypeID", DbType.String, Item.ArtworkTypeID ?? string.Empty);
-            SbSql.Append("        ,@Remark"); objParameter.Add("@Remark", DbType.String, Item.Remark ?? string.Empty);
-            SbSql.Append("        ,@T1Subcon"); objParameter.Add("@T1Subcon", DbType.String, Item.T1Subcon ?? string.Empty);
-            SbSql.Append("        ,@T2Supplier"); objParameter.Add("@T2Supplier", DbType.String, Item.T2Supplier ?? string.Empty);
+            SbSql.Append("         @ReportNo"); objParameter.Add("@ReportNo", DbType.String, NewReportNo);
+            SbSql.Append("        ,@POID"); objParameter.Add("@POID", DbType.String, HttpUtility.HtmlDecode(Item.POID) ?? string.Empty);
+            SbSql.Append("        ,@StyleID"); objParameter.Add("@StyleID", DbType.String, HttpUtility.HtmlDecode(Item.StyleID) ?? string.Empty);
+            SbSql.Append("        ,@SeasonID"); objParameter.Add("@SeasonID", DbType.String, HttpUtility.HtmlDecode(Item.SeasonID) ?? string.Empty);
+            SbSql.Append("        ,@BrandID"); objParameter.Add("@BrandID", DbType.String, HttpUtility.HtmlDecode(Item.BrandID) ?? string.Empty);
+            SbSql.Append("        ,@Article"); objParameter.Add("@Article", DbType.String, HttpUtility.HtmlDecode(Item.Article) ?? string.Empty);
+            SbSql.Append("        ,@ArtworkTypeID"); objParameter.Add("@ArtworkTypeID", DbType.String, HttpUtility.HtmlDecode(Item.ArtworkTypeID) ?? string.Empty);
+            SbSql.Append("        ,@Remark"); objParameter.Add("@Remark", DbType.String, HttpUtility.HtmlDecode(Item.Remark) ?? string.Empty);
+            SbSql.Append("        ,@T1Subcon"); objParameter.Add("@T1Subcon", DbType.String, HttpUtility.HtmlDecode(Item.T1Subcon) ?? string.Empty);
+            SbSql.Append("        ,@T2Supplier"); objParameter.Add("@T2Supplier", DbType.String, HttpUtility.HtmlDecode(Item.T2Supplier) ?? string.Empty);
             SbSql.Append("        ,@TestDate"); objParameter.Add("@TestDate", DbType.Date, Item.TestDate);
             SbSql.Append("        ,@ReceivedDate"); objParameter.Add("@ReceivedDate", DbType.Date, Item.ReceivedDate);
             SbSql.Append("        ,@ReleasedDate"); objParameter.Add("@ReleasedDate", DbType.Date, Item.ReleasedDate);
-            SbSql.Append("        ,@Result"); objParameter.Add("@Result", DbType.String, Item.Result ?? string.Empty);
-            SbSql.Append("        ,@Technician"); objParameter.Add("@Technician", DbType.String, Item.Technician ?? string.Empty);
-            SbSql.Append("        ,@MR"); objParameter.Add("@MR", DbType.String, Item.MR ?? string.Empty);
+            SbSql.Append("        ,@Result"); objParameter.Add("@Result", DbType.String, HttpUtility.HtmlDecode(Item.Result) ?? string.Empty);
+            SbSql.Append("        ,@Technician"); objParameter.Add("@Technician", DbType.String, HttpUtility.HtmlDecode(Item.Technician) ?? string.Empty);
+            SbSql.Append("        ,@MR"); objParameter.Add("@MR", DbType.String, HttpUtility.HtmlDecode(Item.MR) ?? string.Empty);
             SbSql.Append("        ,GETDATE()");
-            SbSql.Append("        ,@AddName"); objParameter.Add("@AddName", DbType.String, Item.AddName ?? string.Empty);
+            SbSql.Append("        ,@AddName"); objParameter.Add("@AddName", DbType.String, HttpUtility.HtmlDecode(Item.AddName) ?? string.Empty);
             SbSql.Append("        ,@OtherMethod"); objParameter.Add("@OtherMethod", DbType.Boolean, Item.OtherMethod);
-            SbSql.Append("        ,@MethodID"); objParameter.Add("@MethodID", DbType.String, Item.MethodID ?? string.Empty);
-            SbSql.Append("        ,@TestingMethod"); objParameter.Add("@TestingMethod", DbType.String, Item.TestingMethod ?? string.Empty);
+            SbSql.Append("        ,@MethodID"); objParameter.Add("@MethodID", DbType.String, HttpUtility.HtmlDecode(Item.MethodID) ?? string.Empty);
+            SbSql.Append("        ,@TestingMethod"); objParameter.Add("@TestingMethod", DbType.String, HttpUtility.HtmlDecode(Item.TestingMethod) ?? string.Empty);
             SbSql.Append("        ,@HTPlate"); objParameter.Add("@HTPlate", DbType.Int32, Item.HTPlate);
             SbSql.Append("        ,@HTFlim"); objParameter.Add("@HTFlim", DbType.Int32, Item.HTFlim);
             SbSql.Append("        ,@HTTime"); objParameter.Add("@HTTime", DbType.Int32, Item.HTTime);
             SbSql.Append("        ,@HTPressure"); objParameter.Add("@HTPressure", DbType.Decimal, Item.HTPressure);
-            SbSql.Append("        ,@HTPellOff"); objParameter.Add("@HTPellOff", DbType.String, Item.HTPellOff ?? string.Empty);
+            SbSql.Append("        ,@HTPellOff"); objParameter.Add("@HTPellOff", DbType.String, HttpUtility.HtmlDecode(Item.HTPellOff) ?? string.Empty);
             SbSql.Append("        ,@HT2ndPressnoreverse"); objParameter.Add("@HT2ndPressnoreverse", DbType.Int32, Item.HT2ndPressnoreverse);
             SbSql.Append("        ,@HT2ndPressreversed"); objParameter.Add("@HT2ndPressreversed", DbType.Int32, Item.HT2ndPressreversed);
-            SbSql.Append("        ,@HTCoolingTime"); objParameter.Add("@HTCoolingTime", DbType.String, Item.HTCoolingTime ?? string.Empty);
+            SbSql.Append("        ,@HTCoolingTime"); objParameter.Add("@HTCoolingTime", DbType.String, HttpUtility.HtmlDecode(Item.HTCoolingTime) ?? string.Empty);
 
             SbSql.Append("        ,@TestBeforePicture");
             if (Item.TestBeforePicture != null) { objParameter.Add("@TestBeforePicture", Item.TestBeforePicture); }
@@ -162,7 +164,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             if (Item.TestAfterPicture != null) { objParameter.Add("@TestAfterPicture", Item.TestAfterPicture); }
             else { objParameter.Add("@TestAfterPicture", System.Data.SqlTypes.SqlBinary.Null); }
 
-            SbSql.Append("        ,@Type"); objParameter.Add("@Type", DbType.String, Item.Type?? string.Empty);
+            SbSql.Append("        ,@Type"); objParameter.Add("@Type", DbType.String, HttpUtility.HtmlDecode(Item.Type) ?? string.Empty);
             SbSql.Append(")" + Environment.NewLine);
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
@@ -174,22 +176,22 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SQLParameterCollection objParameter = new SQLParameterCollection();
             SbSql.Append("UPDATE [MockupWash]" + Environment.NewLine);
             SbSql.Append("SET EditDate=GETDATE()" + Environment.NewLine);
-            if (Item.EditName != null) { SbSql.Append(",EditName=@EditName" + Environment.NewLine); objParameter.Add("@EditName", DbType.String, Item.EditName); }
-            if (Item.POID != null) { SbSql.Append(",POID=@POID" + Environment.NewLine); objParameter.Add("@POID", DbType.String, Item.POID); }
-            if (Item.StyleID != null) { SbSql.Append(",StyleID=@StyleID" + Environment.NewLine); objParameter.Add("@StyleID", DbType.String, Item.StyleID); }
-            if (Item.SeasonID != null) { SbSql.Append(",SeasonID=@SeasonID" + Environment.NewLine); objParameter.Add("@SeasonID", DbType.String, Item.SeasonID); }
-            if (Item.BrandID != null) { SbSql.Append(",BrandID=@BrandID" + Environment.NewLine); objParameter.Add("@BrandID", DbType.String, Item.BrandID); }
-            if (Item.Article != null) { SbSql.Append(",Article=@Article" + Environment.NewLine); objParameter.Add("@Article", DbType.String, Item.Article); }
-            if (Item.ArtworkTypeID != null) { SbSql.Append(",ArtworkTypeID=@ArtworkTypeID" + Environment.NewLine); objParameter.Add("@ArtworkTypeID", DbType.String, Item.ArtworkTypeID); }
-            if (Item.Remark != null) { SbSql.Append(",Remark=@Remark" + Environment.NewLine); objParameter.Add("@Remark", DbType.String, Item.Remark); }
-            if (Item.T1Subcon != null) { SbSql.Append(",T1Subcon=@T1Subcon" + Environment.NewLine); objParameter.Add("@T1Subcon", DbType.String, Item.T1Subcon); }
-            if (Item.T2Supplier != null) { SbSql.Append(",T2Supplier=@T2Supplier" + Environment.NewLine); objParameter.Add("@T2Supplier", DbType.String, Item.T2Supplier); }
+            if (Item.EditName != null) { SbSql.Append(",EditName=@EditName" + Environment.NewLine); objParameter.Add("@EditName", DbType.String, HttpUtility.HtmlDecode(Item.EditName)); }
+            if (Item.POID != null) { SbSql.Append(",POID=@POID" + Environment.NewLine); objParameter.Add("@POID", DbType.String, HttpUtility.HtmlDecode(Item.POID)); }
+            if (Item.StyleID != null) { SbSql.Append(",StyleID=@StyleID" + Environment.NewLine); objParameter.Add("@StyleID", DbType.String, HttpUtility.HtmlDecode(Item.StyleID)); }
+            if (Item.SeasonID != null) { SbSql.Append(",SeasonID=@SeasonID" + Environment.NewLine); objParameter.Add("@SeasonID", DbType.String, HttpUtility.HtmlDecode(Item.SeasonID)); }
+            if (Item.BrandID != null) { SbSql.Append(",BrandID=@BrandID" + Environment.NewLine); objParameter.Add("@BrandID", DbType.String, HttpUtility.HtmlDecode(Item.BrandID)); }
+            if (Item.Article != null) { SbSql.Append(",Article=@Article" + Environment.NewLine); objParameter.Add("@Article", DbType.String, HttpUtility.HtmlDecode(Item.Article)); }
+            if (Item.ArtworkTypeID != null) { SbSql.Append(",ArtworkTypeID=@ArtworkTypeID" + Environment.NewLine); objParameter.Add("@ArtworkTypeID", DbType.String, HttpUtility.HtmlDecode(Item.ArtworkTypeID)); }
+            if (Item.Remark != null) { SbSql.Append(",Remark=@Remark" + Environment.NewLine); objParameter.Add("@Remark", DbType.String, HttpUtility.HtmlDecode(Item.Remark)); }
+            if (Item.T1Subcon != null) { SbSql.Append(",T1Subcon=@T1Subcon" + Environment.NewLine); objParameter.Add("@T1Subcon", DbType.String, HttpUtility.HtmlDecode(Item.T1Subcon)); }
+            if (Item.T2Supplier != null) { SbSql.Append(",T2Supplier=@T2Supplier" + Environment.NewLine); objParameter.Add("@T2Supplier", DbType.String, HttpUtility.HtmlDecode(Item.T2Supplier)); }
             if (Item.TestDate != null) { SbSql.Append(",TestDate=@TestDate" + Environment.NewLine); objParameter.Add("@TestDate", DbType.Date, Item.TestDate); }
             if (Item.ReceivedDate != null) { SbSql.Append(",ReceivedDate=@ReceivedDate" + Environment.NewLine); objParameter.Add("@ReceivedDate", DbType.Date, Item.ReceivedDate); }
             if (Item.ReleasedDate != null) { SbSql.Append(",ReleasedDate=@ReleasedDate" + Environment.NewLine); objParameter.Add("@ReleasedDate", DbType.Date, Item.ReleasedDate); }
-            if (Item.Result != null) { SbSql.Append(",Result=@Result" + Environment.NewLine); objParameter.Add("@Result", DbType.String, Item.Result); }
-            if (Item.Technician != null) { SbSql.Append(",Technician=@Technician" + Environment.NewLine); objParameter.Add("@Technician", DbType.String, Item.Technician); }
-            if (Item.MR != null) { SbSql.Append(",MR=@MR" + Environment.NewLine); objParameter.Add("@MR", DbType.String, Item.MR); }
+            if (Item.Result != null) { SbSql.Append(",Result=@Result" + Environment.NewLine); objParameter.Add("@Result", DbType.String, HttpUtility.HtmlDecode(Item.Result)); }
+            if (Item.Technician != null) { SbSql.Append(",Technician=@Technician" + Environment.NewLine); objParameter.Add("@Technician", DbType.String, HttpUtility.HtmlDecode(Item.Technician)); }
+            if (Item.MR != null) { SbSql.Append(",MR=@MR" + Environment.NewLine); objParameter.Add("@MR", DbType.String, HttpUtility.HtmlDecode(Item.MR)); }
 
             SbSql.Append($@"
 ,OtherMethod=@OtherMethod
@@ -197,17 +199,17 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 ,TestingMethod=iif(@OtherMethod = 0, @TestingMethod, '')
 ");
             objParameter.Add("@OtherMethod", DbType.Boolean, Item.OtherMethod);
-            objParameter.Add("@MethodID", DbType.String, Item.MethodID);
-            objParameter.Add("@TestingMethod", DbType.String, Item.TestingMethod);
+            objParameter.Add("@MethodID", DbType.String, HttpUtility.HtmlDecode(Item.MethodID));
+            objParameter.Add("@TestingMethod", DbType.String, HttpUtility.HtmlDecode(Item.TestingMethod));
 
             if (Item.HTPlate != null) { SbSql.Append(",HTPlate=@HTPlate" + Environment.NewLine); objParameter.Add("@HTPlate", DbType.Int32, Item.HTPlate); }
             if (Item.HTFlim != null) { SbSql.Append(",HTFlim=@HTFlim" + Environment.NewLine); objParameter.Add("@HTFlim", DbType.Int32, Item.HTFlim); }
             if (Item.HTTime != null) { SbSql.Append(",HTTime=@HTTime" + Environment.NewLine); objParameter.Add("@HTTime", DbType.Int32, Item.HTTime); }
             if (Item.HTPressure != null) { SbSql.Append(",HTPressure=@HTPressure" + Environment.NewLine); objParameter.Add("@HTPressure", DbType.Decimal, Item.HTPressure); }
-            if (Item.HTPellOff != null) { SbSql.Append(",HTPellOff=@HTPellOff" + Environment.NewLine); objParameter.Add("@HTPellOff", DbType.String, Item.HTPellOff); }
+            if (Item.HTPellOff != null) { SbSql.Append(",HTPellOff=@HTPellOff" + Environment.NewLine); objParameter.Add("@HTPellOff", DbType.String, HttpUtility.HtmlDecode(Item.HTPellOff)); }
             if (Item.HT2ndPressnoreverse != null) { SbSql.Append(",HT2ndPressnoreverse=@HT2ndPressnoreverse" + Environment.NewLine); objParameter.Add("@HT2ndPressnoreverse", DbType.Int32, Item.HT2ndPressnoreverse); }
             if (Item.HT2ndPressreversed != null) { SbSql.Append(",HT2ndPressreversed=@HT2ndPressreversed" + Environment.NewLine); objParameter.Add("@HT2ndPressreversed", DbType.Int32, Item.HT2ndPressreversed); }
-            if (Item.HTCoolingTime != null) { SbSql.Append(",HTCoolingTime=@HTCoolingTime" + Environment.NewLine); objParameter.Add("@HTCoolingTime", DbType.String, Item.HTCoolingTime); }
+            if (Item.HTCoolingTime != null) { SbSql.Append(",HTCoolingTime=@HTCoolingTime" + Environment.NewLine); objParameter.Add("@HTCoolingTime", DbType.String, HttpUtility.HtmlDecode(Item.HTCoolingTime)); }
 
             // 圖檔
             SbSql.Append(@"
@@ -220,9 +222,9 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             if (Item.TestAfterPicture != null) { objParameter.Add("@TestAfterPicture", Item.TestAfterPicture); }
             else { objParameter.Add("@TestAfterPicture", System.Data.SqlTypes.SqlBinary.Null); }
 
-            if (Item.Type != null) { SbSql.Append(",Type=@Type" + Environment.NewLine); objParameter.Add("@Type", DbType.String, Item.Type); }
+            if (Item.Type != null) { SbSql.Append(",Type=@Type" + Environment.NewLine); objParameter.Add("@Type", DbType.String, HttpUtility.HtmlDecode(Item.Type)); }
             SbSql.Append("WHERE ReportNo = @ReportNo" + Environment.NewLine);
-            objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
+            objParameter.Add("@ReportNo", DbType.String, HttpUtility.HtmlDecode(Item.ReportNo));
 
             _MockupWashDetailProvider = new MockupWashDetailProvider(Common.ProductionDataAccessLayer);
             var oldWashData = _MockupWashDetailProvider.GetMockupWash_Detail(new MockupWash_Detail() { ReportNo = Item.ReportNo }).ToList();
@@ -289,28 +291,28 @@ WHERE UKey = @Ukey
                 {
                     case DatabaseObject.Public.CompareStateType.Add:
                         listDetailPar.Add("@ReportNo", DbType.String, Item.ReportNo);
-                        listDetailPar.Add("@TypeofPrint", DbType.String, detailItem.TypeofPrint ?? string.Empty);
-                        listDetailPar.Add("@Design", DbType.String, detailItem.Design ?? string.Empty);
-                        listDetailPar.Add("@ArtworkColor", DbType.String, detailItem.ArtworkColor ?? string.Empty);
-                        listDetailPar.Add("@FabricRefNo", DbType.String, detailItem.FabricRefNo ?? string.Empty);
-                        listDetailPar.Add("@AccessoryRefno", DbType.String, detailItem.AccessoryRefno ?? string.Empty);
-                        listDetailPar.Add("@FabricColor", DbType.String, detailItem.FabricColor ?? string.Empty);
-                        listDetailPar.Add("@Result", DbType.String, detailItem.Result ?? string.Empty);
-                        listDetailPar.Add("@Remark", DbType.String, detailItem.Remark ?? string.Empty);
-                        listDetailPar.Add("@EditName", DbType.String, detailItem.EditName ?? string.Empty);
+                        listDetailPar.Add("@TypeofPrint", DbType.String, HttpUtility.HtmlDecode(detailItem.TypeofPrint) ?? string.Empty);
+                        listDetailPar.Add("@Design", DbType.String, HttpUtility.HtmlDecode(detailItem.Design) ?? string.Empty);
+                        listDetailPar.Add("@ArtworkColor", DbType.String, HttpUtility.HtmlDecode(detailItem.ArtworkColor) ?? string.Empty);
+                        listDetailPar.Add("@FabricRefNo", DbType.String, HttpUtility.HtmlDecode(detailItem.FabricRefNo) ?? string.Empty);
+                        listDetailPar.Add("@AccessoryRefno", DbType.String, HttpUtility.HtmlDecode(detailItem.AccessoryRefno) ?? string.Empty);
+                        listDetailPar.Add("@FabricColor", DbType.String, HttpUtility.HtmlDecode(detailItem.FabricColor) ?? string.Empty);
+                        listDetailPar.Add("@Result", DbType.String, HttpUtility.HtmlDecode(detailItem.Result) ?? string.Empty);
+                        listDetailPar.Add("@Remark", DbType.String, HttpUtility.HtmlDecode(detailItem.Remark) ?? string.Empty);
+                        listDetailPar.Add("@EditName", DbType.String, HttpUtility.HtmlDecode(detailItem.EditName) ?? string.Empty);
 
                         ExecuteNonQuery(CommandType.Text, insertDetail, listDetailPar);
                         break;
                     case DatabaseObject.Public.CompareStateType.Edit:
-                        listDetailPar.Add("@TypeofPrint", DbType.String, detailItem.TypeofPrint ?? string.Empty);
-                        listDetailPar.Add("@Design", DbType.String, detailItem.Design ?? string.Empty);
-                        listDetailPar.Add("@ArtworkColor", DbType.String, detailItem.ArtworkColor ?? string.Empty);
-                        listDetailPar.Add("@FabricRefNo", DbType.String, detailItem.FabricRefNo ?? string.Empty);
-                        listDetailPar.Add("@AccessoryRefno", DbType.String, detailItem.AccessoryRefno ?? string.Empty);
-                        listDetailPar.Add("@FabricColor", DbType.String, detailItem.FabricColor ?? string.Empty);
-                        listDetailPar.Add("@Result", DbType.String, detailItem.Result ?? string.Empty);
-                        listDetailPar.Add("@Remark", DbType.String, detailItem.Remark ?? string.Empty);
-                        listDetailPar.Add("@EditName", DbType.String, detailItem.EditName ?? string.Empty);
+                        listDetailPar.Add("@TypeofPrint", DbType.String, HttpUtility.HtmlDecode(detailItem.TypeofPrint) ?? string.Empty);
+                        listDetailPar.Add("@Design", DbType.String, HttpUtility.HtmlDecode(detailItem.Design) ?? string.Empty);
+                        listDetailPar.Add("@ArtworkColor", DbType.String, HttpUtility.HtmlDecode(detailItem.ArtworkColor) ?? string.Empty);
+                        listDetailPar.Add("@FabricRefNo", DbType.String, HttpUtility.HtmlDecode(detailItem.FabricRefNo) ?? string.Empty);
+                        listDetailPar.Add("@AccessoryRefno", DbType.String, HttpUtility.HtmlDecode(detailItem.AccessoryRefno) ?? string.Empty);
+                        listDetailPar.Add("@FabricColor", DbType.String, HttpUtility.HtmlDecode(detailItem.FabricColor) ?? string.Empty);
+                        listDetailPar.Add("@Result", DbType.String, HttpUtility.HtmlDecode(detailItem.Result) ?? string.Empty);
+                        listDetailPar.Add("@Remark", DbType.String, HttpUtility.HtmlDecode(detailItem.Remark) ?? string.Empty);
+                        listDetailPar.Add("@EditName", DbType.String, HttpUtility.HtmlDecode(detailItem.EditName) ?? string.Empty);
                         listDetailPar.Add("@ukey", detailItem.Ukey);
 
                         ExecuteNonQuery(CommandType.Text, updateDetail, listDetailPar);

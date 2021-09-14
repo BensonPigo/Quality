@@ -14,7 +14,7 @@ namespace ProductionDataAccessLayer.Interface
 
         DataTable GetMockupOvenFailMailContentData(string ReportNo);
 
-        int Create(MockupOven Item);
+        int Create(MockupOven Item, string Mdivision, out string NewReportNo);
 
         void Update(MockupOven_ViewModel Item);
 

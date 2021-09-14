@@ -96,7 +96,6 @@ namespace BusinessLogicLayer.Service.Tests
                 IMockupCrockingService _MockupCrockingService = new MockupCrockingService();
                 MockupCrocking_ViewModel MockupCrocking = new MockupCrocking_ViewModel()
                 {
-                    ReportNo = "T1",
                     POID = "TP",
                     StyleID = "SS",
                     SeasonID = "20SS",
@@ -114,12 +113,12 @@ namespace BusinessLogicLayer.Service.Tests
                     AddName = "SCIMIS",
                     MockupCrocking_Detail = new System.Collections.Generic.List<MockupCrocking_Detail_ViewModel>()
                     {
-                        new MockupCrocking_Detail_ViewModel(){ReportNo = "T1",Design="d100",ArtworkColor="0001",FabricRefNo="RF",FabricColor  = "FCC",Result="Pass",Remark="RRRK",EditName = "SCIMIS",WetScale="1",DryScale="2-2"},
-                        new MockupCrocking_Detail_ViewModel(){ReportNo = "T1",Design="d200",ArtworkColor="0001",FabricRefNo="RF",FabricColor  = "FCC",Result="Pass",Remark="2RRRK",EditName = "SCIMIS",WetScale="1",DryScale="2-2"},
+                        //new MockupCrocking_Detail_ViewModel(){ReportNo = "T1",Design="d100",ArtworkColor="0001",FabricRefNo="RF",FabricColor  = "FCC",Result="Pass",Remark="RRRK",EditName = "SCIMIS",WetScale="1",DryScale="2-2"},
+                        //new MockupCrocking_Detail_ViewModel(){ReportNo = "T1",Design="d200",ArtworkColor="0001",FabricRefNo="RF",FabricColor  = "FCC",Result="Pass",Remark="2RRRK",EditName = "SCIMIS",WetScale="1",DryScale="2-2"},
                     }
                 };
 
-                var mockupCrocking = _MockupCrockingService.Create(MockupCrocking);
+                var mockupCrocking = _MockupCrockingService.Create(MockupCrocking,"PM1",out string no);
                 Assert.IsTrue(true);
             }
             catch (Exception ex)

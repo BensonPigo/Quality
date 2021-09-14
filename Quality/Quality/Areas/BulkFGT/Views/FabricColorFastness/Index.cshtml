@@ -278,12 +278,12 @@
 
                                         @if (Model.ColorFastness_MainList[i].TestNo > 0)
                                         {
-                                            aHref = Url.Action("Detail", "FabricColorFastness", new { PoID = Model.PoID, TestNo = Model.ColorFastness_MainList[i].TestNo, EditMode = false });
+                                            aHref = Url.Action("Detail", "FabricColorFastness", new { PoID = "" ,ID = Model.ColorFastness_MainList[i].ID, EditMode = false });
                                         }
 
-                                        <a href="@aHref" idx="@Model.PoID ," idv="@Model.ColorFastness_MainList[i].TestNo">
+                                        <a href="@aHref" idx="@Model.ColorFastness_MainList[i].ID" idv="@Model.ColorFastness_MainList[i].TestNo">
   
-                                          <label>  @Model.ColorFastness_MainList[i].TestNo</label>
+                                          <label>@Model.ColorFastness_MainList[i].TestNo</label>
                                         </a>
                                     </td>
 
@@ -313,7 +313,7 @@
                                         @Html.DisplayFor(o => Model.ColorFastness_MainList[i].LastUpdate, "", "")
                                     </td>
                                     <td style="width:10vw;">
-                                        <img class="detailEdit"  onclick="DetailView('@Model.ColorFastness_MainList[i].TestNo')" src="~/Image/Icon/Edit.png" width="30" />
+                                        <img class="detailEdit"  onclick="DetailView('@Model.ColorFastness_MainList[i].ID')" src="~/Image/Icon/Edit.png" width="30" />
                                     </td>
                                     <td style="width:10vw;">
                                         <img class="detailDelete"  onclick="DetailDelete('@Model.ColorFastness_MainList[i].ID', '@Model.ColorFastness_MainList[i].TestNo')" src="~/Image/Icon/Delete.png" width="30" />
@@ -415,7 +415,7 @@
             if ($('#PoID').val() == "") {
                 return;
             }
-            location.href = '@Url.Action("Detail")?PoID=' + document.getElementById("PoID").value.trim() + '&TestNo=&EditMode=True';
+            location.href = '@Url.Action("Detail")?PoID=' + document.getElementById("PoID").value.trim() + '&ID=&EditMode=True';
         });
 
         function SaveData(main) {
@@ -435,8 +435,8 @@
         }
     }
 
-    function DetailView(TestNo) {
-        location.href = '@Url.Action("Detail")?PoID=' + document.getElementById("PoID").value.trim() + '&TestNo=' + TestNo + '&EditMode=True' ;
+    function DetailView(ID) {
+        location.href = '@Url.Action("Detail")?PoID=&ID=' + ID + '&EditMode=True' ;
     }
 
     function DetailDelete(ID, TestNo) {

@@ -397,8 +397,8 @@
                                             </select>
                                         </td>
                                         @{
-                                            string garmentTest_DetailsFontColor = Model.garmentTest_Details[i].Result == "P" ? "blue" : "red";
-                                            string garmentTest_DetailsVal = Model.garmentTest_Details[i].Result == "P" ? "Pass" :
+                                            string garmentTest_DetailsFontColor = Model.garmentTest_Details[i].Result == "P" || Model.garmentTest_Details[i].Result == "Pass" ? "blue" : "red";
+                                            string garmentTest_DetailsVal = Model.garmentTest_Details[i].Result == "P" || Model.garmentTest_Details[i].Result == "Pass" ? "Pass" :
                                                             string.IsNullOrEmpty(Model.garmentTest_Details[i].Result) ? string.Empty : "Fail";
                                         }
                                         <td class="@garmentTest_DetailsFontColor" style="width:10vw;">

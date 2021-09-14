@@ -38,7 +38,6 @@ namespace BusinessLogicLayer.SampleRFT.Service
                 else
                 {
                     result.SummaryBACriteria = Convert.ToDecimal(1.0 * SumBAProduct / SumInspectedQty * 5);
-                    result.SummaryBACriteria = Convert.ToDecimal(8.7);
                 }
                 result.DataList = list;
                 result.Result = true;

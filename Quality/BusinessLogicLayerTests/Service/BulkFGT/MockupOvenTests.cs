@@ -150,7 +150,7 @@ namespace BusinessLogicLayer.Service.Tests
                     }
                 };
 
-                var mockupOven = _MockupOvenService.Create(MockupOven);
+                var mockupOven = _MockupOvenService.Create(MockupOven, "", out string no);
                 Assert.IsTrue(true);
             }
             catch (Exception ex)

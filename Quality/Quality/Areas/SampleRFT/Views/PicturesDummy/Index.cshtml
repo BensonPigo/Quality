@@ -134,7 +134,7 @@
                                             var base64 = Convert.ToBase64String(item.Front);
                                             var imgSrc = String.Format("data:image/webp;base64,{0}", base64);
                                             <div class="zoom-gallery">
-                                                <a href="@imgSrc" data-source="" title="Front" style="width:640px;height:480px;">
+                                                <a href="@imgSrc" data-source=""  style="width:640px;height:480px;">
                                                     <img width="30" src="@imgSrc"/>
                                                 </a>
                                             </div>
@@ -146,7 +146,7 @@
                                             var base64 = Convert.ToBase64String(item.Side);
                                             var imgSrc = String.Format("data:image/webp;base64,{0}", base64);
                                             <div class="zoom-gallery">
-                                                <a href="@imgSrc" data-source="" title="Side" style="width:640px;height:480px;">
+                                                <a href="@imgSrc" data-source=""  style="width:640px;height:480px;">
                                                     <img width="30" src="@imgSrc" />
                                                 </a>
                                             </div>
@@ -158,7 +158,7 @@
                                             var base64 = Convert.ToBase64String(item.Back);
                                             var imgSrc = String.Format("data:image/webp;base64,{0}", base64);
                                             <div class="zoom-gallery">
-                                                <a href="@imgSrc" data-source="" title="Back" style="width:640px;height:480px;">
+                                                <a href="@imgSrc" data-source="" style="width:640px;height:480px;">
                                                     <img width="30" src="@imgSrc" />
                                                 </a>
                                             </div>
@@ -190,7 +190,7 @@
         @Html.Raw(Model.ErrorMessage);
 
         $('#myTable').DataTable({
-            "pageLength": 20,
+            "pageLength": 10,
             initComplete: function () {
             }
         });

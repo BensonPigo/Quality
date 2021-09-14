@@ -218,7 +218,7 @@
                                     </td>
                                     <td>
                                         <h4 style=" margin-right: 1em;">
-                                            <button id="Delete" name="Action:Delete" type="submit" style="margin:0;min-width:0;background-color:transparent">
+                                            <button id="Delete" name="action:Delete" type="submit" style="margin:0;min-width:0;background-color:transparent">
                                                 <img src="~/Image/Icon/Delete.png" width="30" />
                                                 Delete
                                             </button>
@@ -262,6 +262,8 @@
                                     <td style="width: 10vw;"><h5>Report No</h5></td>
                                     <td style="width: 20vw;">
                                         @Html.TextBoxFor(o => o.ReportNo, "", new { @readonly = "readonly" })
+                                        @Html.HiddenFor(o => o.TestBeforePicture)
+                                        @Html.HiddenFor(o => o.TestAfterPicture)
                                     </td>
                                     <td style="width: 10vw;"><h5>SP#</h5></td>
                                     <td style="width: 20vw;">
@@ -473,16 +475,10 @@
     var EditMode;
     var EditType;
     $(function () {
-        $('#SendMail').click(function () {
-            var para = "?TO=jeff.Yeh@sportscity.com.tw";
-            window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=650,height=400');
-        });
-
         msg = new MessagerAlert();
-
         EditMode = false;
         IsEditModeChange();
-        @Html.Raw(Model.ErrorMessage);
+        @Html.Raw(Model.ErrorMessage)
 
         if (!$("body").hasClass("sidebar-collapse")) {
             $(".menu-trigger").click();
@@ -500,8 +496,8 @@
             $(".rowHeader input[type='button']").unbind('click').addClass("IsEditModeQuery");
             $('#btnQuery').addClass("IsEditModeQuery");
 
-            $("#Edit, #Delete, #Picture, #SendMail, #PDF").unbind('click').removeClass("IsEditMode");
-            $('#Save, #Undo, #New').addClass("IsEditMode");            
+            $("#Edit, #Delete, #SendMail, #PDF").unbind('click').removeClass("IsEditMode");
+            $('#Save, #Undo, #New, #Picture').addClass("IsEditMode");
             $('.DetailTable input,.DetailTable select').removeAttr("disabled");
 
             if (EditType == "New") {
@@ -724,7 +720,7 @@
                     else
                     {
                         if (data.BrandID != "") {
-                            $('#BrandID').val(data.BrandID);
+                            $('#BrandID').val(data.BrandID).trigger('blur');
                         }
 
                         if (data.SeasonID != "") {
@@ -940,10 +936,88 @@
         });
 
         $('#Picture').on('click', function () {
-            if ($('#Detail_ReportNo').val() != null && $('#Detail_ReportNo').val() != "") {
-                var para = "?EditMode=" + EditMode + "&Table=PullingTest&BeforeColumn=TestBeforePicture&AfterColumn=TestAfterPicture&PKey_1=ReportNo&PKey_1_Val=" + $('#ReportNo').val();
-                window.open('@Url.Action("PictureList","PublicWondow",new{Area=""})' + para, 'Article', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+            var para = "?Title=" + $('.page-header span').html() + "&EditMode=" + EditMode;
+            para += "&" + "Table=MockupCrocking";
+            para += "&" + "BeforeColumn=TestBeforePicture";
+            para += "&" + "AfterColumn=TestAfterPicture";
+            para += "&" + "PKey_1=ReportNo";
+            para += "&" + "PKey_1_Val=" + $('#ReportNo').val();
+            window.open('@Url.Action("PictureList", "PublicWondow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1024,height=750');
+        });
+
+        $('#PDF').on('click', function () {
+            if ($('#ReportNo').val() == ""
+                || $('#Request_BrandID').val() == ""
+                || $('#Request_SeasonID').val() == ""
+                || $('#Request_StyleID').val() == ""
+                || $('#Request_Article').val() == "") {
+
+                return false;
             }
+
+            var mockupCrocking_Request = {
+                ReportNo: $('#ReportNo').val(),
+                BrandID: $('#Request_BrandID').val(),
+                SeasonID: $('#Request_SeasonID').val(),
+                StyleID: $('#Request_StyleID').val(),
+                Article: $('#Request_Article').val(),
+            };
+            $.ajax({
+                url: "@Url.Action("ToPDF", "MockupCrocking", new { Area = "BulkFGT" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ mockupCrocking_Request }),
+                async: false,
+                success: function (data) {
+                    if (data.Result) {
+                        window.location.href = data.reportPath;
+                    }
+                    else {
+                        msg.WithError(data.ErrorMessage);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $('#SendMail').on('click', function () {
+            if ($('#ReportNo').val() == ""
+                || $('#Request_BrandID').val() == ""
+                || $('#Request_SeasonID').val() == ""
+                || $('#Request_StyleID').val() == ""
+                || $('#Request_Article').val() == "") {
+
+                return false;
+            }
+
+            var mockupCrocking_Request = {
+                ReportNo: $('#ReportNo').val(),
+                BrandID: $('#Request_BrandID').val(),
+                SeasonID: $('#Request_SeasonID').val(),
+                StyleID: $('#Request_StyleID').val(),
+                Article: $('#Request_Article').val(),
+            };
+            $.ajax({
+                url: "@Url.Action("ToPDF", "MockupCrocking", new { Area = "BulkFGT" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ mockupCrocking_Request }),
+                async: false,
+                success: function (data) {
+                    if (data.Result) {
+                        var para = "?file=" + data.FileName;
+                        window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=600');
+                    }
+                    else {
+                        msg.WithError(data.ErrorMessage);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
         });
     }
 
@@ -1130,6 +1204,47 @@
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function GetPicture(data) {
+        $('#TestBeforePicture').val(data.BeforePicture.replace("data:image/webp;base64,", ""));
+        $('#TestAfterPicture').val(data.AfterPicture.replace("data:image/webp;base64,", ""));
+    }
+
+    function FailMail() {
+        var para = "?Title=" + $('.page-header span').html() + "&FactoryID=@ViewBag.FactoryID&Type=BulkFGT&ExitReload=False";
+        window.open('@Url.Action("TestFailMailList", "PublicWondow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
+    }
+
+    function GetTestFailMailList(data) {
+        var to = "";
+        var cc = "";
+        $.each(data, function (index, value) {
+            to += value.To + ';';
+            cc += value.CC + ';';
+        });
+
+        $.ajax({
+            url: "@Url.Action("FailMail", "MockupCrocking", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ ReportNo: $('#ReportNo').val(), TO: to, CC: cc }),
+            async: false,
+            success: function (data) {
+                if (data.result) {
+                    msg.WithSucces("Success");
+                }
+                else {
+                    msg.WithWarning(data.resultMsg);
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                // console.log(xhr.responseText);
+                msg.WithWarningCheck(xhr.responseText, function () {
+                    location.reload();
+                });
             }
         });
     }

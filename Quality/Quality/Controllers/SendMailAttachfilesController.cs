@@ -20,7 +20,7 @@ namespace Quality.Controllers
             _SendMail = new MailTools();
         }
 
-        public ActionResult SendMailer(string TO, string CC, string subject, string body)
+        public ActionResult SendMailer(string TO, string CC, string subject, string body, string file)
         {
             SendMail_Request request = new SendMail_Request() 
             {
@@ -28,6 +28,7 @@ namespace Quality.Controllers
                 CC = CC,
                 Subject = subject,
                 Body = body,
+                FileonServer = new List<string>() { file }
             };
 
             ViewBag.JS = "";

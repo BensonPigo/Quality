@@ -1,4 +1,5 @@
-﻿using ADOHelper.Utility;
+﻿using ADOHelper.Template.MSSQL;
+using ADOHelper.Utility;
 using BusinessLogicLayer.Interface.BulkFGT;
 using DatabaseObject;
 using DatabaseObject.ProductionDB;
@@ -14,7 +15,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Transactions;
 using System.Web.Mvc;
 using Excel = Microsoft.Office.Interop.Excel;
 
@@ -240,7 +240,7 @@ namespace BusinessLogicLayer.Service
 
                 if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
                 {
-                    result.TempFileName = filepathpdf;
+                    result.TempFileName = fileNamePDF;
                     result.Result = true;
                 }
                 else
@@ -251,14 +251,16 @@ namespace BusinessLogicLayer.Service
             }
             catch (Exception ex)
             {
-                throw ex;
+                result.ErrorMessage = ex.ToString();
+                result.Result = false;
             }
 
             return result;
         }
 
-        public BaseResult Create(MockupCrocking_ViewModel MockupCrocking)
+        public BaseResult Create(MockupCrocking_ViewModel MockupCrocking, string Mdivision, out string NewReportNo)
         {
+            NewReportNo = string.Empty;
             if (MockupCrocking.MockupCrocking_Detail.Any(a => a.Result.ToUpper() == "Fail".ToUpper()))
             {
                 MockupCrocking.Result = "Fail";
@@ -276,7 +278,23 @@ namespace BusinessLogicLayer.Service
             int count;
             try
             {
-                count = _MockupCrockingProvider.Create(MockupCrocking);
+                if (MockupCrocking.MockupCrocking_Detail != null || MockupCrocking.MockupCrocking_Detail.Count > 0)
+                {
+                    if (MockupCrocking.MockupCrocking_Detail.Any(a => a.Result.ToUpper() == "Fail".ToUpper()))
+                    {
+                        MockupCrocking.Result = "Fail";
+                    }
+                    else
+                    {
+                        MockupCrocking.Result = "Pass";
+                    }
+                }
+                else
+                {
+                    MockupCrocking.Result = string.Empty;
+                }
+
+                count = _MockupCrockingProvider.Create(MockupCrocking, Mdivision, out NewReportNo);
                 if (count == 0)
                 {
                     result.Result = false;
@@ -284,15 +302,19 @@ namespace BusinessLogicLayer.Service
                     return result;
                 }
 
-                foreach (var MockupCrocking_Detail in MockupCrocking.MockupCrocking_Detail)
+                MockupCrocking.ReportNo = NewReportNo;
+                if (MockupCrocking.MockupCrocking_Detail != null)
                 {
-                    MockupCrocking_Detail.ReportNo = MockupCrocking.ReportNo;
-                    count = _MockupCrockingDetailProvider.Create(MockupCrocking_Detail);
-                    if (count == 0)
+                    foreach (var MockupCrocking_Detail in MockupCrocking.MockupCrocking_Detail)
                     {
-                        result.Result = false;
-                        result.ErrorMessage = "Create MockupCrocking_Detail Fail. 0 Count";
-                        return result;
+                        MockupCrocking_Detail.ReportNo = MockupCrocking.ReportNo;
+                        count = _MockupCrockingDetailProvider.Create(MockupCrocking_Detail);
+                        if (count == 0)
+                        {
+                            result.Result = false;
+                            result.ErrorMessage = "Create MockupCrocking_Detail Fail. 0 Count";
+                            return result;
+                        }
                     }
                 }
 
@@ -305,7 +327,6 @@ namespace BusinessLogicLayer.Service
                 result.ErrorMessage = "Create MockupCrocking Fail";
                 result.Exception = ex;
                 _ISQLDataTransaction.RollBack();
-                throw ex;
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
             return result;
@@ -338,7 +359,6 @@ namespace BusinessLogicLayer.Service
                 result.ErrorMessage = "Update MockupCrocking Fail";
                 result.Exception = ex;
                 _ISQLDataTransaction.RollBack();
-                throw ex;
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
             return result;
@@ -363,7 +383,6 @@ namespace BusinessLogicLayer.Service
                 result.ErrorMessage = "Delete MockupCrocking Fail";
                 result.Exception = ex;
                 _ISQLDataTransaction.RollBack();
-                throw ex;
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
             return result;
@@ -391,7 +410,6 @@ namespace BusinessLogicLayer.Service
                 result.ErrorMessage = "Delete MockupCrocking Detail Fail";
                 result.Exception = ex;
                 _ISQLDataTransaction.RollBack();
-                throw ex;
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
             return result;

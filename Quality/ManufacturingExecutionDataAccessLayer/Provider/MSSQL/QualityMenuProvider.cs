@@ -67,13 +67,40 @@ order by ModuleSeq, FunctionSeq" + Environment.NewLine);
 
             return ExecuteList<Quality_Menu>(CommandType.Text, SbSql.ToString(), objParameter);
         }
-		/*建立(Create) 詳細敘述如下*/
+
+        public IList<Quality_Menu> GetByMenu_detail(Quality_Pass1 pass1)
+        {
+            StringBuilder SbSql = new StringBuilder();
+
+            SbSql.Append($@"
+select  m.ID
+      ,m.ModuleName
+      ,m.ModuleSeq
+      ,FunctionName = IIF(md.FunctionName IS NOT NULL , md.FunctionName , m.FunctionName)
+      ,m.FunctionSeq
+      ,m.Junk
+      ,Url = m.Url 
+from Quality_Pass1 p
+inner join Quality_Position pp on p.Position=pp.ID
+inner join Quality_Pass2 p2 on p2.PositionID=pp.ID
+inner join Quality_Menu m on m.ID=p2.MenuID
+left join Quality_Menu_detail md on md.ID=m.ID AND md.Type=p.BulkFGT_Brand
+WHERE m.Junk=0
+AND p.ID = '{pass1.ID}'
+AND (p2.Used=1 or pp.IsAdmin=1)
+ORDER BY ModuleSeq,FunctionSeq
+" + Environment.NewLine);
+
+            return ExecuteList<Quality_Menu>(CommandType.Text, SbSql.ToString(), new SQLParameterCollection());
+        }
+
+        /*建立(Create) 詳細敘述如下*/
         /// <summary>
         /// 建立
         /// </summary>
         /// <param name="Item">成員</param>
         /// <returns>回傳異動筆數</returns>
-		/// <info>Author: Admin; Date: 2021/07/30  </info>
+        /// <info>Author: Admin; Date: 2021/07/30  </info>
         /// <history>
         /// xx.  YYYY/MM/DD   Ver   Author      Comments
         /// ===  ==========  ====  ==========  ==========
