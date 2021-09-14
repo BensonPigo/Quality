@@ -270,8 +270,8 @@
                                             </td>
                                             <td><h4>Result</h4></td>
                                             @{
-                                                string DetailFontColor = Model.Detail.Result == "P" ? "blue" : "red";
-                                                string DetailVal = Model.Detail.Result == "P" ? "Pass" :
+                                                string DetailFontColor = Model.Detail.Result == "P" || Model.Detail.Result == "Pass" ? "blue" : "red";
+                                                string DetailVal = Model.Detail.Result == "P" || Model.Detail.Result == "Pass" ? "Pass" :
                                                         string.IsNullOrEmpty(Model.Detail.Result) ? string.Empty : "Fail";
                                             }
                                             <td class="@DetailFontColor">
@@ -329,7 +329,7 @@
                                                 </select>
                                             </td>
                                             <td><h4>Fibre Composition</h4></td>
-                                            <td colspan="3">@Html.TextBoxFor(o => Model.Detail.Composition, "", "")</td>
+                                            <td colspan="3">@Html.TextBoxFor(o => Model.Detail.Composition, "", new { @style = "width:100%;" })</td>
                                         </tr>
                                         <tr>
                                             <td colspan="3"></td>
@@ -363,7 +363,7 @@
                                                 </select>
                                             <td><h4>Remark</h4></td>
                                             <td colspan="3">
-                                                @Html.TextBoxFor(o => Model.Detail.Remark, "", "")
+                                                @Html.TextBoxFor(o => Model.Detail.Remark, "", new { @style = "width:100%;" })
                                             </td>
                                         </tr>
                                         <tr>
@@ -631,7 +631,7 @@
                                     {
                                         string Location = Model.FGWT[i].Location.Equals("T") ? "Top" : "Bottom";
                                         bool bolWash = Model.FGWT[i].EditType.Equals("1");
-                                        bool bolScale = Model.FGWT[i].EditType.Equals("3");
+                                        bool bolScale = Model.FGWT[i].EditType.Equals("2");
                                         <tr>
                                             <td>
                                                 @Location
@@ -678,8 +678,8 @@
                                                 }
                                             </td>
                                             @{
-                                                string FGWTFontColor = Model.FGWT[i].Result == "P" ? "blue" : "red";
-                                                string FGWTVal = Model.FGWT[i].Result == "P" ? "Pass" :
+                                                string FGWTFontColor = Model.FGWT[i].Result == "P" || Model.FGWT[i].Result == "Pass" ? "blue" : "red";
+                                                string FGWTVal = Model.FGWT[i].Result == "P" || Model.FGWT[i].Result == "Pass" ? "Pass" :
                                                         string.IsNullOrEmpty(Model.FGWT[i].Result) ? string.Empty : "Fail";
                                             }
                                             <td class="@FGWTFontColor">
@@ -791,8 +791,8 @@
                                                 @Html.HiddenFor(o => Model.FGPT[i].TestUnit)
                                             </td>
                                             @{
-                                                string FGPTFontColor = Model.FGPT[i].Result == "P" ? "blue" : "red";
-                                                string FGPTVal = Model.FGPT[i].Result == "P" ? "Pass" :
+                                                string FGPTFontColor = Model.FGPT[i].Result == "P" || Model.FGPT[i].Result == "Pass" ? "blue" : "red";
+                                                string FGPTVal = Model.FGPT[i].Result == "P" || Model.FGPT[i].Result == "Pass" ? "Pass" :
                                                         string.IsNullOrEmpty(Model.FGPT[i].Result) ? string.Empty : "Fail";
                                             }
                                             <td class="@FGPTFontColor">
