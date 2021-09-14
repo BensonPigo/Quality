@@ -982,8 +982,7 @@
             });
         });
 
-        $('#SendMail').click(function () {
-            // Get PDF
+        $('#SendMail').on('click', function () {
             if ($('#ReportNo').val() == ""
                 || $('#Request_BrandID').val() == ""
                 || $('#Request_SeasonID').val() == ""

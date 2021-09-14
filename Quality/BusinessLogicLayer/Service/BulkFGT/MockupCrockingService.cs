@@ -258,7 +258,7 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public BaseResult Create(MockupCrocking_ViewModel MockupCrocking, string Mdivision)
+        public BaseResult Create(MockupCrocking_ViewModel MockupCrocking, string Mdivision, out string ReportNo)
         {
             if (MockupCrocking.MockupCrocking_Detail.Any(a => a.Result.ToUpper() == "Fail".ToUpper()))
             {
@@ -268,7 +268,7 @@ namespace BusinessLogicLayer.Service
             {
                 MockupCrocking.Result = "Pass";
             }
-
+            ReportNo = string.Empty;
             MockupCrocking.Type = "B";
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
@@ -278,6 +278,7 @@ namespace BusinessLogicLayer.Service
             try
             {
                 count = _MockupCrockingProvider.Create(MockupCrocking, Mdivision, out string NewReportNo);
+                ReportNo = NewReportNo;
                 if (count == 0)
                 {
                     result.Result = false;

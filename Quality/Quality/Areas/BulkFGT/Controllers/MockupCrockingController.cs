@@ -82,8 +82,22 @@ namespace Quality.Areas.BulkFGT.Controllers
         [MultipleButton(Name = "action", Argument = "New")]
         public ActionResult New(MockupCrocking_ViewModel Req)
         {
+            if (Req.MockupCrocking_Detail == null)
+            {
+                Req.MockupCrocking_Detail = new List<MockupCrocking_Detail_ViewModel>();
+            }
             Req.AddName = this.UserID;
-            BaseResult result = _MockupCrockingService.Create(Req, this.MDivisionID);
+            BaseResult result = _MockupCrockingService.Create(Req, this.MDivisionID, out string ReportNo);
+
+            Req.Request = new MockupCrocking_Request()
+            {
+                BrandID = Req.BrandID,
+                SeasonID = Req.SeasonID,
+                StyleID = Req.StyleID,
+                Article = Req.Article,
+                ReportNo = ReportNo,
+            };
+
             MockupCrocking_ViewModel mockupCrocking_ViewModel = _MockupCrockingService.GetMockupCrocking(Req.Request);
             if (mockupCrocking_ViewModel == null)
             {
@@ -111,6 +125,10 @@ namespace Quality.Areas.BulkFGT.Controllers
         [MultipleButton(Name = "action", Argument = "Edit")]
         public ActionResult Edit(MockupCrocking_ViewModel Req)
         {
+            if (Req.MockupCrocking_Detail == null)
+            {
+                Req.MockupCrocking_Detail = new List<MockupCrocking_Detail_ViewModel>();
+            }
             Req.EditName = this.UserID;
             foreach (var item in Req.MockupCrocking_Detail)
             {
@@ -171,7 +189,6 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             this.CheckSession();
             MockupCrocking_ViewModel mockupCrocking_ViewModel = _MockupCrockingService.GetMockupCrocking(mockupCrocking_Request);
-            BaseResult result = new BaseResult();
             if (mockupCrocking_ViewModel == null)
             {
                 return Json(new { Result = false, ErrorMessage = "msg.WithInfo('No Data Found');" });
