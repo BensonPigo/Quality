@@ -161,8 +161,8 @@
             </div>
         </header>
         <div class="main-area">
-            <div class="content-scroll" style="height: calc( 100vh - 110px );">
-                <div class="inner-scroll" style="height: calc( 100vh - 150px );">
+            <div class="content-scroll">
+                <div class="inner-scroll">
                     <div>
                         @*按鈕*@
                         <div>
@@ -536,7 +536,7 @@
                                             @Html.TextBoxFor(modelItem => Model.Crocking_Detail[i].Name, new { @readonly = "readonly" })
                                         </td>
                                         <td>
-                                            @Html.TextBoxFor(modelItem => Model.Crocking_Detail[i].Remark, new { @readonly = "readonly" })
+                                            @Html.TextBoxFor(modelItem => Model.Crocking_Detail[i].Remark)
                                         </td>
                                         <td>
                                             @Html.TextBoxFor(modelItem => Model.Crocking_Detail[i].LastUpdate, new { @readonly = "readonly" })
@@ -580,8 +580,9 @@
                 }
             });
         }
-        IsEditModeChange();
+
         @Html.Raw(Model.ErrorMessage);
+        IsEditModeChange();
     });
 
     function IsEditModeChange() {
@@ -975,13 +976,11 @@
                     if (data.length == 0) {
                         $("#Crocking_Detail_" + targetID + "__Inspector").val('');
                         $("#Crocking_Detail_" + targetID + "__Name").val('');
-                        $("#Crocking_Detail_" + targetID + "__Remark").val('');
                         msg.WithError('Lab Tech Not Found');
                     }
                     else {
                         $("#Crocking_Detail_" + targetID + "__Inspector").val(data[0].ID);
-                        $("#Crocking_Detail_" + targetID + "__Name").val(data[0].Name);
-                        $("#Crocking_Detail_" + targetID + "__Remark").val(data[0].ExtNo);
+                        $("#Crocking_Detail_" + targetID + "__Name").val(data[0].Name + ' Ext.' + data[0].ExtNo);
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
@@ -1014,8 +1013,7 @@
 
     function GetPass1(data, targetID) {
         $("#Crocking_Detail_" + targetID + "__Inspector").val(data.ID);
-        $("#Crocking_Detail_" + targetID + "__Name").val(data.Name);
-        $("#Crocking_Detail_" + targetID + "__Remark").val(data.ExtNo);
+        $("#Crocking_Detail_" + targetID + "__Name").val(data.Name + ' Ext.' + data.ExtNo);
     }
 
     function GetPicture(data) {

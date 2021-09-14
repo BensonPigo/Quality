@@ -146,8 +146,8 @@
         </div>
     </header>
     <div class="main-area">
-        <div class="content-scroll" style="height: calc( 100vh - 110px );">
-            <div class="inner-scroll" style="height: calc( 100vh - 150px );">
+        <div class="content-scroll">
+            <div class="inner-scroll">
                 <div>
                     @using (Html.BeginForm("Index", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { id = "QueryForm" }))
                     {

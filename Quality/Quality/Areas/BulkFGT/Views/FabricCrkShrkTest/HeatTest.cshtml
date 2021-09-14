@@ -145,8 +145,8 @@
             </div>
         </header>
         <div class="main-area">
-            <div class="content-scroll" style="height: calc( 100vh - 110px );">
-                <div class="inner-scroll" style="height: calc( 100vh - 150px );">
+            <div class="content-scroll">
+                <div class="inner-scroll">
                     <div>
                         @*按鈕*@
                         <div>
@@ -433,7 +433,7 @@
                                             @Html.TextBoxFor(modelItem => Model.Heat_Detail[i].Name, new { @readonly = "readonly" })
                                         </td>
                                         <td>
-                                            @Html.TextBoxFor(modelItem => Model.Heat_Detail[i].Remark, new { @readonly = "readonly" })
+                                            @Html.TextBoxFor(modelItem => Model.Heat_Detail[i].Remark)
                                         </td>
                                         <td>
                                             @Html.TextBoxFor(modelItem => Model.Heat_Detail[i].LastUpdate, new { @readonly = "readonly" })
@@ -822,13 +822,11 @@
                     if (data.length == 0) {
                         $("#Heat_Detail_" + targetID + "__Inspector").val('');
                         $("#Heat_Detail_" + targetID + "__Name").val('');
-                        $("#Heat_Detail_" + targetID + "__Remark").val('');
                         msg.WithError('Lab Tech Not Found');
                     }
                     else {
                         $("#Heat_Detail_" + targetID + "__Inspector").val(data[0].ID);
-                        $("#Heat_Detail_" + targetID + "__Name").val(data[0].Name);
-                        $("#Heat_Detail_" + targetID + "__Remark").val(data[0].ExtNo);
+                        $("#Heat_Detail_" + targetID + "__Name").val(data[0].Name + ' Ext.' + data[0].ExtNo);
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
@@ -904,8 +902,7 @@
 
     function GetPass1(data, targetID) {
         $("#Heat_Detail_" + targetID + "__Inspector").val(data.ID);
-        $("#Heat_Detail_" + targetID + "__Name").val(data.Name);
-        $("#Heat_Detail_" + targetID + "__Remark").val(data.ExtNo);
+        $("#Heat_Detail_" + targetID + "__Name").val(data.Name + ' Ext.' + data.ExtNo);
     }
     
     function GetPicture(data) {
