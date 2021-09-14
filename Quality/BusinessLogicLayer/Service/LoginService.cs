@@ -104,6 +104,24 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
+
+        public List<Quality_Menu> GetMenus(string UserID)
+        {
+            List<Quality_Menu> result = new List<Quality_Menu>();
+            QualityMenuProvider = new QualityMenuProvider(Common.ManufacturingExecutionDataAccessLayer);
+            try
+            {
+                result = QualityMenuProvider.GetByMenu_detail(new Quality_Pass1() { ID = UserID }).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+
+            return result;
+        }
+
         public List<string> GetFactory()
         {
             FactoryProvider = new ProductionDataAccessLayer.Provider.MSSQL.FactoryProvider(Common.ProductionDataAccessLayer);

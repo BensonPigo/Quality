@@ -199,6 +199,8 @@ where f.POID = @POID
             string sqlUpdatePO = @"
 update PO set FirLaboratoryRemark = @Remark
 where ID = @POID
+
+exec UpdateInspPercent 'FIRLab',@POID
 ";
 
             string sqlUpdateFIR_Laboratory = $@"
@@ -213,7 +215,6 @@ where   ID = @ID
 
             using (TransactionScope transaction = new TransactionScope())
             {
-                ExecuteNonQuery(CommandType.Text, sqlUpdatePO, listPar);
 
                 foreach (FabricCrkShrkTest_Detail fabricCrkShrkTest_Detail in fabricCrkShrkTest_Result.Details)
                 {
@@ -226,6 +227,8 @@ where   ID = @ID
 
                     ExecuteNonQuery(CommandType.Text, sqlUpdateFIR_Laboratory, listDetailPar);
                 }
+
+                ExecuteNonQuery(CommandType.Text, sqlUpdatePO, listPar);
 
                 transaction.Complete();
             }
@@ -300,7 +303,7 @@ select	[Roll] = flc.Roll,
         [ResultWet_Weft] = flc.ResultWet_Weft,
         [Inspdate] = flc.Inspdate,
         [Inspector] = flc.Inspector,
-        [Name] = (select Name from pass1 where ID = flc.Inspector),
+        [Name] = (select Concat(Name, ' Ext.', ExtNo) from pass1 where ID = flc.Inspector),
         [Remark] = flc.Remark,
         [LastUpdate] = Concat(LastUpdateName.val, ' - ', isnull(Format(flc.EditDate, 'yyyy/MM/dd HH:mm:ss'), Format(flc.AddDate, 'yyyy/MM/dd HH:mm:ss')))
 from FIR_Laboratory_Crocking flc with (nolock)
@@ -539,6 +542,12 @@ update  FIR_Laboratory  set Crocking = @testResult,
      where  ID = @ID
 
 {FIR_Laboratory_Utility.UpdateResultSql}
+
+declare @POID varchar(13)
+
+select @POID = POID from FIR_Laboratory where ID = @ID
+
+exec UpdateInspPercent 'FIRLab',@POID 
 ";
 
             using (TransactionScope transaction = new TransactionScope())
@@ -595,6 +604,12 @@ update  FIR_Laboratory  set Crocking = '',
      where  ID = @ID
 
 {FIR_Laboratory_Utility.UpdateResultSql}
+
+declare @POID varchar(13)
+
+select @POID = POID from FIR_Laboratory where ID = @ID
+
+exec UpdateInspPercent 'FIRLab',@POID 
 ";
 
             using (TransactionScope transaction = new TransactionScope())
@@ -692,7 +707,7 @@ select	[POID] = f.POID,
         [HeatDate] = fl.HeatDate,
         [StyleID] = o.StyleID,
         [SCIRefno] = f.SCIRefno,
-        [Name] = (select Name from pass1 where ID = fl.CrockingInspector),
+        [Name] = (select Name from pass1 where ID = fl.HeatInspector),
         [BrandID] = o.BrandID,
         [Refno] = f.Refno,
         [NonHeat] = fl.NonHeat,
@@ -745,7 +760,7 @@ select	[Roll] = flc.Roll,
         [VerticalAverage] = Round((isnull(flc.VerticalTest1, 0) + isnull(flc.VerticalTest2, 0)  + isnull(flc.VerticalTest3, 0)) / 3.0, 2),
         [Inspdate] = flc.Inspdate,
         [Inspector] = flc.Inspector,
-        [Name] = (select Name from pass1 where ID = flc.Inspector),
+        [Name] = (select Concat(Name, 'Ext.', ExtNo) from pass1 where ID = flc.Inspector),
         [Remark] = flc.Remark,
         [LastUpdate] = Concat(LastUpdateName.val, ' - ', isnull(Format(flc.EditDate, 'yyyy/MM/dd HH:mm:ss'), Format(flc.AddDate, 'yyyy/MM/dd HH:mm:ss')))
 from FIR_Laboratory_Heat flc with (nolock)
@@ -947,6 +962,12 @@ update  FIR_Laboratory  set Heat = @testResult,
      where  ID = @ID
 
 {FIR_Laboratory_Utility.UpdateResultSql}
+
+declare @POID varchar(13)
+
+select @POID = POID from FIR_Laboratory where ID = @ID
+
+exec UpdateInspPercent 'FIRLab',@POID 
 ";
 
             using (TransactionScope transaction = new TransactionScope())
@@ -1003,6 +1024,12 @@ update  FIR_Laboratory  set Heat = '',
      where  ID = @ID
 
 {FIR_Laboratory_Utility.UpdateResultSql}
+
+declare @POID varchar(13)
+
+select @POID = POID from FIR_Laboratory where ID = @ID
+
+exec UpdateInspPercent 'FIRLab',@POID 
 ";
 
             using (TransactionScope transaction = new TransactionScope())
@@ -1036,7 +1063,7 @@ select	[Roll] = flc.Roll,
         [VerticalAverage] = (isnull(flc.VerticalTest1, 0) + isnull(flc.VerticalTest2, 0)  + isnull(flc.VerticalTest3, 0)) / 3.0,
         [Inspdate] = flc.Inspdate,
         [Inspector] = flc.Inspector,
-        [Name] = (select Name from pass1 where ID = flc.Inspector),
+        [Name] = (select Concat(Name, ' Ext.', ExtNo) from pass1 where ID = flc.Inspector),
         [Remark] = flc.Remark,
         [LastUpdate] = Concat(LastUpdateName.val, ' - ', isnull(Format(flc.EditDate, 'yyyy/MM/dd HH:mm:ss'), Format(flc.AddDate, 'yyyy/MM/dd HH:mm:ss')))
 from FIR_Laboratory_Heat flc with (nolock)
@@ -1065,7 +1092,7 @@ select	[POID] = f.POID,
         [WashDate] = fl.WashDate,
         [StyleID] = o.StyleID,
         [SCIRefno] = f.SCIRefno,
-        [Name] = (select Name from pass1 where ID = fl.CrockingInspector),
+        [Name] = (select Name from pass1 where ID = fl.WashInspector),
         [BrandID] = o.BrandID,
         [Refno] = f.Refno,
         [NonWash] = fl.NonWash,
@@ -1124,7 +1151,7 @@ select	[Roll] = flc.Roll,
         [SkewnessRate] = flc.SkewnessRate,
         [Inspdate] = flc.Inspdate,
         [Inspector] = flc.Inspector,
-        [Name] = (select Name from pass1 where ID = flc.Inspector),
+        [Name] = (select Concat(Name, ' Ext.', ExtNo) from pass1 where ID = flc.Inspector),
         [Remark] = flc.Remark,
         [LastUpdate] = Concat(LastUpdateName.val, ' - ', isnull(Format(flc.EditDate, 'yyyy/MM/dd HH:mm:ss'), Format(flc.AddDate, 'yyyy/MM/dd HH:mm:ss')))
 from FIR_Laboratory_Wash flc with (nolock)
@@ -1188,7 +1215,8 @@ VerticalTest3       ,
 SkewnessTest1       ,
 SkewnessTest2       ,
 SkewnessTest3       ,
-SkewnessTest4       
+SkewnessTest4       ,
+SkewnessRate
 )
 values
 (
@@ -1214,7 +1242,8 @@ getDate()              ,
 @SkewnessTest1       ,
 @SkewnessTest2       ,
 @SkewnessTest3       ,
-@SkewnessTest4       
+@SkewnessTest4       ,
+@SkewnessRate
 )
 
 ";
@@ -1246,7 +1275,8 @@ update  FIR_Laboratory_Wash set Inspdate            = @Inspdate             ,
                                 SkewnessTest1       = @SkewnessTest1,
                                 SkewnessTest2       = @SkewnessTest2,
                                 SkewnessTest3       = @SkewnessTest3,
-                                SkewnessTest4       = @SkewnessTest4
+                                SkewnessTest4       = @SkewnessTest4,
+                                SkewnessRate        = @SkewnessRate
         where   ID = @ID and
                 Roll = @Roll and
                 Dyelot = @Dyelot
@@ -1284,6 +1314,7 @@ update  FIR_Laboratory_Wash set Inspdate            = @Inspdate             ,
                             listDetailPar.Add("@SkewnessTest2", detailItem.SkewnessTest2);
                             listDetailPar.Add("@SkewnessTest3", detailItem.SkewnessTest3);
                             listDetailPar.Add("@SkewnessTest4", detailItem.SkewnessTest4);
+                            listDetailPar.Add("@SkewnessRate", detailItem.SkewnessRate);
 
                             ExecuteNonQuery(CommandType.Text, sqlInsertDetail, listDetailPar);
                             break;
@@ -1310,6 +1341,7 @@ update  FIR_Laboratory_Wash set Inspdate            = @Inspdate             ,
                             listDetailPar.Add("@SkewnessTest2", detailItem.SkewnessTest2);
                             listDetailPar.Add("@SkewnessTest3", detailItem.SkewnessTest3);
                             listDetailPar.Add("@SkewnessTest4", detailItem.SkewnessTest4);
+                            listDetailPar.Add("@SkewnessRate", detailItem.SkewnessRate);
 
                             ExecuteNonQuery(CommandType.Text, sqlUpdateDetail, listDetailPar);
                             break;
@@ -1347,6 +1379,12 @@ update  FIR_Laboratory  set Wash = @testResult,
      where  ID = @ID
 
 {FIR_Laboratory_Utility.UpdateResultSql}
+
+declare @POID varchar(13)
+
+select @POID = POID from FIR_Laboratory where ID = @ID
+
+exec UpdateInspPercent 'FIRLab',@POID 
 ";
 
             using (TransactionScope transaction = new TransactionScope())
@@ -1404,6 +1442,12 @@ update  FIR_Laboratory  set Wash = '',
      where  ID = @ID
 
 {FIR_Laboratory_Utility.UpdateResultSql}
+
+declare @POID varchar(13)
+
+select @POID = POID from FIR_Laboratory where ID = @ID
+
+exec UpdateInspPercent 'FIRLab',@POID 
 ";
 
             using (TransactionScope transaction = new TransactionScope())
@@ -1442,7 +1486,7 @@ select	[Roll] = flc.Roll,
         [SkewnessRate] = flc.SkewnessRate,
         [Inspdate] = flc.Inspdate,
         [Inspector] = flc.Inspector,
-        [Name] = (select Name from pass1 where ID = flc.Inspector),
+        [Name] = (select Concat(Name, ' Ext.', ExtNo) from pass1 where ID = flc.Inspector),
         [Remark] = flc.Remark,
         [LastUpdate] = Concat(LastUpdateName.val, ' - ', isnull(Format(flc.EditDate, 'yyyy/MM/dd HH:mm:ss'), Format(flc.AddDate, 'yyyy/MM/dd HH:mm:ss')))
 from FIR_Laboratory_Wash flc with (nolock)

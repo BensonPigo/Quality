@@ -167,6 +167,10 @@ namespace Quality.Controllers
             LogIn_Result info = _LoginService.Update_Pass1(Req);
             if (info.Result)
             {
+                // 重新取得Menu
+                var newMenu = _LoginService.GetMenus(this.UserID);
+                this.MenuList = newMenu;
+
                 List<SelectListItem> BrandList = new FactoryDashBoardWeb.Helper.SetListItem().ItemListBinding(this.Brands);
                 this.BulkFGT_Brand = BrandID;
                 ViewData["Brand"] = this.BulkFGT_Brand;

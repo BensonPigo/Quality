@@ -147,7 +147,7 @@ namespace BusinessLogicLayer.Service.Tests
                     }
                 };
 
-                var mockupWash = _MockupWashService.Create(MockupWash, "");
+                var mockupWash = _MockupWashService.Create(MockupWash, "", out string no);
                 Assert.IsTrue(true);
             }
             catch (Exception ex)

@@ -118,7 +118,7 @@ namespace BusinessLogicLayer.Service.Tests
                     }
                 };
 
-                var mockupCrocking = _MockupCrockingService.Create(MockupCrocking,"PM1");
+                var mockupCrocking = _MockupCrockingService.Create(MockupCrocking,"PM1",out string no);
                 Assert.IsTrue(true);
             }
             catch (Exception ex)

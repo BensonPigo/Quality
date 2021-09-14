@@ -26,6 +26,8 @@ namespace Quality.Areas.SampleRFT.Controllers
             _ICFTCommentsService = new CFTCommentsService();
             this.SelectedMenu = "Sample RFT";
             ViewBag.OnlineHelp = this.OnlineHelp + "SampleRFT.CFTComments,,";
+            TempData["Model"] = null;
+            TempData["tempFilePath"] = null;
         }
 
 
@@ -260,7 +262,7 @@ msg.WithInfo('Cannot found combination Style# {Req.StyleID}, Brand {Req.BrandID}
         {
             try
             {
-
+                Req.DataList = new List<CFTComments_Result>();
                 CFTComments_ViewModel model = new CFTComments_ViewModel();
                 if (Req.QueryType == "OrderID")
                 {
@@ -273,7 +275,7 @@ msg.WithInfo('SP# cannot be emptry');
                         return View("Index", Req);
                     }
 
-                    model = _ICFTCommentsService.Get_CFT_Orders(new CFTComments_ViewModel() { OrderID = Req.OrderID, QueryType = Req.QueryType });
+                    model = _ICFTCommentsService.Get_CFT_Orders(new CFTComments_ViewModel() { OrderID = Req.OrderID, QueryType = "OrderID" });
 
                     if (model.OrderID == null)
                     {
@@ -301,9 +303,10 @@ msg.WithInfo('Style#, Brand and Season cannot be emptry');
                         StyleID = Req.StyleID,
                         BrandID = Req.BrandID,
                         SeasonID = Req.SeasonID,
+                        QueryType = "Style",
                     });
 
-                    if (model.OrderID == null)
+                    if (model.StyleID == null || model.StyleID == string.Empty)
                     {
                         Req.ErrorMessage = $@"
 msg.WithInfo('Cannot found combination Style# {Req.StyleID}, Brand {Req.BrandID}, Season {Req.SeasonID}');

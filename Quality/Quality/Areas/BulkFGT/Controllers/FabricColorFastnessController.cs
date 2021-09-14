@@ -66,13 +66,11 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Json(result);
         }
 
-        public ActionResult Detail(string PoID, string TestNo, string EditMode)
+        public ActionResult Detail(string PoID, string ID, string EditMode)
         {
             FabricColorFastness_ViewModel FabricColorFastnessModel = new FabricColorFastness_ViewModel();
-
             Fabric_ColorFastness_Detail_ViewModel model = new Fabric_ColorFastness_Detail_ViewModel();
-
-            if (Convert.ToBoolean(EditMode) && string.IsNullOrEmpty(TestNo))
+            if (Convert.ToBoolean(EditMode) && string.IsNullOrEmpty(ID))
             {
                 model.Main = new ColorFastness_Result();
                 model.Detail = new List<Fabric_ColorFastness_Detail_Result>();
@@ -81,35 +79,20 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
             else
             {
-                //VM2CF21060177
-                //ESPO2Jm13H4PK
-
-                ColorFastness_Result modelMaster = _FabricColorFastness_Service.GetDetailHeader("ESPO2Jm13H4PK");
-                Fabric_ColorFastness_Detail_ViewModel modelDetail = _FabricColorFastness_Service.GetDetailBody("VM2CF21060177");
-                Fabric_ColorFastness_Detail_ViewModel modelDetail1 = _FabricColorFastness_Service.GetDetailBody("VM2CF21060177");
-                List<Fabric_ColorFastness_Detail_Result> list = new List<Fabric_ColorFastness_Detail_Result>();
-                list.AddRange(modelDetail.Detail);
-                list.AddRange(modelDetail1.Detail);
-                model.Main = modelMaster;
-                model.Detail = list;
+                model = _FabricColorFastness_Service.GetDetailBody(ID);
             }
 
             List<string> Scales = _FabricColorFastness_Service.Get_Scales();
             List<SelectListItem> ScalesList = new SetListItem().ItemListBinding(Scales);
-
-
             ViewBag.Temperature_List = FabricColorFastnessModel.Temperature_List;
             ViewBag.Cycle_List = FabricColorFastnessModel.Cycle_List;
             ViewBag.Detergent_List = FabricColorFastnessModel.Detergent_List;
             ViewBag.Machine_List = FabricColorFastnessModel.Machine_List;
             ViewBag.Drying_List = FabricColorFastnessModel.Drying_List;
-
             ViewBag.ChangeScaleList = ScalesList;
             ViewBag.ResultChangeList = FabricColorFastnessModel.Result_Source;
             ViewBag.StainingScaleList = ScalesList;
             ViewBag.ResultStainList = FabricColorFastnessModel.Result_Source;
-
-
             ViewBag.EditMode = EditMode;
             ViewBag.FactoryID = this.FactoryID;
             return View(model);
