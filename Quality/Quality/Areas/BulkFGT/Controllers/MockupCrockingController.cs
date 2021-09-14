@@ -49,6 +49,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(Result.ReportNo_Source);
             ViewBag.ArtworkTypeID_Source = new SetListItem().ItemListBinding(new List<string>());
+            ViewBag.FactoryID = this.FactoryID;
             return View(Result);
         }
 
@@ -73,6 +74,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(mockupCrocking_ViewModel.ReportNo_Source);
             ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(Req.Request.BrandID, Req.Request.SeasonID, Req.Request.StyleID);
+            ViewBag.FactoryID = this.FactoryID;
             return View("Index", mockupCrocking_ViewModel);
         }
 
@@ -81,7 +83,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         public ActionResult New(MockupCrocking_ViewModel Req)
         {
             Req.AddName = this.UserID;
-            BaseResult result = _MockupCrockingService.Create(Req, MDivisionID);
+            BaseResult result = _MockupCrockingService.Create(Req, this.MDivisionID);
             MockupCrocking_ViewModel mockupCrocking_ViewModel = _MockupCrockingService.GetMockupCrocking(Req.Request);
             if (mockupCrocking_ViewModel == null)
             {
@@ -94,9 +96,14 @@ namespace Quality.Areas.BulkFGT.Controllers
             {
                 Req.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString().Replace("\r\n", "<br />") + "');";
             }
+            else if (result.Result && mockupCrocking_ViewModel.Result == "Fail")
+            {
+                Req.ErrorMessage = "FailMail();";
+            }
 
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(mockupCrocking_ViewModel.ReportNo_Source);
             ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(Req.Request.BrandID, Req.Request.SeasonID, Req.Request.StyleID);
+            ViewBag.FactoryID = this.FactoryID;
             return View("Index", Req);
         }
 
@@ -123,9 +130,14 @@ namespace Quality.Areas.BulkFGT.Controllers
             {
                 Req.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString().Replace("\r\n", "<br />") + "');";
             }
+            else if (result.Result && mockupCrocking_ViewModel.Result == "Fail")
+            {
+                Req.ErrorMessage = "FailMail();";
+            }
 
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(mockupCrocking_ViewModel.ReportNo_Source);
             ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(Req.Request.BrandID, Req.Request.SeasonID, Req.Request.StyleID);
+            ViewBag.FactoryID = this.FactoryID;
             return View("Index", Req);
         }
 
@@ -150,42 +162,26 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(mockupCrocking_ViewModel.ReportNo_Source);
             ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(Req.Request.BrandID, Req.Request.SeasonID, Req.Request.StyleID);
-
+            ViewBag.FactoryID = this.FactoryID;
             return View("Index", Req);
         }
 
-        /// <summary>
-        /// 使用Microsoft.Office.Interop.Excel的寫法
-        /// </summary>
-        /// <param name="Req"></param>
-        /// <returns></returns>
         [HttpPost]
-        [MultipleButton(Name = "action", Argument = "ToPDF")]
-        public ActionResult ToPDF()
+        public JsonResult ToPDF(MockupCrocking_Request mockupCrocking_Request)
         {
             this.CheckSession();
-            try
+            MockupCrocking_ViewModel mockupCrocking_ViewModel = _MockupCrockingService.GetMockupCrocking(mockupCrocking_Request);
+            BaseResult result = new BaseResult();
+            if (mockupCrocking_ViewModel == null)
             {
-                MockupCrocking_ViewModel mockupCrocking = (MockupCrocking_ViewModel)TempData["Model"];
-                // 1. 在Service層取得資料，生成Excel檔案，放在暫存路徑，回傳檔名
-                var result = _MockupCrockingService.GetPDF(mockupCrocking);
-                string tempFilePath = result.TempFileName;
-                // 2. 取得hotst name，串成下載URL ，傳到準備前端下載
-                // URL範例：https://misap:1880/TMP/CFT Comments20210826f7f4ad14-186f-451a-9bc1-6edbcaf6cd65.xlsx 
-                // (暫存檔檔名是CFT Comments20210826f7f4ad14-186f-451a-9bc1-6edbcaf6cd65.xlsx)
-                tempFilePath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + tempFilePath;
-
-                // 3. 前端下載方式：請參考Index.cshtml的 「window.location.href = '@download'」;
-
-                TempData["tempFilePath"] = tempFilePath;
-            }
-            catch (Exception ex)
-            {
-
-                throw ex;
+                return Json(new { Result = false, ErrorMessage = "msg.WithInfo('No Data Found');" });
             }
 
-            return RedirectToAction("Index");
+            Report_Result report_Result = _MockupCrockingService.GetPDF(mockupCrocking_ViewModel);
+            string tempFilePath = report_Result.TempFileName;
+            tempFilePath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + tempFilePath;
+
+            return Json(new { Result = true, reportPath = tempFilePath, FileName = report_Result.TempFileName });
         }
 
         [HttpPost]
@@ -245,6 +241,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Json(new { ErrMsg = "", BrandID = BrandID, SeasonID = SeasonID, StyleID = StyleID, Article = Article });
         }
 
+        [HttpPost]
         public ActionResult AddDetailRow(int lastNo)
         {
             MockupCrocking_ViewModel mockupCrocking_ViewModel = new MockupCrocking_ViewModel();
@@ -286,20 +283,20 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "</td>";
             html += "<td>";
 
-            html += $"<select id='MockupCrocking_Detail_{lastNo}__DryScale' name='Model.MockupCrocking_Detail[{lastNo}].DryScale' class='NotEdit' style='width:157px;'>";
+            html += $"<select id='MockupCrocking_Detail_{lastNo}__DryScale' name='MockupCrocking_Detail[{lastNo}].DryScale' class='NotEdit' style='width:157px;'>";
             html += string.Join("", scaleOption);
             html += "</select >";
 
             html += "</td>";
             html += "<td>";
 
-            html += $"<select id='MockupCrocking_Detail_{lastNo}__WetScale' name='Model.MockupCrocking_Detail[{lastNo}].WetScale' class='NotEdit' style='width:157px;'>";
+            html += $"<select id='MockupCrocking_Detail_{lastNo}__WetScale' name='MockupCrocking_Detail[{lastNo}].WetScale' class='NotEdit' style='width:157px;'>";
             html += string.Join("", scaleOption);
             html += "</select>";
 
             html += "<td>";
 
-            html += $"<select id='MockupCrocking_Detail_{lastNo}__Result' class='result' name='Model.MockupCrocking_Detail[{lastNo}].Result' style='width:157px;' onchange='changeResult()'>";
+            html += $"<select id='MockupCrocking_Detail_{lastNo}__Result' class='result' name='MockupCrocking_Detail[{lastNo}].Result' style='width:157px;' onchange='changeResult()'>";
             html += string.Join("", resultOption);
             html += "</select>";
 
@@ -317,6 +314,18 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Content(html);
         }
 
- 
+        [HttpPost]
+        public JsonResult FailMail(string ReportNo, string TO, string CC)
+        {
+            MockupFailMail_Request mail = new MockupFailMail_Request()
+            {
+                ReportNo = ReportNo,
+                To = TO,
+                CC = CC,
+            };
+
+            SendMail_Result result = _MockupCrockingService.FailSendMail(mail);
+            return Json(result);
+        }
     }
 }

@@ -70,8 +70,6 @@
 
 
     $(function () {
-
-
         var table = $('#MyTable').DataTable({
             "filter": false,
             "paging": false,
@@ -115,7 +113,7 @@
         });
 
         $("#btnExit").click(function () {
-            window.opener.document.location.reload();
+            @Html.Raw(ViewBag.ExitReload);
             window.close();
         });
 

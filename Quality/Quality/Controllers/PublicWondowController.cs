@@ -405,26 +405,26 @@ namespace Quality.Controllers
         }
 
 
-        public ActionResult TestFailMailList(string Title, string FactoryID, string Type, string TargetID)
+        public ActionResult TestFailMailList(string Title, string FactoryID, string Type, string TargetID, bool ExitReload = true)
         {
             var model = _PublicWindowService.Get_TestFailMail(FactoryID, Type, string.Empty);
             ViewData["Title"] = Title;
             ViewData["Type"] = Type;
             ViewData["FactoryID"] = FactoryID;
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            ViewBag.ExitReload = ExitReload ? "window.opener.document.location.reload();" : string.Empty;
             return View(model);
         }
 
         [HttpPost]
-        public ActionResult TestFailMailList(string Title, string FactoryID, string Type, string GroupNameList, string TargetID)
+        public ActionResult TestFailMailList(string Title, string FactoryID, string Type, string GroupNameList, string TargetID, bool ExitReload = true)
         {
             var model = _PublicWindowService.Get_TestFailMail(FactoryID, Type, GroupNameList);
-
-
             ViewData["Type"] = Type;
             ViewData["Title"] = Title;
             ViewData["FactoryID"] = FactoryID;
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            ViewBag.ExitReload = ExitReload ? "window.opener.document.location.reload();" : string.Empty;
             return View(model);
         }
     }
