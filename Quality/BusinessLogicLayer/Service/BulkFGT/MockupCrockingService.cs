@@ -251,7 +251,8 @@ namespace BusinessLogicLayer.Service
             }
             catch (Exception ex)
             {
-                throw ex;
+                result.ErrorMessage = ex.ToString();
+                result.Result = false;
             }
 
             return result;
@@ -306,7 +307,6 @@ namespace BusinessLogicLayer.Service
                 result.ErrorMessage = "Create MockupCrocking Fail";
                 result.Exception = ex;
                 _ISQLDataTransaction.RollBack();
-                throw ex;
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
             return result;
@@ -339,7 +339,6 @@ namespace BusinessLogicLayer.Service
                 result.ErrorMessage = "Update MockupCrocking Fail";
                 result.Exception = ex;
                 _ISQLDataTransaction.RollBack();
-                throw ex;
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
             return result;
@@ -364,7 +363,6 @@ namespace BusinessLogicLayer.Service
                 result.ErrorMessage = "Delete MockupCrocking Fail";
                 result.Exception = ex;
                 _ISQLDataTransaction.RollBack();
-                throw ex;
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
             return result;
@@ -392,7 +390,6 @@ namespace BusinessLogicLayer.Service
                 result.ErrorMessage = "Delete MockupCrocking Detail Fail";
                 result.Exception = ex;
                 _ISQLDataTransaction.RollBack();
-                throw ex;
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
             return result;

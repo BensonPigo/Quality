@@ -366,7 +366,6 @@ namespace BusinessLogicLayer.Service
                 result.ErrorMessage = "Create MockupWash Fail";
                 result.Exception = ex;
                 _ISQLDataTransaction.RollBack();
-                throw ex;
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
             return result;
@@ -399,7 +398,6 @@ namespace BusinessLogicLayer.Service
                 result.ErrorMessage = "Update MockupWash Fail";
                 result.Exception = ex;
                 _ISQLDataTransaction.RollBack();
-                throw ex;
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
             return result;
@@ -424,7 +422,6 @@ namespace BusinessLogicLayer.Service
                 result.ErrorMessage = "Delete MockupWash Fail";
                 result.Exception = ex;
                 _ISQLDataTransaction.RollBack();
-                throw ex;
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
             return result;
@@ -452,7 +449,6 @@ namespace BusinessLogicLayer.Service
                 result.ErrorMessage = "Delete MockupWash Detail Fail";
                 result.Exception = ex;
                 _ISQLDataTransaction.RollBack();
-                throw ex;
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
             return result;
