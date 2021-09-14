@@ -672,16 +672,16 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td align="center" valign="middle" style="width: 20vw;"><input id="txtDefect1" type="text" readonly="readonly" /></td>
-                                        <td align="center" valign="middle" style="width: 20vw;"><input id="txtArea1" type="text" readonly="readonly" /></td>
+                                        <td align="center" valign="middle" style="width: 20vw;"><input id="txtDefect1" type="text" readonly="readonly" style="width: 100%;"/></td>
+                                        <td align="center" valign="middle" style="width: 20vw;"><input id="txtArea1" type="text" readonly="readonly" style="width: 100%;"/></td>
                                     </tr>
                                     <tr>
-                                        <td align="center" valign="middle"><input id="txtDefect2" type="text" readonly="readonly" /></td>
-                                        <td align="center" valign="middle"><input id="txtArea2" type="text" readonly="readonly" /></td>
+                                        <td align="center" valign="middle"><input id="txtDefect2" type="text" readonly="readonly" style="width: 100%;"/></td>
+                                        <td align="center" valign="middle"><input id="txtArea2" type="text" readonly="readonly" style="width: 100%;"/></td>
                                     </tr>
                                     <tr>
-                                        <td align="center" valign="middle"><input id="txtDefect3" type="text" readonly="readonly" /></td>
-                                        <td align="center" valign="middle"><input id="txtArea3" type="text" readonly="readonly" /></td>
+                                        <td align="center" valign="middle"><input id="txtDefect3" type="text" readonly="readonly" style="width: 100%;"/></td>
+                                        <td align="center" valign="middle"><input id="txtArea3" type="text" readonly="readonly" style="width: 100%;"/></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -1865,10 +1865,11 @@
         });
 
         $('#btnReworkListValidateExit').on('click', function () {
+            $('#ReworkListValidateAccount').val('');
+            $('#ReworkListValidatePassword').val('');
             $('#ReworkListValidate').addClass('display-None');
             $('#SelectItemBackground').css("z-index", "1040");
         });
-
     }
 
     function MeasurementBindEvent() {

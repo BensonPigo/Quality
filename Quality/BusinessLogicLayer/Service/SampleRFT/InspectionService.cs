@@ -179,20 +179,12 @@ namespace BusinessLogicLayer.Service
             result.Dispose = inspections.Where(x => x.Status.Equals("Dispose")).Count().ToString();
 
             List<string> top3DefectCode = inspection_details
-                .Where(x => !string.IsNullOrEmpty(x.DefectCode))
-                .GroupBy(x => x.DefectCode)
-                .Select(x => new { DefectCode = x.Key, cnt = x.Count() })
-                .OrderByDescending(x => x.cnt)
-                .Take(3)
-                .Select(x => x.DefectCode).ToList();
+                .Select(x => x.DefectCode)
+                .ToList();
 
             List<string> top3Area = inspection_details
-                .Where(x => !string.IsNullOrEmpty(x.AreaCode) && top3DefectCode.Contains(x.DefectCode))
-                .GroupBy(x => x.AreaCode)
-                .Select(x => new { AreaCode = x.Key, cnt = x.Count() })
-                .OrderByDescending(x => x.cnt)
-                .Take(3)
-                .Select(x => x.AreaCode).ToList();
+                .Select(x => x.AreaCode)
+                .ToList();
 
             List<Top3> top3 = new List<Top3>();
 
