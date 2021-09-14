@@ -264,10 +264,6 @@ begin
 		)
 	)
 end
-INSERT INTO [dbo].[GarmentTest_Detail_Twisting]([ID],[No],[Location])
-select @ID,@NO,* from #Location1
-INSERT INTO [dbo].[GarmentTest_Detail_Twisting]([ID],[No],[Location])
-select @ID,@NO,* from #Location2
 
 INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
 values (@ID,@NO,'Printing / Heat Transfer',1)
