@@ -290,7 +290,6 @@ namespace BusinessLogicLayer.Service
 
                 if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
                 {
-                    result.TempFileFullPath = filepathpdf;
                     result.TempFileName = fileNamePDF;
                     result.Result = true;
                 }

@@ -81,7 +81,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         public ActionResult New(MockupCrocking_ViewModel Req)
         {
             Req.AddName = this.UserID;
-            BaseResult result = _MockupCrockingService.Create(Req);
+            BaseResult result = _MockupCrockingService.Create(Req, MDivisionID);
             MockupCrocking_ViewModel mockupCrocking_ViewModel = _MockupCrockingService.GetMockupCrocking(Req.Request);
             if (mockupCrocking_ViewModel == null)
             {
