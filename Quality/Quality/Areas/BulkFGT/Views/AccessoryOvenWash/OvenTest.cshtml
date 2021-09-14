@@ -1,6 +1,8 @@
 ﻿@{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    DatabaseObject.ViewModel.BulkFGT.Accessory_ViewModel PreModel = new DatabaseObject.ViewModel.BulkFGT.Accessory_ViewModel();
 }
 
 @model DatabaseObject.ViewModel.BulkFGT.Accessory_Oven
@@ -15,13 +17,13 @@
         display: flex
     }
 
-    .input-group > input:nth-child(1) {
-        flex-grow: 2
-    }
+        .input-group > input:nth-child(1) {
+            flex-grow: 2
+        }
 
-    .input-group > input:nth-child(2) {
-        flex-grow: 1
-    }
+        .input-group > input:nth-child(2) {
+            flex-grow: 1
+        }
 
     .IsEditMode {
         color: white !important;
@@ -45,23 +47,23 @@
         background-color: white;
     }
 
-    .DataTable > tbody img {
-        cursor: pointer;
-    }
+        .DataTable > tbody img {
+            cursor: pointer;
+        }
 
-    .DataTable > tbody > tr:nth-of-type(odd) {
-        background-color: #ffffff;
-    }
+        .DataTable > tbody > tr:nth-of-type(odd) {
+            background-color: #ffffff;
+        }
 
-    .DataTable > tbody > tr:nth-of-type(even) {
-        background-color: #F0F2F2;
-    }
+        .DataTable > tbody > tr:nth-of-type(even) {
+            background-color: #F0F2F2;
+        }
 
-    .DataTable > tbody > tr > td {
-        border: solid 1px gray;
-        padding: 0.5em;
-        vertical-align: middle;
-    }
+        .DataTable > tbody > tr > td {
+            border: solid 1px gray;
+            padding: 0.5em;
+            vertical-align: middle;
+        }
 </style>
 @using (Html.BeginForm("OvenTest", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { id = "DetailForm" }))
 {
@@ -87,7 +89,7 @@
                                     <tr>
                                         <td>
                                             <h4 id="Exit" style="margin-right: 1em;">
-                                                <a href="@Url.Action("IndexBack", ViewContext.RouteData.GetRequiredString("Controller"), new { POID = Model.POID })">
+                                                <a href="@Url.Action("AccessoryOvenWash", ViewContext.RouteData.GetRequiredString("Controller"), new { ReqOrderID = Model.POID })">
                                                     <img src="~/Image/Icon/Exit.png" width="30" />
                                                     Exit
                                                 </a>
@@ -131,8 +133,7 @@
                                                 Picture
                                             </h4>
                                         </td>
-                                        <td style="width: 50%;">
-                                        </td>
+                                        <td style="width: 50%;"></td>
                                 </tbody>
                             </table>
                         </div>
@@ -148,6 +149,7 @@
                                         @Html.HiddenFor(o => o.AIR_LaboratoryID)
                                         @Html.HiddenFor(o => o.Seq1)
                                         @Html.HiddenFor(o => o.Seq2)
+                                        @Html.HiddenFor(o => o.POID)
                                     }
                                     <tr>
                                         <td style="width: 10vw;"><h5>SP#</h5></td>
@@ -198,7 +200,7 @@
                                         <td><h5>Scale</h5></td>
                                         <td>
                                             <select id="Scale" name="Scale" disabled="disabled" style="width:157px;">
-                                                @foreach (var item in (List<SelectListItem>)ViewBag.ScaleData)
+                                                @foreach (var item in Model.ScaleData)
                                                 {
                                                     string selected = item.Text.Equals(Model.Scale) ? "selected" : "";
                                                     <option value="@item.Value" @selected>@item.Text</option>
@@ -207,20 +209,23 @@
                                         </td>
                                         <td><h5>Result</h5></td>
                                         <td>
-                                            <select id="Result" name="Result" disabled="disabled" style="width:157px;">
-                                                @foreach (var item in (List<SelectListItem>)ViewBag.ResultList)
-                                                {
-                                                    string selected = item.Text.Equals(Model.Result) ? "selected" : "";
-                                                    <option value="@item.Value" @selected>@item.Text</option>
-                                                }
-                                            </select>
+                                            @*<select id="Result" name="Result" disabled="disabled" style="width:157px;">
+                                                                                       @foreach (var item in Model.ResultData)
+                                                    {
+                                                        string selected = item.Text.Equals(Model.OvenResult) ? "selected" : "";
+                                                        <option value="@item.Value" @selected>@item.Text</option>
+                                                    }
+                                                </select>*@
+                                            @Html.DropDownListFor(o => o.OvenResult, Model.ResultData)
                                         </td>
                                         <td></td>
                                         <td></td>
                                     </tr>
                                     <tr>
                                         <td><h5>Remark</h5></td>
-                                        <td colspan="3"></td>
+                                        <td colspan="3">
+                                            @Html.TextBoxFor(o => o.Remark, new { @style = "width:100%;" })
+                                        </td>
                                         <td></td>
                                         <td></td>
                                     </tr>
@@ -229,7 +234,7 @@
                                         <td colspan="3">
                                             <div class="input-group">
                                                 @Html.TextBoxFor(o => o.OvenInspector, new { @class = "inputInspectorSelectItem" })
-                                                @Html.TextBox("OvenInspectorName", string.Empty, new { @class = "inputInspectorSelectItem", @readonly = "readonly" })
+                                                @Html.TextBox("OvenInspectorName", Model.OvenInspectorName, new { @class = "inputInspectorSelectItem", @readonly = "readonly" })
                                                 <input id="btnDetailInspectorSelectItem" type="button" class="site-btn btn-blue btnInspectorSelectItem" style="margin:0;border:0;" value="..." />
                                             </div>
                                         </td>
@@ -246,6 +251,12 @@
             </div>
         </div>
     </div>
+
+    @Html.HiddenFor(o => o.ToAddress)
+    @Html.HiddenFor(o => o.CcAddress)
+    @Html.HiddenFor(o => Model.OvenTestBeforePicture)
+    @Html.HiddenFor(o => Model.OvenTestAfterPicture)
+    @Html.Hidden("needSendMail", (Model.OvenResult == "Pass" ? "false" : "true"))
 }
 <script type="text/javascript">
     var msg;
@@ -255,6 +266,9 @@
 
         $(function () {
             msg = new MessagerAlert();
+
+            @Html.Raw(Model.ErrorMessage);
+
             EditMode = false;
             IsEditModeChange();
         });
@@ -265,15 +279,22 @@
             // 按編輯為控制disabled，如果是編輯模式下不給使用者操作，請在元件身上加上readonly
             if (EditMode) {
 
+                // Edit文字顏色變得跟其他Submit按鈕一樣
+                $("#Edit").css("color", "rgba(66,66,66,255)");
+
                 $("#Edit,#Encode,#Amend").removeClass("IsEditMode");
+                $("#Edit,#Encode,#Amend").attr("disabled", "disabled");
                 $('#Encode,#Amend').unbind('click');
                 $('#Save').addClass("IsEditMode");
+                $("#Save").removeAttr("disabled", "disabled");
                 $(".DataTable input[type='text'],.DataTable select").removeAttr("disabled", "disabled");
 
                 DetailButtonBind();
             }
             else {
                 $('#Save').unbind('click').removeClass("IsEditMode");
+                $("#Save").attr("disabled", "disabled");
+                $("#Edit,#Encode,#Amend").removeAttr("disabled", "disabled");
                 $(".DataTable input[type='text'],.DataTable select").attr("disabled", "disabled");
 
                 if ('@Model.AIR_LaboratoryID' != '') {
@@ -282,11 +303,20 @@
 
                 if (@Model.OvenEncode == false) {
                     $('#Amend').unbind('click');
+                    $("#Amend").attr("disabled", "disabled");
                     $("#Encode").addClass("IsEditMode");
                 }
 
                 if (@Model.OvenEncode == true) {
+
+                    // Edit文字顏色變得跟其他Submit按鈕一樣
+                    $("#Edit").css("color", "rgba(66,66,66,255)");
+                    $("#Edit").removeClass("IsEditMode");
+                    $('#Edit').unbind('click');
+                    $("#Edit").attr("disabled", "disabled");
+
                     $('#Encode').unbind('click');
+                    $("#Encode").attr("disabled", "disabled");
                     $("#Amend").addClass("IsEditMode");
                 }
             }
@@ -305,7 +335,19 @@
             });
 
             $('#Encode').on('click', function (e) {
-                document.getElementById("DetailForm").submit();
+                var OvenResult = $("#OvenResult").val();
+
+                if (OvenResult != '') {
+
+                    if (OvenResult == "Fail" && $("#needSendMail").val() == 'true') {
+                        FailMail();
+                        return false;
+                    }
+                }
+                else {
+                    msg.WithError("Result cannot be empty.");
+                    return false;
+                }
             });
 
             $('#Amend').on('click', function (e) {
@@ -318,11 +360,38 @@
                 var key3 = 'PKey_3=Seq1&PKey_3_Val=' + '@Model.Seq1';
                 var key4 = 'PKey_4=Seq2&PKey_4_Val=' + '@Model.Seq2';
 
-                var para = "?EditMode=" + EditMode + "&Table=AIR_Laboratory&BrforeColumn=OvenTestBeforePicture&AfterColumn=WashTestBeforePicture&" + key1 + "&" + key2 + "&" + key3 + "&" + key4;
+                var para = "?EditMode=" + EditMode + "&Title=OvenTest&Table=AIR_Laboratory&BeforeColumn=OvenTestBeforePicture&AfterColumn=OvenTestAfterPicture&" + key1 + "&" + key2 + "&" + key3 + "&" + key4;
 
-                window.open('@Url.Action("PictureList","PublicWondow",new{Area=""})' + para, 'Picture', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+                window.open('@Url.Action("PictureList","PublicWondow",new{Area=""})' + para, 'Picture', config = 'toolbar=no,status=no,location=no,width=1000,height=650');
             });
         }
+
+    function FailMail() {
+        var para = "?Title=OvenTest&FactoryID=@ViewBag.FactoryID&Type=BulkFGT";
+
+        window.open('@Url.Action("TestFailMailList", "PublicWondow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
+    }
+
+    function GetTestFailMailList(data) {
+        var to = "";
+        var cc = "";
+        $.each(data, function (index, value) {
+            to += value.To + ';';
+            cc += value.CC + ';';
+        });
+
+        if (to != "") {
+            $("#ToAddress").val(to);
+            $("#CcAddress").val(cc);
+            $("#needSendMail").val(false);
+            $("#Encode").click();
+        }
+        else {
+            msg.WithError("Please choose the mail group.");
+            e.preventDefault();
+        }
+    }
+
 
     function DetailButtonBind() {
         $('.inputInspectorSelectItem').unbind('blur').on('blur', function () {
@@ -364,5 +433,10 @@
     function GetPass1(data, targetID) {
         $("#OvenInspector").val(data.ID);
         $("#OvenInspectorName").val(data.Name);
+    }
+
+    function GetPicture(data) {
+        $('#OvenTestBeforePicture').val(data.BeforePicture.replace("data:image/webp;base64,", ""));
+        $('#OvenTestAfterPicture').val(data.AfterPicture.replace("data:image/webp;base64,", ""));
     }
 </script>
