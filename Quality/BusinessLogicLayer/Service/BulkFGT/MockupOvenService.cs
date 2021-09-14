@@ -308,8 +308,9 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public BaseResult Create(MockupOven_ViewModel MockupOven, string Mdivision)
+        public BaseResult Create(MockupOven_ViewModel MockupOven, string Mdivision, out string NewReportNo)
         {
+            NewReportNo = string.Empty;
             MockupOven.Type = "B";
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
@@ -318,16 +319,23 @@ namespace BusinessLogicLayer.Service
             int count;
             try
             {
-                if(MockupOven.MockupOven_Detail.Any(a  => a.Result.ToUpper() == "Fail".ToUpper()))
+                if (MockupOven.MockupOven_Detail != null || MockupOven.MockupOven_Detail.Count > 0)
                 {
-                    MockupOven.Result = "Fail";
+                    if (MockupOven.MockupOven_Detail.Any(a => a.Result.ToUpper() == "Fail".ToUpper()))
+                    {
+                        MockupOven.Result = "Fail";
+                    }
+                    else
+                    {
+                        MockupOven.Result = "Pass";
+                    }
                 }
                 else
                 {
-                    MockupOven.Result = "Pass";
+                    MockupOven.Result = string.Empty;
                 }
 
-                count = _MockupOvenProvider.Create(MockupOven, Mdivision, out string NewReportNo);
+                count = _MockupOvenProvider.Create(MockupOven, Mdivision, out NewReportNo);
                 if (count == 0)
                 {
                     result.Result = false;

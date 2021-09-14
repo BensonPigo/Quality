@@ -113,8 +113,8 @@ namespace BusinessLogicLayer.Service.Tests
                     AddName = "SCIMIS",
                     MockupCrocking_Detail = new System.Collections.Generic.List<MockupCrocking_Detail_ViewModel>()
                     {
-                        new MockupCrocking_Detail_ViewModel(){ReportNo = "T1",Design="d100",ArtworkColor="0001",FabricRefNo="RF",FabricColor  = "FCC",Result="Pass",Remark="RRRK",EditName = "SCIMIS",WetScale="1",DryScale="2-2"},
-                        new MockupCrocking_Detail_ViewModel(){ReportNo = "T1",Design="d200",ArtworkColor="0001",FabricRefNo="RF",FabricColor  = "FCC",Result="Pass",Remark="2RRRK",EditName = "SCIMIS",WetScale="1",DryScale="2-2"},
+                        //new MockupCrocking_Detail_ViewModel(){ReportNo = "T1",Design="d100",ArtworkColor="0001",FabricRefNo="RF",FabricColor  = "FCC",Result="Pass",Remark="RRRK",EditName = "SCIMIS",WetScale="1",DryScale="2-2"},
+                        //new MockupCrocking_Detail_ViewModel(){ReportNo = "T1",Design="d200",ArtworkColor="0001",FabricRefNo="RF",FabricColor  = "FCC",Result="Pass",Remark="2RRRK",EditName = "SCIMIS",WetScale="1",DryScale="2-2"},
                     }
                 };
 

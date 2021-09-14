@@ -258,17 +258,9 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public BaseResult Create(MockupCrocking_ViewModel MockupCrocking, string Mdivision)
+        public BaseResult Create(MockupCrocking_ViewModel MockupCrocking, string Mdivision, out string NewReportNo)
         {
-            if (MockupCrocking.MockupCrocking_Detail.Any(a => a.Result.ToUpper() == "Fail".ToUpper()))
-            {
-                MockupCrocking.Result = "Fail";
-            }
-            else
-            {
-                MockupCrocking.Result = "Pass";
-            }
-
+            NewReportNo = string.Empty;
             MockupCrocking.Type = "B";
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
@@ -277,7 +269,23 @@ namespace BusinessLogicLayer.Service
             int count;
             try
             {
-                count = _MockupCrockingProvider.Create(MockupCrocking, Mdivision, out string NewReportNo);
+                if (MockupCrocking.MockupCrocking_Detail != null || MockupCrocking.MockupCrocking_Detail.Count > 0)
+                {
+                    if (MockupCrocking.MockupCrocking_Detail.Any(a => a.Result.ToUpper() == "Fail".ToUpper()))
+                    {
+                        MockupCrocking.Result = "Fail";
+                    }
+                    else
+                    {
+                        MockupCrocking.Result = "Pass";
+                    }
+                }
+                else
+                {
+                    MockupCrocking.Result = string.Empty;
+                }
+
+                count = _MockupCrockingProvider.Create(MockupCrocking, Mdivision, out NewReportNo);
                 if (count == 0)
                 {
                     result.Result = false;
@@ -286,15 +294,18 @@ namespace BusinessLogicLayer.Service
                 }
 
                 MockupCrocking.ReportNo = NewReportNo;
-                foreach (var MockupCrocking_Detail in MockupCrocking.MockupCrocking_Detail)
+                if (MockupCrocking.MockupCrocking_Detail != null)
                 {
-                    MockupCrocking_Detail.ReportNo = MockupCrocking.ReportNo;
-                    count = _MockupCrockingDetailProvider.Create(MockupCrocking_Detail);
-                    if (count == 0)
+                    foreach (var MockupCrocking_Detail in MockupCrocking.MockupCrocking_Detail)
                     {
-                        result.Result = false;
-                        result.ErrorMessage = "Create MockupCrocking_Detail Fail. 0 Count";
-                        return result;
+                        MockupCrocking_Detail.ReportNo = MockupCrocking.ReportNo;
+                        count = _MockupCrockingDetailProvider.Create(MockupCrocking_Detail);
+                        if (count == 0)
+                        {
+                            result.Result = false;
+                            result.ErrorMessage = "Create MockupCrocking_Detail Fail. 0 Count";
+                            return result;
+                        }
                     }
                 }
 

@@ -317,17 +317,9 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public BaseResult Create(MockupWash_ViewModel MockupWash, string Mdivision)
+        public BaseResult Create(MockupWash_ViewModel MockupWash, string Mdivision, out string NewReportNo)
         {
-            if (MockupWash.MockupWash_Detail.Any(a => a.Result.ToUpper() == "Fail".ToUpper()))
-            {
-                MockupWash.Result = "Fail";
-            }
-            else
-            {
-                MockupWash.Result = "Pass";
-            }
-
+            NewReportNo = string.Empty;
             MockupWash.Type = "B";
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
@@ -336,7 +328,23 @@ namespace BusinessLogicLayer.Service
             int count;
             try
             {
-                count = _MockupWashProvider.Create(MockupWash, Mdivision, out string NewReportNo);
+                if (MockupWash.MockupWash_Detail != null || MockupWash.MockupWash_Detail.Count > 0)
+                {
+                    if (MockupWash.MockupWash_Detail.Any(a => a.Result.ToUpper() == "Fail".ToUpper()))
+                    {
+                        MockupWash.Result = "Fail";
+                    }
+                    else
+                    {
+                        MockupWash.Result = "Pass";
+                    }
+                }
+                else
+                {
+                    MockupWash.Result = string.Empty;
+                }
+
+                count = _MockupWashProvider.Create(MockupWash, Mdivision, out NewReportNo);
                 if (count == 0)
                 {
                     result.Result = false;
