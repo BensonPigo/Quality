@@ -458,6 +458,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 #region 判斷空值
                 string emptyMsg = string.Empty;
                 if (string.IsNullOrEmpty(Detail.MtlTypeID)) { emptyMsg += "MtlTypeID cannot be empty" + Environment.NewLine; }
+                if (Detail.Above50NaturalFibres == false && Detail.Above50SyntheticFibres == false) { emptyMsg += " < 50% natural fibres>, <50% synthetic fibres(ex. polyester)> have to select one!" + Environment.NewLine; }
                 if (_IGarmentTestDetailFGWTProvider.Chk_FGWTExists(Detail) == true) { emptyMsg += "Data already exists!!"; }
                 #endregion
 
@@ -644,6 +645,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     return result;
                 }
 
+                /*
                 if (source.Detail.Above50NaturalFibres == false && source.Detail.Above50SyntheticFibres == false)
                 {
                     _ISQLDataTransaction.RollBack();
@@ -651,6 +653,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     result.ErrMsg = "<50% natural fibres>, <50% synthetic fibres(ex. polyester)> have to select one!";
                     return result;
                 }
+                */
 
                 if (_IGarmentTestDetailProvider.Update_GarmentTestDetail(source.Detail) == false)
                 {
@@ -686,7 +689,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 // Spirality Save
                 _IGarmentDetailSpiralityProvider = new GarmentDetailSpiralityProvider(_ISQLDataTransaction);
-                if (source.Spiralities != null || source.Spiralities.Count > 0)
+                if (source.Spiralities != null && source.Spiralities.Count > 0)
                 {
                     if (_IGarmentDetailSpiralityProvider.Update_Spirality(source.Spiralities) == false)
                     {
