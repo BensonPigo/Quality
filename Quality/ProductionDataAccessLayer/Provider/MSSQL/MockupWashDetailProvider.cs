@@ -142,7 +142,7 @@ SELECT
         ,md.EditDate
 		,ArtworkColorName = (select stuff((select concat(';', Name) from Color where ID in (select Data from SplitString(md.ArtworkColor,';')) and BrandID = m.BrandID for xml path('')),1,1,''))
         ,FabricColorName = (select stuff((select concat(';', Name) from Color where ID in (select Data from SplitString(md.FabricColor,';')) and BrandID = m.BrandID for xml path('')),1,1,''))
-		,LastUpdate = Concat (md.EditName, '-', Format(md.EditDate,'yyyy/MM/dd HH:mm:ss'))
+		,LastUpdate = iif(isnull(md.EditName, '') <> '', Concat(md.EditName, '-' + Format(md.EditDate,'yyyy/MM/dd HH:mm:ss')), Format(md.EditDate,'yyyy/MM/dd HH:mm:ss'))
 FROM MockupWash_Detail md
 inner join MockupWash m on m.ReportNo = md.ReportNo
 Where 1=1

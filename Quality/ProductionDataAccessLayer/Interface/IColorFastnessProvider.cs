@@ -18,7 +18,7 @@ namespace MICS.DataAccessLayer.Interface
 
         bool Save_PO(string PoID, string Remark);
 
-        bool Delete_ColorFastness(string PoID, List<ColorFastness_Result> source);
+        bool Delete_ColorFastness(string ID);
 
         bool Encode_ColorFastness(string ID, string Status, string Result, string UserID);
 

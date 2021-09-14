@@ -124,15 +124,17 @@ ORDER BY a.SEQ1, a.SEQ2, r.ExportID
             return ExecuteList<Accessory_Result>(CommandType.Text, sqlCmd, listPar);
         }
 
-        public int Update(Accessory_ViewModel Req)
+        public int Update_AIR_Laboratory(Accessory_ViewModel Req)
         {
             SQLParameterCollection listPar = new SQLParameterCollection();
             listPar.Add("@ID", Req.OrderID);
             listPar.Add("@AIRLaboratoryRemark", Req.Remark);
+            listPar.Add("@EditName", Req.EditBy);
 
             string sqlCmd = @"
 UPDATE PO 
-SET AIRLaboratoryRemark = @AIRLaboratoryRemark
+SET AIRLaboratoryRemark = @AIRLaboratoryRemark 
+    ,EditDate=GETDATE() ,EditName=@EditName
 WHERE ID = @ID
 ";
             int idx = 0;
@@ -141,6 +143,7 @@ WHERE ID = @ID
                 sqlCmd += $@"
 UPDATE AIR_Laboratory 
 SET  NonOven = @NonOven_{idx} ,NonWash = @NonWash_{idx}
+,EditDate=GETDATE() ,EditName=@EditName
 where POID = @ID
 AND Seq1 = @Seq1_{idx}
 AND Seq2 = @Seq2_{idx}
@@ -153,6 +156,526 @@ AND Seq2 = @Seq2_{idx}
                 idx++;
             }
             return ExecuteNonQuery(CommandType.Text, sqlCmd, listPar);
+        }
+
+        #region Oven
+        public Accessory_Oven GetOvenTest(Accessory_Oven Req)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@AIR_LaboratoryID", Req.AIR_LaboratoryID);
+            listPar.Add("@POID", Req.POID);
+            listPar.Add("@Seq1", Req.Seq1);
+            listPar.Add("@Seq2", Req.Seq2);
+
+            string sqlCmd = @"
+select   al.POID
+        ,a.SCIRefno
+        ,WKNo = r.ExportId
+        ,a.Refno
+        ,a.ArriveQty
+        ,Supplier = Concat (a.SuppID, s.AbbEn)
+        ,Unit = psd.StockUnit
+        ,Color = psd.ColorID
+        ,psd.SizeSpec
+        ,Scale = al.OvenScale
+        ,OvenResult = al.Oven
+        ,Remark = al.OvenRemark
+        ,al.OvenInspector
+        ,OvenInspectorName = q.Name
+        ,al.OvenDate
+        ,al.OvenEncode 
+	
+        ,AIR_LaboratoryID = al.ID
+        ,al.Seq1
+        ,al.Seq2
+from AIR_Laboratory al
+inner join AIR a ON a.ID = al.ID
+left join Receiving r on a.ReceivingID = r.Id
+left join Supp s on a.Suppid = s.ID
+left join PO_Supp_Detail psd ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
+left join Pass1 q on q.ID = al.OvenInspector
+where   al.ID=@AIR_LaboratoryID
+    and al.POID=@POID
+    and al.Seq1=@Seq1
+    and al.Seq2=@Seq2
+";
+            IList<Accessory_Oven> listResult = ExecuteList<Accessory_Oven>(CommandType.Text, sqlCmd, listPar);
+
+            if (listResult.Count == 0)
+            {
+                throw new Exception("No data found");
+            }
+
+            return listResult.FirstOrDefault();
+        }
+
+        public int UpdateOvenTest(Accessory_Oven Req)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@AIR_LaboratoryID", Req.AIR_LaboratoryID);
+            listPar.Add("@POID", Req.POID);
+            listPar.Add("@Seq1", Req.Seq1);
+            listPar.Add("@Seq2", Req.Seq2);
+
+            string updateCol = string.Empty;
+            #region 需要UPDATE的欄位
+            if (!string.IsNullOrEmpty(Req.Scale))
+            {
+                updateCol += $@" , OvenScale = @Scale" + Environment.NewLine;
+                listPar.Add("@Scale", Req.Scale);
+            }
+            if (!string.IsNullOrEmpty(Req.OvenResult))
+            {
+                updateCol += $@" , Oven = @OvenResult" + Environment.NewLine;
+                listPar.Add("@OvenResult", Req.OvenResult);
+            }
+            else
+            {
+                // OvenResult 不能改回空白
+                // updateCol += $@" , Oven = '' " + Environment.NewLine;
+            }
+            if (!string.IsNullOrEmpty(Req.Remark))
+            {
+                updateCol += $@" , OvenRemark = @Remark" + Environment.NewLine;
+                listPar.Add("@Remark", Req.Remark);
+            }
+            if (!string.IsNullOrEmpty(Req.OvenInspector))
+            {
+                updateCol += $@" , OvenInspector = @OvenInspector" + Environment.NewLine;
+                listPar.Add("@OvenInspector", Req.OvenInspector);
+            }
+
+            if (Req.OvenDate.HasValue)
+            {
+                updateCol += $@" , OvenDate = @OvenDate" + Environment.NewLine;
+                listPar.Add("@OvenDate", Req.OvenDate.Value);
+            }
+
+            updateCol += $@" , OvenEncode = @OvenEncode" + Environment.NewLine;
+            listPar.Add("@OvenEncode", Req.OvenEncode);
+
+            if (!string.IsNullOrEmpty(Req.EditName))
+            {
+                updateCol += $@" , EditName = @EditName" + Environment.NewLine;
+                listPar.Add("@EditName", Req.EditName);
+            }
+
+            updateCol += $@"        ,OvenTestBeforePicture = @OvenTestBeforePicture " + Environment.NewLine;
+            updateCol += $@"        ,OvenTestAfterPicture = @OvenTestAfterPicture " + Environment.NewLine;
+            if (Req.OvenTestBeforePicture != null)
+            {
+                listPar.Add("@OvenTestBeforePicture", Req.OvenTestBeforePicture);
+            }
+            else
+            {
+                listPar.Add("@OvenTestBeforePicture", System.Data.SqlTypes.SqlBinary.Null);
+            }
+
+            if (Req.OvenTestAfterPicture != null)
+            {
+                listPar.Add("@OvenTestAfterPicture", Req.OvenTestAfterPicture);
+            }
+            else
+            {
+                listPar.Add("@OvenTestAfterPicture", System.Data.SqlTypes.SqlBinary.Null);
+            }
+            #endregion
+
+            string sqlCmd = $@"
+UPDATE AIR_Laboratory
+SET EditDate=GETDATE()
+{updateCol}
+where   ID = @AIR_LaboratoryID
+    and POID = @POID
+    and Seq1 = @Seq1
+    and Seq2 = @Seq2
+";
+
+
+            return ExecuteNonQuery(CommandType.Text, sqlCmd, listPar);
+        }
+
+        public int UpdateOvenTest_OvenEncode(Accessory_Oven Req)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@AIR_LaboratoryID", Req.AIR_LaboratoryID);
+            listPar.Add("@POID", Req.POID);
+            listPar.Add("@Seq1", Req.Seq1);
+            listPar.Add("@Seq2", Req.Seq2);
+
+            string updateCol = string.Empty;
+            #region 需要UPDATE的欄位
+            if (!string.IsNullOrEmpty(Req.Scale))
+            {
+                updateCol += $@" , OvenScale = @Scale" + Environment.NewLine;
+                listPar.Add("@Scale", Req.Scale);
+            }
+            if (!string.IsNullOrEmpty(Req.OvenResult))
+            {
+                updateCol += $@" , Oven = @OvenResult" + Environment.NewLine;
+                listPar.Add("@OvenResult", Req.OvenResult);
+            }
+            else
+            {
+                updateCol += $@" , Oven = '' " + Environment.NewLine;
+            }
+            if (!string.IsNullOrEmpty(Req.Remark))
+            {
+                updateCol += $@" , OvenRemark = @Remark" + Environment.NewLine;
+                listPar.Add("@Remark", Req.Remark);
+            }
+            if (!string.IsNullOrEmpty(Req.OvenInspector))
+            {
+                updateCol += $@" , OvenInspector = @OvenInspector" + Environment.NewLine;
+                listPar.Add("@OvenInspector", Req.OvenInspector);
+            }
+
+            if (Req.OvenDate.HasValue)
+            {
+                updateCol += $@" , OvenDate = @OvenDate" + Environment.NewLine;
+                listPar.Add("@OvenDate", Req.OvenDate.Value);
+            }
+            else
+            {
+                updateCol += $@" , OvenDate = NULL" + Environment.NewLine;
+            }
+
+            updateCol += $@" , OvenEncode = @OvenEncode" + Environment.NewLine;
+            listPar.Add("@OvenEncode", Req.OvenEncode);
+
+            if (!string.IsNullOrEmpty(Req.EditName))
+            {
+                updateCol += $@" , EditName = @EditName" + Environment.NewLine;
+                listPar.Add("@EditName", Req.EditName);
+            }
+            #endregion
+
+            string sqlCmd = $@"
+UPDATE AIR_Laboratory
+SET EditDate=GETDATE()
+{updateCol}
+where   ID = @AIR_LaboratoryID
+    and POID = @POID
+    and Seq1 = @Seq1
+    and Seq2 = @Seq2
+";
+
+
+            return ExecuteNonQuery(CommandType.Text, sqlCmd, listPar);
+        }
+
+        /// <summary>
+        /// 取得寄信資訊
+        /// </summary>
+        /// <param name="Req"></param>
+        /// <returns></returns>
+        public DataTable GetData_OvenDataTable(Accessory_Oven Req)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            objParameter.Add("@AIR_LaboratoryID", Req.AIR_LaboratoryID);
+            objParameter.Add("@POID", Req.POID);
+            objParameter.Add("@Seq1", Req.Seq1);
+            objParameter.Add("@Seq2", Req.Seq2);
+
+            string sqlGetData = @"
+select  [SP#] = al.POID
+		,Style = o.StyleID
+		,Brand = o.BrandID
+		,Season = o.SeasonID
+		,Seq = al.Seq1 + ' ' + al.Seq2
+        ,[WK#] = r.ExportId
+		,[Arrive W/H Date]=r.WhseArrival
+        ,a.SCIRefno
+        ,a.Refno
+        ,Color = psd.ColorID
+        ,Supplier = Concat (a.SuppID, s.AbbEn)
+        ,a.ArriveQty
+		,[Oven Result]=al.Oven
+        ,[Oven Scale] = al.OvenScale
+        ,[Oven Last Test Date]=al.OvenDate
+		,[Oven Lab Tech	AIR_Laboratory]=al.OvenInspector
+        ,Remark = al.OvenRemark
+from AIR_Laboratory al
+inner join AIR a ON a.ID = al.ID
+INNER JOIn Orders o ON o.ID = a.POID
+left join Receiving r on a.ReceivingID = r.Id
+left join Supp s on a.Suppid = s.ID
+left join PO_Supp_Detail psd ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
+where   al.ID=@AIR_LaboratoryID
+    and al.POID=@POID
+    and al.Seq1=@Seq1
+    and al.Seq2=@Seq2
+";
+
+            return ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, objParameter);
+        }
+
+        #endregion
+
+        #region Wash
+        public Accessory_Wash GetWashTest(Accessory_Wash Req)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@AIR_LaboratoryID", Req.AIR_LaboratoryID);
+            listPar.Add("@POID", Req.POID);
+            listPar.Add("@Seq1", Req.Seq1);
+            listPar.Add("@Seq2", Req.Seq2);
+
+            string sqlCmd = @"
+select   al.POID
+        ,a.SCIRefno
+        ,WKNo = r.ExportId
+        ,a.Refno
+        ,a.ArriveQty
+        ,Supplier = Concat (a.SuppID, s.AbbEn)
+        ,Unit = psd.StockUnit
+        ,Color = psd.ColorID
+        ,psd.SizeSpec
+        ,Scale = al.WashScale
+        ,WashResult = al.Wash
+        ,Remark = al.WashRemark
+        ,al.WashInspector
+        ,WashInspectorName = q.Name
+        ,al.WashDate
+        ,al.WashEncode 
+	
+        ,AIR_LaboratoryID = al.ID
+        ,al.Seq1
+        ,al.Seq2
+from AIR_Laboratory al
+inner join AIR a ON a.ID = al.ID
+left join Receiving r on a.ReceivingID = r.Id
+left join Supp s on a.Suppid = s.ID
+left join PO_Supp_Detail psd ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
+left join Pass1 q on q.ID = al.WashInspector
+where   al.ID=@AIR_LaboratoryID
+    and al.POID=@POID
+    and al.Seq1=@Seq1
+    and al.Seq2=@Seq2
+";
+            IList<Accessory_Wash> listResult = ExecuteList<Accessory_Wash>(CommandType.Text, sqlCmd, listPar);
+
+            if (listResult.Count == 0)
+            {
+                throw new Exception("No data found");
+            }
+
+            return listResult.FirstOrDefault();
+        }
+
+        public int UpdateWashTest(Accessory_Wash Req)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@AIR_LaboratoryID", Req.AIR_LaboratoryID);
+            listPar.Add("@POID", Req.POID);
+            listPar.Add("@Seq1", Req.Seq1);
+            listPar.Add("@Seq2", Req.Seq2);
+
+            string updateCol = string.Empty;
+            #region 需要UPDATE的欄位
+            if (!string.IsNullOrEmpty(Req.Scale))
+            {
+                updateCol += $@" , WashScale = @Scale" + Environment.NewLine;
+                listPar.Add("@Scale", Req.Scale);
+            }
+            if (!string.IsNullOrEmpty(Req.WashResult))
+            {
+                updateCol += $@" , Wash = @WashResult" + Environment.NewLine;
+                listPar.Add("@WashResult", Req.WashResult);
+            }
+            else
+            {
+                // WashResult 不能改回空白
+                // updateCol += $@" , Wash = '' " + Environment.NewLine;
+            }
+            if (!string.IsNullOrEmpty(Req.Remark))
+            {
+                updateCol += $@" , WashRemark = @Remark" + Environment.NewLine;
+                listPar.Add("@Remark", Req.Remark);
+            }
+            if (!string.IsNullOrEmpty(Req.WashInspector))
+            {
+                updateCol += $@" , WashInspector = @WashInspector" + Environment.NewLine;
+                listPar.Add("@WashInspector", Req.WashInspector);
+            }
+
+            if (Req.WashDate.HasValue)
+            {
+                updateCol += $@" , WashDate = @WashDate" + Environment.NewLine;
+                listPar.Add("@WashDate", Req.WashDate.Value);
+            }
+
+            updateCol += $@" , WashEncode = @WashEncode" + Environment.NewLine;
+            listPar.Add("@WashEncode", Req.WashEncode);
+
+            if (!string.IsNullOrEmpty(Req.EditName))
+            {
+                updateCol += $@" , EditName = @EditName" + Environment.NewLine;
+                listPar.Add("@EditName", Req.EditName);
+            }
+
+            updateCol += $@"        ,WashTestBeforePicture = @WashTestBeforePicture " + Environment.NewLine;
+            updateCol += $@"        ,WashTestAfterPicture = @WashTestAfterPicture " + Environment.NewLine;
+            if (Req.WashTestBeforePicture != null)
+            {
+                listPar.Add("@WashTestBeforePicture", Req.WashTestBeforePicture);
+            }
+            else
+            {
+                listPar.Add("@WashTestBeforePicture", System.Data.SqlTypes.SqlBinary.Null);
+            }
+
+            if (Req.WashTestAfterPicture != null)
+            {
+                listPar.Add("@WashTestAfterPicture", Req.WashTestAfterPicture);
+            }
+            else
+            {
+                listPar.Add("@WashTestAfterPicture", System.Data.SqlTypes.SqlBinary.Null);
+            }
+            #endregion
+
+            string sqlCmd = $@"
+UPDATE AIR_Laboratory
+SET EditDate=GETDATE()
+{updateCol}
+where   ID = @AIR_LaboratoryID
+    and POID = @POID
+    and Seq1 = @Seq1
+    and Seq2 = @Seq2
+";
+
+
+            return ExecuteNonQuery(CommandType.Text, sqlCmd, listPar);
+        }
+
+        public int UpdateWashTest_WashEncode(Accessory_Wash Req)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@AIR_LaboratoryID", Req.AIR_LaboratoryID);
+            listPar.Add("@POID", Req.POID);
+            listPar.Add("@Seq1", Req.Seq1);
+            listPar.Add("@Seq2", Req.Seq2);
+
+            string updateCol = string.Empty;
+            #region 需要UPDATE的欄位
+            if (!string.IsNullOrEmpty(Req.Scale))
+            {
+                updateCol += $@" , WashScale = @Scale" + Environment.NewLine;
+                listPar.Add("@Scale", Req.Scale);
+            }
+            if (!string.IsNullOrEmpty(Req.WashResult))
+            {
+                updateCol += $@" , Wash = @WashResult" + Environment.NewLine;
+                listPar.Add("@WashResult", Req.WashResult);
+            }
+            else
+            {
+                updateCol += $@" , Wash = '' " + Environment.NewLine;
+            }
+            if (!string.IsNullOrEmpty(Req.Remark))
+            {
+                updateCol += $@" , WashRemark = @Remark" + Environment.NewLine;
+                listPar.Add("@Remark", Req.Remark);
+            }
+            if (!string.IsNullOrEmpty(Req.WashInspector))
+            {
+                updateCol += $@" , WashInspector = @WashInspector" + Environment.NewLine;
+                listPar.Add("@WashInspector", Req.WashInspector);
+            }
+
+            if (Req.WashDate.HasValue)
+            {
+                updateCol += $@" , WashDate = @WashDate" + Environment.NewLine;
+                listPar.Add("@WashDate", Req.WashDate.Value);
+            }
+            else
+            {
+                updateCol += $@" , WashDate = NULL" + Environment.NewLine;
+            }
+
+            updateCol += $@" , WashEncode = @WashEncode" + Environment.NewLine;
+            listPar.Add("@WashEncode", Req.WashEncode);
+
+            if (!string.IsNullOrEmpty(Req.EditName))
+            {
+                updateCol += $@" , EditName = @EditName" + Environment.NewLine;
+                listPar.Add("@EditName", Req.EditName);
+            }
+            #endregion
+
+            string sqlCmd = $@"
+UPDATE AIR_Laboratory
+SET EditDate=GETDATE()
+{updateCol}
+where   ID = @AIR_LaboratoryID
+    and POID = @POID
+    and Seq1 = @Seq1
+    and Seq2 = @Seq2
+";
+
+
+            return ExecuteNonQuery(CommandType.Text, sqlCmd, listPar);
+        }
+
+        /// <summary>
+        /// 取得寄信資訊
+        /// </summary>
+        /// <param name="Req"></param>
+        /// <returns></returns>
+        public DataTable GetData_WashDataTable(Accessory_Wash Req)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            objParameter.Add("@AIR_LaboratoryID", Req.AIR_LaboratoryID);
+            objParameter.Add("@POID", Req.POID);
+            objParameter.Add("@Seq1", Req.Seq1);
+            objParameter.Add("@Seq2", Req.Seq2);
+
+            string sqlGetData = @"
+select  [SP#] = al.POID
+		,Style = o.StyleID
+		,Brand = o.BrandID
+		,Season = o.SeasonID
+		,Seq = al.Seq1 + ' ' + al.Seq2
+        ,[WK#] = r.ExportId
+		,[Arrive W/H Date]=r.WhseArrival
+        ,a.SCIRefno
+        ,a.Refno
+        ,Color = psd.ColorID
+        ,Supplier = Concat (a.SuppID, s.AbbEn)
+        ,a.ArriveQty
+		,[Wash Result]=al.Wash
+        ,[Wash Scale] = al.WashScale
+        ,[Wash Last Test Date]=al.WashDate
+		,[Wash Lab Tech	AIR_Laboratory]=al.WashInspector
+        ,Remark = al.WashRemark
+from AIR_Laboratory al
+inner join AIR a ON a.ID = al.ID
+INNER JOIn Orders o ON o.ID = a.POID
+left join Receiving r on a.ReceivingID = r.Id
+left join Supp s on a.Suppid = s.ID
+left join PO_Supp_Detail psd ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
+where   al.ID=@AIR_LaboratoryID
+    and al.POID=@POID
+    and al.Seq1=@Seq1
+    and al.Seq2=@Seq2
+";
+
+            return ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, objParameter);
+        }
+
+        #endregion
+
+
+        public List<SelectListItem> GetScaleData()
+        {
+
+            string Cmd = @"
+Select Text = ID ,Value = ID
+from Scale WITH (NOLOCK) 
+where junk!=1
+";
+            return ExecuteList<SelectListItem>(CommandType.Text, Cmd, new SQLParameterCollection()).ToList();
         }
     }
 }

@@ -674,7 +674,7 @@ Where 1=1
             return ExecuteList<Window_FGPT>(CommandType.Text, SbSql.ToString(), paras);
         }
 
-        public IList<Window_Picture> Get_Picture(string Table, string BrforeColumn, string AfterColumn, string PKey_1, string PKey_2, string PKey_3, string PKey_4, string PKey_1_Val, string PKey_2_Val, string PKey_3_Val, string PKey_4_Val)
+        public IList<Window_Picture> Get_Picture(string Table, string BeforeColumn, string AfterColumn, string PKey_1, string PKey_2, string PKey_3, string PKey_4, string PKey_1_Val, string PKey_2_Val, string PKey_3_Val, string PKey_4_Val)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -703,7 +703,7 @@ Where 1=1
 
             //台北
             SbSql.Append($@"
-select [BrforeImage]={BrforeColumn}
+select [BrforeImage]={BeforeColumn}
 , [AfterImage]={AfterColumn}
 {selectColumn}
 From {Table} 
@@ -735,7 +735,7 @@ Where 1=1
             {
                 SbSql.Append($@"AND {PKey_4}  = @PKey_4  ");
 
-                paras.Add("@PKey_4 ", DbType.String, PKey_3_Val);
+                paras.Add("@PKey_4 ", DbType.String, PKey_4_Val);
             }
 
             return ExecuteList<Window_Picture>(CommandType.Text, SbSql.ToString(), paras);

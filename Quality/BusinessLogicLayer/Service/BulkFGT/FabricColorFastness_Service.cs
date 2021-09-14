@@ -160,7 +160,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             }
         }
 
-        public BaseResult Save_ColorFastness_1stPage(string PoID, string Remark, List<ColorFastness_Result> _ColorFastness)
+        public BaseResult Save_ColorFastness_1stPage(string PoID, string Remark)
         {
             BaseResult baseResult = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
@@ -168,9 +168,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _IColorFastnessProvider = new ColorFastnessProvider(_ISQLDataTransaction);
                 baseResult.Result = _IColorFastnessProvider.Save_PO(PoID, Remark);
-                
-                // 刪除前端傳來卻"不存在"DB的資料
-                baseResult.Result = _IColorFastnessProvider.Delete_ColorFastness(PoID, _ColorFastness);
                 _ISQLDataTransaction.Commit();
             }
             catch (Exception ex)
@@ -625,6 +622,27 @@ namespace BusinessLogicLayer.Service.BulkFGT
             #endregion
 
             return result;
+        }
+
+        public BaseResult DeleteColorFastness(string ID)
+        {
+            BaseResult baseResult = new BaseResult();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            try
+            {
+                _IColorFastnessProvider = new ColorFastnessProvider(_ISQLDataTransaction);
+                baseResult.Result = _IColorFastnessProvider.Delete_ColorFastness(ID);
+                _ISQLDataTransaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                _ISQLDataTransaction.RollBack();
+                baseResult.Result = false;
+                baseResult.ErrorMessage = ex.Message.ToString();
+            }
+            finally { _ISQLDataTransaction.CloseConnection(); }
+
+            return baseResult;
         }
     }
 }

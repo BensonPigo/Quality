@@ -2,6 +2,7 @@
 using BusinessLogicLayer.Interface;
 using BusinessLogicLayer.Interface.BulkFGT;
 using BusinessLogicLayer.Service;
+using DatabaseObject;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
@@ -56,11 +57,19 @@ namespace Quality.Areas.BulkFGT.Controllers
         public ActionResult Query(MockupCrocking_ViewModel Req)
         {
             //example:ADIDAS, 19FW, F1915KYB012, ED5770
-
-            BusinessLogicLayer.Interface.BulkFGT.IMockupCrockingService _MockupCrockingService = new MockupCrockingService();
+            
             MockupCrocking_ViewModel mockupCrocking_ViewModel = _MockupCrockingService.GetMockupCrocking(Req.Request);
 
             //若沒錯誤訊息 且 MockupCrocking_ViewModel == null, 則是沒資料
+            if (mockupCrocking_ViewModel == null)
+            {
+                mockupCrocking_ViewModel = new MockupCrocking_ViewModel()
+                {
+                    ErrorMessage = $"msg.WithInfo('No Data Found');",
+                    MockupCrocking_Detail = new List<MockupCrocking_Detail_ViewModel>(),
+                    ReportNo_Source = new List<string>(),
+                };
+            }
 
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(mockupCrocking_ViewModel.ReportNo_Source);
             ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(Req.Request.BrandID, Req.Request.SeasonID, Req.Request.StyleID);
@@ -69,37 +78,77 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "New")]
-        public ActionResult NewSave(MockupCrocking_ViewModel Req)
+        public ActionResult New(MockupCrocking_ViewModel Req)
         {
-            BusinessLogicLayer.Interface.BulkFGT.IMockupCrockingService _MockupCrockingService = new MockupCrockingService();
+            Req.AddName = this.UserID;
+            BaseResult result = _MockupCrockingService.Create(Req);
             MockupCrocking_ViewModel mockupCrocking_ViewModel = _MockupCrockingService.GetMockupCrocking(Req.Request);
+            if (mockupCrocking_ViewModel == null)
+            {
+                mockupCrocking_ViewModel = new MockupCrocking_ViewModel() {  ReportNo_Source = new List<string>(), };
+            }
 
-            //若沒錯誤訊息 且 MockupCrocking_ViewModel == null, 則是沒資料
+            Req.ReportNo = mockupCrocking_ViewModel.ReportNo;
+            Req.LastEditName = mockupCrocking_ViewModel.LastEditName;
+            if (!result.Result)
+            {
+                Req.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString().Replace("\r\n", "<br />") + "');";
+            }
 
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(mockupCrocking_ViewModel.ReportNo_Source);
             ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(Req.Request.BrandID, Req.Request.SeasonID, Req.Request.StyleID);
-            return View("Index", mockupCrocking_ViewModel);
+            return View("Index", Req);
         }
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "Edit")]
-        public ActionResult EditSave(MockupCrocking_ViewModel Req)
+        public ActionResult Edit(MockupCrocking_ViewModel Req)
         {
-            BusinessLogicLayer.Interface.BulkFGT.IMockupCrockingService _MockupCrockingService = new MockupCrockingService();
+            Req.EditName = this.UserID;
+            foreach (var item in Req.MockupCrocking_Detail)
+            {
+                item.EditName = this.UserID;
+            }
+            BaseResult result = _MockupCrockingService.Update(Req);
             MockupCrocking_ViewModel mockupCrocking_ViewModel = _MockupCrockingService.GetMockupCrocking(Req.Request);
 
-            //若沒錯誤訊息 且 MockupCrocking_ViewModel == null, 則是沒資料
+            if (mockupCrocking_ViewModel == null)
+            {
+                mockupCrocking_ViewModel = new MockupCrocking_ViewModel() { ReportNo_Source = new List<string>(), };
+            }
+
+            Req.ReportNo = mockupCrocking_ViewModel.ReportNo;
+            Req.LastEditName = mockupCrocking_ViewModel.LastEditName;
+            if (!result.Result)
+            {
+                Req.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString().Replace("\r\n", "<br />") + "');";
+            }
 
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(mockupCrocking_ViewModel.ReportNo_Source);
             ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(Req.Request.BrandID, Req.Request.SeasonID, Req.Request.StyleID);
-            return View("Index", mockupCrocking_ViewModel);
+            return View("Index", Req);
         }
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "Delete")]
-        public ActionResult DeleteReportNo(MockupCrocking_ViewModel Req)
+        public ActionResult Delete(MockupCrocking_ViewModel Req)
         {
-            ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(Req.ReportNo_Source);
+            BaseResult result = _MockupCrockingService.Delete(Req);
+            MockupCrocking_ViewModel mockupCrocking_ViewModel = _MockupCrockingService.GetMockupCrocking(Req.Request);
+
+            if (mockupCrocking_ViewModel == null)
+            {
+                mockupCrocking_ViewModel = new MockupCrocking_ViewModel() { ReportNo_Source = new List<string>(), };
+            }
+
+            Req.ReportNo = mockupCrocking_ViewModel.ReportNo;
+            Req.LastEditName = mockupCrocking_ViewModel.LastEditName;
+            if (!result.Result)
+            {
+                Req.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString().Replace("\r\n", "<br />") + "');";
+            }
+
+            ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(mockupCrocking_ViewModel.ReportNo_Source);
             ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(Req.Request.BrandID, Req.Request.SeasonID, Req.Request.StyleID);
 
             return View("Index", Req);
@@ -211,7 +260,6 @@ namespace Quality.Areas.BulkFGT.Controllers
                 scaleOption.Add($"<option value='{item.Value}'>{item.Text}</option>");
             }
 
-            lastNo = lastNo + 1;
             string html = string.Empty;
             html += $"<tr idx='{lastNo}' class='row-content' style='vertical-align: middle; text-align: center;'>";
             html += "<td>";

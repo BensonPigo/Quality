@@ -27,7 +27,6 @@ namespace BusinessLogicLayer.Service
         private IStyleArtworkProvider _IStyleArtworkProvider;
         private IOrdersProvider _OrdersProvider;
         private IOrderQtyProvider _OrderQtyProvider;
-        List<SelectListItem> x = new List<SelectListItem>();
 
         public MockupCrocking_ViewModel GetMockupCrocking(MockupCrocking_Request MockupCrocking)
         {
