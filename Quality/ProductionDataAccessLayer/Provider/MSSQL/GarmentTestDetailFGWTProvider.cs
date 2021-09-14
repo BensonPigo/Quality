@@ -251,36 +251,6 @@ INSERT INTO GarmentTest_Detail_FGWT
 
 ");
                         }
-                        else if (fGWT.Type.ToUpper() == "SPIRALITY: GARMENT - IN PERCENTAGE (AVERAGE)")
-                        {
-                            insertCmd.Append($@"
-
-INSERT INTO GarmentTest_Detail_FGWT
-           (ID, No, Location, Type ,TestDetail ,Criteria ,Criteria2, SystemType, Seq, Shrinkage)
-     VALUES
-           ( {garmentTest_Detail_ID}
-           , {garmentTest_Detail_No}
-           , @Location{idx}
-           , @Type{idx}
-           , @TestDetail{idx}
-           , @Criteria{idx} 
-           , @Criteria2_{idx}
-           , @SystemType{idx}
-           , @Seq{idx}
-           ,iif(@Location{idx} in ('B','T','S') ,(select sum(Twisting)
-	                                                from (
-	                                                	select Twisting = case when @Location{idx} in ('B','T') then gt.Twisting
-	                                                				when @Location{idx} = 'S' and gt.Location = 'B' then gt.Twisting
-	                                                				else 0
-	                                                				end
-	                                                	from GarmentTest_Detail_Twisting gt
-	                                                	where gt.ID = {garmentTest_Detail_ID} and gt.No = {garmentTest_Detail_No}
-	                                                )gt),0
-               )
-           )
-
-");
-                        }
                         else
                         {
                             insertCmd.Append($@"
@@ -367,7 +337,7 @@ update gf
 	set gf.[BeforeWash] = @BeforeWash{idx},
 		gf.[SizeSpec]  = @SizeSpec{idx},
 		gf.[AfterWash]	= @AfterWash{idx},
-		gf.[Shrinkage]	= iif(gf.Type = 'spirality: Garment - in percentage (average)', iif(sl.Location in ('B','T','S') , gt.Twisting, 0), @Shrinkage{idx}),
+		gf.[Shrinkage]	= @Shrinkage{idx},
 		gf.[Scale]	= @Scale{idx} 
 from GarmentTest_Detail_FGWT gf
 outer apply (
@@ -384,17 +354,6 @@ outer apply (
 	)slC
 	where gf.ID = g.ID
 )sl 
-outer apply (
-	select Twisting = sum(Twisting)
-	from (
-		select Twisting = case when sl.Location in ('B','T') then gt.Twisting
-					when sl.Location = 'S' and gt.Location = 'B' then gt.Twisting
-					else 0
-					end
-		from GarmentTest_Detail_Twisting gt
-		where gf.ID = gt.ID and gf.No = gt.No
-	)gt
-)gt
 where gf.ID = @ID{idx} and gf.No = @No{idx} and gf.Location = @Location{idx} and gf.Type = @Type{idx}
 " + Environment.NewLine;
                 idx++;

@@ -97,7 +97,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 fabricCrkShrkTestCrocking_Result.Crocking_Main.CrockingRemark = saveResult.Crocking_Main.CrockingRemark;
                 fabricCrkShrkTestCrocking_Result.Crocking_Detail = saveResult.Crocking_Detail;
                 fabricCrkShrkTestCrocking_Result.Result = saveResult.Result;
-                fabricCrkShrkTestCrocking_Result.ErrorMessage = $"msg.WithInfo('{saveResult.ErrorMessage.ToString().Replace("\r\n", "<br />") }');";
+                fabricCrkShrkTestCrocking_Result.ErrorMessage = $"msg.WithInfo('{saveResult.ErrorMessage.ToString().Replace("\r\n", "<br />") }');EditMode = true;";
             }
 
             ViewBag.ResultList = new SetListItem().ItemListBinding(resultType);
@@ -279,7 +279,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 fabricCrkShrkTestHeat_Result.Heat_Main.HeatRemark = saveResult.Heat_Main.HeatRemark;
                 fabricCrkShrkTestHeat_Result.Heat_Detail = saveResult.Heat_Detail;
                 fabricCrkShrkTestHeat_Result.Result = saveResult.Result;
-                fabricCrkShrkTestHeat_Result.ErrorMessage = $"msg.WithInfo('{saveResult.ErrorMessage.ToString().Replace("\r\n", "<br />") }');";
+                fabricCrkShrkTestHeat_Result.ErrorMessage = $"msg.WithInfo('{saveResult.ErrorMessage.ToString().Replace("\r\n", "<br />") }');EditMode = true;";
             }
 
             ViewBag.ResultList = new SetListItem().ItemListBinding(resultType);
@@ -444,7 +444,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 fabricCrkShrkTestWash_Result.Wash_Main.WashRemark = saveResult.Wash_Main.WashRemark;
                 fabricCrkShrkTestWash_Result.Wash_Detail = saveResult.Wash_Detail;
                 fabricCrkShrkTestWash_Result.Result = saveResult.Result;
-                fabricCrkShrkTestWash_Result.ErrorMessage = $"msg.WithInfo('{saveResult.ErrorMessage.ToString().Replace("\r\n", "<br />") }');";
+                fabricCrkShrkTestWash_Result.ErrorMessage = $"msg.WithInfo('{saveResult.ErrorMessage.ToString().Replace("\r\n", "<br />") }');EditMode = true;";
             }
 
             List<SelectListItem> skewnessOptionList = new SetListItem().ItemListBinding(skewnessOption);

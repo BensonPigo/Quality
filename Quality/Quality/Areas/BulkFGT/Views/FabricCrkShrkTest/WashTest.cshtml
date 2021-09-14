@@ -146,8 +146,8 @@
             </div>
         </header>
         <div class="main-area">
-            <div class="content-scroll" style="height: calc( 100vh - 110px );">
-                <div class="inner-scroll" style="height: calc( 100vh - 150px );">
+            <div class="content-scroll">
+                <div class="inner-scroll">
                     <div>
                         @*按鈕*@
                         <div>
@@ -313,7 +313,7 @@
                                             <select id="Wash_Main__SkewnessOptionID" name="Wash_Main.SkewnessOptionID" class="MainEdit" disabled="disabled" style="width:157px;" onchange="changeSkewnessOption(this.value)">
                                                 @foreach (var item in (List<SelectListItem>)ViewBag.SkewnessOptionList)
                                                 {
-                                                    string selected = item.Text.Equals(Model.Wash_Main.SkewnessOptionID) ? "selected" : "";
+                                                    string selected = item.Value.Equals(Model.Wash_Main.SkewnessOptionID) ? "selected" : "";
                                                     <option value="@item.Value" @selected>@item.Text</option>
                                                 }
                                             </select>
@@ -480,7 +480,7 @@
                                         @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].Name, new { @readonly = "readonly" })
                                     </td>
                                     <td>
-                                        @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].Remark, new { @readonly = "readonly" })
+                                        @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].Remark)
                                     </td>
                                     <td>
                                         @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].LastUpdate, new { @readonly = "readonly" })
@@ -938,13 +938,11 @@
                     if (data.length == 0) {
                         $("#Wash_Detail_" + targetID + "__Inspector").val('');
                         $("#Wash_Detail_" + targetID + "__Name").val('');
-                        $("#Wash_Detail_" + targetID + "__Remark").val('');
                         msg.WithError('Lab Tech Not Found');
                     }
                     else {
                         $("#Wash_Detail_" + targetID + "__Inspector").val(data[0].ID);
-                        $("#Wash_Detail_" + targetID + "__Name").val(data[0].Name);
-                        $("#Wash_Detail_" + targetID + "__Remark").val(data[0].ExtNo);
+                        $("#Wash_Detail_" + targetID + "__Name").val(data[0].Name + ' Ext.' + data[0].ExtNo);
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
@@ -1055,8 +1053,7 @@
 
     function GetPass1(data, targetID) {
         $("#Wash_Detail_" + targetID + "__Inspector").val(data.ID);
-        $("#Wash_Detail_" + targetID + "__Name").val(data.Name);
-        $("#Wash_Detail_" + targetID + "__Remark").val(data.ExtNo);
+        $("#Wash_Detail_" + targetID + "__Name").val(data.Name + ' Ext.' + data.ExtNo);
     }
 
     function GetPicture(data) {

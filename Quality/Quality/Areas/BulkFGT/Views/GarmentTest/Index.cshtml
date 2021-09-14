@@ -254,20 +254,20 @@
                                 </td>
                             </tr>
                             @{
-                                string SeamBreakageFontColor = Model.garmentTest != null && Model.garmentTest.SeamBreakageResult == "P" ? "blue" : "red";
-                                string SeamBreakageVal = Model.garmentTest != null && Model.garmentTest.SeamBreakageResult == "P" ? "Pass" :
+                                string SeamBreakageFontColor = Model.garmentTest != null && (Model.garmentTest.SeamBreakageResult == "P" || Model.garmentTest.SeamBreakageResult == "Pass") ? "blue" : "red";
+                                string SeamBreakageVal = Model.garmentTest != null && (Model.garmentTest.SeamBreakageResult == "P" || Model.garmentTest.SeamBreakageResult == "Pass") ? "Pass" :
                                                         string.IsNullOrEmpty(Model.garmentTest.SeamBreakageResult) ? string.Empty : "Fail";
 
-                                string OdourResultFontColor = Model.garmentTest != null && Model.garmentTest.OdourResult == "P" ? "blue" : "red";
-                                string OdourResultVal = Model.garmentTest != null && Model.garmentTest.OdourResult == "P" ? "Pass" :
+                                string OdourResultFontColor = Model.garmentTest != null && (Model.garmentTest.OdourResult == "P" || Model.garmentTest.OdourResult == "Pass") ? "blue" : "red";
+                                string OdourResultVal = Model.garmentTest != null && (Model.garmentTest.OdourResult == "P" || Model.garmentTest.OdourResult == "Pass") ? "Pass" :
                                                         string.IsNullOrEmpty(Model.garmentTest.OdourResult) ? string.Empty : "Fail";
 
-                                string WashResultFontColor = Model.garmentTest != null && Model.garmentTest.WashResult == "P" ? "blue" : "red";
-                                string WashResultVal = Model.garmentTest != null && Model.garmentTest.WashResult == "P" ? "Pass" :
+                                string WashResultFontColor = Model.garmentTest != null && (Model.garmentTest.WashResult == "P" || Model.garmentTest.WashResult == "Pass") ? "blue" : "red";
+                                string WashResultVal = Model.garmentTest != null && (Model.garmentTest.WashResult == "P" || Model.garmentTest.WashResult == "Pass") ? "Pass" :
                                                         string.IsNullOrEmpty(Model.garmentTest.WashResult) ? string.Empty : "Fail";
 
-                                string ResultFontColor = Model.garmentTest != null && Model.garmentTest.Result == "P" ? "blue" : "red";
-                                string ResultVal = Model.garmentTest != null && Model.garmentTest.Result == "P" ? "Pass" :
+                                string ResultFontColor = Model.garmentTest != null && (Model.garmentTest.Result == "P" || Model.garmentTest.Result == "Pass") ? "blue" : "red";
+                                string ResultVal = Model.garmentTest != null && (Model.garmentTest.Result == "P" || Model.garmentTest.Result == "Pass") ? "Pass" :
                                                         string.IsNullOrEmpty(Model.garmentTest.Result) ? string.Empty : "Fail";
                             }
                             <tr>
@@ -360,117 +360,128 @@
                                 for (int i = 0; i <= Model.garmentTest_Details.Count - 1; i++)
                                 {
                                     string aHref = "";
-                                    <tr>
-                                        <td style="width:10vw;">
+                            <tr>
+                                <td style="width:10vw;">
 
-                                            @if (Model.garmentTest_Details[i].ID > 0)
-                                            {
-                                                aHref = Url.Action("Detail", "GarmentTest", new { ID = Model.garmentTest_Details[i].ID, No = Model.garmentTest_Details[i].No, EditMode = false });
-                                            }
+                                    @if (Model.garmentTest_Details[i].ID > 0)
+                                    {
+                                        aHref = Url.Action("Detail", "GarmentTest", new { ID = Model.garmentTest_Details[i].ID, No = Model.garmentTest_Details[i].No, EditMode = false });
+                                    }
 
-                                            <a href="@aHref" class="detailA" idx="@Model.garmentTest_Details[i].ID" idv="@Model.garmentTest_Details[i].No">
-                                                @Html.DisplayFor(o => Model.garmentTest_Details[i].No, "", "")
-                                            </a>
-                                        </td>
-                                        <td style="width:10vw;">
-                                            @Html.TextBoxFor(o => Model.garmentTest_Details[i].OrderID, "", new { @class = "Detail_OrderID" })
-                                        </td>
-                                        <td style="width:10vw;">
-                                            <select class="Detail_SizeCode" id="Model.garmentTest_Details_@{@i}__.SizeCode" name="Model.garmentTest_Details[@i].SizeCode" disabled="disabled">
-                                                @foreach (var item in (List<SelectListItem>)ViewBag.SizeCodeList)
-                                                {
-                                                    string selected = item.Text.Equals(Model.garmentTest_Details[i].SizeCode) ? "selected" : "";
-                                                    <option value="@item.Value" @selected>@item.Text</option>
-                                                }
-                                            </select>
-                                        </td>
-                                        <td style="width:10vw;">
-                                            @Html.TextBoxFor(o => Model.garmentTest_Details[i].inspdate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
-                                        </td>
-                                        <td style="width:10vw;">
-                                            <select id="Model_garmentTest_Details_@{@i}__MtlTypeID" name="Model.garmentTest_Details[@i].MtlTypeID" disabled="disabled">
-                                                @foreach (var item in (List<SelectListItem>)ViewBag.MtlTypeIDList)
-                                                {
-                                                    string selected = item.Text.Equals(Model.garmentTest_Details[i].MtlTypeID) ? "selected" : "";
-                                                    <option value="@item.Value" @selected>@item.Text</option>
-                                                }
-                                            </select>
-                                        </td>
-                                        @{
-                                            string garmentTest_DetailsFontColor = Model.garmentTest_Details[i].Result == "P" || Model.garmentTest_Details[i].Result == "Pass" ? "blue" : "red";
-                                            string garmentTest_DetailsVal = Model.garmentTest_Details[i].Result == "P" || Model.garmentTest_Details[i].Result == "Pass" ? "Pass" :
-                                                            string.IsNullOrEmpty(Model.garmentTest_Details[i].Result) ? string.Empty : "Fail";
+                                    <a href="@aHref" class="detailA" idx="@Model.garmentTest_Details[i].ID" idv="@Model.garmentTest_Details[i].No">
+                                        @Html.DisplayFor(o => Model.garmentTest_Details[i].No, "", "")
+                                    </a>
+                                </td>
+                                <td style="width:10vw;">
+                                    @Html.TextBoxFor(o => Model.garmentTest_Details[i].OrderID, "", new { @class = "Detail_OrderID" })
+                                </td>
+                                <td style="width:10vw;">
+                                    <select class="Detail_SizeCode" id="Model.garmentTest_Details_@{@i}__.SizeCode" name="Model.garmentTest_Details[@i].SizeCode" disabled="disabled">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.SizeCodeList)
+                                        {
+                                            string selected = item.Text.Equals(Model.garmentTest_Details[i].SizeCode) ? "selected" : "";
+                                            <option value="@item.Value" @selected>@item.Text</option>
                                         }
-                                        <td class="@garmentTest_DetailsFontColor" style="width:10vw;">
-                                            @garmentTest_DetailsVal
-                                        </td>
-                                        <td style="width:10vw;">
-                                            @{
-                                                bool NonSeamBreakageTestVal = Model.garmentTest_Details[i].NonSeamBreakageTest.HasValue ? Model.garmentTest_Details[i].NonSeamBreakageTest.Value : false;
-                                            }
-                                            <input id="garmentTest_Details_NonSeamBreakageTest" name="garmentTest_Details.NonSeamBreakageTest" type="checkbox" checked="@NonSeamBreakageTestVal">
-                                            <input name="garmentTest_Details.NonSeamBreakageTest" type="hidden" value="@NonSeamBreakageTestVal">
-                                        </td>
-                                        <td style="width:10vw;">
-                                            @Html.DisplayFor(o => Model.garmentTest_Details[i].SeamBreakageResult, "", "")
-                                        </td>
-                                        <td style="width:10vw;">
-                                            @Html.DisplayFor(o => Model.garmentTest_Details[i].OdourResult, "", "")
-                                        </td>
-                                        <td style="width:10vw;">
-                                            @Html.DisplayFor(o => Model.garmentTest_Details[i].WashResult, "", "")
-                                        </td>
-                                        <td style="width:10vw;">
-                                            @Html.TextBoxFor(o => Model.garmentTest_Details[i].inspector, "", "")
-                                        </td>
-                                        <td style="width:10vw;">
-                                            @Html.DisplayFor(o => Model.garmentTest_Details[i].GarmentTest_Detail_Inspector, "", "")
-                                        </td>
-                                        <td style="width:10vw;">
-                                            @Html.TextBoxFor(o => Model.garmentTest_Details[i].Remark, "", "")
-                                        </td>
-                                        <td style="width:10vw;">
-                                            <img class="SendMail" src="~/Image/Icon/Mail.png" width="30" />
-                                        </td>
-                                        <td class="Sender" style="width:10vw;">
-                                            @Html.DisplayFor(o => Model.garmentTest_Details[i].Sender, "", "")
-                                        </td>
-                                        <td class="SendDate" style="width:10vw;">
-                                            @{
-                                                var SendDateVal = Model.garmentTest_Details[i].SendDate.HasValue ? Model.garmentTest_Details[i].SendDate.Value.ToString("yyyy/MM/dd HH:mm:ss") : "";
-                                            }
+                                    </select>
+                                </td>
+                                <td style="width:10vw;">
+                                    @Html.TextBoxFor(o => Model.garmentTest_Details[i].inspdate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
+                                </td>
+                                <td style="width:10vw;">
+                                    <select id="Model_garmentTest_Details_@{@i}__MtlTypeID" name="Model.garmentTest_Details[@i].MtlTypeID" disabled="disabled">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.MtlTypeIDList)
+                                        {
+                                            string selected = item.Text.Equals(Model.garmentTest_Details[i].MtlTypeID) ? "selected" : "";
+                                            <option value="@item.Value" @selected>@item.Text</option>
+                                        }
+                                    </select>
+                                </td>
+                                @{
+                                    string garmentTest_DetailsFontColor = Model.garmentTest_Details[i].Result == "P" || Model.garmentTest_Details[i].Result == "Pass" ? "blue" : "red";
+                                    string garmentTest_DetailsVal = Model.garmentTest_Details[i].Result == "P" || Model.garmentTest_Details[i].Result == "Pass" ? "Pass" :
+                                                    string.IsNullOrEmpty(Model.garmentTest_Details[i].Result) ? string.Empty : "Fail";
+                                }
+                                <td class="@garmentTest_DetailsFontColor" style="width:10vw;">
+                                    @garmentTest_DetailsVal
+                                </td>
+                                <td style="width:10vw;">
+                                    @{
+                                        bool NonSeamBreakageTestVal = Model.garmentTest_Details[i].NonSeamBreakageTest.HasValue ? Model.garmentTest_Details[i].NonSeamBreakageTest.Value : false;
+                                    }
+                                    <input id="garmentTest_Details_NonSeamBreakageTest" name="garmentTest_Details.NonSeamBreakageTest" type="checkbox" checked="@NonSeamBreakageTestVal">
+                                    <input name="garmentTest_Details.NonSeamBreakageTest" type="hidden" value="@NonSeamBreakageTestVal">
+                                </td>
+                                @{
+                                    string SeamBreakageResultFontColor = Model.garmentTest_Details[i].SeamBreakageResult == "P" || Model.garmentTest_Details[i].SeamBreakageResult == "Pass" ? "blue" : "red";
+                                    string SeamBreakageResultVal = Model.garmentTest_Details[i].SeamBreakageResult == "P" || Model.garmentTest_Details[i].SeamBreakageResult == "Pass" ? "Pass" :
+                                                            string.IsNullOrEmpty(Model.garmentTest.SeamBreakageResult) ? string.Empty : "Fail";
+                                    string OdourResultDetailFontColor = Model.garmentTest_Details[i].OdourResult == "P" || Model.garmentTest_Details[i].OdourResult == "Pass" ? "blue" : "red";
+                                    string OdourResultDetailVal = Model.garmentTest_Details[i].OdourResult == "P" || Model.garmentTest_Details[i].OdourResult == "Pass" ? "Pass" :
+                                                            string.IsNullOrEmpty(Model.garmentTest.OdourResult) ? string.Empty : "Fail";
+                                    string WashResultDetailFontColor = Model.garmentTest_Details[i].WashResult == "P" || Model.garmentTest_Details[i].WashResult == "Pass" ? "blue" : "red";
+                                    string WashResultDetailVal = Model.garmentTest_Details[i].WashResult == "P" || Model.garmentTest_Details[i].WashResult == "Pass" ? "Pass" :
+                                                            string.IsNullOrEmpty(Model.garmentTest.WashResult) ? string.Empty : "Fail";
+                                }
+                                <td style="width:10vw;" class="@SeamBreakageResultFontColor">
+                                    @SeamBreakageResultVal
+                                </td>
+                                <td style="width:10vw;" class="@OdourResultDetailFontColor">
+                                    @OdourResultDetailVal
+                                </td>
+                                <td style="width:10vw;" class="@WashResultDetailFontColor">
+                                    @WashResultDetailVal
+                                </td>
+                                <td style="width:10vw;">
+                                    @Html.TextBoxFor(o => Model.garmentTest_Details[i].inspector, "", "")
+                                </td>
+                                <td style="width:10vw;">
+                                    @Html.DisplayFor(o => Model.garmentTest_Details[i].GarmentTest_Detail_Inspector, "", "")
+                                </td>
+                                <td style="width:10vw;">
+                                    @Html.TextBoxFor(o => Model.garmentTest_Details[i].Remark, "", "")
+                                </td>
+                                <td style="width:10vw;">
+                                    <img class="SendMail" src="~/Image/Icon/Mail.png" width="30" />
+                                </td>
+                                <td class="Sender" style="width:10vw;">
+                                    @Html.DisplayFor(o => Model.garmentTest_Details[i].Sender, "", "")
+                                </td>
+                                <td class="SendDate" style="width:10vw;">
+                                    @{
+                                        var SendDateVal = Model.garmentTest_Details[i].SendDate.HasValue ? Model.garmentTest_Details[i].SendDate.Value.ToString("yyyy/MM/dd HH:mm:ss") : "";
+                                    }
 
-                                            @SendDateVal
-                                        </td>
-                                        <td style="width:10vw;">
-                                            <img class="ReceiveMail" src="~/Image/Icon/Mail.png" width="30" />
-                                        </td>
-                                        <td class="Receiver" style="width:10vw;">
-                                            @Html.DisplayFor(o => Model.garmentTest_Details[i].Receiver, "", "")
-                                        </td>
-                                        <td class="ReceiveDate" style="width:10vw;">
-                                            @{ 
-                                                var ReceiveDateVal = Model.garmentTest_Details[i].ReceiveDate.HasValue ? Model.garmentTest_Details[i].ReceiveDate.Value.ToString("yyyy/MM/dd HH:mm:ss") : "";
-                                            }
+                                    @SendDateVal
+                                </td>
+                                <td style="width:10vw;">
+                                    <img class="ReceiveMail" src="~/Image/Icon/Mail.png" width="30" />
+                                </td>
+                                <td class="Receiver" style="width:10vw;">
+                                    @Html.DisplayFor(o => Model.garmentTest_Details[i].Receiver, "", "")
+                                </td>
+                                <td class="ReceiveDate" style="width:10vw;">
+                                    @{
+                                        var ReceiveDateVal = Model.garmentTest_Details[i].ReceiveDate.HasValue ? Model.garmentTest_Details[i].ReceiveDate.Value.ToString("yyyy/MM/dd HH:mm:ss") : "";
+                                    }
 
-                                            @ReceiveDateVal
-                                        </td>
-                                        <td style="width:10vw;">
-                                            @Html.DisplayFor(o => Model.garmentTest_Details[i].GarmentTest_Detail_AddName, "", "")
-                                        </td>
-                                        <td style="width:10vw;">
-                                            @Html.DisplayFor(o => Model.garmentTest_Details[i].GarmentTest_Detail_EditName, "", "")
-                                        </td>
-                                        <td style="width:10vw;">
-                                            @if (Model.garmentTest_Details[i].Status == "New")
-                                            {
-                                                <img class="detailEdit" src="~/Image/Icon/Edit.png" width="30" />
-                                            }
-                                        </td>
-                                        <td style="width:10vw;">
-                                            <img class="detailDelete" src="~/Image/Icon/Delete.png" width="30" />
-                                        </td>
-                                    </tr>
+                                    @ReceiveDateVal
+                                </td>
+                                <td style="width:10vw;">
+                                    @Html.DisplayFor(o => Model.garmentTest_Details[i].GarmentTest_Detail_AddName, "", "")
+                                </td>
+                                <td style="width:10vw;">
+                                    @Html.DisplayFor(o => Model.garmentTest_Details[i].GarmentTest_Detail_EditName, "", "")
+                                </td>
+                                <td style="width:10vw;">
+                                    @if (Model.garmentTest_Details[i].Status == "New")
+                                    {
+                                        <img class="detailEdit" src="~/Image/Icon/Edit.png" width="30" />
+                                    }
+                                </td>
+                                <td style="width:10vw;">
+                                    <img class="detailDelete" src="~/Image/Icon/Delete.png" width="30" />
+                                </td>
+                            </tr>
                                 }
                             }
                         </tbody>

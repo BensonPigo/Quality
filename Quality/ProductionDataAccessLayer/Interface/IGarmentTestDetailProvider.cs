@@ -17,7 +17,7 @@ namespace ProductionDataAccessLayer.Interface
 
         bool Update_GarmentTestDetail(GarmentTest_Detail_ViewModel source);
 
-        bool Encode_GarmentTestDetail(string ID, string Status);
+        bool Encode_GarmentTestDetail(string ID, string No, string Status);
 
         string Get_LastResult(string ID);
 
@@ -34,5 +34,7 @@ namespace ProductionDataAccessLayer.Interface
         bool Update_Receive(string ID, string No, string UserID);
 
         bool Save_Detail_Picture(GarmentTest_Detail source);
+
+        bool Update_GarmentTestDetail_Result(string ID, string No);
     }
 }

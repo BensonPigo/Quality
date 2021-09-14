@@ -264,10 +264,6 @@ begin
 		)
 	)
 end
-INSERT INTO [dbo].[GarmentTest_Detail_Twisting]([ID],[No],[Location])
-select @ID,@NO,* from #Location1
-INSERT INTO [dbo].[GarmentTest_Detail_Twisting]([ID],[No],[Location])
-select @ID,@NO,* from #Location2
 
 INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
 values (@ID,@NO,'Printing / Heat Transfer',1)
@@ -451,12 +447,8 @@ INSERT INTO GarmentTest_Detail_FGPT
                 objParameterDetail.Add($"@WashResult", string.IsNullOrEmpty(item.WashResult) ? string.Empty : item.WashResult);
                 objParameterDetail.Add($"@inspector", string.IsNullOrEmpty(item.inspector) ? string.Empty : item.inspector);                
                 objParameterDetail.Add($"@Remark", string.IsNullOrEmpty(item.Remark) ? string.Empty : item.Remark);
-                // objParameterDetail.Add($"@EditName", string.IsNullOrEmpty(item.EditName) ? string.Empty : item.EditName);
-                // objParameterDetail.Add($"@AddName", string.IsNullOrEmpty(item.AddName) ? string.Empty : item.AddName);
                 objParameterDetail.Add($"@UserID", string.IsNullOrEmpty(UserID) ? string.Empty : UserID);
                 objParameterDetail.Add($"@OrderID", string.IsNullOrEmpty(item.OrderID) ? string.Empty : item.OrderID);
-
-                //objParameterDetail.Add($"@inspdate", item.inspdate == null ? DBNull.Value : ((DateTime)item.inspdate).ToString("d"));
 
                 string inspDate = (item.inspdate == null) ? "Null" : "'" + ((DateTime)item.inspdate).ToString("d") + "'";
 
@@ -472,12 +464,8 @@ update GarmentTest_Detail
 set SizeCode = @SizeCode
 ,OrderID = @OrderID
 ,MtlTypeID = @MtlTypeID
-,Result = @Result
-,NonSeamBreakageTest = @NonSeamBreakageTest
-,SeamBreakageResult = @SeamBreakageResult
-,OdourResult = @OdourResult
-,WashResult = @WashResult
-,inspector = @inspector,inspdate = {inspDate}
+,inspector = @inspector
+,inspdate = {inspDate}
 ,Remark = @Remark
 ,EditName = @UserID, EditDate = GetDate()
 where ID = @ID
@@ -709,6 +697,33 @@ values(
             defaultFGPTList.Add(new GarmentTest_Detail_FGPT() { Seq = 1, Location = string.Empty, Type = "odour: Garment", TestDetail = "pass/fail", TestUnit = "pass/Fail", TestName = "PHX-AP0451", });
 
             return defaultFGPTList.OrderBy(o => o.Type).ToList();
+        }
+
+        public bool Update_GarmentTest_Result(string ID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.String, ID } ,
+            };
+
+            string sqlcmd = @"
+update g 
+set g.SeamBreakageResult = All_Result.SeamBreakageResult
+,g.SeamBreakageLastTestDate  = All_Result.inspdate
+,g.OdourResult = All_Result.OdourResult
+,g.WashResult = All_Result.WashResult
+,g.Result = All_Result.Result
+,g.Date = All_Result.inspdate
+from GarmentTest g
+outer apply(
+	select top 1 SeamBreakageResult,gd1.inspdate ,gd1.OdourResult,gd1.WashResult,gd1.Result
+	from GarmentTest_Detail gd1
+	where gd1.id=g.ID and gd1.NonSeamBreakageTest = 0
+	order by gd1.inspdate desc , gd1.EditDate desc , gd1.AddDate desc
+)All_Result
+where ID = @ID
+";
+            return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
         }
 
         /*回傳Garment Test(Get) 詳細敘述如下*/
