@@ -204,8 +204,18 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             if (model.Result)
             {
+
+                // 新增成功後，搜尋條件帶入：這次新增的BrandID、SeasonID、StyleID、Article，並帶出ReportNo下拉選單
+                PullingTest_ViewModel newQueryModel = new PullingTest_ViewModel()
+                {
+                    BrandID = Req.Detail.BrandID,
+                    SeasonID = Req.Detail.SeasonID,
+                    StyleID = Req.Detail.StyleID,
+                    Article = Req.Detail.Article,
+                };
+
                 //存檔後搜尋結果
-                model = Service.GetReportNoList(Req);
+                model = Service.GetReportNoList(newQueryModel);
                 model.ReportNo_Source.FirstOrDefault().Selected = true;
 
                 model.Detail = Service.GetData(model.ReportNo_Source.FirstOrDefault().Value).Detail;

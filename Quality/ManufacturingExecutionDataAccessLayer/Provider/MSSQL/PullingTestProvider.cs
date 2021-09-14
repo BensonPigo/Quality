@@ -96,7 +96,7 @@ from PullingTest p
 left join Production.dbo.Pass1 a ON a.ID=p.AddName 
 left join Production.dbo.Pass1 e ON e.ID=p.EditName
 left join Production.dbo.Pass1 i ON i.ID=p.Inspector
-left join Brand_PullingTestStandarList s ON s.BrandID = p.BrandID AND s.TestItem = p.TestItem AND s.PullForceUnit = p.PullForceUnit
+left join Production.dbo.Brand_PullingTestStandarList s ON s.BrandID = p.BrandID AND s.TestItem = p.TestItem AND s.PullForceUnit = p.PullForceUnit
 where p.ReportNo = @ReportNo
 ";
 
@@ -159,7 +159,7 @@ where BrandID = @BrandID
             string SbSql = $@"
 select PullForce_Standard = PullForce
     ,Time_Standard = Time
-from Brand_PullingTestStandarList 
+from Production.dbo.Brand_PullingTestStandarList 
 where BrandID = @BrandID 
 AND TestItem = @TestItem 
 AND PullForceUnit = @PullForceUnit 

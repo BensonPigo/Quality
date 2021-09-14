@@ -214,7 +214,7 @@
                                     </td>
                                     <td style="width: 10vw;"><h5>SP#</h5></td>
                                     <td style="width: 20vw;">
-                                        @Html.TextBoxFor(o => o.Detail.POID, "", new { @onblur = "CheckSP(this)" })
+                                        @Html.TextBoxFor(o => o.Detail.POID, "", new { @onchange = "CheckSP(this)" })
                                     </td>
                                     <td style="width: 10vw;"><h5>Brand</h5></td>
                                     <td style="width: 20vw;">
@@ -759,6 +759,12 @@
                 async: false,
                 success: function (res) {
 
+                    $("#Detail_PullForce").val(0);
+                    $("#Detail_Time").val(0);
+                    $("#Detail_TestItem").val('');
+                    $("#ResultText").val('');
+                    $("#Detail_Result").val('');
+
                     if (res.POID != '' && res.POID != undefined) {
                         // 表頭塞值
                         $(obj).val(res.POID);
@@ -789,6 +795,7 @@
                         $("#Detail_Article").val('');
                         $("#Detail_PullForceUnit").val('');
                         $("#PullForceUnitText").val('');
+
                         msg.WithError(res.Message);
                     }
 
@@ -810,7 +817,7 @@
         var brand = $(`#${idPre}BrandID`).val();
         var pullForceUnit = $(`#${idPre}PullForceUnit`).val();
 
-        if (testitem != '') {
+        if (testitem != '' && brand != '' && pullForceUnit != '') {
             $.ajax({
                 url: '@Url.Action("GetStandard")',
                 data: { BrandID: brand, TestItem: testitem, PullForceUnit: pullForceUnit},
