@@ -191,7 +191,7 @@ and a.SizeCode = @SizeCode
             string strNo = string.Empty;
 
             DataTable dt = ExecuteDataTable(CommandType.Text, $@"
-select no = isnull(max(no),0)+1 from  ManufacturingExecution.dbo.Inspection_Measurement  WITH (NOLOCK) where styleukey = {Measurement[0].StyleUkey}", objParameter);
+select no = isnull(max(no),0)+1 from  ManufacturingExecution.dbo.RFT_Inspection_Measurement  WITH (NOLOCK) where styleukey = {Measurement[0].StyleUkey}", objParameter);
             if (dt != null || dt.Rows.Count > 0)
             {
                 strNo = dt.Rows[0]["no"].ToString();
