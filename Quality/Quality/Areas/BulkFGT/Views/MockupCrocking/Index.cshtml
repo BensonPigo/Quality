@@ -350,7 +350,7 @@
                                                 styleColor = "red";
                                             }
                                         }
-                                        <font id="Result" class="@styleColor">@Html.DisplayFor(o => o.Result)</font>
+                                        <font id="Result" class="@styleColor">@Model.Result</font>
                                     </td>
                                     <td></td>
                                     <td></td>
@@ -577,6 +577,7 @@
     function Clear() {
         if (EditType == "New") {
             $(".DataTable input[type='text'], .DetailTable select").val('');
+            $('#Result').html('');
         }
     }
 

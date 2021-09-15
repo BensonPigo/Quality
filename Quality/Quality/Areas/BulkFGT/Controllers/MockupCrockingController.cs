@@ -55,7 +55,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "Query")]
-        public ActionResult Query(MockupCrocking_ViewModel Req)
+        public ActionResult Query(MockupCrocking_ViewModel Req )
         {
             //example:ADIDAS, 19FW, F1915KYB012, ED5770
             MockupCrocking_ViewModel mockupCrocking_ViewModel = _MockupCrockingService.GetMockupCrocking(Req.Request);            
@@ -174,7 +174,18 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             if (mockupCrocking_ViewModel == null)
             {
-                mockupCrocking_ViewModel = new MockupCrocking_ViewModel() { ReportNo_Source = new List<string>(), };
+                mockupCrocking_ViewModel = new MockupCrocking_ViewModel()
+                {
+                    Request = new MockupCrocking_Request
+                    {
+                        BrandID = string.Empty,
+                        SeasonID = string.Empty,
+                        StyleID = string.Empty,
+                        Article = string.Empty,
+                    },
+                    MockupCrocking_Detail = new List<MockupCrocking_Detail_ViewModel>(),
+                    ReportNo_Source = new List<string>(),
+                };
             }
             if (!result.Result)
             {
