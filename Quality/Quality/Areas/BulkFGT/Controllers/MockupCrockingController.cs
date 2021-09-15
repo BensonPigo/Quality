@@ -85,8 +85,8 @@ namespace Quality.Areas.BulkFGT.Controllers
             {
                 Req.MockupCrocking_Detail = new List<MockupCrocking_Detail_ViewModel>();
             }
-            Req.AddName = this.UserID;
-            BaseResult result = _MockupCrockingService.Create(Req, this.MDivisionID, out string ReportNo);
+
+            BaseResult result = _MockupCrockingService.Create(Req, this.MDivisionID, this.UserID, out string ReportNo);
 
             Req.Request = new MockupCrocking_Request()
             {
@@ -128,12 +128,8 @@ namespace Quality.Areas.BulkFGT.Controllers
             {
                 Req.MockupCrocking_Detail = new List<MockupCrocking_Detail_ViewModel>();
             }
-            Req.EditName = this.UserID;
-            foreach (var item in Req.MockupCrocking_Detail)
-            {
-                item.EditName = this.UserID;
-            }
-            BaseResult result = _MockupCrockingService.Update(Req);
+
+            BaseResult result = _MockupCrockingService.Update(Req, this.UserID);
             Req.Request = new MockupCrocking_Request()
             {
                 BrandID = Req.BrandID,
@@ -142,6 +138,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 Article = Req.Article,
                 ReportNo = Req.ReportNo,
             };
+
             MockupCrocking_ViewModel mockupCrocking_ViewModel = _MockupCrockingService.GetMockupCrocking(Req.Request);
 
             if (mockupCrocking_ViewModel == null)

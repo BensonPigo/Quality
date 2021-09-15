@@ -148,7 +148,7 @@ namespace BusinessLogicLayer.Service.Tests
                     }
                 };
 
-                var mockupOven = _MockupOvenService.Create(MockupOven, "VM1", out string no);
+                var mockupOven = _MockupOvenService.Create(MockupOven, "VM1", "SCIMIS", out string no);
                 Assert.IsTrue(true);
             }
             catch (Exception ex)
@@ -232,7 +232,7 @@ namespace BusinessLogicLayer.Service.Tests
                     //}
                 };
 
-                var mockupOven = _MockupOvenService.Update(MockupOven);
+                var mockupOven = _MockupOvenService.Update(MockupOven, "SCIMIS");
                 Assert.IsTrue(true);
             }
             catch (Exception ex)
