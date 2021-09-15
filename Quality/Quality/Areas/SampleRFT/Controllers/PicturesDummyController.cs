@@ -38,6 +38,37 @@ namespace Quality.Areas.SampleRFT.Controllers
             return View(model);
         }
 
+        public ActionResult IndexGet(string OrderID)
+        {
+            this.CheckSession();
+
+            if (string.IsNullOrEmpty(OrderID))
+            {
+                RFT_PicDuringDummyFitting_ViewModel e = new RFT_PicDuringDummyFitting_ViewModel()
+                {
+                    ErrorMessage = "SP# cannot be empty",
+                    DataList = new List<RFT_PicDuringDummyFitting>()
+                };
+                return View("Index", e);
+            }
+
+            RFT_PicDuringDummyFitting_ViewModel model = _PicturesDummyService.Get_PicturesDummy_Result(new RFT_PicDuringDummyFitting_ViewModel()
+            {
+                OrderID = OrderID,
+                OrderTypeID = "OrderID"
+            }
+                );
+
+            if (!model.Result)
+            {
+                model.ErrorMessage = $@"
+msg.WithInfo('{model.ErrorMessage.Replace("\r\n", "<br />")}');
+";
+            }
+
+            return View("Index", model);
+        }
+
         [HttpPost]
         public ActionResult Query(RFT_PicDuringDummyFitting_ViewModel Req)
         {

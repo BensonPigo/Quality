@@ -1,0 +1,60 @@
+﻿@using DatabaseObject.ViewModel.SampleRFT
+
+@model StyleResult_ViewModel
+
+<style>
+    #myTable4_info {
+        color: black
+    }
+
+    #myTable4_previous, #myTable4_next {
+        color: black !important;
+    }
+
+    #myTable4_wrapper, #myTable4_wrapper > .dataTables_scrollHeadInner {
+        width: 100%
+    }
+
+    #row-name {
+        color: black;
+    }
+</style>
+<table id="myTable4" class="table table-striped display">
+    <thead>
+        <tr class="row-name" id="row-name">
+            <th>Article</th>
+            <th>Type</th>
+            <th>Test Name</th>
+            <th>Last Result</th>
+            <th>Last Test Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.BulkFGT.Any())
+        {
+            foreach (var item in Model.BulkFGT)
+            {
+                <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                    <td>@item.Article</td>
+                    <td>@item.Type</td>
+                    <td>@item.TestName</td>
+                    <td>@item.LastTestDate</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<script>
+    $(function () {
+        $('#myTable4').DataTable({
+            "pageLength": 10,
+            "autoWidth": false,
+            "info": false,
+            "filter": false,
+            "paging": false,
+            "info": false,
+            "scrollY": "40vh",
+            "scrollCollapse": true,
+        });
+    });
+</script>

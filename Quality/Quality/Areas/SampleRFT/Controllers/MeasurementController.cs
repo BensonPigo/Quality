@@ -35,6 +35,16 @@ namespace Quality.Areas.SampleRFT.Controllers
             return View(new Measurement_ResultModel());
         }
 
+        public ActionResult IndexGet(string OrderID)
+        {
+            Measurement_Request measurementRequest = _MeasurementService.MeasurementGetPara(OrderID, this.FactoryID);
+            Measurement_ResultModel measurement = _MeasurementService.MeasurementGet(measurementRequest);
+            List<SelectListItem> ArticleList = new FactoryDashBoardWeb.Helper.SetListItem().ItemListBinding(measurementRequest.Articles);
+            ViewBag.Articles = ArticleList;
+            TempData["Model"] = measurement.JsonBody;
+            return View("Index", measurement);
+        }
+
         [HttpPost]
         public ActionResult Index(Measurement_Request request)
         {

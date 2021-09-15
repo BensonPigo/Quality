@@ -153,6 +153,7 @@
     <Compile Include="Service\SampleRFT\RFTPerLineService.cs" />
     <Compile Include="Service\StyleManagement\StyleListService.cs" />
     <Compile Include="Service\StyleManagement\StyleManagementService.cs" />
+    <Compile Include="Service\StyleManagement\StyleResultService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ADOHelper\ADOHelper.csproj">

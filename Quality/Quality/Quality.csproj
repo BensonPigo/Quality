@@ -190,6 +190,7 @@
     <Compile Include="Areas\SampleRFT\SampleRFTAreaRegistration.cs" />
     <Compile Include="Areas\StyleManagement\Controllers\StyleListController.cs" />
     <Compile Include="Areas\StyleManagement\Controllers\PrintBarcodeController.cs" />
+    <Compile Include="Areas\StyleManagement\Controllers\StyleResultController.cs" />
     <Compile Include="Areas\StyleManagement\StyleManagementAreaRegistration.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -368,6 +369,12 @@
     <Content Include="Areas\BulkFGT\Views\FabricColorFastness\Detail.cshtml" />
     <Content Include="Image\Icon\Thumbs.db" />
     <Content Include="Areas\FinalInspection\Views\Inspection\Others_TakePicture.cshtml" />
+    <Content Include="Areas\StyleManagement\Views\StyleResult\Index.cshtml" />
+    <Content Include="Areas\StyleManagement\Views\StyleResult\BarcodeScan.cshtml" />
+    <Content Include="Areas\StyleManagement\Views\StyleResult\_Tab2_Layout.cshtml" />
+    <Content Include="Areas\StyleManagement\Views\StyleResult\_Tab3_Layout.cshtml" />
+    <Content Include="Areas\StyleManagement\Views\StyleResult\_Tab4_Layout.cshtml" />
+    <Content Include="Areas\StyleManagement\Views\StyleResult\_Tab1_Layout.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
