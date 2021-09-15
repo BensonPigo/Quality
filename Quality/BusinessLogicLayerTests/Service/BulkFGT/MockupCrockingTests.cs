@@ -118,7 +118,7 @@ namespace BusinessLogicLayer.Service.Tests
                     }
                 };
 
-                var mockupCrocking = _MockupCrockingService.Create(MockupCrocking,"PM1",out string no);
+                var mockupCrocking = _MockupCrockingService.Create(MockupCrocking,"PM1","SCIMIS",out string no);
                 Assert.IsTrue(true);
             }
             catch (Exception ex)
@@ -158,7 +158,7 @@ namespace BusinessLogicLayer.Service.Tests
                     }
                 };
 
-                var mockupCrocking = _MockupCrockingService.Update(MockupCrocking);
+                var mockupCrocking = _MockupCrockingService.Update(MockupCrocking, "SCIMIS");
                 Assert.IsTrue(true);
             }
             catch (Exception ex)

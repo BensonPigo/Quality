@@ -258,10 +258,11 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public BaseResult Create(MockupCrocking_ViewModel MockupCrocking, string Mdivision, out string NewReportNo)
+        public BaseResult Create(MockupCrocking_ViewModel MockupCrocking, string Mdivision, string userid, out string NewReportNo)
         {
             NewReportNo = string.Empty;
             MockupCrocking.Type = "B";
+            MockupCrocking.AddName = userid;
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             _MockupCrockingProvider = new MockupCrockingProvider(_ISQLDataTransaction);
@@ -298,6 +299,7 @@ namespace BusinessLogicLayer.Service
                 {
                     foreach (var MockupCrocking_Detail in MockupCrocking.MockupCrocking_Detail)
                     {
+                        MockupCrocking_Detail.EditName = userid;
                         MockupCrocking_Detail.ReportNo = MockupCrocking.ReportNo;
                         count = _MockupCrockingDetailProvider.Create(MockupCrocking_Detail);
                         if (count == 0)
@@ -323,7 +325,7 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public BaseResult Update(MockupCrocking_ViewModel MockupCrocking)
+        public BaseResult Update(MockupCrocking_ViewModel MockupCrocking, string userid)
         {
             if (MockupCrocking.MockupCrocking_Detail != null || MockupCrocking.MockupCrocking_Detail.Count > 0)
             {
@@ -341,6 +343,14 @@ namespace BusinessLogicLayer.Service
                 MockupCrocking.Result = string.Empty;
             }
 
+            MockupCrocking.EditName = userid;
+            if (MockupCrocking.MockupCrocking_Detail != null)
+            {
+                foreach (var item in MockupCrocking.MockupCrocking_Detail)
+                {
+                    item.EditName = userid;
+                }
+            }
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             _MockupCrockingProvider = new MockupCrockingProvider(_ISQLDataTransaction);

@@ -308,10 +308,11 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public BaseResult Create(MockupOven_ViewModel MockupOven, string Mdivision, out string NewReportNo)
+        public BaseResult Create(MockupOven_ViewModel MockupOven, string Mdivision, string userid, out string NewReportNo)
         {
             NewReportNo = string.Empty;
             MockupOven.Type = "B";
+            MockupOven.EditName = userid;
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             _MockupOvenProvider = new MockupOvenProvider(_ISQLDataTransaction);
@@ -346,6 +347,7 @@ namespace BusinessLogicLayer.Service
                 MockupOven.ReportNo = NewReportNo;
                 foreach (var MockupOven_Detail in MockupOven.MockupOven_Detail)
                 {
+                    MockupOven_Detail.EditName = userid;
                     MockupOven_Detail.ReportNo = MockupOven.ReportNo;
                     count = _MockupOvenDetailProvider.Create(MockupOven_Detail);
                     if (count == 0)
@@ -370,7 +372,7 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public BaseResult Update(MockupOven_ViewModel MockupOven)
+        public BaseResult Update(MockupOven_ViewModel MockupOven, string userid)
         {
             if (MockupOven.MockupOven_Detail != null || MockupOven.MockupOven_Detail.Count > 0)
             {
@@ -388,6 +390,14 @@ namespace BusinessLogicLayer.Service
                 MockupOven.Result = string.Empty;
             }
 
+            MockupOven.EditName = userid;
+            if (MockupOven.MockupOven_Detail != null)
+            {
+                foreach (var item in MockupOven.MockupOven_Detail)
+                {
+                    item.EditName = userid;
+                }
+            }
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             _MockupOvenProvider = new MockupOvenProvider(_ISQLDataTransaction);

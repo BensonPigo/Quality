@@ -317,10 +317,11 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public BaseResult Create(MockupWash_ViewModel MockupWash, string Mdivision, out string NewReportNo)
+        public BaseResult Create(MockupWash_ViewModel MockupWash, string Mdivision, string userid, out string NewReportNo)
         {
             NewReportNo = string.Empty;
             MockupWash.Type = "B";
+            MockupWash.AddName = userid;
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             _MockupWashProvider = new MockupWashProvider(_ISQLDataTransaction);
@@ -355,6 +356,7 @@ namespace BusinessLogicLayer.Service
                 MockupWash.ReportNo = NewReportNo;
                 foreach (var MockupWash_Detail in MockupWash.MockupWash_Detail)
                 {
+                    MockupWash_Detail.EditName = userid;
                     MockupWash_Detail.ReportNo = MockupWash.ReportNo;
                     count = _MockupWashDetailProvider.Create(MockupWash_Detail);
                     if (count == 0)
@@ -379,7 +381,7 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public BaseResult Update(MockupWash_ViewModel MockupWash)
+        public BaseResult Update(MockupWash_ViewModel MockupWash, string userid)
         {
             if (MockupWash.MockupWash_Detail != null || MockupWash.MockupWash_Detail.Count > 0)
             {
@@ -397,6 +399,14 @@ namespace BusinessLogicLayer.Service
                 MockupWash.Result = string.Empty;
             }
 
+            MockupWash.EditName = userid;
+            if (MockupWash.MockupWash_Detail != null)
+            {
+                foreach (var item in MockupWash.MockupWash_Detail)
+                {
+                    item.EditName = userid;
+                }
+            }
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             _MockupWashProvider = new MockupWashProvider(_ISQLDataTransaction);
