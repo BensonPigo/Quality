@@ -197,8 +197,6 @@
             }
         });
 
-        // isClickNew用來判斷是不是從New按鈕按下
-        var isClickNew = true;
         $(".to-edit-detail").dialog({
             width: "70%",
             dialogClass: "add-contact-box",
@@ -212,15 +210,7 @@
                             Dialog_Edit_Click();
                         }
                         else {
-                            if (isClickNew) {
-                                Dialog_Save_Click("Create");
-                                isClickNew = false;
-
-                            }
-                            else {
-                                Dialog_Save_Click('Update');
-                            }
-
+                            Dialog_Save_Click("Create");
                         }
                     },
                     "class": "site-btn btn-red btn-lg",
@@ -424,6 +414,11 @@
         }
         var ToAddress = $("#input_ToAddress").val();
         var CcAddress = $("#input_CcAddress").val();
+
+        console.log(Action);
+        console.log(GroupName);
+        console.log(ToAddress);
+        console.log(CcAddress);
 
         if (Factory == "" || GroupName == "" || ToAddress == "") {
             msg.WithWarning("Factory, Group Name and To Address cannot be empty.");
