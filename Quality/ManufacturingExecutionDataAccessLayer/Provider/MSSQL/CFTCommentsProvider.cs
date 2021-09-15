@@ -137,7 +137,7 @@ and o.Category = 'S'
 and o.OnSiteSample != 1
 {where}
 
-select SampleStage = a.OrderTypeID, CommentsCategory = a.PMS_RFTCommentsID, c.Comnments
+select SampleStage = a.OrderTypeID, CommentsCategory = (select Name from [Production].[dbo].DropDownList where id = a.PMS_RFTCommentsID and type = 'PMS_RFTComments'), c.Comnments
 from (select distinct OrderTypeID,PMS_RFTCommentsID from #tmpBase) a
 outer apply(
 	select Comnments = stuff((
