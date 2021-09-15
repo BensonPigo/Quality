@@ -188,7 +188,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             try
             {
                 _IColorFastnessDetailProvider = new ColorFastnessDetailProvider(_ISQLDataTransaction);
-                _IColorFastnessDetailProvider.Save_ColorFastness(source, Mdivision, UserID);                
+                _IColorFastnessDetailProvider.Save_ColorFastness(source, Mdivision, UserID, out string NewID);
                 _ISQLDataTransaction.Commit();
 
                 // 比對前端資料, 沒有的再刪除DB資料
@@ -196,7 +196,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     _IColorFastnessDetailProvider.Delete_ColorFastness_Detail(source.Main.ID, source.Detail);
                 }
-                
+
+                if (!string.IsNullOrEmpty(NewID))
+                {
+                    baseResult.ErrorMessage = NewID;
+                }
+
                 baseResult.Result = true;
             }
             catch (Exception ex)
@@ -212,6 +217,9 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
         public Fabric_ColorFastness_Detail_ViewModel Encode_ColorFastness(Fabric_ColorFastness_Detail_ViewModel source, DetailStatus status, string UserID)
         {
+            /*
+             * Encode 用out的方式 把Result 丟出來
+            */
             Fabric_ColorFastness_Detail_ViewModel result = new Fabric_ColorFastness_Detail_ViewModel();
             result.sentMail = false;
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
@@ -249,27 +257,19 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _ISQLDataTransaction.RollBack();
                 result.Result = false;
-                result.ErrMsg = ex.Message;
+                result.ErrorMessage = ex.Message;
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
 
             return result;
         }
 
-        public BaseResult SentMail(string POID, string ID, List<Quality_MailGroup> mailGroups)
+        public BaseResult SentMail(string POID, string ID, string ToAddress, string CCAddress)
         {
             BaseResult result = new BaseResult();
-            string ToAddress = string.Empty;
-            string CCAddress = string.Empty;
             _IColorFastnessProvider = new ColorFastnessProvider(Common.ProductionDataAccessLayer);
             try
             {
-                foreach (var item in mailGroups)
-                {
-                    ToAddress += item.ToAddress + ";";
-                    CCAddress += item.CcAddress + ";";
-                }
-
                 if (string.IsNullOrEmpty(ToAddress) == true)
                 {
                     result.Result = false;
@@ -319,14 +319,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
             if (string.IsNullOrEmpty(result.Main.ID))
             {
                 result.Result = false;
-                result.ErrMsg = "ID cannot be empty!";
+                result.ErrorMessage = "ID cannot be empty!";
                 return result;
             }
 
             if (result.Detail.Count == 0)
             {
                 result.Result = false;
-                result.ErrMsg = "Detail data not found!";
+                result.ErrorMessage = "Detail data not found!";
                 return result;
             }
 
@@ -334,7 +334,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             if (dtSubDate.Rows.Count < 1)
             {
                 result.Result = false;
-                result.ErrMsg = "Data not found!";
+                result.ErrorMessage = "Data not found!";
                 return result;
             }
            
@@ -489,7 +489,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             }
             else
             {
-                result.ErrMsg = "Convert To PDF Fail";
+                result.ErrorMessage = "Convert To PDF Fail";
                 result.Result = false;
             }
             #endregion
@@ -507,14 +507,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
             if (string.IsNullOrEmpty(result.Main.ID))
             {
                 result.Result = false;
-                result.ErrMsg = "ID cannot be empty!";
+                result.ErrorMessage = "ID cannot be empty!";
                 return result;
             }
 
             if (result.Detail.Count == 0)
             {
                 result.Result = false;
-                result.ErrMsg = "Detail data not found!";
+                result.ErrorMessage = "Detail data not found!";
                 return result;
             }
 
@@ -522,7 +522,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             if (dtSubDate.Rows.Count < 1)
             {
                 result.Result = false;
-                result.ErrMsg = "Data not found!";
+                result.ErrorMessage = "Data not found!";
                 return result;
             }
 

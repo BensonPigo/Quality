@@ -922,6 +922,26 @@
                 return false;
             }
 
+            // 重新調整index 順序。
+            $('.DetailTable > tbody > tr').each(function (index, data) {
+                var idx = $(this).closest('tr').attr('idx');
+                if (idx != index) {
+                    $.each($(this).find("input[id^='MockupCrocking_Detail']"), function () {
+                        var tableName = $(this).attr('name').substr(0, $(this).attr('name').indexOf("["));
+                        var rollName = $(this).attr('name').substr($(this).attr('name').indexOf("]") + 2, $(this).attr('name').length - $(this).attr('name').indexOf("]"));
+                        $(this).attr("id", tableName + "_" + index.toString() + "__" + rollName);
+                        $(this).attr("name", tableName + "[" + index.toString() + "]." + rollName);
+                    });
+
+                    $.each($(this).find("select[id^='MockupCrocking_Detail']"), function () {
+                        var tableName = $(this).attr('name').substr(0, $(this).attr('name').indexOf("["));
+                        var rollName = $(this).attr('name').substr($(this).attr('name').indexOf("]") + 2, $(this).attr('name').length - $(this).attr('name').indexOf("]"));
+                        $(this).attr("id", tableName + "_" + index.toString() + "__" + rollName);
+                        $(this).attr("name", tableName + "[" + index.toString() + "]." + rollName);
+                    });
+                }
+            });
+
             $(".rowHeader input[type='text']").removeAttr("disabled");
             $(".DataTable input, .DataTable select").removeAttr("disabled");
         });

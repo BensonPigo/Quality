@@ -148,7 +148,7 @@ where id = @ID
             return ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
         }
 
-        public bool Save_ColorFastness(Fabric_ColorFastness_Detail_ViewModel sources, string Mdivision,string UserID)
+        public bool Save_ColorFastness(Fabric_ColorFastness_Detail_ViewModel sources, string Mdivision,string UserID, out string NewID)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
@@ -176,7 +176,7 @@ where id = @ID
 
             string sqlcmd = string.Empty;
             int idx = 1;
-
+            NewID = string.Empty;   
             #region save Main
             if (sources.Main.ID != null && !string.IsNullOrEmpty(sources.Main.ID))
             {
@@ -205,7 +205,7 @@ where ID = @ID
             }
             else
             {
-                string NewID = GetID(Mdivision + "CF", "ColorFastness", DateTime.Today, 2, "ID");
+                NewID = GetID(Mdivision + "CF", "ColorFastness", DateTime.Today, 2, "ID");
                 objParameter.Add(new SqlParameter($"@ID", NewID));
                 sqlcmd += @"
 insert into ColorFastness(ID,POID,TestNo,InspDate,Article,Status,Inspector,Remark,addName,addDate,Temperature,Cycle,Detergent,Machine,Drying,TestBeforePicture,TestAfterPicture)

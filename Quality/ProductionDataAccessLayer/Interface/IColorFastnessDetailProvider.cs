@@ -14,7 +14,7 @@ namespace MICS.DataAccessLayer.Interface
 
         IList<FtyInventory> Get_Roll(string POID, string Seq1, string Seq2);
 
-        bool Save_ColorFastness(Fabric_ColorFastness_Detail_ViewModel source, string Mdivision, string UserID);
+        bool Save_ColorFastness(Fabric_ColorFastness_Detail_ViewModel source, string Mdivision, string UserID, out string NewID);
 
         bool Delete_ColorFastness_Detail(string ID, List<Fabric_ColorFastness_Detail_Result> source);
 
