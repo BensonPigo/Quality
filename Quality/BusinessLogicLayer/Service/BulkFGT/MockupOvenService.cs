@@ -320,7 +320,7 @@ namespace BusinessLogicLayer.Service
             int count;
             try
             {
-                if (MockupOven.MockupOven_Detail != null || MockupOven.MockupOven_Detail.Count > 0)
+                if (MockupOven.MockupOven_Detail != null && MockupOven.MockupOven_Detail.Count > 0)
                 {
                     if (MockupOven.MockupOven_Detail.Any(a => a.Result.ToUpper() == "Fail".ToUpper()))
                     {
@@ -374,7 +374,7 @@ namespace BusinessLogicLayer.Service
 
         public BaseResult Update(MockupOven_ViewModel MockupOven, string userid)
         {
-            if (MockupOven.MockupOven_Detail != null || MockupOven.MockupOven_Detail.Count > 0)
+            if (MockupOven.MockupOven_Detail != null && MockupOven.MockupOven_Detail.Count > 0)
             {
                 if (MockupOven.MockupOven_Detail.Any(a => a.Result.ToUpper() == "Fail".ToUpper()))
                 {

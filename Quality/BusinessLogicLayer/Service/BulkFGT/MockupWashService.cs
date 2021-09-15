@@ -329,7 +329,7 @@ namespace BusinessLogicLayer.Service
             int count;
             try
             {
-                if (MockupWash.MockupWash_Detail != null || MockupWash.MockupWash_Detail.Count > 0)
+                if (MockupWash.MockupWash_Detail != null && MockupWash.MockupWash_Detail.Count > 0)
                 {
                     if (MockupWash.MockupWash_Detail.Any(a => a.Result.ToUpper() == "Fail".ToUpper()))
                     {
@@ -383,7 +383,7 @@ namespace BusinessLogicLayer.Service
 
         public BaseResult Update(MockupWash_ViewModel MockupWash, string userid)
         {
-            if (MockupWash.MockupWash_Detail != null || MockupWash.MockupWash_Detail.Count > 0)
+            if (MockupWash.MockupWash_Detail != null && MockupWash.MockupWash_Detail.Count > 0)
             {
                 if (MockupWash.MockupWash_Detail.Any(a => a.Result.ToUpper() == "Fail".ToUpper()))
                 {
