@@ -360,6 +360,7 @@ SELECT {top1}
         ,MR
 		,MRName = MR_ne.Name
 		,MRExtNo = MR_ne.Extno
+        ,MRMail = MR_ne.EMail
         ,Type
         ,TestBeforePicture
         ,TestAfterPicture
@@ -371,7 +372,7 @@ SELECT {top1}
 		,LastEditName = iif(EditName <> '', Concat (EditName, '-', EditName.Name, ' ', Format(EditDate,'yyyy/MM/dd HH:mm:ss')), Concat (AddName, '-', AddName.Name, ' ', Format(AddDate,'yyyy/MM/dd HH:mm:ss')))
 FROM [MockupCrocking] m
 outer apply (select Name, ExtNo from pass1 p inner join Technician t on t.ID = p.ID where t.id = m.Technician) Technician_ne
-outer apply (select Name, ExtNo from pass1 where id = m.MR) MR_ne
+outer apply (select Name, ExtNo, EMail from pass1 where id = m.MR) MR_ne
 outer apply (select Name from Pass1 where id = m.AddName) AddName
 outer apply (select Name from Pass1 where id = m.EditName) EditName
 ");

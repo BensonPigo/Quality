@@ -17,8 +17,8 @@ namespace BusinessLogicLayer.Service.Tests
             {
                 IMockupWashService _MockupWashService = new MockupWashService();
                 MockupWash_Request MockupWash = new MockupWash_Request()
-                //{ ReportNo = "PHWA190900003" };
-                { BrandID = "ADIDAS", SeasonID = "20SS", StyleID = "S201CSPM108", Article = "FL0237" };
+                { ReportNo = "PHWA200700089" };
+                //{ BrandID = "ADIDAS", SeasonID = "20SS", StyleID = "S201CSPM108", Article = "FL0237" };
                 var mockupWash = _MockupWashService.GetMockupWash(MockupWash);
                 Assert.IsTrue(true);
             }
