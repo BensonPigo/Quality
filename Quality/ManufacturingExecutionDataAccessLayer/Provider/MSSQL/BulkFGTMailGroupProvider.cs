@@ -51,8 +51,8 @@ where q.Type = @Type
                 { "@FactoryID ", DbType.String, quality_Mail.FactoryID },
                 { "@Type ", DbType.String, quality_Mail.Type },
                 { "@GroupName ", DbType.String, quality_Mail.GroupName },
-                { "@ToAddress ", DbType.String, quality_Mail.ToAddress },
-                { "@CcAddress ", DbType.String, quality_Mail.CcAddress },
+                { "@ToAddress ", DbType.String, quality_Mail.ToAddress ?? string.Empty  },
+                { "@CcAddress ", DbType.String, quality_Mail.CcAddress ?? string.Empty },
             };
 
             StringBuilder SbSql = new StringBuilder();

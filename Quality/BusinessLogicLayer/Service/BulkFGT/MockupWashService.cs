@@ -381,13 +381,20 @@ namespace BusinessLogicLayer.Service
 
         public BaseResult Update(MockupWash_ViewModel MockupWash)
         {
-            if (MockupWash.MockupWash_Detail.Any(a => a.Result.ToUpper() == "Fail".ToUpper()))
+            if (MockupWash.MockupWash_Detail != null || MockupWash.MockupWash_Detail.Count > 0)
             {
-                MockupWash.Result = "Fail";
+                if (MockupWash.MockupWash_Detail.Any(a => a.Result.ToUpper() == "Fail".ToUpper()))
+                {
+                    MockupWash.Result = "Fail";
+                }
+                else
+                {
+                    MockupWash.Result = "Pass";
+                }
             }
             else
             {
-                MockupWash.Result = "Pass";
+                MockupWash.Result = string.Empty;
             }
 
             BaseResult result = new BaseResult();
