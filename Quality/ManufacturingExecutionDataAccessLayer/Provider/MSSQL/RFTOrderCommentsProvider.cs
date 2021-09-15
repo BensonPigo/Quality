@@ -161,7 +161,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             int rowSeq = 1;
             foreach (var item in Items)
             {
-                objParameter.Add($"@Comnments{rowSeq}", DbType.String, item.Comnments);
+                objParameter.Add($"@Comnments{rowSeq}", DbType.String, string.IsNullOrEmpty(item.Comnments) ? "" : item.Comnments);
                 objParameter.Add($"@OrderID{rowSeq}", DbType.String, item.OrderID);
                 objParameter.Add($"@PMS_RFTCommentsID{rowSeq}", DbType.String, item.PMS_RFTCommentsID);
 

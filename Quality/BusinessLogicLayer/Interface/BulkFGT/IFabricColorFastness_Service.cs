@@ -31,7 +31,7 @@ namespace BusinessLogicLayer.Interface.BulkFGT
 
         Fabric_ColorFastness_Detail_ViewModel Encode_ColorFastness(Fabric_ColorFastness_Detail_ViewModel source, DetailStatus status, string UserID);
 
-        BaseResult SentMail(string POID, string ID, List<Quality_MailGroup> mailGroups);
+        BaseResult SentMail(string POID, string ID, string ToAddress, string CCAddress);
 
         Fabric_ColorFastness_Detail_ViewModel ToPDF(string ID, bool test);
 

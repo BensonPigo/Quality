@@ -20,9 +20,9 @@ namespace BusinessLogicLayer.Interface.BulkFGT
 
         List<Order_Qty> GetDistinctArticle(Order_Qty Orders);
 
-        BaseResult Create(MockupWash_ViewModel MockupWash, string Mdivision, out string NewReportNo);
+        BaseResult Create(MockupWash_ViewModel MockupWash, string Mdivision, string userid, out string NewReportNo);
 
-        BaseResult Update(MockupWash_ViewModel MockupWash);
+        BaseResult Update(MockupWash_ViewModel MockupWash, string userid);
 
         BaseResult Delete(MockupWash_ViewModel MockupWash);
 

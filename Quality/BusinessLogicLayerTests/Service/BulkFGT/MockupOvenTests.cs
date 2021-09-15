@@ -116,7 +116,6 @@ namespace BusinessLogicLayer.Service.Tests
                 IMockupOvenService _MockupOvenService = new MockupOvenService();
                 MockupOven_ViewModel MockupOven = new MockupOven_ViewModel()
                 {
-                    ReportNo = "T1",
                     POID = "TP",
                     StyleID = "SS",
                     SeasonID = "20SS",
@@ -145,12 +144,11 @@ namespace BusinessLogicLayer.Service.Tests
                     HTCoolingTime = 6,
                     MockupOven_Detail = new System.Collections.Generic.List<MockupOven_Detail_ViewModel>()
                     {
-                        new MockupOven_Detail_ViewModel(){ReportNo = "T1",TypeofPrint="TTTT1",Design="d100",ArtworkColor="0001",FabricRefNo="RF",AccessoryRefno="AF",FabricColor  = "FCC",Result="Pass",Remark="RRRK",EditName = "SCIMIS"},
-                        new MockupOven_Detail_ViewModel(){ReportNo = "T1",TypeofPrint="TTT22",Design="d200",ArtworkColor="0001",FabricRefNo="RF",AccessoryRefno="AF",FabricColor  = "FCC",Result="Pass",Remark="2RRRK",EditName = "SCIMIS"},
+                        new MockupOven_Detail_ViewModel(){TypeofPrint="TTTT1",Design="d100",ArtworkColor="0001",FabricRefNo="RF",AccessoryRefno="AF",FabricColor  = "FCC",Result="Pass",Remark="RRRK",EditName = "SCIMIS"},
                     }
                 };
 
-                var mockupOven = _MockupOvenService.Create(MockupOven, "", out string no);
+                var mockupOven = _MockupOvenService.Create(MockupOven, "VM1", "SCIMIS", out string no);
                 Assert.IsTrue(true);
             }
             catch (Exception ex)
@@ -234,7 +232,7 @@ namespace BusinessLogicLayer.Service.Tests
                     //}
                 };
 
-                var mockupOven = _MockupOvenService.Update(MockupOven);
+                var mockupOven = _MockupOvenService.Update(MockupOven, "SCIMIS");
                 Assert.IsTrue(true);
             }
             catch (Exception ex)

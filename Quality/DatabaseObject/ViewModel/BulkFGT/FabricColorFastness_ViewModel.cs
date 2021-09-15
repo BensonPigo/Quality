@@ -133,12 +133,8 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public BaseResult baseResult { get; set; }
     }
 
-    public class Fabric_ColorFastness_Detail_ViewModel
+    public class Fabric_ColorFastness_Detail_ViewModel : BaseResult
     {
-        public bool? Result { get; set; }
-
-        public string ErrMsg { get; set; }
-
         public bool sentMail { get; set; }
 
         public string reportPath { get; set; }

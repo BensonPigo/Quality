@@ -320,6 +320,7 @@ Select ID
 		, Name
 		, ExtNo
 		, Factory
+        , EMail
 From  Pass1 p1 --工廠
 Where 1=1
 

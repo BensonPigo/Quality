@@ -269,7 +269,7 @@
                                                     styleColor = "red";
                                                 }
                                             }
-                                            <font color="@styleColor">@Html.DisplayFor(o => o.Heat_Main.Heat)</font>
+                                            <font class="@styleColor">@Html.DisplayFor(o => o.Heat_Main.Heat)</font>
                                         </td>
                                         <td><h5>Last Inspeciton Date</h5></td>
                                         <td>
@@ -382,7 +382,7 @@
                                                     styleColor = "red";
                                                 }
                                             }
-                                            <select id="Heat_Detail_@{@i}_Result" class="resultList" name="Heat_Detail[@i].Result" disabled="disabled" style="width:157px;color:@styleColor" onchange="changeResultColor(this)">
+                                            <select id="Heat_Detail_@{@i}_Result" class="resultList" name="Heat_Detail[@i].Result" disabled="disabled" class="@styleColor" style="width:157px;" onchange="changeResultColor(this)">
                                                 @foreach (var item in (List<SelectListItem>)ViewBag.ResultList)
                                                 {
                                                     string selected = item.Text.Equals(Model.Heat_Detail[i].Result) ? "selected" : "";
@@ -756,10 +756,10 @@
     function changeResultColor(obj) {
         var result = $(obj).val();
         if (result == "Pass") {
-            $(obj).css('color', 'blue');
+            $(obj).removeClass('red').addClass('blue');
         }
         else {
-            $(obj).css('color', 'red');
+            $(obj).removeClass('blue').addClass('red');
         }
     }
 

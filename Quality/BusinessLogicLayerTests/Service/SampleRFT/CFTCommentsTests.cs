@@ -34,8 +34,8 @@ namespace BusinessLogicLayer.Service.Tests
             {
                 ICFTCommentsService _CFTCommentsService = new CFTCommentsService();
                 CFTComments_ViewModel CFTComments = new CFTComments_ViewModel() { OrderID = "21090047IRS02" };
-                var _Para = _CFTCommentsService.Get_CFT_OrderComments(CFTComments).DataList;
-                Assert.IsTrue(_Para.Count == 1);
+                var _Para = _CFTCommentsService.GetExcel(CFTComments);
+                Assert.IsTrue(true);
             }
             catch (Exception ex)
             {

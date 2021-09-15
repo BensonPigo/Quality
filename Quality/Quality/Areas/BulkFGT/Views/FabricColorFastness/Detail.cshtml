@@ -15,20 +15,6 @@
 @model Fabric_ColorFastness_Detail_ViewModel
 
 <style type="text/css">
-    .content-scroll {
-        height: calc( 100vh - 110px );
-        overflow: hidden;
-        position: relative;
-        margin-top: 15px;
-    }
-
-    .inner-scroll {
-        height: calc(100vh - 180px);
-        overflow-y: scroll;
-        padding-right: 30px;
-        width: calc(100% + 30px);
-    }
-
     #ButtonMode {
         width: 92vw;
     }
@@ -118,7 +104,7 @@
     <div class="main-area">
         <div class="content-scroll">
             <div class="inner-scroll">
-                @using (Html.BeginForm("Detail", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { id = "DetailForm" }))
+                @using (Html.BeginForm("DetailSave", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { id = "DetailForm" }))
                 {
                 <div style="margin-top: 1em;">
                     <table id="ButtonMode">
@@ -195,11 +181,12 @@
                                 
                                     <label>@Model.Main.TestNo</label>
                                     @Html.HiddenFor(o => o.Main.TestNo)
+                                    @Html.HiddenFor(o => o.Main.ID)
 
                                 </td>
                                 <td style="width: 10vw;"><h5>SP#</h5></td>
-                                <td style="width: 28vw;">
-                                    @Html.DisplayFor(o => o.Main.POID, "", "")
+                                <td>
+                                    @Html.DisplayFor(o => o.Main.POID)
                                     @Html.HiddenFor(o => o.Main.POID)
                                 </td>
 
@@ -225,28 +212,57 @@
 
                                 <td><h5>Temperature(˚C)</h5></td>
                                 <td>
-                                    @Html.DropDownListFor(o => o.Main.Temperature, (List<SelectListItem>)ViewBag.Temperature_List, null, null)
+                                    <select id="Main_Temperature" name="Main.Temperature">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.Temperature_List)
+                                        {
+                                            string selected = item.Text.Equals(Model.Main.Temperature.ToString()) ? "selected" : "";
+                                            <option value="@item.Value" @selected>@item.Text</option>
+                                        }
+                                    </select>                                                                       
                                 </td>
                             </tr>
                             <tr>
                                 <td><h5>Cycle</h5></td>
                                 <td>
-                                    @Html.DropDownListFor(o => o.Main.Cycle, (List<SelectListItem>)ViewBag.Cycle_List, null, null)
+                                    <select id="Main_Cycle" name="Main.Cycle">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.Cycle_List)
+                                        {
+                                            string selected = item.Text.Equals(Model.Main.Cycle.ToString()) ? "selected" : "";
+                                            <option value="@item.Value" @selected>@item.Text</option>
+                                        }
+                                    </select>
                                 </td>
                                 <td><h5>Detergent</h5></td>
                                 <td>
-                                    @Html.DropDownListFor(o => o.Main.Detergent, (List<SelectListItem>)ViewBag.Detergent_List, null, null)
+                                    <select id="Main_Detergent" name="Main.Detergent">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.Detergent_List)
+                                        {
+                                            string selected = item.Text.Equals(Model.Main.Detergent.ToString()) ? "selected" : "";
+                                            <option value="@item.Value" @selected>@item.Text</option>
+                                        }
+                                    </select>
                                 </td>
-
                                 <td><h5>Machine Used</h5></td>
                                 <td>
-                                    @Html.DropDownListFor(o => o.Main.Machine, (List<SelectListItem>)ViewBag.Machine_List, null, new { @class = "form-control", id = "dropArticle" })
+                                    <select id="Main_Machine" name="Main.Machine">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.Machine_List)
+                                        {
+                                            string selected = item.Text.Equals(Model.Main.Machine.ToString()) ? "selected" : "";
+                                            <option value="@item.Value" @selected>@item.Text</option>
+                                        }
+                                    </select>                                    
                                 </td>
                             </tr>
                             <tr>
                                 <td><h5>Drying Process</h5></td>
                                 <td>
-                                    @Html.DropDownListFor(o => o.Main.Drying, (List<SelectListItem>)ViewBag.Drying_List, null, null)
+                                    <select id="Main_Drying" name="Main.Drying">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.Drying_List)
+                                        {
+                                            string selected = item.Text.Equals(Model.Main.Drying.ToString()) ? "selected" : "";
+                                            <option value="@item.Value" @selected>@item.Text</option>
+                                        }
+                                    </select>                                    
                                 </td>
                                 @{
                                         string ResultColor = Model.Main.Result == "Pass" ? "blue" : "red";
@@ -295,11 +311,11 @@
                                 {
                             <tr>
                                 <td style="width:10vw;">
-                                    @Html.Hidden("Seq", "", new { @idx = i })
+                                    <input id='Seq@{@i}' idx='@i' type='hidden'>
                                     @Html.TextBoxFor(o => Model.Detail[i].SubmitDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
                                 </td>
                                 <td style="width:10vw;">
-                                    @Html.TextBoxFor(o => Model.Detail[i].ColorFastnessGroup, "", "")
+                                    @Html.TextBoxFor(o => Model.Detail[i].ColorFastnessGroup, "", new { @maxlength = "2", @type = "number", @step = "1", @min = "0", @max = "99", @oninput = "value=OvenGroupCheck(value)" })
                                 </td>
                                 <td style="width:11vw;">
                                     <div style="width:10vw;">
@@ -328,13 +344,13 @@
                                     @Html.TextBoxFor(o => Model.Detail[i].ColorID, "", new { @readonly = "readonly" })
                                 </td>
                                 @{
-                                            string detailResultColor = Model.Detail[i].Result == "Pass" ? "blue" : "red";
+                                    string detailResultColor = Model.Detail[i].Result == "Pass" ? "blue" : "red";
                                 }
                                 <td style="width:10vw;">
                                     @Html.TextBoxFor(o => Model.Detail[i].Result, "", new { @class = detailResultColor, @readonly = "readonly" })
                                 </td>
                                 <td style="width:10vw;">
-                                    <select>
+                                    <select id="Detail_@{@i}__changeScale" name="Detail[@i].changeScale">
                                         @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
                                                 {
                                                     string selected = item.Text.Equals(Model.Detail[i].changeScale) ? "selected" : "";
@@ -343,18 +359,24 @@
                                     </select>
                                 </td>
                                 <td style="width:10vw;">
-
-                                    <select onchange='selectChange(this)' id="Detail_@{@i}__ResultChange" name="Detail[@i].ResultChange">
+                                    @{
+                                        string styleColor = "red";
+                                        if (Model.Detail[i].ResultChange == "Pass")
+                                        {
+                                            styleColor = "blue";
+                                        }
+                                    }
+                                    <select id="Detail_@{@i}__ResultChange" name="Detail[@i].ResultChange" onchange='selectChange(this)' class="@styleColor">
                                         @foreach (var item in (List<SelectListItem>)ViewBag.ResultChangeList)
-                                                {
-                                                    string selected = item.Text.Equals(Model.Detail[i].ResultChange) ? "selected" : "";
-                                        <option value="@item.Value" @selected>@item.Text</option>
-                                                }
+                                        {
+                                            string selected = item.Text.Equals(Model.Detail[i].ResultChange) ? "selected" : "";
+                                            <option value="@item.Value" @selected>@item.Text</option>
+                                        }
                                     </select>
 
                                 </td>
                                 <td style="width:10vw;">
-                                    <select id="test">
+                                    <select id="Detail_@{@i}__StainingScale" name="Detail[@i].StainingScale">
                                         @foreach (var item in (List<SelectListItem>)ViewBag.StainingScaleList)
                                                 {
                                                     string selected = item.Text.Equals(Model.Detail[i].StainingScale) ? "selected" : "";
@@ -363,12 +385,19 @@
                                     </select>
                                 </td>
                                 <td style="width:10vw;">
-                                    <select onchange='selectChange(this)' id="Detail_@{@i}__ResultStain" name="Detail[@i].ResultStain">
+                                    @{
+                                        styleColor = "red";
+                                        if (Model.Detail[i].ResultStain == "Pass")
+                                        {
+                                            styleColor = "blue";
+                                        }
+                                    }
+                                    <select id="Detail_@{@i}__ResultStain" name="Detail[@i].ResultStain" onchange='selectChange(this)' class="@styleColor">
                                         @foreach (var item in (List<SelectListItem>)ViewBag.ResultStainList)
-                                                {
-                                                    string selected = item.Text.Equals(Model.Detail[i].ResultStain) ? "selected" : "";
-                                        <option value="@item.Value" @selected>@item.Text</option>
-                                                }
+                                        {
+                                            string selected = item.Text.Equals(Model.Detail[i].ResultStain) ? "selected" : "";
+                                            <option value="@item.Value" @selected>@item.Text</option>
+                                        }
                                     </select>
                                 </td>
                                 <td style="width:10vw;">
@@ -402,6 +431,7 @@
     $(function () {
         msg = new MessagerAlert();
         EditMode = ('@ViewBag.EditMode' == 'True');
+        @Html.Raw(Model.ErrorMessage)
         IsEditModeChange();
     });
 
@@ -409,10 +439,10 @@
         EditModeButtionBind();
 
         if (EditMode) {
-            $("#Edit,#Encode").removeClass("IsEditMode");
+            $("#Edit, #Encode, #Amend, #Excel, #PDF").removeClass("IsEditMode");
             $('#Save, #New').addClass("IsEditMode");
             $(".DataTable input[type='text'], .DataTable select, .DetailTable select").removeAttr("disabled");
-            $('#Encode').unbind('click');
+            $('#Encode, #Amend, #Excel, #PDF').unbind('click');
             $(".DetailTable img").removeClass('display-None');
             DetailButtonBind();
             DetailDetailButtonBind();
@@ -422,15 +452,14 @@
             $(".DetailTable img").addClass('display-None');
             $('#Save').unbind('click').removeClass("IsEditMode");
             $(".DataTable input[type='text'], .DataTable select,.DetailTable select").attr("disabled", "disabled");
-
+            $('#Excel, #PDF').addClass("IsEditMode");
 
             if ($('#Main_Status').val() == "New") {
                 $('#Edit, #Encode').addClass("IsEditMode");
+                $('#Amend').unbind('click');
             }
-            else
-            {
+            else {
                 $('#Edit, #Encode').unbind('click');
-
             }
 
             if ($('#Main_Status').val() == "Confirmed") {
@@ -441,23 +470,18 @@
         $('#Picture').addClass("IsEditMode");
     }
 
-
     function DetailButtonBind() {
-            $('#btnDetailArticleSelectItem').on('click', function () {
-                var para = "?OrderID=" + $('#Main_POID').val() + "&StyleUkey=0";
-                 window.open('@Url.Action("ArticleList","PublicWondow",new{Area=""})' + para,'Article',config='toolbar=no,status=no,location=no,width=400,height=650');
-            });
+        $('#btnDetailArticleSelectItem').on('click', function () {
+            var para = "?OrderID=" + $('#Main_POID').val() + "&StyleUkey=0";
+            window.open('@Url.Action("ArticleList","PublicWondow",new{Area=""})' + para, 'Article', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        });
 
-              $('#btnDetailInspectorSelectItem').on('click', function () {
-                window.open('@Url.Action("Pass1List","PublicWondow",new{Area=""})','Inspector',config='toolbar=no,status=no,location=no,width=1000,height=650');
-              });
+        $('#btnDetailInspectorSelectItem').on('click', function () {
+            window.open('@Url.Action("Pass1List","PublicWondow",new{Area=""})', 'Inspector', config = 'toolbar=no,status=no,location=no,width=1000,height=650');
+        });
 
-
-
-            $('#Main_Article').blur(function () {
-
+        $('#Main_Article').blur(function () {
             var OrderID = $('#Main_POID').val();
-
             $.ajax({
                 url: "@Url.Action("ArticleList", "PublicWondow",new { Area=""})",
                 type: 'POST',
@@ -474,16 +498,14 @@
                     console.log(xhr.responseText);
                 }
             });
-    });
+        });
 
-
-          $('#Main_Inspector').blur(function () {
-
+        $('#Main_Inspector').blur(function () {
             $.ajax({
                 url: "@Url.Action("Pass1List", "PublicWondow",new { Area=""})",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({ID: $(this).val(), ReturnType: "JSON" }),
+                data: JSON.stringify({ ID: $(this).val(), ReturnType: "JSON" }),
                 async: true,
                 success: function (data) {
                     if (data.length == 0) {
@@ -491,8 +513,7 @@
                         $("#Main_InspectionName").val('');
                         msg.WithError('Inspector Not Found');
                     }
-                    else
-                    {
+                    else {
                         $("#Main_InspectionName").val(data[0].Name);
                     }
                 },
@@ -501,17 +522,15 @@
                 }
             });
         });
-
     }
 
     function DetailDetailButtonBind() {
 
         $('.btnDetailSEQSelectItem').unbind('click').on('click', function () {
-            var TargetID=  $(this).attr("idv");
+            var TargetID = $(this).attr("idv");
             var para = "?POID=" + $('#Main_POID').val() + "&FabricType=F&TargetID=" + TargetID;
-             window.open('@Url.Action("Po_Supp_DetailList", "PublicWondow",new{Area=""})' + para,'',config='toolbar=no,status=no,location=no,width=1000,height=650');
+            window.open('@Url.Action("Po_Supp_DetailList", "PublicWondow",new{Area=""})' + para, '', config = 'toolbar=no,status=no,location=no,width=1000,height=650');
         });
-
 
         $('.btnDetailRollSelectItem').unbind('click').on('click', function () {
             var TargetID = $(this).attr("idv");
@@ -521,47 +540,38 @@
             }
 
             var seq = $("#Detail_" + TargetID + "__Seq").val().split("-");
-         var para = "?Title=Roll&POID=" + $('#Main_POID').val() + "&Seq1=" + seq[0] + "&Seq2=" + seq[1] +"&TargetID=" + TargetID;
-         window.open('@Url.Action("FtyInventoryList", "PublicWondow",new{Area=""})' + para,'',config='toolbar=no,status=no,location=no,width=1000,height=650');
+            var para = "?Title=Roll&POID=" + $('#Main_POID').val() + "&Seq1=" + seq[0] + "&Seq2=" + seq[1] + "&TargetID=" + TargetID;
+            window.open('@Url.Action("FtyInventoryList", "PublicWondow",new{Area=""})' + para, '', config = 'toolbar=no,status=no,location=no,width=1000,height=650');
         });
 
-
-
         $('.InputDetailSEQSelectItem').unbind('blur').blur(function () {
-        var TargetID = $(this).attr("idv");
+            var TargetID = $(this).attr("idv");
             var POID = $('#Main_POID').val();
             $.ajax({
                 url: "@Url.Action("Po_Supp_DetailList", "PublicWondow",new { Area=""})",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({ POID: POID, FabricType: 'F',Seq:$(this).val(), ReturnType: "JSON" }),
+                data: JSON.stringify({ POID: POID, FabricType: 'F', Seq: $(this).val(), ReturnType: "JSON" }),
                 async: true,
                 success: function (data) {
-
                     var val = $("#Detail_" + TargetID + "__Seq").val();
-
-                    if (data.length == 0) {                    
+                    if (data.length == 0) {
                         msg.WithError(`Cannot found Seq ${val}.`);
                         $("#Detail_" + TargetID + "__Seq").val('');
                         $("#Detail_" + TargetID + "__Refno").val('');
                         $("#Detail_" + TargetID + "__SCIRefno").val('');
                         $("#Detail_" + TargetID + "__ColorID").val('');
-
                     }
-                    else
-                    {
-                        if (val == "")
-                        {
-                        $("#Detail_" + TargetID + "__Refno").val('');
-                        $("#Detail_" + TargetID + "__SCIRefno").val('');
-                        $("#Detail_" + TargetID + "__ColorID").val('');
+                    else {
+                        if (val == "") {
+                            $("#Detail_" + TargetID + "__Refno").val('');
+                            $("#Detail_" + TargetID + "__SCIRefno").val('');
+                            $("#Detail_" + TargetID + "__ColorID").val('');
                         }
-                        else
-
-                        {
-                        $("#Detail_" + TargetID + "__Refno").val(data[0].Refno);
-                        $("#Detail_" + TargetID + "__SCIRefno").val(data[0].SCIRefno);
-                        $("#Detail_" + TargetID + "__ColorID").val(data[0].ColorID);
+                        else {
+                            $("#Detail_" + TargetID + "__Refno").val(data[0].Refno);
+                            $("#Detail_" + TargetID + "__SCIRefno").val(data[0].SCIRefno);
+                            $("#Detail_" + TargetID + "__ColorID").val(data[0].ColorID);
                         }
                     }
                 },
@@ -571,12 +581,11 @@
             });
         });
 
-
         $('.InputDetailRollSelectItem').unbind('blur').blur(function () {
 
             var TargetID = $(this).attr("idv");
 
-            if ($(this).val() == "") { return;}
+            if ($(this).val() == "") { return; }
 
             if ($("#Detail_" + TargetID + "__Seq").val() == '' || $("#Detail_" + TargetID + "__Seq").val() == undefined) {
                 msg.WithError('Please input SEQ# before choose Roll#.');
@@ -592,7 +601,7 @@
                 url: "@Url.Action("FtyInventoryList", "PublicWondow",new { Area=""})",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({ POID: POID, Seq1: SEQ1, Seq2: SEQ2, Roll:$(this).val(), ReturnType: "JSON" }),
+                data: JSON.stringify({ POID: POID, Seq1: SEQ1, Seq2: SEQ2, Roll: $(this).val(), ReturnType: "JSON" }),
                 async: true,
                 success: function (data) {
 
@@ -603,17 +612,14 @@
                         msg.WithError(`Cannot found Roll# ${val}.`);
 
                         $("#Detail_" + TargetID + "__Roll").val('');
-                        $("#Detail_" + TargetID + "__Dyelot").val('');               
+                        $("#Detail_" + TargetID + "__Dyelot").val('');
                     }
-                    else
-                    {
-                        if (val == "")
-                        {
+                    else {
+                        if (val == "") {
                             $("#Detail_" + TargetID + "__Roll").val('');
                             $("#Detail_" + TargetID + "__Dyelot").val('');
                         }
-                        else
-                        {
+                        else {
                             $("#Detail_" + TargetID + "__Roll").val(data[0].Roll);
                             $("#Detail_" + TargetID + "__Dyelot").val(data[0].Dyelot);
                         }
@@ -633,52 +639,67 @@
                     msg.WithSuccess("Delete Success");
                 }, null);
         });
-
-        }
+    }
 
     function EditModeButtionBind() {
-
-          $('#Edit').on('click', function () {
-                  EditMode = true;
-                  IsEditModeChange();
-          });
-
-         $('#Save').on('click', function () {
-
-            if ($('#Main_Article').val()== "") {
-                msg.WithWarning("Article cannot be empty.");
+        $('#Edit').on('click', function () {
+            if ($('#Main_POID').val() == "") {
                 return;
             }
 
+            EditMode = true;
+            IsEditModeChange();
+        });
+
+        $('#Save').on('click', function () {
+            if ($('#Main_Article').val() == "") {
+                msg.WithWarning("Article cannot be empty.");
+                return;
+            }
 
             if ($('#Main_Inspector').val() == "") {
                 msg.WithWarning("Inspector cannot be empty.");
                 return;
             }
 
-
             if ($('#Main_InspDate').val() == "") {
                 msg.WithWarning("Test Date cannot be empty.");
                 return;
             }
 
-            location.href = '@Url.Action("Detail")?POID=' + document.getElementById("Main_POID").value.trim() + '&TestNo=' + document.getElementById("Main_TestNo").value.trim() + '&EditMode=False';
+            $('.DetailTable > tbody > tr').each(function (index, data) {
+                var idx = $(this).closest('tr').attr('idx');
+                if (idx != index) {
+                    $.each($(this).find("input[id^='Details']"), function () {
+                        var tableName = $(this).attr('name').substr(0, $(this).attr('name').indexOf("["));
+                        var rollName = $(this).attr('name').substr($(this).attr('name').indexOf("]") + 2, $(this).attr('name').length - $(this).attr('name').indexOf("]"));
+                        $(this).attr("id", tableName + "_" + index.toString() + "__" + rollName);
+                        $(this).attr("name", tableName + "[" + index.toString() + "]." + rollName);
+                    });
 
-         });
+                    $.each($(this).find("select[id^='Details']"), function () {
+                        var tableName = $(this).attr('name').substr(0, $(this).attr('name').indexOf("["));
+                        var rollName = $(this).attr('name').substr($(this).attr('name').indexOf("]") + 2, $(this).attr('name').length - $(this).attr('name').indexOf("]"));
+                        $(this).attr("id", tableName + "_" + index.toString() + "__" + rollName);
+                        $(this).attr("name", tableName + "[" + index.toString() + "]." + rollName);
+                    });
+                }
+            });
 
+            document.getElementById("DetailForm").submit();
+        });
 
-         $('#Picture').on('click', function () {
+        $('#Picture').on('click', function () {
             var para = "?Title=" + $('.page-header span').html() + "&EditMode=" + EditMode;
             para += "&" + "Table=ColorFastness";
             para += "&" + "BeforeColumn=TestBeforePicture";
             para += "&" + "AfterColumn=TestAfterPicture";
             para += "&" + "PKey_1=ID";
             para += "&" + "PKey_1_Val=" + $('#Detail_ID').val();
-            window.open('@Url.Action("PictureList", "PublicWondow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1024,height=750');
-           });
+            window.open('@Url.Action("PictureList", "PublicWondow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1024,height=750');
+        });
 
-
-         $('#New').unbind('click').on('click', function () {
+        $('#New').unbind('click').on('click', function () {
             if ($('#Main_POID').val() == "") {
                 return;
             }
@@ -687,141 +708,222 @@
                 return;
             }
 
-            //if ($('#Main_Status').val() != "New") {
-            //    return;
-            //}
+            if ($('#Main_Status').val() != "New") {
+                return;
+            }
 
             AddDetailRow();
         });
 
+        $('#Encode').unbind('click').on('click', function () {
+            var detail = [];
+            var ErrMsg = "";
+            $('.DetailTable > tbody > tr').each(function (index, value) {
 
-         $('#Encode').unbind('click').on('click', function () {
-
-              var detail = [];
-              var ErrMsg = "";
-              $('.DetailTable > tbody > tr').each(function (index, value) {
-
-                  var Body, SEQ, Result;
-                  var ChangeScale, StainingScale, ResultChange, ResultStain;
-                  $(this).children().find("input[type='text']").each(function (index, value) {
-                      switch (index) {
-                          case 1:
-                              Body= $(this).val();
-                              break;
-                          case 2:
-                              SEQ = $(this).val();
-                              break;
-                          case 8:
-                              Result = $(this).val();
-                              break;
-                      }
-                  })
-
-
-                  $(this).children().find("select").each(function (index, value) {
-                      switch (index) {
-                          case 0:
-                              ChangeScale = $(this).children("option:selected").val();
-                              break;
-                          case 1:
-                              ResultChange = $(this).children("option:selected").val();
-                              break;
-                          case 2:
-                              StainingScale = $(this).children("option:selected").val();
-                              break;
-                          case 3:
-                              ResultStain = $(this).children("option:selected").val();
-                              break;
-                      }
-                  })
-
-
-                  if (Body == "" || Body== undefined)
-                  {
-                      ErrMsg += "Body cannot be empty.";
-                      return false;
-                  }
-
-                  if (SEQ == "" || SEQ == undefined) {
-                      ErrMsg += "Seq cannot be empty.";
-                      return false;
-                  }
-
-                  if (Result == "" || Result == undefined || ResultChange == "" || ResultChange == undefined || ResultStain == "" || ResultStain == undefined || ChangeScale == "" || ChangeScale == undefined || StainingScale == "" || StainingScale == undefined) {
-                      ErrMsg += "Color Change Scale, Color Staining Scale and Result cannot be empty.";
-                      return false;
-                  }
-
-                  detail.push({
-                      Body: Body,
-                      SEQ: SEQ,
-                      Result: Result,
-                      ChangeScale: ChangeScale,
-                      ResultChange: ResultChange,
-                      StainingScale: StainingScale,
-                      ResultStain: ResultStain
-                  });
-
-
-              });
-
-              if (detail.length == 0) {
-                  ErrMsg += "Data is empty please fill-in data first.";
-              }
-
-              if (ErrMsg != "") {
-                  msg.WithError(ErrMsg);
-                  return;
-              }
-
-
-                $.ajax({
-                    url: "@Url.Action("Encode_Detail", "FabricColorFastness", new { Area = "BulkFGT" })",
-                    type: 'POST',
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify({ POID: $('#Main_POID').val(), TestNo: $('#Main_TestNo').val()}),
-                    async: false,
-                    success: function (data) {
-                        if (data.Result) {
-                            if (data.ColorFastnessResult == "Fail") {
-                                FailMail();
-                            }
-                            else {
-                                msg.WithSuccesCheck("Success", function () {
-                                    location.reload();
-                                });
-                            }
-                        }
-                        else {
-                            msg.WithError(data.ErrMsg);
-                        }
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        console.log(xhr.responseText);
+                var Body, SEQ, Result;
+                var ChangeScale, StainingScale, ResultChange, ResultStain;
+                $(this).children().find("input[type='text']").each(function (index, value) {
+                    switch (index) {
+                        case 1:
+                            Body = $(this).val();
+                            break;
+                        case 2:
+                            SEQ = $(this).val();
+                            break;
+                        case 8:
+                            Result = $(this).val();
+                            break;
                     }
-                              });
+                })
+
+
+                $(this).children().find("select").each(function (index, value) {
+                    switch (index) {
+                        case 0:
+                            ChangeScale = $(this).children("option:selected").val();
+                            break;
+                        case 1:
+                            ResultChange = $(this).children("option:selected").val();
+                            break;
+                        case 2:
+                            StainingScale = $(this).children("option:selected").val();
+                            break;
+                        case 3:
+                            ResultStain = $(this).children("option:selected").val();
+                            break;
+                    }
+                })
+
+
+                if (Body == "" || Body == undefined) {
+                    ErrMsg += "Body cannot be empty.";
+                    return false;
+                }
+
+                if (SEQ == "" || SEQ == undefined) {
+                    ErrMsg += "Seq cannot be empty.";
+                    return false;
+                }
+
+                if (Result == "" || Result == undefined || ResultChange == "" || ResultChange == undefined || ResultStain == "" || ResultStain == undefined || ChangeScale == "" || ChangeScale == undefined || StainingScale == "" || StainingScale == undefined) {
+                    ErrMsg += "Color Change Scale, Color Staining Scale and Result cannot be empty.";
+                    return false;
+                }
+
+                detail.push({
+                    Body: Body,
+                    SEQ: SEQ,
+                    Result: Result,
+                    ChangeScale: ChangeScale,
+                    ResultChange: ResultChange,
+                    StainingScale: StainingScale,
+                    ResultStain: ResultStain
+                });
+
 
             });
 
+            if (detail.length == 0) {
+                ErrMsg += "Data is empty please fill-in data first.";
+            }
+
+            if (ErrMsg != "") {
+                msg.WithError(ErrMsg);
+                return;
+            }
+
+            $.ajax({
+                url: "@Url.Action("Encode_Detail", "FabricColorFastness", new { Area = "BulkFGT" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID: $('#Main_ID').val(), Type: "Encode" }),
+                async: false,
+                success: function (data) {
+                    if (data.Result) {
+                        if (data.ColorFastnessResult == "Fail") {
+                            FailMail();
+                        }
+                        else {
+                            msg.WithSuccesCheck("Success", function () {
+                                location.reload();
+                            });
+                        }
+                    }
+                    else {
+                        msg.WithError(data.ErrorMessage);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+
+        });
+
+        $('#Amend').unbind('click').on('click', function () {
+            $.ajax({
+                url: "@Url.Action("Encode_Detail", "FabricColorFastness", new { Area = "BulkFGT" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID: $('#Main_ID').val(), Type: "Amend" }),
+                async: false,
+                success: function (data) {
+                    if (data.Result) {
+                        msg.WithSuccesCheck("Success", function () {
+                            location.reload();
+                        });
+                    }
+                    else {
+                        msg.WithError(data.ErrorMessage);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $('#Excel').unbind('click').on('click', function () {
+            ToReport(0);
+        });
+
+        $('#PDF').unbind('click').on('click', function () {
+            ToReport(1);
+        });
+    }
+
+    function ToReport(IsToPDF) {
+        $.ajax({
+            url: "@Url.Action("Report", "FabricColorFastness", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ ID: $('#Main_ID').val(), IsToPDF: IsToPDF }),
+            async: false,
+            success: function (data) {
+                if (data.Result) {
+                    window.location.href = data.reportPath;
+                }
+                else {
+                    msg.WithError(data.ErrorMessage);
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
     }
 
     function FailMail() {
         var para = "?Title=" + $('.page-header span').html() + "&FactoryID=@ViewBag.FactoryID&Type=BulkFGT";
-        window.open('@Url.Action("TestFailMailList", "PublicWondow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
+        window.open('@Url.Action("TestFailMailList", "PublicWondow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
+    }
+
+    function GetTestFailMailList(data) {
+        var to = "";
+        var cc = "";
+        $.each(data, function (index, value) {
+            to += value.To + ';';
+            cc += value.CC + ';';
+        });
+
+        $.ajax({
+            url: "@Url.Action("FailMail", "FabricColorFastness", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ POID: $('#Main_POID').val(), ID: $('#Main_ID').val(), TO: to, CC: cc }),
+            async: false,
+            success: function (data) {
+                if (data.result) {
+                    msg.WithSuccesCheck("Success", function () {
+                        location.reload();
+                    });
+                }
+                else {
+                    msg.WithWarningCheck(data.resultMsg, function () {
+                        location.reload();
+                    });
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                // console.log(xhr.responseText);
+                msg.WithWarningCheck(xhr.responseText, function () {
+                    location.reload();
+                });
             }
-
-    function SaveData(main) {
-
-        }
+        });
+    }
 
     function AddDetailRow() {
         var ID;
         var lastNO;
+        var GroupNO;
         if ($('.DetailTable > tbody > tr').length > 0) {
             lastNO = parseInt($('.DetailTable > tbody > tr:last-child > td > input[type="hidden"] ').attr('idx')) + 1;
+            GroupNO = OvenGroupCheck($('.DetailTable>tbody>tr').length + 1);
         }
         else {
             lastNO = 0;
+            GroupNO = "01";
         }
 
         var POID = $('#Main_POID').val();
@@ -829,7 +931,7 @@
             url: "@Url.Action("AddDetailRow", "FabricColorFastness", new { Area = "BulkFGT" })",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
-            data: JSON.stringify({ POID: POID, lastNO: lastNO}),
+            data: JSON.stringify({ lastNO: lastNO, GroupNO: GroupNO }),
             async: false,
             success: function (data) {
                 $('.DetailTable > tbody').append(data);
@@ -842,11 +944,16 @@
         });
     }
 
-    function selectChange(self) {
+    function selectChange(obj) {
+        var result = $(obj).val();
+        if (result == "Pass") {
+            $(obj).removeClass('red').addClass('blue');
+        }
+        else {
+            $(obj).removeClass('blue').addClass('red');
+        }
 
-        var selectedText = $(self).val();
-
-        var key = $(self).parents('td').parents('tr').children('td').find("input[type='hidden']").attr('idx');
+        var key = $(obj).parents('td').parents('tr').children('td').find("input[type='hidden']").attr('idx');
 
         var resultChange = document.getElementById("Detail_" + key + "__ResultChange").value;
         var resultStain = document.getElementById("Detail_" + key + "__ResultStain").value;
@@ -893,4 +1000,11 @@
         $('#Main_TestAfterPicture').val(data.AfterPicture.replace("data:image/webp;base64,", ""));
     }
 
+    function OvenGroupCheck(value) {
+        if (parseInt(value) >= 99) {
+            return 99;
+        }
+
+        return padLeft(parseInt(value).toString(), 2);
+    }
 </script>

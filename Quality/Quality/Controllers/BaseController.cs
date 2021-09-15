@@ -31,6 +31,16 @@ namespace Quality.Controllers
             set { System.Web.HttpContext.Current.Session["BulkFGT_Brand"] = value; }
         }
 
+        public string UserMail
+        {
+            get
+            {
+                if (System.Web.HttpContext.Current.Session["UserMail"] == null) { return ""; }
+                else { return System.Web.HttpContext.Current.Session["UserMail"].ToString(); }
+            }
+            set { System.Web.HttpContext.Current.Session["UserMail"] = value; }
+        }
+
         public string MDivisionID
         {
             get

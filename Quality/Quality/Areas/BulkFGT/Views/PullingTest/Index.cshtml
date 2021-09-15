@@ -265,7 +265,7 @@
                                                 color = "blue";
                                             }
                                         }
-                                        @Html.TextBox("ResultText", Model.Detail.Result, new { @readonly = "readonly", @style = $"color:{color}" })
+                                        @Html.TextBox("ResultText", Model.Detail.Result, new { @readonly = "readonly", @class= $"{color}" })
                                     </td>
                                     <td><h5>Inspector</h5></td>
                                     <td>
@@ -890,13 +890,13 @@
         if (result) {
             $("#Detail_Result").val('Pass');
             $("#ResultText").val('Pass');
-            $("#ResultText").css('color', 'blue');
+            $("#ResultText").removeClass('red').addClass('blue');
             $("#needSendMail").val(false);
         }
         else {
             $("#Detail_Result").val('Fail');
             $("#ResultText").val('Fail');
-            $("#ResultText").css('color', 'red');
+            $("#ResultText").removeClass('blue').addClass('red');
             $("#needSendMail").val(true);
         }
     }

@@ -629,7 +629,20 @@
                                 <tbody>
                                     @for (int i = 0; i <= Model.FGWT.Count - 1; i++)
                                     {
-                                        string Location = Model.FGWT[i].Location.Equals("T") ? "Top" : "Bottom";
+                                        string Location = Model.FGWT[i].Location;
+                                        switch (Model.FGWT[i].Location)
+                                        {
+                                            case "T":
+                                                Location = "Top";
+                                                break;
+                                            case "B":
+                                                Location = "Bottom";
+                                                break;
+                                            case "S":
+                                                Location = "Top+Bottom";
+                                                break;
+                                        };
+
                                         bool bolWash = Model.FGWT[i].EditType.Equals("1");
                                         bool bolScale = Model.FGWT[i].EditType.Equals("2");
                                         <tr>
@@ -637,7 +650,7 @@
                                                 @Location
                                             </td>
                                             <td>
-                                                @Html.DisplayFor(o => Model.FGWT[i].Type)
+                                                @Html.DisplayFor(o => Model.FGWT[i].SystemType)
                                                 @Html.HiddenFor(o => Model.FGWT[i].Type)
                                                 @Html.HiddenFor(o => Model.FGWT[i].ID)
                                                 @Html.HiddenFor(o => Model.FGWT[i].No)

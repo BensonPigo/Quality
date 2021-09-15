@@ -22,5 +22,7 @@ namespace DatabaseObject.ResultModel
         public string MDivisionID { get; set; }
 
         public string FactoryID { get; set; }
+
+        public string UserMail { get; set; }
     }
 }

@@ -70,6 +70,7 @@ namespace Quality.Controllers
             {
                 this.UserID = result.pass1.ID;
                 this.BulkFGT_Brand = result.pass1.BulkFGT_Brand;
+                this.UserMail = result.UserMail;
                 this.MenuList = result.Menus;
                 this.Factorys = result.Factorys;
                 this.MDivisionID = result.MDivisionID;

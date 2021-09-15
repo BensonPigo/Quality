@@ -12,14 +12,6 @@
 @model FabricColorFastness_ViewModel
 
 <style type="text/css">
-    .content-scroll {
-        height: calc( 100vh - 180px );
-    }
-
-    .inner-scroll {
-        height: calc(100vh - 180px);
-    }
-
     .row {
         --bs-gutter-x: 1.5rem;
         --bs-gutter-y: 0;
@@ -290,7 +282,7 @@
                                     @{
                                         string InspDate = Model.ColorFastness_MainList[i].InspDate.HasValue ? Model.ColorFastness_MainList[i].InspDate.Value.ToString("yyyy/MM/dd") : string.Empty;
                                         string ResultColor = Model.ColorFastness_MainList[i].Result == "Pass" ? "blue" : "red";
-                              
+                                        string showPic = Model.ColorFastness_MainList[i].Status == "New" ? string.Empty : "display: none";
                                     }
 
                                     <td style="width:10vw;">
@@ -313,10 +305,10 @@
                                         @Html.DisplayFor(o => Model.ColorFastness_MainList[i].LastUpdate, "", "")
                                     </td>
                                     <td style="width:10vw;">
-                                        <img class="detailEdit"  onclick="DetailView('@Model.ColorFastness_MainList[i].ID')" src="~/Image/Icon/Edit.png" width="30" />
+                                        <img class="detailEdit" style="@showPic" onclick="DetailView('@Model.ColorFastness_MainList[i].ID')" src="~/Image/Icon/Edit.png" width="30" />
                                     </td>
                                     <td style="width:10vw;">
-                                        <img class="detailDelete"  onclick="DetailDelete('@Model.ColorFastness_MainList[i].ID', '@Model.ColorFastness_MainList[i].TestNo')" src="~/Image/Icon/Delete.png" width="30" />
+                                        <img class="detailDelete" style="@showPic" onclick="DetailDelete('@Model.ColorFastness_MainList[i].ID', '@Model.ColorFastness_MainList[i].TestNo')" src="~/Image/Icon/Delete.png" width="30" />
                                     </td>
                                 </tr>
                             }

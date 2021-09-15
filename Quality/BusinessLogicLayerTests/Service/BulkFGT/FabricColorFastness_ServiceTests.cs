@@ -279,7 +279,7 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
             _MailGroups.Add(m1);
             _MailGroups.Add(m2);
 
-            result = service.SentMail("21041712BB", "VM2CF21090002", _MailGroups);
+            //result = service.SentMail("21041712BB", "VM2CF21090002", _MailGroups);
 
 
             Assert.IsTrue(result.Result);

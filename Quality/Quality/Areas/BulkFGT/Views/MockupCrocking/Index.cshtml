@@ -153,8 +153,15 @@
                 </div>
             </div>
             <div class="breadcrumb queryHeader" style="justify-content: flex-end;">
-                <h4 style="margin-right: 1em;color:white">Report No</h4>
-                @Html.DropDownList("QueryReportNo", (List<SelectListItem>)ViewBag.ReportNo_Source, null, new { @class = "form-control" })
+                <h4 style="margin-right: 1em;color:white">Report No</h4>               
+                <select id="Request__ReportNo" name="Request.ReportNo" onchange="ReportNoChange(this.value)">
+                    @foreach (var item in (List<SelectListItem>)ViewBag.ReportNo_Source)
+                    {
+                        string reportNO = Model.Request != null && !string.IsNullOrEmpty(Model.Request.ReportNo) ? Model.Request.ReportNo : string.Empty;
+                        string selected = item.Value.Equals(reportNO) ? "selected" : "";
+                        <option value="@item.Value" @selected>@item.Text</option>
+                    }
+                </select>
                 <input id="btnNew" type="button" class="button" style="margin-left:1em;border:0;cursor:pointer;" name="New" value="New">
             </div>
         </header>
@@ -167,22 +174,22 @@
                             <p class="InfoTitle White">Brand</p>
                         </div>
                         <div class="col-auto">
-                            @Html.TextBoxFor(o => o.Request.BrandID)
+                            <input id="Request_BrandID" name="Request.BrandID" type="text" value="@Model.Request.BrandID">
                             <input id="btnBrandSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
                         </div>
                         <div class="col-auto"><p class="InfoTitle White">Season</p></div>
                         <div class="col-auto">
-                            @Html.TextBoxFor(o => o.Request.SeasonID)
+                            <input id="Request_SeasonID" name="Request.SeasonID" type="text" value="@Model.Request.SeasonID">
                             <input id="btnSeasonSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
                         </div>
                         <div class="col-auto"><p class="InfoTitle White">Style</p></div>
                         <div class="col-auto">
-                            @Html.TextBoxFor(o => o.Request.StyleID)
+                            <input id="Request_StyleID" name="Request.StyleID" type="text" value="@Model.Request.StyleID">
                             <input id="btnStyleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
                         </div>
                         <div class="col-auto"><p class="InfoTitle White">Article</p></div>
                         <div class="col-auto">
-                            @Html.TextBoxFor(o => o.Request.Article)
+                            <input id="Request_Article" name="Request.Article" type="text" value="@Model.Request.Article">
                             <input id="btnArticleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
                         </div>
 
@@ -217,11 +224,10 @@
                                         </h4>
                                     </td>
                                     <td>
-                                        <h4 style=" margin-right: 1em;">
-                                            <button id="Delete" name="action:Delete" type="submit" style="margin:0;min-width:0;background-color:transparent">
-                                                <img src="~/Image/Icon/Delete.png" width="30" />
-                                                Delete
-                                            </button>
+                                        <input id="DeleteSubmit" type="submit" name="action:Delete" style="display:none" />
+                                        <h4 id="Delete" style=" margin-right: 1em;">
+                                            <img src="~/Image/Icon/Delete.png" width="30" />
+                                            Delete
                                         </h4>
                                     </td>
                                     <td>
@@ -261,7 +267,7 @@
                                 <tr>
                                     <td style="width: 10vw;"><h5>Report No</h5></td>
                                     <td style="width: 20vw;">
-                                        @Html.TextBoxFor(o => o.ReportNo, "", new { @readonly = "readonly" })
+                                        <input id="ReportNo" name="ReportNo" readonly="readonly" type="text" value="@Model.ReportNo">                                        
                                         @Html.HiddenFor(o => o.TestBeforePicture)
                                         @Html.HiddenFor(o => o.TestAfterPicture)
                                     </td>
@@ -333,7 +339,18 @@
                                     </td>
                                     <td><h5>Result</h5></td>
                                     <td>
-                                        @Html.TextBoxFor(o => o.Result, "", new { @readonly = "readonly" })
+                                        @{
+                                            string styleColor = "";
+                                            if (Model.Result == "Pass")
+                                            {
+                                                styleColor = "blue";
+                                            }
+                                            else
+                                            {
+                                                styleColor = "red";
+                                            }
+                                        }
+                                        <font id="Result" class="@styleColor">@Model.Result</font>
                                     </td>
                                     <td></td>
                                     <td></td>
@@ -358,15 +375,18 @@
                                     <td>
                                         @{
                                             nameValue = string.Empty;
+                                            string mrmail = string.Empty;
                                             if (!string.IsNullOrWhiteSpace(Model.MRName))
                                             {
                                                 nameValue = Model.MRName + " Ext." + Model.MRExtNo;
+                                                mrmail = Model.MRMail;
                                             }
 
                                         }
                                         <div class="input-group">
                                             @Html.TextBoxFor(o => o.MR, "", new { @class = "OnlyEdit", style = "width:5vw" })
                                             <input type="text" id="MRDesc" readonly="readonly" value="@nameValue" />
+                                            <input type="hidden" id="MRMail" readonly="readonly" value="@mrmail" />
                                             <input id="btnMRSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
                                         </div>
                                     </td>
@@ -402,7 +422,7 @@
                                 <tr idx="@i" class="row-content" style="vertical-align: middle; text-align: center;">
                                     <td>
                                         <div class="input-group">
-                                            @Html.TextBoxFor(modelItem => Model.MockupCrocking_Detail[i].Design)
+                                            <input id="MockupCrocking_Detail_@{@i}__Design" name="MockupCrocking_Detail[@{@i}].Design" type="text" value="@Model.MockupCrocking_Detail[i].Design">                                            
                                         </div>
                                     </td>
                                     <td>
@@ -441,7 +461,14 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <select id="MockupCrocking_Detail_@{@i}__Result" class="result" name="MockupCrocking_Detail[@i].Result" style="width:157px;" onchange="changeResult()">
+                                        @{
+                                            styleColor = "red";
+                                            if (Model.MockupCrocking_Detail[i].Result == "Pass")
+                                            {
+                                                styleColor = "blue";
+                                            }
+                                        }
+                                        <select id="MockupCrocking_Detail_@{@i}__Result" class="result @styleColor" name="MockupCrocking_Detail[@i].Result" style="width:157px;" onchange="changeResult(this)">
                                             @foreach (var item in (List<SelectListItem>)Model.Result_Source)
                                             {
                                                 string selected = item.Text.Equals(Model.MockupCrocking_Detail[i].Result) ? "selected" : "";
@@ -450,10 +477,10 @@
                                         </select>
                                     </td>
                                     <td>
-                                        @Html.TextBoxFor(modelItem => Model.MockupCrocking_Detail[i].Remark, new { })
+                                        <input id="MockupCrocking_Detail_@{@i}__Remark" name="MockupCrocking_Detail[@{@i}].Remark" type="text" value="@Model.MockupCrocking_Detail[i].Remark">
                                     </td>
                                     <td>
-                                        @Html.TextBoxFor(modelItem => Model.MockupCrocking_Detail[i].LastUpdate, new { @readonly = "readonly" })
+                                        <input id="MockupCrocking_Detail_@{@i}__LastUpdate" name="MockupCrocking_Detail[@{@i}].LastUpdate" readonly="readonly" type="text" value="@Model.MockupCrocking_Detail[i].LastUpdate">
                                     </td>
                                     <td>
                                         <img class='detailDelete' src="~/Image/Icon/Delete.png" width=30 style="min-width:30px">
@@ -529,8 +556,7 @@
                 $("#Edit, #Delete, #Picture, #PDF, #SendMail").addClass("IsEditMode");
             }
             else {
-                $("#Edit, #Picture, #PDF, #SendMail").unbind('click').removeClass("IsEditMode");
-                $("#Delete").removeClass("IsEditMode");
+                $("#Edit, #Picture, #Delete, #PDF, #SendMail").unbind('click').removeClass("IsEditMode");
             }
 
             $(".DataTable input, .DataTable select").attr("disabled", "disabled");
@@ -551,7 +577,12 @@
     function Clear() {
         if (EditType == "New") {
             $(".DataTable input[type='text'], .DetailTable select").val('');
+            $('#Result').html('');
         }
+    }
+
+    function ReportNoChange(value) {
+        $('#btnQuery').unbind('click').click();
     }
 
     function QueryButtonBind() {
@@ -775,8 +806,6 @@
         $('#Technician').unbind('blur').on('blur', function () {
             if ($(this).val() == "") {
                 $("#Technician").val('');
-                $("#TechnicianName").val('');
-                $("#TechnicianExtNo").val('');
                 $("#TechnicianDesc").val('');
                 return;
             }
@@ -790,17 +819,13 @@
                 success: function (data) {
                     if (data.length == 0) {
                         $("#Technician").val('');
-                        $("#TechnicianName").val('');
-                        $("#TechnicianExtNo").val('');
                         $("#TechnicianDesc").val('');
                         msg.WithError('Lab Tech Not Found');
                     }
                     else
                     {
                         $("#Technician").val(data[0].ID);
-                        $("#TechnicianName").val(data[0].Name);
-                        $("#TechnicianExtNo").val(data[0].ExtNo);
-                        $("#TechnicianName").val(data[0].Name + ' Ext.' + data[0].ExtNo);
+                        $("#TechnicianDesc").val(data[0].Name + ' Ext.' + data[0].ExtNo);
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
@@ -812,9 +837,8 @@
         $('#MR').unbind('blur').on('blur', function () {
             if ($(this).val() == "") {
                 $("#MR").val('');
-                $("#MRName").val('');
-                $("#MRExtNo").val('');
                 $("#MRDesc").val('');
+                $("#MRMail").val('');
                 return;
             }
 
@@ -827,17 +851,15 @@
                 success: function (data) {
                     if (data.length == 0) {
                         $("#MR").val('');
-                        $("#MRName").val('');
-                        $("#MRExtNo").val('');
                         $("#MRDesc").val('');
+                        $("#MRMail").val('');
                         msg.WithError('Lab Tech Not Found');
                     }
                     else
                     {
                         $("#MR").val(data[0].ID);
-                        $("#MRName").val(data[0].Name);
-                        $("#MRExtNo").val(data[0].ExtNo);
                         $("#MRDesc").val(data[0].Name + ' Ext.' + data[0].ExtNo);
+                        $("#MRMail").val(data[0].EMail);
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
@@ -901,6 +923,26 @@
                 return false;
             }
 
+            // 重新調整index 順序。
+            $('.DetailTable > tbody > tr').each(function (index, data) {
+                var idx = $(this).closest('tr').attr('idx');
+                if (idx != index) {
+                    $.each($(this).find("input[id^='MockupCrocking_Detail']"), function () {
+                        var tableName = $(this).attr('name').substr(0, $(this).attr('name').indexOf("["));
+                        var rollName = $(this).attr('name').substr($(this).attr('name').indexOf("]") + 2, $(this).attr('name').length - $(this).attr('name').indexOf("]"));
+                        $(this).attr("id", tableName + "_" + index.toString() + "__" + rollName);
+                        $(this).attr("name", tableName + "[" + index.toString() + "]." + rollName);
+                    });
+
+                    $.each($(this).find("select[id^='MockupCrocking_Detail']"), function () {
+                        var tableName = $(this).attr('name').substr(0, $(this).attr('name').indexOf("["));
+                        var rollName = $(this).attr('name').substr($(this).attr('name').indexOf("]") + 2, $(this).attr('name').length - $(this).attr('name').indexOf("]"));
+                        $(this).attr("id", tableName + "_" + index.toString() + "__" + rollName);
+                        $(this).attr("name", tableName + "[" + index.toString() + "]." + rollName);
+                    });
+                }
+            });
+
             $(".rowHeader input[type='text']").removeAttr("disabled");
             $(".DataTable input, .DataTable select").removeAttr("disabled");
         });
@@ -912,7 +954,7 @@
                 $('#btnQuery').unbind('click').click();
             }
             else {
-                if ($('#BrandID').val() != '' || $('#SeasonID').val() != '' || $('#StyleID').val() != '' || $('#Article').val() != '') {
+                if ($('#Request_BrandID').val() != '' || $('#Request_SeasonID').val() != '' || $('#Request_StyleID').val() != '' || $('#Request_Article').val() != '') {
                     $('#btnQuery').unbind('click').click();
                 }
             }
@@ -921,17 +963,12 @@
         });
 
         $('#Delete').on('click', function (e) {
-            e.preventDefault();
             if (EditMode == false && $('#ReportNo').val() != null && $('#ReportNo').val() != "") {
+                e.preventDefault();
                 msg.WithConfirm('Do you want to delete the data ?',
                     function () {
-                        document.getElementById('DetailForm').submit();
-                    }, function () {
-                        return false;
-                    });
-            }
-            else {
-                return false;
+                        $("#DeleteSubmit").click();
+                    }, null);
             }
         });
 
@@ -1007,7 +1044,11 @@
                 async: false,
                 success: function (data) {
                     if (data.Result) {
-                        var para = "?file=" + data.FileName;
+                        var para = "?To=" + $('#MRMail').val();
+                        para += "&CC=" + '@ViewBag.UserMail';
+                        para += "&Subject=" + "Mockup Crocking Test – ReportNo:" + $('#ReportNo').val() + " – Style: " + $('#StyleID').val();
+                        para += "&Body=" + "Attachment is Mockup Crocking Test– ReportNo:" + $('#ReportNo').val() + " detail data";
+                        para += "&file=" + data.FileName;
                         window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=600');
                     }
                     else {
@@ -1052,7 +1093,7 @@
         });
 
         $('#btnDetailArticleSelectItem').on('click', function () {
-            var para = "?TargetID=ArticleID&OrderID=&StyleUkey=0&BrandID=" + $('#BrandID').val() + "&SeasonID=" + $('#SeasonID').val() + "&StyleID=" + $('#StyleID').val();
+            var para = "?TargetID=Article&OrderID=&StyleUkey=0&BrandID=" + $('#BrandID').val() + "&SeasonID=" + $('#SeasonID').val() + "&StyleID=" + $('#StyleID').val();
             window.open('@Url.Action("ArticleList","PublicWondow",new{Area=""})' + para,'Article',config='toolbar=no,status=no,location=no,width=400,height=650');
         });
 
@@ -1116,16 +1157,13 @@
 
     function GetTechnician(data, targetID) {
         $('#Technician').val(data.ID);
-        $('#TechnicianName').val(data.Name);
-        $('#TechnicianExtNo').val(data.ExtNo);
         $('#TechnicianDesc').val(data.Name + ' Ext.' + data.ExtNo);
     }
 
     function GetPass1(data, targetID) {
         $('#' + targetID).val(data.ID);
-        $('#' + targetID + 'Name').val(data.Name);
-        $('#' + targetID + 'ExtNo').val(data.ExtNo);
         $('#' + targetID + "Desc").val(data.Name + ' Ext.' + data.ExtNo);
+        $('#' + targetID + 'Mail').val(data.EMail);
     }
 
     function GetColor(pickList, targetID) {
@@ -1136,7 +1174,7 @@
             name.push(obj.Name);
         });
 
-        $('#MockupCrocking_Detail_' + targetID + 'ID').val(id.join(';'));
+        $('#MockupCrocking_Detail_' + targetID).val(id.join(';'));
         $('#MockupCrocking_Detail_' + targetID + 'Name').val(name.join(';'));
     }
 
@@ -1169,15 +1207,28 @@
         });
     }
 
-    function changeResult() {
-        var result = 'Pass';
+    function changeResult(obj) {
+        var result = $(obj).val();
+        if (result == "Pass") {
+            $(obj).removeClass('red').addClass('blue');
+        }
+        else {
+            $(obj).removeClass('blue').addClass('red');
+        }
+
+        var result = true;
         $(".result").each(function () {
             if ($(this).val() != "Pass") {
-                result = 'Fail';
+                result = false;
             }
         });
 
-        $('#Result').val(result);
+        if (result) {
+            $('#Result').html("Pass").removeClass('red').addClass("blue");
+        }
+        else {
+            $('#Result').html("Fail").removeClass('blue').addClass("red");
+        }
     }
 
     function AddDetailRow() {
@@ -1200,7 +1251,6 @@
                 $('.DetailTable > tbody').append(data);
 
                 DetailButtonBind();
-                changeResult();
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 console.log(xhr.responseText);

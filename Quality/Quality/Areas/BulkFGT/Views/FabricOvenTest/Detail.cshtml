@@ -15,20 +15,6 @@
 @model FabricOvenTest_Detail_Result
 
 <style type="text/css">
-    .content-scroll {
-        height: calc( 100vh - 110px );
-        overflow: hidden;
-        position: relative;
-        margin-top: 15px;
-    }
-
-    .inner-scroll {
-        height: calc(100vh - 180px);
-        overflow-y: scroll;
-        padding-right: 30px;
-        width: calc(100% + 30px);
-    }
-
     #tab-Change {
         width: 92vw;
     }
@@ -317,7 +303,7 @@
                                 {
                                     <tr>
                                         <td style="width:10vw;">
-                                            @Html.Hidden("Seq", "", new { @idx = i })
+                                            <input id='Seq@{@i}' idx='@i' type='hidden'>
                                             @Html.TextBoxFor(o => Model.Details[i].SubmitDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
                                         </td>
                                         <td style="width:10vw;">
@@ -366,8 +352,14 @@
                                             </select>
                                         </td>
                                         <td style="width:10vw;">
-
-                                            <select onchange='selectChange(this)' id="Details_@{@i}__ResultChange" name="Details[@i].ResultChange">
+                                            @{
+                                                string styleColor = "red";
+                                                if (Model.Details[i].ResultChange == "Pass")
+                                                {
+                                                    styleColor = "blue";
+                                                }
+                                            }
+                                            <select onchange='selectChange(this)' id="Details_@{@i}__ResultChange" name="Details[@i].ResultChange" class="@styleColor">
                                                 @foreach (var item in (List<SelectListItem>)ViewBag.ResultChangeList)
                                                 {
                                                     string selected = item.Text.Equals(Model.Details[i].ResultChange) ? "selected" : "";
@@ -386,7 +378,14 @@
                                             </select>
                                         </td>
                                         <td style="width:10vw;">
-                                            <select onchange='selectChange(this)' id="Details_@{@i}__ResultStain" name="Details[@i].ResultStain">
+                                            @{
+                                                styleColor = "red";
+                                                if (Model.Details[i].ResultStain == "Pass")
+                                                {
+                                                    styleColor = "blue";
+                                                }
+                                            }
+                                            <select onchange='selectChange(this)' id="Details_@{@i}__ResultStain" name="Details[@i].ResultStain" class="@styleColor">
                                                 @foreach (var item in (List<SelectListItem>)ViewBag.ResultStainList)
                                                 {
                                                     string selected = item.Text.Equals(Model.Details[i].ResultStain) ? "selected" : "";
@@ -635,13 +634,11 @@
                     }
                     else {
 
-                        if (val == "")
-                        {
+                        if (val == "") {
                             $("#Details_" + TargetID + "__Roll").val('');
                             $("#Details_" + TargetID + "__Dyelot").val('');
                         }
-                        else
-                        {
+                        else {
                             $("#Details_" + TargetID + "__Roll").val(data[0].Roll);
                             $("#Details_" + TargetID + "__Dyelot").val(data[0].Dyelot);
                         }
@@ -978,11 +975,16 @@
         });
     }
 
-    function selectChange(self) {
+    function selectChange(obj) {
+        var result = $(obj).val();
+        if (result == "Pass") {
+            $(obj).removeClass('red').addClass('blue');
+        }
+        else {
+            $(obj).removeClass('blue').addClass('red');
+        }
 
-        var selectedText = $(self).val();
-
-        var key = $(self).parents('td').parents('tr').children('td').find("input[type='hidden']").attr('idx');
+        var key = $(obj).parents('td').parents('tr').children('td').find("input[type='hidden']").attr('idx');
 
         var resultChange = document.getElementById("Details_" + key + "__ResultChange").value;
         var resultStain = document.getElementById("Details_" + key + "__ResultStain").value;

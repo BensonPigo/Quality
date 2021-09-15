@@ -24,6 +24,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             {
                 { "@OrderID", DbType.String, filter.OrderID } ,
                 { "@Size", DbType.String, filter.Size } ,
+                { "@Article", DbType.String, filter.Article},
             };
 
             string sqlcmd = @"
@@ -34,9 +35,10 @@ outer apply(
 	from ManufacturingExecution.dbo.Rft_Inspection  i
 	where i.OrderId = oq.ID
 	and i.Size = oq.SizeCode
+    and i.Article = oq.Article
     and Status <> 'Dispose'
 )insp
-where oq.id = @OrderID and SizeCode = @Size
+where oq.id = @OrderID and SizeCode = @Size and Article = @Article
 and oq.Qty - isnull(insp.cnt,0) > 0
 ";
             DataTable dt = ExecuteDataTable(CommandType.Text, sqlcmd, objParameter);

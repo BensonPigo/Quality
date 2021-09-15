@@ -60,6 +60,7 @@ namespace DatabaseObject.Public
         public string Name { get; set; }
         public string ExtNo { get; set; }
         public string Factory { get; set; }
+        public string EMail { get; set; }
     }
 
     public class Window_LocalSupp

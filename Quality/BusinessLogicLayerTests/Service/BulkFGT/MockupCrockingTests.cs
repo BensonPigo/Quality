@@ -107,18 +107,17 @@ namespace BusinessLogicLayer.Service.Tests
                     TestDate = DateTime.Now,
                     ReceivedDate = DateTime.Now,
                     ReleasedDate = DateTime.Now,
-                    Result = "Pass",
+                    //Result = "Pass",
                     Technician = "SCIMIS",
                     MR = "SCIMIS",
-                    AddName = "SCIMIS",
                     MockupCrocking_Detail = new System.Collections.Generic.List<MockupCrocking_Detail_ViewModel>()
                     {
-                        //new MockupCrocking_Detail_ViewModel(){ReportNo = "T1",Design="d100",ArtworkColor="0001",FabricRefNo="RF",FabricColor  = "FCC",Result="Pass",Remark="RRRK",EditName = "SCIMIS",WetScale="1",DryScale="2-2"},
+                        //new MockupCrocking_Detail_ViewModel(){Design="d100",ArtworkColor="0001",FabricRefNo="RF",FabricColor  = "FCC",Result="Pass",Remark="RRRK",WetScale="1",DryScale="2-2"},
                         //new MockupCrocking_Detail_ViewModel(){ReportNo = "T1",Design="d200",ArtworkColor="0001",FabricRefNo="RF",FabricColor  = "FCC",Result="Pass",Remark="2RRRK",EditName = "SCIMIS",WetScale="1",DryScale="2-2"},
                     }
                 };
 
-                var mockupCrocking = _MockupCrockingService.Create(MockupCrocking,"PM1",out string no);
+                var mockupCrocking = _MockupCrockingService.Create(MockupCrocking,"PM1","SCIMIS",out string no);
                 Assert.IsTrue(true);
             }
             catch (Exception ex)
@@ -135,7 +134,7 @@ namespace BusinessLogicLayer.Service.Tests
                 IMockupCrockingService _MockupCrockingService = new MockupCrockingService();
                 MockupCrocking_ViewModel MockupCrocking = new MockupCrocking_ViewModel()
                 {
-                    ReportNo = "T1",
+                    ReportNo = "PM1CK21090007",
                     POID = "up",
                     StyleID = "up",
                     SeasonID = "up",
@@ -153,12 +152,12 @@ namespace BusinessLogicLayer.Service.Tests
                     EditName = "up",
                     MockupCrocking_Detail = new System.Collections.Generic.List<MockupCrocking_Detail_ViewModel>()
                     {
-                        new MockupCrocking_Detail_ViewModel(){Design="up",ArtworkColor="up",FabricRefNo="up",FabricColor  = "up",Result="up",Remark="up",EditName = "up",Ukey=76},
-                        new MockupCrocking_Detail_ViewModel(){Design="up",ArtworkColor="up",FabricRefNo="up",FabricColor  = "up",Result="up",Remark="up",EditName = "up",Ukey=77},
+                        //new MockupCrocking_Detail_ViewModel(){Design="up",ArtworkColor="up",FabricRefNo="up",FabricColor  = "up",Result="up",Remark="up",EditName = "up",Ukey=76},
+                        //new MockupCrocking_Detail_ViewModel(){Design="up",ArtworkColor="up",FabricRefNo="up",FabricColor  = "up",Result="up",Remark="up",EditName = "up",Ukey=77},
                     }
                 };
 
-                var mockupCrocking = _MockupCrockingService.Update(MockupCrocking);
+                var mockupCrocking = _MockupCrockingService.Update(MockupCrocking, "SCIMIS");
                 Assert.IsTrue(true);
             }
             catch (Exception ex)

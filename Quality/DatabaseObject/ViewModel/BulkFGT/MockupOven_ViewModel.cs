@@ -41,6 +41,9 @@ namespace DatabaseObject.ViewModel.BulkFGT
         [Display(Name = "業務 ExtNo")]
         public string MRExtNo { get; set; }
 
+        [Display(Name = "業務 信箱")]
+        public string MRMail { get; set; }
+
         [Display(Name = "LastEditName")]
         public string LastEditName { get; set; }
 
