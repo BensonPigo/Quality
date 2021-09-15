@@ -67,6 +67,7 @@ namespace BusinessLogicLayer.Service
                     throw new Exception(string.Format("Not have permission of {0}.", logIn_Request.FactoryID));
                 }
 
+                result.UserMail = pmsPass1.Count == 0 ? mesPass1.FirstOrDefault().EMail : pmsPass1.FirstOrDefault().EMail;
                 result.pass1 = quality_Pass1s.FirstOrDefault();
                 result.Menus = QualityMenuProvider.Get(result.pass1).ToList();
                 result.MDivisionID = M.Any() ? M.FirstOrDefault().MDivisionID : string.Empty;

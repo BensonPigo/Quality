@@ -42,7 +42,6 @@ namespace Quality.Areas.BulkFGT.Controllers
                     StyleID = string.Empty,
                     Article = string.Empty,
                 },
-
                 MockupCrocking_Detail = new List<MockupCrocking_Detail_ViewModel>(),
                 ReportNo_Source = new List<string>(),
             };
@@ -50,6 +49,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(Result.ReportNo_Source);
             ViewBag.ArtworkTypeID_Source = new SetListItem().ItemListBinding(new List<string>());
             ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
             return View(Result);
         }
 
@@ -59,8 +59,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             //example:ADIDAS, 19FW, F1915KYB012, ED5770
             
-            MockupCrocking_ViewModel mockupCrocking_ViewModel = _MockupCrockingService.GetMockupCrocking(Req.Request);
-
+            MockupCrocking_ViewModel mockupCrocking_ViewModel = _MockupCrockingService.GetMockupCrocking(Req.Request);            
             //若沒錯誤訊息 且 MockupCrocking_ViewModel == null, 則是沒資料
             if (mockupCrocking_ViewModel == null)
             {
@@ -71,10 +70,11 @@ namespace Quality.Areas.BulkFGT.Controllers
                     ReportNo_Source = new List<string>(),
                 };
             }
-
+            mockupCrocking_ViewModel.Request = Req.Request;
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(mockupCrocking_ViewModel.ReportNo_Source);
             ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(Req.Request.BrandID, Req.Request.SeasonID, Req.Request.StyleID);
             ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
             return View("Index", mockupCrocking_ViewModel);
         }
 
@@ -104,21 +104,21 @@ namespace Quality.Areas.BulkFGT.Controllers
                 mockupCrocking_ViewModel = new MockupCrocking_ViewModel() {  ReportNo_Source = new List<string>(), };
             }
 
-            Req.ReportNo = mockupCrocking_ViewModel.ReportNo;
-            Req.LastEditName = mockupCrocking_ViewModel.LastEditName;
             if (!result.Result)
             {
-                Req.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString().Replace("\r\n", "<br />") + "');";
+                mockupCrocking_ViewModel.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString().Replace("\r\n", "<br />") + "');";
             }
             else if (result.Result && mockupCrocking_ViewModel.Result == "Fail")
             {
-                Req.ErrorMessage = "FailMail();";
+                mockupCrocking_ViewModel.ErrorMessage = "FailMail();";
             }
 
+            mockupCrocking_ViewModel.Request = Req.Request;
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(mockupCrocking_ViewModel.ReportNo_Source);
-            ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(Req.Request.BrandID, Req.Request.SeasonID, Req.Request.StyleID);
+            ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(mockupCrocking_ViewModel.Request.BrandID, mockupCrocking_ViewModel.Request.SeasonID, mockupCrocking_ViewModel.Request.StyleID);
             ViewBag.FactoryID = this.FactoryID;
-            return View("Index", Req);
+            ViewBag.UserMail = this.UserMail;
+            return View("Index", mockupCrocking_ViewModel);
         }
 
         [HttpPost]
@@ -156,6 +156,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(mockupCrocking_ViewModel.ReportNo_Source);
             ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(Req.Request.BrandID, Req.Request.SeasonID, Req.Request.StyleID);
             ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
             return View("Index", Req);
         }
 
@@ -163,25 +164,25 @@ namespace Quality.Areas.BulkFGT.Controllers
         [MultipleButton(Name = "action", Argument = "Delete")]
         public ActionResult Delete(MockupCrocking_ViewModel Req)
         {
+            Req.ReportNo = Req.Request.ReportNo;
             BaseResult result = _MockupCrockingService.Delete(Req);
+            Req.Request.ReportNo = "";
             MockupCrocking_ViewModel mockupCrocking_ViewModel = _MockupCrockingService.GetMockupCrocking(Req.Request);
 
             if (mockupCrocking_ViewModel == null)
             {
                 mockupCrocking_ViewModel = new MockupCrocking_ViewModel() { ReportNo_Source = new List<string>(), };
             }
-
-            Req.ReportNo = mockupCrocking_ViewModel.ReportNo;
-            Req.LastEditName = mockupCrocking_ViewModel.LastEditName;
             if (!result.Result)
             {
-                Req.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString().Replace("\r\n", "<br />") + "');";
+                mockupCrocking_ViewModel.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString().Replace("\r\n", "<br />") + "');";
             }
-
+            mockupCrocking_ViewModel.Request = Req.Request;
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(mockupCrocking_ViewModel.ReportNo_Source);
-            ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(Req.Request.BrandID, Req.Request.SeasonID, Req.Request.StyleID);
+            ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(mockupCrocking_ViewModel.Request.BrandID, mockupCrocking_ViewModel.Request.SeasonID, mockupCrocking_ViewModel.Request.StyleID);
             ViewBag.FactoryID = this.FactoryID;
-            return View("Index", Req);
+            ViewBag.UserMail = this.UserMail;
+            return View("Index", mockupCrocking_ViewModel);
         }
 
         [HttpPost]
@@ -313,7 +314,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             html += "<td>";
 
-            html += $"<select id='MockupCrocking_Detail_{lastNo}__Result' class='result' name='MockupCrocking_Detail[{lastNo}].Result' style='width:157px;' onchange='changeResult()'>";
+            html += $"<select id='MockupCrocking_Detail_{lastNo}__Result' class='result blue' name='MockupCrocking_Detail[{lastNo}].Result' style='width:157px;' onchange='changeResult(this)'>";
             html += string.Join("", resultOption);
             html += "</select>";
 

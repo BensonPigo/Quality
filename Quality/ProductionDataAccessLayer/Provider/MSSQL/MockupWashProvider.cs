@@ -350,11 +350,14 @@ FROM MockupWash m
 ");
             SbSql.Append("Where 1 = 1" + Environment.NewLine);
 
+            /*
             if (!string.IsNullOrEmpty(Item.ReportNo))
             {
                 SbSql.Append("And ReportNo = @ReportNo" + Environment.NewLine);
                 objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
             }
+            */
+
             if (!string.IsNullOrEmpty(Item.BrandID))
             {
                 SbSql.Append("And BrandID = @BrandID" + Environment.NewLine);
