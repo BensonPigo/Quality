@@ -185,7 +185,7 @@
 
                                 </td>
                                 <td style="width: 10vw;"><h5>SP#</h5></td>
-                                <td style="width: 28vw;">
+                                <td>
                                     @Html.DisplayFor(o => o.Main.POID)
                                     @Html.HiddenFor(o => o.Main.POID)
                                 </td>
@@ -215,7 +215,7 @@
                                     <select id="Main_Temperature" name="Main.Temperature">
                                         @foreach (var item in (List<SelectListItem>)ViewBag.Temperature_List)
                                         {
-                                            string selected = item.Text.Equals(Model.Main.Temperature) ? "selected" : "";
+                                            string selected = item.Text.Equals(Model.Main.Temperature.ToString()) ? "selected" : "";
                                             <option value="@item.Value" @selected>@item.Text</option>
                                         }
                                     </select>                                                                       
@@ -227,7 +227,7 @@
                                     <select id="Main_Cycle" name="Main.Cycle">
                                         @foreach (var item in (List<SelectListItem>)ViewBag.Cycle_List)
                                         {
-                                            string selected = item.Text.Equals(Model.Main.Cycle) ? "selected" : "";
+                                            string selected = item.Text.Equals(Model.Main.Cycle.ToString()) ? "selected" : "";
                                             <option value="@item.Value" @selected>@item.Text</option>
                                         }
                                     </select>
@@ -237,7 +237,7 @@
                                     <select id="Main_Detergent" name="Main.Detergent">
                                         @foreach (var item in (List<SelectListItem>)ViewBag.Detergent_List)
                                         {
-                                            string selected = item.Text.Equals(Model.Main.Detergent) ? "selected" : "";
+                                            string selected = item.Text.Equals(Model.Main.Detergent.ToString()) ? "selected" : "";
                                             <option value="@item.Value" @selected>@item.Text</option>
                                         }
                                     </select>
@@ -247,7 +247,7 @@
                                     <select id="Main_Machine" name="Main.Machine">
                                         @foreach (var item in (List<SelectListItem>)ViewBag.Machine_List)
                                         {
-                                            string selected = item.Text.Equals(Model.Main.Machine) ? "selected" : "";
+                                            string selected = item.Text.Equals(Model.Main.Machine.ToString()) ? "selected" : "";
                                             <option value="@item.Value" @selected>@item.Text</option>
                                         }
                                     </select>                                    
@@ -259,7 +259,7 @@
                                     <select id="Main_Drying" name="Main.Drying">
                                         @foreach (var item in (List<SelectListItem>)ViewBag.Drying_List)
                                         {
-                                            string selected = item.Text.Equals(Model.Main.Drying) ? "selected" : "";
+                                            string selected = item.Text.Equals(Model.Main.Drying.ToString()) ? "selected" : "";
                                             <option value="@item.Value" @selected>@item.Text</option>
                                         }
                                     </select>                                    
@@ -947,10 +947,10 @@
     function selectChange(obj) {
         var result = $(obj).val();
         if (result == "Pass") {
-            $(obj).css('color', 'blue');
+            $(obj).removeClass('red').addClass('blue');
         }
         else {
-            $(obj).css('color', 'red');
+            $(obj).removeClass('blue').addClass('red');
         }
 
         var key = $(obj).parents('td').parents('tr').children('td').find("input[type='hidden']").attr('idx');

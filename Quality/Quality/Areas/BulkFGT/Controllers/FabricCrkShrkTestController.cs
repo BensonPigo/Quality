@@ -121,7 +121,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += $"<input type='button' class='site-btn btn-blue btnRollSelectItem' style='margin:0;border:0;' value='...'>";
             html += "</div></td>";
             html += "<td>";
-            html += $"<input id='Crocking_Detail_{lastNO}__Result' name='Crocking_Detail[{lastNO}].Result' readonly='readonly' style='color:blue' type='text' value='Pass'>";
+            html += $"<input id='Crocking_Detail_{lastNO}__Result' name='Crocking_Detail[{lastNO}].Result' readonly='readonly' class='blue' type='text' value='Pass'>";
             html += "</td>";
             html += "<td style='color:blue'>";
             html += $"<select id='Crocking_Detail_{lastNO}__DryScale' name='Crocking_Detail[{lastNO}].DryScale' style='width:157px'>";
