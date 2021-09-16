@@ -4,6 +4,7 @@
 
 @{
     ViewBag.Title = "Index";
+    string download = ViewData["tempFilePath"] == null ? "" : ViewData["tempFilePath"].ToString();
 }
 
 
@@ -146,7 +147,7 @@
                             <input type="text" name="StyleID" id="txtStyle" value="@Model.StyleID" />
                             <input id="btnStyle" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
                             &nbsp;&nbsp;
-                            <input type="submit" name="name" id="btnQuery" value="Query" />
+                            <input type="submit" name="action:Query"  id="btnQuery" value="Query" />
                             &nbsp;&nbsp;
                             <input id="btnBarcode" type="button" class="site-btn" style="margin:0;border: 2px solid transparent;" value="   " />
 
@@ -154,6 +155,8 @@
                                 <input id="btnPicture" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />*@
 
                         </div>
+                        
+                        <input type="submit" class="btn-gy" name="action:SampleRFTToExcel" id="SampleRFTToExcel" value="To Excel"  style="display:none"/>
                     }
                 </div>
                 <br />
@@ -296,6 +299,10 @@
             JsBarcode("#Barcode", '@Model.StyleUkey', {
                 height: 40,
             });
+        }
+    
+        if ('@download' != '') {
+            window.location.href = '@download';
         }
 
         @Html.Raw(Model.MsgScript);

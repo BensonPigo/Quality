@@ -184,6 +184,7 @@
     <Compile Include="Areas\SampleRFT\Controllers\BACriteriaController.cs" />
     <Compile Include="Areas\SampleRFT\Controllers\CFTCommentsController.cs" />
     <Compile Include="Areas\SampleRFT\Controllers\InspectionController.cs" />
+    <Compile Include="Areas\SampleRFT\Controllers\InspectionDefectListController.cs" />
     <Compile Include="Areas\SampleRFT\Controllers\MeasurementController.cs" />
     <Compile Include="Areas\SampleRFT\Controllers\PFTperLineController.cs" />
     <Compile Include="Areas\SampleRFT\Controllers\PicturesDummyController.cs" />
@@ -375,6 +376,7 @@
     <Content Include="Areas\StyleManagement\Views\StyleResult\_Tab3_Layout.cshtml" />
     <Content Include="Areas\StyleManagement\Views\StyleResult\_Tab4_Layout.cshtml" />
     <Content Include="Areas\StyleManagement\Views\StyleResult\_Tab1_Layout.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\InspectionDefectList\Index.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -856,6 +858,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="XLT\FabricColorFastness_ToPDF.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\StyleResult_SampleRFT.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

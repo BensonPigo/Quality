@@ -28,6 +28,7 @@ namespace DatabaseObject.ViewModel.SampleRFT
 
         public bool Result { get; set; }
         public string MsgScript { get; set; }
+        public string TempFileName { get; set; }
 
         public List<StyleResult_SampleRFT> SampleRFT { get; set; }
         public List<StyleResult_FTYDisclamier> FTYDisclamier { get; set; }

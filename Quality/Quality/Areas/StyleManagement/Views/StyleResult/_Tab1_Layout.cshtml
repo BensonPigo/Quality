@@ -42,6 +42,7 @@
             <th>RFT</th>
             <th>BA Product</th>
             <th>BA Criteria</th>
+
             <th>Inspection Defect List</th>
             <th>Measurement</th>
             <th>Picture During Dummy Fitting</th>
@@ -63,8 +64,12 @@
                     <td>@item.RFT</td>
                     <td>@item.BAProduct</td>
                     <td>@item.BAAuditCriteria</td>
-                    <td> 
-                        <img src="/Image/Icon/Document.png" style="cursor: pointer;" width="25" height="25" />
+
+                    <td>
+                        @*Inspection Defect List*@
+                        <a href="@Url.Action("IndexGet","InspectionDefectList",new {Area="SampleRFT", OrderID = item.SP })">
+                            <img src="~/Image/Icon/Document.png" width="20" height="20" />
+                        </a>
                     </td>
                     <td>
                         @*Measurement*@
@@ -94,6 +99,11 @@
             "info": false,
             "scrollY": "40vh",
             "scrollCollapse": true,
+            "scrollX": true
+        });
+
+        $("#ToExcel").click(function () {
+            $("#SampleRFTToExcel").click();
         });
     });
 </script>

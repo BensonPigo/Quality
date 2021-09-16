@@ -146,6 +146,7 @@
     <Compile Include="Service\BulkFGT\BulkFGTMailGroup_Service.cs" />
     <Compile Include="Service\FinalInspection\FinalInspectionSettingService.cs" />
     <Compile Include="Service\FinalInspection\FinalInspectionService.cs" />
+    <Compile Include="Service\SampleRFT\InspectionDefectListService.cs" />
     <Compile Include="Service\SampleRFT\InspectionService.cs" />
     <Compile Include="Service\LoginService.cs" />
     <Compile Include="Service\SampleRFT\PicturesDummyService.cs" />

@@ -208,6 +208,7 @@
     <Compile Include="ViewModel\RFT_Inspection_Measurement_ViewModel.cs" />
     <Compile Include="ViewModel\RFT_OrderComments_ViewModel.cs" />
     <Compile Include="ViewModel\RFT_PicDuringDummyFitting_ViewModel.cs" />
+    <Compile Include="ViewModel\SampleRFT\InspectionDefectList_ViewModel.cs" />
     <Compile Include="ViewModel\SampleRFT\StyleResult_ViewModel.cs" />
     <Compile Include="ViewModel\SelectItem_ViewModel.cs" />
     <Compile Include="ViewModel\StyleResult_ViewModel.cs" />

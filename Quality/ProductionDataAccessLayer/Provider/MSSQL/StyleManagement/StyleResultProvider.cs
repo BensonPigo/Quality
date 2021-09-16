@@ -234,7 +234,7 @@ select SP = o.ID
 	,InspectedQty = Inspected.val
 	,RFT = Cast( Cast( IIF(Inspected.val = 0 , 0 , ROUND( ( RFT.val * 1.0 / Inspected.val ) * 100 ,2) ) as numeric(5,2)) as varchar )
 	,BAProduct = BAProduct.val
-	,BACriteria  = Cast( Cast( IIF(Inspected.val = 0, 0, ROUND(BAProduct.val * 1.0 / Inspected.val * 5 ,1) )as numeric(2,1)) as varchar )
+	,BAAuditCriteria  = Cast( Cast( IIF(Inspected.val = 0, 0, ROUND(BAProduct.val * 1.0 / Inspected.val * 5 ,1) )as numeric(2,1)) as varchar )
 from Orders o
 inner join Style s on s.ID = o.StyleID
 outer apply(
@@ -268,6 +268,93 @@ where 1=1
 {sqlWhere}
 ";
             return ExecuteList<StyleResult_SampleRFT>(CommandType.Text, sqlGet_StyleResult_Browse, listPar);
+        }
+
+
+        public DataTable Get_StyleResult_SampleRFT_DataTable(StyleResult_Request styleResult_Request)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            string sqlWhere = string.Empty;
+            string sqlCol = string.Empty;
+            if (!string.IsNullOrEmpty(styleResult_Request.StyleUkey))
+            {
+                sqlWhere += " and s.Ukey = @StyleUkey";
+
+                int Ukey = 0;
+                if (int.TryParse(styleResult_Request.StyleUkey, out Ukey))
+                {
+                    listPar.Add("@StyleUkey", DbType.Int64, Ukey);
+                }
+                else
+                {
+                    listPar.Add("@StyleUkey", DbType.Int64, 0);
+                }
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(styleResult_Request.BrandID))
+                {
+                    sqlWhere += " and s.BrandID = @BrandID";
+                }
+
+                if (!string.IsNullOrEmpty(styleResult_Request.SeasonID))
+                {
+                    sqlWhere += " and s.SeasonID = @SeasonID";
+                }
+
+                if (!string.IsNullOrEmpty(styleResult_Request.StyleID))
+                {
+                    sqlWhere += " and s.ID = @StyleID";
+                }
+
+                listPar.Add(new SqlParameter("@StyleID", styleResult_Request.StyleID));
+                listPar.Add(new SqlParameter("@BrandID", styleResult_Request.BrandID));
+                listPar.Add(new SqlParameter("@SeasonID", styleResult_Request.SeasonID));
+            }
+
+            string SbSql = $@"
+select SP = o.ID
+	,SampleStage = o.OrderTypeID
+	,Factory = o.FactoryID
+	,Delivery = o.BuyerDelivery
+	,o.SCIDelivery
+	,InspectedQty = Inspected.val
+	,RFT = Cast( Cast( IIF(Inspected.val = 0 , 0 , ROUND( ( RFT.val * 1.0 / Inspected.val ) * 100 ,2) ) as numeric(5,2)) as varchar )
+	,BAProduct = BAProduct.val
+	,BAAuditCriteria  = Cast( Cast( IIF(Inspected.val = 0, 0, ROUND(BAProduct.val * 1.0 / Inspected.val * 5 ,1) )as numeric(2,1)) as varchar )
+from Orders o
+inner join Style s on s.ID = o.StyleID
+outer apply(
+	select val = COUNT(r.ID)
+	from ManufacturingExecution.dbo.RFT_Inspection r
+	where r.OrderID = o.ID
+)Inspected
+
+outer apply(
+	select val = COUNT(r.ID)
+	from ManufacturingExecution.dbo.RFT_Inspection r
+	where r.OrderID = o.ID and r.Status='Pass'
+)RFT
+
+outer apply(
+	select val = COUNT(r.ID)
+	from ManufacturingExecution.dbo.RFT_Inspection r
+	where r.OrderID = o.ID 
+	AND (
+		NOT EXISTS(--沒有 RFT_Inspeciton_Detail
+			select 1
+			from ManufacturingExecution.dbo.RFT_Inspection_Detail rd where r.ID = rd.ID	
+		)
+		or NOT EXISTS( --RFT_Inspection_Detail 所有資料 PMS_RFTACriterialID 皆為空
+			select 1
+			from ManufacturingExecution.dbo.RFT_Inspection_Detail rd where r.ID = rd.ID AND rd.PMS_RFTBACriteriaID != ''
+		)
+	)
+)BAProduct
+where 1=1
+{sqlWhere}
+";
+            return ExecuteDataTable(CommandType.Text, SbSql.ToString(), listPar);
         }
 
         public IList<StyleResult_FTYDisclamier> Get_StyleResult_FTYDisclamier(StyleResult_Request styleResult_Request)
@@ -385,6 +472,144 @@ where 1=1
 {sqlWhere}
 ";
             return ExecuteList<StyleResult_RRLR>(CommandType.Text, sqlGet_StyleResult_Browse, listPar);
+        }
+
+
+        public IList<StyleResult_BulkFGT> Get_StyleResult_BulkFGT(StyleResult_Request styleResult_Request)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            string sqlWhere = string.Empty;
+            string sqlCol = string.Empty;
+            listPar.Add(new SqlParameter("@StyleID", styleResult_Request.StyleID));
+            listPar.Add(new SqlParameter("@BrandID", styleResult_Request.BrandID));
+            listPar.Add(new SqlParameter("@SeasonID", styleResult_Request.SeasonID));
+            listPar.Add(new SqlParameter("@MDivisionID", styleResult_Request.MDivisionID));
+
+            string sqlGet_StyleResult_Browse = $@"
+--每個Articl都會要有的Type，先準備好
+SELECT [Type] = '451'
+INTO #Type
+UNION
+SELECT [Type] = IIF( EXISTS(
+	select SpecialMark,r.Name
+	from Style s
+	inner join Reason r on s.SpecialMark = r.ID AND r.ReasonTypeID= 'Style_SpecialMark'
+	where s.Ukey=86967
+	AND r.Name IN (
+		'MATCH TEAMWEAR',
+		'BASEBALL ON FIELD',
+		'SOFTBALL ON FIELD',
+		'TRAINING TEAMWEAR',
+		'LACROSSE ONFIELD',
+		'AMERIC. FOOT. ON-FIELD',
+		'TIRO',
+		'BASEBALL OFF FIELD',
+		'NCAA ON ICE',
+		'ON-COURT',
+		'BBALL PERFORMANCE',
+		'BRANDED BLANKS',
+		'SLD ON-FIELD',
+		'NHL ON ICE',
+		'SLD ON-COURT'
+	)
+),'710','701')
+
+
+--Type 450一個Style只會出現一次
+select Article='', Type='450', TestName = 'Seam Breakage'
+,LastResult=(
+	select g.SeamBreakageResult 
+	from GarmentTest g
+	WHERE g.StyleID = @StyleID
+		AND g.BrandID = @BrandID
+		AND g.SeasonID = @SeasonID
+		AND g.MDivisionid = @MDivisionID
+		AND g.SeamBreakageLastTestDate = (		
+			select MAX(SeamBreakageLastTestDate)
+			from GarmentTest gg
+			where gg.StyleID = g.StyleID
+				AND gg.BrandID = g.BrandID
+				AND gg.SeasonID = g.SeasonID
+				AND gg.MDivisionid= g.MDivisionID
+		)
+)
+,LastTestDate=(
+	select g.SeamBreakageLastTestDate 
+	from GarmentTest g
+	WHERE g.StyleID = @StyleID
+		AND g.BrandID = @BrandID
+		AND g.SeasonID = @SeasonID
+		AND g.MDivisionid = @MDivisionID
+		AND g.SeamBreakageLastTestDate = (		
+			select MAX(SeamBreakageLastTestDate)
+			from GarmentTest gg
+			where gg.StyleID = g.StyleID
+				AND gg.BrandID = g.BrandID
+				AND gg.SeasonID = g.SeasonID
+				AND gg.MDivisionid= g.MDivisionID
+		)
+)
+UNION
+select sa.Article, t.Type
+,TestName = CASE    WHEN t.Type = '451' THEN 'Odour'
+					WHEN  t.Type = '701' THEN 'Garment Wash'
+					WHEN  t.Type = '710' THEN 'Team Wear Wash Test'
+					ELSE ''
+			END
+,LastResult = CASE  WHEN t.Type = '451' THEN Type451.OdourResult
+					WHEN  t.Type = '701' OR t.Type = '710' THEN Type701_710.WashResult
+					ELSE ''
+			END
+,LastTestDate= CASE   WHEN t.Type = '451' THEN Type451.Date
+					  WHEN  t.Type = '701' OR t.Type = '710' THEN Type701_710.Date
+					  ELSE ''
+			   END
+from Style_Article sa
+inner join Style s ON s.Ukey = sa.StyleUkey
+OUTER APPLY(
+	select * from #Type
+)t
+OUTER APPLY(
+	select g.OdourResult ,g.Date
+	from GarmentTest g
+	WHERE g.StyleID = s.ID
+		AND g.BrandID = s.BrandID
+		AND g.SeasonID = s.SeasonID
+		AND g.Article = sa.Article
+		AND g.MDivisionid = @MDivisionID
+		AND g.Date = (		
+			select MAX(SeamBreakageLastTestDate)
+			from GarmentTest gg
+			where gg.StyleID = s.ID
+				AND gg.BrandID = s.BrandID
+				AND gg.SeasonID = s.SeasonID
+				AND g.Article = sa.Article
+				AND gg.MDivisionid = g.MDivisionID
+		)
+)Type451
+OUTER APPLY(
+	select g.WashResult ,g.Date
+	from GarmentTest g
+	WHERE g.StyleID = s.ID
+		AND g.BrandID = s.BrandID
+		AND g.SeasonID = s.SeasonID
+		AND g.Article = sa.Article
+		AND g.MDivisionid = @MDivisionID
+		AND g.Date = (		
+			select MAX(SeamBreakageLastTestDate)
+			from GarmentTest gg
+			where gg.StyleID = s.ID
+				AND gg.BrandID = s.BrandID
+				AND gg.SeasonID = s.SeasonID
+				AND g.Article = sa.Article
+				AND gg.MDivisionid = g.MDivisionID
+		)
+)Type701_710
+where s.ID = @StyleID
+AND s.BrandID = s.BrandID
+AND s.SeasonID = s.SeasonID
+";
+            return ExecuteList<StyleResult_BulkFGT>(CommandType.Text, sqlGet_StyleResult_Browse, listPar);
         }
     }
 }
