@@ -33,7 +33,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
                 objParameter.Add(new SqlParameter($"@ID{idx}", item.ID));
                 objParameter.Add(new SqlParameter($"@No{idx}", item.No));
                 objParameter.Add(new SqlParameter($"@Location{idx}", item.Location));
-                objParameter.Add(new SqlParameter($"@Type{idx}", item.Type));
+                objParameter.Add(new SqlParameter($"@Type{idx}", item.TypeOri));
                 objParameter.Add(new SqlParameter($"@Seq{idx}", item.Seq));
                 objParameter.Add(new SqlParameter($"@TestName{idx}", item.TestName));
 
