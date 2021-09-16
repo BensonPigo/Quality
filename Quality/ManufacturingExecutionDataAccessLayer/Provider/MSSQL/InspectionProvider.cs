@@ -146,7 +146,8 @@ outer apply(
         and r.ReasonTypeID = 'Style_Apparel_Type'	
 	where s.Ukey = o.StyleUkey
 )ApparelType
-where r_Size.SizeBalanceQty < oq.Qty
+where 1 = 1
+--r_Size.SizeBalanceQty < oq.Qty
 and o.Category = 'S'
 and o.OnSiteSample != 1
 and o.Junk = 0

@@ -81,7 +81,7 @@ namespace BusinessLogicLayer.Service
                 switch (type)
                 {
                     case SelectType.StyleID:
-                        result = result.GroupBy(x => new { x.StyleID, x.OrderID, x.ProductTypePMS, x.Brand, x.Season, x.SampleStage, x.OriginalLine, x.OrderQty })
+                        result = result.GroupBy(x => new { x.StyleID, x.OrderID, x.ProductTypePMS, x.Brand, x.Season, x.SampleStage, x.OriginalLine, x.OrderQty, x.SizeBalanceQty })
                                     .Select(x => new Inspection_ViewModel()
                                     {
                                         StyleID = x.Key.StyleID,
@@ -91,11 +91,12 @@ namespace BusinessLogicLayer.Service
                                         Season = x.Key.Season,
                                         SampleStage = x.Key.SampleStage,
                                         OriginalLine = x.Key.OriginalLine,
-                                        OrderQty = x.Key.OrderQty
-                                    }).ToList();
+                                        OrderQty = x.Key.OrderQty,
+                                        SizeBalanceQty = x.Key.SizeBalanceQty
+                                    }).Where(r => Convert.ToInt32(r.SizeBalanceQty) > 0).ToList();
                         break;
                     case SelectType.OrderID:
-                        result = result.GroupBy(x => new { x.StyleID, x.OrderID, x.ProductTypePMS, x.Brand, x.Season, x.SampleStage, x.OriginalLine, x.OrderQty })
+                        result = result.GroupBy(x => new { x.StyleID, x.OrderID, x.ProductTypePMS, x.Brand, x.Season, x.SampleStage, x.OriginalLine, x.OrderQty, x.SizeBalanceQty })
                                     .Select(x => new Inspection_ViewModel()
                                     {
                                         StyleID = x.Key.StyleID,
@@ -105,8 +106,9 @@ namespace BusinessLogicLayer.Service
                                         Season = x.Key.Season,
                                         SampleStage = x.Key.SampleStage,
                                         OriginalLine = x.Key.OriginalLine,
-                                        OrderQty = x.Key.OrderQty
-                                    }).ToList();
+                                        OrderQty = x.Key.OrderQty,
+                                        SizeBalanceQty = x.Key.SizeBalanceQty
+                                    }).Where(r => Convert.ToInt32(r.SizeBalanceQty) > 0).ToList();
                         break;
                     case SelectType.Article:
                         result = result.GroupBy(x => new { x.Article })
