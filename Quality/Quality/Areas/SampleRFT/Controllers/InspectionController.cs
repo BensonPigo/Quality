@@ -343,7 +343,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
-        public JsonResult ChkInspQty(string OrderID, string Size)
+        public JsonResult ChkInspQty(string OrderID, string Size, string Article)
         {
             this.CheckSession();
             InspectionSave_ViewModel inspectionSave_View = new InspectionSave_ViewModel();
@@ -354,6 +354,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             }
             inspectionSave_View.rft_Inspection.OrderID = OrderID;
             inspectionSave_View.rft_Inspection.Size = Size;
+            inspectionSave_View.rft_Inspection.Article = Article;
 
             InspectionSave_ViewModel result = _InspectionService.ChkInspQty(inspectionSave_View);
             return Json(new { result.Result, result .ErrMsg} );

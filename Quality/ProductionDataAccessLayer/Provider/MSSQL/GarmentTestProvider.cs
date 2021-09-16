@@ -467,6 +467,7 @@ set SizeCode = @SizeCode
 ,inspector = @inspector
 ,inspdate = {inspDate}
 ,Remark = @Remark
+,NonSeamBreakageTest = @NonSeamBreakageTest
 ,EditName = @UserID, EditDate = GetDate()
 where ID = @ID
 and No = @No
