@@ -182,7 +182,7 @@ where id = @ID
 
            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, $@"select Max(testno) as testMaxNo from ColorFastness WITH (NOLOCK) where poid='{sources.Main.POID}'", new SQLParameterCollection());
             int testMaxNo = MyUtility.Convert.GetInt(dt.Rows[0]["testMaxNo"]);
-            objParameter.Add("@TestNo", testMaxNo);
+            objParameter.Add("@TestNo", testMaxNo + 1);
 
             if (sources.Main.ID != null && !string.IsNullOrEmpty(sources.Main.ID))
             {
@@ -223,12 +223,21 @@ values(@ID ,@POID,@TestNo,GETDATE(),@Article,'New',@UserID,@Remark,@UserID,GETDA
             #region save Details
             foreach (var item in sources.Detail)
             {
+                if (item.SEQ1 == null)
+                {
+                    item.SEQ1 = item.Seq.ToString().Split('-')[0].Trim();
+                }
+
+                if (item.SEQ2 == null)
+                {
+                    item.SEQ2 = item.Seq.ToString().Split('-')[1].Trim();
+                }
                 // add sql Parameter
-                objParameter.Add(new SqlParameter($"@ColorFastnessGroup{idx}", item.ColorFastnessGroup));
+                objParameter.Add(new SqlParameter($"@ColorFastnessGroup{idx}", string.IsNullOrEmpty(item.ColorFastnessGroup) ? "" : item.ColorFastnessGroup));
                 objParameter.Add(new SqlParameter($"@Seq1{idx}", item.SEQ1));
                 objParameter.Add(new SqlParameter($"@Seq2{idx}", item.SEQ2));
-                objParameter.Add(new SqlParameter($"@Roll{idx}", item.Roll));
-                objParameter.Add(new SqlParameter($"@Dyelot{idx}", item.Dyelot));
+                objParameter.Add(new SqlParameter($"@Roll{idx}", string.IsNullOrEmpty(item.Roll) ? "" : item.Roll));
+                objParameter.Add(new SqlParameter($"@Dyelot{idx}", string.IsNullOrEmpty(item.Dyelot) ? "" : item.Dyelot));
                 objParameter.Add(new SqlParameter($"@Result{idx}", item.Result));
                 objParameter.Add(new SqlParameter($"@changeScale{idx}", item.changeScale));
                 objParameter.Add(new SqlParameter($"@StainingScale{idx}", item.StainingScale));
@@ -278,7 +287,7 @@ values
       ,@Seq2{idx}
       ,@Roll{idx}
       ,@Dyelot{idx}
-      ,{DetailResult}
+      ,'{DetailResult}'
       ,@changeScale{idx}
       ,@StainingScale{idx}
       ,@Remark{idx}
@@ -294,6 +303,7 @@ values
                 {
                     sqlcmd += $@"
 update ColorFastness_Detail
+set 
        [Roll] = @Roll{idx}
       ,[Dyelot] = @Dyelot{idx}
       ,[Result] = @Result{idx}
@@ -327,16 +337,24 @@ and SEQ2 = @Seq2{idx}
             int idx = 1;
             foreach (var item in dbDetail)
             {
+                if (item.SEQ1 == null)
+                {
+                    item.SEQ1 = item.Seq.ToString().Split('-')[0].Trim();
+                }
+
+                if (item.SEQ2 == null)
+                {
+                    item.SEQ2 = item.Seq.ToString().Split('-')[1].Trim();
+                }
+
                 objParameter.Add(new SqlParameter($"@ID{idx}", item.ID));
-                objParameter.Add(new SqlParameter($"@ColorFastnessGroup{idx}", item.ColorFastnessGroup));
+                objParameter.Add(new SqlParameter($"@ColorFastnessGroup{idx}", string.IsNullOrEmpty(item.ColorFastnessGroup) ? "" : item.ColorFastnessGroup));
                 objParameter.Add(new SqlParameter($"@SEQ1{idx}", item.SEQ1));
                 objParameter.Add(new SqlParameter($"@SEQ2{idx}", item.SEQ2));
 
-
-                if (!source.Where(x => x.ID.Equals(item.ID) 
-                    && x.ColorFastnessGroup.Equals(item.ColorFastnessGroup)
-                    && x.SEQ1.Equals(item.SEQ1)
-                    && x.SEQ2.Equals(item.SEQ2)
+                if (!source.Where(x => x.ColorFastnessGroup.EqualString(item.ColorFastnessGroup.ToString())
+                    && x.SEQ1.EqualString(item.SEQ1.ToString())
+                    && x.SEQ2.EqualString(item.SEQ2.ToString())
                 ).Any())
                 {   
                     sqlcmd += $@"
@@ -350,7 +368,14 @@ and SEQ2 = @SEQ2{idx}
                 }
             }
 
-            return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
+            if (string.IsNullOrEmpty(sqlcmd))
+            {
+                return true;
+            }
+            else
+            {
+                return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
+            }
         }
 
         public IList<ColorFastness_Detail> Get(ColorFastness_Detail Item)

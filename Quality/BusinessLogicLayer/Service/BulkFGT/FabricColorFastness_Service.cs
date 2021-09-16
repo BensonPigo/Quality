@@ -184,6 +184,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         public BaseResult Save_ColorFastness_2ndPage(Fabric_ColorFastness_Detail_ViewModel source , string Mdivision, string UserID)
         {
             BaseResult baseResult = new BaseResult();
+            baseResult.Result = true;
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             try
             {
@@ -215,21 +216,18 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return baseResult;
         }
 
-        public Fabric_ColorFastness_Detail_ViewModel Encode_ColorFastness(Fabric_ColorFastness_Detail_ViewModel source, DetailStatus status, string UserID)
+        public Fabric_ColorFastness_Detail_ViewModel Encode_ColorFastness(string ID, DetailStatus status, string UserID)
         {
-            /*
-             * Encode 用out的方式 把Result 丟出來
-            */
-            Fabric_ColorFastness_Detail_ViewModel result = new Fabric_ColorFastness_Detail_ViewModel();
+            Fabric_ColorFastness_Detail_ViewModel result = GetDetailBody(ID);
             result.sentMail = false;
-            result.Result = true;
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             try
             {
                 _IColorFastnessProvider = new ColorFastnessProvider(_ISQLDataTransaction);
                 // Check Detail Result
                 bool detailResult = true;
-                foreach (var item in source.Detail)
+                
+                foreach (var item in result.Detail)
                 {
                     if (item.Result.ToUpper() == "FAIL")
                     {
@@ -243,10 +241,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     case DetailStatus.Encode:
                         result.sentMail = !detailResult;                       
-                        result.Result = _IColorFastnessProvider.Encode_ColorFastness(source.Main.ID, "Confirmed", strResult, UserID);
+                        result.Result = _IColorFastnessProvider.Encode_ColorFastness(ID, "Confirmed", strResult, UserID);
                         break;
                     case DetailStatus.Amend:
-                        result.Result = _IColorFastnessProvider.Encode_ColorFastness(source.Main.ID, "New", strResult, UserID);
+                        result.Result = _IColorFastnessProvider.Encode_ColorFastness(ID, "New", strResult, UserID);
                         break;
                     default:
                         break;

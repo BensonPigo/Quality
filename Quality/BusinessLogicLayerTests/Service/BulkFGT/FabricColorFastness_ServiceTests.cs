@@ -175,8 +175,8 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
                     ColorFastnessGroup = "02",
                     SEQ1 = "02",
                     SEQ2 = "01",
-                    Roll = "0001",
-                    Dyelot = "1010",
+                    Roll = null,
+                    Dyelot = null,
                     Refno = "62550918",
                     SCIRefno = "RB-62550918-F00001",
                     ColorID = "095A",
@@ -248,7 +248,7 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
             sss.Add(s);
 
             ss.Detail = sss;
-            result = service.Encode_ColorFastness(ss, DetailStatus.Encode, "SCIMIS");
+            result = service.Encode_ColorFastness(ss.Main.ID, DetailStatus.Encode, "SCIMIS");
 
             Assert.IsTrue(result.Result == true);
 
@@ -315,6 +315,12 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
             {
                 Assert.Fail(ex.Message.ToString());
             }
+        }
+
+        [TestMethod()]
+        public void Save_ColorFastness_2ndPageTest2()
+        {
+            Assert.Fail();
         }
     }
 }

@@ -29,7 +29,7 @@ namespace BusinessLogicLayer.Interface.BulkFGT
 
         BaseResult Save_ColorFastness_2ndPage(Fabric_ColorFastness_Detail_ViewModel source, string Mdivision, string UserID);
 
-        Fabric_ColorFastness_Detail_ViewModel Encode_ColorFastness(Fabric_ColorFastness_Detail_ViewModel source, DetailStatus status, string UserID);
+        Fabric_ColorFastness_Detail_ViewModel Encode_ColorFastness(string ID, DetailStatus status, string UserID);
 
         BaseResult SentMail(string POID, string ID, string ToAddress, string CCAddress);
 

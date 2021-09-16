@@ -225,7 +225,7 @@ delete from ColorFastness where id = @ID";
         {
             DateTime? cutinline, sciDelv;
 
-            if (CUTINLINE == DBNull.Value || string.IsNullOrEmpty(CUTINLINE.ToString()))
+            if (CUTINLINE == null || string.IsNullOrEmpty(CUTINLINE.ToString()))
             {
                 cutinline = null;
             }
@@ -234,7 +234,7 @@ delete from ColorFastness where id = @ID";
                 cutinline = Convert.ToDateTime(CUTINLINE);
             }
 
-            if (MinSciDelivery == DBNull.Value)
+            if (MinSciDelivery == DBNull.Value || MinSciDelivery == null)
             {
                 sciDelv = null;
             }
