@@ -188,7 +188,7 @@ namespace BusinessLogicLayer.Service
                     string remark = item.Remark;
                     worksheet.Cells[start_row, 1] = mockupCrocking.StyleID;
                     worksheet.Cells[start_row, 2] = string.IsNullOrEmpty(item.FabricColorName) ? item.FabricRefNo : item.FabricRefNo + " - " + item.FabricColorName;
-                    worksheet.Cells[start_row, 3] = mockupCrocking.ArtworkTypeID + "/" + item.Design + " - " + item.ArtworkColor;
+                    worksheet.Cells[start_row, 3] = string.IsNullOrEmpty(mockupCrocking.ArtworkTypeID) ? item.Design + " - " + item.ArtworkColorName : mockupCrocking.ArtworkTypeID + "/" + item.Design + " - " + item.ArtworkColorName;
                     worksheet.Cells[start_row, 4] = string.IsNullOrEmpty(item.DryScale) ? string.Empty : "GRADE" + item.DryScale;
                     worksheet.Cells[start_row, 5] = string.IsNullOrEmpty(item.WetScale) ? string.Empty : "GRADE" + item.WetScale;
                     worksheet.Cells[start_row, 6] = item.Result;

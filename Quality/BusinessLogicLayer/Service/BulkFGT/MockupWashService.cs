@@ -247,7 +247,7 @@ namespace BusinessLogicLayer.Service
                 {
                     string remark = item.Remark;
                     string fabric = string.IsNullOrEmpty(item.FabricColorName) ? item.FabricRefNo : item.FabricRefNo + " - " + item.FabricColorName;
-                    string artwork = mockupWash.ArtworkTypeID + "/" + item.Design + " - " + item.ArtworkColor;
+                    string artwork = string.IsNullOrEmpty(mockupWash.ArtworkTypeID) ? item.Design + " - " + item.ArtworkColorName : mockupWash.ArtworkTypeID + "/" + item.Design + " - " + item.ArtworkColorName;
                     worksheet.Cells[start_row, 1] = mockupWash.StyleID;
                     worksheet.Cells[start_row, 2] = fabric;
                     worksheet.Cells[start_row, 3] = artwork;

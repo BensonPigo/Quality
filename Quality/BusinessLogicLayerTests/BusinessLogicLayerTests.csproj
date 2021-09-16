@@ -150,9 +150,9 @@
     <None Include="XLT\Measurement.xlsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="XLT\MockupCrocking.xltx">
+    <Content Include="XLT\MockupCrocking.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Content>
     <None Include="XLT\Search List.xlsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
