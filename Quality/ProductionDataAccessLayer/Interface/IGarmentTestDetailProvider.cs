@@ -36,5 +36,7 @@ namespace ProductionDataAccessLayer.Interface
         bool Save_Detail_Picture(GarmentTest_Detail source);
 
         bool Update_GarmentTestDetail_Result(string ID, string No);
+
+        bool Update_GarmentTestDetail_Result_Amend(string ID, string No);
     }
 }

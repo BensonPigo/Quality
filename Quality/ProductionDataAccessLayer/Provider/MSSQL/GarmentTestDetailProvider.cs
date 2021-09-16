@@ -289,6 +289,7 @@ and ID = @ID
                 { "@Above50NaturalFibres", DbType.Boolean, source.Above50NaturalFibres } ,
                 { "@Above50SyntheticFibres", DbType.Boolean, source.Above50SyntheticFibres } ,
                 { "@EditName", source.EditName } ,
+                { $"@NonSeamBreakageTest",DbType.Boolean, source.NonSeamBreakageTest == null ? false : source.NonSeamBreakageTest},
             };
 
             if (source.TestBeforePicture != null) { objParameter.Add("@TestBeforePicture", source.TestBeforePicture); }
@@ -313,6 +314,7 @@ update GarmentTest_Detail set
     Neck = @Neck ,
     Above50NaturalFibres =  @Above50NaturalFibres,
     Above50SyntheticFibres =  @Above50SyntheticFibres,
+    NonSeamBreakageTest = @NonSeamBreakageTest,
     EditName = @EditName,
     EditDate = GetDate(),
     TestBeforePicture = @TestBeforePicture,
@@ -398,6 +400,26 @@ outer apply(
 where gd.ID = @ID and gd.No = @No
 ";
             return ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
+        }
+
+        public bool Update_GarmentTestDetail_Result_Amend(string ID, string No)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.String, ID } ,
+                { "@No", DbType.String, No } ,
+            };
+
+            string sqlcmd = @"
+update gd
+set Result = ''
+,SeamBreakageResult = ''
+,OdourResult = ''
+,WashResult = ''
+from GarmentTest_Detail gd 
+where gd.id=@ID and No=@No
+";
+            return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
         }
 
         public bool Update_GarmentTestDetail_Result(string ID, string No)
