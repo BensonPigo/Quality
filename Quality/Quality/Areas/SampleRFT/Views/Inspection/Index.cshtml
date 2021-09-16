@@ -589,7 +589,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td>Production Type</td>
+                                        <td>Product Type</td>
                                         <td>
                                             <input id="txtProductType" type="text" style="width: 8em;" />
                                             <input id="btnProductTypeSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="ProductTypeSelectItem" value="..." />
@@ -1489,7 +1489,7 @@
                 url: "@Url.Action("ChkInspQty", "Inspection", new { Area = "SampleRFT" })",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({ OrderID: $("#txtSP").val(), Size: $("#txtSize").val() }),
+                data: JSON.stringify({ OrderID: $("#txtSP").val(), Size: $("#txtSize").val(), Article: $("#txtArticle").val() }),
                 async: false,
                 success: function (data) {
                     if (data.Result) {
