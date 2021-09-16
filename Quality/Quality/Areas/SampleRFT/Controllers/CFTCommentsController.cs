@@ -48,6 +48,86 @@ namespace Quality.Areas.SampleRFT.Controllers
             return View(model);
         }
 
+        public ActionResult IndexGet(string BrandID, string SeasonID, string StyleID)
+        {
+            this.CheckSession();
+            CFTComments_ViewModel Req = new CFTComments_ViewModel()
+            {
+                BrandID = BrandID,
+                SeasonID = SeasonID,
+                StyleID = StyleID,
+                QueryType = "Style"
+            };
+            CFTComments_ViewModel model = new CFTComments_ViewModel();
+            Req.DataList = new List<CFTComments_Result>();
+
+            if (Req.QueryType == "OrderID")
+            {
+                if (Req.OrderID == null || string.IsNullOrEmpty(Req.OrderID))
+                {
+
+                    Req.ErrorMessage = $@"
+msg.WithInfo('SP# cannot be emptry');
+";
+                    return View("Index", Req);
+                }
+
+                model = _ICFTCommentsService.Get_CFT_Orders(new CFTComments_ViewModel() { OrderID = Req.OrderID, QueryType = "OrderID" });
+
+                if (model.OrderID == null)
+                {
+                    Req.ErrorMessage = $@"
+msg.WithInfo('Cannot found SP# {Req.OrderID}');
+";
+                    return View("Index", Req);
+                }
+
+            }
+            else if (Req.QueryType == "Style")
+            {
+                if (string.IsNullOrEmpty(Req.StyleID) || string.IsNullOrEmpty(Req.BrandID) || string.IsNullOrEmpty(Req.SeasonID)
+                    || Req.StyleID == null || Req.BrandID == null || Req.SeasonID == null)
+                {
+
+                    Req.ErrorMessage = $@"
+msg.WithInfo('Style#, Brand and Season cannot be emptry');
+";
+                    return View("Index", Req);
+                }
+
+                model = _ICFTCommentsService.Get_CFT_Orders(new CFTComments_ViewModel()
+                {
+                    StyleID = Req.StyleID,
+                    BrandID = Req.BrandID,
+                    SeasonID = Req.SeasonID,
+                    QueryType = "Style"
+                });
+
+                if (model.StyleID == null || model.StyleID == string.Empty)
+                {
+                    Req.ErrorMessage = $@"
+msg.WithInfo('Cannot found combination Style# {Req.StyleID}, Brand {Req.BrandID}, Season {Req.SeasonID}');
+";
+                    return View("Index", Req);
+                }
+            }
+
+            // Query
+            model = _ICFTCommentsService.Get_CFT_OrderComments(model);
+
+            if (!model.Result)
+            {
+                model.ErrorMessage = $@"
+msg.WithInfo('{model.ErrorMessage.Replace("'", string.Empty)}');
+";
+            }
+            model.QueryType = Req.QueryType;
+            TempData["Model"] = model;
+
+            return RedirectToAction("Index");
+        }
+
+
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "Query")]
         public ActionResult Query(CFTComments_ViewModel Req)

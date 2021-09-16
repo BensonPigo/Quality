@@ -155,6 +155,7 @@
     <Compile Include="RequestModel\Quality_Pass1_Request.cs" />
     <Compile Include="RequestModel\Quality_Position_Request.cs" />
     <Compile Include="RequestModel\StyleList_Request.cs" />
+    <Compile Include="RequestModel\StyleManagement_Request.cs" />
     <Compile Include="RequestModel\UserList_Authority_Request.cs" />
     <Compile Include="ResultModelBase.cs" />
     <Compile Include="ResultModel\AuthoritybyPosition.cs" />
@@ -207,6 +208,7 @@
     <Compile Include="ViewModel\RFT_Inspection_Measurement_ViewModel.cs" />
     <Compile Include="ViewModel\RFT_OrderComments_ViewModel.cs" />
     <Compile Include="ViewModel\RFT_PicDuringDummyFitting_ViewModel.cs" />
+    <Compile Include="ViewModel\SampleRFT\StyleResult_ViewModel.cs" />
     <Compile Include="ViewModel\SelectItem_ViewModel.cs" />
     <Compile Include="ViewModel\StyleResult_ViewModel.cs" />
   </ItemGroup>

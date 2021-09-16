@@ -147,7 +147,7 @@ namespace BusinessLogicLayer.Service.Tests
                     }
                 };
 
-                var mockupWash = _MockupWashService.Create(MockupWash, "", out string no);
+                var mockupWash = _MockupWashService.Create(MockupWash, "VM1", "SCIMIS", out string no);
                 Assert.IsTrue(true);
             }
             catch (Exception ex)
@@ -199,7 +199,7 @@ namespace BusinessLogicLayer.Service.Tests
                     }
                 };
 
-                var mockupWash = _MockupWashService.Update(MockupWash);
+                var mockupWash = _MockupWashService.Update(MockupWash, "SCIMIS");
                 Assert.IsTrue(true);
             }
             catch (Exception ex)

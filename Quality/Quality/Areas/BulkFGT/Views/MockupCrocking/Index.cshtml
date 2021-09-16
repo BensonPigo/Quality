@@ -350,7 +350,7 @@
                                                 styleColor = "red";
                                             }
                                         }
-                                        <font id="Result" class="@styleColor">@Html.DisplayFor(o => o.Result)</font>
+                                        <font id="Result" class="@styleColor">@Model.Result</font>
                                     </td>
                                     <td></td>
                                     <td></td>
@@ -422,7 +422,7 @@
                                 <tr idx="@i" class="row-content" style="vertical-align: middle; text-align: center;">
                                     <td>
                                         <div class="input-group">
-                                            @Html.TextBoxFor(modelItem => Model.MockupCrocking_Detail[i].Design)
+                                            <input id="MockupCrocking_Detail_@{@i}__Design" name="MockupCrocking_Detail[@{@i}].Design" type="text" value="@Model.MockupCrocking_Detail[i].Design">                                            
                                         </div>
                                     </td>
                                     <td>
@@ -477,10 +477,10 @@
                                         </select>
                                     </td>
                                     <td>
-                                        @Html.TextBoxFor(modelItem => Model.MockupCrocking_Detail[i].Remark, new { })
+                                        <input id="MockupCrocking_Detail_@{@i}__Remark" name="MockupCrocking_Detail[@{@i}].Remark" type="text" value="@Model.MockupCrocking_Detail[i].Remark">
                                     </td>
                                     <td>
-                                        @Html.TextBoxFor(modelItem => Model.MockupCrocking_Detail[i].LastUpdate, new { @readonly = "readonly" })
+                                        <input id="MockupCrocking_Detail_@{@i}__LastUpdate" name="MockupCrocking_Detail[@{@i}].LastUpdate" readonly="readonly" type="text" value="@Model.MockupCrocking_Detail[i].LastUpdate">
                                     </td>
                                     <td>
                                         <img class='detailDelete' src="~/Image/Icon/Delete.png" width=30 style="min-width:30px">
@@ -577,6 +577,7 @@
     function Clear() {
         if (EditType == "New") {
             $(".DataTable input[type='text'], .DetailTable select").val('');
+            $('#Result').html('');
         }
     }
 
@@ -953,7 +954,7 @@
                 $('#btnQuery').unbind('click').click();
             }
             else {
-                if ($('#BrandID').val() != '' || $('#SeasonID').val() != '' || $('#StyleID').val() != '' || $('#Article').val() != '') {
+                if ($('#Request_BrandID').val() != '' || $('#Request_SeasonID').val() != '' || $('#Request_StyleID').val() != '' || $('#Request_Article').val() != '') {
                     $('#btnQuery').unbind('click').click();
                 }
             }
@@ -1209,10 +1210,10 @@
     function changeResult(obj) {
         var result = $(obj).val();
         if (result == "Pass") {
-            $(obj).css('color', 'blue');
+            $(obj).removeClass('red').addClass('blue');
         }
         else {
-            $(obj).css('color', 'red');
+            $(obj).removeClass('blue').addClass('red');
         }
 
         var result = true;
@@ -1223,10 +1224,10 @@
         });
 
         if (result) {
-            $('#Result').html("Pass").css("color", "blue");
+            $('#Result').html("Pass").removeClass('red').addClass("blue");
         }
         else {
-            $('#Result').html("Fail").css("color", "red");
+            $('#Result').html("Fail").removeClass('blue').addClass("red");
         }
     }
 

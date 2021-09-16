@@ -55,10 +55,9 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "Query")]
-        public ActionResult Query(MockupCrocking_ViewModel Req)
+        public ActionResult Query(MockupCrocking_ViewModel Req )
         {
             //example:ADIDAS, 19FW, F1915KYB012, ED5770
-            
             MockupCrocking_ViewModel mockupCrocking_ViewModel = _MockupCrockingService.GetMockupCrocking(Req.Request);            
             //若沒錯誤訊息 且 MockupCrocking_ViewModel == null, 則是沒資料
             if (mockupCrocking_ViewModel == null)
@@ -76,7 +75,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.FactoryID = this.FactoryID;
             ViewBag.UserMail = this.UserMail;
             return View("Index", mockupCrocking_ViewModel);
-        }
+        } 
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "New")]
@@ -86,8 +85,8 @@ namespace Quality.Areas.BulkFGT.Controllers
             {
                 Req.MockupCrocking_Detail = new List<MockupCrocking_Detail_ViewModel>();
             }
-            Req.AddName = this.UserID;
-            BaseResult result = _MockupCrockingService.Create(Req, this.MDivisionID, out string ReportNo);
+
+            BaseResult result = _MockupCrockingService.Create(Req, this.MDivisionID, this.UserID, out string ReportNo);
 
             Req.Request = new MockupCrocking_Request()
             {
@@ -129,12 +128,17 @@ namespace Quality.Areas.BulkFGT.Controllers
             {
                 Req.MockupCrocking_Detail = new List<MockupCrocking_Detail_ViewModel>();
             }
-            Req.EditName = this.UserID;
-            foreach (var item in Req.MockupCrocking_Detail)
+
+            BaseResult result = _MockupCrockingService.Update(Req, this.UserID);
+            Req.Request = new MockupCrocking_Request()
             {
-                item.EditName = this.UserID;
-            }
-            BaseResult result = _MockupCrockingService.Update(Req);
+                BrandID = Req.BrandID,
+                SeasonID = Req.SeasonID,
+                StyleID = Req.StyleID,
+                Article = Req.Article,
+                ReportNo = Req.ReportNo,
+            };
+
             MockupCrocking_ViewModel mockupCrocking_ViewModel = _MockupCrockingService.GetMockupCrocking(Req.Request);
 
             if (mockupCrocking_ViewModel == null)
@@ -142,7 +146,6 @@ namespace Quality.Areas.BulkFGT.Controllers
                 mockupCrocking_ViewModel = new MockupCrocking_ViewModel() { ReportNo_Source = new List<string>(), };
             }
 
-            Req.ReportNo = mockupCrocking_ViewModel.ReportNo;
             Req.LastEditName = mockupCrocking_ViewModel.LastEditName;
             if (!result.Result)
             {
@@ -171,7 +174,18 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             if (mockupCrocking_ViewModel == null)
             {
-                mockupCrocking_ViewModel = new MockupCrocking_ViewModel() { ReportNo_Source = new List<string>(), };
+                mockupCrocking_ViewModel = new MockupCrocking_ViewModel()
+                {
+                    Request = new MockupCrocking_Request
+                    {
+                        BrandID = string.Empty,
+                        SeasonID = string.Empty,
+                        StyleID = string.Empty,
+                        Article = string.Empty,
+                    },
+                    MockupCrocking_Detail = new List<MockupCrocking_Detail_ViewModel>(),
+                    ReportNo_Source = new List<string>(),
+                };
             }
             if (!result.Result)
             {

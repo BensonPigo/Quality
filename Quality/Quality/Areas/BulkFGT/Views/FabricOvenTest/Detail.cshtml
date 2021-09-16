@@ -978,10 +978,10 @@
     function selectChange(obj) {
         var result = $(obj).val();
         if (result == "Pass") {
-            $(obj).css('color', 'blue');
+            $(obj).removeClass('red').addClass('blue');
         }
         else {
-            $(obj).css('color', 'red');
+            $(obj).removeClass('blue').addClass('red');
         }
 
         var key = $(obj).parents('td').parents('tr').children('td').find("input[type='hidden']").attr('idx');

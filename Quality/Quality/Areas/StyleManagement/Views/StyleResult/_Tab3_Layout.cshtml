@@ -1,0 +1,85 @@
+﻿@using DatabaseObject.ViewModel.SampleRFT
+
+@model StyleResult_ViewModel
+<style type="text/css">
+    .CheckListClass .checkboxlabel {
+        font-size: 1.5em;
+    }
+
+    .checkListClass tr td {
+        vertical-align: middle;
+    }
+
+    .CheckListClass {
+        width: 100%;
+        font-size: 0.8em;
+    }
+
+        .CheckListClass table tr td {
+            text-align: left;
+        }
+
+        .checkListClass input {
+            height: 1.5vh;
+        }
+</style>
+
+<div class="margin-c" style="padding:10px 10px 10px 10px;">
+    <div style="display:inline-block;width:100%;padding:5px 5px 5px 5px;color:white;">
+        <input type="button" class="btn-gy" id="RRLRReport" name="name" value="RR/LR Report" />
+    </div>
+    <div style="display:inline-block;width:100%">
+
+        <table id="myTable3" class="table table-striped display">
+            <thead>
+                <tr class="row-name" id="row-name">
+                    <th>Refno</th>
+                    <th>Supplier</th>
+                    <th>Color</th>
+                    <th>RR</th>
+                    <th>RR Remark</th>
+                    <th>LR</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @if (Model.RRLR.Any())
+                {
+                    foreach (var item in Model.RRLR)
+                    {
+                        string rrCheck = item.RR ? "checked" : "";
+                        string lrCheck = item.LR ? "checked" : "";
+                        <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                            <td>@item.Refno</td>
+                            <td>@item.Supplier</td>
+                            <td>@item.ColorID</td>
+                            <td>
+                                <input type="checkbox" name="name" value="" @rrCheck disabled />
+                            </td>
+                            <td>@item.Remark</td>
+                            <td>
+                                <input type="checkbox" name="name" value="" @lrCheck disabled />
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+    $(function () {
+        $('#myTable3').DataTable({
+            "pageLength": 10,
+            "autoWidth": false,
+            "info": false,
+            "filter": false,
+            "paging": false,
+            "info": false,
+            "scrollY": "40vh",
+            "scrollCollapse": true,
+        });
+    });
+</script>

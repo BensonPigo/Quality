@@ -414,13 +414,13 @@
                                 @{
                                     string SeamBreakageResultFontColor = Model.garmentTest_Details[i].SeamBreakageResult == "P" || Model.garmentTest_Details[i].SeamBreakageResult == "Pass" ? "blue" : "red";
                                     string SeamBreakageResultVal = Model.garmentTest_Details[i].SeamBreakageResult == "P" || Model.garmentTest_Details[i].SeamBreakageResult == "Pass" ? "Pass" :
-                                                            string.IsNullOrEmpty(Model.garmentTest.SeamBreakageResult) ? string.Empty : "Fail";
+                                                            string.IsNullOrEmpty(Model.garmentTest_Details[i].SeamBreakageResult) ? string.Empty : "Fail";
                                     string OdourResultDetailFontColor = Model.garmentTest_Details[i].OdourResult == "P" || Model.garmentTest_Details[i].OdourResult == "Pass" ? "blue" : "red";
                                     string OdourResultDetailVal = Model.garmentTest_Details[i].OdourResult == "P" || Model.garmentTest_Details[i].OdourResult == "Pass" ? "Pass" :
-                                                            string.IsNullOrEmpty(Model.garmentTest.OdourResult) ? string.Empty : "Fail";
+                                                            string.IsNullOrEmpty(Model.garmentTest_Details[i].OdourResult) ? string.Empty : "Fail";
                                     string WashResultDetailFontColor = Model.garmentTest_Details[i].WashResult == "P" || Model.garmentTest_Details[i].WashResult == "Pass" ? "blue" : "red";
                                     string WashResultDetailVal = Model.garmentTest_Details[i].WashResult == "P" || Model.garmentTest_Details[i].WashResult == "Pass" ? "Pass" :
-                                                            string.IsNullOrEmpty(Model.garmentTest.WashResult) ? string.Empty : "Fail";
+                                                            string.IsNullOrEmpty(Model.garmentTest_Details[i].WashResult) ? string.Empty : "Fail";
                                 }
                                 <td style="width:10vw;" class="@SeamBreakageResultFontColor">
                                     @SeamBreakageResultVal
