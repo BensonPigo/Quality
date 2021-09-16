@@ -56,7 +56,8 @@ namespace DatabaseObject.ViewModel.SampleRFT
         public string ExpectionFormRemark { get; set; }
         public string Article { get; set; }
         public string Description { get; set; }
-        public string FDFile { get; set; }
+        public string FDFilePath { get; set; }
+        public string FDFileName { get; set; }
     }
 
     public class StyleResult_RRLR

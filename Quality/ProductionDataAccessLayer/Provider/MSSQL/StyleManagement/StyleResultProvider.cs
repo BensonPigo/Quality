@@ -404,10 +404,11 @@ select  ExpectionFormStatus = d.Name
 ,s.ExpectionFormRemark
 ,sa.Article
 ,sa.Description
-,FDFile = IIF(sa.SourceFile = null OR sa.SourceFile = '' 
+,FDFilePath = IIF(sa.SourceFile = null OR sa.SourceFile = '' 
 				, '' 
 				,(select StyleFDFilePath +  sa.SourceFile from System)
 			)
+,FDFileName = ISNULL(sa.SourceFile ,'')
 from Style s
 inner join DropDownList d on d.Type = 'FactoryDisclaimer' AND s.ExpectionFormStatus = d.ID
 inner join Style_Article sa on s.Ukey = sa.StyleUkey

@@ -76,10 +76,10 @@
                             <td>@item.Article</td>
                             <td>@item.Description</td>
                             <td>
-                                @if (!string.IsNullOrEmpty(item.FDFile))
+                                @if (!string.IsNullOrEmpty(item.FDFilePath))
                                 {
 
-                                    <a href="@Url.Action("DownLoadFDFile", new { FDFile = item.FDFile })">
+                                    <a href="@Url.Action("DownLoadFDFile", new { FDFilePath = item.FDFilePath,FileName = item.FDFileName })">
                                         <img src="~/Image/Icon/Download.png" style="cursor: pointer;" width="25" height="25" />
                                     </a>
                                 }

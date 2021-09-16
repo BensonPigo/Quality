@@ -1,0 +1,145 @@
+﻿
+@using DatabaseObject.ViewModel.SampleRFT;
+
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Index";
+}
+
+@model InspectionDefectList_ViewModel
+
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+<link href="~/ThirdParty/plugins/jquery-magnific-popup/magnific-popup.css" rel="stylesheet" />
+<link href="~/ThirdParty/plugins/jquery-ui/jquery-ui.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/jquery-magnific-popup/jquery.magnific-popup.js"></script>
+
+<style type="text/css">
+
+    label, #DetailTable_info, #DetailTable_length > label > select {
+        color: white
+    }
+
+    #DetailTable_previous, #DetailTable_next {
+        color: white !important;
+    }
+
+    .QueryLab {
+        font-size: 2vh;
+    }
+
+    td {
+        text-align: left;
+    }
+</style>
+
+<div class="main-content">
+
+    <header class="page-header">
+        <h3>
+            <i class=""></i><span>Style List</span>
+        </h3>
+        <div class="breadcrumb">
+            <div>Home</div>
+            <div class="current">Style List</div>
+        </div>
+    </header>
+
+    <div class="main-area">
+
+        <div class="content-scroll">
+            <div class="inner-scroll" style="float:left">
+
+                <div>
+                    @using (Html.BeginForm("Query", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post, new { @class = "", @name = "SearchFrom", @id = "SearchFrom", @onsubmit = "ShowLoading();" }))
+                    {
+                        <div>
+                            <label class="QueryLab">SP#</label>
+                            <input type="text" name="OrderID" id="txtOrderID" value="@Model.OrderID" />
+                            &nbsp;&nbsp;
+                            <label class="QueryLab">Style#</label>
+                            <input type="text" name="StyleID" id="txtStyleID" style="background-color:lightgray" value="@Model.StyleID" readonly />
+                            &nbsp;&nbsp;
+                            <label class="QueryLab">Sample Stage</label>
+                            <input type="text" name="SampleStage" id="txtSampleStage" style="background-color:lightgray" value="@Model.SampleStage" readonly/>
+                            &nbsp;&nbsp;
+                            <label class="QueryLab">Season</label>
+                            <input type="text" name="SeasonID" id="txtSeasonID" style="background-color:lightgray" value="@Model.SeasonID" readonly/>
+                            &nbsp;&nbsp;
+                            <input type="submit" name="name" id="btnQuery" value="Query" />
+
+                        </div>
+                    }
+                </div>
+                <br />
+                <div>
+                    <table id="DetailTable" class="table table-striped display cell-border">
+                        <thead>
+                            <tr class="row-name">
+                                <th>Article</th>
+                                <th>Size</th>
+                                <th>Inspection Date</th>
+                                <th>Defect Type</th>
+                                <th>Picture</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @foreach (var item in Model.DataList)
+                            {
+                                <tr class="row-content">
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Article)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Size)
+                                    </td>
+                                    <td>
+                                        @item.InspectionDate
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.DefectType)
+                                    </td>
+                                    <td>
+                                        @if (item.DefectPicture != null)
+                                        {
+                                            var base64 = Convert.ToBase64String(item.DefectPicture);
+                                            var imgSrc = String.Format("data:image/webp;base64,{0}", base64);
+                                            <div class="zoom-gallery">
+                                                <a href="@imgSrc" data-source="" style="width:640px;height:480px;">
+                                                    <img width="30" src="@imgSrc" />
+                                                </a>
+                                            </div>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <br />
+
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<script type="text/javascript">
+
+    var msg = new MessagerAlert();
+
+    $(function () {
+
+        @Html.Raw(Model.ErrorMessage);
+
+        $("#DetailTable").DataTable();
+
+
+    });
+
+</script>
