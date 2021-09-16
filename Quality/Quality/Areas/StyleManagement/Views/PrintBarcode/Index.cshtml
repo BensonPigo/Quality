@@ -1,10 +1,11 @@
-﻿@using DatabaseObject.ViewModel;
+﻿@using DatabaseObject.ViewModel.SampleRFT;
 
 @{
     ViewBag.Title = "Index";
+    string MsgScript = ViewData["MsgScript"] == null ? "" : ViewData["MsgScript"].ToString();
 }
 
-@model PrintBarcode_ViewModel
+@model List<PrintBarcode_ViewModel>
 
 <link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
 <link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
@@ -164,7 +165,7 @@
                         </thead>
 
                         <tbody>
-                            @foreach (var item in Model.DataList)
+                            @foreach (var item in Model)
                             {
                                 <tr class="row-content">
                                     <td>
@@ -208,7 +209,7 @@
 
     $(function () {
 
-        @Html.Raw(Model.MsgScript);
+        @Html.Raw(MsgScript);
 
         var table = $('#DetailTable').DataTable({
             "pageLength": 10

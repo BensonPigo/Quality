@@ -94,13 +94,9 @@ msg.WithInfo('Style, Brand and Season cannot be empty.');
             return RedirectToAction("Index");
         }
 
-        public ActionResult DownLoadFDFile(string FDFilePath, string FileName)
+        public ActionResult DownloadFDFile(string FDFilePath, string FileName)
         {
 
-
-            //設定要下載的檔案路徑 及 儲存的檔名
-            string path = "c:\\temp\\123.pdf";
-            //string FileName = "abc.pdf";
             //宣告並建立WebClient物件
             WebClient wc = new WebClient();
             //載入要下載的檔案
@@ -115,18 +111,28 @@ msg.WithInfo('Style, Brand and Season cannot be empty.');
             Response.End();
 
             return null;
-            //string fileName = FDFile;
 
-            //MemoryStream obj_stream = new MemoryStream();
-            //var tempFile = FDFile;
-            //obj_stream = new MemoryStream(System.IO.File.ReadAllBytes(tempFile));
-            //Response.AddHeader("Content-Disposition", $"attachment; filename={fileName}");
-            //Response.BinaryWrite(obj_stream.ToArray());
-            //obj_stream.Close();
-            //obj_stream.Dispose();
-            //Response.Flush();
-            //Response.End();
-            //return null;
+        }
+
+
+        public ActionResult DownloadRRLRFile(string FilePath,string BrandID, string SeasonID, string StyleID)
+        {
+
+            string FileName = $"{BrandID}_{SeasonID}_{StyleID}.xlsx";
+            //宣告並建立WebClient物件
+            WebClient wc = new WebClient();
+            //載入要下載的檔案
+            byte[] b = wc.DownloadData(FilePath + FileName);
+            //清除Response內的HTML
+            Response.Clear();
+            //設定標頭檔資訊 attachment 是本文章的關鍵字
+            Response.AddHeader("Content-Disposition", "attachment;filename=" + FileName);
+            //開始輸出讀取到的檔案
+            Response.BinaryWrite(b);
+            //一定要加入這一行，否則會持續把Web內的HTML文字也輸出。
+            Response.End();
+
+            return null;
 
         }
     }

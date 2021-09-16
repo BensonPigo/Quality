@@ -178,6 +178,7 @@ WHERE Junk=0
 
             string sqlGet_StyleResult_Browse = $@"
 select  {sqlCol}
+,StyleRRLRPath = (select StyleRRLRPath from System)
 from    Production.dbo.Style s with (nolock)
 where   1 = 1 {sqlWhere}
 ";
@@ -475,7 +476,6 @@ where 1=1
             return ExecuteList<StyleResult_RRLR>(CommandType.Text, sqlGet_StyleResult_Browse, listPar);
         }
 
-
         public IList<StyleResult_BulkFGT> Get_StyleResult_BulkFGT(StyleResult_Request styleResult_Request)
         {
             SQLParameterCollection listPar = new SQLParameterCollection();
@@ -607,8 +607,8 @@ OUTER APPLY(
 		)
 )Type701_710
 where s.ID = @StyleID
-AND s.BrandID = s.BrandID
-AND s.SeasonID = s.SeasonID
+AND s.BrandID = @BrandID
+AND s.SeasonID = @SeasonID
 ";
             return ExecuteList<StyleResult_BulkFGT>(CommandType.Text, sqlGet_StyleResult_Browse, listPar);
         }

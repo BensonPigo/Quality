@@ -85,7 +85,6 @@
     <Compile Include="Service\RFTPerLineServiceTests.cs" />
     <Compile Include="Service\BulkFGT\BulkFGTMailGroupTest.cs" />
     <Compile Include="Service\SampleRFT\MeasurementServiceTests.cs" />
-    <Compile Include="Service\StyleManagement\StyleManagementServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -114,7 +114,6 @@
     <Compile Include="Interface\IStyleArtworkProvider.cs" />
     <Compile Include="Interface\IStyleBOAProvider.cs" />
     <Compile Include="Interface\IStyleListProvider.cs" />
-    <Compile Include="Interface\IStyleManagementProvider.cs" />
     <Compile Include="Interface\IStyleProvider.cs" />
     <Compile Include="Interface\ISystemProvider.cs" />
     <Compile Include="Interface\ITPEPass1Provider.cs" />
@@ -165,7 +164,7 @@
     <Compile Include="Provider\MSSQL\StyleArtworkProvider.cs" />
     <Compile Include="Provider\MSSQL\StyleBOAProvider.cs" />
     <Compile Include="Provider\MSSQL\StyleListProvider.cs" />
-    <Compile Include="Provider\MSSQL\StyleManagementProvider.cs" />
+    <Compile Include="Provider\MSSQL\PrintBarcodeProvider.cs" />
     <Compile Include="Provider\MSSQL\StyleManagement\StyleResultProvider.cs" />
     <Compile Include="Provider\MSSQL\StyleProvider.cs" />
     <Compile Include="Provider\MSSQL\SystemProvider.cs" />

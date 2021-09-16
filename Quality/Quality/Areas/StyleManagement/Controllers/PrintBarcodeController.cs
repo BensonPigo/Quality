@@ -1,7 +1,7 @@
 ﻿using BusinessLogicLayer.Interface;
 using BusinessLogicLayer.Service.StyleManagement;
 using DatabaseObject.ResultModel;
-using DatabaseObject.ViewModel;
+using DatabaseObject.ViewModel.SampleRFT;
 using Quality.Controllers;
 using System;
 using System.Collections.Generic;
@@ -13,11 +13,11 @@ namespace Quality.Areas.StyleManagement
 {
     public class PrintBarcodeController : BaseController
     {
-        private IStyleManagementService _StyleManagementService;
+        private PrintBarcodeService _Service;
 
         public PrintBarcodeController()
         {
-            _StyleManagementService = new StyleManagementService();
+            _Service = new PrintBarcodeService();
             ViewBag.OnlineHelp = this.OnlineHelp + "StyleManagement.PrintBarcode,,";
         }
 
@@ -26,10 +26,7 @@ namespace Quality.Areas.StyleManagement
         {
             this.CheckSession();
 
-            PrintBarcode_ViewModel model = new PrintBarcode_ViewModel()
-            {
-                DataList = new List<StyleResult_ViewModel>()
-            };
+            List<PrintBarcode_ViewModel> model = new List<PrintBarcode_ViewModel>();
             return View(model);
         }
 
@@ -38,37 +35,36 @@ namespace Quality.Areas.StyleManagement
         {
             this.CheckSession();
 
-            PrintBarcode_ViewModel model = new PrintBarcode_ViewModel()
-            {
-                DataList = new List<StyleResult_ViewModel>()
-            };
+            List<PrintBarcode_ViewModel> model = new List<PrintBarcode_ViewModel>();
+
             try
             {
                 bool st = string.IsNullOrEmpty(Req.StyleID);
                 bool sb = (string.IsNullOrEmpty(Req.BrandID) || string.IsNullOrEmpty(Req.SeasonID));
                 if (st && sb)
                 {
-                    model.MsgScript = $@"
+                    ViewData["MsgScript"] = $@"
 msg.WithInfo('Please input ＜Style＞ or ＜Brand, Season＞.');
 ";
                     return View("index", model);
                 }
 
-                model.DataList = _StyleManagementService.Get_PrintBarcodeStyleInfo(Req).ToList();
+                model = _Service.Get_PrintBarcodeStyleInfo(Req).ToList();
 
-                if (!model.DataList.Any())
+                if (!model.Any())
                 {
-                    model.MsgScript = $@"
+                    ViewData["MsgScript"] = $@"
 msg.WithInfo('Data not found.');
 ";
                 }
             }
             catch (Exception ex)
             {
-                model.MsgScript = $@"
+                ViewData["MsgScript"] = $@"
 msg.WithInfo('Error : {ex.Message.Replace("\r\n", "<br />")}');
 ";
             }
+
             return View("index", model);
         }
 

@@ -79,7 +79,7 @@
                                 @if (!string.IsNullOrEmpty(item.FDFilePath))
                                 {
 
-                                    <a href="@Url.Action("DownLoadFDFile", new { FDFilePath = item.FDFilePath,FileName = item.FDFileName })">
+                                    <a href="@Url.Action("DownloadFDFile", new { FDFilePath = item.FDFilePath,FileName = item.FDFileName })">
                                         <img src="~/Image/Icon/Download.png" style="cursor: pointer;" width="25" height="25" />
                                     </a>
                                 }

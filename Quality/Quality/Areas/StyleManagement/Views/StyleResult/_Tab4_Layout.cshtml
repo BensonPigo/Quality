@@ -34,11 +34,14 @@
         {
             foreach (var item in Model.BulkFGT)
             {
+                string color = item.LastResult == "Pass" ? "blue" : "red";
                 <tr class="row-content" style="vertical-align: middle; text-align: center;">
                     <td>@item.Article</td>
                     <td>@item.Type</td>
                     <td>@item.TestName</td>
-                    <td>@item.LastResult</td>
+                    <td style="color:@color">
+                        @item.LastResult
+                    </td>
                     <td>@item.LastTestDate</td>
                 </tr>
             }

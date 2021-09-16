@@ -121,7 +121,6 @@
     <Compile Include="Interface\SampleRFT\IPicturesDummyService.cs" />
     <Compile Include="Interface\SampleRFT\IRFTPerLineService.cs" />
     <Compile Include="Interface\StyleManagement\IStyleListService.cs" />
-    <Compile Include="Interface\StyleManagement\IStyleManagementService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\Authority\AuthorityService.cs" />
     <Compile Include="Service\BulkFGT\AccessoryOvenWashService.cs" />
@@ -153,7 +152,7 @@
     <Compile Include="Service\SampleRFT\MeasurementService.cs" />
     <Compile Include="Service\SampleRFT\RFTPerLineService.cs" />
     <Compile Include="Service\StyleManagement\StyleListService.cs" />
-    <Compile Include="Service\StyleManagement\StyleManagementService.cs" />
+    <Compile Include="Service\StyleManagement\PrintBarcodeService.cs" />
     <Compile Include="Service\StyleManagement\StyleResultService.cs" />
   </ItemGroup>
   <ItemGroup>
