@@ -153,7 +153,6 @@ where id = @ID
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
                 { "@POID", sources.Main.POID } ,
-                { "@TestNo", sources.Main.TestNo } ,
                 { "@InspDate", sources.Main.InspDate } ,
                 { "@Article", sources.Main.Article } ,
                 { "@Result", sources.Main.Result } ,
@@ -176,8 +175,15 @@ where id = @ID
 
             string sqlcmd = string.Empty;
             int idx = 1;
-            NewID = string.Empty;   
+            NewID = string.Empty;
+
             #region save Main
+
+
+           DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, $@"select Max(testno) as testMaxNo from ColorFastness WITH (NOLOCK) where poid='{sources.Main.POID}'", new SQLParameterCollection());
+            int testMaxNo = MyUtility.Convert.GetInt(dt.Rows[0]["testMaxNo"]);
+            objParameter.Add("@TestNo", testMaxNo);
+
             if (sources.Main.ID != null && !string.IsNullOrEmpty(sources.Main.ID))
             {
                 objParameter.Add(new SqlParameter($"@ID", sources.Main.ID));
@@ -245,6 +251,7 @@ and Seq2 = @Seq2{idx}
                 // 代表是新增的資料
                 if (dtDetail.Rows.Count == 0)
                 {
+
                     sqlcmd += $@"
 insert into ColorFastness_Detail 
 (      [ID]

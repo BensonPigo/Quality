@@ -222,6 +222,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             */
             Fabric_ColorFastness_Detail_ViewModel result = new Fabric_ColorFastness_Detail_ViewModel();
             result.sentMail = false;
+            result.Result = true;
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             try
             {
