@@ -804,7 +804,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        private void RowHeight(Microsoft.Office.Interop.Excel.Worksheet worksheet, int row, string strComment)
+        private void RowHeight(Excel.Worksheet worksheet, int row, string strComment)
         {
             if (strComment.Length > 15)
             {
@@ -903,7 +903,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                         Excel.Application objApp = MyUtility.Excel.ConnectExcel(openfilepath);
                         objApp.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
-                        Microsoft.Office.Interop.Excel.Worksheet worksheet = objApp.ActiveWorkbook.Worksheets[1]; // 取得工作表
+                        Excel.Worksheet worksheet = objApp.ActiveWorkbook.Worksheets[1]; // 取得工作表
 
                         // WashName 調整次數 710(1,10,15), 701(1,3)
                         string WashName = all_Data.Main.WashName;
@@ -1003,29 +1003,35 @@ where t.ID = '{all_Data.Detail.inspector}'
 and t.GarmentTest=1
 ";
                                 string technicianName = string.Empty;
-                                string picSource = string.Empty;
+                                Bitmap picSource = null;
                                 Image img = null;
-                                Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[12, 2];
+                                Excel.Range cell = worksheet.Cells[12, 2];
 
                                 DataTable dtTechnicianInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sql_cmd, new ADOHelper.Template.MSSQL.SQLParameterCollection());
 
                                 if (dtTechnicianInfo != null && dtTechnicianInfo.Rows.Count > 0)
                                 {
                                     technicianName = dtTechnicianInfo.Rows[0]["name"].ToString();
-                                    picSource = dtTechnicianInfo.Rows[0]["SignaturePic"].ToString();
+                                    byte[] imgDatya = (byte[])dtTechnicianInfo.Rows[0]["SignaturePic"];
+                                    using (MemoryStream ms = new MemoryStream(imgDatya))
+                                    {
+                                        img = Image.FromStream(ms);
+                                    }
+                                    // Resize
+                                    Bitmap reBitmap = new Bitmap(img, 80, 58);
+                                    picSource = reBitmap;
 
                                     // Name
-                                    worksheet.Cells[76, 9] = technicianName;
+                                    worksheet.Cells[79, 9] = technicianName;
 
                                     // 插入圖檔
                                     if (!MyUtility.Check.Empty(picSource))
                                     {
-                                        if (File.Exists(picSource))
+                                        if (picSource != null)
                                         {
-                                            img = Image.FromFile(picSource);
-                                            Microsoft.Office.Interop.Excel.Range cellPic = worksheet.Cells[74, 9];
-
-                                            worksheet.Shapes.AddPicture(picSource, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellPic.Left, cellPic.Top, 100, 24);
+                                            Clipboard.SetDataObject(picSource);
+                                            Excel.Range cellPic = worksheet.Cells[74, 9];
+                                            worksheet.Paste(cellPic, picSource);
                                         }
                                     }
                                 }
@@ -1487,7 +1493,7 @@ and t.GarmentTest=1
                             }
                             else
                             {
-                                Microsoft.Office.Interop.Excel.Range rng = worksheet.get_Range("A54:A58", Type.Missing).EntireRow;
+                                Excel.Range rng = worksheet.get_Range("A54:A58", Type.Missing).EntireRow;
                                 rng.Select();
                                 rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
                                 Marshal.ReleaseComObject(rng);
@@ -1502,7 +1508,7 @@ and t.GarmentTest=1
                             }
                             else
                             {
-                                Microsoft.Office.Interop.Excel.Range rng = worksheet.get_Range("A49:A53", Type.Missing).EntireRow;
+                                Excel.Range rng = worksheet.get_Range("A49:A53", Type.Missing).EntireRow;
                                 rng.Select();
                                 rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
                                 Marshal.ReleaseComObject(rng);
@@ -1532,7 +1538,7 @@ and t.GarmentTest=1
                                 {
                                     for (int i = 0; i < dt_B.Rows.Count - 5; i++)
                                     {
-                                        Microsoft.Office.Interop.Excel.Range rng = worksheet.get_Range("A48:A48", Type.Missing).EntireRow;
+                                        Excel.Range rng = worksheet.get_Range("A48:A48", Type.Missing).EntireRow;
                                         rng.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown);
                                     }
                                 }
@@ -1548,7 +1554,7 @@ and t.GarmentTest=1
                             }
                             else
                             {
-                                Microsoft.Office.Interop.Excel.Range rng = worksheet.get_Range("A42:A49", Type.Missing).EntireRow;
+                                Excel.Range rng = worksheet.get_Range("A42:A49", Type.Missing).EntireRow;
                                 rng.Select();
                                 rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
                                 Marshal.ReleaseComObject(rng);
@@ -1563,7 +1569,7 @@ and t.GarmentTest=1
                                 {
                                     for (int i = 0; i < dt.Rows.Count - 5; i++)
                                     {
-                                        Microsoft.Office.Interop.Excel.Range rng = worksheet.get_Range("A38:A38", Type.Missing).EntireRow;
+                                        Excel.Range rng = worksheet.get_Range("A38:A38", Type.Missing).EntireRow;
                                         rng.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown);
                                     }
                                 }
@@ -1579,7 +1585,7 @@ and t.GarmentTest=1
                             }
                             else
                             {
-                                Microsoft.Office.Interop.Excel.Range rng = worksheet.get_Range("A32:A39", Type.Missing).EntireRow;
+                                Excel.Range rng = worksheet.get_Range("A32:A39", Type.Missing).EntireRow;
                                 rng.Select();
                                 rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
                                 Marshal.ReleaseComObject(rng);
@@ -1594,7 +1600,7 @@ and t.GarmentTest=1
                                 {
                                     for (int i = 0; i < dt.Rows.Count - 5; i++)
                                     {
-                                        Microsoft.Office.Interop.Excel.Range rng = worksheet.get_Range("A30:A30", Type.Missing).EntireRow;
+                                        Excel.Range rng = worksheet.get_Range("A30:A30", Type.Missing).EntireRow;
                                         rng.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown);
                                     }
                                 }
@@ -1610,7 +1616,7 @@ and t.GarmentTest=1
                             }
                             else
                             {
-                                Microsoft.Office.Interop.Excel.Range rng = worksheet.get_Range("A24:A31", Type.Missing).EntireRow;
+                                Excel.Range rng = worksheet.get_Range("A24:A31", Type.Missing).EntireRow;
                                 rng.Select();
                                 rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
                                 Marshal.ReleaseComObject(rng);
@@ -1625,7 +1631,7 @@ and t.GarmentTest=1
                                 {
                                     for (int i = 0; i < dt.Rows.Count - 5; i++)
                                     {
-                                        Microsoft.Office.Interop.Excel.Range rng = worksheet.get_Range("A22:A22", Type.Missing).EntireRow;
+                                        Excel.Range rng = worksheet.get_Range("A22:A22", Type.Missing).EntireRow;
                                         rng.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown);
                                     }
                                 }
@@ -1641,7 +1647,7 @@ and t.GarmentTest=1
                             }
                             else
                             {
-                                Microsoft.Office.Interop.Excel.Range rng = worksheet.get_Range("A16:A23", Type.Missing).EntireRow;
+                                Excel.Range rng = worksheet.get_Range("A16:A23", Type.Missing).EntireRow;
                                 rng.Select();
                                 rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
                                 Marshal.ReleaseComObject(rng);
@@ -1680,39 +1686,35 @@ where t.ID = '{all_Data.Detail.inspector}'
 and t.GarmentTest=1
 ";
                                 string technicianName = string.Empty;
-                                Bitmap picSource;
+                                Bitmap picSource = null;
                                 Image img = null;
-                                Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[12, 2];
+                                Excel.Range cell = worksheet.Cells[12, 2];
 
                                 DataTable dtTechnicianInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sql_cmd, new ADOHelper.Template.MSSQL.SQLParameterCollection());
 
                                 if (dtTechnicianInfo != null && dtTechnicianInfo.Rows.Count > 0)
                                 {
                                     technicianName = dtTechnicianInfo.Rows[0]["name"].ToString();
-                                    //picSource =
-
-                                    byte[] imgDatya = (byte[])dtTechnicianInfo.Rows[0]["SignaturePic"];
-                                    using (MemoryStream ms = new MemoryStream(imgDatya))
+                                    byte[] imgData = (byte[])dtTechnicianInfo.Rows[0]["SignaturePic"];
+                                    using (MemoryStream ms = new MemoryStream(imgData))
                                     {
                                         img = Image.FromStream(ms);
                                     }
-
-                                    picSource = (Bitmap)img;
+                                    // Resize
+                                    Bitmap reBitmap = new Bitmap(img, 80, 58);
+                                    picSource = reBitmap;
 
                                     // Name
-                                    worksheet.Cells[76, 9] = technicianName;
+                                    worksheet.Cells[80, 9] = technicianName;
 
                                     // 插入圖檔
                                     if (!MyUtility.Check.Empty(picSource))
                                     {
                                         if (picSource != null)
                                         {
-                                            //img = Image.FromFile(picSource);
                                             Clipboard.SetDataObject(picSource);
-                                            Microsoft.Office.Interop.Excel.Range cellPic = worksheet.Cells[74, 9];
+                                            Excel.Range cellPic = worksheet.Cells[76, 9];
                                             worksheet.Paste(cellPic, picSource);
-
-                                            //worksheet.Shapes.AddPicture(picSource, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellPic.Left, cellPic.Top, 100, 24);
                                         }
                                     }
                                 }
@@ -2148,7 +2150,7 @@ and t.GarmentTest=1
                             }
                             else
                             {
-                                Microsoft.Office.Interop.Excel.Range rng = worksheet.get_Range("A54:A58", Type.Missing).EntireRow;
+                                Excel.Range rng = worksheet.get_Range("A54:A58", Type.Missing).EntireRow;
                                 rng.Select();
                                 rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
                                 Marshal.ReleaseComObject(rng);
@@ -2163,7 +2165,7 @@ and t.GarmentTest=1
                             }
                             else
                             {
-                                Microsoft.Office.Interop.Excel.Range rng = worksheet.get_Range("A49:A53", Type.Missing).EntireRow;
+                                Excel.Range rng = worksheet.get_Range("A49:A53", Type.Missing).EntireRow;
                                 rng.Select();
                                 rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
                                 Marshal.ReleaseComObject(rng);
@@ -2190,7 +2192,7 @@ and t.GarmentTest=1
                                 {
                                     for (int i = 0; i < dt.Rows.Count - 5; i++)
                                     {
-                                        Microsoft.Office.Interop.Excel.Range rng = worksheet.get_Range("A48:A48", Type.Missing).EntireRow;
+                                        Excel.Range rng = worksheet.get_Range("A48:A48", Type.Missing).EntireRow;
                                         rng.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown);
                                     }
                                 }
@@ -2206,7 +2208,7 @@ and t.GarmentTest=1
                             }
                             else
                             {
-                                Microsoft.Office.Interop.Excel.Range rng = worksheet.get_Range("A42:A49", Type.Missing).EntireRow;
+                                Excel.Range rng = worksheet.get_Range("A42:A49", Type.Missing).EntireRow;
                                 rng.Select();
                                 rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
                                 Marshal.ReleaseComObject(rng);
@@ -2221,7 +2223,7 @@ and t.GarmentTest=1
                                 {
                                     for (int i = 0; i < dt.Rows.Count - 5; i++)
                                     {
-                                        Microsoft.Office.Interop.Excel.Range rng = worksheet.get_Range("A38:A38", Type.Missing).EntireRow;
+                                        Excel.Range rng = worksheet.get_Range("A38:A38", Type.Missing).EntireRow;
                                         rng.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown);
                                     }
                                 }
@@ -2237,7 +2239,7 @@ and t.GarmentTest=1
                             }
                             else
                             {
-                                Microsoft.Office.Interop.Excel.Range rng = worksheet.get_Range("A32:A39", Type.Missing).EntireRow;
+                                Excel.Range rng = worksheet.get_Range("A32:A39", Type.Missing).EntireRow;
                                 rng.Select();
                                 rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
                                 Marshal.ReleaseComObject(rng);
@@ -2252,7 +2254,7 @@ and t.GarmentTest=1
                                 {
                                     for (int i = 0; i < dt.Rows.Count - 5; i++)
                                     {
-                                        Microsoft.Office.Interop.Excel.Range rng = worksheet.get_Range("A30:A30", Type.Missing).EntireRow;
+                                        Excel.Range rng = worksheet.get_Range("A30:A30", Type.Missing).EntireRow;
                                         rng.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown);
                                     }
                                 }
@@ -2268,7 +2270,7 @@ and t.GarmentTest=1
                             }
                             else
                             {
-                                Microsoft.Office.Interop.Excel.Range rng = worksheet.get_Range("A24:A31", Type.Missing).EntireRow;
+                                Excel.Range rng = worksheet.get_Range("A24:A31", Type.Missing).EntireRow;
                                 rng.Select();
                                 rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
                                 Marshal.ReleaseComObject(rng);
@@ -2283,7 +2285,7 @@ and t.GarmentTest=1
                                 {
                                     for (int i = 0; i < dt.Rows.Count - 5; i++)
                                     {
-                                        Microsoft.Office.Interop.Excel.Range rng = worksheet.get_Range("A22:A22", Type.Missing).EntireRow;
+                                        Excel.Range rng = worksheet.get_Range("A22:A22", Type.Missing).EntireRow;
                                         rng.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown);
                                     }
                                 }
@@ -2299,7 +2301,7 @@ and t.GarmentTest=1
                             }
                             else
                             {
-                                Microsoft.Office.Interop.Excel.Range rng = worksheet.get_Range("A16:A23", Type.Missing).EntireRow;
+                                Excel.Range rng = worksheet.get_Range("A16:A23", Type.Missing).EntireRow;
                                 rng.Select();
                                 rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
                                 Marshal.ReleaseComObject(rng);
@@ -2386,9 +2388,9 @@ and t.GarmentTest=1
                         openfilepath_2020 = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName_2020}.xltx";
                     }
 
-                    Microsoft.Office.Interop.Excel.Application objApp_2020 = MyUtility.Excel.ConnectExcel(openfilepath_2020);
+                    Excel.Application objApp_2020 = MyUtility.Excel.ConnectExcel(openfilepath_2020);
                     objApp_2020.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
-                    Microsoft.Office.Interop.Excel.Worksheet worksheet_2020 = objApp_2020.ActiveWorkbook.Worksheets[1]; // 取得工作表
+                    Excel.Worksheet worksheet_2020 = objApp_2020.ActiveWorkbook.Worksheets[1]; // 取得工作表
 
                     // objApp.Visible = true;
                     #region 插入圖片與Technician名字
@@ -2404,7 +2406,7 @@ where t.ID = '{all_Data.Detail.inspector}'
 and t.GarmentTest=1
 ";
                         string technicianName = string.Empty;
-                        string picSource = string.Empty;
+                        Bitmap picSource ;
                         Image img = null;
 
                         DataTable dtTechnicianInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sql_cmd, new ADOHelper.Template.MSSQL.SQLParameterCollection());
@@ -2412,20 +2414,26 @@ and t.GarmentTest=1
                         if (dtTechnicianInfo != null && dtTechnicianInfo.Rows.Count > 0)
                         {
                             technicianName = dtTechnicianInfo.Rows[0]["name"].ToString();
-                            picSource = dtTechnicianInfo.Rows[0]["SignaturePic"].ToString();
+                            byte[] imgData = (byte[])dtTechnicianInfo.Rows[0]["SignaturePic"];
+                            using (MemoryStream ms = new MemoryStream(imgData))
+                            {
+                                img = Image.FromStream(ms);
+                            }
+                            // Resize
+                            Bitmap reBitmap = new Bitmap(img, 80, 58);
+                            picSource = reBitmap;
 
                             // Name
-                            worksheet_2020.Cells[31, 7] = technicianName;
+                            worksheet_2020.Cells[33, 7] = technicianName;
 
                             // 插入圖檔
                             if (!MyUtility.Check.Empty(picSource))
                             {
-                                if (File.Exists(picSource))
+                                if (picSource != null)
                                 {
-                                    img = Image.FromFile(picSource);
-                                    Microsoft.Office.Interop.Excel.Range cellPic = worksheet_2020.Cells[29, 7];
-
-                                    worksheet_2020.Shapes.AddPicture(picSource, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellPic.Left, cellPic.Top, 100, 24);
+                                    Clipboard.SetDataObject(picSource);
+                                    Excel.Range cellPic = worksheet_2020.Cells[29, 7];
+                                    worksheet_2020.Paste(cellPic, picSource);
                                 }
                             }
                         }
@@ -2463,10 +2471,10 @@ and t.GarmentTest=1
                     for (int i = 0; i <= copyCount - 1; i++)
                     {
                         // 複製儲存格
-                        Microsoft.Office.Interop.Excel.Range rgCopy = worksheet_2020.get_Range("A13:A13").EntireRow;
+                        Excel.Range rgCopy = worksheet_2020.get_Range("A13:A13").EntireRow;
 
                         // 選擇要被貼上的位置
-                        Microsoft.Office.Interop.Excel.Range rgPaste = worksheet_2020.get_Range("A13:A13", Type.Missing);
+                        Excel.Range rgPaste = worksheet_2020.get_Range("A13:A13", Type.Missing);
 
                         // 貼上
                         rgPaste.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown, rgCopy.Copy(Type.Missing));
@@ -2588,10 +2596,10 @@ and t.GarmentTest=1
                         openfilepath_Physical = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName_Physical}.xltx";
                     }
 
-                    Microsoft.Office.Interop.Excel.Application objApp_Physical = MyUtility.Excel.ConnectExcel(openfilepath_Physical);
+                    Excel.Application objApp_Physical = MyUtility.Excel.ConnectExcel(openfilepath_Physical);
 
                     objApp_Physical.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
-                    Microsoft.Office.Interop.Excel.Worksheet worksheet_Physical = objApp_Physical.ActiveWorkbook.Worksheets[1]; // 取得工作表
+                    Excel.Worksheet worksheet_Physical = objApp_Physical.ActiveWorkbook.Worksheets[1]; // 取得工作表
 
                     // objApp.Visible = true;
                     #region 插入圖片與Technician名字
@@ -2606,7 +2614,7 @@ where t.ID = '{all_Data.Detail.inspector}'
 and t.GarmentTest=1
 ";
                         string technicianName = string.Empty;
-                        string picSource = string.Empty;
+                        Bitmap picSource = null;
                         Image img = null;
 
                         DataTable dtTechnicianInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sql_cmd, new ADOHelper.Template.MSSQL.SQLParameterCollection());
@@ -2615,20 +2623,27 @@ and t.GarmentTest=1
                         if (dtTechnicianInfo != null && dtTechnicianInfo.Rows.Count > 0)
                         {
                             technicianName = dtTechnicianInfo.Rows[0]["name"].ToString();
-                            picSource = dtTechnicianInfo.Rows[0]["SignaturePic"].ToString();
+                            byte[] imgDatya = (byte[])dtTechnicianInfo.Rows[0]["SignaturePic"];
+                            using (MemoryStream ms = new MemoryStream(imgDatya))
+                            {
+                                img = Image.FromStream(ms);
+                            }
+                            // Resize
+                            Bitmap reBitmap = new Bitmap(img, 80, 58);
+                            picSource = reBitmap;
+
 
                             // Name
-                            worksheet_Physical.Cells[159, 7] = technicianName;
+                            worksheet_Physical.Cells[161, 7] = technicianName;
 
                             // 插入圖檔
                             if (!MyUtility.Check.Empty(picSource))
                             {
-                                if (File.Exists(picSource))
+                                if (picSource != null)
                                 {
-                                    img = Image.FromFile(picSource);
-                                    Microsoft.Office.Interop.Excel.Range cellPic = worksheet_Physical.Cells[157, 7];
-
-                                    worksheet_Physical.Shapes.AddPicture(picSource, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellPic.Left, cellPic.Top, 100, 24);
+                                    Clipboard.SetDataObject(picSource);
+                                    Excel.Range cellPic = worksheet_Physical.Cells[157, 7];
+                                    worksheet_Physical.Paste(cellPic, picSource);
                                 }
                             }
                         }
@@ -2661,7 +2676,7 @@ and t.GarmentTest=1
                     }
 
                     var testName_1 = all_Data.FGPT.AsEnumerable().Where(o => MyUtility.Convert.GetString(o.TestName) == "PHX-AP0413");
-                    var testName_2 = all_Data.FGPT.AsEnumerable().Where(o => MyUtility.Convert.GetString(o.TestName) == "PHX-AP0450");
+                    var testName_2 = all_Data.FGPT.AsEnumerable().Where(o => MyUtility.Convert.GetString(o.TestName) == "PHX-AP0450 Seam Breakage");
                     var testName_3 = all_Data.FGPT.AsEnumerable().Where(o => MyUtility.Convert.GetString(o.TestName) == "PHX-AP0451");
 
                     #region 儲存格處理
@@ -2688,10 +2703,10 @@ and t.GarmentTest=1
                     for (int i = 0; i <= copyCount_2 - 1; i++)
                     {
                         // 複製儲存格
-                        Microsoft.Office.Interop.Excel.Range rgCopy = worksheet_Physical.get_Range("A149:A149").EntireRow;
+                        Excel.Range rgCopy = worksheet_Physical.get_Range("A149:A149").EntireRow;
 
                         // 選擇要被貼上的位置
-                        Microsoft.Office.Interop.Excel.Range rgPaste = worksheet_Physical.get_Range("A149:A149", Type.Missing);
+                        Excel.Range rgPaste = worksheet_Physical.get_Range("A149:A149", Type.Missing);
 
                         // 貼上
                         rgPaste.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown, rgCopy.Copy(Type.Missing));
@@ -2705,10 +2720,10 @@ and t.GarmentTest=1
                     for (int i = 0; i <= copyCount_1 - 1; i++)
                     {
                         // 複製儲存格
-                        Microsoft.Office.Interop.Excel.Range rgCopy = worksheet_Physical.get_Range("A135:A135").EntireRow;
+                        Excel.Range rgCopy = worksheet_Physical.get_Range("A135:A135").EntireRow;
 
                         // 選擇要被貼上的位置
-                        Microsoft.Office.Interop.Excel.Range rgPaste = worksheet_Physical.get_Range("A135:A135", Type.Missing);
+                        Excel.Range rgPaste = worksheet_Physical.get_Range("A135:A135", Type.Missing);
 
                         // 貼上
                         rgPaste.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown, rgCopy.Copy(Type.Missing));
