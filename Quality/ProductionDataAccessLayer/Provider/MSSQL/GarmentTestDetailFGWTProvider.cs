@@ -212,7 +212,7 @@ SELECT locations = STUFF(
                         break;
                 }
 
-                if (fGWT.Scale == null)
+                if (string.IsNullOrEmpty(fGWT.Scale))
                 {
                     if (fGWT.TestDetail.ToUpper() == "CM")
                     {
@@ -307,6 +307,8 @@ INSERT INTO GarmentTest_Detail_FGWT
                 result = Convert.ToInt32(ExecuteNonQuery(CommandType.Text, insertCmd.ToString() + this.UpdateGarmentTest_Detail_FGWTShrinkage(source.ID, source.No), parameters)) > 0;
             }
 
+            Update_Spirality_FGWT(source.ID.ToString(), source.No.ToString());
+
             return result;
         }
 
@@ -331,7 +333,6 @@ INSERT INTO GarmentTest_Detail_FGWT
                 objParameter.Add(new SqlParameter($"@Shrinkage{idx}", item.Shrinkage));
                 objParameter.Add(new SqlParameter($"@Scale{idx}", item.Scale));
 
-
                 sqlcmd += $@"
 update gf
 	set gf.[BeforeWash] = @BeforeWash{idx},
@@ -355,11 +356,59 @@ outer apply (
 	where gf.ID = g.ID
 )sl 
 where gf.ID = @ID{idx} and gf.No = @No{idx} and gf.Location = @Location{idx} and gf.Type = @Type{idx}
+
 " + Environment.NewLine;
                 idx++;
             }
 
-            return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
+            bool bolResult = Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
+            Update_Spirality_FGWT(source.FirstOrDefault().ID.ToString(), source.FirstOrDefault().No.ToString());
+
+            return bolResult;
+        }
+
+        private void Update_Spirality_FGWT(string ID, string No)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.String, ID} ,
+                { "@No", DbType.String, No } ,
+            };
+
+            string sqlcmd = $@"
+update t
+set t.Shrinkage = s.MethodA
+from GarmentTest_Detail_FGWT t
+inner join Garment_Detail_Spirality s on t.ID= s.ID and t.No = s.No
+and s.Location = 'T'
+where t.ID = @ID and t.No = @No
+and t.Type = 'spirality: Garment - in percentage (average) (Top Method A)'
+
+update t
+set t.Shrinkage = s.MethodB
+from GarmentTest_Detail_FGWT t
+inner join Garment_Detail_Spirality s on t.ID= s.ID and t.No = s.No
+and s.Location ='T'
+where t.ID = @ID and t.No = @No
+and t.Type = 'spirality: Garment - in percentage (average) (Top Method B)'
+
+update t
+set t.Shrinkage = s.MethodA
+from GarmentTest_Detail_FGWT t
+inner join Garment_Detail_Spirality s on t.ID= s.ID and t.No = s.No
+and s.Location = 'B'
+where t.ID = @ID and t.No = @No
+and t.Type = 'spirality: Garment - in percentage (average) (Bottom Method A)'
+
+update t
+set t.Shrinkage = s.MethodB
+from GarmentTest_Detail_FGWT t
+inner join Garment_Detail_Spirality s on t.ID= s.ID and t.No = s.No
+and s.Location = 'B'
+where t.ID = @ID and t.No = @No
+and t.Type = 'spirality: Garment - in percentage (average) (Bottom Method B)'
+";
+            ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter);
         }
 
         private string UpdateGarmentTest_Detail_FGWTShrinkage(long? ID, long? NO)
@@ -501,7 +550,7 @@ select  Seq,
         Scale ,
         TestDetail,
         Criteria = ISNULL(Criteria,0),
-        Criteria2 = ISNULL(Criteria,0)
+        Criteria2 = ISNULL(Criteria2,0)
 from    Adidas_FGWT with (nolock)
 where 1 = 1 {sqlWhere}
 ";
