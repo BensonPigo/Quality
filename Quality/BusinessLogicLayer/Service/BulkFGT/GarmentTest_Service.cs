@@ -19,6 +19,7 @@ using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using Library;
+using System.Windows.Forms;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -484,7 +485,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
        
         #endregion
 
-
+        // Sent Mail 
         #region Sent Mail
         public GarmentTest_ViewModel SendMail(string ID, string No, string UserID)
         {
@@ -601,6 +602,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         }
         #endregion
 
+
         public GarmentTest_Result GetGarmentTest(GarmentTest_Request garmentTest_ViewModel)
         {
             _IGarmentTestProvider = new GarmentTestProvider(Common.ProductionDataAccessLayer);
@@ -675,6 +677,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
             }
         }
 
+
+        // Get Detail Data
         #region Get Detail Data
         public GarmentTest_Detail_Result Get_All_Detail(string ID, string No)
         {
@@ -903,7 +907,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                         // WashName 調整次數 710(1,10,15), 701(1,3)
                         string WashName = all_Data.Main.WashName;
-                        if (WashName == "710" || true)
+                        if (WashName == "710")
                         {
                             // Actual Shrinkage % 
                             // Top
@@ -991,7 +995,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                             if (IsToPDF)
                             {
                                 string sql_cmd = $@"
-select p.name,[SignaturePic] = s.PicPath + t.SignaturePic
+select p.name,[SignaturePic] = t.Signature
 from Production.dbo.Technician t WITH (NOLOCK)
 inner join Production.dbo.pass1 p WITH (NOLOCK) on t.ID = p.ID  
 outer apply (select PicPath from Production.dbo.system) s 
@@ -1668,7 +1672,7 @@ and t.GarmentTest=1
                             if (IsToPDF)
                             {
                                 string sql_cmd = $@"
-select p.name,[SignaturePic] = s.PicPath + t.SignaturePic
+select p.name,[SignaturePic] = t.Signature
 from Production.dbo.Technician t WITH (NOLOCK)
 inner join Production.dbo.pass1 p WITH (NOLOCK) on t.ID = p.ID  
 outer apply (select PicPath from Production.dbo.system) s 
@@ -1676,7 +1680,7 @@ where t.ID = '{all_Data.Detail.inspector}'
 and t.GarmentTest=1
 ";
                                 string technicianName = string.Empty;
-                                string picSource = string.Empty;
+                                Bitmap picSource;
                                 Image img = null;
                                 Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[12, 2];
 
@@ -1685,7 +1689,15 @@ and t.GarmentTest=1
                                 if (dtTechnicianInfo != null && dtTechnicianInfo.Rows.Count > 0)
                                 {
                                     technicianName = dtTechnicianInfo.Rows[0]["name"].ToString();
-                                    picSource = dtTechnicianInfo.Rows[0]["SignaturePic"].ToString();
+                                    //picSource =
+
+                                    byte[] imgDatya = (byte[])dtTechnicianInfo.Rows[0]["SignaturePic"];
+                                    using (MemoryStream ms = new MemoryStream(imgDatya))
+                                    {
+                                        img = Image.FromStream(ms);
+                                    }
+
+                                    picSource = (Bitmap)img;
 
                                     // Name
                                     worksheet.Cells[76, 9] = technicianName;
@@ -1693,12 +1705,14 @@ and t.GarmentTest=1
                                     // 插入圖檔
                                     if (!MyUtility.Check.Empty(picSource))
                                     {
-                                        if (File.Exists(picSource))
+                                        if (picSource != null)
                                         {
-                                            img = Image.FromFile(picSource);
+                                            //img = Image.FromFile(picSource);
+                                            Clipboard.SetDataObject(picSource);
                                             Microsoft.Office.Interop.Excel.Range cellPic = worksheet.Cells[74, 9];
+                                            worksheet.Paste(cellPic, picSource);
 
-                                            worksheet.Shapes.AddPicture(picSource, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellPic.Left, cellPic.Top, 100, 24);
+                                            //worksheet.Shapes.AddPicture(picSource, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellPic.Left, cellPic.Top, 100, 24);
                                         }
                                     }
                                 }
@@ -2382,7 +2396,7 @@ and t.GarmentTest=1
                     if (IsToPDF)
                     {
                         string sql_cmd = $@"
-select p.name,[SignaturePic] = s.PicPath + t.SignaturePic
+select p.name,[SignaturePic] = t.Signature
 from Production.dbo.Technician t WITH (NOLOCK)
 inner join Production.dbo.pass1 p WITH (NOLOCK) on t.ID = p.ID  
 outer apply (select PicPath from Production.dbo.system) s 
@@ -2584,7 +2598,7 @@ and t.GarmentTest=1
                     if (IsToPDF)
                     {
                         string sql_cmd = $@"
-select p.name,[SignaturePic] = s.PicPath + t.SignaturePic
+select p.name,[SignaturePic] = t.Signature
 from Production.dbo.Technician t WITH (NOLOCK)
 inner join Production.dbo.pass1 p WITH (NOLOCK) on t.ID = p.ID  
 outer apply (select PicPath from Production.dbo.system) s 

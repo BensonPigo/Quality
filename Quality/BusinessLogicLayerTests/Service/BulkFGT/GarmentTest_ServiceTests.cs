@@ -668,7 +668,7 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
             {
                 GarmentTest_Detail_Result all_Data = new GarmentTest_Detail_Result();
                 IGarmentTest_Service _Service = new GarmentTest_Service();
-                all_Data = _Service.ToReport("19301", "6", GarmentTest_Service.ReportType.Wash_Test_2018, true, true);
+                all_Data = _Service.ToReport("19609", "9", GarmentTest_Service.ReportType.Wash_Test_2018, true, true);
                 Assert.IsTrue(!string.IsNullOrEmpty(all_Data.reportPath));
             }
             catch (Exception ex)
@@ -775,6 +775,22 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
                 throw ex;
             }
 
+        }
+
+        [TestMethod()]
+        public void ToReportTest1()
+        {
+            try
+            {
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+            Assert.Fail();
         }
     }
 }

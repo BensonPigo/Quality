@@ -191,7 +191,6 @@ where id = @ID
                 sqlcmd += @"
 update ColorFastness
 set	   [POID] = @POID
-      ,[TestNo] = @TestNo
       ,[InspDate] = @InspDate
       ,[Article] = @Article
       ,[Status] = @Status
