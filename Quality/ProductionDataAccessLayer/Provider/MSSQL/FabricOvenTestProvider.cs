@@ -46,14 +46,14 @@ select	[TestNo] = cast(o.TestNo as varchar),
 		[InspDate] = o.InspDate,
 		[Article] = o.Article,
 		[Inspector] = o.Inspector,
+        [InspectorName] = pass1Inspector.Name,
         [Result] = o.Result,
 		[Remark] = o.Remark,
 		[Status] = o.Status,
         [TestBeforePicture] = o.TestBeforePicture,
         [TestAfterPicture] = o.TestAfterPicture
 from Oven o with (nolock)
-left join pass1 pass1AddName on o.AddName = pass1AddName.ID
-left join pass1 pass1EditName on o.EditName = pass1EditName.ID
+left join pass1 pass1Inspector on o.Inspector = pass1Inspector.ID
 where o.POID = @POID and o.TestNo = @TestNo
 ";
 
