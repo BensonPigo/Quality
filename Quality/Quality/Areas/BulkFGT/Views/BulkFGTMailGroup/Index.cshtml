@@ -415,11 +415,6 @@
         var ToAddress = $("#input_ToAddress").val();
         var CcAddress = $("#input_CcAddress").val();
 
-        console.log(Action);
-        console.log(GroupName);
-        console.log(ToAddress);
-        console.log(CcAddress);
-
         if (Factory == "" || GroupName == "" || ToAddress == "") {
             msg.WithWarning("Factory, Group Name and To Address cannot be empty.");
             return;
