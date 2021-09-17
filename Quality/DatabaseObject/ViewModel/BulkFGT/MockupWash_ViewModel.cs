@@ -50,7 +50,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string LastEditName { get; set; }
 
         [Display(Name = "報表電子簽章圖檔完整路徑")]
-        public string SignaturePic { get; set; }
+        public byte[] Signature { get; set; }
 
         public MockupWash_Request Request { get; set; }
 
