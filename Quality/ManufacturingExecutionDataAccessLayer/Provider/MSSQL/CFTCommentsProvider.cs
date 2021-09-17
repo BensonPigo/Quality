@@ -93,7 +93,7 @@ select SampleStage = a.OrderTypeID, CommentsCategory = a.PMS_RFTCommentsID, c.Co
 from (select distinct OrderTypeID,PMS_RFTCommentsID from #tmpBase) a
 outer apply(
 	select Comnments = stuff((
-		select concat(char(10), Comnments)
+		select concat('*', Comnments)
 		from #tmpBase b
 		where a.OrderTypeID = b.OrderTypeID and a.PMS_RFTCommentsID = b.PMS_RFTCommentsID
 		and Comnments <> ''

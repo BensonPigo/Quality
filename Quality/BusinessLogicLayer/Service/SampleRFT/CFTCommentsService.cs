@@ -63,6 +63,11 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 _CFTCommentsProvider = new CFTCommentsProvider(Common.ManufacturingExecutionDataAccessLayer);
                 var res = _CFTCommentsProvider.Get_CFT_OrderComments(Req).ToList();
 
+                foreach (var item in res)
+                {
+                    item.Comnments = item.Comnments == null ? string.Empty : item.Comnments.Replace("*", "<br>");
+                }
+
                 model.DataList = res;
                 model.Result = true;
             }
