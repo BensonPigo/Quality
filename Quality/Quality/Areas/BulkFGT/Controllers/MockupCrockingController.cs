@@ -146,7 +146,11 @@ namespace Quality.Areas.BulkFGT.Controllers
                 mockupCrocking_ViewModel = new MockupCrocking_ViewModel() { ReportNo_Source = new List<string>(), };
             }
 
+            Req.Result = mockupCrocking_ViewModel.Result;
+            Req.MRName = mockupCrocking_ViewModel.MRName;
+            Req.TechnicianName = mockupCrocking_ViewModel.TechnicianName;
             Req.LastEditName = mockupCrocking_ViewModel.LastEditName;
+            Req.MockupCrocking_Detail = mockupCrocking_ViewModel.MockupCrocking_Detail;
             if (!result.Result)
             {
                 Req.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString().Replace("\r\n", "<br />") + "');";

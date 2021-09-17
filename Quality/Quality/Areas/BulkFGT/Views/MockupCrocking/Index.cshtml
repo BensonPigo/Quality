@@ -429,6 +429,7 @@
                                         <div class="input-group">
                                             @Html.HiddenFor(modelItem => Model.MockupCrocking_Detail[i].ArtworkColor, new { @class = "AFColor" })
                                             @Html.TextBoxFor(modelItem => Model.MockupCrocking_Detail[i].ArtworkColorName, new { @class= "AFColor", @readonly = "readonly" })
+                                            @Html.HiddenFor(modelItem => Model.MockupCrocking_Detail[i].Ukey)
                                             <input type="button" class="site-btn btn-blue btnArtworkColorItem" style="margin:0;border:0;" value="..." />
                                         </div>
                                     </td>
