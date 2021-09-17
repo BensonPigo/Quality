@@ -14,13 +14,21 @@
 
 @model GarmentTest_Result
 <style type="text/css">
-    .content-scroll {
-        height: calc( 95vh - 200px );
+    .input-group {
+        display: flex
     }
 
-    .inner-scroll {
-        height: calc( 95vh - 200px );
-    }
+        .input-group > input:nth-child(1) {
+            flex-grow: 3
+        }
+
+        .input-group > input:nth-child(2) {
+            flex-grow: 2
+        }
+
+        .input-group > input:nth-child(3) {
+            flex-grow: 1
+        }
 
     .row {
         --bs-gutter-x: 1.5rem;
@@ -360,7 +368,7 @@
                                 for (int i = 0; i <= Model.garmentTest_Details.Count - 1; i++)
                                 {
                                     string aHref = "";
-                            <tr>
+                            <tr idx="@i">
                                 <td style="width:10vw;">
 
                                     @if (Model.garmentTest_Details[i].ID > 0)
@@ -406,10 +414,10 @@
                                 </td>
                                 <td style="width:10vw;">
                                     @{
-                                        bool NonSeamBreakageTestVal = Model.garmentTest_Details[i].NonSeamBreakageTest.HasValue ? Model.garmentTest_Details[i].NonSeamBreakageTest.Value : false;
+                                        bool NonSeamBreakageTestVal = Model.garmentTest_Details[i].NonSeamBreakageTest;
                                     }
-                                    <input id="garmentTest_Details_NonSeamBreakageTest" name="garmentTest_Details.NonSeamBreakageTest" type="checkbox" checked="@NonSeamBreakageTestVal">
-                                    <input name="garmentTest_Details.NonSeamBreakageTest" type="hidden" value="@NonSeamBreakageTestVal">
+                                    <input id="garmentTest_Details_@{@i}__NonSeamBreakageTest" name="garmentTest_Details[@i].NonSeamBreakageTest" type="checkbox" class="bigSize" checked="@NonSeamBreakageTestVal">
+                                    
                                 </td>
                                 @{
                                     string SeamBreakageResultFontColor = Model.garmentTest_Details[i].SeamBreakageResult == "P" || Model.garmentTest_Details[i].SeamBreakageResult == "Pass" ? "blue" : "red";
@@ -432,10 +440,13 @@
                                     @WashResultDetailVal
                                 </td>
                                 <td style="width:10vw;">
-                                    @Html.TextBoxFor(o => Model.garmentTest_Details[i].inspector, "", "")
+                                    <div class="input-group">
+                                        @Html.TextBoxFor(o => Model.garmentTest_Details[i].inspector, "", new { @class = "inspector" })
+                                        <input id="btnDetailInspectorSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                    </div>
                                 </td>
                                 <td style="width:10vw;">
-                                    @Html.DisplayFor(o => Model.garmentTest_Details[i].GarmentTest_Detail_Inspector, "", "")
+                                    @Html.TextBoxFor(o => Model.garmentTest_Details[i].GarmentTest_Detail_Inspector, "", new { @readonly = "readonly", @style = "width: 8vw", @class= "inspectorName" })
                                 </td>
                                 <td style="width:10vw;">
                                     @Html.TextBoxFor(o => Model.garmentTest_Details[i].Remark, "", "")
@@ -520,7 +531,7 @@
             $('#btnQuery').addClass("IsEditModeQuery");
             $("#Edit").removeClass("IsEditMode");
             $('#Save, #Undo, #New').addClass("IsEditMode");
-            $(".DetailTable input[type='text'], .DetailTable select, .DetailTable input[type='checkbox']").removeAttr("disabled");
+            $(".DetailTable input[type='text'], .DetailTable select, .DetailTable input[type='checkbox'], .DetailTable input[type='button']").removeAttr("disabled");
             $(".DetailTable img").addClass('display-None');
             $('.detailDelete').removeClass('display-None');
             $('#btnQuery').on('click', function () {
@@ -533,7 +544,7 @@
             $('#btnQuery').unbind('click').removeClass("IsEditModeQuery");
             $("#Edit").addClass("IsEditMode");
             $('#Save, #Undo, #New').unbind('click').removeClass("IsEditMode");
-            $(".DetailTable input[type='text'], .DetailTable select, .DetailTable input[type='checkbox']").attr("disabled", "disabled");
+            $(".DetailTable input[type='text'], .DetailTable select, .DetailTable input[type='checkbox'], .DetailTable input[type='button']").attr("disabled", "disabled");
             $(".DetailTable img").removeClass('display-None');
             $('.detailDelete').addClass('display-None');
 
@@ -582,7 +593,7 @@
                         case 2:
                             inspector = $(this).val();
                             break;
-                        case 3:
+                        case 4:
                             Remark = $(this).val();
                             break;
                     }
@@ -657,121 +668,15 @@
     }
 
     function DetailDynamicBind() {
-        //$('.detailEdit').unbind('click').on('click', function () {
-        //    if ($('#garmentTest_ID').val() == "") {
-        //        return;
-        //    }
-
-        //    if ($(this).prop('src').indexOf("Save.png") > -1) {
-        //        var tr = $(this).parent().parent();
-        //        tr.find("input[type='text']").removeAttr("disabled");
-        //        tr.find("input[type='checkbox']").removeAttr("disabled");
-        //        tr.find("select").removeAttr("disabled");
-
-        //        var detail = [];
-        //        var fcol = tr.children().find('a');
-        //        var id = fcol.attr("idx");
-        //        var no = fcol.attr("idv");
-
-        //        var NonSeamBreakageTest = tr.children().find("input[type='checkbox']").prop("checked");
-        //        var OrderID, inspdate, inspector, Remark;
-        //        var SizeCode, MtlTypeID;
-
-        //        tr.children().find("input[type='text']").each(function (index, value) {
-        //            switch (index) {
-        //                case 0:
-        //                    OrderID = $(this).val();
-        //                    break;
-        //                case 1:
-        //                    inspdate = $(this).val();
-        //                    break;
-        //                case 2:
-        //                    inspector = $(this).val();
-        //                    break;
-        //                case 3:
-        //                    Remark = $(this).val();
-        //                    break;
-        //            }
-        //        })
-
-        //        if (OrderID == "") {
-        //            msg.WithError("SP# cannot be empty");
-        //            return;
-        //        }
-
-        //        if (MtlTypeID == "") {
-        //            msg.WithError("Material Type cannot be empty");
-        //            return;
-        //        }
-
-        //        tr.children().find("select").each(function (index, value) {
-        //            switch (index) {
-        //                case 0:
-        //                    SizeCode = $(this).children("option:selected").val();
-        //                    break;
-        //                case 1:
-        //                    MtlTypeID = $(this).children("option:selected").val();
-        //                    break;
-        //            }
-        //        })
-
-        //        detail.push({
-        //            ID: parseInt(id),
-        //            No: parseInt(no),
-        //            OrderID: OrderID,
-        //            inspdate: inspdate,
-        //            inspector: inspector,
-        //            Remark: Remark,
-        //            NonSeamBreakageTest: NonSeamBreakageTest,
-        //            SizeCode: SizeCode,
-        //            MtlTypeID: MtlTypeID,
-        //        });
-
-        //        var main = {
-        //            ID: parseInt($('#garmentTest_ID').val()),
-        //            StyleID: $('#garmentTest_StyleID').val(),
-        //            SeasonID: $('#garmentTest_SeasonID').val(),
-        //            BrandID: $('#garmentTest_BrandID').val(),
-        //            Article: $('#garmentTest_Article').val(),
-        //        };
-
-        //        if (detail.length > 0) {
-        //            SaveData(main, detail);
-        //        }
-        //        else {
-        //            msg.WithError("Save Fail");
-        //            return;
-        //        }
-        //    }
-        //    else {
-        //        $(".rowHeader input[type='text']").attr("disabled", "disabled");
-        //        $(".rowHeader input[type='button'], #btnQuery").addClass("IsEditModeQuery");
-        //        $("#Edit, #Save, #Undo").removeClass("IsEditMode");
-        //        $(".DetailTable img").addClass('display-None');
-        //        $(this).removeClass('display-None');
-        //        $('#btnQuery').on('click', function () {
-        //            return false;
-        //        });
-
-        //        $(this).prop("src", "/Image/Icon/Save.png");
-
-        //        var tr = $(this).parent().parent();
-        //        tr.find("input[type='text']").removeAttr("disabled");
-        //        tr.find("input[type='checkbox']").removeAttr("disabled");
-        //        tr.find("select").removeAttr("disabled");
-        //    }
-        //});
-
         $('.detailEdit').unbind('click').on('click', function () {
             if ($('#garmentTest_ID').val() == "") {
                 return;
             }
 
-            var tr = $(this).parents().parents();
+            var tr = $(this).parent().parent();
             var fcol = tr.children().find("a[class='detailA']");
             var id = fcol.attr("idx");
             var no = fcol.attr("idv");
-
             window.location.href = "@Url.Action("Detail", "GarmentTest", new { EditMode = true })" + "&ID=" + id + "&No=" + no;
         });
 
@@ -781,7 +686,7 @@
             }
 
             var t = $(this);
-            var tr = $(this).parents().parents();
+            var tr = $(this).parent().parent();
             var fcol = tr.children().find("a[class='detailA']");
             var id = fcol.attr("idx");
             var no = fcol.attr("idv");
@@ -791,30 +696,6 @@
                     t.parents().parents('tr').remove();
                     msg.WithSuccess("Delete Success");
                 }, null);
-
-            @*msg.WithConfirm('Do you want to delete the data ?',
-                function ()
-                {
-                    $.ajax({
-                        url: "@Url.Action("DeleteDetail", "GarmentTest", new { Area = "BulkFGT" })",
-                        type: 'POST',
-                        contentType: "application/json; charset=utf-8",
-                        data: JSON.stringify({ ID: id, No: no }),
-                        async: false,
-                        success: function (data) {
-                            if (data.SaveResult) {
-                                t.parents().parents('tr').remove();
-                                msg.WithSuccess("Delete Success");
-                            }
-                            else {
-                                msg.WithError(data.ErrMsg);
-                            }
-                        },
-                        error: function (xhr, ajaxOptions, thrownError) {
-                            console.log(xhr.responseText);
-                        }
-                    });
-                }, null);*@
         });
 
         $('.SendMail').unbind('click').on('click', function () {
@@ -822,7 +703,7 @@
                 return;
             }
 
-            var tr = $(this).parents().parents();
+            var tr = $(this).parent().parent();
             var fcol = tr.children().find("a[class='detailA']");
             var id = fcol.attr("idx");
             var no = fcol.attr("idv");
@@ -856,7 +737,7 @@
                 return;
             }
 
-            var tr = $(this).parents().parents();
+            var tr = $(this).parent().parent();
             var fcol = tr.children().find("a[class='detailA']");
             var id = fcol.attr("idx");
             var no = fcol.attr("idv");
@@ -916,6 +797,38 @@
                 }
             });
 
+        });
+
+        $('#btnDetailInspectorSelectItem').unbind('click').on('click', function () {
+            var targetID = $(this).closest('tr').attr('idx');
+            var para = "?TargetID=" + targetID;
+            window.open('@Url.Action("Pass1List","PublicWondow",new{Area=""})' + para, 'Inspector', config = 'toolbar=no,status=no,location=no,width=1000,height=650');
+        });
+
+        $('.Inspector').unbind('blur').blur(function () {
+            var targetID = $(this).closest('tr').attr('idx');
+
+            $.ajax({
+                url: "@Url.Action("Pass1List", "PublicWondow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#garmentTest_Details_" + targetID + "__Inspector").val('');
+                        $("#garmentTest_Details_" + targetID + "__GarmentTest_Detail_Inspector").val('');
+                        msg.WithError('Inspector Not Found');
+                    }
+                    else {
+                        $("#garmentTest_Details_" + targetID + "__Inspector").val(data[0].ID);
+                        $("#garmentTest_Details_" + targetID + "__GarmentTest_Detail_Inspector").val(data[0].Name + ' Ext.' + data[0].ExtNo);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
         });
     }
 
@@ -1103,5 +1016,12 @@
 
     function GetArticleList(data) {
         $('#Article').val(data);
+    }
+
+    function GetPass1(data, targetID) {
+        console.log(data);
+        console.log(targetID);
+        $("#garmentTest_Details_" + targetID + "__inspector").val(data.ID);
+        $("#garmentTest_Details_" + targetID + "__GarmentTest_Detail_Inspector").val(data.Name + ' Ext.' + data.ExtNo);
     }
 </script>

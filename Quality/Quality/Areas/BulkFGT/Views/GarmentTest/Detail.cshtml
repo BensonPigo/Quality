@@ -138,7 +138,7 @@
     <div class="main-area">
         <div class="content-scroll">
             <div class="inner-scroll">
-                @using (Html.BeginForm("Detail", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { id = "DetailForm" }))
+                @using (Html.BeginForm("DetailSave", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { id = "DetailForm" }))
                 {
                     <div style="margin-top: 1em;">
                         <table id="ButtonMode">
@@ -283,10 +283,7 @@
                                             <td>@Html.TextBoxFor(o => Model.Detail.LOtoFactory, "", "")</td>
                                             <td><h4>Non 450</h4></td>
                                             <td>
-                                                @{
-                                                    bool check = Model.Detail.NonSeamBreakageTest.HasValue ? Model.Detail.NonSeamBreakageTest.Value : false;
-                                                }
-                                                <input id="Detail_NonSeamBreakageTest" name="Detail.NonSeamBreakageTest" type="checkbox" checked="@check" class="bigSize" />
+                                                @Html.CheckBoxFor(o => o.Detail.NonSeamBreakageTest, new { @class= "bigSize" })
                                             </td>
                                             <td></td>
                                             <td></td>

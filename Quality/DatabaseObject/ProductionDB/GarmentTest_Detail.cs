@@ -140,7 +140,7 @@ namespace DatabaseObject.ProductionDB
         /// <summary>紀錄該次測試中是否包含 PHX-AP0450 SeamBrakage 的測試</summary>
         
         [Display(Name = "紀錄該次測試中是否包含 PHX-AP0450 SeamBrakage 的測試")]
-        public bool? NonSeamBreakageTest { get; set; }
+        public bool NonSeamBreakageTest { get; set; }
 
         /// <summary>Adidas-PHX-AP0450 SeamBrakage 檢驗結果</summary>
         [Display(Name = "Adidas-PHX-AP0450 SeamBrakage 檢驗結果")]

@@ -441,7 +441,7 @@ INSERT INTO GarmentTest_Detail_FGPT
                 objParameterDetail.Add($"@SizeCode", string.IsNullOrEmpty(item.SizeCode) ? string.Empty : item.SizeCode);
                 objParameterDetail.Add($"@MtlTypeID", string.IsNullOrEmpty(item.MtlTypeID) ? string.Empty : item.MtlTypeID);
                 objParameterDetail.Add($"@Result", string.IsNullOrEmpty(item.Result) ? string.Empty : item.Result);
-                objParameterDetail.Add($"@NonSeamBreakageTest", item.NonSeamBreakageTest == null ? false : item.NonSeamBreakageTest);
+                objParameterDetail.Add($"@NonSeamBreakageTest", item.NonSeamBreakageTest);
                 objParameterDetail.Add($"@SeamBreakageResult", string.IsNullOrEmpty(item.SeamBreakageResult) ? string.Empty : item.SeamBreakageResult);
                 objParameterDetail.Add($"@OdourResult", string.IsNullOrEmpty(item.OdourResult) ? string.Empty : item.OdourResult);
                 objParameterDetail.Add($"@WashResult", string.IsNullOrEmpty(item.WashResult) ? string.Empty : item.WashResult);

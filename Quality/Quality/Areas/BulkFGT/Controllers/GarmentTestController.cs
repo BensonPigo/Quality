@@ -181,7 +181,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
 
             string html = "";
-            html += "<tr>";
+            html += "<tr idx='" + i + "'>";
             html += "<td><a idx='" + ID + "' idv = '" + lastNO.ToString() + "'>" + lastNO.ToString() + "</a></td>";
             html += "<td><input id='garmentTest_Details_" + i + "_OrderID' name='garmentTest_Details[" + i + "].OrderID' class='Detail_OrderID' type='text'></td>";
             html += "<td><select id='garmentTest_Details_" + i + "_SizeCode' name='garmentTest_Details[" + i + "].SizeCode' class='Detail_SizeCode'><option value=''></option>";
@@ -198,12 +198,12 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
             html += "</select></td>";
             html += "<td></td>";
-            html += "<td><input id='garmentTest_Details_" + i + "_NonSeamBreakageTest' name='garmentTest_Details[" + i + "].NonSeamBreakageTest' type='checkbox'><input name='garmentTest_Details.NonSeamBreakageTest' type='hidden'></td>";
+            html += "<td><input id='garmentTest_Details_" + i + "_NonSeamBreakageTest' name='garmentTest_Details[" + i + "].NonSeamBreakageTest' type='checkbox' class='bigSize'></td>";
             html += "<td></td>";
             html += "<td></td>";
             html += "<td></td>";
-            html += "<td><input id='garmentTest_Details_" + i + "_inspector' name='garmentTest_Details[" + i + "].inspector' type='text'></td>";
-            html += "<td></td>";
+            html += "<td><input id='garmentTest_Details_" + i + "_inspector' name='garmentTest_Details[" + i + "].inspector' type='text'><input id='btnDetailInspectorSelectItem' type='button' class='site-btn btn-blue' style='margin:0;border:0;' value='...'></td>";
+            html += "<td><input id='garmentTest_Details_" + i + "__GarmentTest_Detail_Inspector' name='garmentTest_Details[" + i + "].GarmentTest_Detail_Inspector' readonly='readonly' style='width: 8vw' type='text'></td>";
             html += "<td><input  id='garmentTest_Details_" + i + "_Remark' name='garmentTest_Details[" + i + "].Remark' type='text'></td>";
             html += "<td><img class='SendMail display-None' src='/Image/Icon/Mail.png' width='30'></td>";
             html += "<td></td>";
@@ -268,7 +268,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
-        public ActionResult Detail(GarmentTest_Detail_Result result)
+        public ActionResult DetailSave(GarmentTest_Detail_Result result)
         {
             result.Detail.LineDry = false;
             result.Detail.TumbleDry = false;
@@ -305,6 +305,11 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
 
             GarmentTest_Detail_Result saveresult = _GarmentTest_Service.Save_GarmentTestDetail(result);
+            if (saveresult.Result.Value)
+            {
+                return RedirectToAction("Detail", new { ID = result.Detail.ID.ToString(), No = result.Detail.No.ToString(), EditMode = false });
+            }
+
             GarmentTest_Detail_Result Detail_Result = _GarmentTest_Service.Get_All_Detail(result.Detail.ID.ToString(), result.Detail.No.ToString());
             Detail_Result.EditMode = result.EditMode;
             Detail_Result.Result = saveresult.Result;
@@ -326,7 +331,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.TestResultmmList = TestResultmmList;
             ViewBag.FactoryID = this.FactoryID;
 
-            return View(Detail_Result);
+            return View("Detail", Detail_Result);
         }
 
         [HttpPost]

@@ -289,7 +289,7 @@ and ID = @ID
                 { "@Above50NaturalFibres", DbType.Boolean, source.Above50NaturalFibres } ,
                 { "@Above50SyntheticFibres", DbType.Boolean, source.Above50SyntheticFibres } ,
                 { "@EditName", source.EditName } ,
-                { $"@NonSeamBreakageTest",DbType.Boolean, source.NonSeamBreakageTest == null ? false : source.NonSeamBreakageTest},
+                { $"@NonSeamBreakageTest",DbType.Boolean,  source.NonSeamBreakageTest},
             };
 
             if (source.TestBeforePicture != null) { objParameter.Add("@TestBeforePicture", source.TestBeforePicture); }
