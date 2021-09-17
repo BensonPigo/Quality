@@ -453,7 +453,7 @@
         if (EditMode) {
             $("#Edit, #Encode, #Amend, #Excel, #PDF").removeClass("IsEditMode");
             $('#Save, #New').addClass("IsEditMode");
-            $(".DataTable input[type='text'], .DetailTable select").removeAttr("disabled");
+            $(".DataTable input[type='text'], .DataTable input[type='number'], .DetailTable select").removeAttr("disabled");
             $('#Encode, #Amend, #Excel, #PDF').unbind('click');
             $(".DetailTable img").removeClass('display-None');
             DetailButtonBind();
@@ -463,7 +463,7 @@
         else {
             $(".DetailTable img").addClass('display-None');
             $('#Save').unbind('click').removeClass("IsEditMode");
-            $(".DataTable input[type='text'], .DetailTable select").attr("disabled", "disabled");
+            $(".DataTable input[type='text'], .DataTable input[type='number'], .DetailTable select").attr("disabled", "disabled");
             $('#Excel, #PDF').addClass("IsEditMode");
             if ($('#Main_Status').val() == "New") {
                 $('#Edit, #Encode').addClass("IsEditMode");

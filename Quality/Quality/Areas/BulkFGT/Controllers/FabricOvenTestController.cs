@@ -89,6 +89,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 model.Details = saveResult.Details;
                 model.Result = saveResult.Result;
                 model.ErrorMessage = $"msg.WithInfo('{saveResult.ErrorMessage.ToString().Replace("\r\n", "<br />") }');";
+                EditMode = "True";
             }
 
             ViewBag.ChangeScaleList = ScaleIDList;
