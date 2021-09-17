@@ -206,10 +206,8 @@ namespace Quality.Areas.BulkFGT.Controllers
         public JsonResult Encode_Detail(string ID, FabricColorFastness_Service.DetailStatus Type)
         {
             string ColorFastnessResult = string.Empty;
-            // BaseResult result = _FabricColorFastness_Service.Encode_ColorFastness(ID, Type, this.UserID, out ColorFastnessResult);
-            BaseResult result = new BaseResult();
-            result.Result = true;
-            ColorFastnessResult = "Fail";
+            Fabric_ColorFastness_Detail_ViewModel result = _FabricColorFastness_Service.Encode_ColorFastness(ID, Type, this.UserID);
+            ColorFastnessResult = result.sentMail ? "Fail" : string.Empty;
             return Json(new { result.Result, result.ErrorMessage, ColorFastnessResult });
         }
 
