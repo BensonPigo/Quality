@@ -12,10 +12,12 @@ using ProductionDataAccessLayer.Provider.MSSQL;
 using Sci;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Web.Mvc;
+using System.Windows;
 
 namespace BusinessLogicLayer.Service
 {
@@ -208,12 +210,13 @@ namespace BusinessLogicLayer.Service
 
                 Range cell = worksheet.Cells[12 + haveHTrow, 2];
 
-                string picSource = mockupOven.SignaturePic;
-                if (!MyUtility.Check.Empty(picSource))
+                if (mockupOven.Signature != null)
                 {
-                    if (File.Exists(picSource))
+                    using (MemoryStream ms = new MemoryStream(mockupOven.Signature))
                     {
-                        worksheet.Shapes.AddPicture(picSource, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
+                        Bitmap pic = new Bitmap(Image.FromStream(ms), new Size(100, 40));
+                        Clipboard.SetDataObject(pic);
+                        worksheet.Paste(cell, false);
                     }
                 }
 
