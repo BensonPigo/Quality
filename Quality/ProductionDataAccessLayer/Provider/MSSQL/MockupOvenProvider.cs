@@ -422,7 +422,7 @@ SELECT {top1}
         ,AddName
         ,EditDate
         ,EditName
-        ,SignaturePic = (select PicPath from system) + (select t.SignaturePic from Technician t where t.ID = Technician)
+        ,Signature = (select t.Signature from Technician t where t.ID = Technician)
 FROM MockupOven m
 outer apply (select Name, ExtNo from pass1 p inner join Technician t on t.ID = p.ID where t.id = m.Technician) Technician_ne
 outer apply (select Name, ExtNo, EMail from pass1 where id = m.MR) MR_ne

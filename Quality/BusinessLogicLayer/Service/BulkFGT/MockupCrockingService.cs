@@ -12,10 +12,13 @@ using ProductionDataAccessLayer.Provider.MSSQL;
 using Sci;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Web.Mvc;
+using System.Windows;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace BusinessLogicLayer.Service
@@ -159,12 +162,13 @@ namespace BusinessLogicLayer.Service
                 worksheet.Cells[13, 2] = mockupCrocking.TechnicianName;
                 Excel.Range cell = worksheet.Cells[12, 2];
 
-                string picSource = mockupCrocking.SignaturePic;
-                if (!MyUtility.Check.Empty(picSource))
+                if (mockupCrocking.Signature != null)
                 {
-                    if (System.IO.File.Exists(picSource))
+                    using (MemoryStream ms = new MemoryStream(mockupCrocking.Signature))
                     {
-                        worksheet.Shapes.AddPicture(picSource, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
+                        Bitmap pic = new Bitmap(Image.FromStream(ms), new Size(100, 40));
+                        Clipboard.SetDataObject(pic);
+                        worksheet.Paste(cell, false);
                     }
                 }
 
