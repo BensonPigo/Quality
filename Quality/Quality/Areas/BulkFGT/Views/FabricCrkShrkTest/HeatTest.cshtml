@@ -27,15 +27,6 @@
         color: black;
     }
 
-    /*第一個選擇為Pass*/
-    .resultList {
-        color: blue;
-    }
-
-    .resultList option {
-        color: black;
-    }
-
     .row {
         --bs-gutter-x: 1.5rem;
         --bs-gutter-y: 0;
@@ -382,7 +373,7 @@
                                                     styleColor = "red";
                                                 }
                                             }
-                                            <select id="Heat_Detail_@{@i}_Result" class="resultList" name="Heat_Detail[@i].Result" disabled="disabled" class="@styleColor" style="width:157px;" onchange="changeResultColor(this)">
+                                            <select id="Heat_Detail_@{@i}_Result" name="Heat_Detail[@i].Result" disabled="disabled" class="@styleColor" style="width:157px;" onchange="changeResultColor(this)">
                                                 @foreach (var item in (List<SelectListItem>)ViewBag.ResultList)
                                                 {
                                                     string selected = item.Text.Equals(Model.Heat_Detail[i].Result) ? "selected" : "";
@@ -464,8 +455,8 @@
     $(function () {
         msg = new MessagerAlert();
         EditMode = false;
-        IsEditModeChange();
         @Html.Raw(Model.ErrorMessage);
+        IsEditModeChange();
     });
 
     function IsEditModeChange() {

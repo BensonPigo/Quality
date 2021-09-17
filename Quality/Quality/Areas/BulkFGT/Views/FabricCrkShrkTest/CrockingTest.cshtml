@@ -27,15 +27,6 @@
         color: black;
     }
 
-    /*第一個選擇為Pass*/
-    .resultList {
-        color: blue;
-    }
-
-        .resultList option {
-            color: black;
-        }
-
     .row {
         --bs-gutter-x: 1.5rem;
         --bs-gutter-y: 0;
@@ -431,7 +422,7 @@
                                                     styleColor = "red";
                                                 }
                                             }
-                                            <select class="resultList result@{@i}" id="Crocking_Detail_@{@i}__ResultDry" name="Crocking_Detail[@i].ResultDry" class="@styleColor" disabled="disabled" style="width:157px;" onchange="changeResultColor(this)">
+                                            <select class="result@{@i} @styleColor" id="Crocking_Detail_@{@i}__ResultDry" name="Crocking_Detail[@i].ResultDry" disabled="disabled" style="width:157px;" onchange="changeResultColor(this)">
                                                 @foreach (var item in (List<SelectListItem>)ViewBag.ResultList)
                                                 {
                                                     string selected = item.Text.Equals(Model.Crocking_Detail[i].ResultDry) ? "selected" : "";
@@ -459,7 +450,7 @@
                                                     styleColor = "red";
                                                 }
                                             }
-                                            <select class="resultList result@{@i}" id="Crocking_Detail_@{@i}__ResultDry_Weft" name="Crocking_Detail[@i].ResultDry_Weft" class="@styleColor" disabled="disabled" style="width:157px;" onchange="changeResultColor(this)">
+                                            <select class="result@{@i} @styleColor" id="Crocking_Detail_@{@i}__ResultDry_Weft" name="Crocking_Detail[@i].ResultDry_Weft" disabled="disabled" style="width:157px;" onchange="changeResultColor(this)">
                                                 @foreach (var item in (List<SelectListItem>)ViewBag.ResultList)
                                                 {
                                                     string selected = item.Text.Equals(Model.Crocking_Detail[i].ResultDry_Weft) ? "selected" : "";
@@ -487,7 +478,7 @@
                                                     styleColor = "red";
                                                 }
                                             }
-                                            <select class="resultList result@{@i}" id="Crocking_Detail__@{@i}__ResultWet" name="Crocking_Detail[@i].ResultWet" disabled="disabled" class="@styleColor" style="width:157px;" onchange="changeResultColor(this)">
+                                            <select class="result@{@i} @styleColor" id="Crocking_Detail__@{@i}__ResultWet" name="Crocking_Detail[@i].ResultWet" disabled="disabled" style="width:157px;" onchange="changeResultColor(this)">
                                                 @foreach (var item in (List<SelectListItem>)ViewBag.ResultList)
                                                 {
                                                     string selected = item.Text.Equals(Model.Crocking_Detail[i].ResultWet) ? "selected" : "";
@@ -515,7 +506,7 @@
                                                     styleColor = "red";
                                                 }
                                             }
-                                            <select class="resultList result@{@i}" id="Crocking_Detail_@{@i}__ResultWet_Weft" name="Crocking_Detail[@i].ResultWet_Weft" disabled="disabled" class="@styleColor" style="width:157px;" onchange="changeResultColor(this)">
+                                            <select class="result@{@i} @styleColor" id="Crocking_Detail_@{@i}__ResultWet_Weft" name="Crocking_Detail[@i].ResultWet_Weft" disabled="disabled" style="width:157px;" onchange="changeResultColor(this)">
                                                 @foreach (var item in (List<SelectListItem>)ViewBag.ResultList)
                                                 {
                                                     string selected = item.Text.Equals(Model.Crocking_Detail[i].ResultWet_Weft) ? "selected" : "";

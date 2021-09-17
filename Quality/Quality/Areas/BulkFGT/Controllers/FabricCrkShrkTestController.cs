@@ -132,7 +132,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "</select>";
             html += "</td>";
             html += "<td>";
-            html += $"<select class='resultList result{lastNO}' id='Crocking_Detail_{lastNO}__ResultDry' name='Crocking_Detail[{lastNO}].ResultDry' onchange='changeResultColor(this)' style='width:157px'>";
+            html += $"<select class='result{lastNO}' id='Crocking_Detail_{lastNO}__ResultDry' name='Crocking_Detail[{lastNO}].ResultDry' onchange='changeResultColor(this)' style='width:157px'>";
             html += "<option value='Pass'>Pass</option>";
             html += "<option value='Fail'>Fail</option>";
             html += "</select>";
@@ -146,7 +146,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "</select>";
             html += "</td>";
             html += "<td>";
-            html += $"<select class='resultList result{lastNO}' id='Crocking_Detail_{lastNO}__ResultDry_Weft' name='Crocking_Detail[{lastNO}].ResultDry_Weft' onchange='changeResultColor(this)' style='width:157px'>";
+            html += $"<select class='result{lastNO}' id='Crocking_Detail_{lastNO}__ResultDry_Weft' name='Crocking_Detail[{lastNO}].ResultDry_Weft' onchange='changeResultColor(this)' style='width:157px'>";
             html += "<option value='Pass'>Pass</option>";
             html += "<option value='Fail'>Fail</option>";
             html += "</select>";
@@ -160,7 +160,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "</select>";
             html += "</td>";
             html += "<td>";
-            html += $"<select class='resultList result{lastNO}' id='Crocking_Detail_{lastNO}__ResultWet' name='Crocking_Detail[{lastNO}].ResultWet' onchange='changeResultColor(this)' style='width:157px'>";
+            html += $"<select class='result{lastNO}' id='Crocking_Detail_{lastNO}__ResultWet' name='Crocking_Detail[{lastNO}].ResultWet' onchange='changeResultColor(this)' style='width:157px'>";
             html += "<option value='Pass'>Pass</option>";
             html += "<option value='Fail'>Fail</option>";
             html += "</select>";
@@ -174,7 +174,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "</select>";
             html += "</td>";
             html += "<td>";
-            html += $"<select class='resultList result{lastNO}' id='Crocking_Detail_{lastNO}__ResultWet_Weft' name='Crocking_Detail[{lastNO}].ResultWet_Weft' onchange='changeResultColor(this)' style='width:157px'>";
+            html += $"<select class='result{lastNO}' id='Crocking_Detail_{lastNO}__ResultWet_Weft' name='Crocking_Detail[{lastNO}].ResultWet_Weft' onchange='changeResultColor(this)' style='width:157px'>";
             html += "<option value='Pass'>Pass</option>";
             html += "<option value='Fail'>Fail</option>";
             html += "</select>";
@@ -311,7 +311,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "</td>";
 
             html += "<td>";
-            html += $"<select id='Heat_Detail_{lastNO}__Result' class='resultList' name='Heat_Detail[{lastNO}].Result' style='width:157px;color:blue' onchange='changeResultColor(this)'>";
+            html += $"<select id='Heat_Detail_{lastNO}__Result' name='Heat_Detail[{lastNO}].Result' style='width:157px;color:blue' onchange='changeResultColor(this)'>";
             html += "<option value='Pass'>Pass</option>";
             html += "<option value='Fail'>Fail</option>";
             html += "</select>";
@@ -478,7 +478,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalOriginal 必須是數字。' data-val-required='VerticalOriginal 欄位是必要項。' id='Wash_Detail_{lastNO}__VerticalOriginal' name='Wash_Detail[{lastNO}].VerticalOriginal' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
-            html += $"<select id='Wash_Main_{lastNO}__Result' class='resultList' name='Wash_Detail[{lastNO}].Result' style='width:157px;color:blue' onchange='changeResultColor(this)'>";
+            html += $"<select id='Wash_Main_{lastNO}__Result' name='Wash_Detail[{lastNO}].Result' style='width:157px;color:blue' onchange='changeResultColor(this)'>";
             html += "<option value='Pass'>Pass</option>";
             html += "<option value='Fail'>Fail</option>";
             html += "</select>";

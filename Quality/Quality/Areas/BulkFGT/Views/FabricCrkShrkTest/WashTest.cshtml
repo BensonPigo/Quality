@@ -28,15 +28,6 @@
         color: black;
     }
 
-    /*第一個選擇為Pass*/
-    .resultList {
-        color: blue;
-    }
-
-    .resultList option {
-        color: black;
-    }
-
     .row {
         --bs-gutter-x: 1.5rem;
         --bs-gutter-y: 0;
@@ -410,7 +401,7 @@
                                                 styleColor = "red";
                                             }
                                         }
-                                        <select id="Wash_Main_@{@i}_Result" class="resultList" name="Wash_Detail[@i].Result" disabled="disabled" class="@styleColor" style="width:157px;" onchange="changeResultColor(this)">
+                                        <select id="Wash_Main_@{@i}_Result" name="Wash_Detail[@i].Result" disabled="disabled" class="@styleColor" style="width:157px;" onchange="changeResultColor(this)">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ResultList)
                                             {
                                                 string selected = item.Text.Equals(Model.Wash_Detail[i].Result) ? "selected" : "";
@@ -511,10 +502,9 @@
     $(function () {
         msg = new MessagerAlert();
         EditMode = false;
-        IsEditModeChange();
-
         changeSkewnessOption(@optionID);
         @Html.Raw(Model.ErrorMessage);
+        IsEditModeChange();
     });
 
     function IsEditModeChange() {
