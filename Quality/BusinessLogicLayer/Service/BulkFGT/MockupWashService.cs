@@ -107,6 +107,20 @@ namespace BusinessLogicLayer.Service
             return selectListItems;
         }
 
+        public List<SelectListItem> GetTestingMethod() 
+        {
+            List<SelectListItem> selectListItems = new List<SelectListItem>();
+            _DropDownListProvider = new DropDownListProvider(Common.ProductionDataAccessLayer);
+            DropDownList downList = new DropDownList() { Type = "PMS_MockupWashMethod" };
+            List<DropDownList> dropDowns = _DropDownListProvider.Get(downList).ToList();
+            foreach (var item in dropDowns)
+            {
+                selectListItems.Add(new SelectListItem() { Value = item.ID, Text = item.Description });
+            }
+
+            return selectListItems;
+        }
+
         public List<Orders> GetOrders(Orders orders)
         {
             _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);

@@ -16,6 +16,8 @@ namespace BusinessLogicLayer.Interface.BulkFGT
 
         List<SelectListItem> GetArtworkTypeID(StyleArtwork_Request Request);
 
+        List<SelectListItem> GetTestingMethod();
+
         List<Orders> GetOrders(Orders Orders);
 
         List<Order_Qty> GetDistinctArticle(Order_Qty Orders);

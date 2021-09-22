@@ -237,7 +237,8 @@
                                     <select id="Main_Detergent" name="Main.Detergent">
                                         @foreach (var item in (List<SelectListItem>)ViewBag.Detergent_List)
                                         {
-                                            string selected = item.Text.Equals(Model.Main.Detergent.ToString()) ? "selected" : "";
+                                            string Detergent = Model.Main.Detergent == null ? string.Empty : Model.Main.Detergent.ToString();
+                                            string selected = item.Text.Equals(Detergent) ? "selected" : "";
                                             <option value="@item.Value" @selected>@item.Text</option>
                                         }
                                     </select>
@@ -247,7 +248,8 @@
                                     <select id="Main_Machine" name="Main.Machine">
                                         @foreach (var item in (List<SelectListItem>)ViewBag.Machine_List)
                                         {
-                                            string selected = item.Text.Equals(Model.Main.Machine.ToString()) ? "selected" : "";
+                                            string Machine = Model.Main.Machine == null ? string.Empty : Model.Main.Machine.ToString();
+                                            string selected = item.Text.Equals(Machine) ? "selected" : "";
                                             <option value="@item.Value" @selected>@item.Text</option>
                                         }
                                     </select>                                    
@@ -259,7 +261,8 @@
                                     <select id="Main_Drying" name="Main.Drying">
                                         @foreach (var item in (List<SelectListItem>)ViewBag.Drying_List)
                                         {
-                                            string selected = item.Text.Equals(Model.Main.Drying.ToString()) ? "selected" : "";
+                                            string Drying = Model.Main.Drying == null ? string.Empty : Model.Main.Drying.ToString();
+                                            string selected = item.Text.Equals(Drying) ? "selected" : "";
                                             <option value="@item.Value" @selected>@item.Text</option>
                                         }
                                     </select>                                    

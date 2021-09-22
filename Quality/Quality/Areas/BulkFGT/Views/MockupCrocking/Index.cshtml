@@ -154,7 +154,7 @@
             </div>
             <div class="breadcrumb queryHeader" style="justify-content: flex-end;">
                 <h4 style="margin-right: 1em;color:white">Report No</h4>               
-                <select id="Request__ReportNo" name="Request.ReportNo" onchange="ReportNoChange(this.value)">
+                <select id="Request_ReportNo" name="Request.ReportNo" onchange="ReportNoChange(this.value)">
                     @foreach (var item in (List<SelectListItem>)ViewBag.ReportNo_Source)
                     {
                         string reportNO = Model.Request != null && !string.IsNullOrEmpty(Model.Request.ReportNo) ? Model.Request.ReportNo : string.Empty;
@@ -267,7 +267,7 @@
                                 <tr>
                                     <td style="width: 10vw;"><h5>Report No</h5></td>
                                     <td style="width: 20vw;">
-                                        <input id="ReportNo" name="ReportNo" readonly="readonly" type="text" value="@Model.ReportNo">                                        
+                                        <input id="ReportNo" name="ReportNo" readonly="readonly" type="text" value="@Model.ReportNo">
                                         @Html.HiddenFor(o => o.TestBeforePicture)
                                         @Html.HiddenFor(o => o.TestAfterPicture)
                                     </td>
@@ -603,6 +603,11 @@
         });
 
         $('#btnArticleSelectItem').on('click', function () {
+            if ($('#Request_BrandID').val() == '' || $('#Request_SeasonID').val() == '' || $('#Request_StyleID').val() == '') {
+                msg.WithError('Please input style, brand and season before choose article.');
+                return;
+            }
+
             var para = "?TargetID=Request_Article&OrderID=&StyleUkey=0&BrandID=" + $('#Request_BrandID').val() + "&SeasonID=" + $('#Request_SeasonID').val() + "&StyleID=" + $('#Request_StyleID').val();
             window.open('@Url.Action("ArticleList","PublicWondow",new{Area=""})' + para, 'Article', config = 'toolbar=no,status=no,location=no,width=400,height=650');
         });

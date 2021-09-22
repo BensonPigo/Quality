@@ -22,11 +22,10 @@ namespace Quality.Areas.BulkFGT.Controllers
     public class MockupCrockingController : BaseController
     {
         private IMockupCrockingService _MockupCrockingService;
-        private MailTools _SendMail;
+
         public MockupCrockingController()
         {
             _MockupCrockingService = new MockupCrockingService();
-            _SendMail = new MailTools();
             ViewBag.OnlineHelp = this.OnlineHelp + "BulkFGT.MockupCrocking,,";
         }
 
@@ -139,28 +138,29 @@ namespace Quality.Areas.BulkFGT.Controllers
                 ReportNo = Req.ReportNo,
             };
 
-            MockupCrocking_ViewModel mockupCrocking_ViewModel = _MockupCrockingService.GetMockupCrocking(Req.Request);
+            MockupCrocking_ViewModel model = _MockupCrockingService.GetMockupCrocking(Req.Request);
 
-            if (mockupCrocking_ViewModel == null)
+            if (model == null)
             {
-                mockupCrocking_ViewModel = new MockupCrocking_ViewModel() { ReportNo_Source = new List<string>(), };
+                model = new MockupCrocking_ViewModel() { ReportNo_Source = new List<string>(), };
             }
 
-            Req.Result = mockupCrocking_ViewModel.Result;
-            Req.MRName = mockupCrocking_ViewModel.MRName;
-            Req.TechnicianName = mockupCrocking_ViewModel.TechnicianName;
-            Req.LastEditName = mockupCrocking_ViewModel.LastEditName;
-            Req.MockupCrocking_Detail = mockupCrocking_ViewModel.MockupCrocking_Detail;
+            Req.Result = model.Result;
+            Req.MRName = model.MRName;
+            Req.MRMail = model.MRMail;
+            Req.TechnicianName = model.TechnicianName;
+            Req.LastEditName = model.LastEditName;
+            Req.MockupCrocking_Detail = model.MockupCrocking_Detail;
             if (!result.Result)
             {
                 Req.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString().Replace("\r\n", "<br />") + "');";
             }
-            else if (result.Result && mockupCrocking_ViewModel.Result == "Fail")
+            else if (result.Result && model.Result == "Fail")
             {
                 Req.ErrorMessage = "FailMail();";
             }
 
-            ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(mockupCrocking_ViewModel.ReportNo_Source);
+            ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(model.ReportNo_Source);
             ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(Req.Request.BrandID, Req.Request.SeasonID, Req.Request.StyleID);
             ViewBag.FactoryID = this.FactoryID;
             ViewBag.UserMail = this.UserMail;
@@ -216,8 +216,11 @@ namespace Quality.Areas.BulkFGT.Controllers
             Report_Result report_Result = _MockupCrockingService.GetPDF(mockupCrocking_ViewModel);
             string tempFilePath = report_Result.TempFileName;
             tempFilePath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + tempFilePath;
-
-            return Json(new { Result = true, reportPath = tempFilePath, FileName = report_Result.TempFileName });
+            if (!report_Result.Result)
+            {
+                report_Result.ErrorMessage = report_Result.ErrorMessage.ToString().Replace("\r\n", "<br />");
+            }
+            return Json(new { Result = report_Result.Result, ErrorMessage = report_Result.ErrorMessage, reportPath = tempFilePath, FileName = report_Result.TempFileName });
         }
 
         [HttpPost]

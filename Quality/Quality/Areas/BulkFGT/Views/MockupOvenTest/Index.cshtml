@@ -132,7 +132,7 @@
             width: 70%;
         }
 </style>
-@using (Html.BeginForm("Index", "MockupOvenTest", new { }, FormMethod.Post, new { @id = "DetailForm" }))
+@using (Html.BeginForm("Index", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post, new { @id = "DetailForm" }))
 {
     <div class="main-content">
         <header class="page-header">
@@ -147,8 +147,15 @@
             </div>
             <div class="breadcrumb queryHeader" style="justify-content: flex-end;">
                 <h4 style="margin-right: 1em;color:white">Report No</h4>
-                @Html.DropDownList("QueryReportNo", (List<SelectListItem>)ViewBag.ReportNo_Source, null, new { @class = "form-control" })
-                <input id="btnNew" type="button" class="button" style="margin-left:1em;border:0;" name="New" value="New">
+                <select id="Request_ReportNo" name="Request.ReportNo" onchange="ReportNoChange(this.value)">
+                    @foreach (var item in (List<SelectListItem>)ViewBag.ReportNo_Source)
+                    {
+                        string reportNO = Model.Request != null && !string.IsNullOrEmpty(Model.Request.ReportNo) ? Model.Request.ReportNo : string.Empty;
+                        string selected = item.Value.Equals(reportNO) ? "selected" : "";
+                        <option value="@item.Value" @selected>@item.Text</option>
+                    }
+                </select>
+                <input id="btnNew" type="button" class="button" style="margin-left:1em;border:0;cursor:pointer;" name="New" value="New">
             </div>
         </header>
         <div class="main-area">
@@ -159,22 +166,22 @@
                             <p class="InfoTitle White">Brand</p>
                         </div>
                         <div class="col-auto">
-                            @Html.TextBoxFor(o => o.Request.BrandID)
+                            <input id="Request_BrandID" name="Request.BrandID" type="text" value="@Model.Request.BrandID">
                             <input id="btnBrandSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
                         </div>
                         <div class="col-auto"><p class="InfoTitle White">Season</p></div>
                         <div class="col-auto">
-                            @Html.TextBoxFor(o => o.Request.SeasonID)
+                            <input id="Request_SeasonID" name="Request.SeasonID" type="text" value="@Model.Request.SeasonID">
                             <input id="btnSeasonSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
                         </div>
                         <div class="col-auto"><p class="InfoTitle White">Style</p></div>
                         <div class="col-auto">
-                            @Html.TextBoxFor(o => o.Request.StyleID)
+                            <input id="Request_StyleID" name="Request.StyleID" type="text" value="@Model.Request.StyleID">
                             <input id="btnStyleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
                         </div>
                         <div class="col-auto"><p class="InfoTitle White">Article</p></div>
                         <div class="col-auto">
-                            @Html.TextBoxFor(o => o.Request.Article)
+                            <input id="Request_Article" name="Request.Article" type="text" value="@Model.Request.Article">
                             <input id="btnArticleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
                         </div>
 
@@ -208,7 +215,8 @@
                                         </h4>
                                     </td>
                                     <td>
-                                        <h4 id="Delete" name="Action:Delete" type="submit" style="margin:0;min-width:0;background-color:transparent">
+                                        <input id="DeleteSubmit" type="submit" name="action:Delete" style="display:none" />
+                                        <h4 id="Delete" style=" margin-right: 1em;">
                                             <img src="~/Image/Icon/Delete.png" width="30" />
                                             Delete
                                         </h4>
@@ -239,6 +247,7 @@
                                             New Item
                                         </h4>
                                     </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -249,7 +258,9 @@
                                 <tr>
                                     <td style="width: 10vw;"><h5>Report No</h5></td>
                                     <td style="width: 20vw;">
-                                        @Html.TextBoxFor(o => o.ReportNo, "", new { @readonly = "readonly" })
+                                        <input id="ReportNo" name="ReportNo" readonly="readonly" type="text" value="@Model.ReportNo">
+                                        @Html.HiddenFor(o => o.TestBeforePicture)
+                                        @Html.HiddenFor(o => o.TestAfterPicture)
                                     </td>
                                     <td style="width: 10vw;"><h5>SP#</h5></td>
                                     <td style="width: 20vw;">
@@ -328,7 +339,18 @@
                                     </td>
                                     <td><h5>Result</h5></td>
                                     <td>
-                                        @Html.TextBoxFor(o => o.Result, "", new { @readonly = "readonly" })
+                                        @{
+                                            string styleColor = "";
+                                            if (Model.Result == "Pass")
+                                            {
+                                                styleColor = "blue";
+                                            }
+                                            else
+                                            {
+                                                styleColor = "red";
+                                            }
+                                        }
+                                        <font id="Result" class="@styleColor">@Model.Result</font>
                                     </td>
                                 </tr>
                                 <tr>
@@ -352,21 +374,24 @@
                                     <td>
                                         @{
                                             nameValue = string.Empty;
+                                            string mrmail = string.Empty;
                                             if (!string.IsNullOrWhiteSpace(Model.MRName))
                                             {
                                                 nameValue = Model.MRName + " Ext." + Model.MRExtNo;
+                                                mrmail = Model.MRMail;
                                             }
 
                                         }
                                         <div class="input-group">
-                                            @Html.TextBoxFor(o => o.MR, "", new { @class = "OnlyEdit"})
-                                            <input id="MRDesc" type="text"  readonly="readonly" value='@nameValue'>
+                                            @Html.TextBoxFor(o => o.MR, "", new { @class = "OnlyEdit" })
+                                            <input id="MRDesc" type="text" readonly="readonly" value='@nameValue'>
+                                            <input type="hidden" id="MRMail" readonly="readonly" value="@mrmail" />
                                             <input id="btnDetailMRSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
                                         </div>
                                     </td>
                                     <td><h5>Last Edit Name</h5></td>
                                     <td>
-                                        @Html.TextBoxFor(o => o.LastEditName, "", new { @readonly = "readonly" })
+                                        <input id="LastEditName" name="LastEditName" readonly="readonly" type="text" value="@Model.LastEditName">
                                     </td>
                                 </tr>
                                 <tr>
@@ -391,35 +416,35 @@
                                 <tr>
                                     <td colspan="2"><h5>Actual Plate Tempereture (˚C)</h5></td>
                                     <td>
-                                        @Html.TextBoxFor(o => o.HTPlate, "", new { @class = "OnlyEdit" })
+                                        @Html.TextBoxFor(o => o.HTPlate, "", new { @type = "number", @class = "OnlyEdit", @step = "1" })
 
                                     </td>
                                     <td colspan="2"><h5>Pell Off (hot/cold)(peel)</h5></td>
                                     <td>
-                                        @Html.TextBoxFor(o => o.HTPellOff, "", new { @class = "OnlyEdit"})
+                                        @Html.TextBoxFor(o => o.HTPellOff, "", new { @type = "number", @class = "OnlyEdit", @step = "1" })
                                     </td>
 
                                 </tr>
                                 <tr>
                                     <td colspan="2"><h5>Actual Flim Tempereture (˚C)</h5></td>
                                     <td>
-                                        @Html.TextBoxFor(o => o.HTFlim, "", new { @class = "OnlyEdit" })
+                                        @Html.TextBoxFor(o => o.HTFlim, "", new { @type = "number", @class = "OnlyEdit", @step = "1" })
 
                                     </td>
                                     <td colspan="2"><h5>2nd Press (no reverse) (sec.)</h5></td>
                                     <td>
-                                        @Html.TextBoxFor(o => o.HT2ndPressnoreverse, "", new { @class = "OnlyEdit"})
+                                        @Html.TextBoxFor(o => o.HT2ndPressnoreverse, "", new { @type = "number", @class = "OnlyEdit", @step = "1" })
                                     </td>
                                 </tr>
                                 <tr>
                                     <td colspan="2"><h5>Time (sec.)</h5></td>
                                     <td>
-                                        @Html.TextBoxFor(o => o.HTTime, "", new { @class = "OnlyEdit"})
+                                        @Html.TextBoxFor(o => o.HTTime, "", new { @type = "number", @class = "OnlyEdit", @step = "1" })
 
                                     </td>
                                     <td colspan="2"><h5>2nd Press (reversed)(sec.)</h5></td>
                                     <td>
-                                        @Html.TextBoxFor(o => o.HT2ndPressreversed, "", new { @class = "OnlyEdit", @step = "0.1" })
+                                        @Html.TextBoxFor(o => o.HT2ndPressreversed, "", new { @type = "number", @class = "OnlyEdit", @step = "1" })
                                     </td>
                                 </tr>
                                 <tr>
@@ -430,7 +455,7 @@
                                     </td>
                                     <td colspan="2"><h5>Cooling Time (min)</h5></td>
                                     <td>
-                                        @Html.TextBoxFor(o => o.HTCoolingTime, "", new { @class = "OnlyEdit" })
+                                        @Html.TextBoxFor(o => o.HTCoolingTime, "", new { @type = "number", @class = "OnlyEdit", @step = "1" })
                                     </td>
                                 </tr>
                             </tbody>
@@ -458,7 +483,7 @@
                             <tbody>
                                 @for (int i = 0; i <= Model.MockupOven_Detail.Count - 1; i++)
                                 {
-                                    <tr>
+                                    <tr idx="@i">
                                         <td>
                                             @Html.Hidden("Seq", "", new { @idx = i })
                                             @Html.TextBoxFor(o => Model.MockupOven_Detail[i].TypeofPrint, "", new { @class = "OnlyEdit" })
@@ -474,7 +499,7 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <select id="MockupOven_Detail_@{@i}__AccessoryRefno" name="Model.MockupOven_Detail[@i].AccessoryRefno"  class="OnlyEdit" style="width:157px;">
+                                            <select id="MockupOven_Detail_@{@i}__AccessoryRefno" name="MockupOven_Detail[@i].AccessoryRefno"  class="OnlyEdit" style="width:157px;">
                                                 @foreach (var item in (List<SelectListItem>)ViewBag.AccessoryRefNo_Source)
                                                 {
                                                     string selected = item.Text.Equals(Model.MockupOven_Detail[i].AccessoryRefno) ? "selected" : "";
@@ -493,7 +518,7 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <select id="MockupOven_Detail_@{@i}Result" name="Model.MockupOven_Detail[@i].Result" class="OnlyEdit result" onchange="changeResult()" style="width:157px;">
+                                            <select id="MockupOven_Detail_@{@i}Result" name="MockupOven_Detail[@i].Result" class="OnlyEdit result" onchange="changeResult()" style="width:157px;">
                                                 @foreach (var item in (List<SelectListItem>)ViewBag.ResultList)
                                                 {
                                                     string selected = item.Text.Equals(Model.MockupOven_Detail[i].Result) ? "selected" : "";
@@ -503,10 +528,10 @@
 
                                         </td>
                                         <td>
-                                            @Html.TextBoxFor(o => Model.MockupOven_Detail[i].Remark, "", new { @class = "OnlyEdit"})
+                                            <input id="MockupOven_Detail_@{@i}__Remark" name="MockupOven_Detail[@{@i}].Remark" type="text" class="OnlyEdit" value="@Model.MockupOven_Detail[i].Remark" />                                            
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(o => Model.MockupOven_Detail[i].LastUpdate, "", "")
+                                            <input id="MockupOven_Detail_@{@i}__LastUpdate" name="MockupOven_Detail[@{@i}].LastUpdate" readonly="readonly" type="text" value="@Model.MockupOven_Detail[i].LastUpdate" />                                          
                                         </td>
                                         <td>
                                             <div style="width:5vw;">
@@ -525,21 +550,23 @@
 }
 
 <script type="text/javascript">
-        var msg;
-        var EditMode;
-        var EditType;
-        $(function () {
-            msg = new MessagerAlert();
+    var msg;
+    var EditMode;
+    var EditType;
+    $(function () {
+        msg = new MessagerAlert();
+        EditMode = false;
+        @Html.Raw(Model.ErrorMessage)
+        IsEditModeChange();
 
-            EditMode = false;
-            IsEditModeChange();
-        });
+        if (!$("body").hasClass("sidebar-collapse")) {
+            $(".menu-trigger").click();
+        }
+    });
 
     function IsEditModeChange() {
         EditModeButtionBind();
         Clear();
-        $('#btnQuery').unbind('click').removeClass("IsEditModeQuery");
-
         if (EditMode) {
             $(".queryHeader select").attr("disabled", "disabled");
             $('#btnNew').unbind('click').addClass("IsEditModeQuery");
@@ -548,8 +575,8 @@
             $(".rowHeader input[type='button']").unbind('click').addClass("IsEditModeQuery");
             $('#btnQuery').addClass("IsEditModeQuery");
 
-            $("#Edit, #Delete, #Picture, #SendMail, #PDF").removeClass("IsEditMode");
-            $('#Save, #Undo, #New').addClass("IsEditMode");
+            $("#Edit, #Delete, #SendMail, #PDF").removeClass("IsEditMode");
+            $('#Save, #Undo, #New, #Picture').addClass("IsEditMode");
             $('.DetailTable input,.DetailTable select:not(.NotEdit)').removeAttr("disabled");
 
             if (EditType == "New") {
@@ -562,27 +589,29 @@
 
             $(".DetailTable img").removeClass('display-None');
 
-
             DetailButtonBind();
             DetailDetailButtonBind();
 
             $('#btnQuery').on('click', function () {
                 return false;
             });
-
         }
         else {
             $(".queryHeader select").removeAttr("disabled");
             $(".rowHeader input[type='text']").removeAttr("disabled");
             $(".rowHeader input[type='button']").removeClass("IsEditModeQuery");
             $('#btnNew').removeClass("IsEditModeQuery");
-            $('#Save, #Undo, #New').unbind('click').removeClass("IsEditMode");
-            $('#btnQuery').removeClass("IsEditModeQuery");
+            $('#Save').removeClass("IsEditMode");
+            $('#Undo, #New').unbind('click').removeClass("IsEditMode");
+            $('#btnQuery').unbind('click').removeClass("IsEditModeQuery");
 
             QueryButtonBind();
 
             if ($('#ReportNo').val() != undefined && $('#ReportNo').val() != '') {
-                $("#Edit, #Delete, #Picture, #PDF,#SendMail").addClass("IsEditMode");
+                $("#Edit, #Delete, #Picture, #PDF, #SendMail").addClass("IsEditMode");
+            }
+            else {
+                $("#Edit, #Picture, #Delete, #PDF, #SendMail").unbind('click').removeClass("IsEditMode");
             }
 
             $(".DataTable input, .DataTable select").attr("disabled", "disabled");
@@ -598,33 +627,34 @@
                     }
                 }
             });
-
-            $('#Save').on('click', function () {
-                return false;
-            });
         }
     }
 
+    function Clear() {
+        if (EditType == "New") {
+            $(".DataTable input[type='text'], .DataTable select").val('');
+            $('#Result').html('');
+        }
+    }
 
-        function Clear() {
-            if (EditType == "New") {
-                $(".DataTable input[type='text'], .DataTable select").val('');
-            }
-         }
+    function ReportNoChange(value) {
+        $('#btnQuery').unbind('click').click();
+    }
 
-        function QueryButtonBind() {
+    function QueryButtonBind() {
         $('#btnBrandSelectItem').on('click', function () {
-         window.open('@Url.Action("BrandList","PublicWondow",new{Area=""})','Brand',config='toolbar=no,status=no,location=no,width=400,height=650');
+            var para = "?TargetID=Request_BrandID";
+            window.open('@Url.Action("BrandList","PublicWondow",new{Area=""})' + para, 'Brand', config = 'toolbar=no,status=no,location=no,width=400,height=650');
         });
 
         $('#btnSeasonSelectItem').on('click', function () {
-            var para = "?BrandID=" + $('#Request_BrandID').val();
-            window.open('@Url.Action("SeasonList","PublicWondow",new{Area=""})' + para,'Season',config='toolbar=no,status=no,location=no,width=400,height=650');
+            var para = "?TargetID=Request_SeasonID&BrandID=" + $('#Request_BrandID').val();
+            window.open('@Url.Action("SeasonList","PublicWondow",new{Area=""})' + para, 'Season', config = 'toolbar=no,status=no,location=no,width=400,height=650');
         });
 
         $('#btnStyleSelectItem').on('click', function () {
-            var para = "?BrandID=" + $('#Request_BrandID').val() + "&SeasonID=" + $('#Request_SeasonID').val();
-            window.open('@Url.Action("StyleList","PublicWondow",new{Area=""})' + para,'Style',config='toolbar=no,status=no,location=no,width=400,height=650');
+            var para = "?TargetID=Request_StyleID&BrandID=" + $('#Request_BrandID').val() + "&SeasonID=" + $('#Request_SeasonID').val();
+            window.open('@Url.Action("StyleList","PublicWondow",new{Area=""})' + para, 'Style', config = 'toolbar=no,status=no,location=no,width=400,height=650');
         });
 
         $('#btnArticleSelectItem').on('click', function () {
@@ -633,292 +663,281 @@
                 return;
             }
 
-            var para = "?OrderID=&StyleUkey=0&BrandID=" + $('#Request_BrandID').val() + "&SeasonID=" + $('#Request_SeasonID').val() + "&StyleID=" + $('#Request_StyleID').val();
-            window.open('@Url.Action("ArticleList","PublicWondow",new{Area=""})' + para,'Article',config='toolbar=no,status=no,location=no,width=400,height=650');
+            var para = "?TargetID=Request_Article&OrderID=&StyleUkey=0&BrandID=" + $('#Request_BrandID').val() + "&SeasonID=" + $('#Request_SeasonID').val() + "&StyleID=" + $('#Request_StyleID').val();
+            window.open('@Url.Action("ArticleList","PublicWondow",new{Area=""})' + para, 'Article', config = 'toolbar=no,status=no,location=no,width=400,height=650');
         });
 
         blurEvent('Request_');
     }
 
-        function blurEvent(name) {
+    function blurEvent(name) {
 
         $("#POID").unbind('blur').blur(function () {
-                if ($(this).val() == '') {
-                    return;
+            if ($(this).val() == '') {
+                return;
+            }
+
+            $.ajax({
+                url: "@Url.Action("SPBlur", "MockupOvenTest", new{Area= "BulkFGT" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ POID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.ErrMsg != "") {
+                        $("#POID").val('');
+                        msg.WithError(data.ErrMsg);
+                    }
+                    else {
+                        if (data.BrandID != "") {
+                            $('#BrandID').val(data.BrandID);
+                        }
+
+                        if (data.SeasonID != "") {
+                            $('#SeasonID').val(data.SeasonID);
+                        }
+
+                        if (data.StyleID != "") {
+                            $('#StyleID').val(data.StyleID);
+                        }
+
+
+                        if (data.Article != "") {
+                            $('#Article').val(data.Article);
+                        }
+
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $("#" + name + "BrandID").blur(function () {
+            if ($(this).val() == '') {
+                if (name == '') {
+                    GetArtworkTypeIDList();
+                    ClearColor();
                 }
 
-                $.ajax({
-                    url: "@Url.Action("SPBlur", "MockupOvenTest", new{Area= "BulkFGT" })",
-                    type: 'POST',
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify({ POID: $(this).val(), ReturnType: "JSON" }),
-                    async: true,
-                    success: function (data) {
-                        if (data.ErrMsg != "") {
-                            $("#POID").val('');
-                            msg.WithError(data.ErrMsg);
-                        }
-                        else
-                        {
-                            if (data.BrandID != "") {
-                                $('#BrandID').val(data.BrandID);
-                            }
+                return;
+            }
 
-                            if (data.SeasonID != "") {
-                                $('#SeasonID').val(data.SeasonID);
-                            }
-
-                            if (data.StyleID != "") {
-                                $('#StyleID').val(data.StyleID);
-                            }
-
-
-                            if (data.Article != "") {
-                                $('#Article').val(data.Article);
-                            }
-
-                        }
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        console.log(xhr.responseText);
+            $.ajax({
+                url: "@Url.Action("BrandList","PublicWondow",new{Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#" + name + "BrandID").val('');
+                        msg.WithError('Brand Not Found');
                     }
-                });
-                    });
-
-
-            $("#" + name + "BrandID").blur(function () {
-                if ($(this).val() == '') {
 
                     if (name == '') {
                         GetArtworkTypeIDList();
+                        GetAccessoryRefNoList();
                     }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
 
-                    return;
+        $("#" + name + "SeasonID").blur(function () {
+            if ($(this).val() == '') {
+                if (name == '') {
+                    GetArtworkTypeIDList();
                 }
 
-                $.ajax({
-                    url: "@Url.Action("BrandList","PublicWondow",new{Area=""})",
-                    type: 'POST',
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify({ BrandID: $(this).val(), ReturnType: "JSON" }),
-                    async: true,
-                    success: function (data) {
-                        if (data.length == 0) {
-                            $("#" + name +"BrandID").val('');
-                            msg.WithError('Brand Not Found');
-                        }
+                return;
+            }
 
-                        if (name == '') {
-                            GetArtworkTypeIDList();
-                            GetAccessoryRefNoList();
-                        }
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        console.log(xhr.responseText);
+
+            var BrandID = $('#' + name + 'BrandID').val();
+            $.ajax({
+                url: "@Url.Action("SeasonList","PublicWondow",new{Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: BrandID, SeasonID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#" + name + "SeasonID").val('');
+                        msg.WithError('Season Not Found');
                     }
-                });
-            });
-
-            $("#" + name + "SeasonID").blur(function () {
-                if ($(this).val() == '') {
 
                     if (name == '') {
                         GetArtworkTypeIDList();
+                        GetAccessoryRefNoList();
                     }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
 
-                    return;
+        $("#" + name + "StyleID").blur(function () {
+            if ($(this).val() == '') {
+
+                if (name == '') {
+                    GetArtworkTypeIDList();
                 }
 
+                return;
+            }
 
-                var BrandID = $('#' + name +'BrandID').val();
-                $.ajax({
-                    url: "@Url.Action("SeasonList","PublicWondow",new{Area=""})",
-                    type: 'POST',
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify({ BrandID: BrandID, SeasonID: $(this).val(), ReturnType: "JSON" }),
-                    async: true,
-                    success: function (data) {
-                        if (data.length == 0) {
-                            $("#" + name+"SeasonID").val('');
-                            msg.WithError('Season Not Found');
-                        }
 
-                        if (name == '') {
-                            GetArtworkTypeIDList();
-                            GetAccessoryRefNoList();
-                        }
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        console.log(xhr.responseText);
+            var BrandID = $('#' + name + 'BrandID').val();
+            var SeasonID = $('#' + name + 'SeasonID').val();
+            $.ajax({
+                url: "@Url.Action("StyleList","PublicWondow",new{Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: BrandID, SeasonID: SeasonID, StyleID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#" + name + "StyleID").val('');
+                        msg.WithError('Style Not Found');
                     }
-                });
-            });
-
-            $("#" + name + "StyleID").blur(function () {
-                if ($(this).val() == '') {
 
                     if (name == '') {
                         GetArtworkTypeIDList();
+                        GetAccessoryRefNoList();
                     }
-
-                    return;
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
                 }
-
-
-                var BrandID = $('#' + name +'BrandID').val();
-                var SeasonID = $('#' + name +'SeasonID').val();
-                $.ajax({
-                    url: "@Url.Action("StyleList","PublicWondow",new{Area=""})",
-                    type: 'POST',
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify({ BrandID: BrandID, SeasonID: SeasonID, StyleID: $(this).val(), ReturnType: "JSON" }),
-                    async: true,
-                    success: function (data) {
-                        if (data.length == 0) {
-                            $("#" + name+"StyleID").val('');
-                            msg.WithError('Style Not Found');
-                        }
-
-                        if (name == '') {
-                            GetArtworkTypeIDList();
-                            GetAccessoryRefNoList();
-                        }
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        console.log(xhr.responseText);
-                    }
-                });
             });
+        });
 
-            $('#' + name + 'Article').blur(function () {
-                if ($(this).val() == '') {
-                    return;
+        $('#' + name + 'Article').blur(function () {
+            if ($(this).val() == '') {
+                return;
+            }
+
+            var BrandID = $('#' + name + 'BrandID').val();
+            var SeasonID = $('#' + name + 'SeasonID').val();
+            var StyleID = $('#' + name + 'StyleID').val();
+
+            $.ajax({
+                url: "@Url.Action("ArticleList","PublicWondow",new{Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: BrandID, StyleUkey: 0, SeasonID: SeasonID, StyleID: StyleID, Article: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#" + name + "Article").val('');
+                        msg.WithError('Article Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
                 }
-
-                var BrandID = $('#' + name +'BrandID').val();
-                var SeasonID = $('#' + name +'SeasonID').val();
-                var StyleID = $('#' + name + 'StyleID').val();
-
-                $.ajax({
-                    url: "@Url.Action("ArticleList","PublicWondow",new{Area=""})",
-                    type: 'POST',
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify({ BrandID: BrandID, StyleUkey : 0, SeasonID: SeasonID, StyleID: StyleID, Article: $(this).val(), ReturnType: "JSON" }),
-                    async: true,
-                    success: function (data) {
-                        if (data.length == 0) {
-                            $("#" + name+"Article").val('');
-                            msg.WithError('Article Not Found');
-                        }
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        console.log(xhr.responseText);
-                    }
-                });
             });
+        });
 
+        $("#T1Subcon").unbind('blur').blur(function () {
+            if ($(this).val() == '') {
+                $("#T1SubconAbb").val('');
+                return;
+            }
 
-            $("#T1Subcon").unbind('blur').blur(function () {
-                if ($(this).val() == '') {
-                    $("#T1SubconAbb").val('');
-                    return;
+            $.ajax({
+                url: "@Url.Action("LocalSuppList","PublicWondow",new{Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ SuppID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#T1Subcon").val('');
+                        $("#T1SubconAbb").val('');
+                        msg.WithError('T1/SubconName');
+                    }
+                    else {
+                        $("#T1Subcon").val(data[0].ID);
+                        $("#T1SubconAbb").val(data[0].Name);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
                 }
-
-                $.ajax({
-                    url: "@Url.Action("LocalSuppList","PublicWondow",new{Area=""})",
-                    type: 'POST',
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify({ SuppID: $(this).val(), ReturnType: "JSON" }),
-                    async: true,
-                    success: function (data) {
-                        if (data.length == 0) {
-                            $("#T1Subcon").val('');
-                            $("#T1SubconAbb").val('');
-                            msg.WithError('T1/SubconName');
-                        }
-                        else {
-                            $("#T1Subcon").val(data[0].ID);
-                            $("#T1SubconAbb").val(data[0].Name);
-                        }
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        console.log(xhr.responseText);
-                    }
-                });
             });
+        });
 
-            $("#T2Supplier").unbind('blur').blur(function () {
-                if ($(this).val() == '') {
-                    $("#T2SupplierAbb").val('');
-                    return;
+        $("#T2Supplier").unbind('blur').blur(function () {
+            if ($(this).val() == '') {
+                $("#T2SupplierAbb").val('');
+                return;
+            }
+
+            $.ajax({
+                url: "@Url.Action("TPESuppList","PublicWondow",new{Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ SuppID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#T2Supplier").val('');
+                        $("#T2SupplierAbb").val('');
+                        msg.WithError('T2/SupplierName');
+                    }
+                    else {
+                        $("#T2Supplier").val(data[0].ID);
+                        $("#T2SupplierAbb").val(data[0].Name);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
                 }
-
-                $.ajax({
-                    url: "@Url.Action("TPESuppList","PublicWondow",new{Area=""})",
-                    type: 'POST',
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify({ SuppID: $(this).val(), ReturnType: "JSON" }),
-                    async: true,
-                    success: function (data) {
-                        if (data.length == 0) {
-                            $("#T2Supplier").val('');
-                            $("#T2SupplierAbb").val('');
-                            msg.WithError('T2/SupplierName');
-                        }
-                        else {
-                            $("#T2Supplier").val(data[0].ID);
-                            $("#T2SupplierAbb").val(data[0].Name);
-                        }
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        console.log(xhr.responseText);
-                    }
-                });
             });
+        });
 
-            $("#Technician").unbind('blur').blur(function () {
-                if ($(this).val() == '') {
-                    $("#Technician").val('');
-                    $("#TechnicianName").val('');
-                    $("#TechnicianExtNo").val('');
-                    $("#TechnicianDesc").val('');
-                    return;
+        $("#Technician").unbind('blur').blur(function () {
+            if ($(this).val() == '') {
+                $("#Technician").val('');
+                $("#TechnicianDesc").val('');
+                return;
+            }
+
+            $.ajax({
+                url: "@Url.Action("TechnicianList", "PublicWondow",new{Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ CallFunction: "MockupOven", ID: $(this).val(), ReturnType: "JSON"  }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Technician").val('');
+                        $("#TechnicianDesc").val('');
+                        msg.WithError('Technician');
+                    }
+                    else {
+                        $("#Technician").val(data[0].ID);
+                        $("#TechnicianDesc").val(data[0].Name + ' Ext.' + data[0].ExtNo);
+                    }
+
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
                 }
-
-                $.ajax({
-                    url: "@Url.Action("TechnicianList", "PublicWondow",new{Area=""})",
-                    type: 'POST',
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify({ ID: $(this).val(), ReturnType: "JSON" }),
-                    async: true,
-                    success: function (data) {
-                        if (data.length == 0) {
-                            $("#Technician").val('');
-                            $("#TechnicianName").val('');
-                            $("#TechnicianExtNo").val('');
-                            $("#TechnicianDesc").val('');
-                            msg.WithError('Technician');
-                        }
-                        else {
-                            $("#Technician").val(data[0].ID);
-                            $("#TechnicianName").val(data[0].Name);
-                            $("#TechnicianExtNo").val(data[0].ExtNo);
-                            $("#TechnicianName").val(data[0].Name + ' Ext.' + data[0].ExtNo);
-                        }
-
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        console.log(xhr.responseText);
-                    }
-                });
             });
+        });
 
-         $('#MR').unbind('blur').on('blur', function () {
+        $('#MR').unbind('blur').on('blur', function () {
             if ($(this).val() == "") {
                 $("#MR").val('');
-                $("#MRName").val('');
-                $("#MRExtNo").val('');
                 $("#MRDesc").val('');
+                $("#MRMail").val('');
                 return;
             }
 
@@ -931,17 +950,160 @@
                 success: function (data) {
                     if (data.length == 0) {
                         $("#MR").val('');
-                        $("#MRName").val('');
-                        $("#MRExtNo").val('');
                         $("#MRDesc").val('');
-                        msg.WithError('MR Not Found');
+                        $("#MRMail").val('');
+                        msg.WithError('Lab Tech Not Found');
                     }
                     else
                     {
                         $("#MR").val(data[0].ID);
-                        $("#MRName").val(data[0].Name);
-                        $("#MRExtNo").val(data[0].ExtNo);
                         $("#MRDesc").val(data[0].Name + ' Ext.' + data[0].ExtNo);
+                        $("#MRMail").val(data[0].EMail);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    }
+
+    function EditModeButtionBind() {
+        $('#Edit').on('click', function () {
+            if ($('#ReportNo').val() != null && $('#ReportNo').val() != "") {
+                EditMode = true;
+                EditType = "";
+                $("#Save").attr("name", "Action:Edit");
+                IsEditModeChange();
+            }
+        });
+
+        $('#btnNew').on('click', function () {
+            EditMode = true;
+            EditType = "New";
+            $("#Save").attr("name", "Action:New");
+            IsEditModeChange();
+            GetArtworkTypeIDList();
+
+            $('.DetailTable > tbody > tr').each(function () {
+                $(this).remove();
+            });
+
+        });
+
+        $('#New').unbind('click').on('click', function () {
+            if (!EditMode) {
+                return;
+            }
+            AddDetailRow();
+        });
+
+        $('#Save').on('click', function (e) {
+            if (EditMode == false) {
+                return false;
+            }
+
+            var detail = [];
+            var ErrMsg = "";
+
+            if ($('#BrandID').val() == '' || $('#SeasonID').val() == '' || $('#StyleID').val() == '' || $('#Article').val() == ''
+                || $('#BrandID').val() == undefined || $('#SeasonID').val() == undefined || $('#StyleID').val() == undefined || $('#Article').val() == undefined) {
+                ErrMsg += "Style, Brand, Season and Article cannot be empty<br/>";
+            }
+
+            if (ErrMsg != "") {
+                msg.WithError(ErrMsg);
+                return false;
+            }
+
+            // 重新調整index 順序。
+            $('.DetailTable > tbody > tr').each(function (index, data) {
+                var idx = $(this).closest('tr').attr('idx');
+                if (idx != index) {
+                    $.each($(this).find("input[id^='MockupOven_Detail']"), function () {
+                        var tableName = $(this).attr('name').substr(0, $(this).attr('name').indexOf("["));
+                        var rollName = $(this).attr('name').substr($(this).attr('name').indexOf("]") + 2, $(this).attr('name').length - $(this).attr('name').indexOf("]"));
+                        $(this).attr("id", tableName + "_" + index.toString() + "__" + rollName);
+                        $(this).attr("name", tableName + "[" + index.toString() + "]." + rollName);
+                    });
+
+                    $.each($(this).find("select[id^='MockupOven_Detail']"), function () {
+                        var tableName = $(this).attr('name').substr(0, $(this).attr('name').indexOf("["));
+                        var rollName = $(this).attr('name').substr($(this).attr('name').indexOf("]") + 2, $(this).attr('name').length - $(this).attr('name').indexOf("]"));
+                        $(this).attr("id", tableName + "_" + index.toString() + "__" + rollName);
+                        $(this).attr("name", tableName + "[" + index.toString() + "]." + rollName);
+                    });
+                }
+            });
+
+            $(".rowHeader input[type='text']").removeAttr("disabled");
+            $(".DataTable input, .DataTable select").removeAttr("disabled");
+        });
+
+        $('#Undo').on('click', function () {
+            EditMode = false;
+            IsEditModeChange();
+            if (EditType != "New") {
+                $('#btnQuery').unbind('click').click();
+            }
+            else {
+                if ($('#Request_BrandID').val() != '' || $('#Request_SeasonID').val() != '' || $('#Request_StyleID').val() != '' || $('#Request_Article').val() != '') {
+                    $('#btnQuery').unbind('click').click();
+                }
+            }
+
+            EditType = "";
+        });
+
+        $('#Delete').on('click', function (e) {
+            if (EditMode == false && $('#ReportNo').val() != null && $('#ReportNo').val() != "") {
+                e.preventDefault();
+                msg.WithConfirm('Do you want to delete the data ?',
+                    function () {
+                        $("#DeleteSubmit").click();
+                    }, null);
+            }
+        });
+
+        $('#Picture').on('click', function () {
+            var para = "?Title=" + $('.page-header span').html() + "&EditMode=" + EditMode;
+            para += "&" + "Table=MockupOven";
+            para += "&" + "BeforeColumn=TestBeforePicture";
+            para += "&" + "AfterColumn=TestAfterPicture";
+            para += "&" + "PKey_1=ReportNo";
+            para += "&" + "PKey_1_Val=" + $('#ReportNo').val();
+            window.open('@Url.Action("PictureList", "PublicWondow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1024,height=750');
+        });
+
+        $('#PDF').on('click', function () {
+            if ($('#ReportNo').val() == ""
+                || $('#Request_BrandID').val() == ""
+                || $('#Request_SeasonID').val() == ""
+                || $('#Request_StyleID').val() == ""
+                || $('#Request_Article').val() == "") {
+
+                return false;
+            }
+
+            var mockupOven_Request = {
+                ReportNo: $('#ReportNo').val(),
+                BrandID: $('#Request_BrandID').val(),
+                SeasonID: $('#Request_SeasonID').val(),
+                StyleID: $('#Request_StyleID').val(),
+                Article: $('#Request_Article').val(),
+            };
+            $.ajax({
+                url: "@Url.Action("ToPDF", "MockupOvenTest", new { Area = "BulkFGT" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ mockupOven_Request }),
+                async: false,
+                success: function (data) {
+                    if (data.Result) {
+                        window.location.href = data.reportPath;
+                    }
+                    else {
+                        msg.WithError(data.ErrorMessage);
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
@@ -950,148 +1112,98 @@
             });
         });
 
+        $('#SendMail').on('click', function () {
+            if ($('#ReportNo').val() == ""
+                || $('#Request_BrandID').val() == ""
+                || $('#Request_SeasonID').val() == ""
+                || $('#Request_StyleID').val() == ""
+                || $('#Request_Article').val() == "") {
 
+                return false;
+            }
+
+            var mockupOven_Request = {
+                ReportNo: $('#ReportNo').val(),
+                BrandID: $('#Request_BrandID').val(),
+                SeasonID: $('#Request_SeasonID').val(),
+                StyleID: $('#Request_StyleID').val(),
+                Article: $('#Request_Article').val(),
+            };
+            $.ajax({
+                url: "@Url.Action("ToPDF", "MockupOvenTest", new { Area = "BulkFGT" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ mockupOven_Request }),
+                async: false,
+                success: function (data) {
+                    if (data.Result) {
+                        var para = "?To=" + $('#MRMail').val();
+                        para += "&CC=" + '@ViewBag.UserMail';
+                        para += "&Subject=" + "Mockup Oven Test – ReportNo:" + $('#ReportNo').val() + " – Style: " + $('#StyleID').val();
+                        para += "&Body=" + "Attachment is Mockup Oven Test– ReportNo:" + $('#ReportNo').val() + " detail data";
+                        para += "&file=" + data.FileName;
+                        window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=600');
+                    }
+                    else {
+                        msg.WithError(data.ErrorMessage);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
     }
 
-        function EditModeButtionBind() {
-            $('#Edit').on('click', function () {
-                if ($('#ReportNo').val() != null && $('#ReportNo').val() != "") {
-                    EditMode = true;
-                    EditType = "";
-                    $("#Save").attr("name", "Action:Edit");
-                    IsEditModeChange();
-                }
-            });
+    function DetailButtonBind() {
+        $('#btnDetailBrandSelectItem').on('click', function () {
+            var para = "?TargetID=BrandID";
+            window.open('@Url.Action("BrandList","PublicWondow",new{Area=""})' + para, 'BrandID', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        });
 
-            $('#btnNew').on('click', function () {
-                EditMode = true;
-                EditType = "New";
-                $("#Save").attr("name", "Action:New");
-                IsEditModeChange();
-                GetArtworkTypeIDList();
+        $('#btnDetailSeasonSelectItem').on('click', function () {
+            var para = "?TargetID=SeasonID&BrandID=" + $('#BrandID').val();
+            window.open('@Url.Action("SeasonList","PublicWondow",new{Area=""})' + para, 'SeasonID', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        });
 
-                $('.DetailTable > tbody > tr').each(function () {
-                    $(this).remove();
-                });
+        $('#btnDetailStyleSelectItem').on('click', function () {
+            var para = "?TargetID=StyleID&BrandID=" + $('#BrandID').val() + "&SeasonID=" + $('#SeasonID').val();
+            window.open('@Url.Action("StyleList","PublicWondow",new{Area=""})' + para, 'StyleID', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        });
 
-            });
+        $('#btnDetailArticleSelectItem').on('click', function () {
+            var para = "?TargetID=Article&OrderID=&StyleUkey=0&BrandID=" + $('#BrandID').val() + "&SeasonID=" + $('#SeasonID').val() + "&StyleID=" + $('#StyleID').val();
+            window.open('@Url.Action("ArticleList","PublicWondow",new{Area=""})' + para, 'Article', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        });
 
-            $('#Save').on('click', function (e) {
-                var detail = [];
-                var ErrMsg = "";
+        $('#btnDetailSubconNameSelectItem').on('click', function () {
+            window.open('@Url.Action("LocalSuppList","PublicWondow",new{Area=""})', 'T1/SubconName', config = 'toolbar=no,status=no,location=no,width=900,height=650');
+        });
 
-                if ($('#BrandID').val() == '' || $('#SeasonID').val() == '' || $('#StyleID').val() == '' || $('#Article').val() == ''
-                    || $('#BrandID').val() == undefined || $('#SeasonID').val() == undefined || $('#StyleID').val() == undefined || $('#Article').val() == undefined) {
-                    ErrMsg += "Style, Brand, Season and Article cannot be empty<br/>";
-                }
+        $('#btnDetailSupplierNameSelectItem').on('click', function () {
+            window.open('@Url.Action("TPESuppList","PublicWondow",new{Area=""})', 'T2/SupplierName', config = 'toolbar=no,status=no,location=no,width=800,height=650');
+        });
 
+        $('#btnDetailTechnicianSelectItem').on('click', function () {
+            var para = "?CallFunction=MockupOven";
+            window.open('@Url.Action("TechnicianList", "PublicWondow",new{Area=""})' + para, 'Technician', config = 'toolbar=no,status=no,location=no,width=800,height=650');
+        });
 
-                if (ErrMsg != "") {
-                    e.preventDefault();
-                    msg.WithError(ErrMsg);
-                    return;
-                }
-
-
-                document.getElementById("DetailForm").submit();
-
-            });
-
-            $('#Undo').on('click', function () {
-                EditMode = false;
-                IsEditModeChange();
-                if (EditType != "New") {
-                    $('#btnQuery').click();
-                }
-                else {
-                    if ($('#BrandID').val() != '' || $('#SeasonID').val() != '' || $('#StyleID').val() != '' || $('#Article').val() != '') {
-                        $('#btnQuery').click();
-                    }
-                }
-
-                EditType = "";
-            });
-
-            $('#Delete').on('click', function () {
-                if ($('#ReportNo').val() != null && $('#ReportNo').val() != "") {
-                    msg.WithConfirm('Do you want to delete the data ?',
-                        function () {
-                            document.getElementById('DetailForm').submit();
-                        }, null);
-                }
-            });
-
-           $('#SendMail').click(function () {
-            var para = "?TO=jeff.Yeh@sportscity.com.tw";
-            window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=650,height=400');
-                    });
+        $('#btnDetailMRSelectItem').on('click', function () {
+            window.open('@Url.Action("Pass1List", "PublicWondow",new{Area=""})', 'MR', config = 'toolbar=no,status=no,location=no,width=800,height=650');
+        });
 
 
-            $('#Picture').on('click', function () {
-                if ($('#ReportNo').val() != null && $('#ReportNo').val() != "") {
-                    var para = "?EditMode=" + EditMode + "&Table=PullingTest&BeforeColumn=TestBeforePicture&AfterColumn=TestAfterPicture&PKey_1=ReportNo&PKey_1_Val=" + $('#Detail_ReportNo').val();
-                    window.open('@Url.Action("PictureList","PublicWondow",new{Area=""})' + para, 'Article', config = 'toolbar=no,status=no,location=no,width=400,height=650');
-                }
-            });
+        blurEvent("");
+    }
 
-            $('#New').unbind('click').on('click', function () {
+    function ClearColor() {
+        $('.AFColor').each(function () {
+            $(this).val('');
+        });
+    }
 
-                if (!EditMode) {
-                    return;
-                }
-
-
-                AddDetailRow();
-            });
-        }
-
-        function DetailButtonBind() {
-            $('#btnDetailBrandSelectItem').on('click', function () {
-                window.open('@Url.Action("BrandList","PublicWondow",new{Area=""})','BrandID',config='toolbar=no,status=no,location=no,width=400,height=650');
-            });
-
-            $('#btnDetailSeasonSelectItem').on('click', function () {
-
-
-                var para = "?BrandID=" + $('#BrandID').val();
-                window.open('@Url.Action("SeasonList","PublicWondow",new{Area=""})' + para,'SeasonID',config='toolbar=no,status=no,location=no,width=400,height=650');
-            });
-
-            $('#btnDetailStyleSelectItem').on('click', function () {
-
-                var para = "?BrandID=" + $('#BrandID').val() + "&SeasonID=" + $('#SeasonID').val();
-                window.open('@Url.Action("StyleList","PublicWondow",new{Area=""})' + para,'StyleID',config='toolbar=no,status=no,location=no,width=400,height=650');
-            });
-
-            $('#btnDetailArticleSelectItem').on('click', function () {
-                var para = "?OrderID=&StyleUkey=0&BrandID=" + $('#BrandID').val() + "&SeasonID=" + $('#SeasonID').val() + "&StyleID=" + $('#StyleID').val();
- 
-                window.open('@Url.Action("ArticleList","PublicWondow",new{Area=""})' + para,'Article',config='toolbar=no,status=no,location=no,width=400,height=650');
-            });
-
-            $('#btnDetailSubconNameSelectItem').on('click', function () {
-                window.open('@Url.Action("LocalSuppList","PublicWondow",new{Area=""})','T1/SubconName',config='toolbar=no,status=no,location=no,width=900,height=650');
-            });
-
-            $('#btnDetailSupplierNameSelectItem').on('click', function () {
-                window.open('@Url.Action("TPESuppList","PublicWondow",new{Area=""})','T2/SupplierName',config='toolbar=no,status=no,location=no,width=800,height=650');
-            });
-
-
-            $('#btnDetailTechnicianSelectItem').on('click', function () {
-                var para = "?CallFunction=MockupOven";
-                window.open('@Url.Action("TechnicianList", "PublicWondow",new{Area=""})' + para,'Technician',config='toolbar=no,status=no,location=no,width=800,height=650');
-            });
-
-            $('#btnDetailMRSelectItem').on('click', function () {
-                window.open('@Url.Action("Pass1List", "PublicWondow",new{Area=""})','MR',config='toolbar=no,status=no,location=no,width=800,height=650');
-            });
-
-
-            blurEvent("");
-        }
-        function DetailDetailButtonBind() {
-
+    function DetailDetailButtonBind() {
         $('.btnArtworkColorItem').on('click', function () {
             var brandid = $('#BrandID').val();
             if (brandid == '') {
@@ -1116,145 +1228,79 @@
             window.open('@Url.Action("ColorList", "PublicWondow",new{Area=""})' + para, 'Artwork Color', config = 'toolbar=no,status=no,location=no,width=400,height=650');
         });
 
-            $('.detailDelete').unbind('click').on('click', function () {
-                var t = $(this);
+        $('.detailDelete').unbind('click').on('click', function () {
+            var t = $(this);
 
-                msg.WithConfirm('Do you want to delete the data ?',
-                    function () {
-                        t.parents().parents('tr').remove();
-                        msg.WithSuccess("Delete Success");
-                    }, null);
-            });
-
-
-
+            msg.WithConfirm('Do you want to delete the data ?',
+                function () {
+                    t.parents().parents('tr').remove();
+                    msg.WithSuccess("Delete Success");
+                }, null);
+        });
     }
 
-        function ClearColor() {
-            $('.AFColor').each(function () {
-                $(this).val('');
-            });
-        }
+    function GetBrandList(data, targetID) {
+        $('#' + targetID).val(data);
+        GetArtworkTypeIDList();
+        GetAccessoryRefNoList();
+        ClearColor();
+    }
 
-        function AddDetailRow() {
+    function GetSeasonList(data, targetID) {
+        $('#' + targetID).val(data);
+        GetArtworkTypeIDList();
+        GetAccessoryRefNoList();
+    }
+
+    function GetStyleList(data, targetID) {
+        $('#' + targetID).val(data);
+        GetArtworkTypeIDList();
+        GetAccessoryRefNoList();
+    }
+
+    function GetArticleList(data, targetID) {
+        $('#' + targetID).val(data);
+    }
+
+    function GetLocalSupp(data) {
+        $('#T1Subcon').val(data.ID);
+        $('#T1SubconAbb').val(data.Name);
+    }
+
+    function GetTPESupp(data) {
+        $('#T2Supplier').val(data.ID);
+        $('#T2SupplierAbb').val(data.Name);
+    }
+
+    function GetTechnician(data) {
+        $('#Technician').val(data.ID);
+        $('#TechnicianDesc').val(data.Name + " Ext. " + data.ExtNo);
+    }
+
+    function GetPass1(data) {
+        $('#MR').val(data.ID);
+        $('#MRDesc').val(data.Name + " Ext. " + data.ExtNo);
+        $('#MRMail').val(data.EMail);
+    }
+
+    function GetColor(pickList, targetID) {
+        var id = [];
+        var name = [];
+        $.each(pickList, function (idx, obj) {
+            id.push(obj.ID);
+            name.push(obj.Name);
+        });
+
+        $('#MockupOven_Detail_' + targetID ).val(id.join(';'));
+        $('#MockupOven_Detail_' + targetID + 'Name').val(name.join(';'));
+    }
+
+    function GetArtworkTypeIDList() {
+        $('#ArtworkTypeID').empty();
 
         var BrandID = $('#BrandID').val();
         var SeasonID = $('#SeasonID').val();
         var StyleID = $('#StyleID').val();
-
-
-
-            var lastNO;
-            if ($('.DetailTable > tbody > tr').length > 0) {
-                lastNO = parseInt($('.DetailTable > tbody > tr:last-child > td > input[type="hidden"] ').attr('idx')) + 1;
-            }
-            else {
-                lastNO = 0;
-            }
-
-            $.ajax({
-                url: "@Url.Action("AddDetailRow", "MockupOvenTest", new { Area = "BulkFGT" })",
-                type: 'POST',
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({ lastNO: lastNO, BrandID: BrandID, SeasonID: SeasonID, StyleID: StyleID}),
-                async: false,
-                success: function (data) {
-                    $('.DetailTable > tbody').append(data);
-                    DetailDetailButtonBind();
-                    changeResult();
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    console.log(xhr.responseText);
-                }
-            });
-        }
-
-        function GetBrandList(data) {
-            if (EditMode) {
-                $('#BrandID').val(data);
-                GetArtworkTypeIDList();
-                GetAccessoryRefNoList();
-                ClearColor();
-            }
-            else {
-                $('#Request_BrandID').val(data);
-            }
-        }
-
-        function GetSeasonList(data) {
-            if (EditMode) {
-                $('#SeasonID').val(data);
-                GetArtworkTypeIDList();
-                GetAccessoryRefNoList();
-            }
-            else {
-                $('#Request_SeasonID').val(data);
-            }
-        }
-
-        function GetStyleList(data) {
-            if (EditMode) {
-                $('#StyleID').val(data);
-                GetArtworkTypeIDList();
-                GetAccessoryRefNoList();
-            }
-            else {
-                $('#Request_StyleID').val(data);
-            }
-        }
-
-        function GetArticleList(data) {
-            if (EditMode) {
-                $('#Article').val(data);
-            }
-            else {
-                $('#Request_Article').val(data);
-            }
-    }
-
-        function GetLocalSupp(data) {
-            $('#T1Subcon').val(data.ID);
-            $('#T1SubconAbb').val(data.Name);
-    }
-
-        function GetTPESupp(data) {
-            $('#T2Supplier').val(data.ID);
-            $('#T2SupplierAbb').val(data.Name);
-    }
-
-        function GetTechnician(data) {
-            $('#Technicain').val(data.ID);
-            $('#TechnicianName').val(data.Name + " Ext. " + data.ExtNo);
-        }
-
-        function GetPass1(data) {
-            $('#MR').val(data.ID);
-            $('#MRName').val(data.Name);
-            $('#MRExtNo').val(data.ExtNo);
-            $('#MRDesc').val(data.Name + " Ext. " + data.ExtNo);
-
-    }
-
-
-        function GetColor(pickList, targetID) {
-            var id = [];
-            var name = [];
-            $.each(pickList, function (idx, obj) {
-                id.push(obj.ID);
-                name.push(obj.Name);
-            });
-
-            $('#MockupOven_Detail_' + targetID + 'ID').val(id.join(';'));
-            $('#MockupOven_Detail_' + targetID + 'Name').val(name.join(';'));
-        }
-
-
-        function GetArtworkTypeIDList() {
-        $('#ArtworkTypeID').empty();
-
-            var BrandID = $('#BrandID').val();
-            var SeasonID = $('#SeasonID').val();
-            var StyleID = $('#StyleID').val();
 
         $.ajax({
             url: '@Url.Action("GetArtworkTypeID_Source", "MockupOvenTest")',
@@ -1274,16 +1320,14 @@
         });
     }
 
-     function GetAccessoryRefNoList() {
-
+    function GetAccessoryRefNoList() {
         var BrandID = $('#BrandID').val();
         var SeasonID = $('#SeasonID').val();
         var StyleID = $('#StyleID').val();
 
-         if (BrandID == "" || SeasonID == "" || StyleID == "") {
-             return;
-         }
-
+        if (BrandID == "" || SeasonID == "" || StyleID == "") {
+            return;
+        }
 
         $.ajax({
             url: '@Url.Action("GetAccessoryRefNo_Source", "MockupOvenTest")',
@@ -1292,21 +1336,15 @@
             global: false,
             success: function (response) {
                 $('.DetailTable > tbody > tr').each(function (index, value) {
-
                     $("#MockupOven_Detail_" + index + "__AccessoryRefNo_Source").empty();
-
                 });
 
                 if (response) {
-
                     $('.DetailTable > tbody > tr').each(function (index, value) {
                         $.each(response, function (idx, obj) {
-
                             $("#MockupOven_Detail_" + index + "__AccessoryRefNo_Source").append($('<option></option>').val(obj.Value).html(obj.Text));
                         });
                     });
-
-
                 }
             },
             error: function (xhr, status) {
@@ -1315,18 +1353,85 @@
         });
     }
 
-        function changeResult() {
-            var result = 'Pass';
-            $(".result").each(function () {
-                if ($(this).val() != "Pass") {
-                    result = 'Fail';
-                }
-            });
+    function changeResult() {
+        var result = 'Pass';
+        $(".result").each(function () {
+            if ($(this).val() != "Pass") {
+                result = 'Fail';
+            }
+        });
 
-            $('#Result').val(result);
+        $('#Result').val(result);
+    }
+
+    function AddDetailRow() {
+        var BrandID = $('#BrandID').val();
+        var SeasonID = $('#SeasonID').val();
+        var StyleID = $('#StyleID').val();
+
+        var lastNO;
+        if ($('.DetailTable > tbody > tr').length > 0) {
+            lastNO = parseInt($('.DetailTable > tbody > tr:last-child > td > input[type="hidden"] ').attr('idx')) + 1;
+        }
+        else {
+            lastNO = 0;
         }
 
+        $.ajax({
+            url: "@Url.Action("AddDetailRow", "MockupOvenTest", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ lastNO: lastNO, BrandID: BrandID, SeasonID: SeasonID, StyleID: StyleID }),
+            async: false,
+            success: function (data) {
+                $('.DetailTable > tbody').append(data);
+                DetailDetailButtonBind();
+                changeResult();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
 
+    function GetPicture(data) {
+        $('#TestBeforePicture').val(data.BeforePicture.replace("data:image/webp;base64,", ""));
+        $('#TestAfterPicture').val(data.AfterPicture.replace("data:image/webp;base64,", ""));
+    }
 
+    function FailMail() {
+        var para = "?Title=" + $('.page-header span').html() + "&FactoryID=@ViewBag.FactoryID&Type=BulkFGT&ExitReload=False";
+        window.open('@Url.Action("TestFailMailList", "PublicWondow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
+    }
 
+    function GetTestFailMailList(data) {
+        var to = "";
+        var cc = "";
+        $.each(data, function (index, value) {
+            to += value.To + ';';
+            cc += value.CC + ';';
+        });
+
+        $.ajax({
+            url: "@Url.Action("FailMail", "MockupOvenTest", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ ReportNo: $('#ReportNo').val(), TO: to, CC: cc }),
+            async: false,
+            success: function (data) {
+                if (data.result) {
+                    msg.WithSucces("Success");
+                }
+                else {
+                    msg.WithWarning(data.resultMsg);
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                // console.log(xhr.responseText);
+                msg.WithWarningCheck(xhr.responseText, function () {
+                    location.reload();
+                });
+            }
+        });
+    }
 </script>

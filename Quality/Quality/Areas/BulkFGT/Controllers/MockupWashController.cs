@@ -1,7 +1,9 @@
 ﻿using BusinessLogicLayer.Interface.BulkFGT;
 using BusinessLogicLayer.Service;
+using DatabaseObject;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
+using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using FactoryDashBoardWeb.Helper;
 using Quality.Controllers;
@@ -26,108 +28,210 @@ namespace Quality.Areas.BulkFGT.Controllers
         // GET: BulkFGT/MockupWash
         public ActionResult Index()
         {
-
             MockupWash_ViewModel model = new MockupWash_ViewModel()
             {
                 MockupWash_Detail = new List<MockupWash_Detail_ViewModel>(),
                 ReportNo_Source = new List<string>(),
                 Request = new MockupWash_Request(),
-                TestingMethod_Source = new List<SelectListItem>()
+                TestingMethod_Source = _MockupWashService.GetTestingMethod(),
             };
 
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(model.ReportNo_Source);
             ViewBag.ResultList = model.Result_Source;
             ViewBag.ArtworkTypeID_Source = new SetListItem().ItemListBinding(new List<string>());
             ViewBag.AccessoryRefNo_Source = new SetListItem().ItemListBinding(new List<string>());
-
+            ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
             return View(model);
         }
-
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "Query")]
         public ActionResult Query(MockupWash_ViewModel Req)
         {
+            MockupWash_ViewModel model = _MockupWashService.GetMockupWash(Req.Request);
 
-            MockupWash_Request MockupWash = new MockupWash_Request()
-            { BrandID = Req.Request.BrandID, SeasonID = Req.Request.SeasonID, StyleID = Req.Request.StyleID };
+            if (model == null)
+            {
+                model = new MockupWash_ViewModel()
+                {
+                    ErrorMessage = $"msg.WithInfo('No Data Found');",
+                    MockupWash_Detail = new List<MockupWash_Detail_ViewModel>(),
+                    ReportNo_Source = new List<string>(),
+                    TestingMethod_Source = _MockupWashService.GetTestingMethod(),
+                };
+            }
 
-            var model = _MockupWashService.GetMockupWash(MockupWash);
-            model.Request = new MockupWash_Request();
+            model.Request = Req.Request;
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(model.ReportNo_Source);
             ViewBag.ResultList = model.Result_Source; ;
-            ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(Req.Request.BrandID, Req.Request.SeasonID, Req.Request.StyleID);
-            ViewBag.AccessoryRefNo_Source = GetAccessoryRefNoList(Req.Request.BrandID, Req.Request.SeasonID, Req.Request.StyleID);
+            ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(model.Request.BrandID, model.Request.SeasonID, model.Request.StyleID);
+            ViewBag.AccessoryRefNo_Source = GetAccessoryRefNoList(model.Request.BrandID, model.Request.SeasonID, model.Request.StyleID);
+            ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
             return View("Index", model);
         }
-
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "New")]
         public ActionResult NewSave(MockupWash_ViewModel Req)
         {
+            if (Req.MockupWash_Detail == null)
+            {
+                Req.MockupWash_Detail = new List<MockupWash_Detail_ViewModel>();
+            }
 
-            MockupWash_Request MockupWash = new MockupWash_Request()
-            { BrandID = Req.BrandID, SeasonID = Req.SeasonID, StyleID = Req.StyleID };
+            BaseResult result = _MockupWashService.Create(Req, this.MDivisionID, this.UserID, out string ReportNo);
 
-            var model = _MockupWashService.GetMockupWash(MockupWash);
-            model.Request = new MockupWash_Request();
+            Req.Request = new MockupWash_Request()
+            {
+                BrandID = Req.BrandID,
+                SeasonID = Req.SeasonID,
+                StyleID = Req.StyleID,
+                Article = Req.Article,
+                ReportNo = ReportNo,
+            };
+
+            MockupWash_ViewModel model = _MockupWashService.GetMockupWash(Req.Request);
+            if (model == null)
+            {
+                model = new MockupWash_ViewModel()
+                {
+                    MockupWash_Detail = new List<MockupWash_Detail_ViewModel>(),
+                    ReportNo_Source = new List<string>(),
+                    TestingMethod_Source = _MockupWashService.GetTestingMethod(),
+                };
+            }
+
+            if (!result.Result)
+            {
+                model.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString().Replace("\r\n", "<br />") + "');";
+            }
+            else if (result.Result && model.Result == "Fail")
+            {
+                model.ErrorMessage = "FailMail();";
+            }
+
+            model.Request = Req.Request;
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(model.ReportNo_Source);
             ViewBag.ResultList = model.Result_Source; ;
-            ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(Req.BrandID, Req.SeasonID, Req.StyleID);
-            ViewBag.AccessoryRefNo_Source = GetAccessoryRefNoList(Req.BrandID, Req.SeasonID, Req.StyleID);
+            ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(model.Request.BrandID, model.Request.SeasonID, model.Request.StyleID);
+            ViewBag.AccessoryRefNo_Source = GetAccessoryRefNoList(model.Request.BrandID, model.Request.SeasonID, model.Request.StyleID);
+            ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
             return View("Index", model);
         }
-
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "Edit")]
         public ActionResult EditSave(MockupWash_ViewModel Req)
         {
-            MockupWash_Request MockupWash = new MockupWash_Request()
-            { BrandID = Req.BrandID, SeasonID = Req.SeasonID, StyleID = Req.StyleID };
+            if (Req.MockupWash_Detail == null)
+            {
+                Req.MockupWash_Detail = new List<MockupWash_Detail_ViewModel>();
+            }
 
-            var model = _MockupWashService.GetMockupWash(MockupWash);
-            model.Request = new MockupWash_Request();
-            ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(model.ReportNo_Source);
-            ViewBag.ResultList = model.Result_Source; ;
-            ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(Req.BrandID, Req.SeasonID, Req.StyleID);
-            ViewBag.AccessoryRefNo_Source = GetAccessoryRefNoList(Req.BrandID, Req.SeasonID, Req.StyleID);
-            return View("Index", model);
+            BaseResult result = _MockupWashService.Update(Req, this.UserID);
+            Req.Request = new MockupWash_Request()
+            {
+                BrandID = Req.BrandID,
+                SeasonID = Req.SeasonID,
+                StyleID = Req.StyleID,
+                Article = Req.Article,
+                ReportNo = Req.ReportNo,
+            };
+
+            MockupWash_ViewModel model = _MockupWashService.GetMockupWash(Req.Request);
+
+            if (model == null)
+            {
+                model = new MockupWash_ViewModel()
+                {
+                    MockupWash_Detail = new List<MockupWash_Detail_ViewModel>(),
+                    ReportNo_Source = new List<string>(),
+                    TestingMethod_Source = _MockupWashService.GetTestingMethod(),
+                };
+            }
+
+            Req.Result = model.Result;
+            Req.MRName = model.MRName;
+            Req.MRMail = model.MRMail;
+            Req.TechnicianName = model.TechnicianName;
+            Req.LastEditName = model.LastEditName;
+            Req.MockupWash_Detail = model.MockupWash_Detail;
+            Req.ReportNo_Source = model.ReportNo_Source;
+            Req.TestingMethod_Source = _MockupWashService.GetTestingMethod();
+            if (!result.Result)
+            {
+                Req.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString().Replace("\r\n", "<br />") + "');";
+            }
+            else if (result.Result && model.Result == "Fail")
+            {
+                Req.ErrorMessage = "FailMail();";
+            }
+
+            ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(Req.ReportNo_Source);
+            ViewBag.ResultList = Req.Result_Source;
+            ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(Req.Request.BrandID, Req.Request.SeasonID, Req.Request.StyleID);
+            ViewBag.AccessoryRefNo_Source = GetAccessoryRefNoList(Req.Request.BrandID, Req.Request.SeasonID, Req.Request.StyleID);
+            ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
+            return View("Index", Req);
         }
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "Delete")]
         public ActionResult DeleteReportNo(MockupWash_ViewModel Req)
         {
-            MockupWash_Request MockupWash = new MockupWash_Request()
-            { BrandID = Req.BrandID, SeasonID = Req.SeasonID, StyleID = Req.StyleID };
+            Req.ReportNo = Req.Request.ReportNo;
+            BaseResult result = _MockupWashService.Delete(Req);
+            Req.Request.ReportNo = "";
+            MockupWash_ViewModel model = _MockupWashService.GetMockupWash(Req.Request);
+            if (model == null)
+            {
+                model = new MockupWash_ViewModel()
+                {
+                    MockupWash_Detail = new List<MockupWash_Detail_ViewModel>(),
+                    ReportNo_Source = new List<string>(),
+                    TestingMethod_Source = _MockupWashService.GetTestingMethod(),
+                };
+            }
 
-            var model = _MockupWashService.GetMockupWash(MockupWash);
-            model.Request = new MockupWash_Request();
+            if (!result.Result)
+            {
+                model.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString().Replace("\r\n", "<br />") + "');";
+            }
+
+            model.Request = Req.Request;
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(model.ReportNo_Source);
             ViewBag.ResultList = model.Result_Source; ;
-            ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(Req.BrandID, Req.SeasonID, Req.StyleID);
-            ViewBag.AccessoryRefNo_Source = GetAccessoryRefNoList(Req.BrandID, Req.SeasonID, Req.StyleID);
+            ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(model.Request.BrandID, model.Request.SeasonID, model.Request.StyleID);
+            ViewBag.AccessoryRefNo_Source = GetAccessoryRefNoList(model.Request.BrandID, model.Request.SeasonID, model.Request.StyleID);
+            ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
             return View("Index", model);
         }
 
-        /// <summary>
-        /// 使用Microsoft.Office.Interop.Excel的寫法
-        /// </summary>
-        /// <param name="Req"></param>
-        /// <returns></returns>
         [HttpPost]
-        [MultipleButton(Name = "action", Argument = "ToPDF")]
-        public ActionResult ToPDF()
+        public ActionResult ToPDF(MockupWash_Request MockupWash_Request)
         {
             this.CheckSession();
 
-            return RedirectToAction("Index");
+            MockupWash_ViewModel model = _MockupWashService.GetMockupWash(MockupWash_Request);
+            if (model == null)
+            {
+                return Json(new { Result = false, ErrorMessage = "msg.WithInfo('No Data Found');" });
+            }
+
+            Report_Result report_Result = _MockupWashService.GetPDF(model);
+            string tempFilePath = report_Result.TempFileName;
+            tempFilePath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + tempFilePath;
+            if (!report_Result.Result)
+            {
+                report_Result.ErrorMessage = report_Result.ErrorMessage.ToString().Replace("\r\n", "<br />");
+            }
+            return Json(new { Result = report_Result.Result, ErrorMessage = report_Result.ErrorMessage, reportPath = tempFilePath, FileName = report_Result.TempFileName });
         }
-
-
-
 
         [HttpPost]
         public JsonResult SPBlur(string POID)
@@ -166,7 +270,6 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Json(new { ErrMsg = "", BrandID = BrandID, SeasonID = SeasonID, StyleID = StyleID, Article = Article });
         }
 
-
         [HttpPost]
         public ActionResult GetArtworkTypeID_Source(string BrandID, string SeasonID, string StyleID)
         {
@@ -184,7 +287,6 @@ namespace Quality.Areas.BulkFGT.Controllers
             return _MockupWashService.GetArtworkTypeID(styleArtwork_Request);
         }
 
-
         public ActionResult GetAccessoryRefNo_Source(string BrandID, string SeasonID, string StyleID)
         {
             return Json(GetAccessoryRefNoList(BrandID, SeasonID, StyleID));
@@ -201,7 +303,6 @@ namespace Quality.Areas.BulkFGT.Controllers
             return _MockupWashService.GetAccessoryRefNo(AccessoryRefNo_Request);
         }
 
-
         [HttpPost]
         public ActionResult AddDetailRow(int lastNO, string BrandID, string SeasonID, string StyleID)
         {
@@ -211,26 +312,23 @@ namespace Quality.Areas.BulkFGT.Controllers
             {
                 AccessoryRefNo_Source = GetAccessoryRefNoList(BrandID, SeasonID, StyleID);
             }
-
-
             MockupWash_ViewModel model = new MockupWash_ViewModel();
 
-            int i = lastNO;
             string html = "";
-            html += "<tr>";
-            html += "<td><input id='Seq' idx=" + i + " type ='hidden'></input> <input id='MockupWash_Detail_" + i + "__TypeofPrint' name='MockupWash_Detail[" + i + "].TypeofPrint' class='OnlyEdit' type='text' value=''></td>";
-            html += "<td><input id='MockupWash_Detail_" + i + "__Design' name='MockupWash_Detail[" + i + "].Design' class='OnlyEdit' type='text' ></td>";
-            html += "<td><div class='input-group'><input id='MockupWash_Detail_" + i + "__ArtworkColor' name='MockupWash_Detail[" + i + "].ArtworkColor'  class ='AFColor' type='hidden'><input id='MockupWash_Detail_" + i + "__ArtworkColorName' name='MockupWash_Detail[" + i + "].ArtworkColorName'  class ='AFColor' type='text' readonly='readonly'> <input  idv='" + i.ToString() + "' type='button' class='btnArtworkColorItem  site-btn btn-blue' style='margin: 0; border: 0; ' value='...' /></div></td>";
-            html += "<td><select id='MockupWash_Detail_" + i + "__AccessoryRefNo_Source' name='MockupWash_Detail[" + i + "].AccessoryRefNo_Source'  class='OnlyEdit' style='width: 157px;'><option value=''></option>";
+            html += $"<tr idx='{lastNO}'>";
+            html += $"<td><input id='Seq'{lastNO}'' idx='{lastNO}' type ='hidden'></input> <input id='MockupWash_Detail_{lastNO}__TypeofPrint' name='MockupWash_Detail[{lastNO}].TypeofPrint' class='OnlyEdit' type='text' value=''></td>";
+            html += $"<td><input id='MockupWash_Detail_{lastNO}__Design' name='MockupWash_Detail[{lastNO}].Design' class='OnlyEdit' type='text' ></td>";
+            html += $"<td><div class='input-group'><input id='MockupWash_Detail_{lastNO}__ArtworkColor' name='MockupWash_Detail[{lastNO}].ArtworkColor'  class ='AFColor' type='hidden'><input id='MockupWash_Detail_{lastNO}__ArtworkColorName' name='MockupWash_Detail[{lastNO}].ArtworkColorName' class ='AFColor' type='text' readonly='readonly'> <input  idv='{lastNO}' type='button' class='btnArtworkColorItem  site-btn btn-blue' style='margin: 0; border: 0; ' value='...' /></div></td>";
+            html += $"<td><select id='MockupWash_Detail_{lastNO}__AccessoryRefno' name='MockupWash_Detail[{lastNO}].AccessoryRefno'  class='OnlyEdit' style='width: 157px;'><option value=''></option>";
             foreach (var val in AccessoryRefNo_Source)
             {
                 html += "<option value='" + val.Value + "'>" + val.Text + "</option>";
             }
             html += "</select></td>";
-            html += "<td><input id='MockupWash_Detail_" + i + "__FabricRefNo' name='MockupWash_Detail[" + i + "].FabricRefNo' type='text' ></td>";
-            html += "<td><div class='input-group'><input id='MockupWash_Detail_" + i + "__FabricColor' name='MockupWash_Detail[" + i + "].FabricColor'  class ='AFColor' type='hidden'><input id='MockupWash_Detail_" + i + "__FabricColorName' name='MockupWash_Detail[" + i + "].FabricColorName'  class ='AFColor' type='text' readonly='readonly'> <input  idv='" + i.ToString() + "' type='button' class='btnFabricColorItem  site-btn btn-blue' style='margin: 0; border: 0; ' value='...' /></div></td>";
+            html += $"<td><input id='MockupWash_Detail_{lastNO}__FabricRefNo' name='MockupWash_Detail[{lastNO}].FabricRefNo' type='text' ></td>";
+            html += $"<td><div class='input-group'><input id='MockupWash_Detail_{lastNO}__FabricColor' name='MockupWash_Detail[{lastNO}].FabricColor' class ='AFColor' type='hidden'><input id='MockupWash_Detail_{lastNO}__FabricColorName' name='MockupWash_Detail[{lastNO}].FabricColorName' class ='AFColor' type='text' readonly='readonly'> <input  idv='{lastNO}' type='button' class='btnFabricColorItem  site-btn btn-blue' style='margin: 0; border: 0; ' value='...' /></div></td>";
 
-            html += "<td><select  id='MockupWash_Detail_" + i + "__Result' name='MockupWash_Detail[" + i + "].Result' class='OnlyEdit result' onchange='changeResult()' style='width: 157px;' ><option value=''></option>";
+            html += $"<td><select  id='MockupWash_Detail_{lastNO}__Result' name='MockupWash_Detail[{lastNO}].Result' class='OnlyEdit result blue' onchange='changeResult()' style='width: 157px;' ><option value=''></option>";
             foreach (var val in model.Result_Source)
             {
                 if (val.Value == "Pass")
@@ -245,13 +343,27 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
             html += "</select></td>";
 
-            html += "<td><input id='MockupWash_Detail_" + i + "__SCIRefno' name='MockupWash_Detail[" + i + "].Remark' type='text' class='OnlyEdit'></td>";
-            html += "<td><input id='MockupWash_Detail_" + i + "__ColorID' name='MockupWash_Detail[" + i + "].LastUpdate' type='text'  readonly='readonly' ></td>";
+            html += $"<td><input id='MockupWash_Detail_{lastNO}__SCIRefno' name='MockupWash_Detail[{lastNO}].Remark' type='text' class='OnlyEdit'></td>";
+            html += $"<td><input id='MockupWash_Detail_{lastNO}__ColorID' name='MockupWash_Detail[{lastNO}].LastUpdate' type='text' readonly='readonly'></td>";
 
             html += "<td> <div style='width: 5vw;'><img  class='detailDelete' src='/Image/Icon/Delete.png' width='30'> </div></td>";
             html += "</tr>";
 
             return Content(html);
+        }
+
+        [HttpPost]
+        public JsonResult FailMail(string ReportNo, string TO, string CC)
+        {
+            MockupFailMail_Request mail = new MockupFailMail_Request()
+            {
+                ReportNo = ReportNo,
+                To = TO,
+                CC = CC,
+            };
+
+            SendMail_Result result = _MockupWashService.FailSendMail(mail);
+            return Json(result);
         }
     }
 }
