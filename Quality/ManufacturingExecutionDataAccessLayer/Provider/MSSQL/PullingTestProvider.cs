@@ -413,10 +413,10 @@ WHERE 1=1
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
 
-        public DataTable GetData_DataTable(string ReportNo, string PullForceUnit)
+        public DataTable GetData_DataTable(string ReportNo)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();
-            objParameter.Add("ReportNo", DbType.String, ReportNo);
+            objParameter.Add("@ReportNo", DbType.String, ReportNo);
 
             string sqlGetData = @"
 select    p.ReportNo

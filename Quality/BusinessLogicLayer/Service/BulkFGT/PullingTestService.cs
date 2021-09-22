@@ -176,14 +176,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
         }
 
 
-        public SendMail_Result FailSendMail(string ReportNo,string PullForceUnit, string ToAddress, string CcAddress)
+        public SendMail_Result FailSendMail(string ReportNo, string ToAddress, string CcAddress)
         {
 
             SendMail_Result result = new SendMail_Result();
             try
             {
                 _PullingTestProvider = new PullingTestProvider(Common.ManufacturingExecutionDataAccessLayer);
-                DataTable dt = _PullingTestProvider.GetData_DataTable(ReportNo, PullForceUnit);
+                DataTable dt = _PullingTestProvider.GetData_DataTable(ReportNo);
                 string mailBody = MailTools.DataTableChangeHtml(dt);
 
                 SendMail_Request sendMail_Request = new SendMail_Request()
