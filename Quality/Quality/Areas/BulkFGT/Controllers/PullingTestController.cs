@@ -324,7 +324,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
-        public JsonResult FailMail(string ReportNo,string PullForceUnit, string TO, string CC)
+        public JsonResult FailMail(string ReportNo, string TO, string CC)
         {
             SendMail_Result result = Service.FailSendMail(ReportNo, TO, CC);
             return Json(result);
