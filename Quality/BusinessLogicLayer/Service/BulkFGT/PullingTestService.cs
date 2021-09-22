@@ -98,6 +98,23 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
+        public PullingTest_Result GetPullUnit(string BrandID)
+        {
+            PullingTest_Result result = new PullingTest_Result();
+
+            try
+            {
+                _PullingTestProvider = new PullingTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+                result = _PullingTestProvider.GetPullForceUnit(BrandID);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
         public PullingTest_ViewModel Insert(PullingTest_Result Req)
         {
             PullingTest_ViewModel result = new PullingTest_ViewModel();
@@ -159,7 +176,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         }
 
 
-        public SendMail_Result SendMail(string ReportNo,string PullForceUnit, string ToAddress, string CcAddress)
+        public SendMail_Result FailSendMail(string ReportNo,string PullForceUnit, string ToAddress, string CcAddress)
         {
 
             SendMail_Result result = new SendMail_Result();

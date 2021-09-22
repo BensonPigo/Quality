@@ -155,7 +155,75 @@
                                 {
                                     <tr class="row-content">
                                         <td>
-                                            <a href="/Quality/StyleManagement/StyleResult/Result?BrandID=@Html.DisplayFor(modelItem => item.BrandID)&amp;SeasonID=@Html.DisplayFor(modelItem => item.SeasonID)&amp;StyleID=@Html.DisplayFor(modelItem => item.StyleID)">  @Html.DisplayFor(modelItem => item.Type)</a>
+                                            @{ string link = "";}
+                                            @switch (item.Type)
+                                            {
+                                                case string a when a.Contains("Fabric Crocking & Shrinkage Test"):
+                                                    link = Url.Action("IndexBack", "FabricCrkShrkTest",new { POID = item.OrderID });
+                                                    break;
+                                                case string a when a.Contains("Garment Test"):
+                                                    link = Url.Action("IndexBack", "GarmentTest", new {
+                                                        Brand = item.BrandID,
+                                                        Season = item.SeasonID,
+                                                        Style = item.StyleID,
+                                                        Article = item.Article,
+                                                    });
+                                                    break;
+                                                case string a when a.Contains("Mockup Crocking Test"):
+                                                    link = Url.Action("IndexGet", "MockupCrocking", new
+                                                    {
+                                                        ReportNo = item.ReportNo,
+                                                        BrandID = item.BrandID,
+                                                        SeasonID = item.SeasonID,
+                                                        StyleID = item.StyleID,
+                                                        Article = item.Article,
+                                                    });
+                                                    break;
+                                                case string a when a.Contains("Mockup Oven Test"):
+                                                    link = Url.Action("IndexGet", "MockupOvenTest", new
+                                                    {
+                                                        ReportNo = item.ReportNo,
+                                                        BrandID = item.BrandID,
+                                                        SeasonID = item.SeasonID,
+                                                        StyleID = item.StyleID,
+                                                        Article = item.Article,
+                                                    });
+                                                    break;
+                                                case string a when a.Contains("Mockup Wash Test"):
+                                                    link = Url.Action("IndexGet", "MockupWash", new
+                                                    {
+                                                        ReportNo = item.ReportNo,
+                                                        BrandID = item.BrandID,
+                                                        SeasonID = item.SeasonID,
+                                                        StyleID = item.StyleID,
+                                                        Article = item.Article,
+                                                    });
+                                                    break;
+                                                case string a when a.Contains("Fabric Oven Test"):
+                                                    link = Url.Action("IndexBack", "FabricOvenTest", new { POID = item.OrderID });
+                                                    break;
+                                                case string a when a.Contains("Fabric Color Fastness"):
+                                                    link = Url.Action("IndexBack", "FabricColorFastness", new { POID = item.OrderID });
+                                                    break;
+                                                case string a when a.Contains("Accessory Oven Test & Wash"):
+                                                    link = Url.Action("IndexGet", "AccessoryOvenWash", new { ReqOrderID = item.OrderID , OrderID = item.OrderID });
+                                                    break;
+                                                case string a when a.Contains("Pulling test"):
+                                                    link = Url.Action("IndexGet", "PullingTest", new
+                                                    {
+                                                        ReportNo = item.ReportNo,
+                                                        BrandID = item.BrandID,
+                                                        SeasonID = item.SeasonID,
+                                                        StyleID = item.StyleID,
+                                                        Article = item.Article,
+                                                    });
+                                                    break;
+                                                default:
+                                                    link = "#";
+                                                    break;
+                                            }
+
+                                            <a href="@link">@item.Type</a>
 
                                         </td>
                                         <td>

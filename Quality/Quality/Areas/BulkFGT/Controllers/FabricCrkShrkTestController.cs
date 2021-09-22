@@ -68,6 +68,9 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Json(saveResult);
         }
 
+        /// <summary>
+        /// 外部導向至本頁用
+        /// </summary>
         [HttpGet]
         public ActionResult IndexBack(string POID)
         {

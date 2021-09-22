@@ -209,14 +209,7 @@
                                         </td>
                                         <td><h5>Result</h5></td>
                                         <td>
-                                            @*<select id="Result" name="Result" disabled="disabled" style="width:157px;">
-                                                                                       @foreach (var item in Model.ResultData)
-                                                    {
-                                                        string selected = item.Text.Equals(Model.WashResult) ? "selected" : "";
-                                                        <option value="@item.Value" @selected>@item.Text</option>
-                                                    }
-                                                </select>*@
-                                            @Html.DropDownListFor(o => o.WashResult, Model.ResultData)
+                                            @Html.DropDownListFor(o => o.WashResult, Model.ResultData, new { @onchange = "ResultChange()" })
                                         </td>
                                         <td></td>
                                         <td></td>
@@ -271,6 +264,7 @@
 
             EditMode = false;
             IsEditModeChange();
+            ResultChange();
         });
 
         function IsEditModeChange() {
@@ -334,22 +328,6 @@
                 document.getElementById("DetailForm").submit();
             });
 
-            $('#Encode').on('click', function (e) {
-                var WashResult = $("#WashResult").val();
-
-                if (WashResult != '') {
-
-                    if (WashResult == "Fail" && $("#needSendMail").val() == 'true') {
-                        FailMail();
-                        return false;
-                    }
-                }
-                else {
-                    msg.WithError("Result cannot be empty.");
-                    return false;
-                }
-            });
-
             $('#Amend').on('click', function (e) {
                 document.getElementById("DetailForm").submit();
             });
@@ -366,8 +344,18 @@
             });
         }
 
+    function ResultChange() {
+
+        if ($("#WashResult").val() == 'Pass') {
+            $("#WashResult").css("color", "Blue");
+        }
+        else {
+            $("#WashResult").css("color", "red");
+        }
+    }
+
     function FailMail() {
-        var para = "?Title=WashTest&FactoryID=@ViewBag.FactoryID&Type=BulkFGT";
+        var para = "?Title=WashTest&FactoryID=@ViewBag.FactoryID&Type=BulkFGT&ExitReload=False";
 
         window.open('@Url.Action("TestFailMailList", "PublicWondow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
     }
@@ -381,14 +369,35 @@
         });
 
         if (to != "") {
-            $("#ToAddress").val(to);
-            $("#CcAddress").val(cc);
-            $("#needSendMail").val(false);
-            $("#Encode").click();
-        }
-        else {
-            msg.WithError("Please choose the mail group.");
-            e.preventDefault();
+            var data = {
+                AIR_LaboratoryID: $("#AIR_LaboratoryID").val(),
+                POID: $("#POID").val(),
+                Seq1: $("#Seq1").val(),
+                Seq2: $("#Seq2").val(),
+                ToAddress: to,
+                CcAddress: cc,
+            };
+
+            $.ajax({
+                url: "@Url.Action("WashFailMail")",
+                type: 'POST',
+                dataType: "json",
+                data: { Req: data},
+                async: false,
+                success: function (data) {
+                    if (data.result) {
+                        msg.WithSuccess("Success");
+                    }
+                    else {
+                        msg.WithWarning(data.resultMsg);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    msg.WithWarningCheck(xhr.responseText, function () {
+                        location.reload();
+                    });
+                }
+            });
         }
     }
 

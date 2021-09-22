@@ -52,6 +52,31 @@ namespace Quality.Areas.StyleManagement.Controllers
             return View();
         }
 
+
+        public ActionResult IndexGet(string BrandID, string SeasonID, string StyleID)
+        {
+            this.CheckSession();
+            StyleResult_ViewModel model = new StyleResult_ViewModel();
+            StyleResult_Request Req = new StyleResult_Request() 
+            {
+                BrandID= BrandID,
+                SeasonID = SeasonID,
+                StyleID = StyleID,
+            };
+
+            if (Req == null || string.IsNullOrEmpty(Req.StyleID) || string.IsNullOrEmpty(Req.BrandID) || string.IsNullOrEmpty(Req.SeasonID))
+            {
+                model.MsgScript = $@"
+msg.WithInfo('Style, Brand and Season cannot be empty.');
+";
+                return View("Index", model);
+            }
+
+            Req.MDivisionID = this.MDivisionID;
+            model = _Service.Get_StyleResult_Browse(Req);
+            return View("Index", model);
+        }
+
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "Query")]
         public ActionResult Query(StyleResult_Request Req)

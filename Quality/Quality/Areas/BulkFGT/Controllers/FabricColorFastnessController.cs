@@ -34,6 +34,9 @@ namespace Quality.Areas.BulkFGT.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// 外部導向至本頁用
+        /// </summary>
         public ActionResult IndexBack(string PoID)
         {
             FabricColorFastness_ViewModel model = _FabricColorFastness_Service.Get_Main(PoID);

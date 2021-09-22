@@ -112,7 +112,7 @@
             width: 70%;
         }
 </style>
-@using (Html.BeginForm("Index", "PullingTest", new { }, FormMethod.Post, new { @ID = "mainForm", onsubmit = "return checkSubmitValue();" }))
+@using (Html.BeginForm("Index", "PullingTest", new { }, FormMethod.Post, new { @ID = "mainForm" }))
 {
     <div class="main-content">
         <header class="page-header">
@@ -327,18 +327,19 @@
     @Html.HiddenFor(o => o.ToAddress)
     @Html.HiddenFor(o => o.CcAddress)
 
-    <input type="hidden" id="needSendMail" value="@Model.Detail.Result" />
 }
 <script type="text/javascript">
-        var msg;
-        var EditMode;
-        var EditType;
-        $(function () {
-            msg = new MessagerAlert();
+    var msg = new MessagerAlert();
+    var EditMode;
+    var EditType;
+    $(function () {
+            
 
-            EditMode = false;
-            IsEditModeChange();
-        });
+        @Html.Raw(Model.ErrorMessage)
+
+        EditMode = false;
+        IsEditModeChange();
+    });
 
     function IsEditModeChange() {
         EditModeButtionBind();
@@ -518,6 +519,13 @@
         function blurEvent(name) {
             $("#" + name + "BrandID").blur(function () {
                 if ($(this).val() == '') {
+                    $("#Detail_Result").val('');
+                    $("#ResultText").val('');
+                    $("#Detail_TestItem").val('');
+                    $("#Detail_PullForceUnit").val('');
+                    $("#PullForceUnitText").val('');
+                    $(`#Detail_PullForce_Standard`).val('');
+                    $(`#Detail_Time_Standard`).val('');
                     return;
                 }
 
@@ -531,6 +539,29 @@
                         if (data.length == 0) {
                             $("#" + name +"BrandID").val('');
                             msg.WithError('Brand Not Found');
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                });
+                
+
+                $.ajax({
+                    url: "@Url.Action("GetPullUnit")",
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ BrandID: $(this).val() }),
+                    async: true,
+                    success: function (data) {
+                        if (data.length != 0) {
+
+                            $("#Detail_PullForceUnit").val(data.PullForceUnit);
+                            $("#PullForceUnitText").val(data.PullForceUnit);
+                        }
+                        else {
+                            $("#Detail_PullForceUnit").val('');
+                            $("#PullForceUnitText").val('');
                         }
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
@@ -879,6 +910,12 @@
             Time_Standard = 0;
         }
 
+        if (PullForce_Standard == 0 && Time_Standard == 0) {
+
+            $("#Detail_Result").val('');
+            $("#ResultText").val('');
+            return;
+        }
 
         if (parseFloat(PullForceVal) < parseFloat(PullForce_Standard) || parseFloat(TimeVal) < parseFloat(Time_Standard)) {
             result = false;
@@ -891,13 +928,11 @@
             $("#Detail_Result").val('Pass');
             $("#ResultText").val('Pass');
             $("#ResultText").removeClass('red').addClass('blue');
-            $("#needSendMail").val(false);
         }
         else {
             $("#Detail_Result").val('Fail');
             $("#ResultText").val('Fail');
             $("#ResultText").removeClass('blue').addClass('red');
-            $("#needSendMail").val(true);
         }
     }
 
@@ -947,26 +982,10 @@
 
     }
 
-    function checkSubmitValue() {
-
-        var needSendMail = $("#needSendMail").val();
-
-        if (needSendMail === 'false') {
-            return true;
-        }
-        else {
-            if ($('#Detail_Result').val() == 'Fail' && EditMode) {
-                FailMail();
-                return false;
-            }
-        }
-
-
-    }
-
     function FailMail() {
-        var para = "?Title=Pulling&FactoryID=@ViewBag.FactoryID&Type=BulkFGT";
-        window.open('@Url.Action("TestFailMailList", "PublicWondow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
+        var para = "?Title=Pulling Test&FactoryID=@ViewBag.FactoryID&Type=BulkFGT&ExitReload=False";
+        window.open('@Url.Action("TestFailMailList", "PublicWondow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
+        
     }
 
     function GetTestFailMailList(data) {
@@ -977,16 +996,26 @@
             cc += value.CC + ';';
         });
 
-        if (to != "") {
-            $("#ToAddress").val(to);
-            $("#CcAddress").val(cc);
-            $("#needSendMail").val(false);
-            $("#SaveSubmit").click();
-        }
-        else {
-            msg.WithError("Please choose the mail group.");
-            e.preventDefault();
-        }
+        $.ajax({
+            url: "@Url.Action("FailMail", "PullingTest", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ ReportNo: $('#ReportNoText').val(), PullForceUnit: $("#Detail_PullForceUnit").val() , TO: to, CC: cc }),
+            async: false,
+            success: function (data) {
+                if (data.result) {
+                    msg.WithSuccess("Success");
+                }
+                else {
+                    msg.WithWarning(data.resultMsg);
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                msg.WithWarningCheck(xhr.responseText, function () {
+                    location.reload();
+                });
+            }
+        });
     }
 
     function GetBrandList(data) {

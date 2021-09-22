@@ -184,7 +184,7 @@ AND PullForceUnit = @PullForceUnit
                 { "@SeasonID", DbType.String, Req.SeasonID } ,
                 { "@StyleID", DbType.String, Req.StyleID } ,
                 { "@Article", DbType.String, Req.Article } ,
-                { "@SizeCode", DbType.String, Req.SizeCode } ,
+                { "@SizeCode", DbType.String,  Req.SizeCode ?? "" } ,
                 { "@TestDate", DbType.DateTime, Req.TestDate.Value } ,
                 { "@Result", DbType.String, Req.Result } ,
                 { "@TestItem", DbType.String, Req.TestItem } ,
@@ -429,7 +429,7 @@ select    p.ReportNo
 		,p.TestDate
 		,p.Result
 		,p.TestItem
-		,PullForceUnit = p.PullForce
+		,p.PullForceUnit
 		,Sec = p.Time
 		, [Fabric Ref#] = p.FabricRefno
 		, [Accessory Ref#] = p.AccRefno

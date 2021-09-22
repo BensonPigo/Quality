@@ -45,6 +45,46 @@ namespace Quality.Areas.BulkFGT.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// 外部導向至本頁用
+        /// </summary>
+        public ActionResult IndexGet(string ReportNo, string BrandID, string SeasonID, string StyleID, string Article)
+        {
+            MockupOven_ViewModel Req = new MockupOven_ViewModel()
+            {
+                Request = new MockupOven_Request()
+                {
+                    ReportNo = ReportNo,
+                    BrandID = BrandID,
+                    SeasonID = SeasonID,
+                    StyleID = StyleID,
+                    Article = Article,
+                }
+            };
+
+            MockupOven_ViewModel model = _MockupOvenService.GetMockupOven(Req.Request);
+
+
+            if (model == null)
+            {
+                model = new MockupOven_ViewModel()
+                {
+                    MockupOven_Detail = new List<MockupOven_Detail_ViewModel>(),
+                    ReportNo_Source = new List<string>(),
+                    ErrorMessage = $"msg.WithInfo('No Data Found');",
+                };
+            }
+
+
+            model.Request = Req.Request;
+            ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(model.ReportNo_Source);
+            ViewBag.ResultList = model.Result_Source; ;
+            ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(model.Request.BrandID, model.Request.SeasonID, model.Request.StyleID);
+            ViewBag.AccessoryRefNo_Source = GetAccessoryRefNoList(model.Request.BrandID, model.Request.SeasonID, model.Request.StyleID);
+            ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
+            return View("Index", model);
+        }
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "Query")]

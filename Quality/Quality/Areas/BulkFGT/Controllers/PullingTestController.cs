@@ -13,6 +13,8 @@ using DatabaseObject.ViewModel.BulkFGT;
 using FactoryDashBoardWeb.Helper;
 using System.Linq;
 using DatabaseObject.ProductionDB;
+using DatabaseObject.RequestModel;
+using DatabaseObject.ResultModel;
 
 namespace Quality.Areas.BulkFGT.Controllers
 {
@@ -43,6 +45,36 @@ namespace Quality.Areas.BulkFGT.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// 外部導向至本頁用
+        /// </summary>
+        public ActionResult IndexGet(string ReportNo, string BrandID, string SeasonID, string StyleID, string Article)
+        {
+            PullingTest_ViewModel Req = new PullingTest_ViewModel()
+            {
+                ReportNo_Query= ReportNo,
+                BrandID = BrandID,
+                SeasonID = SeasonID,
+                StyleID = StyleID,
+                Article = Article,
+            };
+
+            PullingTest_ViewModel model = Service.GetReportNoList(Req);
+
+            if (model.ReportNo_Source != null && model.ReportNo_Source.Any())
+            {
+                if (string.IsNullOrEmpty(model.ReportNo_Query))
+                {
+                    model.ReportNo_Query = model.ReportNo_Source.FirstOrDefault().Value;
+                }
+
+                model.Detail = Service.GetData(model.ReportNo_Query).Detail;
+            }
+
+            ViewBag.FactoryID = this.FactoryID;
+            return View("Index", model);
+        }
+
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "Query")]
         public ActionResult Query(PullingTest_ViewModel Req)
@@ -51,7 +83,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             if (model.ReportNo_Source != null && model.ReportNo_Source.Any())
             {
-                if (model.ReportNo_Source.Count == 1)
+                if (string.IsNullOrEmpty(model.ReportNo_Query))
                 {
                     model.ReportNo_Query = model.ReportNo_Source.FirstOrDefault().Value;
                 }
@@ -70,6 +102,23 @@ namespace Quality.Areas.BulkFGT.Controllers
             try
             {
                 o = Service.CheckSP(POID);
+
+            }
+            catch (Exception ex)
+            {
+                return Json(ex);
+            }
+
+            return Json(o);
+        }
+
+        [HttpPost]
+        public ActionResult GetPullUnit(string BrandID)
+        {
+            PullingTest_Result o = new PullingTest_Result();
+            try
+            {
+                o = Service.GetPullUnit(BrandID);
 
             }
             catch (Exception ex)
@@ -165,11 +214,16 @@ namespace Quality.Areas.BulkFGT.Controllers
 
                 model = Service.GetReportNoList(model);
             }
-
-            if (IsSendMail)
+            
+            if (!model.Result)
             {
-                var mailResult = Service.SendMail(model.Detail.ReportNo, PullForceUnit, ToAddress, CcAddress);
+                model.ErrorMessage = $"msg.WithInfo('" + model.ErrorMessage.ToString().Replace("\r\n", "<br />") + "');";
             }
+            else if (model.Detail.Result == "Fail")
+            {
+                model.ErrorMessage = "FailMail();";
+            }
+
 
             ViewBag.FactoryID = this.FactoryID;
             return View("Index", model);
@@ -221,9 +275,14 @@ namespace Quality.Areas.BulkFGT.Controllers
                 model.Detail = Service.GetData(model.ReportNo_Source.FirstOrDefault().Value).Detail;
             }
 
-            if (IsSendMail)
+
+            if (!model.Result)
             {
-                var mailResult = Service.SendMail(model.Detail.ReportNo, PullForceUnit, ToAddress, CcAddress);
+                model.ErrorMessage = $"msg.WithInfo('" + model.ErrorMessage.ToString().Replace("\r\n", "<br />") + "');";
+            }
+            else if (model.Detail.Result == "Fail")
+            {
+                model.ErrorMessage = "FailMail();";
             }
 
             model.ReportNo_Query = model.Detail.ReportNo;
@@ -262,6 +321,13 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             ViewBag.FactoryID = this.FactoryID;
             return View("Index", Result);
+        }
+
+        [HttpPost]
+        public JsonResult FailMail(string ReportNo,string PullForceUnit, string TO, string CC)
+        {
+            SendMail_Result result = Service.FailSendMail(ReportNo, PullForceUnit, TO, CC);
+            return Json(result);
         }
     }
 }

@@ -143,7 +143,7 @@ msg.WithError('{ex.Message}');
                 {
                     To = Req.ToAddress,
                     CC = Req.CcAddress,
-                    Subject = "Oven Test - Test Fail",
+                    Subject = "Accessory Oven Test - Test Fail",
                     Body = mailBody
                 };
                 result = MailTools.SendMail(sendMail_Request);
@@ -230,7 +230,7 @@ msg.WithError('{ex.Message}');
                 {
                     To = Req.ToAddress,
                     CC = Req.CcAddress,
-                    Subject = "Wash Test - Test Fail",
+                    Subject = "Accessory Wash Test - Test Fail",
                     Body = mailBody
                 };
                 result = MailTools.SendMail(sendMail_Request);

@@ -52,6 +52,9 @@ namespace Quality.Areas.BulkFGT.Controllers
             return View(Result);
         }
 
+        /// <summary>
+        /// 外部導向至本頁用
+        /// </summary>
         public ActionResult IndexBack(string Brand, string Season, string Style, string Article)
         {
             GarmentTest_Request Req = new GarmentTest_Request()
@@ -85,6 +88,10 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.GarmentTestRequest = Req;
             return View("Index", Result);
         }
+
+        /// <summary>
+        /// 外部導向至本頁用
+        /// </summary>
 
         [HttpPost]
         public ActionResult Index(GarmentTest_Request Req)

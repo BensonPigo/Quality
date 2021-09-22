@@ -1,4 +1,5 @@
 ﻿using BusinessLogicLayer.Service.BulkFGT;
+using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using FactoryDashBoardWeb.Helper;
 using Quality.Controllers;
@@ -28,6 +29,21 @@ namespace Quality.Areas.BulkFGT.Controllers
                 DataList = new List<Accessory_Result>(),
             };
             return View(accessory_ViewModel);
+        }
+
+        /// <summary>
+        /// 外部導向至本頁用
+        /// </summary>
+        public ActionResult IndexGet(string OrderID)
+        {
+            Accessory_ViewModel Req = new Accessory_ViewModel() { ReqOrderID = OrderID };
+
+            Accessory_ViewModel model = new Accessory_ViewModel();
+
+            model = _Service.GetMainData(Req);
+            model.ReqOrderID = Req.ReqOrderID;
+
+            return View("Index", model);
         }
 
         public ActionResult AccessoryOvenWash(string ReqOrderID)
@@ -138,17 +154,14 @@ namespace Quality.Areas.BulkFGT.Controllers
                 return View("OvenTest", errorModel);
 
             }
-
-            // 開始寄信
-            bool IsSendMail = !string.IsNullOrEmpty(Req.ToAddress);
-
-            if (IsSendMail)
-            {
-                var mailResult = _Service.SendOvenMail(Req);
-            }
-
             // 取得更新後MODEL
             model = _Service.GetOvenTest(Req);
+
+            // Encode成功後，OvenResult是Fail則寄信
+            if (model.OvenResult == "Fail")
+            {
+                model.ErrorMessage = "FailMail();";
+            }
 
             ViewBag.FactoryID = this.FactoryID;
             return View("OvenTest", model);
@@ -182,6 +195,13 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             ViewBag.FactoryID = this.FactoryID;
             return View("OvenTest", model);
+        }
+
+        [HttpPost]
+        public JsonResult OvenFailMail(Accessory_Oven Req)
+        {
+            SendMail_Result result = _Service.SendOvenMail(Req);
+            return Json(result);
         }
         #endregion
 
@@ -254,16 +274,14 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             }
 
-            // 開始寄信
-            bool IsSendMail = !string.IsNullOrEmpty(Req.ToAddress);
-
-            if (IsSendMail)
-            {
-                var mailResult = _Service.SendWashMail(Req);
-            }
-
             // 取得更新後MODEL
             model = _Service.GetWashTest(Req);
+
+            // Encode成功後，WashResult是Fail則寄信
+            if (model.WashResult == "Fail")
+            {
+                model.ErrorMessage = "FailMail();";
+            }
 
             ViewBag.FactoryID = this.FactoryID;
             return View("WashTest", model);
@@ -298,7 +316,15 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.FactoryID = this.FactoryID;
             return View("WashTest", model);
         }
+
+        [HttpPost]
+        public JsonResult WashFailMail(Accessory_Wash Req)
+        {
+            SendMail_Result result = _Service.SendWashMail(Req);
+            return Json(result);
+        }
         #endregion
+
 
     }
 }

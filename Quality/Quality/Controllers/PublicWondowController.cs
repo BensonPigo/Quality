@@ -400,6 +400,8 @@ namespace Quality.Controllers
             var model = _PublicWindowService.Get_Picture(Table, BeforeColumn, AfterColumn, PKey_1, PKey_2, PKey_3, PKey_4, PKey_1_Val, PKey_2_Val, PKey_3_Val, PKey_4_Val);
             ViewData["Title"] = Title;
             ViewData["EditMode"] = EditMode;
+            ViewData["BeforeColumn"] = BeforeColumn;
+            ViewData["AfterColumn"] = AfterColumn;
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
