@@ -112,7 +112,7 @@ namespace BusinessLogicLayer.Service.Tests
                     MR = "SCIMIS",
                     MockupCrocking_Detail = new System.Collections.Generic.List<MockupCrocking_Detail_ViewModel>()
                     {
-                        //new MockupCrocking_Detail_ViewModel(){Design="d100",ArtworkColor="0001",FabricRefNo="RF",FabricColor  = "FCC",Result="Pass",Remark="RRRK",WetScale="1",DryScale="2-2"},
+                        new MockupCrocking_Detail_ViewModel(){Design="d100",ArtworkColor="0001",FabricRefNo="RF",FabricColor  = "FCC",Result="Pass",Remark="RRRK",WetScale="1",DryScale="2-2"},
                         //new MockupCrocking_Detail_ViewModel(){ReportNo = "T1",Design="d200",ArtworkColor="0001",FabricRefNo="RF",FabricColor  = "FCC",Result="Pass",Remark="2RRRK",EditName = "SCIMIS",WetScale="1",DryScale="2-2"},
                     }
                 };
@@ -134,25 +134,24 @@ namespace BusinessLogicLayer.Service.Tests
                 IMockupCrockingService _MockupCrockingService = new MockupCrockingService();
                 MockupCrocking_ViewModel MockupCrocking = new MockupCrocking_ViewModel()
                 {
-                    ReportNo = "PM1CK21090007",
-                    POID = "up",
-                    StyleID = "up",
-                    SeasonID = "up",
-                    BrandID = "up",
-                    Article = "up",
-                    ArtworkTypeID = "up",
-                    Remark = "up",
-                    T1Subcon = "up",
+                    ReportNo = "PM1CK21090008",
+                    POID = "TP",
+                    StyleID = "SS",
+                    SeasonID = "20SS",
+                    BrandID = "bb",
+                    Article = "aa",
+                    ArtworkTypeID = "attt",
+                    Remark = "remmmm",
+                    T1Subcon = "SCIMIS",
                     TestDate = DateTime.Now,
                     ReceivedDate = DateTime.Now,
                     ReleasedDate = DateTime.Now,
-                    Result = "up",
-                    Technician = "up",
-                    MR = "up",
-                    EditName = "up",
+                    //Result = "Pass",
+                    Technician = "SCIMIS",
+                    MR = "SCIMIS",
                     MockupCrocking_Detail = new System.Collections.Generic.List<MockupCrocking_Detail_ViewModel>()
                     {
-                        //new MockupCrocking_Detail_ViewModel(){Design="up",ArtworkColor="up",FabricRefNo="up",FabricColor  = "up",Result="up",Remark="up",EditName = "up",Ukey=76},
+                        new MockupCrocking_Detail_ViewModel(){Design="d100",ArtworkColor="0001",FabricRefNo="RF",FabricColor  = "FCC",Result="Pass",Remark="RRRK",WetScale="1",DryScale="2-2",Ukey=351},
                         //new MockupCrocking_Detail_ViewModel(){Design="up",ArtworkColor="up",FabricRefNo="up",FabricColor  = "up",Result="up",Remark="up",EditName = "up",Ukey=77},
                     }
                 };

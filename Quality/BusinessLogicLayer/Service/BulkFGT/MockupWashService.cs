@@ -236,12 +236,21 @@ namespace BusinessLogicLayer.Service
 
                 if (mockupWash.Signature != null)
                 {
-                    using (MemoryStream ms = new MemoryStream(mockupWash.Signature))
+                    MemoryStream ms = new MemoryStream(mockupWash.Signature);
+                    Image img = Image.FromStream(ms);
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    string imgPath;
+                    if (test)
                     {
-                        Bitmap pic = new Bitmap(Image.FromStream(ms), new Size(100, 40));
-                        Clipboard.SetDataObject(pic);
-                        worksheet.Paste(cell, false);
+                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
                     }
+                    else
+                    {
+                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                    }
+
+                    img.Save(imgPath);
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
                 }
 
                 #region 表身資料
