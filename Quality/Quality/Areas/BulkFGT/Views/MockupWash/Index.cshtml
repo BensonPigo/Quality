@@ -1204,7 +1204,7 @@
             }
 
             var idx = $(this).attr("idv");
-            var para = "?TargetID=" + idx + "__ArtworkColor&BrandID=" + brandid;
+            var para = "?TargetID=" + idx + "__ArtworkColor&BrandID=" + brandid + "&Title=Artwork Color";
             window.open('@Url.Action("ColorList", "PublicWondow",new{Area=""})' + para, 'Artwork Color', config = 'toolbar=no,status=no,location=no,width=400,height=650');
         });
 
@@ -1216,8 +1216,8 @@
             }
 
             var idx = $(this).attr("idv");
-            var para = "?TargetID=" + idx + "__FabricColor&BrandID=" + brandid;
-            window.open('@Url.Action("ColorList", "PublicWondow",new{Area=""})' + para, 'Artwork Color', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+            var para = "?TargetID=" + idx + "__FabricColor&BrandID=" + brandid + "&Title=Fabric Color";
+            window.open('@Url.Action("ColorList", "PublicWondow",new{Area=""})' + para, 'Fabric Color', config = 'toolbar=no,status=no,location=no,width=400,height=650');
         });
 
         $('.detailDelete').unbind('click').on('click', function () {
