@@ -45,6 +45,43 @@ namespace Quality.Areas.BulkFGT.Controllers
             return View(model);
         }
 
+        public ActionResult IndexGet(string ReportNo, string BrandID, string SeasonID, string StyleID, string Article)
+        {
+            MockupWash_ViewModel Req = new MockupWash_ViewModel()
+            {
+                Request = new MockupWash_Request()
+                {
+                    ReportNo = ReportNo,
+                    BrandID = BrandID,
+                    SeasonID = SeasonID,
+                    StyleID = StyleID,
+                    Article = Article,
+                }
+            };
+
+            MockupWash_ViewModel model = _MockupWashService.GetMockupWash(Req.Request);
+
+            if (model == null)
+            {
+                model = new MockupWash_ViewModel()
+                {
+                    ErrorMessage = $"msg.WithInfo('No Data Found');",
+                    MockupWash_Detail = new List<MockupWash_Detail_ViewModel>(),
+                    ReportNo_Source = new List<string>(),
+                    TestingMethod_Source = _MockupWashService.GetTestingMethod(),
+                };
+            }
+
+            model.Request = Req.Request;
+            ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(model.ReportNo_Source);
+            ViewBag.ResultList = model.Result_Source; ;
+            ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(model.Request.BrandID, model.Request.SeasonID, model.Request.StyleID);
+            ViewBag.AccessoryRefNo_Source = GetAccessoryRefNoList(model.Request.BrandID, model.Request.SeasonID, model.Request.StyleID);
+            ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
+            return View("Index", model);
+        }
+
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "Query")]
         public ActionResult Query(MockupWash_ViewModel Req)

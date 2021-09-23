@@ -1003,9 +1003,8 @@ where t.ID = '{all_Data.Detail.inspector}'
 and t.GarmentTest=1
 ";
                                 string technicianName = string.Empty;
-                                Bitmap picSource = null;
                                 Image img = null;
-                                Excel.Range cell = worksheet.Cells[12, 2];
+                                
 
                                 DataTable dtTechnicianInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sql_cmd, new ADOHelper.Template.MSSQL.SQLParameterCollection());
 
@@ -1017,23 +1016,24 @@ and t.GarmentTest=1
                                     {
                                         img = Image.FromStream(ms);
                                     }
-                                    // Resize
-                                    Bitmap reBitmap = new Bitmap(img, 80, 58);
-                                    picSource = reBitmap;
+                                    string imageName = $"{Guid.NewGuid()}.jpg";
+                                    string imgPath;
+
+                                    if (test)
+                                    {
+                                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                                    }
+                                    else
+                                    {
+                                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                                    }
 
                                     // Name
-                                    worksheet.Cells[79, 9] = technicianName;
+                                    worksheet.Cells[76, 9] = technicianName;
+                                    Excel.Range cell = worksheet.Cells[74, 9];
 
-                                    // 插入圖檔
-                                    if (!MyUtility.Check.Empty(picSource))
-                                    {
-                                        if (picSource != null)
-                                        {
-                                            Clipboard.SetDataObject(picSource);
-                                            Excel.Range cellPic = worksheet.Cells[74, 9];
-                                            worksheet.Paste(cellPic, picSource);
-                                        }
-                                    }
+                                    img.Save(imgPath);
+                                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
                                 }
                                 else
                                 {
@@ -1686,7 +1686,6 @@ where t.ID = '{all_Data.Detail.inspector}'
 and t.GarmentTest=1
 ";
                                 string technicianName = string.Empty;
-                                Bitmap picSource = null;
                                 Image img = null;
                                 Excel.Range cell = worksheet.Cells[12, 2];
 
@@ -1700,23 +1699,25 @@ and t.GarmentTest=1
                                     {
                                         img = Image.FromStream(ms);
                                     }
-                                    // Resize
-                                    Bitmap reBitmap = new Bitmap(img, 80, 58);
-                                    picSource = reBitmap;
+
+                                    string imageName = $"{Guid.NewGuid()}.jpg";
+                                    string imgPath;
+
+                                    if (test)
+                                    {
+                                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                                    }
+                                    else
+                                    {
+                                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                                    }
 
                                     // Name
-                                    worksheet.Cells[80, 9] = technicianName;
+                                    worksheet.Cells[78, 9] = technicianName;
+                                    Excel.Range cellNew = worksheet.Cells[76, 9];
 
-                                    // 插入圖檔
-                                    if (!MyUtility.Check.Empty(picSource))
-                                    {
-                                        if (picSource != null)
-                                        {
-                                            Clipboard.SetDataObject(picSource);
-                                            Excel.Range cellPic = worksheet.Cells[76, 9];
-                                            worksheet.Paste(cellPic, picSource);
-                                        }
-                                    }
+                                    img.Save(imgPath);
+                                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellNew.Left, cellNew.Top, 100, 24);
                                 }
                                 else
                                 {
@@ -2406,7 +2407,6 @@ where t.ID = '{all_Data.Detail.inspector}'
 and t.GarmentTest=1
 ";
                         string technicianName = string.Empty;
-                        Bitmap picSource ;
                         Image img = null;
 
                         DataTable dtTechnicianInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sql_cmd, new ADOHelper.Template.MSSQL.SQLParameterCollection());
@@ -2419,23 +2419,25 @@ and t.GarmentTest=1
                             {
                                 img = Image.FromStream(ms);
                             }
-                            // Resize
-                            Bitmap reBitmap = new Bitmap(img, 80, 58);
-                            picSource = reBitmap;
+
+                            string imageName = $"{Guid.NewGuid()}.jpg";
+                            string imgPath;
+
+                            if (test)
+                            {
+                                imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                            }
+                            else
+                            {
+                                imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                            }
 
                             // Name
-                            worksheet_2020.Cells[33, 7] = technicianName;
+                            worksheet_2020.Cells[31, 7] = technicianName;
+                            Excel.Range cellNew = worksheet_2020.Cells[29, 7];
 
-                            // 插入圖檔
-                            if (!MyUtility.Check.Empty(picSource))
-                            {
-                                if (picSource != null)
-                                {
-                                    Clipboard.SetDataObject(picSource);
-                                    Excel.Range cellPic = worksheet_2020.Cells[29, 7];
-                                    worksheet_2020.Paste(cellPic, picSource);
-                                }
-                            }
+                            img.Save(imgPath);
+                            worksheet_2020.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellNew.Left, cellNew.Top, 100, 24);
                         }
                         else
                         {
@@ -2614,7 +2616,6 @@ where t.ID = '{all_Data.Detail.inspector}'
 and t.GarmentTest=1
 ";
                         string technicianName = string.Empty;
-                        Bitmap picSource = null;
                         Image img = null;
 
                         DataTable dtTechnicianInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sql_cmd, new ADOHelper.Template.MSSQL.SQLParameterCollection());
@@ -2628,24 +2629,25 @@ and t.GarmentTest=1
                             {
                                 img = Image.FromStream(ms);
                             }
-                            // Resize
-                            Bitmap reBitmap = new Bitmap(img, 80, 58);
-                            picSource = reBitmap;
 
+                            string imageName = $"{Guid.NewGuid()}.jpg";
+                            string imgPath;
+
+                            if (test)
+                            {
+                                imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                            }
+                            else
+                            {
+                                imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                            }
 
                             // Name
-                            worksheet_Physical.Cells[161, 7] = technicianName;
+                            worksheet_Physical.Cells[159, 7] = technicianName;
+                            Excel.Range cellNew = worksheet_Physical.Cells[157, 7];
 
-                            // 插入圖檔
-                            if (!MyUtility.Check.Empty(picSource))
-                            {
-                                if (picSource != null)
-                                {
-                                    Clipboard.SetDataObject(picSource);
-                                    Excel.Range cellPic = worksheet_Physical.Cells[157, 7];
-                                    worksheet_Physical.Paste(cellPic, picSource);
-                                }
-                            }
+                            img.Save(imgPath);
+                            worksheet_Physical.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellNew.Left, cellNew.Top, 80, 24);
                         }
                         else
                         {

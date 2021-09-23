@@ -2,7 +2,7 @@
 
 @{
     Layout = null;
-    string title = ViewData["Title"] == null ? "Pass1" : ViewData["Title"].ToString();
+    string title = ViewData["Title"] == null ? "Color" : ViewData["Title"].ToString();
 
     string strPickedIDs = ViewData["PickedIDs"] == null || ViewData["PickedIDs"].ToString() == "" ? "" : ViewData["PickedIDs"].ToString();
     List<string> PickedIDs = strPickedIDs.Split(',').Where(o => !string.IsNullOrEmpty(o)).ToList();

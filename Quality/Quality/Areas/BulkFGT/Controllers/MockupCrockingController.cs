@@ -52,6 +52,43 @@ namespace Quality.Areas.BulkFGT.Controllers
             return View(Result);
         }
 
+        /// <summary>
+        /// 外部導向至本頁用
+        /// </summary>
+        public ActionResult IndexGet(string ReportNo, string BrandID, string SeasonID, string StyleID, string Article)
+        {
+            MockupCrocking_ViewModel Req = new MockupCrocking_ViewModel()
+            {
+                Request = new MockupCrocking_Request()
+                {
+                    ReportNo = ReportNo,
+                    BrandID = BrandID,
+                    SeasonID = SeasonID,
+                    StyleID = StyleID,
+                    Article = Article,
+                }
+            };
+
+            //example:ADIDAS, 19FW, F1915KYB012, ED5770
+            MockupCrocking_ViewModel mockupCrocking_ViewModel = _MockupCrockingService.GetMockupCrocking(Req.Request);
+            //若沒錯誤訊息 且 MockupCrocking_ViewModel == null, 則是沒資料
+            if (mockupCrocking_ViewModel == null)
+            {
+                mockupCrocking_ViewModel = new MockupCrocking_ViewModel()
+                {
+                    ErrorMessage = $"msg.WithInfo('No Data Found');",
+                    MockupCrocking_Detail = new List<MockupCrocking_Detail_ViewModel>(),
+                    ReportNo_Source = new List<string>(),
+                };
+            }
+            mockupCrocking_ViewModel.Request = Req.Request;
+            ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(mockupCrocking_ViewModel.ReportNo_Source);
+            ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(Req.Request.BrandID, Req.Request.SeasonID, Req.Request.StyleID);
+            ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
+            return View("Index", mockupCrocking_ViewModel);
+        }
+
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "Query")]
         public ActionResult Query(MockupCrocking_ViewModel Req )

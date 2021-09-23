@@ -48,6 +48,9 @@ namespace Quality.Areas.SampleRFT.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// 外部導向至本頁用
+        /// </summary>
         public ActionResult IndexGet(string BrandID, string SeasonID, string StyleID)
         {
             this.CheckSession();

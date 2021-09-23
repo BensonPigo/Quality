@@ -56,6 +56,9 @@ namespace Quality.Areas.BulkFGT.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// 外部導向至本頁用
+        /// </summary>
         public ActionResult IndexBack(string POID)
         {
             FabricOvenTest_Result model = _FabricOvenTestService.GetFabricOvenTest_Result(POID);

@@ -374,31 +374,31 @@ where 1=1
 
             switch (Req.Type)
             {
-                case "Fabric Crocking & Shrinkage Test":
+                case string a when a.Contains("Fabric Crocking & Shrinkage Test"):
                     SbSql.Append(type1);
                     break;
-                case "Garment Test":
+                case string a when a.Contains("Garment Test"):
                     SbSql.Append(type2);
                     break;
-                case "Mockup Crocking Test":
+                case string a when a.Contains("Mockup Crocking Test"):
                     SbSql.Append(type3);
                     break;
-                case "Mockup Oven Test":
+                case string a when a.Contains("Mockup Oven Test"):
                     SbSql.Append(type4);
                     break;
-                case "Mockup Wash Test":
+                case string a when a.Contains("Mockup Wash Test"):
                     SbSql.Append(type5);
                     break;
-                case "Fabric Oven Test":
+                case string a when a.Contains("Fabric Oven Test"):
                     SbSql.Append(type6);
                     break;
-                case "Fabric Color Fastness":
+                case string a when a.Contains("Fabric Color Fastness"):
                     SbSql.Append(type7);
                     break;
-                case "Accessory Oven Test & Wash":
+                case string a when a.Contains("Accessory Oven Test & Wash"):
                     SbSql.Append(type8);
                     break;
-                case "Pulling test for Snap/Button/Rivet":
+                case string a when a.Contains("Pulling test for Snap/Button/Rivet"):
                     SbSql.Append(type9);
                     break;
                 default:

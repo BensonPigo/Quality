@@ -94,12 +94,15 @@
                             {
                                 <tr class="row-content">
                                     <td>
-                                        @*@Html.DisplayFor(modelItem => item.StyleID)*@
-                                        @*@Html.ActionLink(item.StyleID,"Query", "StyleResult",new { Area = "StyleManagement",@class= "postLink" }, new
-                                            StyleManagement_Request { BrandID = item.BrandID, SeasonID = item.SeasonID, StyleID = item.StyleID })*@
-                                        <a href="@Url.Action("Result","StyleResult", new { @BrandID = item.BrandID, @SeasonID = item.SeasonID, @StyleID = item.StyleID})">@item.StyleID</a>
 
-                                        @*@Html.ActionLink(item.StyleID, "Index", "StyleResult", new { @BrandID = item.BrandID, @SeasonID = item.SeasonID, @StyleID = item.StyleID})*@
+                                        <a href="#" onclick="ClickLink('@Url.Action("IndexGet","StyleResult",new
+                                            {
+                                                BrandID = item.BrandID,
+                                                SeasonID = item.SeasonID,
+                                                StyleID = item.StyleID
+                                            })')">
+                                            @item.StyleID
+                                        </a>
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.BrandID)
@@ -194,4 +197,7 @@
         $("#txtStyle").val(StyleID);
     }
 
+    function ClickLink(URL) {
+        window.open(URL);
+    }
 </script>
