@@ -264,6 +264,8 @@
                                     <td style="width: 10vw;"><h5>Report No</h5></td>
                                     <td style="width: 20vw;">
                                         <input id="ReportNo" name="ReportNo" readonly="readonly" type="text" value="@Model.ReportNo">
+                                        @Html.HiddenFor(o => o.TestBeforePicture)
+                                        @Html.HiddenFor(o => o.TestAfterPicture)
                                     </td>
                                     <td style="width: 10vw;"><h5>SP#</h5></td>
                                     <td style="width: 20vw;">
@@ -1425,7 +1427,7 @@
         });
 
         $.ajax({
-            url: "@Url.Action("FailMail", "MockupOvenTest", new { Area = "BulkFGT" })",
+            url: "@Url.Action("FailMail", "MockupWash", new { Area = "BulkFGT" })",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({ ReportNo: $('#ReportNo').val(), TO: to, CC: cc }),

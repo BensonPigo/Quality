@@ -17,12 +17,13 @@ namespace Quality.Controllers
         private readonly ILoginService _LoginService;
         private string WebPortalURL = ConfigurationManager.AppSettings["WebPortalURL"];
         private static readonly string CryptoKey = ConfigurationManager.AppSettings["CryptoKey"].ToString();
-
+        string OnlineHelpURL = System.Configuration.ConfigurationManager.AppSettings["OnlineHelpURL"].ToString();
         public HomeController()
         {
             _LoginService = new LoginService();
             if (this.Factorys == null || this.Factorys.Count() == 0)
                 this.Factorys = _LoginService.GetFactory();
+            this.OnlineHelp = OnlineHelpURL;
         }
 
         public ActionResult Index()
