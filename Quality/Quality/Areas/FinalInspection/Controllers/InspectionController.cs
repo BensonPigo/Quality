@@ -19,7 +19,6 @@ namespace Quality.Areas.FinalInspection.Controllers
 {
     public class InspectionController : BaseController
     {
-        private string WebHost = ConfigurationManager.AppSettings["WebHost"];
         private string IsTest = ConfigurationManager.AppSettings["IsTest"];
 
         public InspectionController()
@@ -945,11 +944,7 @@ msg.WithInfo('{MoistureResult.ErrorMessage}');
                 {
                     bool test = IsTest.ToLower() == "true";
 
-                    if (test)
-                    {
-                        // 如果是測試則抓local host
-                        WebHost = Request.Url.Scheme + @"://" + Request.Url.Authority + "/";
-                    }
+                    string WebHost = Request.Url.Scheme + @"://" + Request.Url.Authority + "/";
                     Qservice.SendMail(model.FinalInspectionID, WebHost, test);
                 }
                 else

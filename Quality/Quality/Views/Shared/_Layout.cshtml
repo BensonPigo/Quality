@@ -30,16 +30,15 @@
     <title>Quality Web</title>
 
     @{
-        string WebPortalURL = ConfigurationManager.AppSettings["WebPortalURL"].ToString();
-        string WebPortalURL_HomePage = ConfigurationManager.AppSettings["WebPortalURL_HomePage"].ToString();
-
         string FactoryID = string.Empty;
         string SelectedMenu = string.Empty;
         List<Quality_Menu> menus = new List<Quality_Menu>();
+
+        string topPage = Request.Url.Scheme + @"://" + Request.Url.Authority + "/Home/Login";
         if (Session.Keys.Count <= 4)
         {
             Response.Write("Please login again。</br></br>");
-            Response.Write($@"<a href=""{WebPortalURL}"">Login</a>");
+            Response.Write($@"<a href=""{topPage}"">Login</a>");
 
             Response.End();
         }
@@ -162,7 +161,7 @@
 
             <ul class="header-menu light">
                 <li>
-                    <a href="@WebPortalURL_HomePage">
+                    <a href="@topPage">
                         <i class="icon-pol"></i>
                         <span>Home</span>
                     </a>

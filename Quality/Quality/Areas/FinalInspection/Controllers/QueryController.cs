@@ -37,7 +37,6 @@ namespace Quality.Areas.FinalInspection.Controllers
         private QueryService Service = new QueryService();
         private IOrdersProvider _IOrdersProvider;
         public IFinalInspection_MeasurementProvider _FinalInspection_MeasurementProvider { get; set; }
-        private string WebHost = ConfigurationManager.AppSettings["WebHost"];
         private string IsTest = ConfigurationManager.AppSettings["IsTest"];
 
         public QueryController()
@@ -368,13 +367,8 @@ namespace Quality.Areas.FinalInspection.Controllers
 
             QueryReport model = (QueryReport)TempData["Model"];
             TempData["Model"] = model;
-
-            if (test)
-            {
-                // 如果是測試則抓local host
-                WebHost = Request.Url.Scheme + @"://" + Request.Url.Authority + "/";
-            }
-
+            string WebHost = Request.Url.Scheme + @"://" + Request.Url.Authority + "/";
+         
             var result = Service.SendMail(model.FinalInspection.ID, WebHost, test);
 
             return Json(result);
