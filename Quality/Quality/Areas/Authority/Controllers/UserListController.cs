@@ -58,15 +58,7 @@ namespace Quality.Areas.Authority.Controllers
             this.CheckSession();
 
             UserList model = new UserList();
-
-            if (this.UserID == "SCIMIS")
-            {
-                model = _AuthorityService.GetAlUser(string.Empty);
-            }
-            else
-            {
-                model = _AuthorityService.GetAlUser(this.FactoryID);
-            }
+            model = _AuthorityService.GetAlUser();
             return Json(model);
         }
 

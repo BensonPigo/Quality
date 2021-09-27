@@ -23,7 +23,7 @@ namespace BusinessLogicLayer.Interface
         DatabaseObject.ResultModel.Quality_Position Update_Position_Detail(Quality_Position_Request Req);
         DatabaseObject.ResultModel.Quality_Position Create_Position_Detail(Quality_Position_Request Req);
 
-        UserList GetAlUser(string FactoryID);
+        UserList GetAlUser();
         List<SelectListItem> GetPositionList(string FactoryID);
         UserList_Authority ImportUsers(List<UserList_Browse> DataList);
 

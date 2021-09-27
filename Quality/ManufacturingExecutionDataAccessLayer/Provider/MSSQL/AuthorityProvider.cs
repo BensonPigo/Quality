@@ -264,7 +264,7 @@ where p.ID=@ID AND m.ID='{data.MenuID}'
             return result;
         }
         
-        public IList<UserList_Browse> GetAllUser(string FactoryID)
+        public IList<UserList_Browse> GetAllUser()
         {
             StringBuilder SbSql = new StringBuilder();
 
@@ -277,7 +277,6 @@ select DISTINCT
 ,Position
 from Production.dbo.Pass1 p 
 WHERE 1=1
-{(string.IsNullOrEmpty(FactoryID) ? "" : $"AND p.Factory like '%{FactoryID}%' ")}
 AND NOT EXISTS
 (
 	SELECT 1 
@@ -294,7 +293,6 @@ select DISTINCT
 ,Position
 from ManufacturingExecution.dbo.Pass1 p 
 WHERE 1=1
-{(string.IsNullOrEmpty(FactoryID) ? "" : $"AND p.Factory like '%{FactoryID}%' ")}
 AND NOT EXISTS
 (
 	SELECT 1 

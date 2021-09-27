@@ -28,7 +28,7 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
 
         bool ImportUsers(List<UserList_Browse> DataList);
         IList<SelectListItem> GetPositionList(string FactoryID);
-        IList<UserList_Browse> GetAllUser(string FactoryID);
+        IList<UserList_Browse> GetAllUser();
 
         bool Update_Brand(Quality_Pass1 Item);
 

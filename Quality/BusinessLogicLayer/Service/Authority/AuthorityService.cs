@@ -218,7 +218,7 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public UserList GetAlUser(string FactoryID)
+        public UserList GetAlUser()
         {
             UserList result = new UserList();
 
@@ -226,7 +226,7 @@ namespace BusinessLogicLayer.Service
             {
                 _AuthorityProvider = new AuthorityProvider(Common.ManufacturingExecutionDataAccessLayer);
 
-                List<UserList_Browse> list = _AuthorityProvider.GetAllUser(FactoryID).ToList();
+                List<UserList_Browse> list = _AuthorityProvider.GetAllUser().ToList();
 
                 result.DataList = list;
                 result.Result = true;

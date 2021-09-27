@@ -18,7 +18,7 @@ namespace BusinessLogicLayer.Service.Tests
             try
             {
                 IAuthorityService _AuthorityService = new AuthorityService();
-                var result = _AuthorityService.GetAlUser("esp");
+                var result = _AuthorityService.GetAlUser();
 
                 Assert.IsTrue(true);
             }
