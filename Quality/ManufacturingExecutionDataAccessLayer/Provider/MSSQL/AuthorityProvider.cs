@@ -274,14 +274,14 @@ select DISTINCT
 [Select] = Cast(0 as bit)
 , UserID = p.ID
 ,p.Name
-,Position = ''--po.ID
+,Position
 from Production.dbo.Pass1 p 
 WHERE 1=1
-{(string.IsNullOrEmpty(FactoryID) ? "" : $"AND p.Factory='{FactoryID}' ")}
+{(string.IsNullOrEmpty(FactoryID) ? "" : $"AND p.Factory like '%{FactoryID}%' ")}
 AND NOT EXISTS
 (
 	SELECT 1 
-	FROM Quality_Pass1 p1
+	FROM ManufacturingExecution.dbo.Quality_Pass1 p1
 	WHERE p.ID=p1.ID
 ) 
 
@@ -291,14 +291,14 @@ select DISTINCT
 [Select] = Cast(0 as bit)
 , UserID = p.ID
 ,p.Name
-,Position = ''--po.ID
+,Position
 from ManufacturingExecution.dbo.Pass1 p 
 WHERE 1=1
-{(string.IsNullOrEmpty(FactoryID) ? "" : $"AND p.Factory='{FactoryID}' ")}
+{(string.IsNullOrEmpty(FactoryID) ? "" : $"AND p.Factory like '%{FactoryID}%' ")}
 AND NOT EXISTS
 (
 	SELECT 1 
-	FROM Quality_Pass1 p1
+	FROM ManufacturingExecution.dbo.Quality_Pass1 p1
 	WHERE p.ID=p1.ID
 ) 
 

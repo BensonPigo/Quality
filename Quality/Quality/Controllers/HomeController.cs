@@ -15,7 +15,6 @@ namespace Quality.Controllers
     public class HomeController : BaseController
     {
         private readonly ILoginService _LoginService;
-        private string WebPortalURL = ConfigurationManager.AppSettings["WebPortalURL"];
         private static readonly string CryptoKey = ConfigurationManager.AppSettings["CryptoKey"].ToString();
         string OnlineHelpURL = System.Configuration.ConfigurationManager.AppSettings["OnlineHelpURL"].ToString();
         public HomeController()

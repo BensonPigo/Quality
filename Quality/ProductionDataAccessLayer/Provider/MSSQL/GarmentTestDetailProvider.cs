@@ -353,11 +353,12 @@ where ID = @ID and No = @No
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
                 { "@ID", DbType.String, ID } ,
+                { "@No", DbType.String, No } ,
                 { "@Status", DbType.String, Status } ,
             };
 
             string sqlcmd = @"
-Update GarmentTest_Detail set Status=@Status where id = @ID
+Update GarmentTest_Detail set Status = @Status where id = @ID and No = @No
 ";
             return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
         }
