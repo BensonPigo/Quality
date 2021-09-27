@@ -189,6 +189,29 @@ namespace BusinessLogicLayer.Service.BulkFGT
             try
             {
                 _IColorFastnessDetailProvider = new ColorFastnessDetailProvider(_ISQLDataTransaction);
+
+                // 若表身資料重複 跳訊息
+                
+
+                foreach (var item in source.Detail)
+                {
+                    int repeatCnt = source.Detail.Where(s => s.ID == item.ID && s.ColorFastnessGroup == item.ColorFastnessGroup && s.Seq == item.Seq).Count();
+                    if (repeatCnt > 1)
+                    {
+                        baseResult.ErrorMessage = $@"<Body: {item.ColorFastnessGroup}>, <Seq1: {item.Seq}> is repeat cannot save.";
+                        baseResult.Result = false;
+                        return baseResult;
+                    }
+
+                    if (string.IsNullOrEmpty(item.SEQ1) == true || string.IsNullOrEmpty(item.SEQ2))
+                    {
+                        baseResult.ErrorMessage = $"<SEQ#> cannot be empty.";
+                        baseResult.Result = false;
+                        return baseResult;
+                    }
+                }
+
+
                 _IColorFastnessDetailProvider.Save_ColorFastness(source, Mdivision, UserID, out string NewID);
                 _ISQLDataTransaction.Commit();
 
@@ -306,7 +329,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public Fabric_ColorFastness_Detail_ViewModel ToPDF(string ID, bool test)
+        public Fabric_ColorFastness_Detail_ViewModel ToPDF(string ID, bool test = false )
         {
             Fabric_ColorFastness_Detail_ViewModel result = new Fabric_ColorFastness_Detail_ViewModel();
             _IColorFastnessDetailProvider = new ColorFastnessDetailProvider(Common.ProductionDataAccessLayer);
@@ -441,7 +464,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     worksheet.Cells[13 + k, 9] = row.ResultChange;
                     worksheet.Cells[13 + k, 10] = row.StainingScale.ToString();
                     worksheet.Cells[13 + k, 11] = row.ResultStain;
-                    worksheet.Cells[13 + k, 12] = row.Remark.ToString().Trim();
+                    worksheet.Cells[13 + k, 12] = row.Remark;
                     rang.Font.Bold = false;
                     rang.Font.Size = 12;
 
