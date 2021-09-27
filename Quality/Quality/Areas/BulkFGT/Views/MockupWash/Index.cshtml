@@ -143,11 +143,11 @@
         <header class="page-header">
             <div style="float:left">
                 <h3>
-                    <span>Mockup Oven Test</span>
+                    <span>Mockup Wash Test</span>
                 </h3>
                 <div class="breadcrumb">
                     <div>Home</div>
-                    <div class="current">Mockup Oven Test</div>
+                    <div class="current">Mockup Wash Test</div>
                 </div>
             </div>
             <div class="breadcrumb queryHeader" style="justify-content: flex-end;">
@@ -399,8 +399,13 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td><h5>Other Method</h5></td>
-                                    <td>@Html.CheckBoxFor(o => o.OtherMethod, new { @class = "bigSize OnlyEdit", @onchange = "changeOtherMethod()" })</td>
+                                    <td><h5>Testing Method</h5></td>
+                                    <td>
+                                        <div class="input-group">
+                                            @Html.CheckBoxFor(o => o.OtherMethod, new { @class = "bigSize OnlyEdit", @onchange = "changeOtherMethod()", @style= "flex-grow: 0;" })
+                                            <label for="OtherMethod" style="padding: 5px;">Other Method</label>
+                                        </div>
+                                    </td>
                                     <td colspan="4">
                                         @Html.TextBoxFor(o => o.TestingMethod, new { @class= "OnlyEdit" })
                                         <select id="MethodID" name="MethodID" style="width:70%;" class="OnlyEdit">
