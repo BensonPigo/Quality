@@ -1,7 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@model System.Web.Mvc.HandleErrorInfo
+<!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width" />
     <title>錯誤</title>
 </head>
@@ -10,5 +11,17 @@
         <h1>錯誤。</h1>
         <h2>處理您的要求時發生錯誤。</h2>
     </hgroup>
+    <div class="errorMSG" style="display:none;">
+        @if (Model != null)
+        { 
+            <div>
+                <p>
+                    <b>Exception:</b> @Model.Exception.Message<br />
+                    <b>Controller:</b> @Model.ControllerName<br />
+                    <b>Action:</b> @Model.ActionName
+                </p>
+            </div>
+        }
+    </div>
 </body>
 </html>
