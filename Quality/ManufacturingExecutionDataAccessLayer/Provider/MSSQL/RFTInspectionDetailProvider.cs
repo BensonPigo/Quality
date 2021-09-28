@@ -29,7 +29,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 
             string sqlcmd = @"
 select oq.Qty,insp.cnt,* 
-from Production.dbo.Order_Qty oq
+from MainServer.Production.dbo.Order_Qty oq
 outer apply(
 	select cnt = count(1) 
 	from ManufacturingExecution.dbo.Rft_Inspection  i

@@ -181,7 +181,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             };
             string sqlcmd = @"
 Select distinct Article
-From Production.dbo.Order_Qty
+From MainServer.Production.dbo.Order_Qty
 where ID = @OrderID
 ";
              return ExecuteList<Order_Qty>(CommandType.Text, sqlcmd, objParameter);
@@ -198,8 +198,8 @@ where ID = @OrderID
 select o.OrderTypeID,[OrderID] = o.ID,o.StyleID,o.SeasonID
 ,[Unit] = IIF(isnull(o.sizeUnit,'') = '',s.SizeUnit,o.SizeUnit)
 ,[Factory] = o.FactoryID
-from Production.dbo.Orders o
-left join Production.dbo.Style s on o.StyleUkey = s.Ukey
+from MainServer.Production.dbo.Orders o
+left join MainServer.Production.dbo.Style s on o.StyleUkey = s.Ukey
 where o.ID = @OrderID
 --and o.FactoryID = @FactoryID
 ";
@@ -272,7 +272,7 @@ select value = dbo.calculateSizeSpec(@DiffValue, @Tol,'INCH');
         public DataTable Get_Measured_Detail(Measurement_Request measurement)
         {
             string styleUkey = string.Empty;
-            DataTable dtStyle = ExecuteDataTable(CommandType.Text, $@"Select StyleUkey from Production.dbo.Orders where id = '{measurement.OrderID}'", new SQLParameterCollection());
+            DataTable dtStyle = ExecuteDataTable(CommandType.Text, $@"Select StyleUkey from MainServer.Production.dbo.Orders where id = '{measurement.OrderID}'", new SQLParameterCollection());
             if (dtStyle.Rows.Count > 0)
             {
                 styleUkey = dtStyle.Rows[0]["StyleUkey"].ToString();
@@ -306,7 +306,7 @@ declare @no nvarchar(66)
 declare @time nvarchar(5)
 declare @diffno int='1'
 declare @orderid nvarchar(16) = @_OrderID
-declare @MDivision nvarchar(5) = (select MDivisionID from Production.dbo.Factory where id = @Factory)
+declare @MDivision nvarchar(5) = (select MDivisionID from MainServer.Production.dbo.Factory where id = @Factory)
 --declare @shiftTabele table(MDivision varchar(8),Shift varchar(5),StartDate date,BeginTime time,EndTime time,ActualBeginTime datetime,ActualEndTime datetime)
 --declare @workStartDatetime datetime
 --declare @workEndDatetime datetime
@@ -413,7 +413,7 @@ where   ID = @POID
 exec CopyStyle_ToMeasurement @userID,@StyleUkey;
 
 select  @SizeUnit = SizeUnit
-from    Production.dbo.Style
+from    MainServer.Production.dbo.Style
 where   Ukey = @StyleUkey
 
 SELECT  a.StyleUkey

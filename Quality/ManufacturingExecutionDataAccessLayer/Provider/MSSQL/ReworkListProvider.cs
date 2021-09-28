@@ -46,7 +46,7 @@ outer apply(
 				select distinct [Description] = dp.Description
 				,AreaCode,DefectCode,PMS_RFTBACriteriaID
 				from RFT_Inspection_Detail ins2 with(nolock) 
-				left join Production.dbo.DropDownList dp with (nolock) on ins2.PMS_RFTRespID = dp.id
+				left join MainServer.Production.dbo.DropDownList dp with (nolock) on ins2.PMS_RFTRespID = dp.id
 				and dp.Type = 'PMS_RFTResp'
 				where ins2.ID=ins.ID
 			)s
@@ -76,7 +76,7 @@ order by ReworkCardType desc, ins.AddDate
             SbSql.Append("union all" + Environment.NewLine);
             SbSql.Append("SELECT distinct r.OrderID, Style = s.ID, r.Article, r.Size" + Environment.NewLine);
             SbSql.Append("FROM [RFT_Inspection] r" + Environment.NewLine);
-            SbSql.Append("left join Production.dbo.[Style] s on r.StyleUkey = s.Ukey" + Environment.NewLine);
+            SbSql.Append("left join MainServer.Production.dbo.[Style] s on r.StyleUkey = s.Ukey" + Environment.NewLine);
             SbSql.Append("Where 1 = 1" + Environment.NewLine);
 
             if (!string.IsNullOrEmpty(Item.FactoryID)) { SbSql.Append("And r.FactoryID = @FactoryID" + Environment.NewLine); }

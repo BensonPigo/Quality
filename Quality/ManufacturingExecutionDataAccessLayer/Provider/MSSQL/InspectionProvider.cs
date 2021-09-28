@@ -35,14 +35,14 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
                 @"
 -- 塞入Location
 
-select  ID, cnt = count(1),row = ROW_NUMBER()over(order by id)into #tmpfrom Production.dbo.Orders awhere PulloutComplete = 0and Category = 's'and OnSiteSample = 0and junk = 0and brandid = @BrandIDand FtyGroup = @FtyGroupand qty > 0
-and not exists (		select 1		from Production.dbo.Order_Location b		where a.ID = b.OrderId	)and    exists (			    select 1	    from Production.dbo.Style_Location b	    where a.StyleUkey = b.StyleUkey    )
+select  ID, cnt = count(1),row = ROW_NUMBER()over(order by id)into #tmpfrom MainServer.Production.dbo.Orders awhere PulloutComplete = 0and Category = 's'and OnSiteSample = 0and junk = 0and brandid = @BrandIDand FtyGroup = @FtyGroupand qty > 0
+and not exists (		select 1		from MainServer.Production.dbo.Order_Location b		where a.ID = b.OrderId	)and    exists (			    select 1	    from MainServer.Production.dbo.Style_Location b	    where a.StyleUkey = b.StyleUkey    )
 group by ID
 
 
 declare @cnt int = (select count(1) from #tmp)
 declare @OrderID varchar(16)
-declare @Num int = 1;while @Num <= @cntbegin		set @OrderID = (select top 1 id from #tmp where row = @Num)	exec Production.dbo.Ins_OrderLocation @OrderID	set @Num = @Num + 1enddrop table #tmp
+declare @Num int = 1;while @Num <= @cntbegin		set @OrderID = (select top 1 id from #tmp where row = @Num)	exec MainServer.Production.dbo.Ins_OrderLocation @OrderID	set @Num = @Num + 1enddrop table #tmp
 
 
 -- 撈資料
@@ -51,9 +51,9 @@ select  [OrderID] = o.ID
 	, oq.Article
 	, [Size] = oq.SizeCode
 	, [ProductType] = ol.Location
-from [Production].[dbo].Orders o with(nolock)
-inner join [Production].[dbo].Order_Qty oq with(nolock) on o.ID = oq.ID
-inner join [Production].[dbo].Order_Location ol with(nolock) on o.ID = ol.OrderId
+from MainServer.[Production].[dbo].Orders o with(nolock)
+inner join MainServer.[Production].[dbo].Order_Qty oq with(nolock) on o.ID = oq.ID
+inner join MainServer.[Production].[dbo].Order_Location ol with(nolock) on o.ID = ol.OrderId
 left join (	
 	select OrderID,Article,Size,Location, InspectionQty = count(1)
 	from RFT_Inspection r with(nolock)	
