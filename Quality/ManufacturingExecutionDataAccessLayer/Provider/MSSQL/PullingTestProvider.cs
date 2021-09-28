@@ -430,6 +430,7 @@ select    p.ReportNo
 		,p.Result
 		,p.TestItem
 		,p.PullForceUnit
+		,p.PullForce
 		,Sec = p.Time
 		, [Fabric Ref#] = p.FabricRefno
 		, [Accessory Ref#] = p.AccRefno

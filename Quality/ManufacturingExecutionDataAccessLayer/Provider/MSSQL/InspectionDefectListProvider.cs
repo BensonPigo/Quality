@@ -34,8 +34,8 @@ Select OrderID = o.ID
 	,DefectType = Concat (rfd.AreaCode,  ' -', rfd.DefectCode, ' -', d.Description, ' -', rfd.PMS_RFTBACriteriaID)
 	,rfd.DefectPicture
 from Orders o 
-LEFT JOIN ManufacturingExecution.dbo.RFT_Inspection rf on o.ID = rf.OrderID 
-LEFT JOIN ManufacturingExecution.dbo.RFT_Inspection_Detail rfd ON rf.ID = rfd.ID
+INNER JOIN ExtendServer.ManufacturingExecution.dbo.RFT_Inspection rf on o.ID = rf.OrderID 
+INNER JOIN ExtendServer.ManufacturingExecution.dbo.RFT_Inspection_Detail rfd ON rf.ID = rfd.ID
 LEFT JOIN DropdownList d ON d.Type='PMS_RFTResp' AND d.ID = rfd.PMS_RFTRespID
 where o.ID = @OrderID
 ";

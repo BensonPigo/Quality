@@ -46,7 +46,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string SizeSpec { get; set; }
         public decimal ArriveQty { get; set; }
         public DateTime? InspDeadline { get; set; }
-        public string Result { get; set; } // Pass / Fail
+        public string OverAllResult { get; set; } // Pass / Fail
 
         public bool NonOven { get; set; }
         public string OvenResult { get; set; }
@@ -74,6 +74,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string Seq2 { get; set; }
         public string Seq { get; set; }
         public string POID { get; set; }
+        public string OverAllResult { get; set; } // Pass / Fail
 
         public string SCIRefno { get; set; }
         public string WKNo { get; set; }
@@ -128,6 +129,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string Seq2 { get; set; }
         public string Seq { get; set; }
         public string POID { get; set; }
+        public string OverAllResult { get; set; } // Pass / Fail
 
         public string SCIRefno { get; set; }
         public string WKNo { get; set; }

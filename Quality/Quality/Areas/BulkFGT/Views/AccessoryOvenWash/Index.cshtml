@@ -274,7 +274,7 @@
                                 <th style="width:5vw">Size</th>
                                 <th style="width:5vw">Arrive Qty</th>
                                 <th style="width:5vw">Insp. Deadline</th>
-                                <th style="width:5vw">Oven All Result</th>
+                                <th style="width:5vw">Over All Result</th>
                                 <th style="width:5vw">Oven N/A</th>
                                 <th style="width:5vw">Oven Result</th>
                                 <th style="width:5vw">Oven Scale</th>
@@ -331,7 +331,18 @@
                                         @Html.ValueFor(modelItem => Model.DataList[i].InspDeadline, "{0:yyyy/MM/dd}")
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => Model.DataList[i].Result)
+                                        @{
+                                            if (Model.DataList[i].OverAllResult == "Pass")
+
+                                            {
+                                                styleColor = "blue";
+                                            }
+                                            else
+                                            {
+                                                styleColor = "red";
+                                            }
+                                        }
+                                        <font color="@styleColor">@Html.DisplayFor(modelItem => Model.DataList[i].OverAllResult)</font>
                                     </td>
                                     <td class="CheckBoxColor">
                                         @Html.CheckBox("DataList[" + i + "].NonOven", Convert.ToBoolean(Model.DataList[i].NonOven))

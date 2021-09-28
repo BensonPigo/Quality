@@ -40,11 +40,11 @@
 
     <header class="page-header">
         <h3>
-            <i class=""></i><span>Style List</span>
+            <i class=""></i><span>Inspection Defect List</span>
         </h3>
         <div class="breadcrumb">
             <div>Home</div>
-            <div class="current">Style List</div>
+            <div class="current">Inspection Defect List</div>
         </div>
     </header>
 
@@ -98,7 +98,8 @@
                                         @Html.DisplayFor(modelItem => item.Size)
                                     </td>
                                     <td>
-                                        @item.InspectionDate
+                                        @{ string InspectionDate = item.InspectionDate.HasValue ? item.InspectionDate.Value.ToShortDateString() : string.Empty;}
+                                        @InspectionDate
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.DefectType)

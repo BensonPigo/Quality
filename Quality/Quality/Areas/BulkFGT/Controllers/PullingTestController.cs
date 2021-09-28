@@ -317,6 +317,18 @@ namespace Quality.Areas.BulkFGT.Controllers
                 Result = Service.GetReportNoList(Req);
                 Result.ReportNo_Query = "";
                 Result.Detail = new PullingTest_Result();
+                Result.ReportNo_Query = "";
+
+                if (Result.ReportNo_Source != null && Result.ReportNo_Source.Any())
+                {
+                    if (string.IsNullOrEmpty(Result.ReportNo_Query))
+                    {
+                        Result.ReportNo_Query = Result.ReportNo_Source.FirstOrDefault().Value;
+                    }
+
+                    Result.Detail = Service.GetData(Result.ReportNo_Query).Detail;
+                }
+
             }
 
             ViewBag.FactoryID = this.FactoryID;

@@ -62,7 +62,7 @@ OUTER APPLY(
 )Handle
 OUTER APPLY(
 	select Val = ROUND( SUM(IIF(Status = 'Pass',1,0)) * 1.0  / COUNT(1) *1.0  *100 , 2)
-    FROM ManufacturingExecution.dbo.RFT_Inspection  rft WITH(NOLOCK)
+    FROM ExtendServer.ManufacturingExecution.dbo.RFT_Inspection  rft WITH(NOLOCK)
 	WHERE rft.StyleUkey = s.Ukey
 )RFT
 WHERE 1=1

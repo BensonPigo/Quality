@@ -57,15 +57,15 @@
                         <div>
                             @Html.Hidden("StyleUkey")
                             <label class="QueryLab">Brand</label>
-                            <input type="text" name="BrandID" id="txtBrand" />
+                            <input type="text" name="BrandID" id="txtBrand" value="@Model.BrandID" />
                             <input id="btnBrand" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
                             &nbsp;&nbsp;
                             <label class="QueryLab">Season</label>
-                            <input type="text" name="SeasonID" id="txtSeason" />
+                            <input type="text" name="SeasonID" id="txtSeason" value="@Model.SeasonID"/>
                             <input id="btnSeason" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
                             &nbsp;&nbsp;
                             <label class="QueryLab">Style</label>
-                            <input type="text" name="StyleID" id="txtStyle" />
+                            <input type="text" name="StyleID" id="txtStyle" value="@Model.StyleID"/>
                             <input id="btnStyle" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
                             &nbsp;&nbsp;
                             <input type="submit" name="name" id="btnQuery" value="Query" />

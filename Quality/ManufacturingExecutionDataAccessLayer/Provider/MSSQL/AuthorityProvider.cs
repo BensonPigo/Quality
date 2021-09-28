@@ -275,12 +275,12 @@ select DISTINCT
 , UserID = p.ID
 ,p.Name
 ,Position
-from Production.dbo.Pass1 p 
+from [MainServer].Production.dbo.Pass1 p 
 WHERE 1=1
 AND NOT EXISTS
 (
 	SELECT 1 
-	FROM ManufacturingExecution.dbo.Quality_Pass1 p1
+	FROM Quality_Pass1 p1
 	WHERE p.ID=p1.ID
 ) 
 
@@ -291,12 +291,12 @@ select DISTINCT
 , UserID = p.ID
 ,p.Name
 ,Position
-from ManufacturingExecution.dbo.Pass1 p 
+from Pass1 p 
 WHERE 1=1
 AND NOT EXISTS
 (
 	SELECT 1 
-	FROM ManufacturingExecution.dbo.Quality_Pass1 p1
+	FROM Quality_Pass1 p1
 	WHERE p.ID=p1.ID
 ) 
 

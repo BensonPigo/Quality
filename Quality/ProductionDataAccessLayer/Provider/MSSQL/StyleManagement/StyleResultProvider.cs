@@ -84,42 +84,25 @@ WHERE Junk=0
             SQLParameterCollection listPar = new SQLParameterCollection();
             string sqlWhere = string.Empty;
             string sqlCol = string.Empty;
-            if (!string.IsNullOrEmpty(styleResult_Request.StyleUkey))
+
+            if (!string.IsNullOrEmpty(styleResult_Request.BrandID))
             {
-                sqlWhere += " and s.Ukey = @StyleUkey";
-                //listPar.Add(new SqlParameter("@StyleUkey", styleResult_Request.StyleUkey));
-
-                int Ukey = 0;
-                if (int.TryParse(styleResult_Request.StyleUkey, out Ukey))
-                {
-                    listPar.Add("@StyleUkey", DbType.Int64, Ukey);
-                }
-                else
-                {
-                    listPar.Add("@StyleUkey", DbType.Int64, 0);
-                }
+                sqlWhere += " and s.BrandID = @BrandID";
             }
-            else
+
+            if (!string.IsNullOrEmpty(styleResult_Request.SeasonID))
             {
-                if (!string.IsNullOrEmpty(styleResult_Request.BrandID))
-                {
-                    sqlWhere += " and s.BrandID = @BrandID";
-                }
-
-                if (!string.IsNullOrEmpty(styleResult_Request.SeasonID))
-                {
-                    sqlWhere += " and s.SeasonID = @SeasonID";
-                }
-
-                if (!string.IsNullOrEmpty(styleResult_Request.StyleID))
-                {
-                    sqlWhere += " and s.ID = @StyleID";
-                }
-
-                listPar.Add(new SqlParameter("@StyleID", styleResult_Request.StyleID));
-                listPar.Add(new SqlParameter("@BrandID", styleResult_Request.BrandID));
-                listPar.Add(new SqlParameter("@SeasonID", styleResult_Request.SeasonID));
+                sqlWhere += " and s.SeasonID = @SeasonID";
             }
+
+            if (!string.IsNullOrEmpty(styleResult_Request.StyleID))
+            {
+                sqlWhere += " and s.ID = @StyleID";
+            }
+
+            listPar.Add(new SqlParameter("@StyleID", styleResult_Request.StyleID));
+            listPar.Add(new SqlParameter("@BrandID", styleResult_Request.BrandID));
+            listPar.Add(new SqlParameter("@SeasonID", styleResult_Request.SeasonID));
 
             switch (styleResult_Request.CallType)
             {
@@ -132,7 +115,7 @@ WHERE Junk=0
         s.ProgramID,
         s.Description,
         [ProductType] = (   select  TOP 1 Name
-							from Production.dbo.Reason 
+							from Reason 
 							where ReasonTypeID = 'Style_Apparel_Type' and ID = s.ApparelType
                         ),
         s.StyleName";
@@ -146,31 +129,31 @@ WHERE Junk=0
         s.ProgramID,
         s.Description,
         [ProductType] = (   select  TOP 1 Name
-							from Production.dbo.Reason 
+							from Reason 
 							where ReasonTypeID = 'Style_Apparel_Type' and ID = s.ApparelType
                         ),
         [Article] = (   Stuff((
                                 Select concat( ',',Article)
-                                From Production.dbo.Style_Article with (nolock)
+                                From Style_Article with (nolock)
                                 Where StyleUkey = s.Ukey
                                 Order by Seq FOR XML PATH('')
                             ),1,1,'') 
                     ),
         s.StyleName,
         [SpecialMark] = (select Name 
-                        from Production.dbo.Reason WITH (NOLOCK) 
+                        from Reason WITH (NOLOCK) 
                         where   ReasonTypeID = 'Style_SpecialMark' and
                         	    ID = s.SpecialMark
                         ),
         [SMR] = (select Concat (ID, ' ', Name)
-                    from   Production.dbo.pass1 with (nolock)
+                    from   pass1 with (nolock)
                     where   ID = iif(s.Phase = 'Bulk', s.BulkSMR, s.SampleSMR)
                 ),
         Handle = (select Concat (ID, ' ', Name)
-                    from   Production.dbo.pass1 with (nolock)
+                    from   pass1 with (nolock)
                     where   ID = iif(s.Phase = 'Bulk', s.BulkMRHandle, s.SampleMRHandle)
                 ),
-        [RFT] = ''";
+        [RFT] = LEFT( CAST( RFT.Val as varchar),5) ";
                     break;
                 default:
                     break;
@@ -178,8 +161,13 @@ WHERE Junk=0
 
             string sqlGet_StyleResult_Browse = $@"
 select  {sqlCol}
-,StyleRRLRPath = (select StyleRRLRPath from System)
-from    Production.dbo.Style s with (nolock)
+    ,StyleRRLRPath = (select StyleRRLRPath from System)
+from    Style s with (nolock)
+OUTER APPLY(
+	select Val = ROUND( SUM(IIF(Status = 'Pass',1,0)) * 1.0  / COUNT(1) *1.0  *100 , 2)
+    FROM [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection  rft WITH(NOLOCK)
+	WHERE rft.StyleUkey = s.Ukey
+)RFT
 where   1 = 1 {sqlWhere}
 ";
             return ExecuteList<StyleResult_ViewModel>(CommandType.Text, sqlGet_StyleResult_Browse, listPar);
@@ -240,28 +228,28 @@ from Orders o
 inner join Style s on s.ID = o.StyleID
 outer apply(
 	select val = COUNT(r.ID)
-	from ManufacturingExecution.dbo.RFT_Inspection r
+	from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection r
 	where r.OrderID = o.ID
 )Inspected
 
 outer apply(
 	select val = COUNT(r.ID)
-	from ManufacturingExecution.dbo.RFT_Inspection r
+	from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection r
 	where r.OrderID = o.ID and r.Status='Pass'
 )RFT
 
 outer apply(
 	select val = COUNT(r.ID)
-	from ManufacturingExecution.dbo.RFT_Inspection r
+	from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection r
 	where r.OrderID = o.ID 
 	AND (
 		NOT EXISTS(--沒有 RFT_Inspeciton_Detail
 			select 1
-			from ManufacturingExecution.dbo.RFT_Inspection_Detail rd where r.ID = rd.ID	
+			from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection_Detail rd where r.ID = rd.ID	
 		)
 		or NOT EXISTS( --RFT_Inspection_Detail 所有資料 PMS_RFTACriterialID 皆為空
 			select 1
-			from ManufacturingExecution.dbo.RFT_Inspection_Detail rd where r.ID = rd.ID AND rd.PMS_RFTBACriteriaID != ''
+			from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection_Detail rd where r.ID = rd.ID AND rd.PMS_RFTBACriteriaID != ''
 		)
 	)
 )BAProduct
@@ -327,28 +315,28 @@ from Orders o
 inner join Style s on s.ID = o.StyleID
 outer apply(
 	select val = COUNT(r.ID)
-	from ManufacturingExecution.dbo.RFT_Inspection r
+	from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection r
 	where r.OrderID = o.ID
 )Inspected
 
 outer apply(
 	select val = COUNT(r.ID)
-	from ManufacturingExecution.dbo.RFT_Inspection r
+	from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection r
 	where r.OrderID = o.ID and r.Status='Pass'
 )RFT
 
 outer apply(
 	select val = COUNT(r.ID)
-	from ManufacturingExecution.dbo.RFT_Inspection r
+	from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection r
 	where r.OrderID = o.ID 
 	AND (
 		NOT EXISTS(--沒有 RFT_Inspeciton_Detail
 			select 1
-			from ManufacturingExecution.dbo.RFT_Inspection_Detail rd where r.ID = rd.ID	
+			from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection_Detail rd where r.ID = rd.ID	
 		)
 		or NOT EXISTS( --RFT_Inspection_Detail 所有資料 PMS_RFTACriterialID 皆為空
 			select 1
-			from ManufacturingExecution.dbo.RFT_Inspection_Detail rd where r.ID = rd.ID AND rd.PMS_RFTBACriteriaID != ''
+			from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection_Detail rd where r.ID = rd.ID AND rd.PMS_RFTBACriteriaID != ''
 		)
 	)
 )BAProduct
@@ -495,7 +483,7 @@ SELECT [Type] = IIF( EXISTS(
 	select SpecialMark,r.Name
 	from Style s
 	inner join Reason r on s.SpecialMark = r.ID AND r.ReasonTypeID= 'Style_SpecialMark'
-	where s.Ukey=86967
+	where s.ID = @StyleID AND s.BrandID = @BrandID AND s.SeasonID = @SeasonID
 	AND r.Name IN (
 		'MATCH TEAMWEAR',
 		'BASEBALL ON FIELD',

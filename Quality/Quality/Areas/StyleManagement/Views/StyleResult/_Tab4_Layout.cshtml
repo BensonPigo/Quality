@@ -42,7 +42,10 @@
                     <td style="color:@color">
                         @item.LastResult
                     </td>
-                    <td>@item.LastTestDate</td>
+                    <td>
+                        @{ string LastTestDate = item.LastTestDate.HasValue ? item.LastTestDate.Value.ToShortDateString() : string.Empty;}
+                        @LastTestDate
+                    </td>
                 </tr>
             }
         }

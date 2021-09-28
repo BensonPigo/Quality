@@ -60,6 +60,9 @@ msg.WithError('{ex.Message}');
                 int r = _AccessoryOvenWashProvider.Update_AIR_Laboratory(Req);
 
                 result.Result = r > 0;
+
+                _AccessoryOvenWashProvider.Update_AIR_Laboratory_AllResult(Req);
+
                 _ISQLDataTransaction.Commit();
             }
             catch (Exception ex)
@@ -108,23 +111,29 @@ msg.WithError('{ex.Message}');
         public Accessory_Oven UpdateOven(Accessory_Oven Req)
         {
             Accessory_Oven result = new Accessory_Oven();
-
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             try
             {
-                _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(Common.ProductionDataAccessLayer);
+                _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(_ISQLDataTransaction);
 
                 result.ScaleData = _AccessoryOvenWashProvider.GetScaleData();
                 int r = _AccessoryOvenWashProvider.UpdateOvenTest(Req);
 
                 result.Result = r > 0;
+
+                _AccessoryOvenWashProvider.Update_Oven_AllResult(Req);
+
+                _ISQLDataTransaction.Commit();
             }
             catch (Exception ex)
             {
+                _ISQLDataTransaction.RollBack();
                 result.Result = false;
                 result.ErrorMessage = $@"
 msg.WithError('{ex.Message}');
 ";
             }
+            finally { _ISQLDataTransaction.CloseConnection(); }
 
             return result;
         }
@@ -196,21 +205,31 @@ msg.WithError('{ex.Message}');
         {
             Accessory_Wash result = new Accessory_Wash();
 
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             try
             {
-                _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(Common.ProductionDataAccessLayer);
+                _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(_ISQLDataTransaction);
 
                 result.ScaleData = _AccessoryOvenWashProvider.GetScaleData();
                 int r = _AccessoryOvenWashProvider.UpdateWashTest(Req);
 
                 result.Result = r > 0;
+
+                _AccessoryOvenWashProvider.Update_Wash_AllResult(Req);
+
+                _ISQLDataTransaction.Commit();
             }
             catch (Exception ex)
             {
+                _ISQLDataTransaction.RollBack();
                 result.Result = false;
                 result.ErrorMessage = $@"
 msg.WithError('{ex.Message}');
 ";
+            }
+            finally
+            {
+                _ISQLDataTransaction.CloseConnection();
             }
 
             return result;

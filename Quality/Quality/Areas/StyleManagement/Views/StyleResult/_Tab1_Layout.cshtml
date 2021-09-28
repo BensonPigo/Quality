@@ -58,8 +58,15 @@
                     <td>@item.SP</td>
                     <td>@item.SampleStage</td>
                     <td>@item.Factory</td>
-                    <td>@item.Delivery.Value.ToShortDateString()</td>
-                    <td>@item.SCIDelivery.Value.ToShortDateString()</td>
+                    <td>
+                    <td>
+                        @{ string Delivery = item.Delivery.HasValue ? item.Delivery.Value.ToShortDateString() : string.Empty;}
+                        @Delivery
+                    </td>
+                    <td>
+                        @{ string SCIDelivery = item.SCIDelivery.HasValue ? item.SCIDelivery.Value.ToShortDateString() : string.Empty;}
+                        @SCIDelivery
+                    </td>
                     <td>@item.InspectedQty</td>
                     <td>@item.RFT</td>
                     <td>@item.BAProduct</td>

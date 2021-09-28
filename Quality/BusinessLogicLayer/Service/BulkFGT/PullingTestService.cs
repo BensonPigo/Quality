@@ -184,6 +184,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _PullingTestProvider = new PullingTestProvider(Common.ManufacturingExecutionDataAccessLayer);
                 DataTable dt = _PullingTestProvider.GetData_DataTable(ReportNo);
+
+                string unit = dt.Rows[0]["PullForceUnit"].ToString();
+                dt.Columns["PullForceUnit"].ColumnName = unit;
+                dt.Rows[0][unit] = dt.Rows[0]["PullForce"].ToString();
+                dt.Columns.Remove("PullForce");
+
+
                 string mailBody = MailTools.DataTableChangeHtml(dt);
 
                 SendMail_Request sendMail_Request = new SendMail_Request()

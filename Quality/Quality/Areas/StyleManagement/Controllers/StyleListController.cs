@@ -34,7 +34,10 @@ namespace Quality.Areas.StyleManagement.Controllers
         {
             this.CheckSession();
 
-            StyleList model = new StyleList() { DataList = new List<StyleList>() };
+            StyleList model = new StyleList() 
+            { 
+                DataList = new List<StyleList>() 
+            };
             if (Req == null || (string.IsNullOrEmpty(Req.StyleID) && string.IsNullOrEmpty(Req.BrandID) && string.IsNullOrEmpty(Req.SeasonID)))
             {
                 model.MsgScript = $@"
@@ -51,6 +54,9 @@ msg.WithInfo('Style, Brand and Season cannot be empty.');
 msg.WithInfo('{model.ErrorMessage.Replace("\r\n", "<br />")}');
 ";
             }
+            model.BrandID = Req.BrandID;
+            model.SeasonID = Req.SeasonID;
+            model.StyleID = Req.StyleID;
 
             return View("Index", model);
         }

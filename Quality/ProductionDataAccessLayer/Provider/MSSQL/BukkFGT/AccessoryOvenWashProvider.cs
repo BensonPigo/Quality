@@ -155,6 +155,50 @@ AND Seq2 = @Seq2_{idx}
                 listPar.Add($"@NonWash_{idx}", DbType.Boolean, data.NonWash);
                 idx++;
             }
+
+            sqlCmd += $@" exec UpdateInspPercent 'AIRLab','{Req.OrderID}' ";
+
+            return ExecuteNonQuery(CommandType.Text, sqlCmd, listPar);
+        }
+
+        public int Update_AIR_Laboratory_AllResult(Accessory_ViewModel Req)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@ID", Req.OrderID);
+            listPar.Add("@AIRLaboratoryRemark", Req.Remark);
+            listPar.Add("@EditName", Req.EditBy);
+
+            string sqlCmd = string.Empty;
+
+            int idx = 0;
+            foreach (var data in Req.DataList)
+            {
+                sqlCmd += $@"
+UPDATE AIR_Laboratory 
+SET  Result =   CASE    WHEN NonOven = 1 AND NonWash = 1 THEN 'Pass' --兩個都不檢驗：直接整體PPass
+	                    WHEN NonOven = 0 AND NonWash = 1 AND OvenEncode = 1 THEN Oven  --Wash不檢驗 + OvenEncode = true：  OvenResult Pass則視作整體Pass
+	                    WHEN NonOven = 1 AND NonWash = 0 AND WashEncode = 1  THEN Wash--Oven不檢驗 + WashEncode = true：  WashResult Pass則視作整體Pass
+	                    ELSE (	--兩個都要檢驗，則套用以下判斷
+			                    CASE WHEN OvenEncode != 1 OR WashEncode != 1 OR Oven='' OR Wash= '' THEN ''   --其中一個未Encode或檢驗：  檢驗未完成，最終結果為空白
+					                    WHEN Oven='Fail' OR Wash= 'Fail' THEN 'Fail'  --其中一個Fail：最終結果 Fail
+			                    ELSE 'Pass'
+			                    END
+	                    )
+                END
+where POID = @ID
+AND Seq1 = @Seq1_{idx}
+AND Seq2 = @Seq2_{idx}
+";
+
+                listPar.Add($"@Seq1_{idx}", DbType.String, data.Seq1);
+                listPar.Add($"@Seq2_{idx}", DbType.String, data.Seq2);
+                listPar.Add($"@NonOven_{idx}", DbType.Boolean, data.NonOven);
+                listPar.Add($"@NonWash_{idx}", DbType.Boolean, data.NonWash);
+                idx++;
+            }
+
+            sqlCmd += $@" exec UpdateInspPercent 'AIRLab','{Req.OrderID}' ";
+
             return ExecuteNonQuery(CommandType.Text, sqlCmd, listPar);
         }
 
@@ -185,6 +229,7 @@ select   al.POID
         ,al.OvenDate
         ,al.OvenEncode 
 	
+        ,OverAllResult = al.Result
         ,AIR_LaboratoryID = al.ID
         ,al.Seq1
         ,al.Seq2
@@ -289,8 +334,10 @@ where   ID = @AIR_LaboratoryID
     and POID = @POID
     and Seq1 = @Seq1
     and Seq2 = @Seq2
+
 ";
 
+            sqlCmd += $@" exec UpdateInspPercent 'AIRLab','{Req.POID}' ";
 
             return ExecuteNonQuery(CommandType.Text, sqlCmd, listPar);
         }
@@ -439,6 +486,7 @@ select   al.POID
         ,al.WashDate
         ,al.WashEncode 
 	
+        ,OverAllResult = al.Result
         ,AIR_LaboratoryID = al.ID
         ,al.Seq1
         ,al.Seq2
@@ -545,6 +593,8 @@ where   ID = @AIR_LaboratoryID
     and Seq2 = @Seq2
 ";
 
+
+            sqlCmd += $@" exec UpdateInspPercent 'AIRLab','{Req.POID}' ";
 
             return ExecuteNonQuery(CommandType.Text, sqlCmd, listPar);
         }
@@ -666,6 +716,71 @@ where   al.ID=@AIR_LaboratoryID
 
         #endregion
 
+
+        /// <summary>
+        /// 更新最終檢驗結果
+        /// </summary>
+        /// <param name="Req"></param>
+        /// <returns></returns>
+        public int Update_Oven_AllResult(Accessory_Oven Req)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@AIR_LaboratoryID", Req.AIR_LaboratoryID);
+            listPar.Add("@POID", Req.POID);
+            listPar.Add("@Seq1", Req.Seq1);
+            listPar.Add("@Seq2", Req.Seq2);
+
+            string sqlCmd = $@"
+UPDATE AIR_Laboratory
+    SET Result = CASE    WHEN NonOven = 1 AND NonWash = 1 THEN 'Pass' --兩個都不檢驗：直接整體PPass
+	                        WHEN NonOven = 0 AND NonWash = 1 AND OvenEncode = 1 THEN Oven  --Wash不檢驗 + OvenEncode = true：  OvenResult Pass則視作整體Pass
+	                        WHEN NonOven = 1 AND NonWash = 0 AND WashEncode = 1  THEN Wash--Oven不檢驗 + WashEncode = true：  WashResult Pass則視作整體Pass
+	                        ELSE (	--兩個都要檢驗，則套用以下判斷
+			                        CASE WHEN OvenEncode != 1 OR WashEncode != 1 OR Oven='' OR Wash= '' THEN ''   --其中一個未Encode或檢驗：  檢驗未完成，最終結果為空白
+					                        WHEN Oven='Fail' OR Wash= 'Fail' THEN 'Fail'  --其中一個Fail：最終結果 Fail
+			                        ELSE 'Pass'
+			                        END
+	                        )
+                    END
+where   ID = @AIR_LaboratoryID
+    and POID = @POID
+    and Seq1 = @Seq1
+    and Seq2 = @Seq2
+";
+            return ExecuteNonQuery(CommandType.Text, sqlCmd, listPar);
+        }
+        /// <summary>
+        /// 更新最終檢驗結果
+        /// </summary>
+        /// <param name="Req"></param>
+        /// <returns></returns>
+        public int Update_Wash_AllResult(Accessory_Wash Req)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@AIR_LaboratoryID", Req.AIR_LaboratoryID);
+            listPar.Add("@POID", Req.POID);
+            listPar.Add("@Seq1", Req.Seq1);
+            listPar.Add("@Seq2", Req.Seq2);
+
+            string sqlCmd = $@"
+UPDATE AIR_Laboratory
+    SET Result = CASE    WHEN NonOven = 1 AND NonWash = 1 THEN 'Pass' --兩個都不檢驗：直接整體PPass
+	                    WHEN NonOven = 0 AND NonWash = 1 AND OvenEncode = 1 THEN Oven  --Wash不檢驗 + OvenEncode = true：  OvenResult Pass則視作整體Pass
+	                    WHEN NonOven = 1 AND NonWash = 0 AND WashEncode = 1  THEN Wash--Oven不檢驗 + WashEncode = true：  WashResult Pass則視作整體Pass
+	                    ELSE (	--兩個都要檢驗，則套用以下判斷
+			                    CASE WHEN OvenEncode != 1 OR WashEncode != 1 OR Oven='' OR Wash= '' THEN ''   --其中一個未Encode或檢驗：  檢驗未完成，最終結果為空白
+					                    WHEN Oven='Fail' OR Wash= 'Fail' THEN 'Fail'  --其中一個Fail：最終結果 Fail
+			                    ELSE 'Pass'
+			                    END
+	                    )
+                END
+where   ID = @AIR_LaboratoryID
+    and POID = @POID
+    and Seq1 = @Seq1
+    and Seq2 = @Seq2
+";
+            return ExecuteNonQuery(CommandType.Text, sqlCmd, listPar);
+        }
 
         public List<SelectListItem> GetScaleData()
         {
