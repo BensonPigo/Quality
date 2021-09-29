@@ -189,6 +189,7 @@
     <Compile Include="Areas\SampleRFT\Controllers\PFTperLineController.cs" />
     <Compile Include="Areas\SampleRFT\Controllers\PicturesDummyController.cs" />
     <Compile Include="Areas\SampleRFT\SampleRFTAreaRegistration.cs" />
+    <Compile Include="Areas\StyleManagement\Controllers\ExceptionFDController.cs" />
     <Compile Include="Areas\StyleManagement\Controllers\StyleListController.cs" />
     <Compile Include="Areas\StyleManagement\Controllers\PrintBarcodeController.cs" />
     <Compile Include="Areas\StyleManagement\Controllers\StyleResultController.cs" />
@@ -377,6 +378,7 @@
     <Content Include="Areas\StyleManagement\Views\StyleResult\_Tab4_Layout.cshtml" />
     <Content Include="Areas\StyleManagement\Views\StyleResult\_Tab1_Layout.cshtml" />
     <Content Include="Areas\SampleRFT\Views\InspectionDefectList\Index.cshtml" />
+    <Content Include="Areas\StyleManagement\Views\ExceptionFD\Index.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />

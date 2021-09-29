@@ -1,0 +1,191 @@
+﻿
+@using DatabaseObject.ViewModel.StyleManagement
+@using BusinessLogicLayer.Service;
+@{
+    ViewBag.Title = "User List";
+
+
+
+    string ErrorMessage = ViewData["ErrorMessage"] == null ? string.Empty : ViewData["ErrorMessage"].ToString();
+}
+
+@model  List<ExceptionFD_ViewModel>
+
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+
+
+<style type="text/css">
+    .dataTables_wrapper {
+        position: static;
+    }
+
+    label, #myTable_info {
+        color: white
+    }
+
+    #myTable_previous, #myTable_next {
+        color: white !important;
+    }
+
+    #moduleTable_previous, #moduleTable_next {
+        color: white !important;
+    }
+
+    #UsersTable_previous, #UsersTable_next {
+        color: white !important;
+    }
+
+    select {
+        color: wheat
+    }
+
+    .btnmargin {
+        margin-left: 10px;
+        margin-top: 10px;
+    }
+
+    tfoot input {
+        width: 100%;
+        padding: 3px;
+        box-sizing: border-box;
+    }
+
+    .input_Head {
+        /*height: 3vh;*/
+        height: 89%;
+        width: 95%;
+        font-weight: 300 !important;
+        color: #656565;
+        font-size: 0.5em !important;
+    }
+
+    .detail_Head {
+        width: 95%;
+    }
+</style>
+
+<div class="main-content">
+
+    <header class="page-header">
+        <h3>
+            <i class=""></i><span>Exception (FD)</span>
+        </h3>
+        <div class="breadcrumb">
+            <div>Home</div>
+            <div class="current">Exception (FD)</div>
+            @*<input id="btnToExcel" class="site-btn btn-gy btn-sm" style="height:50%;left:80%;" type="button" name="name" value="To Excel" />*@
+            <a href="@Url.Action("ToExcel")" style="margin-left:80%;">
+                <input type="button" class="btn-gy" id="btnToExcel"  name="name" value="To Excel" />
+            </a>
+        </div>
+    </header>
+
+
+    <div class="main-area">
+
+        <div class="content-scroll">
+            <div class="inner-scroll" style="float:left">
+
+                <div>
+                    <table id="myTable" class="table table-striped display">
+                        <thead>
+                            <tr class="row-name">
+                                <th>Style</th>
+                                <th>Brand</th>
+                                <th>Season</th>
+                                <th>Article</th>
+                                <th>FD Status</th>
+                                <th>FD Date</th>
+                                <th>FD Remark</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                            <tr class="row-content">
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.StyleID)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.BrandID)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.SeasonID)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Article)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ExpectionFormStatus)
+                                </td>
+                                <td>
+                                    @{ string FDDate = item.ExpectionFormDate.HasValue ? item.ExpectionFormDate.Value.ToShortDateString() : string.Empty;}
+                                    @Html.DisplayFor(modelItem => FDDate)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ExpectionFormRemark)
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>Style</th>
+                                <th>Brand</th>
+                                <th>Season</th>
+                                <th>Article</th>
+                                <th>FD Status</th>
+                                <th>FD Date</th>
+                                <th>FD Remark</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+
+    var msg = new MessagerAlert();
+
+    $(function () {
+
+        if ('@ErrorMessage' != '') {
+            msg.WithError('@ErrorMessage');
+        }
+
+        $('#myTable tfoot th').each(function () {
+            var title = $(this).text();
+
+            $(this).html('<input type="text" placeholder="' + title + '" />');
+        });
+
+
+        $('#myTable').DataTable({
+            "pageLength": 10,
+            initComplete: function () {
+                // Apply the search
+                this.api().columns().every(function () {
+                    var that = this;
+
+                    $('input', this.footer()).on('keyup change clear', function () {
+                        if (that.search() !== this.value) {
+                            that
+                                .search(this.value)
+                                .draw();
+                        }
+                    });
+                });
+            }
+        });
+
+    });
+</script>

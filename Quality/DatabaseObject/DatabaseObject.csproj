@@ -211,6 +211,7 @@
     <Compile Include="ViewModel\SampleRFT\StyleResult_ViewModel.cs" />
     <Compile Include="ViewModel\SelectItem_ViewModel.cs" />
     <Compile Include="ViewModel\SampleRFT\PrintBarcode_ViewModel.cs" />
+    <Compile Include="ViewModel\StyleManagement\ExceptionFD_ViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
