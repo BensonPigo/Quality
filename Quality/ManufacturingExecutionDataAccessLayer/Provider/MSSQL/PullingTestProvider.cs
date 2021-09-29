@@ -179,7 +179,7 @@ AND PullForceUnit = @PullForceUnit
             SQLParameterCollection objParameter = new SQLParameterCollection()
             {
                 { "@ReportNo", DbType.String, Req.ReportNo +"%" } ,
-                { "@POID", DbType.String, Req.POID } ,
+                { "@POID", DbType.String, (Req.POID == null ? string.Empty : Req.POID )} ,
                 { "@BrandID", DbType.String, Req.BrandID } ,
                 { "@SeasonID", DbType.String, Req.SeasonID } ,
                 { "@StyleID", DbType.String, Req.StyleID } ,

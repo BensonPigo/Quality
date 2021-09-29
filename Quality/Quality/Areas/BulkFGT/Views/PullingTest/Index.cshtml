@@ -265,7 +265,7 @@
                                                 color = "blue";
                                             }
                                         }
-                                        @Html.TextBox("ResultText", Model.Detail.Result, new { @readonly = "readonly", @class= $"{color}" })
+                                        @Html.TextBox("ResultText", Model.Detail.Result, new { @readonly = "readonly", @class = $"{color}" })
                                     </td>
                                     <td><h5>Inspector</h5></td>
                                     <td>
@@ -333,7 +333,7 @@
     var EditMode;
     var EditType;
     $(function () {
-            
+
 
         @Html.Raw(Model.ErrorMessage)
 
@@ -430,8 +430,8 @@
                 var ErrMsg = "";
 
                 if ($('#Detail_BrandID').val() == '' || $('#Detail_SeasonID').val() == '' || $('#Detail_StyleID').val() == '' || $('#Detail_Article').val() == ''
-                    || $('#Detail_BrandID').val() == undefined || $('#Detail_SeasonID').val() == undefined || $('#Detail_StyleID').val() == undefined || $('#Detail_Article').val() == undefined) {
-                    ErrMsg += "Style, Brand, Season and Article cannot be empty<br/>";
+                    || $('#Detail_BrandID').val() == undefined || $('#Detail_SeasonID').val() == undefined || $('#Detail_StyleID').val() == undefined || $('#Detail_Article').val() == undefined || $('#Detail_TestItem').val() == '' || $('#Detail_TestItem').val() == undefined) {
+                    ErrMsg += "Style,Brand,Season,Article,TestItem cannot be empty<br/>";
                 }
 
                 //檢查TestDate, {PullForceUnit}, Sec, Fabric Ref#, Accessory Ref# 不可為空
@@ -518,7 +518,9 @@
 
         function blurEvent(name) {
             $("#" + name + "BrandID").blur(function () {
-                if ($(this).val() == '') {
+                AotoGetPullUnit(this);
+
+                @*if ($(this).val() == '') {
                     $("#Detail_Result").val('');
                     $("#ResultText").val('');
                     $("#Detail_TestItem").val('');
@@ -545,7 +547,7 @@
                         console.log(xhr.responseText);
                     }
                 });
-                
+
 
                 $.ajax({
                     url: "@Url.Action("GetPullUnit")",
@@ -567,7 +569,7 @@
                     error: function (xhr, ajaxOptions, thrownError) {
                         console.log(xhr.responseText);
                     }
-                });
+                });*@
             });
 
             $("#" + name + "SeasonID").blur(function () {
@@ -835,6 +837,60 @@
         }
     }
 
+    function AotoGetPullUnit(BrandObject) {
+
+        if ($(BrandObject).val() == '') {
+            $("#Detail_Result").val('');
+            $("#ResultText").val('');
+            $("#Detail_TestItem").val('');
+            $("#Detail_PullForceUnit").val('');
+            $("#PullForceUnitText").val('');
+            $(`#Detail_PullForce_Standard`).val('');
+            $(`#Detail_Time_Standard`).val('');
+            return;
+        }
+
+        $.ajax({
+            url: "@Url.Action("BrandList","PublicWondow",new{Area=""})",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ BrandID: $(BrandObject).val(), ReturnType: "JSON" }),
+            async: true,
+            success: function (data) {
+                if (data.length == 0) {
+                    $(BrandObject).val('');
+                    msg.WithError('Brand Not Found');
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+
+
+        $.ajax({
+            url: "@Url.Action("GetPullUnit")",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ BrandID: $(BrandObject).val() }),
+            async: true,
+            success: function (data) {
+                if (data.length != 0) {
+
+                    $("#Detail_PullForceUnit").val(data.PullForceUnit);
+                    $("#PullForceUnitText").val(data.PullForceUnit);
+                }
+                else {
+                    $("#Detail_PullForceUnit").val('');
+                    $("#PullForceUnitText").val('');
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
     function ReloadDetail(obj) {
         var reportNo = $(obj).val();
         $("#btnQuery").click();
@@ -874,12 +930,14 @@
 
                         $(`#${idPre}PullForce_Standard`).val('');
                         $(`#${idPre}Time_Standard`).val('');
+                        $(obj).val('');
                         msg.WithError('Cannot found TestItem ' + testitem + '.');
                     }
                     else {
 
                         $(`#${idPre}PullForce_Standard`).val('');
                         $(`#${idPre}Time_Standard`).val('');
+                        $(obj).val('');
                         msg.WithError(res.Message);
                     }
                 }
@@ -985,7 +1043,7 @@
     function FailMail() {
         var para = "?Title=Pulling Test&FactoryID=@ViewBag.FactoryID&Type=BulkFGT&ExitReload=False";
         window.open('@Url.Action("TestFailMailList", "PublicWondow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
-        
+
     }
 
     function GetTestFailMailList(data) {
@@ -1021,9 +1079,11 @@
     function GetBrandList(data) {
         if (EditMode) {
             $('#Detail_BrandID').val(data);
+            AotoGetPullUnit($('#Detail_BrandID')[0]);
         }
         else {
             $('#BrandID').val(data);
+            AotoGetPullUnit($('#BrandID')[0]);
         }
     }
 

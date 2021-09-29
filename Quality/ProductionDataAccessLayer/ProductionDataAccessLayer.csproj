@@ -166,6 +166,7 @@
     <Compile Include="Provider\MSSQL\StyleBOAProvider.cs" />
     <Compile Include="Provider\MSSQL\StyleListProvider.cs" />
     <Compile Include="Provider\MSSQL\PrintBarcodeProvider.cs" />
+    <Compile Include="Provider\MSSQL\StyleManagement\ExceptionFDProvider.cs" />
     <Compile Include="Provider\MSSQL\StyleManagement\StyleResultProvider.cs" />
     <Compile Include="Provider\MSSQL\StyleProvider.cs" />
     <Compile Include="Provider\MSSQL\SystemProvider.cs" />
