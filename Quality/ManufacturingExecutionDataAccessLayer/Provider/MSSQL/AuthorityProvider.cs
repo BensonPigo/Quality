@@ -145,7 +145,7 @@ AND p2.MenuID = {data.MenuID}
 select   MenuID = m.ID
 	    ,m.ModuleName
 	    ,m.FunctionName
-	    , Used = Cast(1 as bit)
+	    , Used = Cast(0 as bit)
 from Quality_Menu m
 where m.Junk = 0
 order by m.ModuleSeq, m.FunctionSeq

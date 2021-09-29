@@ -399,8 +399,8 @@ select  ExpectionFormStatus = d.Name
 			)
 ,FDFileName = ISNULL(sa.SourceFile ,'')
 from Style s
-inner join DropDownList d on d.Type = 'FactoryDisclaimer' AND s.ExpectionFormStatus = d.ID
-inner join Style_Article sa on s.Ukey = sa.StyleUkey
+left join DropDownList d on d.Type = 'FactoryDisclaimer' AND s.ExpectionFormStatus = d.ID
+left join Style_Article sa on s.Ukey = sa.StyleUkey
 where 1=1
 {sqlWhere}
 ";
@@ -507,7 +507,10 @@ SELECT [Type] = IIF( EXISTS(
 --Type 450一個Style只會出現一次
 select Article='', Type='450', TestName = 'Seam Breakage'
 ,LastResult=(
-	select g.SeamBreakageResult 
+	select CASE WHEN g.SeamBreakageResult = 'P' THEN 'Pass'
+				WHEN g.SeamBreakageResult = 'F' THEN 'Fail'
+				ELSE ''
+			END
 	from GarmentTest g
 	WHERE g.StyleID = @StyleID
 		AND g.BrandID = @BrandID
@@ -545,8 +548,18 @@ select sa.Article, t.Type
 					WHEN  t.Type = '710' THEN 'Team Wear Wash Test'
 					ELSE ''
 			END
-,LastResult = CASE  WHEN t.Type = '451' THEN Type451.OdourResult
-					WHEN  t.Type = '701' OR t.Type = '710' THEN Type701_710.WashResult
+,LastResult = CASE  WHEN t.Type = '451' THEN (
+	                                                SELECT CASE WHEN Type451.OdourResult = 'P' THEN 'Pass'
+				                                                WHEN Type451.OdourResult = 'F' THEN 'Fail'
+				                                                ELSE ''
+			                                                END
+                                                )
+					WHEN  t.Type = '701' OR t.Type = '710' THEN (
+	                                                                SELECT CASE WHEN Type701_710.WashResult = 'P' THEN 'Pass'
+				                                                                WHEN Type701_710.WashResult = 'F' THEN 'Fail'
+				                                                                ELSE ''
+			                                                                END
+                                                                )
 					ELSE ''
 			END
 ,LastTestDate= CASE   WHEN t.Type = '451' THEN Type451.Date
