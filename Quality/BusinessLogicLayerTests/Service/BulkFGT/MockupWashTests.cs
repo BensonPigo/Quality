@@ -131,7 +131,7 @@ namespace BusinessLogicLayer.Service.Tests
                     AddName = "SCIMIS",
                     OtherMethod = true,
                     MethodID = "a",
-                    TestingMethod = "TESTWTF",
+                    //TestingMethod = "TESTWTF",
                     HTPlate = 9,
                     HTFlim = 6,
                     HTTime = 3,
@@ -164,7 +164,7 @@ namespace BusinessLogicLayer.Service.Tests
                 IMockupWashService _MockupWashService = new MockupWashService();
                 MockupWash_ViewModel MockupWash = new MockupWash_ViewModel()
                 {
-                    ReportNo = "T1",
+                    ReportNo = "VM1WA21090002",
                     POID = "up",
                     StyleID = "up",
                     SeasonID = "up",
@@ -183,7 +183,7 @@ namespace BusinessLogicLayer.Service.Tests
                     EditName = "up",
                     OtherMethod = false,
                     MethodID = "b",
-                    TestingMethod = "up",
+                   // TestingMethod = "up",
                     HTPlate = 1,
                     HTFlim = 1,
                     HTTime = 1,

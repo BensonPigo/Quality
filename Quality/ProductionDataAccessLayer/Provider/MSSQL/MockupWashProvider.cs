@@ -177,21 +177,21 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("UPDATE [MockupWash]" + Environment.NewLine);
             SbSql.Append("SET EditDate=GETDATE()" + Environment.NewLine);
             if (Item.EditName != null) { SbSql.Append(",EditName=@EditName" + Environment.NewLine); objParameter.Add("@EditName", DbType.String, HttpUtility.HtmlDecode(Item.EditName)); }
-            if (Item.POID != null) { SbSql.Append(",POID=@POID" + Environment.NewLine); objParameter.Add("@POID", DbType.String, HttpUtility.HtmlDecode(Item.POID)); }
-            if (Item.StyleID != null) { SbSql.Append(",StyleID=@StyleID" + Environment.NewLine); objParameter.Add("@StyleID", DbType.String, HttpUtility.HtmlDecode(Item.StyleID)); }
-            if (Item.SeasonID != null) { SbSql.Append(",SeasonID=@SeasonID" + Environment.NewLine); objParameter.Add("@SeasonID", DbType.String, HttpUtility.HtmlDecode(Item.SeasonID)); }
-            if (Item.BrandID != null) { SbSql.Append(",BrandID=@BrandID" + Environment.NewLine); objParameter.Add("@BrandID", DbType.String, HttpUtility.HtmlDecode(Item.BrandID)); }
-            if (Item.Article != null) { SbSql.Append(",Article=@Article" + Environment.NewLine); objParameter.Add("@Article", DbType.String, HttpUtility.HtmlDecode(Item.Article)); }
-            if (Item.ArtworkTypeID != null) { SbSql.Append(",ArtworkTypeID=@ArtworkTypeID" + Environment.NewLine); objParameter.Add("@ArtworkTypeID", DbType.String, HttpUtility.HtmlDecode(Item.ArtworkTypeID)); }
-            if (Item.Remark != null) { SbSql.Append(",Remark=@Remark" + Environment.NewLine); objParameter.Add("@Remark", DbType.String, HttpUtility.HtmlDecode(Item.Remark)); }
-            if (Item.T1Subcon != null) { SbSql.Append(",T1Subcon=@T1Subcon" + Environment.NewLine); objParameter.Add("@T1Subcon", DbType.String, HttpUtility.HtmlDecode(Item.T1Subcon)); }
-            if (Item.T2Supplier != null) { SbSql.Append(",T2Supplier=@T2Supplier" + Environment.NewLine); objParameter.Add("@T2Supplier", DbType.String, HttpUtility.HtmlDecode(Item.T2Supplier)); }
+            if (Item.POID != null) { SbSql.Append(",POID=@POID" + Environment.NewLine); objParameter.Add("@POID", DbType.String, HttpUtility.HtmlDecode(Item.POID) ?? string.Empty); }
+            if (Item.StyleID != null) { SbSql.Append(",StyleID=@StyleID" + Environment.NewLine); objParameter.Add("@StyleID", DbType.String, HttpUtility.HtmlDecode(Item.StyleID) ?? string.Empty); }
+            if (Item.SeasonID != null) { SbSql.Append(",SeasonID=@SeasonID" + Environment.NewLine); objParameter.Add("@SeasonID", DbType.String, HttpUtility.HtmlDecode(Item.SeasonID) ?? string.Empty); }
+            if (Item.BrandID != null) { SbSql.Append(",BrandID=@BrandID" + Environment.NewLine); objParameter.Add("@BrandID", DbType.String, HttpUtility.HtmlDecode(Item.BrandID) ?? string.Empty); }
+            if (Item.Article != null) { SbSql.Append(",Article=@Article" + Environment.NewLine); objParameter.Add("@Article", DbType.String, HttpUtility.HtmlDecode(Item.Article) ?? string.Empty); }
+            if (Item.ArtworkTypeID != null) { SbSql.Append(",ArtworkTypeID=@ArtworkTypeID" + Environment.NewLine); objParameter.Add("@ArtworkTypeID", DbType.String, HttpUtility.HtmlDecode(Item.ArtworkTypeID) ?? string.Empty); }
+            if (Item.Remark != null) { SbSql.Append(",Remark=@Remark" + Environment.NewLine); objParameter.Add("@Remark", DbType.String, HttpUtility.HtmlDecode(Item.Remark) ?? string.Empty); }
+            if (Item.T1Subcon != null) { SbSql.Append(",T1Subcon=@T1Subcon" + Environment.NewLine); objParameter.Add("@T1Subcon", DbType.String, HttpUtility.HtmlDecode(Item.T1Subcon) ?? string.Empty); }
+            if (Item.T2Supplier != null) { SbSql.Append(",T2Supplier=@T2Supplier" + Environment.NewLine); objParameter.Add("@T2Supplier", DbType.String, HttpUtility.HtmlDecode(Item.T2Supplier) ?? string.Empty); }
             if (Item.TestDate != null) { SbSql.Append(",TestDate=@TestDate" + Environment.NewLine); objParameter.Add("@TestDate", DbType.Date, Item.TestDate); }
             if (Item.ReceivedDate != null) { SbSql.Append(",ReceivedDate=@ReceivedDate" + Environment.NewLine); objParameter.Add("@ReceivedDate", DbType.Date, Item.ReceivedDate); }
             if (Item.ReleasedDate != null) { SbSql.Append(",ReleasedDate=@ReleasedDate" + Environment.NewLine); objParameter.Add("@ReleasedDate", DbType.Date, Item.ReleasedDate); }
-            if (Item.Result != null) { SbSql.Append(",Result=@Result" + Environment.NewLine); objParameter.Add("@Result", DbType.String, HttpUtility.HtmlDecode(Item.Result)); }
-            if (Item.Technician != null) { SbSql.Append(",Technician=@Technician" + Environment.NewLine); objParameter.Add("@Technician", DbType.String, HttpUtility.HtmlDecode(Item.Technician)); }
-            if (Item.MR != null) { SbSql.Append(",MR=@MR" + Environment.NewLine); objParameter.Add("@MR", DbType.String, HttpUtility.HtmlDecode(Item.MR)); }
+            if (Item.Result != null) { SbSql.Append(",Result=@Result" + Environment.NewLine); objParameter.Add("@Result", DbType.String, HttpUtility.HtmlDecode(Item.Result) ?? string.Empty); }
+            if (Item.Technician != null) { SbSql.Append(",Technician=@Technician" + Environment.NewLine); objParameter.Add("@Technician", DbType.String, HttpUtility.HtmlDecode(Item.Technician) ?? string.Empty); }
+            if (Item.MR != null) { SbSql.Append(",MR=@MR" + Environment.NewLine); objParameter.Add("@MR", DbType.String, HttpUtility.HtmlDecode(Item.MR) ?? string.Empty); }
 
             SbSql.Append($@"
 ,OtherMethod=@OtherMethod
@@ -199,17 +199,17 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 ,TestingMethod=iif(@OtherMethod = 0, @TestingMethod, '')
 ");
             objParameter.Add("@OtherMethod", DbType.Boolean, Item.OtherMethod);
-            objParameter.Add("@MethodID", DbType.String, HttpUtility.HtmlDecode(Item.MethodID));
-            objParameter.Add("@TestingMethod", DbType.String, HttpUtility.HtmlDecode(Item.TestingMethod));
+            objParameter.Add("@MethodID", DbType.String, HttpUtility.HtmlDecode(Item.MethodID) ?? string.Empty);
+            objParameter.Add("@TestingMethod", DbType.String, HttpUtility.HtmlDecode(Item.TestingMethod) ?? string.Empty);
 
             if (Item.HTPlate != null) { SbSql.Append(",HTPlate=@HTPlate" + Environment.NewLine); objParameter.Add("@HTPlate", DbType.Int32, Item.HTPlate); }
             if (Item.HTFlim != null) { SbSql.Append(",HTFlim=@HTFlim" + Environment.NewLine); objParameter.Add("@HTFlim", DbType.Int32, Item.HTFlim); }
             if (Item.HTTime != null) { SbSql.Append(",HTTime=@HTTime" + Environment.NewLine); objParameter.Add("@HTTime", DbType.Int32, Item.HTTime); }
             if (Item.HTPressure != null) { SbSql.Append(",HTPressure=@HTPressure" + Environment.NewLine); objParameter.Add("@HTPressure", DbType.Decimal, Item.HTPressure); }
-            if (Item.HTPellOff != null) { SbSql.Append(",HTPellOff=@HTPellOff" + Environment.NewLine); objParameter.Add("@HTPellOff", DbType.String, HttpUtility.HtmlDecode(Item.HTPellOff)); }
+            if (Item.HTPellOff != null) { SbSql.Append(",HTPellOff=@HTPellOff" + Environment.NewLine); objParameter.Add("@HTPellOff", DbType.String, HttpUtility.HtmlDecode(Item.HTPellOff) ?? string.Empty); }
             if (Item.HT2ndPressnoreverse != null) { SbSql.Append(",HT2ndPressnoreverse=@HT2ndPressnoreverse" + Environment.NewLine); objParameter.Add("@HT2ndPressnoreverse", DbType.Int32, Item.HT2ndPressnoreverse); }
             if (Item.HT2ndPressreversed != null) { SbSql.Append(",HT2ndPressreversed=@HT2ndPressreversed" + Environment.NewLine); objParameter.Add("@HT2ndPressreversed", DbType.Int32, Item.HT2ndPressreversed); }
-            if (Item.HTCoolingTime != null) { SbSql.Append(",HTCoolingTime=@HTCoolingTime" + Environment.NewLine); objParameter.Add("@HTCoolingTime", DbType.String, HttpUtility.HtmlDecode(Item.HTCoolingTime)); }
+            if (Item.HTCoolingTime != null) { SbSql.Append(",HTCoolingTime=@HTCoolingTime" + Environment.NewLine); objParameter.Add("@HTCoolingTime", DbType.String, HttpUtility.HtmlDecode(Item.HTCoolingTime) ?? string.Empty); }
 
             // 圖檔
             SbSql.Append(@"
@@ -222,7 +222,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             if (Item.TestAfterPicture != null) { objParameter.Add("@TestAfterPicture", Item.TestAfterPicture); }
             else { objParameter.Add("@TestAfterPicture", System.Data.SqlTypes.SqlBinary.Null); }
 
-            if (Item.Type != null) { SbSql.Append(",Type=@Type" + Environment.NewLine); objParameter.Add("@Type", DbType.String, HttpUtility.HtmlDecode(Item.Type)); }
+            if (Item.Type != null) { SbSql.Append(",Type=@Type" + Environment.NewLine); objParameter.Add("@Type", DbType.String, HttpUtility.HtmlDecode(Item.Type) ?? string.Empty); }
             SbSql.Append("WHERE ReportNo = @ReportNo" + Environment.NewLine);
             objParameter.Add("@ReportNo", DbType.String, HttpUtility.HtmlDecode(Item.ReportNo));
 
