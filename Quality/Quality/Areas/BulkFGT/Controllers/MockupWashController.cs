@@ -142,7 +142,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             if (!result.Result)
             {
-                model.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString().Replace("\r\n", "<br />") + "');";
+                model.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString().Replace("\r\n", "<br />") + "');EditMode=true;";
             }
             else if (result.Result && model.Result == "Fail")
             {
@@ -200,7 +200,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             Req.TestingMethod_Source = _MockupWashService.GetTestingMethod();
             if (!result.Result)
             {
-                Req.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString().Replace("\r\n", "<br />") + "');";
+                Req.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString().Replace("\r\n", "<br />") + "');EditMode=true;";
             }
             else if (result.Result && model.Result == "Fail")
             {
@@ -365,7 +365,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += $"<td><input id='MockupWash_Detail_{lastNO}__FabricRefNo' name='MockupWash_Detail[{lastNO}].FabricRefNo' type='text' ></td>";
             html += $"<td><div class='input-group'><input id='MockupWash_Detail_{lastNO}__FabricColor' name='MockupWash_Detail[{lastNO}].FabricColor' class ='AFColor' type='hidden'><input id='MockupWash_Detail_{lastNO}__FabricColorName' name='MockupWash_Detail[{lastNO}].FabricColorName' class ='AFColor' type='text' readonly='readonly'> <input  idv='{lastNO}' type='button' class='btnFabricColorItem  site-btn btn-blue' style='margin: 0; border: 0; ' value='...' /></div></td>";
 
-            html += $"<td><select  id='MockupWash_Detail_{lastNO}__Result' name='MockupWash_Detail[{lastNO}].Result' class='OnlyEdit result blue' onchange='changeResult()' style='width: 157px;' ><option value=''></option>";
+            html += $"<td><select  id='MockupWash_Detail_{lastNO}__Result' name='MockupWash_Detail[{lastNO}].Result' class='OnlyEdit result blue' onchange='changeResult()' ><option value=''></option>";
             foreach (var val in model.Result_Source)
             {
                 if (val.Value == "Pass")

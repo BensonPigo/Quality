@@ -20,7 +20,7 @@
     }
 
         .input-group > input:nth-child(2) {
-            flex-grow: 1MockupOven_Detail
+            flex-grow: 1
         }
 
     tr.row-name {
@@ -450,7 +450,7 @@
     var False = false;
     var poid = '@Model.Heat_Main.POID';
     var seq1 = '@Model.Heat_Main.SEQ'.split(' ')[0];
-    var seq2 = '@Model.Heat_Main.SEQ'.split(' ')[0];
+    var seq2 = '@Model.Heat_Main.SEQ'.split(' ')[1];
 
     $(function () {
         msg = new MessagerAlert();
@@ -790,7 +790,7 @@
 
         $('.btnRollSelectItem').unbind('click').on('click', function () {
             var targetID = $(this).closest('tr').attr('idx');
-            var para = "?POID=" + poid + "&Seq1=" + seq1 + "&Seq1=" + seq2 + "&TargetID=" + targetID;
+            var para = "?POID=" + poid + "&Seq1=" + seq1 + "&Seq2=" + seq2 + "&TargetID=" + targetID;
             window.open('@Url.Action("FtyInventoryList", "PublicWondow",new{Area=""})' + para, 'Roll', config = 'toolbar=no,status=no,location=no,width=950,height=650');
         });
 

@@ -190,28 +190,28 @@ namespace Quality.Areas.BulkFGT.Controllers
             string html = "";
             html += "<tr idx='" + i + "'>";
             html += "<td><a idx='" + ID + "' idv = '" + lastNO.ToString() + "'>" + lastNO.ToString() + "</a></td>";
-            html += "<td><input id='garmentTest_Details_" + i + "_OrderID' name='garmentTest_Details[" + i + "].OrderID' class='Detail_OrderID' type='text'></td>";
-            html += "<td><select id='garmentTest_Details_" + i + "_SizeCode' name='garmentTest_Details[" + i + "].SizeCode' class='Detail_SizeCode'><option value=''></option>";
+            html += "<td><input id='garmentTest_Details_" + i + "__OrderID' name='garmentTest_Details[" + i + "].OrderID' class='Detail_OrderID' type='text'></td>";
+            html += "<td><select id='garmentTest_Details_" + i + "__SizeCode' name='garmentTest_Details[" + i + "].SizeCode' class='Detail_SizeCode'><option value=''></option>";
             foreach(string val in sizecodes)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
-            html += "<td><input class='form-control date-picker' id='garmentTest_Details_" + i + "_inspdate' name='garmentTest_Details[" + i + "].inspdate' type='text' value=''></td>";
-            html += "<td><select id='garmentTest_Details_" + i + "_MtlTypeID' name='garmentTest_Details[" + i + "].MtlTypeID'><option value=''></option>";
+            html += "<td><input class='form-control date-picker' id='garmentTest_Details_" + i + "__inspdate' name='garmentTest_Details[" + i + "].inspdate' type='text' value=''></td>";
+            html += "<td><select id='garmentTest_Details_" + i + "__MtlTypeID' name='garmentTest_Details[" + i + "].MtlTypeID'><option value=''></option>";
             foreach (string val in MtlTypeIDs)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
             html += "<td></td>";
-            html += "<td><input id='garmentTest_Details_" + i + "_NonSeamBreakageTest' name='garmentTest_Details[" + i + "].NonSeamBreakageTest' type='checkbox' class='bigSize'></td>";
+            html += "<td><input id='garmentTest_Details_" + i + "__NonSeamBreakageTest' name='garmentTest_Details[" + i + "].NonSeamBreakageTest' type='checkbox' class='bigSize'></td>";
             html += "<td></td>";
             html += "<td></td>";
             html += "<td></td>";
-            html += "<td><input id='garmentTest_Details_" + i + "_inspector' name='garmentTest_Details[" + i + "].inspector' type='text'><input id='btnDetailInspectorSelectItem' type='button' class='site-btn btn-blue' style='margin:0;border:0;' value='...'></td>";
+            html += "<td><input id='garmentTest_Details_" + i + "__inspector' name='garmentTest_Details[" + i + "].inspector' type='text'><input type='button' class='btnDetailInspectorSelectItem site-btn btn-blue' style='margin:0;border:0;' value='...'></td>";
             html += "<td><input id='garmentTest_Details_" + i + "__GarmentTest_Detail_Inspector' name='garmentTest_Details[" + i + "].GarmentTest_Detail_Inspector' readonly='readonly' style='width: 8vw' type='text'></td>";
-            html += "<td><input  id='garmentTest_Details_" + i + "_Remark' name='garmentTest_Details[" + i + "].Remark' type='text'></td>";
+            html += "<td><input  id='garmentTest_Details_" + i + "__Remark' name='garmentTest_Details[" + i + "].Remark' type='text'></td>";
             html += "<td><img class='SendMail display-None' src='/Image/Icon/Mail.png' width='30'></td>";
             html += "<td></td>";
             html += "<td></td>";

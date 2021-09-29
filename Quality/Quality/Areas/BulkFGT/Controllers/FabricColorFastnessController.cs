@@ -76,11 +76,11 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Json(result);
         }
 
-        public ActionResult Detail(string PoID, string ID, string EditMode)
+        public ActionResult Detail(string PoID, string ID)
         {
             FabricColorFastness_ViewModel FabricColorFastnessModel = new FabricColorFastness_ViewModel();
             Fabric_ColorFastness_Detail_ViewModel model = new Fabric_ColorFastness_Detail_ViewModel();
-            if (Convert.ToBoolean(EditMode) && string.IsNullOrEmpty(ID))
+            if (string.IsNullOrEmpty(ID))
             {
                 model.Main = new ColorFastness_Result();
                 model.Detail = new List<Fabric_ColorFastness_Detail_Result>();
@@ -106,7 +106,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 model.Main.Remark = saveResult.Main.Remark;
                 model.Detail = saveResult.Detail;
                 model.Result = saveResult.Result;
-                model.ErrorMessage = $"msg.WithInfo('{saveResult.ErrorMessage.ToString().Replace("\r\n", "<br />") }');";
+                model.ErrorMessage = $"msg.WithInfo('{saveResult.ErrorMessage.ToString().Replace("\r\n", "<br />") }');EditMode=true;";
             }
 
             List<string> Scales = _FabricColorFastness_Service.Get_Scales();
@@ -120,7 +120,6 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.ResultChangeList = FabricColorFastnessModel.Result_Source;
             ViewBag.StainingScaleList = ScalesList;
             ViewBag.ResultStainList = FabricColorFastnessModel.Result_Source;
-            ViewBag.EditMode = EditMode;
             ViewBag.FactoryID = this.FactoryID;
             return View(model);
         }
@@ -196,13 +195,13 @@ namespace Quality.Areas.BulkFGT.Controllers
             {
                 // 找地方寫入 new ID
                 req.Main.ID = string.IsNullOrEmpty(result.ErrorMessage) ? req.Main.ID : result.ErrorMessage;
-                return RedirectToAction("Detail", new { POID = req.Main.POID, ID = req.Main.ID, EditMode = false });
+                return RedirectToAction("Detail", new { POID = req.Main.POID, ID = req.Main.ID });
             }
 
             req.Result = result.Result;
             req.ErrorMessage = result.ErrorMessage;
             TempData["Model"] = req;
-            return RedirectToAction("Detail", new { POID = req.Main.POID, ID = req.Main.ID, EditMode = false });
+            return RedirectToAction("Detail", new { POID = req.Main.POID, ID = req.Main.ID });
         }
 
         [HttpPost]

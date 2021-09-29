@@ -270,12 +270,12 @@
 
                                         @if (Model.ColorFastness_MainList[i].TestNo > 0)
                                         {
-                                            aHref = Url.Action("Detail", "FabricColorFastness", new { PoID = "" ,ID = Model.ColorFastness_MainList[i].ID, EditMode = false });
+                                            aHref = Url.Action("Detail", "FabricColorFastness", new { PoID = "" ,ID = Model.ColorFastness_MainList[i].ID });
                                         }
 
                                         <a href="@aHref" idx="@Model.ColorFastness_MainList[i].ID" idv="@Model.ColorFastness_MainList[i].TestNo">
   
-                                          <label>@Model.ColorFastness_MainList[i].TestNo</label>
+                                          <label style="cursor: pointer;">@Model.ColorFastness_MainList[i].TestNo</label>
                                         </a>
                                     </td>
 

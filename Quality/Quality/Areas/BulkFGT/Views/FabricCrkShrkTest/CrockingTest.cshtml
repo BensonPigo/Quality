@@ -553,7 +553,7 @@
     var False = false;
     var poid = '@Model.Crocking_Main.POID';
     var seq1 = '@Model.Crocking_Main.SEQ'.split(' ')[0];
-    var seq2 = '@Model.Crocking_Main.SEQ'.split(' ')[0];
+    var seq2 = '@Model.Crocking_Main.SEQ'.split(' ')[1];
     var hiddenColumns = [];
 
     $(function () {
@@ -944,7 +944,7 @@
 
         $('.btnRollSelectItem').unbind('click').on('click', function () {
             var targetID = $(this).closest('tr').attr('idx');
-            var para = "?POID=" + poid + "&Seq1=" + seq1 + "&Seq1=" + seq2 + "&TargetID=" + targetID;
+            var para = "?POID=" + poid + "&Seq1=" + seq1 + "&Seq2=" + seq2 + "&TargetID=" + targetID;
             window.open('@Url.Action("FtyInventoryList", "PublicWondow",new{Area=""})' + para, 'Roll', config = 'toolbar=no,status=no,location=no,width=950,height=650');
         });
 

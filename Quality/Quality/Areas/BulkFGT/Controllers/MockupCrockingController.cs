@@ -141,7 +141,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             if (!result.Result)
             {
-                mockupCrocking_ViewModel.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString().Replace("\r\n", "<br />") + "');";
+                mockupCrocking_ViewModel.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString().Replace("\r\n", "<br />") + "');EditMode=true;";
             }
             else if (result.Result && mockupCrocking_ViewModel.Result == "Fail")
             {
@@ -190,7 +190,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             Req.MockupCrocking_Detail = model.MockupCrocking_Detail;
             if (!result.Result)
             {
-                Req.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString().Replace("\r\n", "<br />") + "');";
+                Req.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString().Replace("\r\n", "<br />") + "');EditMode=true;";
             }
             else if (result.Result && model.Result == "Fail")
             {
@@ -372,7 +372,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             html += "<td>";
 
-            html += $"<select id='MockupCrocking_Detail_{lastNo}__Result' class='result blue' name='MockupCrocking_Detail[{lastNo}].Result' style='width:157px;' onchange='changeResult(this)'>";
+            html += $"<select id='MockupCrocking_Detail_{lastNo}__Result' class='result blue' name='MockupCrocking_Detail[{lastNo}].Result' onchange='changeResult(this)'>";
             html += string.Join("", resultOption);
             html += "</select>";
 

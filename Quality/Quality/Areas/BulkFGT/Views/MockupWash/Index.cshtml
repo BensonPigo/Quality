@@ -344,14 +344,10 @@
                                     <td><h5>Result</h5></td>
                                     <td>
                                         @{
-                                            string styleColor = "";
+                                            string styleColor = "red";
                                             if (Model.Result == "Pass")
                                             {
                                                 styleColor = "blue";
-                                            }
-                                            else
-                                            {
-                                                styleColor = "red";
                                             }
                                         }
                                         <font id="Result" class="@styleColor">@Model.Result</font>
@@ -526,7 +522,14 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <select id="MockupWash_Detail_@{@i}Result" name="MockupWash_Detail[@i].Result" class="OnlyEdit result" onchange="changeResult()" style="width:157px;">
+                                            @{ 
+                                                styleColor = "red";
+                                                if (Model.MockupWash_Detail[i].Result == "Pass")
+                                                {
+                                                    styleColor = "blue";
+                                                }
+                                            }
+                                            <select id="MockupWash_Detail_@{@i}Result" name="MockupWash_Detail[@i].Result" class="OnlyEdit result @styleColor" onchange="changeResult()">
                                                 @foreach (var item in (List<SelectListItem>)ViewBag.ResultList)
                                                 {
                                                     string selected = item.Text.Equals(Model.MockupWash_Detail[i].Result) ? "selected" : "";
@@ -642,7 +645,7 @@
 
     function Clear() {
         if (EditType == "New") {
-            $(".DataTable input[type='text'], .DataTable select").val('');
+            $(".DataTable input, .DataTable select").val('');
             $('#Result').html('');
         }
     }
@@ -1360,13 +1363,16 @@
 
     function changeResult() {
         var result = 'Pass';
+        var color = 'blue';
         $(".result").each(function () {
             if ($(this).val() != "Pass") {
                 result = 'Fail';
+                color = 'red';
             }
+            $(this).removeClass('blue').removeClass('red').addClass(color);
         });
-
-        $('#Result').val(result);
+        
+        $('#Result').html(result).removeClass('blue').removeClass('red').addClass(color);
     }
 
     function changeOtherMethod() {
@@ -1374,12 +1380,12 @@
         $('#TestingMethod').hide();
         $('#MethodID').hide();
         if (isChecked) {
-            $('#TestingMethod').val('');
-            $('#MethodID').show();
-        }
-        else {
             $('#MethodID').val('');
             $('#TestingMethod').show();
+        }
+        else {
+            $('#TestingMethod').val('');
+            $('#MethodID').show();
         }
     }
 

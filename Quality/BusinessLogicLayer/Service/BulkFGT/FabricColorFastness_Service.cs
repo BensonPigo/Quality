@@ -198,16 +198,22 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     int repeatCnt = source.Detail.Where(s => s.ID == item.ID && s.ColorFastnessGroup == item.ColorFastnessGroup && s.Seq == item.Seq).Count();
                     if (repeatCnt > 1)
                     {
-                        baseResult.ErrorMessage = $@"<Body: {item.ColorFastnessGroup}>, <Seq1: {item.Seq}> is repeat cannot save.";
+                        baseResult.ErrorMessage = $@"＜Body: {item.ColorFastnessGroup}＞, ＜Seq1: {item.Seq}＞ is repeat cannot save.";
                         baseResult.Result = false;
                         return baseResult;
                     }
 
-                    if (string.IsNullOrEmpty(item.SEQ1) == true || string.IsNullOrEmpty(item.SEQ2))
+                    if (string.IsNullOrEmpty(item.Seq))
                     {
-                        baseResult.ErrorMessage = $"<SEQ#> cannot be empty.";
+                        baseResult.ErrorMessage = $"＜SEQ#＞ cannot be empty.";
                         baseResult.Result = false;
                         return baseResult;
+                    }
+                    else
+                    {
+                        List<string> Seq = item.Seq.Split('-').ToList();
+                        item.SEQ1 = Seq[0].ToString();
+                        item.SEQ2 = Seq[1].ToString();
                     }
                 }
 

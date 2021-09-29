@@ -469,7 +469,7 @@
                                                 styleColor = "blue";
                                             }
                                         }
-                                        <select id="MockupCrocking_Detail_@{@i}__Result" class="result @styleColor" name="MockupCrocking_Detail[@i].Result" style="width:157px;" onchange="changeResult(this)">
+                                        <select id="MockupCrocking_Detail_@{@i}__Result" class="result @styleColor" name="MockupCrocking_Detail[@i].Result" onchange="changeResult(this)">
                                             @foreach (var item in (List<SelectListItem>)Model.Result_Source)
                                             {
                                                 string selected = item.Text.Equals(Model.MockupCrocking_Detail[i].Result) ? "selected" : "";
@@ -505,8 +505,9 @@
     $(function () {
         msg = new MessagerAlert();
         EditMode = false;
-        IsEditModeChange();
+        
         @Html.Raw(Model.ErrorMessage)
+        IsEditModeChange();
 
         if (!$("body").hasClass("sidebar-collapse")) {
             $(".menu-trigger").click();
@@ -577,7 +578,7 @@
 
     function Clear() {
         if (EditType == "New") {
-            $(".DataTable input[type='text'], .DetailTable select").val('');
+            $(".DataTable input, .DetailTable select").val('');
             $('#Result').html('');
         }
     }

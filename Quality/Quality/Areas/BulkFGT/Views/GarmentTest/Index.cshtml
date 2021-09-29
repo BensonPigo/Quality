@@ -441,8 +441,8 @@
                                 </td>
                                 <td style="width:10vw;">
                                     <div class="input-group">
-                                        @Html.TextBoxFor(o => Model.garmentTest_Details[i].inspector, "", new { @class = "inspector" })
-                                        <input id="btnDetailInspectorSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                        @Html.TextBoxFor(o => Model.garmentTest_Details[i].inspector, "", new { @class = "Inspector" })
+                                        <input class="btnDetailInspectorSelectItem site-btn btn-blue" type="button" style="margin:0;border:0;" value="..." />
                                     </div>
                                 </td>
                                 <td style="width:10vw;">
@@ -799,7 +799,7 @@
 
         });
 
-        $('#btnDetailInspectorSelectItem').unbind('click').on('click', function () {
+        $('.btnDetailInspectorSelectItem').unbind('click').on('click', function () {
             var targetID = $(this).closest('tr').attr('idx');
             var para = "?TargetID=" + targetID;
             window.open('@Url.Action("Pass1List","PublicWondow",new{Area=""})' + para, 'Inspector', config = 'toolbar=no,status=no,location=no,width=1000,height=650');
@@ -816,12 +816,12 @@
                 async: true,
                 success: function (data) {
                     if (data.length == 0) {
-                        $("#garmentTest_Details_" + targetID + "__Inspector").val('');
+                        $("#garmentTest_Details_" + targetID + "__inspector").val('');
                         $("#garmentTest_Details_" + targetID + "__GarmentTest_Detail_Inspector").val('');
                         msg.WithError('Inspector Not Found');
                     }
                     else {
-                        $("#garmentTest_Details_" + targetID + "__Inspector").val(data[0].ID);
+                        $("#garmentTest_Details_" + targetID + "__inspector").val(data[0].ID);
                         $("#garmentTest_Details_" + targetID + "__GarmentTest_Detail_Inspector").val(data[0].Name + ' Ext.' + data[0].ExtNo);
                     }
                 },
@@ -1019,8 +1019,6 @@
     }
 
     function GetPass1(data, targetID) {
-        console.log(data);
-        console.log(targetID);
         $("#garmentTest_Details_" + targetID + "__inspector").val(data.ID);
         $("#garmentTest_Details_" + targetID + "__GarmentTest_Detail_Inspector").val(data.Name + ' Ext.' + data.ExtNo);
     }

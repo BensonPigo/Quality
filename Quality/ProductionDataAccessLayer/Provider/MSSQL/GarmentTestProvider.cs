@@ -709,12 +709,12 @@ values(
 
             string sqlcmd = @"
 update g 
-set g.SeamBreakageResult = All_Result.SeamBreakageResult
-,g.SeamBreakageLastTestDate  = All_Result.inspdate
-,g.OdourResult = All_Result.OdourResult
-,g.WashResult = All_Result.WashResult
-,g.Result = All_Result.Result
-,g.Date = All_Result.inspdate
+set g.SeamBreakageResult = ISNULL(All_Result.SeamBreakageResult, '')
+	,g.SeamBreakageLastTestDate = All_Result.inspdate
+	,g.OdourResult = ISNULL(All_Result.OdourResult, '')
+	,g.WashResult = ISNULL(All_Result.WashResult, '')
+	,g.Result = All_Result.Result
+	,g.Date = All_Result.inspdate
 from GarmentTest g
 outer apply(
 	select top 1 SeamBreakageResult,gd1.inspdate ,gd1.OdourResult,gd1.WashResult,gd1.Result

@@ -86,6 +86,11 @@
             .ReportAction > table > tbody > tr > td > input[type=button] {
                 cursor: pointer;
             }
+
+    .DataTable select {
+        width: 100%;
+        font-size: 1.2em;
+    }
 </style>
 
 
@@ -315,6 +320,7 @@
                             <tr>
                                 <td style="width:10vw;">
                                     <input id='Seq@{@i}' idx='@i' type='hidden'>
+                                    @Html.HiddenFor(o => o.Detail[i].ID)
                                     @Html.TextBoxFor(o => Model.Detail[i].SubmitDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
                                 </td>
                                 <td style="width:10vw;">
@@ -322,6 +328,8 @@
                                 </td>
                                 <td style="width:11vw;">
                                     <div style="width:10vw;">
+                                        @Html.HiddenFor(o => o.Detail[i].SEQ1)
+                                        @Html.HiddenFor(o => o.Detail[i].SEQ2)
                                         @Html.TextBoxFor(o => Model.Detail[i].Seq, "", new { @style = "width:6vw", @idv = (i.ToString()), @class = "InputDetailSEQSelectItem" })
                                         <input id="btnDetailSEQSelectItem" idv=@(i.ToString()) type="button" class="btnDetailSEQSelectItem OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
                                     </div>
@@ -433,7 +441,7 @@
     var EditMode;
     $(function () {
         msg = new MessagerAlert();
-        EditMode = ('@ViewBag.EditMode' == 'True');
+        EditMode = false;
         @Html.Raw(Model.ErrorMessage)
         IsEditModeChange();
     });
@@ -444,7 +452,7 @@
         if (EditMode) {
             $("#Edit, #Encode, #Amend, #Excel, #PDF").removeClass("IsEditMode");
             $('#Save, #New').addClass("IsEditMode");
-            $(".DataTable input[type='text'], .DataTable select, .DetailTable select").removeAttr("disabled");
+            $(".DataTable input, .DataTable select").removeAttr("disabled");
             $('#Encode, #Amend, #Excel, #PDF').unbind('click');
             $(".DetailTable img").removeClass('display-None');
             DetailButtonBind();
@@ -454,7 +462,7 @@
         else {
             $(".DetailTable img").addClass('display-None');
             $('#Save').unbind('click').removeClass("IsEditMode");
-            $(".DataTable input[type='text'], .DataTable select,.DetailTable select").attr("disabled", "disabled");
+            $(".DataTable input, .DataTable select").attr("disabled", "disabled");
             $('#Excel, #PDF').addClass("IsEditMode");
 
             if ($('#Main_Status').val() == "New") {
@@ -896,13 +904,13 @@
             data: JSON.stringify({ POID: $('#Main_POID').val(), ID: $('#Main_ID').val(), TO: to, CC: cc }),
             async: false,
             success: function (data) {
-                if (data.result) {
+                if (data.Result) {
                     msg.WithSuccesCheck("Success", function () {
                         location.reload();
                     });
                 }
                 else {
-                    msg.WithWarningCheck(data.resultMsg, function () {
+                    msg.WithWarningCheck(data.ErrorMessage, function () {
                         location.reload();
                     });
                 }
