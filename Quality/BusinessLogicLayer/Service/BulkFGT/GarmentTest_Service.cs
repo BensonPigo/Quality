@@ -958,7 +958,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         worksheet.Cells[4, 9] = MyUtility.Convert.GetString(all_Data.Main.OrderID);
                         worksheet.Cells[4, 11] = MyUtility.Convert.GetString(all_Data.Main.BrandID);
                         worksheet.Cells[6, 4] = MyUtility.Convert.GetString(all_Data.Main.StyleID);
-                        worksheet.Cells[7, 8] = orders.CustPONo;
+                        worksheet.Cells[7, 8] = orders.CustPONO;
                         worksheet.Cells[7, 4] = MyUtility.Convert.GetString(all_Data.Main.Article);
                         worksheet.Cells[6, 8] = StyleName;
                         worksheet.Cells[8, 8] = MyUtility.Convert.GetDecimal(data.NumArriveQty.Value);

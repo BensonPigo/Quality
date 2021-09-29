@@ -52,7 +52,7 @@ namespace BusinessLogicLayer.Service.FinalInspectionTests
                     FactoryID = "ESP",
                     StyleID = "LW6BM7S",
                     SP = "21040034IC002",
-                    POID = "21040034IC"
+                    CustPONO = "21040034IC"
                 };
 
                 IList<Orders> result = finalInspectionService.GetOrderForInspection(inspection_Request);

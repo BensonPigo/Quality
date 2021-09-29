@@ -102,7 +102,7 @@ namespace Quality.Areas.FinalInspection.Controllers
 
             // GetForFinalInspection 取得 SeasonID
             _IOrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
-            FinalInspection_Request requestItem = new FinalInspection_Request() { SP = model.SP, POID = model.FinalInspection.POID, FactoryID = model.FinalInspection.FactoryID, StyleID = model.StyleID };
+            FinalInspection_Request requestItem = new FinalInspection_Request() { SP = model.SP, CustPONO = model.FinalInspection.CustPONO, FactoryID = model.FinalInspection.FactoryID, StyleID = model.StyleID };
             IList<Orders> orders = _IOrdersProvider.GetOrderForInspection(requestItem);
 
             Excel.Application excelApp = MyUtility.Excel.ConnectExcel(AppDomain.CurrentDomain.BaseDirectory + "XLT\\FinalInspectionReport.xlsx");
@@ -115,7 +115,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             worksheet.Cells[3, 3] = model.FinalInspection.FactoryID;
             worksheet.Cells[3, 7] = model.FinalInspection.InspectionStage;
 
-            worksheet.Cells[4, 3] = model.FinalInspection.POID;
+            worksheet.Cells[4, 3] = model.FinalInspection.CustPONO;
             //worksheet.Cells[4, 7] = model.Carton;
 
             worksheet.Cells[5, 3] = model.SP;

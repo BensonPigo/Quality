@@ -76,7 +76,7 @@
                         <p class="searchFont ">PO#</p>
                     </td>
                     <td style="width:7%">
-                        @Html.TextBox("POID", string.Empty, new { @class = "inputStyle" })
+                        @Html.TextBox("CustPONO", string.Empty, new { @class = "inputStyle" })
                     </td>
 
                     <td style="width:9%" align="right">
@@ -169,7 +169,7 @@
                                         @Html.DisplayFor(modelItem => item.SP)
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.POID)
+                                        @Html.DisplayFor(modelItem => item.CustPONO)
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.SPQty)

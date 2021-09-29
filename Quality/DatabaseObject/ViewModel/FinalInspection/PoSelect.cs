@@ -12,7 +12,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
     public class PoSelect : ResultModelBase<PoSelect_Result>
     {
         public string SP { get; set; }
-        public string POID { get; set; }
+        public string CustPONO { get; set; }
         public string StyleID { get; set; }
         public DateTime? SciDeliveryStart { get; set; } = null;
         public DateTime? SciDeliveryEnd { get; set; } = null;

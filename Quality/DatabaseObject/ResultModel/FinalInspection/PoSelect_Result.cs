@@ -12,8 +12,8 @@ namespace DatabaseObject.ResultModel.FinalInspection
         [Display(Name = "ID")]
         public string ID { get; set; }
 
-        [Display(Name = "POID")]
-        public string POID { get; set; }
+        [Display(Name = "CustPONO")]
+        public string CustPONO { get; set; }
         [Display(Name = "BrandID")]
         public string BrandID { get; set; }
         [Display(Name = "StyleID")]

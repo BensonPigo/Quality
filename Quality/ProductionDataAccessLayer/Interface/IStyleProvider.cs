@@ -10,7 +10,7 @@ namespace ProductionDataAccessLayer.Interface
 
         IList<Style> GetSizeUnit(Int64 ukey);
 
-        string GetSizeUnitByPOID(string POID);
+        string GetSizeUnitByCustPONO(string CustPONO);
 
         string GetStyleName(string StyleID, string Season, string Brand);
     }

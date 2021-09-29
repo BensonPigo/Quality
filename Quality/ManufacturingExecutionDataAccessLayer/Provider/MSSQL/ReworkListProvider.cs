@@ -25,7 +25,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 select  
     [ReworkNo] = ins.ReworkCardNo+'/'+ins.FixType
     ,ins.OrderID
-    ,[POID] = o.CustPONo
+    ,[POID] = o.CustPONO
     ,[Style] = o.StyleID
     ,ins.Size
     ,ins.Article

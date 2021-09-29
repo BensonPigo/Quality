@@ -63,7 +63,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,BrandFTYCode" + Environment.NewLine);
             SbSql.Append("        ,CTNQty" + Environment.NewLine);
             SbSql.Append("        ,CustCDID" + Environment.NewLine);
-            SbSql.Append("        ,CustPONo" + Environment.NewLine);
+            SbSql.Append("        ,CustPONO" + Environment.NewLine);
             SbSql.Append("        ,Customize1" + Environment.NewLine);
             SbSql.Append("        ,Customize2" + Environment.NewLine);
             SbSql.Append("        ,Customize3" + Environment.NewLine);
@@ -275,7 +275,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,BrandFTYCode" + Environment.NewLine);
             SbSql.Append("        ,CTNQty" + Environment.NewLine);
             SbSql.Append("        ,CustCDID" + Environment.NewLine);
-            SbSql.Append("        ,CustPONo" + Environment.NewLine);
+            SbSql.Append("        ,CustPONO" + Environment.NewLine);
             SbSql.Append("        ,Customize1" + Environment.NewLine);
             SbSql.Append("        ,Customize2" + Environment.NewLine);
             SbSql.Append("        ,Customize3" + Environment.NewLine);
@@ -482,7 +482,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,BrandFTYCode" + Environment.NewLine);
             SbSql.Append("        ,CTNQty" + Environment.NewLine);
             SbSql.Append("        ,CustCDID" + Environment.NewLine);
-            SbSql.Append("        ,CustPONo" + Environment.NewLine);
+            SbSql.Append("        ,CustPONO" + Environment.NewLine);
             SbSql.Append("        ,Customize1" + Environment.NewLine);
             SbSql.Append("        ,Customize2" + Environment.NewLine);
             SbSql.Append("        ,Customize3" + Environment.NewLine);
@@ -666,7 +666,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,@BrandFTYCode"); objParameter.Add("@BrandFTYCode", DbType.String, Item.BrandFTYCode);
             SbSql.Append("        ,@CTNQty"); objParameter.Add("@CTNQty", DbType.String, Item.CTNQty);
             SbSql.Append("        ,@CustCDID"); objParameter.Add("@CustCDID", DbType.String, Item.CustCDID);
-            SbSql.Append("        ,@CustPONo"); objParameter.Add("@CustPONo", DbType.String, Item.CustPONo);
+            SbSql.Append("        ,@CustPONO"); objParameter.Add("@CustPONO", DbType.String, Item.CustPONO);
             SbSql.Append("        ,@Customize1"); objParameter.Add("@Customize1", DbType.String, Item.Customize1);
             SbSql.Append("        ,@Customize2"); objParameter.Add("@Customize2", DbType.String, Item.Customize2);
             SbSql.Append("        ,@Customize3"); objParameter.Add("@Customize3", DbType.String, Item.Customize3);
@@ -872,7 +872,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             if (Item.BrandFTYCode != null) { SbSql.Append(",BrandFTYCode=@BrandFTYCode" + Environment.NewLine); objParameter.Add("@BrandFTYCode", DbType.String, Item.BrandFTYCode); }
             if (Item.CTNQty != null) { SbSql.Append(",CTNQty=@CTNQty" + Environment.NewLine); objParameter.Add("@CTNQty", DbType.String, Item.CTNQty); }
             if (Item.CustCDID != null) { SbSql.Append(",CustCDID=@CustCDID" + Environment.NewLine); objParameter.Add("@CustCDID", DbType.String, Item.CustCDID); }
-            if (Item.CustPONo != null) { SbSql.Append(",CustPONo=@CustPONo" + Environment.NewLine); objParameter.Add("@CustPONo", DbType.String, Item.CustPONo); }
+            if (Item.CustPONO != null) { SbSql.Append(",CustPONO=@CustPONO" + Environment.NewLine); objParameter.Add("@CustPONO", DbType.String, Item.CustPONO); }
             if (Item.Customize1 != null) { SbSql.Append(",Customize1=@Customize1" + Environment.NewLine); objParameter.Add("@Customize1", DbType.String, Item.Customize1); }
             if (Item.Customize2 != null) { SbSql.Append(",Customize2=@Customize2" + Environment.NewLine); objParameter.Add("@Customize2", DbType.String, Item.Customize2); }
             if (Item.Customize3 != null) { SbSql.Append(",Customize3=@Customize3" + Environment.NewLine); objParameter.Add("@Customize3", DbType.String, Item.Customize3); }
@@ -1071,9 +1071,9 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
                 where += " and o.id = @SP ";
             }
 
-            if (!string.IsNullOrEmpty(requestItem.POID))
+            if (!string.IsNullOrEmpty(requestItem.CustPONO))
             {
-                listPar.Add("@POID", requestItem.POID);
+                listPar.Add("@POID", requestItem.CustPONO);
                 where += " and o.POID = @POID ";
             }
 
@@ -1113,10 +1113,10 @@ where o.ftygroup = @Ftygroup and o.PulloutComplete = 0 and o.Qty > 0
                 where += " and o.id = @SP ";
             }
 
-            if (!string.IsNullOrEmpty(requestItem.POID))
+            if (!string.IsNullOrEmpty(requestItem.CustPONO))
             {
-                listPar.Add("@POID", requestItem.POID);
-                where += " and o.POID = @POID ";
+                listPar.Add("@CustPONO", requestItem.CustPONO);
+                where += " and o.CustPONO = @CustPONO ";
             }
 
             if (!string.IsNullOrEmpty(requestItem.StyleID))
@@ -1127,7 +1127,7 @@ where o.ftygroup = @Ftygroup and o.PulloutComplete = 0 and o.Qty > 0
 
             sqlGetData = $@"
 select o.ID 
-     , o.POID 
+     , o.CustPONO 
      , o.Qty  
      , o.StyleID  
      , o.SeasonID 

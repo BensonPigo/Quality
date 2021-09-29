@@ -76,7 +76,7 @@
                         <p class="searchFont ">PO#</p>
                     </td>
                     <td style="width:4%" align="center">
-                        @Html.TextBoxFor(o => o.POID, string.Empty, new { style = "border-color:black;" })
+                        @Html.TextBoxFor(o => o.CustPONO, string.Empty, new { style = "border-color:black;" })
                     </td>
 
                     <td style="width:5%" align="right">
@@ -128,8 +128,8 @@
                                         @Html.Hidden($"model[{idx}].ID", item.ID)
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.POID)
-                                        @Html.Hidden($"model[{idx}].POID", item.POID)
+                                        @Html.DisplayFor(modelItem => item.CustPONO)
+                                        @Html.Hidden($"model[{idx}].CustPONO", item.CustPONO)
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.Qty)
@@ -192,7 +192,7 @@
 
 
     function checkvalue() {
-        if ($("#SP").val() == "" && $("#POID").val() == "" && $("#StyleID").val() == "") {
+        if ($("#SP").val() == "" && $("#CustPONO").val() == "" && $("#StyleID").val() == "") {
 
             msg.WithError('Please input ＜SP#＞，＜PO#＞ or ＜Style#＞ first!');
 

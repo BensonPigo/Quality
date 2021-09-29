@@ -24,7 +24,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
         [Required]
         [StringLength(13)]
         [Display(Name = "訂單PO")]
-        public string POID { get; set; }
+        public string CustPONO { get; set; }
 
         /// <summary>檢驗階段</summary>
         [Required]

@@ -52,9 +52,9 @@ namespace BusinessLogicLayer.Service
                                 Value = s,
                             }).ToList();
 
-                measurement.SizeUnit = _StyleProvider.GetSizeUnitByPOID(finalInspection.POID);
+                measurement.SizeUnit = _StyleProvider.GetSizeUnitByCustPONO(finalInspection.CustPONO);
 
-                List<DatabaseObject.ManufacturingExecutionDB.Measurement> baseMeasurementItems = _MeasurementProvider.GetMeasurementsByPOID(finalInspection.POID, userID).ToList();
+                List<DatabaseObject.ManufacturingExecutionDB.Measurement> baseMeasurementItems = _MeasurementProvider.GetMeasurementsByPOID(finalInspection.CustPONO, userID).ToList();
                 measurement.ListMeasurementItem = baseMeasurementItems.Select( s =>
                         new MeasurementItem() {
                             Description = s.Description,

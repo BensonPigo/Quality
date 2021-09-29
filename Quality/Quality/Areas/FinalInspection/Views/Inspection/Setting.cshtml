@@ -77,6 +77,18 @@
             width: 100%
         }
 
+        #SewingLineSeqTable_info {
+            color: white
+        }
+
+        #SewingLineTable_previous, #SewingLineTable_next {
+            color: white !important;
+        }
+
+        #SewingLineTable_wrapper, #SewingLineTable_wrapper > .dataTables_scrollHeadInner {
+            width: 100%
+        }
+
         table.dataTable.cell-border table tbody tr td:not(:first-child) {
             text-align: center;
         }
@@ -93,7 +105,7 @@
     @using (Html.BeginForm("GoGeneral", "Inspection", FormMethod.Post, new { @id = "settingForm", onsubmit = "return checkSubmitValue();" }))
     {
         @Html.HiddenFor(o => o.FinalInspectionID)
-        @Html.HiddenFor(o=> o.AcceptableQualityLevelsUkey)
+        @Html.HiddenFor(o => o.AcceptableQualityLevelsUkey)
         <div style="padding:2em 3em 2em 3em">
             <div class="col-auto"><h1 style="font-size:2em">Inspection Setting</h1></div>
 
@@ -112,7 +124,7 @@
                     <tr>
                         <td><label>What's sewing line you audit?</label></td>
                         <td>
-                            @Html.TextBoxFor(o => o.SewingLineID, new { @readonly = "readonly",@style="width:40%;float:left;" })
+                            @Html.TextBoxFor(o => o.SewingLineID, new { @readonly = "readonly", @style = "width:40%;float:left;" })
                             <input type="button" onclick="ClearSewing(this)" name="name" value="Clear" style="float:left;" />
                         </td>
                     </tr>
@@ -142,13 +154,13 @@
                     <tr>
                         <td><label>AQL Plan</label></td>
                         <td>
-                            @if (AQLPlanDisabled)
+                            @if (AQLPlanDisabled || Model.AQLPlan == null)
                             {
                                 @Html.DropDownListFor(o => o.AQLPlan, (List<SelectListItem>)ViewBag.AQLPlanList, null, new { @class = "form-control", @disabled = "@disabled" })
                             }
                             else
                             {
-                                @Html.DropDownListFor(o => o.AQLPlan, (List<SelectListItem>)ViewBag.AQLPlanList, null, new { @class = "form-control"})
+                                @Html.DropDownListFor(o => o.AQLPlan, (List<SelectListItem>)ViewBag.AQLPlanList, null, new { @class = "form-control" })
                             }
                         </td>
                     </tr>
@@ -162,7 +174,7 @@
                         <td>
                             @if (SampleQtyDisabled)
                             {
-                                @Html.TextBoxFor(o => o.SampleSize, new { @type = "number", @min = "0", @class = "form-control center-block", @onchange = "onSampleSizeChange(this.value)" , @disabled = "disabled" , @style = "width:49%;" })
+                                @Html.TextBoxFor(o => o.SampleSize, new { @type = "number", @min = "0", @class = "form-control center-block", @onchange = "onSampleSizeChange(this.value)", @disabled = "disabled", @style = "width:49%;" })
                             }
                             else
                             {
@@ -176,7 +188,7 @@
 
                             @if (SampleQtyDisabled)
                             {
-                                @Html.TextBoxFor(o => o.AcceptQty, new { @type = "number", @style = "width:49%;", @min = "0", @class = "form-control center-block" , @disabled = "disabled" })
+                                @Html.TextBoxFor(o => o.AcceptQty, new { @type = "number", @style = "width:49%;", @min = "0", @class = "form-control center-block", @disabled = "disabled" })
                             }
                             else
                             {
@@ -190,11 +202,11 @@
 
                             @if (SampleQtyDisabled)
                             {
-                                <input id="RejectQty" type="number" class="form-control center-block" min="0" value="@ViewData["RejectQty"]" style = "width:49%;" disabled />
+                                <input id="RejectQty" type="number" class="form-control center-block" min="0" value="@ViewData["RejectQty"]" style="width:49%;" disabled />
                             }
                             else
                             {
-                                <input id="RejectQty" type="number" class="form-control center-block" min="0" value="@ViewData["RejectQty"]" style = "width:49%;"/>
+                                <input id="RejectQty" type="number" class="form-control center-block" min="0" value="@ViewData["RejectQty"]" style="width:49%;" />
                             }
                         </td>
                     </tr>
@@ -285,6 +297,36 @@
             </div>
         </div>
 
+        <!--Sewing Line彈出視窗-->
+
+        <div class="detail-dialog to-SewingLine-detail" title="Select Sewing Line">
+            <div class="detail-dialog-content dialog-content-w-icon" style="height:40vh">
+                <table cellspacing="100" id="SewingLineTable" class="table table-striped display">
+                    <thead>
+                        <tr class="row-name">
+                            <th>Select</th>
+                            <th>Line</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.SelectedSewing.Count; i++)
+                        {
+                            <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                                <td>
+                                    <input type="checkbox" ID="SewingLine_Select_[@i]" SewingLine="@Model.SelectedSewing[i].SewingLine" class="messageCheckbox" Idx=@i onclick="SelectOrderShipSeqChange(this)" style="width: 1.4em;" />
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(o => Model.SelectedSewing[i].SewingLine)
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <br />
+
+            </div>
+        </div>
+
         <button class="button" style="right:0">Next</button>
 
         //Model.SelectCarton的標籤藏在這邊
@@ -316,13 +358,20 @@
 
         // 摺疊資料需先轉成array
         var adata = [];
+        var bdata = [];
         var index = 0;
+        var index2 = 0;
         var Order_AvailableQty = { };
         var table;
         @foreach (var item in Model.SelectedPO)
         {
-            @:adata.push([null, '@item.OrderID', index, '@item.POID', '@item.StyleID', '@item.SeasonID', '@item.BrandID', @item.Qty, '@item.Cartons',@item.AvailableQty, '@item.SeasonID', '@item.Seq', '@item.Article']);
+            @:adata.push([null, '@item.OrderID', index, '@item.CustPONO', '@item.StyleID', '@item.SeasonID', '@item.BrandID', @item.Qty, '@item.Cartons',@item.AvailableQty, '@item.SeasonID', '@item.Seq', '@item.Article']);
             @:index = index + 1;
+        }
+        @foreach (var item in Model.SelectedSewing)
+        {
+            @:bdata.push([null, '@item.SewingLine', index2]);
+            @:index2 = index2 + 1;
         }
 
         $(function () {
@@ -332,7 +381,9 @@
 
 
             $("#SewingLineID").on('click', function () {
-                window.open('@Url.Action("SewingLineList", "PublicWondow",new { Area=""})' + '?FactoryID=@ViewBag.FactoryID', 'SewingLineList', config = 'toolbar=no,status=no,location=no,width=400,height=650' );
+                //window.open('@Url.Action("SewingLineList", "PublicWondow",new { Area=""})' + '?FactoryID=@ViewBag.FactoryID', 'SewingLineList', config = 'toolbar=no,status=no,location=no,width=400,height=650' );
+
+                open_SewingLine($(this).val());
             });
 
 
@@ -446,7 +497,23 @@
                     { targets: 5, visible: false },
                 ]
             });
-            
+
+            $("#SewingLineTable").DataTable({
+                "pageLength": 10,
+                "autoWidth": false,
+                "info": false,
+                destroy: true, // 設定這個才能重新初始化Datatables
+                "filter": false,
+                "paging": false,
+                "info": false,
+                "scrollY": "40vh",
+                "scrollCollapse": true,
+                columnDefs: [
+                    { targets: 0 },
+                    { targets: 1 },
+                ]
+            });
+
             // dialog 共用
             $(".detail-dialog").dialog({
                 autoOpen: false,
@@ -522,13 +589,42 @@
                                 }
                             });
                             var index = $("#currnetSelectedShipmodeSeq").val();
-                            
+
                             //判斷Shipmode Seq是否改變，如果改變清空Carton
                             if (document.getElementById("SelectedPO[" + index + "].Seq").value != checkedList.join(',')) {
                                 document.getElementById("SelectedPO[" + index + "].Cartons").value = "";
                             }
 
                             document.getElementById("SelectedPO[" + index + "].Seq").value = checkedList.join(',');
+                            $(this).dialog("close");
+                        }
+                        , "class": "button"
+                        , "style": "bottom:0;background-color:#E00000;border-radius: 21px;"
+                    },
+                },
+            });
+
+            $(".to-SewingLine-detail").dialog({
+                width: "70%",
+                dialogClass: "add-contact-box",
+                buttons: {
+                    "1": {
+                        text: 'Next',
+                        click: function () {
+
+                            var checkedList = [];
+
+                            $('[id^=SewingLine_Select_]').each(function () {
+
+                                if ($(this).prop('checked')) {
+
+                                    checkedList.push($(this).attr("SewingLine"));
+                                }
+                            });
+
+                            //把勾選的代進textobx
+                            $("#SewingLineID").val(checkedList.join(','));
+                            //document.getElementById("SelectedPO[" + index + "].Seq").value = checkedList.join(',');
                             $(this).dialog("close");
                         }
                         , "class": "button"
@@ -674,8 +770,8 @@
 
             $(adata).each(function (index, element) {
                 var orderID = element[1];
-                var poID = element[3];
-                if (orderID == findValue[0] && poID == findValue[1]) {
+                var CustPONO = element[3];
+                if (orderID == findValue[0] && CustPONO == findValue[1]) {
                     rowIndex = element[2];
 
                 }
@@ -735,8 +831,8 @@
 
             $(adata).each(function (index, element) {
                 var orderID = element[1];
-                var poID = element[3];
-                if (orderID == findValue[0] && poID == findValue[1]) {
+                var CustPONO = element[3];
+                if (orderID == findValue[0] && CustPONO == findValue[1]) {
                     rowIndex = element[2];
                 }
             });
@@ -756,11 +852,61 @@
             NonLoading();
         }
 
+
+        function open_SewingLine(pkey) {
+            var findValue = pkey.split(',');
+            var line = findValue[0];
+            $(".to-SewingLine-detail").dialog("open");
+            ShowLoading();
+
+            $("#SewingLineTable").DataTable({
+                "pageLength": 10,
+                //"autoWidth": false,
+                "info": false,
+                destroy: true, // 設定這個才能重新初始化Datatables
+                //"filter": false,
+                "paging": false,
+                "info": false,
+                "scrollY": "40vh",
+                "scrollCollapse": true,
+                columnDefs: [
+                    { targets: 0 },
+                    { targets: 1 },
+                ]
+            });
+
+            $("#SewingLineTable_filter").hide();
+
+            $('[id^=SewingLine_Select_]').each(function () {
+                $(this).prop('checked', false);
+            });
+
+            //$(bdata).each(function (index, element) {
+            //    var sewingline = element[1];
+            //    if (sewingline == findValue[0]) {
+            //        rowIndex = element[2];
+            //    }
+            //});
+
+            var LineValues = $("#SewingLineID").val();
+            var LineList = LineValues.split(',');
+
+            if (LineValues != '') {
+
+                $(LineList).each(function () {
+
+                    $('input[Type=checkbox][SewingLine=' + this + ']').prop('checked', true);
+                });
+            }
+
+            NonLoading();
+        }
+
         function format(d, orderID) {
             return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
                 '<tr><td style="width:90%">PO#:</td><td style="width:10%">' +
                 '<input type="hidden" name="SelectedPO[' + d[2] + '].ORDERID" id="SelectedPO[' + d[2] + '].ORDERID" value="' + d[1] + '" \/>' +
-                '<input type="hidden" name="SelectedPO[' + d[2] + '].POID" id="SelectedPO[' + d[2] + '].POID" value="' + d[3] + '" \/>' +
+                '<input type="hidden" name="SelectedPO[' + d[2] + '].CustPONO" id="SelectedPO[' + d[2] + '].CustPONO" value="' + d[3] + '" \/>' +
                 d[3] +
                 '</td></tr>' +
                 '<tr><td>Style#:</td><td>' + d[4] + '</td></tr>' +
@@ -855,7 +1001,7 @@
         }
 
         function checkSubmitValue() {
-            
+
             if (onSampleSizeChange(document.getElementById("InspectionStage").value) == false) {
                 return false;
             }

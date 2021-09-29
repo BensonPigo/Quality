@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text;
 using System.Transactions;
 
 namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
@@ -29,7 +30,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 
             string sqlGetData = @"
 select  ID                             ,
-        POID                           ,
+        CustPONO                       ,
         InspectionStage                ,
         InspectionTimes                ,
         FactoryID                      ,
@@ -94,16 +95,16 @@ where   ID = @ID
 
         }
 
-        public string GetInspectionTimes(string POID)
+        public string GetInspectionTimes(string CustPONO)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection() {
-            { "@POID", DbType.String, POID }
+            { "@CustPONO", DbType.String, CustPONO }
             };
 
             string sqlGetData = @"
 select [InspectionTimes] = isnull(max(InspectionTimes), 0) + 1
     from FinalInspection
-    where   POID = @POID
+    where   CustPONO = @CustPONO
 ";
 
             return ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, objParameter).Rows[0]["InspectionTimes"].ToString();
@@ -133,7 +134,7 @@ where   ID like '{idHead}%'
                 setting.FinalInspectionID = GetNewFinalInspectionID(factoryID);
                 sqlUpdCmd += $@"
 insert into FinalInspection(id                            ,
-                            poid                          ,
+                            CustPONO                          ,
                             InspectionStage               ,
                             InspectionTimes               ,
                             FactoryID                     ,
@@ -149,7 +150,7 @@ insert into FinalInspection(id                            ,
                             AddName                       ,
                             AddDate)
                 values(@FinalInspectionID                            ,
-                       @POID                          ,
+                       @CustPONO                          ,
                        @InspectionStage               ,
                        @InspectionTimes               ,
                        @FactoryID                     ,
@@ -192,7 +193,7 @@ delete  FinalInspection_OrderCarton where ID = @FinalInspectionID
 
 
             objParameter.Add("@FinalInspectionID", setting.FinalInspectionID);
-            objParameter.Add("@POID", setting.SelectedPO[0].POID);
+            objParameter.Add("@CustPONO", setting.SelectedPO[0].CustPONO);
             objParameter.Add("@InspectionStage", setting.InspectionStage);
             objParameter.Add("@InspectionTimes", setting.InspectionTimes);
             objParameter.Add("@FactoryID", factoryID);
@@ -531,7 +532,7 @@ where   ID = @FinalInspectionID
             string sqlGetData = $@"
 select ID, Description 
 into #baseBACriteria
-from    [MainServer].Production.dbo.DropDownList ddl 
+from  SciProduction_DropDownList ddl 
 where Type = 'PMS_BACriteria'
 order by Seq
 
@@ -665,7 +666,7 @@ select  Image
             string sqlGetMoistureListCartonItem = @"
 select distinct ID, Seq, Article
 into    #Order_QtyShip_Detail
-from    [MainServer].Production.dbo.Order_QtyShip_Detail
+from    Production.dbo.Order_QtyShip_Detail  ----使用四節式會發生 「交易內容正由另一個工作階段所使用」 的錯誤，確認該資料表有做訂閱同步，因此直接使用備機上的Table
 where   ID in (select OrderID from FinalInspection_Order with (nolock) where ID = @finalInspectionID)
 
 select  [FinalInspection_OrderCartonUkey] = foc.Ukey,
@@ -681,6 +682,7 @@ where foc.ID = @finalInspectionID
             return ExecuteList<CartonItem>(CommandType.Text, sqlGetMoistureListCartonItem, objParameter);
 
         }
+        
 
         public IList<ViewMoistureResult> GetViewMoistureResult(string finalInspectionID)
         {
@@ -921,23 +923,26 @@ where   ID = @finalInspectionID
 
             string sqlcmd = @"
 
-declare @styleukey bigint
-declare @sizeUnit varchar(8)
-declare @POID varchar(13)
+declare @CustPONO varchar(30)
 
-select  @POID = POID
+select  @CustPONO = CustPONO
 from    FinalInspection with (nolock)
 where   ID = @finalInspectionID
 
-select  @styleukey = Ukey,
-        @sizeUnit = SizeUnit
+
+select  StyleUkey = Ukey,SizeUnit
+INTO #Style_Size
 from    SciProduction_Style
-where   Ukey = (select StyleUkey from SciProduction_Orders where ID = @POID)
+where   Ukey IN (
+	select StyleUkey 
+	from SciProduction_Orders 
+	where ID IN (select ID
+					from SciProduction_Orders
+					where CustPONO = @CustPONO
+				) 
+)
 
-
-select  SizeSpec,
-        MeasurementUkey,
-        AddDate
+select  SizeSpec,        MeasurementUkey,        AddDate
 into    #tmp_Inspection_Measurement
 from    FinalInspection_Measurement
 where   ID = @finalInspectionID and
@@ -954,16 +959,15 @@ select m.Ukey
 	,m.SizeCode 
 	,[MeasurementSizeSpec] = m.SizeSpec 
 	,[InspectionMeasurementSizeSpec] = im.SizeSpec
-	,[diff]= max(dbo.calculateSizeSpec(m.SizeSpec,im.SizeSpec, @sizeUnit))
+	,[diff]= max(dbo.calculateSizeSpec(m.SizeSpec,im.SizeSpec, ss.SizeUnit))
 	,im.AddDate
 	,[HeadSizeCode] = FORMAT(im.AddDate,'yyyy/MM/dd HH:mm:ss')
 into #tmp 
 from Measurement m with(nolock)
+INNER JOIN #Style_Size ss ON m.StyleUkey = ss.StyleUkey 
 left join #tmp_Inspection_Measurement im on im.MeasurementUkey = m.Ukey 
 LEFT JOIN [ManufacturingExecution].[dbo].[MeasurementTranslate] b ON  m.MeasurementTranslateUkey = b.UKey
-where   m.StyleUkey = @styleukey and
-        m.SizeCode = @size and
-        m.junk = 0
+where  m.SizeCode = @size and m.junk = 0
 group by m.Ukey,iif(isnull(b.DescEN,'') = '',m.Description,b.DescEN),m.Tol1,m.Tol2,m.Code,m.SizeCode,m.SizeSpec,im.SizeSpec,im.AddDate
 
 drop table #tmp_Inspection_Measurement
@@ -1003,7 +1007,7 @@ set @sql = '
 exec (@sql)
 
 
-drop table #tmp
+drop table #tmp,#Style_Size,#tmp_Inspection_Measurement
 
 ";
 
@@ -1085,9 +1089,13 @@ select  @StyleID = StyleID,
         @SeasonID = SeasonID,
         @BrandID = BrandID
 from    SciProduction_Orders with (nolock)
-where   ID = (select POID from FinalInspection with (nolock) where ID = @FinalInspectionID )
+where   ID IN (
+    select ID
+    from MainServer.Production.dbo.Orders
+    where CustPONO = (select CustPONO from FinalInspection with (nolock) where ID = @FinalInspectionID )
+)
 
-select  f.POID,
+select  f.CustPONO,
         f.InspectionResult,
         f.FactoryID,
         [SP] = (SELECT Stuff((select concat( ',',OrderID) 
@@ -1127,7 +1135,11 @@ select  @StyleID = StyleID,
         @SeasonID = SeasonID,
         @BrandID = BrandID
 from    SciProduction_Orders with (nolock)
-where   ID = (select POID from FinalInspection with (nolock) where ID = @FinalInspectionID )
+where   ID IN (
+    select ID
+    from MainServer.Production.dbo.Orders
+    where CustPONO = (select CustPONO from FinalInspection with (nolock) where ID = @FinalInspectionID )
+)
 
 select  [SP] = (SELECT Stuff((select concat( ',',OrderID) 
                                 from  FinalInspection_Order fo with (nolock) 
@@ -1161,11 +1173,16 @@ where f.InspectionResult = @InspectionResult)";
                 parameter.Add("@InspectionResult", request.InspectionResult);
             }
 
-            if (!string.IsNullOrEmpty(request.POID))
+            if (!string.IsNullOrEmpty(request.CustPONO))
             {
-                whereOrder += @" and POID = @POID";
-                whereFinalInspection += @" and f.POID = @POID";
-                parameter.Add("@POID", request.POID);
+                whereOrder += @" and ID IN (
+select ID
+from MainServer.Production.dbo.Orders
+where CustPONO = @CustPONO
+)
+";
+                whereFinalInspection += @" and f.CustPONO = @CustPONO";
+                parameter.Add("@CustPONO", request.CustPONO);
             }
 
             if (!string.IsNullOrEmpty(request.SP))
@@ -1201,7 +1218,7 @@ select  ID,
         BrandID,
         Qty
 into    #tmpOrders
-from    SciProduction_Orders with (nolock)
+from    MainServer.Production.dbo.Orders with (nolock)
 where   1 = 1 {whereOrder}
 
 select  ID, Article
@@ -1211,7 +1228,7 @@ where   ID in (select ID from #tmpOrders)
 
 select  [FinalInspectionID] = f.ID,
         [SP] = fo.OrderID,
-        f.POID,
+        f.CustPONO,
         [SPQty] = cast(o.Qty as varchar),
         [StyleID] = o.StyleID,
         [Season] = o.SeasonID,

@@ -60,7 +60,7 @@ namespace BusinessLogicLayer.Service.FinalInspection
 
                 queryReport.AQLPlan = new FinalInspectionService().GetAQLPlanDesc(queryReport.FinalInspection.AcceptableQualityLevelsUkey);
 
-                queryReport.MeasurementUnit = _StyleProvider.GetSizeUnitByPOID(queryReport.FinalInspection.POID);
+                queryReport.MeasurementUnit = _StyleProvider.GetSizeUnitByCustPONO(queryReport.FinalInspection.CustPONO);
 
                 List<FinalInspectionDefectItem> finalInspectionDefectItems = _FinalInspFromPMSProvider.GetFinalInspectionDefectItems(finalInspectionID).ToList();
                 if (finalInspectionDefectItems.Any(s => s.Qty > 0))
@@ -170,7 +170,7 @@ namespace BusinessLogicLayer.Service.FinalInspection
                 List<MailTo> mailTos = _IMailToProvider.Get(new MailTo() { ID = "401" }).ToList();
                 string toAddress = mailTos.Select(s => s.ToAddress).FirstOrDefault();
                 string ccAddress = mailTos.Select(s => s.CcAddress).FirstOrDefault();
-                string subject = $"Final Inspection Report(PO#: {drReportMailInfo["POID"]})-{drReportMailInfo["InspectionResult"]}";
+                string subject = $"Final Inspection Report(PO#: {drReportMailInfo["CustPONO"]})-{drReportMailInfo["InspectionResult"]}";
 
                 //對照HomeController的RedirectToPage Action裡面的順序設定
                 string action = this.GetCurrentAction(finalInspection.InspectionStep);
@@ -182,7 +182,7 @@ namespace BusinessLogicLayer.Service.FinalInspection
                 StringBuilder content = new StringBuilder();
                 content.Append($@"
 Hi all,<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This is final inspection report for [PO#]:<font style='color: blue'> {drReportMailInfo["POID"]}</font>. Please refer to below information.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This is final inspection report for [PO#]:<font style='color: blue'> {drReportMailInfo["CustPONO"]}</font>. Please refer to below information.<br/>
 <b>[Factory]:</b><font style='color: blue'> {drReportMailInfo["FactoryID"]}</font><br/>
 <b>[SP#]:</b><font style='color: blue'>  {drReportMailInfo["SP"]}</font><br/>
 <b>[Style]:</b><font style='color: blue'>  {drReportMailInfo["StyleID"]}</font><br/>

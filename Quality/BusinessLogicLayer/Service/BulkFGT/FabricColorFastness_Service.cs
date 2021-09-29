@@ -361,13 +361,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
             }
            
             DataTable dtOrders = _IOrdersProvider.Get_Orders_DataTable("", result.Main.POID);
-            string styleID, seasonID, custPONo, brandID, styleUkey;
+            string styleID, seasonID, CustPONO, brandID, styleUkey;
 
             if (dtOrders.Rows.Count == 0)
             {
                 styleID = string.Empty;
                 seasonID = string.Empty;
-                custPONo = string.Empty;
+                CustPONO = string.Empty;
                 brandID = string.Empty;
                 styleUkey = string.Empty;
             }
@@ -376,7 +376,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 styleID = dtOrders.Rows[0]["StyleID"].ToString();
                 styleUkey = dtOrders.Rows[0]["StyleUkey"].ToString();
                 seasonID = dtOrders.Rows[0]["SeasonID"].ToString();
-                custPONo = dtOrders.Rows[0]["CustPONo"].ToString();
+                CustPONO = dtOrders.Rows[0]["CustPONO"].ToString();
                 brandID = dtOrders.Rows[0]["BrandID"].ToString();
             }
 
@@ -415,7 +415,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 worksheet.Cells[3, 12] = brandID;
 
                 worksheet.Cells[5, 4] = styleID;
-                worksheet.Cells[5, 10] = custPONo;
+                worksheet.Cells[5, 10] = CustPONO;
                 worksheet.Cells[5, 12] = result.Main.Article;
                 worksheet.Cells[6, 4] = StyleName;
                 worksheet.Cells[6, 10] = seasonID;

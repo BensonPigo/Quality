@@ -15,6 +15,7 @@ namespace ProductionDataAccessLayer.Interface
         IList<SelectCarton> GetSelectedCartonForSetting(string finalInspectionID);
         IList<FinalInspectionDefectItem> GetFinalInspectionDefectItems(string finalInspectionID);
 
+        IList<SelectSewing> GetSelectedSewingLine(string FactoryID);
         IList<SelectOrderShipSeq> GetSelectOrderShipSeqForSetting(List<string> listOrderID);
         IList<SelectOrderShipSeq> GetSelectOrderShipSeqForSetting(string finalInspectionID);
         List<string> GetArticleList(string finalInspectionID);
@@ -22,5 +23,6 @@ namespace ProductionDataAccessLayer.Interface
         List<string> GetProductTypeList(string finalInspectionID);
 
         IList<SelectListItem> GetActionSelectListItem();
+        IList<DatabaseObject.ProductionDB.System> GetSystem();
     }
 }

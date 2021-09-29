@@ -2699,19 +2699,20 @@
                     tableContent += "</tr>";
                 });
 
-                $.each(spArrList.filter(onlyUnique), function (index, value) {
+                //去重複產生下拉選單
+                $.each(jQuery.unique(spArrList), function (index, value) {
                     spOption += "<option value=" + value + ">" + value + "</option>";
                 });
 
-                $.each(styleArrList.filter(onlyUnique), function (index, value) {
+                $.each(jQuery.unique(styleArrList), function (index, value) {
                     styleOption += "<option value=" + value + ">" + value + "</option>";
                 });
 
-                $.each(articleArrList.filter(onlyUnique), function (index, value) {
+                $.each(jQuery.unique(articleArrList), function (index, value) {
                     articleOption += "<option value=" + value + ">" + value + "</option>";
                 });
 
-                $.each(sizeArrList.filter(onlyUnique), function (index, value) {
+                $.each(jQuery.unique(sizeArrList), function (index, value) {
                     sizeOption += "<option value=" + value + ">" + value + "</option>";
                 });
 

@@ -11,7 +11,7 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
     {
         FinalInspection GetFinalInspection(string FinalInspectionID);
 
-        string GetInspectionTimes(string POID);
+        string GetInspectionTimes(string CustPONO);
 
         string UpdateFinalInspection(Setting setting, string userID, string factoryID, string MDivisionid);
 
@@ -58,6 +58,6 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
 
         IList<SelectOrderShipSeq> GetListShipModeSeq(string finalInspectionID);
 
-        IList<OtherImage> GetOthersImageList(string finalInspectionID);
+        IList<OtherImage> GetOthersImageList(string finalInspectionID);        
     }
 }

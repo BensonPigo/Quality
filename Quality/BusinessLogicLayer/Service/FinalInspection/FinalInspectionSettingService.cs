@@ -52,6 +52,7 @@ namespace BusinessLogicLayer.Service
                 result.SampleSize = finalInspection.SampleSize;
                 result.AcceptQty = finalInspection.AcceptQty;
 
+                result.SelectedSewing = _FinalInspFromPMSProvider.GetSelectedSewingLine(finalInspection.FactoryID).ToList();
                 result.SelectedPO = _FinalInspFromPMSProvider.GetSelectedPOForInspection(finalInspectionID).ToList();
                 result.SelectOrderShipSeq = _FinalInspFromPMSProvider.GetSelectOrderShipSeqForSetting(finalInspectionID).ToList();
                 result.SelectCarton = _FinalInspFromPMSProvider.GetSelectedCartonForSetting(finalInspectionID).ToList();
@@ -88,7 +89,7 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public Setting GetSettingForInspection(string POID, List<string> listOrderID, string FactoryID)
+        public Setting GetSettingForInspection(string CustPONO, List<string> listOrderID, string FactoryID)
         {
             Setting result = new Setting();
             try
@@ -96,7 +97,8 @@ namespace BusinessLogicLayer.Service
                 _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
                 _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
 
-                result.InspectionTimes = _FinalInspectionProvider.GetInspectionTimes(POID);
+                result.InspectionTimes = _FinalInspectionProvider.GetInspectionTimes(CustPONO);
+                result.SelectedSewing = _FinalInspFromPMSProvider.GetSelectedSewingLine(FactoryID).ToList();
                 result.SelectedPO = _FinalInspFromPMSProvider.GetSelectedPOForInspection(listOrderID).ToList();
                 result.SelectOrderShipSeq = _FinalInspFromPMSProvider.GetSelectOrderShipSeqForSetting(listOrderID).ToList();
                 result.SelectCarton = _FinalInspFromPMSProvider.GetSelectedCartonForSetting(listOrderID).ToList();

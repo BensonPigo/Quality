@@ -8,7 +8,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
     public class QueryFinalInspection_ViewModel : ResultModelBase<QueryFinalInspection>
     {
         public string SP { get; set; }
-        public string POID { get; set; }
+        public string CustPONO { get; set; }
         public string StyleID { get; set; }
         public string InspectionResult { get; set; }
 
@@ -20,7 +20,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
     {
         public string FinalInspectionID { get; set; }
         public string SP { get; set; }
-        public string POID { get; set; }
+        public string CustPONO { get; set; }
         public string SPQty { get; set; }
         public string StyleID { get; set; }
         public string Season { get; set; }

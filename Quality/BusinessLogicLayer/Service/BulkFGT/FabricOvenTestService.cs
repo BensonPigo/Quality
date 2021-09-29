@@ -471,7 +471,7 @@ namespace BusinessLogicLayer.Service
                 string styleUkey = string.Empty;
                 string styleID = string.Empty;
                 string seasonID = string.Empty;
-                string custPONo = string.Empty;
+                string CustPONO = string.Empty;
                 string brandID = string.Empty;
 
                 if (listOrders.Count > 0)
@@ -479,7 +479,7 @@ namespace BusinessLogicLayer.Service
                     styleUkey = listOrders[0].StyleUkey.ToString();
                     styleID = listOrders[0].StyleID;
                     seasonID = listOrders[0].SeasonID;
-                    custPONo = listOrders[0].CustPONo;
+                    CustPONO = listOrders[0].CustPONO;
                     brandID = listOrders[0].BrandID;
                 }
 
@@ -515,7 +515,7 @@ namespace BusinessLogicLayer.Service
                     worksheet.Cells[4, 9] = poID;
                     worksheet.Cells[4, 14] = brandID;
                     worksheet.Cells[6, 3] = styleID;
-                    worksheet.Cells[6, 9] = custPONo;
+                    worksheet.Cells[6, 9] = CustPONO;
                     worksheet.Cells[6, 14] = dtOven.Rows[0]["Article"].ToString();
                     worksheet.Cells[7, 3] = listStyle[0].StyleName;
                     worksheet.Cells[7, 9] = seasonID;

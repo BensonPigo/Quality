@@ -1163,7 +1163,7 @@ namespace BusinessLogicLayer.Service
                 worksheet.Cells[4, 7] = fabricCrkShrkTestCrocking_Main.POID;
                 worksheet.Cells[4, 10] = fabricCrkShrkTestCrocking_Main.BrandID;
                 worksheet.Cells[6, 3] = fabricCrkShrkTestCrocking_Main.StyleID;
-                worksheet.Cells[6, 6] = orders.CustPONo;
+                worksheet.Cells[6, 6] = orders.CustPONO;
                 worksheet.Cells[7, 3] = style.StyleName;
                 worksheet.Cells[7, 9] = fabricCrkShrkTestCrocking_Main.ArriveQty;
                 worksheet.Cells[14, 8] = groupItem.Key.Name;
@@ -1487,7 +1487,7 @@ namespace BusinessLogicLayer.Service
                 worksheet.Cells[3, 9] = fabricCrkShrkTestCrocking_Main.POID;
                 worksheet.Cells[3, 13] = fabricCrkShrkTestCrocking_Main.BrandID;
                 worksheet.Cells[5, 2] = fabricCrkShrkTestCrocking_Main.StyleID;
-                worksheet.Cells[5, 5] = orders.CustPONo;
+                worksheet.Cells[5, 5] = orders.CustPONO;
                 worksheet.Cells[6, 2] = style.StyleName;
                 worksheet.Cells[6, 12] = fabricCrkShrkTestCrocking_Main.ArriveQty;
                 worksheet.Cells[13, 9] = groupItem.Key.Name;

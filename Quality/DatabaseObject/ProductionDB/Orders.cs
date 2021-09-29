@@ -119,7 +119,7 @@ namespace DatabaseObject.ProductionDB
         /// <summary>客戶訂單單號</summary>
         [StringLength(30)]
         [Display(Name = "客戶訂單單號")]
-        public string CustPONo { get; set; }
+        public string CustPONO { get; set; }
         /// <summary>客人的自訂欄位</summary>
         [StringLength(30)]
         [Display(Name = "客人的自訂欄位")]

@@ -46,7 +46,7 @@ namespace BusinessLogicLayer.Service.FinalInspection.Tests
 
                 QueryFinalInspection_ViewModel queryFinalInspection = new QueryFinalInspection_ViewModel();
 
-                queryFinalInspection.POID = "21010007IR";
+                queryFinalInspection.CustPONO = "21010007IR";
 
                 List<QueryFinalInspection> result = _QueryService.GetFinalinspectionQueryList(queryFinalInspection);
 

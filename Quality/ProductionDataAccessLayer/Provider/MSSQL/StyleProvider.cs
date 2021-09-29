@@ -477,17 +477,23 @@ select StyleName from Style where ID = @StyleID and SeasonID = @SeasonID and Bra
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
 
-        public string GetSizeUnitByPOID(string POID)
+        public string GetSizeUnitByCustPONO(string CustPONO)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection()
             {
-                 { "@POID", DbType.String, POID} ,
+                 { "@CustPONO", DbType.String, CustPONO} ,
             };
 
             string sqlcmd = @"
-select SizeUnit 
+select TOP 1 SizeUnit 
 from Style  with (nolock)
-where   ukey = (select styleUkey from orders with (nolock) where ID = @POID)
+where   ukey IN (
+select styleUkey
+    from orders
+    WHERE ID IN (
+        select ID from orders with (nolock) where CustPONO = @CustPONO
+    )
+)
 ";
 
             DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);

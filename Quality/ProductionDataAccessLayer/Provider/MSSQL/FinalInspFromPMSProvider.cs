@@ -22,13 +22,37 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         public FinalInspFromPMSProvider(SQLDataTransaction tra) : base(tra) { }
         #endregion
 
+        public IList<SelectSewing> GetSelectedSewingLine(string FactoryID)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+
+            //台北
+            SbSql.Append($@"
+Select SewingLine = ID
+From Production.dbo.SewingLine --工廠
+Where Junk = 0
+AND FactoryID=@FactoryID
+");
+
+            if (!string.IsNullOrEmpty(FactoryID))
+            {
+                SbSql.Append($@"AND FactoryID  = @FactoryID ");
+
+                paras.Add("@FactoryID", DbType.String, FactoryID);
+            }
+
+
+            return ExecuteList<SelectSewing>(CommandType.Text, SbSql.ToString(), paras);
+        }
+
         public IList<SelectedPO> GetSelectedPOForInspection(List<string> listOrderID)
         {
             SQLParameterCollection listPar = new SQLParameterCollection();
             string whereOrderID = listOrderID.Select(s => $"'{s}'").JoinToString(",");
             string sqlGetData = $@"
 select  [OrderID] = o.id,
-        o.POID,
+        o.CustPONO,
         o.StyleID,
         o.SeasonID,
         o.BrandID,
@@ -56,7 +80,7 @@ from    [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order with (no
 where   ID  =   @finalInspectionID
 
 select  [OrderID] = o.id,
-        o.POID,
+        o.CustPONO,
         o.StyleID,
         o.SeasonID,
         o.BrandID,
@@ -331,6 +355,91 @@ from Order_QtyShip oqs with (nolock)
 where   oqs.id in ({whereOrderID})
 ";
             return ExecuteList<SelectOrderShipSeq>(CommandType.Text, sqlGetData, listPar);
+        }
+
+        public IList<DatabaseObject.ProductionDB.System> GetSystem()
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            SbSql.Append("SELECT" + Environment.NewLine);
+            SbSql.Append("         Mailserver" + Environment.NewLine);
+            SbSql.Append("        ,Sendfrom" + Environment.NewLine);
+            SbSql.Append("        ,EmailID" + Environment.NewLine);
+            SbSql.Append("        ,EmailPwd" + Environment.NewLine);
+            SbSql.Append("        ,PicPath" + Environment.NewLine);
+            SbSql.Append("        ,StdTMS" + Environment.NewLine);
+            SbSql.Append("        ,ClipPath" + Environment.NewLine);
+            SbSql.Append("        ,FtpIP" + Environment.NewLine);
+            SbSql.Append("        ,FtpID" + Environment.NewLine);
+            SbSql.Append("        ,FtpPwd" + Environment.NewLine);
+            SbSql.Append("        ,SewLock" + Environment.NewLine);
+            SbSql.Append("        ,SampleRate" + Environment.NewLine);
+            SbSql.Append("        ,PullLock" + Environment.NewLine);
+            SbSql.Append("        ,RgCode" + Environment.NewLine);
+            SbSql.Append("        ,ImportDataPath" + Environment.NewLine);
+            SbSql.Append("        ,ImportDataFileName" + Environment.NewLine);
+            SbSql.Append("        ,ExportDataPath" + Environment.NewLine);
+            SbSql.Append("        ,CurrencyID" + Environment.NewLine);
+            SbSql.Append("        ,USDRate" + Environment.NewLine);
+            SbSql.Append("        ,POApproveName" + Environment.NewLine);
+            SbSql.Append("        ,POApproveDay" + Environment.NewLine);
+            SbSql.Append("        ,CutDay" + Environment.NewLine);
+            SbSql.Append("        ,AccountKeyword" + Environment.NewLine);
+            SbSql.Append("        ,ReadyDay" + Environment.NewLine);
+            SbSql.Append("        ,VNMultiple" + Environment.NewLine);
+            SbSql.Append("        ,MtlLeadTime" + Environment.NewLine);
+            SbSql.Append("        ,ExchangeID" + Environment.NewLine);
+            SbSql.Append("        ,RFIDServerName" + Environment.NewLine);
+            SbSql.Append("        ,RFIDDatabaseName" + Environment.NewLine);
+            SbSql.Append("        ,RFIDLoginId" + Environment.NewLine);
+            SbSql.Append("        ,RFIDLoginPwd" + Environment.NewLine);
+            SbSql.Append("        ,RFIDTable" + Environment.NewLine);
+            SbSql.Append("        ,ProphetSingleSizeDeduct" + Environment.NewLine);
+            SbSql.Append("        ,PrintingSuppID" + Environment.NewLine);
+            SbSql.Append("        ,QCMachineDelayTime" + Environment.NewLine);
+            SbSql.Append("        ,APSLoginId" + Environment.NewLine);
+            SbSql.Append("        ,APSLoginPwd" + Environment.NewLine);
+            SbSql.Append("        ,SQLServerName" + Environment.NewLine);
+            SbSql.Append("        ,APSDatabaseName" + Environment.NewLine);
+            SbSql.Append("        ,RFIDMiddlewareInRFIDServer" + Environment.NewLine);
+            SbSql.Append("        ,UseAutoScanPack" + Environment.NewLine);
+            SbSql.Append("        ,MtlAutoLock" + Environment.NewLine);
+            SbSql.Append("        ,InspAutoLockAcc" + Environment.NewLine);
+            SbSql.Append("        ,ShippingMarkPath" + Environment.NewLine);
+            SbSql.Append("        ,StyleSketch" + Environment.NewLine);
+            SbSql.Append("        ,ARKServerName" + Environment.NewLine);
+            SbSql.Append("        ,ARKDatabaseName" + Environment.NewLine);
+            SbSql.Append("        ,ARKLoginId" + Environment.NewLine);
+            SbSql.Append("        ,ARKLoginPwd" + Environment.NewLine);
+            SbSql.Append("        ,MarkerInputPath" + Environment.NewLine);
+            SbSql.Append("        ,MarkerOutputPath" + Environment.NewLine);
+            SbSql.Append("        ,ReplacementReport" + Environment.NewLine);
+            SbSql.Append("        ,CuttingP10mustCutRef" + Environment.NewLine);
+            SbSql.Append("        ,Automation" + Environment.NewLine);
+            SbSql.Append("        ,AutomationAutoRunTime" + Environment.NewLine);
+            SbSql.Append("        ,CanReviseDailyLockData" + Environment.NewLine);
+            SbSql.Append("        ,AutoGenerateByTone" + Environment.NewLine);
+            SbSql.Append("        ,MiscPOApproveName" + Environment.NewLine);
+            SbSql.Append("        ,MiscPOApproveDay" + Environment.NewLine);
+            SbSql.Append("        ,QMSAutoAdjustMtl" + Environment.NewLine);
+            SbSql.Append("        ,ShippingMarkTemplatePath" + Environment.NewLine);
+            SbSql.Append("        ,WIP_FollowCutOutput" + Environment.NewLine);
+            SbSql.Append("        ,NoRestrictOrdersDelivery" + Environment.NewLine);
+            SbSql.Append("        ,WIP_ByShell" + Environment.NewLine);
+            SbSql.Append("        ,RFCardEraseBeforePrinting" + Environment.NewLine);
+            SbSql.Append("        ,SewlineAvgCPU" + Environment.NewLine);
+            SbSql.Append("        ,SmallLogoCM" + Environment.NewLine);
+            SbSql.Append("        ,CheckRFIDCardDuplicateByWebservice" + Environment.NewLine);
+            SbSql.Append("        ,IsCombineSubProcess" + Environment.NewLine);
+            SbSql.Append("        ,IsNoneShellNoCreateAllParts" + Environment.NewLine);
+            SbSql.Append("        ,Region" + Environment.NewLine);
+            SbSql.Append("        ,DQSQtyPCT" + Environment.NewLine);
+            SbSql.Append("        ,FinalInspection_CTNMoisureStandard" + Environment.NewLine);
+            SbSql.Append("FROM [System]" + Environment.NewLine);
+
+
+
+            return ExecuteList<DatabaseObject.ProductionDB.System>(CommandType.Text, SbSql.ToString(), objParameter);
         }
     }
 }

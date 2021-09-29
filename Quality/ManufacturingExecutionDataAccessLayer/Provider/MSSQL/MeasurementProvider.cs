@@ -393,11 +393,11 @@ drop table #tmp
             return dt;
         }
 
-        public IList<Measurement> GetMeasurementsByPOID(string POID, string userID)
+        public IList<Measurement> GetMeasurementsByPOID(string CustPONO, string userID)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
-                { "@POID", DbType.String, POID },
+                { "@CustPONO", DbType.String, CustPONO },
                 { "@userID", DbType.String, userID },
             };
 
@@ -408,7 +408,11 @@ declare @StyleUkey bigint
 
 select  @StyleUkey = StyleUkey
 from    SciProduction_Orders with (nolock)
-where   ID = @POID
+where   ID IN (
+    select POID
+    from SciProduction_Orders
+    where CustPONO = @CustPONO
+)
 
 exec CopyStyle_ToMeasurement @userID,@StyleUkey;
 

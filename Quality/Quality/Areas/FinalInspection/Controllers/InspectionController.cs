@@ -34,7 +34,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             FinalInspection_Request finalInspection_Request = new FinalInspection_Request()
             {
                 SP = Req.SP,
-                POID = Req.POID,
+                CustPONO = Req.CustPONO,
                 StyleID = Req.StyleID,
                 FactoryID = this.FactoryID
             };
@@ -48,7 +48,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             try
             {
                 if (!string.IsNullOrEmpty(Req.SP) ||
-                    !string.IsNullOrEmpty(Req.POID) ||
+                    !string.IsNullOrEmpty(Req.CustPONO) ||
                     !string.IsNullOrEmpty(Req.StyleID))
                 {
                     list = finalInspectionService.GetOrderForInspection_ByModel(finalInspection_Request).ToList();
@@ -82,10 +82,10 @@ msg.WithInfo('{ex.Message}');
 
                 if (selected.Any())
                 {
-                    string poID = selected[0].POID;
+                    string CustPONO = selected[0].CustPONO;
                     List<string> listOrderID = selected.Select(s => s.ID).ToList();
 
-                    setting = finalInspectionSettingService.GetSettingForInspection(poID, listOrderID, this.FactoryID);
+                    setting = finalInspectionSettingService.GetSettingForInspection(CustPONO, listOrderID, this.FactoryID);
 
                 }
             }

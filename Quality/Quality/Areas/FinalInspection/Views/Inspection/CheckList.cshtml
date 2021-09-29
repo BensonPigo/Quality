@@ -32,7 +32,7 @@
         @using (Html.BeginForm("CheckList", "Inspection", FormMethod.Post, new { @id = "settingForm", onsubmit = "return checkSubmitValue(this.submitted);" }))
         {
             @Html.HiddenFor(o => o.ID)
-            @Html.HiddenFor(o => o.POID)
+            @Html.HiddenFor(o => o.CustPONO)
             <div style="padding:2em 3em 2em 3em;width:60%;float:left;position: absolute;transform: translate(-50%, 0%);left: 50%">
                 <table id="CheckListTable" class="cell-border" style="width:100%"></table>
             </div>
