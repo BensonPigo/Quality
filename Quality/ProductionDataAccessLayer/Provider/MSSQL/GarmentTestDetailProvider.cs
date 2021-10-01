@@ -277,7 +277,6 @@ and ID = @ID
                 { "@SubmitDate", DbType.Date, source.SubmitDate},
                 { "@ArrivedQty", source.ArrivedQty } ,
                 { "@LOtoFactory", LOtoFactory} ,
-                { "@Result", source.Result } ,
                 { "@Remark", source.Remark } ,
                 { "@LineDry", DbType.Boolean, source.LineDry } ,
                 { "@Temperature", source.Temperature } ,
@@ -303,7 +302,6 @@ update GarmentTest_Detail set
     SubmitDate = @SubmitDate,
     ArrivedQty =  @ArrivedQty,
     LOtoFactory =  @LOtoFactory,
-    Result = @Result,
     Remark =  @Remark,
     LineDry =  @LineDry,
     Temperature =  @Temperature,
@@ -382,10 +380,10 @@ g.StyleID
 ,gd.No
 ,gd.SizeCode
 ,[TestDate] = format(gd.inspdate, 'yyyy/MM/dd')
-,g.Result
-,[450 Result] = gd.SeamBreakageResult
-,[451 Result] = gd.OdourResult
-,[701 Result] = gd.WashResult
+,[Result] = case when g.Result = 'P' then 'Pass' when g.Result = 'F' then 'Fail' else '' end
+,[450 Result] = case when gd.SeamBreakageResult = 'P' then 'Pass' when gd.SeamBreakageResult = 'F' then 'Fail' else '' end
+,[451 Result] = case when gd.OdourResult = 'P' then 'Pass' when gd.OdourResult = 'F' then 'Fail' else '' end
+,[701 Result] = case when gd.WashResult = 'P' then 'Pass' when gd.WashResult = 'F' then 'Fail' else '' end
 ,gd.inspector
 ,[Comments] = gd.Remark
 from GarmentTest g
@@ -488,13 +486,8 @@ select s1.*,Result =
 group by Result
 
 update gd
-set Result = case 
-	when gd.SeamBreakageResult = 'F' or gd.OdourResult = 'F' or gd.WashResult = 'F' then 'F'
-	when OdourResult = '' or WashResult = '' then '' 
-	when (NonSeamBreakageTest = 0 and SeamBreakageResult = '') then ''
-	when OdourResult = 'P' and WashResult = 'P' and (NonSeamBreakageTest = 1 and (NonSeamBreakageTest = 0 and SeamBreakageResult = 'P')) then 'P'
-	else '' end
-,SeamBreakageResult = case
+set
+ SeamBreakageResult = case
 	when NonSeamBreakageTest = 1 then ''
 	when NonSeamBreakageTest = 0 and (select count(1) from #tmpFGPTResult where TestName = 'PHX-AP0450' and Result = 'Fail') > 0 then 'F'
 	when NonSeamBreakageTest = 0 and (select count(1) from #tmpFGPTResult where TestName = 'PHX-AP0450' and Result = 'Pass') > 0 then 'P'
@@ -510,6 +503,17 @@ set Result = case
 	when  (select count(1) from #tmpFGWTResult where Result = 'Pass') > 0 then 'P'
 	when  (select count(1) from #tmpFGWTResult where Result = '') > 0 then ''
 	else ''  End
+from GarmentTest_Detail gd 
+where gd.id=@ID and No=@No
+
+update gd
+set
+ Result = case 
+	when gd.SeamBreakageResult = 'F' or gd.OdourResult = 'F' or gd.WashResult = 'F' then 'F'	
+	when OdourResult = 'P' and WashResult = 'P' and (NonSeamBreakageTest = 1 or (NonSeamBreakageTest = 0 and SeamBreakageResult = 'P')) then 'P'
+	when OdourResult = '' or WashResult = '' then '' 
+	when (NonSeamBreakageTest = 0 and SeamBreakageResult = '') then ''
+	else '' end
 from GarmentTest_Detail gd 
 where gd.id=@ID and No=@No
 
