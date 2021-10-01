@@ -260,6 +260,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     // 刪除不存在前端detail的資料
                     if (!detail.Where(x => x.ID.Equals(item.ID) && x.No.Equals(item.No)).Any())
                     {
+                        if (item.Status.ToUpper() == "CONFIRMED")
+                        {
+                            result.SaveResult = false;
+                            result.ErrMsg = $@"TestNo {item.No} is confirmed cannot delete.";
+                            return result;
+                        }
                         _IGarmentTestDetailProvider.Delete_GarmentTestDetail(item.ID.ToString(), item.No.ToString());
                     }
                 }
@@ -399,12 +405,18 @@ namespace BusinessLogicLayer.Service.BulkFGT
         {
             GarmentTest_ViewModel result = new GarmentTest_ViewModel();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            _IGarmentTestDetailProvider = new GarmentTestDetailProvider(_ISQLDataTransaction);
             try
             {
                 #region 判斷是否空值
                 string emptyMsg = string.Empty;
                 if (string.IsNullOrEmpty(ID)) { emptyMsg += "Master ID cannot be 0 or null" + Environment.NewLine; }
                 if (string.IsNullOrEmpty(No)) { emptyMsg += "No cannot be 0 or null" + Environment.NewLine; }
+                GarmentTest_Detail_ViewModel detail = _IGarmentTestDetailProvider.Get(ID, No).First();
+                if (detail.Status.ToUpper() == "Confirmed")
+                {
+                    emptyMsg += "Encode data cannot delete.";
+                } 
 
                 if (!string.IsNullOrEmpty(emptyMsg))
                 {
@@ -414,7 +426,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
                 #endregion
 
-                _IGarmentTestDetailProvider = new GarmentTestDetailProvider(_ISQLDataTransaction);
                 int deleteCnt = _IGarmentTestDetailProvider.Delete_GarmentTestDetail(ID, No);
                 result.SaveResult = true;
                 _ISQLDataTransaction.Commit();
@@ -601,7 +612,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
         #endregion
-
 
         public GarmentTest_Result GetGarmentTest(GarmentTest_Request garmentTest_ViewModel)
         {

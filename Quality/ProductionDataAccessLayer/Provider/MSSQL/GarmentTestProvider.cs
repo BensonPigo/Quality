@@ -709,19 +709,25 @@ values(
 
             string sqlcmd = @"
 update g 
-set g.SeamBreakageResult = ISNULL(All_Result.SeamBreakageResult, '')
-	,g.SeamBreakageLastTestDate = All_Result.inspdate
+set g.SeamBreakageResult = ISNULL(SResult.SeamBreakageResult, '')
+	,g.SeamBreakageLastTestDate = SResult.inspdate
 	,g.OdourResult = ISNULL(All_Result.OdourResult, '')
 	,g.WashResult = ISNULL(All_Result.WashResult, '')
-	,g.Result = All_Result.Result
+	,g.Result = ISNULL(All_Result.Result,'')
 	,g.Date = All_Result.inspdate
 from GarmentTest g
 outer apply(
 	select top 1 SeamBreakageResult,gd1.inspdate ,gd1.OdourResult,gd1.WashResult,gd1.Result
 	from GarmentTest_Detail gd1
-	where gd1.id=g.ID and gd1.NonSeamBreakageTest = 0
+	where gd1.id=g.ID
 	order by gd1.inspdate desc , gd1.EditDate desc , gd1.AddDate desc
 )All_Result
+outer apply(
+	select top 1 SeamBreakageResult,gd1.inspdate 
+	from GarmentTest_Detail gd1
+	where gd1.id=g.ID and gd1.NonSeamBreakageTest = 0
+	order by gd1.inspdate desc , gd1.EditDate desc , gd1.AddDate desc
+) SResult
 where ID = @ID
 ";
             return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;

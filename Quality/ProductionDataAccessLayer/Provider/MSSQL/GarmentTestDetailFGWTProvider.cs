@@ -324,7 +324,7 @@ INSERT INTO GarmentTest_Detail_FGWT
                 // Key
                 objParameter.Add(new SqlParameter($"@ID{idx}", item.ID));
                 objParameter.Add(new SqlParameter($"@No{idx}", item.No));
-                objParameter.Add(new SqlParameter($"@Location{idx}", item.Location));
+                objParameter.Add(new SqlParameter($"@Location{idx}", string.IsNullOrEmpty(item.Location) ? string.Empty : item.Location));
                 objParameter.Add(new SqlParameter($"@Type{idx}", item.Type));
 
                 objParameter.Add(new SqlParameter($"@BeforeWash{idx}", item.BeforeWash));
@@ -334,30 +334,30 @@ INSERT INTO GarmentTest_Detail_FGWT
                 objParameter.Add(new SqlParameter($"@Scale{idx}", item.Scale));
 
                 sqlcmd += $@"
-update gf
-	set gf.[BeforeWash] = @BeforeWash{idx},
-		gf.[SizeSpec]  = @SizeSpec{idx},
-		gf.[AfterWash]	= @AfterWash{idx},
-		gf.[Shrinkage]	= @Shrinkage{idx},
-		gf.[Scale]	= @Scale{idx} 
-from GarmentTest_Detail_FGWT gf
-outer apply (
-	select distinct
-		[Location] = iif (slC.cnt > 1, 'S', sl.Location)
-	from GarmentTest g
-	inner join Style s on g.StyleID = s.ID and g.BrandID = s.BrandID and g.SeasonID = s.SeasonID
-	inner join Style_Location sl on s.Ukey = sl.StyleUkey
-	outer apply (
-		select cnt = count(*)
-		from Style_Location sl 
-		where s.Ukey = sl.StyleUkey
-		and sl.Location in ('B', 'T')
-	)slC
-	where gf.ID = g.ID
-)sl 
-where gf.ID = @ID{idx} and gf.No = @No{idx} and gf.Location = @Location{idx} and gf.Type = @Type{idx}
+                update gf
+                	set gf.[BeforeWash] = @BeforeWash{idx},
+                		gf.[SizeSpec]  = @SizeSpec{idx},
+                		gf.[AfterWash]	= @AfterWash{idx},
+                		gf.[Shrinkage]	= @Shrinkage{idx},
+                		gf.[Scale]	= @Scale{idx} 
+                from GarmentTest_Detail_FGWT gf
+                outer apply (
+                	select distinct
+                		[Location] = iif (slC.cnt > 1, 'S', sl.Location)
+                	from GarmentTest g
+                	inner join Style s on g.StyleID = s.ID and g.BrandID = s.BrandID and g.SeasonID = s.SeasonID
+                	inner join Style_Location sl on s.Ukey = sl.StyleUkey
+                	outer apply (
+                		select cnt = count(*)
+                		from Style_Location sl 
+                		where s.Ukey = sl.StyleUkey
+                		and sl.Location in ('B', 'T')
+                	)slC
+                	where gf.ID = g.ID
+                )sl 
+                where gf.ID = @ID{idx} and gf.No = @No{idx} and gf.Location = @Location{idx} and gf.Type = @Type{idx}
 
-" + Environment.NewLine;
+                " + Environment.NewLine;
                 idx++;
             }
 

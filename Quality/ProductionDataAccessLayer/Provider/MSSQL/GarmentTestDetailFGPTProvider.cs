@@ -40,6 +40,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
                 objParameter.Add(new SqlParameter($"@TestResult{idx}", item.TestResult));
                 objParameter.Add(new SqlParameter($"@TestUnit{idx}", item.TestUnit));
                 objParameter.Add(new SqlParameter($"@TypeSelection_Seq{idx}", item.TypeSelection_Seq));
+                objParameter.Add(new SqlParameter($"@TypeSelection_VersionID{idx}", item.TypeSelection_VersionID));
 
 
                 sqlcmd += $@"
@@ -47,7 +48,8 @@ update g
 set
     [TestResult]    = isnull(@TestResult{idx}, ''),
     [TestUnit]	    = @TestUnit{idx},
-    [TypeSelection_Seq]	= @TypeSelection_Seq{idx}
+    [TypeSelection_Seq]	= @TypeSelection_Seq{idx},
+    [TypeSelection_VersionID]	= @TypeSelection_VersionID{idx}
 from GarmentTest_Detail_FGPT g
 left join DropDownList d on d.ID = g.TestName and d.Type = 'PMS_FGPT_TestName' 
 where g.ID = @ID{idx} and g.No = @No{idx} and g.Type = @Type{idx} and g.Location = @Location{idx} 
