@@ -225,7 +225,7 @@ select SP = o.ID
 	,BAProduct = BAProduct.val
 	,BAAuditCriteria  = Cast( Cast( IIF(Inspected.val = 0, 0, ROUND(BAProduct.val * 1.0 / Inspected.val * 5 ,1) )as numeric(2,1)) as varchar )
 from Orders o
-inner join Style s on s.ID = o.StyleID
+inner join Style s on s.ID = o.StyleID AND o.BrandID = s.BrandID AND o.SeasonID = s.SeasonID
 outer apply(
 	select val = COUNT(r.ID)
 	from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection r
@@ -312,7 +312,7 @@ select SP = o.ID
 	,BAProduct = BAProduct.val
 	,BAAuditCriteria  = Cast( Cast( IIF(Inspected.val = 0, 0, ROUND(BAProduct.val * 1.0 / Inspected.val * 5 ,1) )as numeric(2,1)) as varchar )
 from Orders o
-inner join Style s on s.ID = o.StyleID
+inner join Style s on s.ID = o.StyleID AND o.BrandID = s.BrandID AND o.SeasonID = s.SeasonID
 outer apply(
 	select val = COUNT(r.ID)
 	from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection r
