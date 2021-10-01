@@ -206,6 +206,8 @@ set	   [POID] = @POID
       ,[TestBeforePicture] = @TestBeforePicture
       ,[TestAfterPicture] = @TestAfterPicture
 where ID = @ID
+
+exec UpdateInspPercent 'LabColorFastness', @POID
 " + Environment.NewLine;
             }
             else
@@ -362,6 +364,9 @@ where id = @ID{idx}
 and ColorFastnessGroup = @ColorFastnessGroup{idx}
 and SEQ1 = @SEQ1{idx} 
 and SEQ2 = @SEQ2{idx} 
+
+declare @POID varchar(13) = (select POID from ColorFastness where ID = @ID)
+exec UpdateInspPercent 'LabColorFastness', @POID
 " + Environment.NewLine;
                     idx++;
                 }

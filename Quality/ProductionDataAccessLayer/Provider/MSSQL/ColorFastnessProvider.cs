@@ -38,6 +38,10 @@ Update ColorFastness set Status = @Status
 , result = @result
 , EditName = @UserID, EditDate = GetDate()
 where id = @ID
+
+declare @POID varchar(13) = (select POID from ColorFastness where ID = @ID)
+
+exec UpdateInspPercent 'LabColorFastness', @POID
 ";
             return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
         }
@@ -217,7 +221,11 @@ exec UpdateInspPercent 'LabColorFastness',@PoID
             
             string sqlcmd = $@"
 delete from ColorFastness_Detail where id = @ID
-delete from ColorFastness where id = @ID";
+delete from ColorFastness where id = @ID
+
+declare @POID varchar(13) = (select POID from ColorFastness where ID = @ID)
+exec UpdateInspPercent 'LabColorFastness', @POID
+";
             return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
         }
 
