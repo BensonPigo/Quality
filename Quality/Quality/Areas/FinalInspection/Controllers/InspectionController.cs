@@ -955,7 +955,21 @@ msg.WithInfo('{MoistureResult.ErrorMessage}');
                         InspectionStep = "Submit"
                     }, "Insp-Others", this.UserID);
 
+                    // Submit 紀錄
                     BaseResult r = oService.UpdateOthersSubmit(model, this.UserID);
+
+                    // 取出剛剛的紀錄
+                    FinalInspectionService sevice = new FinalInspectionService();
+                    DatabaseObject.ManufacturingExecutionDB.FinalInspection current = sevice.GetFinalInspection(model.FinalInspectionID);
+
+                    // 若是Fail則寄信
+                    if (current.InspectionResult == "Fail")
+                    {
+                        bool test = IsTest.ToLower() == "true";
+
+                        string WebHost = Request.Url.Scheme + @"://" + Request.Url.Authority + "/";
+                        Qservice.SendMail(model.FinalInspectionID, WebHost, test);
+                    }
 
                     if (r.Result)
                     {

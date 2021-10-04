@@ -166,7 +166,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             #endregion
 
             #region Others
-            worksheet.Cells[44, 3] = (double)model.FinalInspection.ProductionStatus;
+            worksheet.Cells[44, 3] = (double)model.FinalInspection.ProductionStatus * 0.01;
             worksheet.Cells[45, 3] = model.FinalInspection.OthersRemark;
             #endregion
 

@@ -904,26 +904,26 @@
 
         function format(d, orderID) {
             return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
-                '<tr><td style="width:90%">PO#:</td><td style="width:10%">' +
+                '<tr><td style="width:70%">PO#:</td><td style=" text-align: right;" style="width:30%">' +
                 '<input type="hidden" name="SelectedPO[' + d[2] + '].ORDERID" id="SelectedPO[' + d[2] + '].ORDERID" value="' + d[1] + '" \/>' +
                 '<input type="hidden" name="SelectedPO[' + d[2] + '].CustPONO" id="SelectedPO[' + d[2] + '].CustPONO" value="' + d[3] + '" \/>' +
                 d[3] +
                 '</td></tr>' +
-                '<tr><td>Style#:</td><td>' + d[4] + '</td></tr>' +
-                '<tr><td>Season:</td><td>' + d[5] + '</td></tr>' +
-                '<tr><td>Brand:</td><td>' + d[6] + '</td></tr>' +
+                '<tr><td>Style#:</td><td style=" text-align: right;">' + d[4] + '</td></tr>' +
+                '<tr><td>Season:</td><td style=" text-align: right;">' + d[5] + '</td></tr>' +
+                '<tr><td>Brand:</td><td style=" text-align: right;">' + d[6] + '</td></tr>' +
 
-                '<tr><td>Shipmode Seq:</td><td class="OpenDetail" >' +
-                '<input type="text" style="width:60px" readonly="readonly" onclick="open_ShipmodeSeq(\'' + d[1] + ',' + d[3] + '\');" name="SelectedPO[' + d[2] + '].Seq" id="SelectedPO[' + d[2] + '].Seq" value="' + d[11] + '" OrderID="' + orderID + '" Col="ShipmodeSeq"/>' +
+                '<tr><td>Shipmode Seq:</td><td style=" text-align: right;" class="OpenDetail" >' +
+                '<input type="text" style="width:100%" readonly="readonly" onclick="open_ShipmodeSeq(\'' + d[1] + ',' + d[3] + '\');" name="SelectedPO[' + d[2] + '].Seq" id="SelectedPO[' + d[2] + '].Seq" value="' + d[11] + '" OrderID="' + orderID + '" Col="ShipmodeSeq"/>' +
                 '</td></tr>' +
 
-                '<tr><td>Article:</td><td>' + d[12] + '</td></tr>' +
-                '<tr><td>SP# Qty By Seq:</td><td>' + d[7] + '</td></tr>' +
-                '<tr><td>Cartons:</td><td class="OpenDetail" >' +
-                '<input type="text" style="width:60px" readonly="readonly" onclick="open_cartonsDetail(\'' + d[1] + ',' + d[3] + '\');" name="SelectedPO[' + d[2] + '].Cartons" id="SelectedPO[' + d[2] + '].Cartons" value="' + d[8] + '" OrderID="' + orderID +'" Col="Cartons"/>' +
+                '<tr><td>Article:</td><td style=" text-align: right;">' + d[12] + '</td></tr>' +
+                '<tr><td>SP# Qty By Seq:</td><td style=" text-align: right;">' + d[7] + '</td></tr>' +
+                '<tr><td>Cartons:</td><td style=" text-align: right;" class="OpenDetail" >' +
+                '<input type="text" style="width:100%" readonly="readonly" onclick="open_cartonsDetail(\'' + d[1] + ',' + d[3] + '\');" name="SelectedPO[' + d[2] + '].Cartons" id="SelectedPO[' + d[2] + '].Cartons" value="' + d[8] + '" OrderID="' + orderID +'" Col="Cartons"/>' +
                 '</td></tr>'+
-                '<tr><td>Available Qty:</td><td class="OpenDetail" >' +
-                '<input type="number" style="width:60px" name="SelectedPO[' + d[2] + '].AvailableQty" id="SelectedPO[' + d[2] + '].AvailableQty" value="' + d[9] + '" OrderID="' + orderID + '" oninput="value=AvailableQtyChk(' + d[7] + ',value)" max="' + d[7] + '" min="0" Col="AvailableQty"/>' +
+                '<tr><td>Available Qty:</td><td style=" text-align: right;" class="OpenDetail" >' +
+                '<input type="number" style="width:100%" name="SelectedPO[' + d[2] + '].AvailableQty" id="SelectedPO[' + d[2] + '].AvailableQty" value="' + d[9] + '" OrderID="' + orderID + '" oninput="value=AvailableQtyChk(' + d[7] + ',value)" max="' + d[7] + '" min="0" Col="AvailableQty"/>' +
                 '</td></tr>' +
                 '</table>';
         }
@@ -1057,8 +1057,38 @@
                 }
             });
 
+            var ShipmodeResult = true;
+            $('input[col=ShipmodeSeq]').each(function () {
+                if ($(this).val() == "") {
+                    msg.WithError("Shipmode Seq cannot be empty.");
+                    ShipmodeResult =  false;
+                }
+            });
+
+            var AQLPlanResult = true;
             $("#AQLPlan").removeAttr("disabled");
-            return true;
+            var stage = $("#InspectionStage").val();
+
+            if ((stage == 'Final' || stage == '3rd Party') && $("#AQLPlan").val() == '') {
+                AQLPlanResult = false;
+            }
+
+
+            if (ShipmodeResult && AQLPlanResult) {
+                return true;
+            }
+            else {
+                if (!ShipmodeResult) {
+                    msg.WithError("Shipmode Seq cannot be empty.");
+                    NonLoading();
+                    return false;
+                }
+                if (!AQLPlanResult) {
+                    msg.WithError("AQL Plan cannot be empty when Choose Inspection Stage is Final or 3rd Party.");
+                    NonLoading();
+                    return false;
+                }
+            }
         }
     </script>
 }
