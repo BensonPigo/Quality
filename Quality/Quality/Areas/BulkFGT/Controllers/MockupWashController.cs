@@ -356,7 +356,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += $"<td><input id='Seq'{lastNO}'' idx='{lastNO}' type ='hidden'></input> <input id='MockupWash_Detail_{lastNO}__TypeofPrint' name='MockupWash_Detail[{lastNO}].TypeofPrint' class='OnlyEdit' type='text' value=''></td>";
             html += $"<td><input id='MockupWash_Detail_{lastNO}__Design' name='MockupWash_Detail[{lastNO}].Design' class='OnlyEdit' type='text' ></td>";
             html += $"<td><div class='input-group'><input id='MockupWash_Detail_{lastNO}__ArtworkColor' name='MockupWash_Detail[{lastNO}].ArtworkColor'  class ='AFColor' type='hidden'><input id='MockupWash_Detail_{lastNO}__ArtworkColorName' name='MockupWash_Detail[{lastNO}].ArtworkColorName' class ='AFColor' type='text' readonly='readonly'> <input  idv='{lastNO}' type='button' class='btnArtworkColorItem  site-btn btn-blue' style='margin: 0; border: 0; ' value='...' /></div></td>";
-            html += $"<td><select id='MockupWash_Detail_{lastNO}__AccessoryRefno' name='MockupWash_Detail[{lastNO}].AccessoryRefno'  class='OnlyEdit' style='width: 157px;'><option value=''></option>";
+            html += $"<td><select id='MockupWash_Detail_{lastNO}__AccessoryRefno' name='MockupWash_Detail[{lastNO}].AccessoryRefno'  class='OnlyEdit AccessoryRefno' style='width: 157px;'><option value=''></option>";
             foreach (var val in AccessoryRefNo_Source)
             {
                 html += "<option value='" + val.Value + "'>" + val.Text + "</option>";

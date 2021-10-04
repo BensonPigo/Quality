@@ -297,7 +297,7 @@
                                 <tr>
                                     <td><h5>Artwork</h5></td>
                                     <td>
-                                        <select class="OnlyEdit" id="ArtworkTypeID" name="ArtworkTypeID" style="width:157px;">
+                                        <select class="OnlyEdit" id="ArtworkTypeID" name="ArtworkTypeID" onchange="ArtworkTypeChange()">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ArtworkTypeID_Source)
                                             {
                                                 string selected = item.Text.Equals(Model.ArtworkTypeID) ? "selected" : "";
@@ -425,7 +425,7 @@
                                     </td>
                                     <td colspan="2"><h5>Pell Off (hot/cold)(peel)</h5></td>
                                     <td>
-                                        @Html.TextBoxFor(o => o.HTPellOff, "", new { @type = "number", @class = "OnlyEdit", @step = "1" })
+                                        @Html.TextBoxFor(o => o.HTPellOff, "", new { @class = "OnlyEdit" })
                                     </td>
 
                                 </tr>
@@ -459,7 +459,7 @@
                                     </td>
                                     <td colspan="2"><h5>Cooling Time (min)</h5></td>
                                     <td>
-                                        @Html.TextBoxFor(o => o.HTCoolingTime, "", new { @type = "number", @class = "OnlyEdit", @step = "1" })
+                                        @Html.TextBoxFor(o => o.HTCoolingTime, "", new { @class = "OnlyEdit" })
                                     </td>
                                 </tr>
                             </tbody>
@@ -503,7 +503,7 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <select id="MockupWash_Detail_@{@i}__AccessoryRefno" name="MockupWash_Detail[@i].AccessoryRefno" class="OnlyEdit" style="width:157px;">
+                                            <select id="MockupWash_Detail_@{@i}__AccessoryRefno" name="MockupWash_Detail[@i].AccessoryRefno" class="OnlyEdit AccessoryRefno" style="width:157px;">
                                                 @foreach (var item in (List<SelectListItem>)ViewBag.AccessoryRefNo_Source)
                                                 {
                                                     string selected = item.Text.Equals(Model.MockupWash_Detail[i].AccessoryRefno) ? "selected" : "";
@@ -641,17 +641,33 @@
                 }
             });
         }
+
+        ArtworkTypeChange();
     }
 
     function Clear() {
         if (EditType == "New") {
-            $(".DataTable input, .DataTable select").val('');
+            $(".DataTable input[type='text'], .DataTable input[type='number'], .DataTable select").val('');
             $('#Result').html('');
         }
     }
 
     function ReportNoChange(value) {
         $('#btnQuery').unbind('click').click();
+    }
+
+    function ArtworkTypeChange() {
+        if (!EditMode) {
+            return;
+        }
+
+        var result = $('#ArtworkTypeID').val();
+        if (result == "HEAT TRANSFER") {
+            $('.AccessoryRefno').val('').attr("disabled", "disabled");
+        }
+        else {
+            $('.AccessoryRefno').removeAttr("disabled");
+        }
     }
 
     function QueryButtonBind() {
@@ -1412,6 +1428,7 @@
                 $('.DetailTable > tbody').append(data);
                 DetailDetailButtonBind();
                 changeResult();
+                ArtworkTypeChange();
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 console.log(xhr.responseText);

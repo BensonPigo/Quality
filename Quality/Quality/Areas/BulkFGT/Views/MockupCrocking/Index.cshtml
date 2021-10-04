@@ -578,7 +578,7 @@
 
     function Clear() {
         if (EditType == "New") {
-            $(".DataTable input, .DetailTable select").val('');
+            $(".DataTable input[type='text'], .DataTable input[type='number'], .DataTable select").val('');
             $('#Result').html('');
         }
     }

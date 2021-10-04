@@ -292,7 +292,7 @@
                                 <tr>
                                     <td><h5>Artwork</h5></td>
                                     <td>
-                                        <select class="OnlyEdit" id="ArtworkTypeID" name="ArtworkTypeID" style="width:157px;">
+                                        <select class="OnlyEdit" id="ArtworkTypeID" name="ArtworkTypeID" onchange="ArtworkTypeChange()">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ArtworkTypeID_Source)
                                             {
                                                 string selected = item.Text.Equals(Model.ArtworkTypeID) ? "selected" : "";
@@ -394,7 +394,7 @@
                                     <td colspan="6"><h5 style="font-weight: 900;">Testing Method</h5></td>
                                 </tr>
                                 <tr>
-                                    <td><h5>Temperature (oC)</h5></td>
+                                    <td><h5>Tempereture (˚C)</h5></td>
                                     <td>
                                         @Html.TextBoxFor(o => o.TestTemperature, "", new { @type = "number", @class = "OnlyEdit", @step = "0.01" })
 
@@ -417,7 +417,7 @@
                                     </td>
                                     <td colspan="2"><h5>Pell Off (hot/cold)(peel)</h5></td>
                                     <td>
-                                        @Html.TextBoxFor(o => o.HTPellOff, "", new { @type = "number", @class = "OnlyEdit", @step = "1" })
+                                        @Html.TextBoxFor(o => o.HTPellOff, "", new { @class = "OnlyEdit" })
                                     </td>
 
                                 </tr>
@@ -495,7 +495,7 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <select id="MockupOven_Detail_@{@i}__AccessoryRefno" name="MockupOven_Detail[@i].AccessoryRefno"  class="OnlyEdit" style="width:157px;">
+                                            <select id="MockupOven_Detail_@{@i}__AccessoryRefno" name="MockupOven_Detail[@i].AccessoryRefno" class="OnlyEdit AccessoryRefno" >
                                                 @foreach (var item in (List<SelectListItem>)ViewBag.AccessoryRefNo_Source)
                                                 {
                                                     string selected = item.Text.Equals(Model.MockupOven_Detail[i].AccessoryRefno) ? "selected" : "";
@@ -631,17 +631,33 @@
                 }
             });
         }
+
+        ArtworkTypeChange();
     }
 
     function Clear() {
         if (EditType == "New") {
-            $(".DataTable input, .DataTable select").val('');
+            $(".DataTable input[type='text'], .DataTable input[type='number'], .DataTable select").val('');
             $('#Result').html('');
         }
     }
 
     function ReportNoChange(value) {
         $('#btnQuery').unbind('click').click();
+    }
+
+    function ArtworkTypeChange() {
+        if (!EditMode) {
+            return;
+        }
+
+        var result = $('#ArtworkTypeID').val();
+        if (result == "HEAT TRANSFER") {
+            $('.AccessoryRefno').val('').attr("disabled", "disabled");
+        }
+        else {
+            $('.AccessoryRefno').removeAttr("disabled");
+        }
     }
 
     function QueryButtonBind() {
@@ -955,7 +971,7 @@
                         $("#MR").val('');
                         $("#MRDesc").val('');
                         $("#MRMail").val('');
-                        msg.WithError('Lab Tech Not Found');
+                        msg.WithError('MR Not Found');
                     }
                     else
                     {
@@ -1393,6 +1409,7 @@
                 $('.DetailTable > tbody').append(data);
                 DetailDetailButtonBind();
                 changeResult();
+                ArtworkTypeChange();
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 console.log(xhr.responseText);
