@@ -83,12 +83,12 @@
             </a>
         </div>
     </header>
-
-
     <div class="main-area">
 
         <div class="content-scroll">
             <div class="inner-scroll" style="float:left">
+                <h3 style="color:white"> FD Date after @DateTime.Now.ToShortDateString()</h3>
+                <br />
 
                 <div>
                     <table id="myTable" class="table table-striped display">
@@ -106,30 +106,30 @@
                         <tbody>
                             @foreach (var item in Model)
                             {
-                            <tr class="row-content">
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.StyleID)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.BrandID)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.SeasonID)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.Article)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.ExpectionFormStatus)
-                                </td>
-                                <td>
-                                    @{ string FDDate = item.ExpectionFormDate.HasValue ? item.ExpectionFormDate.Value.ToShortDateString() : string.Empty;}
-                                    @Html.DisplayFor(modelItem => FDDate)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.ExpectionFormRemark)
-                                </td>
-                            </tr>
+                                <tr class="row-content">
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.StyleID)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.BrandID)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SeasonID)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Article)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ExpectionFormStatus)
+                                    </td>
+                                    <td>
+                                        @{ string FDDate = item.ExpectionFormDate.HasValue ? item.ExpectionFormDate.Value.ToShortDateString() : string.Empty;}
+                                        @Html.DisplayFor(modelItem => FDDate)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ExpectionFormRemark)
+                                    </td>
+                                </tr>
                             }
                         </tbody>
                         <tfoot>
