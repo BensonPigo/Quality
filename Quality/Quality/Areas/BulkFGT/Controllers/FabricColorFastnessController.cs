@@ -144,30 +144,30 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "<td><input id='Detail_" + i + "__Refno' name='Detail[" + i + "].Refno' type='text' readonly='readonly'></td>"; // Refno
             html += "<td><input id='Detail_" + i + "__SCIRefno' name='Detail[" + i + "].SCIRefno' type='text' readonly='readonly'></td>"; // SCIRefno
             html += "<td><input id='Detail_" + i + "__ColorID' name='Detail[" + i + "].SCIRefno' type='text' readonly='readonly'></td>"; // ColorID
-            html += "<td><input id='Detail_" + i + "__Result' name='Detail[" + i + "].Result' type='text' readonly='readonly' class='blue'></td>"; // Result
+            html += "<td><input id='Detail_" + i + "__Result' name='Detail[" + i + "].Result' type='text' readonly='readonly' class='blue' value='Pass'></td>"; // Result
 
-            html += "<td><select id='Detail_" + i + "__changeScale' name='Detail[" + i + "].changeScale'><option value=''></option>"; // changeScale
+            html += "<td><select id='Detail_" + i + "__changeScale' name='Detail[" + i + "].changeScale'>"; // changeScale
             foreach (string val in Scales)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select id='Detail_" + i + "__ResultChange' name='Detail[" + i + "].ResultChange' onchange='selectChange(this)'><option value=''></option>"; // ResultChange
+            html += "<td><select id='Detail_" + i + "__ResultChange' name='Detail[" + i + "].ResultChange' class='blue' onchange='selectChange(this)'>"; // ResultChange
             foreach (var val in FabricColorFastnessModel.Result_Source)
             {
                 html += "<option value='" + val.Value + "'>" + val.Text + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select id='Detail_" + i + "__StainingScale' name='Detail[" + i + "].StainingScale'><option value=''></option>"; // StainingScale
+            html += "<td><select id='Detail_" + i + "__StainingScale' name='Detail[" + i + "].StainingScale'>"; // StainingScale
             foreach (string val in Scales)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select id='Detail_" + i + "__ResultStain' name='Detail[" + i + "].ResultStain' onchange='selectChange(this)'><option value=''></option>"; // ResultStain
+            html += "<td><select id='Detail_" + i + "__ResultStain' name='Detail[" + i + "].ResultStain' class='blue' onchange='selectChange(this)'>"; // ResultStain
             foreach (var val in FabricColorFastnessModel.Result_Source)
             {
                 html += "<option value='" + val.Value + "'>" + val.Text + "</option>";
@@ -178,7 +178,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             html += "<td></td>"; // LastUpdate
 
-            html += "<td><img class='detailDelete display-None' src='/Image/Icon/Delete.png' width='30'></td>";
+            html += "<td><img class='detailDelete' src='/Image/Icon/Delete.png' width='30'></td>";
             html += "</tr>";
 
             return Content(html);
