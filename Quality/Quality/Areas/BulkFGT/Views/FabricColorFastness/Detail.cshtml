@@ -441,7 +441,7 @@
     var EditMode;
     $(function () {
         msg = new MessagerAlert();
-        EditMode = false;
+        EditMode = ('@ViewBag.EditMode' == 'True');
         @Html.Raw(Model.ErrorMessage)
         IsEditModeChange();
     });

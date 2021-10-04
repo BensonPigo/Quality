@@ -91,7 +91,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 model.Main.Remark = saveResult.Main.Remark;
                 model.Details = saveResult.Details;
                 model.Result = saveResult.Result;
-                model.ErrorMessage = $"msg.WithInfo('{saveResult.ErrorMessage.ToString().Replace("\r\n", "<br />") }');";
+                model.ErrorMessage = $"msg.WithInfo('{saveResult.ErrorMessage.ToString().Replace("\r\n", "<br />") }');EditMode=true;";
                 EditMode = "True";
             }
 
@@ -153,8 +153,8 @@ namespace Quality.Areas.BulkFGT.Controllers
             int i = lastNO;
             FabricOvenTest_Detail_Detail detail = new FabricOvenTest_Detail_Detail();
             string html = "";
-            html += "<tr>";
-            html += "<td><input id='Seq" + i + "' idx=" + i + " type ='hidden'></input> <input id='Details_" + i + "__SubmitDate' name='Details[" + i + "].SubmitDate' class='form-control date-picker' type='text' value=''></td>";
+            html += "<tr idx='" + i + "'>";
+            html += "<td><input id='Seq" + i + "' idx='" + i + "' type ='hidden'></input> <input id='Details_" + i + "__SubmitDate' name='Details[" + i + "].SubmitDate' class='form-control date-picker' type='text' value=''></td>";
             html += "<td><input id='Details_" + i + "__OvenGroup' name='Details[" + i + "].OvenGroup' type='number' max='99' maxlength='2' min='0' step='1' oninput='value=OvenGroupCheck(value)' value='" + GroupNO + "'></td>"; // group
             html += "<td style='width: 11vw;'><div style='width:10vw;'><input id='Details_" + i + "__SEQ' name='Details[" + i + "].SEQ' idv='" + i.ToString() + "' class ='InputDetailSEQSelectItem' type='text'  style = 'width: 6vw'> <input id='btnDetailSEQSelectItem'  idv='" + i.ToString() + "' type='button' class='btnDetailSEQSelectItem OnlyEdit site-btn btn-blue' style='margin: 0; border: 0; ' value='...' /></div></td>"; // seq
             html += "<td style='width: 11vw;'><div style='width:10vw;'><input id='Details_" + i + "__Roll' name='Details[" + i + "].Roll' idv='" + i.ToString() + "' class ='InputDetailRollSelectItem' type='text' style = 'width: 6vw'> <input id='btnDetailRollSelectItem' idv='" + i.ToString() + "' type='button' class='btnDetailRollSelectItem OnlyEdit site-btn btn-blue' style='margin: 0; border: 0; ' value='...' /></div></td>"; // roll
@@ -197,7 +197,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "<td></td>"; // LastUpdate
 
 
-            html += "<td><select id='Details_" + i + "__Temperature' name='Details[" + i + "].Temperature' ><option value=''></option>"; // Temperature
+            html += "<td><select id='Details_" + i + "__Temperature' name='Details[" + i + "].Temperature' >"; // Temperature
             foreach (string val in Temperatures)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
@@ -205,7 +205,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "</select></td>";
 
 
-            html += "<td><select id='Details_" + i + "__Time' name='Details[" + i + "].Time' ><option value=''></option>"; // Time
+            html += "<td><select id='Details_" + i + "__Time' name='Details[" + i + "].Time' >"; // Time
             foreach (string val in Times)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";

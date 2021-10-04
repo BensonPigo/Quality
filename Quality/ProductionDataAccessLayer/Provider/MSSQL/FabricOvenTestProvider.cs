@@ -252,6 +252,8 @@ where   ID = @ID and
         OvenGroup = @OvenGroup and
         SEQ1 = @SEQ1 and
         SEQ2 = @SEQ2
+
+exec UpdateInspPercent 'LabOven',@POID
 ";
 
             string sqlUpdateDetail = @"
@@ -281,7 +283,10 @@ update  Oven_Detail set Roll           =  @Roll         ,
                 foreach (FabricOvenTest_Detail_Detail detailItem in needUpdateDetailList)
                 {
                     SQLParameterCollection listDetailPar = new SQLParameterCollection();
-
+                    int temperature = 0;
+                    int time = 0;
+                    int.TryParse(detailItem.Temperature, out temperature);
+                    int.TryParse(detailItem.Time, out time);
                     switch (detailItem.StateType)
                     {
                         case DatabaseObject.Public.CompareStateType.Add:
@@ -299,8 +304,8 @@ update  Oven_Detail set Roll           =  @Roll         ,
                             listDetailPar.Add("@ResultChange", detailItem.ResultChange);
                             listDetailPar.Add("@ResultStain", detailItem.ResultStain);
                             listDetailPar.Add("@SubmitDate", detailItem.SubmitDate);
-                            listDetailPar.Add("@Temperature", int.Parse(detailItem.Temperature));
-                            listDetailPar.Add("@Time", int.Parse(detailItem.Time));
+                            listDetailPar.Add("@Temperature", temperature);
+                            listDetailPar.Add("@Time", time);
 
                             ExecuteNonQuery(CommandType.Text, sqlInsertOvenDetail, listDetailPar);
                             break;
@@ -319,8 +324,8 @@ update  Oven_Detail set Roll           =  @Roll         ,
                             listDetailPar.Add("@ResultChange", detailItem.ResultChange);
                             listDetailPar.Add("@ResultStain", detailItem.ResultStain);
                             listDetailPar.Add("@SubmitDate", detailItem.SubmitDate);
-                            listDetailPar.Add("@Temperature", int.Parse(detailItem.Temperature));
-                            listDetailPar.Add("@Time", int.Parse(detailItem.Time));
+                            listDetailPar.Add("@Temperature", temperature);
+                            listDetailPar.Add("@Time", time);
 
                             ExecuteNonQuery(CommandType.Text, sqlUpdateDetail, listDetailPar);
                             break;
@@ -329,6 +334,7 @@ update  Oven_Detail set Roll           =  @Roll         ,
                             listDetailPar.Add("@OvenGroup", detailItem.OvenGroup);
                             listDetailPar.Add("@SEQ1", detailItem.Seq1);
                             listDetailPar.Add("@SEQ2", detailItem.Seq2);
+                            listDetailPar.Add("@POID", fabricOvenTest_Detail_Result.Main.POID);
 
                             ExecuteNonQuery(CommandType.Text, sqlDeleteDetail, listDetailPar);
                             break;
@@ -478,6 +484,7 @@ update Oven set Status = 'Confirmed',
                 Result = @result
 where POID = @poID and TestNo = @TestNo
 
+exec UpdateInspPercent 'LabOven',@poID
 ";
             ExecuteNonQuery(CommandType.Text, sqlUpdateOvenMain, listPar);
         }
@@ -493,6 +500,7 @@ update Oven set Status = 'New',
                 Result = ''
 where POID = @poID and TestNo = @TestNo
 
+exec UpdateInspPercent 'LabOven',@poID
 ";
             ExecuteNonQuery(CommandType.Text, sqlUpdateOvenMain, listPar);
         }

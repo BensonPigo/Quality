@@ -301,7 +301,7 @@
                             <tbody>
                                 @for (int i = 0; i <= Model.Details.Count - 1; i++)
                                 {
-                                    <tr>
+                                    <tr idx='@i'>
                                         <td style="width:10vw;">
                                             <input id='Seq@{@i}' idx='@i' type='hidden'>
                                             @Html.TextBoxFor(o => Model.Details[i].SubmitDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
@@ -693,6 +693,29 @@
                 return false;
             }
 
+            var detailMsg = "";
+            $('.DetailTable > tbody > tr').each(function (index, data) {
+                var idx = $(this).closest('tr').attr('idx');
+                if ($("#Details_" + idx + "__SEQ").val() == "") {
+                    detailMsg += "SEQ cannot be empty.";
+                    return false;
+                }
+
+                if ($("#Details_" + idx + "__Roll").val() == "") {
+                    detailMsg += "Roll cannot be empty.";
+                    return false;
+                }
+
+                if ($("#Details_" + idx + "__Dyelot").val() == "") {
+                    detailMsg += "Dyelot cannot be empty.";
+                    return false;
+                }
+            });
+
+            if (detailMsg != '') {
+                msg.WithWarning(detailMsg);
+                return false;
+            }
 
             $('.DetailTable > tbody > tr').each(function (index, data) {
                 var idx = $(this).closest('tr').attr('idx');
@@ -752,20 +775,24 @@
 
                 var OvenGroup, SEQ, Result;
                 var ChangeScale, StainingScale, ResultChange, ResultStain;
-                $(this).children().find("input[type='text']").each(function (index, value) {
+                $(this).children().find("input[type='number']").each(function (index, value) {
                     switch (index) {
-                        case 1:
+                        case 0:
                             OvenGroup = $(this).val();
-                            break;
-                        case 2:
-                            SEQ = $(this).val();
-                            break;
-                        case 8:
-                            Result = $(this).val();
                             break;
                     }
                 })
 
+                $(this).children().find("input[type='text']").each(function (index, value) {
+                    switch (index) {
+                        case 1:
+                            SEQ = $(this).val();
+                            break;
+                        case 7:
+                            Result = $(this).val();
+                            break;
+                    }
+                })
 
                 $(this).children().find("select").each(function (index, value) {
                     switch (index) {

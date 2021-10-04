@@ -281,11 +281,11 @@
                                     @{
                                         string InspDate = Model.Details[i].InspDate.HasValue ? Model.Details[i].InspDate.Value.ToString("yyyy/MM/dd") : string.Empty;
                                         string ResultColor = Model.Details[i].Result == "Pass" ? "blue" : "red";
-                                        string  showPic = Model.Details[i].Status=="New"? string.Empty:"display: none" ;
+                                        string showPic = Model.Details[i].Status=="New"? string.Empty:"display: none" ;
                                     }
 
                                     <td style="width:10vw;">
-                                        InspDate
+                                        @InspDate
                                     </td>
                                     <td style="width:10vw;">
                                         @Html.DisplayFor(o => Model.Details[i].Article, "", "")
