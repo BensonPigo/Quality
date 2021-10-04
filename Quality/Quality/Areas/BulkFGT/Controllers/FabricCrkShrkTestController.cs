@@ -126,7 +126,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "<td>";
             html += $"<input id='Crocking_Detail_{lastNO}__Result' name='Crocking_Detail[{lastNO}].Result' readonly='readonly' class='blue' type='text' value='Pass'>";
             html += "</td>";
-            html += "<td style='color:blue'>";
+            html += "<td>";
             html += $"<select id='Crocking_Detail_{lastNO}__DryScale' name='Crocking_Detail[{lastNO}].DryScale' style='width:157px'>";
             foreach (string val in scaleIDs)
             {
@@ -314,7 +314,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "</td>";
 
             html += "<td>";
-            html += $"<select id='Heat_Detail_{lastNO}__Result' name='Heat_Detail[{lastNO}].Result' style='width:157px;color:blue' onchange='changeResultColor(this)'>";
+            html += $"<select id='Heat_Detail_{lastNO}__Result' name='Heat_Detail[{lastNO}].Result' class='blue' onchange='changeResultColor(this)'>";
             html += "<option value='Pass'>Pass</option>";
             html += "<option value='Fail'>Fail</option>";
             html += "</select>";
@@ -363,7 +363,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += $"<input id='Heat_Detail_{lastNO}__Name' name='Heat_Detail[{lastNO}].Name' readonly='readonly' type='text' value='' >";
             html += "</td>";
             html += "<td>";
-            html += $"<input id='Heat_Detail_{lastNO}__Remark' name='Heat_Detail[{lastNO}].Remark' readonly='readonly' type='text' value='' >";
+            html += $"<input id='Heat_Detail_{lastNO}__Remark' name='Heat_Detail[{lastNO}].Remark' type='text' value='' >";
             html += "</td>";
             html += "<td>";
             html += $"<input id='Heat_Detail_{lastNO}__LastUpdate' name='Heat_Detail[{lastNO}].LastUpdate' readonly='readonly' type='text' value='' >";
@@ -481,7 +481,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalOriginal 必須是數字。' data-val-required='VerticalOriginal 欄位是必要項。' id='Wash_Detail_{lastNO}__VerticalOriginal' name='Wash_Detail[{lastNO}].VerticalOriginal' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
-            html += $"<select id='Wash_Main_{lastNO}__Result' name='Wash_Detail[{lastNO}].Result' style='width:157px;color:blue' onchange='changeResultColor(this)'>";
+            html += $"<select id='Wash_Main_{lastNO}__Result' name='Wash_Detail[{lastNO}].Result' class='blue' onchange='changeResultColor(this)'>";
             html += "<option value='Pass'>Pass</option>";
             html += "<option value='Fail'>Fail</option>";
             html += "</select>";
@@ -548,7 +548,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += $"<input id='Wash_Detail_{lastNO}__Name' name='Wash_Detail[{lastNO}].Name' readonly='readonly' type='text' value=''>";
             html += "</td>";
             html += "<td>";
-            html += $"<input id='Wash_Detail_{lastNO}__Remark' name='Wash_Detail[{lastNO}].Remark' readonly='readonly' type='text' value=''>";
+            html += $"<input id='Wash_Detail_{lastNO}__Remark' name='Wash_Detail[{lastNO}].Remark' type='text' value=''>";
             html += "</td>";
             html += "<td>";
             html += $"<input id='Wash_Detail_{lastNO}__LastUpdate' name='Wash_Detail[{lastNO}].LastUpdate' readonly='readonly' type='text' value=''>";

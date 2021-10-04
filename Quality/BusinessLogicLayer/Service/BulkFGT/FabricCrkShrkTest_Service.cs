@@ -633,6 +633,8 @@ namespace BusinessLogicLayer.Service
 
                     if (fabricCrkShrkTestWash_Result.Wash_Main.SkewnessOptionID == "1")
                     {
+                        fabricCrkShrkTestWash_Detail.HorizontalRate = Math.Abs(fabricCrkShrkTestWash_Detail.HorizontalRate);
+                        fabricCrkShrkTestWash_Detail.VerticalRate = Math.Abs(fabricCrkShrkTestWash_Detail.VerticalRate);
                         fabricCrkShrkTestWash_Detail.SkewnessRate = MyUtility.Check.Empty(fabricCrkShrkTestWash_Detail.SkewnessTest1 + fabricCrkShrkTestWash_Detail.SkewnessTest2) ? 0 :
                             (fabricCrkShrkTestWash_Detail.SkewnessTest1 - fabricCrkShrkTestWash_Detail.SkewnessTest2) / (fabricCrkShrkTestWash_Detail.SkewnessTest1 + fabricCrkShrkTestWash_Detail.SkewnessTest2) * 200;
                     }

@@ -251,14 +251,10 @@
                                         <td><h5>Result</h5></td>
                                         <td>
                                             @{
-                                                string styleColor = "";
+                                                string styleColor = "red";
                                                 if (Model.Wash_Main.Wash == "Pass")
                                                 {
                                                     styleColor = "blue";
-                                                }
-                                                else
-                                                {
-                                                    styleColor = "red";
                                                 }
                                             }
                                             <font class="@styleColor">@Html.DisplayFor(o => o.Wash_Main.Wash)</font>
@@ -392,13 +388,10 @@
                                     </td>
                                     <td>
                                         @{
+                                            styleColor = "red";
                                             if (Model.Wash_Detail[i].Result == "Pass")
                                             {
                                                 styleColor = "blue";
-                                            }
-                                            else
-                                            {
-                                                styleColor = "red";
                                             }
                                         }
                                         <select id="Wash_Main_@{@i}_Result" name="Wash_Detail[@i].Result" disabled="disabled" class="@styleColor" style="width:157px;" onchange="changeResultColor(this)">
@@ -958,6 +951,7 @@
         });
 
         $('.HorizontalTest').unbind('blur').on('blur', function () {
+            var option = $('#Wash_Main__SkewnessOptionID').val();
             var idx = $(this).closest('tr').attr('idx');
             var value1 = parseFloat($('#Wash_Detail_' + idx + '__HorizontalTest1').val());
             var value2 = parseFloat($('#Wash_Detail_' + idx + '__HorizontalTest2').val());
@@ -975,10 +969,15 @@
             }
             // (HorizontalAverage - HorizontalOriginal) / HorizontalOriginal * 100
             var rate = Round(accMul(accDiv(accSubtr(avg, original), original), 100));
+            if (option == "1") {
+                rate = Math.abs(rate);
+            }
+
             $('#Wash_Detail_' + idx + '__HorizontalRate').val(rate);
         });
 
         $('.VerticalTest').unbind('blur').on('blur', function () {
+            var option = $('#Wash_Main__SkewnessOptionID').val();
             var idx = $(this).closest('tr').attr('idx');
             var value1 = parseFloat($('#Wash_Detail_' + idx + '__VerticalTest1').val());
             var value2 = parseFloat($('#Wash_Detail_' + idx + '__VerticalTest2').val());
@@ -997,7 +996,12 @@
 
             // (VerticalAverage - VerticalOriginal) / VerticalOriginal * 100
             var rate = Round(accMul(accDiv(accSubtr(avg, original), original), 100));
-            rate = Math.round(rate * 100) / 100;
+            // rate = Math.round(rate * 100) / 100;
+
+            if (option == "1") {
+                rate = Math.abs(rate);
+            }
+
             $('#Wash_Detail_' + idx + '__VerticalRate').val(rate);
         });
 
@@ -1018,7 +1022,7 @@
         switch (option) {
             case "1":
                 if (value1 + value2 != 0) {
-                    rate = Round(accMul(accMul(accDiv(accSubtr(value1, value2), accAdd(value1, value2)), 2), 100));
+                    rate = Math.abs(Round(accMul(accMul(accDiv(accSubtr(value1, value2), accAdd(value1, value2)), 2), 100)));
                 }
                 break;
             case "2":
