@@ -426,7 +426,7 @@ select    p.ReportNo
 		,p.SeasonID
 		,p.Article
 		,p.SizeCode
-		,p.TestDate
+		,TestDate  = convert(varchar, p.TestDate , 111)
 		,p.Result
 		,p.TestItem
 		,p.PullForceUnit

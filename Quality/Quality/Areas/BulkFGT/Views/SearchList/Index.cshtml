@@ -133,7 +133,7 @@
         <div class="content-scroll">
             <div class="inner-scroll" style="float:left">
                 <div>
-                    <table id="myTable" class="table table-striped display" style="text-align:center; width:150%">
+                    <table id="myTable" class="table table-striped display" style="text-align:center;">
                         <thead>
                             <tr class="row-name" style="color:black">
                                 <th>Type</th>
@@ -153,6 +153,7 @@
                             {
                                 foreach (var item in Model.DataList)
                                 {
+                                    string color = item.Result == "Pass" ? "blue" : "red";
                                     <tr class="row-content">
                                         <td>
                                             @{ string link = "";}
@@ -223,7 +224,7 @@
                                                     break;
                                             }
 
-                                            <a href="@link">@item.Type</a>
+                                            <a href="@link" target="_blank">@item.Type</a>
 
                                         </td>
                                         <td>
@@ -247,11 +248,12 @@
                                         <td>
                                             @Html.DisplayFor(modelItem => item.Artwork)
                                         </td>
-                                        <td>
+                                        <td style="color: @color">
                                             @Html.DisplayFor(modelItem => item.Result)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.TestDate)
+                                            @{string TestDate = item.TestDate.HasValue ? item.TestDate.Value.ToShortDateString() : ""; }
+                                            @Html.DisplayFor(modelItem => TestDate)
                                         </td>
                                     </tr>
                                 }
@@ -279,13 +281,13 @@
         @Html.Raw(Model.ErrorMessage);
 
         $('#myTable').DataTable({
-            "pageLength": 20,
+            //"pageLength": 9,
             "filter": false,
             "paging": true,
-            "scrollY": "49vh",
-            "scrollCollapse": true,
-            "scrollX": true,
-            "autoWidth": false
+            //"scrollY": "49vh",
+            //"scrollCollapse": true,
+            //"scrollX": true,
+            //"autoWidth": false
 
         });
 

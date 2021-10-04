@@ -32,7 +32,7 @@ namespace DatabaseObject.ViewModel.SampleRFT
         public string TempFileName { get; set; }
 
         public List<StyleResult_SampleRFT> SampleRFT { get; set; }
-        public List<StyleResult_FTYDisclamier> FTYDisclamier { get; set; }
+        public List<StyleResult_FTYDisclaimer> FTYDisclaimer { get; set; }
         public List<StyleResult_RRLR> RRLR { get; set; }
         public List<StyleResult_BulkFGT> BulkFGT { get; set; }
     }
@@ -50,7 +50,7 @@ namespace DatabaseObject.ViewModel.SampleRFT
         public string BAAuditCriteria { get; set; }
     }
 
-    public class StyleResult_FTYDisclamier
+    public class StyleResult_FTYDisclaimer
     {
         public string ExpectionFormStatus { get; set; }
         public DateTime? ExpectionFormDate { get; set; }

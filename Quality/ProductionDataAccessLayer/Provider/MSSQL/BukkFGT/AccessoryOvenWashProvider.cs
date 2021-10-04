@@ -42,7 +42,7 @@ select OrderID= o.ID
 							 ELSE  (SELECT DATEADD(DAY, (SELECT MtlLeadTime from System) ,'2021-10-30'))
 						END	
 	,CompletionDate = IIF( p.AIRLabInspPercent = 100,CompletionDate.Val,NULL)
-	,ArticlePercent = p.AIRInspPercent
+	,ArticlePercent = p.AIRLabInspPercent
 	,MtlCmplt = p.Complete
 	,Remark = p.AIRLaboratoryRemark
 	,CreateBy = Concat (p.AddName, '-', c.Name, ' ', convert(varchar,  p.AddDate, 120) )
@@ -94,7 +94,7 @@ select
 	,psd.SizeSpec
 	,a.ArriveQty
 	,al.InspDeadline
-	,al.Result
+	,OverAllResult = al.Result
 	,al.NonOven
 	,OvenResult = al.Oven
 	,al.OvenScale

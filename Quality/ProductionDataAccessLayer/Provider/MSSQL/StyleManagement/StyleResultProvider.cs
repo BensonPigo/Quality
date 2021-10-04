@@ -47,7 +47,36 @@ WHERE Junk=0 {where}
             return ExecuteList<SelectListItem>(CommandType.Text, SbSql.ToString(), new SQLParameterCollection());
         }
 
+        public IList<StyleResult_Request> GetStyle(StyleResult_Request Req)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection listPar = new SQLParameterCollection();
 
+            SbSql.Append($@"
+SELECT StyleID=ID,StyleUkey=Cast(Ukey AS VARCHAR),BrandID,SeasonID
+FROM Production.dbo.Style with (nolock)
+WHERE Junk=0
+");
+            if (!string.IsNullOrWhiteSpace(Req.StyleUkey))
+            {
+                SbSql.Append($@"and Ukey = {Req.StyleUkey} ");
+            }
+
+            if (!string.IsNullOrWhiteSpace(Req.StyleID))
+            {
+                SbSql.Append($@"and ID = '{Req.StyleUkey}' ");
+            }
+            if (!string.IsNullOrWhiteSpace(Req.BrandID))
+            {
+                SbSql.Append($@"and BrandID = '{Req.BrandID}' ");
+            }
+            if (!string.IsNullOrWhiteSpace(Req.SeasonID))
+            {
+                SbSql.Append($@"and SeasonID = '{Req.SeasonID}' ");
+            }
+
+            return ExecuteList<StyleResult_Request>(CommandType.Text, SbSql.ToString(), listPar);
+        }
         public IList<SelectListItem> GetStyles(StyleResult_Request Req)
         {
             StringBuilder SbSql = new StringBuilder();
@@ -146,11 +175,11 @@ WHERE Junk=0
                         	    ID = s.SpecialMark
                         ),
         [SMR] = (select Concat (ID, ' ', Name)
-                    from   pass1 with (nolock)
+                    from   TPEPass1  with (nolock)
                     where   ID = iif(s.Phase = 'Bulk', s.BulkSMR, s.SampleSMR)
                 ),
         Handle = (select Concat (ID, ' ', Name)
-                    from   pass1 with (nolock)
+                    from   TPEPass1  with (nolock)
                     where   ID = iif(s.Phase = 'Bulk', s.BulkMRHandle, s.SampleMRHandle)
                 ),
         [RFT] = LEFT( CAST( RFT.Val as varchar),5) ";
@@ -178,41 +207,25 @@ where   1 = 1 {sqlWhere}
             SQLParameterCollection listPar = new SQLParameterCollection();
             string sqlWhere = string.Empty;
             string sqlCol = string.Empty;
-            if (!string.IsNullOrEmpty(styleResult_Request.StyleUkey))
+
+            if (!string.IsNullOrEmpty(styleResult_Request.BrandID))
             {
-                sqlWhere += " and s.Ukey = @StyleUkey";
-
-                int Ukey = 0;
-                if (int.TryParse(styleResult_Request.StyleUkey, out Ukey))
-                {
-                    listPar.Add("@StyleUkey", DbType.Int64, Ukey);
-                }
-                else
-                {
-                    listPar.Add("@StyleUkey", DbType.Int64, 0);
-                }
+                sqlWhere += " and s.BrandID = @BrandID";
             }
-            else
+
+            if (!string.IsNullOrEmpty(styleResult_Request.SeasonID))
             {
-                if (!string.IsNullOrEmpty(styleResult_Request.BrandID))
-                {
-                    sqlWhere += " and s.BrandID = @BrandID";
-                }
-
-                if (!string.IsNullOrEmpty(styleResult_Request.SeasonID))
-                {
-                    sqlWhere += " and s.SeasonID = @SeasonID";
-                }
-
-                if (!string.IsNullOrEmpty(styleResult_Request.StyleID))
-                {
-                    sqlWhere += " and s.ID = @StyleID";
-                }
-
-                listPar.Add(new SqlParameter("@StyleID", styleResult_Request.StyleID));
-                listPar.Add(new SqlParameter("@BrandID", styleResult_Request.BrandID));
-                listPar.Add(new SqlParameter("@SeasonID", styleResult_Request.SeasonID));
+                sqlWhere += " and s.SeasonID = @SeasonID";
             }
+
+            if (!string.IsNullOrEmpty(styleResult_Request.StyleID))
+            {
+                sqlWhere += " and s.ID = @StyleID";
+            }
+
+            listPar.Add(new SqlParameter("@StyleID", styleResult_Request.StyleID));
+            listPar.Add(new SqlParameter("@BrandID", styleResult_Request.BrandID));
+            listPar.Add(new SqlParameter("@SeasonID", styleResult_Request.SeasonID));
 
             string sqlGet_StyleResult_Browse = $@"
 select SP = o.ID
@@ -346,46 +359,29 @@ where 1=1
             return ExecuteDataTable(CommandType.Text, SbSql.ToString(), listPar);
         }
 
-        public IList<StyleResult_FTYDisclamier> Get_StyleResult_FTYDisclamier(StyleResult_Request styleResult_Request)
+        public IList<StyleResult_FTYDisclaimer> Get_StyleResult_FTYDisclaimer(StyleResult_Request styleResult_Request)
         {
             SQLParameterCollection listPar = new SQLParameterCollection();
             string sqlWhere = string.Empty;
             string sqlCol = string.Empty;
-            if (!string.IsNullOrEmpty(styleResult_Request.StyleUkey))
+            if (!string.IsNullOrEmpty(styleResult_Request.BrandID))
             {
-                sqlWhere += " and s.Ukey = @StyleUkey";
-
-                int Ukey = 0;
-                if (int.TryParse(styleResult_Request.StyleUkey, out Ukey))
-                {
-                    listPar.Add("@StyleUkey", DbType.Int64, Ukey);
-                }
-                else
-                {
-                    listPar.Add("@StyleUkey", DbType.Int64, 0);
-                }
+                sqlWhere += " and s.BrandID = @BrandID";
             }
-            else
+
+            if (!string.IsNullOrEmpty(styleResult_Request.SeasonID))
             {
-                if (!string.IsNullOrEmpty(styleResult_Request.BrandID))
-                {
-                    sqlWhere += " and s.BrandID = @BrandID";
-                }
-
-                if (!string.IsNullOrEmpty(styleResult_Request.SeasonID))
-                {
-                    sqlWhere += " and s.SeasonID = @SeasonID";
-                }
-
-                if (!string.IsNullOrEmpty(styleResult_Request.StyleID))
-                {
-                    sqlWhere += " and s.ID = @StyleID";
-                }
-
-                listPar.Add(new SqlParameter("@StyleID", styleResult_Request.StyleID));
-                listPar.Add(new SqlParameter("@BrandID", styleResult_Request.BrandID));
-                listPar.Add(new SqlParameter("@SeasonID", styleResult_Request.SeasonID));
+                sqlWhere += " and s.SeasonID = @SeasonID";
             }
+
+            if (!string.IsNullOrEmpty(styleResult_Request.StyleID))
+            {
+                sqlWhere += " and s.ID = @StyleID";
+            }
+
+            listPar.Add(new SqlParameter("@StyleID", styleResult_Request.StyleID));
+            listPar.Add(new SqlParameter("@BrandID", styleResult_Request.BrandID));
+            listPar.Add(new SqlParameter("@SeasonID", styleResult_Request.SeasonID));
 
             string sqlGet_StyleResult_Browse = $@"
 select  ExpectionFormStatus = d.Name
@@ -404,7 +400,7 @@ left join Style_Article sa on s.Ukey = sa.StyleUkey
 where 1=1
 {sqlWhere}
 ";
-            return ExecuteList<StyleResult_FTYDisclamier>(CommandType.Text, sqlGet_StyleResult_Browse, listPar);
+            return ExecuteList<StyleResult_FTYDisclaimer>(CommandType.Text, sqlGet_StyleResult_Browse, listPar);
         }
 
         public IList<StyleResult_RRLR> Get_StyleResult_RRLR(StyleResult_Request styleResult_Request)
@@ -412,41 +408,24 @@ where 1=1
             SQLParameterCollection listPar = new SQLParameterCollection();
             string sqlWhere = string.Empty;
             string sqlCol = string.Empty;
-            if (!string.IsNullOrEmpty(styleResult_Request.StyleUkey))
+            if (!string.IsNullOrEmpty(styleResult_Request.BrandID))
             {
-                sqlWhere += " and s.Ukey = @StyleUkey";
-
-                int Ukey = 0;
-                if (int.TryParse(styleResult_Request.StyleUkey, out Ukey))
-                {
-                    listPar.Add("@StyleUkey", DbType.Int64, Ukey);
-                }
-                else
-                {
-                    listPar.Add("@StyleUkey", DbType.Int64, 0);
-                }
+                sqlWhere += " and s.BrandID = @BrandID";
             }
-            else
+
+            if (!string.IsNullOrEmpty(styleResult_Request.SeasonID))
             {
-                if (!string.IsNullOrEmpty(styleResult_Request.BrandID))
-                {
-                    sqlWhere += " and s.BrandID = @BrandID";
-                }
-
-                if (!string.IsNullOrEmpty(styleResult_Request.SeasonID))
-                {
-                    sqlWhere += " and s.SeasonID = @SeasonID";
-                }
-
-                if (!string.IsNullOrEmpty(styleResult_Request.StyleID))
-                {
-                    sqlWhere += " and s.ID = @StyleID";
-                }
-
-                listPar.Add(new SqlParameter("@StyleID", styleResult_Request.StyleID));
-                listPar.Add(new SqlParameter("@BrandID", styleResult_Request.BrandID));
-                listPar.Add(new SqlParameter("@SeasonID", styleResult_Request.SeasonID));
+                sqlWhere += " and s.SeasonID = @SeasonID";
             }
+
+            if (!string.IsNullOrEmpty(styleResult_Request.StyleID))
+            {
+                sqlWhere += " and s.ID = @StyleID";
+            }
+
+            listPar.Add(new SqlParameter("@StyleID", styleResult_Request.StyleID));
+            listPar.Add(new SqlParameter("@BrandID", styleResult_Request.BrandID));
+            listPar.Add(new SqlParameter("@SeasonID", styleResult_Request.SeasonID));
 
             string sqlGet_StyleResult_Browse = $@"
 select sr.Refno
@@ -580,12 +559,12 @@ OUTER APPLY(
 		AND g.Article = sa.Article
 		AND g.MDivisionid = @MDivisionID
 		AND g.Date = (		
-			select MAX(SeamBreakageLastTestDate)
+			select MAX(Date)
 			from GarmentTest gg
 			where gg.StyleID = s.ID
 				AND gg.BrandID = s.BrandID
 				AND gg.SeasonID = s.SeasonID
-				AND g.Article = sa.Article
+				AND gg.Article = sa.Article
 				AND gg.MDivisionid = g.MDivisionID
 		)
 )Type451
@@ -598,12 +577,12 @@ OUTER APPLY(
 		AND g.Article = sa.Article
 		AND g.MDivisionid = @MDivisionID
 		AND g.Date = (		
-			select MAX(SeamBreakageLastTestDate)
+			select MAX(Date)
 			from GarmentTest gg
 			where gg.StyleID = s.ID
 				AND gg.BrandID = s.BrandID
 				AND gg.SeasonID = s.SeasonID
-				AND g.Article = sa.Article
+				AND gg.Article = sa.Article
 				AND gg.MDivisionid = g.MDivisionID
 		)
 )Type701_710

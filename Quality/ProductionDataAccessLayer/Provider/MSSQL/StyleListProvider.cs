@@ -44,20 +44,20 @@ from Style s WITH(NOLOCK)
 LEFT JOIN Reason r WITH(NOLOCK) ON  r.ReasonTypeID = 'Style_SpecialMark'  and r.ID = s.SpecialMark
 OUTER APPLY(
 	SELECT Val = p.ID +'-' +p.Name
-	FROM Pass1 p
+	FROM TPEPass1  p
 	WHERE p.ID = s.BulkSMR AND s.Phase = 'Bulk'
 	UNION
 	SELECT Val = p.ID +'-' +p.Name
-	FROM Pass1 p
+	FROM TPEPass1  p
 	WHERE p.ID = s.SampleSMR AND s.Phase = 'Sample'
 )SMR
 OUTER APPLY(
 	SELECT Val = p.ID +'-' +p.Name
-	FROM Pass1 p
+	FROM TPEPass1  p
 	WHERE p.ID = s.BulkMRHandle AND s.Phase = 'Bulk'
 	UNION
 	SELECT Val = p.ID +'-' +p.Name
-	FROM Pass1 p
+	FROM TPEPass1  p
 	WHERE p.ID = s.SampleMRHandle AND s.Phase = 'Sample'
 )Handle
 OUTER APPLY(

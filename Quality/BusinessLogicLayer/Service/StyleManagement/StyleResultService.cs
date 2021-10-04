@@ -25,7 +25,7 @@ namespace BusinessLogicLayer.Service.StyleManagement
             StyleResult_ViewModel result = new StyleResult_ViewModel()
             {
                 SampleRFT = new List<StyleResult_SampleRFT>(),
-                FTYDisclamier = new List<StyleResult_FTYDisclamier>(),
+                FTYDisclaimer = new List<StyleResult_FTYDisclaimer>(),
                 RRLR = new List<StyleResult_RRLR>(),
                 BulkFGT = new List<StyleResult_BulkFGT>()
             };
@@ -42,7 +42,7 @@ namespace BusinessLogicLayer.Service.StyleManagement
                     result = styleResults.FirstOrDefault();
                 }
                 result.SampleRFT = _Provider.Get_StyleResult_SampleRFT(styleResult_Request).ToList();
-                result.FTYDisclamier = _Provider.Get_StyleResult_FTYDisclamier(styleResult_Request).ToList();
+                result.FTYDisclaimer = _Provider.Get_StyleResult_FTYDisclaimer(styleResult_Request).ToList();
                 result.RRLR = _Provider.Get_StyleResult_RRLR(styleResult_Request).ToList();
                 result.BulkFGT = _Provider.Get_StyleResult_BulkFGT(styleResult_Request).ToList();
 
@@ -132,6 +132,18 @@ namespace BusinessLogicLayer.Service.StyleManagement
             return result;
         }
 
+        public IList<StyleResult_Request> GetStyle(StyleResult_Request Req)
+        {
+            try
+            {
+                _Provider = new StyleResultProvider(Common.ProductionDataAccessLayer);
+                return _Provider.GetStyle(Req).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         public IList<SelectListItem> GetStyles(StyleResult_Request Req)
         {
             try

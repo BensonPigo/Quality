@@ -28,7 +28,7 @@ namespace Quality.Areas.StyleManagement.Controllers
             StyleResult_ViewModel model = new StyleResult_ViewModel()
             {
                 SampleRFT = new List<StyleResult_SampleRFT>(),
-                FTYDisclamier = new List<StyleResult_FTYDisclamier>() { new StyleResult_FTYDisclamier() },
+                FTYDisclaimer = new List<StyleResult_FTYDisclaimer>() { new StyleResult_FTYDisclaimer() },
                 RRLR = new List<StyleResult_RRLR>() { new StyleResult_RRLR() },
                 BulkFGT = new List<StyleResult_BulkFGT>() { new StyleResult_BulkFGT() }
             };
@@ -85,7 +85,7 @@ msg.WithInfo('Style, Brand and Season cannot be empty.');
             StyleResult_ViewModel model = new StyleResult_ViewModel() 
             {
                 SampleRFT = new List<StyleResult_SampleRFT>(),
-                FTYDisclamier = new List<StyleResult_FTYDisclamier>(),
+                FTYDisclaimer = new List<StyleResult_FTYDisclaimer>(),
                 RRLR = new List<StyleResult_RRLR>(),
                 BulkFGT = new List<StyleResult_BulkFGT>(),
             };
@@ -101,11 +101,35 @@ msg.WithInfo('Style, Brand and Season cannot be empty.');
             model = _Service.Get_StyleResult_Browse(Req);
 
             model.SampleRFT = model.SampleRFT == null ? new List<StyleResult_SampleRFT>() : model.SampleRFT;
-            model.FTYDisclamier = model.FTYDisclamier == null ? new List<StyleResult_FTYDisclamier>() : model.FTYDisclamier;
+            model.FTYDisclaimer = model.FTYDisclaimer == null ? new List<StyleResult_FTYDisclaimer>() : model.FTYDisclaimer;
             model.RRLR = model.RRLR == null ? new List<StyleResult_RRLR>() : model.RRLR;
             model.BulkFGT = model.BulkFGT == null ? new List<StyleResult_BulkFGT>() : model.BulkFGT;
 
             return View("Index", model);
+        }
+
+        [HttpPost]
+        public ActionResult CheckStyle(StyleResult_Request Req)
+        {
+            this.CheckSession();
+
+            try
+            {
+                var list = _Service.GetStyle(new StyleResult_Request() { StyleUkey = Req.StyleUkey }).ToList();
+
+                if (list.Any())
+                {
+                    return Json(list.FirstOrDefault());
+                }
+                else
+                {
+                    return Json(new List<StyleResult_Request>());
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(ex.Message);
+            }
         }
 
         [HttpPost]
