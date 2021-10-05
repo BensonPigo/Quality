@@ -484,13 +484,16 @@
                                     @Html.DisplayFor(o => Model.garmentTest_Details[i].GarmentTest_Detail_EditName, "", "")
                                 </td>
                                 <td style="width:10vw;">
-                                    @if (Model.garmentTest_Details[i].Status == "New")
+                                    @if (Model.garmentTest_Details[i].Status.ToLower() == "new")
                                     {
                                         <img class="detailEdit" src="~/Image/Icon/Edit.png" width="30" />
                                     }
                                 </td>
                                 <td style="width:10vw;">
-                                    <img class="detailDelete" src="~/Image/Icon/Delete.png" width="30" />
+                                    @if (Model.garmentTest_Details[i].Status.ToLower() == "new")
+                                    {
+                                        <img class="detailDelete" src="~/Image/Icon/Delete.png" width="30" />
+                                    }
                                 </td>
                             </tr>
                                 }
