@@ -22,7 +22,7 @@ namespace Quality.Areas.StyleManagement.Controllers
         {
             _Service = new StyleResultService();
             this.SelectedMenu = "Style Management";
-            ViewBag.OnlineHelp = this.OnlineHelp + "StyleManagement.StyleResul,,";
+            ViewBag.OnlineHelp = this.OnlineHelp + "StyleManagement.StyleResult,,";
         }
         // GET: StyleManagement/StyleResult
         public ActionResult Index()
