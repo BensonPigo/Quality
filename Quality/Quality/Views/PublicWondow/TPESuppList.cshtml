@@ -47,7 +47,7 @@
     <legend>@title</legend>
     @using (Html.BeginForm("TPESuppList", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post, new { @width = "100%", @height = "5%", @style = "margin-bottom:10px;" }))
     {
-        <input type="text" name="Name" value="" />
+        <input type="text" name="SuppID" value="" />
         @Html.Hidden("Title", title);
         @Html.Hidden("TargetID", TargetID)
         <input type="submit" value="Query" />
