@@ -18,6 +18,7 @@ namespace Quality.Areas.StyleManagement.Controllers
         public StyleListController()
         {
             _StyleListService = new StyleListService();
+            this.SelectedMenu = "Style Management";
             ViewBag.OnlineHelp = this.OnlineHelp + "StyleManagement.StyleList,,";
         }
 

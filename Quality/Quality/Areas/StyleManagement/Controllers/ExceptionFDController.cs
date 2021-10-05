@@ -17,7 +17,8 @@ namespace Quality.Areas.StyleManagement.Controllers
         public ExceptionFDController()
         {
             Service = new ExceptionFDService();
-            ViewBag.OnlineHelp = this.OnlineHelp + "StyleManagement.ExceptionFDService,,";
+            this.SelectedMenu = "Style Management";
+            ViewBag.OnlineHelp = this.OnlineHelp + "StyleManagement.ExceptionFD,,";
         }
         // GET: StyleManagement/ExceptionFD
         public ActionResult Index()

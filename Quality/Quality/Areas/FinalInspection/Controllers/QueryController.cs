@@ -41,6 +41,7 @@ namespace Quality.Areas.FinalInspection.Controllers
 
         public QueryController()
         {
+            this.SelectedMenu = "Final Inspection";
             ViewBag.OnlineHelp = this.OnlineHelp + "FinalInspection.Query,,";
         }
 

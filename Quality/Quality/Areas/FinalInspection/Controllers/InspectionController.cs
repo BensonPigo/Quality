@@ -23,6 +23,7 @@ namespace Quality.Areas.FinalInspection.Controllers
 
         public InspectionController()
         {
+            this.SelectedMenu = "Final Inspection";
             ViewBag.OnlineHelp = this.OnlineHelp + "FinalInspection.Inspection,,";
         }
 

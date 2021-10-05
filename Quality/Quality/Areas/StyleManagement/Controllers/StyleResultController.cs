@@ -21,6 +21,8 @@ namespace Quality.Areas.StyleManagement.Controllers
         public StyleResultController()
         {
             _Service = new StyleResultService();
+            this.SelectedMenu = "Style Management";
+            ViewBag.OnlineHelp = this.OnlineHelp + "StyleManagement.StyleResul,,";
         }
         // GET: StyleManagement/StyleResult
         public ActionResult Index()

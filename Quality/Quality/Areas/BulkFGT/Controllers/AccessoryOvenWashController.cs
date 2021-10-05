@@ -18,6 +18,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         public AccessoryOvenWashController()
         {
             _Service = new AccessoryOvenWashService();
+            this.SelectedMenu = "Bulk FGT";
             ViewBag.OnlineHelp = this.OnlineHelp + "BulkFGT.AccessoryOvenWash,,";
         }
 

@@ -25,6 +25,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         public PullingTestController()
         {
             Service = new PullingTestService();
+            this.SelectedMenu = "Bulk FGT";
             ViewBag.OnlineHelp = this.OnlineHelp + "BulkFGT.PullingTest,,";
         }
 
