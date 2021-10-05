@@ -743,6 +743,7 @@
                                                 break;
                                         };
                                         bool boolVer = Model.FGPT[i].TypeSelection_VersionID > 0;
+                                        string yellow = boolVer ? "bg-lightyellow" : "";
                                         <tr>
                                             <td>
                                                 @Location
@@ -753,13 +754,13 @@
                                                 @Html.HiddenFor(o => Model.FGPT[i].TypeSelection_VersionID)
                                                 @Html.HiddenFor(o => Model.FGPT[i].TestName)
                                                 @Html.TextBoxFor(o => Model.FGPT[i].Type, new { @readonly = "readonly", @class = "display-None txtFGPTType" })
-                                                @Html.HiddenFor(o => Model.FGPT[i].TypeSelection_Seq)                                                
+                                                @Html.HiddenFor(o => Model.FGPT[i].TypeSelection_Seq, new { @class = "TypeSelection_Seq" })                                                
                                             </td>
                                             <td>
                                                 @Html.DisplayFor(o => Model.FGPT[i].TestName)
                                                 @Html.TextBoxFor(o => Model.FGPT[i].TypeOri, new { @readonly = "readonly", @class = "display-None TypeOri" })
                                             </td>
-                                            <td class="FGPTType">
+                                            <td class="FGPTType @yellow">
                                                 @Html.DisplayFor(o => Model.FGPT[i].Type)
                                             </td>
                                             <td style="width:5vw;">
@@ -1209,6 +1210,7 @@
         var newVal = oriVal.replace("{0}", data.Code);
         $('#FGPT .selected').siblings("td[class='FGPTType']").html(newVal);
         $('#FGPT .selected').siblings("td").children("input[class='display-None txtFGPTType']").val(newVal);
+        $('#FGPT .selected').siblings("td").children("input[class='TypeSelection_Seq']").val(data.Seq);
         $('#FGPT .selected').removeClass('selected');
     }
 
