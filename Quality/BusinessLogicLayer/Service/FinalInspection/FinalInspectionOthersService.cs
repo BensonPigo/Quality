@@ -138,7 +138,7 @@ namespace BusinessLogicLayer.Service
                     finalInspection.OthersRemark = others.OthersRemark;
                     finalInspection.CFA = UserID;
                     finalInspection.ShipmentStatus = others.ShipmentStatus;
-                    finalInspection.InspectionResult = finalInspection.AcceptQty <= finalInspection.RejectQty ? "Fail" : "Pass";
+                    finalInspection.InspectionResult = finalInspection.AcceptQty < finalInspection.RejectQty && finalInspection.RejectQty > 0 ? "Fail" : "Pass";
 
                     _FinalInspectionProvider.UpdateFinalInspectionByStep(finalInspection, "Submit", UserID);
                     _FinalInspectionProvider.UpdateFinalInspection_OtherImage(others.FinalInspectionID, others.ListOthersImageItem.Select(o => o.Image).ToList());
