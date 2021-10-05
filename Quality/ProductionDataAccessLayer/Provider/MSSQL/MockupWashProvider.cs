@@ -195,8 +195,8 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 
             SbSql.Append($@"
 ,OtherMethod=@OtherMethod
-,MethodID=iif(@OtherMethod = 0, '', @MethodID)
-,TestingMethod=iif(@OtherMethod = 0, @TestingMethod, '')
+,MethodID=iif(@OtherMethod = 0, @MethodID, '', @MethodID)
+,TestingMethod=iif(@OtherMethod = 0, '', @TestingMethod, '')
 ");
             objParameter.Add("@OtherMethod", DbType.Boolean, Item.OtherMethod);
             objParameter.Add("@MethodID", DbType.String, HttpUtility.HtmlDecode(Item.MethodID) ?? string.Empty);
