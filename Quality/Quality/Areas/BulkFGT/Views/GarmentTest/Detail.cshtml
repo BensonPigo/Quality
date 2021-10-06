@@ -1208,7 +1208,7 @@
     function GetFGPT(data) {
         var oriVal = $('#FGPT .selected .TypeOri').val();
         var newVal = oriVal.replace("{0}", data.Code);
-        $('#FGPT .selected').siblings("td[class='FGPTType']").html(newVal);
+        $('#FGPT .selected').siblings("td[class='FGPTType bg-lightyellow']").html(newVal);
         $('#FGPT .selected').siblings("td").children("input[class='display-None txtFGPTType']").val(newVal);
         $('#FGPT .selected').siblings("td").children("input[class='TypeSelection_Seq']").val(data.Seq);
         $('#FGPT .selected').removeClass('selected');
