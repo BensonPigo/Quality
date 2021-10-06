@@ -52,6 +52,8 @@ namespace DatabaseObject.ViewModel.BulkFGT
         [Display(Name = "LastEditName")]
         public string LastEditName { get; set; }
 
+        public string MethodDescription { get; set; }        
+
         [Display(Name = "報表電子簽章圖檔完整路徑")]
         public byte[] Signature { get; set; }
 

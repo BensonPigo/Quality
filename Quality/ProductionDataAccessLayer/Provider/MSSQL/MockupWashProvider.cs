@@ -426,6 +426,7 @@ SELECT {top1}
 		,m.OtherMethod
         ,m.MethodID
         ,m.TestingMethod
+        ,MethodDescription = iif(m.OtherMethod = 1, m.TestingMethod, (select Description from DropDownList where type = 'PMS_MockupWashMethod' and id = m.MethodID))
 		,m.HTPlate
 		,m.HTPellOff
 		,m.HTFlim
