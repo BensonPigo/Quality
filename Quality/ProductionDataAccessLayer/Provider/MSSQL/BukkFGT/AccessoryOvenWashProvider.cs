@@ -437,7 +437,7 @@ select  [SP#] = al.POID
 		,Season = o.SeasonID
 		,Seq = al.Seq1 + ' ' + al.Seq2
         ,[WK#] = r.ExportId
-		,[Arrive W/H Date]=r.WhseArrival
+		,[Arrive W/H Date]= convert(varchar, r.WhseArrival , 111) 
         ,a.SCIRefno
         ,a.Refno
         ,Color = psd.ColorID
@@ -445,7 +445,7 @@ select  [SP#] = al.POID
         ,a.ArriveQty
 		,[Oven Result]=al.Oven
         ,[Oven Scale] = al.OvenScale
-        ,[Oven Last Test Date]=al.OvenDate
+        ,[Oven Last Test Date]= convert(varchar, al.OvenDate , 111)  
 		,[Oven Lab Tech	AIR_Laboratory]=al.OvenInspector
         ,Remark = al.OvenRemark
 from AIR_Laboratory al
@@ -690,7 +690,7 @@ select  [SP#] = al.POID
 		,Season = o.SeasonID
 		,Seq = al.Seq1 + ' ' + al.Seq2
         ,[WK#] = r.ExportId
-		,[Arrive W/H Date]=r.WhseArrival
+		,[Arrive W/H Date]=  convert(varchar, r.WhseArrival , 111) 
         ,a.SCIRefno
         ,a.Refno
         ,Color = psd.ColorID
@@ -698,7 +698,7 @@ select  [SP#] = al.POID
         ,a.ArriveQty
 		,[Wash Result]=al.Wash
         ,[Wash Scale] = al.WashScale
-        ,[Wash Last Test Date]=al.WashDate
+        ,[Wash Last Test Date]=  convert(varchar, al.WashDate , 111)  
 		,[Wash Lab Tech	AIR_Laboratory]=al.WashInspector
         ,Remark = al.WashRemark
 from AIR_Laboratory al
