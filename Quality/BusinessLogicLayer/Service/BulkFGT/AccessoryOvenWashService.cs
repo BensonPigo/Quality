@@ -78,6 +78,11 @@ msg.WithError('{ex.Message}');
             return result;
         }
 
+        public void UpdateInspPercent(string POID)
+        {
+            _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(Common.ProductionDataAccessLayer);
+            _AccessoryOvenWashProvider.UpdateInspPercent(POID);
+        }
 
         #region Oven
         public Accessory_Oven GetOvenTest(Accessory_Oven Req)
@@ -120,7 +125,6 @@ msg.WithError('{ex.Message}');
                 int r = _AccessoryOvenWashProvider.UpdateOvenTest(Req);
 
                 result.Result = r > 0;
-
                 _AccessoryOvenWashProvider.Update_Oven_AllResult(Req);
 
                 _ISQLDataTransaction.Commit();
@@ -214,7 +218,6 @@ msg.WithError('{ex.Message}');
                 int r = _AccessoryOvenWashProvider.UpdateWashTest(Req);
 
                 result.Result = r > 0;
-
                 _AccessoryOvenWashProvider.Update_Wash_AllResult(Req);
 
                 _ISQLDataTransaction.Commit();

@@ -77,6 +77,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             Accessory_ViewModel model = new Accessory_ViewModel();
             Req.EditBy = this.UserID;
             _Service.Update(Req);
+            _Service.UpdateInspPercent(Req.OrderID);
             Req.ReqOrderID = Req.OrderID;
 
             TempData["Req"] = Req;
@@ -144,6 +145,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             //修改
             model = _Service.UpdateOven(Req);
 
+            _Service.UpdateInspPercent(Req.POID);
             if (!model.Result)
             {
                 // 錯誤處理：新增一個Model承接ErrorMessage，並查詢原資料帶到畫面
@@ -178,6 +180,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             //修改
             model = _Service.UpdateOven(Req);
+            _Service.UpdateInspPercent(Req.POID);
 
             if (!model.Result)
             {
@@ -262,6 +265,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             //修改
             model = _Service.UpdateWash(Req);
+            _Service.UpdateInspPercent(Req.POID);
 
             if (!model.Result)
             {
@@ -298,6 +302,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             //修改
             model = _Service.UpdateWash(Req);
+            _Service.UpdateInspPercent(Req.POID);
 
             if (!model.Result)
             {

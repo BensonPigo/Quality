@@ -266,7 +266,7 @@ outer apply(
 		)
 	)
 )BAProduct
-where 1=1
+where o.Category = 'S'
 {sqlWhere}
 ";
             return ExecuteList<StyleResult_SampleRFT>(CommandType.Text, sqlGet_StyleResult_Browse, listPar);

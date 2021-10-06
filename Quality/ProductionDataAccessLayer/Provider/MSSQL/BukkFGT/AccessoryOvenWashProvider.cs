@@ -124,6 +124,17 @@ ORDER BY a.SEQ1, a.SEQ2, r.ExportID
             return ExecuteList<Accessory_Result>(CommandType.Text, sqlCmd, listPar);
         }
 
+        public int UpdateInspPercent(string POID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@POID", POID);
+
+            string sqlCmd = $@" exec UpdateInspPercent 'AIRLab',@POID ";
+
+            return ExecuteNonQuery(CommandType.Text, sqlCmd, listPar);
+        }
+
+
         public int Update_AIR_Laboratory(Accessory_ViewModel Req)
         {
             SQLParameterCollection listPar = new SQLParameterCollection();
@@ -156,7 +167,6 @@ AND Seq2 = @Seq2_{idx}
                 idx++;
             }
 
-            sqlCmd += $@" exec UpdateInspPercent 'AIRLab','{Req.OrderID}' ";
 
             return ExecuteNonQuery(CommandType.Text, sqlCmd, listPar);
         }
@@ -196,8 +206,6 @@ AND Seq2 = @Seq2_{idx}
                 listPar.Add($"@NonWash_{idx}", DbType.Boolean, data.NonWash);
                 idx++;
             }
-
-            sqlCmd += $@" exec UpdateInspPercent 'AIRLab','{Req.OrderID}' ";
 
             return ExecuteNonQuery(CommandType.Text, sqlCmd, listPar);
         }
@@ -336,8 +344,6 @@ where   ID = @AIR_LaboratoryID
     and Seq2 = @Seq2
 
 ";
-
-            sqlCmd += $@" exec UpdateInspPercent 'AIRLab','{Req.POID}' ";
 
             return ExecuteNonQuery(CommandType.Text, sqlCmd, listPar);
         }
@@ -592,10 +598,6 @@ where   ID = @AIR_LaboratoryID
     and Seq1 = @Seq1
     and Seq2 = @Seq2
 ";
-
-
-            sqlCmd += $@" exec UpdateInspPercent 'AIRLab','{Req.POID}' ";
-
             return ExecuteNonQuery(CommandType.Text, sqlCmd, listPar);
         }
 
