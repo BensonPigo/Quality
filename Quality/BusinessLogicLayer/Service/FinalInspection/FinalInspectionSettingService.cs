@@ -222,8 +222,8 @@ namespace BusinessLogicLayer.Service
 
                 var selectOrderShipSeq = setting.SelectOrderShipSeq.Where(s => s.Selected);
                 setting.SelectOrderShipSeq = selectOrderShipSeq.Any() ? selectOrderShipSeq.ToList() : new List<SelectOrderShipSeq>();
-
-                finalInspectionID = _FinalInspectionProvider.UpdateFinalInspection(setting, UserID, factoryID, MDivisionid);
+                string newfinalInspectionID = _FinalInspectionProvider.GetNewFinalInspectionID(factoryID);
+                finalInspectionID = _FinalInspectionProvider.UpdateFinalInspection(setting, UserID, factoryID, MDivisionid, newfinalInspectionID);
                 result.Result = true;
             }
             catch (Exception ex)

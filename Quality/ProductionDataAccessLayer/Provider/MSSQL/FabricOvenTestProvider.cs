@@ -608,6 +608,7 @@ where   ov.POID = @poID and ov.TestNo = @TestNo
             string sqlDeleteOven = @"
 delete  Oven_Detail where ID = (select ID from Oven where POID = @poID and TestNo = @TestNo)
 delete  Oven where POID = @poID and TestNo = @TestNo
+exec UpdateInspPercent 'LabOven',@poID
 ";
             using (TransactionScope transaction = new TransactionScope())
             {

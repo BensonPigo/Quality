@@ -268,7 +268,8 @@ msg.WithError(""Shipmode Seq cant't be empty."");
             if (!result)
             {
                 setting.ErrorMessage = result.ErrorMessage;
-
+                FinalInspectionSettingService finalInspectionSettingService = new FinalInspectionSettingService();
+                setting = finalInspectionSettingService.GetSettingForInspection(setting.SelectedPO[0].CustPONO, setting.SelectedPO.Select(o=>o.OrderID).ToList(), this.FactoryID);
                 return View("Setting", setting);
             }
 

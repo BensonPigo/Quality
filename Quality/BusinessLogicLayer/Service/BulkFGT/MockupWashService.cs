@@ -205,7 +205,7 @@ namespace BusinessLogicLayer.Service
                 worksheet.Cells[5, 2] = mockupWash.T1Subcon + "-" + mockupWash.T1SubconAbb; ;
                 worksheet.Cells[6, 2] = mockupWash.T2Supplier + "-" + mockupWash.T2SupplierAbb; ;
 
-                worksheet.Cells[7, 2] = mockupWash.TestingMethod;
+                worksheet.Cells[7, 2] = mockupWash.MethodDescription;
                 worksheet.Cells[4, 6] = mockupWash.ReleasedDate;
                 worksheet.Cells[5, 6] = mockupWash.TestDate;
                 worksheet.Cells[6, 6] = mockupWash.ReceivedDate;
