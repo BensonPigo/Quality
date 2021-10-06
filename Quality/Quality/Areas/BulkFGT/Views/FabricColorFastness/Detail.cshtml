@@ -558,6 +558,7 @@
         $('.InputDetailSEQSelectItem').unbind('blur').blur(function () {
             var TargetID = $(this).attr("idv");
             var POID = $('#Main_POID').val();
+
             $.ajax({
                 url: "@Url.Action("Po_Supp_DetailList", "PublicWondow",new { Area=""})",
                 type: 'POST',
@@ -596,7 +597,10 @@
 
             var TargetID = $(this).attr("idv");
 
-            if ($(this).val() == "") { return; }
+            if ($(this).val() == "") {
+                $("#Detail_" + TargetID + "__Dyelot").val('');
+                return;
+            }
 
             if ($("#Detail_" + TargetID + "__Seq").val() == '' || $("#Detail_" + TargetID + "__Seq").val() == undefined) {
                 msg.WithError('Please input SEQ# before choose Roll#.');
@@ -755,6 +759,10 @@
             var ErrMsg = "";
             $('.DetailTable > tbody > tr').each(function (index, value) {
 
+                if (ErrMsg != "") {
+                    return false;
+                }
+
                 var Body, SEQ, Result;
                 var ChangeScale, StainingScale, ResultChange, ResultStain;
                 $(this).children().find("input[type='number']").each(function (index, value) {
@@ -823,7 +831,7 @@
 
             });
 
-            if (detail.length == 0) {
+            if (detail.length == 0 && ErrMsg == "") {
                 ErrMsg += "Data is empty please fill-in data first.";
             }
 

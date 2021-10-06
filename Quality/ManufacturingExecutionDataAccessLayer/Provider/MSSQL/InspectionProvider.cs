@@ -119,10 +119,10 @@ select  [OrderID] = o.ID
 	, [SizeBalanceQty] = cast(oq.Qty - r_Size.SizeBalanceQty as varchar)
 	, [OrderQty] = cast(o.qty as varchar)
 	, [OrderBalanceQty] = cast(o.qty - r_Order.OrderBalanceQty as varchar)
-from [Production].[dbo].Orders o with(nolock)
-inner join [Production].[dbo].Style s with(nolock) on o.StyleUkey = s.Ukey
-inner join [Production].[dbo].Order_Qty oq with(nolock) on o.ID = oq.ID
-inner join [Production].[dbo].Order_Location ol with(nolock) on o.ID = ol.OrderId
+from MainServer.[Production].[dbo].Orders o with(nolock)
+inner join MainServer.[Production].[dbo].Style s with(nolock) on o.StyleUkey = s.Ukey
+inner join MainServer.[Production].[dbo].Order_Qty oq with(nolock) on o.ID = oq.ID
+inner join MainServer.[Production].[dbo].Order_Location ol with(nolock) on o.ID = ol.OrderId
 outer apply (
 	select SizeBalanceQty = count(*)
 	from RFT_Inspection r with(nolock)
@@ -141,8 +141,8 @@ outer apply (
 )r_Order
 outer apply(
 	select r.Name 
-	from [Production].[dbo].Style s with(nolock)
-	inner join [Production].[dbo].Reason r with(nolock) on r.ID = s.ApparelType 
+	from MainServer.[Production].[dbo].Style s with(nolock)
+	inner join MainServer.[Production].[dbo].Reason r with(nolock) on r.ID = s.ApparelType 
         and r.ReasonTypeID = 'Style_Apparel_Type'	
 	where s.Ukey = o.StyleUkey
 )ApparelType

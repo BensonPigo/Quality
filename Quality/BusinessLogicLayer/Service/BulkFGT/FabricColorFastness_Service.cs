@@ -63,7 +63,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
 
                 var source = _IColorFastnessProvider.GetMain(PoID);
-                if (string.IsNullOrEmpty(source.PoID ))
+                if (!source.Result)
+                {
+                    result.Result = source.Result;
+                    result.ErrorMessage = source.ErrorMessage;
+                    return result;
+                }
+
+                if (string.IsNullOrEmpty(source.PoID))
                 {
                     result.Result = false;
                     result.ErrorMessage = "Data not found!";

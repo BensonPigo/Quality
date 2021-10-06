@@ -80,9 +80,9 @@ and o.SeasonID = @SeasonID";
             SbSql.Append($@"
 select r.OrderID,o.OrderTypeID, PMS_RFTCommentsID = d.Description, r.Comnments
 into #tmpBase
-from [Production].[dbo].Orders o with(nolock)
+from MainServer.[Production].[dbo].Orders o with(nolock)
 inner join RFT_OrderComments r on r.OrderID = o.id
-left join Production.dbo.DropdownList d ON d.Type='PMS_RFTComments' AND d.ID = r.PMS_RFTCommentsID
+left join MainServer.Production.dbo.DropdownList d ON d.Type='PMS_RFTComments' AND d.ID = r.PMS_RFTCommentsID
 where 1=1
 and o.junk = 0
 and o.Category = 'S'
@@ -129,7 +129,7 @@ and o.SeasonID = @SeasonID";
             SbSql.Append($@"
 select r.OrderID,o.OrderTypeID, r.PMS_RFTCommentsID, r.Comnments
 into #tmpBase
-from [Production].[dbo].Orders o with(nolock)
+from MainServer.[Production].[dbo].Orders o with(nolock)
 inner join RFT_OrderComments r on r.OrderID = o.id
 where 1=1
 and o.junk = 0
@@ -137,7 +137,7 @@ and o.Category = 'S'
 and o.OnSiteSample != 1
 {where}
 
-select SampleStage = a.OrderTypeID, CommentsCategory = (select Name from [Production].[dbo].DropDownList where id = a.PMS_RFTCommentsID and type = 'PMS_RFTComments'), c.Comnments
+select SampleStage = a.OrderTypeID, CommentsCategory = (select Name from MainServer.[Production].[dbo].DropDownList where id = a.PMS_RFTCommentsID and type = 'PMS_RFTComments'), c.Comnments
 from (select distinct OrderTypeID,PMS_RFTCommentsID from #tmpBase) a
 outer apply(
 	select Comnments = stuff((

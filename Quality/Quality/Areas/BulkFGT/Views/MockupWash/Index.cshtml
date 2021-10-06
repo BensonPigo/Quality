@@ -662,7 +662,7 @@
         }
 
         var result = $('#ArtworkTypeID').val();
-        if (result == "HEAT TRANSFER") {
+        if (result != "HEAT TRANSFER") {
             $('.AccessoryRefno').val('').attr("disabled", "disabled");
         }
         else {
@@ -727,6 +727,7 @@
 
                         if (data.StyleID != "") {
                             $('#StyleID').val(data.StyleID);
+                            GetArtworkTypeIDList();
                         }
 
                         if (data.Article != "") {
@@ -785,7 +786,7 @@
 
             var BrandID = $('#' + name + 'BrandID').val();
             $.ajax({
-                url: "@Url.Action("SeasonList","PublicWondow",new{Area=""})",
+                url: "@Url.Action("SeasonList","PublicWondow", new { Area = "" })",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ BrandID: BrandID, SeasonID: $(this).val(), ReturnType: "JSON" }),
