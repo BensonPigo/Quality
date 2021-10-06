@@ -110,13 +110,13 @@ select [InspectionTimes] = isnull(max(InspectionTimes), 0) + 1
             return ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, objParameter).Rows[0]["InspectionTimes"].ToString();
         }
 
-        private string GetNewFinalInspectionID(string factoryID)
+        public string GetNewFinalInspectionID(string factoryID)
         {
             string idHead = $"{factoryID}CH{DateTime.Now.ToString("yyMM")}";
 
             string sqlGetCurMaxID = $@"
 select  [MaxSerID] =  cast(Replace(isnull(MAX(ID), '0'), '{idHead}', '') as int)
-from    ManufacturingExecution.dbo.FinalInspection with (nolock)
+from    ExtendServer.ManufacturingExecution.dbo.FinalInspection with (nolock)
 where   ID like '{idHead}%'
 ";
             int newSer = (int)ExecuteDataTable(CommandType.Text, sqlGetCurMaxID, new SQLParameterCollection()).Rows[0]["MaxSerID"] + 1;
@@ -124,14 +124,14 @@ where   ID like '{idHead}%'
             return newID;
         }
 
-        public string UpdateFinalInspection(Setting setting, string userID, string factoryID, string MDivisionid)
+        public string UpdateFinalInspection(Setting setting, string userID, string factoryID, string MDivisionid, string NewFinalInspectionID)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();
             string sqlUpdCmd = string.Empty;
 
             if (string.IsNullOrEmpty(setting.FinalInspectionID))
             {
-                setting.FinalInspectionID = GetNewFinalInspectionID(factoryID);
+                setting.FinalInspectionID = NewFinalInspectionID;
                 sqlUpdCmd += $@"
 insert into FinalInspection(id                            ,
                             CustPONO                          ,
