@@ -636,7 +636,7 @@ namespace BusinessLogicLayer.Service
                         fabricCrkShrkTestWash_Detail.HorizontalRate = Math.Abs(fabricCrkShrkTestWash_Detail.HorizontalRate);
                         fabricCrkShrkTestWash_Detail.VerticalRate = Math.Abs(fabricCrkShrkTestWash_Detail.VerticalRate);
                         fabricCrkShrkTestWash_Detail.SkewnessRate = MyUtility.Check.Empty(fabricCrkShrkTestWash_Detail.SkewnessTest1 + fabricCrkShrkTestWash_Detail.SkewnessTest2) ? 0 :
-                            (fabricCrkShrkTestWash_Detail.SkewnessTest1 - fabricCrkShrkTestWash_Detail.SkewnessTest2) / (fabricCrkShrkTestWash_Detail.SkewnessTest1 + fabricCrkShrkTestWash_Detail.SkewnessTest2) * 200;
+                            Math.Abs((fabricCrkShrkTestWash_Detail.SkewnessTest1 - fabricCrkShrkTestWash_Detail.SkewnessTest2) / (fabricCrkShrkTestWash_Detail.SkewnessTest1 + fabricCrkShrkTestWash_Detail.SkewnessTest2) * 200);
                     }
 
                     if (fabricCrkShrkTestWash_Result.Wash_Main.SkewnessOptionID == "2")
@@ -1493,6 +1493,13 @@ namespace BusinessLogicLayer.Service
                 worksheet.Cells[6, 2] = style.StyleName;
                 worksheet.Cells[6, 12] = fabricCrkShrkTestCrocking_Main.ArriveQty;
                 worksheet.Cells[13, 9] = groupItem.Key.Name;
+
+                for (int i = 1; i < groupItem.Count(); i++)
+                {
+                    Microsoft.Office.Interop.Excel.Range rngToInsert = worksheet.get_Range("A11:A11", Type.Missing).EntireRow;
+                    rngToInsert.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown);
+                    Marshal.ReleaseComObject(rngToInsert);
+                }
 
                 int k = 10;
                 foreach (DataRow detailItemRow in groupItem)
