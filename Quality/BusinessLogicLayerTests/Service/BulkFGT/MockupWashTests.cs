@@ -114,7 +114,6 @@ namespace BusinessLogicLayer.Service.Tests
                 IMockupWashService _MockupWashService = new MockupWashService();
                 MockupWash_ViewModel MockupWash = new MockupWash_ViewModel()
                 {
-                    ReportNo = "T1",
                     SeasonID = "20SS",
                     BrandID = "bb",
                     Article = "aa",
@@ -130,8 +129,8 @@ namespace BusinessLogicLayer.Service.Tests
                     MR = "SCIMIS",
                     AddName = "SCIMIS",
                     OtherMethod = true,
-                    MethodID = "a",
-                    //TestingMethod = "TESTWTF",
+                    //MethodID = "a",
+                    TestingMethod = "TESTWTF",
                     HTPlate = 9,
                     HTFlim = 6,
                     HTTime = 3,
@@ -142,8 +141,7 @@ namespace BusinessLogicLayer.Service.Tests
                     HTCoolingTime = "66TT",
                     MockupWash_Detail = new System.Collections.Generic.List<MockupWash_Detail_ViewModel>()
                     {
-                        new MockupWash_Detail_ViewModel(){ReportNo = "T1",TypeofPrint="TTTT1",Design="d100",ArtworkColor="0001",FabricRefNo="RF",AccessoryRefno="AF",FabricColor  = "FCC",Result="Pass",Remark="RRRK",EditName = "SCIMIS"},
-                        new MockupWash_Detail_ViewModel(){ReportNo = "T1",TypeofPrint="TTT22",Design="d200",ArtworkColor="0001",FabricRefNo="RF",AccessoryRefno="AF",FabricColor  = "FCC",Result="Pass",Remark="2RRRK",EditName = "SCIMIS"},
+                        new MockupWash_Detail_ViewModel(){TypeofPrint="TTTT1",Design="d100",ArtworkColor="0001",FabricRefNo="RF",AccessoryRefno="AF",FabricColor  = "FCC",Result="Pass",Remark="RRRK",EditName = "SCIMIS"},
                     }
                 };
 
@@ -253,7 +251,7 @@ namespace BusinessLogicLayer.Service.Tests
             {
                 IMockupWashService _MockupWashService = new MockupWashService();
                 MockupWash_Request MockupWash = new MockupWash_Request()
-                { ReportNo = "PHWA190900003" };
+                { ReportNo = "PHWA180800001" };
                 //{ BrandID = "ADIDAS", SeasonID = "20SS", StyleID = "S201CSPM108", Article = "FL0237" };
                 var mockupWash = _MockupWashService.GetMockupWash(MockupWash);
                 var result = _MockupWashService.GetPDF(mockupWash, true);
