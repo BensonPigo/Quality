@@ -259,8 +259,21 @@ namespace Quality.Areas.BulkFGT.Controllers
             List<SelectListItem> TestResultmmList = new SetListItem().ItemListBinding(TestResultmm);
 
             GarmentTest_Detail_Result Detail_Result = _GarmentTest_Service.Get_All_Detail(ID, No);
-            Detail_Result.EditMode = EditMode;
+            if (TempData["Model"] != null)
+            {
+                GarmentTest_Detail_Result saveResult = (GarmentTest_Detail_Result)TempData["Model"];
+                Detail_Result.Detail = saveResult.Detail;
+                Detail_Result.Shrinkages = saveResult.Shrinkages;
+                Detail_Result.Spiralities = saveResult.Spiralities;
+                Detail_Result.Apperance = saveResult.Apperance;
+                Detail_Result.FGWT = saveResult.FGWT;
+                Detail_Result.FGPT = saveResult.FGPT;
+                Detail_Result.Result = saveResult.Result;
+                Detail_Result.ErrMsg = $"msg.WithInfo('{saveResult.ErrMsg.ToString().Replace("\r\n", "<br />") }');EditMode=true;";
+                EditMode = true;
+            }
 
+            Detail_Result.EditMode = EditMode;
             List<SelectListItem> ScaleList = new SetListItem().ItemListBinding(Detail_Result.Scales);
 
             ViewBag.TemperatureList = TemperatureList;

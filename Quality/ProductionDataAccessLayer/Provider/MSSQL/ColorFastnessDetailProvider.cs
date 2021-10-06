@@ -10,7 +10,7 @@ using DatabaseObject.ViewModel.BulkFGT;
 using Sci;
 using System.Data.SqlClient;
 using System.Linq;
-using ADOHelper.DBToolKit;
+using ADOHelper.DBToolKit; 
 
 namespace MICS.DataAccessLayer.Provider.MSSQL
 {
@@ -44,7 +44,6 @@ select cd.ID
 , SubmitDate
 ,cd.ColorFastnessGroup
 ,Seq = CONCAT(cd.SEQ1,'-',cd.SEQ2)
-,cd.SEQ1,cd.SEQ2
 ,cd.Roll
 ,cd.Dyelot
 ,po3.Refno,po3.SCIRefno,po3.ColorID
@@ -178,18 +177,18 @@ where id = @ID
             else { objParameter.Add("@TestAfterPicture", System.Data.SqlTypes.SqlBinary.Null); }
 
             string sqlcmd = string.Empty;
-            int idx = 1;
             NewID = string.Empty;
-
+            string ID = string.Empty;
             #region save Main
 
 
-           DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, $@"select Max(testno) as testMaxNo from ColorFastness WITH (NOLOCK) where poid='{sources.Main.POID}'", new SQLParameterCollection());
+            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, $@"select Max(testno) as testMaxNo from ColorFastness WITH (NOLOCK) where poid='{sources.Main.POID}'", new SQLParameterCollection());
             int testMaxNo = MyUtility.Convert.GetInt(dt.Rows[0]["testMaxNo"]);
             objParameter.Add("@TestNo", testMaxNo + 1);
 
             if (sources.Main.ID != null && !string.IsNullOrEmpty(sources.Main.ID))
             {
+                ID = sources.Main.ID;
                 objParameter.Add(new SqlParameter($"@ID", sources.Main.ID));
                 // update 
                 sqlcmd += @"
@@ -217,6 +216,7 @@ exec UpdateInspPercent 'LabColorFastness', @POID
             else
             {
                 NewID = GetID(Mdivision + "CF", "ColorFastness", DateTime.Today, 2, "ID");
+                ID = NewID;
                 objParameter.Add(new SqlParameter($"@ID", NewID));
                 sqlcmd += @"
 insert into ColorFastness(ID,POID,TestNo,InspDate,Article,Status,Inspector,Remark,addName,addDate,Temperature,Cycle,Detergent,Machine,Drying,TestBeforePicture,TestAfterPicture)
@@ -225,48 +225,19 @@ values(@ID ,@POID,@TestNo,GETDATE(),@Article,'New',@UserID,@Remark,@UserID,GETDA
             }
             #endregion
 
+            Fabric_ColorFastness_Detail_ViewModel oldData = Get_DetailBody(ID);
+            List<Fabric_ColorFastness_Detail_Result> oldDetailData = oldData.Detail;
+
+            List<Fabric_ColorFastness_Detail_Result> needUpdateDetailList =
+                ToolKit.PublicClass.CompareListValue<Fabric_ColorFastness_Detail_Result>(
+                    sources.Detail,
+                    oldDetailData,
+                    "ID,ColorFastnessGroup,SEQ1,SEQ2",
+                    "Roll,Dyelot,changeScale,StainingScale,Remark,SubmitDate,ResultChange,ResultStain");
+
             #region save Details
-            foreach (var item in sources.Detail)
-            {
-                if (item.SEQ1 == null)
-                {
-                    item.SEQ1 = item.Seq.ToString().Split('-')[0].Trim();
-                }
 
-                if (item.SEQ2 == null)
-                {
-                    item.SEQ2 = item.Seq.ToString().Split('-')[1].Trim();
-                }
-                // add sql Parameter
-                objParameter.Add(new SqlParameter($"@ColorFastnessGroup{idx}", string.IsNullOrEmpty(item.ColorFastnessGroup) ? "" : item.ColorFastnessGroup));
-                objParameter.Add(new SqlParameter($"@Seq1{idx}", item.SEQ1));
-                objParameter.Add(new SqlParameter($"@Seq2{idx}", item.SEQ2));
-                objParameter.Add(new SqlParameter($"@Roll{idx}", string.IsNullOrEmpty(item.Roll) ? "" : item.Roll));
-                objParameter.Add(new SqlParameter($"@Dyelot{idx}", string.IsNullOrEmpty(item.Dyelot) ? "" : item.Dyelot));
-                objParameter.Add(new SqlParameter($"@Result{idx}", item.Result));
-                objParameter.Add(new SqlParameter($"@changeScale{idx}", item.changeScale));
-                objParameter.Add(new SqlParameter($"@StainingScale{idx}", item.StainingScale));
-                objParameter.Add(new SqlParameter($"@Remark{idx}", item.Remark));
-                objParameter.Add($"@SubmitDate{idx}", DbType.Date, item.SubmitDate);
-                objParameter.Add(new SqlParameter($"@ResultChange{idx}", item.ResultChange));
-                objParameter.Add(new SqlParameter($"@ResultStain{idx}", item.ResultStain));
-
-                string sql_detail = $@"
-select 1 from ColorFastness_Detail with(nolock) 
-where id = @ID
-and ColorFastnessGroup = @ColorFastnessGroup{idx}
-and Seq1 = @Seq1{idx}
-and Seq2 = @Seq2{idx}
-";
-                DataTable dtDetail = ExecuteDataTableByServiceConn(CommandType.Text, sql_detail, objParameter);
-
-                string DetailResult = (item.ResultChange.EqualString("Pass") && item.ResultStain.EqualString("Pass")) ? "Pass" : "Fail";
-
-                // 代表是新增的資料
-                if (dtDetail.Rows.Count == 0)
-                {
-
-                    sqlcmd += $@"
+            string insertDetail = $@"
 insert into ColorFastness_Detail 
 (      [ID]
       ,[ColorFastnessGroup]
@@ -287,50 +258,111 @@ insert into ColorFastness_Detail
 values
 (
        @ID
-      ,@ColorFastnessGroup{idx}
-      ,@Seq1{idx}
-      ,@Seq2{idx}
-      ,@Roll{idx}
-      ,@Dyelot{idx}
-      ,'{DetailResult}'
-      ,@changeScale{idx}
-      ,@StainingScale{idx}
-      ,@Remark{idx}
+      ,@ColorFastnessGroup
+      ,@Seq1
+      ,@Seq2
+      ,@Roll
+      ,@Dyelot
+      ,@Result
+      ,@changeScale
+      ,@StainingScale
+      ,@Remark
       ,@UserID
       ,GetDate()      
-      ,@SubmitDate{idx}
-      ,@ResultChange{idx}
-      ,@ResultStain{idx}
-)
-" + Environment.NewLine;
-                }
-                else
-                {
-                    sqlcmd += $@"
+      ,@SubmitDate
+      ,@ResultChange
+      ,@ResultStain
+)";
+            string deleteDetail = $@"
+delete from ColorFastness_Detail 
+where id = @ID
+and ColorFastnessGroup = @ColorFastnessGroup
+and SEQ1 = @SEQ1
+and SEQ2 = @SEQ2
+
+declare @POID varchar(13) = (select POID from ColorFastness where ID = @ID)
+exec UpdateInspPercent 'LabColorFastness', @POID
+";
+            string updateDetail = $@"
 update ColorFastness_Detail
 set 
-       [Roll] = @Roll{idx}
-      ,[Dyelot] = @Dyelot{idx}
-      ,[Result] = @Result{idx}
-      ,[changeScale] = @changeScale{idx}
-      ,[StainingScale] = @StainingScale{idx}
-      ,[Remark] = @Remark{idx}
+       [Roll] = @Roll
+      ,[Dyelot] = @Dyelot
+      ,[Result] = @Result
+      ,[changeScale] = @changeScale
+      ,[StainingScale] = @StainingScale
+      ,[Remark] = @Remark
       ,[EditName] = @UserID
       ,[EditDate] = GetDate()
-      ,[SubmitDate] = @SubmitDate{idx}
-      ,[ResultChange] = @ResultChange{idx}
-      ,[ResultStain] = @ResultStain{idx}
+      ,[SubmitDate] = @SubmitDate
+      ,[ResultChange] = @ResultChange
+      ,[ResultStain] = @ResultStain
 where ID = @ID
-and ColorFastnessGroup = @ColorFastnessGroup{idx}
-and SEQ1 = @Seq1{idx}
-and SEQ2 = @Seq2{idx}
-" + Environment.NewLine;
+and ColorFastnessGroup = @ColorFastnessGroup
+and SEQ1 = @Seq1
+and SEQ2 = @Seq2
+";
+            foreach (var detailItem in needUpdateDetailList)
+            {
+                SQLParameterCollection listDetailPar = new SQLParameterCollection();
+                string DetailResult = (detailItem.ResultChange.EqualString("Pass") && detailItem.ResultStain.EqualString("Pass")) ? "Pass" : "Fail";
+
+                switch (detailItem.StateType)
+                {
+                    case DatabaseObject.Public.CompareStateType.Add:
+                        listDetailPar.Add(new SqlParameter($"@ID", ID));
+                        listDetailPar.Add(new SqlParameter($"@ColorFastnessGroup", string.IsNullOrEmpty(detailItem.ColorFastnessGroup) ? "" : detailItem.ColorFastnessGroup));
+                        listDetailPar.Add(new SqlParameter($"@Seq1", detailItem.SEQ1));
+                        listDetailPar.Add(new SqlParameter($"@Seq2", detailItem.SEQ2));
+                        listDetailPar.Add(new SqlParameter($"@Roll", string.IsNullOrEmpty(detailItem.Roll) ? "" : detailItem.Roll));
+                        listDetailPar.Add(new SqlParameter($"@Dyelot", string.IsNullOrEmpty(detailItem.Dyelot) ? "" : detailItem.Dyelot));
+                        listDetailPar.Add(new SqlParameter($"@Result", DetailResult));
+                        listDetailPar.Add(new SqlParameter($"@changeScale", detailItem.changeScale));
+                        listDetailPar.Add(new SqlParameter($"@StainingScale", detailItem.StainingScale));
+                        listDetailPar.Add(new SqlParameter($"@Remark", detailItem.Remark));
+                        listDetailPar.Add(new SqlParameter($"@UserID", UserID));
+                        listDetailPar.Add($"@SubmitDate", DbType.Date, detailItem.SubmitDate);
+                        listDetailPar.Add(new SqlParameter($"@ResultChange", detailItem.ResultChange));
+                        listDetailPar.Add(new SqlParameter($"@ResultStain", detailItem.ResultStain));
+
+                        ExecuteNonQuery(CommandType.Text, insertDetail, listDetailPar);
+                        break;
+                    case DatabaseObject.Public.CompareStateType.Edit:
+                        listDetailPar.Add(new SqlParameter($"@ID", ID));
+                        listDetailPar.Add(new SqlParameter($"@ColorFastnessGroup", string.IsNullOrEmpty(detailItem.ColorFastnessGroup) ? "" : detailItem.ColorFastnessGroup));
+                        listDetailPar.Add(new SqlParameter($"@Seq1", detailItem.SEQ1));
+                        listDetailPar.Add(new SqlParameter($"@Seq2", detailItem.SEQ2));
+                        listDetailPar.Add(new SqlParameter($"@Roll", string.IsNullOrEmpty(detailItem.Roll) ? "" : detailItem.Roll));
+                        listDetailPar.Add(new SqlParameter($"@Dyelot", string.IsNullOrEmpty(detailItem.Dyelot) ? "" : detailItem.Dyelot));
+                        listDetailPar.Add(new SqlParameter($"@Result", DetailResult));
+                        listDetailPar.Add(new SqlParameter($"@changeScale", detailItem.changeScale));
+                        listDetailPar.Add(new SqlParameter($"@StainingScale", detailItem.StainingScale));
+                        listDetailPar.Add(new SqlParameter($"@Remark", detailItem.Remark));
+                        listDetailPar.Add(new SqlParameter($"@UserID", UserID));
+                        listDetailPar.Add($"@SubmitDate", DbType.Date, detailItem.SubmitDate);
+                        listDetailPar.Add(new SqlParameter($"@ResultChange", detailItem.ResultChange));
+                        listDetailPar.Add(new SqlParameter($"@ResultStain", detailItem.ResultStain));
+
+                        ExecuteNonQuery(CommandType.Text, updateDetail, listDetailPar);
+                        break;
+                    case DatabaseObject.Public.CompareStateType.Delete:
+                        listDetailPar.Add(new SqlParameter($"@ID", ID));
+                        listDetailPar.Add(new SqlParameter($"@ColorFastnessGroup", string.IsNullOrEmpty(detailItem.ColorFastnessGroup) ? "" : detailItem.ColorFastnessGroup));
+                        listDetailPar.Add(new SqlParameter($"@Seq1", detailItem.SEQ1));
+                        listDetailPar.Add(new SqlParameter($"@Seq2", detailItem.SEQ2));
+
+                        ExecuteNonQuery(CommandType.Text, deleteDetail, listDetailPar);
+                        break;
+                    case DatabaseObject.Public.CompareStateType.None:
+                        break;
+                    default:
+                        break;
                 }
-                idx++;
             }
+
             #endregion
 
-            return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
+            return true;
         }
 
         public bool Delete_ColorFastness_Detail(string ID, List<Fabric_ColorFastness_Detail_Result> source)
@@ -342,16 +374,6 @@ and SEQ2 = @Seq2{idx}
             int idx = 1;
             foreach (var item in dbDetail)
             {
-                if (item.SEQ1 == null)
-                {
-                    item.SEQ1 = item.Seq.ToString().Split('-')[0].Trim();
-                }
-
-                if (item.SEQ2 == null)
-                {
-                    item.SEQ2 = item.Seq.ToString().Split('-')[1].Trim();
-                }
-
                 objParameter.Add(new SqlParameter($"@ID{idx}", item.ID));
                 objParameter.Add(new SqlParameter($"@ColorFastnessGroup{idx}", string.IsNullOrEmpty(item.ColorFastnessGroup) ? "" : item.ColorFastnessGroup));
                 objParameter.Add(new SqlParameter($"@SEQ1{idx}", item.SEQ1));

@@ -1,4 +1,5 @@
 ﻿using DatabaseObject.ProductionDB;
+using DatabaseObject.Public;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -145,8 +146,38 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public List<Fabric_ColorFastness_Detail_Result> Detail { get; set; }
     }
 
-    public class Fabric_ColorFastness_Detail_Result : ColorFastness_Detail
+    public class Fabric_ColorFastness_Detail_Result : CompareBase
     {
+        public string ID { get; set; }
+
+        public string ColorFastnessGroup { get; set; }
+
+        public string Roll { get; set; }
+
+        public string Dyelot { get; set; }
+
+        public string Result { get; set; }
+
+        public string changeScale { get; set; }
+
+        public string StainingScale { get; set; }
+
+        public string Remark { get; set; }
+
+        public string AddName { get; set; }
+
+        public DateTime? AddDate { get; set; }
+
+        public string EditName { get; set; }
+
+        public DateTime? EditDate { get; set; }
+
+        public DateTime? SubmitDate { get; set; }
+
+        public string ResultChange { get; set; }
+
+        public string ResultStain { get; set; }
+
         public string Seq { get; set; }
 
         public string Refno { get; set; }
@@ -156,6 +187,42 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string ColorID { get; set; }
 
         public string LastUpdate { get; set; }
+
+        public string SEQ1
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(this.Seq))
+                {
+                    return string.Empty;
+                }
+
+                if (!this.Seq.Contains("-"))
+                {
+                    return string.Empty;
+                }
+
+                return this.Seq.Split('-')[0].Trim();
+            }
+        }
+
+        public string SEQ2
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(this.Seq))
+                {
+                    return string.Empty;
+                }
+
+                if (!this.Seq.Contains("-"))
+                {
+                    return string.Empty;
+                }
+
+                return this.Seq.Split('-')[1].Trim();
+            }
+        }
     }
 
     

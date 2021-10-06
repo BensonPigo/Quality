@@ -216,24 +216,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         baseResult.Result = false;
                         return baseResult;
                     }
-                    else
-                    {
-                        List<string> Seq = item.Seq.Split('-').ToList();
-                        item.SEQ1 = Seq[0].ToString();
-                        item.SEQ2 = Seq[1].ToString();
-                    }
                 }
 
 
                 _IColorFastnessDetailProvider.Save_ColorFastness(source, Mdivision, UserID, out string NewID);
                 _ISQLDataTransaction.Commit();
-
-                // 比對前端資料, 沒有的再刪除DB資料
-                if (!string.IsNullOrEmpty(source.Main.ID))
-                {
-                    _IColorFastnessDetailProvider.Delete_ColorFastness_Detail(source.Main.ID, source.Detail);
-                }
-
                 if (!string.IsNullOrEmpty(NewID))
                 {
                     baseResult.ErrorMessage = NewID;
