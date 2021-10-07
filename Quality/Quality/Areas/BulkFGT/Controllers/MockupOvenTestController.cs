@@ -330,6 +330,11 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         private List<SelectListItem> GetArtworkTypeIDList(string BrandID, string SeasonID, string StyleID)
         {
+            if (string.IsNullOrEmpty(BrandID) || string.IsNullOrEmpty(SeasonID) || string.IsNullOrEmpty(StyleID))
+            {
+                return new List<SelectListItem>();
+            }
+
             StyleArtwork_Request styleArtwork_Request = new StyleArtwork_Request()
             {
                 BrandID = BrandID,
@@ -355,6 +360,11 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         private List<SelectListItem> GetAccessoryRefNoList(string BrandID, string SeasonID, string StyleID)
         {
+            if (string.IsNullOrEmpty(BrandID) || string.IsNullOrEmpty(SeasonID) || string.IsNullOrEmpty(StyleID))
+            {
+                return new List<SelectListItem>();
+            }
+
             AccessoryRefNo_Request AccessoryRefNo_Request = new AccessoryRefNo_Request()
             {
                 BrandID = BrandID,
@@ -382,7 +392,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += $"<td><input id='Seq{lastNO}' idx='{lastNO}' type ='hidden'></input> <input id='MockupOven_Detail_{lastNO}__TypeofPrint' name='MockupOven_Detail[{lastNO}].TypeofPrint' class='OnlyEdit' type='text' value=''></td>";
             html += $"<td><input id='MockupOven_Detail_{lastNO}__Design' name='MockupOven_Detail[{lastNO}].Design' class='OnlyEdit' type='text' ></td>"; 
             html += $"<td><div class='input-group'><input id='MockupOven_Detail_{lastNO}__ArtworkColor' name='MockupOven_Detail[{lastNO}].ArtworkColor'  class ='AFColor' type='hidden'><input id='MockupOven_Detail_{lastNO}__ArtworkColorName' name='MockupOven_Detail[{lastNO}].ArtworkColorName'  class ='AFColor' type='text' readonly='readonly'> <input idv='{lastNO}' type='button' class='btnArtworkColorItem  site-btn btn-blue' style='margin: 0; border: 0; ' value='...' /></div></td>";
-            html += $"<td><select id='MockupOven_Detail_{lastNO}__AccessoryRefNo' name='MockupOven_Detail[{lastNO}].AccessoryRefNo'  class='OnlyEdit AccessoryRefno' style='width: 157px;'><option value=''></option>"; 
+            html += $"<td><select id='MockupOven_Detail_{lastNO}__AccessoryRefNo' name='MockupOven_Detail[{lastNO}].AccessoryRefNo'  class='OnlyEdit AccessoryRefno' style='width: 157px;'>"; 
             foreach (var val in AccessoryRefNo_Source)
             {
                 html += "<option value='" + val.Value + "'>" + val.Text + "</option>";

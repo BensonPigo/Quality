@@ -39,7 +39,7 @@ namespace BusinessLogicLayer.Interface.BulkFGT
 
         IList<GarmentTest_Detail_FGPT_ViewModel> Get_FGPT(string ID, string No);
 
-        GarmentTest_ViewModel Save_GarmentTest(GarmentTest_ViewModel garmentTest_ViewModel, List<GarmentTest_Detail> detail, string UserID);
+        GarmentTest_ViewModel Save_GarmentTest(GarmentTest_ViewModel garmentTest_ViewModel, List<GarmentTest_Detail_ViewModel> detail, string UserID);
 
         GarmentTest_Result Generate_FGWT(GarmentTest_ViewModel Main, GarmentTest_Detail_ViewModel Detail);
 

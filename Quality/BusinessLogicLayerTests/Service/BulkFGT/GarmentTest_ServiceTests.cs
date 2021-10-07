@@ -722,7 +722,7 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
                        MDivisionid = "VM2",
                    };
 
-                GarmentTest_Detail detail = new GarmentTest_Detail
+                GarmentTest_Detail_ViewModel detail = new GarmentTest_Detail_ViewModel
                 {
                     ID = 16615,
                     No = 3,
@@ -738,7 +738,7 @@ namespace BusinessLogicLayer.Service.BulkFGT.Tests
                     MtlTypeID = "WOVEN",
                 };
 
-                List<GarmentTest_Detail> details = new List<GarmentTest_Detail>();
+                List<GarmentTest_Detail_ViewModel> details = new List<GarmentTest_Detail_ViewModel>();
                 details.Add(detail);
 
                 result = _Service.Save_GarmentTest(garmentTest_ViewModel, details, "SCIMIS");
