@@ -178,7 +178,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public GarmentTest_ViewModel Save_GarmentTest(GarmentTest_ViewModel garmentTest_ViewModel, List<GarmentTest_Detail> detail, string UserID)
+        public GarmentTest_ViewModel Save_GarmentTest(GarmentTest_ViewModel garmentTest_ViewModel, List<GarmentTest_Detail_ViewModel> detail, string UserID)
         {
             // 僅傳入 List<GarmentTest_Detail> detail
 
@@ -415,6 +415,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
                             _IGarmentTestProvider.Update_GarmentTest_Result(ID) == false)
                         {
                             result.Result = false;
+                            result.sentMail = true;
+                        }
+                        else
+                        {
+                            result.sentMail = false;
                         }
                         break;
                     case DetailStatus.Amend:

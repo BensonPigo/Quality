@@ -162,7 +162,7 @@ where 1=1
             return ExecuteList<GarmentTest_ViewModel>(CommandType.Text, sqlcmd, objParameter);
         }
 
-        public void Save_GarmentTest(GarmentTest_ViewModel master, List<GarmentTest_Detail> detail, string UserID)
+        public void Save_GarmentTest(GarmentTest_ViewModel master, List<GarmentTest_Detail_ViewModel> detail, string UserID)
         {
             bool result = true;
             using (TransactionScope transaction = new TransactionScope())
@@ -256,7 +256,7 @@ end
 else
 begin
 	INSERT INTO [dbo].[GarmentTest_Detail_Shrinkage]([ID],[No],[Location],[Type],[seq])
-	select  @ID,@NO, t2.Location, t1.Type, t1.Seq 
+	select distinct  @ID,@NO, t2.Location, t1.Type, t1.Seq 
 	from GarmentTestShrinkage t1 
 	inner join  #Location_S t2 on t1.LocationGroup = t2.Location
 	where exists(
@@ -435,34 +435,20 @@ INSERT INTO GarmentTest_Detail_FGPT
 
                     #endregion
 
-                    #region Save Detail 
+                }
 
-                    string sqlUpdateMaster = $@"
+                #region Save Detail 
+
+                string sqlUpdateMaster = $@"
 update SampleGarmentTest
 set EditDate = GetDate(), EditName = @UserID
 where ID = @ID
 ";
+                List<GarmentTest_Detail_ViewModel> oldDetailData = GetDetail(master.ID.ToString()).ToList();
+                List<GarmentTest_Detail_ViewModel> needUpdateDetailList = PublicClass.CompareListValue<GarmentTest_Detail_ViewModel>(
+                    detail, oldDetailData, "ID,No", "OrderID,SizeCode,MtlTypeID,inspdate,inspector,NonSeamBreakageTest,Remark");
 
-                    List<GarmentTest_Detail_ViewModel> newDetailData = new List<GarmentTest_Detail_ViewModel>();
-                    GarmentTest_Detail_ViewModel DetailData = new GarmentTest_Detail_ViewModel()
-                    {
-                        ID = item.ID,
-                        No = item.No,
-                        OrderID = item.OrderID,
-                        SizeCode = item.SizeCode,
-                        MtlTypeID = item.MtlTypeID,
-                        InspDate = item.inspdate,
-                        Inspector = item.inspector,
-                        NonSeamBreakageTest = item.NonSeamBreakageTest,
-                        Remark = item.Remark,
-                    };
-                    newDetailData.Add(DetailData);
-
-                    List<GarmentTest_Detail_ViewModel> oldDetailData = GetDetail(master.ID.ToString(), item.No.ToString()).ToList();
-                    List<GarmentTest_Detail_ViewModel> needUpdateDetailList = PublicClass.CompareListValue<GarmentTest_Detail_ViewModel>(
-                        newDetailData, oldDetailData, "ID,No", "OrderID,SizeCode,MtlTypeID,InspDate,Inspector,NonSeamBreakageTest,Remark");
-
-                    string sqlInsertGarmentTestDetail = $@"
+                string sqlInsertGarmentTestDetail = $@"
 declare @MaxNo int = (select MaxNo = isnull(max(No),0) from GarmentTest_Detail with(nolock) where  id = '{master.ID}')
 
 insert into GarmentTest_Detail(
@@ -480,26 +466,26 @@ values(
     , @SizeCode,@MtlTypeID,@NonSeamBreakageTest
     ,@OrderID
     ,@inspector
-    ,@InspDate
+    ,@inspdate
     ,@Remark
     ,@UserID, GetDate()
     ,'New'
 )
 ";
-                    string sqlUpdateDetail = $@"
+                string sqlUpdateDetail = $@"
 update GarmentTest_Detail
 set SizeCode = @SizeCode
 ,OrderID = @OrderID
 ,MtlTypeID = @MtlTypeID
 ,inspector = @inspector
-,inspdate = @InspDate
+,inspdate = @inspdate
 ,Remark = @Remark
 ,NonSeamBreakageTest = @NonSeamBreakageTest
 ,EditName = @UserID, EditDate = GetDate()
 where ID = @ID
 and No = @No
 ";
-                    string sqlDeleteDetail = @"
+                string sqlDeleteDetail = @"
 Delete GarmentTest_Detail_Shrinkage  where id = @ID and NO = @No
 Delete GarmentTest_Detail_Apperance where id = @ID and NO = @No
 Delete GarmentTest_Detail_FGWT where id = @ID and NO = @No
@@ -508,59 +494,58 @@ Delete Garment_Detail_Spirality where id = @ID and NO = @No
 
 Delete GarmentTest_Detail where id = @ID and NO = @No
 ";
-                    foreach (GarmentTest_Detail_ViewModel detailItem in needUpdateDetailList)
+                foreach (GarmentTest_Detail_ViewModel detailItem in needUpdateDetailList)
+                {
+                    SQLParameterCollection objParameterDetail = new SQLParameterCollection();
+                    switch (detailItem.StateType)
                     {
-                        SQLParameterCollection objParameterDetail = new SQLParameterCollection();
-                        switch (detailItem.StateType)
-                        {
-                            case CompareStateType.Add:
-                                objParameterDetail.Add($"@ID", master.ID);
-                                objParameterDetail.Add($"@No", item.No == null ? 0 : item.No);
+                        case CompareStateType.Add:
+                            objParameterDetail.Add($"@ID", master.ID);
+                            objParameterDetail.Add($"@No", detailItem.No == null ? 0 : detailItem.No);
 
-                                objParameterDetail.Add($"@SizeCode", string.IsNullOrEmpty(item.SizeCode) ? string.Empty : item.SizeCode);
-                                objParameterDetail.Add($"@MtlTypeID", string.IsNullOrEmpty(item.MtlTypeID) ? string.Empty : item.MtlTypeID);
-                                objParameterDetail.Add($"@NonSeamBreakageTest", item.NonSeamBreakageTest);
-                                objParameterDetail.Add($"@inspector", string.IsNullOrEmpty(item.inspector) ? string.Empty : item.inspector);
-                                objParameterDetail.Add($"@Remark", string.IsNullOrEmpty(item.Remark) ? string.Empty : item.Remark);
-                                objParameterDetail.Add($"@UserID", string.IsNullOrEmpty(UserID) ? string.Empty : UserID);
-                                objParameterDetail.Add($"@OrderID", string.IsNullOrEmpty(item.OrderID) ? string.Empty : item.OrderID);
-                                objParameterDetail.Add($"@InspDate", item.inspdate);
+                            objParameterDetail.Add($"@SizeCode", string.IsNullOrEmpty(detailItem.SizeCode) ? string.Empty : detailItem.SizeCode);
+                            objParameterDetail.Add($"@MtlTypeID", string.IsNullOrEmpty(detailItem.MtlTypeID) ? string.Empty : detailItem.MtlTypeID);
+                            objParameterDetail.Add($"@NonSeamBreakageTest", detailItem.NonSeamBreakageTest);
+                            objParameterDetail.Add($"@inspector", string.IsNullOrEmpty(detailItem.inspector) ? string.Empty : detailItem.inspector);
+                            objParameterDetail.Add($"@Remark", string.IsNullOrEmpty(detailItem.Remark) ? string.Empty : detailItem.Remark);
+                            objParameterDetail.Add($"@UserID", string.IsNullOrEmpty(UserID) ? string.Empty : UserID);
+                            objParameterDetail.Add($"@OrderID", string.IsNullOrEmpty(detailItem.OrderID) ? string.Empty : detailItem.OrderID);
+                            objParameterDetail.Add($"@inspdate", detailItem.inspdate);
 
-                                ExecuteNonQuery(CommandType.Text, sqlInsertGarmentTestDetail, objParameterDetail);
-                                break;
-                            case CompareStateType.Edit:
-                                objParameterDetail.Add($"@ID", detailItem.ID);
-                                objParameterDetail.Add($"@No", detailItem.No);
-                             
-                                objParameterDetail.Add($"@OrderID", string.IsNullOrEmpty(detailItem.OrderID) ? "" : detailItem.OrderID);
-                                objParameterDetail.Add($"@SizeCode", string.IsNullOrEmpty(item.SizeCode) ? string.Empty : item.SizeCode);
-                                objParameterDetail.Add($"@MtlTypeID", string.IsNullOrEmpty(detailItem.MtlTypeID) ? "" : detailItem.MtlTypeID);
-                                objParameterDetail.Add($"@NonSeamBreakageTest", detailItem.NonSeamBreakageTest);
-                                objParameterDetail.Add($"@Remark", string.IsNullOrEmpty(detailItem.Remark) ? "" : detailItem.Remark);
-                                objParameterDetail.Add($"@UserID", string.IsNullOrEmpty(UserID) ? string.Empty : UserID);
-                                objParameterDetail.Add($"@InspDate", detailItem.InspDate);
-                                objParameterDetail.Add($"@inspector", string.IsNullOrEmpty(item.inspector) ? string.Empty : item.inspector);
+                            ExecuteNonQuery(CommandType.Text, sqlInsertGarmentTestDetail, objParameterDetail);
+                            break;
+                        case CompareStateType.Edit:
+                            objParameterDetail.Add($"@ID", detailItem.ID);
+                            objParameterDetail.Add($"@No", detailItem.No);
 
-                                ExecuteNonQuery(CommandType.Text, sqlUpdateDetail, objParameterDetail);
-                                break;
-                            case CompareStateType.Delete:
-                                objParameterDetail.Add($"@ID", detailItem.ID);
-                                objParameterDetail.Add($"@No", detailItem.No);
-                                objParameterDetail.Add($"@UserID", string.IsNullOrEmpty(UserID) ? string.Empty : UserID);
+                            objParameterDetail.Add($"@OrderID", string.IsNullOrEmpty(detailItem.OrderID) ? "" : detailItem.OrderID);
+                            objParameterDetail.Add($"@SizeCode", string.IsNullOrEmpty(detailItem.SizeCode) ? string.Empty : detailItem.SizeCode);
+                            objParameterDetail.Add($"@MtlTypeID", string.IsNullOrEmpty(detailItem.MtlTypeID) ? "" : detailItem.MtlTypeID);
+                            objParameterDetail.Add($"@NonSeamBreakageTest", detailItem.NonSeamBreakageTest);
+                            objParameterDetail.Add($"@Remark", string.IsNullOrEmpty(detailItem.Remark) ? "" : detailItem.Remark);
+                            objParameterDetail.Add($"@UserID", string.IsNullOrEmpty(UserID) ? string.Empty : UserID);
+                            objParameterDetail.Add($"@inspdate", detailItem.inspdate);
+                            objParameterDetail.Add($"@inspector", string.IsNullOrEmpty(detailItem.inspector) ? string.Empty : detailItem.inspector);
 
-                                ExecuteNonQuery(CommandType.Text, sqlDeleteDetail, objParameterDetail);
-                                break;
-                            case CompareStateType.None:
-                                break;
-                            default:
-                                break;
-                        }
+                            ExecuteNonQuery(CommandType.Text, sqlUpdateDetail, objParameterDetail);
+                            break;
+                        case CompareStateType.Delete:
+                            objParameterDetail.Add($"@ID", detailItem.ID);
+                            objParameterDetail.Add($"@No", detailItem.No);
+                            objParameterDetail.Add($"@UserID", string.IsNullOrEmpty(UserID) ? string.Empty : UserID);
 
-                        ExecuteDataTable(CommandType.Text, sqlUpdateMaster, objParameterDetail);
+                            ExecuteNonQuery(CommandType.Text, sqlDeleteDetail, objParameterDetail);
+                            break;
+                        case CompareStateType.None:
+                            break;
+                        default:
+                            break;
                     }
 
-                    #endregion
+                    ExecuteDataTable(CommandType.Text, sqlUpdateMaster, objParameterDetail);
                 }
+
+                #endregion
 
                 transaction.Complete();
             }
@@ -839,13 +824,12 @@ where ID = @ID
             return ExecuteList<GarmentTest_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
         }
 
-        public IList<GarmentTest_Detail_ViewModel> GetDetail(string ID, string No)
+        public IList<GarmentTest_Detail_ViewModel> GetDetail(string ID)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
                 { "@ID", DbType.String, ID } ,
-                { "@No", DbType.String, No } ,
             };
             SbSql.Append("SELECT" + Environment.NewLine);
             SbSql.Append("         ID" + Environment.NewLine);
@@ -887,7 +871,6 @@ where ID = @ID
             SbSql.Append("        ,TestAfterPicture" + Environment.NewLine);
             SbSql.Append("FROM [GarmentTest_Detail]" + Environment.NewLine);
             SbSql.Append("where ID = @ID" + Environment.NewLine);
-            SbSql.Append("and No = @No" + Environment.NewLine);
 
             return ExecuteList<GarmentTest_Detail_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
         }

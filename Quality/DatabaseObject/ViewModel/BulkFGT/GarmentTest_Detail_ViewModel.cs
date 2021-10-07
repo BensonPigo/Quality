@@ -18,8 +18,6 @@ namespace DatabaseObject.ViewModel
         public string GarmentTest_Detail_EditName { get; set; }
         public Int64? ID { get; set; }
         public int? No { get; set; }
-        public DateTime? InspDate { get; set; }
-        public string Inspector { get; set; }
         public string Remark { get; set; }
         public DateTime? SubmitDate { get; set; }
         public string SizeCode { get; set; }
