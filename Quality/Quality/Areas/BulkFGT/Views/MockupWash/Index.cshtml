@@ -1327,6 +1327,11 @@
         var SeasonID = $('#SeasonID').val();
         var StyleID = $('#StyleID').val();
 
+        if (BrandID == "" || SeasonID == "" || StyleID == "")
+        {
+            return;
+        }
+
         $.ajax({
             url: '@Url.Action("GetArtworkTypeID_Source", "MockupWash")',
             type: 'POST',
