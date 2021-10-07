@@ -165,8 +165,8 @@ namespace BusinessLogicLayer.Service.Tests
                 IMockupOvenService _MockupOvenService = new MockupOvenService();
                 MockupOven_ViewModel MockupOven = new MockupOven_ViewModel()
                 {
-                    ReportNo = "T1",
-                    POID = "TP",
+                    ReportNo = "VM1OV21100001",
+                    POID = "TP2",
                     StyleID = "SS",
                     SeasonID = "20SS",
                     BrandID = "bb",
