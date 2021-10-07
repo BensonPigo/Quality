@@ -435,9 +435,9 @@
                 }
 
                 //檢查TestDate, {PullForceUnit}, Sec, Fabric Ref#, Accessory Ref# 不可為空
-                if ($('#Detail_TestDate').val() == '' || $('#Detail_PullForceUnit').val() == '' || $('#Detail_Time').val() == ''
+                if ($('#Detail_TestItem').val() == '' || $('#Detail_TestDate').val() == '' || $('#Detail_PullForceUnit').val() == '' || $('#Detail_Time').val() == ''
                     || $('#Detail_FabricRefno').val() == '' || $('#Detail_AccRefno').val() == ''
-                    || $('#Detail_TestDate').val() == undefined || $('#Detail_PullForceUnit').val() == undefined || $('#Detail_Time').val() == undefined
+                    || $('#Detail_TestItem').val() == undefined|| $('#Detail_TestDate').val() == undefined || $('#Detail_PullForceUnit').val() == undefined || $('#Detail_Time').val() == undefined
                     || $('#Detail_FabricRefno').val() == undefined || $('#Detail_AccRefno').val() == undefined) {
                     ErrMsg += "TestDate, Newton, Sec, Fabric Ref# and Accessory Ref# cannot be empty<br/>";
                 }
@@ -518,7 +518,7 @@
 
         function blurEvent(name) {
             $("#" + name + "BrandID").blur(function () {
-                AotoGetPullUnit(this);
+                AutoGetPullUnit(this);
 
                 @*if ($(this).val() == '') {
                     $("#Detail_Result").val('');
@@ -837,7 +837,7 @@
         }
     }
 
-    function AotoGetPullUnit(BrandObject) {
+    function AutoGetPullUnit(BrandObject) {
 
         if ($(BrandObject).val() == '') {
             $("#Detail_Result").val('');
@@ -879,10 +879,15 @@
 
                     $("#Detail_PullForceUnit").val(data.PullForceUnit);
                     $("#PullForceUnitText").val(data.PullForceUnit);
+
+                    if (data.PullForceUnit == null || data.PullForceUnit == '') {
+                        msg.WithInfo("Pull Force Unit not found.");
+                    }
                 }
                 else {
                     $("#Detail_PullForceUnit").val('');
                     $("#PullForceUnitText").val('');
+                    msg.WithInfo("Pull Force Unit not found.");
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {
@@ -1079,11 +1084,11 @@
     function GetBrandList(data) {
         if (EditMode) {
             $('#Detail_BrandID').val(data);
-            AotoGetPullUnit($('#Detail_BrandID')[0]);
+            AutoGetPullUnit($('#Detail_BrandID')[0]);
         }
         else {
             $('#BrandID').val(data);
-            AotoGetPullUnit($('#BrandID')[0]);
+            AutoGetPullUnit($('#BrandID')[0]);
         }
     }
 
