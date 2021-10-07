@@ -1392,15 +1392,15 @@ namespace BusinessLogicLayer.Service
             int pagestartRow = firstStartRow;
             bool isSingle = true;
 
-            if (firstStartRow >= 35 && firstStartRow <= 71)
+            if (firstStartRow >= 35 && firstStartRow <= 75)
             {
-                pagestartRow = 73;
+                pagestartRow = 77;
                 isSingle = false;
             }
 
-            if (firstStartRow > 71 && ((firstStartRow - 71) % 74) > 37)
+            if (firstStartRow > 75 && ((firstStartRow - 75) % 82) > 37)
             {
-                pagestartRow = ((((firstStartRow - 71) / 74) + 1) * 74) + 73;
+                pagestartRow = ((((firstStartRow - 75) / 82) + 1) * 82) + 81;
                 isSingle = false;
             }
 
@@ -1416,13 +1416,13 @@ namespace BusinessLogicLayer.Service
                     isSingle = true;
                 }
 
-                if (pagestartRow % 74 != 73)
+                if (pagestartRow % 82 != 81)
                 {
-                    pagestartRow = pagestartRow < 72 ? 73 : ((((pagestartRow - 71) / 74) + 1) * 74) + 73;
+                    pagestartRow = pagestartRow < 72 ? 81 : ((((pagestartRow - 75) / 82) + 1) * 82) + 81;
                 }
                 else
                 {
-                    pagestartRow += 74;
+                    pagestartRow += 82;
                 }
 
                 infoForPDFs.Add(new PageInfoForPDF { StartRow = pagestartRow, IsSingle = isSingle });
@@ -1538,9 +1538,9 @@ namespace BusinessLogicLayer.Service
                 // worksheet.Cells.EntireColumn.AutoFit();
                 #region 開始畫格子
 
-                int firstCubeStartRow = 15 + groupArticle.Count();
+                int firstCubeStartRow = 15 + groupItem.Count();
 
-                List<PageInfoForPDF> infoForPDFs = this.GetPageInfo(firstCubeStartRow, groupArticle.Count());
+                List<PageInfoForPDF> infoForPDFs = this.GetPageInfo(firstCubeStartRow, groupItem.Count());
                 Microsoft.Office.Interop.Excel.Range cubeCopyRange;
                 Microsoft.Office.Interop.Excel.Range pastCubeRange;
                 foreach (PageInfoForPDF pageInfoForPDF in infoForPDFs)
@@ -1559,7 +1559,7 @@ namespace BusinessLogicLayer.Service
                 }
                 #endregion
                 int printPageCountNotIncludeFirst = infoForPDFs[0].IsSingle ? (infoForPDFs.Count - 1) : infoForPDFs.Count;
-                int headPageCount = groupArticle.Count() > 58 ? MyUtility.Convert.GetInt(Math.Ceiling((groupItem.Count() - 58) / 74.0)) : 0;
+                int headPageCount = groupItem.Count() > 58 ? MyUtility.Convert.GetInt(Math.Ceiling((groupItem.Count() - 58) / 74.0)) : 0;
                 int lastPageRowNum = lastPageRowNum = 71 + (74 * (printPageCountNotIncludeFirst + headPageCount));
 
                 worksheet.PageSetup.PrintArea = $"$A$1:$N${lastPageRowNum.ToString()}";
