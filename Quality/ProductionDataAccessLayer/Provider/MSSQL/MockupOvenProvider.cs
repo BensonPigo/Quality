@@ -194,7 +194,6 @@ SET
     ,HTCoolingTime=@HTCoolingTime
     ,TestBeforePicture=@TestBeforePicture
     ,TestAfterPicture=@TestAfterPicture
-    ,Type=@Type
 WHERE ReportNo = @ReportNo
 " + Environment.NewLine);
             objParameter.Add("@EditName", DbType.String, HttpUtility.HtmlDecode(Item.EditName) ?? string.Empty);

@@ -8,6 +8,8 @@ namespace DatabaseObject.ViewModel.BulkFGT
 {
     public class MockupCrocking_ViewModel : MockupCrocking
     {
+        public bool ReturnResult { get; set; } = true;
+
         public bool SaveResult { get; set; } = true;
         public string ErrorMessage { get; set; }
 

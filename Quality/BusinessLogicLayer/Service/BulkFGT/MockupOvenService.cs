@@ -50,7 +50,8 @@ namespace BusinessLogicLayer.Service
             }
             catch (Exception ex)
             {
-                throw ex;
+                mockupOven_model.ErrorMessage = ex.Message.ToString();
+                mockupOven_model.ReturnResult = false;
             }
 
             return mockupOven_model;
@@ -68,9 +69,9 @@ namespace BusinessLogicLayer.Service
                     selectListItems.Add(new SelectListItem { Value = item.ArtworkTypeID, Text = item.ArtworkTypeID });
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                return null;
             }
 
             return selectListItems;
@@ -89,9 +90,9 @@ namespace BusinessLogicLayer.Service
                     selectListItems.Add(new SelectListItem { Value = item.Refno, Text = item.Refno });
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                return null;
             }
 
             return selectListItems;
@@ -105,9 +106,9 @@ namespace BusinessLogicLayer.Service
                 orders.Category = "B";
                 return _OrdersProvider.Get(orders).ToList();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                return null;
             }
         }
 
@@ -118,9 +119,9 @@ namespace BusinessLogicLayer.Service
             {
                 return _OrderQtyProvider.GetDistinctArticle(order_Qty).ToList();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                return null;
             }
         }
 
@@ -313,7 +314,7 @@ namespace BusinessLogicLayer.Service
             }
             catch (Exception ex)
             {
-                result.ErrorMessage = ex.ToString();
+                result.ErrorMessage = ex.Message.ToString();
                 result.Result = false;
             }
 

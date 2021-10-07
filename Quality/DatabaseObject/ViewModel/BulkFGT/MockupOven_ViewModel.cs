@@ -8,6 +8,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
 {
     public class MockupOven_ViewModel : MockupOven
     {
+        public bool ReturnResult { get; set; } = true;
         public bool SaveResult { get; set; } = true;
         public string ErrorMessage { get; set; }
 

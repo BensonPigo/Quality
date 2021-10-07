@@ -150,7 +150,6 @@ UPDATE [MockupCrocking] SET
     ,Result=@Result
     ,Technician=@Technician
     ,MR=@MR
-    ,Type=@Type
     ,TestBeforePicture=@TestBeforePicture
     ,TestAfterPicture=@TestAfterPicture
 WHERE ReportNo = @ReportNo
