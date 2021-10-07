@@ -260,7 +260,7 @@ namespace BusinessLogicLayer.Service.Tests
             {
                 IFabricCrkShrkTest_Service fabricCrkShrkTest_Service = new FabricCrkShrkTest_Service();
                 string excelName;
-                BaseResult baseResult = fabricCrkShrkTest_Service.ToPdfFabricCrkShrkTestCrockingDetail(364797, out excelName, true);
+                BaseResult baseResult = fabricCrkShrkTest_Service.ToPdfFabricCrkShrkTestCrockingDetail(360043, out excelName, true);
 
                 if (!baseResult)
                 {
