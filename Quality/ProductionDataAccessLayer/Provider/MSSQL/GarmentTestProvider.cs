@@ -10,6 +10,9 @@ using DatabaseObject.ViewModel;
 using DatabaseObject.RequestModel;
 using System.Linq;
 using System.Data.SqlClient;
+using System.Transactions;
+using ToolKit;
+using DatabaseObject.Public;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
@@ -159,29 +162,30 @@ where 1=1
             return ExecuteList<GarmentTest_ViewModel>(CommandType.Text, sqlcmd, objParameter);
         }
 
-        public bool Save_GarmentTest(GarmentTest_ViewModel master, List<GarmentTest_Detail> detail, string UserID)
+        public void Save_GarmentTest(GarmentTest_ViewModel master, List<GarmentTest_Detail> detail, string UserID)
         {
             bool result = true;
-
-            foreach (var item in detail)
+            using (TransactionScope transaction = new TransactionScope())
             {
-                string sql_Shrinkage_Chk = $"select 1 from Production.dbo.GarmentTest_Detail_Shrinkage with(nolock) where id = '{master.ID}' and NO = '{item.No}'";
-                DataTable dtChk_Shrinkage = ExecuteDataTableByServiceConn(CommandType.Text, sql_Shrinkage_Chk, new SQLParameterCollection());
-
-                string sql_detail = $@"select 1 from GarmentTest_Detail with(nolock) where  id = '{master.ID}' and NO = '{item.No}'";
-                DataTable dtDetail = ExecuteDataTableByServiceConn(CommandType.Text, sql_detail, new SQLParameterCollection());
-
-                if (dtChk_Shrinkage!= null && dtChk_Shrinkage.Rows.Count == 0)
+                foreach (var item in detail)
                 {
-                    #region insertShrinkage
-                    SQLParameterCollection objParameter1 = new SQLParameterCollection
+                    string sql_Shrinkage_Chk = $"select 1 from Production.dbo.GarmentTest_Detail_Shrinkage with(nolock) where id = '{master.ID}' and NO = '{item.No}'";
+                    DataTable dtChk_Shrinkage = ExecuteDataTableByServiceConn(CommandType.Text, sql_Shrinkage_Chk, new SQLParameterCollection());
+
+                    string sql_detail = $@"select 1 from GarmentTest_Detail with(nolock) where  id = '{master.ID}' and NO = '{item.No}'";
+                    DataTable dtDetail = ExecuteDataTableByServiceConn(CommandType.Text, sql_detail, new SQLParameterCollection());
+
+                    if (dtChk_Shrinkage != null && dtChk_Shrinkage.Rows.Count == 0)
+                    {
+                        #region insertShrinkage
+                        SQLParameterCollection objParameter1 = new SQLParameterCollection
                     {
                         { "@ID", DbType.String, master.ID} ,
                         { "@BrandID", DbType.String, master.BrandID } ,
                         { "@No", DbType.String, item.No} ,
                     };
 
-                    string insertShrinkage = $@"
+                        string insertShrinkage = $@"
 select sl.Location
 into #Location1
 from GarmentTest gt with(nolock)
@@ -282,53 +286,53 @@ values (@ID,@NO,'Shrinkage & Twisting',7)
 INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
 values (@ID,@NO,'Appearance of garment after wash',8)
 ";
-                    ExecuteDataTableByServiceConn(CommandType.Text, insertShrinkage, objParameter1);
-                    #endregion
-                }
+                        ExecuteDataTableByServiceConn(CommandType.Text, insertShrinkage, objParameter1);
+                        #endregion
+                    }
 
-                #region 建立 Garment_Detail_Spirality
-                // 代表是新增的資料
-                if (dtDetail.Rows.Count == 0)
-                {
-                    SQLParameterCollection objParameter_Loction = new SQLParameterCollection
+                    #region 建立 Garment_Detail_Spirality
+                    // 代表是新增的資料
+                    if (dtDetail.Rows.Count == 0)
+                    {
+                        SQLParameterCollection objParameter_Loction = new SQLParameterCollection
                     {
                         { "@StyleID", DbType.String, master.StyleID} ,
                         { "@BrandID", DbType.String, master.BrandID } ,
                         { "@SeasonID", DbType.String, master.SeasonID} ,
                     };
 
-                    string sql_Location = @"
+                        string sql_Location = @"
 select sl.Location
 from Style s
 inner join Style_Location sl on sl.StyleUkey = s.Ukey
 where s.id = @StyleID AND s.BrandID = @BrandID AND s.SeasonID = @SeasonID
 ";
-                    DataTable dt_Location = ExecuteDataTableByServiceConn(CommandType.Text, sql_Location, objParameter_Loction);
+                        DataTable dt_Location = ExecuteDataTableByServiceConn(CommandType.Text, sql_Location, objParameter_Loction);
 
-                    string sqlcmd_Spirality = string.Empty;
-                    if (dt_Location.Select("Location = 'T'").Any())
-                    {
-                        sqlcmd_Spirality += $@"INSERT INTO[dbo].[Garment_Detail_Spirality]([ID],[No],[Location])VALUES('{master.ID}','{item.No}','T');";
+                        string sqlcmd_Spirality = string.Empty;
+                        if (dt_Location.Select("Location = 'T'").Any())
+                        {
+                            sqlcmd_Spirality += $@"INSERT INTO[dbo].[Garment_Detail_Spirality]([ID],[No],[Location])VALUES('{master.ID}','{item.No}','T');";
+                        }
+
+                        if (dt_Location.Select("Location = 'B'").Any())
+                        {
+                            sqlcmd_Spirality += $@"INSERT INTO[dbo].[Garment_Detail_Spirality]([ID],[No],[Location])VALUES('{master.ID}','{item.No}','B');";
+                        }
+
+                        ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd_Spirality, objParameter_Loction);
                     }
+                    #endregion
 
-                    if (dt_Location.Select("Location = 'B'").Any())
-                    {
-                        sqlcmd_Spirality += $@"INSERT INTO[dbo].[Garment_Detail_Spirality]([ID],[No],[Location])VALUES('{master.ID}','{item.No}','B');";
-                    }
-
-                    ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd_Spirality, objParameter_Loction);
-                }
-                #endregion
-
-                #region 寫入GarmentTest_Detail_FGPT
-                SQLParameterCollection objParameter_Loctions = new SQLParameterCollection
+                    #region 寫入GarmentTest_Detail_FGPT
+                    SQLParameterCollection objParameter_Loctions = new SQLParameterCollection
                     {
                         { "@StyleID", DbType.String, master.StyleID} ,
                         { "@BrandID", DbType.String, master.BrandID } ,
                         { "@SeasonID", DbType.String, master.SeasonID} ,
                     };
 
-                string sql_locations = $@"
+                    string sql_locations = $@"
 SELECT locations = STUFF(
 	(
         select DISTINCT ',' + sl.Location
@@ -338,63 +342,63 @@ SELECT locations = STUFF(
 	    FOR XML PATH('')
 	) 
 ,1,1,'')";
-                DataTable dtLocations = ExecuteDataTableByServiceConn(CommandType.Text, sql_locations, objParameter_Loctions);
-                List<string> locations = dtLocations.Rows[0]["locations"].ToString().Split(',').ToList();
-                bool containsT = locations.Contains("T");
-                bool containsB = locations.Contains("B");
+                    DataTable dtLocations = ExecuteDataTableByServiceConn(CommandType.Text, sql_locations, objParameter_Loctions);
+                    List<string> locations = dtLocations.Rows[0]["locations"].ToString().Split(',').ToList();
+                    bool containsT = locations.Contains("T");
+                    bool containsB = locations.Contains("B");
 
-                StringBuilder insertCmd = new StringBuilder();
-                List<SqlParameter> parameters = new List<SqlParameter>();
-                List<GarmentTest_Detail_FGPT> fGPTs = new List<GarmentTest_Detail_FGPT>();
+                    StringBuilder insertCmd = new StringBuilder();
+                    List<SqlParameter> parameters = new List<SqlParameter>();
+                    List<GarmentTest_Detail_FGPT> fGPTs = new List<GarmentTest_Detail_FGPT>();
 
-                string sql_RugbyFootBall = $@"select 1 from Style s where s.id = @StyleID AND s.BrandID = @BrandID AND s.SeasonID = @SeasonID AND s.ProgramID like '%FootBall%'";
-                DataTable dtRugbyFootBall = ExecuteDataTableByServiceConn(CommandType.Text, sql_RugbyFootBall, objParameter_Loctions);
-                bool isRugbyFootBall = dtRugbyFootBall.Rows.Count > 0;
+                    string sql_RugbyFootBall = $@"select 1 from Style s where s.id = @StyleID AND s.BrandID = @BrandID AND s.SeasonID = @SeasonID AND s.ProgramID like '%FootBall%'";
+                    DataTable dtRugbyFootBall = ExecuteDataTableByServiceConn(CommandType.Text, sql_RugbyFootBall, objParameter_Loctions);
+                    bool isRugbyFootBall = dtRugbyFootBall.Rows.Count > 0;
 
-                // 若只有B則寫入Bottom的項目+ALL的項目，若只有T則寫入TOP的項目+ALL的項目，若有B和T則寫入Top+ Bottom的項目+ALL的項目
-                if (containsT && containsB)
-                {
-                    fGPTs = GetDefaultFGPT(false, false, true, isRugbyFootBall, "S");
-                }
-                else if (containsT)
-                {
-                    fGPTs = GetDefaultFGPT(containsT, false, false, isRugbyFootBall, "T");
-                }
-                else
-                {
-                    fGPTs = GetDefaultFGPT(false, containsB, false, isRugbyFootBall, "B");
-                }
-
-                if (item.MtlTypeID.ToString().ToUpper() == "KNIT")
-                {
-                    fGPTs = fGPTs.Where(w => w.TestName == "PHX-AP0450" || w.TestName == "PHX-AP0451").ToList();
-                }
-
-                int idx = 0;
-
-                SQLParameterCollection objParameterFGPT = new SQLParameterCollection();
-
-                foreach (var fGPT in fGPTs)
-                {
-                    string location = string.Empty;
-
-                    switch (fGPT.Location)
+                    // 若只有B則寫入Bottom的項目+ALL的項目，若只有T則寫入TOP的項目+ALL的項目，若有B和T則寫入Top+ Bottom的項目+ALL的項目
+                    if (containsT && containsB)
                     {
-                        case "Top":
-                            location = "T";
-                            break;
-                        case "Bottom":
-                            location = "B";
-                            break;
-                        case "Full": // Top+Bottom = Full
-                            location = "S";
-                            break;
-                        default:
-                            location = fGPT.Location;
-                            break;
+                        fGPTs = GetDefaultFGPT(false, false, true, isRugbyFootBall, "S");
+                    }
+                    else if (containsT)
+                    {
+                        fGPTs = GetDefaultFGPT(containsT, false, false, isRugbyFootBall, "T");
+                    }
+                    else
+                    {
+                        fGPTs = GetDefaultFGPT(false, containsB, false, isRugbyFootBall, "B");
                     }
 
-                    insertCmd.Append($@"
+                    if (item.MtlTypeID.ToString().ToUpper() == "KNIT")
+                    {
+                        fGPTs = fGPTs.Where(w => w.TestName == "PHX-AP0450" || w.TestName == "PHX-AP0451").ToList();
+                    }
+
+                    int idx = 0;
+
+                    SQLParameterCollection objParameterFGPT = new SQLParameterCollection();
+
+                    foreach (var fGPT in fGPTs)
+                    {
+                        string location = string.Empty;
+
+                        switch (fGPT.Location)
+                        {
+                            case "Top":
+                                location = "T";
+                                break;
+                            case "Bottom":
+                                location = "B";
+                                break;
+                            case "Full": // Top+Bottom = Full
+                                location = "S";
+                                break;
+                            default:
+                                location = fGPT.Location;
+                                break;
+                        }
+
+                        insertCmd.Append($@"
 
 INSERT INTO GarmentTest_Detail_FGPT
            (ID,No,Location,Type,TestDetail,TestUnit,Criteria,TestName,Seq,TypeSelection_VersionID,TypeSelection_Seq)
@@ -412,76 +416,58 @@ INSERT INTO GarmentTest_Detail_FGPT
            , '{fGPT.TypeSelection_Seq}')
 ");
 
-                    objParameterFGPT.Add(new SqlParameter($"@Location{idx}", location));
-                    objParameterFGPT.Add(new SqlParameter($"@Type{idx}", fGPT.Type));
-                    objParameterFGPT.Add(new SqlParameter($"@TestDetail{idx}", fGPT.TestDetail));
-                    objParameterFGPT.Add(new SqlParameter($"@TestUnit{idx}", fGPT.TestUnit));
-                    objParameterFGPT.Add(new SqlParameter($"@Criteria{idx}", fGPT.Criteria));
-                    objParameterFGPT.Add(new SqlParameter($"@TestName{idx}", fGPT.TestName));
-                    idx++;
-                }
+                        objParameterFGPT.Add(new SqlParameter($"@Location{idx}", location));
+                        objParameterFGPT.Add(new SqlParameter($"@Type{idx}", fGPT.Type));
+                        objParameterFGPT.Add(new SqlParameter($"@TestDetail{idx}", fGPT.TestDetail));
+                        objParameterFGPT.Add(new SqlParameter($"@TestUnit{idx}", fGPT.TestUnit));
+                        objParameterFGPT.Add(new SqlParameter($"@Criteria{idx}", fGPT.Criteria));
+                        objParameterFGPT.Add(new SqlParameter($"@TestName{idx}", fGPT.TestName));
+                        idx++;
+                    }
 
-                // 找不到才Insert
-                string sql_Chk_FGPT = $"SELECT 1 FROM GarmentTest_Detail_FGPT WHERE ID ='{master.ID}' AND NO='{item.No}'";
-                DataTable dtChk_FGPT = ExecuteDataTableByServiceConn(CommandType.Text, sql_Chk_FGPT, new SQLParameterCollection());
-                if (dtChk_FGPT.Rows.Count == 0)
-                {
-                    ExecuteDataTableByServiceConn(CommandType.Text, insertCmd.ToString(), objParameterFGPT);
-                }
+                    // 找不到才Insert
+                    string sql_Chk_FGPT = $"SELECT 1 FROM GarmentTest_Detail_FGPT WHERE ID ='{master.ID}' AND NO='{item.No}'";
+                    DataTable dtChk_FGPT = ExecuteDataTableByServiceConn(CommandType.Text, sql_Chk_FGPT, new SQLParameterCollection());
+                    if (dtChk_FGPT.Rows.Count == 0)
+                    {
+                        ExecuteDataTableByServiceConn(CommandType.Text, insertCmd.ToString(), objParameterFGPT);
+                    }
 
-                #endregion
+                    #endregion
 
-                #region Save Detail 
+                    #region Save Detail 
 
-                SQLParameterCollection objParameterDetail = new SQLParameterCollection();
-                // 代表已有資料, update
-                objParameterDetail.Add($"@ID", master.ID);
-                objParameterDetail.Add($"@No", item.No == null ? 0 : item.No);
-
-                objParameterDetail.Add($"@SizeCode", string.IsNullOrEmpty(item.SizeCode) ? string.Empty : item.SizeCode);
-                objParameterDetail.Add($"@MtlTypeID", string.IsNullOrEmpty(item.MtlTypeID) ? string.Empty : item.MtlTypeID);
-                objParameterDetail.Add($"@Result", string.IsNullOrEmpty(item.Result) ? string.Empty : item.Result);
-                objParameterDetail.Add($"@NonSeamBreakageTest", item.NonSeamBreakageTest);
-                objParameterDetail.Add($"@SeamBreakageResult", string.IsNullOrEmpty(item.SeamBreakageResult) ? string.Empty : item.SeamBreakageResult);
-                objParameterDetail.Add($"@OdourResult", string.IsNullOrEmpty(item.OdourResult) ? string.Empty : item.OdourResult);
-                objParameterDetail.Add($"@WashResult", string.IsNullOrEmpty(item.WashResult) ? string.Empty : item.WashResult);
-                objParameterDetail.Add($"@inspector", string.IsNullOrEmpty(item.inspector) ? string.Empty : item.inspector);                
-                objParameterDetail.Add($"@Remark", string.IsNullOrEmpty(item.Remark) ? string.Empty : item.Remark);
-                objParameterDetail.Add($"@UserID", string.IsNullOrEmpty(UserID) ? string.Empty : UserID);
-                objParameterDetail.Add($"@OrderID", string.IsNullOrEmpty(item.OrderID) ? string.Empty : item.OrderID);
-
-                string inspDate = (item.inspdate == null) ? "Null" : "'" + ((DateTime)item.inspdate).ToString("d") + "'";
-
-                string sqlcmd = @"
-update GarmentTest
+                    string sqlUpdateMaster = $@"
+update SampleGarmentTest
 set EditDate = GetDate(), EditName = @UserID
 where ID = @ID
 ";
-                if (dtDetail.Rows.Count > 0)
-                {
-                    sqlcmd += $@"
-update GarmentTest_Detail
-set SizeCode = @SizeCode
-,OrderID = @OrderID
-,MtlTypeID = @MtlTypeID
-,inspector = @inspector
-,inspdate = {inspDate}
-,Remark = @Remark
-,NonSeamBreakageTest = @NonSeamBreakageTest
-,EditName = @UserID, EditDate = GetDate()
-where ID = @ID
-and No = @No
-" + Environment.NewLine;
-                }
-                else
-                {
-                    sqlcmd += $@"
+
+                    List<GarmentTest_Detail_ViewModel> newDetailData = new List<GarmentTest_Detail_ViewModel>();
+                    GarmentTest_Detail_ViewModel DetailData = new GarmentTest_Detail_ViewModel()
+                    {
+                        ID = item.ID,
+                        No = item.No,
+                        OrderID = item.OrderID,
+                        SizeCode = item.SizeCode,
+                        MtlTypeID = item.MtlTypeID,
+                        InspDate = item.inspdate,
+                        Inspector = item.inspector,
+                        NonSeamBreakageTest = item.NonSeamBreakageTest,
+                        Remark = item.Remark,
+                    };
+                    newDetailData.Add(DetailData);
+
+                    List<GarmentTest_Detail_ViewModel> oldDetailData = GetDetail(master.ID.ToString(), item.No.ToString()).ToList();
+                    List<GarmentTest_Detail_ViewModel> needUpdateDetailList = PublicClass.CompareListValue<GarmentTest_Detail_ViewModel>(
+                        newDetailData, oldDetailData, "ID,No", "OrderID,SizeCode,MtlTypeID,InspDate,Inspector,NonSeamBreakageTest,Remark");
+
+                    string sqlInsertGarmentTestDetail = $@"
 declare @MaxNo int = (select MaxNo = isnull(max(No),0) from GarmentTest_Detail with(nolock) where  id = '{master.ID}')
 
 insert into GarmentTest_Detail(
-    ID,No,SizeCode,MtlTypeID,Result,NonSeamBreakageTest,SeamBreakageResult,OdourResult
+    ID,No,SizeCode,MtlTypeID,NonSeamBreakageTest
     ,OrderID
-    ,WashResult
     ,inspector
     ,inspdate
     ,Remark
@@ -491,24 +477,93 @@ insert into GarmentTest_Detail(
 values(
     @ID
     , @MaxNo +1
-    , @SizeCode,@MtlTypeID,@Result,@NonSeamBreakageTest,@SeamBreakageResult,@OdourResult
+    , @SizeCode,@MtlTypeID,@NonSeamBreakageTest
     ,@OrderID
-    ,@WashResult
     ,@inspector
-    ,{inspDate}
+    ,@InspDate
     ,@Remark
     ,@UserID, GetDate()
     ,'New'
 )
 ";
+                    string sqlUpdateDetail = $@"
+update GarmentTest_Detail
+set SizeCode = @SizeCode
+,OrderID = @OrderID
+,MtlTypeID = @MtlTypeID
+,inspector = @inspector
+,inspdate = @InspDate
+,Remark = @Remark
+,NonSeamBreakageTest = @NonSeamBreakageTest
+,EditName = @UserID, EditDate = GetDate()
+where ID = @ID
+and No = @No
+";
+                    string sqlDeleteDetail = @"
+Delete GarmentTest_Detail_Shrinkage  where id = @ID and NO = @No
+Delete GarmentTest_Detail_Apperance where id = @ID and NO = @No
+Delete GarmentTest_Detail_FGWT where id = @ID and NO = @No
+Delete GarmentTest_Detail_FGPT where id = @ID and NO = @No
+Delete Garment_Detail_Spirality where id = @ID and NO = @No
+
+Delete GarmentTest_Detail where id = @ID and NO = @No
+";
+                    foreach (GarmentTest_Detail_ViewModel detailItem in needUpdateDetailList)
+                    {
+                        SQLParameterCollection objParameterDetail = new SQLParameterCollection();
+                        switch (detailItem.StateType)
+                        {
+                            case CompareStateType.Add:
+                                objParameterDetail.Add($"@ID", master.ID);
+                                objParameterDetail.Add($"@No", item.No == null ? 0 : item.No);
+
+                                objParameterDetail.Add($"@SizeCode", string.IsNullOrEmpty(item.SizeCode) ? string.Empty : item.SizeCode);
+                                objParameterDetail.Add($"@MtlTypeID", string.IsNullOrEmpty(item.MtlTypeID) ? string.Empty : item.MtlTypeID);
+                                objParameterDetail.Add($"@NonSeamBreakageTest", item.NonSeamBreakageTest);
+                                objParameterDetail.Add($"@inspector", string.IsNullOrEmpty(item.inspector) ? string.Empty : item.inspector);
+                                objParameterDetail.Add($"@Remark", string.IsNullOrEmpty(item.Remark) ? string.Empty : item.Remark);
+                                objParameterDetail.Add($"@UserID", string.IsNullOrEmpty(UserID) ? string.Empty : UserID);
+                                objParameterDetail.Add($"@OrderID", string.IsNullOrEmpty(item.OrderID) ? string.Empty : item.OrderID);
+                                objParameterDetail.Add($"@InspDate", item.inspdate);
+
+                                ExecuteNonQuery(CommandType.Text, sqlInsertGarmentTestDetail, objParameterDetail);
+                                break;
+                            case CompareStateType.Edit:
+                                objParameterDetail.Add($"@ID", detailItem.ID);
+                                objParameterDetail.Add($"@No", detailItem.No);
+                             
+                                objParameterDetail.Add($"@OrderID", string.IsNullOrEmpty(detailItem.OrderID) ? "" : detailItem.OrderID);
+                                objParameterDetail.Add($"@SizeCode", string.IsNullOrEmpty(item.SizeCode) ? string.Empty : item.SizeCode);
+                                objParameterDetail.Add($"@MtlTypeID", string.IsNullOrEmpty(detailItem.MtlTypeID) ? "" : detailItem.MtlTypeID);
+                                objParameterDetail.Add($"@NonSeamBreakageTest", detailItem.NonSeamBreakageTest);
+                                objParameterDetail.Add($"@Remark", string.IsNullOrEmpty(detailItem.Remark) ? "" : detailItem.Remark);
+                                objParameterDetail.Add($"@UserID", string.IsNullOrEmpty(UserID) ? string.Empty : UserID);
+                                objParameterDetail.Add($"@InspDate", detailItem.InspDate);
+                                objParameterDetail.Add($"@inspector", string.IsNullOrEmpty(item.inspector) ? string.Empty : item.inspector);
+
+                                ExecuteNonQuery(CommandType.Text, sqlUpdateDetail, objParameterDetail);
+                                break;
+                            case CompareStateType.Delete:
+                                objParameterDetail.Add($"@ID", detailItem.ID);
+                                objParameterDetail.Add($"@No", detailItem.No);
+                                objParameterDetail.Add($"@UserID", string.IsNullOrEmpty(UserID) ? string.Empty : UserID);
+
+                                ExecuteNonQuery(CommandType.Text, sqlDeleteDetail, objParameterDetail);
+                                break;
+                            case CompareStateType.None:
+                                break;
+                            default:
+                                break;
+                        }
+
+                        ExecuteDataTable(CommandType.Text, sqlUpdateMaster, objParameterDetail);
+                    }
+
+                    #endregion
                 }
 
-                result = Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameterDetail)) > 0;
-
-                #endregion
+                transaction.Complete();
             }
-
-            return result;
         }
 
         /// <summary>
@@ -783,151 +838,59 @@ where ID = @ID
 
             return ExecuteList<GarmentTest_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
         }
-		/*建立Garment Test(Create) 詳細敘述如下*/
-        /// <summary>
-        /// 建立Garment Test
-        /// </summary>
-        /// <param name="Item">Garment Test成員</param>
-        /// <returns>回傳異動筆數</returns>
-		/// <info>Author: Admin; Date: 2021/08/23  </info>
-        /// <history>
-        /// xx.  YYYY/MM/DD   Ver   Author      Comments
-        /// ===  ==========  ====  ==========  ==========
-        /// 01.  2021/08/23  1.00    Admin        Create
-        /// </history>
-        public int Create(GarmentTest Item)
+
+        public IList<GarmentTest_Detail_ViewModel> GetDetail(string ID, string No)
         {
             StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append("INSERT INTO [GarmentTest]"+ Environment.NewLine);
-            SbSql.Append("(" + Environment.NewLine);
-            SbSql.Append("         ID"+ Environment.NewLine);
-            SbSql.Append("        ,FirstOrderID"+ Environment.NewLine);
-            SbSql.Append("        ,OrderID"+ Environment.NewLine);
-            SbSql.Append("        ,StyleID"+ Environment.NewLine);
-            SbSql.Append("        ,SeasonID"+ Environment.NewLine);
-            SbSql.Append("        ,BrandID"+ Environment.NewLine);
-            SbSql.Append("        ,Article"+ Environment.NewLine);
-            SbSql.Append("        ,MDivisionid"+ Environment.NewLine);
-            SbSql.Append("        ,DeadLine"+ Environment.NewLine);
-            SbSql.Append("        ,SewingInline"+ Environment.NewLine);
-            SbSql.Append("        ,SewingOffline"+ Environment.NewLine);
-            SbSql.Append("        ,Date"+ Environment.NewLine);
-            SbSql.Append("        ,Result"+ Environment.NewLine);
-            SbSql.Append("        ,Remark"+ Environment.NewLine);
-            SbSql.Append("        ,AddName"+ Environment.NewLine);
-            SbSql.Append("        ,AddDate"+ Environment.NewLine);
-            SbSql.Append("        ,EditName"+ Environment.NewLine);
-            SbSql.Append("        ,EditDate"+ Environment.NewLine);
-            SbSql.Append("        ,OldUkey"+ Environment.NewLine);
-            SbSql.Append("        ,SeamBreakageResult"+ Environment.NewLine);
-            SbSql.Append("        ,SeamBreakageLastTestDate"+ Environment.NewLine);
-            SbSql.Append("        ,OdourResult"+ Environment.NewLine);
-            SbSql.Append("        ,WashResult"+ Environment.NewLine);
-            SbSql.Append(")"+ Environment.NewLine);
-            SbSql.Append("VALUES"+ Environment.NewLine);
-            SbSql.Append("(" + Environment.NewLine);
-            SbSql.Append("         @ID"); objParameter.Add("@ID", DbType.String, Item.ID);
-            SbSql.Append("        ,@FirstOrderID"); objParameter.Add("@FirstOrderID", DbType.String, Item.FirstOrderID);
-            SbSql.Append("        ,@OrderID"); objParameter.Add("@OrderID", DbType.String, Item.OrderID);
-            SbSql.Append("        ,@StyleID"); objParameter.Add("@StyleID", DbType.String, Item.StyleID);
-            SbSql.Append("        ,@SeasonID"); objParameter.Add("@SeasonID", DbType.String, Item.SeasonID);
-            SbSql.Append("        ,@BrandID"); objParameter.Add("@BrandID", DbType.String, Item.BrandID);
-            SbSql.Append("        ,@Article"); objParameter.Add("@Article", DbType.String, Item.Article);
-            SbSql.Append("        ,@MDivisionid"); objParameter.Add("@MDivisionid", DbType.String, Item.MDivisionid);
-            SbSql.Append("        ,@DeadLine"); objParameter.Add("@DeadLine", DbType.String, Item.DeadLine);
-            SbSql.Append("        ,@SewingInline"); objParameter.Add("@SewingInline", DbType.String, Item.SewingInline);
-            SbSql.Append("        ,@SewingOffline"); objParameter.Add("@SewingOffline", DbType.String, Item.SewingOffline);
-            SbSql.Append("        ,@Date"); objParameter.Add("@Date", DbType.String, Item.Date);
-            SbSql.Append("        ,@Result"); objParameter.Add("@Result", DbType.String, Item.Result);
-            SbSql.Append("        ,@Remark"); objParameter.Add("@Remark", DbType.String, Item.Remark);
-            SbSql.Append("        ,@AddName"); objParameter.Add("@AddName", DbType.String, Item.AddName);
-            SbSql.Append("        ,@AddDate"); objParameter.Add("@AddDate", DbType.DateTime, Item.AddDate);
-            SbSql.Append("        ,@EditName"); objParameter.Add("@EditName", DbType.String, Item.EditName);
-            SbSql.Append("        ,@EditDate"); objParameter.Add("@EditDate", DbType.DateTime, Item.EditDate);
-            SbSql.Append("        ,@OldUkey"); objParameter.Add("@OldUkey", DbType.String, Item.OldUkey);
-            SbSql.Append("        ,@SeamBreakageResult"); objParameter.Add("@SeamBreakageResult", DbType.String, Item.SeamBreakageResult);
-            SbSql.Append("        ,@SeamBreakageLastTestDate"); objParameter.Add("@SeamBreakageLastTestDate", DbType.String, Item.SeamBreakageLastTestDate);
-            SbSql.Append("        ,@OdourResult"); objParameter.Add("@OdourResult", DbType.String, Item.OdourResult);
-            SbSql.Append("        ,@WashResult"); objParameter.Add("@WashResult", DbType.String, Item.WashResult);
-            SbSql.Append(")"+ Environment.NewLine);
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.String, ID } ,
+                { "@No", DbType.String, No } ,
+            };
+            SbSql.Append("SELECT" + Environment.NewLine);
+            SbSql.Append("         ID" + Environment.NewLine);
+            SbSql.Append("        ,No" + Environment.NewLine);
+            SbSql.Append("        ,Result" + Environment.NewLine);
+            SbSql.Append("        ,inspdate" + Environment.NewLine);
+            SbSql.Append("        ,inspector" + Environment.NewLine);
+            SbSql.Append("        ,Remark" + Environment.NewLine);
+            SbSql.Append("        ,Sender" + Environment.NewLine);
+            SbSql.Append("        ,SendDate" + Environment.NewLine);
+            SbSql.Append("        ,Receiver" + Environment.NewLine);
+            SbSql.Append("        ,ReceiveDate" + Environment.NewLine);
+            SbSql.Append("        ,AddName" + Environment.NewLine);
+            SbSql.Append("        ,AddDate" + Environment.NewLine);
+            SbSql.Append("        ,EditName" + Environment.NewLine);
+            SbSql.Append("        ,EditDate" + Environment.NewLine);
+            SbSql.Append("        ,OldUkey" + Environment.NewLine);
+            SbSql.Append("        ,SubmitDate" + Environment.NewLine);
+            SbSql.Append("        ,ArrivedQty" + Environment.NewLine);
+            SbSql.Append("        ,LineDry" + Environment.NewLine);
+            SbSql.Append("        ,Temperature" + Environment.NewLine);
+            SbSql.Append("        ,TumbleDry" + Environment.NewLine);
+            SbSql.Append("        ,Machine" + Environment.NewLine);
+            SbSql.Append("        ,HandWash" + Environment.NewLine);
+            SbSql.Append("        ,Composition" + Environment.NewLine);
+            SbSql.Append("        ,Neck" + Environment.NewLine);
+            SbSql.Append("        ,Status" + Environment.NewLine);
+            SbSql.Append("        ,SizeCode" + Environment.NewLine);
+            SbSql.Append("        ,LOtoFactory" + Environment.NewLine);
+            SbSql.Append("        ,MtlTypeID" + Environment.NewLine);
+            SbSql.Append("        ,Above50NaturalFibres" + Environment.NewLine);
+            SbSql.Append("        ,Above50SyntheticFibres" + Environment.NewLine);
+            SbSql.Append("        ,OrderID" + Environment.NewLine);
+            SbSql.Append("        ,NonSeamBreakageTest" + Environment.NewLine);
+            SbSql.Append("        ,SeamBreakageResult" + Environment.NewLine);
+            SbSql.Append("        ,OdourResult" + Environment.NewLine);
+            SbSql.Append("        ,WashResult" + Environment.NewLine);
+            SbSql.Append("        ,TestBeforePicture" + Environment.NewLine);
+            SbSql.Append("        ,TestAfterPicture" + Environment.NewLine);
+            SbSql.Append("FROM [GarmentTest_Detail]" + Environment.NewLine);
+            SbSql.Append("where ID = @ID" + Environment.NewLine);
+            SbSql.Append("and No = @No" + Environment.NewLine);
 
-
-
-
-            return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
+            return ExecuteList<GarmentTest_Detail_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
         }
-		/*更新Garment Test(Update) 詳細敘述如下*/
-        /// <summary>
-        /// 更新Garment Test
-        /// </summary>
-        /// <param name="Item">Garment Test成員</param>
-        /// <returns>回傳異動筆數</returns>
-		/// <info>Author: Admin; Date: 2021/08/23  </info>
-        /// <history>
-        /// xx.  YYYY/MM/DD   Ver   Author      Comments
-        /// ===  ==========  ====  ==========  ==========
-        /// 01.  2021/08/23  1.00    Admin        Create
-        /// </history>
-        public int Update(GarmentTest Item)
-        {
-            StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append("UPDATE [GarmentTest]"+ Environment.NewLine);
-            SbSql.Append("SET"+ Environment.NewLine);
-            if (Item.ID != null) { SbSql.Append("ID=@ID"+ Environment.NewLine); objParameter.Add("@ID", DbType.String, Item.ID);}
-            if (Item.FirstOrderID != null) { SbSql.Append(",FirstOrderID=@FirstOrderID"+ Environment.NewLine); objParameter.Add("@FirstOrderID", DbType.String, Item.FirstOrderID);}
-            if (Item.OrderID != null) { SbSql.Append(",OrderID=@OrderID"+ Environment.NewLine); objParameter.Add("@OrderID", DbType.String, Item.OrderID);}
-            if (Item.StyleID != null) { SbSql.Append(",StyleID=@StyleID"+ Environment.NewLine); objParameter.Add("@StyleID", DbType.String, Item.StyleID);}
-            if (Item.SeasonID != null) { SbSql.Append(",SeasonID=@SeasonID"+ Environment.NewLine); objParameter.Add("@SeasonID", DbType.String, Item.SeasonID);}
-            if (Item.BrandID != null) { SbSql.Append(",BrandID=@BrandID"+ Environment.NewLine); objParameter.Add("@BrandID", DbType.String, Item.BrandID);}
-            if (Item.Article != null) { SbSql.Append(",Article=@Article"+ Environment.NewLine); objParameter.Add("@Article", DbType.String, Item.Article);}
-            if (Item.MDivisionid != null) { SbSql.Append(",MDivisionid=@MDivisionid"+ Environment.NewLine); objParameter.Add("@MDivisionid", DbType.String, Item.MDivisionid);}
-            if (Item.DeadLine != null) { SbSql.Append(",DeadLine=@DeadLine"+ Environment.NewLine); objParameter.Add("@DeadLine", DbType.String, Item.DeadLine);}
-            if (Item.SewingInline != null) { SbSql.Append(",SewingInline=@SewingInline"+ Environment.NewLine); objParameter.Add("@SewingInline", DbType.String, Item.SewingInline);}
-            if (Item.SewingOffline != null) { SbSql.Append(",SewingOffline=@SewingOffline"+ Environment.NewLine); objParameter.Add("@SewingOffline", DbType.String, Item.SewingOffline);}
-            if (Item.Date != null) { SbSql.Append(",Date=@Date"+ Environment.NewLine); objParameter.Add("@Date", DbType.String, Item.Date);}
-            if (Item.Result != null) { SbSql.Append(",Result=@Result"+ Environment.NewLine); objParameter.Add("@Result", DbType.String, Item.Result);}
-            if (Item.Remark != null) { SbSql.Append(",Remark=@Remark"+ Environment.NewLine); objParameter.Add("@Remark", DbType.String, Item.Remark);}
-            if (Item.AddName != null) { SbSql.Append(",AddName=@AddName"+ Environment.NewLine); objParameter.Add("@AddName", DbType.String, Item.AddName);}
-            if (Item.AddDate != null) { SbSql.Append(",AddDate=@AddDate"+ Environment.NewLine); objParameter.Add("@AddDate", DbType.DateTime, Item.AddDate);}
-            if (Item.EditName != null) { SbSql.Append(",EditName=@EditName"+ Environment.NewLine); objParameter.Add("@EditName", DbType.String, Item.EditName);}
-            if (Item.EditDate != null) { SbSql.Append(",EditDate=@EditDate"+ Environment.NewLine); objParameter.Add("@EditDate", DbType.DateTime, Item.EditDate);}
-            if (Item.OldUkey != null) { SbSql.Append(",OldUkey=@OldUkey"+ Environment.NewLine); objParameter.Add("@OldUkey", DbType.String, Item.OldUkey);}
-            if (Item.SeamBreakageResult != null) { SbSql.Append(",SeamBreakageResult=@SeamBreakageResult"+ Environment.NewLine); objParameter.Add("@SeamBreakageResult", DbType.String, Item.SeamBreakageResult);}
-            if (Item.SeamBreakageLastTestDate != null) { SbSql.Append(",SeamBreakageLastTestDate=@SeamBreakageLastTestDate"+ Environment.NewLine); objParameter.Add("@SeamBreakageLastTestDate", DbType.String, Item.SeamBreakageLastTestDate);}
-            if (Item.OdourResult != null) { SbSql.Append(",OdourResult=@OdourResult"+ Environment.NewLine); objParameter.Add("@OdourResult", DbType.String, Item.OdourResult);}
-            if (Item.WashResult != null) { SbSql.Append(",WashResult=@WashResult"+ Environment.NewLine); objParameter.Add("@WashResult", DbType.String, Item.WashResult);}
-            SbSql.Append("WHERE 1 = 1" + Environment.NewLine);
-
-
-
-
-            return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
-        }
-		/*刪除Garment Test(Delete) 詳細敘述如下*/
-        /// <summary>
-        /// 刪除Garment Test
-        /// </summary>
-        /// <param name="Item">Garment Test成員</param>
-        /// <returns>回傳異動筆數</returns>
-		/// <info>Author: Admin; Date: 2021/08/23  </info>
-        /// <history>
-        /// xx.  YYYY/MM/DD   Ver   Author      Comments
-        /// ===  ==========  ====  ==========  ==========
-        /// 01.  2021/08/23  1.00    Admin        Create
-        /// </history>
-        public int Delete(GarmentTest Item)
-        {
-            StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append("DELETE FROM [GarmentTest]"+ Environment.NewLine);
-
-
-
-
-            return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
-        }
-	#endregion
+        #endregion
     }
 }
