@@ -61,6 +61,7 @@ left join PO_Supp_Detail po3 on c.POID = po3.ID
 left join Pass1 pEdit on pEdit.ID = cd.EditName
 left join pass1 pAdd on pAdd.ID = cd.AddName
 where cd.ID = @ID
+order by cd.id,cd.ColorFastnessGroup
 ";
             var detail = ExecuteList<Fabric_ColorFastness_Detail_Result>(CommandType.Text, sqlcmd2, objParameter);
 
@@ -302,8 +303,10 @@ and ColorFastnessGroup = @ColorFastnessGroup
 and SEQ1 = @Seq1
 and SEQ2 = @Seq2
 ";
+
+            ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter);
             foreach (var detailItem in needUpdateDetailList)
-            {
+            {   
                 SQLParameterCollection listDetailPar = new SQLParameterCollection();
                 string DetailResult = (detailItem.ResultChange.EqualString("Pass") && detailItem.ResultStain.EqualString("Pass")) ? "Pass" : "Fail";
 

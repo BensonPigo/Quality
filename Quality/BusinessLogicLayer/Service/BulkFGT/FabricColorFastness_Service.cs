@@ -430,11 +430,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 List<Fabric_ColorFastness_Detail_Result> dr = new List<Fabric_ColorFastness_Detail_Result>();
                 foreach (var item in result.Detail)
                 {
-                    if (MyUtility.Check.Empty(item.SubmitDate))
+                    if (MyUtility.Check.Empty(dtSubDate.Rows[i]["submitDate"]) && MyUtility.Check.Empty(item.SubmitDate))
                     {
                         dr.Add(item);
                     }
-                    else
+                    else if (!MyUtility.Check.Empty(dtSubDate.Rows[i]["submitDate"]) && !MyUtility.Check.Empty(item.SubmitDate))
                     {
                         if (DateTime.Compare(Convert.ToDateTime(item.SubmitDate), Convert.ToDateTime(dtSubDate.Rows[i]["submitDate"])) == 0)
                         {
