@@ -407,20 +407,18 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         _IGarmentTestDetailProvider = new GarmentTestDetailProvider(_ISQLDataTransaction);
                         _IGarmentTestProvider = new GarmentTestProvider(_ISQLDataTransaction);
 
-                        // all result 有任一個是Fail 就寄信
-                        result.sentMail = !_IGarmentTestDetailProvider.Chk_AllResult(ID, No);
+                    
                         // 重新判斷Result
                         if (_IGarmentTestDetailProvider.Encode_GarmentTestDetail(ID, No, "Confirmed") == false ||
                             _IGarmentTestDetailProvider.Update_GarmentTestDetail_Result(ID, No) == false ||
                             _IGarmentTestProvider.Update_GarmentTest_Result(ID) == false)
                         {
                             result.Result = false;
-                            result.sentMail = true;
                         }
-                        else
-                        {
-                            result.sentMail = false;
-                        }
+
+                        // all result 有任一個是Fail 就寄信
+                        result.sentMail = _IGarmentTestDetailProvider.Chk_AllResult(ID, No);
+
                         break;
                     case DetailStatus.Amend:
                         _IGarmentTestDetailProvider = new GarmentTestDetailProvider(_ISQLDataTransaction);

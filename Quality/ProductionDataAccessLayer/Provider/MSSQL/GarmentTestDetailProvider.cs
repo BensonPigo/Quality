@@ -245,7 +245,20 @@ and No = @No
 
 --
 ";
-            return ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter).AsEnumerable().Where(x => x.Equals("Fail")).Any();
+            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
+            if (dt != null && dt.Rows.Count > 0)
+            {
+                if (dt.AsEnumerable().Where(x => x["Result"].Equals("Fail")).Any())
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public string Get_LastResult(string ID)
