@@ -269,6 +269,11 @@ namespace Quality.Areas.BulkFGT.Controllers
         [HttpPost]
         private List<SelectListItem> GetArtworkTypeIDList(string brandID, string seasonID, string styleID)
         {
+            if (string.IsNullOrEmpty(brandID) || string.IsNullOrEmpty(seasonID) || string.IsNullOrEmpty(styleID))
+            {
+                return new List<SelectListItem>();
+            }
+
             IMockupCrockingService mockupCrockingService = new MockupCrockingService();
             StyleArtwork_Request styleArtwork_Request = new StyleArtwork_Request()
             {

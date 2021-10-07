@@ -163,7 +163,7 @@ namespace BusinessLogicLayer.Service.Tests
                 MockupWash_ViewModel MockupWash = new MockupWash_ViewModel()
                 {
                     ReportNo = "VM1WA21090002",
-                    POID = "up",
+                    POID = "up2",
                     StyleID = "up",
                     SeasonID = "up",
                     BrandID = "up",
@@ -177,7 +177,7 @@ namespace BusinessLogicLayer.Service.Tests
                     ReleasedDate = DateTime.Now,
                     Result = "up",
                     Technician = "up",
-                    MR = "up",
+                    //MR = "up",
                     EditName = "up",
                     OtherMethod = false,
                     MethodID = "b",

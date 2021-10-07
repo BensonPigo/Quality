@@ -603,7 +603,10 @@
 
             var TargetID = $(this).attr("idv");
 
-            if ($(this).val() == "") { return; }
+            if ($(this).val() == "") {
+                $("#Details_" + TargetID + "__Dyelot").val('');
+                return;
+            }
 
             if ($("#Details_" + TargetID + "__SEQ").val() == '' || $("#Details_" + TargetID + "__SEQ").val() == undefined) {
                 msg.WithError('Please input SEQ# before choose Roll#.');
@@ -622,19 +625,13 @@
                 data: JSON.stringify({ POID: POID, Seq1: SEQ1, Seq2: SEQ2, Roll: $(this).val(), ReturnType: "JSON" }),
                 async: true,
                 success: function (data) {
-
-                    var val = $("#Details_" + TargetID + "__Roll").val();
-
                     if (data.length == 0) {
-
                         $("#Details_" + TargetID + "__Roll").val('');
                         $("#Details_" + TargetID + "__Dyelot").val('');
-
                         msg.WithError('Roll# Not Found');
                     }
                     else {
-
-                        if (val == "") {
+                        if (data[0].Roll == "") {
                             $("#Details_" + TargetID + "__Roll").val('');
                             $("#Details_" + TargetID + "__Dyelot").val('');
                         }
@@ -642,7 +639,6 @@
                             $("#Details_" + TargetID + "__Roll").val(data[0].Roll);
                             $("#Details_" + TargetID + "__Dyelot").val(data[0].Dyelot);
                         }
-
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
