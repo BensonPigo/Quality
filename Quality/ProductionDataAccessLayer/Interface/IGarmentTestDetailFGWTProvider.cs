@@ -9,9 +9,9 @@ namespace ProductionDataAccessLayer.Interface
     {
         IList<GarmentTest_Detail_FGWT_ViewModel> Get_GarmentTest_Detail_FGWT(string ID, string No);
 
-        bool Chk_FGWTExists(GarmentTest_Detail source);
+        bool Chk_FGWTExists(GarmentTest_Detail_ViewModel source);
 
-        bool Create_FGWT(GarmentTest Master, GarmentTest_Detail source);
+        bool Create_FGWT(GarmentTest Master, GarmentTest_Detail_ViewModel source);
 
         bool Update_FGWT(List<GarmentTest_Detail_FGWT_ViewModel> source);
     }

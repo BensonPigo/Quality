@@ -178,12 +178,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public GarmentTest_ViewModel Save_GarmentTest(GarmentTest_ViewModel garmentTest_ViewModel, List<GarmentTest_Detail> detail, string UserID)
+        public GarmentTest_ViewModel Save_GarmentTest(GarmentTest_ViewModel garmentTest_ViewModel, List<GarmentTest_Detail_ViewModel> detail, string UserID)
         {
             // 僅傳入 List<GarmentTest_Detail> detail
 
             GarmentTest_ViewModel result = new GarmentTest_ViewModel();
-            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            _IGarmentTestProvider = new GarmentTestProvider(Common.ProductionDataAccessLayer);
             _IGarmentTestDetailProvider = new GarmentTestDetailProvider(Common.ProductionDataAccessLayer);
             try
             {
@@ -207,23 +207,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     result.SaveResult = false;
                     result.ErrMsg = emptyMsg;
-                    _ISQLDataTransaction.CloseConnection();
                     return result;
                 }
 
                 #endregion
 
-                _IGarmentTestProvider = new GarmentTestProvider(_ISQLDataTransaction);
-                _IGarmentTestDetailProvider = new GarmentTestDetailProvider(_ISQLDataTransaction);
-
                 // 先將表身資料存檔
-                if (_IGarmentTestProvider.Save_GarmentTest(garmentTest_ViewModel, detail, UserID) == false)
-                {
-                    result.SaveResult = false;
-                    result.ErrMsg = "save GarmentTest data is empry";
-                    _ISQLDataTransaction.RollBack();
-                    return result;
-                }
+                _IGarmentTestProvider.Save_GarmentTest(garmentTest_ViewModel, detail, UserID);
 
                 // 再判斷Detail的Result
                 foreach (var item in detail)
@@ -232,53 +222,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     {
                         result.SaveResult = false;
                         result.ErrMsg = "update GarmentTest detail result is empry";
-                        _ISQLDataTransaction.RollBack();
                         return result;
                     }
                 }
-
-                // 最後更新當前所有Result資料
-                if (_IGarmentTestProvider.Update_GarmentTest_Result(garmentTest_ViewModel.ID.ToString()) == false)
-                {
-                    result.SaveResult = false;
-                    result.ErrMsg = "update GarmentTest all result is empry";
-                    _ISQLDataTransaction.RollBack();
-                    return result;
-                }
-                _ISQLDataTransaction.Commit();
-
-                // 刪除 前端資料不存在但DB存在的資料
-                // Detail
-                var detailDB = _IGarmentTestDetailProvider.Get_GarmentTestDetail(
-                    new GarmentTest_ViewModel
-                    {
-                        ID = garmentTest_ViewModel.ID
-                    }).ToList();
-
-                foreach (var item in detailDB)
-                {
-                    // 刪除不存在前端detail的資料
-                    if (!detail.Where(x => x.ID.Equals(item.ID) && x.No.Equals(item.No)).Any())
-                    {
-                        if (item.Status.ToUpper() == "CONFIRMED")
-                        {
-                            result.SaveResult = false;
-                            result.ErrMsg = $@"TestNo {item.No} is confirmed cannot delete.";
-                            return result;
-                        }
-                        _IGarmentTestDetailProvider.Delete_GarmentTestDetail(item.ID.ToString(), item.No.ToString());
-                    }
-                }
-
-
             }
             catch (Exception ex)
             {
-                _ISQLDataTransaction.RollBack();
                 result.SaveResult = false;
                 result.ErrMsg = ex.Message;
             }
-            finally { _ISQLDataTransaction.CloseConnection(); }
 
             return result;
         }
@@ -463,6 +415,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
                             _IGarmentTestProvider.Update_GarmentTest_Result(ID) == false)
                         {
                             result.Result = false;
+                            result.sentMail = true;
+                        }
+                        else
+                        {
+                            result.sentMail = false;
                         }
                         break;
                     case DetailStatus.Amend:
