@@ -73,6 +73,8 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
             SbSql.Append(@"
+SELECT Refno = ''
+UNION
 select sb.Refno
 from Style_BOA sb
 inner join Fabric f on sb.SCIRefno = f.SCIRefno
@@ -98,7 +100,7 @@ Where 1 = 1
                 objParameter.Add("@BrandID", DbType.String, Item.BrandID);
             }
 
-            SbSql.Append("Order by sb.Refno");
+            SbSql.Append("Order by Refno");
 
             return ExecuteList<Style_BOA>(CommandType.Text, SbSql.ToString(), objParameter);
         }

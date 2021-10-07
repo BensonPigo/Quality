@@ -29,18 +29,18 @@ from Style_Artwork
 Where 1 = 1
 ");
 
-            if (Item.StyleUkey != null)
-            {
-                SbSql.Append("And StyleUkey = @StyleUkey" + Environment.NewLine);
-                objParameter.Add("@StyleUkey", DbType.Int64, Item.StyleUkey);
-            }
-
             if (!string.IsNullOrEmpty(Item.BrandID) && !string.IsNullOrEmpty(Item.SeasonID) && !string.IsNullOrEmpty(Item.StyleID))
             {
                 SbSql.Append("And StyleUkey = (select ukey from Style where ID = @StyleID and SeasonID = @SeasonID and BrandID = @BrandID)" + Environment.NewLine);
                 objParameter.Add("@StyleID", DbType.String, Item.StyleID);
                 objParameter.Add("@SeasonID", DbType.String, Item.SeasonID);
                 objParameter.Add("@BrandID", DbType.String, Item.BrandID);
+            }
+
+            if (!string.IsNullOrEmpty(Item.POID))
+            {
+                SbSql.Append("AND StyleUkey = (SELECT StyleUkey From Orders o  WHERE o.ID = @POID )" + Environment.NewLine);
+                objParameter.Add("@POID", DbType.String, Item.POID);
             }
 
             SbSql.Append("order by ArtworkTypeID");

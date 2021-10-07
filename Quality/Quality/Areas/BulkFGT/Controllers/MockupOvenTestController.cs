@@ -312,9 +312,20 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
-        public ActionResult GetArtworkTypeID_Source(string BrandID, string SeasonID, string StyleID)
+        public JsonResult GetArtwrok_Ajax(string POID, string BrandID, string SeasonID, string StyleID)
         {
-            return Json(GetArtworkTypeIDList(BrandID, SeasonID, StyleID));
+            List<SelectListItem> datas = new List<SelectListItem>();
+            
+            if (!string.IsNullOrEmpty(POID))
+            {
+                datas = this.GetArtworkTypeIDListByPOID(POID);
+            }
+            else
+            {
+                datas = this.GetArtworkTypeIDList(BrandID, SeasonID, StyleID);
+            }
+
+            return Json(datas);
         }
 
         private List<SelectListItem> GetArtworkTypeIDList(string BrandID, string SeasonID, string StyleID)
@@ -327,6 +338,15 @@ namespace Quality.Areas.BulkFGT.Controllers
             };
             return _MockupOvenService.GetArtworkTypeID(styleArtwork_Request);
         }
+        private List<SelectListItem> GetArtworkTypeIDListByPOID(string POID)
+        {
+            StyleArtwork_Request styleArtwork_Request = new StyleArtwork_Request()
+            {
+                POID = POID,
+            };
+            return _MockupOvenService.GetArtworkTypeID(styleArtwork_Request);
+        }
+
 
         public ActionResult GetAccessoryRefNo_Source(string BrandID, string SeasonID, string StyleID)
         {

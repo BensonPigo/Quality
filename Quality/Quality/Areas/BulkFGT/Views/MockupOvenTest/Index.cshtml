@@ -285,20 +285,22 @@
                                     </td>
                                     <td><h5>Article</h5></td>
                                     <td>
-                                        @Html.TextBoxFor(o => o.Article, "", new { @class = "OnlyEdit"})
+                                        @Html.TextBoxFor(o => o.Article, "", new { @class = "OnlyEdit" })
                                         <input id="btnDetailArticleSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
                                     </td>
                                 </tr>
                                 <tr>
                                     <td><h5>Artwork</h5></td>
                                     <td>
-                                        <select class="OnlyEdit" id="ArtworkTypeID" name="ArtworkTypeID" onchange="ArtworkTypeChange()">
+                                        @*<select class="OnlyEdit" id="ArtworkTypeID" name="ArtworkTypeID" onchange="ArtworkTypeChange()">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ArtworkTypeID_Source)
                                             {
                                                 string selected = item.Text.Equals(Model.ArtworkTypeID) ? "selected" : "";
                                                 <option value="@item.Value" @selected>@item.Text</option>
                                             }
-                                        </select>
+                                        </select>*@
+
+                                        @Html.DropDownListFor(o => Model.ArtworkTypeID, (List<SelectListItem>)ViewBag.ArtworkTypeID_Source, new { @value = Model.ArtworkTypeID , @class = "OnlyEdit", @onchange = "ArtworkTypeChange()" })
                                     </td>
                                     <td><h5>Remark</h5></td>
                                     <td colspan="3">
@@ -309,7 +311,7 @@
                                     <td><h5>T1/SubconName</h5></td>
                                     <td>
                                         <div class="input-group">
-                                            @Html.TextBoxFor(o => o.T1Subcon, "", new { @class = "OnlyEdit" ,@style= "width: 5vw" })
+                                            @Html.TextBoxFor(o => o.T1Subcon, "", new { @class = "OnlyEdit", @style = "width: 5vw" })
                                             @Html.TextBoxFor(o => o.T1SubconAbb, "", new { @readonly = "readonly" })
                                             <input id="btnDetailSubconNameSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
                                         </div>
@@ -325,13 +327,13 @@
                                     </td>
                                     <td><h5>Test Date</h5></td>
                                     <td>
-                                        @Html.TextBoxFor(o => o.TestDate, "{0:yyyy/MM/dd}", new {  @class = "date-picker OnlyEdit" })
+                                        @Html.TextBoxFor(o => o.TestDate, "{0:yyyy/MM/dd}", new { @class = "date-picker OnlyEdit" })
                                     </td>
                                 </tr>
                                 <tr>
                                     <td><h5>Receive Date</h5></td>
                                     <td>
-                                        @Html.TextBoxFor(o => o.ReceivedDate, "{0:yyyy/MM/dd}", new {  @class = "date-picker OnlyEdit" })
+                                        @Html.TextBoxFor(o => o.ReceivedDate, "{0:yyyy/MM/dd}", new { @class = "date-picker OnlyEdit" })
                                     </td>
                                     <td><h5>Released Date</h5></td>
                                     <td>
@@ -459,7 +461,7 @@
                     </div>
 
                     <div style="margin-top: 1em; width: 92vw; overflow:auto;">
-                        <table  cellspacing="100"  class="DetailTable DataTable table table-striped display;" style="width: 120vw">
+                        <table cellspacing="100" class="DetailTable DataTable table table-striped display;" style="width: 120vw">
                             <thead>
                                 <tr>
 
@@ -495,16 +497,17 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <select id="MockupOven_Detail_@{@i}__AccessoryRefno" name="MockupOven_Detail[@i].AccessoryRefno" class="OnlyEdit AccessoryRefno" >
+                                            @*<select id="MockupOven_Detail_@{@i}__AccessoryRefno" name="MockupOven_Detail[@i].AccessoryRefno" class="OnlyEdit AccessoryRefno" >
                                                 @foreach (var item in (List<SelectListItem>)ViewBag.AccessoryRefNo_Source)
                                                 {
                                                     string selected = item.Text.Equals(Model.MockupOven_Detail[i].AccessoryRefno) ? "selected" : "";
                                                     <option value="@item.Value" @selected>@item.Text</option>
                                                 }
-                                            </select>
+                                                                                    </select>*@
+                                            @Html.DropDownListFor(o => Model.MockupOven_Detail[i].AccessoryRefno, (List<SelectListItem>)ViewBag.AccessoryRefNo_Source,new { @value = Model.MockupOven_Detail[i].AccessoryRefno, @class = "OnlyEdit" })
                                         </td>
                                         <td>
-                                            @Html.TextBoxFor(o => Model.MockupOven_Detail[i].FabricRefNo, "", new { @class = "OnlyEdit"})
+                                            @Html.TextBoxFor(o => Model.MockupOven_Detail[i].FabricRefNo, "", new { @class = "OnlyEdit" })
                                         </td>
                                         <td>
                                             <div class="input-group">
@@ -514,7 +517,7 @@
                                             </div>
                                         </td>
                                         <td>
-                                            @{ 
+                                            @{
                                                 styleColor = "red";
                                                 if (Model.MockupOven_Detail[i].Result == "Pass")
                                                 {
@@ -531,10 +534,10 @@
 
                                         </td>
                                         <td>
-                                            <input id="MockupOven_Detail_@{@i}__Remark" name="MockupOven_Detail[@{@i}].Remark" type="text" class="OnlyEdit" value="@Model.MockupOven_Detail[i].Remark" />                                            
+                                            <input id="MockupOven_Detail_@{@i}__Remark" name="MockupOven_Detail[@{@i}].Remark" type="text" class="OnlyEdit" value="@Model.MockupOven_Detail[i].Remark" />
                                         </td>
                                         <td>
-                                            <input id="MockupOven_Detail_@{@i}__LastUpdate" name="MockupOven_Detail[@{@i}].LastUpdate" readonly="readonly" type="text" value="@Model.MockupOven_Detail[i].LastUpdate" />                                          
+                                            <input id="MockupOven_Detail_@{@i}__LastUpdate" name="MockupOven_Detail[@{@i}].LastUpdate" readonly="readonly" type="text" value="@Model.MockupOven_Detail[i].LastUpdate" />
                                         </td>
                                         <td>
                                             <div style="width:5vw;">
@@ -652,7 +655,7 @@
         }
 
         var result = $('#ArtworkTypeID').val();
-        if (result == "HEAT TRANSFER") {
+        if (result != "HEAT TRANSFER") {
             $('.AccessoryRefno').val('').attr("disabled", "disabled");
         }
         else {
@@ -724,6 +727,7 @@
                         if (data.Article != "") {
                             $('#Article').val(data.Article);
                         }
+                        GetArtworkDropDown();
 
                     }
                 },
@@ -736,7 +740,7 @@
         $("#" + name + "BrandID").blur(function () {
             if ($(this).val() == '') {
                 if (name == '') {
-                    GetArtworkTypeIDList();
+                    GetArtworkDropDown();
                     ClearColor();
                 }
 
@@ -756,7 +760,7 @@
                     }
 
                     if (name == '') {
-                        GetArtworkTypeIDList();
+                        GetArtworkDropDown();
                         GetAccessoryRefNoList();
                     }
                 },
@@ -769,7 +773,7 @@
         $("#" + name + "SeasonID").blur(function () {
             if ($(this).val() == '') {
                 if (name == '') {
-                    GetArtworkTypeIDList();
+                    GetArtworkDropDown();
                 }
 
                 return;
@@ -790,7 +794,7 @@
                     }
 
                     if (name == '') {
-                        GetArtworkTypeIDList();
+                        GetArtworkDropDown();
                         GetAccessoryRefNoList();
                     }
                 },
@@ -804,7 +808,7 @@
             if ($(this).val() == '') {
 
                 if (name == '') {
-                    GetArtworkTypeIDList();
+                    GetArtworkDropDown();
                 }
 
                 return;
@@ -826,7 +830,7 @@
                     }
 
                     if (name == '') {
-                        GetArtworkTypeIDList();
+                        GetArtworkDropDown();
                         GetAccessoryRefNoList();
                     }
                 },
@@ -1002,7 +1006,7 @@
             EditType = "New";
             $("#Save").attr("name", "Action:New");
             IsEditModeChange();
-            GetArtworkTypeIDList();
+            GetArtworkDropDown();
 
             $('.DetailTable > tbody > tr').each(function () {
                 $(this).remove();
@@ -1260,20 +1264,20 @@
 
     function GetBrandList(data, targetID) {
         $('#' + targetID).val(data);
-        GetArtworkTypeIDList();
+        GetArtworkDropDown();
         GetAccessoryRefNoList();
         ClearColor();
     }
 
     function GetSeasonList(data, targetID) {
         $('#' + targetID).val(data);
-        GetArtworkTypeIDList();
+        GetArtworkDropDown();
         GetAccessoryRefNoList();
     }
 
     function GetStyleList(data, targetID) {
         $('#' + targetID).val(data);
-        GetArtworkTypeIDList();
+        GetArtworkDropDown();
         GetAccessoryRefNoList();
     }
 
@@ -1312,31 +1316,6 @@
 
         $('#MockupOven_Detail_' + targetID ).val(id.join(';'));
         $('#MockupOven_Detail_' + targetID + 'Name').val(name.join(';'));
-    }
-
-    function GetArtworkTypeIDList() {
-        $('#ArtworkTypeID').empty();
-
-        var BrandID = $('#BrandID').val();
-        var SeasonID = $('#SeasonID').val();
-        var StyleID = $('#StyleID').val();
-
-        $.ajax({
-            url: '@Url.Action("GetArtworkTypeID_Source", "MockupOvenTest")',
-            type: 'POST',
-            data: jQuery.param({ BrandID: BrandID, SeasonID: SeasonID, StyleID: StyleID }),
-            global: false,
-            success: function (response) {
-                if (response) {
-                    $.each(response, function (idx, obj) {
-                        $('#ArtworkTypeID').append($('<option></option>').val(obj.Value).html(obj.Text));
-                    });
-                }
-            },
-            error: function (xhr, status) {
-                msg.WithError("Get View fail:" + xhr.responseText + " " + xhr.status);
-            }
-        });
     }
 
     function GetAccessoryRefNoList() {
@@ -1456,5 +1435,33 @@
                 });
             }
         });
+    }
+
+    function GetArtworkDropDown() {
+
+        $("#ArtworkTypeID").empty();
+
+        if ($("#POID").val() != "" || ($("#BrandID").val() != "" && $("#SeasonID").val() != "" && $("#StyleID").val() != "")) {
+            $.ajax({
+                url: "@Url.Action("GetArtwrok_Ajax")",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ POID: $("#POID").val(), BrandID: $("#BrandID").val(), SeasonID: $("#SeasonID").val(), StyleID: $("#StyleID").val() }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        msg.WithError('Artwork Not Found');
+                    }
+                    else {
+                        $.each(data, function (idx, obj) {
+                            $('#ArtworkTypeID').append($('<option></option>').val(obj.Value).html(obj.Text));
+                        });
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        }
     }
 </script>

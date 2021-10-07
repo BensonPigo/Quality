@@ -238,8 +238,6 @@ NOTE: This is an automated reply from a system mailbox. Please do not reply to t
                     }
                 }
 
-                message.To.Add("lawrence.huang@sportscity.com.tw;");
-                message.To.Add("kate.chang@sportscity.com.tw");
                 foreach (var cc in ccAddress.Split(';'))
                 {
                     if (!string.IsNullOrEmpty(cc))
