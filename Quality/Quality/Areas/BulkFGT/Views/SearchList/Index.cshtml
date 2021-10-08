@@ -326,7 +326,7 @@
             window.open('@Url.Action("BrandList", "PublicWondow",new { Area=""})', WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
         }
         if (WindowType == "SeasonID") {
-            window.open('@Url.Action("SeasonList", "PublicWondow",new { Area=""})', WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
+            window.open(`@Url.Action("SeasonList", "PublicWondow",new { Area=""})?BrandID=${$("#BrandID").val()}`, WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
         }
         if (WindowType == "StyleID") {
             var para = "?BrandID=" + $('#BrandID').val() + "&SeasonID=" + $('#SeasonID').val();

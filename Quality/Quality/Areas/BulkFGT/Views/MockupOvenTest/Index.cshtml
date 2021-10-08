@@ -147,14 +147,20 @@
             </div>
             <div class="breadcrumb queryHeader" style="justify-content: flex-end;">
                 <h4 style="margin-right: 1em;color:white">Report No</h4>
-                <select id="Request_ReportNo" name="Request.ReportNo" onchange="ReportNoChange(this.value)">
-                    @foreach (var item in (List<SelectListItem>)ViewBag.ReportNo_Source)
-                    {
-                        string reportNO = Model.Request != null && !string.IsNullOrEmpty(Model.Request.ReportNo) ? Model.Request.ReportNo : string.Empty;
-                        string selected = item.Value.Equals(reportNO) ? "selected" : "";
-                        <option value="@item.Value" @selected>@item.Text</option>
-                    }
-                </select>
+                @*<select id="Request_ReportNo" name="Request.ReportNo" onchange="ReportNoChange(this.value)">
+                        @foreach (var item in (List<SelectListItem>)ViewBag.ReportNo_Source)
+                        {
+                            string reportNO = Model.Request != null && !string.IsNullOrEmpty(Model.Request.ReportNo) ? Model.Request.ReportNo : string.Empty;
+                            string selected = item.Value.Equals(reportNO) ? "selected" : "";
+                            <option value="@item.Value" @selected>@item.Text</option>
+                        }
+                    </select>*@
+
+                @Html.DropDownListFor(o => Model.Request.ReportNo, (List<SelectListItem>)ViewBag.ReportNo_Source, new
+                {
+                    @value = Model.Request.ReportNo,
+                    @onchange = "ReportNoChange(this.value)"
+                })
                 <input id="btnNew" type="button" class="button" style="margin-left:1em;border:0;cursor:pointer;" name="New" value="New">
             </div>
         </header>
@@ -293,14 +299,14 @@
                                     <td><h5>Artwork</h5></td>
                                     <td>
                                         @*<select class="OnlyEdit" id="ArtworkTypeID" name="ArtworkTypeID" onchange="ArtworkTypeChange()">
-                                            @foreach (var item in (List<SelectListItem>)ViewBag.ArtworkTypeID_Source)
-                                            {
-                                                string selected = item.Text.Equals(Model.ArtworkTypeID) ? "selected" : "";
-                                                <option value="@item.Value" @selected>@item.Text</option>
-                                            }
-                                        </select>*@
+                                                @foreach (var item in (List<SelectListItem>)ViewBag.ArtworkTypeID_Source)
+                                                {
+                                                    string selected = item.Text.Equals(Model.ArtworkTypeID) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>*@
 
-                                        @Html.DropDownListFor(o => Model.ArtworkTypeID, (List<SelectListItem>)ViewBag.ArtworkTypeID_Source, new { @value = Model.ArtworkTypeID , @class = "OnlyEdit", @onchange = "ArtworkTypeChange()" })
+                                        @Html.DropDownListFor(o => Model.ArtworkTypeID, (List<SelectListItem>)ViewBag.ArtworkTypeID_Source, new { @value = Model.ArtworkTypeID, @class = "OnlyEdit", @onchange = "ArtworkTypeChange()" })
                                     </td>
                                     <td><h5>Remark</h5></td>
                                     <td colspan="3">
@@ -484,6 +490,7 @@
                                     <tr idx="@i">
                                         <td>
                                             @Html.Hidden("Seq", "", new { @idx = i })
+                                            @Html.HiddenFor(o=>Model.MockupOven_Detail[i].Ukey)
                                             @Html.TextBoxFor(o => Model.MockupOven_Detail[i].TypeofPrint, "", new { @class = "OnlyEdit" })
                                         </td>
                                         <td style="width:10vw;">
@@ -497,14 +504,14 @@
                                             </div>
                                         </td>
                                         <td>
-                                            @*<select id="MockupOven_Detail_@{@i}__AccessoryRefno" name="MockupOven_Detail[@i].AccessoryRefno" class="OnlyEdit AccessoryRefno" >
+                                            <select id="MockupOven_Detail_@{@i}__AccessoryRefno" name="MockupOven_Detail[@i].AccessoryRefno" class="OnlyEdit AccessoryRefno" >
                                                 @foreach (var item in (List<SelectListItem>)ViewBag.AccessoryRefNo_Source)
                                                 {
                                                     string selected = item.Text.Equals(Model.MockupOven_Detail[i].AccessoryRefno) ? "selected" : "";
                                                     <option value="@item.Value" @selected>@item.Text</option>
                                                 }
-                                                                                    </select>*@
-                                            @Html.DropDownListFor(o => Model.MockupOven_Detail[i].AccessoryRefno, (List<SelectListItem>)ViewBag.AccessoryRefNo_Source,new { @value = Model.MockupOven_Detail[i].AccessoryRefno, @class = "OnlyEdit" })
+                                                                                    </select>
+                                            @*@Html.DropDownList("MockupOven_Detail_0__AccessoryRefno", (List<SelectListItem>)ViewData["AccessoryRefNo_Source"], new { @name= "MockupOven_Detail[0].AccessoryRefno",@value=Model.MockupOven_Detail[i].AccessoryRefno,  @class = "OnlyEdit AccessoryRefno" })*@
                                         </td>
                                         <td>
                                             @Html.TextBoxFor(o => Model.MockupOven_Detail[i].FabricRefNo, "", new { @class = "OnlyEdit" })
@@ -524,14 +531,20 @@
                                                     styleColor = "blue";
                                                 }
                                             }
-                                            <select id="MockupOven_Detail_@{@i}Result" name="MockupOven_Detail[@i].Result" class="OnlyEdit result @styleColor" onchange="changeResult()">
-                                                @foreach (var item in (List<SelectListItem>)ViewBag.ResultList)
-                                                {
-                                                    string selected = item.Text.Equals(Model.MockupOven_Detail[i].Result) ? "selected" : "";
-                                                    <option value="@item.Value" @selected>@item.Text</option>
-                                                }
-                                            </select>
+                                            @*<select id="MockupOven_Detail_@{@i}Result" name="MockupOven_Detail[@i].Result" class="OnlyEdit result @styleColor" onchange="changeResult()">
+                                                    @foreach (var item in (List<SelectListItem>)ViewBag.ResultList)
+                                                    {
+                                                        string selected = item.Text.Equals(Model.MockupOven_Detail[i].Result) ? "selected" : "";
+                                                        <option value="@item.Value" @selected>@item.Text</option>
+                                                    }
+                                                </select>*@
 
+                                            @Html.DropDownListFor(o => Model.MockupOven_Detail[i].Result, (List<SelectListItem>)ViewBag.ResultList, new
+                                           {
+                                               @value = Model.Request.ReportNo,
+                                               @class = "OnlyEdit result " + styleColor,
+                                               @onchange = "changeResult()"
+                                           })
                                         </td>
                                         <td>
                                             <input id="MockupOven_Detail_@{@i}__Remark" name="MockupOven_Detail[@{@i}].Remark" type="text" class="OnlyEdit" value="@Model.MockupOven_Detail[i].Remark" />
@@ -656,10 +669,10 @@
 
         var result = $('#ArtworkTypeID').val();
         if (result != "HEAT TRANSFER") {
-            $('.AccessoryRefno').val('').attr("disabled", "disabled");
+            //$('.AccessoryRefno').val('').attr("disabled", "disabled");
         }
         else {
-            $('.AccessoryRefno').removeAttr("disabled");
+            //$('.AccessoryRefno').removeAttr("disabled");
         }
     }
 
@@ -1334,13 +1347,13 @@
             global: false,
             success: function (response) {
                 $('.DetailTable > tbody > tr').each(function (index, value) {
-                    $("#MockupOven_Detail_" + index + "__AccessoryRefNo_Source").empty();
+                    $("#MockupOven_Detail_" + index + "__AccessoryRefNo").empty();
                 });
 
                 if (response) {
                     $('.DetailTable > tbody > tr').each(function (index, value) {
                         $.each(response, function (idx, obj) {
-                            $("#MockupOven_Detail_" + index + "__AccessoryRefNo_Source").append($('<option></option>').val(obj.Value).html(obj.Text));
+                            $("#MockupOven_Detail_" + index + "__AccessoryRefNo").append($('<option></option>').val(obj.Value).html(obj.Text));
                         });
                     });
                 }

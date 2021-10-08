@@ -167,12 +167,6 @@ UPDATE [MockupOven]
 SET
     EditDate = GETDATE()
     ,EditName=@EditName
-    ,POID=@POID
-    ,StyleID=@StyleID
-    ,SeasonID=@SeasonID
-    ,BrandID=@BrandID
-    ,Article=@Article
-    ,ArtworkTypeID=@ArtworkTypeID
     ,Remark=@Remark
     ,T1Subcon=@T1Subcon
     ,T2Supplier=@T2Supplier

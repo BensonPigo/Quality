@@ -107,7 +107,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(model.ReportNo_Source);
             ViewBag.ResultList = model.Result_Source; ;
             ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(model.Request.BrandID, model.Request.SeasonID, model.Request.StyleID);
-            ViewBag.AccessoryRefNo_Source = GetAccessoryRefNoList(model.Request.BrandID, model.Request.SeasonID, model.Request.StyleID);
+            ViewData["AccessoryRefNo_Source"] = GetAccessoryRefNoList(model.Request.BrandID, model.Request.SeasonID, model.Request.StyleID);
             ViewBag.FactoryID = this.FactoryID;
             ViewBag.UserMail = this.UserMail;
             return View("Index", model);

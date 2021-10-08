@@ -229,7 +229,7 @@ where m.Type = 'B'
 
             #region Fabric Oven Test (515) 
             string type6 = $@"
-select DISTINCT type= 'Fabric Oven Test (515)'
+select DISTINCT Type= 'Fabric Oven Test (515)'
         ,ReportNo = cast(f.TestNo as varchar(50))
 		,OrderID = o.POID
 		,o.StyleID
