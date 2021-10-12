@@ -123,7 +123,11 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         public JsonResult SaveDetail(GarmentTest_ViewModel main, List<GarmentTest_Detail_ViewModel> details)
-        {            
+        {
+            if (details == null)
+            {
+                details = new List<GarmentTest_Detail_ViewModel>();
+            }
             GarmentTest_ViewModel result = _GarmentTest_Service.Save_GarmentTest(main, details, this.UserID);
 
             GarmentTest_Result result1 = new GarmentTest_Result()

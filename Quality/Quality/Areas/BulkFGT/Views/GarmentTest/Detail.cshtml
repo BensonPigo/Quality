@@ -294,23 +294,24 @@
                                         <tr>
                                             <td><h4>Line Dry</h4></td>
                                             <td>
-                                                @{ 
-                                                    string chkLineDry = Model.Detail.LineDry.HasValue ? Model.Detail.LineDry.Value ?  "checked" : string.Empty : string.Empty;
-                                                } 
+                                                @{
+                                                    string chkLineDry = Model.Detail.LineDry.HasValue ? Model.Detail.LineDry.Value ? "checked" : string.Empty : string.Empty;
+                                                    string chkTumbleDry = Model.Detail.TumbleDry.HasValue ? Model.Detail.TumbleDry.Value ? "checked" : string.Empty : string.Empty;
+                                                    string chkHandWash = Model.Detail.HandWash.HasValue ? Model.Detail.HandWash.Value ? "checked" : string.Empty : string.Empty;
+
+                                                    if (string.IsNullOrEmpty(chkLineDry) && string.IsNullOrEmpty(chkTumbleDry) && string.IsNullOrEmpty(chkHandWash))
+                                                    {
+                                                        chkLineDry = "checked";
+                                                    }
+                                                }
                                                 <input class="bigSize" id="Detail_DrySelect" name="Detail.DrySelect" type="radio" value="LineDry" @chkLineDry>
                                             </td>
                                             <td><h4>Tumble Dry</h4></td>
                                             <td>
-                                                @{
-                                                    string chkTumbleDry = Model.Detail.TumbleDry.HasValue ? Model.Detail.TumbleDry.Value ? "checked" : string.Empty : string.Empty;
-                                                }
                                                 <input class="bigSize" id="Detail_DrySelect" name="Detail.DrySelect" type="radio" value="TumbleDry" @chkTumbleDry>
                                             </td>
                                             <td><h4>Hand Wash</h4></td>
                                             <td>
-                                                @{
-                                                    string chkHandWash = Model.Detail.HandWash.HasValue ? Model.Detail.HandWash.Value ? "checked" : string.Empty : string.Empty;
-                                                }
                                                 <input class="bigSize" id="Detail_DrySelect" name="Detail.DrySelect" type="radio" value="HandWash" @chkHandWash>
                                             </td>
                                         </tr>

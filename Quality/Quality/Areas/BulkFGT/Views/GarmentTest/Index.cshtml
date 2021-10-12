@@ -650,13 +650,7 @@
                 return;
             }
 
-            if (detail.length > 0) {
-                SaveData(main, detail);
-            }
-            else {
-                msg.WithError("Save Fail");
-                return;
-            }
+            SaveData(main, detail);
         });
 
         $('#Undo').on('click', function () {
