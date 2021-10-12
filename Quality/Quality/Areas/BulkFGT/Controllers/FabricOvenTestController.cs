@@ -164,28 +164,28 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "<td><input id='Details_" + i + "__ColorID' name='Details[" + i + "].ColorID' type='text' readonly='readonly'></td>"; // ColorID
             html += "<td><input  readonly='readonly'  id='Details_" + i + "__Result' name='Details[" + i + "].Result'  class='detailResultColor' type='text'></td>"; // Result
 
-            html += "<td><select id='Details_" + i + "__ChangeScale' name='Details[" + i + "].ChangeScale'><option value=''></option>"; // ChangeScale
+            html += "<td><select id='Details_" + i + "__ChangeScale' name='Details[" + i + "].ChangeScale'>"; // ChangeScale
             foreach (string val in model.ScaleIDs)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select onchange='selectChange(this)' id='Details_" + i + "__ResultChange' name='Details[" + i + "].ResultChange' ><option value=''></option>"; // ResultChange
+            html += "<td><select onchange='selectChange(this)' id='Details_" + i + "__ResultChange' name='Details[" + i + "].ResultChange' >"; // ResultChange
             foreach (string val in Results)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select id='Details_" + i + "__StainingScale' name='Details[" + i + "].StainingScale'><option value=''></option>"; // StainingScale
+            html += "<td><select id='Details_" + i + "__StainingScale' name='Details[" + i + "].StainingScale'>"; // StainingScale
             foreach (string val in model.ScaleIDs)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select onchange='selectChange(this)' id='Details_" + i + "__ResultStain' name='Details[" + i + "].ResultStain' ><option value=''></option>"; // ResultStain
+            html += "<td><select onchange='selectChange(this)' id='Details_" + i + "__ResultStain' name='Details[" + i + "].ResultStain' >"; // ResultStain
             foreach (string val in Results)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
