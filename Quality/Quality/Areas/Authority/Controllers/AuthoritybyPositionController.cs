@@ -59,16 +59,6 @@ namespace Quality.Areas.Authority.Controllers
                 });
             }
 
-
-            if (!ModelState.IsValid)
-            {
-                return Json(new Quality_Position()
-                {
-                    Result = false,
-                    ErrorMessage = "Data valid false."
-                });
-            }
-
             Quality_Position model = _AuthorityService.Update_Position_Detail(Req);
 
             return Json(model);

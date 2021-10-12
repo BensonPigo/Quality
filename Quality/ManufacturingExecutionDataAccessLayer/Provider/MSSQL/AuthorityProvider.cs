@@ -179,7 +179,7 @@ order by m.ModuleSeq, m.FunctionSeq
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
             objParameter.Add("@ID", DbType.String, Req.Position);
-            objParameter.Add("@Description", DbType.String, Req.Description);
+            objParameter.Add("@Description", DbType.String, Req.Description ?? "'");
             objParameter.Add("@IsAdmin", DbType.Boolean, Req.IsAdmin);
             objParameter.Add("@Junk", DbType.Boolean, Req.Junk);
 
@@ -228,7 +228,7 @@ where p.ID=@ID AND m.ID='{data.MenuID}'
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
             objParameter.Add("@ID", DbType.String, Req.Position);
-            objParameter.Add("@Description", DbType.String, Req.Description);
+            objParameter.Add("@Description", DbType.String, Req.Description ?? "");
             objParameter.Add("@IsAdmin", DbType.Boolean, Req.IsAdmin);
             objParameter.Add("@Junk", DbType.Boolean, Req.Junk);
 
