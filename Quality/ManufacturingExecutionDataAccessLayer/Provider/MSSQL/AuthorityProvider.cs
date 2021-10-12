@@ -408,5 +408,13 @@ where qmd.Type = @BulkFGT_Brand
 
             return ExecuteList<Quality_Menu_Detail>(CommandType.Text, SbSql.ToString(), objParameter);
         }
+
+        public bool UpdatePass2()
+        {
+            string SbSql = "UpdateFunctionList";
+
+            ExecuteNonQuery(CommandType.StoredProcedure, SbSql, new SQLParameterCollection());
+            return true;
+        }
     }
 }

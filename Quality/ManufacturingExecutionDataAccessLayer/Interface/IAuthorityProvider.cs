@@ -34,5 +34,6 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
 
         IList<Brand> GetBrands();
         IList<Quality_Menu_Detail> GetFunctionName(string BulkFGT_Brand);
+        bool UpdatePass2();
     }
 }

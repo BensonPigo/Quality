@@ -75,7 +75,8 @@
         <div class="breadcrumb">
             <div>Home</div>
             <div class="current">Authority by Position</div>
-            <input id="btnNew" onclick="New_Click('', 'New')" class="site-btn btn-gy btn-sm" style="height:50%;left:80%;" type="button" name="name" value="New" />
+            <input id="btnNew" onclick="New_Click('', 'New')" class="site-btn btn-gy btn-sm" style="height: 50%; left: 68%;" type="button" name="name" value="New" />
+            <input id="btnUpdatePass2" onclick="UpdatePass2()" class="site-btn btn-gy btn-sm" style="height: 50%; left: 69%;" type="button" name="name" value="Update FunctionList" />
         </div>
     </header>
 
@@ -438,6 +439,32 @@
         EditMode = true;
         HeadToggle('Create');
         $(".detail_Chk").removeAttr("disabled");
+    }
+
+    function UpdatePass2() {
+
+        //產生預設資料
+        $.ajax({
+            url: '@Url.Action("UpdatePass2")',
+            data: { Position: '' },
+            type: 'POST',
+            dataType: "json",
+            async: false,
+            success: function (res) {
+                if (res.Result) {
+                    msg.WithSuccesCheck("Success.", function () {
+                        location.reload();
+                    });
+                }
+                else {
+                    msg.WithErrorCheck(res.ErrorMessage, function () {
+                        location.reload();
+                    });
+                }
+
+            }
+        });
+
     }
 
     function HeadToggle(Action) {

@@ -31,5 +31,6 @@ namespace BusinessLogicLayer.Interface
 
         IList<Brand> GetBrand();
         IList<Quality_Menu_Detail> GetFunctionName(string BulkFGT_Brand);
+        AuthoritybyPosition UpdatePass2();
     }
 }

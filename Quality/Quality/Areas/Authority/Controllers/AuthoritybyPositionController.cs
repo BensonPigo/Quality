@@ -103,5 +103,22 @@ namespace Quality.Areas.Authority.Controllers
 
             return Json(model);
         }
+
+        [HttpPost]
+        public ActionResult UpdatePass2()
+        {
+            this.CheckSession();
+
+            AuthoritybyPosition model = _AuthorityService.Get_Position_Browse(this.FactoryID);
+            AuthoritybyPosition res = _AuthorityService.UpdatePass2();
+
+            if (!res.Result)
+            {
+                model.Result = false;
+                model.ErrorMessage = "Update fail.";
+            }
+
+            return Json(model);
+        }
     }
 }

@@ -311,5 +311,27 @@ namespace BusinessLogicLayer.Service
 
             return _Quality_Menu_Detail;
         }
+        public AuthoritybyPosition UpdatePass2()
+        {
+            AuthoritybyPosition result = new AuthoritybyPosition();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ManufacturingExecutionDataAccessLayer);
+
+            try
+            {
+                _AuthorityProvider = new AuthorityProvider(_ISQLDataTransaction);
+
+                result.Result = _AuthorityProvider.UpdatePass2();
+                _ISQLDataTransaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                _ISQLDataTransaction.RollBack();
+                result.Result = false;
+                result.ErrorMessage = ex.Message;
+            }
+            finally { _ISQLDataTransaction.CloseConnection(); }
+
+            return result;
+        }
     }
 }
