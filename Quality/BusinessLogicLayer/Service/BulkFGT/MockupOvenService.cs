@@ -155,11 +155,12 @@ namespace BusinessLogicLayer.Service
 
 
                 var mockupOven_Detail = mockupOven.MockupOven_Detail;
-                string basefileName = "MockupOven";
+                bool haveHT = mockupOven.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER");
+                string basefileName = haveHT ? "MockupOven2" : "MockupOven";
                 string openfilepath;
                 if (test)
                 {
-                    openfilepath = "C:\\Git\\Quality\\Quality\\Quality\\bin\\XLT\\MockupOven.xltx";
+                    openfilepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "XLT", $"{basefileName}.xltx");
                 }
                 else
                 {
@@ -167,13 +168,9 @@ namespace BusinessLogicLayer.Service
                 }
 
                 Application excelApp = MyUtility.Excel.ConnectExcel(openfilepath);
-
-
-
                 excelApp.DisplayAlerts = false;
                 Worksheet worksheet = excelApp.Sheets[1];
 
-                bool haveHT = mockupOven.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER");
                 int htRow = 6;
                 int haveHTrow = haveHT ? htRow : 0;
 
@@ -198,13 +195,6 @@ namespace BusinessLogicLayer.Service
                     worksheet.Cells[11, 6] = mockupOven.HT2ndPressnoreverse;
                     worksheet.Cells[12, 6] = mockupOven.HT2ndPressreversed;
                     worksheet.Cells[13, 6] = mockupOven.HTCoolingTime;
-                }
-                else
-                {
-                    for (int i = 0; i < htRow; i++)
-                    {
-                        worksheet.Rows[9].Delete(XlDeleteShiftDirection.xlShiftUp);
-                    }
                 }
 
                 worksheet.Cells[13 + haveHTrow, 2] = mockupOven.TechnicianName;

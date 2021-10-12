@@ -286,7 +286,7 @@ namespace BusinessLogicLayer.Service.Tests
             {
                 IMockupOvenService _MockupOvenService = new MockupOvenService();
                 MockupOven_Request MockupOven = new MockupOven_Request()
-                { ReportNo = "PHOV210900008" };
+                { ReportNo = "PHOV180800020" };
                 //{ BrandID = "ADIDAS", SeasonID = "20SS", StyleID = "S201CSPM108", Article = "FL0237" };
                 var mockupOven = _MockupOvenService.GetMockupOven(MockupOven);
                 _MockupOvenService.GetPDF(mockupOven, true);

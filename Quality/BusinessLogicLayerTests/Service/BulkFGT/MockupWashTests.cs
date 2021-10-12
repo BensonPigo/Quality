@@ -251,7 +251,7 @@ namespace BusinessLogicLayer.Service.Tests
             {
                 IMockupWashService _MockupWashService = new MockupWashService();
                 MockupWash_Request MockupWash = new MockupWash_Request()
-                { ReportNo = "VM1WA21090001" };
+                { ReportNo = "PHWA180900019" };
                 //{ BrandID = "ADIDAS", SeasonID = "20SS", StyleID = "S201CSPM108", Article = "FL0237" };
                 var mockupWash = _MockupWashService.GetMockupWash(MockupWash);
                 var result = _MockupWashService.GetPDF(mockupWash, true);
