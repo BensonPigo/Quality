@@ -490,6 +490,7 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             InspectionSave_ViewModel save_ViewModel = _InspectionService.SaveRFTInspection(inspectionSave_View);
             viewModel.Result = save_ViewModel.Result;
+            viewModel.ErrMsg = save_ViewModel.ErrMsg;
             return Json(viewModel);
         }
 
