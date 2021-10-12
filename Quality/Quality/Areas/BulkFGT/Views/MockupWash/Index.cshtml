@@ -491,6 +491,7 @@
                                         <td>
                                             @Html.Hidden("Seq", "", new { @idx = i })
                                             @Html.TextBoxFor(o => Model.MockupWash_Detail[i].TypeofPrint, "", new { @class = "OnlyEdit" })
+                                            @Html.HiddenFor(o => Model.MockupWash_Detail[i].Ukey)
                                         </td>
                                         <td style="width:10vw;">
                                             @Html.TextBoxFor(o => Model.MockupWash_Detail[i].Design, "", new { @class = "OnlyEdit" })
