@@ -367,6 +367,7 @@
                             {
                                 for (int i = 0; i <= Model.garmentTest_Details.Count - 1; i++)
                                 {
+                                    string status = string.IsNullOrEmpty(Model.garmentTest_Details[i].Status) ? string.Empty : Model.garmentTest_Details[i].Status.ToLower();
                                     string aHref = "";
                             <tr idx="@i">
                                 <td style="width:10vw;">
@@ -484,13 +485,13 @@
                                     @Html.DisplayFor(o => Model.garmentTest_Details[i].GarmentTest_Detail_EditName, "", "")
                                 </td>
                                 <td style="width:10vw;">
-                                    @if (Model.garmentTest_Details[i].Status.ToLower() == "new")
+                                    @if (status == "new")
                                     {
                                         <img class="detailEdit" src="~/Image/Icon/Edit.png" width="30" />
                                     }
                                 </td>
                                 <td style="width:10vw;">
-                                    @if (Model.garmentTest_Details[i].Status.ToLower() == "new")
+                                    @if (status == "new")
                                     {
                                         <img class="detailDelete" src="~/Image/Icon/Delete.png" width="30" />
                                     }
