@@ -35,16 +35,20 @@ namespace BusinessLogicLayer.Service
                 others.FinalInspectionID = finalInspectionID;
                 others.CFA = finalInspection.CFA;
                 others.ProductionStatus = finalInspection.ProductionStatus;
-                if (finalInspection.SubmitDate == null)
-                {
-                    others.InspectionResult = "On-going";
-                }
-                else
-                {
-                    others.InspectionResult = finalInspection.AcceptQty <= finalInspection.RejectQty ? "Fail" : "Pass";
-                }
+                //if (finalInspection.SubmitDate == null)
+                //{
+                //    others.InspectionResult = "On-going";
+                //}
+                //else
+                //{
+                //    others.InspectionResult = finalInspection.AcceptQty <= finalInspection.RejectQty ? "Fail" : "Pass";
+                //}
 
-                others.ShipmentStatus = finalInspection.AcceptQty <= finalInspection.RejectQty ? "On Hold" : "Ship";
+                // ISP20211205l調整，事先帶出最後結果
+                others.InspectionResult = finalInspection.AcceptQty < finalInspection.RejectQty && finalInspection.RejectQty > 0 ? "Fail" : "Pass";
+
+
+                others.ShipmentStatus = finalInspection.AcceptQty < finalInspection.RejectQty && finalInspection.RejectQty > 0 ? "On Hold" : "Ship";
 
                 others.OthersRemark = finalInspection.OthersRemark;
 

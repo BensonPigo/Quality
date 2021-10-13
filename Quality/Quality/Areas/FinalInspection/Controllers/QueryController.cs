@@ -117,7 +117,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             worksheet.Cells[3, 7] = model.FinalInspection.InspectionStage;
 
             worksheet.Cells[4, 3] = model.FinalInspection.CustPONO;
-            //worksheet.Cells[4, 7] = model.Carton;
+            worksheet.Cells[4, 7] = model.ListCartonInfo!= null && model.ListCartonInfo.Any() ?  model.ListCartonInfo.Select(o=>o.CTNNo).Distinct().JoinToString(",") : "";
 
             worksheet.Cells[5, 3] = model.SP;
             worksheet.Cells[5, 7] = model.FinalInspection.AuditDate.HasValue ? ((DateTime)model.FinalInspection.AuditDate).ToString("yyyy/MM/dd") : string.Empty;
