@@ -691,9 +691,9 @@ where foc.ID = @finalInspectionID
             };
 
             string sqlGetViewMoistureResult = @"
-declare @FinalInspection_CTNMoisureStandard numeric(5,2)
+declare @FinalInspection_CTNMoistureStandard numeric(5,2)
 
-select  @FinalInspection_CTNMoisureStandard = FinalInspection_CTNMoisureStandard
+select  @FinalInspection_CTNMoistureStandard = FinalInspection_CTNMoistureStandard
 from    [MainServer].Production.dbo.System
 
 select  fm.Ukey,
@@ -705,7 +705,7 @@ select  fm.Ukey,
         fm.GarmentTop,
         fm.GarmentMiddle,
         fm.GarmentBottom,
-        [CTNStandard] = @FinalInspection_CTNMoisureStandard,
+        [CTNStandard] = @FinalInspection_CTNMoistureStandard,
         fm.CTNInside,
         fm.CTNOutside,
         Result = IIF(fm.Result = 'P','Pass','Fail'),

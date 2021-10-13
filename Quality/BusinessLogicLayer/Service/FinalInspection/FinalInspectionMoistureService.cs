@@ -32,7 +32,7 @@ namespace BusinessLogicLayer.Service
                 moisture.ListArticle = _FinalInspFromPMSProvider.GetArticleList(finalInspectionID);
                 moisture.ActionSelectListItem = _FinalInspFromPMSProvider.GetActionSelectListItem().ToList();
 
-                moisture.FinalInspection_CTNMoisureStandard = _FinalInspFromPMSProvider.GetSystem()[0].FinalInspection_CTNMoisureStandard;
+                moisture.FinalInspection_CTNMoistureStandard = _FinalInspFromPMSProvider.GetSystem()[0].FinalInspection_CTNMoistureStandard;
                 moisture.ListEndlineMoisture = _FinalInspectionProvider.GetEndlineMoisture().ToList();
                 _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
                 moisture.ListCartonItem = _FinalInspectionProvider.GetMoistureListCartonItem(finalInspectionID).ToList();
@@ -185,7 +185,7 @@ namespace BusinessLogicLayer.Service
                 _SystemProvider = new SystemProvider(Common.ProductionDataAccessLayer);
 
                 List<EndlineMoisture> listEndlineMoisture = _FinalInspectionProvider.GetEndlineMoisture().ToList();
-                decimal CTNMoisureStandard = _SystemProvider.Get()[0].FinalInspection_CTNMoisureStandard;
+                decimal CTNMoisureStandard = _SystemProvider.Get()[0].FinalInspection_CTNMoistureStandard;
                 decimal GMTMoisureStandard = listEndlineMoisture
                                             .Where(s => s.Instrument == moistureResult.Instrument &&
                                                         s.Fabrication == moistureResult.Fabrication).First().Standard;
