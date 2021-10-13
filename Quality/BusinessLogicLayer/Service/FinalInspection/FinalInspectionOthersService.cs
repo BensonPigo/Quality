@@ -43,6 +43,7 @@ namespace BusinessLogicLayer.Service
                 //{
                 //    others.InspectionResult = finalInspection.AcceptQty <= finalInspection.RejectQty ? "Fail" : "Pass";
                 //}
+
                 // ISP20211205l調整，事先帶出最後結果
                 others.InspectionResult = finalInspection.AcceptQty < finalInspection.RejectQty && finalInspection.RejectQty > 0 ? "Fail" : "Pass";
 

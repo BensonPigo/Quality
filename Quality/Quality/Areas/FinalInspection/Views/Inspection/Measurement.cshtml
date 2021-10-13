@@ -623,7 +623,7 @@
                     return;
                 }
 
-                var finval = FractionDiff(standard.toString(), val.toString());
+                var finval = FractionDiff(val.toString(), standard.toString());
                 $(this).parent().parent().children().find("p[class='Diff']").html(finval);
 
                 var sTolh = FractionAdd(standard.toString(), tolh.toString());
