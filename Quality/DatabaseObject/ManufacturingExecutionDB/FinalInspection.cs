@@ -139,8 +139,8 @@ namespace DatabaseObject.ManufacturingExecutionDB
         [Display(Name = "是否收到Shipping Mark")]
         public bool CheckShippingMark { get; set; }
 
-        /// <summary>是否收到Polytag/ Marketing</summary>
-        [Display(Name = "是否收到Polytag/ Marketing")]
+        /// <summary>是否收到Polybag/ Marketing</summary>
+        [Display(Name = "是否收到Polybag/ Marketing")]
         public bool CheckPolytagMarketing { get; set; }
 
         /// <summary>是否收到Color/ Size/ Qty</summary>
