@@ -303,6 +303,11 @@
                                                 string selected = item.Text.Equals(Model.ArtworkTypeID) ? "selected" : "";
                                                 <option value="@item.Value" @selected>@item.Text</option>
                                             }
+
+                                            @if (((List<SelectListItem>)ViewBag.ArtworkTypeID_Source).Count == 0)
+                                            {
+                                                <option value="@Model.ArtworkTypeID" selected>@Model.ArtworkTypeID</option>
+                                            }
                                         </select>
                                     </td>
                                     <td><h5>Remark</h5></td>

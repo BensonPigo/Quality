@@ -298,15 +298,18 @@
                                 <tr>
                                     <td><h5>Artwork</h5></td>
                                     <td>
-                                        @*<select class="OnlyEdit" id="ArtworkTypeID" name="ArtworkTypeID" onchange="ArtworkTypeChange()">
-                                                @foreach (var item in (List<SelectListItem>)ViewBag.ArtworkTypeID_Source)
-                                                {
-                                                    string selected = item.Text.Equals(Model.ArtworkTypeID) ? "selected" : "";
-                                                    <option value="@item.Value" @selected>@item.Text</option>
-                                                }
-                                            </select>*@
+                                        <select class="OnlyEdit" id="ArtworkTypeID" name="ArtworkTypeID" onchange="ArtworkTypeChange()">
+                                            @foreach (var item in (List<SelectListItem>)ViewBag.ArtworkTypeID_Source)
+                                            {
+                                                string selected = item.Text.Equals(Model.ArtworkTypeID) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
 
-                                        @Html.DropDownListFor(o => Model.ArtworkTypeID, (List<SelectListItem>)ViewBag.ArtworkTypeID_Source, new { @value = Model.ArtworkTypeID, @class = "OnlyEdit", @onchange = "ArtworkTypeChange()" })
+                                            @if (((List<SelectListItem>)ViewBag.ArtworkTypeID_Source).Count == 0)
+                                            {
+                                                <option value="@Model.ArtworkTypeID" selected>@Model.ArtworkTypeID</option>
+                                            }
+                                        </select>
                                     </td>
                                     <td><h5>Remark</h5></td>
                                     <td colspan="3">

@@ -168,7 +168,7 @@ select DISTINCT Type = 'Mockup Oven Test (514)'
 	, m.BrandID
 	, m.SeasonID
 	, m.Article
-	, m.ArtworkTypeID
+	, [Artwork] = m.ArtworkTypeID
 	, m.Result
 	, m.TestDate
 from MockupOven m
@@ -202,7 +202,7 @@ select DISTINCT Type = 'Mockup Wash Test (701)'
 	, m.BrandID
 	, m.SeasonID
 	, m.Article
-	, m.ArtworkTypeID
+	, [Artwork] = m.ArtworkTypeID
 	, m.Result
 	, m.TestDate
 from MockupWash m
@@ -307,7 +307,7 @@ select DISTINCT Type = 'Accessory Oven Test & Wash (515, 701)'
 		,o.BrandID
 		,o.SeasonID
 		,Article = ''
-		,Artwork = ''
+		,[Artwork] = ''
 		,Result=f.Result
 		,TestDate = (
 			SELECT MAX (TestDate) FROM (
@@ -346,7 +346,7 @@ select DISTINCT Type = 'Pulling test for Snap/Botton/Rivet (437)'
 	, m.BrandID
 	, m.SeasonID
 	, m.Article
-	, [ArtworkTypeID] = ''
+	, [Artwork] = ''
 	, m.Result
 	, m.TestDate
 from [ExtendServer].ManufacturingExecution.dbo.PullingTest m 
