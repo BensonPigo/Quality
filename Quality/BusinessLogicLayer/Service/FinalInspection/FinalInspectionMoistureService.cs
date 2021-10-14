@@ -16,7 +16,6 @@ namespace BusinessLogicLayer.Service
     public class FinalInspectionMoistureService : IFinalInspectionMoistureService
     {
         public IFinalInspectionProvider _FinalInspectionProvider { get; set; }
-        public ISystemProvider _SystemProvider { get; set; }
         public IFinalInspFromPMSProvider _FinalInspFromPMSProvider { get; set; }
 
         public Moisture GetMoistureForInspection(string finalInspectionID)
@@ -182,10 +181,9 @@ namespace BusinessLogicLayer.Service
             try
             {
                 _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
-                _SystemProvider = new SystemProvider(Common.ProductionDataAccessLayer);
 
                 List<EndlineMoisture> listEndlineMoisture = _FinalInspectionProvider.GetEndlineMoisture().ToList();
-                decimal CTNMoisureStandard = _SystemProvider.Get()[0].FinalInspection_CTNMoistureStandard;
+                decimal CTNMoisureStandard = _FinalInspectionProvider.GetSystem()[0].FinalInspection_CTNMoistureStandard;
                 decimal GMTMoisureStandard = listEndlineMoisture
                                             .Where(s => s.Instrument == moistureResult.Instrument &&
                                                         s.Fabrication == moistureResult.Fabrication).First().Standard;
