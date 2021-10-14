@@ -60,5 +60,6 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
 
         IList<OtherImage> GetOthersImageList(string finalInspectionID);
         string GetNewFinalInspectionID(string factoryID);
+        IList<DatabaseObject.ProductionDB.System> GetSystem();
     }
 }

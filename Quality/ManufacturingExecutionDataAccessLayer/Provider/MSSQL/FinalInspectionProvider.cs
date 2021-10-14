@@ -694,7 +694,7 @@ where foc.ID = @finalInspectionID
 declare @FinalInspection_CTNMoistureStandard numeric(5,2)
 
 select  @FinalInspection_CTNMoistureStandard = FinalInspection_CTNMoistureStandard
-from    [MainServer].Production.dbo.System
+from    System
 
 select  fm.Ukey,
         fm.Article,
@@ -1283,5 +1283,14 @@ where   ID = @FinalInspectionID
         }
 
         #endregion
+
+        public IList<DatabaseObject.ProductionDB.System> GetSystem()
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            SbSql.Append("SELECT * FROM [System]" + Environment.NewLine);
+
+            return ExecuteList<DatabaseObject.ProductionDB.System>(CommandType.Text, SbSql.ToString(), objParameter);
+        }
     }
 }
