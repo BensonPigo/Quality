@@ -942,15 +942,15 @@ msg.WithInfo('{MoistureResult.ErrorMessage}');
                 }
 
 
-                if (model.InspectionResult == "Fail")
-                {
-                    bool test = IsTest.ToLower() == "true";
+                //if (model.InspectionResult == "Fail")
+                //{
+                //    bool test = IsTest.ToLower() == "true";
 
-                    string WebHost = Request.Url.Scheme + @"://" + Request.Url.Authority + "/";
-                    Qservice.SendMail(model.FinalInspectionID, WebHost, test);
-                }
-                else
-                {
+                //    string WebHost = Request.Url.Scheme + @"://" + Request.Url.Authority + "/";
+                //    Qservice.SendMail(model.FinalInspectionID, WebHost, test);
+                //}
+                //else
+                //{
                     fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
                     {
                         ID = model.FinalInspectionID,
@@ -987,7 +987,7 @@ msg.WithSuccesCheck('Success, redirect to top page.',function() {
 msg.WithError('{r.ErrorMessage}');
 ";
                     }
-                }
+                //}
             }
 
             return View(model);
