@@ -269,7 +269,7 @@ msg.WithError(""Shipmode Seq cant't be empty."");
             {
                 setting.ErrorMessage = result.ErrorMessage;
                 FinalInspectionSettingService finalInspectionSettingService = new FinalInspectionSettingService();
-                setting = finalInspectionSettingService.GetSettingForInspection(setting.SelectedPO[0].CustPONO, setting.SelectedPO.Select(o=>o.OrderID).ToList(), this.FactoryID);
+                setting = finalInspectionSettingService.GetSettingForInspection(setting.SelectedPO[0].CustPONO, setting.SelectedPO.Select(o => o.OrderID).ToList(), this.FactoryID);
                 return View("Setting", setting);
             }
 
@@ -741,7 +741,7 @@ msg.WithError(""Shipmode Seq cant't be empty."");
 msg.WithInfo('{MoistureResult.ErrorMessage}');
 ";
 
-                    Moisture model= service.GetMoistureForInspection(moistureResult.FinalInspectionID);
+                    Moisture model = service.GetMoistureForInspection(moistureResult.FinalInspectionID);
 
                     ViewBag.ListArticle = new SetListItem().ItemListBinding(model.ListArticle);
                     ViewBag.ListCartonItem = model.ListCartonItem;
@@ -941,53 +941,42 @@ msg.WithInfo('{MoistureResult.ErrorMessage}');
                     model.ListOthersImageItem.Add(o);
                 }
 
+                fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
+                {
+                    ID = model.FinalInspectionID,
+                    InspectionStep = "Submit"
+                }, "Insp-Others", this.UserID);
 
-                //if (model.InspectionResult == "Fail")
-                //{
-                //    bool test = IsTest.ToLower() == "true";
+                // Submit 紀錄
+                BaseResult r = oService.UpdateOthersSubmit(model, this.UserID);
 
-                //    string WebHost = Request.Url.Scheme + @"://" + Request.Url.Authority + "/";
-                //    Qservice.SendMail(model.FinalInspectionID, WebHost, test);
-                //}
-                //else
-                //{
-                    fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
-                    {
-                        ID = model.FinalInspectionID,
-                        InspectionStep = "Submit"
-                    }, "Insp-Others", this.UserID);
+                // 取出剛剛的紀錄
+                FinalInspectionService sevice = new FinalInspectionService();
+                DatabaseObject.ManufacturingExecutionDB.FinalInspection current = sevice.GetFinalInspection(model.FinalInspectionID);
 
-                    // Submit 紀錄
-                    BaseResult r = oService.UpdateOthersSubmit(model, this.UserID);
+                // 若是Submit成功，且Fail則寄信
+                if (r.Result && current.InspectionResult == "Fail")
+                {
+                    bool test = IsTest.ToLower() == "true";
 
-                    // 取出剛剛的紀錄
-                    FinalInspectionService sevice = new FinalInspectionService();
-                    DatabaseObject.ManufacturingExecutionDB.FinalInspection current = sevice.GetFinalInspection(model.FinalInspectionID);
+                    string WebHost = Request.Url.Scheme + @"://" + Request.Url.Authority + "/";
+                    Qservice.SendMail(model.FinalInspectionID, WebHost, test);
+                }
 
-                    // 若是Fail則寄信
-                    if (current.InspectionResult == "Fail")
-                    {
-                        bool test = IsTest.ToLower() == "true";
-
-                        string WebHost = Request.Url.Scheme + @"://" + Request.Url.Authority + "/";
-                        Qservice.SendMail(model.FinalInspectionID, WebHost, test);
-                    }
-
-                    if (r.Result)
-                    {
-                        model.ErrorMessage = @"
+                if (r.Result)
+                {
+                    model.ErrorMessage = @"
 msg.WithSuccesCheck('Success, redirect to top page.',function() {                        
      window.location.href = '/FinalInspection/Inspection';
 });
 ";
-                    }
-                    else
-                    {
-                        model.ErrorMessage = $@"
+                }
+                else
+                {
+                    model.ErrorMessage = $@"
 msg.WithError('{r.ErrorMessage}');
 ";
-                    }
-                //}
+                }
             }
 
             return View(model);
