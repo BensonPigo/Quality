@@ -315,7 +315,7 @@ namespace BusinessLogicLayer.Service
         {
             NewReportNo = string.Empty;
             MockupOven.Type = "B";
-            MockupOven.EditName = userid;
+            MockupOven.AddName = userid;
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             _MockupOvenProvider = new MockupOvenProvider(_ISQLDataTransaction);
