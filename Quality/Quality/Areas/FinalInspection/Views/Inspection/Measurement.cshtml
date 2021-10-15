@@ -643,7 +643,7 @@
                     return;
                 }
 
-                var finval = accSubtr(standard, val);
+                var finval = accSubtr(val, standard);
                 $(this).parent().parent().children().find("p[class='Diff']").html(finval);
 
                 val = parseFloat(val);
