@@ -435,7 +435,7 @@ select sr.Refno
 	,Remark = sr.RRRemark
 	,sr.LR
 from Style s
-inner join Style_RRLRReport sr on s.Ukey = sr.StyleUkey
+inner join Style_RRLR_Report sr on s.Ukey = sr.StyleUkey
 left join Supp su ON sr.SuppID = su.ID
 where 1=1
 {sqlWhere}
