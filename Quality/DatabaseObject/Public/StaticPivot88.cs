@@ -8,7 +8,7 @@ namespace DatabaseObject.Public
 {
     public class StaticPivot88
     {
-        public readonly static string SuppID = "Pivot8";
+        public readonly static string SuppID = "P88";
         public readonly static string ModuleNameFinalInsp = "FinalInspection";
         public readonly static string APIThreadFinalInsp = "SentPivot88";
     }
