@@ -1292,5 +1292,143 @@ where   ID = @FinalInspectionID
 
             return ExecuteList<DatabaseObject.ProductionDB.System>(CommandType.Text, SbSql.ToString(), objParameter);
         }
+
+        public DataSet GetPivot88(string ID)
+        {
+            SQLParameterCollection parameter = new SQLParameterCollection() {
+                            { "@InspectionID", DbType.String, ID }
+                        };
+
+            string sqlGetData = @"
+declare @ID varchar(13) = @InspectionID
+
+
+Select	f.AuditDate,
+		f.RejectQty,
+		f.InspectionResult,
+		[DefectQty] = (select sum(Qty) from FinalInspection_Detail with (nolock) where ID = f.ID),
+		[AvailableQty] = (select sum(AvailableQty) from FinalInspection_Order with (nolock) where ID = f.ID),
+		f.SampleSize,
+		[InspectionLevel] = (select Replicate('M', InspectionLevels/1000)  
+									+ REPLACE(REPLACE(REPLACE(  
+									      Replicate('C', InspectionLevels%1000/100),  
+									      Replicate('C', 9), 'CM'),  
+									      Replicate('C', 5), 'D'),  
+									      Replicate('C', 4), 'CD')  
+									 + REPLACE(REPLACE(REPLACE(  
+									      Replicate('X', InspectionLevels%100 / 10),  
+									      Replicate('X', 9),'XC'),  
+									      Replicate('X', 5), 'L'),  
+									      Replicate('X', 4), 'XL')  
+									 + REPLACE(REPLACE(REPLACE(  
+									      Replicate('I', InspectionLevels%10),  
+									      Replicate('I', 9),'IX'),  
+									      Replicate('I', 5), 'V'),  
+									      Replicate('I', 4),'IV')   from [MainServer].Production.dbo.AcceptableQualityLevels where Ukey = f.AcceptableQualityLevelsUkey),
+		
+		[InspectionResultID] = iif(f.InspectionResult = 'Pass', 1, 2),
+		[InspectionStatusID] = iif(f.InspectionResult = 'Pass', 5, 6),
+		f.SubmitDate,
+		[InspectionMinutes] = Round(DATEDIFF(SECOND, f.AddDate, f.EditDate) / 60.0, 5),
+		[CFA] = isnull((select name from Production.dbo.Pass1 with (nolock) where ID = f.CFA), (select name from Pass1 with (nolock) where ID = f.CFA)),
+		OrderInfo.POQty,
+		OrderInfo.ETD_ETA,
+		f.CustPONO
+from FinalInspection f with (nolock)
+outer apply (select	[POQty] = sum(o.Qty),
+					[ETD_ETA] = max(o.BuyerDelivery)
+				from Production.dbo.Orders o with (nolock)
+				where o.CustPONo = f.CustPONO) OrderInfo
+where f.ID = @ID 
+
+select	distinct
+		oc.ColorID
+from  Production.dbo.Order_ColorCombo oc with (nolock)
+where oc.ID in (select POID from Production.dbo.Orders with (nolock) 
+				where id in (select OrderID 
+							 from FinalInspection_Order with (nolock) where ID = @ID))
+
+select	distinct
+		oq.SizeCode,
+		oq.Article
+from FinalInspection_Order fo with (nolock)
+inner join Production.dbo.Orders o with (nolock) on o.ID = fo.OrderID
+inner join Production.dbo.Order_Qty oq with (nolock) on oq.ID = o.ID
+where fo.ID = @ID
+
+select	s.StyleName,
+		o.FactoryID,
+		o.BrandID,
+		s.CDCodeNew
+into #tmpStyleInfo
+from FinalInspection_Order fo with (nolock)
+inner join Production.dbo.Orders o with (nolock) on o.ID = fo.OrderID
+inner join Production.dbo.Style s with (nolock) on s.Ukey = o.StyleUkey
+where fo.ID = @ID
+
+declare @AdidasSAPERPCode varchar(3)
+
+select top 1 @AdidasSAPERPCode = SUBSTRING(BrandAreaCode, 1, 3)
+from [MainServer].Production.dbo.Factory_BrandDefinition fb with (nolock)
+where exists (select 1 from #tmpStyleInfo where fb.ID = FactoryID and fb.BrandID = BrandID and fb.CDCodeID = CDCodeNew)
+
+SELECT	[Style] =  Stuff((select concat( ';',StyleName)   from #tmpStyleInfo FOR XML PATH('')),1,1,''),
+		[BrandAreaCode] = @AdidasSAPERPCode,
+		[BrandAreaID] = (select Name from Production.dbo.DropDownList with (nolock) where Type = 'AdidasSAPERPCode' and ID = @AdidasSAPERPCode)
+
+select	[DefectTypeDesc] = gdt.Description,
+		[DefectCodeDesc] = gdc.Description,
+        fd.GarmentDefectCodeID,
+		[CriticalQty] = iif(gdc.IsCriticalDefect = 1, fd.Qty, 0),
+        [MajorQty] = iif(gdc.IsCriticalDefect = 0, fd.Qty, 0)
+from FinalInspection_Detail fd with (nolock)
+left join Production.dbo.GarmentDefectType gdt with (nolock) on gdt.ID = fd.GarmentDefectTypeID
+left join Production.dbo.GarmentDefectCode gdc with (nolock) on gdc.ID = fd.GarmentDefectCodeID
+where fd.ID = @ID
+
+
+drop table #tmpStyleInfo
+";
+
+            return ExecuteDataSet(CommandType.Text, sqlGetData, parameter);
+        }
+
+        public List<string> GetPivot88FinalInspectionID()
+        {
+            SQLParameterCollection parameter = new SQLParameterCollection();
+            string sqlGetData = @"
+select  ID
+from Finalinspection with (nolock)
+where   IsExportToP88 = 0 and
+        InspectionResult in ('Pass', 'Fail') and
+        submitdate is not null and
+        InspectionStage in ('Final', '3rd Party')
+
+";
+
+            DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, parameter);
+
+            if (dtResult.Rows.Count > 0)
+            {
+                return dtResult.AsEnumerable().Select(s => s["ID"].ToString()).ToList();
+            }
+            else
+            {
+                return new List<string>();
+            }
+
+        }
+
+        public void UpdateIsExportToP88(string ID)
+        {
+            string sqlUpdateIsExportToP88 = @"
+    update FinalInspection set IsExportToP88 = 1 where ID = @ID
+";
+            SQLParameterCollection sqlPar = new SQLParameterCollection() {
+                            { "@ID", DbType.String, ID }
+                        };
+
+            ExecuteNonQuery(CommandType.Text, sqlUpdateIsExportToP88, sqlPar);
+        }
     }
 }

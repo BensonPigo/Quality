@@ -26,5 +26,9 @@ namespace BusinessLogicLayer.Interface
         BaseResult UpdateFinalInspectionByStep(FinalInspection finalInspection, string currentStep, string userID);
 
         string GetAQLPlanDesc(long ukey);
+
+        object GetPivot88Json(string ID);
+
+        List<SentPivot88Result> SentPivot88(PivotTransferRequest pivotTransferRequest);
     }
 }
