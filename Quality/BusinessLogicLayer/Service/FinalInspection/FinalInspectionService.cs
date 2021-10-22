@@ -121,7 +121,7 @@ namespace BusinessLogicLayer.Service
 
             List<object> sections = new List<object>();
 
-            string sku_number = dtSizeArticle.Rows.Count > 0 ? dtSizeArticle.AsEnumerable().Select(s => $"{s["Article"]}_{s["SizeCode"]}").JoinToString(",") : string.Empty;
+            var listSku_number = dtSizeArticle.AsEnumerable().Select(s => $"{s["Article"]}_{s["SizeCode"]}");
 
             sections.Add(new
             {
@@ -171,8 +171,9 @@ namespace BusinessLogicLayer.Service
                 });
             }
 
-            List<object> assignment_items = new List<object>() {
-                new {
+            List<object> assignment_items = listSku_number.Select(
+                sku_number => new
+                {
                     sampled_inspected = drFinalInspection["SampleSize"],
                     inspection_result_id = drFinalInspection["InspectionResultID"],
                     inspection_status_id = drFinalInspection["InspectionStatusID"],
@@ -181,39 +182,46 @@ namespace BusinessLogicLayer.Service
                     total_inspection_minutes = drFinalInspection["InspectionMinutes"],
                     sampling_size = drFinalInspection["SampleSize"],
                     qty_to_inspect = drFinalInspection["AvailableQty"],
-                    assignment = new {
-                                        report_type = new { id = 12},
-                                        inspector = new { username = "user1"},//new { username = drFinalInspection["CFA"]},
-                                        date_inspection = drFinalInspection["AuditDate"]
-                                      },
-                    po_line = new {
-                                    qty = drFinalInspection["POQty"],
-                                    etd = drFinalInspection["ETD_ETA"],
-                                    eta = drFinalInspection["ETD_ETA"],
-                                    color = dtColor.Rows.Count > 0 ? dtColor.AsEnumerable().Select(s => s["ColorID"].ToString()).JoinToString(";") : string.Empty,
-                                    size = dtSizeArticle.Rows.Count > 0 ? dtSizeArticle.AsEnumerable().Select(s => s["SizeCode"].ToString()).Distinct().JoinToString(";") : string.Empty,
-                                    style = drStyleInfo["Style"],
-                                    po = new {
-                                                exporter = new { 
-                                                               id = drStyleInfo["BrandAreaID"],
-                                                               erp_business_id = drStyleInfo["BrandAreaCode"],
-                                                           },
-                                                po_number = drFinalInspection["CustPONO"],
-                                                customer_po = drFinalInspection["CustPONO"],
-                                                importer = new {
-                                                                id = 215,
-                                                                erp_business_id = "Adidas001",
-                                                            },
-                                                project = new { id = 2063}
-                                            },
-                                    sku = new {
-                                                sku_number = sku_number.Length > 80 ? sku_number.Substring(0, 80) : sku_number,
-                                                item_name = "No Item",
-                                                item_description = string.Empty,
-                                                        },
-                                    },
+                    assignment = new
+                    {
+                        report_type = new { id = 12 },
+                        inspector = new { username = "user1" },//new { username = drFinalInspection["CFA"]},
+                        date_inspection = drFinalInspection["AuditDate"]
+                    },
+                    po_line = new
+                    {
+                        qty = drFinalInspection["POQty"],
+                        etd = drFinalInspection["ETD_ETA"],
+                        eta = drFinalInspection["ETD_ETA"],
+                        color = dtColor.Rows.Count > 0 ? dtColor.AsEnumerable().Select(s => s["ColorID"].ToString()).JoinToString(";") : string.Empty,
+                        size = dtSizeArticle.Rows.Count > 0 ? dtSizeArticle.AsEnumerable().Select(s => s["SizeCode"].ToString()).Distinct().JoinToString(";") : string.Empty,
+                        style = drStyleInfo["Style"],
+                        po = new
+                        {
+                            exporter = new
+                            {
+                                id = drStyleInfo["BrandAreaID"],
+                                erp_business_id = drStyleInfo["BrandAreaCode"],
+                            },
+                            po_number = drFinalInspection["CustPONO"],
+                            customer_po = drFinalInspection["CustPONO"],
+                            importer = new
+                            {
+                                id = 215,
+                                erp_business_id = "Adidas001",
+                            },
+                            project = new { id = 2063 }
+                        },
+                        sku = new
+                        {
+                            sku_number,
+                            item_name = "No Item",
+                            item_description = string.Empty,
+                        },
+                    },
                 }
-            };
+                ).ToList<object>();
+
 
             object result = new
             {
@@ -249,21 +257,21 @@ namespace BusinessLogicLayer.Service
                 return sentPivot88Results;
             }
 
-            sentPivot88Results = listInspectionID.AsParallel().Select(s => {
+            sentPivot88Results = listInspectionID.AsParallel().Select(finalInspectionID => {
 
                 bool isSuccess = true;
                 string errorMsg = string.Empty;
                 string postBody = string.Empty;
                 try
                 {
-                    postBody = JsonConvert.SerializeObject(GetPivot88Json(s));
+                    postBody = JsonConvert.SerializeObject(GetPivot88Json(finalInspectionID));
 
-                    WebApiBaseResult webApiBaseResult = WebApiTool.WebApiSend(pivotTransferRequest.BaseUri, pivotTransferRequest.RequestUri, postBody, HttpMethod.Put, headers: pivotTransferRequest.Headers);
+                    WebApiBaseResult webApiBaseResult = WebApiTool.WebApiSend(pivotTransferRequest.BaseUri, pivotTransferRequest.RequestUri + finalInspectionID, postBody, HttpMethod.Put, headers: pivotTransferRequest.Headers);
                     
                     switch (webApiBaseResult.webApiResponseStatus)
                     {
                         case WebApiResponseStatus.Success:
-                            _FinalInspectionProvider.UpdateIsExportToP88(s);
+                            _FinalInspectionProvider.UpdateIsExportToP88(finalInspectionID);
                             break;
                         case WebApiResponseStatus.WebApiReturnFail:
                             isSuccess = false;
@@ -303,7 +311,7 @@ namespace BusinessLogicLayer.Service
 
                 return new SentPivot88Result()
                 {
-                    InspectionID = s,
+                    InspectionID = finalInspectionID,
                     isSuccess = isSuccess,
                     errorMsg = errorMsg,
                 };

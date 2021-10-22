@@ -1309,7 +1309,7 @@ Select	f.AuditDate,
 		[DefectQty] = (select sum(Qty) from FinalInspection_Detail with (nolock) where ID = f.ID),
 		[AvailableQty] = (select sum(AvailableQty) from FinalInspection_Order with (nolock) where ID = f.ID),
 		f.SampleSize,
-		[InspectionLevel] = (select Replicate('M', InspectionLevels/1000)  
+		[InspectionLevel] = isnull((select Replicate('M', InspectionLevels/1000)  
 									+ REPLACE(REPLACE(REPLACE(  
 									      Replicate('C', InspectionLevels%1000/100),  
 									      Replicate('C', 9), 'CM'),  
@@ -1324,7 +1324,7 @@ Select	f.AuditDate,
 									      Replicate('I', InspectionLevels%10),  
 									      Replicate('I', 9),'IX'),  
 									      Replicate('I', 5), 'V'),  
-									      Replicate('I', 4),'IV')   from [MainServer].Production.dbo.AcceptableQualityLevels where Ukey = f.AcceptableQualityLevelsUkey),
+									      Replicate('I', 4),'IV')   from [MainServer].Production.dbo.AcceptableQualityLevels where Ukey = f.AcceptableQualityLevelsUkey), 'I'),
 		
 		[InspectionResultID] = iif(f.InspectionResult = 'Pass', 1, 2),
 		[InspectionStatusID] = iif(f.InspectionResult = 'Pass', 5, 6),

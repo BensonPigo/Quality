@@ -50,7 +50,7 @@ namespace BusinessLogicLayer.Service.FinalInspectionTests
                     InspectionType = "Final Inspection",
                     InspectionID = new List<string>() { "ESPCH21100005" },
                     BaseUri = "https://adidasstage4.pivot88.com",
-                    RequestUri = "rest/operation/v1/inspection_reports/unique_key:test28"
+                    RequestUri = "rest/operation/v1/inspection_reports/unique_key:"
                 };
 
                 pivotTransferRequest.Headers.Add("api-key", "fc16972a-bdc9-420f-9b6e-e7193ed99508");
