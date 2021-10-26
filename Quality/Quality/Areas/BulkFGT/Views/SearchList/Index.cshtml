@@ -132,7 +132,6 @@
         </div>
         <div class="content-scroll">
             <div class="inner-scroll" style="float:left">
-                <div>
                     <table id="myTable" class="table table-striped display" style="text-align:center;">
                         <thead>
                             <tr class="row-name" style="color:black">
@@ -261,7 +260,6 @@
 
                         </tbody>
                     </table>
-                </div>
                 <br />
 
             </div>
@@ -281,9 +279,10 @@
         @Html.Raw(Model.ErrorMessage);
 
         $('#myTable').DataTable({
-            //"pageLength": 9,
+            "pageLength": 10,
             "filter": false,
             "paging": true,
+            lengthChange: false,
             //"scrollY": "49vh",
             //"scrollCollapse": true,
             //"scrollX": true,
