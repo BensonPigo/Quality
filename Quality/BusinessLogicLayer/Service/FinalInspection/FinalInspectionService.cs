@@ -105,8 +105,13 @@ namespace BusinessLogicLayer.Service
 
         public object GetPivot88Json(string ID)
         {
-            _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
-            DataSet resultPivot88 = _FinalInspectionProvider.GetPivot88(ID);
+            IFinalInspectionProvider finalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+            DataSet resultPivot88 = finalInspectionProvider.GetPivot88(ID);
+
+            if (resultPivot88.Tables.Count == 0)
+            {
+                return null;
+            }
 
             if (resultPivot88.Tables[0].Rows.Count == 0)
             {
@@ -257,7 +262,7 @@ namespace BusinessLogicLayer.Service
                 return sentPivot88Results;
             }
 
-            sentPivot88Results = listInspectionID.AsParallel().Select(finalInspectionID => {
+            sentPivot88Results = listInspectionID.Select(finalInspectionID => {
 
                 bool isSuccess = true;
                 string errorMsg = string.Empty;
