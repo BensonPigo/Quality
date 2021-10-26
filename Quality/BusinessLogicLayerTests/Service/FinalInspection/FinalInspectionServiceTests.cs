@@ -13,12 +13,63 @@ using DatabaseObject.RequestModel;
 using BusinessLogicLayer.Interface;
 using DatabaseObject.ViewModel.FinalInspection;
 using DatabaseObject;
+using Newtonsoft.Json;
+using DatabaseObject.ResultModel.FinalInspection;
 
 namespace BusinessLogicLayer.Service.FinalInspectionTests
 {
     [TestClass()]
     public class FinalInspectionServiceTests
     {
+
+        [TestMethod()]
+        public void GetPivot88JsonTest()
+        {
+            try
+            {
+                FinalInspectionService finalInspectionService = new FinalInspectionService();
+
+                string result = JsonConvert.SerializeObject(finalInspectionService.GetPivot88Json("ESPCH21100005"));
+                
+                Assert.IsTrue(true);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.ToString());
+            }
+        }
+
+        [TestMethod()]
+        public void SentPivot88Test()
+        {
+            try
+            {
+                FinalInspectionService finalInspectionService = new FinalInspectionService();
+                PivotTransferRequest pivotTransferRequest = new PivotTransferRequest()
+                { 
+                    InspectionType = "Final Inspection",
+                    InspectionID = new List<string>() { "ESPCH21100005"},
+                    BaseUri = "https://adidasstage4.pivot88.com",
+                    RequestUri = "rest/operation/v1/inspection_reports/unique_key:"
+                };
+
+                for (int i = 0; i < 10; i++)
+                {
+                    pivotTransferRequest.InspectionID.Add("ESPCH21100005");
+                }
+
+                pivotTransferRequest.Headers.Add("api-key", "fc16972a-bdc9-420f-9b6e-e7193ed99508");
+
+                List<SentPivot88Result> sentPivot88Results = finalInspectionService.SentPivot88(pivotTransferRequest);
+
+                Assert.IsTrue(true);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.ToString());
+            }
+        }
+
         [TestMethod()]
         public void GetFinalInspectionTest()
         {

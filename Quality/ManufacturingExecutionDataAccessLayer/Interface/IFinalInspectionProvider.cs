@@ -61,5 +61,11 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         IList<OtherImage> GetOthersImageList(string finalInspectionID);
         string GetNewFinalInspectionID(string factoryID);
         IList<DatabaseObject.ProductionDB.System> GetSystem();
+
+        DataSet GetPivot88(string ID);
+
+        List<string> GetPivot88FinalInspectionID();
+
+        void UpdateIsExportToP88(string ID);
     }
 }

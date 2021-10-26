@@ -140,10 +140,12 @@
     <Compile Include="ProductionDB\TypeSelection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Public\CompareBase.cs" />
+    <Compile Include="Public\StaticPivot88.cs" />
     <Compile Include="Public\WindowModel.cs" />
     <Compile Include="RequestModel\MockupFailMail_Request.cs" />
     <Compile Include="RequestModel\FinalInspection_Query.cs" />
     <Compile Include="RequestModel\FinalInspection_Request.cs" />
+    <Compile Include="RequestModel\PivotTransferRequest.cs" />
     <Compile Include="RequestModel\StyleArtwork_Request.cs" />
     <Compile Include="RequestModel\MockupOven_Request.cs" />
     <Compile Include="RequestModel\AccessoryRefNo_Request.cs" />
@@ -164,6 +166,7 @@
     <Compile Include="ResultModel\FabricCrkShrkTest_Result.cs" />
     <Compile Include="ResultModel\FabricOvenTest_Result.cs" />
     <Compile Include="ResultModel\FinalInspection\PoSelect_Result.cs" />
+    <Compile Include="ResultModel\FinalInspection\SentPivot88Result.cs" />
     <Compile Include="ResultModel\LogIn_Result.cs" />
     <Compile Include="ResultModel\Measurement_ResultModel.cs" />
     <Compile Include="ResultModel\Report_Result.cs" />
