@@ -190,7 +190,7 @@ namespace BusinessLogicLayer.Service
                     assignment = new
                     {
                         report_type = new { id = 12 },
-                        inspector = new { username = "user1" },//new { username = drFinalInspection["CFA"]},
+                        inspector = new { username = drFinalInspection["CFA"]},
                         date_inspection = drFinalInspection["AuditDate"]
                     },
                     po_line = new
@@ -267,11 +267,12 @@ namespace BusinessLogicLayer.Service
                 bool isSuccess = true;
                 string errorMsg = string.Empty;
                 string postBody = string.Empty;
+                string requestUri = pivotTransferRequest.RequestUri + "sintex" + finalInspectionID;
                 try
                 {
                     postBody = JsonConvert.SerializeObject(GetPivot88Json(finalInspectionID));
 
-                    WebApiBaseResult webApiBaseResult = WebApiTool.WebApiSend(pivotTransferRequest.BaseUri, pivotTransferRequest.RequestUri + finalInspectionID, postBody, HttpMethod.Put, headers: pivotTransferRequest.Headers);
+                    WebApiBaseResult webApiBaseResult = WebApiTool.WebApiSend(pivotTransferRequest.BaseUri, requestUri, postBody, HttpMethod.Put, headers: pivotTransferRequest.Headers);
                     
                     switch (webApiBaseResult.webApiResponseStatus)
                     {

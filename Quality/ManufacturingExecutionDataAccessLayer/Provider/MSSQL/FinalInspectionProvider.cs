@@ -1330,7 +1330,7 @@ Select	f.AuditDate,
 		[InspectionStatusID] = iif(f.InspectionResult = 'Pass', 5, 6),
 		f.SubmitDate,
 		[InspectionMinutes] = Round(DATEDIFF(SECOND, f.AddDate, f.EditDate) / 60.0, 5),
-		[CFA] = isnull((select name from Production.dbo.Pass1 with (nolock) where ID = f.CFA), (select name from Pass1 with (nolock) where ID = f.CFA)),
+		[CFA] = isnull((select Pivot88UserName from quality_pass1 with (nolock) where ID = f.CFA), ''),
 		OrderInfo.POQty,
 		OrderInfo.ETD_ETA,
 		f.CustPONO
