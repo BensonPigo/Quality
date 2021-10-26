@@ -190,7 +190,7 @@ namespace BusinessLogicLayer.Service
                     assignment = new
                     {
                         report_type = new { id = 12 },
-                        inspector = new { username = "user1" },//new { username = drFinalInspection["CFA"]},
+                        inspector = new { username = drFinalInspection["CFA"]},
                         date_inspection = drFinalInspection["AuditDate"]
                     },
                     po_line = new
