@@ -33,6 +33,7 @@ namespace DatabaseObject.ProductionDB
         public int? Temperature { get; set; }
 
         public int? Cycle { get; set; }
+        public int? CycleTime { get; set; }
 
         public string Detergent { get; set; }
 

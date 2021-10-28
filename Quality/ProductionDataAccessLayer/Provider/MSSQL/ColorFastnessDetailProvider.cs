@@ -165,6 +165,7 @@ where id = @ID
                 { "@Remark", sources.Main.Remark } ,
                 { "@Temperature", sources.Main.Temperature } ,
                 { "@Cycle", sources.Main.Cycle } ,
+                { "@CycleTime", sources.Main.CycleTime } ,
                 { "@Detergent", sources.Main.Detergent } ,
                 { "@Machine", sources.Main.Machine } ,
                 { "@Drying", sources.Main.Drying } ,
@@ -204,6 +205,7 @@ set	   [POID] = @POID
       ,[EditDate] = GetDate()
       ,[Temperature] = @Temperature
       ,[Cycle] = @Cycle
+      ,[CycleTime] = @CycleTime
       ,[Detergent] = @Detergent
       ,[Machine] = @Machine
       ,[Drying] = @Drying
