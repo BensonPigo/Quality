@@ -755,7 +755,6 @@
             keyValues = keyValues,
         });
 
-        keyValues.Add("Style#", "");
         Html.RenderPartial("SelectItem", new SelectItem_ViewModel()
         {
             IDX = "SP",
@@ -1365,7 +1364,7 @@
 
     function PrveLoad() {
         StyleClick($("#txtSP").val());
-        SPClick($("#txtStyle").val());
+        SPClick();
     }
 
     function LeftOnBindEvent() {
@@ -1381,14 +1380,6 @@
         });
 
         $('#btnSPSelectItem').on('click', function () {
-            if ($("#txtStyle").val() != "") {
-                $(".para[idx='SP'][idi=1]").show();
-            }
-            else {
-                $(".para[idx='SP'][idi=1]").hide();
-            }
-
-            $(".para[idx='SP'][idi=1] > .Value").html($("#txtStyle").val());
             $("#SelectItemBackground, .SelectItem[idx='SP']").removeClass('display-None');
         });
 
@@ -1396,7 +1387,7 @@
             $('#txtArticle, #txtSize, #txtProductType, #txtProductTypePMS, #txtBrand, #txtSeason, #txtSampleStage, #txtOriginalLine, #txtSizeQty, #txtSizeBalanceQty, #txtOrderQty, #txtOrderBalanceQty').val("");
             $(".table-top3>tbody>tr>td>input[type='text']").val("");
             $("#DefectType>tbody>tr").remove();
-            SPCheck($('#txtStyle').val(), $(this).val());
+            SPCheck($(this).val());
         });
 
         $('#btnArticleSelectItem').on('click', function () {
@@ -1740,7 +1731,7 @@
                 }
 
                 content += "<td><img src='/Image/Icon/Delete.png' width='30' class='deleteDefectType' /></td>";
-                content += "<td><p>" + area2 + '-' + defectTypeID + '-' + responsibility + '-' + bAAuditCriteriaID + "</p></td>";
+                content += "<td><p>" + area2 + '-' + defectCategory + '-' + responsibility + '-' + bAAuditCriteriaID + "</p></td>";
                 content += "<td class='display-None DefectValue' idi='" + rowCount + "'>";
                 content += "<p idx='DefectCategory' idv='" + defectCategoryID + "'>" + defectCategory + "</p>";
                 content += "<p idx='ADDDefectType' idv='" + defectTypeID + "'>" + defectType + "</p>";
@@ -2079,7 +2070,6 @@
                     msg.WithError("Style not found.");
                 }
 
-                SPClick($("#txtStyle").val());
                 IsEditModeButtonChange();
             },
             error: function (xhr, ajaxOptions, thrownError) {
@@ -2088,12 +2078,12 @@
         });
     }
 
-    function SPClick(StyleID) {
+    function SPClick() {
         $.ajax({
             url: "@Url.Action("GetSP", "Inspection", new { Area = "SampleRFT" })",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
-            data: JSON.stringify({ StyleID: StyleID }),
+            data: JSON.stringify({  }),
             async: true,
             success: function (data) {
                 $(".FilterUL[idx='SP']").html(data);
@@ -2105,7 +2095,7 @@
         });
     }
 
-    function SPCheck(StyleID, OrderID) {
+    function SPCheck(OrderID) {
         if (OrderID == null || OrderID == "") {
             return;
         }
@@ -2114,7 +2104,7 @@
             url: "@Url.Action("CheckSP", "Inspection", new { Area = "SampleRFT" })",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
-            data: JSON.stringify({ StyleID: StyleID, OrderID: OrderID }),
+            data: JSON.stringify({ OrderID: OrderID }),
             async: true,
             success: function (data) {
                 if (data.Result == 0) {
@@ -2144,7 +2134,7 @@
                     $('#btnRefresh').click();
                 }
 
-                SPClick($("#txtStyle").val());
+                SPClick();
                 ArticleClick($("#txtStyle").val(), $('#txtSP').val());
                 IsEditModeButtonChange();
             },
@@ -2676,13 +2666,22 @@
 
                     tableContent += "<tr idx='" + value.FixType + "' idsp='" + value.OrderID + "' idstyle='" + value.Style + "' idarticle='" + value.Article + "' idsize='" + value.Size + "'>";
                     tableContent += "<td><input type='checkbox' idx='" + value.ID + "' class='ReworkListCheckBox'></td>";
-                    tableContent += "<td><input id='txtReworkListReworkNo" + value.ID + "' type='text' readonly='readonly' value='" + value.ReworkNo + "' /></td>";
-                    tableContent += "<td><input id='txtReworkListOrderID" + value.ID + "' type='text' readonly='readonly' value='" + value.OrderID + "' /></td>";
-                    tableContent += "<td><input id='txtReworkListPOID" + value.ID + "' type='text' readonly='readonly' value='" + value.POID + "'/></td>";
-                    tableContent += "<td><input id='txtReworkListStyle" + value.ID + "' type='text' readonly='readonly' value='" + value.Style + "'/></td>";
-                    tableContent += "<td><input id='txtReworkListSize" + value.ID + "' type='text' readonly='readonly' value='" + value.Size + "'/></td>";
-                    tableContent += "<td><input id='txtReworkListArticle" + value.ID + "' type='text' readonly='readonly' value='" + value.Article + "'/></td>";
-                    tableContent += "<td><input id='txtReworkListDefect" + value.ID + "' type='text' readonly='readonly' value='" + value.Defect + "'/></td>";
+                    tableContent += "<td><h4 style='width: 8vw;'>" + value.ReworkNo + "</h4></td>";
+                    tableContent += "<td><h4 style='width: 12vw;'>" + value.OrderID + "</h4></td>";
+                    tableContent += "<td><h4 style='width: 12vw;'>" + value.POID + "</h4></td>";
+                    tableContent += "<td><h4>" + value.Style + "</h4></td>";
+                    tableContent += "<td><h4>" + value.Size + "</h4></td>";
+                    tableContent += "<td><h4>" + value.Article + "</h4></td>";
+
+                    tableContent += "<td>";
+                    $.each(value.Defect.split(';'), function (index, value) {
+                        if (value == "") {
+                            return;
+                        }
+                        tableContent += "<h4 style='width: 25vw;padding-bottom: 1vh;'>" + value + "</h4>";
+                    });
+                    tableContent += "</td>";
+                    
                     tableContent += "<td><input id='btnReworkListPass" + value.ID + "' type='button' class='site-btn btn-green font1rem btnReworkListPass' style='margin: 0; border: 0; padding: 7px 2em; ' name='ReworkListPass' value='Pass' /></td>";
                     tableContent += "<td><input id='btnReworkListReject" + value.ID + "' type='button' class='site-btn btn-red font1rem btnReworkListReject' style='margin:0;border:0;padding: 7px 2em;' name='ReworkListReject' value='Reject' /></td>";
                     tableContent += "<td>";

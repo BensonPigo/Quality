@@ -48,7 +48,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                         {
                             Main = new FabricOvenTest_Main(),
                             Details = new List<FabricOvenTest_Detail>(),
-                            ErrorMessage = $"msg.WithInfo('{model.ErrorMessage.Replace("\r\n", "<br />")}');" ,
+                            ErrorMessage = $"msg.WithInfo('{model.ErrorMessage}');" ,
                         };
             }
             ViewBag.POID = POID;
@@ -91,7 +91,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 model.Main.Remark = saveResult.Main.Remark;
                 model.Details = saveResult.Details;
                 model.Result = saveResult.Result;
-                model.ErrorMessage = $"msg.WithInfo('{saveResult.ErrorMessage.ToString().Replace("\r\n", "<br />") }');EditMode=true;";
+                model.ErrorMessage = $"msg.WithInfo('{saveResult.ErrorMessage.ToString() }');EditMode=true;";
                 EditMode = "True";
             }
 

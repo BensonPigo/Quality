@@ -41,7 +41,7 @@ left join [dbo].[SciProduction_Orders] o with(nolock)
 on ins.OrderId=o.ID
 outer apply(
 	select code = (
-		select CONCAT(AreaCode,'-',DefectCode,'-',PMS_RFTBACriteriaID,'-',Description) 
+		select CONCAT(AreaCode,'-',DefectCode,'-',PMS_RFTBACriteriaID,'-',Description,';') 
 		from (
 				select distinct [Description] = dp.Description
 				,AreaCode,DefectCode,PMS_RFTBACriteriaID

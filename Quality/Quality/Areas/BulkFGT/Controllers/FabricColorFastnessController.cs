@@ -54,7 +54,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             if (!model.Result)
             {
                 model.ColorFastness_MainList = new List<ColorFastness_Result>();
-                model.ErrorMessage = $"msg.WithInfo('" + model.ErrorMessage.ToString().Replace("\r\n", "<br />") + "');";
+                model.ErrorMessage = $"msg.WithInfo('" + model.ErrorMessage + "');";
             }
 
             ViewBag.QueryPoID = QueryPoID;
@@ -106,7 +106,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 model.Main.Remark = saveResult.Main.Remark;
                 model.Detail = saveResult.Detail;
                 model.Result = saveResult.Result;
-                model.ErrorMessage = $"msg.WithInfo('{saveResult.ErrorMessage.ToString().Replace("\r\n", "<br />") }');EditMode=true;";
+                model.ErrorMessage = $"msg.WithInfo('{saveResult.ErrorMessage }');EditMode=true;";
                 EditMode = "True";
             }
 

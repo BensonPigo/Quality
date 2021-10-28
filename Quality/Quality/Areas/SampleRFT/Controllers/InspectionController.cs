@@ -134,10 +134,10 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
-        public ActionResult GetSP(string StyleID)
+        public ActionResult GetSP()
         {
             this.CheckSession();
-            List<string> orderIDs = SelectItemData.Where(x => string.IsNullOrEmpty(StyleID) || x.StyleID.Equals(StyleID))
+            List<string> orderIDs = SelectItemData
                                     .GroupBy(x => x.OrderID)
                                     .Select(x => x.Key).ToList();
 
@@ -151,7 +151,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
-        public JsonResult CheckSP(string StyleID, string OrderID)
+        public JsonResult CheckSP(string OrderID)
         {
             this.CheckSession();
             Inspection_ViewModel viewModel = new Inspection_ViewModel();
@@ -160,7 +160,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                 return Json(viewModel);
             }
 
-            List<Inspection_ViewModel> result = _InspectionService.CheckSelectItemData(new Inspection_ViewModel() { FactoryID = this.FactoryID, StyleID = StyleID, OrderID = OrderID, Brand = this.Brand, }
+            List<Inspection_ViewModel> result = _InspectionService.CheckSelectItemData(new Inspection_ViewModel() { FactoryID = this.FactoryID, OrderID = OrderID, Brand = this.Brand, }
                                                                                     , InspectionService.SelectType.OrderID)
                                                                    .ToList();
             viewModel = result.Any() ? result.FirstOrDefault() : viewModel;

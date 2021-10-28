@@ -141,7 +141,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             if (!result.Result)
             {
-                mockupCrocking_ViewModel.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString().Replace("\r\n", "<br />") + "');EditMode=true;";
+                mockupCrocking_ViewModel.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString() + "');EditMode=true;";
             }
             else if (result.Result && mockupCrocking_ViewModel.Result == "Fail")
             {
@@ -190,7 +190,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             Req.MockupCrocking_Detail = model.MockupCrocking_Detail;
             if (!result.Result)
             {
-                Req.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString().Replace("\r\n", "<br />") + "');EditMode=true;";
+                Req.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString() + "');EditMode=true;";
             }
             else if (result.Result && model.Result == "Fail")
             {
@@ -230,7 +230,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
             if (!result.Result)
             {
-                mockupCrocking_ViewModel.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString().Replace("\r\n", "<br />") + "');";
+                mockupCrocking_ViewModel.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString() + "');";
             }
             mockupCrocking_ViewModel.Request = Req.Request;
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(mockupCrocking_ViewModel.ReportNo_Source);
@@ -255,7 +255,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             tempFilePath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + tempFilePath;
             if (!report_Result.Result)
             {
-                report_Result.ErrorMessage = report_Result.ErrorMessage.ToString().Replace("\r\n", "<br />");
+                report_Result.ErrorMessage = report_Result.ErrorMessage.ToString();
             }
             return Json(new { Result = report_Result.Result, ErrorMessage = report_Result.ErrorMessage, reportPath = tempFilePath, FileName = report_Result.TempFileName });
         }

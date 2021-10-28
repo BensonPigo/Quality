@@ -9,7 +9,19 @@ namespace DatabaseObject
     public class BaseResult
     {
         public bool Result { get; set; } = true;
-        public string ErrorMessage { get; set; }
+
+        private string _ErrorMeassage;
+        public string ErrorMessage
+        {
+            get
+            {
+                return _ErrorMeassage;
+            }
+            set
+            {
+                _ErrorMeassage = value.Replace("\r\n", "<br />").Replace("'", string.Empty);
+            }
+        }
         public Exception Exception { get; set; }
         public object ResultObject { get; set; }
 

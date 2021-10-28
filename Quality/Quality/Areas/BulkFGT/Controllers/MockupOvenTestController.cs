@@ -147,7 +147,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             if (!result.Result)
             {
-                model.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString().Replace("\r\n", "<br />") + "');EditMode=true;";
+                model.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString() + "');EditMode=true;";
             }
             else if (result.Result && model.Result == "Fail")
             {
@@ -204,7 +204,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             Req.MockupOven_Detail = model.MockupOven_Detail;
             if (!result.Result)
             {
-                Req.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString().Replace("\r\n", "<br />") + "');EditMode=true;";
+                Req.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString() + "');EditMode=true;";
             }
             else if (result.Result && model.Result == "Fail")
             {
@@ -240,7 +240,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
             if (!result.Result)
             {
-                model.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString().Replace("\r\n", "<br />") + "');";
+                model.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString() + "');";
             }
             model.Request = Req.Request;
 
@@ -268,7 +268,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             tempFilePath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + tempFilePath;
             if (!report_Result.Result)
             {
-                report_Result.ErrorMessage = report_Result.ErrorMessage.ToString().Replace("\r\n", "<br />");
+                report_Result.ErrorMessage = report_Result.ErrorMessage.ToString();
             }
             
             return Json(new { Result = report_Result.Result, ErrorMessage = report_Result.ErrorMessage, reportPath = tempFilePath, FileName = report_Result.TempFileName });
