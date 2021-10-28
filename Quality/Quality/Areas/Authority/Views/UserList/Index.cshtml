@@ -574,6 +574,7 @@
         });
     }
 
+    var userTable;
     //初始化Import User的表格
     function InitUserDataTable(res) {
 
@@ -615,8 +616,7 @@
                 { },
                 {
                     // 欄位換成下拉選單
-                    render: function (data, type, full, meta) {
-
+                    render: function (data, type, full, meta) {                        
 
                         var $select = $('<select id="position-' + meta.row + '"></select>', {
                         });
@@ -667,7 +667,7 @@
                 });
             }
         });
-
+        userTable = table;
         $('#UsersTable tbody').on('click', 'td', function () {
 
             // Index = 0 為Select欄位
@@ -830,7 +830,7 @@
 
             if (table[i][0]) {
 
-                var pos = $("#position-" + i).val();
+                var pos = table[i][3];//$("#position-" + i).val();
                 var data = {
                     UserID: table[i][1],
                     Position: pos,
@@ -868,4 +868,5 @@
             NonLoading();
         });
     }
+
 </script>

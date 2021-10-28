@@ -274,7 +274,7 @@ select DISTINCT
 [Select] = Cast(0 as bit)
 , UserID = p.ID
 ,p.Name
-,Position
+,Position = (select TOP 1 ID from Quality_Position)
 from [MainServer].Production.dbo.Pass1 p 
 WHERE 1=1
 AND NOT EXISTS
@@ -290,7 +290,7 @@ select DISTINCT
 [Select] = Cast(0 as bit)
 , UserID = p.ID
 ,p.Name
-,Position
+,Position = (select TOP 1 ID from Quality_Position)
 from Pass1 p 
 WHERE 1=1
 AND NOT EXISTS
