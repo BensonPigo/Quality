@@ -100,6 +100,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 model.Main.Inspector = saveResult.Main.Inspector;
                 model.Main.InspectionName = saveResult.Main.InspectionName;
                 model.Main.Cycle = saveResult.Main.Cycle;
+                model.Main.CycleTime = saveResult.Main.CycleTime;
                 model.Main.Detergent = saveResult.Main.Detergent;
                 model.Main.Machine = saveResult.Main.Machine;
                 model.Main.Drying = saveResult.Main.Drying;
@@ -114,6 +115,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             List<SelectListItem> ScalesList = new SetListItem().ItemListBinding(Scales);
             ViewBag.Temperature_List = FabricColorFastnessModel.Temperature_List;
             ViewBag.Cycle_List = FabricColorFastnessModel.Cycle_List;
+            ViewBag.CycleTime_List = FabricColorFastnessModel.CycleTime_List;
             ViewBag.Detergent_List = FabricColorFastnessModel.Detergent_List;
             ViewBag.Machine_List = FabricColorFastnessModel.Machine_List;
             ViewBag.Drying_List = FabricColorFastnessModel.Drying_List;

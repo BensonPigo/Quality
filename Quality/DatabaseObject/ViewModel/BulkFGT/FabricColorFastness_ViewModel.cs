@@ -66,11 +66,26 @@ namespace DatabaseObject.ViewModel.BulkFGT
                 return new List<SelectListItem>()
                 {
                     new SelectListItem(){ Text="0",Value="0"},
+                    new SelectListItem(){ Text="1",Value="1"},
                     new SelectListItem(){ Text="3",Value="3"},
                     new SelectListItem(){ Text="5",Value="3"},
                     new SelectListItem(){ Text="10",Value="10"},
                     new SelectListItem(){ Text="15",Value="15"},
                     new SelectListItem(){ Text="25",Value="25"},
+                };
+            }
+            set { }
+        }
+        public List<SelectListItem> CycleTime_List
+        {
+            get
+            {
+                return new List<SelectListItem>()
+                {
+                    new SelectListItem(){ Text="",Value=""},
+                    new SelectListItem(){ Text="30",Value="30"},
+                    new SelectListItem(){ Text="60",Value="60"},
+                    new SelectListItem(){ Text="90",Value="90"},
                 };
             }
             set { }
@@ -102,6 +117,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
                     new SelectListItem(){ Text="Top",Value="Top"},
                     new SelectListItem(){ Text="Load",Value="Load"},
                     new SelectListItem(){ Text="Front Load",Value="Front Load"},
+                    new SelectListItem(){ Text="Fastness Machine",Value="Fastness Machine"},
                 };
             }
             set { }

@@ -237,6 +237,17 @@
                                         }
                                     </select>
                                 </td>
+
+                                <td><h5>Cycle Time (min)</h5></td>
+                                <td>
+                                    <select id="Main_CycleTime" name="Main.CycleTime">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.CycleTime_List)
+                                        {
+                                            string selected = item.Text.Equals(Model.Main.CycleTime.ToString()) ? "selected" : "";
+                                            <option value="@item.Value" @selected>@item.Text</option>
+                                        }
+                                    </select>
+                                </td>
                                 <td><h5>Detergent</h5></td>
                                 <td>
                                     <select id="Main_Detergent" name="Main.Detergent">
@@ -248,6 +259,9 @@
                                         }
                                     </select>
                                 </td>
+                            </tr>
+                            <tr>
+
                                 <td><h5>Machine Used</h5></td>
                                 <td>
                                     <select id="Main_Machine" name="Main.Machine">
@@ -257,10 +271,8 @@
                                             string selected = item.Text.Equals(Machine) ? "selected" : "";
                                             <option value="@item.Value" @selected>@item.Text</option>
                                         }
-                                    </select>                                    
+                                    </select>
                                 </td>
-                            </tr>
-                            <tr>
                                 <td><h5>Drying Process</h5></td>
                                 <td>
                                     <select id="Main_Drying" name="Main.Drying">
@@ -270,18 +282,20 @@
                                             string selected = item.Text.Equals(Drying) ? "selected" : "";
                                             <option value="@item.Value" @selected>@item.Text</option>
                                         }
-                                    </select>                                    
+                                    </select>
                                 </td>
                                 @{
-                                        string ResultColor = Model.Main.Result == "Pass" ? "blue" : "red";
+                                    string ResultColor = Model.Main.Result == "Pass" ? "blue" : "red";
                                 }
                                 <td><h5>Result</h5></td>
                                 <td class="@ResultColor">
                                     @Html.DisplayFor(o => o.Main.Result, "", "")
                                 </td>
+                            </tr>
+                            <tr>
                                 <td><h5>Remark</h5></td>
                                 <td colspan="5">
-                                    @Html.TextBoxFor(o => o.Main.Remark, "", "")
+                                    @Html.TextBoxFor(o => o.Main.Remark, "", new { @style="width:100%"})
                                     @Html.HiddenFor(o => o.Main.TestBeforePicture)
                                     @Html.HiddenFor(o => o.Main.TestAfterPicture)
                                     @Html.HiddenFor(o => o.Main.Status)
