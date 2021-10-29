@@ -969,19 +969,13 @@ where t.ID = '{all_Data.Detail.inspector}'
 and t.GarmentTest=1
 ";
                                 string technicianName = string.Empty;
-                                Image img = null;
-                                
-
                                 DataTable dtTechnicianInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sql_cmd, new ADOHelper.Template.MSSQL.SQLParameterCollection());
 
-                                if (dtTechnicianInfo != null && dtTechnicianInfo.Rows.Count > 0)
+                                if (dtTechnicianInfo != null && dtTechnicianInfo.Rows.Count > 0 && dtTechnicianInfo.Rows[0]["SignaturePic"] != null)
                                 {
                                     technicianName = dtTechnicianInfo.Rows[0]["name"].ToString();
-                                    byte[] imgDatya = (byte[])dtTechnicianInfo.Rows[0]["SignaturePic"];
-                                    using (MemoryStream ms = new MemoryStream(imgDatya))
-                                    {
-                                        img = Image.FromStream(ms);
-                                    }
+                                    byte[] imgData = (byte[])dtTechnicianInfo.Rows[0]["SignaturePic"];
+                                  
                                     string imageName = $"{Guid.NewGuid()}.jpg";
                                     string imgPath;
 
@@ -998,7 +992,11 @@ and t.GarmentTest=1
                                     worksheet.Cells[76, 9] = technicianName;
                                     Excel.Range cell = worksheet.Cells[74, 9];
 
-                                    img.Save(imgPath);
+                                    using (MemoryStream ms = new MemoryStream(imgData))
+                                    {
+                                        Image img = Image.FromStream(ms);
+                                        img.Save(imgPath);
+                                    }
                                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
                                 }
                                 else
@@ -1652,20 +1650,15 @@ where t.ID = '{all_Data.Detail.inspector}'
 and t.GarmentTest=1
 ";
                                 string technicianName = string.Empty;
-                                Image img = null;
+                               
                                 Excel.Range cell = worksheet.Cells[12, 2];
 
                                 DataTable dtTechnicianInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sql_cmd, new ADOHelper.Template.MSSQL.SQLParameterCollection());
 
-                                if (dtTechnicianInfo != null && dtTechnicianInfo.Rows.Count > 0)
+                                if (dtTechnicianInfo != null && dtTechnicianInfo.Rows.Count > 0 && dtTechnicianInfo.Rows[0]["SignaturePic"] != null)
                                 {
                                     technicianName = dtTechnicianInfo.Rows[0]["name"].ToString();
                                     byte[] imgData = (byte[])dtTechnicianInfo.Rows[0]["SignaturePic"];
-                                    using (MemoryStream ms = new MemoryStream(imgData))
-                                    {
-                                        img = Image.FromStream(ms);
-                                    }
-
                                     string imageName = $"{Guid.NewGuid()}.jpg";
                                     string imgPath;
 
@@ -1681,8 +1674,12 @@ and t.GarmentTest=1
                                     // Name
                                     worksheet.Cells[78, 9] = technicianName;
                                     Excel.Range cellNew = worksheet.Cells[76, 9];
-
-                                    img.Save(imgPath);
+                                    using (MemoryStream ms = new MemoryStream(imgData))
+                                    {
+                                        Image img = Image.FromStream(ms);
+                                        img.Save(imgPath);
+                                    }
+                                    
                                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellNew.Left, cellNew.Top, 100, 24);
                                 }
                                 else
@@ -2373,19 +2370,12 @@ where t.ID = '{all_Data.Detail.inspector}'
 and t.GarmentTest=1
 ";
                         string technicianName = string.Empty;
-                        Image img = null;
-
                         DataTable dtTechnicianInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sql_cmd, new ADOHelper.Template.MSSQL.SQLParameterCollection());
 
-                        if (dtTechnicianInfo != null && dtTechnicianInfo.Rows.Count > 0)
+                        if (dtTechnicianInfo != null && dtTechnicianInfo.Rows.Count > 0 && dtTechnicianInfo.Rows[0]["SignaturePic"] != null)
                         {
                             technicianName = dtTechnicianInfo.Rows[0]["name"].ToString();
                             byte[] imgData = (byte[])dtTechnicianInfo.Rows[0]["SignaturePic"];
-                            using (MemoryStream ms = new MemoryStream(imgData))
-                            {
-                                img = Image.FromStream(ms);
-                            }
-
                             string imageName = $"{Guid.NewGuid()}.jpg";
                             string imgPath;
 
@@ -2402,7 +2392,12 @@ and t.GarmentTest=1
                             worksheet_2020.Cells[31, 7] = technicianName;
                             Excel.Range cellNew = worksheet_2020.Cells[29, 7];
 
-                            img.Save(imgPath);
+                            using (MemoryStream ms = new MemoryStream(imgData))
+                            {
+                                Image img = Image.FromStream(ms);
+                                img.Save(imgPath);
+                            }
+
                             worksheet_2020.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellNew.Left, cellNew.Top, 100, 24);
                         }
                         else
@@ -2582,19 +2577,14 @@ where t.ID = '{all_Data.Detail.inspector}'
 and t.GarmentTest=1
 ";
                         string technicianName = string.Empty;
-                        Image img = null;
-
                         DataTable dtTechnicianInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sql_cmd, new ADOHelper.Template.MSSQL.SQLParameterCollection());
 
 
-                        if (dtTechnicianInfo != null && dtTechnicianInfo.Rows.Count > 0)
+                        if (dtTechnicianInfo != null && dtTechnicianInfo.Rows.Count > 0 && dtTechnicianInfo.Rows[0]["SignaturePic"] != null)
                         {
                             technicianName = dtTechnicianInfo.Rows[0]["name"].ToString();
-                            byte[] imgDatya = (byte[])dtTechnicianInfo.Rows[0]["SignaturePic"];
-                            using (MemoryStream ms = new MemoryStream(imgDatya))
-                            {
-                                img = Image.FromStream(ms);
-                            }
+                            byte[] imgData = (byte[])dtTechnicianInfo.Rows[0]["SignaturePic"];
+
 
                             string imageName = $"{Guid.NewGuid()}.jpg";
                             string imgPath;
@@ -2612,7 +2602,11 @@ and t.GarmentTest=1
                             worksheet_Physical.Cells[159, 7] = technicianName;
                             Excel.Range cellNew = worksheet_Physical.Cells[157, 7];
 
-                            img.Save(imgPath);
+                            using (MemoryStream ms = new MemoryStream(imgData))
+                            {
+                                Image img = Image.FromStream(ms);
+                                img.Save(imgPath);
+                            }
                             worksheet_Physical.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellNew.Left, cellNew.Top, 80, 24);
                         }
                         else
