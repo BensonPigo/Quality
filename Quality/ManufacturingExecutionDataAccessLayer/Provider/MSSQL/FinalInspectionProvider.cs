@@ -1370,7 +1370,8 @@ declare @AdidasSAPERPCode varchar(3)
 
 select top 1 @AdidasSAPERPCode = SUBSTRING(BrandAreaCode, 1, 3)
 from [MainServer].Production.dbo.Factory_BrandDefinition fb with (nolock)
-where exists (select 1 from #tmpStyleInfo where fb.ID = FactoryID and fb.BrandID = BrandID and fb.CDCodeID = CDCodeNew)
+where   exists (select 1 from #tmpStyleInfo where fb.ID = FactoryID and fb.BrandID = BrandID and (fb.CDCodeID = CDCodeNew or fb.CDCodeID = ''))
+order by fb.CDCodeID desc
 
 SELECT	[Style] =  Stuff((select concat( ';',StyleName)   from #tmpStyleInfo FOR XML PATH('')),1,1,''),
 		[BrandAreaCode] = @AdidasSAPERPCode,
