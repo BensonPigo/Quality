@@ -14,6 +14,8 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string Type { get; set; }
         public string TempFileName { get; set; }
         public List<SelectListItem> TypeDatasource { get; set; }
+
+        public string MDivisionID { get; set; }
     }
 
 

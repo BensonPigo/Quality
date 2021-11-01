@@ -64,6 +64,7 @@ msg.WithInfo('[Style] or [Brand, Season] can't be cmpty. ');
 
             List<SelectListItem> data = _SearchListService.GetTypeDatasource(this.UserID);
 
+            Req.MDivisionID = this.MDivisionID;
             // Query
             Req.DataList = new List<SearchList_Result>();
             Req = _SearchListService.Get_SearchList(Req);
@@ -86,6 +87,7 @@ msg.WithInfo('{Req.ErrorMessage.Replace("'", string.Empty)}');
         {
             this.CheckSession();
 
+            Req.MDivisionID = this.MDivisionID;
             SearchList_ViewModel result = _SearchListService.ToExcel(Req);
             result.TempFileName = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + result.TempFileName;
             return Json(new { result.Result, result.ErrorMessage, result.TempFileName });

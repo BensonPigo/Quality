@@ -45,7 +45,8 @@ and p.ID='{Pass1ID}'
                 { "@BrandID", DbType.String, Req.BrandID },
                 { "@SeasonID", DbType.String, Req.SeasonID },
                 { "@StyleID", DbType.String, Req.StyleID },
-                { "@Article", DbType.String, Req.Article }
+                { "@Article", DbType.String, Req.Article },
+                { "@MDivisionID", DbType.String, Req.MDivisionID }
             };
 
             StringBuilder SbSql = new StringBuilder();
@@ -107,6 +108,10 @@ inner join GarmentTest_Detail gd ON g.ID= gd.ID
 WHERE 1=1 
 ";
 
+            if (!string.IsNullOrEmpty(Req.MDivisionID))
+            {
+                type2 += "AND g.MDivisionID = @MDivisionID ";
+            }
             if (!string.IsNullOrEmpty(Req.BrandID))
             {
                 type2 += "AND BrandID = @BrandID ";
