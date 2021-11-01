@@ -9,7 +9,7 @@ namespace DatabaseObject.RequestModel
     public class PivotTransferRequest
     {
         public string InspectionType { get; set; }
-        public List<string> InspectionID { get; set; } = new List<string>();
+        public string InspectionID { get; set; } = string.Empty;
 
         public string BaseUri { get; set; }
 

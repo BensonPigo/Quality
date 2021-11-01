@@ -1380,6 +1380,7 @@ SELECT	[Style] =  Stuff((select concat( ';',StyleName)   from #tmpStyleInfo FOR 
 select	[DefectTypeDesc] = gdt.Description,
 		[DefectCodeDesc] = gdc.Description,
         fd.GarmentDefectCodeID,
+        gdc.Pivot88DefectCodeID,
 		[CriticalQty] = iif(gdc.IsCriticalDefect = 1, fd.Qty, 0),
         [MajorQty] = iif(gdc.IsCriticalDefect = 0, fd.Qty, 0)
 from FinalInspection_Detail fd with (nolock)
@@ -1394,7 +1395,7 @@ drop table #tmpStyleInfo
             return ExecuteDataSet(CommandType.Text, sqlGetData, parameter);
         }
 
-        public List<string> GetPivot88FinalInspectionID()
+        public List<string> GetPivot88FinalInspectionID(string finalInspectionID)
         {
             SQLParameterCollection parameter = new SQLParameterCollection();
             string sqlGetData = @"
@@ -1403,9 +1404,15 @@ from Finalinspection with (nolock)
 where   IsExportToP88 = 0 and
         InspectionResult in ('Pass', 'Fail') and
         submitdate is not null and
-        InspectionStage in ('Final', '3rd Party')
+        InspectionStage in ('Final', '3rd Party') and
+        exists (select 1 from Production.dbo.Orders o with (nolock) where o.CustPONo = Finalinspection.CustPONO and o.BrandID in ('Adidas','Reebok'))
 
 ";
+            if (!string.IsNullOrEmpty(finalInspectionID))
+            {
+                sqlGetData += " and ID = @ID";
+                parameter.Add("@ID", finalInspectionID);
+            }
 
             DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, parameter);
 

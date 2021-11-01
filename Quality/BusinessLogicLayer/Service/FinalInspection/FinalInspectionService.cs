@@ -167,7 +167,7 @@ namespace BusinessLogicLayer.Service
                                 {
                                     label = s["DefectCodeDesc"],
                                     subsection = s["DefectTypeDesc"],
-                                    code = s["GarmentDefectCodeID"],
+                                    code = s["Pivot88DefectCodeID"],
                                     critical_level = s["CriticalQty"],
                                     major_level = s["MajorQty"],
                                     minor_level = 0,
@@ -248,14 +248,7 @@ namespace BusinessLogicLayer.Service
             _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
             _AutomationErrMsgProvider = new AutomationErrMsgProvider(Common.ProductionDataAccessLayer);
 
-            if (pivotTransferRequest.InspectionID.Any())
-            {
-                listInspectionID = pivotTransferRequest.InspectionID;
-            }
-            else
-            {
-                listInspectionID = _FinalInspectionProvider.GetPivot88FinalInspectionID();
-            }
+            listInspectionID = _FinalInspectionProvider.GetPivot88FinalInspectionID(pivotTransferRequest.InspectionID);
 
             if (listInspectionID.Count == 0)
             {
