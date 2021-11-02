@@ -1,0 +1,707 @@
+﻿@using DatabaseObject.ViewModel.FinalInspection;
+
+@{
+    ViewBag.Title = "Moisture";
+    List<CartonItem> ListCartonItem = ViewBag.ListCartonItem == null ? new List<CartonItem>() : (List<CartonItem>)ViewBag.ListCartonItem;
+    string ErrorMessage = ViewData["ErrorMessage"] == null ? string.Empty : ViewData["ErrorMessage"].ToString();
+}
+
+@model DatabaseObject.ViewModel.FinalInspection.MoistureResult
+@section FinalInspection_head{
+    <link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+    <link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+    <link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+
+    <style type="text/css">
+        .whiteBackgrond form {
+            height: 100%
+        }
+
+        .col-auto {
+            margin: 1.5em
+        }
+
+        .table_div > tbody > tr > td > * {
+            margin: 0.5em 0.5em 0.5em 0em;
+        }
+
+        #myCartons_info, #myEndlineMoisture_info, #myView_info {
+            color: white
+        }
+
+        .table_div tr td:nth-child(2n+1) {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        #myCartons_previous, #myCartons_next,
+        #myEndlineMoisture_previous, #myEndlineMoisture_next,
+        #myView_previous, #myView_next {
+            color: white !important;
+        }
+
+        #myCartons_wrapper, #myCartons_wrapper > .dataTables_scrollHeadInner,
+        #myEndlineMoisture_wrapper, #myEndlineMoisture_wrapper > .dataTables_scrollHeadInner,
+        #myView_wrapper, #myView_wrapper > .dataTables_scrollHeadInner {
+            width: 100%
+        }
+
+        .DownLeftWhiteBackgrond input[type="text"], select {
+            width: 90%;
+            box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+        }
+    </style>
+}
+@Html.Partial("~/Areas/FinalInspection/Views/Shared/_Inspection_Layout.cshtml")
+@using (Html.BeginForm("Moisture", "Inspection", FormMethod.Post, new { @id = "settingForm", onsubmit = "return checkSubmitValue(this.submitted);" }))
+{
+    <div class="DownLeftWhiteBackgrond">
+        <div style="padding:0.5em">
+            <div class="col-auto"><h1 style="font-size:1.5em;color:#999999">Moisture for what?</h1></div>
+            <div>
+                <table class="col-auto table_div" style="width:100%">
+                    <tr>
+                        <td><label>Article</label></td>
+                        <td>@Html.DropDownList("Article", (List<SelectListItem>)ViewBag.ListArticle, null, new { @class = "form-control", @style = "width:80%" })</td>
+                    </tr>
+                    <tr>
+                        <td><label class="cartonData">Carton#</label></td>
+                        <td>@Html.TextBox("Cartons", string.Empty, new { @class = "cartonData", @readonly = "readonly", @style = "width:80%", @onclick = "open_cartonsDetail()" })</td>
+                        @Html.HiddenFor(o => o.FinalInspection_OrderCartonUkey)
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="DownRightWhiteBackgrond">
+        <div style="padding:0.5em">
+            <div style="margin: 1em">
+                @Html.HiddenFor(o => o.FinalInspectionID)
+                <div class="col-auto"><h1 style="font-size:1.5em;color:#999999">Moisture</h1></div>
+                <button class="site-btn btn-blue" type="button" id="View" style="position:absolute;top:1em;right:8.6em">View</button>
+                <button class="site-btn btn-blue" type="button" id="Save" style="position:absolute;top:1em;right:0">Save</button>
+                <div>
+                    <table class="col-auto table_div" style="width:100%">
+                        <tr>
+                            <td style="width:30%;text-align:right;"><label>Detection Instrument</label></td>
+                            <td>@Html.TextBoxFor(o => o.Instrument, new { @readonly = "readonly", @onclick = "open_EndlineMoistureDetail()" })</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right;"><label>Fabrication</label></td>
+                            <td>@Html.TextBoxFor(o => o.Fabrication, new { @readonly = "readonly",@Style= "background-color: lightgray;" })</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <hr style="width:100%" />
+            <div style="margin:1em">
+                <table class="col-auto table_div" style="width:100%">
+                    <tr>
+                        <td colspan="6">
+                            <label>Garment Moisture</label>
+                            <label style="font-weight: normal;">(Standard:<label id="GarmentStandard"></label>)</label>
+                        </td>
+                        @*<td colspan="4"><label>(Standard:<label id="GarmentStandard"></label>)</label></td>*@
+                    </tr>
+                    <tr>
+                        <td style="text-align:right"><label>Top</label></td>
+                        <td>@Html.TextBoxFor(o => o.GarmentTop, new { @type = "number", @step = "0.1", @onchange = "setColor();", @style = "width:100px" })</td>
+                        <td style="text-align:right"><label>Middle</label></td>
+                        <td>@Html.TextBoxFor(o => o.GarmentMiddle, new { @type = "number", @step = "0.1", @onchange = "setColor();", @style = "width:100px" })</td>
+                        <td style="text-align:right"><label>Bottom</label></td>
+                        <td>@Html.TextBoxFor(o => o.GarmentBottom, new { @type = "number", @step = "0.1", @onchange = "setColor();", @style = "width:100px" })</td>
+                    </tr>
+                    <tr>
+                        <td colspan="6">
+                            <label>Carton Moisture</label>
+                            <label style="font-weight: normal;">(Standard:@ViewBag.FinalInspection_CTNMoistureStandard)</label>
+                        </td>
+                        @*<td colspan="4"><label>(Standard:@ViewBag.FinalInspection_CTNMoistureStandard)</label></td>*@
+                    </tr>
+                    <tr>
+                        <td style="text-align:right"><label class="cartonData">Inside</label></td>
+                        <td>@Html.TextBoxFor(o => o.CTNInside, new { @class = "cartonData", @type = "number", @step = "0.1", @onchange = "setColor();", @style = "width:100px" })</td>
+                        <td  style="text-align:right"><label>Outside</label></td>
+                        <td>@Html.TextBoxFor(o => o.CTNOutside, new { @class = "cartonData", @type = "number", @step = "0.1", @onchange = "setColor();", @style = "width:100px" })</td>
+                        <td colspan="2"></td>
+                    </tr>
+                </table>
+            </div>
+            <hr style="width:100%" />
+            <div style="margin:1em">
+                <table class="col-auto table_div" style="width:100%">
+                    <tr>
+                        <td style="width:8%"><label>Result</label></td>
+                        <td style="width:50px"><label id="Result"></label></td>
+                        <td style="width:12%"><label>Action</label></td>
+                        <td>@Html.DropDownListFor(o => o.Action, (List<SelectListItem>)ViewBag.ActionSelectListItem, null, new { @style = "width:157px" })</td>
+                    </tr>
+                    <tr>
+                        <td style="vertical-align:top"><label>Remark</label></td>
+                        <td colspan="3">@Html.TextAreaFor(o => o.Remark, new { @style = "width:90%;min-height:10vh" })</td>
+                    </tr>
+                </table>
+            </div>
+            <input type="hidden" id="goPage" name="goPage">
+            <div style="position:absolute;right:2em;bottom:7em;font-size:0.8em">Inline, 3rd Party can skip this step</div>
+            <button id="btnBack" onclick="this.form.submitted=this.value;" type="submit" value="Back" style="right:7em;" class="button">Back</button>
+            <button id="btnNext" onclick="this.form.submitted=this.value;" type="submit" value="Next" style="right:0;" class="button">Next</button>
+        </div>
+    </div>
+}
+
+<!--Detail-Cartons彈出視窗-->
+<!--多個Table forA001-->
+<div class="detail-dialog to-edit-detail-myCartons" title="Carton">
+    <div class="detail-dialog-content dialog-content-w-icon" style="height:70vh">
+        <table cellspacing="100" id="myCartons" class="table table-striped display">
+            <thead>
+                <tr class="row-name">
+                    <th style="display:none">
+                        Ukey
+                    </th>
+                    <th>SP#</th>
+                    <th>Packing List ID</th>
+                    <th>CTN No</th>
+                    <th>Article</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < ListCartonItem.Count; i++)
+                {
+                    <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                        <td style="display:none">
+                            @ListCartonItem[i].FinalInspection_OrderCartonUkey
+                        </td>
+                        <td>
+                            @ListCartonItem[i].OrderID
+                        </td>
+                        <td>
+                            @ListCartonItem[i].PackinglistID
+                        </td>
+                        <td>
+                            @ListCartonItem[i].CTNNo
+                        </td>
+                        <td>
+                            @ListCartonItem[i].Article-
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+        <br />
+        <div>
+        </div>
+    </div>
+</div>
+
+<div class="detail-dialog to-edit-detail-myEndlineMoisture" title="Detail">
+    <div class="detail-dialog-content dialog-content-w-icon" style="height:70vh">
+        <table cellspacing="100" id="myEndlineMoisture" class="table table-striped display">
+            <thead>
+                <tr class="row-name">
+                    <th>Detection Instrument</th>
+                    <th>Fabrication</th>
+                    <th>Garment Moisture Standard</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < ViewBag.ListEndlineMoisture.Count; i++)
+                {
+                    <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                        <td>
+                            @ViewBag.ListEndlineMoisture[i].Instrument
+                        </td>
+                        <td>
+                            @ViewBag.ListEndlineMoisture[i].Fabrication
+                        </td>
+                        <td>
+                            @ViewBag.ListEndlineMoisture[i].Standard
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+        <br />
+        <div>
+        </div>
+    </div>
+</div>
+
+<div class="detail-dialog to-edit-detail-myView" title="View">
+    <div class="detail-dialog-content dialog-content-w-icon" style="height:70vh">
+        <table cellspacing="100" id="myView" class="table table-striped display">
+            <thead>
+                <tr class="row-name">
+                    <th>Article</th>
+                    <th>CTN#</th>
+                    <th>Detection<br />Instrument</th>
+                    <th>Fabrication</th>
+                    <th>Garment<br />Moisture<br />Standard</th>
+                    <th>Garment<br />Moisture<br />TOP</th>
+                    <th>Garment<br />Moisture<br />Middle</th>
+                    <th>Garment<br />Moisture<br />Bottom</th>
+                    <th>Carton<br />Moisture<br />Standard</th>
+                    <th>Carton<br />Moisture<br />Inside</th>
+                    <th>Carton<br />Moisture<br />Outside</th>
+                    <th>Result</th>
+                    <th>Action</th>
+                    <th>Remark</th>
+                    <th></th>
+                </tr>
+            </thead>
+        </table>
+        <br />
+        <div>
+        </div>
+    </div>
+</div>
+
+@section FinalInspection_script
+{
+    <script>
+        var msg = new MessagerAlert();
+        var myCartons;
+        var myEndlineMoistureTable;
+        var myView;
+
+        $(function () {
+
+            @Html.Raw(ErrorMessage)
+
+            if (@ViewBag.ListCartonItem.Count == 0) {
+                $('.cartonData').each(function (){
+                    $(this).attr('disabled', 'disabled');
+                });
+            }
+
+            $(".detail-dialog").dialog({
+                autoOpen: false,
+                modal: true,
+                closeText: ' ',
+                width: 500,
+                minHeight: 400,
+                position: {
+                    my: "center top",
+                    at: "center top",
+                    of: window
+                },
+                dialogClass: "site-box",
+                open: function (event, ui) {
+                    $('.ui-widget-overlay').bind('click', function () {
+                        //location.reload();//強制Refresh頁面 Benson
+                        $(".ui-dialog-content").dialog('close');
+                    });
+                    $(this).parent().siblings().find(".ui-dialog-content").dialog('close');
+
+                    //XX 藏起來
+                    $(".ui-dialog-titlebar-close").hide();
+                    $(".ui-dialog-title").css("width", "100%");
+                },
+                close: function () {
+                },
+            });
+
+            // myCartons
+            myCartons = $('#myCartons').DataTable({
+                "pageLength": 10,
+                "autoWidth": false,
+                destroy: true, // 設定這個才能重新初始化Datatables
+                "info": false,
+                "filter": false,
+                "paging": true,
+                "info": false,
+                "scrollY": "50vh",
+                "scrollCollapse": true,
+                columnDefs: [
+                    { targets: 1, width: "30%" },
+                    { targets: 2, width: "30%" },
+                    { targets: 3, width: "30%" },
+                    { targets: 4, visible: false},
+                ],
+            });
+
+            $(".to-edit-detail-myCartons").dialog({
+                width: "70%",
+                dialogClass: "add-contact-box",
+                buttons: {
+                    "1": {
+                        text: 'Next',
+                        click: function () {
+                            var dataRow = myCartons.row('.selected').data();
+                            if (dataRow != undefined) {
+                                document.getElementById("FinalInspection_OrderCartonUkey").value = dataRow[0];
+                                document.getElementById("Cartons").value = dataRow[3];
+                            }
+                            else {
+                                document.getElementById("Cartons").value = '';
+                            }
+
+                            $(this).dialog("close");
+                        }
+                        , "class": "button"
+                        , "style": "bottom:0;background-color:#E00000"
+                    },
+                },
+            });
+
+            //設定選擇
+            $('#myCartons tBody').on('click', 'tr', function () {
+                if ($(this).hasClass('selected')) {
+                    $(this).removeClass('selected');
+                }
+                else {
+                    myCartons.$('tr.selected').removeClass('selected');
+                    $(this).addClass('selected');
+                }
+            });
+
+            // myEndlineMoisture
+            myEndlineMoistureTable = $('#myEndlineMoisture').DataTable({
+                "pageLength": 10,
+                "autoWidth": false,
+                "info": false,
+                "filter": false,
+                "paging": true,
+                "info": false,
+                "scrollY": "50vh",
+                "scrollCollapse": true,
+                columnDefs: [
+                    { targets: 0, width: "30%" },
+                    { targets: 1, width: "30%" },
+                    { targets: 2, width: "30%" },
+                ]
+            });
+
+            //設定選擇
+            $('#myEndlineMoisture tBody').on('click', 'tr', function () {
+                if ($(this).hasClass('selected')) {
+                    $(this).removeClass('selected');
+                }
+                else {
+                    myEndlineMoistureTable.$('tr.selected').removeClass('selected');
+                    $(this).addClass('selected');
+                }
+            });
+
+            $(".to-edit-detail-myEndlineMoisture").dialog({
+                width: "70%",
+                dialogClass: "add-contact-box",
+                buttons: {
+                    "1": {
+                        text: 'Next',
+                        click: function () {
+                            var dataRow = myEndlineMoistureTable.row('.selected').data();
+                            if (dataRow != undefined) {
+                                document.getElementById("Instrument").value = dataRow[0];
+                                document.getElementById("Fabrication").value = dataRow[1];
+                                document.getElementById("GarmentStandard").innerHTML = dataRow[2];
+                            }
+                            else {
+                                document.getElementById("Instrument").value = '';
+                                document.getElementById("Fabrication").value = '';
+                                document.getElementById("GarmentStandard").innerHTML = '';
+                            }
+                            setColor();
+                            $(this).dialog("close");
+                        }
+                        , "class": "button"
+                        , "style": "bottom:0;background-color:#E00000"
+                    },
+                },
+            });
+
+            // myView
+            myView = $('#myView').DataTable({
+                "pageLength": 10,
+                "autoWidth": false,
+                "info": false,
+                "filter": false,
+                "paging": true,
+                "info": false,
+                "scrollY": "50vh",
+                "scrollCollapse": true,
+                "scrollX": true,
+                columns: [
+                    {},
+                    {},
+                    {},
+                    {},
+                    {},
+                    {},
+                    {},
+                    {},
+                    {},
+                    {},
+                    {},
+                    {},
+                    {},
+                    {},
+                    {
+                        "orderable": false
+                        ,render: function (data, type) {
+                            return '<button class="button" onclick="ViewDelete(this)" style="padding:0;position:static" value="' + data + '">Delete</button>';
+                        }}
+                    ],
+            });
+
+            $(".to-edit-detail-myView").dialog({
+                width: "70%",
+                dialogClass: "add-contact-box",
+            });
+
+            $('#View').on('click', function () {
+                OpenViewDialog();
+            });
+
+            $("#Save").click(function () {
+
+                var data =
+                {
+                    FinalInspectionID: $("#FinalInspectionID").val(),
+                    Article: $("#Article").val(),
+                    FinalInspection_OrderCartonUkey: $("#FinalInspection_OrderCartonUkey").val(),
+                    Instrument: $("#Instrument").val(),
+                    Fabrication: $("#Fabrication").val(),
+                    GarmentTop: $("#GarmentTop").val(),
+                    GarmentMiddle: $("#GarmentMiddle").val(),
+                    GarmentBottom: $("#GarmentBottom").val(),
+                    CTNInside: $("#CTNInside").val(),
+                    CTNOutside: $("#CTNOutside").val(),
+                    Action: $("#Action").val(),
+                    Result: $("#Result").text(),
+                    Remark: $("#Remark").val(),
+                };
+
+                $.ajax({
+                    url: '@Url.Action("MoistureSingleSave", "Inspection")',
+                    type: 'POST',
+                    data: jQuery.param({ Req: data }),
+                    global: false,
+                    success: function (response) {
+                        if (response.Result) {
+                            msg.WithSuccess("Success!");
+                        }
+                        else {
+                            msg.WithError(response.ErrorMessage);
+                        }
+                    },
+                    error: function (xhr, status) {
+                        msg.WithError("Get View fail:" + xhr.responseText + " " + xhr.status);
+                    }
+                });
+
+            });
+
+        });
+
+        function OpenViewDialog() {            
+               $.ajax({
+                    url: '@Url.Action("GetViewMoistureResult", "Inspection")',
+                    type: 'POST',
+                   data: jQuery.param({ finalInspectionID: "@ViewBag.FinalInspectionID" }),
+                    global: false,
+                   success: function (response) {
+                       var adata = setData(response);
+                       myView.clear();
+                       myView.rows.add(adata).draw();
+
+                       $(".to-edit-detail-myView").dialog("open");
+                       myView.columns.adjust();
+                    },
+                   error: function (xhr, status) {
+                        msg.WithError("Get View fail:" + xhr.responseText + " " + xhr.status);
+                    }
+                });
+        }
+
+        function ViewDelete(obj) {
+            var UKey = $(obj).val();
+
+            $.ajax({
+                url: '@Url.Action("MoistureDelete", "Inspection")',
+                type: 'POST',
+                data: jQuery.param({ UKey: UKey }),
+                global: false,
+                success: function (response) {
+                    if (response.Result) {
+                        msg.WithSuccesCheck("Success!", function () {
+                            $(".to-edit-detail-myView").dialog("close");
+                            OpenViewDialog();
+                        });
+                    }
+                    else {
+                        msg.WithError(response.ErrorMessage);
+                    }
+                },
+                error: function (xhr, status) {
+                    msg.WithError("Get View fail:" + xhr.responseText + " " + xhr.status);
+                }
+            });
+        }
+
+        function setData(data) {
+            var adata = [];
+            for (var i = 0; i <= data.length - 1; i++) {
+
+                var garmentTopColor = "Black";
+                if (data[i].GarmentTop > data[i].GarmentStandard) {
+                    garmentTopColor = "#E62513";
+                }
+
+                var garmentMiddleColor = "Black";
+                if (data[i].GarmentMiddle > data[i].GarmentStandard) {
+                    garmentMiddleColor = "#E62513";
+                }
+
+                var garmentBottomColor = "Black";
+                if (data[i].GarmentBottom > data[i].GarmentStandard) {
+                    garmentBottomColor = "#E62513";
+                }
+
+                var ctnInsideColor = "Black";
+                if (data[i].CTNInside > data[i].CTNStandard) {
+                    ctnInsideColor = "#E62513";
+                }
+
+                var ctnOutsideColor = "Black";
+                if (data[i].CTNOutside > data[i].CTNStandard) {
+                    ctnOutsideColor = "#E62513";
+                }
+
+                var resultColor = "#00CC00";
+                if (data[i].Result != "Pass") {
+                    resultColor = "#E62513";
+                }
+                var CTNInside;
+                var CTNOutside;
+
+                if (data[i].CTNInside == null) {
+                    CTNInside = '';
+                }
+                else {
+                    CTNInside = parseFloat(data[i].CTNInside);
+                }
+
+                if (data[i].CTNOutside == null) {
+                    CTNOutside = '';
+                }
+                else {
+                    CTNOutside = parseFloat(data[i].CTNOutside);
+                }
+
+
+                var tmp = [];
+                tmp.push(data[i].Article);
+                tmp.push(data[i].CTNNo);
+                tmp.push(data[i].Instrument);
+                tmp.push(data[i].Fabrication);
+
+                tmp.push(data[i].GarmentStandard);
+                tmp.push(` <div style="color:${garmentTopColor}">${data[i].GarmentTop}</div>`);
+                tmp.push(` <div style="color:${garmentMiddleColor}">${data[i].GarmentMiddle}</div>`);
+                tmp.push(` <div style="color:${garmentBottomColor}">${data[i].GarmentBottom}</div>`);
+                tmp.push(data[i].CTNStandard);
+                tmp.push(` <div style="color:${ctnInsideColor}">${CTNInside}</div>`);
+                tmp.push(` <div style="color:${ctnOutsideColor}">${CTNOutside}</div>`);
+                tmp.push(` <div style="color:${resultColor}">${data[i].Result}</div>`);
+                tmp.push(data[i].Action);
+                tmp.push(data[i].Remark);
+                tmp.push(data[i].Ukey);
+                adata.push(tmp);
+            }
+
+            return adata;
+        }
+
+        function open_cartonsDetail() {
+            $(".to-edit-detail-myCartons").dialog("open");
+            //$("#myCartons").DataTable().columns.adjust();
+            var article = $("#Article").val();
+
+            myCartons = $('#myCartons').DataTable({
+                "pageLength": 10,
+                "autoWidth": false,
+                "info": false,
+                //"filter": false,
+                "paging": false,
+                destroy: true, // 設定這個才能重新初始化Datatables
+                "info": false,
+                "scrollY": "50vh",
+                "scrollCollapse": true,
+                "search": {
+                    "search": article + '-'
+                },
+                columnDefs: [
+                    { targets: 1, width: "30%" },
+                    { targets: 2, width: "30%" },
+                    { targets: 3, width: "30%" },
+                    { targets: 4, visible: false },
+                ],
+            });
+
+            $("#myCartons_filter").hide();
+        }
+
+        function open_EndlineMoistureDetail() {
+            $(".to-edit-detail-myEndlineMoisture").dialog("open");
+            $("#myEndlineMoisture").DataTable().columns.adjust();
+        }
+
+        function setColor() {
+            var garmentStandard = $("#GarmentStandard").text();
+            var garmentStandardValue = 0;
+
+            var cartonsValue = @ViewBag.FinalInspection_CTNMoistureStandard;
+
+            $("#Result").text("Fail");
+            $("#Result").css("color", "#E62513");
+
+//當下列一個成立則顯示Fail，反之則Pass
+//[TOP]>[Garment Standad]
+//[Middle]>[Garment Standad]
+//[Bottom]>[Garment Standard]
+//[Inside]>[Carton Standard]
+//[Outside]>[Carton Standard]
+
+            if (garmentStandard == '') {
+                return;
+            }
+            else {
+
+                garmentStandardValue = parseFloat(garmentStandard);
+                if (@ViewBag.ListCartonItem.Count == 0) {
+                    if (garmentStandardValue >= parseFloat($("#GarmentTop").val()) &&
+                        garmentStandardValue >= parseFloat($("#GarmentMiddle").val()) &&
+                        garmentStandardValue >= parseFloat($("#GarmentBottom").val())) {
+                        $("#Result").text("Pass");
+                        $("#Result").css("color", "#00CC00");
+                    }
+                }
+                else {
+                    if (garmentStandardValue >= parseFloat($("#GarmentTop").val()) &&
+                        garmentStandardValue >= parseFloat($("#GarmentMiddle").val()) &&
+                        garmentStandardValue >= parseFloat($("#GarmentBottom").val()) &&
+                        cartonsValue >= parseFloat($("#CTNInside").val()) &&
+                        cartonsValue >= parseFloat($("#CTNOutside").val())) {
+                        $("#Result").text("Pass");
+                        $("#Result").css("color", "#00CC00");
+                    }
+                }
+            }
+        }
+
+        function checkSubmitValue(self) {
+            document.getElementById("goPage").value = self;
+
+            ShowLoading();
+
+            return true;
+        }
+    </script>
+}

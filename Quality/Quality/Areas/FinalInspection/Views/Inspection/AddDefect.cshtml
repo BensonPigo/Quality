@@ -1,0 +1,274 @@
+﻿
+@{
+    /**/
+
+    ViewBag.Title = "Add Defect";
+}
+
+@model DatabaseObject.ViewModel.FinalInspection.AddDefect
+@section FinalInspection_head{
+    <link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+    <link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+    <link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+
+    <style type="text/css">
+        #CheckListTable_previous, #CheckListTable_next {
+            color: white !important;
+        }
+
+        tr.shown td.details-control {
+            background: url('/Image/Icon/ChildRowClose.png') no-repeat center center;
+        }
+
+        td.details-control {
+            background: url('/Image/Icon/ChildRowOpen.png') no-repeat center center;
+        }
+
+        #CheckListTable {
+            font-size: 1.4em;
+        }
+    </style>
+}
+@Html.Partial("~/Areas/FinalInspection/Views/Shared/_Inspection_Layout.cshtml")
+<div class="DownWhiteBackgrond">
+    @using (Html.BeginForm("AddDefect", "Inspection", FormMethod.Post, new { @id = "AddDefectForm", onsubmit = "return checkValue(this.submitted)" }))
+    {
+
+        <div style="padding:2em 3em 2em 3em;width:80%;float:left;position: absolute;transform: translate(-50%, 0%);left: 50%">
+            <div>
+                <h1 style="font-size: 2vh; font-weight: 900; ">
+                    How many reject Qty(pcs)
+                    @Html.TextBox("RejectQty", Model.RejectQty, new { @type = "number", @style = "width:10vw", @class = "form-control center-block" })
+                </h1>
+            </div>
+            <table id="CheckListTable" class="cell-border" style="width:100%"></table>
+        </div>
+        <div style="width:100%">
+            <input type="hidden" id="goPage" name="goPage">
+            <button id="btnBack" onclick="this.form.submitted=this.value;" type="submit" value="Back" class="button" style="right:7em;">Back</button>
+            <button id="btnNext" onclick="this.form.submitted=this.value;" type="submit" value="Next" style="right:0;" class="button">Next</button>
+        </div>
+
+        @Html.Hidden("FinalInspectionID", Model.FinalInspectionID)
+        @Html.Hidden("SampleSize", Model.SampleSize)
+
+    }
+
+</div>
+@section FinalInspection_script
+{
+    <script>
+        var EditMode = false; //彈出視窗設定
+        var msg = new MessagerAlert();
+
+        // 摺疊資料需先轉成array
+        var adata = [];
+
+        var table;
+        var items = @Html.Raw(Json.Encode(Model.ListFinalInspectionDefectItem));
+        var lookup = {};
+        var result = [];
+
+        // 取出群組
+        for (var item, i = 0; item = items[i++];) {
+            var code = item.DefectTypeDesc;
+
+            if (!(code in lookup)) {
+                lookup[code] = 1;
+                result.push(code);
+            }
+        }
+
+        // 組摺疊用的array
+        var keyCount = 0;
+
+        while (keyCount < result.length)
+        {
+            var temp = [];
+
+            for (var i = 0; i < items.length; i++) {
+
+                if (result[keyCount] == items[i].DefectTypeDesc) {
+                    temp.push([
+                        items[i].Ukey
+                        , items[i].DefectCodeDesc
+                        , items[i].Qty
+                        , items[i].ListFinalInspectionDefectImage
+                        , items[i].RowIndex
+                        , items[i].DefectCode
+                        , items[i].DefectType
+                    ]);
+                }
+            }
+
+            adata.push([null, result[keyCount], temp])
+            keyCount++
+        }
+
+
+        $(function () {
+            table = $('#CheckListTable').DataTable({
+                data: adata,
+                autoWidth: false,
+                destroy: true,
+                columnDefs: [
+                    { targets: 0, width: "2%", orderable: false },
+                    { targets: 1, width: "98%", orderable: false },
+                ],
+                columns: [
+                    {
+                        "className": "details-control",
+                    },
+                    {
+                        "style": "color:#E62513",
+                    },
+                ],
+                "filter": false,
+                "paging": false,
+                "info": false,
+                "ordering": false,
+                "pageLength": 10,
+                "scrollY": "50vh",
+                "scrollCollapse": true,
+                "createdRow": function (row, data, index) {
+                    $('td', row).css('background-color', '#FAA7A7');
+                    //取出DefectType 作為每一個大項的Key
+                    $('td', row).attr('ID', 'CheckListTable_' + data[1].split('-')[0]);
+                }
+            });
+
+            $("#CheckListTable tbody").on("click", "td.details-control", function () {
+                var tr = $(this).closest('tr');
+                var row = table.row(tr);
+
+                if (row.child.isShown()) {
+                    row.child.hide();
+                    tr.removeClass('shown');
+                }
+                else {
+                    row.child(format(row.data())).show();
+                    tr.addClass('shown');
+                }
+            });
+        });
+
+        function format(d) {
+            var list = d[2];
+            var sTr = "";
+
+            $(list).each(function (index, value) {
+
+                var RowIndex = value[4];
+                sTr = sTr + "<tr><td style='width:70%'>" + value[1] + "</td>";
+                sTr = sTr + `<td style='vertical-align: middle'>
+    <input type='hidden' id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Ukey' name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Ukey' value='${value[0]}'>
+    <input type='hidden' id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].RowIndex' name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].RowIndex' value='${RowIndex}'>
+    <input type='hidden' id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].DefectCode' name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].DefectCode' value='${value[5]}'>
+    <input type='hidden' id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].DefectType' name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].DefectType' value='${value[6]}'>
+    <input type='number' id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Qty' onchange='QtyChange("${value[6]}",${index},this)' name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Qty'  min="0" style="width: 7vh" id='${value[0]} ' name='${value[0]}'  value='${value[2]}' /></td>
+    <td> <img src="/Image/Icon/Camera.png" style="cursor: pointer;" onclick="ScreenShot(${value[0]},${RowIndex})" width="25vw" height="25vw" /></td>
+    <td> <img src="/Image/Icon/Picture.png" style="cursor: pointer;" onclick="OpenPicture(${value[0]},${RowIndex})" width="25vw" height="25vw" /></td>
+    </tr>`;
+
+            });
+            return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
+                sTr +
+                '</table>';
+        }
+
+        // Qty改變時，把值寫回DataTable的Datasource
+        function QtyChange(DefectType, index,obj) {
+
+            table.row($(`#CheckListTable_${DefectType}`).closest('tr')).data()[2][index][2] = $(obj).val();
+        }
+
+        function checkValue(self) {
+
+            document.getElementById("goPage").value = self;
+
+            var rejectQty = $("#RejectQty").val();
+            var model = @Html.Raw(Json.Encode(Model));
+            var sampleSize = model.SampleSize;
+
+            if (rejectQty > sampleSize)
+            {
+                msg.WithError('＜ RejectQty ＞ can not bigger than ＜SampleSize＞');
+                return false;
+            }
+
+
+            ShowLoading();
+
+            //為避免POST抓不到畫面上的控制項，因此要全部打開
+            var trlist = $("#CheckListTable tbody td.details-control");
+
+            trlist.each(function () {
+                var tr = $(this).closest('tr');
+                var row = table.row(tr);
+
+                if (row.child.isShown()) {
+                    // 打開的就不用管他
+                    //row.child.hide();
+                    //tr.removeClass('shown');
+                }
+                else {
+                    row.child(format(row.data())).show();
+                    tr.addClass('shown');
+                }
+            });
+
+            return true;
+        }
+
+        function OpenPicture(DetailUkey, RowIndex) {
+
+            // Ukey = -1代表還沒有這筆Detail紀錄
+            if (DetailUkey == -1) {
+                //msg.WithInfo("No Picture");
+                window.open('@Url.Action("DefectPicture")?RowIndex=' + RowIndex, "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
+            }
+            else {
+                window.open('@Url.Action("DefectPicture")?DetailUkey=' + DetailUkey, "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
+            }
+        }
+
+        function ScreenShot(DetailUkey, RowIndex) {
+
+            if (DetailUkey == -1) {
+                window.open('@Url.Action("AddDefectTakePicture")?RowIndex=' + RowIndex, "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
+            }
+            else {
+                window.open('@Url.Action("AddDefectTakePicture")?DetailUkey=' + DetailUkey, "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
+            }
+        }
+        function GetImage(Data) {
+            //透過AJAX暫存成Temp Data
+
+            var Ukey = Data.DetailUkey;
+            var RowIndex = Data.RowIndex;
+            var Picture = Data.Img.replace("data:image/webp;base64,", "");
+
+            var data =
+            {
+                Ukey: Ukey,
+                RowIndex: RowIndex,
+                TempImage: Picture,
+            };
+
+            $.ajax({
+                url: "@Url.Action("AddDefectPicturesTempSave", "Inspection", new { Area = "FinalInspection" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ data: data }),
+                async: true,
+                success: function (data) {
+                    //msg.WithSuccess("Image OK!!");
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        }
+    </script>
+}

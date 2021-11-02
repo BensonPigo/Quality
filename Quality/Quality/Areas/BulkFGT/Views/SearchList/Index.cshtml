@@ -1,0 +1,462 @@
+﻿
+@using DatabaseObject.ViewModel.BulkFGT
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model SearchList_ViewModel
+
+
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+
+<style type="text/css">
+    .dataTables_wrapper {
+        position: static;
+    }
+
+    h3, label, #myTable_info {
+        color: white
+    }
+
+    #myTable_previous, #myTable_next {
+        color: white !important;
+    }
+
+    select {
+        color: black
+    }
+
+    .btnmargin {
+        margin-left: 10px;
+        margin-top: 10px;
+    }
+
+    tfoot input {
+        width: 100%;
+        padding: 3px;
+        box-sizing: border-box;
+    }
+
+    td {
+        padding: 0.3vw;
+    }
+
+    .col-auto {
+        width: auto;
+    }
+
+        .col-auto > p {
+            padding: 0
+        }
+
+    .readonly {
+        background-color: lightgray;
+    }
+
+    .row-name {
+        color: black;
+        font-size: 1.2em;
+        background-color: gray;
+    }
+    .inner-scroll{
+        padding-bottom:30px;
+    }
+
+</style>
+<div class="main-content">
+
+    <header class="page-header">
+        <h3>
+            <i class=""></i><span>Search List</span>
+        </h3>
+        <div class="breadcrumb">
+            <div>Home</div>
+            <div class="current">Search List</div>
+        </div>
+    </header>
+
+
+    <div class="main-area">
+        <div>
+            @using (Html.BeginForm("Query", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { @class = "", @name = "SearchFrom", @onsubmit = "return checkvalue(this.submitted)", @id = "SearchFrom" }))
+            {
+                    <table style="width:100%;">
+                        <tr>
+                            <td>
+                                <label class="FindLab">Brand</label>
+                            </td>
+                            <td nowrap="nowrap">
+                                <div>
+                                    @Html.TextBoxFor(o => o.BrandID, new { @value = Model.BrandID, @style = "width:9vw" })
+                                    <input id="btnBrandID" onclick="OpenWindow('BrandID')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
+                                </div>
+                            </td>
+                            <td>
+                                <label class="FindLab">Season</label>
+                            </td>
+                            <td nowrap="nowrap">
+                                @Html.TextBoxFor(o => o.SeasonID, new { @value = Model.SeasonID, @style = "width:9vw" })
+                                <input id="btnSeasonID" onclick="OpenWindow('SeasonID')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
+                            </td>
+                            <td>
+                                <label class="FindLab">Style</label>
+                            </td>
+                            <td nowrap="nowrap">
+                                @Html.TextBoxFor(o => o.StyleID, new { @value = Model.StyleID, @style = "width:9.5vw" })
+                                <input id="btnStyleID" onclick="OpenWindow('StyleID')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
+                            </td>
+                            <td>
+                                <label class="FindLab">Article</label>
+                            </td>
+                            <td nowrap="nowrap">
+                                @Html.TextBoxFor(o => o.Article, new { @value = Model.Article, @style = "width:9.5vw" })
+                                <input id="btnArticle" onclick="OpenWindow('Article')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
+                            </td>
+                            <td style="padding: 0vw;">
+                                <input type="submit" onclick="this.form.submitted=this.value;" class="site-btn btn-gy font1rem Black" style="width: 7vw;" name="action:Query" id="btnQuery" value="Query" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label class="FindLab" for="TypeSP">Type</label>
+                            </td>
+                            <td colspan="7">
+                                @Html.DropDownListFor(o => o.Type, Model.TypeDatasource)
+                            </td>
+                            <td style="padding: 0vw;">
+                                <input type="button" class="site-btn btn-gy font1rem Black" style="width: 7vw;" name="action:ToExcel" id="btnExcel" value="To Excel" />
+                            </td>
+                        </tr>
+                    </table>
+            }
+        </div>
+        <div class="content-scroll">
+            <div class="inner-scroll" style="float:left">
+                    <table id="myTable" class="table table-striped display" style="text-align:center;">
+                        <thead>
+                            <tr class="row-name" style="color:black">
+                                <th>Type</th>
+                                <th>Report No</th>
+                                <th>SP#</th>
+                                <th>Style#</th>
+                                <th>Brand</th>
+                                <th>Season</th>
+                                <th>Article</th>
+                                <th>Artwork</th>
+                                <th>Result</th>
+                                <th>Test Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.DataList != null && Model.DataList.Count > 0)
+                            {
+                                foreach (var item in Model.DataList)
+                                {
+                                    string color = item.Result == "Pass" ? "blue" : "red";
+                                    <tr class="row-content">
+                                        <td>
+                                            @{ string link = "";}
+                                            @switch (item.Type)
+                                            {
+                                                case string a when a.Contains("Fabric Crocking & Shrinkage Test"):
+                                                    link = Url.Action("IndexBack", "FabricCrkShrkTest",new { POID = item.OrderID });
+                                                    break;
+                                                case string a when a.Contains("Garment Test"):
+                                                    link = Url.Action("IndexBack", "GarmentTest", new {
+                                                        Brand = item.BrandID,
+                                                        Season = item.SeasonID,
+                                                        Style = item.StyleID,
+                                                        Article = item.Article,
+                                                    });
+                                                    break;
+                                                case string a when a.Contains("Mockup Crocking Test"):
+                                                    link = Url.Action("IndexGet", "MockupCrocking", new
+                                                    {
+                                                        ReportNo = item.ReportNo,
+                                                        BrandID = item.BrandID,
+                                                        SeasonID = item.SeasonID,
+                                                        StyleID = item.StyleID,
+                                                        Article = item.Article,
+                                                    });
+                                                    break;
+                                                case string a when a.Contains("Mockup Oven Test"):
+                                                    link = Url.Action("IndexGet", "MockupOvenTest", new
+                                                    {
+                                                        ReportNo = item.ReportNo,
+                                                        BrandID = item.BrandID,
+                                                        SeasonID = item.SeasonID,
+                                                        StyleID = item.StyleID,
+                                                        Article = item.Article,
+                                                    });
+                                                    break;
+                                                case string a when a.Contains("Mockup Wash Test"):
+                                                    link = Url.Action("IndexGet", "MockupWash", new
+                                                    {
+                                                        ReportNo = item.ReportNo,
+                                                        BrandID = item.BrandID,
+                                                        SeasonID = item.SeasonID,
+                                                        StyleID = item.StyleID,
+                                                        Article = item.Article,
+                                                    });
+                                                    break;
+                                                case string a when a.Contains("Fabric Oven Test"):
+                                                    link = Url.Action("IndexBack", "FabricOvenTest", new { POID = item.OrderID });
+                                                    break;
+                                                case string a when a.Contains("Fabric Color Fastness"):
+                                                    link = Url.Action("IndexBack", "FabricColorFastness", new { POID = item.OrderID });
+                                                    break;
+                                                case string a when a.Contains("Accessory Oven Test & Wash"):
+                                                    link = Url.Action("IndexGet", "AccessoryOvenWash", new { ReqOrderID = item.OrderID , OrderID = item.OrderID });
+                                                    break;
+                                                case string a when a.Contains("Pulling test"):
+                                                    link = Url.Action("IndexGet", "PullingTest", new
+                                                    {
+                                                        ReportNo = item.ReportNo,
+                                                        BrandID = item.BrandID,
+                                                        SeasonID = item.SeasonID,
+                                                        StyleID = item.StyleID,
+                                                        Article = item.Article,
+                                                    });
+                                                    break;
+                                                default:
+                                                    link = "#";
+                                                    break;
+                                            }
+
+                                            <a href="@link" target="_blank">@item.Type</a>
+
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.ReportNo)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.OrderID)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.StyleID)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.BrandID)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.SeasonID)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Article)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Artwork)
+                                        </td>
+                                        <td style="color: @color">
+                                            @Html.DisplayFor(modelItem => item.Result)
+                                        </td>
+                                        <td>
+                                            @{string TestDate = item.TestDate.HasValue ? item.TestDate.Value.ToShortDateString() : ""; }
+                                            @Html.DisplayFor(modelItem => TestDate)
+                                        </td>
+                                    </tr>
+                                }
+                            }
+
+                        </tbody>
+                    </table>
+                <br />
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+
+    var msg = new MessagerAlert();
+
+    $(function () {
+        QueryButtonBind();
+
+        @Html.Raw(Model.ErrorMessage);
+
+        $('#myTable').DataTable({
+            "pageLength": 10,
+            "filter": false,
+            "paging": true,
+            //lengthChange: false,
+            //"scrollY": "49vh",
+            //"scrollCollapse": true,
+            //"scrollX": true,
+            //"autoWidth": false
+
+        });
+
+
+        $("#btnExcel").click(function () {
+            var Req = {
+                BrandID: $('#BrandID').val(),
+                SeasonID: $('#SeasonID').val(),
+                StyleID: $('#StyleID').val(),
+                Article: $('#Article').val(),
+                Type: $('#Type').val(),
+            };
+            $.ajax({
+                url: "@Url.Action("ToExcel", "SearchList", new { Area = "BulkFGT" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ Req }),
+                async: false,
+                success: function (data) {
+                    if (data.Result) {
+                        window.location.href = data.TempFileName;
+                    }
+                    else {
+                        msg.WithError(data.ErrMsg);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    });
+
+    function OpenWindow(WindowType) {
+        if (WindowType == "BrandID") {
+            window.open('@Url.Action("BrandList", "PublicWondow",new { Area=""})', WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        }
+        if (WindowType == "SeasonID") {
+            window.open(`@Url.Action("SeasonList", "PublicWondow",new { Area=""})?BrandID=${$("#BrandID").val()}`, WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        }
+        if (WindowType == "StyleID") {
+            var para = "?BrandID=" + $('#BrandID').val() + "&SeasonID=" + $('#SeasonID').val();
+            window.open('@Url.Action("StyleList", "PublicWondow",new { Area=""})' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        }
+
+        if (WindowType == "Article" && $("#StyleID").val() != "") {
+            var para = "?OrderID=&StyleUkey=0&BrandID=" + $('#BrandID').val() + "&SeasonID=" + $('#SeasonID').val() + "&StyleID=" + $('#StyleID').val();
+            window.open('@Url.Action("ArticleList", "PublicWondow",new { Area=""})' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        }
+    }
+    function GetBrandList(BrandID) {
+        $("#BrandID").val(BrandID);
+        // 在這邊取得開窗選擇的Brand，進行後續動作
+    }
+    function GetSeasonList(SeasonID) {
+        $("#SeasonID").val(SeasonID);
+        // 在這邊取得開窗選擇的Brand，進行後續動作
+    }
+    function GetStyleList(StyleID) {
+        $("#StyleID").val(StyleID);
+        // 在這邊取得開窗選擇的Brand，進行後續動作
+    }
+    function GetArticleList(Article) {
+        $("#Article").val(Article);
+        // 在這邊取得開窗選擇的Brand，進行後續動作
+    }
+
+    function QueryButtonBind() {
+        $("#BrandID").blur(function () {
+            $.ajax({
+                url: "@Url.Action("BrandList", "PublicWondow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#BrandID").val('');
+                        msg.WithError('Brand Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $("#SeasonID").blur(function () {
+            var BrandID = $('#BrandID').val();
+            $.ajax({
+                url: "@Url.Action("SeasonList", "PublicWondow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: BrandID, SeasonID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#SeasonID").val('');
+                        msg.WithError('Season Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $("#StyleID").blur(function () {
+            var BrandID = $('#BrandID').val();
+            var SeasonID = $('#SeasonID').val();
+            $.ajax({
+                url: "@Url.Action("StyleList", "PublicWondow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: BrandID, SeasonID: SeasonID, StyleID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#StyleID").val('');
+                        msg.WithError('Style Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $('#Article').blur(function () {
+            var BrandID = $('#BrandID').val();
+            var SeasonID = $('#SeasonID').val();
+            var StyleID = $('#StyleID').val();
+            $.ajax({
+                url: "@Url.Action("ArticleList", "PublicWondow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: BrandID, StyleUkey : 0, SeasonID: SeasonID, StyleID: StyleID, ArticleID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Article").val('');
+                        msg.WithError('Article Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    }
+
+    function checkvalue(buttonName) {
+
+        if (buttonName =="Query") {
+        if (($("#BrandID").val() == "" || $("#SeasonID").val() == "" ) && $("#StyleID").val() == "") {
+
+            var msgContent = "[Style] or [Brand, Season] can't be cmpty. ";
+            msg.WithError(msgContent);
+
+            return false;
+            }
+        }
+
+        return true;
+    }
+
+
+</script>
+

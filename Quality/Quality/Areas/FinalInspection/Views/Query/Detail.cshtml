@@ -1,0 +1,504 @@
+﻿@{
+    ViewBag.Title = "Detail";
+}
+
+@model DatabaseObject.ViewModel.FinalInspection.QueryReport
+
+@section FinalInspection_head{
+    <link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+    <link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+    <link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+    <link href="~/Areas/FinalInspection/CSS/FinalInspection.css" rel="stylesheet" />
+
+    <style type="text/css">
+        .whiteBackgrond div {
+            padding-bottom: 0.5em;
+        }
+
+        .valueColor {
+            color: #0000FF;
+        }
+
+        tr.row-name {
+            color: black;
+        }
+
+        #Detail_Cartons_wrapper tr.row-name {
+            color: wheat;
+        }
+
+        #Detail_ShipmodeSeq_wrapper tr.row-name {
+            color: wheat;
+        }
+
+        #tab-Change {
+            width: 100%;
+        }
+
+            #tab-Change > ul {
+                display: block;
+                margin: 0;
+                list-style: none;
+            }
+
+        .tab-title {
+            list-style: none;
+        }
+
+        #tab-Change > ul > li {
+            display: inline-block;
+            vertical-align: top;
+            margin: 0 -1px -1px 0;
+            border: 1px solid #BCBCBC;
+            height: 4vh;
+            line-height: 25px;
+            background: #CDCDCD;
+            padding: 0 15px;
+            list-style: none;
+            box-sizing: border-box;
+        }
+
+            #tab-Change > ul > li a {
+                color: #000;
+                text-decoration: none;
+            }
+
+            #tab-Change > ul > li.active {
+                background: #fff;
+            }
+
+        #tab-Change > .tab-inner {
+            padding: 10px;
+            color: #000;
+            border: 1px #BCBCBC solid;
+            height: 50vh;
+            overflow: scroll;
+            overflow-x: hidden;
+        }
+
+        #Detail_Cartons_info {
+            color: white
+        }
+
+        #Detail_Cartons_previous, #Detail_Cartons_next {
+            color: white !important;
+        }
+
+        #Detail_Cartons_wrapper, #Detail_Cartons_wrapper > .dataTables_scrollHeadInner {
+            width: 100%
+        }
+
+        #Detail_ShipmodeSeq_info {
+            color: white
+        }
+
+        #Detail_ShipmodeSeq_previous, #Detail_ShipmodeSeq_next {
+            color: white !important;
+        }
+
+        #Detail_ShipmodeSeq_wrapper, #Detail_ShipmodeSeq_wrapper > .dataTables_scrollHeadInner {
+            width: 100%
+        }
+
+        textarea {
+            height: 20px;
+        }
+    </style>
+}
+
+<div class="whiteBackgrond" style="height:86vh">
+    <div style="padding:1em">
+        <div>
+            <h1 style="font-size:2em;color: #999999;">Inspection Report</h1>
+            <button class="site-btn btn-blue" style="position:absolute;top:1em;right:0" onclick="ClickDownload()">Download</button>
+        </div>
+        <div style="display:inline-block;border:1px solid gray;width:38%;height:15vh;padding-left:5px">
+            <div><h1 style="font-size:1.5em">PO information</h1></div>
+            <div>
+                <table>
+                    <tr>
+                        <td>PO#</td>
+                        <td class="valueColor" style="width:20%">@Model.FinalInspection.CustPONO</td>
+                        <td style="padding-left:10px;">Style</td>
+                        <td class="valueColor" style="width:20%">@Model.StyleID</td>
+                        <td>Brand</td>
+                        <td class="valueColor">@Model.BrandID</td>
+                    </tr>
+                    <tr>
+                        <td>SP#</td>
+                        <td class="valueColor" colspan="5">
+                            <input type="text" value="@Model.SP" style="width:100%" readonly />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Factory</td>
+                        <td class="valueColor">@Model.FinalInspection.FactoryID</td>
+                        <td colspan="2">Total SP# Qty</td>
+                        <td class="valueColor">@Model.TotalSPQty</td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div style="display:inline-block;border:1px solid gray;width:58%;height:15vh;padding-left:5px">
+            <div><h1 style="font-size:1.5em">Inspection Setting</h1></div>
+            <div>
+                <table>
+                    <tr>
+                        <td>Inspection Stage</td>
+                        <td class="valueColor" style="padding-left:10px;">@Model.FinalInspection.InspectionStage</td>
+                        <td style="padding-left:10px;">Carton</td>
+                        <td style="width:4vw">
+                            <button type="button" style="min-width:50%" onclick="open_cartonsDetail()" class="site-btn btn-blue">...</button>
+                        </td>
+                        <td>Shipmode Seq</td>
+                        <td style="width:4vw">
+                            <button type="button" style="min-width:50%" onclick="open_ShipmodeSeqDetail()" class="site-btn btn-blue">...</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Audit Date</td>
+                        <td class="valueColor">@Convert.ToDateTime(Model.FinalInspection.AuditDate).ToString("yyyy/MM/dd")</td>
+                        <td style="padding-left:10px;">Available Qty</td>
+                        <td class="valueColor">@Model.AvailableQty</td>
+                        <td colspan="4"></td>
+                    </tr>
+                    <tr>
+                        <td>AQL Plan</td>
+                        <td class="valueColor">@Model.AQLPlan</td>
+                        <td style="padding-left:10px;">Sample Plan Qty</td>
+                        <td class="valueColor" style="padding-left:10px;">@Model.FinalInspection.SampleSize</td>
+                        <td>Accepted</td>
+                        <td class="valueColor">@Model.FinalInspection.AcceptQty</td>
+                        <td>Rejected</td>
+                        <td class="valueColor" style="padding-left:10px;">@Model.FinalInspection.RejectQty</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div style="margin:0.5em"><h1 style="font-size:2em">Inspection Detail</h1></div>
+        <div id="tab-Change">
+            <ul class="tab-title">
+                <li link="#tab01">General</li>
+                <li link="#tab02">Check List</li>
+                <li link="#tab03">Defect</li>
+                <li link="#tab04">Beautiful Product Audit</li>
+                <li link="#tab05">Moisture</li>
+                <li link="#tab06">Measurement</li>
+                <li link="#tab07">Others</li>
+            </ul>
+            <div id="tab01" class="tab-inner">
+                <div style="height:auto">
+                    @Html.Partial("~/Areas/FinalInspection/Views/Query/_Tab1_Layout.cshtml")
+                </div>
+            </div>
+            <div id="tab02" class="tab-inner">
+                @Html.Partial("~/Areas/FinalInspection/Views/Query/_Tab2_Layout.cshtml")
+            </div>
+            <div id="tab03" class="tab-inner">
+                @Html.Partial("~/Areas/FinalInspection/Views/Query/_Tab3_Layout.cshtml")
+            </div>
+            <div id="tab04" class="tab-inner">
+                @Html.Partial("~/Areas/FinalInspection/Views/Query/_Tab4_Layout.cshtml")
+            </div>
+            <div id="tab05" class="tab-inner">
+                @Html.Partial("~/Areas/FinalInspection/Views/Query/_Tab5_Layout.cshtml")
+            </div>
+            <div id="tab06" class="tab-inner">
+                @Html.Partial("~/Areas/FinalInspection/Views/Query/_Tab6_Layout.cshtml")
+            </div>
+            <div id="tab07" class="tab-inner">
+                @Html.Partial("~/Areas/FinalInspection/Views/Query/_Tab7_Layout.cshtml")
+            </div>
+        </div>
+        <div>
+            <table style="width:100%">
+                <tr>
+                    <td style="width:7%">CFA</td>
+                    <td class="valueColor" style="width:10%">@Model.FinalInspection.CFA</td>
+                    <td style="width:7%">Pass Qty(pcs)</td>
+                    <td class="valueColor" style="width:5%">@Model.FinalInspection.PassQty</td>
+                    <td style="width:7%">Inpection Result</td>
+                    <td class="valueColor" style="width:10%">@Model.FinalInspection.InspectionResult</td>
+                    <td style="width:7%" rowspan="2">
+                        @if (Model.FinalInspection.InspectionResult == "On-going")
+                        {
+                            <button type="button" onclick="GoOnInspect()" class="site-btn btn-red">Go On Inspect</button>
+                        }
+                    </td>
+                    <td style="width:7%" rowspan="2">
+                        @if (Model.FinalInspection.InspectionResult != "On-going")
+                        {
+                            <button type="button" onclick="SendMail()" class="site-btn btn-blue">Send Mail</button>
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td>Submit Date</td>
+                    <td class="valueColor">
+                        @if (Model.FinalInspection.SubmitDate == null)
+                        {
+                            @:N/A
+                        }
+                        else
+                        {
+                            @Convert.ToDateTime(Model.FinalInspection.SubmitDate).ToString("yyyy/MM/dd")
+                        }
+                    </td>
+                    <td>Reject Qty(pcs)</td>
+                    <td class="valueColor">@Model.FinalInspection.RejectQty</td>
+                    <td>Shipment Status</td>
+                    <td class="valueColor">@Model.FinalInspection.ShipmentStatus</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="detail-dialog-cartons to-edit-detail-cartons">
+    <div class="detail-dialog-content dialog-content-w-icon" style="height:60vh">
+        <table cellspacing="100" id="Detail_Cartons" class="table table-striped display">
+            <thead>
+                <tr class="row-name">
+                    <th>SP</th>
+                    <th>Packing List ID</th>
+                    <th>CTN No</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.ListCartonInfo.Count; i++)
+                {
+                    <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                        <td>
+                            @Html.DisplayFor(o => Model.ListCartonInfo[i].OrderID)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(o => Model.ListCartonInfo[i].PackinglistID)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(o => Model.ListCartonInfo[i].CTNNo)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+        <br />
+        <div>
+        </div>
+    </div>
+</div>
+
+<div class="detail-dialog-ShipmodeSeq to-edit-detail-ShipmodeSeq">
+    <div class="detail-dialog-content dialog-content-w-icon" style="height:60vh">
+        <table cellspacing="100" id="Detail_ShipmodeSeq" class="table table-striped display">
+            <thead>
+                <tr class="row-name">
+                    <th>SP</th>
+                    <th>Seq</th>
+                    <th>Shipmode</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.ListShipModeSeq.Count; i++)
+                {
+                    <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                        <td>
+                            @Html.DisplayFor(o => Model.ListShipModeSeq[i].OrderID)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(o => Model.ListShipModeSeq[i].Seq)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(o => Model.ListShipModeSeq[i].ShipmodeID)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+        <br />
+        <div>
+        </div>
+    </div>
+</div>
+@section FinalInspection_script
+{
+    <script>
+        var msg = new MessagerAlert();
+
+        $(function () {
+            tabChange();
+
+            $('#Detail_Cartons').DataTable({
+                "autoWidth": false,
+                "info": false,
+                "filter": false,
+                "paging": false,
+                "info": false,
+                "scrollY": "50vh",
+                "scrollCollapse": true,
+                columnDefs: [
+                    { targets: 0, width: "30%" },
+                    { targets: 1, width: "30%" },
+                    { targets: 2, width: "30%" },
+                ]
+            });
+
+            $('#Detail_ShipmodeSeq').DataTable({
+                "autoWidth": false,
+                "info": false,
+                "filter": false,
+                "paging": false,
+                "info": false,
+                "scrollY": "50vh",
+                "scrollCollapse": true,
+                columnDefs: [
+                    { targets: 0, width: "30%" },
+                    { targets: 1, width: "30%" },
+                    { targets: 2, width: "30%" },
+                ]
+            });
+
+            $(".detail-dialog-cartons").dialog({
+                autoOpen: false,
+                modal: true,
+                closeText: ' ',
+                width: 500,
+                minHeight: 400,
+                position: {
+                    my: "center top",
+                    at: "center top",
+                    of: window
+                },
+                dialogClass: "site-box",
+                open: function (event, ui) {
+                    $('.ui-widget-overlay').bind('click', function () {
+                        //location.reload();//強制Refresh頁面 Benson
+                        $(".ui-dialog-content").dialog('close');
+                    });
+                    $(this).parent().siblings().find(".ui-dialog-content").dialog('close');
+
+                },
+                close: function () {
+                },
+            });
+
+            $(".to-edit-detail-cartons").dialog({
+                width: "70%",
+                dialogClass: "add-contact-box",
+            });
+
+            $(".detail-dialog-ShipmodeSeq").dialog({
+                autoOpen: false,
+                modal: true,
+                closeText: ' ',
+                width: 500,
+                minHeight: 400,
+                position: {
+                    my: "center top",
+                    at: "center top",
+                    of: window
+                },
+                dialogClass: "site-box",
+                open: function (event, ui) {
+                    $('.ui-widget-overlay').bind('click', function () {
+                        //location.reload();//強制Refresh頁面 Benson
+                        $(".ui-dialog-content").dialog('close');
+                    });
+                    $(this).parent().siblings().find(".ui-dialog-content").dialog('close');
+
+                },
+                close: function () {
+                },
+            });
+
+            $(".to-edit-detail-ShipmodeSeq").dialog({
+                width: "70%",
+                dialogClass: "add-contact-box",
+            });
+        });
+
+        function tabChange() {
+            var $li = $('#tab-Change > ul.tab-title li');
+            $($li.eq(0).attr('link')).show();
+
+            $($li.eq(0).addClass('active').attr('link')).siblings('.tab-inner').hide();
+            $li.click(function () {
+                $($(this).attr('link')).show().siblings('.tab-inner').hide();
+                $(this).addClass('active').siblings('.active').removeClass('active');
+            });
+        }
+
+        function open_cartonsDetail() {
+            $(".to-edit-detail-cartons").dialog("open");
+            $("#Detail_Cartons").DataTable().columns.adjust();
+        }
+
+        function open_ShipmodeSeqDetail() {
+            $(".to-edit-detail-ShipmodeSeq").dialog("open");
+            $("#Detail_ShipmodeSeq").DataTable().columns.adjust();
+        }
+
+        function OpenDefectPicture(DetailUkey, RowIndex) {
+
+            // Ukey = -1代表還沒有這筆Detail紀錄
+            if (DetailUkey == -1) {
+                //msg.WithInfo("No Picture");
+                window.open('@Url.Action("DefectPicture", "Inspection")?RowIndex=' + RowIndex, "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
+            }
+            else {
+                window.open('@Url.Action("DefectPicture", "Inspection")?DetailUkey=' + DetailUkey, "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
+            }
+        }
+
+        function OpenBAPicture(DetailUkey, RowIndex) {
+
+            // Ukey = -1代表還沒有這筆Detail紀錄
+            if (DetailUkey == -1) {
+                window.open('@Url.Action("BAPicture", "Inspection")?RowIndex=' + RowIndex, "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
+            }
+            else {
+                window.open('@Url.Action("BAPicture", "Inspection")?DetailUkey=' + DetailUkey, "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
+            }
+        }
+
+        function OpenOthersPicture() {
+            window.open('@Url.Action("OthersPicture", "Inspection")?FinalInspectionID=@Model.FinalInspection.ID', "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
+        }
+
+        function ClickDownload() {
+
+            window.location.href = '@Url.Action("Download")';
+
+        }
+
+        function GoOnInspect() {
+            ShowLoading();
+            window.location.href = '@Url.Action(Model.GoOnInspectURL,"Inspection",new { FinalInspectionID = Model.FinalInspection.ID})';
+        }
+
+        function SendMail() {            
+            $.ajax({
+                url: "@Url.Action("SendMail")",
+                type: 'POST',
+                dataType: "json",
+                async: false,
+                success: function (data) {
+
+                    if (data.Result) {
+                        msg.WithSuccess("Success!!");
+                    }
+                    else {
+                        msg.WithError(data.ErrorMessage);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+
+        }
+    </script>
+}

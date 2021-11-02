@@ -1,0 +1,203 @@
+﻿
+@using DatabaseObject.RequestModel;
+@using DatabaseObject.ResultModel;
+@using DatabaseObject.ViewModel;
+
+
+@{
+    ViewBag.Title = "Index";
+}
+
+@model StyleList
+
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+
+<style type="text/css">
+
+    label, #DetailTable_info, #DetailTable_length > label > select {
+        color: white
+    }
+
+    #DetailTable_previous, #DetailTable_next {
+        color: white !important;
+    }
+
+    .QueryLab {
+        font-size: 2vh;
+    }
+
+    td {
+        text-align: left;
+    }
+</style>
+
+<div class="main-content">
+
+    <header class="page-header">
+        <h3>
+            <i class=""></i><span>Style List</span>
+        </h3>
+        <div class="breadcrumb">
+            <div>Home</div>
+            <div class="current">Style List</div>
+        </div>
+    </header>
+
+    <div class="main-area">
+
+        <div class="content-scroll">
+            <div class="inner-scroll" style="float:left">
+
+                <div>
+                    @using (Html.BeginForm("Query", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post, new { @class = "", @name = "SearchFrom", @id = "SearchFrom", @onsubmit = "ShowLoading();" }))
+                    {
+                        <div>
+                            @Html.Hidden("StyleUkey")
+                            <label class="QueryLab">Brand</label>
+                            <input type="text" name="BrandID" id="txtBrand" value="@Model.BrandID" />
+                            <input id="btnBrand" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
+                            &nbsp;&nbsp;
+                            <label class="QueryLab">Season</label>
+                            <input type="text" name="SeasonID" id="txtSeason" value="@Model.SeasonID"/>
+                            <input id="btnSeason" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
+                            &nbsp;&nbsp;
+                            <label class="QueryLab">Style</label>
+                            <input type="text" name="StyleID" id="txtStyle" value="@Model.StyleID"/>
+                            <input id="btnStyle" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
+                            &nbsp;&nbsp;
+                            <input type="submit" name="name" id="btnQuery" value="Query" />
+
+                        </div>
+                    }
+                </div>
+                <br />
+                <div>
+                    <table id="DetailTable" class="table table-striped display cell-border">
+                        <thead>
+                            <tr class="row-name">
+                                <th>Style</th>
+                                <th>Brand</th>
+                                <th>Season</th>
+                                <th>Description</th>
+                                <th>Sample RFT</th>
+                                <th>SMR</th>
+                                <th>Handle</th>
+                                <th>Special Mark</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @foreach (var item in Model.DataList)
+                            {
+                                <tr class="row-content">
+                                    <td>
+
+                                        <a href="#" onclick="ClickLink('@Url.Action("IndexGet","StyleResult",new
+                                            {
+                                                BrandID = item.BrandID,
+                                                SeasonID = item.SeasonID,
+                                                StyleID = item.StyleID
+                                            })')">
+                                            @item.StyleID
+                                        </a>
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.BrandID)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SeasonID)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Description)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SampleRFT)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SMR)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Handle)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SpecialMark)
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <br />
+
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<script type="text/javascript">
+
+    var msg = new MessagerAlert();
+
+    $(function () {
+
+        @Html.Raw(Model.MsgScript);
+
+        $("#DetailTable").DataTable();
+
+        //$("a.postLink").click(function (e) {
+        //    e.preventDefault();
+        //    $.post($(this).attr("href"), function (data) {
+        //        debugger
+        //        // got the result in data variable. do whatever you want now
+        //        //may be reload the page
+        //    });
+        //});
+
+        $("#btnBrand").on('click', function () {
+
+            // 共用元件使用方式
+            // 1. 開啟 BrandList 視窗
+            // 2. 宣告Callbacl事件，命名方式：Get + 開始視窗的Action名字，以這邊為例即是 GetBrandList即可取得回傳值
+            window.open('@Url.Action("BrandList", "PublicWondow",new { Area=""})', 'Brand', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        });
+
+        $("#btnSeason").on('click', function () {
+
+            window.open('@Url.Action("SeasonList", "PublicWondow",new { Area=""})' + '?BrandID=' + $("#txtBrand").val(), 'Season', config = 'toolbar=no,status=no,location=no,width=400,height=650' );
+        });
+
+        $("#btnStyle").on('click', function () {
+
+            window.open('@Url.Action("StyleList", "PublicWondow",new { Area=""})' + '?BrandID=' + $("#txtBrand").val() + '&SeasonID=' + $("#txtSeason").val(), 'Style', config = 'toolbar=no,status=no,location=no,width=400,height=650' );
+        });
+
+        $("#txtBrand").change(function () {
+            txtStyleToggle();
+        });
+        $("#txtSeason").change(function () {
+            txtStyleToggle();
+        });
+
+
+    });
+
+    // 2. 宣告事件，命名方式：Get + 開始視窗的Action名字，以這邊為例即是 GetBrandList
+    function GetBrandList(BrandID) {
+        $("#txtBrand").val(BrandID);
+    }
+    function GetSeasonList(SeasonID) {
+        $("#txtSeason").val(SeasonID);
+    }
+    function GetStyleList(StyleID) {
+        $("#txtStyle").val(StyleID);
+    }
+
+    function ClickLink(URL) {
+        window.open(URL);
+    }
+</script>

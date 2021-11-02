@@ -9,9 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ProductionDataAccessLayer</RootNamespace>
     <AssemblyName>ProductionDataAccessLayer</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,8 +32,41 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="PmsWebApiUtility20">
+      <HintPath>..\..\_Dll\PmsWebApiUtility20.dll</HintPath>
+    </Reference>
+    <Reference Include="Sci">
+      <HintPath>..\..\_Dll\Sci.dll</HintPath>
+    </Reference>
+    <Reference Include="Sci.Proj">
+      <HintPath>..\..\_Dll\Sci.Proj.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.7\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.7\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -41,35 +75,112 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interface\IAdidasFGWTProvider.cs" />
+    <Compile Include="Interface\IAutomationErrMsgProvider.cs" />
     <Compile Include="Interface\IBrandProvider.cs" />
+    <Compile Include="Interface\IColorFastnessDetailProvider.cs" />
+    <Compile Include="Interface\IColorFastnessProvider.cs" />
     <Compile Include="Interface\IDropDownListProvider.cs" />
+    <Compile Include="Interface\IFabricCrkShrkTestProvider.cs" />
     <Compile Include="Interface\IFactoryProvider.cs" />
+    <Compile Include="Interface\IFabricOvenTestProvider.cs" />
+    <Compile Include="Interface\IFIRLaboratoryCrockingProvider.cs" />
+    <Compile Include="Interface\IFIRLaboratoryHeatProvider.cs" />
+    <Compile Include="Interface\IFIRLaboratoryProvider.cs" />
+    <Compile Include="Interface\IFIRLaboratoryWashProvider.cs" />
+    <Compile Include="Interface\IFIRProvider.cs" />
     <Compile Include="Interface\IGarmentDefectCodeProvider.cs" />
     <Compile Include="Interface\IGarmentDefectTypeProvider.cs" />
+    <Compile Include="Interface\IGarmentDetailSpiralityProvider.cs" />
+    <Compile Include="Interface\IGarmentTestDetailApperanceProvider.cs" />
+    <Compile Include="Interface\IGarmentTestDetailFGPTProvider.cs" />
+    <Compile Include="Interface\IGarmentTestDetailFGWTProvider.cs" />
+    <Compile Include="Interface\IGarmentTestDetailProvider.cs" />
+    <Compile Include="Interface\IGarmentTestDetailShrinkageProvider.cs" />
+    <Compile Include="Interface\IGarmentTestProvider.cs" />
+    <Compile Include="Interface\IMockupCrockingDetailProvider.cs" />
+    <Compile Include="Interface\IMockupCrockingProvider.cs" />
+    <Compile Include="Interface\IMockupOvenDetailProvider.cs" />
+    <Compile Include="Interface\IMockupWashDetailProvider.cs" />
+    <Compile Include="Interface\IMockupOvenProvider.cs" />
+    <Compile Include="Interface\IMockupWashProvider.cs" />
     <Compile Include="Interface\INewCDCodeProvider.cs" />
     <Compile Include="Interface\IOrderLocationProvider.cs" />
     <Compile Include="Interface\IOrderQtyProvider.cs" />
+    <Compile Include="Interface\IFinalInspFromPMSProvider.cs" />
     <Compile Include="Interface\IOrdersProvider.cs" />
+    <Compile Include="Interface\IOvenDetailProvider.cs" />
+    <Compile Include="Interface\IOvenProvider.cs" />
     <Compile Include="Interface\IPass1Provider.cs" />
+    <Compile Include="Interface\IScaleProvider.cs" />
+    <Compile Include="Interface\ISeasonProvider.cs" />
     <Compile Include="Interface\ISewingLineProvider.cs" />
+    <Compile Include="Interface\IStyleArticleProvider.cs" />
+    <Compile Include="Interface\IStyleArtworkProvider.cs" />
+    <Compile Include="Interface\IStyleBOAProvider.cs" />
+    <Compile Include="Interface\IStyleListProvider.cs" />
     <Compile Include="Interface\IStyleProvider.cs" />
+    <Compile Include="Interface\ISystemProvider.cs" />
     <Compile Include="Interface\ITPEPass1Provider.cs" />
+    <Compile Include="Interface\ITypeSelectionProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Provider\MSSQL\AdidasFGWTProvider.cs" />
+    <Compile Include="Provider\MSSQL\AutomationErrMsgProvider.cs" />
     <Compile Include="Provider\MSSQL\BrandProvider.cs" />
+    <Compile Include="Provider\MSSQL\BukkFGT\AccessoryOvenWashProvider.cs" />
+    <Compile Include="Provider\MSSQL\ColorFastnessDetailProvider.cs" />
+    <Compile Include="Provider\MSSQL\ColorFastnessProvider.cs" />
     <Compile Include="Provider\MSSQL\DropDownListProvider.cs" />
+    <Compile Include="Provider\MSSQL\FabricCrkShrkTestProvider.cs" />
     <Compile Include="Provider\MSSQL\FactoryProvider.cs" />
+    <Compile Include="Provider\MSSQL\FabricOvenTestProvider.cs" />
+    <Compile Include="Provider\MSSQL\FIRLaboratoryCrockingProvider.cs" />
+    <Compile Include="Provider\MSSQL\FIRLaboratoryHeatProvider.cs" />
+    <Compile Include="Provider\MSSQL\FIRLaboratoryProvider.cs" />
+    <Compile Include="Provider\MSSQL\FIRLaboratoryWashProvider.cs" />
+    <Compile Include="Provider\MSSQL\FIRProvider.cs" />
     <Compile Include="Provider\MSSQL\GarmentDefectCodeProvider.cs" />
     <Compile Include="Provider\MSSQL\GarmentDefectTypeProvider.cs" />
+    <Compile Include="Provider\MSSQL\GarmentDetailSpiralityProvider.cs" />
+    <Compile Include="Provider\MSSQL\GarmentTestDetailApperanceProvider.cs" />
+    <Compile Include="Provider\MSSQL\GarmentTestDetailFGPTProvider.cs" />
+    <Compile Include="Provider\MSSQL\GarmentTestDetailFGWTProvider.cs" />
+    <Compile Include="Provider\MSSQL\GarmentTestDetailProvider.cs" />
+    <Compile Include="Provider\MSSQL\GarmentTestDetailShrinkageProvider.cs" />
+    <Compile Include="Provider\MSSQL\GarmentTestProvider.cs" />
+    <Compile Include="Provider\MSSQL\MockupCrockingDetailProvider.cs" />
+    <Compile Include="Provider\MSSQL\MockupCrockingProvider.cs" />
+    <Compile Include="Provider\MSSQL\MockupOvenDetailProvider.cs" />
+    <Compile Include="Provider\MSSQL\MockupWashDetailProvider.cs" />
+    <Compile Include="Provider\MSSQL\MockupOvenProvider.cs" />
+    <Compile Include="Provider\MSSQL\MockupWashProvider.cs" />
     <Compile Include="Provider\MSSQL\NewCDCodeProvider.cs" />
     <Compile Include="Provider\MSSQL\OrderLocationProvider.cs" />
     <Compile Include="Provider\MSSQL\OrderQtyProvider.cs" />
+    <Compile Include="Provider\MSSQL\FinalInspFromPMSProvider.cs" />
     <Compile Include="Provider\MSSQL\OrdersProvider.cs" />
+    <Compile Include="Provider\MSSQL\OvenDetailProvider.cs" />
+    <Compile Include="Provider\MSSQL\OvenProvider.cs" />
     <Compile Include="Provider\MSSQL\Pass1Provider.cs" />
+    <Compile Include="Provider\MSSQL\PublicWondowProvider.cs" />
+    <Compile Include="Provider\MSSQL\ScaleProvider.cs" />
+    <Compile Include="Provider\MSSQL\SeasonProvider.cs" />
     <Compile Include="Provider\MSSQL\SewingLineProvider.cs" />
+    <Compile Include="Provider\MSSQL\StyleArticleProvider.cs" />
+    <Compile Include="Provider\MSSQL\StyleArtworkProvider.cs" />
+    <Compile Include="Provider\MSSQL\StyleBOAProvider.cs" />
+    <Compile Include="Provider\MSSQL\StyleListProvider.cs" />
+    <Compile Include="Provider\MSSQL\PrintBarcodeProvider.cs" />
+    <Compile Include="Provider\MSSQL\StyleManagement\ExceptionFDProvider.cs" />
+    <Compile Include="Provider\MSSQL\StyleManagement\StyleResultProvider.cs" />
     <Compile Include="Provider\MSSQL\StyleProvider.cs" />
+    <Compile Include="Provider\MSSQL\SystemProvider.cs" />
     <Compile Include="Provider\MSSQL\TPEPass1Provider.cs" />
+    <Compile Include="Provider\MSSQL\TypeSelectionProvider.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ADOHelper\ADOHelper.csproj">
       <Project>{eddc9b9a-b751-4520-a783-40c5588a8883}</Project>

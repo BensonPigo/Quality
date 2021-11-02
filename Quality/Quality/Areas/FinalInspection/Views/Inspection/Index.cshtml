@@ -1,13 +1,249 @@
-﻿
-<link href="~/Areas/FinalInspection/CSS/Inspection.css" rel="stylesheet" />
+﻿@using DatabaseObject.ViewModel.FinalInspection
+@using DatabaseObject
+     
+
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+<link href="~/Areas/FinalInspection/CSS/FinalInspection.css" rel="stylesheet" />
+
+
+
 <style type="text/css">
+
+
+    #DetailTable_info {
+        color: black
+    }
+
+    #DetailTable_previous, #DetailTable_next {
+        color: black !important;
+    }
+
+    #row-name {
+        color: black;
+    }
+
+    .searchFont {
+        font-size: 1.5em;
+        font-weight: 900;
+    }
+
+    .center {
+        margin-top: 0vh;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 1vh;
+    }
+
+    #DetailTable td {
+        height: 1vh;
+        padding: 0;
+    }
+
+
+    .dataTables_scroll {
+        height: 54vh
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        color: black !important;
+    }
 </style>
 
-<div class="main-content">
-    <div style="display:flex;flex-wrap:nowrap; border-radius:16px; background:#ffffff; width:70vw;height:10vw;align-items:center; vertical-align:middle">
-        <div><p class="TitleLabel">SP#</p></div>
-        <div>
-            <input type="text" style="width:50%; border-color:black;" />
+@{ 
+    string ErrorMessage = Model.ErrorMessage == null ? "" : Model.ErrorMessage;
+}
+
+@model PoSelect
+
+@using (Html.BeginForm("Index", "Inspection", FormMethod.Post, new { onsubmit = "return checkvalue()" }))
+{
+    <div class="search-condition">
+
+        <div class="whiteBackgrond" style="display:flex;flex-wrap:nowrap;height:7vh;align-items:center; vertical-align:middle">
+
+            <table class="center" style="width: 100%;  height: 3vh ">
+                <tr>
+                    <td style="width:5%" align="right">
+                        <p class="searchFont">SP#</p>
+                    </td>
+                    <td style="width:4%" align="center">
+                        @Html.TextBoxFor(o => o.SP, string.Empty, new { style = "border-color:black;" })
+                    </td>
+                    <td style="width:5%" align="right">
+                        <p class="searchFont ">PO#</p>
+                    </td>
+                    <td style="width:4%" align="center">
+                        @Html.TextBoxFor(o => o.CustPONO, string.Empty, new { style = "border-color:black;" })
+                    </td>
+
+                    <td style="width:5%" align="right">
+                        <p class="searchFont">Style#</p>
+                    </td>
+                    <td style="width:4%" align="center">
+                        @Html.TextBoxFor( o => o.StyleID, string.Empty, new { style = "border-color:black;" })
+                    </td>
+                    <td style="width: 8%; vertical-align: bottom;" align="right">
+
+                        <button type="submit" style="border: 0; background: transparent; min-width:3vh">
+                            <img src="~/Image/Icon/Query.png" width="40" height="40" alt="submit" />
+                        </button>
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
+}
+
+@using (Html.BeginForm("Setting", "Inspection", FormMethod.Post, new { onsubmit = "return checkDetail()" }))
+{
+<div class="DownWhiteBackgrond" style="height:80vh" >
+    <div style="border:0px;padding:2vh;">
+        <h1 style="font-size: 3vh; font-weight: 900; color: #999999 ">&nbsp What's SP# you want to inspect?</h1>
+        <div class="content-scroll" style=" height: calc( 100vh - 280px )">
+            <div class="inner-scroll" style="float:left">
+                <div>
+                    <table cellspacing="100" id="DetailTable" class="table table-striped display">
+                        <thead>
+                            <tr id="row-name" class="row-name">
+                                <th>SP#</th>
+                                <th>PO#</th>
+                                <th>SP# Qty</th>
+                                <th>Style</th>
+                                <th>Season</th>
+                                <th>Brand</th>
+                                <th>Article</th>
+                                <th>Select</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{ int idx = 0; }
+                            @foreach (var item in Model.DataList)
+                            {
+                                <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ID)
+                                        @Html.Hidden($"model[{idx}].ID", item.ID)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.CustPONO)
+                                        @Html.Hidden($"model[{idx}].CustPONO", item.CustPONO)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Qty)
+                                        @Html.Hidden($"model[{idx}].Qty", item.Qty)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.StyleID)
+                                        @Html.Hidden($"model[{idx}].StyleID", item.StyleID)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SeasonID)
+                                        @Html.Hidden($"model[{idx}].SeasonID", item.SeasonID)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.BrandID)
+                                        @Html.Hidden($"model[{idx}].BrandID", item.BrandID)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Article)
+                                        @Html.Hidden($"model[{idx}].Article", item.Article)
+                                    </td>
+                                    <td>
+                                        @Html.CheckBox($"model[{idx}].Selected", item.Selected ,new { @class= "messageCheckbox" })
+                                    </td>
+                                </tr>
+                                idx++;
+                            }
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button style="right:2em;" class="button" id="btnNext">Next</button>
 </div>
+
+}
+
+
+
+<script type="text/javascript">
+
+
+    var msg = new MessagerAlert();
+
+    var table;
+    $(function () {
+        
+        @Html.Raw(Model.ErrorMessage);   
+
+        table = $('#DetailTable').DataTable({
+            "pageLength": 10,
+            "filter": false,
+            "paging": true,
+            "scrollY": "49vh",
+            "scrollCollapse": true,
+        });
+    });
+
+
+    function checkvalue() {
+        if ($("#SP").val() == "" && $("#CustPONO").val() == "" && $("#StyleID").val() == "") {
+
+            msg.WithError('Please input ＜SP#＞，＜PO#＞ or ＜Style#＞ first!');
+
+            return false;
+        }
+
+        return true;
+    }
+
+
+
+    function checkDetail() {
+        ShowLoading();
+        var selected = [];
+        var selectedList = $('input:checkbox:checked');
+        selectedList.each(function () {
+            selected.push($(this).val());
+        });
+
+        if (selected == '') {
+            msg.WithError('Please select data!');
+            return false;
+        }
+
+
+
+        var checkedValue = [];
+        var inputElements = document.getElementsByClassName('messageCheckbox');
+        for (var i = 0; inputElements[i]; ++i) {
+            if (inputElements[i].checked) {
+                if (checkedValue.indexOf(inputElements[i].value) === -1) {
+                    checkedValue.push(inputElements[i].value);
+                }
+            }
+        }
+
+        if (checkedValue.length > 1) {
+            msg.WithError('Cannot selet multi ＜PO#＞');
+            return false;
+        }
+        
+        table.page.len(99999).draw();
+
+        return true;
+    }
+
+
+</script>
+
+
+
+
+
+

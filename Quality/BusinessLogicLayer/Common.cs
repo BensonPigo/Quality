@@ -16,6 +16,12 @@ namespace BusinessLogicLayer
             //取得連線名稱統一放在網站目錄下Region.txt的內容
             if (region.Equals(string.Empty) || region.Equals("Debug"))
             {
+                if (HttpContext.Current == null)
+                {
+                    region = "Debug";
+                    return;
+                }
+
                 string region_path = HttpContext.Current.Server.MapPath("~\\Region.txt");
                 if (!File.Exists(region_path))
                 {

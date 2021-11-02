@@ -22,3 +22,13 @@ Quality/.vs/Quality/v16/Server/sqlite3/storage.ide-wal
 Quality/.vs/Quality/
 Quality/Quality/Quality.csproj.user
 Quality/.vs/
+Quality/BusinessLogicLayerTests/bin/
+Quality/BusinessLogicLayerTests/obj/
+Quality/packages/
+Quality/BusinessLogicLayerTests/BusinessLogicLayerTests.csproj.user
+Quality/QualityTests/bin/
+Quality/QualityTests/obj/Debug/
+/Quality/QualityTests/obj
+/Quality/packages
+Quality/Quality/Properties/PublishProfiles/FolderProfile.pubxml.user
+Quality/Quality/TMP/

@@ -6,5 +6,7 @@ namespace ProductionDataAccessLayer.Interface
     public interface IFactoryProvider
     {
         IList<Factory> GetFtyGroup();
+
+        IList<Factory> GetMDivisionID(string fty);
     }
 }

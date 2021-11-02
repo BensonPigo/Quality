@@ -1,0 +1,2904 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Sci.Proj</name>
+    </assembly>
+    <members>
+        <member name="M:Sci.DateTimeExtensions.MonthInRangeOf(System.DateTime,System.DateTime,System.Int32,System.Int32)">
+            <summary>
+            檢查此日期是否在baseDateTime的前後range範圍內
+            <para>baseDateTime = 2011/05/01</para>
+            <para>rangeA = -1</para>
+            <para>rangeB = 2 </para>
+            <para>就代表檢查是否在2011/04 ~ 2011/07 之間</para>
+            </summary>
+            <param name="datetime"></param>
+            <param name="baseDateTime">檢查基準日</param>
+            <param name="rangeFrom"></param>
+            <param name="rangeTo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.DateTimeExtensions.MonthGreaterThan(System.DateTime,System.DateTime,System.Int32)">
+            <summary>
+            比對月份是否比傳入值大於幾個月以上
+            <para>A = 2011/05/01 ; B = 2011/04/01</para>
+            <para>A.MonthGreaterThan(B) 回傳 true </para>
+            <para>A.MonthGreaterThan(B,1) 回傳 true </para>
+            <para>A.MonthGreaterThan(B,2) 回傳 false</para>
+            </summary>
+            <param name="datetime"></param>
+            <param name="baseDateTime"></param>
+            <param name="greaters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.DateTimeExtensions.MonthSmallerThan(System.DateTime,System.DateTime,System.Int32)">
+            <summary>
+            比對月份是否比傳入值小於幾個月以上
+            <para>A = 2011/05/01 ; B = 2011/04/01</para>
+            <para>A.MonthSmallerThan(B) 回傳 false </para>
+            <para>A.MonthSmallerThan(B,1) 回傳 true </para>
+            <para>A.MonthSmallerThan(B,2) 回傳 true</para>
+            </summary>
+            <param name="datetime"></param>
+            <param name="baseDateTime"></param>
+            <param name="smallers"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.DB.Transfer.Before_Export_ByRegion(Sci.DB.TransRegion)">
+            <summary>
+            1. 確認DB在Server上, 沒有的話要掛載上去
+            <para>2. Drop DB裡面所有的Table</para>
+            </summary>
+            <param name="region"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.DB.Transfer.Detach_Database(Sci.DB.TransRegion)">
+            <summary>
+            將 DB Detach,並刪除 log檔( .ldf )
+            </summary>
+            <param name="region"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.DB.Transfer.Export_ByRegion">
+            <summary>
+            依照Region 拆Thread 執行轉檔
+            </summary>
+            <param name="region"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.DB.Transfer.Export_ByRegion_InThread(System.Collections.Generic.List{Sci.DB.TransTask})">
+            <summary>
+            同Region的Task, 依照GroupID拆開後, 拆Thread 執行轉檔
+            </summary>
+            <param name="region_Tasks">同Region的Task</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.DB.Transfer.Transfer_Task_BySeq(System.Collections.Generic.List{Sci.DB.TransTask})">
+            <summary>
+            同Region, GroupID , 依照Seq排序作執行轉檔
+            同 GroupID ,若前一個Seq 執行失敗, 後面的Seq 的task將不會執行
+            </summary>
+            <param name="tasks">同Region, GroupID 的Task</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.DB.Transfer.Deploy_Procedure(System.String,System.String,System.String)">
+            <summary>
+            搜尋目錄下的特定名稱的.sql檔 , 逐一執行
+            </summary>
+            <param name="procedureDir"></param>
+            <param name="prefix"></param>
+            <param name="connectionName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.MyUtility.Check.EqualDecimal(System.Object,System.Object)">
+            <summary>
+            物件轉Decimal後比對是否相同
+            <para> null 和 DBNull 當作是 0</para>
+            </summary>
+            <param name="a"></param>
+            <param name="b"></param>
+            <returns></returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Sci.MyUtility.Check.StrStartsWith(System.Object,System.Object)" -->
+        <!-- Badly formed XML comment ignored for member "M:Sci.MyUtility.Check.StrEndsWith(System.Object,System.Object)" -->
+        <member name="M:Sci.MyUtility.Check.EqualString(System.Object,System.Object)">
+            <summary>
+            物件轉String後, 使用 String 的 TrimEnd + IgnoreCase方式作字串比對
+            <para>null 視為空字串</para>
+            </summary>
+            <param name="a"></param>
+            <param name="b"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.MyUtility.Check.StringEqual(System.String,System.String)">
+            <summary>
+            強制用 String 的 TrimEnd + IgnoreCase方式作字串比對
+            <para>傳入 null 則不作轉String動作, 直接null 比對</para>
+            </summary>
+            <param name="a"></param>
+            <param name="b"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.MyUtility.Check.ChkDir(System.String)">
+            <summary>
+            Check Directory that is existing?
+            </summary>
+            <param name="directory">Full pathname</param>
+            <returns>result of the method process.</returns>
+        </member>
+        <member name="M:Sci.MyUtility.Check.Empty(System.String)">
+            <summary>
+            Empty()
+            </summary>
+            <param name="string valuevalue"></param>
+            <returns>bool</returns>
+        </member>
+        <member name="M:Sci.MyUtility.Check.Empty(System.Int32)">
+            <summary>
+            Empty()
+            </summary>
+            <param name="int valuevalue"></param>
+            <returns>bool</returns>
+        </member>
+        <member name="M:Sci.MyUtility.Check.Empty(System.Int64)">
+            <summary>
+            Empty()
+            </summary>
+            <param name="int valuevalue"></param>
+            <returns>bool</returns>
+        </member>
+        <member name="M:Sci.MyUtility.Check.Empty(System.Single)">
+            <summary>
+            Empty()
+            </summary>
+            <param name="float valuevalue"></param>
+            <returns>bool</returns>
+        </member>
+        <member name="M:Sci.MyUtility.Check.Empty(System.Double)">
+            <summary>
+            Empty()
+            </summary>
+            <param name="double valuevalue"></param>
+            <returns>bool</returns>
+        </member>
+        <member name="M:Sci.MyUtility.Check.Empty(System.Decimal)">
+            <summary>
+            Empty()
+            </summary>
+            <param name="decimal valuevalue"></param>
+            <returns>bool</returns>
+        </member>
+        <member name="M:Sci.MyUtility.Check.Empty(System.Boolean)">
+            <summary>
+            Empty()
+            </summary>
+            <param name="bool valuevalue"></param>
+            <returns>bool</returns>
+        </member>
+        <member name="M:Sci.MyUtility.Check.Empty(System.DateTime)">
+            <summary>
+            Empty()
+            </summary>
+            <param name="DateTime valuevalue"></param>
+            <returns>bool</returns>
+        </member>
+        <member name="M:Sci.MyUtility.Check.Empty(System.DBNull)">
+            <summary>
+            Empty()
+            </summary>
+            <param name="DBNull valuevalue"></param>
+            <returns>bool</returns>
+        </member>
+        <member name="M:Sci.MyUtility.Check.Empty(System.Object)">
+            <summary>
+            to return true for these values : null , DBNull, "" , false , 數字 0 
+            </summary>
+            <param name="Object valuevalue"></param>
+            <returns>bool</returns>
+        </member>
+        <member name="M:Sci.MyUtility.Check.Seek(System.String,System.String,System.String,System.String)">
+            <summary>
+            seek()
+            </summary>
+            <param name="string seekValueseekValue"></param>
+            <param name="string seekTableseekTable"></param>
+            <param name="string seekFieldseekField"></param>
+            <param name="[string connectionName = null][stringconnectionName=null]"></param>
+            <returns>bool</returns>
+        </member>
+        <member name="M:Sci.MyUtility.Check.Seek(System.String,System.String)">
+            <summary>
+            seek()
+            </summary>
+            <param name="string sqlCmdsqlCmd"></param>
+            <param name="[string connectionName = null][stringconnectionName=null]"></param>
+            <returns>bool</returns>
+        </member>
+        <member name="M:Sci.MyUtility.Check.Seek(System.String,System.Data.DataRow@,System.String)">
+            <summary>
+            seek()
+            </summary>
+            <param name="string sqlCmdsqlCmd"></param>
+            <param name="out DataRow drDataRowdr"></param>
+            <param name="[string connectionName = null][stringconnectionName=null]"></param>
+            <returns>bool</returns>
+        </member>
+        <member name="M:Sci.MyUtility.Check.isTrue(System.Object)">
+            <summary>
+            for boolean judgement.
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.MyUtility.Check.InList(System.Object,System.Object[])">
+            <summary>
+            將checkedItem轉成String 之後, 再用String比對法判斷是否在listObjs之中
+            <para>ex : InList("1" , 1,"2",3)  return true</para>
+            <para>ex : InList("A" , 1,"2",3)  return false</para>
+            </summary>
+            <param name="checkedItem"></param>
+            <param name="listObjs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.MyUtility.Check.isFalse(System.Object)">
+            <summary>
+            for boolean judgement.
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.MyUtility.Convert.CBinary(System.Char)">
+            <summary>
+            CBinary()
+            </summary>
+            <param name="char valuevalue"></param>
+            <returns>string</returns>
+        </member>
+        <member name="M:Sci.MyUtility.Convert.Evaluate(System.String)">
+            <summary>
+            Evaluate()
+            </summary>
+            <param name="string expressionexpression"></param>
+            <returns>decimal</returns>
+        </member>
+        <member name="M:Sci.MyUtility.Convert.GetDouble(System.Object)">
+            <summary>
+            將Object轉成 Double , 若轉換失敗則傳回 0
+            </summary>
+            <param name="obj"></param>
+            要轉換的 Obejct
+            <returns></returns>
+        </member>
+        <member name="M:Sci.MyUtility.Convert.GetDecimal(System.Object)">
+            <summary>
+            將Object轉成 decimal , 若轉換失敗則傳回 0
+            </summary>
+            <param name="obj"></param>
+            要轉換的 Obejct
+            <returns></returns>
+        </member>
+        <member name="M:Sci.MyUtility.Convert.GetFloat(System.Object)">
+            <summary>
+            將Object轉成 float , 若轉換失敗則傳回 0
+            </summary>
+            <param name="obj"></param>
+            要轉換的 Obejct
+            <returns></returns>
+        </member>
+        <member name="M:Sci.MyUtility.Convert.GetInt(System.Object)">
+            <summary>
+            將Object轉成 int , 若轉換失敗則傳回 0
+            </summary>
+            <param name="obj"></param>
+            要轉換的 Obejct
+            <returns></returns>
+        </member>
+        <member name="M:Sci.MyUtility.Convert.GetLong(System.Object)">
+            <summary>
+            將Object轉成 long , 若轉換失敗則傳回 0
+            </summary>
+            <param name="obj"></param>
+            要轉換的 Obejct
+            <returns></returns>
+        </member>
+        <member name="M:Sci.MyUtility.Convert.GetDate(System.Object)">
+            <summary>
+            將Object轉成 DateTime? , 若轉換失敗則傳回 null
+            </summary>
+            <param name="obj"></param>
+            要轉換的 Obejct
+            <returns></returns>
+        </member>
+        <member name="M:Sci.MyUtility.Convert.GetDate(System.Double)">
+            <summary>
+            將 excel 的日期欄位值(double)轉換成DateTime
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.MyUtility.Convert.GetString(System.Object)">
+            <summary>
+            將Object轉成 string , 若轉換失敗則傳回 空字串
+            </summary>
+            <param name="obj"></param>
+            要轉換的 Obejct
+            <returns></returns>
+        </member>
+        <member name="M:Sci.MyUtility.Convert.GetBool(System.Object)">
+            <summary>
+            將Object轉成 bool , 若轉換失敗則傳回 false
+            </summary>
+            <param name="obj"></param>
+            要轉換的 Obejct
+            <returns></returns>
+        </member>
+        <member name="M:Sci.MyUtility.Convert.NBinary(System.String)">
+            <summary>
+            NBinary()
+            </summary>
+            <param name="string valuevalue"></param>
+            <returns>int</returns>
+        </member>
+        <member name="M:Sci.MyUtility.Convert.NTDMoney(System.Decimal)">
+            <summary>
+            NTDMoney()
+            </summary>
+            <param name="double valuevalue"></param>
+            <returns>string</returns>
+        </member>
+        <member name="M:Sci.MyUtility.Convert.NTOC(System.Int32,System.Int32)">
+            <summary>
+            NTOC()
+            </summary>
+            <param name="int valuevalue"></param>
+            <param name="[int length = 10][intlength=10]"></param>
+            <returns>string</returns>
+        </member>
+        <member name="M:Sci.MyUtility.Convert.USDMoney(System.Decimal)">
+            <summary>
+            USDMoney()
+            </summary>
+            <param name="double valuevalue"></param>
+            <returns>string</returns>
+        </member>
+        <member name="M:Sci.MyUtility.Convert.GetDigitalValue(System.String)">
+            <summary>
+            將特定格式的文字轉換為數字，若轉換失敗則傳回0
+            ex: '12 3/4', '12-3/4', '12"3/4'
+            </summary>
+            <param name="String valuevalue"></param>
+            <returns>string</returns>
+        </member>
+        <member name="M:Sci.MyUtility.Excel.ConnectExcel(System.String)">
+            <summary>
+            ConnectExcel()
+            </summary>
+            <param name="openFile"> both xls/ xlt filePath are ok for this paramter.</param>
+            <returns>Microsoft.Office.Interop.Excel.Application</returns>
+        </member>
+        <member name="M:Sci.MyUtility.Excel.SheetToArray(Microsoft.Office.Interop.Excel.Worksheet,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            抓取 Excel sheet 的內容轉成2維object陣列
+            <para>回傳的資料範圍會比實際範圍大</para>
+            <para>需自行判斷 object[row,col] == null 來跳出迴圈 </para>
+            <para>實際回傳 row count = objArray.GetLength(0) </para>
+            <para>實際回傳 column count = objArray.GetLength(1) </para>
+            </summary>
+            <param name="sheet"></param>
+            <param name="startRow">抓取範圍的起始列數</param>
+            <param name="startCol">抓取範圍的起始行數</param>
+            <param name="offsetRows">指定最多抓幾列 ; sheet.Rows.Counts 會是該版本Excel的最大列數 </param>
+            <param name="offsetCols">指定最多抓幾行 ; sheet.Columns.Counts 會是該版本Excel的最大行數 </param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.MyUtility.Excel.CopyToXls(System.Data.DataTable,System.String,System.String,System.Int32,System.Boolean,System.String,System.Object,System.Boolean,System.Object,System.Boolean)">
+            <summary>
+            CopyToXls()
+            </summary>
+            <param name="DataTable dtdt"></param>
+            <param name="[String fileName = null][StringfileName=null]"></param>
+            <param name="[String xltfile = null][Stringxltfile=null]"></param>
+            <param name="[int headerRow = 1][intheaderRow=1]"></param>
+            <param name="[bool showExcel = true][boolshowExcel=true]"></param>
+            <param name="[String fieldList = null][StringfieldList=null]"></param>
+            <param name="[Object excelApp = null][ObjectexcelApp=null]"></param>
+            <param name="[bool showSaveMsg = true][boolshowSaveMsg=true]"></param>
+            <returns>bool</returns>
+        </member>
+        <member name="M:Sci.MyUtility.Excel.CopyToXls(System.Object[0:,0:],System.String,System.String,System.Int32,System.Boolean,System.Object)">
+            <summary>
+            將 2維陣列存到excel 檔
+            </summary>
+            <param name="dataArray"></param>
+            <param name="xltFileName">範本檔</param>
+            <param name="fileName">output excel路徑檔名</param>
+            <param name="headerline">標題列列數</param>
+            <param name="openfile">excel存檔後是否開啟檔案</param>
+            <param name="excelAppObj">不指定的話會在內部產生Excel application物件 ; 連續產生excel的話可不用反覆new Excel物件</param>
+            <returns></returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Sci.MyUtility.Excel.XlsAutoFit(System.String,System.String,System.Int32,System.Boolean)" -->
+        <member name="M:Sci.MyUtility.Excel.SaveXlsFile(System.String,System.Windows.Forms.SaveFileDialog@)">
+             <summary>
+            SaveXlsFile()
+             </summary>
+             <param name="string fileTitleNamefileTitleName"></param>
+             <param name="out SaveFileDialogSaveFileDialog"></param>
+             <returns>bool</returns>
+        </member>
+        <member name="M:Sci.MyUtility.Excel.GetExcelCellValue(System.Object,System.String)">
+             <summary>
+            GetExcelCellValue()
+             </summary>
+             <param name="object cellValuecellValue"></param>
+             <param name="string typetype"></param>
+             <returns>object</returns>
+        </member>
+        <member name="M:Sci.MyUtility.Excel.KillExcelProcess(Microsoft.Office.Interop.Excel.Application)">
+            <summary>
+            透過Excel.Application 關閉工作管理員畫面裡的Excel.exe
+            </summary>
+            <param name="excelApp"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.MyUtility.Excel.GetRandomFileName(System.String)">
+            <summary>
+            取得ReportTmpDir + 隨機檔名的完整檔名路徑
+            </summary>
+            <param name="prefix">檔名的prefix</param>
+            <returns>完整的檔名路徑</returns>
+        </member>
+        <member name="M:Sci.MyUtility.File.ExportReportToPdf(System.String,System.String)">
+            <summary>
+            Export the report to PDF format file.
+            </summary>
+            <param name="rdlcfile">Reporting service definition client file.</param>
+            <param name="savefile">Destination file name.</param>
+            <returns>Result of process.</returns>
+        </member>
+        <member name="M:Sci.MyUtility.File.ExportGridToExcel(System.String,System.Windows.Forms.DataGridView)">
+            <summary>
+            Export the grid to Excel.
+            </summary>
+            <param name="title">Title string.</param>
+            <param name="grid">grid control.</param>
+            <returns>Result of process.</returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Sci.MyUtility.File.GetFile(System.String)" -->
+        <member name="M:Sci.MyUtility.File.GetFileSize(System.String,System.Int64@)">
+            <summary>
+            Get the physical file size.
+            </summary>
+            <param name="file">Full path filename.</param>
+            <param name="size">the file size in bytes.</param>
+            <returns>result of the method process.</returns>
+        </member>
+        <member name="M:Sci.MyUtility.File.OpenFile(System.String)">
+            <summary>
+            Using the default software with filename to open specified file.
+            </summary>
+            <param name="file">Full path filename.</param>
+            <returns>result of the method process.</returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Sci.MyUtility.File.UnRARFile(System.String,System.String,System.String)" -->
+        <!-- Badly formed XML comment ignored for member "M:Sci.MyUtility.File.UnRARFile(System.String,System.Boolean,System.String,System.String,System.Boolean,System.Boolean)" -->
+        <member name="M:Sci.MyUtility.File.ReadPoperty(System.String,System.String)">
+            <summary>
+            讀取內容為 {key} = {value} 這種多行格式的文字檔
+            </summary>
+            <param name="filePath"></param>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Sci.MyUtility.FTP.FtpFile">
+            <summary>
+            FTP 檔案相關資訊
+            </summary>
+        </member>
+        <member name="F:Sci.MyUtility.FTP.FtpFile.FileName">
+            <summary>
+            檔名
+            </summary>
+        </member>
+        <member name="F:Sci.MyUtility.FTP.FtpFile.FileSize">
+            <summary>
+            檔案大小(位元組)
+            </summary>
+        </member>
+        <member name="F:Sci.MyUtility.FTP.FtpFile.LastModiifyTime">
+            <summary>
+            最後修改時間
+            </summary>
+        </member>
+        <member name="M:Sci.MyUtility.FTP.FTP_Delete(System.String)">
+            <summary>
+            Delete a FTP server file.
+            </summary>
+            <param name="ftpfile">server file name.</param>
+            <returns>Result of process.</returns>
+        </member>
+        <member name="M:Sci.MyUtility.FTP.FTP_Download(System.String,System.String)">
+            <summary>
+            Download file from FTP server.
+            </summary>
+            <param name="ftpfile">server file name</param>
+            <param name="savefile">local file name.</param>
+            <returns>Result of process.</returns>
+        </member>
+        <member name="M:Sci.MyUtility.FTP.FTP_GetDirectoryList(System.String,System.Collections.Generic.IList{System.String}@)">
+            <summary>
+            Get Directory list from FTp server.
+            </summary>
+            <param name="ftppath">Server path name.  "" 空字串代表Ftp 的 Root dir</param>
+            <param name="directories">list of directory information.</param>
+            <returns>Result of process.</returns>
+        </member>
+        <member name="M:Sci.MyUtility.FTP.FTP_GetFileList(System.String,System.Collections.Generic.IList{System.String}@)">
+            <summary>
+            Get File list from FTp server. (只列出指定目錄的檔案 , 不會將全部子目錄檔案列出 )
+            </summary>
+            <param name="ftpPath">Server path name.</param>
+            <param name="files">list of fileNames.</param>
+            <returns>Result of process.</returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Sci.MyUtility.FTP.FTP_GetFileList(System.String,System.Collections.Generic.IList{Sci.MyUtility.FTP.FtpFile}@)" -->
+        <member name="M:Sci.MyUtility.FTP.FTP_Ping">
+            <summary>
+            Ping a IP.
+            </summary>
+            <returns>Result of process.</returns>
+        </member>
+        <member name="M:Sci.MyUtility.FTP.FTP_Upload(System.String,System.String)">
+            <summary>
+            Upload file to FTP server.
+            </summary>
+            <param name="uploadfile">file name.</param>
+            <param name="ftppath">server path name.</param>
+            <returns>Result of process.</returns>
+        </member>
+        <member name="M:Sci.MyUtility.GetValue.DeleCrLf(System.String)">
+            <summary>
+            DeleCrLf()
+            </summary>
+            <param name="string texttext"></param>
+            <returns>string</returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Sci.MyUtility.GetValue.GetBatchID(System.String,System.String,System.DateTime,System.Int32,System.String,System.String,System.Int32,System.Int32,System.Int32)" -->
+        <member name="M:Sci.MyUtility.GetValue.GetDate(System.DateTime,System.Int32)">
+            <summary>
+            GetDate()
+            </summary>
+            <param name="DateTime valuevalue"></param>
+            <param name="[int mode = 1][intmode=1]"></param>
+            <returns>DateTime</returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Sci.MyUtility.GetValue.GetID(System.String,System.String,System.DateTime,System.Int32,System.String,System.String,System.Int32,System.Int32)" -->
+        <!-- Badly formed XML comment ignored for member "M:Sci.MyUtility.GetValue.GetUKey(System.String,System.String,System.String)" -->
+        <member name="M:Sci.MyUtility.GetValue.GetStr(System.String,System.Int32)">
+            <summary>
+            GetStr()
+            </summary>
+            <param name="string sourcesource"></param>
+            <param name="[int row = 1][introw=1]"></param>
+            <returns>string</returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Sci.MyUtility.GetValue.GetRandomCode(System.Random,System.Int32,System.String)" -->
+        <member name="M:Sci.MyUtility.GetValue.GetSeq(System.String)">
+            <summary>
+            GetSeq()
+            </summary>
+            <param name="string lastseqlastseq"></param>
+            <returns>string</returns>
+        </member>
+        <member name="M:Sci.MyUtility.GetValue.Lookup(System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Lookup()
+            </summary>
+            <param name="string returnFieldreturnField"></param>
+            <param name="string seekValueseekValue"></param>
+            <param name="string seekTableseekTable"></param>
+            <param name="string seekFieldseekField"></param>
+            <param name="[string connectionName = null][stringconnectionName=null]"></param>
+            <returns>string</returns>
+        </member>
+        <member name="M:Sci.MyUtility.GetValue.Lookup(System.String,System.String)">
+            <summary>
+            Lookup()
+            </summary>
+            <param name="string sqlCmdsqlCmd"></param>
+            <param name="[string connectionName = null][stringconnectionName=null]"></param>
+            <returns>string</returns>
+        </member>
+        <member name="M:Sci.MyUtility.GetValue.Right(System.String,System.Int32)">
+            <summary>
+            Right()
+            </summary>
+            <param name="string texttext"></param>
+            <param name=" int lengthlength"></param>
+            <returns>string</returns>
+        </member>
+        <member name="M:Sci.MyUtility.GetValue.SayMemo(System.String,System.Int32)">
+            <summary>
+            SayMemo()
+            </summary>
+            <param name="string memoSourcememoSource"></param>
+            <param name="[int numChars = 80][intnumChars=80]"></param>
+            <returns>string</returns>
+        </member>
+        <member name="M:Sci.MyUtility.GetValue.GetID_YYYYMM_5_BatchCreate(System.Data.SqlClient.SqlConnection,System.String,System.String,System.DateTime,System.String,System.String@)">
+            <summary>
+            在批次內取流水號, 並且output 在 createdID上
+            </summary>
+            <param name="conn"></param>
+            <param name="Prefix"></param>
+            <param name="TableName"></param>
+            <param name="refDate"></param>
+            <param name="ColumnName"></param>
+            <param name="createdID"></param>
+        </member>
+        <member name="M:Sci.MyUtility.GetValue.GetID_YYYYMM_5(System.String,System.String,System.DateTime,System.String)">
+            <summary>
+            產生Prefix + YYMMMM + 5碼流水號的ID
+            </summary>
+            <param name="Prefix"></param>
+            <param name="TableName"></param>
+            <param name="refDate"></param>
+            <param name="ColumnName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.MyUtility.GetValue.GetID_YYYYMM_5(System.String,System.String,System.DateTime,System.String,System.Data.SqlClient.SqlConnection)">
+            <summary>
+            產生Prefix + YYMMMM + 5碼流水號的ID
+            </summary>
+            <param name="Prefix"></param>
+            <param name="TableName"></param>
+            <param name="refDate"></param>
+            <param name="ColumnName"></param>
+            <param name="conn"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.MyUtility.Math.Round(System.Decimal,System.Int32)">
+            <summary>
+            Round()
+            </summary>
+            <param name="decimal valuevalue"></param>
+            <param name="[int ext = 0][intext=0]"></param>
+            <returns>decimal</returns>
+        </member>
+        <member name="M:Sci.MyUtility.Math.Round(System.Double,System.Int32)">
+            <summary>
+            Round()
+            </summary>
+            <param name="double valuevalue"></param>
+            <param name="[int ext = 0][intext=0]"></param>
+            <returns>double</returns>
+        </member>
+        <member name="M:Sci.MyUtility.Math.SumDecimal(System.Object[])">
+            <summary>
+            透過 Convert.GetDecimal 轉換 object 為decimal之後做Sum
+            </summary>
+            <param name="array"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.MyUtility.Math.SumInt(System.Object[])">
+            <summary>
+            透過 Convert.GetInt 轉換 object 為 int 之後做Sum
+            </summary>
+            <param name="array"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.MyUtility.Math.DateMinus(System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            兩個日期相減的TimeSpan , return TimeSpan of (A - B)
+            <para> 會加以判斷 A , B的Date 若是 null , 則以 Minimun Date 帶入 </para>
+            </summary>
+            <param name="A"></param>
+            <param name="B"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.MyUtility.Math.DateMinus_Days(System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            兩個日期的天數差距 , return Days of (A - B)
+            <para> 會加以判斷 A , B的Date 若是 null , 則以 Minimun Date 帶入 </para>
+            </summary>
+            <param name="A"></param>
+            <param name="B"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.MyUtility.Math.DateMinus_Months(System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            兩個日期的月數差距 , return Months of (A - B)
+            <para> 會加以判斷 A , B的Date 若是 null , 則以 Minimun Date 帶入 </para>
+            </summary>
+            <param name="A"></param>
+            <param name="B"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.MyUtility.Math.DateMinus_Years(System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            兩個日期的年差距 , return Years of (A - B)
+            <para> 會加以判斷 A , B的Date 若是 null , 則以 Minimun Date 帶入 </para>
+            </summary>
+            <param name="A"></param>
+            <param name="B"></param>
+            <returns></returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Sci.MyUtility.Msg.ErrorBox(System.String,System.String,System.Windows.Forms.MessageBoxButtons,System.Windows.Forms.MessageBoxDefaultButton)" -->
+        <!-- Badly formed XML comment ignored for member "M:Sci.MyUtility.Msg.InfoBox(System.String,System.String,System.Windows.Forms.MessageBoxButtons,System.Windows.Forms.MessageBoxDefaultButton)" -->
+        <!-- Badly formed XML comment ignored for member "M:Sci.MyUtility.Msg.QuestionBox(System.String,System.String,System.Windows.Forms.MessageBoxButtons,System.Windows.Forms.MessageBoxDefaultButton)" -->
+        <!-- Badly formed XML comment ignored for member "M:Sci.MyUtility.Msg.WarningBox(System.String,System.String,System.Windows.Forms.MessageBoxButtons,System.Windows.Forms.MessageBoxDefaultButton)" -->
+        <member name="M:Sci.MyUtility.Msg.WaitWindows(System.Object)">
+            <summary>
+            WaitWindows()
+            </summary>
+            <param name="Object msgmsg"></param>
+            <returns>void</returns>
+        </member>
+        <member name="M:Sci.MyUtility.Msg.WaitWindows(System.String)">
+            <summary>
+            WaitWindows()
+            </summary>
+            <param name="String msgmsg"></param>
+            <returns>void</returns>
+        </member>
+        <member name="M:Sci.MyUtility.Msg.WaitWindows(System.Int32,System.Int32)">
+            <summary>
+            to display progress for outputing report
+            <para>暫訂loop 進度每達到 1/50 就顯示一次 {currentCount} / {totalCount} </para>
+            </summary>
+            <param name="currentCount"></param>
+            <param name="totalCount"></param>
+        </member>
+        <member name="M:Sci.MyUtility.Msg.WaitClear">
+            <summary>
+            WaitClear()
+            </summary>
+            <returns>void</returns>
+        </member>
+        <member name="M:Sci.MyUtility.Tool.CursorUpdateTable(System.Data.DataTable,System.String,System.String)">
+            <summary>
+            CursorUpdateTable
+            </summary>
+            <param name="DataTable dtCursordtCursor"></param>
+            <param name="string strTableNamestrTableName"></param>
+            <param name="string strConnectionstrConnection"></param>
+            <returns>DualResult</returns>
+        </member>
+        <member name="M:Sci.MyUtility.Tool.TableBulkInsert(System.Data.DataTable,System.String,System.Object)">
+            <summary>
+            批次透過 SqlBulkCopy 將DataTable 匯到 connection 的 #tmpTable
+            <para>匯入會排除 DataRowState = Deleted 的資料</para>
+            <para>再將#tmpTable 批次 insert into {TargetTable} 中</para>
+            </summary>
+            <param name="data"></param>
+            <param name="tableName"></param>
+            <param name="connection">可傳 null, String , SqlConnection物件</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.MyUtility.Tool.TableBulkInsert(System.Data.DataTable,Sci.DB.DBTable,System.Object)">
+            <summary>
+            批次透過 SqlBulkCopy 將DataTable 匯到 connection 的 #tmpTable
+            <para>匯入會排除 DataRowState = Deleted 的資料</para>
+            <para>再將#tmpTable 批次 insert into {TargetTable} 中</para>
+            </summary>
+            <param name="data"></param>
+            <param name="tableSchema"></param>
+            <param name="connection">可傳 null, String , SqlConnection物件</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.MyUtility.Tool.TableBulkMerge(System.Data.DataTable,System.String,System.Object,Sci.SQL.MergeOption)">
+            <summary>
+            批次透過 SqlBulkCopy 將DataTable 匯到 connection 的 #tmpTable
+            <para>只有使用MergeOption.InsertUpdate_SafeDelete選項的時候會使用 DataRowState = Deleted 的資料做刪除動作</para>
+            <para>再將#tmpTable 批次 Merge 到 {TargetTable} 中</para>
+            </summary>
+            <param name="data"></param>
+            <param name="tableName"></param>
+            <param name="connection">可傳 null, String , SqlConnection物件</param>
+            <param name="option"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.MyUtility.Tool.TableBulkMerge(System.Data.DataTable,Sci.DB.DBTable,System.Object,Sci.SQL.MergeOption)">
+            <summary>
+            批次透過 SqlBulkCopy 將DataTable 匯到 connection 的 #tmpTable
+            <para>只有使用MergeOption.InsertUpdate_SafeDelete選項的時候會使用 DataRowState = Deleted 的資料做刪除動作</para>
+            <para>再將#tmpTable 批次 Merge 到 {TargetTable} 中</para>
+            </summary>
+            <param name="data"></param>
+            <param name="tableSchema"></param>
+            <param name="connection">可傳 null, String , SqlConnection物件</param>
+            <param name="option"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.MyUtility.Tool.ProcessWithObject(System.Collections.Generic.IEnumerable{System.Object},System.String,System.String,System.Data.DataTable@,System.String,System.Data.SqlClient.SqlConnection,System.Collections.Generic.List{System.Data.SqlClient.SqlParameter},System.String)">
+            <summary>
+            將任意Type的 source (by properties of Type) 轉換成DataTable後 , 呼叫 ProcessWithDataTable
+            </summary>
+            <param name="source"></param>
+            <param name="tmp_columns"></param>
+            <param name="sqlcmd"></param>
+            <param name="result"></param>
+            <param name="temptablename"></param>
+            <param name="conn"></param>
+            <param name="paramters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.MyUtility.Tool.ProcessWithObject(System.Collections.Generic.IEnumerable{System.Object},System.String,System.String,System.Data.DataTable[]@,System.String,System.Data.SqlClient.SqlConnection,System.Collections.Generic.List{System.Data.SqlClient.SqlParameter},System.String)">
+            <summary>
+            將任意Type的 source (by properties of Type) 轉換成DataTable後 , 呼叫 ProcessWithDataTable
+            </summary>
+            <param name="source"></param>
+            <param name="tmp_columns"></param>
+            <param name="sqlcmd"></param>
+            <param name="result"></param>
+            <param name="temptablename"></param>
+            <param name="conn"></param>
+            <param name="paramters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.MyUtility.Tool.ProcessWithDatatable(System.Data.DataTable,System.String,System.String,System.Data.DataTable@,System.String,System.Data.SqlClient.SqlConnection,System.Collections.Generic.List{System.Data.SqlClient.SqlParameter},System.String)">
+            <summary>
+            ProcessWithDatatable
+            </summary>
+            <param name="DataTable sourcesource"></param>
+            <param name="string tmp_columnstmp_columns"></param>
+            <param name="string sqlcmdsqlcmd"></param>
+            <param name="out DataTable resultDataTableresult"></param>
+            <param name="string temptablenametemptablename"></param>
+        </member>
+        <member name="M:Sci.MyUtility.Tool.ProcessWithDatatable(System.Data.DataTable,System.String,System.String,System.Data.DataTable[]@,System.String,System.Data.SqlClient.SqlConnection,System.Collections.Generic.List{System.Data.SqlClient.SqlParameter},System.String)">
+            <summary>
+            ProcessWithDatatable
+            </summary>
+            <param name="DataTable sourcesource"></param>
+            <param name="string tmp_columnstmp_columns"></param>
+            <param name="string sqlcmdsqlcmd"></param>
+            <param name="out DataTable[] resultDataTable[]result"></param>
+            <param name="string temptablenametemptablename"></param>
+        </member>
+        <member name="M:Sci.MyUtility.Tool.SetupCombox(System.Windows.Forms.ComboBox,System.Int32,System.Int32,System.String,System.String)">
+            <summary>
+            設定　comboBox 的 Datasource
+            </summary>
+            <param name="combobox"></param>
+            ComboBox Control
+            <param name="columncount"></param>
+            顯示的 DataSource 的 Column 數 1 / 2
+            <param name="rowsourcetype"></param>
+            決定 rowsource 的型態 1 -> Value, 2->SQL Command
+            <param name="rowsource"></param>
+            DBProxy的ConnectionName名稱
+            <param name="ConnectionName"></param>
+        </member>
+        <member name="M:Sci.MyUtility.Tool.SetupCombox(Sci.Win.UI.ComboBox,System.Int32,System.Data.DataTable)">
+            <summary>
+            設定　comboBox 的 Datasource
+            </summary>
+            <param name="combobox"></param>
+            ComboBox Control
+            <param name="columncount"></param>
+            顯示的 DataSource 的 Column 數 1 / 2
+            <param name="dt"></param>
+            顯示的 Datatable. 固定第一欄為 key, 第三欄為 value
+        </member>
+        <member name="M:Sci.MyUtility.Tool.SetGridFrozen(System.Windows.Forms.DataGridView)">
+            <summary>
+            Grid Header右鍵點選凍結欄位
+            </summary>
+            <param name="DataGridView gridgrid"></param>
+            <returns>void</returns>
+        </member>
+        <member name="M:Sci.MyUtility.Tool.AddMenuToPopupGridFilter(Sci.Win.Forms.Base,Sci.Win.UI.Grid,System.Windows.Forms.ContextMenuStrip,System.String)">
+            <summary>
+            增加用來篩選 Grid資料的Menu ( menu click後 show form去做控制篩選 )
+            <para> -可在 form 的Constructor執行 , 放置在 InitializeComponent() 之後</para>
+            <para> -也可放在 form 的SetGrid1Menus執行 </para>
+            <para> @limitFilters :</para>
+            <para> - 給 null 或是空字串代表不限定, 所有的欄位都可篩選</para>
+            <para> - 給 "poid,factoryid"代表只篩選 poid和factoryid 這兩個column</para>
+            </summary>
+            <param name="form"></param>
+            <param name="bindGrid">要控制篩選的Grid</param>
+            <param name="menu">用來 append menu的Grid menu</param>
+            <param name="limitFilters">如果只想限定特定欄位要做篩選
+            <para> - 給 null 或是空字串代表不限定, 所有的欄位都可篩選</para>
+            <para> - 給 "poid,factoryid"代表只篩選 poid和factoryid 這兩個column</para></param>
+        </member>
+        <member name="M:Sci.ProjExts.Empty(System.Object)">
+            <summary>
+            to return true for these values : null , DBNull, "" , false , 數字 0 
+            </summary>
+        </member>
+        <member name="M:Sci.ProjExts.EqualDecimal(System.Object,System.Object)">
+            <summary>
+            物件轉Decimal後比對是否相同
+            <para> null 和 DBNull 當作是 0</para>
+            </summary>
+        </member>
+        <member name="M:Sci.ProjExts.EqualString(System.Object,System.Object)">
+            <summary>
+            物件轉String後, 使用 String 的 TrimEnd + IgnoreCase方式作字串比對
+            <para>null 和 DBNull 視為空字串</para>
+            </summary>
+        </member>
+        <member name="M:Sci.ProjExts.StrStartsWith(System.Object,System.Object)">
+            <summary>
+            String a 開頭的字串是否為b
+            <para>物件轉String後, 使用 String 的 StartsWith + IgnoreCase方式作字串比對</para>
+            <para>null 和 DBNull 視為空字串</para>
+            </summary>
+        </member>
+        <member name="M:Sci.ProjExts.StrEndsWith(System.Object,System.Object)">
+            <summary>
+            String a 結尾的字串是否為b
+            <para>物件轉String後, 使用 String 的 EndsWith + IgnoreCase方式作字串比對</para>
+            <para>null 和 DBNull 視為空字串</para>
+            </summary>
+        </member>
+        <member name="M:Sci.ProjExts.Replace(System.String,System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.String}})">
+            <summary>
+            多重key-value的字串取代
+            <para>會在foreach中執行 Regex.Replace(sourceStr,pair.Key, pair.Value ,IgnoreCase) </para>
+            <para>pair.Key   相當於舊值</para>
+            <para>pair.Value 相當於新值</para>
+            </summary>
+            <param name="sourceStr"></param>
+            <param name="pairs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.ProjExts.InList(System.String,System.Object[])">
+            <summary>
+            by (EqualString) , Checked Item 是 listObjs的其中一個 
+            <para> "123" 在 {"123", "4","56"} 中 ;  </para>
+            <para>但 "3" 不在{"123", "4","56"}中</para>
+            </summary>
+            <param name="checkedItem"></param>
+            <param name="listObjs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.ProjExts.InList(System.String,System.Object,System.String)">
+            <summary>
+            將 listObjs 依照指定的 splitor 切成多個字串後
+            <para>再 by (EqualString) , Checked Item 是 listObjs的其中一個 </para>
+            <para> 例如: listObjs = "123,4,56" </para>
+            <para> listObjs 被切成 {"123", "4","56"} </para>
+            <para> 在判斷checkedItem 是否在 {"123", "4","56"} 中 ;  </para>
+            </summary>
+            <param name="checkedItem"></param>
+            <param name="listObj"></param>
+            <param name="splitor"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.ProjExts.InList_AnyInclude(System.String,System.Object[])">
+            <summary>
+            by IndexOf(Str) ,Checked Item 是 listObjs的其中一個
+            <para> "3" 在 {"123", "4","56"} 中, "123"也在其中  </para>
+            </summary>
+            <param name="checkedItem"></param>
+            <param name="listObjs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.ProjExts.IsOneOfThe``1(``0,``0[])">
+            <summary>
+            檢查當前物件，是否存在於檢查物件
+            </summary>
+            <param name="lookupValue"></param>
+            <param name="lookupTargets"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.ProjExts.IsOneOfThe(System.String,System.String[])">
+            <summary>
+            檢查當前文字，是否存在於檢查目標(區分大小寫比較)
+            </summary>
+            <param name="lookupValue"></param>
+            <param name="lookupTargets"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.ProjExts.IsOneOfThe(System.String,System.Boolean,System.String[])">
+            <summary>
+            檢查當前文字，是否存在於檢查目標(指定是否區分大小寫來比較)
+            </summary>
+            <param name="lookupValue"></param>
+            <param name="lookupTargets"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.ProjExts.JoinToString(System.Collections.Generic.IEnumerable{System.String},System.String)">
+            <summary>
+            用指定的分隔符號，透過string.Join方法將各項目串連起來做回傳
+            </summary>
+            <param name="items"></param>
+            <param name="delimiter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.ProjExts.AddCheckBoxOnHeader(System.Windows.Forms.DataGridView,System.Int32,System.EventHandler)">
+            <summary>
+            to add a checkBox on columnHeader
+            </summary>
+            <param name="grid"></param>
+            <param name="columnIndex">default 0 ; specify the column to create checkBox</param>
+            <param name="onCheckedChanged">specify code in checkBox.CheckedChanged</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.ProjExts.GetTable(System.Windows.Forms.DataGridView)">
+            <summary>
+            由 Grid 取回 DataSource 的 Datatable，若Source不為DataTable不在此Method使用範圍內
+            </summary>
+            <param name="grid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.ProjExts.GetTableWithGridLayout(System.Windows.Forms.DataGridView,System.Collections.Generic.List{System.String})">
+            <summary>
+            由 Grid 取回 DataSource 的 Datatable，並依照Grid顯示之欄位數量、名稱設定，若Source不為DataTable不在此Method使用範圍內
+            </summary>
+            <param name="grid"></param>
+            <param name="notDeleteColumn"> 需要保留的欄位 </param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.ProjExts.CopyTo(System.Data.DataRow,System.Data.DataRow,System.String)">
+            <summary>
+            fieldNames 須以","隔開
+            </summary>
+            <param name="source"></param>
+            <param name="target"></param>
+            <param name="fieldNames">fieldNames 須以","隔開</param>
+        </member>
+        <member name="M:Sci.ProjExts.CopyTo(System.Data.DataRow,System.Data.DataTable,System.String)">
+            <summary>
+            fieldNames 須以","隔開
+            <para>Target Table 先產生一筆Row ,從Source copy fields後會加進Table中 </para>
+            </summary>
+            <param name="source"></param>
+            <param name="targetTable"></param>
+            <param name="fieldNames">fieldNames 須以","隔開</param>
+        </member>
+        <member name="M:Sci.ProjExts.CopyToAs(System.Data.DataRow,System.Data.DataTable,System.String)">
+            <summary>
+            fieldNames 須以","隔開
+            <para>fieldNames 內填法若是 " id=tmpID,name=remark" , 則會update : target["id"]=source["tmpID"] ; target["name"]=source["remark"]  </para>
+            <para>Target Table 先產生一筆Row ,從Source copy fields後會加進Table中 </para>
+            </summary>
+            <param name="source"></param>
+            <param name="targetTable"></param>
+            <param name="fieldNames">fieldNames 須以","隔開
+            <para>fieldNames 內填法若是 " id=tmpID,name=remark" , 則會update : target["id"]=source["tmpID"] ; target["name"]=source["remark"]  </para>
+            </param>
+        </member>
+        <member name="M:Sci.ProjExts.CopyToAs(System.Data.DataRow,System.Data.DataRow,System.String)">
+            <summary>
+            fieldNames 須以","隔開
+            <para>fieldNames 內填法若是 " id=tmpID,name=remark" , 則會update : target["id"]=source["tmpID"] ; target["name"]=source["remark"]  </para>
+            <para>Target Table 先產生一筆Row ,從Source copy fields後會加進Table中 </para>
+            </summary>
+            <param name="source"></param>
+            <param name="target"></param>
+            <param name="fieldNames">fieldNames 須以","隔開
+            <para>fieldNames 內填法若是 " id=tmpID,name=remark" , 則會update : target["id"]=source["tmpID"] ; target["name"]=source["remark"]  </para>
+            </param>
+        </member>
+        <member name="M:Sci.ProjExts.Sum(System.Data.DataTable,System.String,System.String)">
+            <summary>
+            指定欄位作加總並置入dataTable中, 
+            <para>若有指定groupColumns的話, 會再作group subTotal</para> 
+            </summary>
+            <param name="sourceTable"></param>
+            <param name="sumColumns">指定有哪些欄位要做加總 <para>可用逗號隔開 ex:"Qty,Foc,Amount"</para></param>
+            <param name="groupColumns">指定要依照哪些column 作group by <para>可用逗號隔開 ex:"poid,seq1,seq2"</para></param>
+            <returns>subTotal和overall total 的dataRow</returns>
+        </member>
+        <member name="M:Sci.ProjExts.GetSameFields(System.Data.DataTable,System.Data.DataTable)">
+            <summary>
+            取得兩個Table相同名稱的欄位(逗號隔開)
+            </summary>
+            <param name="sourceTable"></param>
+            <param name="targetTable"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.ProjExts.GetAllFields(System.Data.DataTable)">
+            <summary>
+            取得Table全部的欄位名稱(逗號隔開)
+            </summary>
+            <param name="sourceTable"></param>
+            <param name="targetTable"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.ProjExts.GetAllFields(System.Data.DataTable,System.Boolean)">
+            <summary>
+            取得Table的欄位名稱(逗號隔開)
+            <para> true  代表只列出 Expression columns</para>
+            <para> false 代表排除 Expression columns</para>
+            </summary>
+            <param name="sourceTable"></param>
+            <param name="targetTable"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.ProjExts.ColumnsStringAdd(System.Data.DataTable,System.String,System.String,System.String)">
+            <summary>
+            add String column with default value
+            </summary>
+            <param name="sourceTable"></param>
+            <param name="name"></param>
+            <param name="defaultValue"> default empty String if expression is null</param>
+            <param name="expression"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.ProjExts.ColumnsDecimalAdd(System.Data.DataTable,System.String,System.Decimal,System.String)">
+            <summary>
+            add decimal column with default value
+            </summary>
+            <param name="sourceTable"></param>
+            <param name="name"></param>
+            <param name="defaultValue"> default 0 if expression is null</param>
+            <param name="expression"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.ProjExts.ColumnsIntAdd(System.Data.DataTable,System.String,System.Int32,System.String)">
+            <summary>
+            add int column with default value
+            </summary>
+            <param name="sourceTable"></param>
+            <param name="name"></param>
+            <param name="defaultValue"> default 0 if expression is null</param>
+            <param name="expression"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.ProjExts.ColumnsBooleanAdd(System.Data.DataTable,System.String,System.Boolean,System.String)">
+            <summary>
+            add bool column with default value
+            </summary>
+            <param name="sourceTable"></param>
+            <param name="name"></param>
+            <param name="defaultValue">default false if expression is null</param>
+            <param name="expression"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.ProjExts.SetReadOnly(System.Windows.Forms.Control,System.Boolean,System.Boolean)">
+            <summary>
+            由Control層級設定ReadOnly屬性，若Control非指定之Type則不做其他動作
+            </summary>
+            <param name="c"></param>
+            <param name="boReadOnly"></param>
+        </member>
+        <member name="T:Sci.Utility.AutoUpdator">
+            <summary>
+            自帶Adapter和CommandBuilder的DataSet
+            </summary>
+        </member>
+        <member name="M:Sci.Utility.AutoUpdator.#cctor">
+            <summary>
+            在最最一開始先準備好一份對照表，供後面組裝adapter的parameter時候使用
+            </summary>
+        </member>
+        <member name="T:Sci.Utility.AutoUpdator.UkeyRelation">
+            <summary>
+            以Ukey當作PK的DetailTable，透過這個設定值來做Identity欄位同步
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.AutoUpdator.UkeyRelation.MasterRow">
+            <summary>
+            MasterRow
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.AutoUpdator.UkeyRelation.ChildRowIdentityLinkField">
+            <summary>
+            ChildRowIdentityLinkField
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.AutoUpdator.UkeyRelation.ChildRows">
+            <summary>
+            ChildRows
+            </summary>
+        </member>
+        <member name="M:Sci.Utility.AutoUpdator.UkeyRelation.#ctor(System.Data.DataRow,System.String,System.Data.DataRow[])">
+            <summary>
+            UkeyRelation
+            </summary>
+            <param name="masterRow">masterRow</param>
+            <param name="link">link</param>
+            <param name="childRows">childRows</param>
+        </member>
+        <member name="T:Sci.Utility.AutoUpdator.LoadTableInfo">
+            <summary>
+            提供LoadTable方法使用的參數集合物件
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.AutoUpdator.LoadTableInfo.ConnectionName">
+            <summary>
+            要使用的連線名稱，預設為空字串
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.AutoUpdator.LoadTableInfo.AliasName">
+            <summary>
+            指定本次載回的資料表，TableName的值，預設會透過GetSchema去抓sql取回的主資料表名稱，但有可能需要抓同一個表兩次，所以提供此屬性，讓呼叫端可以調整要使用的名稱
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.AutoUpdator.LoadTableInfo.Sql">
+            <summary>
+            要執行的TSQL
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.AutoUpdator.LoadTableInfo.Timeout">
+            <summary>
+            給予Adapter內，各個Command物件的timeout值，預設0代表不指定
+            </summary>
+        </member>
+        <member name="M:Sci.Utility.AutoUpdator.LoadTableInfo.#ctor(System.String)">
+            <summary>
+            提供LoadTable方法使用的參數集合物件
+            </summary>
+            <param name="sql">要執行的TSQL</param>
+        </member>
+        <member name="T:Sci.Utility.AutoUpdator.LoadReferenceTableInfo">
+            <summary>
+            提供LoadReferenceTable方法使用的參數集合物件，繼承LoadTable
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.AutoUpdator.LoadReferenceTableInfo.TableName">
+            <summary>
+            載回來之後要使用的資料表名稱
+            </summary>
+        </member>
+        <member name="M:Sci.Utility.AutoUpdator.LoadReferenceTableInfo.#ctor(System.String,System.String)">
+            <summary>
+            提供LoadReferenceTable方法使用的參數集合物件，繼承LoadTable
+            </summary>
+            <param name="sql">要執行的TSQL</param>
+            <param name="tableName">載回來之後要使用的資料表名稱</param>
+        </member>
+        <member name="M:Sci.Utility.AutoUpdator.#ctor">
+            <summary>
+            自帶Adapter和CommandBuilder的DataSet
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.AutoUpdator.DefaultConnectionName">
+            <summary>
+            讓LoadTable與LoadReferenceTable可以使用這個屬性來決定採用哪一個連線設定
+            </summary>
+        </member>
+        <member name="M:Sci.Utility.AutoUpdator.CloseAllConnection">
+            <summary>
+            關閉所有連線
+            </summary>
+        </member>
+        <member name="M:Sci.Utility.AutoUpdator.OpenAllConnection">
+            <summary>
+            打開所有連線
+            </summary>
+        </member>
+        <member name="M:Sci.Utility.AutoUpdator.ReopenAllConnection">
+            <summary>
+            關閉後重新打開所有連線
+            </summary>
+        </member>
+        <member name="M:Sci.Utility.AutoUpdator.LoadTable(System.String,System.Object[])">
+            <summary>
+            將資料表讀取回來，包含資料與資料結構，會自動判斷Identity欄位
+            </summary>
+            <param name="sql">sql</param>
+            <param name="args">args</param>
+            <returns>DataTable</returns>
+        </member>
+        <member name="M:Sci.Utility.AutoUpdator.LoadTable(Sci.Utility.AutoUpdator.LoadTableInfo,System.Object[])">
+            <summary>
+            以啟動物件進行載入資料表的動作
+            </summary>
+            <param name="info">info</param>
+            <param name="args">args</param>
+            <returns>DataTable</returns>
+        </member>
+        <member name="M:Sci.Utility.AutoUpdator.LoadReferenceTable(System.String,System.String,System.Object[])">
+            <summary>
+            將資料表加入內容作為一般資料表，這種資料表不能夠成為AutoUpdate的目標
+            </summary>
+            <param name="sql">sql</param>
+            <param name="tableName">tableName</param>
+            <param name="args">args</param>
+            <returns>DataTable</returns>
+        </member>
+        <member name="M:Sci.Utility.AutoUpdator.LoadReferenceTable(Sci.Utility.AutoUpdator.LoadReferenceTableInfo,System.Object[])">
+            <summary>
+            以啟動物件進行載入參考資料表的動作
+            </summary>
+            <param name="info">info</param>
+            <param name="args">args</param>
+            <returns>DataTable</returns>
+        </member>
+        <member name="M:Sci.Utility.AutoUpdator.UpdateAllTable">
+            <summary>
+            依照當時LoadTable的順序，循序進行Update
+            </summary>
+        </member>
+        <member name="M:Sci.Utility.AutoUpdator.Update(System.Data.DataTable[])">
+            <summary>
+            依照指定的順序更新目標Table
+            </summary>
+            <param name="tables">tables</param>
+        </member>
+        <member name="M:Sci.Utility.AutoUpdator.Update(System.Data.DataRow[])">
+            <summary>
+            把要更新的資料列，分所屬Table，逐一進行更新，但是順序就不太一定了
+            </summary>
+            <param name="rows">rows</param>
+        </member>
+        <member name="M:Sci.Utility.AutoUpdator.AppendUkeyRelation(System.Data.DataRow,System.String,System.Data.DataRow[])">
+            <summary>
+            當有使用到UKey的欄位時，會以此關聯來同步MasterRow新取回來的Ukey給他的ChildRows
+            </summary>
+            <param name="masterRow">masterRow</param>
+            <param name="childLinkField">childLinkField</param>
+            <param name="detailRows">detailRows</param>
+        </member>
+        <member name="M:Sci.Utility.AutoUpdator.Dispose(System.Boolean)">
+            <summary>
+            釋放內部資源
+            </summary>
+            <param name="disposing">disposing</param>
+        </member>
+        <member name="M:Sci.Utility.AutoUpdator.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            回報外部此物件屬性狀態
+            </summary>
+            <param name="info">info</param>
+            <param name="context">context</param>
+        </member>
+        <member name="T:Sci.Utility.Drawing.DrawingPrg">
+            <summary>
+            class for draw
+            </summary>
+        </member>
+        <member name="M:Sci.Utility.Drawing.DrawingPrg.DrawText(System.String,System.Drawing.Font,System.Drawing.Color,System.Drawing.Color,System.Int32,System.Int32)">
+            <summary>
+            文字 To Image
+            </summary>
+            <param name="text">文字內容</param>
+            <param name="font">字型</param>
+            <param name="textColor">文字顏色</param>
+            <param name="backColor">背景顏色</param>
+            <param name="width">寬度，預設0為自動寬度</param>
+            <param name="height">長度，預設0為自動長度</param>
+            <returns> image of text </returns>
+        </member>
+        <member name="M:Sci.Utility.Drawing.DrawingPrg.SplitStringByRectangle(System.String,System.Drawing.Size,System.Drawing.Font)">
+            <summary>
+            依照長、寬限制文字寬度及自動分區塊
+            </summary>
+            <param name="rawString">原始字串</param>
+            <param name="sz">需要的範圍Size</param>
+            <param name="fnt">字體</param>
+            <returns>Key切割後的區塊字串、Value區塊測量的高度</returns>
+        </member>
+        <member name="M:Sci.Utility.Drawing.DrawingPrg.DwarGrayMask(System.Drawing.Image)">
+            <summary>
+            把目標圖片圖灰後回傳
+            </summary>
+            <param name="img">目標圖片</param>
+            <returns> return image with gray mask </returns>
+        </member>
+        <member name="M:Sci.Utility.Excel.ExcelExtensionse.GetRanges(Microsoft.Office.Interop.Excel.Worksheet,System.String)">
+            <summary>
+            用RangeName去取Excel.Range物件，等同於WorkSheet.Range["RangeName"]
+            </summary>
+            <inheritdoc />
+        </member>
+        <member name="M:Sci.Utility.Excel.ExcelExtensionse.GetRanges(Microsoft.Office.Interop.Excel.Worksheet,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:Sci.Utility.Excel.ExcelPrgs.SelectExcelHeader(System.String,System.Int32,System.Int32,System.Collections.Generic.Dictionary{System.String,System.Type})">
+            <summary>
+            把Excel的一個WorkSheet變成一個DataTable
+            </summary>
+            <param name="fileName">如果不指定檔名，會開對話視窗去選</param>
+            <param name="sheetNum">如果不指定SheetIndex會取第一個</param>
+            <param name="captionIndex">如果不指定標題列位置，預設第一列</param>
+            <param name="columnTypes">如果有指定，則遇到特定的標題，就會用特定的型態來給DataColumn用，未指定或找不到的，一律用string為預設</param>
+            <inheritdoc/>
+        </member>
+        <member name="M:Sci.Utility.Excel.ExcelPrgs.SelectExcelHeader(System.String,System.String,System.Int32,System.Collections.Generic.Dictionary{System.String,System.Type})">
+            <summary>
+            把Excel的一個WorkSheet變成一個DataTable
+            </summary>
+            <param name="fileName">如果不指定檔名，會開對話視窗去選</param>
+            <param name="sheetName">如果不指定SheetIndex會取第一個</param>
+            <param name="captionIndex">如果不指定標題列位置，預設第一列</param>
+            <param name="columnTypes">如果有指定，則遇到特定的標題，就會用特定的型態來給DataColumn用，未指定或找不到的，一律用string為預設</param>
+            <inheritdoc/>
+        </member>
+        <member name="T:Sci.Utility.Excel.ExcelPrgs.SelectExcelAgents">
+            <inheritdoc />
+        </member>
+        <member name="P:Sci.Utility.Excel.ExcelPrgs.SelectExcelAgents.FileName">
+            <inheritdoc />
+        </member>
+        <member name="P:Sci.Utility.Excel.ExcelPrgs.SelectExcelAgents.SheetName">
+            <inheritdoc />
+        </member>
+        <member name="P:Sci.Utility.Excel.ExcelPrgs.SelectExcelAgents.SheetNumber">
+            <inheritdoc />
+        </member>
+        <member name="P:Sci.Utility.Excel.ExcelPrgs.SelectExcelAgents.CaptionIndex">
+            <inheritdoc />
+        </member>
+        <member name="P:Sci.Utility.Excel.ExcelPrgs.SelectExcelAgents.ColumnTypes">
+            <inheritdoc />
+        </member>
+        <member name="P:Sci.Utility.Excel.ExcelPrgs.SelectExcelAgents.AutoTrimColumnName">
+            <inheritdoc />
+        </member>
+        <member name="M:Sci.Utility.Excel.ExcelPrgs.SelectExcelAgents.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="M:Sci.Utility.Excel.ExcelPrgs.SelectExcelAgents.Load">
+            <inheritdoc />
+        </member>
+        <member name="T:Sci.Utility.Excel.MyExcelPrg">
+            <summary>
+            made by Edward for excel process
+            </summary>
+        </member>
+        <member name="F:Sci.Utility.Excel.MyExcelPrg.Filter_Excel">
+            <summary>
+            fliter file extension of excel
+            </summary>
+        </member>
+        <member name="F:Sci.Utility.Excel.MyExcelPrg.filter_Excel">
+            <summary>
+            fliter file extension of excel
+            </summary>
+        </member>
+        <member name="M:Sci.Utility.Excel.MyExcelPrg.SaveXlsAs(System.String)">
+            <summary>
+            Edward : 開啟Excel檔案另存
+                create : 2016-04-20 15:27:00
+            </summary>
+            <param name="sourcePath"> source path </param>
+        </member>
+        <member name="M:Sci.Utility.Excel.MyExcelPrg.OpenFile(System.String)">
+            <summary>
+            Edward : 執行檔案
+                 create : 2016-04-20 15:27:00
+            </summary>
+            <param name="path"> file path </param>
+        </member>
+        <member name="M:Sci.Utility.Excel.MyExcelPrg.FastDtToExcel(System.Data.DataTable,Microsoft.Office.Interop.Excel.Worksheet,System.Int32,System.Int32,System.Boolean,System.Collections.Generic.List{System.String},System.Boolean)">
+            <summary>
+            Edward : DataTable快速寫入WorkSheet
+                 create : 2016-04-21 12:20:00
+            </summary>
+            <param name="dt">DataTable</param>
+            <param name="sheet">WorkSheet</param>
+            <param name="firstRow">開始列、開始列為1</param>
+            <param name="firstCol">開始欄、開始欄為1</param>
+            <param name="addHead">是否加入Table Header</param>
+            <param name="wantedColumns"> 需要那些欄位，目前應該都沒有使用到 </param>
+            <param name="allowRangeTransferToString"> allow transfer column to string format </param>
+        </member>
+        <member name="M:Sci.Utility.Excel.MyExcelPrg.GetExcelColumnName(System.Int32)">
+            <summary>
+            Edward : 欄位索引轉換成Excel欄位名稱如AA、AB...
+                create : 2016-04-21 21:00:00
+            </summary>
+            <param name="columnNumber">索引值27,28,29...</param>
+            <returns> excel column name</returns>
+        </member>
+        <member name="M:Sci.Utility.Excel.MyExcelPrg.GetExcelColumnIndex(System.String)">
+            <summary>
+            Edward : Excel欄位名稱如AA、AB轉成數字索引
+                create : 2016-08-26 15:00:00
+            </summary>
+            <param name="columnName">欄位名稱AA,BB,CC</param>
+            <returns> excel column index </returns>
+        </member>
+        <member name="M:Sci.Utility.Excel.MyExcelPrg.GetXltPath(System.String)">
+            <summary>
+            get xlt path, compare with XltPathDir
+            </summary>
+            <param name="xltName"> source path, will check correct </param>
+            <returns> return correct path </returns>
+        </member>
+        <member name="P:Sci.Utility.Excel.MyExcelPrg.Excel_DefaultPath">
+            <summary>
+            excel default path
+            </summary>
+        </member>
+        <member name="M:Sci.Utility.Excel.MyExcelPrg.GetSaveFileDialog(System.String)">
+            <summary>
+            get savefiledialog
+            </summary>
+            <param name="filter"> 副檔名filter </param>
+            <returns> return savefiledialog </returns>
+        </member>
+        <member name="M:Sci.Utility.Excel.MyExcelPrg.SetPrintRange(Microsoft.Office.Interop.Excel.Worksheet)">
+            <summary>
+            設定Sheet的列印範圍，A1~最後一格
+            </summary>
+            <param name="sheet"> excel work sheet </param>
+        </member>
+        <member name="M:Sci.Utility.Excel.MyExcelPrg.GetLastCell(Microsoft.Office.Interop.Excel.Worksheet)">
+            <summary>
+            內建的xlCellTypeLastCell若最後一列為Merge，會抓到A欄位，非正確的最後一欄
+            </summary>
+            <param name="sheet"> target work sheet </param>
+            <returns> last cell </returns>
+        </member>
+        <member name="M:Sci.Utility.Excel.MyExcelPrg.GetParameters(System.String,System.String)">
+            <summary>
+            get variable from string start with vPrefix.
+            </summary>
+            <param name="vPrefix"> variable prefix </param>
+            <param name="targetStr"> target string </param>
+            <returns> list of variable </returns>
+        </member>
+        <member name="M:Sci.Utility.Excel.MyExcelPrg.SplitDataTable(System.Data.DataTable,System.Int32,System.Int32,System.Int32,System.Boolean,System.Boolean,System.Int32,System.Int32,System.String,System.String)">
+            <summary>
+            Edward : 分割Datatable
+                 create : 2016-05-10 16:00:00
+            </summary>
+            <param name="dt"> targer datatable </param>
+            <param name="colIdx"> limit columns count </param>
+            <param name="leftHeader"> row header </param>
+            <param name="rightHeader"> row booter </param>
+            <param name="haveTotal"> have total column at last </param>
+            <param name="haveSeparator"> have separator </param>
+            <param name="intUpBar"> index of up separator </param>
+            <param name="intDownBar"> index of down separator </param>
+            <param name="separator1"> separator 1 </param>
+            <param name="separator2"> separator 2 </param>
+            <returns> splited datatable </returns>
+        </member>
+        <member name="M:Sci.Utility.Excel.MyExcelPrg.GetSpColumnName(System.Data.DataTable)">
+            <summary>
+            get space column name from datatable
+            </summary>
+            <param name="dt"> target datatable </param>
+            <returns> column name with space </returns>
+        </member>
+        <member name="M:Sci.Utility.Excel.MyExcelPrg.KillExcelProcess(Microsoft.Office.Interop.Excel.Application)">
+            <summary>
+            透過Excel.Application 關閉工作管理員畫面裡的Excel.exe
+            </summary>
+            <param name="excelApp"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Sci.Utility.Excel.SaveDataToExcel">
+            <summary>
+            Edward : Data轉存成Excel，可自設是否加Pivot Table及其他屬性
+            可參考 Planning P01_Print OnToExcel() 中的用法
+                 create : 2016-04-30
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveDataToExcel.PivotSheets">
+            <summary>
+            list of pivot sheet
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveDataToExcel.HeaderColor">
+            <summary>
+            set header color, key : index of excel, value : color
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveDataToExcel.AutoFit">
+            <summary>
+            set column auto fit
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveDataToExcel.AutoFilter">
+            <summary>
+            set title filter
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveDataToExcel.FreezeHeader">
+            <summary>
+            set title freeze
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveDataToExcel.TitleBold">
+            <summary>
+            set title bold
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveDataToExcel.boOpenFile">
+            <summary>
+            open file after save
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveDataToExcel.BoOpenFile">
+            <summary>
+            open file after save
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveDataToExcel.ExcelApp">
+            <summary>
+            excel application, be carefully use.
+            </summary>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveDataToExcel.AddPivotSheet(Microsoft.Office.Interop.Excel.Application,Microsoft.Office.Interop.Excel.Worksheet,Microsoft.Office.Interop.Excel.Workbook,System.Data.DataTable,System.String,System.Collections.Generic.List{Sci.Utility.Excel.SaveDataToExcel.MyPivotField},System.String,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            Edward : 新增Excel Pivot表
+                create : 2016-04-21 21:00:00
+            </summary>
+            <param name="oApp"> excel application </param>
+            <param name="sourceSheet"> excel work sheet </param>
+            <param name="oBook"> excel work book </param>
+            <param name="sourcedt"> source datatable </param>
+            <param name="newSheetName"> new sheet name </param>
+            <param name="pivFieldLis"> list of PivotField </param>
+            <param name="specificRange"> specific range </param>
+            <param name="repeatAllLabel"> repeat all label </param>
+            <param name="closeAllSubtotal"> close all subtotal </param>
+            <param name="setDataFieldToColumn"> set data field to column field </param>
+            <param name="showRowGrand"> show row grand total</param>
+            <param name="showColumnGrand"> show column grand total</param>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveDataToExcel.#ctor(System.Data.DataTable,System.Int32,System.Boolean)">
+            <summary>
+            Construct for datatable
+            </summary>
+            <param name="sourceDt"> source datatable </param>
+            <param name="headerStartRow"> start row position </param>
+            <param name="keepApp"> keep application after save() </param>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveDataToExcel.#ctor(System.Data.DataSet,System.Int32,System.Boolean)">
+            <summary>
+            Construct for dataset
+            </summary>
+            <param name="sourceDs"> source dataset </param>
+            <param name="headerStartRow"> start row position </param>
+            <param name="keepApp"> keep application after save() </param>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveDataToExcel.Save(System.String,System.String)">
+            <summary>
+            save table to excel
+            </summary>
+            <param name="path"> save file path </param>
+            <param name="prefix"> save excel file name prefix </param>
+            <returns> save success or not </returns>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveDataToExcel.FinishSave">
+            <summary>
+            在 Save 及 額外的Code結束後，對Excel Application的處理
+            </summary>
+            <returns> execute success or not </returns>
+        </member>
+        <member name="T:Sci.Utility.Excel.SaveDataToExcel.MyPivotField">
+            <summary>
+            Edward : Pivot欄位用的Class
+                create : 2016-04-21 21:00:00
+            </summary>
+        </member>
+        <member name="T:Sci.Utility.Excel.SaveDataToExcel.MyPivotField.SubtotalEnum">
+            <summary>
+            show subtotal : None: 不指定, Open: 顯示各項小計, Close: 不顯示各項小計
+            </summary>
+        </member>
+        <member name="F:Sci.Utility.Excel.SaveDataToExcel.MyPivotField.SubtotalEnum.None">
+            <summary>
+            不指定
+            </summary>
+        </member>
+        <member name="F:Sci.Utility.Excel.SaveDataToExcel.MyPivotField.SubtotalEnum.Open">
+            <summary>
+            顯示各項小計
+            </summary>
+        </member>
+        <member name="F:Sci.Utility.Excel.SaveDataToExcel.MyPivotField.SubtotalEnum.Close">
+            <summary>
+            不顯示各項小計
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveDataToExcel.MyPivotField.FieldName">
+            <summary>
+            Field name
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveDataToExcel.MyPivotField.XlFieldType">
+            <summary>
+            enum XlPivotFieldOrientation : 樞紐分析表欄位的位置，X、Y、Data、篩選欄位...等
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveDataToExcel.MyPivotField.XlFieldFn">
+            <summary>
+            enum XlConsolidationFunction : 樞紐分析表欄位計算方式，sum、avg、max、min...等
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveDataToExcel.MyPivotField.SelectItem">
+            <summary>
+            list of select item
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveDataToExcel.MyPivotField.XlSubtotal">
+            <summary>
+            enum subtotal : 是否要顯示各項小計
+            </summary>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveDataToExcel.MyPivotField.#ctor(System.String,System.Int32,System.Int32,System.String,System.Int32)">
+            <summary>
+            MyPivotField 建構式
+            </summary>
+            <param name="fieldName"> field name</param>
+            <param name="xlFieldType">Hidden = 0 ,RowField = 1 ,ColumnField = 2 ,PageField = 3 ,DataField = 4</param>
+            <param name="xlFieldFn">Unknown = 0 ,Sum = 1 ,Min = 2 ,Max = 3 ,Average = 4</param>
+            <param name="selectItems"> select items </param>
+            <param name="xlSubtotal"> 是否要顯示各項小計 None = 0, Open = 1, Close = 2 </param>
+        </member>
+        <member name="T:Sci.Utility.Excel.SaveDataToExcel.PivotSheet">
+            <summary>
+            class for excel pivot sheet
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveDataToExcel.PivotSheet.SheetName">
+            <summary>
+            sheet name
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveDataToExcel.PivotSheet.LisMyField">
+            <summary>
+            list of MyPivotField
+            </summary>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveDataToExcel.PivotSheet.#ctor(System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Construct with parameters
+            </summary>
+            <param name="sheetName"> set this sheet name </param>
+            <param name="rowField"> pivot row field </param>
+            <param name="columnField"> pivot column field</param>
+            <param name="pageField"> pivot page field</param>
+            <param name="dataField"> pivot data field </param>
+        </member>
+        <member name="T:Sci.Utility.Excel.SaveXltReportCls">
+            <summary>
+            Edward : 由範本儲存成報表
+                 create : 2016-05-09 16:20:00
+                 Step1.新增範本檔案，可多個Sheet、或指定某幾個Sheet需要Copy
+                 Step2.新增傳入之變數
+                 Step3.Save()
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.dicDatas">
+            <summary>
+            dictionary of report content, key : some special tag in xlt start with _v,  value some common class or internal class
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.DicDatas">
+            <summary>
+            dictionary of report content, key : some special tag in xlt start with _v,  value some common class or internal class
+            </summary>
+        </member>
+        <member name="T:Sci.Utility.Excel.SaveXltReportCls.ReplaceAction">
+            <summary>
+            delegate for replace action, for some customized action
+            </summary>
+            <param name="oSheet"> for work sheet </param>
+            <param name="rowNo"> for row index </param>
+            <param name="columnNo"> for column index </param>
+        </member>
+        <member name="T:Sci.Utility.Excel.SaveXltReportCls.DgActionAfterFillData">
+            <summary>
+            delegate for some action after fill data, before save file.
+            </summary>
+            <param name="oSheets"> for work sheet </param>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.ActionAfterFillData">
+            <summary>
+            delegate DgActionAfterFillData method.
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls._v">
+            <summary>
+            report variable prefix.
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.VPrefix">
+            <summary>
+            report variable prefix.
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.CRPrefix">
+            <summary>
+            report Copy range variable prefix.
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.CopySheet">
+            <summary>
+            copy sheet, key: target index of worksheets , value: copy count
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.CopySheets">
+            <summary>
+            copy sheet, key: target index of worksheets by string , value: copy count
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.VarToSheetName">
+            <summary>
+            someone variable for sheet name
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.isProtect">
+            <summary>
+            file is protect or not.
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.IsProtect">
+            <summary>
+            file is protect or not.
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.ProtectPass">
+            <summary>
+            protect passward
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.boOpenFile">
+            <summary>
+            open file after save
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.BoOpenFile">
+            <summary>
+            open file after save
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.AddPrintRange">
+            <summary>
+            add print range for print
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.AllowRangeTransferToString">
+            <summary>
+            allow excel column transfer to string foramt
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.FontName">
+            <summary>
+            set excel font name.
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.FontSize">
+            <summary>
+            set excel font size.
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.SetPrinterAtLocal">
+            <summary>
+            設定預設印表機為空，用以避開遠端連線時因為共享印表機而導致工廠端回抓Terminal的印表機產生額外時間差異
+            </summary>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveXltReportCls.FindWindow(System.String,System.String)">
+            <summary>
+            find windows
+            </summary>
+            <param name="lpClassName"> Class name </param>
+            <param name="lpWindowName"> Window name </param>
+            <returns> IntPtr </returns>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveXltReportCls.SetForegroundWindow(System.IntPtr)">
+            <summary>
+            Set window foreground
+            </summary>
+            <param name="hWnd"> IntPtr </param>
+            <returns> execute success or not </returns>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.ExcelApp">
+            <summary>
+            excel application, be carefully use.
+            </summary>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveXltReportCls.#ctor(System.String,System.Boolean,System.Boolean,System.String)">
+            <summary>
+            construct with parameters
+            </summary>
+            <param name="xltPath"> xlt file path </param>
+            <param name="isProtect"> file is protect or not </param>
+            <param name="keepApp"> keep application after save() </param>
+            <param name="prefix"> save file name prefix </param>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveXltReportCls.#ctor(System.Boolean,System.Boolean,System.String)">
+            <summary>
+            construct with parameter
+            </summary>
+            <param name="isProtect"> file is protect or not </param>
+            <param name="keepApp"> keep application after save() </param>
+            <param name="prefix"> save file name prefix </param>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveXltReportCls.DoCopy(Microsoft.Office.Interop.Excel.Workbook,Microsoft.Office.Interop.Excel.Worksheet)">
+            <summary>
+            copy sheet
+            </summary>
+            <param name="oWB"> excel work book </param>
+            <param name="oSheet"> excel work sheet </param>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveXltReportCls.SetDefaultPrinter(System.String)">
+            <summary>
+            set default printer
+            </summary>
+            <param name="Name"> return name </param>
+            <returns> success or not </returns>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveXltReportCls.Save(System.String,System.Boolean)">
+            <summary>
+            SaveXltReportCls的最後步驟，若前方沒有把ExcelApp接起來的話，則會自行回收
+            </summary>
+            <param name="path"> 儲存路徑 </param>
+            <param name="addHead"> add datatable header </param>
+            <returns> save success or not </returns>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveXltReportCls.FinishSave">
+            <summary>
+            在 Save 及 額外的Code結束後，對Excel Application的處理
+            </summary>
+            <returns> execute success or not </returns>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveXltReportCls.SaveToPrinter">
+            <summary>
+            SaveXltReportCls的最後步驟加上列印
+            </summary>
+            <returns> save success or not </returns>
+        </member>
+        <member name="T:Sci.Utility.Excel.SaveXltReportCls.XltImageString">
+            <summary>
+            Transfer string to Image
+            </summary>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveXltReportCls.XltImageString.#ctor(System.String)">
+            <summary>
+            Transfer string to Image
+            </summary>
+            <param name="text"> source text </param>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveXltReportCls.XltImageString.ToString">
+            <summary>
+            override ToString(): return source text
+            </summary>
+            <returns> return source text </returns>
+        </member>
+        <member name="T:Sci.Utility.Excel.SaveXltReportCls.xltImageString">
+            <summary>
+            Transfer string to Image
+            </summary>
+        </member>
+        <member name="T:Sci.Utility.Excel.SaveXltReportCls.XltLongString">
+            <summary>
+            split long string, use Graphics.MeasureString
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltLongString.Height">
+            <summary>
+            Height
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltLongString.Width">
+            <summary>
+            Width
+            </summary>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveXltReportCls.XltLongString.#ctor(System.String)">
+            <summary>
+            split long string, use Graphics.MeasureString
+            </summary>
+            <param name="text"> source text </param>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveXltReportCls.XltLongString.ToString">
+            <summary>
+            override ToString(): return source text
+            </summary>
+            <returns> return source text </returns>
+        </member>
+        <member name="T:Sci.Utility.Excel.SaveXltReportCls.xltLongString">
+            <summary>
+            split long string, use Graphics.MeasureString
+            </summary>
+        </member>
+        <member name="T:Sci.Utility.Excel.SaveXltReportCls.XltRptTable">
+            <summary>
+            Transfer datatable to customized table for class
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.ReportColumns">
+            <summary>
+            limit report column count.
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.ReportLeftHeader">
+            <summary>
+            row header
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.intUpBar">
+            <summary>
+            index of up separator bar
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.IntUpBar">
+            <summary>
+            index of up separator bar
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.intDownBar">
+            <summary>
+            index of down separator bar
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.IntDownBar">
+            <summary>
+            index of down separator bar
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.HaveTotal">
+            <summary>
+            have total column at last
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.HaveSeparator">
+            <summary>
+            have separator
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.Separator1">
+            <summary>
+            separator style
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.Separator2">
+            <summary>
+            separator style
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.ShowHeader">
+            <summary>
+            show header
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.boAddNewRow">
+            <summary>
+            加入Table的時候不自動加入Row，依照範本檔的Row數量為主
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.BoAddNewRow">
+            <summary>
+            加入Table的時候不自動加入Row，依照範本檔的Row數量為主
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.boAddFilter">
+            <summary>
+            加入第一行篩選
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.BoAddFilter">
+            <summary>
+            加入第一行篩選
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.boFreezePanes">
+            <summary>
+            加入第一行凍結窗格
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.BoFreezePanes">
+            <summary>
+            加入第一行凍結窗格
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.intFreezeColumn">
+            <summary>
+            freeze index of column
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.IntFreezeColumn">
+            <summary>
+            freeze index of column
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.boTitleBold">
+            <summary>
+            加入第一行粗體
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.BoTitleBold">
+            <summary>
+            加入第一行粗體
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.boAutoFitColumn">
+            <summary>
+            自動欄寬
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.BoAutoFitColumn">
+            <summary>
+            自動欄寬
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.boAutoFitRow">
+            <summary>
+            自動行高
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.BoAutoFitRow">
+            <summary>
+            自動行高
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.lisColumnInfo">
+            <summary>
+            Customized columns style.
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.LisColumnInfo">
+            <summary>
+            Customized columns style.
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.Borders">
+            <summary>
+            borders
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.TotalBorders">
+            <summary>
+            borders of total
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.HeaderColor">
+            <summary>
+            Set header color.
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.ContentColor">
+            <summary>
+            Set content color.
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.Font">
+            <summary>
+            set font
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.lisTitleMerge">
+            <summary>
+            KEY為合併後的名稱、Value為X,X，起始到結束的索引
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.LisTitleMerge">
+            <summary>
+            KEY為合併後的名稱、Value為X,X，起始到結束的索引
+            </summary>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.#ctor">
+            <summary>
+            Construct
+            </summary>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.#ctor(System.Data.DataTable)">
+            <summary>
+            Construce with parameter
+            </summary>
+            <param name="dt"> source datatable </param>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.#ctor(System.Data.DataTable,System.Int32,System.Int32,System.Boolean,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Construce with parameter
+            </summary>
+            <param name="dt"> source datatable </param>
+            <param name="intUpBar"> up bar index </param>
+            <param name="intDownBar"> down bar index </param>
+            <param name="haveTotal"> have totle column at last </param>
+            <param name="reportColumns"> limit report column count </param>
+            <param name="reportLeftHeader"> row header </param>
+            <param name="haveSeparator"> have separator </param>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.#ctor(System.Data.DataTable,System.Boolean,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Construce with parameter
+            </summary>
+            <param name="dt"> source datatable </param>
+            <param name="haveTotal"> have totle column at last </param>
+            <param name="reportColumns"> limit report column count </param>
+            <param name="reportLeftHeader"> row header </param>
+            <param name="haveSeparator"> have separator </param>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.SetDataTable(System.Data.DataTable)">
+            <summary>
+            Set datatable to this class
+            </summary>
+            <param name="dt"> source table </param>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveXltReportCls.XltRptTable.DrawColor(Microsoft.Office.Interop.Excel.Range,System.Drawing.Color)">
+            <summary>
+            draw range color
+            </summary>
+            <param name="rg"> target range </param>
+            <param name="color"> color </param>
+        </member>
+        <member name="T:Sci.Utility.Excel.SaveXltReportCls.xltRptTable">
+            <summary>
+            Transfer datatable to customized table for class
+            </summary>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveXltReportCls.xltRptTable.#ctor">
+            <summary>
+            Construct
+            </summary>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveXltReportCls.xltRptTable.#ctor(System.Data.DataTable)">
+            <summary>
+            Construce with parameter
+            </summary>
+            <param name="dt"> source datatable </param>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveXltReportCls.xltRptTable.#ctor(System.Data.DataTable,System.Int32,System.Int32,System.Boolean,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Construce with parameter
+            </summary>
+            <param name="dt"> source datatable </param>
+            <param name="intUpBar"> up bar index </param>
+            <param name="intDownBar"> down bar index </param>
+            <param name="haveTotal"> have totle column at last </param>
+            <param name="reportColumns"> limit report column count </param>
+            <param name="reportLeftHeader"> row header </param>
+            <param name="haveSeparator"> have separator </param>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveXltReportCls.xltRptTable.#ctor(System.Data.DataTable,System.Boolean,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Construce with parameter
+            </summary>
+            <param name="dt"> source datatable </param>
+            <param name="haveTotal"> have totle column at last </param>
+            <param name="reportColumns"> limit report column count </param>
+            <param name="reportLeftHeader"> row header </param>
+            <param name="haveSeparator"> have separator </param>
+        </member>
+        <member name="T:Sci.Utility.Excel.SaveXltReportCls.XlsPrivateCommand">
+            <summary>
+            insert, delete row
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsPrivateCommand.UpDelete">
+            <summary>
+            delete up rows
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsPrivateCommand.UpInsert">
+            <summary>
+            insert up rows
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsPrivateCommand.DownDelete">
+            <summary>
+            delete down rows
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsPrivateCommand.DownInsert">
+            <summary>
+            insert down rows
+            </summary>
+        </member>
+        <member name="T:Sci.Utility.Excel.SaveXltReportCls.xlsPrivateCommand">
+            <summary>
+            insert, delete row
+            </summary>
+        </member>
+        <member name="T:Sci.Utility.Excel.SaveXltReportCls.XlsColumnInfo">
+            <summary>
+            Set color customized style
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsColumnInfo.ExlColumnName">
+            <summary>
+            excel column name : A,B,C,D,E...
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsColumnInfo.ExlIndex">
+            <summary>
+            excel index : 1,2,3,4,5...
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsColumnInfo.DtColumnName">
+            <summary>
+            datatable column name
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsColumnInfo.IsAutoFit">
+            <summary>
+            column auto fit
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsColumnInfo.IsAutoFitRows">
+            <summary>
+            column auto fix row
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsColumnInfo.IsAutoWrapText">
+            <summary>
+            column auto warp text
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsColumnInfo.ColumnWidth">
+            <summary>
+            column width
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsColumnInfo.Alignment">
+            <summary>
+            column horizontal alignment
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsColumnInfo.HeaderAlignment">
+            <summary>
+            column header horizontal alignment
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsColumnInfo.BodyAlignment">
+            <summary>
+            column body horizontal alignment
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsColumnInfo.VerticalAlignment">
+            <summary>
+            column vertical alignment
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsColumnInfo.HeaderVerticalAlignment">
+            <summary>
+            column header vertical alignment
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsColumnInfo.BodyVerticalAlignment">
+            <summary>
+            column body vertical alignment
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsColumnInfo.IsNumber">
+            <summary>
+            is number column or not
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsColumnInfo.Color">
+            <summary>
+            background color
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsColumnInfo.PointCnt">
+            <summary>
+            小數位數
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsColumnInfo.NumberFormate">
+            <summary>
+            excel number format
+            </summary>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveXltReportCls.XlsColumnInfo.#ctor(System.Int32)">
+            <summary>
+            construct for excel column index
+            </summary>
+            <param name="index"> excel column index </param>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveXltReportCls.XlsColumnInfo.#ctor(System.String)">
+            <summary>
+            construct for excel column name
+            </summary>
+            <param name="columnName"> excel column name </param>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveXltReportCls.XlsColumnInfo.#ctor(System.Int32,System.Boolean,System.Int32,Microsoft.Office.Interop.Excel.XlHAlign)">
+            <summary>
+            construct with some setting
+            </summary>
+            <param name="index"> excel column index </param>
+            <param name="isAutoFit"> column auto fit </param>
+            <param name="columnWidth"> column width </param>
+            <param name="alignment"> column horizontal alignment </param>
+        </member>
+        <member name="T:Sci.Utility.Excel.SaveXltReportCls.xlsColumnInfo">
+            <summary>
+            Set color customized style
+            </summary>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveXltReportCls.xlsColumnInfo.#ctor(System.Int32)">
+            <summary>
+            construct for excel column index
+            </summary>
+            <param name="index"> excel column index </param>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveXltReportCls.xlsColumnInfo.#ctor(System.String)">
+            <summary>
+            construct for excel column name
+            </summary>
+            <param name="columnName"> excel column name </param>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveXltReportCls.xlsColumnInfo.#ctor(System.Int32,System.Boolean,System.Int32,Microsoft.Office.Interop.Excel.XlHAlign)">
+            <summary>
+            construct with some setting
+            </summary>
+            <param name="index"> excel column index </param>
+            <param name="isAutoFit"> column auto fit </param>
+            <param name="columnWidth"> column width </param>
+            <param name="alignment"> column horizontal alignment </param>
+        </member>
+        <member name="T:Sci.Utility.Excel.SaveXltReportCls.XlsRangeIndex">
+            <summary>
+            get Range index, and array of value2
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsRangeIndex.SCol">
+            <summary>
+            start column index
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsRangeIndex.ECol">
+            <summary>
+            end column index
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsRangeIndex.SRow">
+            <summary>
+            start row index
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsRangeIndex.ERow">
+            <summary>
+            end row index
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsRangeIndex.RowCount">
+            <summary>
+            row count
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsRangeIndex.ColumnCount">
+            <summary>
+            column count
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsRangeIndex.Range">
+            <summary>
+            range
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsRangeIndex.Header">
+            <summary>
+            header range
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsRangeIndex.Content">
+            <summary>
+            content range
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsRangeIndex.ArrayDT">
+            <summary>
+            array of value2
+            </summary>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveXltReportCls.XlsRangeIndex.#ctor(Microsoft.Office.Interop.Excel.Range)">
+            <summary>
+            construct with parameter, default
+            </summary>
+            <param name="rg"> source range </param>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveXltReportCls.XlsRangeIndex.#ctor(Microsoft.Office.Interop.Excel.Range,System.Int32)">
+            <summary>
+            construct with parameter, range with merge
+            </summary>
+            <param name="rg"> source range </param>
+            <param name="headMergeCount"> how much merge count of range head </param>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveXltReportCls.XlsRangeIndex.#ctor(Microsoft.Office.Interop.Excel.Worksheet)">
+            <summary>
+            construct with parameter, worksheet
+            </summary>
+            <param name="oSheet"> excel work sheet </param>
+        </member>
+        <member name="T:Sci.Utility.Excel.SaveXltReportCls.XlsBorderscls">
+            <summary>
+            class for set borders
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsBorderscls.AllCellsBorders">
+            <summary>
+            all cells set borders
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsBorderscls.OnlyHeaderBorders">
+            <summary>
+            only header set borders
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsBorderscls.OnlyOuterBorders">
+            <summary>
+            only outer set borders
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsBorderscls.InsideVertical">
+            <summary>
+            indide vertical set borders
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsBorderscls.OutsideVertical">
+            <summary>
+            outside vertical set borders
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsBorderscls.DependOnColumn">
+            <summary>
+            set borders depend on some column.
+            </summary>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveXltReportCls.XlsBorderscls.DrawBorder(Sci.Utility.Excel.SaveXltReportCls.XlsRangeIndex)">
+            <summary>
+            draw borders
+            </summary>
+            <param name="xri"> some range </param>
+        </member>
+        <member name="T:Sci.Utility.Excel.SaveXltReportCls.XlsTotalBorderscls">
+            <summary>
+            class for set total borders
+            </summary>
+        </member>
+        <member name="P:Sci.Utility.Excel.SaveXltReportCls.XlsTotalBorderscls.DependOnColumn">
+            <summary>
+            set borders depend on some column.
+            </summary>
+        </member>
+        <member name="M:Sci.Utility.Excel.SaveXltReportCls.XlsTotalBorderscls.DrawBorder(Sci.Utility.Excel.SaveXltReportCls.XlsRangeIndex)">
+            <summary>
+            draw borders
+            </summary>
+            <param name="xri"> some range </param>
+        </member>
+        <member name="P:Sci.Utility.WaitPanel.MaxWidth">
+            <summary>
+            WaitingPanel的最大寬度限制，預設為200
+            </summary>
+        </member>
+        <member name="M:Sci.Utility.Word.SaveDotReportCls.OpenFile(System.String)">
+            <summary>
+            Edward : 執行檔案
+                 create : 2016-04-20 15:27:00
+            </summary>
+            <param name="Path"></param>
+        </member>
+        <member name="T:Sci.WaitPanelExtension">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Sci.WaitPanelExtension.ShowWaitMessage(System.Windows.Forms.Form,System.String,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="frm"></param>
+            <param name="message"></param>
+            <param name="delaySaperateMs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.WaitPanelExtension.HideWaitMessage(System.Windows.Forms.Form)">
+            <summary>
+            
+            </summary>
+            <param name="frm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.WaitPanelExtension.SetWaitMessageAlignment(System.Windows.Forms.Form,System.Nullable{System.Drawing.ContentAlignment})">
+            <summary>
+            
+            </summary>
+            <param name="frm"></param>
+            <param name="align"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sci.WaitPanelExtension.SetWaitMessageMaxWidth(System.Windows.Forms.Form,System.Nullable{System.Int32})">
+            <summary>
+            最大顯示寬度，原始值為200，不指定maxWidth或是給null，會還原為預設值200
+            </summary>
+            <param name="frm"></param>
+            <param name="maxWidth"></param>
+            <returns></returns>
+        </member>
+        <member name="F:Sci.Win.UI.ConnectSelection.components">
+            <summary>
+            設計工具所需的變數。
+            </summary>
+        </member>
+        <member name="M:Sci.Win.UI.ConnectSelection.Dispose(System.Boolean)">
+            <summary>
+            清除任何使用中的資源。
+            </summary>
+            <param name="disposing">如果應該處置 Managed 資源則為 true，否則為 false。</param>
+        </member>
+        <member name="M:Sci.Win.UI.ConnectSelection.InitializeComponent">
+            <summary>
+            此為設計工具支援所需的方法 - 請勿使用程式碼編輯器
+            修改這個方法的內容。
+            </summary>
+        </member>
+        <member name="F:Sci.Win.UI.EditBox_4Grid.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Sci.Win.UI.EditBox_4Grid.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Sci.Win.UI.EditBox_4Grid.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:Sci.Win.UI.ImportFromExcel">
+            <summary>
+            ImportFromExcel
+            </summary>
+        </member>
+        <member name="M:Sci.Win.UI.ImportFromExcel.#ctor">
+            <summary>
+            ImportFromExcel
+            </summary>
+        </member>
+        <member name="F:Sci.Win.UI.ImportFromExcel.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Sci.Win.UI.ImportFromExcel.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Sci.Win.UI.ImportFromExcel.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:Sci.Win.UI.MsgFlowView.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Sci.Win.UI.MsgFlowView.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Sci.Win.UI.MsgFlowView.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:Sci.Win.UI.MsgShow.components">
+            <summary>
+            設計工具所需的變數。
+            </summary>
+        </member>
+        <member name="M:Sci.Win.UI.MsgShow.Dispose(System.Boolean)">
+            <summary>
+            清除任何使用中的資源。
+            </summary>
+            <param name="disposing">如果應該處置 Managed 資源則為 true，否則為 false。</param>
+        </member>
+        <member name="M:Sci.Win.UI.MsgShow.InitializeComponent">
+            <summary>
+            此為設計工具支援所需的方法 - 請勿使用程式碼編輯器
+            修改這個方法的內容。
+            </summary>
+        </member>
+        <member name="F:Sci.Win.UI.ChangeMemo.components">
+            <summary>
+            設計工具所需的變數。
+            </summary>
+        </member>
+        <member name="M:Sci.Win.UI.ChangeMemo.Dispose(System.Boolean)">
+            <summary>
+            清除任何使用中的資源。
+            </summary>
+            <param name="disposing">如果應該處置 Managed 資源則為 true，否則為 false。</param>
+        </member>
+        <member name="M:Sci.Win.UI.ChangeMemo.InitializeComponent">
+            <summary>
+            此為設計工具支援所需的方法 - 請勿使用程式碼編輯器
+            修改這個方法的內容。
+            </summary>
+        </member>
+        <member name="M:Sci.Win.UI.GridFilter.AddMenuToPopupGridFilter(Sci.Win.Forms.Base,Sci.Win.UI.Grid,System.Windows.Forms.ContextMenuStrip,System.String)">
+            <summary>
+            增加用來篩選 Grid資料的Menu ( menu click後 show form去做控制篩選 )
+            <para> -可在 form 的Constructor執行 , 放置在 InitializeComponent() 之後</para>
+            <para> -也可放在 form 的SetGrid1Menus執行 </para>
+            <para> @limitFilters :</para>
+            <para> - 給 null 或是空字串代表不限定, 所有的欄位都可篩選</para>
+            <para> - 給 "poid,factoryid"代表只篩選 poid和factoryid 這兩個column</para>
+            </summary>
+            <param name="form"></param>
+            <param name="bindGrid">要控制篩選的Grid</param>
+            <param name="menu">用來 append menu的Grid menu</param>
+            <param name="limitFilters">如果只想限定特定欄位要做篩選
+            <para> - 給 null 或是空字串代表不限定, 所有的欄位都可篩選</para>
+            <para> - 給 "poid,factoryid"代表只篩選 poid和factoryid 這兩個column</para></param>
+        </member>
+        <member name="F:Sci.Win.UI.GridFilter.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Sci.Win.UI.GridFilter.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Sci.Win.UI.GridFilter.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:Sci.Win.UI.MenuSetting.components">
+            <summary>
+            設計工具所需的變數。
+            </summary>
+        </member>
+        <member name="M:Sci.Win.UI.MenuSetting.Dispose(System.Boolean)">
+            <summary>
+            清除任何使用中的資源。
+            </summary>
+            <param name="disposing">如果應該處置 Managed 資源則為 true，否則為 false。</param>
+        </member>
+        <member name="M:Sci.Win.UI.MenuSetting.InitializeComponent">
+            <summary>
+            此為設計工具支援所需的方法 - 請勿使用程式碼編輯器
+            修改這個方法的內容。
+            </summary>
+        </member>
+        <member name="E:Sci.Win.UI.MsgGridForm.OnToExcel">
+            <summary>
+            提供外部覆寫 ToExcel 的方法
+            </summary>
+        </member>
+        <member name="F:Sci.Win.UI.MsgGridForm.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Sci.Win.UI.MsgGridForm.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Sci.Win.UI.MsgGridForm.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Sci.Win.UI.SelectReason.#ctor(System.String,System.Boolean)" -->
+        <member name="F:Sci.Win.UI.SelectReason.components">
+            <summary>
+            設計工具所需的變數。
+            </summary>
+        </member>
+        <member name="M:Sci.Win.UI.SelectReason.Dispose(System.Boolean)">
+            <summary>
+            清除任何使用中的資源。
+            </summary>
+            <param name="disposing">如果應該處置 Managed 資源則為 true，否則為 false。</param>
+        </member>
+        <member name="M:Sci.Win.UI.SelectReason.InitializeComponent">
+            <summary>
+            此為設計工具支援所需的方法 - 請勿使用程式碼編輯器
+            修改這個方法的內容。
+            </summary>
+        </member>
+        <member name="F:Sci.Win.UI.ShowHistory.components">
+            <summary>
+            設計工具所需的變數。
+            </summary>
+        </member>
+        <member name="M:Sci.Win.UI.ShowHistory.Dispose(System.Boolean)">
+            <summary>
+            清除任何使用中的資源。
+            </summary>
+            <param name="disposing">如果應該處置 Managed 資源則為 true，否則為 false。</param>
+        </member>
+        <member name="M:Sci.Win.UI.ShowHistory.InitializeComponent">
+            <summary>
+            此為設計工具支援所需的方法 - 請勿使用程式碼編輯器
+            修改這個方法的內容。
+            </summary>
+        </member>
+        <member name="T:Sci.Win.UI.StdReportSetting">
+            <summary>
+            StdReportSetting
+            </summary>
+        </member>
+        <member name="M:Sci.Win.UI.StdReportSetting.#ctor(System.Windows.Forms.ToolStripMenuItem)">
+            <summary>
+            StdReportSetting
+            </summary>
+            <param name="menuitem">menuitem</param>
+        </member>
+        <member name="M:Sci.Win.UI.StdReportSetting.OnGridSetup">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sci.Win.UI.StdReportSetting.OnDetailGridSetup">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sci.Win.UI.StdReportSetting.ClickSaveBefore">
+            <inheritdoc/>
+        </member>
+        <member name="F:Sci.Win.UI.StdReportSetting.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Sci.Win.UI.StdReportSetting.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Sci.Win.UI.StdReportSetting.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:Sci.Win.UI.StdScreenSetting.components">
+            <summary>
+            設計工具所需的變數。
+            </summary>
+        </member>
+        <member name="M:Sci.Win.UI.StdScreenSetting.Dispose(System.Boolean)">
+            <summary>
+            清除任何使用中的資源。
+            </summary>
+            <param name="disposing">如果應該處置 Managed 資源則為 true，否則為 false。</param>
+        </member>
+        <member name="M:Sci.Win.UI.StdScreenSetting.InitializeComponent">
+            <summary>
+            此為設計工具支援所需的方法 - 請勿使用程式碼編輯器
+            修改這個方法的內容。
+            </summary>
+        </member>
+        <member name="F:Sci.Win.UI.UserLastSetting.components">
+            <summary>
+            設計工具所需的變數。
+            </summary>
+        </member>
+        <member name="M:Sci.Win.UI.UserLastSetting.Dispose(System.Boolean)">
+            <summary>
+            清除任何使用中的資源。
+            </summary>
+            <param name="disposing">如果應該處置 Managed 資源則為 true，否則為 false。</param>
+        </member>
+        <member name="M:Sci.Win.UI.UserLastSetting.InitializeComponent">
+            <summary>
+            此為設計工具支援所需的方法 - 請勿使用程式碼編輯器
+            修改這個方法的內容。
+            </summary>
+        </member>
+        <member name="F:Sci.Win.UI.UserScreenSetting.components">
+            <summary>
+            設計工具所需的變數。
+            </summary>
+        </member>
+        <member name="M:Sci.Win.UI.UserScreenSetting.Dispose(System.Boolean)">
+            <summary>
+            清除任何使用中的資源。
+            </summary>
+            <param name="disposing">如果應該處置 Managed 資源則為 true，否則為 false。</param>
+        </member>
+        <member name="M:Sci.Win.UI.UserScreenSetting.InitializeComponent">
+            <summary>
+            此為設計工具支援所需的方法 - 請勿使用程式碼編輯器
+            修改這個方法的內容。
+            </summary>
+        </member>
+    </members>
+</doc>

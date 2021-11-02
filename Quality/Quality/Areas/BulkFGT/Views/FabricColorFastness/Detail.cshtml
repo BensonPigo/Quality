@@ -1,0 +1,1072 @@
+﻿@using DatabaseObject.ViewModel.BulkFGT;
+
+@{
+    ViewBag.Title = "Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/ThirdParty/plugins/Tabs/nicepage.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/Tabs/nicepage.js"></script>
+
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+<link href="~/ThirdParty/plugins/jquery-ui/jquery-ui.css" rel="stylesheet" />
+
+@model Fabric_ColorFastness_Detail_ViewModel
+
+<style type="text/css">
+    #ButtonMode {
+        width: 92vw;
+    }
+
+
+    .DataTable {
+        width: 92vw;
+        font-size: 1rem;
+        font-weight: bold;
+        border: solid 1px black;
+        background-color: white;
+    }
+
+        .DataTable > tbody > tr:nth-of-type(odd) {
+            background-color: #ffffff;
+        }
+
+        .DataTable > tbody > tr:nth-of-type(even) {
+            background-color: #F0F2F2;
+        }
+
+        .DataTable > tbody > tr > td {
+            border: solid 1px gray;
+            padding: 1em;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+    .White {
+        color: white !important;
+    }
+
+    .Black {
+        color: black !important;
+    }
+
+    .IsEditMode {
+        color: white !important;
+        cursor: pointer;
+    }
+
+    .IsEditModeQuery {
+        color: gray !important;
+        cursor: no-drop;
+    }
+
+    .bigSize {
+        width: 3em;
+        height: 2em;
+    }
+
+    .ReportAction {
+        width: 29vw;
+        height: 29vh;
+        position: absolute;
+        left: 30vw;
+        top: 19vh;
+        z-index: 1042;
+        background-color: #c8eac8;
+        border: solid 1px black;
+        font-size: 1.4em;
+        font-weight: bold;
+    }
+
+        .ReportAction > table > tbody > tr > td {
+            padding: 0.5em;
+        }
+
+            .ReportAction > table > tbody > tr > td > input[type=button] {
+                cursor: pointer;
+            }
+
+    .DataTable select {
+        width: 100%;
+        font-size: 1.2em;
+    }
+</style>
+
+
+<div class="main-content">
+    <header class="page-header">
+        <h3>
+            <i class="icon-users"></i><span>Fabric Color Fastness</span>
+        </h3>
+        <div class="breadcrumb">
+            <div>Home</div>
+            <div>Fabric Color Fastness</div>
+            <div class="current">Detail</div>
+        </div>
+    </header>
+
+    <div class="main-area">
+        <div class="content-scroll">
+            <div class="inner-scroll">
+                @using (Html.BeginForm("DetailSave", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { id = "DetailForm" }))
+                {
+                <div style="margin-top: 1em;">
+                    <table id="ButtonMode">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <h4 id="Exit" style=" margin-right: 1em;width:5vw ">
+                                        <a href="@Url.Action("IndexBack", "FabricColorFastness", new { POID = Model.Main.POID})">
+                                            <img src="~/Image/Icon/Exit.png" width="30" />
+                                            Exit
+                                        </a>
+                                    </h4>
+                                </td>
+                                <td>
+                                    <h4 id="Edit" style=" margin-right: 1em;; width: 5vw">
+                                        <img src="~/Image/Icon/Edit.png" width="30" />
+                                        Edit
+                                    </h4>
+                                </td>
+                                <td>
+                                    <h4 id="Save" style=" margin-right: 1em; width: 6vw">
+                                        <img src="~/Image/Icon/Save.png" width="30" />
+                                        Save
+                                    </h4>
+                                </td>
+                                <td>
+                                    <h4 id="Encode" style=" margin-right: 1em; width: 7vw;">
+                                        <img src="~/Image/Icon/Lock.png" width="30" />
+                                        Encode
+                                    </h4>
+                                </td>
+                                <td>
+                                    <h4 id="Amend" style=" margin-right: 1em; width: 7vw;">
+                                        <img src="~/Image/Icon/Unlock.png" width="30" />
+                                        Amend
+                                    </h4>
+                                </td>
+                                <td>
+                                    <h4 id="Excel" style=" margin-right: 1em; width: 6vw;">
+                                        <img src="~/Image/Icon/XLS.png" width="30" />
+                                        Excel
+                                    </h4>
+                                </td>
+                                <td>
+                                    <h4 id="PDF" style=" margin-right: 1em; width: 5vw;">
+                                        <img src="~/Image/Icon/PDF.png" width="30" />
+                                        PDF
+                                    </h4>
+                                </td>
+                                <td>
+                                    <h4 id="Picture" style=" margin-right: 1em; width: 7vw;">
+                                        <img src="~/Image/Icon/Camera.png" width="30" />
+                                        Picture
+                                    </h4>
+                                </td>
+                                <td style="width: 20%;">
+                                </td>
+                                <td>
+                                    <h4 id="New">
+                                        <img src="~/Image/Icon/New.png" width="30" />
+                                        New Item
+                                    </h4>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="margin-top: 1em;">
+                    <table class="DataTable">
+                        <tbody>
+                            <tr>
+                                <td style="width: 10vw;"><h5>No of Test#</h5></td>
+                                <td style="width: 20vw;">
+                                
+                                    <label>@Model.Main.TestNo</label>
+                                    @Html.HiddenFor(o => o.Main.TestNo)
+                                    @Html.HiddenFor(o => o.Main.ID)
+
+                                </td>
+                                <td style="width: 10vw;"><h5>SP#</h5></td>
+                                <td>
+                                    @Html.DisplayFor(o => o.Main.POID)
+                                    @Html.HiddenFor(o => o.Main.POID)
+                                </td>
+
+                                <td style="width: 10vw;"><h5>TestDate</h5></td>
+
+                                <td style="width: 15vw;">
+                                    @Html.TextBoxFor(o => Model.Main.InspDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><h5>Article</h5></td>
+                                <td>
+                                    @Html.TextBoxFor(o => Model.Main.Article, "", new { @style = "width: 12vw" })
+                                    <input id="btnDetailArticleSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                </td>
+                                <td><h5>Inspector</h5></td>
+                                <td>
+                                    @Html.TextBoxFor(o => Model.Main.Inspector, "", new { @style = "width: 7vw" })
+                                    @Html.TextBoxFor(o => Model.Main.InspectionName, "", new { @readonly = "readonly", @style = "width: 8vw" })
+
+                                    <input id="btnDetailInspectorSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                </td>
+
+                                <td><h5>Temperature(˚C)</h5></td>
+                                <td>
+                                    <select id="Main_Temperature" name="Main.Temperature">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.Temperature_List)
+                                        {
+                                            string selected = item.Text.Equals(Model.Main.Temperature.ToString()) ? "selected" : "";
+                                            <option value="@item.Value" @selected>@item.Text</option>
+                                        }
+                                    </select>                                                                       
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><h5>Cycle</h5></td>
+                                <td>
+                                    <select id="Main_Cycle" name="Main.Cycle">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.Cycle_List)
+                                        {
+                                            string selected = item.Text.Equals(Model.Main.Cycle.ToString()) ? "selected" : "";
+                                            <option value="@item.Value" @selected>@item.Text</option>
+                                        }
+                                    </select>
+                                </td>
+
+                                <td><h5>Cycle Time (min)</h5></td>
+                                <td>
+                                    <select id="Main_CycleTime" name="Main.CycleTime">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.CycleTime_List)
+                                        {
+                                            string selected = item.Text.Equals(Model.Main.CycleTime.ToString()) ? "selected" : "";
+                                            <option value="@item.Value" @selected>@item.Text</option>
+                                        }
+                                    </select>
+                                </td>
+                                <td><h5>Detergent</h5></td>
+                                <td>
+                                    <select id="Main_Detergent" name="Main.Detergent">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.Detergent_List)
+                                        {
+                                            string Detergent = Model.Main.Detergent == null ? string.Empty : Model.Main.Detergent.ToString();
+                                            string selected = item.Text.Equals(Detergent) ? "selected" : "";
+                                            <option value="@item.Value" @selected>@item.Text</option>
+                                        }
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+
+                                <td><h5>Machine Used</h5></td>
+                                <td>
+                                    <select id="Main_Machine" name="Main.Machine">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.Machine_List)
+                                        {
+                                            string Machine = Model.Main.Machine == null ? string.Empty : Model.Main.Machine.ToString();
+                                            string selected = item.Text.Equals(Machine) ? "selected" : "";
+                                            <option value="@item.Value" @selected>@item.Text</option>
+                                        }
+                                    </select>
+                                </td>
+                                <td><h5>Drying Process</h5></td>
+                                <td>
+                                    <select id="Main_Drying" name="Main.Drying">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.Drying_List)
+                                        {
+                                            string Drying = Model.Main.Drying == null ? string.Empty : Model.Main.Drying.ToString();
+                                            string selected = item.Text.Equals(Drying) ? "selected" : "";
+                                            <option value="@item.Value" @selected>@item.Text</option>
+                                        }
+                                    </select>
+                                </td>
+                                @{
+                                    string ResultColor = Model.Main.Result == "Pass" ? "blue" : "red";
+                                }
+                                <td><h5>Result</h5></td>
+                                <td class="@ResultColor">
+                                    @Html.DisplayFor(o => o.Main.Result, "", "")
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><h5>Remark</h5></td>
+                                <td colspan="5">
+                                    @Html.TextBoxFor(o => o.Main.Remark, "", new { @style="width:100%"})
+                                    @Html.HiddenFor(o => o.Main.TestBeforePicture)
+                                    @Html.HiddenFor(o => o.Main.TestAfterPicture)
+                                    @Html.HiddenFor(o => o.Main.Status)
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="margin-top: 1em; width: 92vw; overflow:auto;">
+                    <table class="DetailTable DataTable" style='width:271vw'>
+                        <thead>
+                            <tr>
+
+                                <th><h4>Submit Date</h4></th>
+                                <th><h4>Body</h4></th>
+                                <th><h4>SEQ#</h4></th>
+                                <th><h4>Roll#</h4></th>
+                                <th><h4>Dyelot</h4></th>
+                                <th><h4>Refno</h4></th>
+                                <th><h4>SCI Refno</h4></th>
+                                <th><h4>Color</h4></th>
+                                <th><h4>Result</h4></th>
+                                <th><h4>Color Change Scale</h4></th>
+                                <th><h4>Result (Change)</h4></th>
+                                <th><h4>Color Staining Scale</h4></th>
+                                <th><h4>Result (Staining)</h4></th>
+                                <th><h4>Remark</h4></th>
+                                <th><h4>LastUpdate</h4></th>
+                                <th><h4></h4></th>
+                            </tr>
+
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i <= Model.Detail.Count - 1; i++)
+                                {
+                            <tr>
+                                <td style="width:10vw;">
+                                    <input id='Seq@{@i}' idx='@i' type='hidden'>
+                                    @Html.HiddenFor(o => o.Detail[i].ID)
+                                    @Html.TextBoxFor(o => Model.Detail[i].SubmitDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
+                                </td>
+                                <td style="width:10vw;">
+                                    @Html.TextBoxFor(o => Model.Detail[i].ColorFastnessGroup, "", new { @maxlength = "2", @type = "number", @step = "1", @min = "0", @max = "99", @oninput = "value=OvenGroupCheck(value)" })
+                                </td>
+                                <td style="width:11vw;">
+                                    <div style="width:10vw;">
+                                        @Html.HiddenFor(o => o.Detail[i].SEQ1)
+                                        @Html.HiddenFor(o => o.Detail[i].SEQ2)
+                                        @Html.TextBoxFor(o => Model.Detail[i].Seq, "", new { @style = "width:6vw", @idv = (i.ToString()), @class = "InputDetailSEQSelectItem" })
+                                        <input id="btnDetailSEQSelectItem" idv=@(i.ToString()) type="button" class="btnDetailSEQSelectItem OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                    </div>
+
+                                </td>
+                                <td style="width:11vw;">
+                                    <div style="width:10vw;">
+                                        @Html.TextBoxFor(o => Model.Detail[i].Roll, "", new { @style = "width:6vw", @idv = (i.ToString()), @class = "InputDetailRollSelectItem" })
+                                        <input id="btnDetailRollSelectItem" idv=@(i.ToString()) type="button" class="btnDetailRollSelectItem OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                    </div>
+                                </td>
+
+                                <td style="width:10vw;">
+                                    @Html.TextBoxFor(o => Model.Detail[i].Dyelot, "", new { @readonly = "readonly" })
+                                </td>
+                                <td style="width:10vw;">
+                                    @Html.TextBoxFor(o => Model.Detail[i].Refno, "", new { @readonly = "readonly" })
+                                </td>
+                                <td style="width:10vw;">
+                                    @Html.TextBoxFor(o => Model.Detail[i].SCIRefno, "", new { @readonly = "readonly" })
+                                </td>
+                                <td style="width:10vw;">
+                                    @Html.TextBoxFor(o => Model.Detail[i].ColorID, "", new { @readonly = "readonly" })
+                                </td>
+                                @{
+                                    string detailResultColor = Model.Detail[i].Result == "Pass" ? "blue" : "red";
+                                }
+                                <td style="width:10vw;">
+                                    @Html.TextBoxFor(o => Model.Detail[i].Result, "", new { @class = detailResultColor, @readonly = "readonly" })
+                                </td>
+                                <td style="width:10vw;">
+                                    <select id="Detail_@{@i}__changeScale" name="Detail[@i].changeScale">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
+                                                {
+                                                    string selected = item.Text.Equals(Model.Detail[i].changeScale) ? "selected" : "";
+                                        <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                    </select>
+                                </td>
+                                <td style="width:10vw;">
+                                    @{
+                                        string styleColor = "red";
+                                        if (Model.Detail[i].ResultChange == "Pass")
+                                        {
+                                            styleColor = "blue";
+                                        }
+                                    }
+                                    <select id="Detail_@{@i}__ResultChange" name="Detail[@i].ResultChange" onchange='selectChange(this)' class="@styleColor">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.ResultChangeList)
+                                        {
+                                            string selected = item.Text.Equals(Model.Detail[i].ResultChange) ? "selected" : "";
+                                            <option value="@item.Value" @selected>@item.Text</option>
+                                        }
+                                    </select>
+
+                                </td>
+                                <td style="width:10vw;">
+                                    <select id="Detail_@{@i}__StainingScale" name="Detail[@i].StainingScale">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.StainingScaleList)
+                                                {
+                                                    string selected = item.Text.Equals(Model.Detail[i].StainingScale) ? "selected" : "";
+                                        <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                    </select>
+                                </td>
+                                <td style="width:10vw;">
+                                    @{
+                                        styleColor = "red";
+                                        if (Model.Detail[i].ResultStain == "Pass")
+                                        {
+                                            styleColor = "blue";
+                                        }
+                                    }
+                                    <select id="Detail_@{@i}__ResultStain" name="Detail[@i].ResultStain" onchange='selectChange(this)' class="@styleColor">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.ResultStainList)
+                                        {
+                                            string selected = item.Text.Equals(Model.Detail[i].ResultStain) ? "selected" : "";
+                                            <option value="@item.Value" @selected>@item.Text</option>
+                                        }
+                                    </select>
+                                </td>
+                                <td style="width:10vw;">
+                                    @Html.TextBoxFor(o => Model.Detail[i].Remark, "", "")
+                                </td>
+                                <td style="width:10vw;">
+                                    @Html.DisplayFor(o => Model.Detail[i].LastUpdate, "", "")
+                                </td>
+                                <td style="width:10vw;">
+                                    <div style="width:5vw;">
+                                        <img class="detailDelete" src="~/Image/Icon/Delete.png" width="30" />
+                                    </div>
+
+                                </td>
+
+                            </tr>
+                                }
+                        </tbody>
+                    </table>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var msg;
+
+    var EditMode;
+    $(function () {
+        msg = new MessagerAlert();
+        EditMode = ('@ViewBag.EditMode' == 'True');
+        @Html.Raw(Model.ErrorMessage)
+        IsEditModeChange();
+    });
+
+    function IsEditModeChange() {
+        EditModeButtionBind();
+
+        if (EditMode) {
+            $("#Edit, #Encode, #Amend, #Excel, #PDF").removeClass("IsEditMode");
+            $('#Save, #New').addClass("IsEditMode");
+            $(".DataTable input, .DataTable select").removeAttr("disabled");
+            $('#Encode, #Amend, #Excel, #PDF').unbind('click');
+            $(".DetailTable img").removeClass('display-None');
+            DetailButtonBind();
+            DetailDetailButtonBind();
+
+        }
+        else {
+            $(".DetailTable img").addClass('display-None');
+            $('#Save').unbind('click').removeClass("IsEditMode");
+            $(".DataTable input, .DataTable select").attr("disabled", "disabled");
+            $('#Excel, #PDF').addClass("IsEditMode");
+
+            if ($('#Main_Status').val() == "New") {
+                $('#Edit, #Encode').addClass("IsEditMode");
+                $('#Amend').unbind('click');
+            }
+            else {
+                $('#Edit, #Encode').unbind('click');
+            }
+
+            if ($('#Main_Status').val() == "Confirmed") {
+                $('#Amend').addClass("IsEditMode");
+            }
+        }
+
+        $('#Picture').addClass("IsEditMode");
+    }
+
+    function DetailButtonBind() {
+        $('#btnDetailArticleSelectItem').on('click', function () {
+            var para = "?OrderID=" + $('#Main_POID').val() + "&StyleUkey=0";
+            window.open('@Url.Action("ArticleList","PublicWondow",new{Area=""})' + para, 'Article', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        });
+
+        $('#btnDetailInspectorSelectItem').on('click', function () {
+            window.open('@Url.Action("Pass1List","PublicWondow",new{Area=""})', 'Inspector', config = 'toolbar=no,status=no,location=no,width=1000,height=650');
+        });
+
+        $('#Main_Article').blur(function () {
+            var OrderID = $('#Main_POID').val();
+            $.ajax({
+                url: "@Url.Action("ArticleList", "PublicWondow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ OrderID: OrderID, StyleUkey: 0, Article: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Main_Article").val('');
+                        msg.WithError('Article Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $('#Main_Inspector').blur(function () {
+            $.ajax({
+                url: "@Url.Action("Pass1List", "PublicWondow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Main_Inspector").val('');
+                        $("#Main_InspectionName").val('');
+                        msg.WithError('Inspector Not Found');
+                    }
+                    else {
+                        $("#Main_InspectionName").val(data[0].Name);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    }
+
+    function DetailDetailButtonBind() {
+
+        $('.btnDetailSEQSelectItem').unbind('click').on('click', function () {
+            var TargetID = $(this).attr("idv");
+            var para = "?POID=" + $('#Main_POID').val() + "&FabricType=F&TargetID=" + TargetID;
+            window.open('@Url.Action("Po_Supp_DetailList", "PublicWondow",new{Area=""})' + para, '', config = 'toolbar=no,status=no,location=no,width=1000,height=650');
+        });
+
+        $('.btnDetailRollSelectItem').unbind('click').on('click', function () {
+            var TargetID = $(this).attr("idv");
+            if ($("#Detail_" + TargetID + "__Seq").val() == '' || $("#Detail_" + TargetID + "__Seq").val() == undefined) {
+                msg.WithError('Please input SEQ# before choose Roll#.');
+                return;
+            }
+
+            var seq = $("#Detail_" + TargetID + "__Seq").val().split("-");
+            var para = "?Title=Roll&POID=" + $('#Main_POID').val() + "&Seq1=" + seq[0] + "&Seq2=" + seq[1] + "&TargetID=" + TargetID;
+            window.open('@Url.Action("FtyInventoryList", "PublicWondow",new{Area=""})' + para, '', config = 'toolbar=no,status=no,location=no,width=1000,height=650');
+        });
+
+        $('.InputDetailSEQSelectItem').unbind('blur').blur(function () {
+            var TargetID = $(this).attr("idv");
+            var POID = $('#Main_POID').val();
+
+            $.ajax({
+                url: "@Url.Action("Po_Supp_DetailList", "PublicWondow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ POID: POID, FabricType: 'F', Seq: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    var val = $("#Detail_" + TargetID + "__Seq").val();
+                    if (data.length == 0) {
+                        msg.WithError(`Cannot found Seq ${val}.`);
+                        $("#Detail_" + TargetID + "__Seq").val('');
+                        $("#Detail_" + TargetID + "__Refno").val('');
+                        $("#Detail_" + TargetID + "__SCIRefno").val('');
+                        $("#Detail_" + TargetID + "__ColorID").val('');
+                    }
+                    else {
+                        if (val == "") {
+                            $("#Detail_" + TargetID + "__Refno").val('');
+                            $("#Detail_" + TargetID + "__SCIRefno").val('');
+                            $("#Detail_" + TargetID + "__ColorID").val('');
+                        }
+                        else {
+                            $("#Detail_" + TargetID + "__Refno").val(data[0].Refno);
+                            $("#Detail_" + TargetID + "__SCIRefno").val(data[0].SCIRefno);
+                            $("#Detail_" + TargetID + "__ColorID").val(data[0].ColorID);
+                        }
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $('.InputDetailRollSelectItem').unbind('blur').blur(function () {
+
+            var TargetID = $(this).attr("idv");
+
+            if ($(this).val() == "") {
+                $("#Detail_" + TargetID + "__Dyelot").val('');
+                return;
+            }
+
+            if ($("#Detail_" + TargetID + "__Seq").val() == '' || $("#Detail_" + TargetID + "__Seq").val() == undefined) {
+                msg.WithError('Please input SEQ# before choose Roll#.');
+                return;
+            }
+
+            var seq = $("#Detail_" + TargetID + "__Seq").val().split("-");
+            var POID = $('#Main_POID').val();
+            var SEQ1 = seq[0];
+            var SEQ2 = seq[1];
+
+            $.ajax({
+                url: "@Url.Action("FtyInventoryList", "PublicWondow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ POID: POID, Seq1: SEQ1, Seq2: SEQ2, Roll: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+
+                    var val = $("#Detail_" + TargetID + "__Roll").val();
+
+                    if (data.length == 0) {
+
+                        msg.WithError(`Cannot found Roll# ${val}.`);
+
+                        $("#Detail_" + TargetID + "__Roll").val('');
+                        $("#Detail_" + TargetID + "__Dyelot").val('');
+                    }
+                    else {
+                        if (val == "") {
+                            $("#Detail_" + TargetID + "__Roll").val('');
+                            $("#Detail_" + TargetID + "__Dyelot").val('');
+                        }
+                        else {
+                            $("#Detail_" + TargetID + "__Roll").val(data[0].Roll);
+                            $("#Detail_" + TargetID + "__Dyelot").val(data[0].Dyelot);
+                        }
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $('.detailDelete').unbind('click').on('click', function () {
+            var t = $(this);
+            msg.WithConfirm('Do you want to delete the data ?',
+                function () {
+                    t.parents().parents('tr').remove();
+                    msg.WithSuccess("Delete Success");
+                }, null);
+        });
+    }
+
+    function EditModeButtionBind() {
+        $('#Edit').on('click', function () {
+            if ($('#Main_POID').val() == "") {
+                return;
+            }
+
+            EditMode = true;
+            IsEditModeChange();
+        });
+
+        $('#Save').on('click', function () {
+            if ($('#Main_Article').val() == "") {
+                msg.WithWarning("Article cannot be empty.");
+                return;
+            }
+
+            if ($('#Main_Inspector').val() == "") {
+                msg.WithWarning("Inspector cannot be empty.");
+                return;
+            }
+
+            if ($('#Main_InspDate').val() == "") {
+                msg.WithWarning("Test Date cannot be empty.");
+                return;
+            }
+
+            var detailMsg = "";
+            $('.DetailTable > tbody > tr').each(function (index, data) {
+                var idx = $(this).closest('tr').attr('idx');
+                if ($("#Detail_" + idx + "__Seq").val() == "") {
+                    detailMsg += "SEQ cannot be empty.";
+                    return false;
+                }
+
+                if ($("#Detail_" + idx + "__Roll").val() == "") {
+                    detailMsg += "Roll cannot be empty.";
+                    return false;
+                }
+
+                if ($("#Detail_" + idx + "__Dyelot").val() == "") {
+                    detailMsg += "Dyelot cannot be empty.";
+                    return false;
+                }
+            });
+
+            if (detailMsg != '') {
+                msg.WithWarning(detailMsg);
+                return false;
+            }
+
+            $('.DetailTable > tbody > tr').each(function (index, data) {
+                var idx = $(this).closest('tr').attr('idx');
+                if (idx != index) {
+                    $.each($(this).find("input[id^='Details']"), function () {
+                        var tableName = $(this).attr('name').substr(0, $(this).attr('name').indexOf("["));
+                        var rollName = $(this).attr('name').substr($(this).attr('name').indexOf("]") + 2, $(this).attr('name').length - $(this).attr('name').indexOf("]"));
+                        $(this).attr("id", tableName + "_" + index.toString() + "__" + rollName);
+                        $(this).attr("name", tableName + "[" + index.toString() + "]." + rollName);
+                    });
+
+                    $.each($(this).find("select[id^='Details']"), function () {
+                        var tableName = $(this).attr('name').substr(0, $(this).attr('name').indexOf("["));
+                        var rollName = $(this).attr('name').substr($(this).attr('name').indexOf("]") + 2, $(this).attr('name').length - $(this).attr('name').indexOf("]"));
+                        $(this).attr("id", tableName + "_" + index.toString() + "__" + rollName);
+                        $(this).attr("name", tableName + "[" + index.toString() + "]." + rollName);
+                    });
+                }
+            });
+
+            document.getElementById("DetailForm").submit();
+        });
+
+        $('#Picture').on('click', function () {
+            var para = "?Title=" + $('.page-header span').html() + "&EditMode=" + EditMode;
+            para += "&" + "Table=ColorFastness";
+            para += "&" + "BeforeColumn=TestBeforePicture";
+            para += "&" + "AfterColumn=TestAfterPicture";
+            para += "&" + "PKey_1=ID";
+            para += "&" + "PKey_1_Val=" + $('#Detail_ID').val();
+            window.open('@Url.Action("PictureList", "PublicWondow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1024,height=750');
+        });
+
+        $('#New').unbind('click').on('click', function () {
+            if ($('#Main_POID').val() == "") {
+                return;
+            }
+
+            if (!EditMode) {
+                return;
+            }
+
+            if ($('#Main_Status').val() != "New") {
+                return;
+            }
+
+            AddDetailRow();
+        });
+
+        $('#Encode').unbind('click').on('click', function () {
+            var detail = [];
+            var ErrMsg = "";
+            $('.DetailTable > tbody > tr').each(function (index, value) {
+
+                if (ErrMsg != "") {
+                    return false;
+                }
+
+                var Body, SEQ, Result;
+                var ChangeScale, StainingScale, ResultChange, ResultStain;
+                $(this).children().find("input[type='number']").each(function (index, value) {
+                    switch (index) {
+                        case 0:
+                            Body = $(this).val();
+                            break;
+                    }
+                })
+
+                $(this).children().find("input[type='text']").each(function (index, value) {
+                    switch (index) {
+                        case 1:
+                            SEQ = $(this).val();
+                            break;
+                        case 7:
+                            Result = $(this).val();
+                            break;
+                    }
+                })
+
+
+                $(this).children().find("select").each(function (index, value) {
+                    switch (index) {
+                        case 0:
+                            ChangeScale = $(this).children("option:selected").val();
+                            break;
+                        case 1:
+                            ResultChange = $(this).children("option:selected").val();
+                            break;
+                        case 2:
+                            StainingScale = $(this).children("option:selected").val();
+                            break;
+                        case 3:
+                            ResultStain = $(this).children("option:selected").val();
+                            break;
+                    }
+                })
+
+
+                if (Body == "" || Body == undefined) {
+                    ErrMsg += "Body cannot be empty.";
+                    return false;
+                }
+
+                if (SEQ == "" || SEQ == undefined) {
+                    ErrMsg += "Seq cannot be empty.";
+                    return false;
+                }
+
+                if (Result == "" || Result == undefined || ResultChange == "" || ResultChange == undefined || ResultStain == "" || ResultStain == undefined || ChangeScale == "" || ChangeScale == undefined || StainingScale == "" || StainingScale == undefined) {
+                    ErrMsg += "Color Change Scale, Color Staining Scale and Result cannot be empty.";
+                    return false;
+                }
+
+                detail.push({
+                    Body: Body,
+                    SEQ: SEQ,
+                    Result: Result,
+                    ChangeScale: ChangeScale,
+                    ResultChange: ResultChange,
+                    StainingScale: StainingScale,
+                    ResultStain: ResultStain
+                });
+
+
+            });
+
+            if (detail.length == 0 && ErrMsg == "") {
+                ErrMsg += "Data is empty please fill-in data first.";
+            }
+
+            if (ErrMsg != "") {
+                msg.WithError(ErrMsg);
+                return;
+            }
+
+            $.ajax({
+                url: "@Url.Action("Encode_Detail", "FabricColorFastness", new { Area = "BulkFGT" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID: $('#Main_ID').val(), Type: "Encode" }),
+                async: false,
+                success: function (data) {
+                    if (data.Result) {
+                        if (data.ColorFastnessResult == "Fail") {
+                            FailMail();
+                        }
+                        else {
+                            msg.WithSuccesCheck("Success", function () {
+                                location.reload();
+                            });
+                        }
+                    }
+                    else {
+                        msg.WithError(data.ErrorMessage);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+
+        });
+
+        $('#Amend').unbind('click').on('click', function () {
+            $.ajax({
+                url: "@Url.Action("Encode_Detail", "FabricColorFastness", new { Area = "BulkFGT" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID: $('#Main_ID').val(), Type: "Amend" }),
+                async: false,
+                success: function (data) {
+                    if (data.Result) {
+                        msg.WithSuccesCheck("Success", function () {
+                            location.reload();
+                        });
+                    }
+                    else {
+                        msg.WithError(data.ErrorMessage);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $('#Excel').unbind('click').on('click', function () {
+            ToReport(0);
+        });
+
+        $('#PDF').unbind('click').on('click', function () {
+            ToReport(1);
+        });
+    }
+
+    function ToReport(IsToPDF) {
+        $.ajax({
+            url: "@Url.Action("Report", "FabricColorFastness", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ ID: $('#Main_ID').val(), IsToPDF: IsToPDF }),
+            async: false,
+            success: function (data) {
+                if (data.Result) {
+                    window.location.href = data.reportPath;
+                }
+                else {
+                    msg.WithError(data.ErrorMessage);
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function FailMail() {
+        var para = "?Title=" + $('.page-header span').html() + "&FactoryID=@ViewBag.FactoryID&Type=BulkFGT";
+        window.open('@Url.Action("TestFailMailList", "PublicWondow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
+    }
+
+    function GetTestFailMailList(data) {
+        var to = "";
+        var cc = "";
+        $.each(data, function (index, value) {
+            to += value.To + ';';
+            cc += value.CC + ';';
+        });
+
+        $.ajax({
+            url: "@Url.Action("FailMail", "FabricColorFastness", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ POID: $('#Main_POID').val(), ID: $('#Main_ID').val(), TO: to, CC: cc }),
+            async: false,
+            success: function (data) {
+                if (data.Result) {
+                    msg.WithSuccesCheck("Success", function () {
+                        location.reload();
+                    });
+                }
+                else {
+                    msg.WithWarningCheck(data.ErrorMessage, function () {
+                        location.reload();
+                    });
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                // console.log(xhr.responseText);
+                msg.WithWarningCheck(xhr.responseText, function () {
+                    location.reload();
+                });
+            }
+        });
+    }
+
+    function AddDetailRow() {
+        var ID;
+        var lastNO;
+        var GroupNO;
+        if ($('.DetailTable > tbody > tr').length > 0) {
+            lastNO = parseInt($('.DetailTable > tbody > tr:last-child > td > input[type="hidden"] ').attr('idx')) + 1;
+            GroupNO = OvenGroupCheck($('.DetailTable>tbody>tr').length + 1);
+        }
+        else {
+            lastNO = 0;
+            GroupNO = "01";
+        }
+
+        var POID = $('#Main_POID').val();
+        $.ajax({
+            url: "@Url.Action("AddDetailRow", "FabricColorFastness", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ lastNO: lastNO, GroupNO: GroupNO }),
+            async: false,
+            success: function (data) {
+                $('.DetailTable > tbody').append(data);
+                DetailDetailButtonBind();
+                $('.date-picker').datepicker({ changeYear: true, changeMonth: true, currentText: "Now" });
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function selectChange(obj) {
+        var result = $(obj).val();
+        if (result == "Pass") {
+            $(obj).removeClass('red').addClass('blue');
+        }
+        else {
+            $(obj).removeClass('blue').addClass('red');
+        }
+
+        var key = $(obj).parents('td').parents('tr').children('td').find("input[type='hidden']").attr('idx');
+
+        var resultChange = document.getElementById("Detail_" + key + "__ResultChange").value;
+        var resultStain = document.getElementById("Detail_" + key + "__ResultStain").value;
+
+        if (resultChange == "Fail" || resultStain == "Fail") {
+            document.getElementById("Detail_" + key + "__Result").value = 'Fail';
+        }
+        else {
+            document.getElementById("Detail_" + key + "__Result").value = 'Pass';
+        }
+
+        $("#Detail_" + key + "__Result").removeClass("blue").removeClass("red");;
+        var detailResultColor = document.getElementById("Detail_" + key + "__Result").value == "Pass" ? "blue" : "red";
+        $("#Detail_" + key + "__Result").addClass(detailResultColor);
+
+    }
+
+    function GetArticleList(data) {
+        $('#Main_Article').val(data);
+    }
+
+    function GetPass1(data) {
+
+        $('#Main_Inspector').val(data.ID);
+        $('#Main_InspectionName').val(data.Name );
+    }
+
+    function GetPo_Supp_Detail(data, TargetID) {
+
+        $("#Detail_" + TargetID + "__Seq").val(data.Seq1 + "-" + data.Seq2);
+        $("#Detail_" + TargetID + "__Refno").val(data.Refno);
+        $("#Detail_" + TargetID + "__SCIRefno").val(data.SCIRefno);
+        $("#Detail_" + TargetID + "__ColorID").val(data.ColorID);
+    }
+
+    function GetFtyInventory(data, TargetID) {
+
+        $("#Detail_" + TargetID + "__Roll").val(data.Roll);
+        $("#Detail_" + TargetID + "__Dyelot").val(data.Dyelot);
+    }
+
+    function GetPicture(data) {
+        $('#Main_TestBeforePicture').val(data.BeforePicture.replace("data:image/webp;base64,", ""));
+        $('#Main_TestAfterPicture').val(data.AfterPicture.replace("data:image/webp;base64,", ""));
+    }
+
+    function OvenGroupCheck(value) {
+        if (parseInt(value) >= 99) {
+            return 99;
+        }
+
+        return padLeft(parseInt(value).toString(), 2);
+    }
+</script>

@@ -1,0 +1,194 @@
+﻿@using DatabaseObject.ViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model BACriteria_ViewModel
+
+
+
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+
+
+<style type="text/css">
+    .dataTables_wrapper {
+        position: static;
+    }
+
+    h3, label, #myTable_info {
+        color: white
+    }
+
+    #myTable_previous, #myTable_next {
+        color: white !important;
+    }
+
+    #moduleTable_previous, #moduleTable_next {
+        color: white !important;
+    }
+
+    #UsersTable_previous, #UsersTable_next {
+        color: white !important;
+    }
+
+    select {
+        color: wheat
+    }
+
+    .btnmargin {
+        margin-left: 10px;
+        margin-top: 10px;
+    }
+
+    tfoot input {
+        width: 100%;
+        padding: 3px;
+        box-sizing: border-box;
+    }
+
+    .input_Head {
+        /*height: 3vh;*/
+        height: 89%;
+        width: 95%;
+        font-weight: 300 !important;
+        color: #656565;
+        font-size: 0.5em !important;
+    }
+
+    .detail_Head {
+        width: 95%;
+    }
+</style>
+
+<div class="main-content">
+
+    <header class="page-header">
+        <h3>
+            <i class=""></i><span>BA Criteria</span>
+        </h3>
+        <div class="breadcrumb">
+            <div>Home</div>
+            <div class="current">BA Criteria</div>
+        </div>
+    </header>
+
+
+    <div class="main-area">
+
+        <div class="content-scroll">
+            <div class="inner-scroll" style="float:left">
+
+                <div>
+                    @using (Html.BeginForm("Query", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { @class = "", @name = "SearchFrom",@onsubmit="return checkForm(this);", @id = "SearchFrom" }))
+                    {
+                        <div>
+                            <label class="QueryLab">SP#</label>
+                            <input type="text" name="OrderID" id="txtOrderID" />
+                            &nbsp;&nbsp;
+                            <label class="QueryLab">Style</label>
+                            <input type="text" name="StyleID" id="txtStyle" />
+                            &nbsp;&nbsp;
+                            <label class="QueryLab">Brand</label>
+                            <input type="text" name="BrandID" id="txtBrand" />
+                            &nbsp;&nbsp;
+                            <label class="QueryLab">Season</label>
+                            <input type="text" name="SeasonID" id="txtSeason" />
+                            &nbsp;&nbsp;
+                            <input type="submit" name="name" id="btnQuery" value="Query" />
+                            &nbsp;&nbsp;
+                            <input type="button" class="btn-yellow" name="toexcel" id="btnToExcel" value="To Excel" />
+                        </div>
+                    }
+                </div>
+                <br />
+                <h3>BA Criteria：@Math.Round(Model.SummaryBACriteria, 1)</h3>
+                <br />
+                <div>
+
+                    <table id="myTable" class="table table-striped display" style="text-align:center">
+                        <thead>
+                            <tr class="row-name">
+                                <th>SP#</th>
+                                <th>Sample Stage</th>
+                                <th>Qty</th>
+                                <th>Inspected Qty</th>
+                                <th>BA Product</th>
+                                <th>BA Criteria</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.DataList)
+                            {
+                                <tr class="row-content">
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.OrderID)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.OrderTypeID)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Qty)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.InspectedQty)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.BAProduct)
+                                    </td>
+                                    <td>
+                                        @Math.Round(item.BACriteria, 1)
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <br />
+
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<script type="text/javascript">
+
+    var msg = new MessagerAlert();
+
+    var testData = [
+        ["111", "System Architect", "false",],
+        ["222", "System MOA Architect", "true",],
+        ["333", "System YUI Architect", "false",],
+        ["111", "System SSSS", "false",]
+    ];
+    var EditMode = false;
+
+    $(function () {
+
+        
+        @Html.Raw(Model.ErrorMessage);   
+
+        $('#myTable').DataTable({
+            "pageLength": 20,
+            initComplete: function () {
+            }
+        });
+
+        $("#btnToExcel").click(function () {            
+            location.href = '@Url.Action("ExcelExport")';
+        });
+    });
+
+    function checkForm(obj) {
+        if ($("#txtOrderID").val() == "" & $("#txtStyle").val() == "") {
+            msg.WithError("Style# and SP# cannot all be empty");
+            return false;
+        }
+    }
+
+</script>

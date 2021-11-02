@@ -64,7 +64,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,Remark"+ Environment.NewLine);
             SbSql.Append("FROM [Pass1]"+ Environment.NewLine);
             SbSql.Append("Where ID=@ID" + Environment.NewLine);
-            if (string.IsNullOrEmpty(Item.Password)) { SbSql.Append("and Password = @Password" + Environment.NewLine); }
+            if (!string.IsNullOrEmpty(Item.Password)) { SbSql.Append("and Password = @Password" + Environment.NewLine); }
 
 
             return ExecuteList<Pass1>(CommandType.Text, SbSql.ToString(), objParameter);

@@ -1,0 +1,1135 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+<link href="~/ThirdParty/plugins/jquery-ui/jquery-ui.css" rel="stylesheet" />
+
+@model DatabaseObject.ViewModel.BulkFGT.PullingTest_ViewModel
+<style type="text/css">
+    .row {
+        --bs-gutter-x: 1.5rem;
+        --bs-gutter-y: 0;
+        display: flex;
+        flex-wrap: wrap;
+        width: 95vw;
+        margin-top: calc(var(--bs-gutter-y) * -1);
+        margin-right: calc(var(--bs-gutter-x)/ -2);
+        margin-left: calc(var(--bs-gutter-x)/ -2);
+    }
+
+    .button {
+        background-color: #E00000; /* Red */
+        border: none;
+        color: white;
+        padding: 6px 16px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+    }
+
+    .row > * {
+        flex-shrink: 0;
+        width: 100%;
+        max-width: 100%;
+        padding-left: calc(var(--bs-gutter-x)/ 2);
+    }
+
+    .rowHeader {
+        font-size: 1.1vw;
+        font-weight: bold;
+    }
+
+    .queryHeader select {
+        width: 10vw;
+    }
+
+    .rowHeader input[type="text"] {
+        width: 10vw;
+    }
+
+    .col-auto {
+        width: auto;
+    }
+
+        .col-auto > p {
+            padding: 0
+        }
+
+    .White {
+        color: white !important;
+    }
+
+    .Black {
+        color: black !important;
+    }
+
+    .IsEditMode {
+        color: white !important;
+        cursor: pointer;
+    }
+
+    .IsEditModeQuery {
+        color: gray !important;
+        cursor: no-drop;
+    }
+
+    #ButtonMode {
+        width: 92vw;
+    }
+
+    .DataTable {
+        width: 92vw;
+        font-size: 1rem;
+        font-weight: bold;
+        border: solid 1px black;
+        background-color: white;
+    }
+
+        .DataTable > tbody img {
+            cursor: pointer;
+        }
+
+        .DataTable > tbody > tr:nth-of-type(odd) {
+            background-color: #ffffff;
+        }
+
+        .DataTable > tbody > tr:nth-of-type(even) {
+            background-color: #F0F2F2;
+        }
+
+        .DataTable > tbody > tr > td {
+            border: solid 1px gray;
+            padding: 0.5em;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        .DataTable input[type='text'], .DataTable input[type='number'] {
+            width: 70%;
+        }
+</style>
+@using (Html.BeginForm("Index", "PullingTest", new { }, FormMethod.Post, new { @ID = "mainForm" }))
+{
+    <div class="main-content">
+        <header class="page-header">
+            <h3>
+                <span>Pulling test for Snap/Button/Rivet</span>
+            </h3>
+            <div class="breadcrumb">
+                <div>Home</div>
+                <div class="current">Pulling test for Snap/Button/Rivet</div>
+            </div>
+            <div class="breadcrumb queryHeader" style="justify-content: flex-end;">
+                <h4 style="margin-right: 1em;color:white">Report No</h4>
+                @Html.DropDownList("ReportNo_Query", Model.ReportNo_Source, null, new { @value = Model.ReportNo_Query, @onchange = "ReloadDetail(this)", @class = "form-control" })
+                <input id="btnNew" type="button" class="button" style="margin-left:1em;border:0;" name="New" value="New">
+            </div>
+        </header>
+        <div class="main-area">
+            <div class="content-scroll">
+                <div class="inner-scroll">
+                    <div class="row rowHeader">
+                        <div class="col-auto">
+                            <p class="InfoTitle White">Brand</p>
+                        </div>
+                        <div class="col-auto">
+                            <input id="BrandID" name="BrandID" type="text" value="@Model.BrandID" />
+                            <input id="btnBrandSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                        </div>
+                        <div class="col-auto"><p class="InfoTitle White">Season</p></div>
+                        <div class="col-auto">
+                            <input id="SeasonID" name="SeasonID" type="text" value="@Model.SeasonID" />
+                            <input id="btnSeasonSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                        </div>
+                        <div class="col-auto"><p class="InfoTitle White">Style</p></div>
+                        <div class="col-auto">
+                            <input id="StyleID" name="StyleID" type="text" style="width: 15vw" value="@Model.StyleID" />
+                            <input id="btnStyleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                        </div>
+                        <div class="col-auto"><p class="InfoTitle White">Article</p></div>
+                        <div class="col-auto">
+                            <input id="Article" name="Article" type="text" value="@Model.Article" />
+                            <input id="btnArticleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                        </div>
+
+                        <div class="col-auto">
+                            <button id="btnQuery" type="submit" name="Action:Query" class="site-btn btn-gy font1rem Black" style="padding: 0.4em;">Query</button>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 1em;">
+                        <table id="ButtonMode">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <h4 id="Edit" style="margin-right: 1em;">
+                                            <img src="~/Image/Icon/Edit.png" width="30" />
+                                            Edit
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <input id="SaveSubmit" type="submit" name="Action:Save" style="display:none" />
+                                        <h4 id="Save" style="margin-right: 1em;">
+                                            <img src="~/Image/Icon/Save.png" width="30" />
+                                            Save
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 id="Undo" style="margin-right: 1em;">
+                                            <img src="~/Image/Icon/Undo.png" width="30" />
+                                            Undo
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <input id="DeleteSubmit" type="submit" name="Action:Delete" style="display:none" />
+                                        <h4 id="Delete" style=" margin-right: 1em;">
+                                            <img src="~/Image/Icon/Delete.png" width="30" />
+                                            Delete
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 id="Picture" style=" margin-right: 1em;">
+                                            <img src="~/Image/Icon/Camera.png" width="30" />
+                                            Picture
+                                        </h4>
+                                    </td>
+                                    <td style="width: 50%;"></td>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div style="margin-top: 1em;">
+                        <table class="DataTable DetailTable">
+                            <tbody>
+                                <tr>
+                                    <td style="width: 10vw;"><h5>Report No</h5></td>
+                                    <td style="width: 20vw;">
+                                        @Html.TextBox("ReportNoText", Model.Detail.ReportNo, new { @readonly = "readonly" })
+                                        @*@Html.Hidden("Detail_ReportNo", Model.Detail.ReportNo,new { @name= "Detail.ReportNo" })*@
+                                        <input type="hidden" id="Detail_ReportNo" name="Detail.ReportNo" value="@Model.Detail.ReportNo" />
+                                    </td>
+                                    <td style="width: 10vw;"><h5>SP#</h5></td>
+                                    <td style="width: 20vw;">
+                                        @Html.TextBoxFor(o => o.Detail.POID, "", new { @onchange = "CheckSP(this)" })
+                                    </td>
+                                    <td style="width: 10vw;"><h5>Brand</h5></td>
+                                    <td style="width: 20vw;">
+                                        @Html.TextBoxFor(o => o.Detail.BrandID, "")
+                                        <input id="btnDetailBrandSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><h5>Season</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.Detail.SeasonID, "", new { @readonly = "readonly" })
+                                        <input id="btnDetailSeasonSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                    </td>
+                                    <td><h5>Style#</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.Detail.StyleID, "", new { @readonly = "readonly" })
+                                        <input id="btnDetailStyleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                    </td>
+                                    <td><h5>Article</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.Detail.Article, "", new { @class = "OnlyEdit", @readonly = "readonly" })
+                                        <input id="btnDetailArticleSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><h5>Size</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.Detail.SizeCode, "", new { @class = "OnlyEdit", @readonly = "readonly" })
+                                        <input id="btnDetailSizeCodeSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                    </td>
+                                    <td><h5>Remark</h5></td>
+                                    <td colspan="3">
+                                        @Html.TextBoxFor(o => o.Detail.Remark, "", new { @class = "OnlyEdit", @readonly = "readonly" })
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><h5>Test Date</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.Detail.TestDate, "{0:yyyy/MM/dd}", new { @readonly = "readonly", @class = "date-picker OnlyEdit" })
+                                    </td>
+                                    <td><h5>Result</h5></td>
+                                    <td>
+                                        @Html.HiddenFor(o => o.Detail.Result, new { @class = "OnlyEdit" })
+                                        @{
+                                            string color = "red";
+                                            if (Model.Detail != null && Model.Detail.Result == "Pass")
+                                            {
+                                                color = "blue";
+                                            }
+                                        }
+                                        @Html.TextBox("ResultText", Model.Detail.Result, new { @readonly = "readonly", @class = $"{color}" })
+                                    </td>
+                                    <td><h5>Inspector</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.Detail.Inspector, "", new { @style = "width:35%", @readonly = "readonly" })
+                                        @Html.TextBoxFor(o => o.Detail.InspectorName, "", new { @style = "width:50%", @readonly = "readonly" })
+                                        <input id="btnDetailInspectorSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><h5>Test Item</h5></td>
+                                    <td>
+                                        @Html.DropDownListFor(o => o.Detail.TestItem, Model.TestItem_Source, null, new { @onchange = "TestItemChange(this)", @class = "OnlyEdit" })
+                                    </td>
+                                    <td>
+                                        <h5>
+                                            @Html.HiddenFor(o => o.Detail.PullForceUnit, new { @class = "OnlyEdit" })
+                                            @Html.TextBox("PullForceUnitText", Model.Detail.PullForceUnit, new { @readonly = "readonly" })
+                                        </h5>
+                                    </td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.Detail.PullForce, "", new { @onblur = "ResultCheck()", @class = "OnlyEdit", @readonly = "readonly", @type = "number", @step = "0.01" })
+                                    </td>
+                                    <td><h5>Sec</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.Detail.Time, "", new { @onblur = "ResultCheck()", @class = "OnlyEdit", @readonly = "readonly", @type = "number" })
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><h5>Fabric Ref#</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.Detail.FabricRefno, "", new { @class = "OnlyEdit", @readonly = "readonly" })
+                                    </td>
+                                    <td><h5>Accessory Ref#</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.Detail.AccRefno, "", new { @class = "OnlyEdit", @readonly = "readonly" })
+                                    </td>
+                                    <td><h5>Snap Operator</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.Detail.SnapOperator, "", new { @class = "OnlyEdit", @readonly = "readonly" })
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><h5>Last Edit Name</h5></td>
+                                    <td colspan="5">
+                                        @Html.TextBoxFor(o => o.Detail.LastEditName, "", new { @readonly = "readonly" })
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @Html.HiddenFor(o => o.Detail.PullForce_Standard)
+    @Html.HiddenFor(o => o.Detail.Time_Standard)
+    @Html.HiddenFor(o => Model.Detail.TestBeforePicture)
+    @Html.HiddenFor(o => Model.Detail.TestAfterPicture)
+    @Html.HiddenFor(o => o.ToAddress)
+    @Html.HiddenFor(o => o.CcAddress)
+
+}
+<script type="text/javascript">
+    var msg = new MessagerAlert();
+    var EditMode;
+    var EditType;
+    $(function () {
+
+
+        @Html.Raw(Model.ErrorMessage)
+
+        EditMode = false;
+        IsEditModeChange();
+    });
+
+    function IsEditModeChange() {
+        EditModeButtionBind();
+        Clear();
+
+        if (EditMode) {
+            $(".queryHeader select").attr("disabled", "disabled");
+            $('#btnNew').unbind('click').addClass("IsEditModeQuery");
+
+            $(".rowHeader input[type='text']").attr("disabled", "disabled");
+            $(".rowHeader input[type='button']").unbind('click').addClass("IsEditModeQuery");
+            $('#btnQuery').addClass("IsEditModeQuery");
+
+            $("#Edit, #Delete").removeClass("IsEditMode");
+            $('#Save, #Undo, #New').addClass("IsEditMode");
+
+            if (EditType == "New") {
+                $(".DetailTable input:not(#ReportNoText,#Detail_LastEditName,#ResultText,#PullForceUnitText,#Detail_InspectorName), .DetailTable select").removeAttr("disabled");
+                $(".DetailTable input:not(#ReportNoText,#Detail_LastEditName,#ResultText,#PullForceUnitText,#Detail_InspectorName), .DetailTable select").removeAttr("readonly");
+            }
+            else {
+                $(".OnlyEdit").removeAttr("disabled").removeAttr("readonly");
+            }
+
+            $(".DetailTable img").addClass('display-None');
+
+            DetailButtonBind();
+            $('#btnQuery').on('click', function () {
+                return false;
+            });
+        }
+        else {
+            $(".queryHeader select").removeAttr("disabled");
+            $(".rowHeader input[type='text']").removeAttr("disabled");
+            $(".rowHeader input[type='button']").removeClass("IsEditModeQuery");
+
+            if ($('#Detail_ReportNo').val() != undefined && $('#Detail_ReportNo').val() != '') {
+                $("#Edit, #Delete, #Picture").addClass("IsEditMode");
+            }
+
+            $('#btnNew').removeClass("IsEditModeQuery");
+            $('#btnQuery').unbind('click').removeClass("IsEditModeQuery");
+            $('#Save, #Undo, #New').unbind('click').removeClass("IsEditMode");
+            $(".DetailTable input:not(#Detail_ReportNo), .DetailTable select").attr("disabled", "disabled");
+            $(".DetailTable img").removeClass('display-None');
+
+            QueryButtonBind();
+
+            $('#btnQuery').on('click', function () {
+                if (EditType != "New") {
+
+                    if ($("#ReportNo_Query").val()  == '' && ($('#BrandID').val() == '' || $('#SeasonID').val() == '' || $('#StyleID').val() == '' || $('#Article').val() == '')) {
+                        msg.WithError("Style, Brand, Season and Article cannot be empty");
+                        return false;
+                    }
+                }
+            });
+        }
+    }
+
+
+        function Clear() {
+            if (EditType == "New") {
+                $(".DetailTable input[type='text'], .DetailTable select").val('');
+            }
+    }
+
+
+        function EditModeButtionBind() {
+            $('#Edit').on('click', function () {
+                if ($('#Detail_ReportNo').val() != null && $('#Detail_ReportNo').val() != "") {
+                    EditMode = true;
+                    EditType = "";
+                    $("#SaveSubmit").attr("name", "Action:Edit"); //**
+                    IsEditModeChange();
+                }
+            });
+
+            $('#btnNew').on('click', function () {
+                EditMode = true;
+                EditType = "New";
+                $("#SaveSubmit").attr("name", "Action:New"); //--
+                IsEditModeChange();
+            });
+
+            $('#Save').on('click', function (e) {
+                var detail = [];
+                var ErrMsg = "";
+
+                if ($('#Detail_BrandID').val() == '' || $('#Detail_SeasonID').val() == '' || $('#Detail_StyleID').val() == '' || $('#Detail_Article').val() == ''
+                    || $('#Detail_BrandID').val() == undefined || $('#Detail_SeasonID').val() == undefined || $('#Detail_StyleID').val() == undefined || $('#Detail_Article').val() == undefined || $('#Detail_TestItem').val() == '' || $('#Detail_TestItem').val() == undefined) {
+                    ErrMsg += "Style,Brand,Season,Article,TestItem cannot be empty<br/>";
+                }
+
+                //檢查TestDate, {PullForceUnit}, Sec, Fabric Ref#, Accessory Ref# 不可為空
+                if ($('#Detail_TestItem').val() == '' || $('#Detail_TestDate').val() == '' || $('#Detail_PullForceUnit').val() == '' || $('#Detail_Time').val() == ''
+                    || $('#Detail_FabricRefno').val() == '' || $('#Detail_AccRefno').val() == ''
+                    || $('#Detail_TestItem').val() == undefined|| $('#Detail_TestDate').val() == undefined || $('#Detail_PullForceUnit').val() == undefined || $('#Detail_Time').val() == undefined
+                    || $('#Detail_FabricRefno').val() == undefined || $('#Detail_AccRefno').val() == undefined) {
+                    ErrMsg += "TestDate, Newton, Sec, Fabric Ref# and Accessory Ref# cannot be empty<br/>";
+                }
+
+                if (ErrMsg != "") {
+                    e.preventDefault();
+                    msg.WithError(ErrMsg);
+                    return;
+                }
+                else {
+                    $("#ReportNoText").removeAttr("disabled");
+                    $("#SaveSubmit").click();
+                }
+
+            });
+
+            $('#Undo').on('click', function () {
+                EditMode = false;
+                IsEditModeChange();
+                if (EditType != "New") {
+                    $('#btnQuery').click();
+                }
+                else {
+                    if ($('#BrandID').val() != '' || $('#SeasonID').val() != '' || $('#StyleID').val() != '' || $('#Article').val() != '') {
+                        $('#btnQuery').click();
+                    }
+                }
+
+                EditType = "";
+            });
+
+            $('#Delete').on('click', function () {
+                if ($('#Detail_ReportNo').val() != null && $('#Detail_ReportNo').val() != "") {
+                    msg.WithConfirm('Do you want to delete the data ?', function ()
+                    {
+                        $("#ReportNoText").removeAttr("disabled");
+                        $("#DeleteSubmit").click();
+                    }, null);
+                }
+
+            });
+
+            $('#Picture').on('click', function () {
+                if ($('#Detail_ReportNo').val() != null && $('#Detail_ReportNo').val() != "") {
+                    var para = "?EditMode=" + EditMode + "&Title=PullingTest&TargetBeforeColumn=Detail_TestBeforePicture&TargetAfterColumn=Detail_TestAfterPicture&Table=ManufacturingExecution.dbo.PullingTest&BeforeColumn=TestBeforePicture&AfterColumn=TestAfterPicture&PKey_1=ReportNo&PKey_1_Val=" + $('#Detail_ReportNo').val();
+                    window.open('@Url.Action("PictureList","PublicWondow",new{Area=""})' + para, 'Article', config = 'toolbar=no,status=no,location=no,width=1000,height=650');
+                }
+            });
+        }
+
+        function QueryButtonBind() {
+            $('#btnBrandSelectItem').on('click', function () {
+                 window.open('@Url.Action("BrandList","PublicWondow",new{Area=""})','Brand',config='toolbar=no,status=no,location=no,width=400,height=650');
+            });
+
+            $('#btnSeasonSelectItem').on('click', function () {
+                var para = "?BrandID=" + $('#BrandID').val();
+                window.open('@Url.Action("SeasonList","PublicWondow",new{Area=""})' + para,'Season',config='toolbar=no,status=no,location=no,width=400,height=650');
+            });
+
+            $('#btnStyleSelectItem').on('click', function () {
+                var para = "?BrandID=" + $('#BrandID').val() + "&SeasonID=" + $('#SeasonID').val();
+                window.open('@Url.Action("StyleList","PublicWondow",new{Area=""})' + para,'Style',config='toolbar=no,status=no,location=no,width=400,height=650');
+            });
+
+            $('#btnArticleSelectItem').on('click', function () {
+                if ($('#BrandID').val() == '' || $('#SeasonID').val() == '' || $('#StyleID').val() == '') {
+                    msg.WithError('Please input style, brand and season before choose article.');
+                    return;
+                }
+
+                var para = "?OrderID=&StyleUkey=0&BrandID=" + $('#BrandID').val() + "&SeasonID=" + $('#SeasonID').val() + "&StyleID=" + $('#StyleID').val();
+                window.open('@Url.Action("ArticleList","PublicWondow",new{Area=""})' + para,'Article',config='toolbar=no,status=no,location=no,width=400,height=650');
+            });
+
+            blurEvent('');
+        }
+
+        function blurEvent(name) {
+            $("#" + name + "BrandID").blur(function () {
+                AutoGetPullUnit(this);
+
+                @*if ($(this).val() == '') {
+                    $("#Detail_Result").val('');
+                    $("#ResultText").val('');
+                    $("#Detail_TestItem").val('');
+                    $("#Detail_PullForceUnit").val('');
+                    $("#PullForceUnitText").val('');
+                    $(`#Detail_PullForce_Standard`).val('');
+                    $(`#Detail_Time_Standard`).val('');
+                    return;
+                }
+
+                $.ajax({
+                    url: "@Url.Action("BrandList","PublicWondow",new{Area=""})",
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ BrandID: $(this).val(), ReturnType: "JSON" }),
+                    async: true,
+                    success: function (data) {
+                        if (data.length == 0) {
+                            $("#" + name +"BrandID").val('');
+                            msg.WithError('Brand Not Found');
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                });
+
+
+                $.ajax({
+                    url: "@Url.Action("GetPullUnit")",
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ BrandID: $(this).val() }),
+                    async: true,
+                    success: function (data) {
+                        if (data.length != 0) {
+
+                            $("#Detail_PullForceUnit").val(data.PullForceUnit);
+                            $("#PullForceUnitText").val(data.PullForceUnit);
+                        }
+                        else {
+                            $("#Detail_PullForceUnit").val('');
+                            $("#PullForceUnitText").val('');
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                });*@
+            });
+
+            $("#" + name + "SeasonID").blur(function () {
+                if ($(this).val() == '') {
+                    return;
+                }
+
+                var result = checkValue('season', name);
+                if (result == 0) {
+                    return;
+                }
+
+                var BrandID = $('#' + name +'BrandID').val();
+                $.ajax({
+                    url: "@Url.Action("SeasonList","PublicWondow",new{Area=""})",
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ BrandID: BrandID, SeasonID: $(this).val(), ReturnType: "JSON" }),
+                    async: true,
+                    success: function (data) {
+                        if (data.length == 0) {
+                            $("#" + name+"SeasonID").val('');
+                            msg.WithError('Season Not Found');
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            });
+
+            $("#" + name + "StyleID").blur(function () {
+                if ($(this).val() == '') {
+                    return;
+                }
+
+                var result = checkValue('style', name);
+                if (result == 0) {
+                    return;
+                }
+
+                var BrandID = $('#' + name +'BrandID').val();
+                var SeasonID = $('#' + name +'SeasonID').val();
+                $.ajax({
+                    url: "@Url.Action("StyleList","PublicWondow",new{Area=""})",
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ BrandID: BrandID, SeasonID: SeasonID, StyleID: $(this).val(), ReturnType: "JSON" }),
+                    async: true,
+                    success: function (data) {
+                        if (data.length == 0) {
+                            $("#" + name+"StyleID").val('');
+                            msg.WithError('Style Not Found');
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            });
+
+            $('#' + name + 'Article').blur(function () {
+                if ($(this).val() == '') {
+                    return;
+                }
+
+                var result = checkValue('article', name);
+                if (result == 0) {
+                    return;
+                }
+
+                var BrandID = $('#' + name +'BrandID').val();
+                var SeasonID = $('#' + name +'SeasonID').val();
+                var StyleID = $('#' + name +'StyleID').val();
+                $.ajax({
+                    url: "@Url.Action("ArticleList","PublicWondow",new{Area=""})",
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ BrandID: BrandID, StyleUkey : 0, SeasonID: SeasonID, StyleID: StyleID, Article: $(this).val(), ReturnType: "JSON" }),
+                    async: true,
+                    success: function (data) {
+                        if (data.length == 0) {
+                            $("#" + name+"Article").val('');
+                            msg.WithError('Article Not Found');
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            });
+
+            $('#' + name + 'SizeCode').blur(function () {
+                if ($(this).val() == '') {
+                    return;
+                }
+
+                var result = checkValue('sizecode', name);
+                if (result == 0) {
+                    return;
+                }
+
+                var BrandID = $('#' + name +'BrandID').val();
+                var SeasonID = $('#' + name +'SeasonID').val();
+                var StyleID = $('#' + name + 'StyleID').val();
+                var Article = $('#' + name + 'Article').val();
+                $.ajax({
+                    url: "@Url.Action("SizeList","PublicWondow",new{Area=""})",
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ BrandID: BrandID, StyleUkey: 0, SeasonID: SeasonID, StyleID: StyleID, Article: Article, Size: $(this).val(), ReturnType: "JSON" }),
+                    async: true,
+                    success: function (data) {
+                        if (data.length == 0) {
+                            $("#" + name +"SizeCode").val('');
+                            msg.WithError('Size Not Found');
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            });
+
+
+            $("#" + name + "Inspector").blur(function () {
+                if ($(this).val() == '') {
+                    return;
+                }
+
+                $.ajax({
+                    url: "@Url.Action("Pass1List","PublicWondow",new{Area=""})",
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ ID: $(this).val(), ReturnType: "JSON" }),
+                    async: true,
+                    success: function (data) {
+                        if (data.length == 0) {
+                            $("#" + name +"Inspector").val('');
+                            msg.WithError('Inspector Not Found');
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            });
+        }
+
+        function DetailButtonBind() {
+            $('#btnDetailBrandSelectItem').on('click', function () {
+                window.open('@Url.Action("BrandList","PublicWondow",new{Area=""})','BrandID',config='toolbar=no,status=no,location=no,width=400,height=650');
+            });
+
+            $('#btnDetailSeasonSelectItem').on('click', function () {
+                if (checkValue('season','Detail_') == 0) {
+                    return;
+                }
+
+                var para = "?BrandID=" + $('#Detail_BrandID').val();
+                window.open('@Url.Action("SeasonList","PublicWondow",new{Area=""})' + para,'SeasonID',config='toolbar=no,status=no,location=no,width=400,height=650');
+            });
+
+            $('#btnDetailInspectorSelectItem').on('click', function () {
+                window.open('@Url.Action("Pass1List","PublicWondow",new{Area=""})','Inspector',config='toolbar=no,status=no,location=no,width=1000,height=650');
+            });
+
+            $('#btnDetailStyleSelectItem').on('click', function () {
+                if (checkValue('style', 'Detail_') == 0) {
+                    return;
+                }
+
+                var para = "?BrandID=" + $('#Detail_BrandID').val() + "&SeasonID=" + $('#Detail_SeasonID').val();
+                window.open('@Url.Action("StyleList","PublicWondow",new{Area=""})' + para,'StyleID',config='toolbar=no,status=no,location=no,width=400,height=650');
+            });
+
+            $('#btnDetailArticleSelectItem').on('click', function () {
+                var para = '';
+                var result = checkValue('article', 'Detail_');
+                if (result == 0) {
+                    return;
+                }
+                else if (result == 1) {
+                    para = "?OrderID=" + $('#Detail_POID').val() + "&StyleUkey=0";
+                }
+                else if (result == 2) {
+                    para = "?OrderID=&StyleUkey=0&BrandID=" + $('#Detail_BrandID').val() + "&SeasonID=" + $('#Detail_SeasonID').val() + "&StyleID=" + $('#Detail_StyleID').val();
+                }
+                window.open('@Url.Action("ArticleList","PublicWondow",new{Area=""})' + para,'Article',config='toolbar=no,status=no,location=no,width=400,height=650');
+            });
+
+            $('#btnDetailSizeCodeSelectItem').on('click', function () {
+                var para = '';
+                var result = checkValue('sizecode', 'Detail_');
+                if (result == 0) {
+                    return;
+                }
+                else if (result == 1) {
+                    para = "?OrderID=" + $('#Detail_POID').val() + "&StyleUkey=0&Article=" + $('#Detail_Article').val();
+                }
+                else if (result == 2) {
+                    para = "?OrderID=&StyleUkey=0&BrandID=" + $('#Detail_BrandID').val() + "&SeasonID=" + $('#Detail_SeasonID').val() + "&StyleID=" + $('#Detail_StyleID').val();
+                }
+
+                window.open('@Url.Action("SizeList","PublicWondow",new{Area=""})' + para,'SizeCode',config='toolbar=no,status=no,location=no,width=400,height=650');
+            });
+
+            blurEvent("Detail_");
+    }
+
+    function CheckSP(obj) {
+        var poid = $(obj).val();
+
+        if (poid!='') {
+            $.ajax({
+                url: '@Url.Action("CheckSP")',
+                data: { POID: poid },
+                type: 'POST',
+                dataType: "json",
+                async: false,
+                success: function (res) {
+
+                    $("#Detail_PullForce").val(0);
+                    $("#Detail_Time").val(0);
+                    $("#Detail_TestItem").val('');
+                    $("#ResultText").val('');
+                    $("#Detail_Result").val('');
+
+                    if (res.POID != '' && res.POID != undefined) {
+                        // 表頭塞值
+                        $(obj).val(res.POID);
+                        $("#Detail_SeasonID").val(res.SeasonID);
+                        $("#Detail_BrandID").val(res.BrandID);
+                        $("#Detail_StyleID").val(res.StyleID);
+                        $("#Detail_Article").val(res.Article);
+                        $("#Detail_PullForceUnit").val(res.PullForceUnit);
+                        $("#PullForceUnitText").val(res.PullForceUnit);
+
+                    }
+                    else if (res.POID == '' || res.POID == null) {
+                        $(obj).val('');
+                        $("#Detail_SeasonID").val('');
+                        $("#Detail_BrandID").val('');
+                        $("#Detail_StyleID").val('');
+                        $("#Detail_Article").val('');
+                        $("#Detail_PullForceUnit").val('');
+                        $("#PullForceUnitText").val('');
+
+                        msg.WithError('Cannot found SP# ' + poid + '.');
+                    }
+                    else {
+                        $(obj).val('');
+                        $("#Detail_SeasonID").val('');
+                        $("#Detail_BrandID").val('');
+                        $("#Detail_StyleID").val('');
+                        $("#Detail_Article").val('');
+                        $("#Detail_PullForceUnit").val('');
+                        $("#PullForceUnitText").val('');
+
+                        msg.WithError(res.Message);
+                    }
+
+                }
+            });
+        }
+    }
+
+    function AutoGetPullUnit(BrandObject) {
+
+        if ($(BrandObject).val() == '') {
+            $("#Detail_Result").val('');
+            $("#ResultText").val('');
+            $("#Detail_TestItem").val('');
+            $("#Detail_PullForceUnit").val('');
+            $("#PullForceUnitText").val('');
+            $(`#Detail_PullForce_Standard`).val('');
+            $(`#Detail_Time_Standard`).val('');
+            return;
+        }
+
+        $.ajax({
+            url: "@Url.Action("BrandList","PublicWondow",new{Area=""})",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ BrandID: $(BrandObject).val(), ReturnType: "JSON" }),
+            async: true,
+            success: function (data) {
+                if (data.length == 0) {
+                    $(BrandObject).val('');
+                    msg.WithError('Brand Not Found');
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+
+
+        $.ajax({
+            url: "@Url.Action("GetPullUnit")",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ BrandID: $(BrandObject).val() }),
+            async: true,
+            success: function (data) {
+                if (data.length != 0) {
+
+                    $("#Detail_PullForceUnit").val(data.PullForceUnit);
+                    $("#PullForceUnitText").val(data.PullForceUnit);
+
+                    if (data.PullForceUnit == null || data.PullForceUnit == '') {
+                        msg.WithInfo("Pull Force Unit not found.");
+                    }
+                }
+                else {
+                    $("#Detail_PullForceUnit").val('');
+                    $("#PullForceUnitText").val('');
+                    msg.WithInfo("Pull Force Unit not found.");
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function ReloadDetail(obj) {
+        var reportNo = $(obj).val();
+        $("#btnQuery").click();
+    }
+
+    function TestItemChange(obj) {
+
+        var idPre = 'Detail_';
+
+        var testitem = $(obj).val();
+        var brand = $(`#${idPre}BrandID`).val();
+        var pullForceUnit = $(`#${idPre}PullForceUnit`).val();
+
+        if (testitem != '' && brand != '' && pullForceUnit != '') {
+            $.ajax({
+                url: '@Url.Action("GetStandard")',
+                data: { BrandID: brand, TestItem: testitem, PullForceUnit: pullForceUnit},
+                type: 'POST',
+                dataType: "json",
+                async: false,
+                success: function (res) {
+
+                    //$(obj).val(testitem);
+                    if (res.PullForce_Standard != '' && res.PullForce_Standard != undefined) {
+
+                        // 因為標準改變，把現有的值清空
+                        $(`#${idPre}PullForce`).val(0);
+                        $(`#${idPre}Time`).val(0);
+
+                        // 標準值塞值
+                        $(`#${idPre}PullForce_Standard`).val(res.PullForce_Standard);
+                        $(`#${idPre}Time_Standard`).val(res.Time_Standard);
+
+                        ResultCheck();
+                    }
+                    else if (res.PullForce_Standard == '' || res.PullForce_Standard == null) {
+
+                        $(`#${idPre}PullForce_Standard`).val('');
+                        $(`#${idPre}Time_Standard`).val('');
+                        $(obj).val('');
+                        msg.WithError('Cannot found TestItem ' + testitem + '.');
+                    }
+                    else {
+
+                        $(`#${idPre}PullForce_Standard`).val('');
+                        $(`#${idPre}Time_Standard`).val('');
+                        $(obj).val('');
+                        msg.WithError(res.Message);
+                    }
+                }
+            });
+        }
+    }
+
+    function ResultCheck() {
+        var result = true;
+
+        var PullForceVal = $('#Detail_PullForce').val();
+        var TimeVal = $(`#Detail_Time`).val();
+
+        if (PullForceVal == '') {
+            PullForceVal = 0;
+        }
+        if (TimeVal == '') {
+            TimeVal = 0;
+        }
+
+        var PullForce_Standard = $(`#Detail_PullForce_Standard`).val();
+        var Time_Standard = $(`#Detail_Time_Standard`).val();
+
+        if (PullForce_Standard == '') {
+            PullForce_Standard = 0;
+        }
+        if (Time_Standard == '') {
+            Time_Standard = 0;
+        }
+
+        if (PullForce_Standard == 0 && Time_Standard == 0) {
+
+            $("#Detail_Result").val('');
+            $("#ResultText").val('');
+            return;
+        }
+
+        if (parseFloat(PullForceVal) < parseFloat(PullForce_Standard) || parseFloat(TimeVal) < parseFloat(Time_Standard)) {
+            result = false;
+        }
+        else {
+
+        }
+
+        if (result) {
+            $("#Detail_Result").val('Pass');
+            $("#ResultText").val('Pass');
+            $("#ResultText").removeClass('red').addClass('blue');
+        }
+        else {
+            $("#Detail_Result").val('Fail');
+            $("#ResultText").val('Fail');
+            $("#ResultText").removeClass('blue').addClass('red');
+        }
+    }
+
+    function checkValue(type, name) {
+        switch (type) {
+            case 'season': //查詢明細共用
+                if ($('#'+name+'BrandID').val() == '') {
+                    msg.WithError('Please input brand before choose season.');
+                    $('#' + name + 'SeasonID').val('');
+                    return 0;
+                }
+                break;
+            case 'style': //查詢明細共用
+                if ($('#' + name + 'BrandID').val() == '' || $('#' + name +'SeasonID').val() == '') {
+                    msg.WithError('Please input brand, season before choose style.');
+                    $('#' + name + 'StyleID').val('');
+                    return 0;
+                }
+                break;
+            case 'article': //查詢明細共用
+                if (name == "Detail_" && $('#Detail_POID').val() != '') {
+                    return 1;
+                }
+                else if ($('#' + name + 'BrandID').val() != '' && $('#' + name + 'SeasonID').val() != '' && $('#' + name + 'StyleID').val() != '') {
+                    return 2;
+                }
+                else {
+                    msg.WithError('Please input sp# or style, brand and season before choose article.');
+                    $('#' + name + 'Article').val('');
+                    return 0;
+                }
+                break;
+            case 'sizecode':
+                if ($('#Detail_POID').val() != '' && $('#Detail_Article').val() != '') {
+                    return 1;
+                }
+                else if ($('#Detail_BrandID').val() != '' && $('#Detail_SeasonID').val() != '' && $('#Detail_StyleID').val() != '') {
+                    return 2;
+                }
+                else {
+                    msg.WithError('Please input sp#, article or style, brand and season before choose size.');
+                    $('#' + name + 'Sizecode').val('');
+                    return 0;
+                }
+                break;
+        }
+
+    }
+
+    function FailMail() {
+        var para = "?Title=Pulling Test&FactoryID=@ViewBag.FactoryID&Type=BulkFGT&ExitReload=False";
+        window.open('@Url.Action("TestFailMailList", "PublicWondow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
+
+    }
+
+    function GetTestFailMailList(data) {
+        var to = "";
+        var cc = "";
+        $.each(data, function (index, value) {
+            to += value.To + ';';
+            cc += value.CC + ';';
+        });
+
+        $.ajax({
+            url: "@Url.Action("FailMail", "PullingTest", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ ReportNo: $('#ReportNoText').val() , TO: to, CC: cc }),
+            async: false,
+            success: function (data) {
+                if (data.result) {
+                    msg.WithSuccess("Success");
+                }
+                else {
+                    msg.WithWarning(data.resultMsg);
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                msg.WithWarningCheck(xhr.responseText, function () {
+                    location.reload();
+                });
+            }
+        });
+    }
+
+    function GetBrandList(data) {
+        if (EditMode) {
+            $('#Detail_BrandID').val(data);
+            AutoGetPullUnit($('#Detail_BrandID')[0]);
+        }
+        else {
+            $('#BrandID').val(data);
+            AutoGetPullUnit($('#BrandID')[0]);
+        }
+    }
+
+    function GetSeasonList(data) {
+        if (EditMode) {
+            $('#Detail_SeasonID').val(data);
+        }
+        else {
+            $('#SeasonID').val(data);
+        }
+    }
+
+    function GetStyleList(data) {
+        if (EditMode) {
+            $('#Detail_StyleID').val(data);
+        }
+        else {
+            $('#StyleID').val(data);
+        }
+    }
+
+    function GetArticleList(data) {
+        if (EditMode) {
+            $('#Detail_Article').val(data);
+        }
+        else {
+            $('#Article').val(data);
+        }
+    }
+
+    function GetSizeList(data) {
+        $('#Detail_SizeCode').val(data);
+    }
+
+    function GetPass1(data) {
+        $('#Detail_Inspector').val(data.ID);
+        $('#Detail_InspectorName').val(data.Name);
+    }
+
+    function GetPicture(data) {
+        $('#Detail_TestBeforePicture').val(data.BeforePicture.replace("data:image/webp;base64,", ""));
+        $('#Detail_TestAfterPicture').val(data.AfterPicture.replace("data:image/webp;base64,", ""));
+    }
+</script>

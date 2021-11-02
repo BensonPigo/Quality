@@ -1,0 +1,138 @@
+﻿@using DatabaseObject.Public
+
+@{
+    Layout = null;
+    string FinalInspectionID = ViewData["FinalInspectionID"] == null ? "" : ViewData["FinalInspectionID"].ToString();
+
+}
+
+@model Window_Picture
+
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<link href="~/ThirdParty/SciCustom/css/style.css" rel="stylesheet" />
+<style>
+
+    ul {
+        padding: 0;
+    }
+
+    li {
+        list-style-type: none;
+        border: 1px solid black;
+        padding: 2px;
+    }
+
+    td {
+        border-style: ridge;
+    }
+
+    .leftDiv {
+        width: 45%;
+        height: 90%;
+        float: left;
+        margin-right: 2%;
+    }
+
+    .outerDiv {
+        width: 95vw;
+        height: 90%;
+        float: left;
+        margin-right: 2%;
+    }
+
+    .grayDiv {
+        width: 100%;
+        height: 8vh;
+        background-color: lightgray;
+        text-align: center;
+    }
+
+    .pointer {
+        cursor: pointer;
+    }
+</style>
+<br />
+<header>
+    <h3 style="width:85%;float:left;margin:0"></h3>
+    <input id="btnSave" type="button" value="Save" />
+    <input id="btnExit" type="button" value="Exit" />
+</header>
+<br />
+<div class="outerDiv" style="margin-right:2%;">
+
+    @using (Html.BeginForm("TakePicture", "Inspection", FormMethod.Post, new { @id = "TakePictureForm", onsubmit = "return checkValue(this.submitted)" }))
+    {
+        <div class="grayDiv">
+            <img Type="Pic" class="OpenCamera pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Camera.png" />
+            <img id="Del" class="pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Delete.png" />
+
+        </div>
+        <img id="ImgPic" Type="Pic" style="width:100%;" />
+    }
+</div>
+
+@{
+    Html.RenderPartial("ScreenShot");
+}
+
+<script>
+
+    var ID_List = [];
+    var Name_List = [];
+    $(function () {
+
+
+        // Screenshot Exit
+        $('#btnScreenshotExit').on('click', function () {
+            StopScreen();
+            $('#Screenshot').addClass("display-None");
+        });
+
+
+        $("#btnSave").click(function () {
+
+            var Pic = document.querySelector("#ImgPic");
+
+            var Picture = {
+                FinalInspectionID: '@FinalInspectionID',
+                Img: Pic.src,
+            }
+
+            window.opener.GetImage(Picture);
+            window.close();
+        });
+
+
+        $("#btnExit").click(function () {
+            window.close();
+        });
+
+        $("#Del").click(function () {
+
+            $("#ImgPic").removeAttr("src");
+        });
+
+        CamInit();
+
+
+    });
+
+    function CamInit() {
+        $('.OpenCamera').on('click', function () {
+
+            var Type = $(this).attr('Type');
+            var sentID = "ImgPic";
+            switch (Type) {
+                case "Pic":
+                    sentID = "ImgPic";
+                    break;
+                default:
+                    sentID = "";
+                    break;
+            }
+
+            $('#Screenshot').removeClass("display-None");
+            Screenshot(sentID);
+        });
+    }
+</script>

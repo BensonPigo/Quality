@@ -14,7 +14,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Quality</RootNamespace>
     <AssemblyName>Quality</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
     <Use64BitIISExpress />
@@ -25,6 +25,7 @@
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -45,20 +46,70 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.1.3.1\lib\net40\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict, Version=1.0.1709.1400, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\_Dll\Ict.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Win, Version=1.0.1612.1500, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\_Dll\Ict.Win.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Win.UI, Version=1.0.1710.2600, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\_Dll\Ict.Win.UI.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>..\..\_Dll\Microsoft.Office.Interop.Excel.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI, Version=2.1.3.1, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.1.3.1\lib\net40\NPOI.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OOXML, Version=2.1.3.1, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.1.3.1\lib\net40\NPOI.OOXML.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXml4Net, Version=2.1.3.1, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.1.3.1\lib\net40\NPOI.OpenXml4Net.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXmlFormats, Version=2.1.3.1, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.1.3.1\lib\net40\NPOI.OpenXmlFormats.dll</HintPath>
+    </Reference>
+    <Reference Include="office, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="Sci, Version=2020.6.15.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\_Dll\Sci.dll</HintPath>
+    </Reference>
+    <Reference Include="Sci.Proj, Version=2020.6.15.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\_Dll\Sci.Proj.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.7\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
-    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Http, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.7\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.7\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.Routing" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
@@ -102,6 +153,7 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="WebGrease">
       <Private>True</Private>
       <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
@@ -120,23 +172,54 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Areas\Authority\AuthorityAreaRegistration.cs" />
+    <Compile Include="Areas\Authority\Controllers\AuthoritybyPositionController.cs" />
+    <Compile Include="Areas\Authority\Controllers\UserListController.cs" />
+    <Compile Include="Areas\BulkFGT\BulkFGTAreaRegistration.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\AccessoryOvenWashController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\BulkFGTMailGroupController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\FabricColorFastnessController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\FabricCrkShrkTestController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\FabricOvenTestController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\GarmentTestController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\MockupCrockingController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\MockupOvenTestController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\MockupWashController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\PullingTestController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\SearchListController.cs" />
     <Compile Include="Areas\FinalInspection\Controllers\InspectionController.cs" />
+    <Compile Include="Areas\FinalInspection\Controllers\QueryController.cs" />
     <Compile Include="Areas\FinalInspection\FinalInspectionAreaRegistration.cs" />
-    <Compile Include="Areas\Bulk FGT\Controllers\GarmentTestController.cs" />
+    <Compile Include="Areas\SampleRFT\Controllers\BACriteriaController.cs" />
+    <Compile Include="Areas\SampleRFT\Controllers\CFTCommentsController.cs" />
     <Compile Include="Areas\SampleRFT\Controllers\InspectionController.cs" />
+    <Compile Include="Areas\SampleRFT\Controllers\InspectionDefectListController.cs" />
+    <Compile Include="Areas\SampleRFT\Controllers\MeasurementController.cs" />
+    <Compile Include="Areas\SampleRFT\Controllers\PFTperLineController.cs" />
+    <Compile Include="Areas\SampleRFT\Controllers\PicturesDummyController.cs" />
     <Compile Include="Areas\SampleRFT\SampleRFTAreaRegistration.cs" />
+    <Compile Include="Areas\StyleManagement\Controllers\ExceptionFDController.cs" />
+    <Compile Include="Areas\StyleManagement\Controllers\StyleListController.cs" />
+    <Compile Include="Areas\StyleManagement\Controllers\PrintBarcodeController.cs" />
+    <Compile Include="Areas\StyleManagement\Controllers\StyleResultController.cs" />
+    <Compile Include="Areas\StyleManagement\StyleManagementAreaRegistration.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\PublicWondowController.cs" />
+    <Compile Include="Controllers\SendMailAttachfilesController.cs" />
+    <Compile Include="Controllers\TransferFinalInspectionController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helper\Attribute.cs" />
     <Compile Include="Helper\CheckWorkDate.cs" />
     <Compile Include="Helper\SetListItem.cs" />
+    <Compile Include="Helper\StringEncryptHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Areas\FinalInspection\CSS\Inspection.css" />
+    <Content Include="Areas\FinalInspection\CSS\FinalInspection.css" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -145,17 +228,22 @@
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="Image\Icon\Accessory.png" />
+    <Content Include="Image\Icon\add.png" />
     <Content Include="Image\Icon\Back.png" />
     <Content Include="Image\Icon\Back2.png" />
     <Content Include="Image\Icon\Barcode.png" />
+    <Content Include="Image\Icon\Camara_White.png" />
     <Content Include="Image\Icon\Camera.png" />
     <Content Include="Image\Icon\Checking.png" />
     <Content Include="Image\Icon\CheckList.png" />
+    <Content Include="Image\Icon\ChildRowClose.png" />
+    <Content Include="Image\Icon\ChildRowOpen.png" />
     <Content Include="Image\Icon\Confirm.png" />
     <Content Include="Image\Icon\Copy.png" />
     <Content Include="Image\Icon\Cutting.png" />
     <Content Include="Image\Icon\DateRange.png" />
     <Content Include="Image\Icon\Delete.png" />
+    <Content Include="Image\Icon\Delete_White.png" />
     <Content Include="Image\Icon\DOC.png" />
     <Content Include="Image\Icon\Document.png" />
     <Content Include="Image\Icon\Download.png" />
@@ -164,7 +252,10 @@
     <Content Include="Image\Icon\Dryer.png" />
     <Content Include="Image\Icon\East.png" />
     <Content Include="Image\Icon\Edit.png" />
+    <Content Include="Image\Icon\Edit_White.png" />
+    <Content Include="Image\Icon\Excel_White.png" />
     <Content Include="Image\Icon\Exit.png" />
+    <Content Include="Image\Icon\Exit_White.png" />
     <Content Include="Image\Icon\Fabric.png" />
     <Content Include="Image\Icon\Factory.png" />
     <Content Include="Image\Icon\Import.png" />
@@ -173,30 +264,46 @@
     <Content Include="Image\Icon\List3.png" />
     <Content Include="Image\Icon\List4.png" />
     <Content Include="Image\Icon\Lock.png" />
+    <Content Include="Image\Icon\Lock_White.png" />
     <Content Include="Image\Icon\Mail.png" />
+    <Content Include="Image\Icon\Mail_White.png" />
     <Content Include="Image\Icon\Measure.png" />
     <Content Include="Image\Icon\Measure2.png" />
     <Content Include="Image\Icon\Measure3.png" />
     <Content Include="Image\Icon\New.png" />
+    <Content Include="Image\Icon\New_White.png" />
     <Content Include="Image\Icon\PDF.png" />
+    <Content Include="Image\Icon\PDF_White.png" />
     <Content Include="Image\Icon\Picture.png" />
     <Content Include="Image\Icon\Print.png" />
+    <Content Include="Image\Icon\Print_White.png" />
     <Content Include="Image\Icon\QRCode.png" />
     <Content Include="Image\Icon\Quality.png" />
     <Content Include="Image\Icon\Query.png" />
+    <Content Include="Image\Icon\Receive.png" />
     <Content Include="Image\Icon\Refresh.png" />
+    <Content Include="Image\Icon\Remove.png" />
     <Content Include="Image\Icon\Save.png" />
+    <Content Include="Image\Icon\Save_White.png" />
+    <Content Include="Image\Icon\SendMail.png" />
+    <Content Include="Image\Icon\Setting.png" />
     <Content Include="Image\Icon\Sewing.png" />
     <Content Include="Image\Icon\Sewing2.png" />
     <Content Include="Image\Icon\Sewing3.png" />
     <Content Include="Image\Icon\Style.png" />
+    <Content Include="Image\Icon\Tick.png" />
     <Content Include="Image\Icon\Translate.png" />
     <Content Include="Image\Icon\UnConfirm.png" />
     <Content Include="Image\Icon\Undo.png" />
+    <Content Include="Image\Icon\Undo_White.png" />
     <Content Include="Image\Icon\Unlock.png" />
+    <Content Include="Image\Icon\UnLock_White.png" />
     <Content Include="Image\Icon\View.png" />
     <Content Include="Image\Icon\Washing.png" />
     <Content Include="Image\Icon\XLS.png" />
+    <Content Include="Image\QA_Skewness1.png" />
+    <Content Include="Image\QA_Skewness2.png" />
+    <Content Include="Image\QA_Skewness3.png" />
     <Content Include="Image\searchicon.png" />
     <Content Include="Image\tenor.gif" />
     <Content Include="Scripts\bootstrap.js" />
@@ -210,9 +317,79 @@
     <Content Include="Image\Icon\FactoryEDI.mkl" />
     <Content Include="Areas\FinalInspection\Views\web.config" />
     <Content Include="Areas\FinalInspection\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\FinalInspection\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Shared\_Inspection_Layout.cshtml" />
     <Content Include="Areas\FinalInspection\Views\Inspection\Index.cshtml" />
     <Content Include="Areas\SampleRFT\Views\Shared\ScreenShot.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Inspection\General.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Inspection\CheckList.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Inspection\AddDefect.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Inspection\BeautifulProductAudit.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Inspection\Moisture.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Inspection\Measurement.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Inspection\Others.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Query\Index.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Query\Detail.cshtml" />
+    <Content Include="Areas\Authority\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Authority\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\Authority\Views\UserList\Index.cshtml" />
+    <Content Include="fonts\OpenSans.woff2" />
+    <Content Include="Areas\FinalInspection\Views\Inspection\Setting.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Shared\_ForAll_Layout.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\BACriteria\Index.cshtml" />
+    <Content Include="Areas\Authority\Views\AuthoritybyPosition\Index.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\PFTperLine\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\web.config" />
+    <Content Include="Areas\BulkFGT\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\BulkFGTMailGroup\Index.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\PicturesDummy\Index.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\Measurement\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\GarmentTest\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\GarmentTest\Detail.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Query\_Tab1_Layout.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Query\_Tab2_Layout.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Query\_Tab3_Layout.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Query\_Tab4_Layout.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Query\_Tab5_Layout.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Query\_Tab6_Layout.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Query\_Tab7_Layout.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\FabricCrkShrkTest\Index.cshtml" />
+    <Content Include="Areas\StyleManagement\Views\web.config" />
+    <Content Include="Areas\StyleManagement\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\StyleManagement\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\StyleManagement\Views\StyleList\Index.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\CFTComments\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\SearchList\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\PullingTest\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\MockupCrocking\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\AccessoryOvenWash\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\AccessoryOvenWash\OvenTest.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\AccessoryOvenWash\WashTest.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\FabricOvenTest\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\FabricOvenTest\Detail.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\MockupWash\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\MockupOvenTest\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\FabricColorFastness\Index.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Shared\PictureList.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Inspection\FinalInspection_Picture.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Inspection\TakePicture.cshtml" />
+    <Content Include="Areas\FinalInspection\Views\Shared\ScreenShot.cshtml" />
+    <Content Include="Areas\StyleManagement\Views\PrintBarcode\Index.cshtml" />
+    <Content Include="Areas\StyleManagement\Views\PrintBarcode\PrintBarcode.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\FabricCrkShrkTest\CrockingTest.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\FabricCrkShrkTest\HeatTest.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\FabricCrkShrkTest\WashTest.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\FabricColorFastness\Detail.cshtml" />
+    <Content Include="Image\Icon\Thumbs.db" />
+    <Content Include="Areas\FinalInspection\Views\Inspection\Others_TakePicture.cshtml" />
+    <Content Include="Areas\StyleManagement\Views\StyleResult\Index.cshtml" />
+    <Content Include="Areas\StyleManagement\Views\StyleResult\BarcodeScan.cshtml" />
+    <Content Include="Areas\StyleManagement\Views\StyleResult\_Tab2_Layout.cshtml" />
+    <Content Include="Areas\StyleManagement\Views\StyleResult\_Tab3_Layout.cshtml" />
+    <Content Include="Areas\StyleManagement\Views\StyleResult\_Tab4_Layout.cshtml" />
+    <Content Include="Areas\StyleManagement\Views\StyleResult\_Tab1_Layout.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\InspectionDefectList\Index.cshtml" />
+    <Content Include="Areas\StyleManagement\Views\ExceptionFD\Index.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -294,6 +471,51 @@
     <Content Include="ThirdParty\plugins\bootstrap\bootstrap.js" />
     <Content Include="ThirdParty\plugins\bootstrap\bootstrap.min.css" />
     <Content Include="ThirdParty\plugins\bootstrap\bootstrap.min.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.bootstrap.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.bootstrap.min.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.bootstrap4.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.bootstrap4.min.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.bootstrap5.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.bootstrap5.min.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.bulma.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.bulma.min.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.dataTables.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.dataTables.min.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.foundation.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.foundation.min.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.jqueryui.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.jqueryui.min.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.semanticui.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.semanticui.min.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\jquery.dataTables.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\jquery.dataTables.min.css" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\images\sort_asc.png" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\images\sort_asc_disabled.png" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\images\sort_both.png" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\images\sort_desc.png" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\images\sort_desc_disabled.png" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\dataTables.bootstrap.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\dataTables.bootstrap.min.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\dataTables.bootstrap4.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\dataTables.bootstrap4.min.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\dataTables.bootstrap5.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\dataTables.bootstrap5.min.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\dataTables.bulma.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\dataTables.bulma.min.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\dataTables.dataTables.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\dataTables.dataTables.min.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\dataTables.foundation.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\dataTables.foundation.min.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\dataTables.jqueryui.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\dataTables.jqueryui.min.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\dataTables.semanticui.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\dataTables.semanticui.min.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\jquery.dataTables.js" />
+    <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\js\jquery.dataTables.min.js" />
+    <Content Include="ThirdParty\plugins\DataTables\datatables.css" />
+    <Content Include="ThirdParty\plugins\DataTables\datatables.js" />
+    <Content Include="ThirdParty\plugins\DataTables\datatables.min.css" />
+    <Content Include="ThirdParty\plugins\DataTables\datatables.min.js" />
     <Content Include="ThirdParty\plugins\filesaver\FileSaver.min.js" />
     <Content Include="ThirdParty\plugins\jquery-blockUI\jquery.blockUI.js" />
     <Content Include="ThirdParty\plugins\jquery-datepicker\Datepicker.js" />
@@ -485,9 +707,15 @@
     <Content Include="ThirdParty\plugins\jquery-validation\localization\methods_pt.min.js" />
     <Content Include="ThirdParty\plugins\jquery\jquery-3.2.1.js" />
     <Content Include="ThirdParty\plugins\jquery\jquery-3.2.1.min.js" />
+    <Content Include="ThirdParty\plugins\JsBarcode\JsBarcode.all.min.js" />
+    <Content Include="ThirdParty\plugins\QuaggaJS\live_w_locator.js" />
+    <Content Include="ThirdParty\plugins\QuaggaJS\quagga.js" />
+    <Content Include="ThirdParty\plugins\QuaggaJS\styles.css" />
     <Content Include="ThirdParty\plugins\sweetalert2\promise.min.js" />
     <Content Include="ThirdParty\plugins\sweetalert2\sweetalert2.min.css" />
     <Content Include="ThirdParty\plugins\sweetalert2\sweetalert2.min.js" />
+    <Content Include="ThirdParty\plugins\Tabs\nicepage.css" />
+    <Content Include="ThirdParty\plugins\Tabs\nicepage.js" />
     <Content Include="ThirdParty\SciCustom\css\dashboard.css" />
     <Content Include="ThirdParty\SciCustom\css\icon.css" />
     <Content Include="ThirdParty\SciCustom\css\images\ui-icons_444444_256x240.png" />
@@ -500,6 +728,7 @@
     <Content Include="ThirdParty\SciCustom\css\login.css" />
     <Content Include="ThirdParty\SciCustom\css\page.css" />
     <Content Include="ThirdParty\SciCustom\css\style.css" />
+    <Content Include="ThirdParty\SciCustom\css\TableStyle.css" />
     <Content Include="ThirdParty\SciCustom\img\header-hi.png" />
     <Content Include="ThirdParty\SciCustom\img\header-login.png" />
     <Content Include="ThirdParty\SciCustom\img\icon-chart.png" />
@@ -523,6 +752,9 @@
     <Content Include="ThirdParty\SciCustom\js\jquery-ui.min.js" />
     <Content Include="ThirdParty\SciCustom\js\main.js" />
     <Content Include="ThirdParty\SciCustom\js\MemoList.js" />
+    <Content Include="TMP\001.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -557,14 +789,110 @@
     <Content Include="ThirdParty\SciCustom\css\fonts\sci.woff" />
     <Content Include="ThirdParty\SciCustom\css\_DS_Store" />
     <Content Include="ThirdParty\SciCustom\img\_DS_Store" />
+    <Content Include="Views\Home\Setting.cshtml" />
+    <Content Include="XLT\BACriteria.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\Measurement.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\PublicWondow\BrandList.cshtml" />
+    <Content Include="Views\PublicWondow\ArticleList.cshtml" />
+    <Content Include="Views\PublicWondow\SeasonList.cshtml" />
+    <Content Include="Views\PublicWondow\SizeList.cshtml" />
+    <Content Include="Views\PublicWondow\StyleList.cshtml" />
+    <Content Include="Views\PublicWondow\TechnicianList.cshtml" />
+    <Content Include="Views\PublicWondow\SewingLineList.cshtml" />
+    <Content Include="Views\PublicWondow\Pass1List.cshtml" />
+    <Content Include="Views\PublicWondow\AppearanceList.cshtml" />
+    <Content Include="Views\PublicWondow\FtyInventoryList.cshtml" />
+    <Content Include="Views\PublicWondow\LocalSuppList.cshtml" />
+    <Content Include="Views\PublicWondow\Po_Supp_DetailList.cshtml" />
+    <Content Include="Views\PublicWondow\TPESuppList.cshtml" />
+    <Content Include="Views\PublicWondow\ColorList.cshtml" />
+    <Content Include="Views\PublicWondow\FGPTList.cshtml" />
+    <Content Include="Views\PublicWondow\PictureList.cshtml" />
+    <Content Include="Views\Shared\ScreenShot.cshtml" />
+    <Content Include="XLT\FinalInspectionReport.xlsx" />
+    <Content Include="Views\PublicWondow\TestFailMailList.cshtml" />
+    <Content Include="XLT\MockupCrocking.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\CFT Comments.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\CFT Comments.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\Search List.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\MockupWash.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\SendMailAttachfiles\SendMailer.cshtml" />
+    <Content Include="XLT\FabricOvenTestDetailReport.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\FabricOvenTestDetailReportToPDF.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\WashTest_2018.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\WashTest_2020_FGWT.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\WashTest_Physical.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\MockupOven.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\FabricCrockingTest.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\FabricCrockingTestPDF.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\FabricCrockingTestPDFWeftWarp.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\FabricCrockingTestWeftWarp.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\FabricHeatTest.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\FabricWashTest.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\FabricColorFastness_ToExcel.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\FabricColorFastness_ToPDF.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\StyleResult_SampleRFT.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\ExceptionFD.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\MockupOven2.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\MockupWash2.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Areas\Authority\Controllers\" />
     <Folder Include="Areas\Authority\Data\" />
-    <Folder Include="Areas\Authority\Views\Shared\" />
+    <Folder Include="Areas\BulkFGT\Data\" />
     <Folder Include="Areas\FinalInspection\Models\" />
     <Folder Include="Areas\SampleRFT\Data\" />
+    <Folder Include="Areas\StyleManagement\Models\" />
     <Folder Include="Models\" />
     <Folder Include="ThirdParty\plugins\bootstrap-fileinput\fonts\" />
     <Folder Include="Views\Authority\" />
@@ -601,6 +929,14 @@
     <ProjectReference Include="..\Library\Library.csproj">
       <Project>{3e6d504f-e89b-4c0a-a87d-07d1e6786a13}</Project>
       <Name>Library</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ManufacturingExecutionDataAccessLayer\ManufacturingExecutionDataAccessLayer.csproj">
+      <Project>{642AEBC1-02D9-4716-BB21-61621C62A67F}</Project>
+      <Name>ManufacturingExecutionDataAccessLayer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ProductionDataAccessLayer\ProductionDataAccessLayer.csproj">
+      <Project>{C2E1C298-46BF-4BDB-82A8-102777FA89EA}</Project>
+      <Name>ProductionDataAccessLayer</Name>
     </ProjectReference>
     <ProjectReference Include="..\ToolKit\ToolKit.csproj">
       <Project>{f75434e9-6588-4aa4-87f9-7e419dbcc57f}</Project>

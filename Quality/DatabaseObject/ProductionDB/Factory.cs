@@ -55,7 +55,6 @@ namespace DatabaseObject.ProductionDB
         public string AddressCH { get; set; }
 
         /// <summary>英文地址</summary>
-        [StringLength(-1)]
         [Display(Name = "英文地址")]
         public string AddressEN { get; set; }
 

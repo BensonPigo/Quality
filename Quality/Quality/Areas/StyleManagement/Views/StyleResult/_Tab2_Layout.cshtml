@@ -1,0 +1,109 @@
+﻿@using DatabaseObject.ViewModel.SampleRFT
+
+@model StyleResult_ViewModel
+
+@{
+    string ExpectionFormStatus = (Model.FTYDisclaimer.Any() ? Model.FTYDisclaimer.FirstOrDefault().ExpectionFormStatus : "");
+    string ExpectionFormDate = (Model.FTYDisclaimer.Any() && Model.FTYDisclaimer.FirstOrDefault().ExpectionFormDate.HasValue ? Model.FTYDisclaimer.FirstOrDefault().ExpectionFormDate.Value.ToShortDateString() : "");
+    string ExpectionFormRemark = (Model.FTYDisclaimer.Any() ? Model.FTYDisclaimer.FirstOrDefault().ExpectionFormRemark : "");
+
+}
+
+<style type="text/css">
+    .CheckListClass .checkboxlabel {
+        font-size: 1.5em;
+    }
+
+    .checkListClass tr td {
+        vertical-align: middle;
+    }
+
+    .CheckListClass {
+        width: 100%;
+        font-size: 0.8em;
+    }
+
+        .CheckListClass table tr td {
+            text-align: left;
+        }
+
+        .checkListClass input {
+            height: 1.5vh;
+        }
+</style>
+
+<div class="margin-c" style="padding:10px 10px 10px 10px;">
+    <div style="display:inline-block;width:100%">
+
+        <table style="border: 1px solid gray;font-size: 1vw;width: 100%;height: 50%;background-color: transparent;color: black;">
+            <tr>
+                <td style="width:10vw;border: 1px solid gray;vertical-align: middle;">
+                    FTY Disclaimer
+                </td>
+                <td style="border: 1px solid gray;vertical-align: middle;width: 25vw;">
+                    @ExpectionFormStatus
+                </td>
+                <td colspan="3" style="width:10vw;border: 1px solid gray;vertical-align: middle;">
+                    @ExpectionFormDate
+                </td>
+            </tr>
+            <tr>
+                <td style="width:10vw;border: 1px solid gray;vertical-align: middle;">
+                    FD Remark
+                </td>
+                <td colspan="4" style="border: 1px solid gray;vertical-align: middle;width: 25vw;">
+                    @ExpectionFormRemark
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div style="display:inline-block;width:100%">
+
+        <table id="myTable2" class="table table-striped display">
+            <thead>
+                <tr class="row-name" id="row-name">
+                    <th>Article</th>
+                    <th>Description</th>
+                    <th>FD File</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.FTYDisclaimer.Any())
+                {
+                    foreach (var item in Model.FTYDisclaimer)
+                    {
+                        <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                            <td>@item.Article</td>
+                            <td>@item.Description</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.FDFilePath))
+                                {
+
+                                    <a href="@Url.Action("DownloadFDFile", new { FDFilePath = item.FDFilePath,FileName = item.FDFileName })">
+                                        <img src="~/Image/Icon/Download.png" style="cursor: pointer;" width="25" height="25" />
+                                    </a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+    $(function () {
+        $('#myTable2').DataTable({
+            "pageLength": 10,
+            "autoWidth": false,
+            "info": false,
+            "filter": false,
+            "paging": false,
+            "info": false,
+            "scrollY": "40vh",
+            "scrollCollapse": true,
+        });
+    });
+</script>

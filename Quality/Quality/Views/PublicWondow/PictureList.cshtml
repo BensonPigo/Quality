@@ -1,0 +1,228 @@
+﻿@using DatabaseObject.Public
+
+@{
+    Layout = null;
+    string title = ViewData["Title"] == null ? "Picture" : ViewData["Title"].ToString();
+    string EditMode = ViewData["EditMode"] == null ? "EditMode" : ViewData["EditMode"].ToString();
+
+    string TargetID = ViewData["TargetID"] == null ? string.Empty : ViewData["TargetID"].ToString();
+
+    string BeforeColumn = ViewData["BeforeColumn"] == null ? string.Empty : ViewData["BeforeColumn"].ToString();
+    string AfterColumn = ViewData["AfterColumn"] == null ? string.Empty : ViewData["AfterColumn"].ToString();
+}
+
+@model Window_Picture
+
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+
+<link href="~/ThirdParty/SciCustom/css/style.css" rel="stylesheet" />
+<style>
+
+    ul {
+        padding: 0;
+    }
+
+    li {
+        list-style-type: none;
+        border: 1px solid black;
+        padding: 2px;
+    }
+
+    td {
+        border-style: ridge;
+    }
+
+    .leftDiv {
+        width: 45%;
+        height: 90%;
+        float: left;
+        margin-right: 2%;
+    }
+
+    .outerDiv {
+        width: 45%;
+        height: 90%;
+        float: left;
+        margin-right: 2%;
+    }
+
+    .grayDiv {
+        width: 100%;
+        height: 4vh;
+        background-color: lightgray;
+        text-align: center;
+    }
+
+    .pointer {
+        cursor: pointer;
+    }
+</style>
+<br />
+<header>
+    <h3 style="width:85%;float:left;margin:0">@title</h3>
+    <input id="btnKeep" type="button" value="Keep" />
+    <input id="btnExit" type="button" value="Exit" />
+</header>
+<br />
+<div class="outerDiv" style="margin-right:2%;">
+    <div class="grayDiv">
+        <h2 style="width:80%;float:left;padding-top:5px">Before</h2>
+        <img id="BeforeCam" class="OpenCamera pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Camera.png" />
+        <img id="BeforeDel" class="pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Delete.png" />
+
+    </div>
+    @{
+        var BrforeImage = Model.BrforeImage is null ? new byte[1] : Model.BrforeImage;
+        var base64_Brfore = Convert.ToBase64String(BrforeImage);
+        var imgSrc_Brfore = String.Format("data:image/webp;base64,{0}", base64_Brfore);
+
+        var AfterImage = Model.AfterImage is null ? new byte[1] : Model.AfterImage;
+        var base64_After = Convert.ToBase64String(AfterImage);
+        var imgSrc_After = String.Format("data:image/webp;base64,{0}", base64_After);
+    }
+    @if (BrforeImage[0] != 0)
+    {
+        <img id="BeforePic" Type="Before" style="width:100%;" src="@imgSrc_Brfore" />
+        <img id="OriBeforePic" style="width:100%;display:none;" src="@imgSrc_Brfore" />
+    }
+    else
+    {
+        <img id="BeforePic" Type="Before" style="width:100%;" />
+        <img id="OriBeforePic" style="width:100%;display:none;" />
+    }
+</div>
+<div class="outerDiv">
+    <div class="grayDiv">
+        <h2 style="width:80%;float:left;padding-top:5px">After</h2>
+        <img id="AfterCam" Type="After" class="OpenCamera pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Camera.png" />
+        <img id="AfterDel" class="pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Delete.png" />
+    </div>
+    @if (AfterImage[0] != 0)
+    {
+        <img id="AfterPic" style="width:100%;" src="@imgSrc_After" />
+        <img id="OriAfterPic" style="width:100%;display:none;" src="@imgSrc_After" />
+    }
+    else
+    {
+        <img id="AfterPic" style="width:100%;" />
+        <img id="OriAfterPic" style="width:100%;display:none;" />
+    }
+
+</div>
+
+@{
+    Html.RenderPartial("ScreenShot");
+}
+
+<script>
+
+    var ID_List = [];
+    var Name_List = [];
+    $(function () {
+
+        // 找出父頁面的照片
+        const CurrentBefore = window.opener.document.querySelector("#@BeforeColumn");
+        const CurrentAfter = window.opener.document.querySelector("#@AfterColumn");
+
+        //如果父頁面有照片，則顯示父頁面照片，如果沒有則顯示DB的照片
+        if (CurrentBefore != null && CurrentBefore.value != '') {
+            var before = document.querySelector("#BeforePic");
+            before.src = 'data:image/webp;base64,' + CurrentBefore.value;
+        }
+        if (CurrentAfter != null && CurrentAfter.value != '') {
+            var after = document.querySelector("#AfterPic");
+            after.src = 'data:image/webp;base64,' + CurrentAfter.value;
+        }
+
+        // Screenshot Exit
+        $('#btnScreenshotExit').on('click', function () {
+            StopScreen();
+            $('#Screenshot').addClass("display-None");
+        });
+
+
+        $("#btnKeep").click(function () {
+
+            var before = document.querySelector("#BeforePic");
+            var after = document.querySelector("#AfterPic");
+
+            var Picture = {
+                BeforePicture: before.src,
+                AfterPicture: after.src,
+            }
+
+            window.opener.GetPicture(Picture);
+            window.close();
+        });
+
+
+        $("#btnExit").click(function () {
+            window.close();
+        });
+
+        $("#BeforeDel").click(function () {
+
+            // DB的圖檔
+            const Ori = document.querySelector("#OriBeforePic");
+
+            // User拍下的圖片
+            const Setting = document.querySelector("#BeforePic");
+
+
+            document.querySelector("#BeforePic").removeAttribute('src');
+            // 如果User沒拍，則刪除原本的
+            //if (Ori == "" || Ori == null || Ori == undefined) {
+            //    document.querySelector("#BeforePic").removeAttribute('src');
+            //}
+            //else {
+            //    Setting.src = Ori.src;
+            //}
+        });
+
+        $("#AfterDel").click(function () {
+
+            // DB的圖檔
+            const Ori = document.querySelector("#OriAfterPic");
+
+            // User拍下的圖片
+            const Setting = document.querySelector("#AfterPic");
+
+            document.querySelector("#AfterPic").removeAttribute('src');
+            // 如果User沒拍，則刪除原本的
+            //if (Ori == "" || Ori == null || Ori == undefined) {
+            //    document.querySelector("#AfterPic").removeAttribute('src');
+            //}
+            //else {
+            //    Setting.src = Ori.src;
+            //}
+        });
+
+        CamInit();
+
+
+        if ('@EditMode' == 'False') {
+            $("#BeforeDel, #AfterDel, .OpenCamera").hide();
+        }
+    });
+
+    function CamInit() {
+        $('.OpenCamera').on('click', function () {
+
+            if ('@EditMode' == 'True') {
+                var Type = $(this).attr('Type');
+                var sentID = "BeforePic";
+                switch (Type) {
+                    case "Befroe":
+                        sentID = "BeforePic";
+                        break;
+                    case "After":
+                        sentID = "AfterPic";
+                        break;
+                }
+
+                $('#Screenshot').removeClass("display-None");
+                Screenshot(sentID);
+            }
+        });
+    }
+</script>

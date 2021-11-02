@@ -1,0 +1,1023 @@
+﻿@using DatabaseObject.ResultModel;
+@using DatabaseObject.RequestModel;
+@using DatabaseObject.ViewModel;
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+<link href="~/ThirdParty/plugins/jquery-ui/jquery-ui.css" rel="stylesheet" />
+
+@model GarmentTest_Result
+<style type="text/css">
+    .input-group {
+        display: flex
+    }
+
+        .input-group > input:nth-child(1) {
+            flex-grow: 3
+        }
+
+        .input-group > input:nth-child(2) {
+            flex-grow: 2
+        }
+
+        .input-group > input:nth-child(3) {
+            flex-grow: 1
+        }
+
+    .row {
+        --bs-gutter-x: 1.5rem;
+        --bs-gutter-y: 0;
+        display: flex;
+        flex-wrap: wrap;
+        width: 95vw;
+        margin-top: calc(var(--bs-gutter-y) * -1);
+        margin-right: calc(var(--bs-gutter-x)/ -2);
+        margin-left: calc(var(--bs-gutter-x)/ -2);
+    }
+
+        .row > * {
+            flex-shrink: 0;
+            width: 100%;
+            max-width: 100%;
+            padding-left: calc(var(--bs-gutter-x)/ 2);
+        }
+
+    .rowHeader {
+        font-size: 1.1vw;
+        font-weight: bold;
+    }
+
+        .rowHeader input[type="text"] {
+            width: 12vw;
+        }
+
+    .col-auto {
+        width: auto;
+    }
+
+        .col-auto > p {
+            padding: 0
+        }
+
+    .White {
+        color: white !important;
+    }
+
+    .Black {
+        color: black !important;
+    }
+
+    .IsEditMode {
+        color: white !important;
+        cursor: pointer;
+    }
+
+    .IsEditModeQuery {
+        color: gray !important;
+        cursor: no-drop;
+    }
+
+    #ButtonMode {
+        width: 92vw;
+    }
+
+    .DataTable {
+        width: 92vw;
+        font-size: 1rem;
+        font-weight: bold;
+        border: solid 1px black;
+        background-color: white;
+    }
+        .DataTable > tbody img{
+            cursor:pointer;
+        }
+
+        .DataTable > tbody > tr:nth-of-type(odd) {
+            background-color: #ffffff;
+        }
+
+        .DataTable > tbody > tr:nth-of-type(even) {
+            background-color: #F0F2F2;
+        }
+
+        .DataTable > tbody > tr > td {
+            border: solid 1px gray;
+            padding: 1em;
+            text-align: left;
+            vertical-align: middle;
+        }
+</style>
+
+<div class="main-content">
+    <header class="page-header">
+        <h3>
+            <i class="icon-users"></i><span>Garment Test</span>
+        </h3>
+    </header>
+
+    <div class="main-area">
+        <div class="content-scroll">
+            <div class="inner-scroll">
+                @using (Html.BeginForm("Index", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { id = "QueryForm" }))
+                {
+                    <div class="row rowHeader">
+                        <div class="col-auto">
+                            <p class="InfoTitle White">Brand</p>
+                        </div>
+                        <div class="col-auto">
+                            <input id="Brand" name="Brand" type="text" value="@Model.req.Brand" />
+                            <input id="btnBrandSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="BrandSelectItem" value="..." />
+                        </div>
+                        <div class="col-auto"><p class="InfoTitle White">Season</p></div>
+                        <div class="col-auto">
+                            <input id="Season" name="Season" type="text" value="@Model.req.Season"/>
+                            <input id="btnSeasonSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="SeasonSelectItem" value="..." />
+                        </div>
+                        <div class="col-auto"><p class="InfoTitle White">Style</p></div>
+                        <div class="col-auto">
+                            <input id="Style" name="Style" type="text" value="@Model.req.Style"/>
+                            <input id="btnStyleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="StyleSelectItem" value="..." />
+                        </div>
+                        <div class="col-auto"><p class="InfoTitle White">Article</p></div>
+                        <div class="col-auto">
+                            <input id="Article" name="Article" type="text" value="@Model.req.Article"/>
+                            <input id="btnArticleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="ArticleSelectItem" value="..." />
+                        </div>
+
+                        <div class="col-auto">
+                            <button id="btnQuery" type="submit" class="site-btn btn-gy font1rem Black" style="padding: 0.4em;">Query</button>
+                        </div>
+                    </div>
+                }
+
+                <div style="margin-top: 1em;">
+                    <table id="ButtonMode">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <h4 id="Edit" style=" margin-right: 1em;">
+                                        <img src="~/Image/Icon/Edit.png" width="30" />
+                                        Edit
+                                    </h4>
+                                </td>
+                                <td>
+                                    <h4 id="Save" style=" margin-right: 1em;">
+                                        <img src="~/Image/Icon/Save.png" width="30" />
+                                        Save
+                                    </h4>
+                                </td>
+                                <td>
+                                    <h4 id="Undo" style=" margin-right: 1em;">
+                                        <img src="~/Image/Icon/Undo.png" width="30" />
+                                        Undo
+                                    </h4>
+                                </td>
+                                <td style="width: 66%;">
+
+                                </td>
+                                <td align="right">
+                                    <h4 id="New" style=" margin-right: 1em;">
+                                        <img src="~/Image/Icon/New.png" width="30" />
+                                        New Test No
+                                    </h4>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="margin-top: 1em;">
+                    <table class="DataTable">
+                        <tbody>
+                            <tr>
+                                <td style="width: 10vw;"><h5>Style#</h5></td>
+                                <td style="width: 20vw;">
+                                    @Html.TextBoxFor(o => o.garmentTest.StyleID, "", new { @readonly = "readonly" })
+                                    @Html.TextBoxFor(o => o.garmentTest.ID, "", new { @readonly = "readonly", @class = "display-None" })
+                                </td>
+                                <td style="width: 10vw;"><h5>Season</h5></td>
+                                <td style="width: 20vw;">
+                                    @Html.TextBoxFor(o => o.garmentTest.SeasonID, "", new { @readonly = "readonly" })
+                                </td>
+                                <td style="width: 10vw;"><h5>Brand</h5></td>
+                                <td style="width: 20vw;">
+                                    @Html.TextBoxFor(o => o.garmentTest.BrandID, "", new { @readonly = "readonly" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><h5>Article</h5></td>
+                                <td>
+                                    @Html.TextBoxFor(o => o.garmentTest.Article, "", new { @readonly = "readonly" })
+                                </td>
+                                <td><h5>First SP#</h5></td>
+                                <td>
+                                    @Html.TextBoxFor(o => o.garmentTest.FirstOrderID, "", new { @readonly = "readonly" })
+                                    @Html.HiddenFor(o => o.garmentTest.OrderID)
+                                </td>
+                                <td><h5>M</h5></td>
+                                <td>
+                                    @Html.TextBoxFor(o => o.garmentTest.MDivisionid, "", new { @readonly = "readonly" })
+                                </td>
+                            </tr>
+                            <tr>
+                                @{
+                                    string Deadline = Model.garmentTest.DeadLine.HasValue ? Model.garmentTest.DeadLine.Value.ToString("yyyy/MM/dd") : string.Empty;
+                                    string SewingInline = Model.garmentTest.SewingInline.HasValue ? Model.garmentTest.SewingInline.Value.ToString("yyyy/MM/dd") : string.Empty;
+                                    string MinSciDelivery = Model.garmentTest.MinSciDelivery.HasValue ? Model.garmentTest.MinSciDelivery.Value.ToString("yyyy/MM/dd") : string.Empty;
+                                    string SewingOffline = Model.garmentTest.SewingOffline.HasValue ? Model.garmentTest.SewingOffline.Value.ToString("yyyy/MM/dd") : string.Empty;
+                                    string MinBuyerDelivery = Model.garmentTest.MinBuyerDelivery.HasValue ? Model.garmentTest.MinBuyerDelivery.Value.ToString("yyyy/MM/dd") : string.Empty;
+                                    string Date = Model.garmentTest.Date.HasValue ? Model.garmentTest.Date.Value.ToString("yyyy/MM/dd") : string.Empty;
+                                }
+                                <td><h5>Deadline</h5></td>
+                                <td>
+                                    @Deadline
+                                </td>
+                                <td><h5>Earliest Inline</h5></td>
+                                <td>
+                                    @SewingInline
+                                </td>
+                                <td><h5>Earliest SCI Div</h5></td>
+                                <td>
+                                    @MinSciDelivery
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><h5>Special Mark</h5></td>
+                                <td>
+                                    @Html.TextBoxFor(o => o.garmentTest.SpecialMark, "", new { @readonly = "readonly" })
+                                </td>
+                                <td><h5>Earliest Offline</h5></td>
+                                <td>
+                                    @SewingOffline
+                                </td>
+                                <td><h5>Earliest Buyer Div</h5></td>
+                                <td>
+                                    @MinBuyerDelivery
+                                </td>
+                            </tr>
+                            @{
+                                string SeamBreakageFontColor = Model.garmentTest != null && (Model.garmentTest.SeamBreakageResult == "P" || Model.garmentTest.SeamBreakageResult == "Pass") ? "blue" : "red";
+                                string SeamBreakageVal = Model.garmentTest != null && (Model.garmentTest.SeamBreakageResult == "P" || Model.garmentTest.SeamBreakageResult == "Pass") ? "Pass" :
+                                                        string.IsNullOrEmpty(Model.garmentTest.SeamBreakageResult) ? string.Empty : "Fail";
+
+                                string OdourResultFontColor = Model.garmentTest != null && (Model.garmentTest.OdourResult == "P" || Model.garmentTest.OdourResult == "Pass") ? "blue" : "red";
+                                string OdourResultVal = Model.garmentTest != null && (Model.garmentTest.OdourResult == "P" || Model.garmentTest.OdourResult == "Pass") ? "Pass" :
+                                                        string.IsNullOrEmpty(Model.garmentTest.OdourResult) ? string.Empty : "Fail";
+
+                                string WashResultFontColor = Model.garmentTest != null && (Model.garmentTest.WashResult == "P" || Model.garmentTest.WashResult == "Pass") ? "blue" : "red";
+                                string WashResultVal = Model.garmentTest != null && (Model.garmentTest.WashResult == "P" || Model.garmentTest.WashResult == "Pass") ? "Pass" :
+                                                        string.IsNullOrEmpty(Model.garmentTest.WashResult) ? string.Empty : "Fail";
+
+                                string ResultFontColor = Model.garmentTest != null && (Model.garmentTest.Result == "P" || Model.garmentTest.Result == "Pass") ? "blue" : "red";
+                                string ResultVal = Model.garmentTest != null && (Model.garmentTest.Result == "P" || Model.garmentTest.Result == "Pass") ? "Pass" :
+                                                        string.IsNullOrEmpty(Model.garmentTest.Result) ? string.Empty : "Fail";
+                            }
+                            <tr>
+                                <td><h5>450 Last Result</h5></td>
+                                <td class="@SeamBreakageFontColor">
+                                    @SeamBreakageVal
+                                </td>
+                                <td><h5>451 Last Result</h5></td>
+                                <td class="@OdourResultFontColor">
+                                    @OdourResultVal
+                                </td>
+                                <td>
+                                    <h5 class="WashResult">@Model.garmentTest.WashName Last Result</h5>
+                                </td>
+                                <td class="@WashResultFontColor">
+                                    @WashResultVal
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><h5>Last Result</h5></td>
+                                <td class="@ResultFontColor">
+                                    @ResultVal
+                                </td>
+                                <td><h5>Last Test Date</h5></td>
+                                <td>
+                                    @Date
+                                </td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><h5>Last Comment</h5></td>
+                                <td colspan="7">
+                                    @Html.DisplayFor(o => o.garmentTest.Remark, "", "")
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><h5>Create By</h5></td>
+                                <td colspan="2">
+                                    @Html.DisplayFor(o => o.garmentTest.GarmentTestAddName, "", "")
+                                </td>
+                                <td><h5>Edit By</h5></td>
+                                <td colspan="2">
+                                    @Html.DisplayFor(o => o.garmentTest.GarmentTestEditName, "", "")
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="margin-top: 1em; overflow:auto;">
+                    <table class="DetailTable DataTable">
+                        <thead>
+                            @{
+                                string trClass = Model.garmentTest_Details == null || Model.garmentTest_Details.Count == 0 ? "display-None" : "";
+                                string washName = "701";
+                                if (Model != null && Model.garmentTest_Details != null && Model.garmentTest_Details.Count() > 0)
+                                {
+                                    washName = Model.garmentTest.WashName;
+                                }
+                                <tr class="@trClass">
+                                    <th><h4>No. of Test</h4></th>
+                                    <th><h4>SP#</h4></th>
+                                    <th><h4>Size</h4></th>
+                                    <th><h4>Test Date</h4></th>
+                                    <th><h4>Material Type</h4></th>
+                                    <th><h4>Result</h4></th>
+                                    <th><h4>Non 450</h4></th>
+                                    <th><h4>450 Result</h4></th>
+                                    <th><h4>451 Result</h4></th>
+                                    <th><h4>@washName Result</h4></th>
+                                    <th><h4>Inspector</h4></th>
+                                    <th><h4>Inspector Name</h4></th>
+                                    <th><h4>Comments</h4></th>
+                                    <th style="padding: 0 1em;"><h4>Send</h4></th>
+                                    <th><h4>Sender</h4></th>
+                                    <th><h4>Send Date</h4></th>
+                                    <th><h4>Receive</h4></th>
+                                    <th><h4>Receiver</h4></th>
+                                    <th><h4>Receive Date</h4></th>
+                                    <th><h4>Add Name</h4></th>
+                                    <th><h4>Edit Name</h4></th>
+                                    <th style="padding: 0 1em;"><h4>View</h4></th>
+                                    <th><h4>Delete</h4></th>
+                                </tr>
+                            }
+                        </thead>
+                        <tbody>
+                            @if (Model.garmentTest_Details != null)
+                            {
+                                for (int i = 0; i <= Model.garmentTest_Details.Count - 1; i++)
+                                {
+                                    string status = string.IsNullOrEmpty(Model.garmentTest_Details[i].Status) ? string.Empty : Model.garmentTest_Details[i].Status.ToLower();
+                                    string aHref = "";
+                            <tr idx="@i">
+                                <td style="width:10vw;">
+
+                                    @if (Model.garmentTest_Details[i].ID > 0)
+                                    {
+                                        aHref = Url.Action("Detail", "GarmentTest", new { ID = Model.garmentTest_Details[i].ID, No = Model.garmentTest_Details[i].No, EditMode = false });
+                                    }
+
+                                    <a href="@aHref" class="detailA" idx="@Model.garmentTest_Details[i].ID" idv="@Model.garmentTest_Details[i].No">
+                                        @Html.DisplayFor(o => Model.garmentTest_Details[i].No, "", "")
+                                    </a>
+                                </td>
+                                <td style="width:10vw;">
+                                    @Html.TextBoxFor(o => Model.garmentTest_Details[i].OrderID, "", new { @class = "Detail_OrderID" })
+                                </td>
+                                <td style="width:10vw;">
+                                    <select class="Detail_SizeCode" id="Model.garmentTest_Details_@{@i}__.SizeCode" name="Model.garmentTest_Details[@i].SizeCode" disabled="disabled">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.SizeCodeList)
+                                        {
+                                            string selected = item.Text.Equals(Model.garmentTest_Details[i].SizeCode) ? "selected" : "";
+                                            <option value="@item.Value" @selected>@item.Text</option>
+                                        }
+                                    </select>
+                                </td>
+                                <td style="width:10vw;">
+                                    @Html.TextBoxFor(o => Model.garmentTest_Details[i].inspdate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
+                                </td>
+                                <td style="width:10vw;">
+                                    <select id="Model_garmentTest_Details_@{@i}__MtlTypeID" name="Model.garmentTest_Details[@i].MtlTypeID" disabled="disabled">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.MtlTypeIDList)
+                                        {
+                                            string selected = item.Text.Equals(Model.garmentTest_Details[i].MtlTypeID) ? "selected" : "";
+                                            <option value="@item.Value" @selected>@item.Text</option>
+                                        }
+                                    </select>
+                                </td>
+                                @{
+                                    string garmentTest_DetailsFontColor = Model.garmentTest_Details[i].Result == "P" || Model.garmentTest_Details[i].Result == "Pass" ? "blue" : "red";
+                                    string garmentTest_DetailsVal = Model.garmentTest_Details[i].Result == "P" || Model.garmentTest_Details[i].Result == "Pass" ? "Pass" :
+                                                    string.IsNullOrEmpty(Model.garmentTest_Details[i].Result) ? string.Empty : "Fail";
+                                }
+                                <td class="@garmentTest_DetailsFontColor" style="width:10vw;">
+                                    @garmentTest_DetailsVal
+                                </td>
+                                <td style="width:10vw;">
+                                    @{
+                                        bool NonSeamBreakageTestVal = Model.garmentTest_Details[i].NonSeamBreakageTest;
+                                    }
+                                    <input id="garmentTest_Details_@{@i}__NonSeamBreakageTest" name="garmentTest_Details[@i].NonSeamBreakageTest" type="checkbox" class="bigSize" checked="@NonSeamBreakageTestVal">
+                                    
+                                </td>
+                                @{
+                                    string SeamBreakageResultFontColor = Model.garmentTest_Details[i].SeamBreakageResult == "P" || Model.garmentTest_Details[i].SeamBreakageResult == "Pass" ? "blue" : "red";
+                                    string SeamBreakageResultVal = Model.garmentTest_Details[i].SeamBreakageResult == "P" || Model.garmentTest_Details[i].SeamBreakageResult == "Pass" ? "Pass" :
+                                                            string.IsNullOrEmpty(Model.garmentTest_Details[i].SeamBreakageResult) ? string.Empty : "Fail";
+                                    string OdourResultDetailFontColor = Model.garmentTest_Details[i].OdourResult == "P" || Model.garmentTest_Details[i].OdourResult == "Pass" ? "blue" : "red";
+                                    string OdourResultDetailVal = Model.garmentTest_Details[i].OdourResult == "P" || Model.garmentTest_Details[i].OdourResult == "Pass" ? "Pass" :
+                                                            string.IsNullOrEmpty(Model.garmentTest_Details[i].OdourResult) ? string.Empty : "Fail";
+                                    string WashResultDetailFontColor = Model.garmentTest_Details[i].WashResult == "P" || Model.garmentTest_Details[i].WashResult == "Pass" ? "blue" : "red";
+                                    string WashResultDetailVal = Model.garmentTest_Details[i].WashResult == "P" || Model.garmentTest_Details[i].WashResult == "Pass" ? "Pass" :
+                                                            string.IsNullOrEmpty(Model.garmentTest_Details[i].WashResult) ? string.Empty : "Fail";
+                                }
+                                <td style="width:10vw;" class="@SeamBreakageResultFontColor">
+                                    @SeamBreakageResultVal
+                                </td>
+                                <td style="width:10vw;" class="@OdourResultDetailFontColor">
+                                    @OdourResultDetailVal
+                                </td>
+                                <td style="width:10vw;" class="@WashResultDetailFontColor">
+                                    @WashResultDetailVal
+                                </td>
+                                <td style="width:10vw;">
+                                    <div class="input-group">
+                                        @Html.TextBoxFor(o => Model.garmentTest_Details[i].inspector, new { @class = "Inspector" })
+                                        <input class="btnDetailInspectorSelectItem site-btn btn-blue" type="button" style="margin:0;border:0;" value="..." />
+                                    </div>
+                                </td>
+                                <td style="width:10vw;">
+                                    @Html.TextBoxFor(o => Model.garmentTest_Details[i].GarmentTest_Detail_Inspector, "", new { @readonly = "readonly", @style = "width: 8vw", @class= "inspectorName" })
+                                </td>
+                                <td style="width:10vw;">
+                                    @Html.TextBoxFor(o => Model.garmentTest_Details[i].Remark, "", "")
+                                </td>
+                                <td style="width:10vw;">
+                                    <img class="SendMail" src="~/Image/Icon/Mail.png" width="30" />
+                                </td>
+                                <td class="Sender" style="width:10vw;">
+                                    @Html.DisplayFor(o => Model.garmentTest_Details[i].Sender, "", "")
+                                </td>
+                                <td class="SendDate" style="width:10vw;">
+                                    @{
+                                        var SendDateVal = Model.garmentTest_Details[i].SendDate.HasValue ? Model.garmentTest_Details[i].SendDate.Value.ToString("yyyy/MM/dd HH:mm:ss") : "";
+                                    }
+
+                                    @SendDateVal
+                                </td>
+                                <td style="width:10vw;">
+                                    <img class="ReceiveMail" src="~/Image/Icon/Mail.png" width="30" />
+                                </td>
+                                <td class="Receiver" style="width:10vw;">
+                                    @Html.DisplayFor(o => Model.garmentTest_Details[i].Receiver, "", "")
+                                </td>
+                                <td class="ReceiveDate" style="width:10vw;">
+                                    @{
+                                        var ReceiveDateVal = Model.garmentTest_Details[i].ReceiveDate.HasValue ? Model.garmentTest_Details[i].ReceiveDate.Value.ToString("yyyy/MM/dd HH:mm:ss") : "";
+                                    }
+
+                                    @ReceiveDateVal
+                                </td>
+                                <td style="width:10vw;">
+                                    @Html.DisplayFor(o => Model.garmentTest_Details[i].GarmentTest_Detail_AddName, "", "")
+                                </td>
+                                <td style="width:10vw;">
+                                    @Html.DisplayFor(o => Model.garmentTest_Details[i].GarmentTest_Detail_EditName, "", "")
+                                </td>
+                                <td style="width:10vw;">
+                                    @if (status == "new")
+                                    {
+                                        <img class="detailEdit" src="~/Image/Icon/Edit.png" width="30" />
+                                    }
+                                </td>
+                                <td style="width:10vw;">
+                                    @if (status == "new")
+                                    {
+                                        <img class="detailDelete" src="~/Image/Icon/Delete.png" width="30" />
+                                    }
+                                </td>
+                            </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var msg;
+    var EditMode;
+    $(function () {
+        msg = new MessagerAlert();
+        EditMode = false;
+        IsEditModeChange();
+        DetailDynamicBind();
+
+        if ('@Model.ErrMsg' != '') {
+            msg.WithError('@Model.ErrMsg');
+        }
+
+        if (!$("body").hasClass("sidebar-collapse")) {
+            $(".menu-trigger").click();
+        }
+    });
+
+    function IsEditModeChange() {
+        EditModeButtionBind();
+
+        if (EditMode) {
+            $(".rowHeader input[type='text']").attr("disabled", "disabled");
+            $(".rowHeader input[type='button']").unbind('click').addClass("IsEditModeQuery");
+            $('#btnQuery').addClass("IsEditModeQuery");
+            $("#Edit").removeClass("IsEditMode");
+            $('#Save, #Undo, #New').addClass("IsEditMode");
+            $(".DetailTable input[type='text'], .DetailTable select, .DetailTable input[type='checkbox'], .DetailTable input[type='button']").removeAttr("disabled");
+            $(".DetailTable img").addClass('display-None');
+            $('.detailDelete').removeClass('display-None');
+            $('#btnQuery').on('click', function () {
+                return false;
+            });
+        }
+        else {
+            $(".rowHeader input[type='text']").removeAttr("disabled");
+            $(".rowHeader input[type='button']").removeClass("IsEditModeQuery");
+            $('#btnQuery').unbind('click').removeClass("IsEditModeQuery");
+            $("#Edit").addClass("IsEditMode");
+            $('#Save, #Undo, #New').unbind('click').removeClass("IsEditMode");
+            $(".DetailTable input[type='text'], .DetailTable select, .DetailTable input[type='checkbox'], .DetailTable input[type='button']").attr("disabled", "disabled");
+            $(".DetailTable img").removeClass('display-None');
+            $('.detailDelete').addClass('display-None');
+
+            QueryButtonBind();
+
+            $('#btnQuery').on('click', function () {
+                if ($('#Brand').val() == '' || $('#Season').val() == '' || $('#Style').val() == '' || $('#Article').val() == '') {
+                    msg.WithError("Style, Brand, Season and Article cannot be empty");
+                    return false;
+                }
+            });
+        }
+    }
+
+    function EditModeButtionBind() {
+        $('#Edit').on('click', function () {
+            if ($('#garmentTest_ID').val() == "") {
+                return;
+            }
+
+            if ($('#garmentTest_StyleID').val() != "" && $('#garmentTest_SeasonID').val() != "" && $('#garmentTest_BrandID').val() != "") {
+                EditMode = true;
+                IsEditModeChange();
+            }
+        });
+
+        $('#Save').on('click', function () {
+            var detail = [];
+            var ErrMsg = "";
+            $('.DetailTable > tbody > tr').each(function (index, value) {
+                var fcol = $(this).children().find('a');
+                var id = fcol.attr("idx");
+                var no = fcol.attr("idv");
+
+                var NonSeamBreakageTest = $(this).children().find("input[type='checkbox']").prop("checked");
+                var OrderID, inspdate, inspector, Remark;
+                var SizeCode, MtlTypeID;
+                $(this).children().find("input[type='text']").each(function (index, value) {
+                    switch (index) {
+                        case 0:
+                            OrderID = $(this).val();
+                            break;
+                        case 1:
+                            inspdate = $(this).val();
+                            break;
+                        case 2:
+                            inspector = $(this).val();
+                            break;
+                        case 4:
+                            Remark = $(this).val();
+                            break;
+                    }
+                })
+
+                $(this).children().find("select").each(function (index, value) {
+                    switch (index) {
+                        case 0:
+                            SizeCode = $(this).children("option:selected").val();
+                            break;
+                        case 1:
+                            MtlTypeID = $(this).children("option:selected").val();
+                            break;
+                    }
+                })
+
+
+                if (OrderID == "") {
+                    ErrMsg += "SP# cannot be empty";
+                    return false;
+                }
+
+                if (MtlTypeID == "") {
+                    ErrMsg += "Material Type cannot be empty";
+                    return false;
+                }
+
+                detail.push({
+                    ID: parseInt(id),
+                    No: parseInt(no),
+                    OrderID: OrderID,
+                    inspdate: inspdate,
+                    inspector: inspector,
+                    Remark: Remark,
+                    NonSeamBreakageTest: NonSeamBreakageTest,
+                    SizeCode: SizeCode,
+                    MtlTypeID: MtlTypeID,
+                });
+            });
+
+            var main = {
+                ID: parseInt($('#garmentTest_ID').val()),
+                StyleID: $('#garmentTest_StyleID').val(),
+                SeasonID: $('#garmentTest_SeasonID').val(),
+                BrandID: $('#garmentTest_BrandID').val(),
+                Article: $('#garmentTest_Article').val(),
+            };
+
+            if (ErrMsg != "") {
+                msg.WithError(ErrMsg);
+                return;
+            }
+
+            SaveData(main, detail);
+        });
+
+        $('#Undo').on('click', function () {
+            EditMode = false;
+            IsEditModeChange();
+            $('#btnQuery').click();
+        });
+
+        $('#New').on('click', function () {
+            AddDetailRow($('#garmentTest_OrderID').val(), $('#garmentTest_Article').val(), $('#garmentTest_BrandID').val(), $('#garmentTest_SeasonID').val(), $('#garmentTest_StyleID').val());
+        });
+    }
+
+    function DetailDynamicBind() {
+        $('.detailEdit').unbind('click').on('click', function () {
+            if ($('#garmentTest_ID').val() == "") {
+                return;
+            }
+
+            var tr = $(this).parent().parent();
+            var fcol = tr.children().find("a[class='detailA']");
+            var id = fcol.attr("idx");
+            var no = fcol.attr("idv");
+            window.location.href = "@Url.Action("Detail", "GarmentTest", new { EditMode = true })" + "&ID=" + id + "&No=" + no;
+        });
+
+        $('.detailDelete').unbind('click').on('click', function () {
+            if ($('#garmentTest_ID').val() == "") {
+                return;
+            }
+
+            var t = $(this);
+            var tr = $(this).parent().parent();
+            var fcol = tr.children().find("a[class='detailA']");
+            var id = fcol.attr("idx");
+            var no = fcol.attr("idv");
+            msg.WithConfirm('Do you want to delete the data ?',
+                function ()
+                {
+                    t.parents().parents('tr').remove();
+                    msg.WithSuccess("Delete Success");
+                }, null);
+        });
+
+        $('.SendMail').unbind('click').on('click', function () {
+            if ($('#garmentTest_ID').val() == "") {
+                return;
+            }
+
+            var tr = $(this).parent().parent();
+            var fcol = tr.children().find("a[class='detailA']");
+            var id = fcol.attr("idx");
+            var no = fcol.attr("idv");
+            $.ajax({
+                url: "@Url.Action("SendMail", "GarmentTest", new { Area = "BulkFGT" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID: id, No: no }),
+                async: true,
+                success: function (data) {
+                    if (data.SaveResult) {
+                        tr.find("td[class='Sender']").html(data.Sender);
+                        tr.find("td[class='SendDate']").html(data.SendDate);
+                        var subject = "Garment Test - Style:" + $('#garmentTest_StyleID').val() + ", Season:" + $('#garmentTest_SeasonID').val();
+                        var body = "Garment Test - Style:" + $('#garmentTest_StyleID').val() + ", Season:" + $('#garmentTest_SeasonID').val() + " had been sent, please receive and confirm";
+                        var para = "?subject=" + subject + "&body=" + body;
+                        window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=400');
+                    }
+                    else {
+                        msg.WithError(data.ErrMsg);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $('.ReceiveMail').unbind('click').on('click', function () {
+            if ($('#garmentTest_ID').val() == "") {
+                return;
+            }
+
+            var tr = $(this).parent().parent();
+            var fcol = tr.children().find("a[class='detailA']");
+            var id = fcol.attr("idx");
+            var no = fcol.attr("idv");
+            $.ajax({
+                url: "@Url.Action("ReceiveMail", "GarmentTest", new { Area = "BulkFGT" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID: id, No: no }),
+                async: true,
+                success: function (data) {
+                    if (data.SaveResult) {
+                        tr.find("td[class='Receiver']").html(data.Sender);
+                        tr.find("td[class='ReceiveDate']").html(data.SendDate);
+                    }
+                    else {
+                        msg.WithError(data.ErrMsg);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $('.Detail_OrderID').unbind('blur').on('blur', function () {
+            if ($('#garmentTest_ID').val() == "") {
+                return;
+            }
+
+            if ($(this).val() == "") {
+                return;
+            }
+
+            var SizeCode = $(this).parent().siblings().find("select[class='Detail_SizeCode']");
+            var OrderID = $(this).val();
+            var Brand = $('#Brand').val();
+            var Season = $('#Season').val();
+            var Style = $('#Style').val();
+            var Article = $('#Article').val();
+            $.ajax({
+                url: "@Url.Action("ChangeSizeCode", "GarmentTest", new { Area = "BulkFGT" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ OrderID: OrderID, Brand: Brand, Season: Season, Style: Style, Article: Article }),
+                async: false,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $(this).val('');
+                        msg.WithError("SP not Found");
+                    }
+                    else {
+                        SizeCode.html(data);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+
+        });
+
+        $('.btnDetailInspectorSelectItem').unbind('click').on('click', function () {
+            var targetID = $(this).closest('tr').attr('idx');
+            var para = "?TargetID=" + targetID;
+            window.open('@Url.Action("Pass1List","PublicWondow",new{Area=""})' + para, 'Inspector', config = 'toolbar=no,status=no,location=no,width=1000,height=650');
+        });
+
+        $('.Inspector').unbind('blur').blur(function () {
+            var targetID = $(this).closest('tr').attr('idx');
+
+            $.ajax({
+                url: "@Url.Action("Pass1List", "PublicWondow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#garmentTest_Details_" + targetID + "__inspector").val('');
+                        $("#garmentTest_Details_" + targetID + "__GarmentTest_Detail_Inspector").val('');
+                        msg.WithError('Inspector Not Found');
+                    }
+                    else {
+                        $("#garmentTest_Details_" + targetID + "__inspector").val(data[0].ID);
+                        $("#garmentTest_Details_" + targetID + "__GarmentTest_Detail_Inspector").val(data[0].Name + ' Ext.' + data[0].ExtNo);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    }
+
+    function SaveData(main, detail) {
+        $.ajax({
+            url: "@Url.Action("SaveDetail", "GarmentTest", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ main: main, details: detail }),
+            async: false,
+            success: function (data) {
+                if (data.Result) {
+                    $('#Brand').val(data.req.Brand);
+                    $('#Season').val(data.req.Season);
+                    $('#Style').val(data.req.Style);
+                    $('#Article').val(data.req.Article);
+                    $(".rowHeader input[type='text']").removeAttr("disabled");
+                    msg.WithSuccesCheck("Success", function () {
+                        document.getElementById("QueryForm").submit();
+                    });
+                }
+                else {
+                    msg.WithError(data.ErrMsg);
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function AddDetailRow(OrderID, Article, Brand, Season, Style) {
+        if ($('#garmentTest_ID').val() == "") {
+            return;
+        }
+
+        var ID;
+        var lastNO;
+        if ($('.DetailTable > tbody > tr').length > 0) {
+            ID = parseInt($('.DetailTable > tbody > tr:last-child > td > a').attr('idx'));
+            lastNO = parseInt($('.DetailTable > tbody > tr:last-child > td > a').attr('idv')) + 1;
+        }
+        else {
+            ID = $('#garmentTest_ID').val();
+            lastNO = 1;
+        }
+
+        $.ajax({
+            url: "@Url.Action("AddDetailRow", "GarmentTest", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ ID: ID, lastNO: lastNO, OrderID: OrderID, Article: Article, Brand: Brand, Season: Season, Style: Style}),
+            async: false,
+            success: function (data) {
+                $('.DetailTable > thead > tr').show();
+                $('.DetailTable > tbody').append(data);
+                DetailDynamicBind();
+                $('.date-picker').datepicker({ changeYear: true, changeMonth: true, currentText: "Now" });
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function QueryButtonBind() {
+        $('#btnBrandSelectItem').on('click', function () {
+             window.open('@Url.Action("BrandList", "PublicWondow",new { Area=""})', 'Brand', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        });
+
+        $('#btnSeasonSelectItem').on('click', function () {
+            var para = "?BrandID=" + $('#Brand').val();
+            window.open('@Url.Action("SeasonList", "PublicWondow",new { Area=""})' + para, 'Season', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        });
+
+        $('#btnStyleSelectItem').on('click', function () {
+            var para = "?BrandID=" + $('#Brand').val() + "&SeasonID=" + $('#Season').val();
+            window.open('@Url.Action("StyleList", "PublicWondow",new { Area=""})' + para, 'Style', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        });
+
+        $('#btnArticleSelectItem').on('click', function () {
+            if ($('#Brand').val() == '' || $('#Season').val() == '' || $('#Style').val() == '') {
+                msg.WithError('Please input style, brand and season before choose article.');
+                return;
+            }
+
+            var para = "?OrderID=&StyleUkey=0&BrandID=" + $('#Brand').val() + "&SeasonID=" + $('#Season').val() + "&StyleID=" + $('#Style').val();
+            window.open('@Url.Action("ArticleList", "PublicWondow",new { Area=""})' + para, 'Article', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        });
+
+        $("#Brand").blur(function () {
+            $.ajax({
+                url: "@Url.Action("BrandList", "PublicWondow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Brand").val('');
+                        msg.WithError('Brand Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $("#Season").blur(function () {
+            var BrandID = $('#Brand').val();
+            $.ajax({
+                url: "@Url.Action("SeasonList", "PublicWondow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: BrandID, SeasonID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Season").val('');
+                        msg.WithError('Season Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $("#Style").blur(function () {
+            var BrandID = $('#Brand').val();
+            var SeasonID = $('#Season').val();
+            $.ajax({
+                url: "@Url.Action("StyleList", "PublicWondow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: BrandID, SeasonID: SeasonID, StyleID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Style").val('');
+                        msg.WithError('Style Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $('#Article').blur(function () {
+            var BrandID = $('#Brand').val();
+            var SeasonID = $('#Season').val();
+            var StyleID = $('#Style').val();
+            $.ajax({
+                url: "@Url.Action("ArticleList", "PublicWondow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: BrandID, StyleUkey : 0, SeasonID: SeasonID, StyleID: StyleID, ArticleID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Article").val('');
+                        msg.WithError('Article Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    }
+
+    function GetBrandList(data) {
+        $('#Brand').val(data);
+    }
+
+    function GetSeasonList(data) {
+        $('#Season').val(data);
+    }
+
+    function GetStyleList(data) {
+        $('#Style').val(data);
+    }
+
+    function GetArticleList(data) {
+        $('#Article').val(data);
+    }
+
+    function GetPass1(data, targetID) {
+        $("#garmentTest_Details_" + targetID + "__inspector").val(data.ID);
+        $("#garmentTest_Details_" + targetID + "__GarmentTest_Detail_Inspector").val(data.Name + ' Ext.' + data.ExtNo);
+    }
+</script>

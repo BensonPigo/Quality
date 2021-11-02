@@ -1,0 +1,20 @@
+﻿tr.row-name {
+    font-size: 18px;
+    color: wheat;
+}
+
+tr.row-content {
+    color: #6c7173;
+}
+
+/*.table {
+    border-bottom: 8px solid #448aff;
+}*/
+
+td.check {
+    text-align: center;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) {
+    background: #F0F2F2; /*!important;*/
+}

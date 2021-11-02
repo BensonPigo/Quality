@@ -54,11 +54,13 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             SbSql.Append("FROM [RFT_Inspection] r"+ Environment.NewLine);
             SbSql.Append("Where 1 = 1" + Environment.NewLine);
 
-            if (!string.IsNullOrEmpty(Item.FactoryID.ToString())) { SbSql.Append("And r.FactoryID = @FactoryID" + Environment.NewLine); }
+            if (!string.IsNullOrEmpty(Item.FactoryID)) { SbSql.Append("And r.FactoryID = @FactoryID" + Environment.NewLine); }
+
+            if (Item.ID != 0) { SbSql.Append("And r.ID = @ID" + Environment.NewLine); }
 
             if (!string.IsNullOrEmpty(Item.Line)) { SbSql.Append("And r.Line = @Line" + Environment.NewLine); }
 
-            if (!Item.InspectionDate.HasValue) { 
+            if (Item.InspectionDate.HasValue) { 
                 SbSql.Append("And ((r.AddDate >= @InspectionDate and r.AddDate <= DATEADD(SECOND, -1, DATEADD(day, 1,@InspectionDate))) " + Environment.NewLine);
                 SbSql.Append("  or (r.EditDate >= @InspectionDate and r.EditDate <= DATEADD(SECOND, -1, DATEADD(day, 1,@InspectionDate)))) " + Environment.NewLine);
             }
@@ -234,12 +236,122 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
 
-        /// <summary>
-        /// Get Rework List comboBox Filters
-        /// </summary>
-        /// <param name="Item">RFT_Inspection</param>
-        /// <param name="key">顯示 & distinct 什麼資料</param>
-        /// <returns></returns>
+        public int SaveReworkListAction(List<RFT_Inspection> items, string statusType)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            // 調整Repl 無法加.的問題
+            statusType = statusType.ToLower() == "repl" ? "Repl." : statusType;
+            int rowcnt = 1;
+            string sqlcmd = "";
+            foreach (var item in items)
+            {
+                // sql Parameter
+                objParameter.Add($"@ID{rowcnt}", string.IsNullOrEmpty(item.ID.ToString()) ? "" : item.ID.ToString());
+                objParameter.Add($"@FixType{rowcnt}", string.IsNullOrEmpty(statusType) ? "" : statusType);
+                objParameter.Add($"@EditName{rowcnt}", string.IsNullOrEmpty(item.EditName.ToString()) ? "" : item.EditName.ToString());
+                objParameter.Add($"@inspectDate{rowcnt}", item.InspectionDate == null ? "NULL" : ((DateTime)item.InspectionDate).ToString("d"));
+                objParameter.Add($"@DisposeReason{rowcnt}", string.IsNullOrEmpty(item.DisposeReason) ? "" : item.DisposeReason.ToString());
+
+                if (statusType.ToLower() == "pass")
+                {
+                    sqlcmd += $@"
+update RFT_Inspection
+set	status = 'Fixed'
+,InspectionDate = @inspectDate{rowcnt}
+,EditName = @EditName{rowcnt} , EditDate = GETDATE()
+where ID = @ID{rowcnt}
+
+update rc
+set Status = 'Fixed'
+,EditName = @EditName{rowcnt}, EditDate = GETDATE()
+from ReworkCard rc
+inner join RFT_Inspection inp on inp.ReworkCardNo = rc.No
+and inp.ReworkCardType = rc.Type and inp.Line = rc.Line
+and inp.FactoryID = rc.FactoryID
+where inp.ID = @ID{rowcnt}
+";
+                }
+                else if(statusType.ToLower() == "wash" ||
+                    statusType.ToLower() == "repl." ||
+                    statusType.ToLower() == "print" ||
+                    statusType.ToLower() == "shade")
+                {
+                    sqlcmd += $@"
+update RFT_Inspection
+set	FixType = @FixType{rowcnt}
+,EditName = @EditName{rowcnt} , EditDate = GETDATE()
+where ID = @ID{rowcnt}
+
+update rc
+set Status = 'Fixed'
+,EditName = @EditName{rowcnt}, EditDate = GETDATE()
+from ReworkCard rc
+inner join RFT_Inspection inp on inp.ReworkCardNo = rc.No
+and inp.ReworkCardType = rc.Type and inp.Line = rc.Line
+and inp.FactoryID = rc.FactoryID
+where inp.ID = @ID{rowcnt}
+";
+                }
+
+                else if (statusType.ToLower() == "dispose")
+                {
+                    sqlcmd += $@"
+update RFT_Inspection
+set	Status = @FixType{rowcnt}
+,EditName = @EditName{rowcnt} , EditDate = GETDATE()
+,DisposeReason = @DisposeReason{rowcnt}
+where ID = @ID{rowcnt}
+
+update rc
+set Status = 'Fixed'
+,EditName = @EditName{rowcnt}, EditDate = GETDATE()
+from ReworkCard rc
+inner join RFT_Inspection inp on inp.ReworkCardNo = rc.No
+and inp.ReworkCardType = rc.Type and inp.Line = rc.Line
+and inp.FactoryID = rc.FactoryID
+where inp.ID = @ID{rowcnt}
+";
+                }
+               
+                rowcnt++;
+            }
+
+            return ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter);
+        }
+
+        public int SaveReworkListDelete(List<RFT_Inspection> items)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+
+            int rowcnt = 1;
+            string sqlcmd = "";
+            foreach (var item in items)
+            {
+                // sql Parameter
+                objParameter.Add($"@ID{rowcnt}", string.IsNullOrEmpty(item.ID.ToString()) ? "" : item.ID.ToString());
+                objParameter.Add($"@EditName{rowcnt}", string.IsNullOrEmpty(item.EditName) ? "" : item.EditName);
+
+                sqlcmd = $@"
+update rc
+set Status = 'Fixed'
+,EditName = @EditName{rowcnt}, EditDate = GETDATE()
+from ReworkCard rc
+inner join RFT_Inspection inp on inp.ReworkCardNo = rc.No
+    and inp.ReworkCardType = rc.Type and inp.Line = rc.Line
+    and inp.FactoryID = rc.FactoryID
+where inp.ID = @ID{rowcnt}
+
+delete from RFT_Inspection_Detail
+where id = @id{rowcnt}
+
+delete from RFT_Inspection
+where id = @id{rowcnt}
+";
+                rowcnt++;
+            }
+
+            return ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter);
+        }
         #endregion
     }
 }

@@ -39,25 +39,27 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
         /// ===  ==========  ====  ==========  ==========
         /// 01.  2021/07/30  1.00    Admin        Create
         /// </history>
-        public IList<Quality_Menu> Get(string PositionID)
+        public IList<Quality_Menu> Get(Quality_Pass1 pass1)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
-                { "@PositionID", DbType.String, PositionID} ,
+                { "@PositionID", DbType.String, pass1.Position} ,
+                { "@Brand", DbType.String, pass1.BulkFGT_Brand} ,
             };
 
             SbSql.Append(@"
 select m.[ID]
 	, m.[ModuleName]
 	, m.[ModuleSeq]
-	, m.[FunctionName]
+	, [FunctionName] = isnull(md.[FunctionName] ,m.[FunctionName])
 	, m.[FunctionSeq]
 	, m.[Junk]
 	, m.[Url]
 from Quality_Position p
 inner join Quality_Pass2 p2 on p.ID = PositionID
 inner join Quality_Menu m on m.ID = p2.MenuID
+left join Quality_Menu_Detail md on md.ID = m.ID and md.Type = @Brand
 where p.ID = @PositionID
 and p2.Used = iif(p.IsAdmin = 1, p2.Used, 1)
 and m.Junk = 0
@@ -65,13 +67,40 @@ order by ModuleSeq, FunctionSeq" + Environment.NewLine);
 
             return ExecuteList<Quality_Menu>(CommandType.Text, SbSql.ToString(), objParameter);
         }
-		/*建立(Create) 詳細敘述如下*/
+
+        public IList<Quality_Menu> GetByMenu_detail(Quality_Pass1 pass1)
+        {
+            StringBuilder SbSql = new StringBuilder();
+
+            SbSql.Append($@"
+select  m.ID
+      ,m.ModuleName
+      ,m.ModuleSeq
+      ,FunctionName = IIF(md.FunctionName IS NOT NULL , md.FunctionName , m.FunctionName)
+      ,m.FunctionSeq
+      ,m.Junk
+      ,Url = m.Url 
+from Quality_Pass1 p
+inner join Quality_Position pp on p.Position=pp.ID
+inner join Quality_Pass2 p2 on p2.PositionID=pp.ID
+inner join Quality_Menu m on m.ID=p2.MenuID
+left join Quality_Menu_detail md on md.ID=m.ID AND md.Type=p.BulkFGT_Brand
+WHERE m.Junk=0
+AND p.ID = '{pass1.ID}'
+AND (p2.Used=1 or pp.IsAdmin=1)
+ORDER BY ModuleSeq,FunctionSeq
+" + Environment.NewLine);
+
+            return ExecuteList<Quality_Menu>(CommandType.Text, SbSql.ToString(), new SQLParameterCollection());
+        }
+
+        /*建立(Create) 詳細敘述如下*/
         /// <summary>
         /// 建立
         /// </summary>
         /// <param name="Item">成員</param>
         /// <returns>回傳異動筆數</returns>
-		/// <info>Author: Admin; Date: 2021/07/30  </info>
+        /// <info>Author: Admin; Date: 2021/07/30  </info>
         /// <history>
         /// xx.  YYYY/MM/DD   Ver   Author      Comments
         /// ===  ==========  ====  ==========  ==========
@@ -99,9 +128,6 @@ order by ModuleSeq, FunctionSeq" + Environment.NewLine);
             SbSql.Append("        ,@FunctionSeq"); objParameter.Add("@FunctionSeq", DbType.Int32, Item.FunctionSeq);
             SbSql.Append("        ,@Junk"); objParameter.Add("@Junk", DbType.String, Item.Junk);
             SbSql.Append(")"+ Environment.NewLine);
-
-
-
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
@@ -132,8 +158,6 @@ order by ModuleSeq, FunctionSeq" + Environment.NewLine);
             SbSql.Append("WHERE 1 = 1" + Environment.NewLine);
 
 
-
-
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
 		/*刪除(Delete) 詳細敘述如下*/
@@ -153,9 +177,6 @@ order by ModuleSeq, FunctionSeq" + Environment.NewLine);
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
             SbSql.Append("DELETE FROM [Quality_Menu]"+ Environment.NewLine);
-
-
-
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }

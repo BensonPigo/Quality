@@ -119,7 +119,7 @@ namespace DatabaseObject.ProductionDB
         /// <summary>客戶訂單單號</summary>
         [StringLength(30)]
         [Display(Name = "客戶訂單單號")]
-        public string CustPONo { get; set; }
+        public string CustPONO { get; set; }
         /// <summary>客人的自訂欄位</summary>
         [StringLength(30)]
         [Display(Name = "客人的自訂欄位")]
@@ -167,7 +167,6 @@ namespace DatabaseObject.ProductionDB
         [Display(Name = "CMPQ的確認日期")]
         public DateTime? CMPQDate { get; set; }
         /// <summary>CMPQ上的備註</summary>
-        [StringLength(-1)]
         [Display(Name = "CMPQ上的備註")]
         public string CMPQRemark { get; set; }
         /// <summary>Each-con 確認日期</summary>
@@ -236,31 +235,24 @@ namespace DatabaseObject.ProductionDB
         [Display(Name = "取消")]
         public bool Junk { get; set; }
         /// <summary>包裝說明</summary>
-        [StringLength(-1)]
         [Display(Name = "包裝說明")]
         public string Packing { get; set; }
         /// <summary>大貨嘜頭(正面)</summary>
-        [StringLength(-1)]
         [Display(Name = "大貨嘜頭(正面)")]
         public string MarkFront { get; set; }
         /// <summary>大貨嘜頭(背面)</summary>
-        [StringLength(-1)]
         [Display(Name = "大貨嘜頭(背面)")]
         public string MarkBack { get; set; }
         /// <summary>大貨嘜頭(左面)</summary>
-        [StringLength(-1)]
         [Display(Name = "大貨嘜頭(左面)")]
         public string MarkLeft { get; set; }
         /// <summary>大貨嘜頭(右面)</summary>
-        [StringLength(-1)]
         [Display(Name = "大貨嘜頭(右面)")]
         public string MarkRight { get; set; }
         /// <summary>圖片與商標位置</summary>
-        [StringLength(-1)]
         [Display(Name = "圖片與商標位置")]
         public string Label { get; set; }
         /// <summary>訂單備註</summary>
-        [StringLength(-1)]
         [Display(Name = "訂單備註")]
         public string OrderRemark { get; set; }
         /// <summary>加工的展開方式</summary>
@@ -287,7 +279,6 @@ namespace DatabaseObject.ProductionDB
         [Display(Name = "mnoti_apv第二階段")]
         public DateTime? MnorderApv2 { get; set; }
         /// <summary>Packing第二階段資料</summary>
-        [StringLength(-1)]
         [Display(Name = "Packing第二階段資料")]
         public string Packing2 { get; set; }
         /// <summary>SAMPLE REASON</summary>
@@ -298,7 +289,6 @@ namespace DatabaseObject.ProductionDB
         [Display(Name = "水洗測式")]
         public bool RainwearTestPassed { get; set; }
         /// <summary>尺寸範圍</summary>
-        [StringLength(-1)]
         [Display(Name = "尺寸範圍")]
         public string SizeRange { get; set; }
         /// <summary>物料出清</summary>
@@ -309,7 +299,6 @@ namespace DatabaseObject.ProductionDB
         [Display(Name = "Special Mark")]
         public string SpecialMark { get; set; }
         /// <summary>延出備註</summary>
-        [StringLength(-1)]
         [Display(Name = "延出備註")]
         public string OutstandingRemark { get; set; }
         /// <summary>延出原因修改人</summary>
@@ -641,5 +630,8 @@ namespace DatabaseObject.ProductionDB
         [Display(Name = "")]
         public string SizeUnitWeight { get; set; }
 
+        public bool Checked { get; set; }
+
+        public string Article { get; set; }
     }
 }

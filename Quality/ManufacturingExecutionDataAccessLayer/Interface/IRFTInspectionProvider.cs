@@ -11,5 +11,9 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         int Update(RFT_Inspection inspection);
 
         int Create(RFT_Inspection inspection);
+
+        int SaveReworkListAction(List<RFT_Inspection> items, string statusType);
+
+        int SaveReworkListDelete(List<RFT_Inspection> items);
     }
 }

@@ -15,6 +15,7 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
     /// </history>
     public interface IQualityMenuProvider
     {
-        IList<Quality_Menu> Get(string PositionID);
+        IList<Quality_Menu> Get(Quality_Pass1 pass1);
+        IList<Quality_Menu> GetByMenu_detail(Quality_Pass1 pass1);
     }
 }

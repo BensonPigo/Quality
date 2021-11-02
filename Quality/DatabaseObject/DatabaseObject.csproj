@@ -9,9 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DatabaseObject</RootNamespace>
     <AssemblyName>DatabaseObject</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,9 +32,32 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.7\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.7\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -44,50 +68,157 @@
   <ItemGroup>
     <Compile Include="ManufacturingExecutionDB\Area.cs" />
     <Compile Include="ManufacturingExecutionDB\DQSReason.cs" />
+    <Compile Include="ManufacturingExecutionDB\EndlineMoisture.cs" />
     <Compile Include="ManufacturingExecutionDB\FinalInspection.cs" />
     <Compile Include="ManufacturingExecutionDB\FinalInspection_Detail.cs" />
+    <Compile Include="ManufacturingExecutionDB\FinalInspection_DetailImage.cs" />
     <Compile Include="ManufacturingExecutionDB\FinalInspection_Measurement.cs" />
+    <Compile Include="ManufacturingExecutionDB\FinalInspection_Moisture.cs" />
     <Compile Include="ManufacturingExecutionDB\FinalInspection_NonBACriteria.cs" />
+    <Compile Include="ManufacturingExecutionDB\FinalInspection_NonBACriteriaImage.cs" />
     <Compile Include="ManufacturingExecutionDB\FinalInspection_Order.cs" />
     <Compile Include="ManufacturingExecutionDB\FinalInspection_OrderCarton.cs" />
+    <Compile Include="ManufacturingExecutionDB\FinalInspection_OtherImage.cs" />
     <Compile Include="ManufacturingExecutionDB\MailTo.cs" />
     <Compile Include="ManufacturingExecutionDB\Measurement.cs" />
     <Compile Include="ManufacturingExecutionDB\Pass1.cs" />
     <Compile Include="ManufacturingExecutionDB\Quality_Menu.cs" />
+    <Compile Include="ManufacturingExecutionDB\Quality_Menu_Detail.cs" />
     <Compile Include="ManufacturingExecutionDB\Quality_Pass1.cs" />
     <Compile Include="ManufacturingExecutionDB\Quality_Pass2.cs" />
+    <Compile Include="ManufacturingExecutionDB\Quality_MailGroup.cs" />
     <Compile Include="ManufacturingExecutionDB\Quality_Position.cs" />
     <Compile Include="ManufacturingExecutionDB\ReworkCard.cs" />
-    <Compile Include="ManufacturingExecutionDB\ReworkList.cs" />
     <Compile Include="ManufacturingExecutionDB\RFT_Inspection.cs" />
     <Compile Include="ManufacturingExecutionDB\RFT_Inspection_Detail.cs" />
     <Compile Include="ManufacturingExecutionDB\RFT_Inspection_Measurement.cs" />
     <Compile Include="ManufacturingExecutionDB\RFT_OrderComments.cs" />
     <Compile Include="ManufacturingExecutionDB\RFT_PicDuringDummyFitting.cs" />
     <Compile Include="ProductionDB\AcceptableQualityLevels.cs" />
+    <Compile Include="ProductionDB\Adidas_FGWT.cs" />
     <Compile Include="ProductionDB\Brand.cs" />
+    <Compile Include="ProductionDB\ColorFastness.cs" />
+    <Compile Include="ProductionDB\ColorFastness_Detail.cs" />
     <Compile Include="ProductionDB\DropDownList.cs" />
     <Compile Include="ProductionDB\Factory.cs" />
+    <Compile Include="ProductionDB\FIR.cs" />
+    <Compile Include="ProductionDB\FIR_Laboratory.cs" />
+    <Compile Include="ProductionDB\FIR_Laboratory_Crocking.cs" />
+    <Compile Include="ProductionDB\FIR_Laboratory_Heat.cs" />
+    <Compile Include="ProductionDB\FIR_Laboratory_Wash.cs" />
     <Compile Include="ProductionDB\GarmentDefectCode.cs" />
     <Compile Include="ProductionDB\GarmentDefectType.cs" />
+    <Compile Include="ProductionDB\GarmentTest.cs" />
+    <Compile Include="ProductionDB\GarmentTest_Detail.cs" />
+    <Compile Include="ProductionDB\GarmentTest_Detail_Apperance.cs" />
+    <Compile Include="ProductionDB\GarmentTest_Detail_FGPT.cs" />
+    <Compile Include="ProductionDB\GarmentTest_Detail_FGWT.cs" />
+    <Compile Include="ProductionDB\GarmentTest_Detail_Shrinkage.cs" />
+    <Compile Include="ProductionDB\Garment_Detail_Spirality.cs" />
+    <Compile Include="ProductionDB\MockupCrocking.cs" />
+    <Compile Include="ProductionDB\MockupCrocking_Detail.cs" />
+    <Compile Include="ProductionDB\MockupOven.cs" />
+    <Compile Include="ProductionDB\MockupOven_Detail.cs" />
+    <Compile Include="ProductionDB\MockupWash.cs" />
+    <Compile Include="ProductionDB\MockupWash_Detail.cs" />
     <Compile Include="ProductionDB\NewCDCode.cs" />
     <Compile Include="ProductionDB\Orders.cs" />
     <Compile Include="ProductionDB\Order_Location.cs" />
     <Compile Include="ProductionDB\Order_Qty.cs" />
+    <Compile Include="ProductionDB\Oven.cs" />
+    <Compile Include="ProductionDB\Oven_Detail.cs" />
     <Compile Include="ProductionDB\Pass1.cs" />
+    <Compile Include="ProductionDB\Scale.cs" />
+    <Compile Include="ProductionDB\Season.cs" />
     <Compile Include="ProductionDB\SewingLine.cs" />
     <Compile Include="ProductionDB\Style.cs" />
+    <Compile Include="ProductionDB\Style_Article.cs" />
+    <Compile Include="ProductionDB\Style_Artwork.cs" />
+    <Compile Include="ProductionDB\Style_BOA.cs" />
+    <Compile Include="ProductionDB\System.cs" />
     <Compile Include="ProductionDB\TPEPass1.cs" />
+    <Compile Include="ProductionDB\TypeSelection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Public\CompareBase.cs" />
+    <Compile Include="Public\StaticPivot88.cs" />
+    <Compile Include="Public\WindowModel.cs" />
+    <Compile Include="RequestModel\MockupFailMail_Request.cs" />
+    <Compile Include="RequestModel\FinalInspection_Query.cs" />
+    <Compile Include="RequestModel\FinalInspection_Request.cs" />
+    <Compile Include="RequestModel\PivotTransferRequest.cs" />
+    <Compile Include="RequestModel\StyleArtwork_Request.cs" />
+    <Compile Include="RequestModel\MockupOven_Request.cs" />
+    <Compile Include="RequestModel\AccessoryRefNo_Request.cs" />
+    <Compile Include="RequestModel\MockupWash_Request.cs" />
+    <Compile Include="RequestModel\MockupCrocking_Request.cs" />
+    <Compile Include="RequestModel\GarmentTest_Request.cs" />
+    <Compile Include="RequestModel\SendMail_Request.cs" />
     <Compile Include="RequestModel\LogIn_Request.cs" />
+    <Compile Include="RequestModel\Measurement_Request.cs" />
+    <Compile Include="RequestModel\Quality_Pass1_Request.cs" />
+    <Compile Include="RequestModel\Quality_Position_Request.cs" />
+    <Compile Include="RequestModel\StyleList_Request.cs" />
+    <Compile Include="RequestModel\StyleManagement_Request.cs" />
+    <Compile Include="RequestModel\UserList_Authority_Request.cs" />
     <Compile Include="ResultModelBase.cs" />
+    <Compile Include="ResultModel\AuthoritybyPosition.cs" />
+    <Compile Include="ResultModel\BACriteria_Result.cs" />
+    <Compile Include="ResultModel\FabricCrkShrkTest_Result.cs" />
+    <Compile Include="ResultModel\FabricOvenTest_Result.cs" />
+    <Compile Include="ResultModel\FinalInspection\PoSelect_Result.cs" />
+    <Compile Include="ResultModel\FinalInspection\SentPivot88Result.cs" />
     <Compile Include="ResultModel\LogIn_Result.cs" />
+    <Compile Include="ResultModel\Measurement_ResultModel.cs" />
+    <Compile Include="ResultModel\Report_Result.cs" />
+    <Compile Include="ResultModel\SendMail_Result.cs" />
+    <Compile Include="ResultModel\Module_Detail.cs" />
+    <Compile Include="ResultModel\Quality_MailGroup_ResultModel.cs" />
+    <Compile Include="ResultModel\Quality_Position.cs" />
+    <Compile Include="ResultModel\StyleList.cs" />
+    <Compile Include="ResultModel\StyleManagement_Request.cs" />
+    <Compile Include="ResultModel\UserList.cs" />
+    <Compile Include="ResultModel\UserList_Authority.cs" />
+    <Compile Include="ResultModel\UserList_Browse.cs" />
+    <Compile Include="ViewModel\BACriteria_ViewModel.cs" />
+    <Compile Include="ViewModel\BulkFGT\Accessory_ViewModel.cs" />
+    <Compile Include="ViewModel\BulkFGT\FabricColorFastness_ViewModel.cs" />
+    <Compile Include="ViewModel\BulkFGT\GarmentTest_Detail_Apperance_ViewModel.cs" />
+    <Compile Include="ViewModel\BulkFGT\GarmentTest_Detail_FGPT_ViewModel.cs" />
+    <Compile Include="ViewModel\BulkFGT\GarmentTest_Detail_FGWT_ViewModel.cs" />
+    <Compile Include="ViewModel\BulkFGT\GarmentTest_Detail_ViewModel.cs" />
+    <Compile Include="ViewModel\BulkFGT\GarmentTest_ViewModel.cs" />
+    <Compile Include="ViewModel\BulkFGT\MockupOven_ViewModel.cs" />
+    <Compile Include="ViewModel\BulkFGT\MockupWash_ViewModel.cs" />
+    <Compile Include="ViewModel\BulkFGT\PullingTest_ViewModel.cs" />
+    <Compile Include="ViewModel\BulkFGT\SearchList_ViewModel.cs" />
+    <Compile Include="ViewModel\FinalInspection\AddDefect.cs" />
+    <Compile Include="ViewModel\FinalInspection\Moisture.cs" />
+    <Compile Include="ViewModel\FinalInspection\Measurement.cs" />
+    <Compile Include="ViewModel\FinalInspection\PoSelect.cs" />
+    <Compile Include="ViewModel\FinalInspection\QueryReport_Measurement.cs" />
+    <Compile Include="ViewModel\FinalInspection\QueryReport.cs" />
+    <Compile Include="ViewModel\FinalInspection\QueryFinalInspection.cs" />
+    <Compile Include="ViewModel\FinalInspection\Others.cs" />
+    <Compile Include="ViewModel\FinalInspection\BeautifulProductAudit.cs" />
+    <Compile Include="ViewModel\FinalInspection\Setting.cs" />
+    <Compile Include="ResultModel\GarmentTest_Result.cs" />
     <Compile Include="ViewModel\InspectionSave_ViewModel.cs" />
     <Compile Include="ViewModel\Inspection_ViewModel.cs" />
     <Compile Include="ViewModel\ReworkList_ViewModel.cs" />
+    <Compile Include="ViewModel\SampleRFT\CFTComments_ViewModel.cs" />
+    <Compile Include="ViewModel\BulkFGT\MockupCrocking_ViewModel.cs" />
+    <Compile Include="ViewModel\RFTPerLine_ViewModel.cs" />
+    <Compile Include="ViewModel\RFT_Inspection_Measurement_ViewModel.cs" />
     <Compile Include="ViewModel\RFT_OrderComments_ViewModel.cs" />
     <Compile Include="ViewModel\RFT_PicDuringDummyFitting_ViewModel.cs" />
+    <Compile Include="ViewModel\SampleRFT\InspectionDefectList_ViewModel.cs" />
+    <Compile Include="ViewModel\SampleRFT\StyleResult_ViewModel.cs" />
     <Compile Include="ViewModel\SelectItem_ViewModel.cs" />
+    <Compile Include="ViewModel\SampleRFT\PrintBarcode_ViewModel.cs" />
+    <Compile Include="ViewModel\StyleManagement\ExceptionFD_ViewModel.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

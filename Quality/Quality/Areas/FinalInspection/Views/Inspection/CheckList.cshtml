@@ -1,0 +1,206 @@
+﻿
+@{
+    ViewBag.Title = "Setting";
+}
+
+@model DatabaseObject.ManufacturingExecutionDB.FinalInspection
+@section FinalInspection_head{
+    <link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+    <link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+    <link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+
+    <style type="text/css">
+        #CheckListTable_previous, #CheckListTable_next {
+            color: white !important;
+        }
+
+        tr.shown td.details-control {
+            background: url('/Image/Icon/ChildRowClose.png') no-repeat center center;
+        }
+
+        td.details-control {
+            background: url('/Image/Icon/ChildRowOpen.png') no-repeat center center;
+        }
+        #CheckListTable {
+            font-size: 1.4em;
+        }
+    </style>
+}
+@Html.Partial("~/Areas/FinalInspection/Views/Shared/_Inspection_Layout.cshtml")
+    <div class="DownWhiteBackgrond">
+        @using (Html.BeginForm("CheckList", "Inspection", FormMethod.Post, new { @id = "settingForm", onsubmit = "return checkSubmitValue(this.submitted);" }))
+        {
+            @Html.HiddenFor(o => o.ID)
+            @Html.HiddenFor(o => o.CustPONO)
+            <div style="padding:2em 3em 2em 3em;width:60%;float:left;position: absolute;transform: translate(-50%, 0%);left: 50%">
+                <table id="CheckListTable" class="cell-border" style="width:100%"></table>
+            </div>
+            <div style="width:100%">
+                <input type="hidden" id="goPage" name="goPage">
+                <button id="btnBack" onclick="this.form.submitted=this.value;" type="submit" value="Back" class="button" style="right:7em;">Back</button>
+                <button id="btnNext" onclick="this.form.submitted=this.value;" type="submit" value="Next" style="right:0;" class="button">Next</button>
+            </div>
+        }
+
+    </div>
+@section FinalInspection_script
+{
+    <script>
+        var EditMode = false; //彈出視窗設定
+        var msg = new MessagerAlert();
+
+        // 摺疊資料需先轉成array
+        var adata = [];
+        var index = 0;
+
+        // 設定大小寫
+        var True = true;
+        var False = false;
+
+        var table;
+
+        // name, td:value, td:checkbox
+        adata.push([null, 'Fabric Artwork Check List',
+            [
+                ['CheckCloseShade', 'Color/Shade',@Model.CheckCloseShade],
+                ['CheckHandfeel', 'Handfeel', @Model.CheckHandfeel],
+                ['CheckAppearance', 'Appearance',@Model.CheckAppearance],
+                ['CheckPrintEmbDecorations', 'Print/Emb Decorations', @Model.CheckPrintEmbDecorations]
+            ]
+        ]);
+        adata.push([null, 'Label',
+            [
+                ['CheckFiberContent', 'Fiber Content', @Model.CheckFiberContent],
+                ['CheckCareInstructions', 'Care Instructions', @Model.CheckCareInstructions],
+                ['CheckDecorativeLabel', 'Decorative Label', @Model.CheckDecorativeLabel],
+                ['CheckAdicomLabel', 'Adicom Label', @Model.CheckAdicomLabel],
+                ['CheckCountryofOrigion', 'Country of Origion', @Model.CheckCountryofOrigion],
+                ['CheckSizeKey', 'Size Key', @Model.CheckSizeKey],
+                ['Check8FlagLabel', '8-Flag Label', @Model.Check8FlagLabel],
+                ['CheckAdditionalLabel', 'Additional Label', @Model.CheckAdditionalLabel],
+            ]
+        ]);
+        adata.push([null, 'Packaging',
+            [
+                ['CheckShippingMark', 'Shipping Mark', @Model.CheckShippingMark],
+                ['CheckPolybagMarketing', 'Polybag/Marketing', @Model.CheckPolytagMarketing],
+                ['CheckColorSizeQty', 'Color/Size/Qty', @Model.CheckColorSizeQty],
+                ['CheckHangtag', 'Hangtag', @Model.CheckHangtag],
+            ]
+        ]);
+
+        $(function () {
+            table = $('#CheckListTable').DataTable({
+                data: adata,
+                autoWidth: false,
+                destroy: true,
+                columnDefs: [
+                    { targets: 0, width: "2%", orderable: false },
+                    { targets: 1, width: "98%", orderable: false },
+                ],
+                columns: [
+                    {
+                        "className": "details-control",
+                    },
+                    {
+                        "style": "color:#E62513",
+                    },
+                ],
+                "filter": false,
+                "paging": false,
+                "info": false,
+                "ordering": false,
+                "pageLength": 10,
+                "scrollY": "50vh",
+                "scrollCollapse": true,
+                "createdRow": function (row, data, index) {
+                    $('td', row).css('background-color', '#FAA7A7');
+                    
+                    $('td', row).attr('ID', 'CheckList_' + data[1].replaceAll(' ',''));
+                }
+            });
+
+            $("#CheckListTable tbody").on("click", "td.details-control", function () {
+                var tr = $(this).closest('tr');
+                var row = table.row(tr);
+
+                if (row.child.isShown()) {
+                    row.child.hide();
+                    tr.removeClass('shown');
+                }
+                else {
+                    row.child(format(row.data())).show();
+                    tr.addClass('shown');
+                }
+            });
+
+            // 把開窗點到的資料，寫入DataTable的Datasource，請注意必須限定在Check box的標籤才需要觸發事件
+            $("#CheckListTable tbody").on("click", "td.OpenDetail input", function () {
+
+
+                // 取得修改了哪個Code底下的資料
+                var Code = $(this).attr("Code");
+
+                //取得勾選的子項目ID
+                var id = $(this).attr("id");
+
+                var partentTd = $("#CheckList_" + Code);
+                var tr = $(partentTd).closest('tr');
+                var row = table.row(tr);
+
+                $.each(row.data()[2], function () {
+                    if (this[0] == id) {
+                        this[2] = $(this).find("input").val();
+                    }
+                })
+            });
+        });
+
+        function format(d) {
+            var parentID = d[1].replaceAll(' ', '');
+            var list = d[2];
+            var sTr = "";
+            $(list).each(function (index, value) {
+
+                sTr = sTr + '<tr><td style="width:95%">' + value[1] + '</td>';
+                if (value[2]) {
+
+                    sTr = sTr + `<td class="OpenDetail" style="vertical-align: middle"><input checked="checked" data-val="true" id="${value[0]}" name="${value[0]}" code="${parentID}" type="checkbox" value="true"></td></tr>`;
+                }
+                else {
+                    sTr = sTr + `<td class="OpenDetail" style="vertical-align: middle"><input data-val="true"  id="${value[0]}" " name="${value[0]}" type="checkbox" code="${parentID}" value="true"><input name="${value[0]}" " type="hidden" value="false"></td></tr>`;
+                }
+            });
+            return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
+                sTr +
+                '</table>';
+        }
+
+        function checkSubmitValue(self) {
+
+            document.getElementById("goPage").value = self;
+
+            ShowLoading();
+
+            var trlist = $("#CheckListTable tbody td.details-control");
+
+            trlist.each(function () {
+                var tr = $(this).closest('tr');
+                var row = table.row(tr);
+
+                if (row.child.isShown()) {
+                    // 打開的就不用管他
+                    //row.child.hide();
+                    //tr.removeClass('shown');
+                }
+                else {
+                    row.child(format(row.data())).show();
+                    tr.addClass('shown');
+                }
+            });
+            
+            return true;
+        }
+    </script>
+}

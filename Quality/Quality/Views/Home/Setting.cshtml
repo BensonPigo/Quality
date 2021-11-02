@@ -1,0 +1,53 @@
+﻿@using BusinessLogicLayer.Service;
+
+@{
+    ViewBag.Title = "Setting";
+
+    string Brand = ViewData["Brand"] == null ? "" : ViewData["Brand"].ToString();
+    string Msg = ViewData["Msg"] == null ? "" : ViewData["Msg"].ToString();
+}
+
+
+
+<div class="main-content">
+
+
+    <header class="page-header">
+        <h3>
+            <i class="icon-vcard"></i><span>Setting</span>
+        </h3>
+        <div class="breadcrumb">
+            <div>Home</div>
+            <div class="current">Setting</div>
+        </div>
+    </header>
+
+
+    <div class="main-area">
+        <div class="content-scroll">
+            <div class="inner-scroll" style="float:left">
+                @using (Html.BeginForm("Setting", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post, new { @class = "", @name = "SearchFrom", @id = "SearchFrom" }))
+                {
+                    <input type="submit" class="site-btn btn-blue" name="name" value="Save" />
+                    <hr>
+                    <h3 style="color:whitesmoke">Menu Setting</h3>
+                    <br />
+                    @Html.DropDownList("BrandID", (List<SelectListItem>)ViewData["Brands"], Brand, new { @class = "", @style = "width:15VW;", })
+                }
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<script type="text/javascript">
+
+    var msg = new MessagerAlert();
+    $(function () {       
+        if ('@Msg' != '') {
+            msg.WithInfo('@Msg');
+        }
+    })
+
+</script>

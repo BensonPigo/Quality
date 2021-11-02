@@ -16,14 +16,55 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         public StyleProvider(SQLDataTransaction tra) : base(tra) { }
         #endregion
 
-		#region CRUD Base
-		/*回傳款式資料基本檔(Get) 詳細敘述如下*/
+        #region CRUD Base
+        public IList<Style> GetSizeUnit(Int64 ukey)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection()
+            {
+                 { "@ukey", DbType.Int64, ukey } ,
+            };
+
+            string sqlcmd = @"
+select SizeUnit from Style 
+where 1=1
+and ukey = @ukey
+";
+
+            return ExecuteList<Style>(CommandType.Text, sqlcmd, objParameter);
+        }
+
+        public IList<Style> GetStyleID()
+        {
+            string sqlcmd = @"select distinct id from Style where Junk = 0";
+
+            return ExecuteList<Style>(CommandType.Text, sqlcmd, new SQLParameterCollection());
+        }
+
+        public string GetStyleName(string StyleID,string Season,string Brand)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection()
+            {
+                 { "@StyleID", DbType.String, StyleID } ,
+                 { "@SeasonID", DbType.String, Season } ,
+                 { "@BrandID", DbType.String, Brand } ,
+            };
+
+            string sqlcmd = @"
+select StyleName from Style where ID = @StyleID and SeasonID = @SeasonID and BrandID = @BrandID
+";
+            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
+
+            return dt.Rows[0]["StyleName"].ToString();
+        }
+
+
+        /*回傳款式資料基本檔(Get) 詳細敘述如下*/
         /// <summary>
         /// 回傳款式資料基本檔
         /// </summary>
         /// <param name="Item">款式資料基本檔成員</param>
         /// <returns>回傳款式資料基本檔</returns>
-		/// <info>Author: Admin; Date: 2021/08/05  </info>
+        /// <info>Author: Admin; Date: 2021/08/05  </info>
         /// <history>
         /// xx.  YYYY/MM/DD   Ver   Author      Comments
         /// ===  ==========  ====  ==========  ==========
@@ -32,7 +73,10 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         public IList<Style> Get(Style Item)
         {
             StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
+            SQLParameterCollection objParameter = new SQLParameterCollection()
+            {
+                 { "@ukey", DbType.Int64, Item.Ukey } ,
+            };
             SbSql.Append("SELECT"+ Environment.NewLine);
             SbSql.Append("         ID"+ Environment.NewLine);
             SbSql.Append("        ,Ukey"+ Environment.NewLine);
@@ -113,7 +157,11 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,GearLine"+ Environment.NewLine);
             SbSql.Append("        ,ThreadVersion"+ Environment.NewLine);
             SbSql.Append("FROM [Style]"+ Environment.NewLine);
-
+            SbSql.Append("where 1 = 1" + Environment.NewLine);
+            if (Item.Ukey != 0)
+            {
+                SbSql.Append("and ukey = @Ukey" + Environment.NewLine);
+            }
 
 
             return ExecuteList<Style>(CommandType.Text, SbSql.ToString(), objParameter);
@@ -428,6 +476,37 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
-	#endregion
+
+        public string GetSizeUnitByCustPONO(string CustPONO)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection()
+            {
+                 { "@CustPONO", DbType.String, CustPONO} ,
+            };
+
+            string sqlcmd = @"
+select TOP 1 SizeUnit 
+from Style  with (nolock)
+where   ukey IN (
+select styleUkey
+    from orders
+    WHERE ID IN (
+        select ID from orders with (nolock) where CustPONO = @CustPONO
+    )
+)
+";
+
+            DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
+
+            if (dtResult.Rows.Count > 0)
+            {
+                return dtResult.Rows[0]["SizeUnit"].ToString();
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
+        #endregion
     }
 }

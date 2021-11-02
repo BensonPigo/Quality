@@ -1,0 +1,148 @@
+﻿<style type="text/css">
+    #Screenshot {
+        width: 70vw;
+        height: 84vh;
+        position: absolute;
+        left: 16vw;
+        top: 11vh;
+        z-index: 1043;
+        background-color: white;
+        border: solid 1px black;
+        font-size: 1em;
+        font-weight: bold;
+        padding: 1em;
+        overflow-y:scroll;
+    }
+
+    .display-None {
+        display: none;
+    }
+
+    .display-Block {
+        display: block;
+    }
+</style>
+
+<div id="Screenshot" class="display-None">
+    <div class="select">
+        <label for="videoSource">Video source: </label><select id="videoSource"></select>
+        <input id="screenshot-button" type="button" class="site-btn btn-gy font1rem" value="Take screenshot" />
+        <input id="btnScreenshotExit" type="button" class="site-btn btn-gy font1rem" style="margin:0;border:0;padding: 7px 2em;" name="ScreenshotExit" value="Exit" />
+    </div>
+
+    <div class="videoScreen">
+        <div>
+            <video autoplay muted playsinline style="padding:1em; width:100%;"></video>
+            <img id="screenshot-img" style="width:30vw;">
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function Screenshot(ImgID) {
+        const videoElement = document.querySelector('video');
+        const videoSelect = document.querySelector('select#videoSource');
+        const screenshotButton = document.querySelector("#screenshot-button");
+        const img = document.querySelector("#screenshot-img");
+        const imgSet = document.querySelector("#" + ImgID);
+        const canvas = document.createElement("canvas");
+
+        videoSelect.innerHTML = '';
+        videoSelect.onchange = getStream;
+        getStream().then(getDevices).then(gotDevices);
+
+        $("#screenshot-img").width("100%");
+
+        screenshotButton.onclick = videoElement.onclick = function () {
+            canvas.width = videoElement.videoWidth;
+            canvas.height = videoElement.videoHeight;
+            canvas.getContext("2d").drawImage(videoElement, 0, 0);
+            
+            // Other browsers will fall back to image/png
+            var src = canvas.toDataURL("image/webp");
+            if (src.length > 6) {
+                img.src = src;
+                imgSet.src = src;
+                OtherSetting(ImgID, 'a' + ImgID);
+                $("#screenshot-img").width("100%");
+            }
+        };
+
+        function getDevices() {
+            // AFAICT in Safari this only gets default devices until gUM is called :/
+            return navigator.mediaDevices.enumerateDevices();
+        }
+
+        function gotDevices(deviceInfos) {
+            window.deviceInfos = deviceInfos; // make available to console
+            for (const deviceInfo of deviceInfos) {
+                const option = document.createElement('option');
+                option.value = deviceInfo.deviceId;
+                if (deviceInfo.kind === 'videoinput') {
+                    option.text = deviceInfo.label || `Camera ${videoSelect.length + 1}`;
+                    videoSelect.appendChild(option);
+                }
+            }
+        }
+
+        function getStream() {
+            if (window.stream) {
+                window.stream.getTracks().forEach(track => {
+                    track.stop();
+                });
+            }
+            const videoSource = videoSelect.value;
+            const constraints = {
+                video: {
+                    deviceId: videoSource ? { exact: videoSource } : undefined,
+                    width: { ideal: 640 },
+                    height: { ideal: 480 }
+                }
+            };
+            return navigator.mediaDevices
+                .getUserMedia(constraints)
+                .then(gotStream)
+                .catch(handleError);
+        }
+
+        function gotStream(stream) {
+            window.stream = stream; // make stream available to console
+            videoSelect.selectedIndex = [...videoSelect.options].
+                findIndex(option => option.text === stream.getVideoTracks()[0].label);
+            videoElement.srcObject = stream;
+            screenshotButton.disabled = false;
+        }
+
+        function handleError(error) {
+            console.error('Error: ', error);
+        }
+    }
+
+    function StopScreen() {
+        const videoSelect = document.querySelector('select#videoSource').innerHTML;
+        const img = document.querySelector("#screenshot-img");
+        const videoElement = document.querySelector('video');
+        if (videoSelect == "") {
+            return;
+        }
+
+        const stream = videoElement.srcObject;
+        const tracks = stream.getTracks();
+
+        img.src = "";
+
+        tracks.forEach(function (track) {
+            track.stop();
+        });
+
+        videoElement.pause();
+        videoElement.srcObject = null;
+    }
+
+    function OtherSetting(ImgID, aID) {
+        const imgSet = document.querySelector("#" + ImgID);
+        const aSet = document.querySelector("#" + aID);
+
+        //aSet.href = imgSet.src;
+    }
+</script>

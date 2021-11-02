@@ -87,7 +87,8 @@ namespace ADOHelper.Template.MSSQL
 					{
 						object obj = null;
 						obj = (!rdr.IsDBNull(i) ? rdr.GetValue(i) : DataAccessHelper.GetDBNullValue(property.PropertyType.FullName));
-						property.SetValue(t, obj, null);
+
+                        property.SetValue(t, obj, null);
 					}
 				}
 				ts.Add(t);

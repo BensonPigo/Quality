@@ -21,35 +21,36 @@ namespace Quality.Controllers
             set { System.Web.HttpContext.Current.Session["UserID"] = value; }
         }
 
-        public string UserName
+        public string BulkFGT_Brand
         {
             get
             {
-                if (System.Web.HttpContext.Current.Session["UserName"] == null) { return ""; }
-                else { return System.Web.HttpContext.Current.Session["UserName"].ToString(); }
+                if (System.Web.HttpContext.Current.Session["BulkFGT_Brand"] == null) { return ""; }
+                else { return System.Web.HttpContext.Current.Session["BulkFGT_Brand"].ToString(); }
             }
-            set { System.Web.HttpContext.Current.Session["UserName"] = value; }
+            set { System.Web.HttpContext.Current.Session["BulkFGT_Brand"] = value; }
         }
 
-        public string Email
+        public string UserMail
         {
             get
             {
-                if (System.Web.HttpContext.Current.Session["Email"] == null) { return ""; }
-                else { return System.Web.HttpContext.Current.Session["Email"].ToString(); }
+                if (System.Web.HttpContext.Current.Session["UserMail"] == null) { return ""; }
+                else { return System.Web.HttpContext.Current.Session["UserMail"].ToString(); }
             }
-            set { System.Web.HttpContext.Current.Session["Email"] = value; }
+            set { System.Web.HttpContext.Current.Session["UserMail"] = value; }
         }
 
-        public string ImportFrom
+        public string MDivisionID
         {
             get
             {
-                if (System.Web.HttpContext.Current.Session["ImportFrom"] == null) { return ""; }
-                else { return System.Web.HttpContext.Current.Session["ImportFrom"].ToString(); }
+                if (System.Web.HttpContext.Current.Session["MDivisionID"] == null) { return ""; }
+                else { return System.Web.HttpContext.Current.Session["MDivisionID"].ToString(); }
             }
-            set { System.Web.HttpContext.Current.Session["ImportFrom"] = value; }
+            set { System.Web.HttpContext.Current.Session["MDivisionID"] = value; }
         }
+
 
         public string FactoryID
         {
@@ -158,6 +159,79 @@ namespace Quality.Controllers
             }
             set { System.Web.HttpContext.Current.Session["SelectItemData"] = value; }
         }
+
+        public string TargetArea
+        {
+            get
+            {
+                if (System.Web.HttpContext.Current.Session["TargetArea"] == null) { return string.Empty; }
+                else { return System.Web.HttpContext.Current.Session["TargetArea"].ToString(); }
+            }
+            set { System.Web.HttpContext.Current.Session["TargetArea"] = value; }
+        }
+
+        public string TargetController
+        {
+            get
+            {
+                if (System.Web.HttpContext.Current.Session["TargetController"] == null) { return string.Empty; }
+                else { return System.Web.HttpContext.Current.Session["TargetController"].ToString(); }
+            }
+            set { System.Web.HttpContext.Current.Session["TargetController"] = value; }
+        }
+
+        public string TargetAction
+        {
+            get
+            {
+                if (System.Web.HttpContext.Current.Session["TargetAction"] == null) { return string.Empty; }
+                else { return System.Web.HttpContext.Current.Session["TargetAction"].ToString(); }
+            }
+            set { System.Web.HttpContext.Current.Session["TargetAction"] = value; }
+        }
+
+
+        public string TargetPKey_Parameter
+        {
+            get
+            {
+                if (System.Web.HttpContext.Current.Session["TargetPKey_Parameter"] == null) { return string.Empty; }
+                else { return System.Web.HttpContext.Current.Session["TargetPKey_Parameter"].ToString(); }
+            }
+            set { System.Web.HttpContext.Current.Session["TargetPKey_Parameter"] = value; }
+        }
+
+        public string TargetPKey_Value
+        {
+            get
+            {
+                if (System.Web.HttpContext.Current.Session["TargetPKey_Value"] == null) { return string.Empty; }
+                else { return System.Web.HttpContext.Current.Session["TargetPKey_Value"].ToString(); }
+            }
+            set { System.Web.HttpContext.Current.Session["TargetPKey_Value"] = value; }
+        }
+
+
         #endregion
+
+        // 檢查是否登入
+        public bool CheckSession()
+        {
+            if (Session == null || Session.Keys.Count == 1)
+            {
+                if (Request.IsAjaxRequest())//是Ajax的話
+                {
+                    Response.StatusCode = 440;//Login timeout
+                    Response.End();
+                }
+                else
+                {
+                    Response.Write("Please login again。</br></br>");
+                    Response.End();
+                }       
+                return false;
+            }
+            return true;
+        }
     }
 }

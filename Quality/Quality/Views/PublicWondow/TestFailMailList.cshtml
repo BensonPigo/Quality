@@ -1,0 +1,128 @@
+﻿@using DatabaseObject.Public
+
+@{
+    Layout = null;
+    string title = ViewData["Title"] == null ? "Test Fail Mail" : ViewData["Title"].ToString();
+    string TargetID = ViewData["TargetID"] == null ? string.Empty : ViewData["TargetID"].ToString();
+
+}
+
+@model List<Window_TestFailMail>
+
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+
+<style>
+
+    ul {
+        padding: 0;
+    }
+
+
+    .head {
+        border-top: 2px solid black;
+        text-align: center;
+        font-size: 1.2em;
+        background-color: lightgray;
+    }
+</style>
+
+<fieldset style="width:300px;height:600px;">
+    <legend>@title - Test Fail</legend>
+    <h3>
+        Please choose the mail group.
+    </h3>
+
+
+
+    <div style="width:100%;height:90%;overflow-y: scroll;">
+        <table id="MyTable" style="width:100%;max-height:95%;" class="table table-striped display">
+            <thead>
+                <tr>
+                    <th> </th>
+                    <th>Group Name</th>
+                    @*<th>ToAddress</th>*@
+                    @*<th>CcAddress</th>*@
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><input type="checkbox" name="name" value="" GroupName="@item.GroupName" /></td>
+                        <td>
+                            @item.GroupName
+                            <input type="hidden" addrType="To" GroupName="@item.GroupName" value="@item.ToAddress" />
+                            <input type="hidden" addrType="CC" GroupName="@item.GroupName" value="@item.CcAddress" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</fieldset>
+<br />
+<input id="btnSend" type="button" value="Send" />
+<input id="btnExit" type="button" value="Exit" />
+<script>
+
+
+    $(function () {
+        var table = $('#MyTable').DataTable({
+            "filter": false,
+            "paging": false,
+            "order": false,
+            "info": false,
+            columns: [
+                { target: 0 },
+                { target: 1 },
+            ]
+        });
+
+        $("#btnSend").click(function () {
+
+            //取得勾選的Group Name
+            var GroupNameList = [];
+            $("input[type=checkbox]:checked").each(function () {
+
+                var GroupName = $(this).attr("GroupName");
+                GroupNameList.push(GroupName);
+            });
+
+
+            var Mails = [];
+            for (var i = 0; i < GroupNameList.length; i++) {
+
+                var group = GroupNameList[i];
+                var to = $("input[GroupName=" + group + "][addrType=To]").val();
+                var cc = $("input[GroupName=" + group + "][addrType=CC]").val();
+
+                var Mail = {
+                    Group: group,
+                    To: to,
+                    CC: cc,
+                }
+                Mails.push(Mail);
+            }
+
+            if (Mails.length > 0) {
+                // 呼叫父視窗的GetTestFailMail Function，把值傳回去
+                window.opener.GetTestFailMailList(Mails, '@TargetID');
+                window.close();
+            }
+            else {
+                alert("Please choose the mail group.");
+            }
+
+        });
+
+        $("#btnExit").click(function () {
+            @Html.Raw(ViewBag.ExitReload);
+            window.close();
+        });
+
+    });
+
+</script>

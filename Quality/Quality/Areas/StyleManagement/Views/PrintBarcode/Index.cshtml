@@ -1,0 +1,361 @@
+﻿@using DatabaseObject.ViewModel.SampleRFT;
+
+@{
+    ViewBag.Title = "Index";
+    string MsgScript = ViewData["MsgScript"] == null ? "" : ViewData["MsgScript"].ToString();
+}
+
+@model List<PrintBarcode_ViewModel>
+
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+
+<style type="text/css">
+
+    label, #DetailTable_info {
+        color: white
+    }
+
+    #DetailTable_previous, #DetailTable_next {
+        color: white !important;
+    }
+
+
+    #SelectItemBackground {
+        background-color: rgba(204, 204, 204, 0.5);
+        bottom: 0;
+        left: 0;
+        position: fixed;
+        right: 0;
+        top: 0;
+        z-index: 1041;
+    }
+
+    .SelectItem {
+        width: 15vw;
+        height: 45vh;
+        position: absolute;
+        left: 42vw;
+        top: 30vh;
+        z-index: 1043;
+        overflow-y: auto;
+    }
+
+    .QueryLab {
+        font-size: 2vh;
+    }
+
+    .FilterInput {
+        background-image: url('../../../../Image/searchicon.png'); /* Add a search icon to input */
+        background-position: 10px 12px; /* Position the search icon */
+        background-repeat: no-repeat; /* Do not repeat the icon image */
+        width: 100%; /* Full-width */
+        font-size: 1rem; /* Increase font-size */
+        padding: 12px 20px 12px 40px; /* Add some padding */
+        border: 1px solid #ddd; /* Add a grey border */
+    }
+
+    .FilterInput {
+        background-image: url('../../../../ThirdParty/SciCustom/icon/searchicon.png');
+        background-position: 10px 12px; /* Position the search icon */
+        background-repeat: no-repeat; /* Do not repeat the icon image */
+        width: 100%; /* Full-width */
+        font-size: 1rem; /* Increase font-size */
+        padding: 12px 20px 12px 40px; /* Add some padding */
+        border: 1px solid #ddd; /* Add a grey border */
+    }
+
+    #DetailTable_previous, #DetailTable_next {
+        color: white !important;
+    }
+
+    .FilterUL li a {
+        border: 1px solid #ddd; /* Add a border to all links */
+        margin-top: -1px; /* Prevent double borders */
+        background-color: #f6f6f6; /* Grey background color */
+        padding: 12px; /* Add some padding */
+        text-decoration: none; /* Remove default text underline */
+        font-size: 1rem; /* Increase the font-size */
+        color: black; /* Add a black text color */
+        display: block; /* Make it into a block element to fill the whole list */
+    }
+
+        .FilterUL li a:hover:not(.header) {
+            background-color: #eee; /* Add a hover effect to all links, except for headers */
+        }
+
+    #btnBarcode {
+        background-image: url('../../../../ThirdParty/SciCustom/icon/Barcode.png');
+        background-size: 100% auto;
+        background-color: white;
+    }
+
+    #Barcode {
+        height: 10vh;
+    }
+
+    td {
+        text-align: left;
+    }
+
+    #tab_Head {
+        background-color: lightgray;
+    }
+</style>
+
+<div class="main-content">
+
+    <header class="page-header">
+        <h3>
+            <i class=""></i><span>Print Barcode</span>
+        </h3>
+        <div class="breadcrumb">
+            <div>Home</div>
+            <div class="current">Print Barcode</div>
+        </div>
+    </header>
+
+
+    <div class="main-area">
+
+        <div class="content-scroll">
+            <div class="inner-scroll" style="float:left">
+
+                <div>
+                    @using (Html.BeginForm("Query", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post, new { @class = "", @name = "SearchFrom", @id = "SearchFrom" }))
+                    {
+                    <div>
+                        @Html.Hidden("StyleUkey")
+                        <label class="QueryLab">Brand</label>
+                        <input type="text" name="BrandID" id="txtBrand" />
+                        <input id="btnBrandSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="BrandSelectItem" value="..." />
+                        &nbsp;&nbsp;
+                        <label class="QueryLab">Season</label>
+                        <input type="text" name="SeasonID" id="txtSeason" />
+                        <input id="btnSeasonSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="SeasonSelectItem" value="..." />
+                        &nbsp;&nbsp;
+                        <label class="QueryLab">Style</label>
+                        <input type="text" name="StyleID" id="txtStyle" />
+                        <input id="btnStyleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="StyleSelectItem" value="..." />
+                        &nbsp;&nbsp;
+                        <input type="submit" name="name" id="btnQuery" value="Query" />
+
+                        &nbsp;&nbsp;
+                        <input type="button" name="name" id="btnPrintBarcode" value="Print Barcode" />
+                    </div>
+                    }
+                </div>
+                <br />
+                <div>
+
+                    <table id="DetailTable" class="table table-striped display cell-border" style="width:100%;">
+
+                        <thead>
+                            <tr class="row-name">
+                                <th>   </th>
+                                <th>Style#</th>
+                                <th>Brand</th>
+                                <th>Season</th>
+                                <th>Style Name</th>
+                                <th>Description</th>
+                                <th>Product Type</th>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr class="row-content">
+                                    <td>
+                                        <input type="checkbox" name="StyleUkey" value="@item.StyleUkey" />
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.StyleID)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.BrandID)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SeasonID)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.StyleName)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Description)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ProductType)
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <br />
+
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<script type="text/javascript">
+
+    var msg = new MessagerAlert();
+
+    $(function () {
+
+        @Html.Raw(MsgScript);
+
+        var table = $('#DetailTable').DataTable({
+            "pageLength": 10
+        });
+        $("input[type=checkbox]").change(function () {
+
+            var boolean = !$(this).prop("checked");
+
+            //相反設定
+            $(this).prop('checked', boolean);
+        });
+
+        $('#DetailTable tbody').on('click', 'td', function () {
+
+            // Index = 0 為勾選欄位
+            if (table.cell(this).index().column == 0) {
+
+                //取得td內的input，是否勾選
+                var boolean = !$(this).find("input").prop("checked");
+
+                //相反設定
+                $(this).find("input").prop('checked', boolean);
+
+
+            }
+        });
+
+        $("#btnPrintBarcode").click(function () {
+
+            var selectList = $("input[Name=StyleUkey]:checked");
+            if (selectList.lenth == 0) {
+                msg.WithInfo("Please style# first.");
+            }
+
+            var DataList = [];
+
+            selectList.each(function (obj) {
+
+                var stuleUkey = $(this).val();
+                DataList.push(stuleUkey);
+            });
+            if (DataList.length > 0) {
+                $.ajax({
+                    url: '@Url.Action("PrintBarcode")',
+                    data: { DataList: DataList },
+                    type: 'POST',
+                    dataType: "json",
+                    async: false,
+                    success: function (res) {
+                        window.open('@Url.Action("PrintBarcode")', 'Print Barcode', config = 'toolbar=no,status=no,location=no,width=700,height=650');
+                    }
+                });
+            }
+            else {
+                msg.WithInfo("Please select data before print.");
+            }
+        });
+
+        QueryButtonBind();
+    });
+
+    function QueryButtonBind() {
+        $('#btnBrandSelectItem').on('click', function () {
+             window.open('@Url.Action("BrandList", "PublicWondow",new { Area=""})', 'Brand', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        });
+
+        $('#btnSeasonSelectItem').on('click', function () {
+            var para = "?BrandID=" + $('#txtBrand').val();
+            window.open('@Url.Action("SeasonList", "PublicWondow",new { Area=""})' + para, 'Season', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        });
+
+        $('#btnStyleSelectItem').on('click', function () {
+            var para = "?BrandID=" + $('#txtBrand').val() + "&SeasonID=" + $('#txtSeason').val();
+            window.open('@Url.Action("StyleList", "PublicWondow",new { Area=""})' + para, 'Style', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        });
+
+        $("#txtBrand").blur(function () {
+            $.ajax({
+                url: "@Url.Action("BrandList", "PublicWondow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#txtBrand").val('');
+                        msg.WithError('Brand Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $("#txtSeason").blur(function () {
+            var BrandID = $('#txtBrand').val();
+            $.ajax({
+                url: "@Url.Action("SeasonList", "PublicWondow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: BrandID, SeasonID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#txtSeason").val('');
+                        msg.WithError('Season Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $("#txtStyle").blur(function () {
+            var BrandID = $('#txtBrand').val();
+            var SeasonID = $('#txtSeason').val();
+            $.ajax({
+                url: "@Url.Action("StyleList", "PublicWondow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: BrandID, SeasonID: SeasonID, StyleID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#txtStyle").val('');
+                        msg.WithError('Style Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    }
+
+    function GetBrandList(data) {
+        $('#txtBrand').val(data);
+    }
+
+    function GetSeasonList(data) {
+        $('#txtSeason').val(data);
+    }
+
+    function GetStyleList(data) {
+        $('#txtStyle').val(data);
+    }
+</script>

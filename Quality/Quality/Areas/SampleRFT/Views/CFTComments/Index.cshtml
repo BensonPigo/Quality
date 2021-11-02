@@ -1,0 +1,279 @@
+﻿
+@using DatabaseObject.ViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string download = ViewData["tempFilePath"] == null ? "" : ViewData["tempFilePath"].ToString();
+    string QueryType = Model.QueryType;
+    bool isReadOnly = true;
+}
+
+@model CFTComments_ViewModel
+
+
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+
+<style type="text/css">
+    .dataTables_wrapper {
+        position: static;
+    }
+
+    h3, label, #myTable_info {
+        color: white
+    }
+
+    #myTable_previous, #myTable_next {
+        color: white !important;
+    }
+
+    select {
+        color: wheat
+    }
+
+    .btnmargin {
+        margin-left: 10px;
+        margin-top: 10px;
+    }
+
+    tfoot input {
+        width: 100%;
+        padding: 3px;
+        box-sizing: border-box;
+    }
+    td {
+        padding: 5px 5px 5px 5px;
+    }
+    .readonly{
+        background-color:lightgray;
+    }
+    .button {
+        width: 5vw;
+    }
+</style>
+<div class="main-content">
+
+    <header class="page-header">
+        <h3>
+            <i class=""></i><span>CFT Comments</span>
+        </h3>
+        <div class="breadcrumb">
+            <div>Home</div>
+            <div class="current">CFT Comments</div>
+        </div>
+    </header>
+
+
+    <div class="main-area">
+
+        <div class="content-scroll">
+            <div class="inner-scroll" style="float:left">
+
+                <div>
+                    @using (Html.BeginForm("Query", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { @class = "", @name = "SearchFrom", @onsubmit = "", @id = "SearchFrom" }))
+                    {
+                        <div>
+                            <table>
+                                <tr>
+                                        @{
+                                            isReadOnly = !(QueryType == "Style");
+                                        }
+                                    <td>
+                                        @Html.RadioButtonFor(o=>o.QueryType, "Style", new { @ID= "TypeStyle", @class = "Radio" })
+                                    </td>
+                                    <td>
+                                        <label class="FindLab" for="TypeStyle">Style</label>
+                                    </td>
+                                    <td>
+                                        @if (isReadOnly)
+                                        {
+                                            @Html.TextBoxFor(o => o.StyleID, new { @value = Model.StyleID, @readonly = "readonly" })
+                                        }
+                                        else
+                                        {
+
+                                            @Html.TextBoxFor(o => o.StyleID, new { @value = Model.StyleID})
+                                        }
+                                    </td>
+                                    <td>
+                                        <label class="FindLab">Brand</label>
+                                    </td>
+                                    <td>
+                                        @if (isReadOnly)
+                                        {
+                                            @Html.TextBoxFor(o => o.BrandID, new { @value = Model.BrandID, @readonly = "readonly" })
+                                        }
+                                        else
+                                        {
+                                            @Html.TextBoxFor(o => o.BrandID, new { @value = Model.BrandID })
+                                        }
+                                    </td>
+                                    <td>
+                                        <label class="FindLab">Season</label>
+                                    </td>
+                                    <td>
+                                        @if (isReadOnly)
+                                        {
+                                            @Html.TextBoxFor(o => o.SeasonID, new { @value = "Model.SeasonID", @readonly = "readonly" })
+                                        }
+                                        else
+                                        {
+                                            @Html.TextBoxFor(o => o.SeasonID, new { @value = Model.SeasonID })
+                                        }
+                                    </td>
+                                    <td>
+                                        <input type="submit" class="button"  name="action:Query" id="btnFind" value="Find" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    @{
+                                        isReadOnly = !(QueryType == "OrderID");
+                                    }
+                                    <td>
+                                        @Html.RadioButtonFor(o => o.QueryType, "OrderID", new { @ID = "TypeSP", @class = "Radio", @value = Model.SampleStage })
+                                    </td>
+                                    <td>
+                                        <label class="FindLab" for="TypeSP">SP#</label>
+                                    </td>
+                                    <td>
+                                        @if (isReadOnly)
+                                        {
+                                            @Html.TextBoxFor(o => o.OrderID, new { @value = Model.OrderID, @readonly = "readonly" })
+                                        }
+                                        else
+                                        {
+                                            @Html.TextBoxFor(o => o.OrderID, new { @value = Model.OrderID })
+                                        }
+                                    </td>
+                                    <td>
+                                        <label class="FindLab">Sample Stage</label>
+                                    </td>
+                                    <td colspan="3">
+                                        @Html.TextBoxFor(o => o.SampleStage, new { @class = "readonly", @value = Model.SampleStage })
+                                    </td>
+                                    <td>
+                                        <input type="submit" class="button" name="action:ToExcel" id="btnExcel" value="To Excel" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    }
+                </div>
+                <br />
+                <div>
+
+                    <table id="myTable" class="table table-striped display" style="text-align:center">
+                        <thead>
+                            <tr class="row-name">
+                                <th>SampleStage</th>
+                                <th>Comments Category</th>
+                                <th>Comments</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.DataList)
+                            {
+                                <tr class="row-content">
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SampleStage)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.CommentsCategory)
+                                    </td>
+                                    <td>
+                                        @Html.Raw(item.Comnments)
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <br />
+
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<script type="text/javascript">
+
+    var msg = new MessagerAlert();
+
+    $(function () {
+
+        if ('@download' != '') {
+            window.location.href = '@download';
+        }
+
+        @Html.Raw(Model.ErrorMessage);
+
+        $('#myTable').DataTable({
+            "pageLength": 10,
+            initComplete: function () {
+            }
+        });
+
+        $(".Radio").click(function () {
+            if ($("#TypeStyle").prop("checked")) {
+                $("#OrderID").val("");
+                $("#SampleStage").val("");
+
+                $("#BrandID").removeAttr("readonly");
+                $("#SeasonID").removeAttr("readonly");
+                $("#StyleID").removeAttr("readonly");
+
+                $("#OrderID").attr("readonly", "readonly");
+            }
+            if ($("#TypeSP").prop("checked")) {
+                $("#BrandID").val("");
+                $("#SeasonID").val("");
+                $("#StyleID").val("");
+                $("#OrderID").removeAttr("readonly");
+
+                $("#BrandID").attr("readonly", "readonly");
+                $("#SeasonID").attr("readonly", "readonly");
+                $("#StyleID").attr("readonly", "readonly");
+            }
+        });
+
+
+        $("#OrderID").blur(function () {
+
+            //選到SP#才需要查資料
+            if ($("#TypeSp").prop("checked")) {                
+                $.ajax({
+                    url: '@Url.Action("GetOrderinfo")',
+                    data: { OrderID: $(this).val() },
+                    type: 'POST',
+                    dataType: "json",
+                    async: false,
+                    success: function (res) {
+
+                        if (res.Result) {
+                            // 表頭塞值
+                            $("#StyleID").val(res.StyleID);
+                            $("#SampleStage").val(res.SampleStage);
+                            $("#BrandID").val(res.BrandID);
+                            $("#SeasonID").val(res.SeasonID);
+
+                        }
+                        else {
+                            msg.WithErrorCheck(res.ErrorMessage, function () {
+                                location.reload();
+                            });
+                        }
+
+                    }
+                });
+            }
+        });
+
+    });
+
+
+</script>
+
