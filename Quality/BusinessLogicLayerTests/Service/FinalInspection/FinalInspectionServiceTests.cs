@@ -29,7 +29,7 @@ namespace BusinessLogicLayer.Service.FinalInspectionTests
             {
                 FinalInspectionService finalInspectionService = new FinalInspectionService();
 
-                string result = JsonConvert.SerializeObject(finalInspectionService.GetPivot88Json("ESPCH21100005"));
+                string result = JsonConvert.SerializeObject(finalInspectionService.GetPivot88Json("ESPCH21100006"));
                 
                 Assert.IsTrue(true);
             }
@@ -48,15 +48,9 @@ namespace BusinessLogicLayer.Service.FinalInspectionTests
                 PivotTransferRequest pivotTransferRequest = new PivotTransferRequest()
                 { 
                     InspectionType = "Final Inspection",
-                    InspectionID = new List<string>() { "ESPCH21100005"},
                     BaseUri = "https://adidasstage4.pivot88.com",
                     RequestUri = "rest/operation/v1/inspection_reports/unique_key:"
                 };
-
-                for (int i = 0; i < 10; i++)
-                {
-                    pivotTransferRequest.InspectionID.Add("ESPCH21100005");
-                }
 
                 pivotTransferRequest.Headers.Add("api-key", "fc16972a-bdc9-420f-9b6e-e7193ed99508");
 
