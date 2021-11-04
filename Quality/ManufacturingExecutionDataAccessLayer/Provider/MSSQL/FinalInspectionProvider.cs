@@ -1327,7 +1327,7 @@ Select	f.AuditDate,
 									      Replicate('I', 4),'IV')   from [MainServer].Production.dbo.AcceptableQualityLevels where Ukey = f.AcceptableQualityLevelsUkey), 'I'),
 		
 		[InspectionResultID] = iif(f.InspectionResult = 'Pass', 1, 2),
-		[InspectionStatusID] = iif(f.InspectionResult = 'Pass', 5, 6),
+		[InspectionStatusID] = iif(f.InspectionResult = 'Pass', 3, 7),
 		f.SubmitDate,
 		[InspectionMinutes] = Round(DATEDIFF(SECOND, f.AddDate, f.EditDate) / 60.0, 5),
 		[CFA] = isnull((select Pivot88UserName from quality_pass1 with (nolock) where ID = f.CFA), ''),
