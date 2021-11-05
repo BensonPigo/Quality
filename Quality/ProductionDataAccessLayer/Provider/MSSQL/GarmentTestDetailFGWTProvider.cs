@@ -339,7 +339,7 @@ INSERT INTO GarmentTest_Detail_FGWT
                 		gf.[SizeSpec]  = @SizeSpec{idx},
                 		gf.[AfterWash]	= @AfterWash{idx},
                 		gf.[Shrinkage]	= @Shrinkage{idx},
-                		gf.[Scale]	= @Scale{idx} 
+                		gf.[Scale]	= IIF( (gf.TestDetail = 'grade' OR gf.TestDetail ='pass/fail' ) AND @Scale{idx} IS NULL , '', @Scale{idx})
                 from GarmentTest_Detail_FGWT gf
                 outer apply (
                 	select distinct
