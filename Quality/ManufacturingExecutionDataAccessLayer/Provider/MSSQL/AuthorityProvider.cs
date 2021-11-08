@@ -30,6 +30,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 select   UserID = p.ID
 		,[Name] = IIF(isnull(pp1.Name,'') = '', mp1.name,pp1.name) 
 		,p.Position
+        ,p.Pivot88UserName
 from Quality_Pass1 p
 left join ManufacturingExecution.dbo.Pass1 mp1 ON p.ID= mp1.ID
 left join Production.dbo.Pass1 pp1 on p.ID = pp1.id
@@ -50,6 +51,7 @@ select TOp 1 UserID = p.ID
 		,[Password] = IIF(isnull(pp1.Password,'') = '', mp1.Password, pp1.Password)
 		,[Email] = IIF(isnull(pp1.Email,'')='', mp1.Email, pp1.Email)
 		,p.Position
+        ,p.Pivot88UserName
 from Quality_Pass1 p
 left join ManufacturingExecution.dbo.Pass1 mp1 ON p.ID= mp1.ID
 left join Production.dbo.Pass1 pp1 on p.ID = pp1.id
@@ -86,32 +88,19 @@ order by m.ModuleSeq, m.FunctionSeq
         public bool Update_User_List_Detail(UserList_Authority_Request Req)
         {
             StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+
+            paras.Add("Pivot88UserName", Req.Pivot88UserName ?? string.Empty);
 
             SbSql.Append($@"
 UPDATE Quality_Pass1
 SET Position='{Req.Position}'
+    ,Pivot88UserName = @Pivot88UserName
 WHERE Id='{Req.UserID}'
 ;
 ");
 
-            /*表身只唯讀， 因此註解這段
-            foreach (var data in Req.DataList)
-            {
-                SbSql.Append($@"
-UPDATE p2
-SET p2.Used='{(data.Used ? "1" : "0")}'
-from Quality_Pass1 p
-inner join InternalWeb.dbo.Pass1 p1 on p.ID=p1.ID
-inner join Quality_Position pos on pos.ID=p.Position
-inner join Quality_Pass2 p2 on p2.PositionID=pos.ID AND p2.FactoryID=pos.Factory
-inner join Quality_Menu m on p2.MenuID=m.id
-where p.ID = '{Req.UserID}'
-AND p2.MenuID = {data.MenuID}
-;
-");
-            }
-            */
-            bool result = Convert.ToInt32(ExecuteNonQuery(CommandType.Text, SbSql.ToString(), new SQLParameterCollection())) > 0;
+            bool result = Convert.ToInt32(ExecuteNonQuery(CommandType.Text, SbSql.ToString(), paras)) > 0;
             return result;
         }
 

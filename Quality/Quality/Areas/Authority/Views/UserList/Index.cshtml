@@ -96,6 +96,7 @@
                                 <th>UserID</th>
                                 <th>Name</th>
                                 <th>Position</th>
+                                <th>Pivot88 UserName</th>
                                 <th>   </th>
                             </tr>
                         </thead>
@@ -113,6 +114,9 @@
                                         @Html.DisplayFor(modelItem => item.Position)
                                     </td>
                                     <td>
+                                        @Html.DisplayFor(modelItem => item.Pivot88UserName)
+                                    </td>
+                                    <td>
                                         <img onclick="Edit_Pic_Click('@item.UserID')" style="width:1.2vw;cursor:pointer;" src="~/Image/Icon/Edit.png" />
                                     </td>
                                 </tr>
@@ -123,6 +127,7 @@
                                 <th>UserID</th>
                                 <th>Name</th>
                                 <th>Position</th>
+                                <th>Pivot88 UserName</th>
                                 <th>   </th>
                             </tr>
                         </tfoot>
@@ -181,8 +186,13 @@
 
                             @Html.DropDownList("Position", PositionList, new { @class = "", @style = "width:100%", @disabled = "disabled" })
                         </td>
-                        <td style=" border: 1px solid gray;font-size: 2vh;"></td>
-                        <td style=" border: 1px solid gray;font-size: 2vh;"></td>
+
+                        <td style="width:10vw;border: 1px solid gray;height: 5vh;font-size: 2vh;background-color:#696868;vertical-align: middle;">
+                            <label>Pivot88 UserName </label>
+                        </td>
+                        <td style=" border: 1px solid gray;font-size: 2vh;vertical-align: middle;">
+                            <input tpye="text" id="Pivot88UserName" readonly value="" style="background-color:lightgray;"/>
+                        </td>
                     </tr>
                 </table>
                 <br />
@@ -343,11 +353,15 @@
             $(".input_Head").show();
 
             $("#Position").removeAttr("disabled");
+            $("#Pivot88UserName").removeAttr("readonly");
+            $("#Pivot88UserName").css("background-color", "white");
         }
         else {
             $(".detail_Head").show();
             $(".input_Head").hide();
             $("#Position").attr("disabled", "disabled");
+            $("#Pivot88UserName").attr("readonly", "readonly");
+            $("#Pivot88UserName").css("background-color", "lightgray");
         }
     }
 
@@ -391,6 +405,7 @@
                     $("#Password").text(res.Password);
                     $("#Email").text(res.Email);
                     $("#Position").val(res.Position);
+                    $("#Pivot88UserName").val(res.Pivot88UserName);
                     InputToggle();
 
                     InitDetailDataTable(res);
@@ -793,6 +808,7 @@
             Password: $("#Password").text(),
             Email: $("#Email").text(),
             Position: $("#Position").val(),
+            Pivot88UserName: $("#Pivot88UserName").val(),
             DataList: DataList
         };
 

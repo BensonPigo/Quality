@@ -12,5 +12,6 @@ namespace DatabaseObject.ResultModel
         public string UserID { get; set; }
         public string Name { get; set; }
         public string Position { get; set; }
+        public string Pivot88UserName { get; set; }
     }
 }

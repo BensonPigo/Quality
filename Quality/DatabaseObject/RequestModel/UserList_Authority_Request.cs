@@ -17,6 +17,7 @@ namespace DatabaseObject.RequestModel
 
         [Required]
         public string Position { get; set; }
+        public string Pivot88UserName { get; set; }
 
         public List<Module_Detail> DataList { get; set; }
     }
