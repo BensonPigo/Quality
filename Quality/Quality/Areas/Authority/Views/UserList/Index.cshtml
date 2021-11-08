@@ -191,7 +191,7 @@
                             <label>Pivot88 UserName </label>
                         </td>
                         <td style=" border: 1px solid gray;font-size: 2vh;vertical-align: middle;">
-                            <input tpye="text" id="Pivot88UserName" readonly value="" />
+                            <input tpye="text" id="Pivot88UserName" readonly value="" style="background-color:lightgray;"/>
                         </td>
                     </tr>
                 </table>
@@ -354,12 +354,14 @@
 
             $("#Position").removeAttr("disabled");
             $("#Pivot88UserName").removeAttr("readonly");
+            $("#Pivot88UserName").css("background-color", "white");
         }
         else {
             $(".detail_Head").show();
             $(".input_Head").hide();
             $("#Position").attr("disabled", "disabled");
             $("#Pivot88UserName").attr("readonly", "readonly");
+            $("#Pivot88UserName").css("background-color", "lightgray");
         }
     }
 
