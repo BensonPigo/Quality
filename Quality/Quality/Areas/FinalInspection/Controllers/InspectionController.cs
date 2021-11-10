@@ -121,6 +121,8 @@ msg.WithInfo('{ex.Message}');
                 ViewBag.SewingTeam = SewingTeam;
             }
 
+            // 預設值
+            setting.Team = "A";
 
             ViewBag.AQLPlanList = new List<SelectListItem>()
             {
@@ -181,6 +183,9 @@ msg.WithInfo('{ex.Message}');
                 }
                 ViewBag.SewingTeam = SewingTeam;
             }
+
+            // 預設值
+            //setting.Team = "A";
 
             ViewBag.AQLPlanList = new List<SelectListItem>()
             {
@@ -292,6 +297,7 @@ msg.WithInfo('{ex.Message}');
                 ViewBag.SewingTeam = SewingTeam;
             }
 
+
             ViewBag.AQLPlanList = new List<SelectListItem>()
                 {
                     new SelectListItem(){Text="",Value=""},
@@ -335,6 +341,8 @@ msg.WithError(""Shipmode Seq cant't be empty."");
                     }
                     ViewBag.SewingTeam = SewingTeam;
                 }
+                // 預設值
+                setting.Team = "A";
 
                 return View("Setting", setting);
             }

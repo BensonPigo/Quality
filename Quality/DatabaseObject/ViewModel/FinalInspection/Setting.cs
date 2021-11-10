@@ -11,6 +11,8 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string InspectionStage { get; set; } = string.Empty;
         public DateTime? AuditDate { get; set; } 
         public string SewingLineID { get; set; } = string.Empty;
+        public string Shift { get; set; } = string.Empty;
+        public string Team { get; set; } = string.Empty;
         public string InspectionTimes { get; set; } = string.Empty;
 
         public string AcceptableQualityLevelsUkey { get; set; } = string.Empty;

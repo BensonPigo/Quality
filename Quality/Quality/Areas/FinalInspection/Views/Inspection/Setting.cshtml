@@ -131,11 +131,19 @@
                     <tr>
                         <td>
                             <label>Shift</label>
-                            @Html.DropDownListFor(o => o.InspectionStage, (List<SelectListItem>)ViewBag.Shift, null, new { @class = "form-control", @style = "width:100px", @onchange = "onInspectionStageChange(this.value)" })
+                            @*@Html.DropDownListFor(o => o.Shift, (List<SelectListItem>)ViewBag.Shift, null, new { @class = "form-control", @style = "width:100px" })*@
+                            @{var ShiftList = (List<SelectListItem>)ViewBag.Shift; }
+                            <select id="Shift" name="Shift" class="form-control" style="width:100px">
+                                @foreach (var item in ShiftList)
+                                {
+                                    string selected = Model.Shift == item.Value ? "selected" : "";
+                                    <option value="@item.Value" @selected>@item.Text</option>
+                                }
+                            </select>
                         </td>
                         <td>
                             <label>Team</label>
-                            @Html.DropDownListFor(o => o.InspectionStage, (List<SelectListItem>)ViewBag.SewingTeam, null, new { @class = "form-control", @style = "width:100px", @onchange = "onInspectionStageChange(this.value)" })
+                            @Html.DropDownListFor(o => o.Team, (List<SelectListItem>)ViewBag.SewingTeam, null, new { @class = "form-control", @style = "width:100px"})
                         </td>
                     </tr>
                 </table>

@@ -44,6 +44,8 @@ namespace BusinessLogicLayer.Service
                 result.InspectionStage = finalInspection.InspectionStage;
                 result.AuditDate = finalInspection.AuditDate;
                 result.SewingLineID = finalInspection.SewingLineID;
+                result.Shift = finalInspection.Shift;
+                result.Team = finalInspection.Team;
                 result.InspectionTimes = finalInspection.InspectionTimes.ToString();
 
                 result.AcceptableQualityLevelsUkey = finalInspection.AcceptableQualityLevelsUkey.ToString();

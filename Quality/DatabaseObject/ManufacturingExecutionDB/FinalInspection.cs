@@ -58,6 +58,8 @@ namespace DatabaseObject.ManufacturingExecutionDB
         [StringLength(100)]
         [Display(Name = "產線")]
         public string SewingLineID { get; set; }
+        public string Shift { get; set; }
+        public string Team { get; set; }
 
         /// <summary>AcceptableQualityLevelsUkey</summary>
         [Display(Name = "AcceptableQualityLevelsUkey")]
