@@ -642,6 +642,8 @@
                         GetArtworkTypeIDList();
                         ClearColor();
                     }
+
+                    ReportNoClear(name);
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     console.log(xhr.responseText);
@@ -673,6 +675,8 @@
                     if (name == '') {
                         GetArtworkTypeIDList();
                     }
+
+                    ReportNoClear(name);
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     console.log(xhr.responseText);
@@ -706,6 +710,8 @@
                     if (name == '') {
                         GetArtworkTypeIDList();
                     }
+
+                    ReportNoClear(name);
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     console.log(xhr.responseText);
@@ -732,6 +738,8 @@
                         $("#" + name+"Article").val('');
                         msg.WithError('Article Not Found');
                     }
+
+                    ReportNoClear(name);
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     console.log(xhr.responseText);
@@ -1141,20 +1149,30 @@
         $('#' + targetID).val(data);
         GetArtworkTypeIDList();
         ClearColor();
+        ReportNoClear(targetID);
     }
 
     function GetSeasonList(data, targetID) {
         $('#' + targetID).val(data);
         GetArtworkTypeIDList();
+        ReportNoClear(targetID);
     }
 
     function GetStyleList(data, targetID) {
         $('#' + targetID).val(data);
         GetArtworkTypeIDList();
+        ReportNoClear(targetID);
     }
 
     function GetArticleList(data, targetID) {
-        $('#' +targetID).val(data);
+        $('#' + targetID).val(data);
+        ReportNoClear(targetID);
+    }
+
+    function ReportNoClear(targetID) {
+        if (targetID.indexOf('Request_') > -1) {
+            $('#Request_ReportNo').html('');
+        }
     }
 
     function GetLocalSupp(data) {
