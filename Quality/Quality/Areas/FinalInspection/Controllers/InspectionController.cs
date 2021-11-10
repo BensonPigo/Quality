@@ -103,6 +103,25 @@ msg.WithInfo('{ex.Message}');
                 new SelectListItem(){Text="3rd Party",Value="3rd Party"},
             };
 
+            ViewBag.Shift = new List<SelectListItem>()
+            {
+                new SelectListItem(){Text="Day",Value="D"},
+                new SelectListItem(){Text="Night",Value="N"},
+            };
+
+            ViewBag.SewingTeam = new List<SelectListItem>();
+
+            if (setting.SelectedSewingTeam != null)
+            {
+                List<SelectListItem> SewingTeam = new List<SelectListItem>();
+                foreach (var item in setting.SelectedSewingTeam)
+                {
+                    SewingTeam.Add(new SelectListItem() { Text = item.SewingTeamID, Value = item.SewingTeamID });
+                }
+                ViewBag.SewingTeam = SewingTeam;
+            }
+
+
             ViewBag.AQLPlanList = new List<SelectListItem>()
             {
                 new SelectListItem(){Text="",Value=""},
@@ -144,6 +163,24 @@ msg.WithInfo('{ex.Message}');
                 new SelectListItem(){Text="Final",Value="Final"},
                 new SelectListItem(){Text="3rd Party",Value="3rd Party"},
             };
+
+            ViewBag.Shift = new List<SelectListItem>()
+            {
+                new SelectListItem(){Text="Day",Value="D"},
+                new SelectListItem(){Text="Night",Value="N"},
+            };
+
+            ViewBag.SewingTeam = new List<SelectListItem>();
+
+            if (setting.SelectedSewingTeam != null)
+            {
+                List<SelectListItem> SewingTeam = new List<SelectListItem>();
+                foreach (var item in setting.SelectedSewingTeam)
+                {
+                    SewingTeam.Add(new SelectListItem() { Text = item.SewingTeamID, Value = item.SewingTeamID });
+                }
+                ViewBag.SewingTeam = SewingTeam;
+            }
 
             ViewBag.AQLPlanList = new List<SelectListItem>()
             {
@@ -237,6 +274,24 @@ msg.WithInfo('{ex.Message}');
                     new SelectListItem(){Text="3rd Party",Value="3rd Party"},
                 };
 
+            ViewBag.Shift = new List<SelectListItem>()
+            {
+                new SelectListItem(){Text="Day",Value="D"},
+                new SelectListItem(){Text="Night",Value="N"},
+            };
+
+            ViewBag.SewingTeam = new List<SelectListItem>();
+
+            if (setting.SelectedSewingTeam != null)
+            {
+                List<SelectListItem> SewingTeam = new List<SelectListItem>();
+                foreach (var item in setting.SelectedSewingTeam)
+                {
+                    SewingTeam.Add(new SelectListItem() { Text = item.SewingTeamID, Value = item.SewingTeamID });
+                }
+                ViewBag.SewingTeam = SewingTeam;
+            }
+
             ViewBag.AQLPlanList = new List<SelectListItem>()
                 {
                     new SelectListItem(){Text="",Value=""},
@@ -270,6 +325,17 @@ msg.WithError(""Shipmode Seq cant't be empty."");
                 setting.ErrorMessage = result.ErrorMessage;
                 FinalInspectionSettingService finalInspectionSettingService = new FinalInspectionSettingService();
                 setting = finalInspectionSettingService.GetSettingForInspection(setting.SelectedPO[0].CustPONO, setting.SelectedPO.Select(o => o.OrderID).ToList(), this.FactoryID);
+
+                if (setting.SelectedSewingTeam != null)
+                {
+                    List<SelectListItem> SewingTeam = new List<SelectListItem>();
+                    foreach (var item in setting.SelectedSewingTeam)
+                    {
+                        SewingTeam.Add(new SelectListItem() { Text = item.SewingTeamID, Value = item.SewingTeamID });
+                    }
+                    ViewBag.SewingTeam = SewingTeam;
+                }
+
                 return View("Setting", setting);
             }
 

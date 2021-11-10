@@ -16,6 +16,7 @@ namespace ProductionDataAccessLayer.Interface
         IList<FinalInspectionDefectItem> GetFinalInspectionDefectItems(string finalInspectionID);
 
         IList<SelectSewing> GetSelectedSewingLine(string FactoryID);
+        IList<SelectSewingTeam> GetSelectedSewingTeam();
         IList<SelectOrderShipSeq> GetSelectOrderShipSeqForSetting(List<string> listOrderID);
         IList<SelectOrderShipSeq> GetSelectOrderShipSeqForSetting(string finalInspectionID);
         List<string> GetArticleList(string finalInspectionID);

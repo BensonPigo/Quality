@@ -20,6 +20,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
 
 
         public List<SelectSewing> SelectedSewing { get; set; }
+        public List<SelectSewingTeam> SelectedSewingTeam { get; set; }
         public List<SelectedPO> SelectedPO { get; set; }
 
         public List<SelectOrderShipSeq> SelectOrderShipSeq { get; set; }
@@ -29,6 +30,11 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public List<AcceptableQualityLevels> AcceptableQualityLevels { get; set; }
     }
 
+    public class SelectSewingTeam
+    {
+        public bool Selected { get; set; }
+        public string SewingTeamID { get; set; }
+    }
     public class SelectSewing
     {
         public bool Selected { get; set; }
@@ -66,6 +72,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string Seq { get; set; }
         public string PackingListID { get; set; }
         public string CTNNo { get; set; }
+        public int ShipQty { get; set; }
     }
 
 }

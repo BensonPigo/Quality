@@ -45,6 +45,21 @@ AND FactoryID=@FactoryID
 
             return ExecuteList<SelectSewing>(CommandType.Text, SbSql.ToString(), paras);
         }
+        public IList<SelectSewingTeam> GetSelectedSewingTeam()
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+
+            //台北
+            SbSql.Append($@"
+Select SewingTeamID = ID
+from Production.dbo.SewingTeam 
+Where Junk = 0
+");
+
+
+            return ExecuteList<SelectSewingTeam>(CommandType.Text, SbSql.ToString(), paras);
+        }
 
         public IList<SelectedPO> GetSelectedPOForInspection(List<string> listOrderID)
         {
@@ -103,9 +118,11 @@ select  [Selected] = Cast(0 as bit),
         [PackingListID] = pld.id, 
         [CTNNo] = CTNStartNo,
         [Seq] = pld.OrderShipmodeSeq
+		,ShipQty = SUM(pld.ShipQty)
  from PackingList_Detail pld
- where  pld.OrderID in ({whereOrderID}) and
-        CTNQty = 1
+ where  pld.OrderID in ({whereOrderID}) 
+    --and CTNQty = 1
+ group by  OrderID,ID,CTNStartNo,OrderShipmodeSeq
 ";
             return ExecuteList<SelectCarton>(CommandType.Text, sqlGetData, listPar);
         }
