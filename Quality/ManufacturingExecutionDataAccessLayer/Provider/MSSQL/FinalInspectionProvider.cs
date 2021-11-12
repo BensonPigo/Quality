@@ -1343,10 +1343,12 @@ Select	f.AuditDate,
 		[CFA] = isnull((select Pivot88UserName from quality_pass1 with (nolock) where ID = f.CFA), ''),
 		OrderInfo.POQty,
 		OrderInfo.ETD_ETA,
-		f.CustPONO
+		f.CustPONO,
+        OrderInfo.CustomerPo
 from FinalInspection f with (nolock)
 outer apply (select	[POQty] = sum(o.Qty),
-					[ETD_ETA] = max(o.BuyerDelivery)
+					[ETD_ETA] = max(o.BuyerDelivery),
+                    [CustomerPo] = max(o.CustCDID)
 				from Production.dbo.Orders o with (nolock)
 				where o.CustPONo = f.CustPONO) OrderInfo
 where f.ID = @ID 

@@ -176,6 +176,14 @@ namespace BusinessLogicLayer.Service
                 });
             }
 
+            sections.Add(new
+            {
+                type = "qualityPlan",
+                title = "quality_plan",
+                section_result_id = 1,
+                defective_parts = 0,
+            });
+
             List<object> assignment_items = listSku_number.Select(
                 sku_number => new
                 {
@@ -209,7 +217,7 @@ namespace BusinessLogicLayer.Service
                                 erp_business_id = drStyleInfo["BrandAreaCode"],
                             },
                             po_number = drFinalInspection["CustPONO"],
-                            customer_po = drFinalInspection["CustPONO"],
+                            customer_po = drFinalInspection["CustomerPo"],
                             importer = new
                             {
                                 id = 215,

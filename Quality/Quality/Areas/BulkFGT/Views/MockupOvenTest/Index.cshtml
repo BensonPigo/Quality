@@ -779,6 +779,8 @@
                         GetArtworkDropDown();
                         GetAccessoryRefNoList();
                     }
+
+                    ReportNoClear(name);
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     console.log(xhr.responseText);
@@ -813,6 +815,8 @@
                         GetArtworkDropDown();
                         GetAccessoryRefNoList();
                     }
+
+                    ReportNoClear(name);
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     console.log(xhr.responseText);
@@ -849,6 +853,8 @@
                         GetArtworkDropDown();
                         GetAccessoryRefNoList();
                     }
+
+                    ReportNoClear(name);
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     console.log(xhr.responseText);
@@ -876,6 +882,8 @@
                         $("#" + name + "Article").val('');
                         msg.WithError('Article Not Found');
                     }
+
+                    ReportNoClear(name);
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     console.log(xhr.responseText);
@@ -1284,22 +1292,32 @@
         GetArtworkDropDown();
         GetAccessoryRefNoList();
         ClearColor();
+        ReportNoClear(targetID);
     }
 
     function GetSeasonList(data, targetID) {
         $('#' + targetID).val(data);
         GetArtworkDropDown();
         GetAccessoryRefNoList();
+        ReportNoClear(targetID);
     }
 
     function GetStyleList(data, targetID) {
         $('#' + targetID).val(data);
         GetArtworkDropDown();
         GetAccessoryRefNoList();
+        ReportNoClear(targetID);
     }
 
     function GetArticleList(data, targetID) {
         $('#' + targetID).val(data);
+        ReportNoClear(targetID);
+    }
+
+    function ReportNoClear(targetID) {
+        if (targetID.indexOf('Request_') > -1) {
+            $('#Request_ReportNo').html('');
+        }
     }
 
     function GetLocalSupp(data) {

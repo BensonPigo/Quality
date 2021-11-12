@@ -1040,16 +1040,11 @@ msg.WithInfo('{MoistureResult.ErrorMessage}');
 
                 if (r.Result)
                 {
-                    model.ErrorMessage = @"
-msg.WithSuccesCheck('Success, redirect to top page.',function() {                        
-     window.location.href = '/FinalInspection/Inspection';
-});
-";
+                    model.ErrorMessage = @"msg.WithSuccesCheck(""Submit Success, redirect to top page."",function() { window.location.href = ""/FinalInspection/Inspection""; });";
                 }
                 else
                 {
-                    model.ErrorMessage = $@"
-msg.WithError('{r.ErrorMessage}');
+                    model.ErrorMessage = $@"msg.WithError(""Submit Fail, {r.ErrorMessage}"");
 ";
                 }
             }
