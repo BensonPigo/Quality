@@ -25,6 +25,10 @@
         #CheckListTable {
             font-size: 1.4em;
         }
+
+            #CheckListTable > tbody > tr > td {
+                padding-right: 1px;
+            }
     </style>
 }
 @Html.Partial("~/Areas/FinalInspection/Views/Shared/_Inspection_Layout.cshtml")
@@ -61,7 +65,7 @@
         var table;
 
         // name, td:value, td:checkbox
-        adata.push([null, 'Fabric Artwork Check List',
+        adata.push([null, 'Fabric Artwork Check List',false,
             [
                 ['CheckCloseShade', 'Color/Shade',@Model.CheckCloseShade],
                 ['CheckHandfeel', 'Handfeel', @Model.CheckHandfeel],
@@ -69,7 +73,7 @@
                 ['CheckPrintEmbDecorations', 'Print/Emb Decorations', @Model.CheckPrintEmbDecorations]
             ]
         ]);
-        adata.push([null, 'Label',
+        adata.push([null, 'Label', false,
             [
                 ['CheckFiberContent', 'Fiber Content', @Model.CheckFiberContent],
                 ['CheckCareInstructions', 'Care Instructions', @Model.CheckCareInstructions],
@@ -81,10 +85,10 @@
                 ['CheckAdditionalLabel', 'Additional Label', @Model.CheckAdditionalLabel],
             ]
         ]);
-        adata.push([null, 'Packaging',
+        adata.push([null, 'Packaging', false,
             [
                 ['CheckShippingMark', 'Shipping Mark', @Model.CheckShippingMark],
-                ['CheckPolybagMarketing', 'Polybag/Marketing', @Model.CheckPolytagMarketing],
+                ['CheckPolytagMarketing', 'Polybag/Marketing', @Model.CheckPolytagMarketing],
                 ['CheckColorSizeQty', 'Color/Size/Qty', @Model.CheckColorSizeQty],
                 ['CheckHangtag', 'Hangtag', @Model.CheckHangtag],
             ]
@@ -97,7 +101,8 @@
                 destroy: true,
                 columnDefs: [
                     { targets: 0, width: "2%", orderable: false },
-                    { targets: 1, width: "98%", orderable: false },
+                    { targets: 1, width: "96%", orderable: false },
+                    { targets: 2, width: "2%", orderable: false },
                 ],
                 columns: [
                     {
@@ -105,6 +110,24 @@
                     },
                     {
                         "style": "color:#E62513",
+                    },
+                    {
+                        // Used欄位換成Check box
+                        render: function (data, type, full, meta) {
+                            
+                            var AllCheckedTxt = "checked";
+                            var sameCodeItem = full[3];
+                            $(sameCodeItem).each(function () {
+                                var checked = this[2];
+                                if (checked == false) {
+                                    AllCheckedTxt = "";
+                                }
+                            });
+
+                            var code = full[1].replaceAll(' ', '');
+                            var rtn = `<input type="checkbox" onclick="ColHeaderCheck('${code}',this)" id="Head_${code}" code="${code}" name="checkbox-${meta.row}" style="font-size: 0.2vw;" ${AllCheckedTxt}>`;
+                            return rtn;
+                        },
                     },
                 ],
                 "filter": false,
@@ -138,7 +161,6 @@
             // 把開窗點到的資料，寫入DataTable的Datasource，請注意必須限定在Check box的標籤才需要觸發事件
             $("#CheckListTable tbody").on("click", "td.OpenDetail input", function () {
 
-
                 // 取得修改了哪個Code底下的資料
                 var Code = $(this).attr("Code");
 
@@ -146,20 +168,47 @@
                 var id = $(this).attr("id");
 
                 var partentTd = $("#CheckList_" + Code);
+                var header = $("#Head_" + Code);
                 var tr = $(partentTd).closest('tr');
                 var row = table.row(tr);
 
-                $.each(row.data()[2], function () {
+                $.each(row.data()[3], function () {
                     if (this[0] == id) {
-                        this[2] = $(this).find("input").val();
+                        
+                        this[2] = $("#" + id).prop("checked");//$(this).find("input").val();
+                        
+                        if (this[2] == false) {
+                            $(header).prop("checked", False);
+                        }
                     }
                 })
             });
+
         });
+
+
+        function ColHeaderCheck(ColHeaderName,obj) {
+            var checked = $(obj).prop("checked");
+
+            //如果未開啟細項，則打開
+            if ($(obj).parent().parent().hasClass("shown") == false) {
+                $(`#CheckList_${ColHeaderName}`).click();
+            }
+            //$(`#CheckList_${ColHeaderName}`).click();
+            $(`input[code=${ColHeaderName}]`).prop("checked", checked);
+
+            // 把修改的資料，寫入DataTable的Datasource
+            var partentTd = $("#CheckList_" + ColHeaderName);
+            var tr = $(partentTd).closest('tr');
+            var row = table.row(tr);
+            $.each(row.data()[3], function () {
+                this[2] = checked;
+            })
+        }
 
         function format(d) {
             var parentID = d[1].replaceAll(' ', '');
-            var list = d[2];
+            var list = d[3];
             var sTr = "";
             $(list).each(function (index, value) {
 

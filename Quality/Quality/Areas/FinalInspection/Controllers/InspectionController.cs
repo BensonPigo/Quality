@@ -421,13 +421,117 @@ msg.WithError(""Shipmode Seq cant't be empty."");
             }
             else if (goPage == "Next")
             {
-                finalinspection.InspectionStep = "Insp-AddDefect";
+                finalinspection.InspectionStep = "Insp-Measurement";
                 sevice.UpdateFinalInspectionByStep(finalinspection, "Insp-CheckList", this.UserID);
 
-                return RedirectToAction("AddDefect", new { FinalInspectionID = finalinspection.ID });
+                return RedirectToAction("Measurement", new { FinalInspectionID = finalinspection.ID });
             }
             return View();
         }
+        #endregion
+
+        #region Measurement頁面
+        public ActionResult Measurement(string FinalInspectionID)
+        {
+            FinalInspectionMeasurementService service = new FinalInspectionMeasurementService();
+            Measurement model = service.GetMeasurementForInspection(FinalInspectionID, this.UserID);
+
+            List<string> listSize = model.ListSize.Select(O => O.SizeCode).Distinct().ToList();
+
+            List<SelectListItem> sizeList = new SetListItem().ItemListBinding(listSize);
+            ViewBag.ListSize = sizeList;
+
+            TempData["AllSize"] = model.ListSize;
+
+            return View(model);
+        }
+
+        /// <summary>
+        /// 右上角Save按鈕
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult MeasurementSingleSave(Measurement model)
+        {
+            if (model.ListMeasurementItem != null && !model.ListMeasurementItem.Where(o => o.ResultSizeSpec != null && o.ResultSizeSpec != "").Any())
+            {
+                return Json(true);
+            }
+
+            FinalInspectionMeasurementService service = new FinalInspectionMeasurementService();
+            BaseResult result = service.UpdateMeasurement(model, this.UserID);
+
+            if (result)
+            {
+                FinalInspectionService fservice = new FinalInspectionService();
+
+                fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
+                {
+                    ID = model.FinalInspectionID,
+                    InspectionStep = "Insp-AddDefect"
+                }, "Insp-Measurement", this.UserID);
+            }
+
+            return Json(result);
+        }
+
+        [HttpPost]
+        public ActionResult GetNewSizeByArticle(string Article)
+        {
+            List<ArticleSize> ListSize = (List<ArticleSize>)TempData["AllSize"];
+
+            var listSize = ListSize.Where(o => o.Article == Article).Select(O => O.SizeCode).Distinct().ToList();
+            List<SelectListItem> result = new SetListItem().ItemListBinding(listSize);
+
+            // 保存原資料
+            TempData["AllSize"] = ListSize;
+
+            return Json(result);
+        }
+
+        [HttpPost]
+        public ActionResult OpenView(string FinalInspectionID)
+        {
+            FinalInspectionMeasurementService service = new FinalInspectionMeasurementService();
+            List<MeasurementViewItem> result = service.GetMeasurementViewItem(FinalInspectionID);
+
+            //string someJson = "[  {    \"Code\": \"S021\",    \"Description\": \"A Chest width ( meas. 2cm below armhole )\",    \"Tol(+)\": \"2\",    \"Tol(-)\": \"1\",    \"50_aa\": \"103\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S03\",    \"Description\": \"B WAIST WIDTH\",    \"Tol(+)\": \"2\",    \"Tol(-)\": \"1\",    \"50_aa\": \"99\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S04\",    \"Description\": \"B1 WAIST MEAS. POINT FROM CHEST MEAS. POINT\",    \"Tol(+)\": \"0\",    \"Tol(-)\": \"0\",    \"50_aa\": \"19\",    \"2021/08/20 16:25:38\": \"1\",    \"diff1\": \"-18\"  },  {    \"Code\": \"S05\",    \"Description\": \"D HEM OPENING  (MEAS. STRAIGHT)\",    \"Tol(+)\": \"2\",    \"Tol(-)\": \"1\",    \"50_aa\": \"102\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S06\",    \"Description\": \"E Front zip length (zipend 0,5cm before collar edge) (tolerance +/- 1%)\",    \"Tol(+)\": \"0\",    \"Tol(-)\": \"0\",    \"50_aa\": \"26\",    \"2021/08/20 16:25:38\": \"2\",    \"diff1\": \"-24\"  },  {    \"Code\": \"S07\",    \"Description\": \"F FRONT TO BACK\",    \"Tol(+)\": \"0.5\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"3\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S08\",    \"Description\": \"H 1/2 ZIP - Shoulder length\",    \"Tol(+)\": \"0.8\",    \"Tol(-)\": \"0.4\",    \"50_aa\": \"14.6\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S09\",    \"Description\": \"I 2 PIECE - PRESHAPE  sleeve - Sleeve length\",    \"Tol(+)\": \"1\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"67\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S10\",    \"Description\": \"J Sleeve width ( meas. 2cm below armhole )\",    \"Tol(+)\": \"1\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"39.5\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S11\",    \"Description\": \"K LONG + PRESHAPE SLEEVE -Ellbow width (meas. 32,0cm above sleeve opening)\",    \"Tol(+)\": \"1\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"28.5\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S14\",    \"Description\": \"M LONG + PRESHAPE sleeve - Sleeve opening\",    \"Tol(+)\": \"1\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"21\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S15\",    \"Description\": \"O1 1/2 ZIP - Front neck drop (HPS to c.f. neck seam)\",    \"Tol(+)\": \"0.5\",    \"Tol(-)\": \"0\",    \"50_aa\": \"10.5\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S16\",    \"Description\": \"O2 1/2 ZIP - Back neck drop (HPS to c.b. neck seam) pattern meas.\",    \"Tol(+)\": \"0.5\",    \"Tol(-)\": \"0\",    \"50_aa\": \"2\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S17\",    \"Description\": \"N 1/2 ZIP - Back neck width (HPS to HPS)\",    \"Tol(+)\": \"1\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"14.4\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S18\",    \"Description\": \"Q1 COLLAR LENGTH OUTER EDGE\",    \"Tol(+)\": \"1\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"41.6\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S19\",    \"Description\": \"Q2 Collar height (center front) (tolerance +/- 10%)\",    \"Tol(+)\": \"0\",    \"Tol(-)\": \"0\",    \"50_aa\": \"6\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S20\",    \"Description\": \"Q3 COLLAR HEIGHT (CENTER BACK) (TOLERANCE +/- 10%)\",    \"Tol(+)\": \"0\",    \"Tol(-)\": \"0\",    \"50_aa\": \"4.5\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S21\",    \"Description\": \"S MINIMUM NECK OPENING STRETCHED\",    \"Tol(+)\": \"0\",    \"Tol(-)\": \"0\",    \"50_aa\": \"63\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S22\",    \"Description\": \"Y1 Logo meas.: top edge of logo meas. to HPS\",    \"Tol(+)\": \"0.5\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"17.5\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S23\",    \"Description\": \"Y2 LOGO MEAS.: EDGE OF LOGO TO CENTER FRONT\",    \"Tol(+)\": \"0.5\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"7\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S24\",    \"Description\": \"Z 1/2 ZIP - Back length\",    \"Tol(+)\": \"1.5\",    \"Tol(-)\": \"1\",    \"50_aa\": \"74\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S25\",    \"Description\": \"DEC LABEL\",    \"Tol(+)\": \"\",    \"Tol(-)\": \"\",    \"50_aa\": \"50\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S27\",    \"Description\": \"POLYBAG SIZE (WXL)\",    \"Tol(+)\": \"\",    \"Tol(-)\": \"\",    \"50_aa\": \"30X40\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  }]";
+
+            return Json(result);
+        }
+
+        [HttpPost]
+        public ActionResult Measurement(Measurement model, string goPage)
+        {
+            // model的ListMeasurementItem一定會是空的
+
+            FinalInspectionService fservice = new FinalInspectionService();
+
+            if (goPage == "Back")
+            {
+                fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
+                {
+                    ID = model.FinalInspectionID,
+                    InspectionStep = "Insp-CheckList"
+                }, "Insp-Measurement", this.UserID);
+                return RedirectToAction("CheckList", new { FinalInspectionID = model.FinalInspectionID });
+            }
+            else if (goPage == "Next")
+            {
+
+                fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
+                {
+                    ID = model.FinalInspectionID,
+                    InspectionStep = "Insp-AddDefect"
+                }, "Insp-Measurement", this.UserID);
+
+                return RedirectToAction("AddDefect", new { FinalInspectionID = model.FinalInspectionID });
+            }
+
+            return View();
+        }
+
         #endregion
 
         #region AddDefect頁面
@@ -517,10 +621,10 @@ msg.WithError(""Shipmode Seq cant't be empty."");
                 fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
                 {
                     ID = addDefct.FinalInspectionID,
-                    InspectionStep = "Insp-CheckList"
+                    InspectionStep = "Insp-Measurement"
                 }, "Insp-AddDefect", this.UserID);
 
-                return RedirectToAction("CheckList", new { FinalInspectionID = addDefct.FinalInspectionID });
+                return RedirectToAction("Measurement", new { FinalInspectionID = addDefct.FinalInspectionID });
             }
             else if (goPage == "Next")
             {
@@ -725,6 +829,7 @@ msg.WithError(""Shipmode Seq cant't be empty."");
 
             ViewBag.FinalInspectionID = model.FinalInspectionID;
             ViewBag.FinalInspection_CTNMoistureStandard = model.FinalInspection_CTNMoistureStandard;
+            ViewBag.FinalInspection_CTNMoistureStandardBM = model.FinalInspection_CTNMoistureStandardBM;
 
             DatabaseObject.ViewModel.FinalInspection.MoistureResult moistureResult = new DatabaseObject.ViewModel.FinalInspection.MoistureResult();
 
@@ -804,10 +909,10 @@ msg.WithError(""Shipmode Seq cant't be empty."");
                     fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
                     {
                         ID = moistureResult.FinalInspectionID,
-                        InspectionStep = "Insp-Measurement"
+                        InspectionStep = "Insp-Others"
                     }, "Insp-Moisture", this.UserID);
 
-                    return RedirectToAction("Measurement", new { FinalInspectionID = moistureResult.FinalInspectionID });
+                    return RedirectToAction("Others", new { FinalInspectionID = moistureResult.FinalInspectionID });
                 }
                 else
                 {
@@ -827,110 +932,6 @@ msg.WithInfo('{MoistureResult.ErrorMessage}');
                 }
             }
             return View(moistureResult);
-        }
-
-        #endregion
-
-        #region Measurement頁面
-        public ActionResult Measurement(string FinalInspectionID)
-        {
-            FinalInspectionMeasurementService service = new FinalInspectionMeasurementService();
-            Measurement model = service.GetMeasurementForInspection(FinalInspectionID, this.UserID);
-
-            List<string> listSize = model.ListSize.Select(O => O.SizeCode).Distinct().ToList();
-
-            List<SelectListItem> sizeList = new SetListItem().ItemListBinding(listSize);
-            ViewBag.ListSize = sizeList;
-
-            TempData["AllSize"] = model.ListSize;
-
-            return View(model);
-        }
-
-        /// <summary>
-        /// 右上角Save按鈕
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public ActionResult MeasurementSingleSave(Measurement model)
-        {
-            if (model.ListMeasurementItem != null && !model.ListMeasurementItem.Where(o => o.ResultSizeSpec != null && o.ResultSizeSpec != "").Any())
-            {
-                return Json(true);
-            }
-
-            FinalInspectionMeasurementService service = new FinalInspectionMeasurementService();
-            BaseResult result = service.UpdateMeasurement(model, this.UserID);
-
-            if (result)
-            {
-                FinalInspectionService fservice = new FinalInspectionService();
-
-                fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
-                {
-                    ID = model.FinalInspectionID,
-                    InspectionStep = "Insp-Others"
-                }, "Insp-Measurement", this.UserID);
-            }
-
-            return Json(result);
-        }
-
-        [HttpPost]
-        public ActionResult GetNewSizeByArticle(string Article)
-        {
-            List<ArticleSize> ListSize = (List<ArticleSize>)TempData["AllSize"];
-
-            var listSize = ListSize.Where(o => o.Article == Article).Select(O => O.SizeCode).Distinct().ToList();
-            List<SelectListItem> result = new SetListItem().ItemListBinding(listSize);
-
-            // 保存原資料
-            TempData["AllSize"] = ListSize;
-
-            return Json(result);
-        }
-
-        [HttpPost]
-        public ActionResult OpenView(string FinalInspectionID)
-        {
-            FinalInspectionMeasurementService service = new FinalInspectionMeasurementService();
-            List<MeasurementViewItem> result = service.GetMeasurementViewItem(FinalInspectionID);
-
-            //string someJson = "[  {    \"Code\": \"S021\",    \"Description\": \"A Chest width ( meas. 2cm below armhole )\",    \"Tol(+)\": \"2\",    \"Tol(-)\": \"1\",    \"50_aa\": \"103\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S03\",    \"Description\": \"B WAIST WIDTH\",    \"Tol(+)\": \"2\",    \"Tol(-)\": \"1\",    \"50_aa\": \"99\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S04\",    \"Description\": \"B1 WAIST MEAS. POINT FROM CHEST MEAS. POINT\",    \"Tol(+)\": \"0\",    \"Tol(-)\": \"0\",    \"50_aa\": \"19\",    \"2021/08/20 16:25:38\": \"1\",    \"diff1\": \"-18\"  },  {    \"Code\": \"S05\",    \"Description\": \"D HEM OPENING  (MEAS. STRAIGHT)\",    \"Tol(+)\": \"2\",    \"Tol(-)\": \"1\",    \"50_aa\": \"102\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S06\",    \"Description\": \"E Front zip length (zipend 0,5cm before collar edge) (tolerance +/- 1%)\",    \"Tol(+)\": \"0\",    \"Tol(-)\": \"0\",    \"50_aa\": \"26\",    \"2021/08/20 16:25:38\": \"2\",    \"diff1\": \"-24\"  },  {    \"Code\": \"S07\",    \"Description\": \"F FRONT TO BACK\",    \"Tol(+)\": \"0.5\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"3\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S08\",    \"Description\": \"H 1/2 ZIP - Shoulder length\",    \"Tol(+)\": \"0.8\",    \"Tol(-)\": \"0.4\",    \"50_aa\": \"14.6\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S09\",    \"Description\": \"I 2 PIECE - PRESHAPE  sleeve - Sleeve length\",    \"Tol(+)\": \"1\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"67\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S10\",    \"Description\": \"J Sleeve width ( meas. 2cm below armhole )\",    \"Tol(+)\": \"1\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"39.5\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S11\",    \"Description\": \"K LONG + PRESHAPE SLEEVE -Ellbow width (meas. 32,0cm above sleeve opening)\",    \"Tol(+)\": \"1\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"28.5\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S14\",    \"Description\": \"M LONG + PRESHAPE sleeve - Sleeve opening\",    \"Tol(+)\": \"1\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"21\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S15\",    \"Description\": \"O1 1/2 ZIP - Front neck drop (HPS to c.f. neck seam)\",    \"Tol(+)\": \"0.5\",    \"Tol(-)\": \"0\",    \"50_aa\": \"10.5\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S16\",    \"Description\": \"O2 1/2 ZIP - Back neck drop (HPS to c.b. neck seam) pattern meas.\",    \"Tol(+)\": \"0.5\",    \"Tol(-)\": \"0\",    \"50_aa\": \"2\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S17\",    \"Description\": \"N 1/2 ZIP - Back neck width (HPS to HPS)\",    \"Tol(+)\": \"1\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"14.4\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S18\",    \"Description\": \"Q1 COLLAR LENGTH OUTER EDGE\",    \"Tol(+)\": \"1\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"41.6\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S19\",    \"Description\": \"Q2 Collar height (center front) (tolerance +/- 10%)\",    \"Tol(+)\": \"0\",    \"Tol(-)\": \"0\",    \"50_aa\": \"6\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S20\",    \"Description\": \"Q3 COLLAR HEIGHT (CENTER BACK) (TOLERANCE +/- 10%)\",    \"Tol(+)\": \"0\",    \"Tol(-)\": \"0\",    \"50_aa\": \"4.5\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S21\",    \"Description\": \"S MINIMUM NECK OPENING STRETCHED\",    \"Tol(+)\": \"0\",    \"Tol(-)\": \"0\",    \"50_aa\": \"63\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S22\",    \"Description\": \"Y1 Logo meas.: top edge of logo meas. to HPS\",    \"Tol(+)\": \"0.5\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"17.5\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S23\",    \"Description\": \"Y2 LOGO MEAS.: EDGE OF LOGO TO CENTER FRONT\",    \"Tol(+)\": \"0.5\",    \"Tol(-)\": \"0.5\",    \"50_aa\": \"7\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S24\",    \"Description\": \"Z 1/2 ZIP - Back length\",    \"Tol(+)\": \"1.5\",    \"Tol(-)\": \"1\",    \"50_aa\": \"74\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S25\",    \"Description\": \"DEC LABEL\",    \"Tol(+)\": \"\",    \"Tol(-)\": \"\",    \"50_aa\": \"50\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  },  {    \"Code\": \"S27\",    \"Description\": \"POLYBAG SIZE (WXL)\",    \"Tol(+)\": \"\",    \"Tol(-)\": \"\",    \"50_aa\": \"30X40\",    \"2021/08/20 16:25:38\": null,    \"diff1\": null  }]";
-
-            return Json(result);
-        }
-
-        [HttpPost]
-        public ActionResult Measurement(Measurement model, string goPage)
-        {
-            // model的ListMeasurementItem一定會是空的
-
-            FinalInspectionService fservice = new FinalInspectionService();
-
-            if (goPage == "Back")
-            {
-                fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
-                {
-                    ID = model.FinalInspectionID,
-                    InspectionStep = "Insp-Moisture"
-                }, "Insp-Measurement", this.UserID);
-                return RedirectToAction("Moisture", new { FinalInspectionID = model.FinalInspectionID });
-            }
-            else if (goPage == "Next")
-            {
-
-                fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
-                {
-                    ID = model.FinalInspectionID,
-                    InspectionStep = "Insp-Others"
-                }, "Insp-Measurement", this.UserID);
-
-                return RedirectToAction("Others", new { FinalInspectionID = model.FinalInspectionID });
-            }
-
-            return View();
         }
 
         #endregion
@@ -997,10 +998,10 @@ msg.WithInfo('{MoistureResult.ErrorMessage}');
                 fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
                 {
                     ID = model.FinalInspectionID,
-                    InspectionStep = "Insp-Measurement"
+                    InspectionStep = "Insp-Moisture"
                 }, "Insp-Others", this.UserID);
 
-                return RedirectToAction("Measurement", new { FinalInspectionID = model.FinalInspectionID });
+                return RedirectToAction("Moisture", new { FinalInspectionID = model.FinalInspectionID });
             }
             else if (goPage == "Submit")
             {

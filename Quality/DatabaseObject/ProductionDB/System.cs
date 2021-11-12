@@ -292,5 +292,6 @@ namespace DatabaseObject.ProductionDB
         public int DQSQtyPCT { get; set; }
 
         public decimal FinalInspection_CTNMoistureStandard { get; set; }
+        public decimal FinalInspection_CTNMoistureStandardBM { get; set; }
     }
 }
