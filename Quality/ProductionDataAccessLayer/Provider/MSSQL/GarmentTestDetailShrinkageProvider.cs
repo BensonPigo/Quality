@@ -81,7 +81,7 @@ and No = @No
                 objParameter.Add(new SqlParameter($"@AfterWash1{idx}", item.AfterWash1));
                 objParameter.Add(new SqlParameter($"@Shrinkage1{idx}", item.Shrinkage1));
 
-                objParameter.Add(new SqlParameter($"@AfterWash2{idx}", item.Shrinkage1));
+                objParameter.Add(new SqlParameter($"@AfterWash2{idx}", item.AfterWash2));
                 objParameter.Add(new SqlParameter($"@Shrinkage2{idx}", item.Shrinkage2));
 
                 objParameter.Add(new SqlParameter($"@AfterWash3{idx}", item.AfterWash3));
