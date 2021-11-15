@@ -331,6 +331,18 @@ where   ID = @FinalInspectionID
                     objParameter.Add("@CheckColorSizeQty", finalInspection.CheckColorSizeQty);
                     objParameter.Add("@CheckHangtag", finalInspection.CheckHangtag);
                     break;
+                case "Insp-Measurement":
+                    sqlUpdCmd += $@"
+update FinalInspection
+ set    InspectionStep = @InspectionStep,
+        EditName= @userID,
+        EditDate= getdate()
+where   ID = @FinalInspectionID
+";
+                    objParameter.Add("@FinalInspectionID", finalInspection.ID);
+                    objParameter.Add("@userID", userID);
+                    objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
+                    break;
                 case "Insp-AddDefect":
                     sqlUpdCmd += $@"
 update FinalInspection
@@ -356,18 +368,6 @@ where   ID = @FinalInspectionID
                     objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
                     break;
                 case "Insp-Moisture":
-                    sqlUpdCmd += $@"
-update FinalInspection
- set    InspectionStep = @InspectionStep,
-        EditName= @userID,
-        EditDate= getdate()
-where   ID = @FinalInspectionID
-";
-                    objParameter.Add("@FinalInspectionID", finalInspection.ID);
-                    objParameter.Add("@userID", userID);
-                    objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
-                    break;
-                case "Insp-Measurement":
                     sqlUpdCmd += $@"
 update FinalInspection
  set    InspectionStep = @InspectionStep,
