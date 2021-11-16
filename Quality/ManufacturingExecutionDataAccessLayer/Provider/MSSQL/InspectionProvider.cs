@@ -35,7 +35,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
                 @"
 -- 塞入Location
 
-select  ID, cnt = count(1),row = ROW_NUMBER()over(order by id)into #tmpfrom MainServer.Production.dbo.Orders awhere PulloutComplete = 0and Category = 's'and OnSiteSample = 0and junk = 0and brandid = @BrandIDand FtyGroup = @FtyGroupand qty > 0
+select  ID, cnt = count(1),row = ROW_NUMBER()over(order by id)into #tmpfrom MainServer.Production.dbo.Orders awhere PulloutComplete = 0and Category = 's'and junk = 0and brandid = @BrandIDand FtyGroup = @FtyGroupand qty > 0
 and not exists (		select 1		from MainServer.Production.dbo.Order_Location b		where a.ID = b.OrderId	)and    exists (			    select 1	    from MainServer.Production.dbo.Style_Location b	    where a.StyleUkey = b.StyleUkey    )
 group by ID
 
@@ -74,7 +74,6 @@ outer apply (
 )r_Size
 where r_Size.SizeBalanceQty < oq.Qty
 and o.Category = 'S'
-and o.OnSiteSample != 1
 and o.Junk = 0
 and o.PulloutComplete = 0 " + Environment.NewLine);
 
@@ -149,7 +148,6 @@ outer apply(
 where 1 = 1
 --r_Size.SizeBalanceQty < oq.Qty
 and o.Category = 'S'
-and o.OnSiteSample != 1
 and o.Junk = 0
 and o.PulloutComplete = 0 " + Environment.NewLine);
 
