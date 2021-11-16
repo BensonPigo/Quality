@@ -54,9 +54,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             // 必填條件
             if ((Req.BrandID == "" || Req.SeasonID == "") || Req.StyleID == "")
             {
-                Req.ErrorMessage = $@"
-msg.WithInfo('[Style] or [Brand, Season] can't be cmpty. ');
-";
+                Req.ErrorMessage = $@"msg.WithInfo(""[Style] or [Brand, Season] can't be cmpty. "");";
                 TempData["Model"] = Req;
                 return RedirectToAction("Index");
             }
@@ -72,9 +70,7 @@ msg.WithInfo('[Style] or [Brand, Season] can't be cmpty. ');
 
             if (!Req.Result)
             {
-                Req.ErrorMessage = $@"
-msg.WithInfo('{Req.ErrorMessage.Replace("'", string.Empty)}');
-";
+                Req.ErrorMessage = $@"msg.WithInfo(""{Req.ErrorMessage.Replace("'", string.Empty)}"");";
             }
 
             TempData["Model"] = Req;

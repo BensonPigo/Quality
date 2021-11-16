@@ -69,9 +69,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                 if (Req.OrderID == null || string.IsNullOrEmpty(Req.OrderID))
                 {
 
-                    Req.ErrorMessage = $@"
-msg.WithInfo('SP# cannot be emptry');
-";
+                    Req.ErrorMessage = $@"msg.WithInfo(""SP# cannot be emptry"");";
                     return View("Index", Req);
                 }
 
@@ -79,9 +77,7 @@ msg.WithInfo('SP# cannot be emptry');
 
                 if (model.OrderID == null)
                 {
-                    Req.ErrorMessage = $@"
-msg.WithInfo('Cannot found SP# {Req.OrderID}');
-";
+                    Req.ErrorMessage = $@"msg.WithInfo(""Cannot found SP# {Req.OrderID}"");";
                     return View("Index", Req);
                 }
 
@@ -92,9 +88,7 @@ msg.WithInfo('Cannot found SP# {Req.OrderID}');
                     || Req.StyleID == null || Req.BrandID == null || Req.SeasonID == null)
                 {
 
-                    Req.ErrorMessage = $@"
-msg.WithInfo('Style#, Brand and Season cannot be emptry');
-";
+                    Req.ErrorMessage = $@"msg.WithInfo(""Style#, Brand and Season cannot be emptry"");";
                     return View("Index", Req);
                 }
 
@@ -108,9 +102,7 @@ msg.WithInfo('Style#, Brand and Season cannot be emptry');
 
                 if (model.StyleID == null || model.StyleID == string.Empty)
                 {
-                    Req.ErrorMessage = $@"
-msg.WithInfo('Cannot found combination Style# {Req.StyleID}, Brand {Req.BrandID}, Season {Req.SeasonID}');
-";
+                    Req.ErrorMessage = $@"msg.WithInfo(""Cannot found combination Style# {Req.StyleID}, Brand {Req.BrandID}, Season {Req.SeasonID}"");";
                     return View("Index", Req);
                 }
             }
@@ -120,9 +112,7 @@ msg.WithInfo('Cannot found combination Style# {Req.StyleID}, Brand {Req.BrandID}
 
             if (!model.Result)
             {
-                model.ErrorMessage = $@"
-msg.WithInfo('{model.ErrorMessage.Replace("'", string.Empty)}');
-";
+                model.ErrorMessage = $@"msg.WithInfo(""{model.ErrorMessage.Replace("'", string.Empty)}"");";
             }
             model.QueryType = Req.QueryType;
             TempData["Model"] = model;
@@ -145,9 +135,7 @@ msg.WithInfo('{model.ErrorMessage.Replace("'", string.Empty)}');
                 if (Req.OrderID == null || string.IsNullOrEmpty(Req.OrderID))
                 {
 
-                    Req.ErrorMessage = $@"
-msg.WithInfo('SP# cannot be emptry');
-";
+                    Req.ErrorMessage = $@"msg.WithInfo(""SP# cannot be emptry"");";
                     return View("Index", Req);
                 }
 
@@ -155,9 +143,7 @@ msg.WithInfo('SP# cannot be emptry');
 
                 if (model.OrderID == null)
                 {
-                    Req.ErrorMessage = $@"
-msg.WithInfo('Cannot found SP# {Req.OrderID}');
-";
+                    Req.ErrorMessage = $@"msg.WithInfo(""Cannot found SP# {Req.OrderID}"");";
                     return View("Index", Req);
                 }
 
@@ -168,9 +154,7 @@ msg.WithInfo('Cannot found SP# {Req.OrderID}');
                     || Req.StyleID == null || Req.BrandID == null || Req.SeasonID == null)
                 {
 
-                    Req.ErrorMessage = $@"
-msg.WithInfo('Style#, Brand and Season cannot be emptry');
-";
+                    Req.ErrorMessage = $@"msg.WithInfo(""Style#, Brand and Season cannot be emptry"");";
                     return View("Index", Req);
                 }
 
@@ -184,9 +168,7 @@ msg.WithInfo('Style#, Brand and Season cannot be emptry');
 
                 if (model.StyleID == null || model.StyleID == string.Empty)
                 {
-                    Req.ErrorMessage = $@"
-msg.WithInfo('Cannot found combination Style# {Req.StyleID}, Brand {Req.BrandID}, Season {Req.SeasonID}');
-";
+                    Req.ErrorMessage = $@"msg.WithInfo(""Cannot found combination Style# {Req.StyleID}, Brand {Req.BrandID}, Season {Req.SeasonID}"");";
                     return View("Index", Req);
                 }
             }
@@ -196,9 +178,7 @@ msg.WithInfo('Cannot found combination Style# {Req.StyleID}, Brand {Req.BrandID}
 
             if (!model.Result)
             {
-                model.ErrorMessage = $@"
-msg.WithInfo('{model.ErrorMessage.Replace("'",string.Empty)}');
-";
+                model.ErrorMessage = $@"msg.WithInfo(""{model.ErrorMessage.Replace("'",string.Empty)}"");";
             }
             model.QueryType = Req.QueryType;
             TempData["Model"] = model;
@@ -237,9 +217,7 @@ msg.WithInfo('{model.ErrorMessage.Replace("'",string.Empty)}');
                     if (Req.OrderID == null || string.IsNullOrEmpty(Req.OrderID))
                     {
 
-                        Req.ErrorMessage = $@"
-msg.WithInfo('SP# cannot be emptry');
-";
+                        Req.ErrorMessage = $@"msg.WithInfo(""SP# cannot be emptry"");";
                         return View("Index", Req);
                     }
 
@@ -247,9 +225,7 @@ msg.WithInfo('SP# cannot be emptry');
 
                     if (model.OrderID == null)
                     {
-                        Req.ErrorMessage = $@"
-msg.WithInfo('Cannot found SP# {Req.OrderID}');
-";
+                        Req.ErrorMessage = $@"msg.WithInfo(""Cannot found SP# {Req.OrderID}"");";
                         return View("Index", Req);
                     }
 
@@ -260,9 +236,7 @@ msg.WithInfo('Cannot found SP# {Req.OrderID}');
                         || Req.StyleID == null || Req.BrandID == null || Req.SeasonID == null)
                     {
 
-                        Req.ErrorMessage = $@"
-msg.WithInfo('Style#, Brand and Season cannot be emptry');
-";
+                        Req.ErrorMessage = $@"msg.WithInfo(""Style#, Brand and Season cannot be emptry"");";
                         return View("Index", Req);
                     }
 
@@ -275,9 +249,7 @@ msg.WithInfo('Style#, Brand and Season cannot be emptry');
 
                     if (model.OrderID == null)
                     {
-                        Req.ErrorMessage = $@"
-msg.WithInfo('Cannot found combination Style# {Req.StyleID}, Brand {Req.BrandID}, Season {Req.SeasonID}');
-";
+                        Req.ErrorMessage = $@"msg.WithInfo(""Cannot found combination Style# {Req.StyleID}, Brand {Req.BrandID}, Season {Req.SeasonID}"");";
                         return View("Index", Req);
                     }
                 }
@@ -352,9 +324,7 @@ msg.WithInfo('Cannot found combination Style# {Req.StyleID}, Brand {Req.BrandID}
                     if (Req.OrderID == null || string.IsNullOrEmpty(Req.OrderID))
                     {
 
-                        Req.ErrorMessage = $@"
-msg.WithInfo('SP# cannot be emptry');
-";
+                        Req.ErrorMessage = $@"msg.WithInfo(""SP# cannot be emptry"");";
                         return View("Index", Req);
                     }
 
@@ -362,9 +332,7 @@ msg.WithInfo('SP# cannot be emptry');
 
                     if (model.OrderID == null)
                     {
-                        Req.ErrorMessage = $@"
-msg.WithInfo('Cannot found SP# {Req.OrderID}');
-";
+                        Req.ErrorMessage = $@"msg.WithInfo(""Cannot found SP# {Req.OrderID}"");";
                         return View("Index", Req);
                     }
 
@@ -375,9 +343,7 @@ msg.WithInfo('Cannot found SP# {Req.OrderID}');
                         || Req.StyleID == null || Req.BrandID == null || Req.SeasonID == null)
                     {
 
-                        Req.ErrorMessage = $@"
-msg.WithInfo('Style#, Brand and Season cannot be emptry');
-";
+                        Req.ErrorMessage = $@"msg.WithInfo(""Style#, Brand and Season cannot be emptry"");";
                         return View("Index", Req);
                     }
 
@@ -391,9 +357,7 @@ msg.WithInfo('Style#, Brand and Season cannot be emptry');
 
                     if (model.StyleID == null || model.StyleID == string.Empty)
                     {
-                        Req.ErrorMessage = $@"
-msg.WithInfo('Cannot found combination Style# {Req.StyleID}, Brand {Req.BrandID}, Season {Req.SeasonID}');
-";
+                        Req.ErrorMessage = $@"msg.WithInfo(""Cannot found combination Style# {Req.StyleID}, Brand {Req.BrandID}, Season {Req.SeasonID}"");";
                         return View("Index", Req);
                     }
                 }

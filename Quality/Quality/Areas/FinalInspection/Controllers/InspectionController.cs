@@ -58,9 +58,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             }
             catch (Exception ex)
             {
-                model.ErrorMessage = $@"
-msg.WithInfo('{ex.Message}');
-";
+                model.ErrorMessage = $@"msg.WithInfo(""{ex.Message}"");";
             }
 
             return View(model);
@@ -255,9 +253,7 @@ msg.WithInfo('{ex.Message}');
 
             if (setting.SelectedPO != null && setting.SelectedPO.Where(o => string.IsNullOrEmpty(o.Seq)).Any())
             {
-                setting.ErrorMessage = $@"
-msg.WithError(""Shipmode Seq cant't be empty."");
-";
+                setting.ErrorMessage = $@"msg.WithError(""Shipmode Seq cant't be empty."");";
                 return View("Setting", setting);
             }
 
@@ -737,9 +733,7 @@ msg.WithError(""Shipmode Seq cant't be empty."");
                 }
                 else
                 {
-                    ViewData["ErrorMessage"] = $@"
-msg.WithInfo('{MoistureResult.ErrorMessage}');
-";
+                    ViewData["ErrorMessage"] = $@"msg.WithInfo(""{MoistureResult.ErrorMessage}"");";
 
                     Moisture model = service.GetMoistureForInspection(moistureResult.FinalInspectionID);
 

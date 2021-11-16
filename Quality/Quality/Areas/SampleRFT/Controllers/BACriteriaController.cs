@@ -62,9 +62,7 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             if (!model.Result)
             {
-                model.ErrorMessage = $@"
-msg.WithInfo('{model.ErrorMessage}');
-";
+                model.ErrorMessage = $@"msg.WithInfo(""{ model.ErrorMessage}""); ";
             }
 
             TempData["Model"] = model;
