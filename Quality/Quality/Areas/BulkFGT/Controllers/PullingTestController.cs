@@ -218,7 +218,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             
             if (!model.Result)
             {
-                model.ErrorMessage = $"msg.WithInfo('" + model.ErrorMessage.ToString().Replace("\r\n", "<br />") + "');";
+                model.ErrorMessage = $@"msg.WithInfo(""{model.ErrorMessage.ToString().Replace("\r\n", "<br />")}"");";
             }
             else if (model.Detail.Result == "Fail")
             {
@@ -279,7 +279,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             if (!model.Result)
             {
-                model.ErrorMessage = $"msg.WithInfo('" + model.ErrorMessage.ToString().Replace("\r\n", "<br />") + "');";
+                model.ErrorMessage = $@"msg.WithInfo(""{model.ErrorMessage.ToString().Replace("\r\n", "<br />")}"");";
             }
             else if (model.Detail.Result == "Fail")
             {

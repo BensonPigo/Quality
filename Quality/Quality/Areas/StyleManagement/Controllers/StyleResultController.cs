@@ -68,9 +68,7 @@ namespace Quality.Areas.StyleManagement.Controllers
 
             if (Req == null || string.IsNullOrEmpty(Req.StyleID) || string.IsNullOrEmpty(Req.BrandID) || string.IsNullOrEmpty(Req.SeasonID))
             {
-                model.MsgScript = $@"
-msg.WithInfo('Style, Brand and Season cannot be empty.');
-";
+                model.MsgScript = $@"msg.WithInfo(""Style, Brand and Season cannot be empty."");";
                 return View("Index", model);
             }
 
@@ -93,9 +91,7 @@ msg.WithInfo('Style, Brand and Season cannot be empty.');
             };
             if (Req == null || string.IsNullOrEmpty(Req.StyleID) || string.IsNullOrEmpty(Req.BrandID) || string.IsNullOrEmpty(Req.SeasonID))
             {
-                model.MsgScript = $@"
-msg.WithInfo('Style, Brand and Season cannot be empty.');
-";
+                model.MsgScript = $@"msg.WithInfo(""Style, Brand and Season cannot be empty."");";
                 return View("Index", model);
             }
 
@@ -212,9 +208,7 @@ msg.WithInfo('Style, Brand and Season cannot be empty.');
 
                 Req.MDivisionID = this.MDivisionID;
                 model = _Service.Get_StyleResult_Browse(Req);
-                model.MsgScript = $@"
-msg.WithInfo('Could not found RR/LR Report.');
-";
+                model.MsgScript = $@"msg.WithInfo(""Could not found RR/LR Report."");";
 
                 return View("Index", model);
             }

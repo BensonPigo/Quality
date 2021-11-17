@@ -65,7 +65,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             {
                 model = new MockupWash_ViewModel()
                 {
-                    ErrorMessage = $"msg.WithInfo('No Data Found');",
+                    ErrorMessage = $@"msg.WithInfo(""No Data Found"");",
                     MockupWash_Detail = new List<MockupWash_Detail_ViewModel>(),
                     ReportNo_Source = new List<string>(),
                     TestingMethod_Source = _MockupWashService.GetTestingMethod(),
@@ -92,7 +92,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             {
                 model = new MockupWash_ViewModel()
                 {
-                    ErrorMessage = $"msg.WithInfo('No Data Found');",
+                    ErrorMessage = $@"msg.WithInfo(""No Data Found"");",
                     MockupWash_Detail = new List<MockupWash_Detail_ViewModel>(),
                     ReportNo_Source = new List<string>(),
                     TestingMethod_Source = _MockupWashService.GetTestingMethod(),
@@ -142,7 +142,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             if (!result.Result)
             {
-                model.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString() + "');EditMode=true;";
+                model.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.ToString()}"");EditMode=true;";
             }
             else if (result.Result && model.Result == "Fail")
             {
@@ -200,7 +200,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             Req.TestingMethod_Source = _MockupWashService.GetTestingMethod();
             if (!result.Result)
             {
-                Req.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString() + "');EditMode=true;";
+                Req.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.ToString()}"");EditMode=true;";
             }
             else if (result.Result && model.Result == "Fail")
             {
@@ -236,7 +236,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             if (!result.Result)
             {
-                model.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString() + "');";
+                model.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.ToString()}"");";
             }
 
             model.Request = Req.Request;
@@ -257,7 +257,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             MockupWash_ViewModel model = _MockupWashService.GetMockupWash(MockupWash_Request);
             if (model == null)
             {
-                return Json(new { Result = false, ErrorMessage = "msg.WithInfo('No Data Found');" });
+                return Json(new { Result = false, ErrorMessage = @"msg.WithInfo(""No Data Found"");" });
             }
 
             Report_Result report_Result = _MockupWashService.GetPDF(model);

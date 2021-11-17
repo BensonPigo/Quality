@@ -71,7 +71,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 {
                     MockupOven_Detail = new List<MockupOven_Detail_ViewModel>(),
                     ReportNo_Source = new List<string>(),
-                    ErrorMessage = $"msg.WithInfo('No Data Found');",
+                    ErrorMessage = $@"msg.WithInfo(""No Data Found"");",
                 };
             }
 
@@ -98,7 +98,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 {
                     MockupOven_Detail = new List<MockupOven_Detail_ViewModel>(),
                     ReportNo_Source = new List<string>(),
-                    ErrorMessage = $"msg.WithInfo('No Data Found');",
+                    ErrorMessage = $@"msg.WithInfo(""No Data Found"");",
                 };
             }
 
@@ -147,7 +147,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             if (!result.Result)
             {
-                model.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString() + "');EditMode=true;";
+                model.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.ToString()}"");EditMode=true;";
             }
             else if (result.Result && model.Result == "Fail")
             {
@@ -204,7 +204,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             Req.MockupOven_Detail = model.MockupOven_Detail;
             if (!result.Result)
             {
-                Req.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString() + "');EditMode=true;";
+                Req.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.ToString()}"");EditMode=true;";
             }
             else if (result.Result && model.Result == "Fail")
             {
@@ -240,7 +240,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
             if (!result.Result)
             {
-                model.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString() + "');";
+                model.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.ToString()}"");";
             }
             model.Request = Req.Request;
 
@@ -260,7 +260,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             MockupOven_ViewModel model = _MockupOvenService.GetMockupOven(mockupOven_Request);
             if (model == null)
             {
-                return Json(new { Result = false, ErrorMessage = "msg.WithInfo('No Data Found');" });
+                return Json(new { Result = false, ErrorMessage = @"msg.WithInfo(""No Data Found"");" });
             }
 
             Report_Result report_Result = _MockupOvenService.GetPDF(model);

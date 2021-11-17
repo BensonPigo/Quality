@@ -76,7 +76,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             {
                 mockupCrocking_ViewModel = new MockupCrocking_ViewModel()
                 {
-                    ErrorMessage = $"msg.WithInfo('No Data Found');",
+                    ErrorMessage = $@"msg.WithInfo(""No Data Found"");",
                     MockupCrocking_Detail = new List<MockupCrocking_Detail_ViewModel>(),
                     ReportNo_Source = new List<string>(),
                 };
@@ -100,7 +100,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             {
                 mockupCrocking_ViewModel = new MockupCrocking_ViewModel()
                 {
-                    ErrorMessage = $"msg.WithInfo('No Data Found');",
+                    ErrorMessage = $@"msg.WithInfo(""No Data Found"");",
                     MockupCrocking_Detail = new List<MockupCrocking_Detail_ViewModel>(),
                     ReportNo_Source = new List<string>(),
                 };
@@ -141,7 +141,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             if (!result.Result)
             {
-                mockupCrocking_ViewModel.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString() + "');EditMode=true;";
+                mockupCrocking_ViewModel.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.ToString()}"");EditMode=true;";
             }
             else if (result.Result && mockupCrocking_ViewModel.Result == "Fail")
             {
@@ -190,7 +190,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             Req.MockupCrocking_Detail = model.MockupCrocking_Detail;
             if (!result.Result)
             {
-                Req.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString() + "');EditMode=true;";
+                Req.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.ToString()}"");EditMode=true;";
             }
             else if (result.Result && model.Result == "Fail")
             {
@@ -230,7 +230,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
             if (!result.Result)
             {
-                mockupCrocking_ViewModel.ErrorMessage = $"msg.WithInfo('" + result.ErrorMessage.ToString() + "');";
+                mockupCrocking_ViewModel.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.ToString()} "");";
             }
             mockupCrocking_ViewModel.Request = Req.Request;
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(mockupCrocking_ViewModel.ReportNo_Source);
@@ -247,7 +247,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             MockupCrocking_ViewModel mockupCrocking_ViewModel = _MockupCrockingService.GetMockupCrocking(mockupCrocking_Request);
             if (mockupCrocking_ViewModel == null)
             {
-                return Json(new { Result = false, ErrorMessage = "msg.WithInfo('No Data Found');" });
+                return Json(new { Result = false, ErrorMessage = @"msg.WithInfo(""No Data Found"");" });
             }
 
             Report_Result report_Result = _MockupCrockingService.GetPDF(mockupCrocking_ViewModel);

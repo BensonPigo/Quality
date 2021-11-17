@@ -41,9 +41,7 @@ namespace Quality.Areas.StyleManagement.Controllers
             };
             if (Req == null || (string.IsNullOrEmpty(Req.StyleID) && string.IsNullOrEmpty(Req.BrandID) && string.IsNullOrEmpty(Req.SeasonID)))
             {
-                model.MsgScript = $@"
-msg.WithInfo('Style, Brand and Season cannot be empty.');
-";
+                model.MsgScript = $@"msg.WithInfo(""Style, Brand and Season cannot be empty."");";
                 return View("Index", model);
             }
 
@@ -51,9 +49,7 @@ msg.WithInfo('Style, Brand and Season cannot be empty.');
 
             if (!model.Result)
             {
-                model.MsgScript = $@"
-msg.WithInfo('{model.ErrorMessage.Replace("\r\n", "<br />")}');
-";
+                model.MsgScript = $@"msg.WithInfo(""{model.ErrorMessage.Replace("\r\n", "<br />")}"");";
             }
             model.BrandID = Req.BrandID;
             model.SeasonID = Req.SeasonID;

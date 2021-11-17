@@ -61,9 +61,7 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             if (!model.Result)
             {
-                model.ErrorMessage = $@"
-msg.WithInfo('{model.ErrorMessage.Replace("\r\n", "<br />")}');
-";
+                model.ErrorMessage = $@"msg.WithInfo(""{model.ErrorMessage.Replace("\r\n", "<br />")}"");";
             }
 
             return View("Index", model);
@@ -89,9 +87,7 @@ msg.WithInfo('{model.ErrorMessage.Replace("\r\n", "<br />")}');
 
             if (!model.Result)
             {
-                model.ErrorMessage = $@"
-msg.WithInfo('{model.ErrorMessage.Replace("\r\n", "<br />")}');
-";
+                model.ErrorMessage = $@"msg.WithInfo(""{model.ErrorMessage.Replace("\r\n", "<br />")}"");";
             }
 
             return View("Index", model);

@@ -53,7 +53,7 @@ namespace BusinessLogicLayer.Service.StyleManagement
             catch (Exception ex)
             {
                 result.Result = false;
-                result.MsgScript = $@"msg.WithInfo('{ex.Message}');";
+                result.MsgScript = $@"msg.WithInfo(""{ex.Message}"");";
             }
 
             return result;

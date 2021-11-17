@@ -41,7 +41,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
             catch (Exception ex)
             {
                 result.Result = false;
-                result.ErrorMessage = $@"msg.WithInfo('{ex.Message}');";
+                result.ErrorMessage = $@"msg.WithInfo(""{ex.Message}"");";
             }
 
             return result;
