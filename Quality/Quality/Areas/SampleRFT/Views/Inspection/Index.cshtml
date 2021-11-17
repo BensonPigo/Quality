@@ -58,7 +58,7 @@
     }
 
     .table-striped > tbody > tr > td > input[type="text"] {
-        width: 11em;
+        width: 65%;
     }
 
     .table-striped > tbody > tr:nth-of-type(even),
@@ -563,38 +563,41 @@
                             <table style="width: 40vw;" class="table table-striped">
                                 <tbody>
                                     <tr>
-                                        <td>Style#</td>
-                                        <td colspan="3" align="left">
+                                        <td style="width:3em;">Style#</td>
+                                        <td colspan="2" align="left">
                                             <input id="txtStyle" type="text" />
                                             <input id="btnStyleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="StyleSelectItem" value="..." />
                                         </td>
+                                        <td></td>
                                     </tr>
                                     <tr>
                                         <td>SP#</td>
-                                        <td colspan="3">
+                                        <td colspan="2">
                                             <input id="txtSP" type="text" />
                                             <input id="btnSPSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="SPSelectItem" value="..." />
                                         </td>
+                                        <td></td>
                                     </tr>
                                     <tr>
-                                        <td style="width: 6.8vw;">Article</td>
-                                        <td style="width: 12vw;">
-                                            <input id="txtArticle" type="text" style="width: 8em;" />
+                                        <td>Article</td>
+                                        <td>
+                                            <input id="txtArticle" style="width:10vw;" type="text" />
                                             <input id="btnArticleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="ArticleSelectItem" value="..." />
                                         </td>
-                                        <td style="width: 5.7vw;">Size</td>
-                                        <td style="width: 12vw;">
-                                            <input id="txtSize" type="text" style="width: 8em;" />
+                                        <td style="width:3em;">Size</td>
+                                        <td>
+                                            <input id="txtSize" style="width:35%;" type="text" />
                                             <input id="btnSizeSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="SizeSelectItem" value="..." />
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Product Type</td>
                                         <td>
-                                            <input id="txtProductType" type="text" style="width: 8em;" />
+                                            <input id="txtProductType" style="width: 10vw;" type="text" />
                                             <input id="btnProductTypeSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="ProductTypeSelectItem" value="..." />
                                         </td>
-                                        <td colspan="2"><input id="txtProductTypePMS" type="text" readonly="readonly" /></td>
+                                        <td><input id="txtProductTypePMS" type="text" readonly="readonly" /></td>
+                                        <td></td>
                                     </tr>
                                     <tr>
                                         <td>Brand</td>
@@ -2109,7 +2112,7 @@
             success: function (data) {
                 if (data.Result == 0) {
                     $('#txtSP').val("");
-                    msg.WithError("SP# not found.");
+                    msg.WithError(data.ErrMsg);
                 }
                 else {
                     $('#txtStyle').val(data.StyleID);

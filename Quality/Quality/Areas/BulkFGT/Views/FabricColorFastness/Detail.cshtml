@@ -746,9 +746,11 @@
             var para = "?Title=" + $('.page-header span').html() + "&EditMode=" + EditMode;
             para += "&" + "Table=ColorFastness";
             para += "&" + "BeforeColumn=TestBeforePicture";
-            para += "&" + "AfterColumn=TestAfterPicture";
+            para += "&" + "AfterColumn=TestAfterPicture"; 
             para += "&" + "PKey_1=ID";
             para += "&" + "PKey_1_Val=" + $('#Detail_ID').val();
+            para += "&" + "TargetBeforeColumn=Main_TestBeforePicture";
+            para += "&" + "TargetAfterColumn=Main_TestAfterPicture";
             window.open('@Url.Action("PictureList", "PublicWondow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1024,height=750');
         });
 

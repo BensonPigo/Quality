@@ -44,9 +44,7 @@ namespace Quality.Areas.StyleManagement
                 bool sb = (string.IsNullOrEmpty(Req.BrandID) || string.IsNullOrEmpty(Req.SeasonID));
                 if (st && sb)
                 {
-                    ViewData["MsgScript"] = $@"
-msg.WithInfo('Please input ＜Style＞ or ＜Brand, Season＞.');
-";
+                    ViewData["MsgScript"] = $@"msg.WithInfo(""Please input ＜Style＞ or ＜Brand, Season＞."");";
                     return View("index", model);
                 }
 
@@ -54,16 +52,12 @@ msg.WithInfo('Please input ＜Style＞ or ＜Brand, Season＞.');
 
                 if (!model.Any())
                 {
-                    ViewData["MsgScript"] = $@"
-msg.WithInfo('Data not found.');
-";
+                    ViewData["MsgScript"] = $@"msg.WithInfo(""Data not found."");";
                 }
             }
             catch (Exception ex)
             {
-                ViewData["MsgScript"] = $@"
-msg.WithInfo('Error : {ex.Message.Replace("\r\n", "<br />")}');
-";
+                ViewData["MsgScript"] = $@"msg.WithInfo(""Error : {ex.Message.Replace("\r\n", "<br />")}"");";
             }
 
             return View("index", model);
