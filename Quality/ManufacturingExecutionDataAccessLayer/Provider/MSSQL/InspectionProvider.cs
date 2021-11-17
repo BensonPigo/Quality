@@ -161,5 +161,58 @@ and o.PulloutComplete = 0 " + Environment.NewLine);
 
             return ExecuteList<Inspection_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
         }
+
+        public IList<Inspection_ChkOrderID_ViewModel> CheckSelectItemData_SP(Inspection_ViewModel inspection_ViewModel)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+				{ "@FtyGroup", DbType.String, inspection_ViewModel.FactoryID } ,
+				{ "@ID", DbType.String, inspection_ViewModel.OrderID } ,
+				{ "@BrandID", DbType.String, inspection_ViewModel.Brand } ,
+			};
+
+            SbSql.Append(
+				@"
+select distinct  [OrderID] = o.ID 
+	, [Inpsected] = cast(iif(r_Size.SizeBalanceQty >= oq.Qty, 1, 0) as bit)
+	, o.PulloutComplete
+	, o.FtyGroup
+from MainServer.[Production].[dbo].Orders o with(nolock)
+inner join MainServer.[Production].[dbo].Style s with(nolock) on o.StyleUkey = s.Ukey
+inner join MainServer.[Production].[dbo].Order_Qty oq with(nolock) on o.ID = oq.ID
+inner join MainServer.[Production].[dbo].Order_Location ol with(nolock) on o.ID = ol.OrderId
+outer apply (
+	select SizeBalanceQty = count(*)
+	from RFT_Inspection r with(nolock)
+	where r.OrderID = o.ID
+	and r.Article = oq.Article
+	and r.Size = oq.SizeCode
+	and r.Location = ol.Location
+	and Status in ('Pass', 'Fixed')
+)r_Size
+outer apply (
+	select OrderBalanceQty = count(*)
+	from RFT_Inspection r with(nolock)
+	where r.OrderID = o.ID
+	and r.Location = ol.Location
+	and Status in ('Pass', 'Fixed')
+)r_Order
+outer apply(
+	select r.Name 
+	from MainServer.[Production].[dbo].Style s with(nolock)
+	inner join MainServer.[Production].[dbo].Reason r with(nolock) on r.ID = s.ApparelType 
+        and r.ReasonTypeID = 'Style_Apparel_Type'	
+	where s.Ukey = o.StyleUkey
+)ApparelType
+where  o.Category = 'S'
+and o.Junk = 0
+and o.ID = @ID" + Environment.NewLine);
+
+			if (!string.IsNullOrEmpty(inspection_ViewModel.FactoryID)) { SbSql.Append("and o.FtyGroup = @FtyGroup" + Environment.NewLine); }
+			if (!string.IsNullOrEmpty(inspection_ViewModel.Brand)) { SbSql.Append("and o.BrandID = @BrandID" + Environment.NewLine); }
+
+			return ExecuteList<Inspection_ChkOrderID_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
+        }
     }
 }

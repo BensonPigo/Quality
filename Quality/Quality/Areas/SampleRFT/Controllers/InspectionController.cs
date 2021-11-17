@@ -165,6 +165,19 @@ namespace Quality.Areas.SampleRFT.Controllers
                                                                    .ToList();
             viewModel = result.Any() ? result.FirstOrDefault() : viewModel;
             viewModel.Result = result.Any();
+
+            if (!viewModel.Result)
+            {
+                List<Inspection_ChkOrderID_ViewModel> result2 = _InspectionService.CheckSelectItemData_SP(new Inspection_ViewModel() { FactoryID = this.FactoryID, OrderID = OrderID, Brand = this.Brand, }).ToList();
+                string ErrMsg = "SP# not found";
+                if (result2.Count > 0)
+                {
+                    if (result2.FirstOrDefault().Inpsected) ErrMsg = "Already inpsected!";
+                    if (!result2.FirstOrDefault().PulloutComplete) ErrMsg = "Already pulled out!";
+                }
+                viewModel.ErrMsg = ErrMsg;
+            }
+
             return Json(viewModel);
         }
 

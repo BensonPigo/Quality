@@ -12,5 +12,7 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         IList<Inspection_ViewModel> GetSelectItemData(Inspection_ViewModel inspection_ViewModel);
 
         IList<Inspection_ViewModel> CheckSelectItemData(Inspection_ViewModel inspection_ViewModel);
+
+        IList<Inspection_ChkOrderID_ViewModel> CheckSelectItemData_SP(Inspection_ViewModel inspection_ViewModel);
     }
 }

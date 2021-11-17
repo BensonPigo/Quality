@@ -2112,7 +2112,7 @@
             success: function (data) {
                 if (data.Result == 0) {
                     $('#txtSP').val("");
-                    msg.WithError("SP# not found.");
+                    msg.WithError(data.ErrMsg);
                 }
                 else {
                     $('#txtStyle').val(data.StyleID);

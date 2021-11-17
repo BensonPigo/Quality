@@ -47,4 +47,11 @@ namespace DatabaseObject.ViewModel
 
         public string Area { get; set; }
     }
+
+    public class Inspection_ChkOrderID_ViewModel
+    {
+        public string OrderID { get; set; }
+        public bool Inpsected { get; set; }
+        public bool PulloutComplete { get; set; }
+    }
 }

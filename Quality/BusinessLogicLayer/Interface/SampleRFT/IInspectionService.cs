@@ -13,6 +13,7 @@ namespace BusinessLogicLayer.Interface
 
         IList<Inspection_ViewModel> CheckSelectItemData(Inspection_ViewModel inspection_ViewModel, SelectType type);
 
+        IList<Inspection_ChkOrderID_ViewModel> CheckSelectItemData_SP(Inspection_ViewModel inspection_ViewModel);
         Inspection_ViewModel GetTop3(Inspection_ViewModel inspection_ViewModel);
 
         IList<GarmentDefectType> GetGarmentDefectType();

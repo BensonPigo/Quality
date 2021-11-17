@@ -141,6 +141,13 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
+        public IList<Inspection_ChkOrderID_ViewModel> CheckSelectItemData_SP(Inspection_ViewModel inspection_ViewModel)
+        {
+            _InspectionProvider = new InspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+            List<Inspection_ChkOrderID_ViewModel> result = _InspectionProvider.CheckSelectItemData_SP(inspection_ViewModel).ToList();
+            return result;
+        }
+
         public Inspection_ViewModel GetTop3(Inspection_ViewModel inspection_ViewModel)
         {
             _RFTInspectionProvider = new RFTInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
