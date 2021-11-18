@@ -135,34 +135,11 @@ namespace BusinessLogicLayer.Service
                 section_result_id = 1,
             });
 
+            object defects;
+
             if (dtDefectsDetail.Rows.Count > 0)
             {
-                sections.Add(new
-                {
-                    type = "aqlDefects",
-                    title = "product",
-                    section_result_id = drFinalInspection["InspectionResultID"],
-                    defective_parts = drFinalInspection["DefectQty"],
-                    qty_inspected = drFinalInspection["AvailableQty"],
-                    sampled_inspected = drFinalInspection["SampleSize"],
-                    inspection_level = drFinalInspection["InspectionLevel"],
-                    inspection_method = "Normal",
-                    aql_minor = 1,
-                    aql_major = 1,
-                    aql_major_a = 0.4,
-                    aql_major_b = 1.5,
-                    aql_critical = 1,
-                    //aql_minor = 0,
-                    //aql_major = 0,
-                    //aql_major_a = drFinalInspection["DefectQty"],
-                    //aql_major_b = drFinalInspection["DefectQty"],
-                    //aql_critical = 0,
-                    max_minor_defects = 0,
-                    max_major_defects = drFinalInspection["DefectQty"],
-                    max_major_a_defects = drFinalInspection["DefectQty"],
-                    max_major_b_defects = drFinalInspection["DefectQty"],
-                    max_critical_defects = 0,
-                    defects = dtDefectsDetail.AsEnumerable()
+                defects = dtDefectsDetail.AsEnumerable()
                                 .Select(s => new
                                 {
                                     label = s["DefectCodeDesc"],
@@ -172,9 +149,51 @@ namespace BusinessLogicLayer.Service
                                     major_level = s["MajorQty"],
                                     minor_level = 0,
                                     comments = "No comment",
-                                })
-                });
+                                });
             }
+            else
+            {
+                defects = new List<object>() {
+                    new {
+                            label = string.Empty,
+                            subsection = string.Empty,
+                            code = string.Empty,
+                            critical_level = 0,
+                            major_level = 0,
+                            minor_level = 0,
+                            comments = "No comment",
+                    },
+                };
+            }
+
+            sections.Add(new
+            {
+                type = "aqlDefects",
+                title = "product",
+                section_result_id = drFinalInspection["InspectionResultID"],
+                defective_parts = drFinalInspection["DefectQty"],
+                qty_inspected = drFinalInspection["AvailableQty"],
+                sampled_inspected = drFinalInspection["SampleSize"],
+                inspection_level = drFinalInspection["InspectionLevel"],
+                inspection_method = "Normal",
+                aql_minor = 1,
+                aql_major = 1,
+                aql_major_a = 0.4,
+                aql_major_b = 1.5,
+                aql_critical = 1,
+                //aql_minor = 0,
+                //aql_major = 0,
+                //aql_major_a = drFinalInspection["DefectQty"],
+                //aql_major_b = drFinalInspection["DefectQty"],
+                //aql_critical = 0,
+                max_minor_defects = 0,
+                max_major_defects = drFinalInspection["DefectQty"],
+                max_major_a_defects = drFinalInspection["DefectQty"],
+                max_major_b_defects = drFinalInspection["DefectQty"],
+                max_critical_defects = 0,
+                defects,
+            });
+
 
             sections.Add(new
             {
@@ -198,7 +217,7 @@ namespace BusinessLogicLayer.Service
                     assignment = new
                     {
                         report_type = new { id = 12 },
-                        inspector = new { username = drFinalInspection["CFA"]},
+                        inspector = new { username = drFinalInspection["CFA"] },
                         date_inspection = drFinalInspection["AuditDate"]
                     },
                     po_line = new
@@ -263,7 +282,8 @@ namespace BusinessLogicLayer.Service
                 return sentPivot88Results;
             }
 
-            sentPivot88Results = listInspectionID.Select(finalInspectionID => {
+            sentPivot88Results = listInspectionID.Select(finalInspectionID =>
+            {
 
                 bool isSuccess = true;
                 string errorMsg = string.Empty;
@@ -274,7 +294,7 @@ namespace BusinessLogicLayer.Service
                     postBody = JsonConvert.SerializeObject(GetPivot88Json(finalInspectionID));
 
                     WebApiBaseResult webApiBaseResult = WebApiTool.WebApiSend(pivotTransferRequest.BaseUri, requestUri, postBody, HttpMethod.Put, headers: pivotTransferRequest.Headers);
-                    
+
                     switch (webApiBaseResult.webApiResponseStatus)
                     {
                         case WebApiResponseStatus.Success:
