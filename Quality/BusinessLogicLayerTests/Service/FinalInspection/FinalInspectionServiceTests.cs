@@ -29,7 +29,7 @@ namespace BusinessLogicLayer.Service.FinalInspectionTests
             {
                 FinalInspectionService finalInspectionService = new FinalInspectionService();
 
-                string result = JsonConvert.SerializeObject(finalInspectionService.GetPivot88Json("ES3CH21110007"));
+                string result = JsonConvert.SerializeObject(finalInspectionService.GetPivot88Json("ES3CH21110006"));
                 
                 Assert.IsTrue(true);
             }

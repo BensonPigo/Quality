@@ -1306,7 +1306,7 @@ declare @ID varchar(13) = @InspectionID
 Select	f.AuditDate,
 		f.RejectQty,
 		f.InspectionResult,
-		[DefectQty] = (select sum(Qty) from FinalInspection_Detail with (nolock) where ID = f.ID),
+		[DefectQty] = (select isnull(sum(Qty), 0) from FinalInspection_Detail with (nolock) where ID = f.ID),
 		[AvailableQty] = (select sum(AvailableQty) from FinalInspection_Order with (nolock) where ID = f.ID),
 		f.SampleSize,
 		[InspectionLevel] = isnull((select Replicate('M', InspectionLevels/1000)  
