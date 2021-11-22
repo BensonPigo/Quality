@@ -173,9 +173,14 @@ where POID=@PoID
 ";
             var source2 = ExecuteList<ColorFastness_Result>(CommandType.Text, sqlcmd2, objParameter);
 
-            if (source.Count == 0 || source2.Count == 0)
+            if (source.Count == 0)
             {
                 return new FabricColorFastness_ViewModel() { Result = false, ErrorMessage = "No data found" };
+            }
+
+            if (source2.Count == 0)
+            {
+                source2 = new List<ColorFastness_Result>();
             }
 
             FabricColorFastness_ViewModel result = new FabricColorFastness_ViewModel()
