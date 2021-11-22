@@ -70,6 +70,8 @@ select  ID                             ,
         OthersRemark                   ,
         SubmitDate                     ,
         InspectionStep                 ,
+        Shift                     ,
+        Team                 ,
         AddName                        ,
         AddDate                        ,
         EditName                       ,
@@ -147,6 +149,8 @@ insert into FinalInspection(id                            ,
                             InspectionResult              ,
                             ShipmentStatus                ,
                             InspectionStep                ,
+                            Shift                         ,
+                            Team                          ,
                             AddName                       ,
                             AddDate)
                 values(@FinalInspectionID                            ,
@@ -163,6 +167,8 @@ insert into FinalInspection(id                            ,
                        'On-going'              ,
                         'On Hold'                ,
                        'Setting',
+                       @Shift                         ,
+                       @Team                          ,
                        @UserID                       ,
                        GetDate()
                 )
@@ -180,6 +186,8 @@ set     InspectionStage = @InspectionStage                         ,
         SampleSize = @SampleSize      ,
         AcceptQty = @AcceptQty          ,
         InspectionStep = 'Setting',
+        Shift = @Shift          ,
+        Team = @Team,
         EditName = @UserID                  ,
         EditDate= getdate()
 where   ID = @FinalInspectionID
@@ -204,6 +212,8 @@ delete  FinalInspection_OrderCarton where ID = @FinalInspectionID
             objParameter.Add("@SampleSize", setting.SampleSize);
             objParameter.Add("@AcceptQty", setting.AcceptQty);
             objParameter.Add("@UserID", userID);
+            objParameter.Add("@Team", setting.Team);
+            objParameter.Add("@Shift", setting.Shift);
 
             foreach (SelectedPO selectedPOItem in setting.SelectedPO)
             {
@@ -321,6 +331,18 @@ where   ID = @FinalInspectionID
                     objParameter.Add("@CheckColorSizeQty", finalInspection.CheckColorSizeQty);
                     objParameter.Add("@CheckHangtag", finalInspection.CheckHangtag);
                     break;
+                case "Insp-Measurement":
+                    sqlUpdCmd += $@"
+update FinalInspection
+ set    InspectionStep = @InspectionStep,
+        EditName= @userID,
+        EditDate= getdate()
+where   ID = @FinalInspectionID
+";
+                    objParameter.Add("@FinalInspectionID", finalInspection.ID);
+                    objParameter.Add("@userID", userID);
+                    objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
+                    break;
                 case "Insp-AddDefect":
                     sqlUpdCmd += $@"
 update FinalInspection
@@ -346,18 +368,6 @@ where   ID = @FinalInspectionID
                     objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
                     break;
                 case "Insp-Moisture":
-                    sqlUpdCmd += $@"
-update FinalInspection
- set    InspectionStep = @InspectionStep,
-        EditName= @userID,
-        EditDate= getdate()
-where   ID = @FinalInspectionID
-";
-                    objParameter.Add("@FinalInspectionID", finalInspection.ID);
-                    objParameter.Add("@userID", userID);
-                    objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
-                    break;
-                case "Insp-Measurement":
                     sqlUpdCmd += $@"
 update FinalInspection
  set    InspectionStep = @InspectionStep,

@@ -1,6 +1,7 @@
 ﻿
 @{
     ViewBag.Title = "General";
+    string stage = Model == null ? string.Empty : Model.InspectionStage;
 }
 <link href="~/Areas/FinalInspection/CSS/FinalInspection.css" rel="stylesheet" />
 @Html.Partial("~/Areas/FinalInspection/Views/Shared/_Inspection_Layout.cshtml")
@@ -81,7 +82,10 @@
             </tr>
         </table>
         <input type="hidden" id="goPage" name="goPage">
-        <button id="btnBack" onclick="this.form.submitted=this.value;" type="submit" value="Back" class="button" style="right:7em;padding: 0;"><p style=" font-size: 12px; padding: 14px 0">Back To Setting</p></button>
+        <p style="font-size: 16px;font-weight:bolder; position: absolute; right: 1em;bottom:4.3em;">Inline, Stagger can skip Metal Detection.</p>
+        <button id="btnBack" onclick="this.form.submitted=this.value;" type="submit" value="Back" class="button" style="right:7em;padding: 0;">
+            <p style=" font-size: 12px; padding: 14px 0">Back To Setting</p>
+        </button>
         <button id="btnNext" onclick="this.form.submitted=this.value;" type="submit" value="Next" style="right:0;" class="button">Next</button>
 
         @Html.HiddenFor(o=>o.ID)
@@ -99,17 +103,30 @@
             document.getElementById("goPage").value = self;
 
             if (self == "Next") {
-                var selected = [];
-                var selectedList = $('input:checkbox:checked');
-                selectedList.each(function () {
-                    selected.push($(this).val());
-                });
 
-                if (selected.length < 4) {
-                    msg.WithError('These items must be selected before go to next step.');
-                    return false;
+                if ('@stage' == "Inline" || '@stage' == "Stagger") {
+
+                    if ($("#FabricApprovalDoc").prop("checked") == false || $("#SealingSampleDoc").prop("checked") == false || $("#GarmentWashingDoc").prop("checked") == false)
+                    {
+                        msg.WithError('These items must be selected before go to next step.');
+                        return false;
+
+                    }
+
                 }
+                else {
+                    var selected = [];
+                    var selectedList = $('input:checkbox:checked');
+                    selectedList.each(function () {
+                        selected.push($(this).val());
+                    });
 
+                    if (selected.length < 4) {
+                        msg.WithError('These items must be selected before go to next step.');
+                        return false;
+                    }
+
+                }
             }
 
             ShowLoading();
