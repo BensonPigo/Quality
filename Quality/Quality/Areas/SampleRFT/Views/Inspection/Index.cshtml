@@ -1465,7 +1465,10 @@
                 return;
             }
 
-            PassClick($("#txtStyle").val(), $("#txtSP").val(), $("#txtArticle").val(), $("#txtSize").val(), $("#txtProductType").val());
+            msg.WithConfirm("Are you sure?",
+                function () {
+                    PassClick($("#txtStyle").val(), $("#txtSP").val(), $("#txtArticle").val(), $("#txtSize").val(), $("#txtProductType").val());
+                }, null);            
         });
 
         $('#btnReject').on('click', function () {
