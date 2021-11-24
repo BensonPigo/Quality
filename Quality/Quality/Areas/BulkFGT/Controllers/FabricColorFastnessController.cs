@@ -21,7 +21,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         public FabricColorFastnessController()
         {
             _FabricColorFastness_Service = new FabricColorFastness_Service();
-            ViewBag.OnlineHelp = this.OnlineHelp + "BulkFGT.FabricColorFastness,,";
+            ViewBag.OnlineHelp = this.OnlineHelp + "BulkFGT.WashingFastness,,"; // ISP20211364
         }
 
         public ActionResult Index()
