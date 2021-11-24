@@ -626,7 +626,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         public JsonResult CFTCommentsSend(string OrderID)
         {
             this.CheckSession();
-            RFT_OrderComments_ViewModel rFT_PicDuringDummyFitting_ViewModel = _InspectionService.SendMailRFT_OrderComments(new RFT_OrderComments { OrderID = OrderID });
+            RFT_OrderComments_ViewModel rFT_PicDuringDummyFitting_ViewModel = _InspectionService.SendMailRFT_OrderComments(new RFT_OrderComments { OrderID = OrderID }, this.UserID);
             return Json(rFT_PicDuringDummyFitting_ViewModel);
         }
 

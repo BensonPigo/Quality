@@ -689,7 +689,7 @@ namespace BusinessLogicLayer.Service
                     Subject = "Fabric Crocking Test - Test Fail",
                     Body = mailBody
                 };
-                result = MailTools.SendMail(sendMail_Request, isTest);
+                result = MailTools.SendMail(sendMail_Request);
 
             }
             catch (Exception ex)
@@ -1605,7 +1605,7 @@ namespace BusinessLogicLayer.Service
                     Subject = "Fabric Heat Test - Test Fail",
                     Body = mailBody
                 };
-                result = MailTools.SendMail(sendMail_Request, isTest);
+                result = MailTools.SendMail(sendMail_Request);
 
             }
             catch (Exception ex)
@@ -1632,7 +1632,7 @@ namespace BusinessLogicLayer.Service
                     Subject = "Fabric Wash Test - Test Fail",
                     Body = mailBody
                 };
-                result = MailTools.SendMail(sendMail_Request, isTest);
+                result = MailTools.SendMail(sendMail_Request);
 
             }
             catch (Exception ex)

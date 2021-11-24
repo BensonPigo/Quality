@@ -26,7 +26,7 @@ namespace BusinessLogicLayer.Service.Tests
                     FileonServer = x,
 
                 };
-               var result = MailTools.SendMail(request, true);
+               var result = MailTools.SendMail(request);
                 Assert.IsTrue(result.result);
             }
             catch (Exception ex)
