@@ -50,7 +50,7 @@ namespace BusinessLogicLayer.Interface
 
         RFT_OrderComments_ViewModel SaveRFT_OrderComments(List<RFT_OrderComments> rFT_OrderComments);
 
-        RFT_OrderComments_ViewModel SendMailRFT_OrderComments(RFT_OrderComments rFT_OrderComments);
+        RFT_OrderComments_ViewModel SendMailRFT_OrderComments(RFT_OrderComments rFT_OrderComments, string UserID);
 
         RFT_PicDuringDummyFitting GetRFT_PicDuringDummyFitting(RFT_PicDuringDummyFitting picDuringDummyFitting);
 
