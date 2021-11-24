@@ -92,12 +92,13 @@
 
         $("#btnSave").click(function () {
 
-            var Pic = document.querySelector("#ImgPic");
+            //var Pic = document.querySelector("#ImgPic");
+            var Pic = document.querySelectorAll("#ImgPic");
 
             var Picture = {
                 DetailUkey: '@DetailUkey',
                 RowIndex : '@RowIndex',
-                Img: Pic.src,
+                Img: Pic[0].src,
             }
 
             window.opener.GetImage(Picture);
