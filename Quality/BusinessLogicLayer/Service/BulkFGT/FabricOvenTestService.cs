@@ -295,7 +295,7 @@ namespace BusinessLogicLayer.Service
                     Subject = "Fabric Oven Test - Test Fail",
                     Body = mailBody
                 };
-                result = MailTools.SendMail(sendMail_Request, isTest);
+                result = MailTools.SendMail(sendMail_Request);
 
             }
             catch (Exception ex)

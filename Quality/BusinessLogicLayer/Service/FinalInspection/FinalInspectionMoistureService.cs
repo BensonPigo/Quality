@@ -31,7 +31,9 @@ namespace BusinessLogicLayer.Service
                 moisture.ListArticle = _FinalInspFromPMSProvider.GetArticleList(finalInspectionID);
                 moisture.ActionSelectListItem = _FinalInspFromPMSProvider.GetActionSelectListItem().ToList();
 
-                moisture.FinalInspection_CTNMoistureStandard = _FinalInspectionProvider.GetSystem()[0].FinalInspection_CTNMoistureStandard;
+                DatabaseObject.ProductionDB.System system = _FinalInspectionProvider.GetSystem()[0];
+                moisture.FinalInspection_CTNMoistureStandard = system.FinalInspection_CTNMoistureStandard;
+                moisture.FinalInspection_CTNMoistureStandardBM = system.FinalInspection_CTNMoistureStandardBM;
                 moisture.ListEndlineMoisture = _FinalInspectionProvider.GetEndlineMoisture().ToList();
                 _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
                 moisture.ListCartonItem = _FinalInspectionProvider.GetMoistureListCartonItem(finalInspectionID).ToList();

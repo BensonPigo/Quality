@@ -10,6 +10,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
     {
         public string FinalInspectionID { get; set; }
         public decimal? FinalInspection_CTNMoistureStandard { get; set; }
+        public decimal? FinalInspection_CTNMoistureStandardBM { get; set; }
         public List<string> ListArticle { get; set; }
         public List<CartonItem> ListCartonItem { get; set; }
         public List<EndlineMoisture> ListEndlineMoisture { get; set; }

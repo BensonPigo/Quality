@@ -53,6 +53,9 @@
             -webkit-box-sizing: border-box;
             -moz-box-sizing: border-box;
         }
+        #myEndlineMoisture_length > label > select{
+            background-color:white;
+        }
     </style>
 }
 @Html.Partial("~/Areas/FinalInspection/Views/Shared/_Inspection_Layout.cshtml")
@@ -117,7 +120,7 @@
                     <tr>
                         <td colspan="6">
                             <label>Carton Moisture</label>
-                            <label style="font-weight: normal;">(Standard:@ViewBag.FinalInspection_CTNMoistureStandard)</label>
+                            <label style="font-weight: normal;">(Standard:<span id="CTNMoistureStandard">@ViewBag.FinalInspection_CTNMoistureStandard</span>)</label>
                         </td>
                         @*<td colspan="4"><label>(Standard:@ViewBag.FinalInspection_CTNMoistureStandard)</label></td>*@
                     </tr>
@@ -269,7 +272,7 @@
         var myCartons;
         var myEndlineMoistureTable;
         var myView;
-
+        var Instrument = '';
         $(function () {
 
             @Html.Raw(ErrorMessage)
@@ -397,12 +400,25 @@
                         text: 'Next',
                         click: function () {
                             var dataRow = myEndlineMoistureTable.row('.selected').data();
+
                             if (dataRow != undefined) {
                                 document.getElementById("Instrument").value = dataRow[0];
                                 document.getElementById("Fabrication").value = dataRow[1];
                                 document.getElementById("GarmentStandard").innerHTML = dataRow[2];
+
+                                Instrument = dataRow[0];
+                                if (Instrument == "Aqua Boy") {
+                                    $("#CTNMoistureStandard").text(@ViewBag.FinalInspection_CTNMoistureStandard);
+                                }
+                                else if (Instrument == "B Machine") {
+                                    $("#CTNMoistureStandard").text(@ViewBag.FinalInspection_CTNMoistureStandardBM);
+                                }
+                                else {
+                                    Instrument = '';
+                                }
                             }
                             else {
+                                Instrument = '';
                                 document.getElementById("Instrument").value = '';
                                 document.getElementById("Fabrication").value = '';
                                 document.getElementById("GarmentStandard").innerHTML = '';
@@ -500,7 +516,7 @@
 
         });
 
-        function OpenViewDialog() {            
+        function OpenViewDialog() {
                $.ajax({
                     url: '@Url.Action("GetViewMoistureResult", "Inspection")',
                     type: 'POST',
@@ -657,7 +673,17 @@
             var garmentStandard = $("#GarmentStandard").text();
             var garmentStandardValue = 0;
 
-            var cartonsValue = @ViewBag.FinalInspection_CTNMoistureStandard;
+            var cartonsValue = 0.0;
+
+            if (Instrument == "Aqua Boy") {
+                cartonsValue =@ViewBag.FinalInspection_CTNMoistureStandard;
+            }
+            else if (Instrument == "B Machine") {
+                cartonsValue =@ViewBag.FinalInspection_CTNMoistureStandardBM;
+            }
+            else {
+
+            }
 
             $("#Result").text("Fail");
             $("#Result").css("color", "#E62513");

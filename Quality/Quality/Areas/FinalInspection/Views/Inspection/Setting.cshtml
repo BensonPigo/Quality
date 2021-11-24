@@ -110,7 +110,7 @@
             <div class="col-auto"><h1 style="font-size:2em">Inspection Setting</h1></div>
 
             @*Basic*@
-            <div style="width:50%;height:25vh;float:left;">
+            <div style="width:50%;height:27vh;float:left;">
                 <div class="col-auto"><h2 class="sub_title">Basic</h2></div>
                 <table class="col-auto table_div" @*style="width:100%"*@>
                     <tr>
@@ -128,11 +128,29 @@
                             <input type="button" onclick="ClearSewing(this)" name="name" value="Clear" style="float:left;" />
                         </td>
                     </tr>
+                    <tr>
+                        <td>
+                            <label>Shift</label>
+                            @*@Html.DropDownListFor(o => o.Shift, (List<SelectListItem>)ViewBag.Shift, null, new { @class = "form-control", @style = "width:100px" })*@
+                            @{var ShiftList = (List<SelectListItem>)ViewBag.Shift; }
+                            <select id="Shift" name="Shift" class="form-control" style="width:100px">
+                                @foreach (var item in ShiftList)
+                                {
+                                    string selected = Model.Shift == item.Value ? "selected" : "";
+                                    <option value="@item.Value" @selected>@item.Text</option>
+                                }
+                            </select>
+                        </td>
+                        <td>
+                            <label>Team</label>
+                            @Html.DropDownListFor(o => o.Team, (List<SelectListItem>)ViewBag.SewingTeam, null, new { @class = "form-control", @style = "width:100px"})
+                        </td>
+                    </tr>
                 </table>
             </div>
 
             @*Inspection Number*@
-            <div style="width:50%;height:25vh;float:left;">
+            <div style="width:50%;height:27vh;float:left;">
                 <div class="col-auto"><h2 class="sub_title">Inspection Number</h2></div>
                 <div class="col-auto"><label style="padding-left:3em;font-weight:bold">This is <font style="color:#0000ff">@Html.DisplayFor(o => o.InspectionTimes)</font> times to inspect for this PO#</label></div>
                 @Html.HiddenFor(o => o.InspectionTimes)
@@ -232,7 +250,7 @@
                         {
                             <tr class="row-content" style="vertical-align: middle; text-align: center;">
                                 <td>
-                                    <input type="checkbox" ID="Carton_Select_[@i]" class="messageCheckbox" Idx=@i CTNNo=@Model.SelectCarton[i].CTNNo PackingListID=@Model.SelectCarton[i].PackingListID OrderID=@Model.SelectCarton[i].OrderID onclick="SelectCartonChange(this)" style="width: 1.4em;" />
+                                    <input type="checkbox" ID="Carton_Select_[@i]" class="messageCheckbox" Idx=@i CTNNo=@Model.SelectCarton[i].CTNNo PackingListID=@Model.SelectCarton[i].PackingListID shipQty="@Model.SelectCarton[i].ShipQty" OrderID=@Model.SelectCarton[i].OrderID onclick="SelectCartonChange(this)" style="width: 1.4em;" />
                                 </td>
                                 <td>
                                     @Html.DisplayFor(o => Model.SelectCarton[i].PackingListID)
@@ -337,6 +355,7 @@
             @Html.Hidden($"SelectCarton[{i}].CTNNo", Model.SelectCarton[i].CTNNo)
             @Html.Hidden($"SelectCarton[{i}].OrderID", Model.SelectCarton[i].OrderID)
             @Html.Hidden($"SelectCarton[{i}].Seq", Model.SelectCarton[i].Seq)
+            @Html.Hidden($"SelectCarton[{i}].ShipQty", Model.SelectCarton[i].ShipQty)
         }
         //Model.SelectOrderShipSeq
         for (int i = 0; i < Model.SelectOrderShipSeq.Count; i++)
@@ -552,17 +571,26 @@
                         click: function () {
 
                             var checkedList = [];
-
+                            var totalQty = 0;
                             $('[id^=Carton_Select_]').each(function () {
 
                                 if ($(this).prop('checked')) {
                                     //checkedList.push($(this).val());
                                     checkedList.push($(this).attr("ctnno"));
+                                    totalQty = totalQty + parseInt($(this).attr("ShipQty"));
                                 }
                             });
 
                             var index = $("#currnetSelectedPO").val();
                             document.getElementById("SelectedPO[" + index + "].Cartons").value = checkedList.join(',');
+
+                            var orderID = document.getElementById("SelectedPO[" + index + "].AvailableQty").getAttribute("OrderId");
+                            document.getElementById("SelectedPO[" + index + "].AvailableQty").value = totalQty;
+
+                            table.row($("#SelectPO_" + orderID).closest('tr')).data()[9] = totalQty;
+                            Order_AvailableQty[orderID] = totalQty;
+                            Cacu_AvailableQty();
+
                             $(this).dialog("close");
                         }
                         , "class": "button"
@@ -1052,8 +1080,9 @@
                     //tr.removeClass('shown');
                 }
                 else {
-                    row.child(format(row.data())).show();
-                    tr.addClass('shown');
+                    //row.child(format(row.data())).show();
+                    //tr.addClass('shown');
+                    $(this).click();
                 }
             });
 
