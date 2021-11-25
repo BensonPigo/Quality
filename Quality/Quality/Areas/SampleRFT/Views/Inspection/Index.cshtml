@@ -596,8 +596,7 @@
                                             <input id="txtProductType" style="width: 10vw;" type="text" />
                                             <input id="btnProductTypeSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="ProductTypeSelectItem" value="..." />
                                         </td>
-                                        <td><input id="txtProductTypePMS" type="text" readonly="readonly" /></td>
-                                        <td></td>
+                                        <td colspan="2"><input id="txtProductTypePMS" type="text" readonly="readonly" /></td>
                                     </tr>
                                     <tr>
                                         <td>Brand</td>
@@ -764,6 +763,7 @@
             keyValues = keyValues,
         });
 
+        keyValues.Add("Style#", "");
         keyValues.Add("SP#", "");
         Html.RenderPartial("SelectItem", new SelectItem_ViewModel()
         {
@@ -1465,7 +1465,10 @@
                 return;
             }
 
-            PassClick($("#txtStyle").val(), $("#txtSP").val(), $("#txtArticle").val(), $("#txtSize").val(), $("#txtProductType").val());
+            msg.WithConfirm("Are you sure?",
+                function () {
+                    PassClick($("#txtStyle").val(), $("#txtSP").val(), $("#txtArticle").val(), $("#txtSize").val(), $("#txtProductType").val());
+                }, null);            
         });
 
         $('#btnReject').on('click', function () {

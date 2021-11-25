@@ -1,6 +1,7 @@
 ﻿using ADOHelper.Template.MSSQL;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
+using System.Configuration;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -11,11 +12,13 @@ namespace ADOHelper.Utility
 {
     public class MailTools
     {
-        public static SendMail_Result SendMail(SendMail_Request SendMail_Request, bool isTest = false)
+        private static string IsTest = ConfigurationManager.AppSettings["IsTest"];
+        public static SendMail_Result SendMail(SendMail_Request SendMail_Request)
         {
             SendMail_Result sendMail_Result = new SendMail_Result();
             try
             {
+                bool isTest = IsTest.ToLower() == "true";
                 SQLParameterCollection objParameter = new SQLParameterCollection();
 
                 string mailFrom = "foxpro@sportscity.com.tw";

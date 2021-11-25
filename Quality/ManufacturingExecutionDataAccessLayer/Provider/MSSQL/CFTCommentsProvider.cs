@@ -49,7 +49,7 @@ from [Production].[dbo].Orders o with(nolock)
 where 1=1
 and o.junk = 0
 and o.Category = 'S'
-and o.OnSiteSample != 1
+--and o.OnSiteSample != 1
 {where}
 ");
             return ExecuteList<CFTComments_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
@@ -86,7 +86,7 @@ left join MainServer.Production.dbo.DropdownList d ON d.Type='PMS_RFTComments' A
 where 1=1
 and o.junk = 0
 and o.Category = 'S'
-and o.OnSiteSample != 1
+--and o.OnSiteSample != 1
 {where}
 
 select SampleStage = a.OrderTypeID, CommentsCategory = a.PMS_RFTCommentsID, c.Comnments
@@ -134,7 +134,7 @@ inner join RFT_OrderComments r on r.OrderID = o.id
 where 1=1
 and o.junk = 0
 and o.Category = 'S'
-and o.OnSiteSample != 1
+--and o.OnSiteSample != 1
 {where}
 
 select SampleStage = a.OrderTypeID, CommentsCategory = (select Name from MainServer.[Production].[dbo].DropDownList where id = a.PMS_RFTCommentsID and type = 'PMS_RFTComments'), c.Comnments

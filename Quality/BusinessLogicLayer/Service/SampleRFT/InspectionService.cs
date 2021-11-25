@@ -755,16 +755,17 @@ namespace BusinessLogicLayer.Service
             return rFT_OrderComments_ViewModel;
         }
 
-        public RFT_OrderComments_ViewModel SendMailRFT_OrderComments(RFT_OrderComments rFT_OrderComments)
+        public RFT_OrderComments_ViewModel SendMailRFT_OrderComments(RFT_OrderComments rFT_OrderComments, string UserID)
         {
             _IRFTOrderCommentsProvider = new RFTOrderCommentsProvider(Common.ManufacturingExecutionDataAccessLayer);
             _IMailToProvider = new MailToProvider(Common.ManufacturingExecutionDataAccessLayer);
+            _IOrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
             RFT_OrderComments_ViewModel rFT_OrderComments_ViewModel = new RFT_OrderComments_ViewModel();
             try
             {
                 // 撈資料
                 List<RFT_OrderComments_ViewModel> queryData = GetRFT_OrderComments(rFT_OrderComments);
-
+                Orders orders = _IOrdersProvider.Get(new Orders { ID = rFT_OrderComments.OrderID }).FirstOrDefault();
                 #region 寄信
                 // 取得 mail to address
                 List<MailTo> mailToAddress = _IMailToProvider.GetMR_SMR_MailAddress(
@@ -851,9 +852,35 @@ vertical-align: middle;
         .DefectTable .tdValue {
             padding: 1em;
         }
-</style>
+</style>";
+                html += $@"
+<table class='CFTCommentsTable DefectTable'>
+<tbody>
+    <tr style='width:17vw;'>
+        <td><p>Style</p></td>
+        <td><p>{orders.StyleID}</p></td>
+    </tr>
+    <tr>
+        <td><p>Sample Stage</p></td>
+        <td><p>{orders.OrderTypeID}</p></td>
+    </tr>
+    <tr>
+        <td><p>Season</p></td>
+        <td><p>{orders.SeasonID}</p></td>
+    </tr>
+    <tr>
+        <td><p>Data Released</p></td>
+        <td><p>{DateTime.Now.ToString("yyyy/MM/dd")}</p></td>
+    </tr>
+    <tr>
+        <td><p>Released By</p></td>
+        <td>{UserID}</td>
+    </tr>
+</tbody>
+</table>
+";
 
-
+                html += @"
 <table class='CFTCommentsTable DefectTable'>
 <thead>
 <tr>

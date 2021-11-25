@@ -823,8 +823,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
             string StyleName = styleProvider.GetStyleName(all_Data.Main.StyleID, all_Data.Main.SeasonID, all_Data.Main.BrandID);
 
             IOrdersProvider ordersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
-            Orders orders = ordersProvider.Get(new Orders() { ID = all_Data.Main.OrderID }).First();
-
+            Orders orders = new Orders();
+            if (!string.IsNullOrEmpty(all_Data.Detail.OrderID))
+            {
+                orders = ordersProvider.Get(new Orders() { ID = all_Data.Detail.OrderID }).First();
+            }
 
             _IGarmentTestDetailShrinkageProvider = new GarmentTestDetailShrinkageProvider(Common.ProductionDataAccessLayer);
             DataTable dtShrinkages = _IGarmentTestDetailShrinkageProvider.Get_dt_Shrinkage(ID, No);
