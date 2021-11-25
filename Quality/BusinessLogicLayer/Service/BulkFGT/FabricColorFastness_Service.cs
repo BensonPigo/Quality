@@ -306,7 +306,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     To = ToAddress,
                     CC = CCAddress,
-                    Subject = "Fabric Color Fastness-Crocking Test – Test Fail",
+                    Subject = "Washing Fastness-Crocking Test – Test Fail",
                     Body = strHtml,
                 };
 

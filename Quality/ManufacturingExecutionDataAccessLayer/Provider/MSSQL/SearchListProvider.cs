@@ -267,9 +267,9 @@ where 1=1
             }
             #endregion
 
-            #region Fabric Color Fastness (501)
+            #region Washing Fastness (501)
             string type7 = $@"
-select DISTINCT Type= 'Fabric Color Fastness (501)'
+select DISTINCT Type= 'Washing Fastness (501)'
         ,ReportNo = cast(f.TestNo as varchar(50))
 		,OrderID = o.POID
 		,o.StyleID
@@ -397,7 +397,7 @@ where 1=1
                 case string a when a.Contains("Fabric Oven Test"):
                     SbSql.Append(type6);
                     break;
-                case string a when a.Contains("Fabric Color Fastness"):
+                case string a when a.Contains("Washing Fastness"):
                     SbSql.Append(type7);
                     break;
                 case string a when a.Contains("Accessory Oven Test & Wash"):
