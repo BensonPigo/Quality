@@ -158,11 +158,11 @@ namespace Quality.Areas.BulkFGT.Controllers
 
                 var BeforeImage = model.Detail.TestBeforePicture is null ? new byte[1] : model.Detail.TestBeforePicture;
                 var base64_Before = Convert.ToBase64String(BeforeImage);
-                var imgSrc_Before = String.Format("data:image/webp;base64,{0}", base64_Before);
+                var imgSrc_Before = String.Format("data:image/png;base64,{0}", base64_Before);
 
                 var AfterImage = model.Detail.TestAfterPicture is null ? new byte[1] : model.Detail.TestAfterPicture;
                 var base64_After = Convert.ToBase64String(AfterImage);
-                var imgSrc_After = String.Format("data:image/webp;base64,{0}", base64_After);
+                var imgSrc_After = String.Format("data:image/png;base64,{0}", base64_After);
 
                 model.Detail.TestBeforePicture_Base64 = imgSrc_Before;
                 model.Detail.TestAfterPicture_Base64 = imgSrc_After;

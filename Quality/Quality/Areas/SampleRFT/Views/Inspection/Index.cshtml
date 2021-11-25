@@ -1758,7 +1758,7 @@
                     AreaCode: area2,
                     PMS_RFTRespID: responsibilityID,
                     PMS_RFTBACriteriaID: bAAuditCriteriaID,
-                    DefectPicture: pic.replace("data:image/webp;base64,", ""),
+                    DefectPicture: pic.replace("data:image/png;base64,", ""),
                 };
                 ReworkListAddReject(datasDetail);
             }
@@ -2605,7 +2605,7 @@
                         PMS_RFTBACriteriaID = idv;
                         break;
                     case "pic":
-                        DefectPicture = h.replace("data:image/webp;base64,", "");
+                        DefectPicture = h.replace("data:image/png;base64,", "");
                         break;
                 }
             });
@@ -3159,15 +3159,15 @@
                 const PictureBack = document.querySelector("#PictureBack");
                 const aPictureBack = document.querySelector("#aPictureBack");
                 if (data.Front != null) {
-                    PictureFront.src = "data:image/webp;base64," + ByteArrayToBase64(data.Front);
+                    PictureFront.src = "data:image/png;base64," + ByteArrayToBase64(data.Front);
                     aPictureFront.href = PictureFront.src;
                 }
                 if (data.Side != null) {
-                    PictureSide.src = "data:image/webp;base64," + ByteArrayToBase64(data.Side);
+                    PictureSide.src = "data:image/png;base64," + ByteArrayToBase64(data.Side);
                     aPictureSide.href = PictureSide.src;
                 }
                 if (data.Back != null) {
-                    PictureBack.src = "data:image/webp;base64," + ByteArrayToBase64(data.Back);
+                    PictureBack.src = "data:image/png;base64," + ByteArrayToBase64(data.Back);
                     aPictureBack.href = PictureBack.src;
                 }
             },
@@ -3178,9 +3178,9 @@
     }
 
     function PicturesSave() {
-        var PictureFront = document.querySelector("#PictureFront").src.replace("data:image/webp;base64,", "");
-        var PictureSide = document.querySelector("#PictureSide").src.replace("data:image/webp;base64,", "");
-        var PictureBack = document.querySelector("#PictureBack").src.replace("data:image/webp;base64,", "");
+        var PictureFront = document.querySelector("#PictureFront").src.replace("data:image/png;base64,", "");
+        var PictureSide = document.querySelector("#PictureSide").src.replace("data:image/png;base64,", "");
+        var PictureBack = document.querySelector("#PictureBack").src.replace("data:image/png;base64,", "");
 
         var datas =
         {

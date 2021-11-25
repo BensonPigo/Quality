@@ -47,7 +47,7 @@
             canvas.height = videoElement.videoHeight;
             canvas.getContext("2d").drawImage(videoElement, 0, 0);
             // Other browsers will fall back to image/png
-            var src = canvas.toDataURL("image/webp");
+            var src = canvas.toDataURL("image/png");
             if (src.length > 6) {
                 img.src = src;
                 imgSet.src = src;

@@ -161,7 +161,7 @@ namespace Quality.Areas.FinalInspection.Controllers
 
             // Packaging
             worksheet.Cells[21, 1] = "Shipping Mark: " + (model.FinalInspection.CheckShippingMark ? "Y" : "N");
-            worksheet.Cells[21, 3] = "Polytag/ Marketing: " + (model.FinalInspection.CheckPolytagMarketing ? "Y" : "N");
+            worksheet.Cells[21, 3] = "Polybag/ Marketing: " + (model.FinalInspection.CheckPolytagMarketing ? "Y" : "N");
             worksheet.Cells[21, 5] = "Color/ Size/ Qty: " + (model.FinalInspection.CheckColorSizeQty ? "Y" : "N");
             worksheet.Cells[21, 7] = "Hangtag: " + (model.FinalInspection.CheckHangtag ? "Y" : "N");
             #endregion

@@ -74,11 +74,11 @@
     @{
         var BrforeImage = Model.BrforeImage is null ? new byte[1] : Model.BrforeImage;
         var base64_Brfore = Convert.ToBase64String(BrforeImage);
-        var imgSrc_Brfore = String.Format("data:image/webp;base64,{0}", base64_Brfore);
+        var imgSrc_Brfore = String.Format("data:image/png;base64,{0}", base64_Brfore);
 
         var AfterImage = Model.AfterImage is null ? new byte[1] : Model.AfterImage;
         var base64_After = Convert.ToBase64String(AfterImage);
-        var imgSrc_After = String.Format("data:image/webp;base64,{0}", base64_After);
+        var imgSrc_After = String.Format("data:image/png;base64,{0}", base64_After);
     }
     @if (BrforeImage[0] != 0)
     {
@@ -127,11 +127,11 @@
         //如果父頁面有照片，則顯示父頁面照片，如果沒有則顯示DB的照片
         if (CurrentBefore != null && CurrentBefore.value != '') {
             var before = document.querySelector("#BeforePic");
-            before.src = 'data:image/webp;base64,' + CurrentBefore.value;
+            before.src = 'data:image/png;base64,' + CurrentBefore.value;
         }
         if (CurrentAfter != null && CurrentAfter.value != '') {
             var after = document.querySelector("#AfterPic");
-            after.src = 'data:image/webp;base64,' + CurrentAfter.value;
+            after.src = 'data:image/png;base64,' + CurrentAfter.value;
         }
 
         // Screenshot Exit
