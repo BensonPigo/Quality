@@ -70,11 +70,11 @@
     @{
         var BrforeImage = Model.BrforeImage is null ? new byte[1] : Model.BrforeImage;
         var base64_Brfore = Convert.ToBase64String(BrforeImage);
-        var imgSrc_Brfore = String.Format("data:image/webp;base64,{0}", base64_Brfore);
+        var imgSrc_Brfore = String.Format("data:image/png;base64,{0}", base64_Brfore);
 
         var AfterImage = Model.AfterImage is null ? new byte[1] : Model.AfterImage;
         var base64_After = Convert.ToBase64String(AfterImage);
-        var imgSrc_After = String.Format("data:image/webp;base64,{0}", base64_After);
+        var imgSrc_After = String.Format("data:image/png;base64,{0}", base64_After);
     }
     <img id="BeforePic" Type="Before" style="width:100%;" src="@imgSrc_Brfore" />
     <img id="OriBeforePic" style="width:100%;display:none;" src="@imgSrc_Brfore" />
