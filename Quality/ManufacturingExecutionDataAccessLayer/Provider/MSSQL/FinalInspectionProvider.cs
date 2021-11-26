@@ -1344,11 +1344,17 @@ Select	f.AuditDate,
 		OrderInfo.POQty,
 		OrderInfo.ETD_ETA,
 		f.CustPONO,
-        OrderInfo.CustomerPo
+        OrderInfo.CustomerPo,
+        [ReportTypeID] = case when OrderInfo.IsDestJP = 1 then 25
+                            when f.AcceptableQualityLevelsUkey  = -1 then 26
+                            else 12 end,
+        [DateStarted] = f.AddDate,
+        [InspectionCompletedDate] = f.EditDate
 from FinalInspection f with (nolock)
 outer apply (select	[POQty] = sum(o.Qty),
 					[ETD_ETA] = max(o.BuyerDelivery),
-                    [CustomerPo] = max(o.CustCDID)
+                    [CustomerPo] = max(o.CustCDID),
+                    [IsDestJP] = max(iif(o.Dest = 'JP', 1, 0))
 				from Production.dbo.Orders o with (nolock)
 				where o.CustPONo = f.CustPONO) OrderInfo
 where f.ID = @ID 
@@ -1360,13 +1366,16 @@ where oc.ID in (select POID from Production.dbo.Orders with (nolock)
 				where id in (select OrderID 
 							 from FinalInspection_Order with (nolock) where ID = @ID))
 
-select	distinct
-		oq.SizeCode,
-		oq.Article
-from FinalInspection_Order fo with (nolock)
-inner join Production.dbo.Orders o with (nolock) on o.ID = fo.OrderID
-inner join Production.dbo.Order_Qty oq with (nolock) on oq.ID = o.ID
-where fo.ID = @ID
+select	pd.SizeCode,
+		pd.Article,
+        [ShipQty] = sum(pd.ShipQty)
+from FinalInspection_OrderCarton foc with (nolock)
+inner join Production.dbo.PackingList_Detail pd with (nolock) on foc.PackinglistID = pd.ID and 
+                                                                 foc.OrderID = pd.OrderID and 
+                                                                 foc.CTNNo = pd.CTNStartNo
+where foc.ID = @ID
+group by pd.SizeCode,
+		 pd.Article
 
 select	s.StyleName,
 		o.FactoryID,
@@ -1416,7 +1425,7 @@ from Finalinspection with (nolock)
 where   IsExportToP88 = 0 and
         InspectionResult in ('Pass', 'Fail') and
         submitdate is not null and
-        InspectionStage in ('Final', '3rd Party') and
+        InspectionStage = 'Final' and
         exists (select 1 from Production.dbo.Orders o with (nolock) where o.CustPONo = Finalinspection.CustPONO and o.BrandID in ('Adidas','Reebok'))
 
 ";

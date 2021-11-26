@@ -126,7 +126,12 @@ namespace BusinessLogicLayer.Service
 
             List<object> sections = new List<object>();
 
-            var listSku_number = dtSizeArticle.AsEnumerable().Select(s => $"{s["Article"]}_{s["SizeCode"]}");
+            var listSku_number = dtSizeArticle.AsEnumerable().Select(s => 
+            new { 
+                sku = $"{s["Article"]}_{s["SizeCode"]}",
+                qty_to_inspect = s["ShipQty"]
+            }
+            );
 
             sections.Add(new
             {
@@ -210,13 +215,13 @@ namespace BusinessLogicLayer.Service
                     inspection_result_id = drFinalInspection["InspectionResultID"],
                     inspection_status_id = drFinalInspection["InspectionStatusID"],
                     qty_inspected = drFinalInspection["AvailableQty"],
-                    inspection_completed_date = drFinalInspection["SubmitDate"],
+                    inspection_completed_date = drFinalInspection["InspectionCompletedDate"],
                     total_inspection_minutes = drFinalInspection["InspectionMinutes"],
                     sampling_size = drFinalInspection["SampleSize"],
-                    qty_to_inspect = drFinalInspection["AvailableQty"],
+                    qty_to_inspect = sku_number.qty_to_inspect,
                     assignment = new
                     {
-                        report_type = new { id = 12 },
+                        report_type = new { id = drFinalInspection["ReportTypeID"] },
                         inspector = new { username = drFinalInspection["CFA"] },
                         date_inspection = drFinalInspection["AuditDate"]
                     },
@@ -246,7 +251,7 @@ namespace BusinessLogicLayer.Service
                         },
                         sku = new
                         {
-                            sku_number,
+                            sku_number.sku,
                             item_name = "No Item",
                             item_description = string.Empty,
                         },
@@ -258,7 +263,7 @@ namespace BusinessLogicLayer.Service
             object result = new
             {
                 status = "Submitted",
-                date_started = drFinalInspection["AuditDate"],
+                date_started = drFinalInspection["DateStarted"],
                 defective_parts = drFinalInspection["RejectQty"],
                 sections,
                 assignment_items,
