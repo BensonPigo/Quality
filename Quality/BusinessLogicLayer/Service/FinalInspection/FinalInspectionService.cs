@@ -127,8 +127,8 @@ namespace BusinessLogicLayer.Service
             List<object> sections = new List<object>();
 
             var listSku_number = dtSizeArticle.AsEnumerable().Select(s => 
-            new { 
-                sku = $"{s["Article"]}_{s["SizeCode"]}",
+            new {
+                sku_number = $"{s["Article"]}_{s["SizeCode"]}",
                 qty_to_inspect = s["ShipQty"]
             }
             );
@@ -251,7 +251,7 @@ namespace BusinessLogicLayer.Service
                         },
                         sku = new
                         {
-                            sku_number.sku,
+                            sku_number = sku_number.sku_number,
                             item_name = "No Item",
                             item_description = string.Empty,
                         },
