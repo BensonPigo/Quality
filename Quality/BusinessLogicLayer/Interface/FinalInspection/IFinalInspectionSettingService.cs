@@ -24,7 +24,7 @@ namespace BusinessLogicLayer.Interface
         /// <param name="listOrderID">listOrderID</param>
         /// <param name="FactoryID">FactoryID</param>
         /// <returns>Setting</returns>
-        Setting GetSettingForInspection(string POID, List<string> listOrderID, string FactoryID);
+        Setting GetSettingForInspection(string POID, List<string> listOrderID, string FactoryID, string UserID);
 
         /// <summary>
         /// UpdateFinalInspection
