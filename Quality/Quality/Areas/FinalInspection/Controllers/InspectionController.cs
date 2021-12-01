@@ -923,6 +923,7 @@ namespace Quality.Areas.FinalInspection.Controllers
 
                     ViewBag.FinalInspectionID = model.FinalInspectionID;
                     ViewBag.FinalInspection_CTNMoistureStandard = model.FinalInspection_CTNMoistureStandard;
+                    ViewBag.FinalInspection_CTNMoistureStandardBM = model.FinalInspection_CTNMoistureStandardBM;
                 }
             }
             return View(moistureResult);

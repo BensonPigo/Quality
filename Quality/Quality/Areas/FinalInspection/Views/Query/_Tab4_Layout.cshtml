@@ -27,7 +27,12 @@
             <tr class="row-content" style="vertical-align: middle; text-align: center;">
                 <td>@item.BACriteria:@item.BACriteriaDesc</td>
                 <td>@item.Qty</td>
-                <td> <img src="/Image/Icon/Picture.png" style="cursor: pointer;" onclick="OpenBAPicture(@item.Ukey,@item.RowIndex)" width="25" height="25" /></td>
+                <td>
+                    @if (item.HasImage)
+                    {
+                        <img src="/Image/Icon/Picture.png" style="cursor: pointer;" onclick="OpenBAPicture(@item.Ukey,@item.RowIndex)" width="25" height="25" />
+                    }
+                </td>
             </tr>
         }
     </tbody>
