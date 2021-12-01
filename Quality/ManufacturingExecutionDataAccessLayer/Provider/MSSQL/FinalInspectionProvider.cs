@@ -1157,7 +1157,7 @@ select  [SP] = (SELECT Stuff((select concat( ',',OrderID)
                                 FOR XML PATH('')),1,1,'') ),
         [StyleID] = @StyleID,
         [BrandID] = @BrandID,
-        [CFA] = (select name from pass1 with (nolock) where ID = f.CFA),
+        [CFA] = ISNULL((select name from pass1 with (nolock) where ID = f.CFA),(select name from Production..pass1 with (nolock) where ID = f.CFA)),
         [TotalSPQty] = @spQty
 from    FinalInspection f with (nolock)
 where ID = @FinalInspectionID
