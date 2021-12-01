@@ -215,5 +215,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
         [Display(Name = "最後編輯日")]
         public DateTime? EditDate { get; set; }
 
+        public bool HasOtherImage { get; set; }
+
     }
 }

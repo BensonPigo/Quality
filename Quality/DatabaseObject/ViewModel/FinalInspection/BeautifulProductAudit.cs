@@ -23,6 +23,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string BACriteria { get; set; }
         public string BACriteriaDesc { get; set; }
         public int? Qty { get; set; }
+        public bool HasImage { get; set; }
         public List<byte[]> ListBACriteriaImage { get; set; } = new List<byte[]>();
         public byte[] TempImage { get; set; }
         public Int64 RowIndex { get; set; }

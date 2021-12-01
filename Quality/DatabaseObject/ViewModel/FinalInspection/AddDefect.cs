@@ -29,6 +29,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string DefectCodeDesc { get; set; }
 
         public int Qty { get; set; }
+        public bool HasImage { get; set; }
 
         public List<byte[]> ListFinalInspectionDefectImage { get; set; } = new List<byte[]>();
 
