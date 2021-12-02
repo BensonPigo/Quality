@@ -103,7 +103,6 @@ namespace BusinessLogicLayer.Service
                 _QualityPass1 = new QualityPass1Provider(Common.ManufacturingExecutionDataAccessLayer);
 
                 var tmp = _QualityPass1.Get(new Quality_Pass1() { ID = UserID });
-                Quality_Pass1 Pass1 = tmp.Any() ? tmp.ToList().FirstOrDefault() : new Quality_Pass1();
 
                 result.InspectionTimes = _FinalInspectionProvider.GetInspectionTimes(CustPONO);
                 result.SelectedSewing = _FinalInspFromPMSProvider.GetSelectedSewingLine(FactoryID).ToList();
@@ -113,11 +112,15 @@ namespace BusinessLogicLayer.Service
                 result.SelectCarton = _FinalInspFromPMSProvider.GetSelectedCartonForSetting(listOrderID).ToList();
                 result.AcceptableQualityLevels = _FinalInspFromPMSProvider.GetAcceptableQualityLevelsForSetting().ToList();
 
-                if (string.IsNullOrEmpty(Pass1.Pivot88UserName) && UserID.ToUpper() != "SCIMIS")
+                if (result.SelectedPO.Any() && result.SelectedPO.Where(o=>o.BrandID== "ADIDAS").Any())
                 {
-                    result.Result = false;
-                    result.ErrorMessage = $@"msg.WithError(""No Pivot88 account, please contact to local IT."")";
-                    return result;
+                    Quality_Pass1 Pass1 = tmp.Any() ? tmp.ToList().FirstOrDefault() : new Quality_Pass1();
+                    if (string.IsNullOrEmpty(Pass1.Pivot88UserName) && UserID.ToUpper() != "SCIMIS")
+                    {
+                        result.Result = false;
+                        result.ErrorMessage = $@"msg.WithError(""No Pivot88 account, please contact to local IT."")";
+                        return result;
+                    }
                 }
 
             }
