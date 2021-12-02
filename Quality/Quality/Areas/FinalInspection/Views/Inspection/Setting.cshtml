@@ -92,9 +92,11 @@
         table.dataTable.cell-border table tbody tr td:not(:first-child) {
             text-align: center;
         }
-        label{
-            font-size:1.4em;
+
+        label {
+            font-size: 1.4em;
         }
+
         #SelectedPOTable {
             font-size: 1.4em;
         }
@@ -143,7 +145,7 @@
                         </td>
                         <td>
                             <label>Team</label>
-                            @Html.DropDownListFor(o => o.Team, (List<SelectListItem>)ViewBag.SewingTeam, null, new { @class = "form-control", @style = "width:100px"})
+                            @Html.DropDownListFor(o => o.Team, (List<SelectListItem>)ViewBag.SewingTeam, null, new { @class = "form-control", @style = "width:100px" })
                         </td>
                     </tr>
                 </table>
@@ -380,6 +382,7 @@
         var bdata = [];
         var index = 0;
         var index2 = 0;
+        var currentStage = '';
         var Order_AvailableQty = { };
         var table;
         @foreach (var item in Model.SelectedPO)
@@ -447,6 +450,17 @@
                     row.child(format(row.data(), orderID)).show();
                     tr.addClass('shown');
                 }
+
+                var availableQtycheck = $('input[col=AvailableQty]');
+
+                $.each(availableQtycheck, function () {
+                    if (currentStage == "Final") {
+                        $($(this)[0]).attr("readonly", "readonly");
+                    }
+                    else {
+                        $($(this)[0]).removeAttr("readonly");
+                    }
+                });
             });
 
 
@@ -985,6 +999,19 @@
                 $('#AcceptQty').prop('disabled', false);
                 $('#RejectQty').prop('disabled', false);
             }
+
+            currentStage = value;
+
+            var availableQtycheck = $('input[col=AvailableQty]');
+
+            $.each(availableQtycheck, function () {
+                if (currentStage == "Final") {
+                    $($(this)[0]).attr("readonly", "readonly");
+                }
+                else {
+                    $($(this)[0]).removeAttr("readonly");
+                }
+            });
         }
 
         function ClearSewing(obj) {
@@ -1102,13 +1129,31 @@
                 AQLPlanResult = false;
             }
 
+            var CartonResult = true;
+            if (stage == 'Final') {
 
-            if (ShipmodeResult && AQLPlanResult) {
+                var cartoncheck = $('input[col=Cartons]');
+
+                $.each(cartoncheck, function () {
+                    var selectcarton = $($(this)[0]).val();
+                    if (selectcarton == '' || selectcarton == undefined) {
+                        CartonResult = false;
+                    }
+                });
+            }
+
+
+            if (ShipmodeResult && AQLPlanResult && CartonResult) {
                 return true;
             }
             else {
                 if (!ShipmodeResult) {
                     msg.WithError("Shipmode Seq cannot be empty.");
+                    NonLoading();
+                    return false;
+                }
+                if (!CartonResult) {
+                    msg.WithError("＜Cartons＞ cannot be empty if inspection stage is Final.");
                     NonLoading();
                     return false;
                 }

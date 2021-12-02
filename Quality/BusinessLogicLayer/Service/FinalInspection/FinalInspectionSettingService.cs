@@ -19,6 +19,7 @@ namespace BusinessLogicLayer.Service
         public IFinalInspectionProvider _FinalInspectionProvider { get; set; }
         public IOrdersProvider _OrdersProvider { get; set; }
         public IFinalInspFromPMSProvider _FinalInspFromPMSProvider { get; set; }
+        public IQualityPass1Provider _QualityPass1 { get; set; }
 
         public Setting GetSettingForInspection(string finalInspectionID)
         {
@@ -92,13 +93,16 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public Setting GetSettingForInspection(string CustPONO, List<string> listOrderID, string FactoryID)
+        public Setting GetSettingForInspection(string CustPONO, List<string> listOrderID, string FactoryID, string UserID)
         {
             Setting result = new Setting();
             try
             {
                 _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
                 _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
+                _QualityPass1 = new QualityPass1Provider(Common.ManufacturingExecutionDataAccessLayer);
+
+                var tmp = _QualityPass1.Get(new Quality_Pass1() { ID = UserID });
 
                 result.InspectionTimes = _FinalInspectionProvider.GetInspectionTimes(CustPONO);
                 result.SelectedSewing = _FinalInspFromPMSProvider.GetSelectedSewingLine(FactoryID).ToList();
@@ -107,6 +111,18 @@ namespace BusinessLogicLayer.Service
                 result.SelectOrderShipSeq = _FinalInspFromPMSProvider.GetSelectOrderShipSeqForSetting(listOrderID).ToList();
                 result.SelectCarton = _FinalInspFromPMSProvider.GetSelectedCartonForSetting(listOrderID).ToList();
                 result.AcceptableQualityLevels = _FinalInspFromPMSProvider.GetAcceptableQualityLevelsForSetting().ToList();
+
+                if (result.SelectedPO.Any(o=>o.BrandID.ToUpper() == "ADIDAS" || o.BrandID.ToUpper() == "REEBOK"))
+                {
+                    Quality_Pass1 Pass1 = tmp.Any() ? tmp.ToList().FirstOrDefault() : new Quality_Pass1();
+                    if (string.IsNullOrEmpty(Pass1.Pivot88UserName) && UserID.ToUpper() != "SCIMIS")
+                    {
+                        result.Result = false;
+                        result.ErrorMessage = $@"msg.WithError(""No Pivot88 account, please contact to local IT."")";
+                        return result;
+                    }
+                }
+
             }
             catch (Exception ex)
             {
