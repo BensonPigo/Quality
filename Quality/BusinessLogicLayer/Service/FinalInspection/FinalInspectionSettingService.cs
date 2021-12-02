@@ -112,7 +112,7 @@ namespace BusinessLogicLayer.Service
                 result.SelectCarton = _FinalInspFromPMSProvider.GetSelectedCartonForSetting(listOrderID).ToList();
                 result.AcceptableQualityLevels = _FinalInspFromPMSProvider.GetAcceptableQualityLevelsForSetting().ToList();
 
-                if (result.SelectedPO.Any() && result.SelectedPO.Where(o=>o.BrandID== "ADIDAS").Any())
+                if (result.SelectedPO.Any(o=>o.BrandID.ToUpper() == "ADIDAS" || o.BrandID.ToUpper() == "REEBOK"))
                 {
                     Quality_Pass1 Pass1 = tmp.Any() ? tmp.ToList().FirstOrDefault() : new Quality_Pass1();
                     if (string.IsNullOrEmpty(Pass1.Pivot88UserName) && UserID.ToUpper() != "SCIMIS")
