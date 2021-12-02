@@ -105,8 +105,8 @@ select g.ID
 from GarmentTest g
 left join Pass1 CreatBy on CreatBy.ID = g.AddName
 left join Pass1 EditBy on EditBy.ID = g.EditName
-left join Style s on g.StyleID = s.ID　and g.SeasonID = s.SeasonID　and g.BrandID = s.BrandID
-left join Style_Location sl on s.Ukey = sl.StyleUkey
+--left join Style s on g.StyleID = s.ID　and g.SeasonID = s.SeasonID　and g.BrandID = s.BrandID
+--left join Style_Location sl on s.Ukey = sl.StyleUkey
 outer apply(
 	select MinBuyerDelivery,MinSciDelivery
 	from dbo.GetSCI(g.FirstOrderID,'')
@@ -129,7 +129,7 @@ outer apply(
 	and r.Name in ('MATCH TEAMWEAR','BASEBALL ON FIELD','SOFTBALL ON FIELD','TRAINING TEAMWEAR','LACROSSE ONFIELD','AMERIC. FOOT. ON-FIELD','TIRO','BASEBALL OFF FIELD','NCAA ON ICE','ON-COURT','BBALL PERFORMANCE','BRANDED BLANKS','SLD ON-FIELD','NHL ON ICE','SLD ON-COURT')
 )WashName
 where 1=1
- and sl.Location IN ('T','B')
+ --and sl.Location IN ('T','B')
 ";
             if (!string.IsNullOrEmpty(filter.MDivisionid))
             {
@@ -313,17 +313,21 @@ where s.id = @StyleID AND s.BrandID = @BrandID AND s.SeasonID = @SeasonID
                         DataTable dt_Location = ExecuteDataTableByServiceConn(CommandType.Text, sql_Location, objParameter_Loction);
 
                         string sqlcmd_Spirality = string.Empty;
-                        if (dt_Location.Select("Location = 'T'").Any())
-                        {
-                            sqlcmd_Spirality += $@"INSERT INTO[dbo].[Garment_Detail_Spirality]([ID],[No],[Location])VALUES('{master.ID}','{item.No}','T');";
-                        }
 
-                        if (dt_Location.Select("Location = 'B'").Any())
+                        if (dt_Location.Select("Location = 'T'").Any() || dt_Location.Select("Location = 'B'").Any())
                         {
-                            sqlcmd_Spirality += $@"INSERT INTO[dbo].[Garment_Detail_Spirality]([ID],[No],[Location])VALUES('{master.ID}','{item.No}','B');";
-                        }
+                            if (dt_Location.Select("Location = 'T'").Any())
+                            {
+                                sqlcmd_Spirality += $@"INSERT INTO[dbo].[Garment_Detail_Spirality]([ID],[No],[Location])VALUES('{master.ID}','{item.No}','T');";
+                            }
 
-                        ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd_Spirality, objParameter_Loction);
+                            if (dt_Location.Select("Location = 'B'").Any())
+                            {
+                                sqlcmd_Spirality += $@"INSERT INTO[dbo].[Garment_Detail_Spirality]([ID],[No],[Location])VALUES('{master.ID}','{item.No}','B');";
+                            }
+
+                            ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd_Spirality, objParameter_Loction);
+                        }
                     }
                     #endregion
 
