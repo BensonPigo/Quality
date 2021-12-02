@@ -105,8 +105,6 @@ select g.ID
 from GarmentTest g
 left join Pass1 CreatBy on CreatBy.ID = g.AddName
 left join Pass1 EditBy on EditBy.ID = g.EditName
---left join Style s on g.StyleID = s.ID　and g.SeasonID = s.SeasonID　and g.BrandID = s.BrandID
---left join Style_Location sl on s.Ukey = sl.StyleUkey
 outer apply(
 	select MinBuyerDelivery,MinSciDelivery
 	from dbo.GetSCI(g.FirstOrderID,'')
@@ -129,7 +127,6 @@ outer apply(
 	and r.Name in ('MATCH TEAMWEAR','BASEBALL ON FIELD','SOFTBALL ON FIELD','TRAINING TEAMWEAR','LACROSSE ONFIELD','AMERIC. FOOT. ON-FIELD','TIRO','BASEBALL OFF FIELD','NCAA ON ICE','ON-COURT','BBALL PERFORMANCE','BRANDED BLANKS','SLD ON-FIELD','NHL ON ICE','SLD ON-COURT')
 )WashName
 where 1=1
- --and sl.Location IN ('T','B')
 ";
             if (!string.IsNullOrEmpty(filter.MDivisionid))
             {
