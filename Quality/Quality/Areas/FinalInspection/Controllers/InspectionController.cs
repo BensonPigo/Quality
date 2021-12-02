@@ -60,7 +60,11 @@ namespace Quality.Areas.FinalInspection.Controllers
             {
                 model.ErrorMessage = $@"msg.WithInfo(""{ex.Message}"");";
             }
+            model.SP = Req.SP;
+            model.CustPONO = Req.CustPONO;
+            model.StyleID = Req.StyleID;
 
+            TempData["IndexModel"] = model;
             return View(model);
         }
 
@@ -83,14 +87,20 @@ namespace Quality.Areas.FinalInspection.Controllers
                 {
                     string CustPONO = selected[0].CustPONO;
                     List<string> listOrderID = selected.Select(s => s.ID).ToList();
-
-                    setting = finalInspectionSettingService.GetSettingForInspection(CustPONO, listOrderID, this.FactoryID);
-
+                    setting = finalInspectionSettingService.GetSettingForInspection(CustPONO, listOrderID, this.FactoryID, this.UserID);
                 }
             }
             else
             {
                 setting = finalInspectionSettingService.GetSettingForInspection(finalInspectionID);
+            }
+
+            if (!setting.Result)
+            {
+                PoSelect IndexModel = (PoSelect)TempData["IndexModel"];
+                IndexModel.ErrorMessage = setting.ErrorMessage;
+                TempData["IndexModel"] = IndexModel;
+                return View("Index", IndexModel);
             }
 
             ViewBag.InspectionStageList = new List<SelectListItem>()
@@ -326,7 +336,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             {
                 setting.ErrorMessage = result.ErrorMessage;
                 FinalInspectionSettingService finalInspectionSettingService = new FinalInspectionSettingService();
-                setting = finalInspectionSettingService.GetSettingForInspection(setting.SelectedPO[0].CustPONO, setting.SelectedPO.Select(o => o.OrderID).ToList(), this.FactoryID);
+                setting = finalInspectionSettingService.GetSettingForInspection(setting.SelectedPO[0].CustPONO, setting.SelectedPO.Select(o => o.OrderID).ToList(), this.FactoryID, this.UserID);
 
                 if (setting.SelectedSewingTeam != null)
                 {

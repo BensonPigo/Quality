@@ -21,5 +21,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
         [StringLength(8)]
         [Display(Name = "BulkFGT 功能名稱 Key")]
         public string BulkFGT_Brand { get; set; }
+
+        public string Pivot88UserName { get; set; }
     }
 }
