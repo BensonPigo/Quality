@@ -75,8 +75,9 @@ select  ID                             ,
         AddName                        ,
         AddDate                        ,
         EditName                       ,
-        EditDate
-from FinalInspection with (nolock)
+        EditDate                       ,
+        HasOtherImage = Cast(IIF(exists(select 1 from FinalInspection_OtherImage b where a.id= b.id),1,0) as bit)
+from FinalInspection a with (nolock)
 where   ID = @ID
 ";
             IList<FinalInspection> listResult = ExecuteList<FinalInspection>(CommandType.Text, sqlGetData, objParameter);
@@ -550,12 +551,14 @@ select  [Ukey] = isnull(fn.Ukey, -1),
         [BACriteria] = bac.ID,
         [BACriteriaDesc] = bac.Description,
         [Qty] = isnull(fn.Qty, 0),		
-		[RowIndex]=ROW_NUMBER() OVER(ORDER BY bac.ID) -1
+		[RowIndex]=ROW_NUMBER() OVER(ORDER BY bac.ID) -1,
+		HasImage = Cast(IIF(img.Image is null,0,1) as bit)
     from #baseBACriteria bac with (nolock)
     left join   FinalInspection_NonBACriteria fn on    fn.ID = @finalInspectionID and
                                                             fn.BACriteria = bac.ID
+	left join FinalInspection_NonBACriteriaImage img  ON img.FinalInspection_NonBACriteriaUkey = fn.Ukey AND img.ID = fn.ID
 
-
+DROP TABLE #baseBACriteria
 ";
             return ExecuteList<BACriteriaItem>(CommandType.Text, sqlGetData, listPar);
         }
