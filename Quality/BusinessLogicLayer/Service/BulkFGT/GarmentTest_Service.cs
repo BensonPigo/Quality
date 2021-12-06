@@ -225,7 +225,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         return result;
                     }
                 }
-                _IGarmentTestProvider.Update_GarmentTest_Result(detail.Select(s => s.ID.ToString()).First());
+                if (detail.Any())
+                {
+                    _IGarmentTestProvider.Update_GarmentTest_Result(detail.Select(s => s.ID.ToString()).First());
+                }
             }
             catch (Exception ex)
             {
