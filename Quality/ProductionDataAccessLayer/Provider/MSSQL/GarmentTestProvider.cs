@@ -357,7 +357,7 @@ SELECT locations = STUFF(
 
                     string sql_RugbyFootBall = $@"select 1 from Style s where s.id = @StyleID AND s.BrandID = @BrandID AND s.SeasonID = @SeasonID AND s.ProgramID like '%FootBall%'";
                     DataTable dtRugbyFootBall = ExecuteDataTableByServiceConn(CommandType.Text, sql_RugbyFootBall, objParameter_Loctions);
-                    bool isRugbyFootBall = dtRugbyFootBall.Rows.Count > 0;
+                    bool isRugbyFootBall = dtRugbyFootBall.Rows.Count > 0 && item.MtlTypeID.ToString().ToUpper() == "WOVEN";
 
                     // 若只有B則寫入Bottom的項目+ALL的項目，若只有T則寫入TOP的項目+ALL的項目，若有B和T則寫入Top+ Bottom的項目+ALL的項目
                     if (containsT && containsB)
@@ -368,9 +368,13 @@ SELECT locations = STUFF(
                     {
                         fGPTs = GetDefaultFGPT(containsT, false, false, isRugbyFootBall, "T");
                     }
-                    else
+                    else if (containsB)
                     {
                         fGPTs = GetDefaultFGPT(false, containsB, false, isRugbyFootBall, "B");
+                    }
+                    else
+                    {
+                        fGPTs = GetDefaultFGPT(false, false, false, isRugbyFootBall, string.Empty);
                     }
 
                     if (item.MtlTypeID.ToString().ToUpper() == "KNIT")
