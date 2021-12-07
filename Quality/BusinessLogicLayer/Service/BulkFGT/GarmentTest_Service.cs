@@ -829,7 +829,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
             Orders orders = new Orders();
             if (!string.IsNullOrEmpty(all_Data.Detail.OrderID))
             {
-                orders = ordersProvider.Get(new Orders() { ID = all_Data.Detail.OrderID }).First();
+                var query = ordersProvider.Get(new Orders() { ID = all_Data.Detail.OrderID });
+                if (query.Any())
+                {
+                    orders = query.FirstOrDefault();
+                }
             }
 
             _IGarmentTestDetailShrinkageProvider = new GarmentTestDetailShrinkageProvider(Common.ProductionDataAccessLayer);
