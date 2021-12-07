@@ -230,7 +230,7 @@ NOTE: This is an automated reply from a system mailbox. Please do not reply to t
                 MailMessage message = new MailMessage();
                 message.Subject = subject;
 
-                foreach (var to in toAddress.Split(';'))
+                foreach (var to in toAddress.Replace("\r", "").Replace("\n", "").Split(';'))
                 {
                     if (!string.IsNullOrEmpty(to))
                     {
@@ -238,7 +238,7 @@ NOTE: This is an automated reply from a system mailbox. Please do not reply to t
                     }
                 }
 
-                foreach (var cc in ccAddress.Split(';'))
+                foreach (var cc in ccAddress.Replace("\r", "").Replace("\n", "").Split(';'))
                 {
                     if (!string.IsNullOrEmpty(cc))
                     {
