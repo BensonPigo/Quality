@@ -51,11 +51,11 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td><input type="checkbox" name="name" value="" GroupName="@item.GroupName" /></td>
+                        <td><input type="checkbox" name="name" value="" GroupName="@item.GroupName.Replace(" ","_")" /></td>
                         <td>
                             @item.GroupName
-                            <input type="hidden" addrType="To" GroupName="@item.GroupName" value="@item.ToAddress" />
-                            <input type="hidden" addrType="CC" GroupName="@item.GroupName" value="@item.CcAddress" />
+                            <input type="hidden" addrType="To" GroupName="@item.GroupName.Replace(" ","_")" value="@item.ToAddress" />
+                            <input type="hidden" addrType="CC" GroupName="@item.GroupName.Replace(" ","_")" value="@item.CcAddress" />
                         </td>
                     </tr>
                 }

@@ -7,6 +7,7 @@ using Quality.Controllers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 
@@ -49,17 +50,53 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             quality_Mail.Type = "BulkFGT";
             Quality_MailGroup_ResultModel result = new Quality_MailGroup_ResultModel();
-            switch (Action)
+
+            List<string> to = quality_Mail.ToAddress.Any() ? quality_Mail.ToAddress.Split(';').Where(o=>!string.IsNullOrEmpty(o)).ToList() : new List<string>();
+            List<string> cc = quality_Mail.CcAddress.Any() ? quality_Mail.CcAddress.Split(';').Where(o => !string.IsNullOrEmpty(o)).ToList() : new List<string>(); 
+            bool allResult = true;
+            foreach (var item in to)
             {
-                case "Create":
-                    result = _BulkFGTMailGroup_Service.MailGroupSave(quality_Mail, BulkFGTMailGroup_Service.SaveType.Insert);
+                bool OK = Regex.IsMatch(item, @"^([\w-]+\.)*?[\w-]+@[\w-]+\.([\w-]+\.)*?[\w]+$");
+                if (!OK)
+                {
+                    allResult = false;
                     break;
-                case "Update":
-                    result = _BulkFGTMailGroup_Service.MailGroupSave(quality_Mail, BulkFGTMailGroup_Service.SaveType.Update);
-                    break;
-                case "Delete":
-                    result = _BulkFGTMailGroup_Service.MailGroupSave(quality_Mail, BulkFGTMailGroup_Service.SaveType.Delete);
-                    break;
+                }
+            }
+
+            if (allResult)
+            {
+                foreach (var item in cc)
+                {
+                    bool OK = Regex.IsMatch(item, @"^([\w-]+\.)*?[\w-]+@[\w-]+\.([\w-]+\.)*?[\w]+$");
+                    if (!OK)
+                    {
+                        allResult = false;
+                        break;
+                    }
+                }
+            }
+
+            if (!allResult)
+            {
+                result.Result = false;
+                result.ErrMsg = "Format is not correct";
+            }
+
+            if (allResult)
+            {
+                switch (Action)
+                {
+                    case "Create":
+                        result = _BulkFGTMailGroup_Service.MailGroupSave(quality_Mail, BulkFGTMailGroup_Service.SaveType.Insert);
+                        break;
+                    case "Update":
+                        result = _BulkFGTMailGroup_Service.MailGroupSave(quality_Mail, BulkFGTMailGroup_Service.SaveType.Update);
+                        break;
+                    case "Delete":
+                        result = _BulkFGTMailGroup_Service.MailGroupSave(quality_Mail, BulkFGTMailGroup_Service.SaveType.Delete);
+                        break;
+                }
             }
 
             return Json(new { result.Result , result.ErrMsg });
