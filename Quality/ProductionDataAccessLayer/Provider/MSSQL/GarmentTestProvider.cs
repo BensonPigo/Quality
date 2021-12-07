@@ -181,7 +181,7 @@ where 1=1
                         SQLParameterCollection objParameter1 = new SQLParameterCollection
                     {
                         { "@ID", DbType.String, master.ID} ,
-                        { "@BrandID", DbType.String, master.BrandID } ,
+                        { "@BrandID", DbType.String, master.BrandID.ToUpper() } ,
                         { "@No", DbType.String, item.No} ,
                     };
 
@@ -237,36 +237,33 @@ declare @location_combo varchar(15) =
 	for xml path ('')
 ) , 1, 1, ''))
 
-if @location_combo = 'B,T' and @BrandID = 'ADIDAS'
+if @BrandID = 'ADIDAS' or @BrandID = 'REEBOK'
 begin
-	INSERT INTO [dbo].[GarmentTest_Detail_Shrinkage]([ID],[No],[Location],[Type],[seq])
-	select  @ID,@NO, t2.Location, t1.Type, t1.Seq 
-	from GarmentTestShrinkage t1 
-	inner join  #Location_S t2 on t1.Location = t2.Location
-	where exists(
-	select 1 from #Location_S s	
-	where (
-			(s.BrandID = 'ADIDAS' and t1.BrandID = s.BrandID)
-			or
-			(s.BrandID !='ADIDAS' and t1.BrandID = '')
-		)
-	)
-	and t1.LocationGroup = 'TB'
+	if @location_combo = 'B,T'
+	begin
+		INSERT INTO [dbo].[GarmentTest_Detail_Shrinkage]([ID],[No],[Location],[Type],[seq])
+		select  @ID,@NO, t2.Location, t1.Type, t1.Seq
+		from GarmentTestShrinkage t1 
+		inner join  #Location_S t2 on t1.Location = t2.Location
+		where t1.BrandID = @BrandID
+		and t1.LocationGroup = 'TB'
+	end
+	else
+	begin
+		INSERT INTO [dbo].[GarmentTest_Detail_Shrinkage]([ID],[No],[Location],[Type],[seq])
+		select distinct  @ID,@NO, t2.Location, t1.Type, t1.Seq
+		from GarmentTestShrinkage t1 
+		inner join  #Location_S t2 on t1.LocationGroup = t2.Location
+		where t1.BrandID = @BrandID
+	end
 end
 else
 begin
 	INSERT INTO [dbo].[GarmentTest_Detail_Shrinkage]([ID],[No],[Location],[Type],[seq])
-	select distinct  @ID,@NO, t2.Location, t1.Type, t1.Seq 
+	select distinct  @ID,@NO, t2.Location, t1.Type, t1.Seq
 	from GarmentTestShrinkage t1 
 	inner join  #Location_S t2 on t1.LocationGroup = t2.Location
-	where exists(
-	select 1 from #Location_S s	
-	where (
-			(s.BrandID = 'ADIDAS' and t1.BrandID = s.BrandID)
-			or
-			(s.BrandID !='ADIDAS' and t1.BrandID = '')
-		)
-	)
+	where t1.BrandID = ''
 end
 
 INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
