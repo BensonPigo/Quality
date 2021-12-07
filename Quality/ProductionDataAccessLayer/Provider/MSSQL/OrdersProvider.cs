@@ -1091,7 +1091,7 @@ select o.ID
      , o.BrandID 
      , [Article] = (SELECT Stuff((select concat( ',',Article)   from Order_Article where ID = o.ID FOR XML PATH('')),1,1,'') )
   from orders o
-where o.ftygroup = @Ftygroup and o.PulloutComplete = 0 and o.Qty > 0
+where o.ftygroup = @Ftygroup and o.Qty > 0
         {where}
 ";
 
@@ -1133,7 +1133,7 @@ select o.ID
      , o.BrandID 
      , [Article] = (SELECT Stuff((select concat( ',',Article)   from Order_Article where ID = o.ID FOR XML PATH('')),1,1,'') )
   from orders o
-where o.ftygroup = @Ftygroup and o.PulloutComplete = 0 and o.Qty > 0
+where o.ftygroup = @Ftygroup and o.Qty > 0
         {where}
 ";
 
