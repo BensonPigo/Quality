@@ -53,7 +53,7 @@ namespace ADOHelper.Utility
 
                 if (SendMail_Request.To != null && SendMail_Request.To != string.Empty)
                 {
-                    foreach (var to in SendMail_Request.To.Split(';'))
+                    foreach (var to in SendMail_Request.To.Replace("\r", "").Replace("\n", "").Split(';'))
                     {
                         if (!string.IsNullOrEmpty(to))
                         {
@@ -64,7 +64,7 @@ namespace ADOHelper.Utility
 
                 if (SendMail_Request.CC != null && SendMail_Request.CC != string.Empty)
                 {
-                    foreach (var cc in SendMail_Request.CC.Split(';'))
+                    foreach (var cc in SendMail_Request.CC.Replace("\r", "").Replace("\n", "").Split(';'))
                     {
                         if (!string.IsNullOrEmpty(cc))
                         {
