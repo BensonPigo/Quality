@@ -51,8 +51,8 @@ namespace Quality.Areas.BulkFGT.Controllers
             quality_Mail.Type = "BulkFGT";
             Quality_MailGroup_ResultModel result = new Quality_MailGroup_ResultModel();
 
-            List<string> to = quality_Mail.ToAddress.Any() ? quality_Mail.ToAddress.Split(';').Where(o=>!string.IsNullOrEmpty(o)).ToList() : new List<string>();
-            List<string> cc = quality_Mail.CcAddress.Any() ? quality_Mail.CcAddress.Split(';').Where(o => !string.IsNullOrEmpty(o)).ToList() : new List<string>(); 
+            List<string> to = quality_Mail.ToAddress != null && quality_Mail.ToAddress.Any() ? quality_Mail.ToAddress.Split(';').Where(o=>!string.IsNullOrEmpty(o)).ToList() : new List<string>();
+            List<string> cc = quality_Mail.CcAddress != null && quality_Mail.CcAddress.Any() ? quality_Mail.CcAddress.Split(';').Where(o => !string.IsNullOrEmpty(o)).ToList() : new List<string>(); 
             bool allResult = true;
             foreach (var item in to)
             {
