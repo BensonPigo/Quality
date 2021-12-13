@@ -49,7 +49,7 @@ OUTER APPLY(
 
 where o.Junk = 0
 AND o.Category = 'S'
-AND o.OnSiteSample != 1
+--AND o.OnSiteSample != 1
 ");
             if (!string.IsNullOrEmpty(OrderID))
             {

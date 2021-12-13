@@ -226,7 +226,7 @@ SELECT OrderID = ID, StyleID ,OrderTypeID ,SeasonID
 FROM SciProduction_Orders o
 where o.Junk=0
 and o.Category='S'
-and o.OnSiteSample!=1
+--and o.OnSiteSample!=1
 and o.ID = @OrderID
 ");
 
