@@ -1372,8 +1372,8 @@ where oc.ID in (select POID from Production.dbo.Orders with (nolock)
 select	oq.SizeCode,
 		oq.Article,
         [ShipQty] = sum(oq.Qty)
-from FinalInspection_Order fo with (nolock)
-inner join Production.dbo.Order_Qty oq with (nolock) on fo.OrderID = oq.ID
+from FinalInspection_Order_QtyShip fo with (nolock)
+inner join Production.dbo.Order_QtyShip_Detail oq with (nolock) on fo.OrderID = oq.ID and fo.Seq = oq.Seq
 where fo.ID = @ID
 group by oq.SizeCode,
 		 oq.Article
