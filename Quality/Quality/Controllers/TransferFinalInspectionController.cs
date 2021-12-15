@@ -19,7 +19,6 @@ namespace Quality.Controllers
         [HttpPost]
         public HttpResponseMessage SentPivot88(PivotTransferRequest pivotTransferRequest)
         {
-            string strmsg = string.Empty;
             try
             {
                 FinalInspectionService finalInspectionService = new FinalInspectionService();
