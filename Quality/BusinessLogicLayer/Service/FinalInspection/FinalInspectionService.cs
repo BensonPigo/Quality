@@ -137,7 +137,7 @@ namespace BusinessLogicLayer.Service
             {
                 type = "checklists",
                 title = "checklists",
-                section_result_id = 1,
+                section_result_id = 0,
             });
 
             object defects;
@@ -204,7 +204,7 @@ namespace BusinessLogicLayer.Service
             {
                 type = "qualityPlan",
                 title = "quality_plan",
-                section_result_id = 1,
+                section_result_id = 0,
                 defective_parts = 0,
             });
 
