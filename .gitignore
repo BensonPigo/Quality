@@ -24,6 +24,8 @@ Quality/Quality/Quality.csproj.user
 Quality/.vs/
 Quality/BusinessLogicLayerTests/bin/
 Quality/BusinessLogicLayerTests/obj/
+Quality/BusinessLogicLayerTests1/bin/
+Quality/BusinessLogicLayerTests1/obj/
 Quality/packages/
 Quality/BusinessLogicLayerTests/BusinessLogicLayerTests.csproj.user
 Quality/QualityTests/bin/
