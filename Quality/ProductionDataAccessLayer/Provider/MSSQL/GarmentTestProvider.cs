@@ -491,6 +491,8 @@ where ID = @ID
 and No = @No
 ";
                 string sqlDeleteDetail = @"
+SET XACT_ABORT ON
+
 Delete GarmentTest_Detail_Shrinkage  where id = @ID and NO = @No
 Delete GarmentTest_Detail_Apperance where id = @ID and NO = @No
 Delete GarmentTest_Detail_FGWT where id = @ID and NO = @No
@@ -498,6 +500,7 @@ Delete GarmentTest_Detail_FGPT where id = @ID and NO = @No
 Delete Garment_Detail_Spirality where id = @ID and NO = @No
 
 Delete GarmentTest_Detail where id = @ID and NO = @No
+Delete [ExtendServer].PMSFile.dbo.GarmentTest_Detail where id = @ID and NO = @No
 ";
                 foreach (GarmentTest_Detail_ViewModel detailItem in needUpdateDetailList)
                 {
@@ -837,8 +840,8 @@ where ID = @ID
                 { "@ID", DbType.String, ID } ,
             };
             SbSql.Append("SELECT" + Environment.NewLine);
-            SbSql.Append("         ID" + Environment.NewLine);
-            SbSql.Append("        ,No" + Environment.NewLine);
+            SbSql.Append("         gd.ID" + Environment.NewLine);
+            SbSql.Append("        ,gd.No" + Environment.NewLine);
             SbSql.Append("        ,Result" + Environment.NewLine);
             SbSql.Append("        ,inspdate" + Environment.NewLine);
             SbSql.Append("        ,inspector" + Environment.NewLine);
@@ -872,10 +875,12 @@ where ID = @ID
             SbSql.Append("        ,SeamBreakageResult" + Environment.NewLine);
             SbSql.Append("        ,OdourResult" + Environment.NewLine);
             SbSql.Append("        ,WashResult" + Environment.NewLine);
-            SbSql.Append("        ,TestBeforePicture" + Environment.NewLine);
-            SbSql.Append("        ,TestAfterPicture" + Environment.NewLine);
-            SbSql.Append("FROM [GarmentTest_Detail]" + Environment.NewLine);
-            SbSql.Append("where ID = @ID" + Environment.NewLine);
+            SbSql.Append("        ,gdi.TestBeforePicture" + Environment.NewLine);
+            SbSql.Append("        ,gdi.TestAfterPicture" + Environment.NewLine);
+            SbSql.Append($@"FROM [GarmentTest_Detail] gd
+left join [ExtendServer].PMSFile.dbo.GarmentTest_Detail gdi on gd.ID=gdi.ID AND gd.No = gdi.No
+" + Environment.NewLine);
+            SbSql.Append("where gd.ID = @ID" + Environment.NewLine);
 
             return ExecuteList<GarmentTest_Detail_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
         }

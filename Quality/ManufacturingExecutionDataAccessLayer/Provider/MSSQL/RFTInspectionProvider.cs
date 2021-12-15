@@ -332,6 +332,7 @@ where inp.ID = @ID{rowcnt}
                 objParameter.Add($"@EditName{rowcnt}", string.IsNullOrEmpty(item.EditName) ? "" : item.EditName);
 
                 sqlcmd = $@"
+SET XACT_ABORT ON
 update rc
 set Status = 'Fixed'
 ,EditName = @EditName{rowcnt}, EditDate = GETDATE()
@@ -342,6 +343,9 @@ inner join RFT_Inspection inp on inp.ReworkCardNo = rc.No
 where inp.ID = @ID{rowcnt}
 
 delete from RFT_Inspection_Detail
+where id = @id{rowcnt}
+
+delete from [ExtendServer].PMSFile.dbo.RFT_Inspection_Detail
 where id = @id{rowcnt}
 
 delete from RFT_Inspection

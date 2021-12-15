@@ -49,9 +49,10 @@ select	[TestNo] = cast(o.TestNo as varchar),
         [Result] = o.Result,
 		[Remark] = o.Remark,
 		[Status] = o.Status,
-        [TestBeforePicture] = o.TestBeforePicture,
-        [TestAfterPicture] = o.TestAfterPicture
+        [TestBeforePicture] = oi.TestBeforePicture,
+        [TestAfterPicture] = oi.TestAfterPicture
 from Oven o with (nolock)
+LEFT JOIN [ExtendServer].PMSFile.dbo.Oven oi with (nolock) ON o.ID = oi.ID
 left join pass1 pass1AddName on o.AddName = pass1AddName.ID
 left join pass1 pass1EditName on o.EditName = pass1EditName.ID
 where o.POID = @POID and o.TestNo = @TestNo
@@ -261,10 +262,11 @@ select	[POID] = f.POID,
         [DescDetail] = fab.DescDetail,
         [CrockingRemark] = fl.CrockingRemark,
         [CrockingEncdoe] = fl.CrockingEncode,
-        [CrockingTestBeforePicture] = fl.CrockingTestBeforePicture,
-        [CrockingTestAfterPicture] = fl.CrockingTestAfterPicture
+        [CrockingTestBeforePicture] = fli.CrockingTestBeforePicture,
+        [CrockingTestAfterPicture] = fli.CrockingTestAfterPicture
 from FIR f with (nolock)
 left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
+left join [ExtendServer].PMSFile.dbo.FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
 left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
 left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
 left join Supp s with (nolock) on s.ID = f.SuppID
@@ -346,7 +348,14 @@ where   BrandID = (select BrandID from orders with (nolock) where ID = (select P
             listPar.Add("@CrockingTestAfterPicture", fabricCrkShrkTestCrocking_Result.Crocking_Main.CrockingTestAfterPicture);
 
             string sqlUpdateCrocking = @"
+SET XACT_ABORT ON
+
 update  FIR_Laboratory set  CrockingRemark = @CrockingRemark,
+                            CrockingTestBeforePicture = @CrockingTestBeforePicture,
+                            CrockingTestAfterPicture = @CrockingTestAfterPicture
+where   ID = @ID 
+
+update  [ExtendServer].PMSFile.dbo.FIR_Laboratory set  CrockingRemark = @CrockingRemark,
                             CrockingTestBeforePicture = @CrockingTestBeforePicture,
                             CrockingTestAfterPicture = @CrockingTestAfterPicture
 where   ID = @ID 
@@ -714,10 +723,11 @@ select	[POID] = f.POID,
         [DescDetail] = fab.DescDetail,
         [HeatRemark] = fl.HeatRemark,
         [HeatEncode] = fl.HeatEncode,
-        [HeatTestBeforePicture] = fl.HeatTestBeforePicture,
-        [HeatTestAfterPicture] = fl.HeatTestAfterPicture
+        [HeatTestBeforePicture] = fli.HeatTestBeforePicture,
+        [HeatTestAfterPicture] = fli.HeatTestAfterPicture
 from FIR f with (nolock)
 left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
+left join [ExtendServer].PMSFile.dbo.FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
 left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
 left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
 left join Supp s with (nolock) on s.ID = f.SuppID
@@ -780,7 +790,13 @@ where flc.ID = @ID
             listPar.Add("@HeatTestAfterPicture", fabricCrkShrkTestHeat_Result.Heat_Main.HeatTestAfterPicture);
 
             string sqlUpdateCrocking = @"
+SET XACT_ABORT ON
 update  FIR_Laboratory set  HeatRemark = @HeatRemark,
+                            HeatTestBeforePicture = @HeatTestBeforePicture,
+                            HeatTestAfterPicture = @HeatTestAfterPicture
+where   ID = @ID 
+;
+update  [ExtendServer].PMSFile.dbo.FIR_Laboratory set  HeatRemark = @HeatRemark,
                             HeatTestBeforePicture = @HeatTestBeforePicture,
                             HeatTestAfterPicture = @HeatTestAfterPicture
 where   ID = @ID 
@@ -1100,10 +1116,11 @@ select	[POID] = f.POID,
         [DescDetail] = fab.DescDetail,
         [WashRemark] = fl.WashRemark,
         [WashEncode] = fl.WashEncode,
-        [WashTestBeforePicture] = fl.WashTestBeforePicture,
-        [WashTestAfterPicture] = fl.WashTestAfterPicture
+        [WashTestBeforePicture] = fli.WashTestBeforePicture,
+        [WashTestAfterPicture] = fli.WashTestAfterPicture
 from FIR f with (nolock)
 left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
+left join [ExtendServer].PMSFile.dbo.FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
 left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
 left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
 left join Supp s with (nolock) on s.ID = f.SuppID
@@ -1172,7 +1189,15 @@ where flc.ID = @ID
             listPar.Add("@WashTestAfterPicture", fabricCrkShrkTestWash_Result.Wash_Main.WashTestAfterPicture);
 
             string sqlUpdateCrocking = @"
+SET XACT_ABORT ON
+
 update  FIR_Laboratory set  WashRemark = @WashRemark, 
+                            SkewnessOptionID = @SkewnessOptionID, 
+                            WashTestBeforePicture = @WashTestBeforePicture, 
+                            WashTestAfterPicture = @WashTestAfterPicture
+where   ID = @ID 
+
+update  [ExtendServer].PMSFile.dbo.FIR_Laboratory set  WashRemark = @WashRemark, 
                             SkewnessOptionID = @SkewnessOptionID, 
                             WashTestBeforePicture = @WashTestBeforePicture, 
                             WashTestAfterPicture = @WashTestAfterPicture

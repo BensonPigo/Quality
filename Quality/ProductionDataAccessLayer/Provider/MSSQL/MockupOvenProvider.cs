@@ -80,6 +80,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             NewReportNo = GetID(Mdivision + "OV", "MockupOven", DateTime.Today, 2, "ReportNo");
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
+            SbSql.Append("SET XACT_ABORT ON" + Environment.NewLine);
             SbSql.Append("INSERT INTO [MockupOven]" + Environment.NewLine);
             SbSql.Append("(" + Environment.NewLine);
             SbSql.Append("         ReportNo" + Environment.NewLine);
@@ -155,6 +156,12 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,@Type"); objParameter.Add("@Type", DbType.String, HttpUtility.HtmlDecode(Item.Type) ?? string.Empty);
             SbSql.Append(")" + Environment.NewLine);
 
+
+            SbSql.Append($@"
+INSERT INTO [ExtendServer].PMSFile.dbo.MockupOven (ReportNo,TestBeforePicture,TestAfterPicture)
+VALUES (@ReportNo,@TestBeforePicture,@TestAfterPicture)
+");
+
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
 
@@ -163,6 +170,8 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
             SbSql.Append($@"
+SET XACT_ABORT ON
+
 UPDATE [MockupOven]
 SET
     EditDate = GETDATE()
@@ -187,6 +196,12 @@ SET
     ,HT2ndPressreversed=@HT2ndPressreversed
     ,HTCoolingTime=@HTCoolingTime
     ,TestBeforePicture=@TestBeforePicture
+    ,TestAfterPicture=@TestAfterPicture
+WHERE ReportNo = @ReportNo
+
+UPDATE [ExtendServer].PMSFile.dbo.MockupOven
+SET
+    TestBeforePicture=@TestBeforePicture
     ,TestAfterPicture=@TestAfterPicture
 WHERE ReportNo = @ReportNo
 " + Environment.NewLine);
@@ -334,7 +349,10 @@ WHERE UKey = @Ukey
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
+            SbSql.Append("SET XACT_ABORT ON" + Environment.NewLine);
             SbSql.Append("DELETE FROM [MockupOven]" + Environment.NewLine);
+            SbSql.Append("WHERE ReportNo = @ReportNo" + Environment.NewLine);
+            SbSql.Append(@"DELETE FROM [ExtendServer].PMSFile.dbo.[MockupOven]" + Environment.NewLine);
             SbSql.Append("WHERE ReportNo = @ReportNo" + Environment.NewLine);
             objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
@@ -442,6 +460,7 @@ SELECT {top1}
         ,EditName
         ,Signature = (select t.Signature from Technician t where t.ID = Technician)
 FROM MockupOven m
+left join [ExtendServer].PMSFile.dbo.MockupOven mi on m.ReportNo=mo.ReportNo
 outer apply (select Name, ExtNo from pass1 p inner join Technician t on t.ID = p.ID where t.id = m.Technician) Technician_ne
 outer apply (select Name, ExtNo, EMail from pass1 where id = m.MR) MR_ne
 outer apply (select Name from Pass1 where id = m.AddName) AddName
@@ -451,7 +470,7 @@ outer apply (select Name from Pass1 where id = m.EditName) EditName
 
             if (!string.IsNullOrEmpty(Item.ReportNo))
             {
-                SbSql.Append("And ReportNo = @ReportNo" + Environment.NewLine);
+                SbSql.Append("And m.ReportNo = @ReportNo" + Environment.NewLine);
                 objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
             }
             if (!string.IsNullOrEmpty(Item.BrandID))

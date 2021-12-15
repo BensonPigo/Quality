@@ -83,8 +83,8 @@ select    p.ReportNo
 		,p.AccRefno
 		,p.SnapOperator
 		,p.Remark
-		,p.TestBeforePicture
-		,p.TestAfterPicture
+		,pi.TestBeforePicture
+		,pi.TestAfterPicture
 		,[LastEditName]=IIF(p.EditDate IS NULL
 			,(Concat (p.AddName , '-', a.Name, ' ', Cast(p.AddDate as varchar)))
 			,(Concat (p.EditName, '-', e.Name, ' ', Cast(p.EditDate as varchar)))
@@ -93,6 +93,7 @@ select    p.ReportNo
 		,Time_Standard = s.Time
         ,TestDateText = convert(varchar, p.TestDate, 111)
 from PullingTest p 
+left join [ExtendServer].PMSFile.dbo.PullingTest pi on p.ReportNo = pi.ReportNo
 left join Production.dbo.Pass1 a ON a.ID=p.AddName 
 left join Production.dbo.Pass1 e ON e.ID=p.EditName
 left join Production.dbo.Pass1 i ON i.ID=p.Inspector
@@ -218,6 +219,8 @@ AND PullForceUnit = @PullForceUnit
             }
 
             SbSql.Append($@"
+SET XACT_ABORT ON
+
 INSERT INTO PullingTest
            (ReportNo
            ,POID
@@ -268,6 +271,19 @@ VALUES(
             ,@TestAfterPicture
            ,GETDATE()
            ,@AddName)
+
+INSERT INTO PullingTest
+           (ReportNo
+            ,TestBeforePicture
+            ,TestAfterPicture)
+VALUES(    
+            (   ---流水號處理
+                select REPLACE( @ReportNo ,'%','') + ISNULL(REPLICATE('0',4-len( CAST( CAST( RIGHT( max(ReportNo),3) as int) + 1 as varchar) ))+ CAST( CAST( RIGHT( max(ReportNo),3) as int) + 1 as varchar),'0001')
+                from PullingTest
+                where ReportNo LIKE @ReportNo
+            )
+            ,@TestBeforePicture
+            ,@TestAfterPicture)
 ");
 
 
@@ -397,6 +413,8 @@ WHERE ReportNo=@ReportNo
 
 
             SbSql.Append($@"
+SET XACT_ABORT ON
+
 DELETE FROM PullingTest
 WHERE 1=1
 ");
@@ -404,6 +422,22 @@ WHERE 1=1
             {
                 SbSql.Append($@"AND ReportNo = @ReportNo ");
                 objParameter.Add("@ReportNo", DbType.String, ReportNo );
+            }
+            else
+            {
+                SbSql.Append($@"AND 1=0 ");
+            }
+
+
+            SbSql.Append($@"
+
+DELETE FROM [ExtendServer].PMSFile.dbo.PullingTest
+WHERE 1=1
+");
+            if (!string.IsNullOrEmpty(ReportNo))
+            {
+                SbSql.Append($@"AND ReportNo = @ReportNo ");
+                objParameter.Add("@ReportNo", DbType.String, ReportNo);
             }
             else
             {

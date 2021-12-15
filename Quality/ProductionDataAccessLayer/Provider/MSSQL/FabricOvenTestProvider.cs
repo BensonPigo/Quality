@@ -50,9 +50,10 @@ select	[TestNo] = cast(o.TestNo as varchar),
         [Result] = o.Result,
 		[Remark] = o.Remark,
 		[Status] = o.Status,
-        [TestBeforePicture] = o.TestBeforePicture,
-        [TestAfterPicture] = o.TestAfterPicture
+        [TestBeforePicture] = oi.TestBeforePicture,
+        [TestAfterPicture] = oi.TestAfterPicture
 from Oven o with (nolock)
+LEFT JOIN [ExtendServer].PMSFile.dbo.Oven oi with (nolock) ON o.ID = oi.ID
 left join pass1 pass1Inspector on o.Inspector = pass1Inspector.ID
 where o.POID = @POID and o.TestNo = @TestNo
 ";
@@ -176,6 +177,8 @@ where o.POID = @POID
             listPar.Add("@TestAfterPicture", fabricOvenTest_Detail_Result.Main.TestAfterPicture);
 
             string sqlUpdateOven = @"
+SET XACT_ABORT ON
+
 update  Oven set    InspDate = @InspDate,
                     Article = @Article,
                     Inspector = @Inspector,
@@ -185,6 +188,12 @@ update  Oven set    InspDate = @InspDate,
                     TestBeforePicture = @TestBeforePicture,
                     TestAfterPicture = @TestAfterPicture
 where   POID = @POID and TestNo = @TestNo
+
+update  [ExtendServer].PMSFile.dbo.Oven set  
+                    TestBeforePicture = @TestBeforePicture,
+                    TestAfterPicture = @TestAfterPicture
+where   POID = @POID and TestNo = @TestNo
+
 
 select  [OvenID] = ID
 from    Oven
@@ -362,6 +371,8 @@ update  Oven_Detail set Roll           =  @Roll         ,
             listPar.Add("@TestAfterPicture", fabricOvenTest_Detail_Result.Main.TestAfterPicture);
 
             string sqlInsertOven = @"
+SET XACT_ABORT ON
+
 declare @TestNo numeric(2,0)
 DECLARE @OvenID table (ID bigint, TestNo numeric(2, 0))
 
@@ -375,6 +386,10 @@ insert into Oven(POID, TestNo, InspDate, Article, Status, Inspector, Remark, add
 
 select  [OvenID] = ID, TestNo
 from @OvenID
+
+insert into [ExtendServer].PMSFile.dbo.Oven(ID, POID, TestNo, TestBeforePicture, TestAfterPicture)
+        OUTPUT INSERTED.ID, INSERTED.TestNo into @OvenID
+        values(@OvenID, @POID, @TestNo, @TestBeforePicture, @TestAfterPicture)
 ";
 
             string sqlInsertOvenDetail = @"
@@ -589,10 +604,11 @@ select  ov.ID
         ,ov.EditDate
         ,ov.Temperature
         ,ov.Time
-        ,ov.TestBeforePicture
-        ,ov.TestAfterPicture
+        ,oi.TestBeforePicture
+        ,oi.TestAfterPicture
         ,[InspectorName] = (select Name from Pass1 where ID = ov.Inspector)
 from    Oven ov with (nolock)
+left join [ExtendServer].PMSFile.dbo.Oven oi with (nolock) on oi.ID=ov.ID
 where   ov.POID = @poID and ov.TestNo = @TestNo
 ";
 
@@ -606,8 +622,10 @@ where   ov.POID = @poID and ov.TestNo = @TestNo
             listPar.Add("@TestNo", TestNo);
 
             string sqlDeleteOven = @"
+SET XACT_ABORT ON
 delete  Oven_Detail where ID = (select ID from Oven where POID = @poID and TestNo = @TestNo)
 delete  Oven where POID = @poID and TestNo = @TestNo
+delete  [ExtendServer].PMSFile.dbo.Oven where POID = @poID and TestNo = @TestNo
 exec UpdateInspPercent 'LabOven',@poID
 ";
             using (TransactionScope transaction = new TransactionScope())
