@@ -1369,16 +1369,14 @@ where oc.ID in (select POID from Production.dbo.Orders with (nolock)
 				where id in (select OrderID 
 							 from FinalInspection_Order with (nolock) where ID = @ID))
 
-select	pd.SizeCode,
-		pd.Article,
-        [ShipQty] = sum(pd.ShipQty)
-from FinalInspection_OrderCarton foc with (nolock)
-inner join Production.dbo.PackingList_Detail pd with (nolock) on foc.PackinglistID = pd.ID and 
-                                                                 foc.OrderID = pd.OrderID and 
-                                                                 foc.CTNNo = pd.CTNStartNo
-where foc.ID = @ID
-group by pd.SizeCode,
-		 pd.Article
+select	oq.SizeCode,
+		oq.Article,
+        [ShipQty] = sum(oq.Qty)
+from FinalInspection_Order fo with (nolock)
+inner join Production.dbo.Order_Qty oq with (nolock) on fo.OrderID = oq.ID
+where fo.ID = @ID
+group by oq.SizeCode,
+		 oq.Article
 
 select	s.StyleName,
 		o.FactoryID,
