@@ -44,7 +44,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,RealLength"+ Environment.NewLine);
             SbSql.Append("        ,Description"+ Environment.NewLine);
             SbSql.Append("        ,Seq"+ Environment.NewLine);
-            SbSql.Append("FROM [DropDownList]"+ Environment.NewLine);
+            SbSql.Append("FROM [DropDownList] WITH(NOLOCK)" + Environment.NewLine);
             SbSql.Append("WHERE Type = @Type" + Environment.NewLine);
             SbSql.Append("Order by Seq" + Environment.NewLine);
 

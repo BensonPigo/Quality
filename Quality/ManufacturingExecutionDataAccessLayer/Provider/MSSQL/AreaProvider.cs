@@ -56,7 +56,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,O"+ Environment.NewLine);
             SbSql.Append("        ,LocalCode"+ Environment.NewLine);
             SbSql.Append("        ,Seq"+ Environment.NewLine);
-            SbSql.Append("FROM [Area]"+ Environment.NewLine);
+            SbSql.Append("FROM [Area] WITH(NOLOCK)"+ Environment.NewLine);
             SbSql.Append("WHERE Junk = 0" + Environment.NewLine);
 
             if (!string.IsNullOrEmpty(Item.Type)) { SbSql.Append("and Type = @Type" + Environment.NewLine); }

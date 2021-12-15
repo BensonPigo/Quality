@@ -39,7 +39,7 @@ Update ColorFastness set Status = @Status
 , EditName = @UserID, EditDate = GetDate()
 where id = @ID
 
-declare @POID varchar(13) = (select POID from ColorFastness where ID = @ID)
+declare @POID varchar(13) = (select POID from ColorFastness WITH(NOLOCK) where ID = @ID)
 
 exec UpdateInspPercent 'LabColorFastness', @POID
 ";
@@ -60,7 +60,7 @@ exec UpdateInspPercent 'LabColorFastness', @POID
             SbSql.Append("        ,BrandID" + Environment.NewLine);
             SbSql.Append("        ,StyleID" + Environment.NewLine);
             SbSql.Append("        ,SeasonID" + Environment.NewLine);
-            SbSql.Append("FROM [PO]" + Environment.NewLine);
+            SbSql.Append("FROM [PO] WITH(NOLOCK)" + Environment.NewLine);
             SbSql.Append("Where 1 = 1" + Environment.NewLine);
             #endregion
 
@@ -104,7 +104,7 @@ and c.ID = @ID
             };
 
             string sqlcmd = @"
-select Name from Pass1 where ID = @Inspector
+select Name from Pass1 WITH(NOLOCK) where ID = @Inspector
 ";
             DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
             return dt.Rows[0]["Name"].ToString();
@@ -132,7 +132,7 @@ and a.seq1 = @Seq1
 
         public List<string> GetScales()
         {
-            string sqlcmd = @"select ID from Scale  WHERE Junk=0 order by ID";
+            string sqlcmd = @"select ID from Scale  WITH(NOLOCK) WHERE Junk=0 order by ID";
             DataTable dt = ExecuteDataTable(CommandType.Text, sqlcmd, new SQLParameterCollection());
 
             return dt.Rows.OfType<DataRow>().Select(dr => dr.Field<string>("ID")).ToList();
@@ -152,13 +152,13 @@ select PoID = a.ID,b.StyleID,b.SeasonID,b.BrandID
 ,a.ColorFastnessLaboratoryRemark
 ,[ArticlePercent] = a.LabColorFastnessPercent
 ,[CompletionDate] = MaxInspDate.value
-,[CreateBy] = CONCAT(a.AddName,'-',(select Name from Pass1 where id = a.AddName),' ', a.AddDate)
-,[EditBy] = CONCAT(a.AddName,'-',(select Name from Pass1 where id = a.EditName),' ',a.EditDate)
+,[CreateBy] = CONCAT(a.AddName,'-',(select Name from Pass1 WITH(NOLOCK) where id = a.AddName),' ', a.AddDate)
+,[EditBy] = CONCAT(a.AddName,'-',(select Name from Pass1 WITH(NOLOCK) where id = a.EditName),' ',a.EditDate)
 from po a WITH (NOLOCK) 
 left join Orders b WITH (NOLOCK) on a.ID = b.POID
 outer apply(
 	select value = MAX(InspDate)
-	from ColorFastness cf
+	from ColorFastness cf WITH(NOLOCK)
 	where cf.POID = a.ID
 )MaxInspDate
 where a.id= @PoID
@@ -166,9 +166,9 @@ where a.id= @PoID
             var source = ExecuteList<FabricColorFastness_ViewModel>(CommandType.Text, sqlcmd, objParameter);
 
             string sqlcmd2 = @"
-select *,[LastUpdate] = IIF(c.EditName != '',Concat((select Name from Pass1 where id = c.EditName),' ',c.EditDate)
-	,Concat((select Name from Pass1 where id = c.AddName),' ',c.AddDate))
-from ColorFastness c
+select *,[LastUpdate] = IIF(c.EditName != '',Concat((select Name from Pass1 WITH(NOLOCK) where id = c.EditName),' ',c.EditDate)
+	,Concat((select Name from Pass1 WITH(NOLOCK) where id = c.AddName),' ',c.AddDate))
+from ColorFastness c WITH(NOLOCK)
 where POID=@PoID
 ";
             var source2 = ExecuteList<ColorFastness_Result>(CommandType.Text, sqlcmd2, objParameter);

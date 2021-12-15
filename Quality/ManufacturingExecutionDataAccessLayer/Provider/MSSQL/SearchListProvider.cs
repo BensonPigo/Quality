@@ -26,11 +26,11 @@ select Text = '', Value = ''
 UNION
 select Text = IIF(md.FunctionName IS NOt NULL , md.FunctionName,m.FunctionName)
 	 , Value = IIF(md.FunctionName IS NOt NULL , md.FunctionName,m.FunctionName)
-from Quality_Pass1 p
-inner join Quality_Position pp on p.Position=pp.ID
-inner join Quality_Pass2 p2 on p2.PositionID=pp.ID 
-inner join Quality_Menu m on m.ID=p2.MenuID
-left join Quality_Menu_detail md on md.ID=m.ID AND md.Type=p.BulkFGT_Brand
+from Quality_Pass1 p WITH(NOLOCK)
+inner join Quality_Position pp WITH(NOLOCK) on p.Position=pp.ID
+inner join Quality_Pass2 p2 WITH(NOLOCK) on p2.PositionID=pp.ID 
+inner join Quality_Menu m WITH(NOLOCK) on m.ID=p2.MenuID
+left join Quality_Menu_detail md WITH(NOLOCK) on md.ID=m.ID AND md.Type=p.BulkFGT_Brand
 where ModuleName='Bulk FGT'
 and FunctionSeq not in (10,20)
 and p.ID='{Pass1ID}'
@@ -72,9 +72,9 @@ select DISTINCT Type = 'Fabric Crocking & Shrinkage Test (504, 405)'
 			)tmp
 		)
 
-from PO p
-inner join Orders o ON o.ID = p.ID
-INNER JOIN FIR_Laboratory f ON f.POID = p.ID
+from PO p WITH(NOLOCK)
+inner join Orders o WITH(NOLOCK) ON o.ID = p.ID
+INNER JOIN FIR_Laboratory f WITH(NOLOCK) ON f.POID = p.ID
 WHERE 1=1 
 ";
             if (!string.IsNullOrEmpty(Req.BrandID))
@@ -103,8 +103,8 @@ select  Type = 'Garment Test (450, 451, 701, 710)'
 		,Artwork = ''
 		,Result= IIF(gd.Result='P','Pass', IIF(gd.Result='F','Fail',''))
 		,TestDate = gd.InspDate
-from GarmentTest g
-inner join GarmentTest_Detail gd ON g.ID= gd.ID
+from GarmentTest g WITH(NOLOCK)
+inner join GarmentTest_Detail gd WITH(NOLOCK) ON g.ID= gd.ID
 WHERE 1=1 
 ";
 
@@ -142,7 +142,7 @@ select DISTINCT  Type = 'Mockup Crocking Test  (504)'
 		,Artwork = ArtworkTypeID
 		,Result
 		,TestDate 
-from MockupCrocking 
+from MockupCrocking  WITH(NOLOCK)
 WHERE 1=1 
 ";
 
@@ -176,7 +176,7 @@ select DISTINCT Type = 'Mockup Oven Test (514)'
 	, [Artwork] = m.ArtworkTypeID
 	, m.Result
 	, m.TestDate
-from MockupOven m
+from MockupOven m WITH(NOLOCK)
 where m.Type = 'B'
 ";
 
@@ -210,7 +210,7 @@ select DISTINCT Type = 'Mockup Wash Test (701)'
 	, [Artwork] = m.ArtworkTypeID
 	, m.Result
 	, m.TestDate
-from MockupWash m
+from MockupWash m WITH(NOLOCK)
 where m.Type = 'B' 
 ";
 
@@ -244,9 +244,9 @@ select DISTINCT Type= 'Fabric Oven Test (515)'
 		,Artwork = ''
 		,Result=f.Result
 		,TestDate = f.InspDate
-from PO p
-inner join Orders o ON o.POID = p.ID
-inner join Oven f ON f.POID = p.ID
+from PO p WITH(NOLOCK)
+inner join Orders o WITH(NOLOCK) ON o.POID = p.ID
+inner join Oven f WITH(NOLOCK) ON f.POID = p.ID
 where 1=1 
 ";
             if (!string.IsNullOrEmpty(Req.BrandID))
@@ -280,9 +280,9 @@ select DISTINCT Type= 'Washing Fastness (501)'
 		,Result=f.Result
 		,TestDate = f.InspDate
 
-from PO p
-inner join Orders o ON o.POID = p.ID
-INNER JOIN ColorFastness f ON f.POID = p.ID
+from PO p WITH(NOLOCK)
+inner join Orders o WITH(NOLOCK) ON o.POID = p.ID
+INNER JOIN ColorFastness f WITH(NOLOCK) ON f.POID = p.ID
 WHERE 1=1 
 ";
             if (!string.IsNullOrEmpty(Req.BrandID))
@@ -323,8 +323,8 @@ select DISTINCT Type = 'Accessory Oven Test & Wash (515, 701)'
 		)
 
 from PO p
-inner join Orders o ON o.POID = p.ID
-INNER JOIN AIR_Laboratory f ON f.POID = p.ID
+inner join Orders o WITH(NOLOCK) ON o.POID = p.ID
+INNER JOIN AIR_Laboratory f WITH(NOLOCK) ON f.POID = p.ID
 WHERE 1=1 
 ";
             if (!string.IsNullOrEmpty(Req.BrandID))
@@ -354,7 +354,7 @@ select DISTINCT Type = 'Pulling test for Snap/Botton/Rivet (437)'
 	, [Artwork] = ''
 	, m.Result
 	, m.TestDate
-from [ExtendServer].ManufacturingExecution.dbo.PullingTest m 
+from [ExtendServer].ManufacturingExecution.dbo.PullingTest m  WITH(NOLOCK)
 where 1=1 
 ";
             if (!string.IsNullOrEmpty(Req.BrandID))

@@ -93,7 +93,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,MoistureStandard1_Comparison"+ Environment.NewLine);
             SbSql.Append("        ,MoistureStandard2"+ Environment.NewLine);
             SbSql.Append("        ,MoistureStandard2_Comparison"+ Environment.NewLine);
-            SbSql.Append("FROM [FIR]"+ Environment.NewLine);
+            SbSql.Append("FROM [FIR] WITH(NOLOCK)" + Environment.NewLine);
 
 
 

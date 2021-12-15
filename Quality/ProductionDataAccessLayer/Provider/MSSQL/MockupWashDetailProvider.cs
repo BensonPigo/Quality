@@ -34,7 +34,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,Remark" + Environment.NewLine);
             SbSql.Append("        ,EditName" + Environment.NewLine);
             SbSql.Append("        ,EditDate" + Environment.NewLine);
-            SbSql.Append("FROM [MockupWash_Detail]" + Environment.NewLine);
+            SbSql.Append("FROM [MockupWash_Detail] WITH(NOLOCK)" + Environment.NewLine);
             SbSql.Append("Where 1=1" + Environment.NewLine);
 
             if (!string.IsNullOrEmpty(Item.ReportNo))
@@ -140,11 +140,11 @@ SELECT
         ,md.Remark
         ,md.EditName
         ,md.EditDate
-		,ArtworkColorName = (select stuff((select concat(';', Name) from Color where ID in (select Data from SplitString(md.ArtworkColor,';')) and BrandID = m.BrandID for xml path('')),1,1,''))
-        ,FabricColorName = (select stuff((select concat(';', Name) from Color where ID in (select Data from SplitString(md.FabricColor,';')) and BrandID = m.BrandID for xml path('')),1,1,''))
+		,ArtworkColorName = (select stuff((select concat(';', Name) from Color WITH(NOLOCK) where ID in (select Data from SplitString(md.ArtworkColor,';')) and BrandID = m.BrandID for xml path('')),1,1,''))
+        ,FabricColorName = (select stuff((select concat(';', Name) from Color WITH(NOLOCK) where ID in (select Data from SplitString(md.FabricColor,';')) and BrandID = m.BrandID for xml path('')),1,1,''))
 		,LastUpdate = iif(isnull(md.EditName, '') <> '', Concat(md.EditName, '-' + Format(md.EditDate,'yyyy/MM/dd HH:mm:ss')), Format(md.EditDate,'yyyy/MM/dd HH:mm:ss'))
-FROM MockupWash_Detail md
-inner join MockupWash m on m.ReportNo = md.ReportNo
+FROM MockupWash_Detail md WITH(NOLOCK)
+inner join MockupWash m WITH(NOLOCK) on m.ReportNo = md.ReportNo
 Where 1=1
 ");
             if (!string.IsNullOrEmpty(Item.ReportNo))

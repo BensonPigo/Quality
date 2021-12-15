@@ -53,7 +53,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,WetScale_Weft"+ Environment.NewLine);
             SbSql.Append("        ,ResultDry_Weft"+ Environment.NewLine);
             SbSql.Append("        ,ResultWet_Weft"+ Environment.NewLine);
-            SbSql.Append("FROM [FIR_Laboratory_Crocking]"+ Environment.NewLine);
+            SbSql.Append("FROM [FIR_Laboratory_Crocking] WITH(NOLOCK)" + Environment.NewLine);
 
 
 

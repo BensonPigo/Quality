@@ -50,7 +50,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,AddDate"+ Environment.NewLine);
             SbSql.Append("        ,EditName"+ Environment.NewLine);
             SbSql.Append("        ,EditDate"+ Environment.NewLine);
-            SbSql.Append("FROM [Scale] where junk = 0"+ Environment.NewLine);
+            SbSql.Append("FROM [Scale] WITH(NOLOCK) where junk = 0" + Environment.NewLine);
 
 
 

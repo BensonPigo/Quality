@@ -46,7 +46,7 @@ ID,No
 ,[AfterWash3]
 ,[Shrinkage3]
 ,[Seq]
-from GarmentTest_Detail_Shrinkage
+from GarmentTest_Detail_Shrinkage WITH(NOLOCK)
 where ID = @ID
 and No = @No
 ";
@@ -118,7 +118,7 @@ where ID = @ID{idx} and No = @No{idx} and Type = @Type{idx} and Location = @Loca
 select [ID],[No]
 ,[Location]
 ,[Type],[BeforeWash],[SizeSpec],[AfterWash1],[Shrinkage1],[AfterWash2],[Shrinkage2],[AfterWash3],[Shrinkage3]
-from GarmentTest_Detail_Shrinkage
+from GarmentTest_Detail_Shrinkage WITH(NOLOCK)
 where ID = @ID
 and No = @No
 order by Location desc, seq

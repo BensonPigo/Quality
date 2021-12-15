@@ -47,7 +47,7 @@ namespace ManufacturingExecutionDataAccessLayer.DataAccessLayer.Provider.MSSQL
             SbSql.Append("         PositionID"+ Environment.NewLine);
             SbSql.Append("        ,MenuID"+ Environment.NewLine);
             SbSql.Append("        ,Used"+ Environment.NewLine);
-            SbSql.Append("FROM [Quality_Pass2]"+ Environment.NewLine);
+            SbSql.Append("FROM [Quality_Pass2] WITH(NOLOCK)" + Environment.NewLine);
 
 
 

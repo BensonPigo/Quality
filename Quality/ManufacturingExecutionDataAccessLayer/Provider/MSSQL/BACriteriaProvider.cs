@@ -33,16 +33,16 @@ select OrderID=o.ID
 	,InspectedQty = ISNULL(Inspected.Qty, 0)
 	,BAProduct = ISNULL(Inspected.Qty, 0) - ISNULL(BAProduct.Qty, 0)
 	,BACriteria = ROUND( IIF( ISNULL(Inspected.Qty, 0) = 0 , 0 ,(ISNULL(Inspected.Qty, 0) - ISNULL(BAProduct.Qty, 0) ) *1.0 / ISNULL(Inspected.Qty, 0)*1.0 * 5) ,1)
-from SciProduction_Orders o
+from SciProduction_Orders o WITH(NOLOCK)
 OUTER APPLY(
 	select Qty = COUNT(1)
-	from RFT_Inspection i
+	from RFT_Inspection i WITH(NOLOCK)
 	where i.OrderID = o.ID
 )Inspected
 OUTER APPLY(
 	select Qty =  COUNT(DISTINCT i.ID)
-	from RFT_Inspection i
-	inner join RFT_Inspection_Detail id on i.ID = id.ID
+	from RFT_Inspection i WITH(NOLOCK)
+	inner join RFT_Inspection_Detail id WITH(NOLOCK) on i.ID = id.ID
 	WHERE id.PMS_RFTBACriteriaID BETWEEN 'C2' AND 'C9'
 	AND i.OrderID = o.ID
 )BAProduct

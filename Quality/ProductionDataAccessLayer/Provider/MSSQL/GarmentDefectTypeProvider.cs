@@ -43,9 +43,9 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,EditDate"+ Environment.NewLine);
             SbSql.Append("        ,LocalDescription"+ Environment.NewLine);
             SbSql.Append("        ,Seq"+ Environment.NewLine);
-            SbSql.Append("FROM [GarmentDefectType] g"+ Environment.NewLine);
+            SbSql.Append("FROM [GarmentDefectType] g WITH(NOLOCK)" + Environment.NewLine);
             SbSql.Append("WHERE Junk = 0" + Environment.NewLine);
-            SbSql.Append("AND EXISTS (SELECT 1 FROM GarmentDefectCode WHERE g.ID = GarmentDefectTypeID AND Junk = 0 AND IsCFA  = 0)" + Environment.NewLine);
+            SbSql.Append("AND EXISTS (SELECT 1 FROM GarmentDefectCode WITH(NOLOCK) WHERE g.ID = GarmentDefectTypeID AND Junk = 0 AND IsCFA  = 0)" + Environment.NewLine);
             SbSql.Append("ORDER BY Seq" + Environment.NewLine);
 
 

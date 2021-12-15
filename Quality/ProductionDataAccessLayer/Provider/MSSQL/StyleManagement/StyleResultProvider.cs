@@ -144,7 +144,7 @@ WHERE Junk=0
         s.ProgramID,
         s.Description,
         [ProductType] = (   select  TOP 1 Name
-							from Reason 
+							from Reason  WITH(NOLOCK)
 							where ReasonTypeID = 'Style_Apparel_Type' and ID = s.ApparelType
                         ),
         s.StyleName";
@@ -158,7 +158,7 @@ WHERE Junk=0
         s.ProgramID,
         s.Description,
         [ProductType] = (   select  TOP 1 Name
-							from Reason 
+							from Reason  WITH(NOLOCK)
 							where ReasonTypeID = 'Style_Apparel_Type' and ID = s.ApparelType
                         ),
         [Article] = (   Stuff((
@@ -190,7 +190,7 @@ WHERE Junk=0
 
             string sqlGet_StyleResult_Browse = $@"
 select  {sqlCol}
-    ,StyleRRLRPath = (select StyleRRLRPath from System)
+    ,StyleRRLRPath = (select StyleRRLRPath from System WITH(NOLOCK))
 from    Style s with (nolock)
 OUTER APPLY(
 	select Val = ROUND( SUM(IIF(Status = 'Pass',1,0)) * 1.0  / COUNT(1) *1.0  *100 , 2)
@@ -237,32 +237,32 @@ select SP = o.ID
 	,RFT = Cast( Cast( IIF(Inspected.val = 0 , 0 , ROUND( ( RFT.val * 1.0 / Inspected.val ) * 100 ,2) ) as numeric(5,2)) as varchar )
 	,BAProduct = BAProduct.val
 	,BAAuditCriteria  = Cast( Cast( IIF(Inspected.val = 0, 0, ROUND(BAProduct.val * 1.0 / Inspected.val * 5 ,1) )as numeric(2,1)) as varchar )
-from Orders o
-inner join Style s on s.ID = o.StyleID AND o.BrandID = s.BrandID AND o.SeasonID = s.SeasonID
+from Orders o WITH(NOLOCK)
+inner join Style s WITH(NOLOCK) on s.ID = o.StyleID AND o.BrandID = s.BrandID AND o.SeasonID = s.SeasonID
 outer apply(
 	select val = COUNT(r.ID)
-	from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection r
+	from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection r WITH(NOLOCK)
 	where r.OrderID = o.ID
 )Inspected
 
 outer apply(
 	select val = COUNT(r.ID)
-	from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection r
+	from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection r WITH(NOLOCK)
 	where r.OrderID = o.ID and r.Status='Pass'
 )RFT
 
 outer apply(
 	select val = COUNT(r.ID)
-	from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection r
+	from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection r WITH(NOLOCK)
 	where r.OrderID = o.ID 
 	AND (
 		NOT EXISTS(--沒有 RFT_Inspeciton_Detail
 			select 1
-			from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection_Detail rd where r.ID = rd.ID	
+			from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection_Detail rd WITH(NOLOCK) where r.ID = rd.ID	
 		)
 		or NOT EXISTS( --RFT_Inspection_Detail 所有資料 PMS_RFTACriterialID 皆為空
 			select 1
-			from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection_Detail rd where r.ID = rd.ID AND rd.PMS_RFTBACriteriaID != ''
+			from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection_Detail rd WITH(NOLOCK) where r.ID = rd.ID AND rd.PMS_RFTBACriteriaID != ''
 		)
 	)
 )BAProduct
@@ -324,32 +324,32 @@ select SP = o.ID
 	,RFT = Cast( Cast( IIF(Inspected.val = 0 , 0 , ROUND( ( RFT.val * 1.0 / Inspected.val ) * 100 ,2) ) as numeric(5,2)) as varchar )
 	,BAProduct = BAProduct.val
 	,BAAuditCriteria  = Cast( Cast( IIF(Inspected.val = 0, 0, ROUND(BAProduct.val * 1.0 / Inspected.val * 5 ,1) )as numeric(2,1)) as varchar )
-from Orders o
-inner join Style s on s.ID = o.StyleID AND o.BrandID = s.BrandID AND o.SeasonID = s.SeasonID
+from Orders o WITH(NOLOCK)
+inner join Style s WITH(NOLOCK) on s.ID = o.StyleID AND o.BrandID = s.BrandID AND o.SeasonID = s.SeasonID
 outer apply(
 	select val = COUNT(r.ID)
-	from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection r
+	from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection r WITH(NOLOCK)
 	where r.OrderID = o.ID
 )Inspected
 
 outer apply(
 	select val = COUNT(r.ID)
-	from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection r
+	from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection r WITH(NOLOCK)
 	where r.OrderID = o.ID and r.Status='Pass'
 )RFT
 
 outer apply(
 	select val = COUNT(r.ID)
-	from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection r
+	from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection r WITH(NOLOCK)
 	where r.OrderID = o.ID 
 	AND (
 		NOT EXISTS(--沒有 RFT_Inspeciton_Detail
 			select 1
-			from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection_Detail rd where r.ID = rd.ID	
+			from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection_Detail rd WITH(NOLOCK) where r.ID = rd.ID	
 		)
 		or NOT EXISTS( --RFT_Inspection_Detail 所有資料 PMS_RFTACriterialID 皆為空
 			select 1
-			from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection_Detail rd where r.ID = rd.ID AND rd.PMS_RFTBACriteriaID != ''
+			from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection_Detail rd WITH(NOLOCK) where r.ID = rd.ID AND rd.PMS_RFTBACriteriaID != ''
 		)
 	)
 )BAProduct
@@ -391,12 +391,12 @@ select  ExpectionFormStatus = d.Name
 ,sa.Description
 ,FDFilePath = IIF(sa.SourceFile = null OR sa.SourceFile = '' 
 				, '' 
-				,(select StyleFDFilePath +  sa.SourceFile from System)
+				,(select StyleFDFilePath +  sa.SourceFile from System WITH(NOLOCK))
 			)
 ,FDFileName = ISNULL(sa.SourceFile ,'')
-from Style s
-left join DropDownList d on d.Type = 'FactoryDisclaimer' AND s.ExpectionFormStatus = d.ID
-left join Style_Article sa on s.Ukey = sa.StyleUkey
+from Style s WITH(NOLOCK)
+left join DropDownList d WITH(NOLOCK) on d.Type = 'FactoryDisclaimer' AND s.ExpectionFormStatus = d.ID
+left join Style_Article sa WITH(NOLOCK) on s.Ukey = sa.StyleUkey
 where 1=1
 {sqlWhere}
 ";
@@ -434,9 +434,9 @@ select sr.Refno
 	,sr.RR
 	,Remark = sr.RRRemark
 	,sr.LR
-from Style s
-inner join Style_RRLR_Report sr on s.Ukey = sr.StyleUkey
-left join Supp su ON sr.SuppID = su.ID
+from Style s WITH(NOLOCK)
+inner join Style_RRLR_Report sr WITH(NOLOCK) on s.Ukey = sr.StyleUkey
+left join Supp su WITH(NOLOCK) ON sr.SuppID = su.ID
 where 1=1
 {sqlWhere}
 ";
@@ -460,8 +460,8 @@ INTO #Type
 UNION
 SELECT [Type] = IIF( EXISTS(
 	select SpecialMark,r.Name
-	from Style s
-	inner join Reason r on s.SpecialMark = r.ID AND r.ReasonTypeID= 'Style_SpecialMark'
+	from Style s WITH(NOLOCK)
+	inner join Reason r WITH(NOLOCK) on s.SpecialMark = r.ID AND r.ReasonTypeID= 'Style_SpecialMark'
 	where s.ID = @StyleID AND s.BrandID = @BrandID AND s.SeasonID = @SeasonID
 	AND r.Name IN (
 		'MATCH TEAMWEAR',
@@ -490,14 +490,14 @@ select Article='', Type='450', TestName = 'Seam Breakage'
 				WHEN g.SeamBreakageResult = 'F' THEN 'Fail'
 				ELSE ''
 			END
-	from GarmentTest g
+	from GarmentTest g WITH(NOLOCK)
 	WHERE g.StyleID = @StyleID
 		AND g.BrandID = @BrandID
 		AND g.SeasonID = @SeasonID
 		AND g.MDivisionid = @MDivisionID
 		AND g.SeamBreakageLastTestDate = (		
 			select MAX(SeamBreakageLastTestDate)
-			from GarmentTest gg
+			from GarmentTest gg WITH(NOLOCK)
 			where gg.StyleID = g.StyleID
 				AND gg.BrandID = g.BrandID
 				AND gg.SeasonID = g.SeasonID
@@ -506,14 +506,14 @@ select Article='', Type='450', TestName = 'Seam Breakage'
 )
 ,LastTestDate=(
 	select g.SeamBreakageLastTestDate 
-	from GarmentTest g
+	from GarmentTest g WITH(NOLOCK)
 	WHERE g.StyleID = @StyleID
 		AND g.BrandID = @BrandID
 		AND g.SeasonID = @SeasonID
 		AND g.MDivisionid = @MDivisionID
 		AND g.SeamBreakageLastTestDate = (		
 			select MAX(SeamBreakageLastTestDate)
-			from GarmentTest gg
+			from GarmentTest gg WITH(NOLOCK)
 			where gg.StyleID = g.StyleID
 				AND gg.BrandID = g.BrandID
 				AND gg.SeasonID = g.SeasonID
@@ -545,14 +545,14 @@ select sa.Article, t.Type
 					  WHEN  t.Type = '701' OR t.Type = '710' THEN Type701_710.Date
 					  ELSE ''
 			   END
-from Style_Article sa
-inner join Style s ON s.Ukey = sa.StyleUkey
+from Style_Article sa WITH(NOLOCK)
+inner join Style s WITH(NOLOCK) ON s.Ukey = sa.StyleUkey
 OUTER APPLY(
 	select * from #Type
 )t
 OUTER APPLY(
 	select g.OdourResult ,g.Date
-	from GarmentTest g
+	from GarmentTest g WITH(NOLOCK)
 	WHERE g.StyleID = s.ID
 		AND g.BrandID = s.BrandID
 		AND g.SeasonID = s.SeasonID
@@ -560,7 +560,7 @@ OUTER APPLY(
 		AND g.MDivisionid = @MDivisionID
 		AND g.Date = (		
 			select MAX(Date)
-			from GarmentTest gg
+			from GarmentTest gg WITH(NOLOCK)
 			where gg.StyleID = s.ID
 				AND gg.BrandID = s.BrandID
 				AND gg.SeasonID = s.SeasonID
@@ -570,7 +570,7 @@ OUTER APPLY(
 )Type451
 OUTER APPLY(
 	select g.WashResult ,g.Date
-	from GarmentTest g
+	from GarmentTest g WITH(NOLOCK)
 	WHERE g.StyleID = s.ID
 		AND g.BrandID = s.BrandID
 		AND g.SeasonID = s.SeasonID
@@ -578,7 +578,7 @@ OUTER APPLY(
 		AND g.MDivisionid = @MDivisionID
 		AND g.Date = (		
 			select MAX(Date)
-			from GarmentTest gg
+			from GarmentTest gg WITH(NOLOCK)
 			where gg.StyleID = s.ID
 				AND gg.BrandID = s.BrandID
 				AND gg.SeasonID = s.SeasonID

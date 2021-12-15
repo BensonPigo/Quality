@@ -51,7 +51,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,Time"+ Environment.NewLine);
             SbSql.Append("        ,TestBeforePicture"+ Environment.NewLine);
             SbSql.Append("        ,TestAfterPicture"+ Environment.NewLine);
-            SbSql.Append("FROM [Oven]"+ Environment.NewLine);
+            SbSql.Append("FROM [Oven] WITH(NOLOCK)" + Environment.NewLine);
 
 
 

@@ -51,7 +51,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,Seq"+ Environment.NewLine);
             SbSql.Append("        ,ReworkTotalFailCode"+ Environment.NewLine);
             SbSql.Append("        ,IsCFA"+ Environment.NewLine);
-            SbSql.Append("FROM [GarmentDefectCode]"+ Environment.NewLine);
+            SbSql.Append("FROM [GarmentDefectCode] WITH(NOLOCK)" + Environment.NewLine);
             SbSql.Append("WHERE Junk = 0" + Environment.NewLine);
             SbSql.Append("AND IsCFA = 0" + Environment.NewLine);
             if (!string.IsNullOrEmpty(Item.GarmentDefectTypeID)) { SbSql.Append("AND GarmentDefectTypeID = @GarmentDefectTypeID" + Environment.NewLine); }

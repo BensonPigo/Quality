@@ -23,7 +23,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SQLParameterCollection paras = new SQLParameterCollection();
             SbSql.Append($@"
 select ID
-from Production.dbo.Brand
+from Production.dbo.Brand WITH(NOLOCK)
 where junk = 0
 
 ");
@@ -50,7 +50,7 @@ where junk = 0
             SQLParameterCollection paras = new SQLParameterCollection();
             SbSql.Append($@"
 select ID
-from Production.dbo.{OtherTable}
+from Production.dbo.{OtherTable} WITH(NOLOCK)
 where 1=1
 
 ");
@@ -70,7 +70,7 @@ where 1=1
             SQLParameterCollection paras = new SQLParameterCollection();
             SbSql.Append($@"
 select DISTINCT ID
-from Production.dbo.Season
+from Production.dbo.Season WITH(NOLOCK)
 where junk = 0
 
 ");
@@ -105,7 +105,7 @@ where junk = 0
             SQLParameterCollection paras = new SQLParameterCollection();
             SbSql.Append($@"
 select DISTINCT ID
-from Production.dbo.Style
+from Production.dbo.Style WITH(NOLOCK)
 where junk = 0
 
 ");
@@ -147,7 +147,7 @@ where junk = 0
                 //有傳入 OrderID
                 SbSql.Append($@"
 select DISTINCT Article
-from Production.dbo.Order_Qty
+from Production.dbo.Order_Qty WITH(NOLOCK)
 where 1=1
 AND ID = @OrderID
 ");
@@ -158,7 +158,7 @@ AND ID = @OrderID
                 //沒有傳入 OrderID
                 SbSql.Append($@"
 select DISTINCT Article
-from Production.dbo.Style_Article
+from Production.dbo.Style_Article WITH(NOLOCK)
 where 1=1
 
 ");
@@ -172,7 +172,7 @@ where 1=1
                     SbSql.Append($@"
 AND StyleUkey in (
 	select Ukey
-	from Production.dbo.Style
+	from Production.dbo.Style WITH(NOLOCK)
 	where id= @StyleID and BrandID=@BrandID and SeasonID=@SeasonID
 )
 ");
@@ -215,7 +215,7 @@ AND StyleUkey in (
                 //有傳入 OrderID
                 SbSql.Append($@"
 select DISTINCT SizeCode
-from Production.dbo.Order_Qty
+from Production.dbo.Order_Qty WITH(NOLOCK)
 where 1=1
 AND ID = @OrderID
 ");
@@ -232,7 +232,7 @@ AND ID = @OrderID
                 //沒有傳入 OrderID
                 SbSql.Append($@"
 select DISTINCT SizeCode
-from Production.dbo.Style_SizeCode
+from Production.dbo.Style_SizeCode WITH(NOLOCK)
 where 1=1
 
 ");
@@ -242,7 +242,7 @@ where 1=1
                     SbSql.Append($@"
 AND StyleUkey in (
 	select Ukey
-	from Production.dbo.Style
+	from Production.dbo.Style WITH(NOLOCK)
 	where id= @StyleID and BrandID=@BrandID and SeasonID=@SeasonID
 )
 ");
@@ -286,8 +286,8 @@ Select tch.ID
 		, p1.Name
 		, p1.ExtNo
 		, p1.Factory
-From Production.dbo.Technician tch
-Inner join Production.dbo.Pass1 p1 on tch.ID = p1.ID
+From Production.dbo.Technician tch WITH(NOLOCK)
+Inner join Production.dbo.Pass1 p1 WITH(NOLOCK) on tch.ID = p1.ID
 Where tch.{CallFunction} = 1
 
 ");
@@ -321,7 +321,7 @@ Select ID
 		, ExtNo
 		, Factory
         , EMail
-From  Pass1 p1 --工廠
+From  Pass1 p1 WITH(NOLOCK) --工廠
 Where 1=1
 
 ");
@@ -352,7 +352,7 @@ Where 1=1
 Select ID
 		, Abb
 		, Name
-From Production.dbo.LocalSupp -- 工廠
+From Production.dbo.LocalSupp  WITH(NOLOCK)-- 工廠
 Where Junk = 0
 
 ");
@@ -433,38 +433,21 @@ Where Junk = 0
                     paras.Add("@SuppID", DbType.String, SuppID + "%");
                 }
             }
-            /*
-            //台北
-            SbSql.Append($@"
-Select ID
-		, Abb 
-		, Name
-From [PMS\pmsdb\{Region}].Production.dbo.Supp 
-Where Junk = 0
-{whereLocal}
-UNION
-Select ID
-		, Abb = AbbEN
-		, Name =NameEN
-From [PMS\pmsdb\{Region}].Production.dbo.Supp 
-Where Junk = 0
-{where}
-");
-            */
+
 
             ///工廠 用這段
             SbSql.Append($@"
 Select ID
 		, Abb 
 		, Name
-From Production.dbo.LocalSupp 
+From Production.dbo.LocalSupp  WITH(NOLOCK)
 Where Junk = 0
 {whereLocal}
 UNION
 Select ID
 		, Abb = AbbEN
 		, Name =NameEN
-From Production.dbo.Supp 
+From Production.dbo.Supp  WITH(NOLOCK)
 Where Junk = 0
 {where}
 ");
@@ -484,8 +467,8 @@ select psd.SEQ1
 		, psd.Refno
 		, psd.ColorID
 		, ps.SuppID
-from Production.dbo.PO_Supp_Detail psd
-inner join Production.dbo.Po_Supp ps on psd.ID = ps.ID and psd.Seq1 = ps.SEQ1
+from Production.dbo.PO_Supp_Detail psd WITH(NOLOCK)
+inner join Production.dbo.Po_Supp ps WITH(NOLOCK) on psd.ID = ps.ID and psd.Seq1 = ps.SEQ1
 Where psd.FabricType = @FabricType
 AND psd.ID = @POID
 
@@ -512,7 +495,7 @@ AND psd.ID = @POID
             //台北
             SbSql.Append($@"
 Select DISTINCT Roll, Dyelot
-From Production.dbo.FtyInventory --工廠
+From Production.dbo.FtyInventory  WITH(NOLOCK)--工廠
 Where 1=1
 ");
             if (!string.IsNullOrEmpty(Seq1))
@@ -558,7 +541,7 @@ Where 1=1
                 SbSql.Append($@"
 Select ID 
      , Name 
-from DropDownList 
+from DropDownList  WITH(NOLOCK)
 Where Type = 'Pms_LabSubProcess' 
 ");
             }
@@ -567,7 +550,7 @@ Where Type = 'Pms_LabSubProcess'
                 SbSql.Append($@"
 Select ID
      , Name
-from DropDownList
+from DropDownList WITH(NOLOCK)
 Where Type = 'Pms_LabAccessory'
 ");
             }
@@ -583,7 +566,7 @@ Where Type = 'Pms_LabAccessory'
             //台北
             SbSql.Append($@"
 Select ID
-From Production.dbo.SewingLine --工廠
+From Production.dbo.SewingLine  WITH(NOLOCK)--工廠
 Where Junk = 0
 AND FactoryID=@FactoryID
 ");
@@ -622,8 +605,7 @@ AND FactoryID=@FactoryID
             //台北
             SbSql.Append($@"
 Select DISTINCT ID, Name
---From [TradeDB].Trade.dbo.Color --台北
-From Production.dbo.Color --工廠
+From Production.dbo.Color WITH(NOLOCK) --工廠
 Where Junk=0
 ");
             if (!string.IsNullOrEmpty(BrandID))
@@ -652,8 +634,7 @@ Where Junk=0
             //台北
             SbSql.Append($@"
 select Seq = cast(Seq as varchar), Code 
---From [TradeDB].ProductionTPE.dbo.TypeSelection --台北 
-From Production.dbo.TypeSelection --工廠 
+From Production.dbo.TypeSelection WITH(NOLOCK) --工廠 
 Where 1=1 
 ");
             if (!string.IsNullOrEmpty(VersionID))
@@ -707,7 +688,7 @@ Where 1=1
 select [BrforeImage]={BeforeColumn}
 , [AfterImage]={AfterColumn}
 {selectColumn}
-From {Table} 
+From {Table}  WITH(NOLOCK)
 Where 1=1
 ");
 
@@ -750,7 +731,7 @@ Where 1=1
             //台北
             SbSql.Append($@"
 select *
-From Quality_MailGroup 
+From Quality_MailGroup  WITH(NOLOCK)
 Where 1=1
 ");
             if (!string.IsNullOrEmpty(FactoryID))
