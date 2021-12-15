@@ -76,7 +76,7 @@ select  ID                             ,
         AddDate                        ,
         EditName                       ,
         EditDate                       ,
-        HasOtherImage = Cast(IIF(exists(select 1 from FinalInspection_OtherImage b where a.id= b.id),1,0) as bit)
+        HasOtherImage = Cast(IIF(exists(select 1 from FinalInspection_OtherImage WITH(NOLOCK) b where a.id= b.id),1,0) as bit)
 from FinalInspection a with (nolock)
 where   ID = @ID
 ";
@@ -106,7 +106,7 @@ where   ID = @ID
 
             string sqlGetData = @"
 select [InspectionTimes] = isnull(max(InspectionTimes), 0) + 1
-    from FinalInspection
+    from FinalInspection WITH(NOLOCK)
     where   CustPONO = @CustPONO
 ";
 
@@ -543,7 +543,7 @@ where   ID = @FinalInspectionID
             string sqlGetData = $@"
 select ID, Description 
 into #baseBACriteria
-from  SciProduction_DropDownList ddl 
+from  SciProduction_DropDownList ddl  WITH(NOLOCK)
 where Type = 'PMS_BACriteria'
 order by Seq
 
@@ -554,9 +554,9 @@ select  [Ukey] = isnull(fn.Ukey, -1),
 		[RowIndex]=ROW_NUMBER() OVER(ORDER BY bac.ID) -1,
 		HasImage = Cast(IIF(img.Image is null,0,1) as bit)
     from #baseBACriteria bac with (nolock)
-    left join   FinalInspection_NonBACriteria fn on    fn.ID = @finalInspectionID and
+    left join   FinalInspection_NonBACriteria fn WITH(NOLOCK) on    fn.ID = @finalInspectionID and
                                                             fn.BACriteria = bac.ID
-	left join FinalInspection_NonBACriteriaImage img  ON img.FinalInspection_NonBACriteriaUkey = fn.Ukey AND img.ID = fn.ID
+	left join FinalInspection_NonBACriteriaImage img WITH(NOLOCK)  ON img.FinalInspection_NonBACriteriaUkey = fn.Ukey AND img.ID = fn.ID
 
 DROP TABLE #baseBACriteria
 ";
@@ -679,7 +679,7 @@ select  Image
             string sqlGetMoistureListCartonItem = @"
 select distinct ID, Seq, Article
 into    #Order_QtyShip_Detail
-from    Production.dbo.Order_QtyShip_Detail  ----使用四節式會發生 「交易內容正由另一個工作階段所使用」 的錯誤，確認該資料表有做訂閱同步，因此直接使用備機上的Table
+from    Production.dbo.Order_QtyShip_Detail WITH(NOLOCK)  ----使用四節式會發生 「交易內容正由另一個工作階段所使用」 的錯誤，確認該資料表有做訂閱同步，因此直接使用備機上的Table
 where   ID in (select OrderID from FinalInspection_Order with (nolock) where ID = @finalInspectionID)
 
 select  [FinalInspection_OrderCartonUkey] = foc.Ukey,
@@ -707,7 +707,7 @@ where foc.ID = @finalInspectionID
 declare @FinalInspection_CTNMoistureStandard numeric(5,2)
 
 select  @FinalInspection_CTNMoistureStandard = FinalInspection_CTNMoistureStandard
-from    System
+from    System WITH(NOLOCK)
 
 select  fm.Ukey,
         fm.Article,
@@ -945,19 +945,19 @@ where   ID = @finalInspectionID
 
 select  StyleUkey = Ukey,SizeUnit
 INTO #Style_Size
-from    SciProduction_Style
+from    SciProduction_Style WITH(NOLOCK)
 where   Ukey IN (
 	select StyleUkey 
-	from SciProduction_Orders 
+	from SciProduction_Orders  WITH(NOLOCK)
 	where ID IN (select ID
-					from SciProduction_Orders
+					from SciProduction_Orders WITH(NOLOCK)
 					where CustPONO = @CustPONO
 				) 
 )
 
 select  SizeSpec,        MeasurementUkey,        AddDate
 into    #tmp_Inspection_Measurement
-from    FinalInspection_Measurement
+from    FinalInspection_Measurement WITH(NOLOCK)
 where   ID = @finalInspectionID and
         Article = @article and
         SizeCode = @size and
@@ -977,9 +977,9 @@ select m.Ukey
 	,[HeadSizeCode] = FORMAT(im.AddDate,'yyyy/MM/dd HH:mm:ss')
 into #tmp 
 from Measurement m with(nolock)
-INNER JOIN #Style_Size ss ON m.StyleUkey = ss.StyleUkey 
-left join #tmp_Inspection_Measurement im on im.MeasurementUkey = m.Ukey 
-LEFT JOIN [ManufacturingExecution].[dbo].[MeasurementTranslate] b ON  m.MeasurementTranslateUkey = b.UKey
+INNER JOIN #Style_Size ss WITH(NOLOCK) ON m.StyleUkey = ss.StyleUkey 
+left join #tmp_Inspection_Measurement im WITH(NOLOCK) on im.MeasurementUkey = m.Ukey 
+LEFT JOIN [ManufacturingExecution].[dbo].[MeasurementTranslate] b WITH(NOLOCK) ON  m.MeasurementTranslateUkey = b.UKey
 where  m.SizeCode = @size and m.junk = 0
 group by m.Ukey,iif(isnull(b.DescEN,'') = '',m.Description,b.DescEN),m.Tol1,m.Tol2,m.Code,m.SizeCode,m.SizeSpec,im.SizeSpec,im.AddDate
 
@@ -1104,7 +1104,7 @@ select  @StyleID = StyleID,
 from    SciProduction_Orders with (nolock)
 where   ID IN (
     select ID
-    from MainServer.Production.dbo.Orders
+    from MainServer.Production.dbo.Orders WITH(NOLOCK)
     where CustPONO = (select CustPONO from FinalInspection with (nolock) where ID = @FinalInspectionID )
 )
 
@@ -1150,7 +1150,7 @@ select  @StyleID = StyleID,
 from    SciProduction_Orders with (nolock)
 where   ID IN (
     select ID
-    from MainServer.Production.dbo.Orders
+    from MainServer.Production.dbo.Orders WITH(NOLOCK)
     where CustPONO = (select CustPONO from FinalInspection with (nolock) where ID = @FinalInspectionID )
 )
 
@@ -1190,7 +1190,7 @@ where f.InspectionResult = @InspectionResult)";
             {
                 whereOrder += @" and ID IN (
 select ID
-from Production.dbo.Orders
+from Production.dbo.Orders WITH(NOLOCK)
 where CustPONO = @CustPONO
 )
 ";
@@ -1301,7 +1301,7 @@ where   ID = @FinalInspectionID
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append("SELECT * FROM [System]" + Environment.NewLine);
+            SbSql.Append("SELECT * FROM [System] WITH(NOLOCK)" + Environment.NewLine);
 
             return ExecuteList<DatabaseObject.ProductionDB.System>(CommandType.Text, SbSql.ToString(), objParameter);
         }
@@ -1337,7 +1337,7 @@ Select	f.AuditDate,
 									      Replicate('I', InspectionLevels%10),  
 									      Replicate('I', 9),'IX'),  
 									      Replicate('I', 5), 'V'),  
-									      Replicate('I', 4),'IV')   from [MainServer].Production.dbo.AcceptableQualityLevels where Ukey = f.AcceptableQualityLevelsUkey), 'I'),
+									      Replicate('I', 4),'IV')   from [MainServer].Production.dbo.AcceptableQualityLevels WITH(NOLOCK) where Ukey = f.AcceptableQualityLevelsUkey), 'I'),
 		
 		[InspectionResultID] = iif(f.InspectionResult = 'Pass', 1, 2),
 		[InspectionStatusID] = iif(f.InspectionResult = 'Pass', 3, 7),

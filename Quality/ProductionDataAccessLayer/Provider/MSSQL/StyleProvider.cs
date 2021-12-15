@@ -25,7 +25,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             };
 
             string sqlcmd = @"
-select SizeUnit from Style 
+select SizeUnit from Style  WITH(NOLOCK)
 where 1=1
 and ukey = @ukey
 ";
@@ -35,7 +35,7 @@ and ukey = @ukey
 
         public IList<Style> GetStyleID()
         {
-            string sqlcmd = @"select distinct id from Style where Junk = 0";
+            string sqlcmd = @"select distinct id from Style WITH(NOLOCK) where Junk = 0";
 
             return ExecuteList<Style>(CommandType.Text, sqlcmd, new SQLParameterCollection());
         }
@@ -50,7 +50,7 @@ and ukey = @ukey
             };
 
             string sqlcmd = @"
-select StyleName from Style where ID = @StyleID and SeasonID = @SeasonID and BrandID = @BrandID
+select StyleName from Style WITH(NOLOCK) where ID = @StyleID and SeasonID = @SeasonID and BrandID = @BrandID
 ";
             DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
 
@@ -156,7 +156,7 @@ select StyleName from Style where ID = @StyleID and SeasonID = @SeasonID and Bra
             SbSql.Append("        ,FitType"+ Environment.NewLine);
             SbSql.Append("        ,GearLine"+ Environment.NewLine);
             SbSql.Append("        ,ThreadVersion"+ Environment.NewLine);
-            SbSql.Append("FROM [Style]"+ Environment.NewLine);
+            SbSql.Append("FROM [Style] WITH(NOLOCK)" + Environment.NewLine);
             SbSql.Append("where 1 = 1" + Environment.NewLine);
             if (Item.Ukey != 0)
             {
@@ -489,7 +489,7 @@ select TOP 1 SizeUnit
 from Style  with (nolock)
 where   ukey IN (
 select styleUkey
-    from orders
+    from orders WITH(NOLOCK)
     WHERE ID IN (
         select ID from orders with (nolock) where CustPONO = @CustPONO
     )

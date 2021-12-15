@@ -107,7 +107,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,Region" + Environment.NewLine);
             SbSql.Append("        ,DQSQtyPCT" + Environment.NewLine);
             SbSql.Append("        ,FinalInspection_CTNMoistureStandard" + Environment.NewLine);
-            SbSql.Append("FROM [System]" + Environment.NewLine);
+            SbSql.Append("FROM [System] WITH(NOLOCK)" + Environment.NewLine);
 
 
 

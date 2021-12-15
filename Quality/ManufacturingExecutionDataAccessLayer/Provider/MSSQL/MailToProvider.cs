@@ -35,7 +35,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,AddDate" + Environment.NewLine);
             SbSql.Append("        ,EditName" + Environment.NewLine);
             SbSql.Append("        ,EditDate" + Environment.NewLine);
-            SbSql.Append("FROM [MailTo]" + Environment.NewLine);
+            SbSql.Append("FROM [MailTo] WITH(NOLOCK)" + Environment.NewLine);
             SbSql.Append("Where 1 = 1" + Environment.NewLine);
             if (!string.IsNullOrEmpty(Item.ID)) { SbSql.Append(" and ID = @ID" + Environment.NewLine); }
 
@@ -58,20 +58,20 @@ ToAddress = STUFF((
 select concat(';',ToAddress)
 	from (
 		select ToAddress =  p.EMail
-		from MainServer.Production.dbo.Orders o 
-		inner join MainServer.Production.dbo.TPEPass1 p on o.SMR = p.ID
+		from MainServer.Production.dbo.Orders o  WITH(NOLOCK)
+		inner join MainServer.Production.dbo.TPEPass1 p WITH(NOLOCK) on o.SMR = p.ID
 		where o.ID=@OrderID
 
 		union all
 
 		select ToAddress = p.EMail
-		from MainServer.Production.dbo.Orders o 
-		inner join MainServer.Production.dbo.TPEPass1 p on o.MRHandle = p.ID
+		from MainServer.Production.dbo.Orders o  WITH(NOLOCK)
+		inner join MainServer.Production.dbo.TPEPass1 p WITH(NOLOCK) on o.MRHandle = p.ID
 		where o.ID=@OrderID
 
 		union all
 
-		select ToAddress from MailTo where id=@MailID
+		select ToAddress from MailTo WITH(NOLOCK) where id=@MailID
 	) a
 	for xml path('')
 ), 1, 1, '')

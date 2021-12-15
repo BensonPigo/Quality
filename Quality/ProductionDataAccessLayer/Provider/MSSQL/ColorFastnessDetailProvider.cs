@@ -33,7 +33,7 @@ namespace MICS.DataAccessLayer.Provider.MSSQL
 select c.* 
 ,[Name] = p.Name
 ,[InspectionName] = Concat (Inspector, ' ', p.Name)
-from ColorFastness c
+from ColorFastness c WITH(NOLOCK)
 left join pass1 p on c.Inspector = p.ID
 where c.id = @ID
 ";
@@ -54,12 +54,12 @@ select cd.ID
     when cd.AddName !='' then CONCAT(cd.AddName,'-',pAdd.Name,pAdd.ExtNo)
     else '' end
 ,cd.AddDate,cd.AddName,cd.EditDate,cd.EditName
-from ColorFastness_Detail cd
-left join ColorFastness c on c.ID =  cd.ID
-left join PO_Supp_Detail po3 on c.POID = po3.ID 
+from ColorFastness_Detail cd WITH(NOLOCK)
+left join ColorFastness c WITH(NOLOCK) on c.ID =  cd.ID
+left join PO_Supp_Detail po3 WITH(NOLOCK) on c.POID = po3.ID 
 	and cd.SEQ1 = po3.SEQ1 and cd.SEQ2 = po3.SEQ2
-left join Pass1 pEdit on pEdit.ID = cd.EditName
-left join pass1 pAdd on pAdd.ID = cd.AddName
+left join Pass1 pEdit WITH(NOLOCK) on pEdit.ID = cd.EditName
+left join pass1 pAdd WITH(NOLOCK) on pAdd.ID = cd.AddName
 where cd.ID = @ID
 order by cd.id,cd.ColorFastnessGroup
 ";
@@ -90,7 +90,7 @@ select POID = ID
 ,SCIRefno
 ,Refno
 ,ColorID
-from PO_Supp_Detail
+from PO_Supp_Detail WITH(NOLOCK)
 where ID = @POID
 and FabricType = 'F'
 ";
@@ -119,7 +119,7 @@ and FabricType = 'F'
             string sqlcmd = @"
 select POID,Seq1,Seq2
 ,Roll,Dyelot
-from FtyInventory
+from FtyInventory WITH(NOLOCK)
 where POID = @POID
 and Seq1 = @Seq1
 and Seq2 = @Seq2
@@ -283,7 +283,7 @@ and ColorFastnessGroup = @ColorFastnessGroup
 and SEQ1 = @SEQ1
 and SEQ2 = @SEQ2
 
-declare @POID varchar(13) = (select POID from ColorFastness where ID = @ID)
+declare @POID varchar(13) = (select POID from ColorFastness WITH(NOLOCK) where ID = @ID)
 exec UpdateInspPercent 'LabColorFastness', @POID
 ";
             string updateDetail = $@"
@@ -396,7 +396,7 @@ and ColorFastnessGroup = @ColorFastnessGroup{idx}
 and SEQ1 = @SEQ1{idx} 
 and SEQ2 = @SEQ2{idx} 
 
-declare @POID varchar(13) = (select POID from ColorFastness where ID = @ID)
+declare @POID varchar(13) = (select POID from ColorFastness WITH(NOLOCK) where ID = @ID)
 exec UpdateInspPercent 'LabColorFastness', @POID
 " + Environment.NewLine;
                     idx++;

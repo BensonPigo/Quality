@@ -40,13 +40,13 @@ SELECT
 	m.SizeSpec,
 	SizeSpec2 = fm.[SizeSpec],
 	[diff] = dbo.calculateSizeSpec(m.SizeSpec, fm.SizeSpec, SizeUnit.SizeUnit)
-FROM [FinalInspection_Measurement] fm
-inner join FinalInspection f on f.ID = fm.ID
-inner join Measurement m on m.Ukey = fm.MeasurementUkey
+FROM [FinalInspection_Measurement] fm WITH(NOLOCK)
+inner join FinalInspection f WITH(NOLOCK) on f.ID = fm.ID
+inner join Measurement m WITH(NOLOCK) on m.Ukey = fm.MeasurementUkey
 inner join SciProduction_Style s with(nolock) on s.ukey = m.StyleUkey
 left join SciProduction_Orders o1 with(nolock) on o1.id = @SP
 outer apply(
-	select top 1 SizeUnit from SciProduction_Orders o
+	select top 1 SizeUnit from SciProduction_Orders o WITH(NOLOCK)
 	where StyleUkey = m.StyleUkey and id = @SP
 		and LocalOrder=1 and SubconInSisterFty=1
 )o2
@@ -85,7 +85,7 @@ order by Time,fm.[Article],fm.[SizeCode],fm.Location
             SbSql.Append("        ,MeasurementUkey" + Environment.NewLine);
             SbSql.Append("        ,AddName" + Environment.NewLine);
             SbSql.Append("        ,AddDate" + Environment.NewLine);
-            SbSql.Append("FROM [FinalInspection_Measurement]" + Environment.NewLine);
+            SbSql.Append("FROM [FinalInspection_Measurement] WITH(NOLOCK)" + Environment.NewLine);
 
 
 

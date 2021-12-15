@@ -51,7 +51,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,ReworkCardType"+ Environment.NewLine);
             SbSql.Append("        ,InspectionDate"+ Environment.NewLine);
             SbSql.Append("        ,DisposeReason"+ Environment.NewLine);
-            SbSql.Append("FROM [RFT_Inspection] r"+ Environment.NewLine);
+            SbSql.Append("FROM [RFT_Inspection] r WITH(NOLOCK)" + Environment.NewLine);
             SbSql.Append("Where 1 = 1" + Environment.NewLine);
 
             if (!string.IsNullOrEmpty(Item.FactoryID)) { SbSql.Append("And r.FactoryID = @FactoryID" + Environment.NewLine); }

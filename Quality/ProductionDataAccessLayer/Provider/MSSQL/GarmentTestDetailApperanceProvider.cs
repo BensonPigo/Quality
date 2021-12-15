@@ -40,12 +40,12 @@ ga.[ID]
 ,[Wash5] 
 ,[WashName2] = IIF(WashName.Value is null,'3','10')
 ,[WashName3] = IIF(WashName.Value is null,'','15')
-from GarmentTest_Detail_Apperance ga 
+from GarmentTest_Detail_Apperance ga  WITH(NOLOCK)
 inner join GarmentTest g on ga.ID = g.ID
 outer apply(
 	select Value =  r.Name 
-	from Style s
-	inner join Reason r on s.SpecialMark = r.ID and r.ReasonTypeID = 'Style_SpecialMark'
+	from Style s WITH(NOLOCK)
+	inner join Reason r WITH(NOLOCK) on s.SpecialMark = r.ID and r.ReasonTypeID = 'Style_SpecialMark'
 	where s.ID = g.StyleID
 	and s.BrandID = g.BrandID
 	and s.SeasonID = g.SeasonID
@@ -111,7 +111,7 @@ where ID = @ID{idx} and No = @No{idx} and Seq = @Seq{idx}
             SbSql.Append("        ,Seq"+ Environment.NewLine);
             SbSql.Append("        ,Wash4"+ Environment.NewLine);
             SbSql.Append("        ,Wash5"+ Environment.NewLine);
-            SbSql.Append("FROM [GarmentTest_Detail_Apperance]"+ Environment.NewLine);
+            SbSql.Append("FROM [GarmentTest_Detail_Apperance] WITH(NOLOCK)" + Environment.NewLine);
 
 
 

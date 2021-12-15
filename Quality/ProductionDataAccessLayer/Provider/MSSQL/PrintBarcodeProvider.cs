@@ -75,7 +75,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         s.ProgramID,
         s.Description,
         [ProductType] = (   select  TOP 1 Name
-							from Reason 
+							from Reason  WITH(NOLOCK)
 							where ReasonTypeID = 'Style_Apparel_Type' and ID = s.ApparelType
                         ),
         s.StyleName";

@@ -32,11 +32,11 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             };
 
             SbSql.Append(
-                @"
+				@"
 -- 塞入Location
 
-select  ID, cnt = count(1),row = ROW_NUMBER()over(order by id)into #tmpfrom MainServer.Production.dbo.Orders awhere PulloutComplete = 0and Category = 's'and junk = 0and brandid = @BrandIDand FtyGroup = @FtyGroupand qty > 0
-and not exists (		select 1		from MainServer.Production.dbo.Order_Location b		where a.ID = b.OrderId	)and    exists (			    select 1	    from MainServer.Production.dbo.Style_Location b	    where a.StyleUkey = b.StyleUkey    )
+select  ID, cnt = count(1),row = ROW_NUMBER()over(order by id)into #tmpfrom MainServer.Production.dbo.Orders a WITH(NOLOCK)where PulloutComplete = 0and Category = 's'and junk = 0and brandid = @BrandIDand FtyGroup = @FtyGroupand qty > 0
+and not exists (		select 1		from MainServer.Production.dbo.Order_Location b WITH(NOLOCK)		where a.ID = b.OrderId	)and    exists (			    select 1	    from MainServer.Production.dbo.Style_Location b WITH(NOLOCK)	    where a.StyleUkey = b.StyleUkey    )
 group by ID
 
 

@@ -56,10 +56,10 @@ select m.[ID]
 	, m.[FunctionSeq]
 	, m.[Junk]
 	, m.[Url]
-from Quality_Position p
-inner join Quality_Pass2 p2 on p.ID = PositionID
-inner join Quality_Menu m on m.ID = p2.MenuID
-left join Quality_Menu_Detail md on md.ID = m.ID and md.Type = @Brand
+from Quality_Position p WITH(NOLOCK)
+inner join Quality_Pass2 p2 WITH(NOLOCK) on p.ID = PositionID
+inner join Quality_Menu m WITH(NOLOCK) on m.ID = p2.MenuID
+left join Quality_Menu_Detail md WITH(NOLOCK) on md.ID = m.ID and md.Type = @Brand
 where p.ID = @PositionID
 and p2.Used = iif(p.IsAdmin = 1, p2.Used, 1)
 and m.Junk = 0
@@ -80,11 +80,11 @@ select  m.ID
       ,m.FunctionSeq
       ,m.Junk
       ,Url = m.Url 
-from Quality_Pass1 p
-inner join Quality_Position pp on p.Position=pp.ID
-inner join Quality_Pass2 p2 on p2.PositionID=pp.ID
-inner join Quality_Menu m on m.ID=p2.MenuID
-left join Quality_Menu_detail md on md.ID=m.ID AND md.Type=p.BulkFGT_Brand
+from Quality_Pass1 p WITH(NOLOCK)
+inner join Quality_Position pp WITH(NOLOCK) on p.Position=pp.ID
+inner join Quality_Pass2 p2 WITH(NOLOCK) on p2.PositionID=pp.ID
+inner join Quality_Menu m WITH(NOLOCK) on m.ID=p2.MenuID
+left join Quality_Menu_detail md WITH(NOLOCK) on md.ID=m.ID AND md.Type=p.BulkFGT_Brand
 WHERE m.Junk=0
 AND p.ID = '{pass1.ID}'
 AND (p2.Used=1 or pp.IsAdmin=1)

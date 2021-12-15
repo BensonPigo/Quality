@@ -63,7 +63,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,EditName"+ Environment.NewLine);
             SbSql.Append("        ,EditDate"+ Environment.NewLine);
             SbSql.Append("        ,FabricPanelCode"+ Environment.NewLine);
-            SbSql.Append("FROM [Style_BOA]"+ Environment.NewLine);
+            SbSql.Append("FROM [Style_BOA] WITH(NOLOCK)" + Environment.NewLine);
 
             return ExecuteList<Style_BOA>(CommandType.Text, SbSql.ToString(), objParameter);
         }
@@ -76,8 +76,8 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 SELECT Refno = ''
 UNION
 select sb.Refno
-from Style_BOA sb
-inner join Fabric f on sb.SCIRefno = f.SCIRefno
+from Style_BOA sb WITH(NOLOCK)
+inner join Fabric f WITH(NOLOCK) on sb.SCIRefno = f.SCIRefno
 Where 1 = 1
 ");
             if (!string.IsNullOrEmpty(Item.MtlTypeID))
@@ -94,7 +94,7 @@ Where 1 = 1
 
             if (!string.IsNullOrEmpty(Item.BrandID) && !string.IsNullOrEmpty(Item.SeasonID) && !string.IsNullOrEmpty(Item.StyleID))
             {
-                SbSql.Append("And sb.StyleUkey = (select ukey from Style where ID = @StyleID and SeasonID = @SeasonID and BrandID = @BrandID)" + Environment.NewLine);
+                SbSql.Append("And sb.StyleUkey = (select ukey from Style WITH(NOLOCK) where ID = @StyleID and SeasonID = @SeasonID and BrandID = @BrandID)" + Environment.NewLine);
                 objParameter.Add("@StyleID", DbType.String, Item.StyleID);
                 objParameter.Add("@SeasonID", DbType.String, Item.SeasonID);
                 objParameter.Add("@BrandID", DbType.String, Item.BrandID);
