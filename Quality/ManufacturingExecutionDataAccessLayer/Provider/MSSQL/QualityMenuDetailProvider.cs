@@ -47,7 +47,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             SbSql.Append("         ID"+ Environment.NewLine);
             SbSql.Append("        ,Type"+ Environment.NewLine);
             SbSql.Append("        ,FunctionName"+ Environment.NewLine);
-            SbSql.Append("FROM [Quality_Menu_Detail]"+ Environment.NewLine);
+            SbSql.Append("FROM [Quality_Menu_Detail] WITH(NOLOCK)" + Environment.NewLine);
 
 
 

@@ -55,7 +55,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,VerticalTest1"+ Environment.NewLine);
             SbSql.Append("        ,VerticalTest2"+ Environment.NewLine);
             SbSql.Append("        ,VerticalTest3"+ Environment.NewLine);
-            SbSql.Append("FROM [FIR_Laboratory_Heat]"+ Environment.NewLine);
+            SbSql.Append("FROM [FIR_Laboratory_Heat] WITH(NOLOCK)" + Environment.NewLine);
 
 
 

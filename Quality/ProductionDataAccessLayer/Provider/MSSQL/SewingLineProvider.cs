@@ -24,7 +24,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append(
                 @"
 select distinct ID
-from Sewingline
+from Sewingline WITH(NOLOCK)
 where Junk = 0
 " + Environment.NewLine);
 

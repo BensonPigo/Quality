@@ -27,21 +27,21 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 
         public IList<Style> GetStyleID()
         {
-            string sqlcmd = @"select distinct ID from Style where Junk = 0";
+            string sqlcmd = @"select distinct ID from Style WITH(NOLOCK) where Junk = 0";
 
             return ExecuteList<Style>(CommandType.Text, sqlcmd, new SQLParameterCollection());
         }
 
         public IList<Brand> GetBrandID()
         {
-            string sqlcmd = @"select distinct ID from Brand where Junk = 0";
+            string sqlcmd = @"select distinct ID from Brand WITH(NOLOCK) where Junk = 0";
 
             return ExecuteList<Brand>(CommandType.Text, sqlcmd, new SQLParameterCollection());
         }
 
         public IList<Season> GetSeasonID()
         {
-            string sqlcmd = @"select distinct ID from Season where Junk = 0";
+            string sqlcmd = @"select distinct ID from Season WITH(NOLOCK) where Junk = 0";
 
             return ExecuteList<Season>(CommandType.Text, sqlcmd, new SQLParameterCollection());
         }
@@ -55,7 +55,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
                 { "@SeasonID", DbType.String, filter.SeasonID} ,
             };
             string sqlcmd = @"
-select distinct Article from GarmentTest
+select distinct Article from GarmentTest WITH(NOLOCK)
 where 1=1
 and BrandID = @BrandID
 and StyleID = @StyleID
@@ -102,25 +102,25 @@ select g.ID
 ,[GarmentTestAddName] = CONCAT(g.AddName,'-',CreatBy.Name,'',g.AddDate)
 ,[GarmentTestEditName] = CONCAT(g.EditName,'-',EditBy.Name,'',g.EditDate)
 ,g.AddName,g.EditName
-from GarmentTest g
-left join Pass1 CreatBy on CreatBy.ID = g.AddName
-left join Pass1 EditBy on EditBy.ID = g.EditName
+from GarmentTest g WITH(NOLOCK)
+left join Pass1 CreatBy WITH(NOLOCK) on CreatBy.ID = g.AddName
+left join Pass1 EditBy WITH(NOLOCK) on EditBy.ID = g.EditName
 outer apply(
 	select MinBuyerDelivery,MinSciDelivery
 	from dbo.GetSCI(g.FirstOrderID,'')
 ) GetSCI
 outer apply(
 	select Value =  r.Name 
-	from Style s
-	inner join Reason r on s.SpecialMark = r.ID and r.ReasonTypeID = 'Style_SpecialMark'
+	from Style s WITH(NOLOCK)
+	inner join Reason r WITH(NOLOCK) on s.SpecialMark = r.ID and r.ReasonTypeID = 'Style_SpecialMark'
 	where s.ID = g.StyleID
 	and s.BrandID = g.BrandID
 	and s.SeasonID = g.SeasonID
 )SpecialMark
 outer apply(
 	select Value =  r.Name 
-	from Style s
-	inner join Reason r on s.SpecialMark = r.ID and r.ReasonTypeID = 'Style_SpecialMark'
+	from Style s WITH(NOLOCK)
+	inner join Reason r WITH(NOLOCK) on s.SpecialMark = r.ID and r.ReasonTypeID = 'Style_SpecialMark'
 	where s.ID = g.StyleID
 	and s.BrandID = g.BrandID
 	and s.SeasonID = g.SeasonID
@@ -243,7 +243,7 @@ begin
 	begin
 		INSERT INTO [dbo].[GarmentTest_Detail_Shrinkage]([ID],[No],[Location],[Type],[seq])
 		select  @ID,@NO, t2.Location, t1.Type, t1.Seq
-		from GarmentTestShrinkage t1 
+		from GarmentTestShrinkage t1  WITH(NOLOCK)
 		inner join  #Location_S t2 on t1.Location = t2.Location
 		where t1.BrandID = @BrandID
 		and t1.LocationGroup = 'TB'
@@ -252,7 +252,7 @@ begin
 	begin
 		INSERT INTO [dbo].[GarmentTest_Detail_Shrinkage]([ID],[No],[Location],[Type],[seq])
 		select distinct  @ID,@NO, t2.Location, t1.Type, t1.Seq
-		from GarmentTestShrinkage t1 
+		from GarmentTestShrinkage t1  WITH(NOLOCK)
 		inner join  #Location_S t2 on t1.LocationGroup = t2.Location
 		where t1.BrandID = @BrandID
 	end
@@ -261,7 +261,7 @@ else
 begin
 	INSERT INTO [dbo].[GarmentTest_Detail_Shrinkage]([ID],[No],[Location],[Type],[seq])
 	select distinct  @ID,@NO, t2.Location, t1.Type, t1.Seq
-	from GarmentTestShrinkage t1 
+	from GarmentTestShrinkage t1  WITH(NOLOCK)
 	inner join  #Location_S t2 on t1.LocationGroup = t2.Location
 	where t1.BrandID = ''
 end
@@ -300,8 +300,8 @@ values (@ID,@NO,'Appearance of garment after wash',8)
 
                         string sql_Location = @"
 select sl.Location
-from Style s
-inner join Style_Location sl on sl.StyleUkey = s.Ukey
+from Style s WITH(NOLOCK)
+inner join Style_Location sl WITH(NOLOCK) on sl.StyleUkey = s.Ukey
 where s.id = @StyleID AND s.BrandID = @BrandID AND s.SeasonID = @SeasonID
 ";
                         DataTable dt_Location = ExecuteDataTableByServiceConn(CommandType.Text, sql_Location, objParameter_Loction);
@@ -337,8 +337,8 @@ where s.id = @StyleID AND s.BrandID = @BrandID AND s.SeasonID = @SeasonID
 SELECT locations = STUFF(
 	(
         select DISTINCT ',' + sl.Location
-	    from Style s
-	    INNER JOIN Style_Location sl ON s.Ukey = sl.StyleUkey 
+	    from Style s WITH(NOLOCK)
+	    INNER JOIN Style_Location sl WITH(NOLOCK) ON s.Ukey = sl.StyleUkey 
 	    where s.id = @StyleID AND s.BrandID = @BrandID AND s.SeasonID = @SeasonID
 	    FOR XML PATH('')
 	) 
@@ -352,7 +352,7 @@ SELECT locations = STUFF(
                     List<SqlParameter> parameters = new List<SqlParameter>();
                     List<GarmentTest_Detail_FGPT> fGPTs = new List<GarmentTest_Detail_FGPT>();
 
-                    string sql_RugbyFootBall = $@"select 1 from Style s where s.id = @StyleID AND s.BrandID = @BrandID AND s.SeasonID = @SeasonID AND s.ProgramID like '%FootBall%'";
+                    string sql_RugbyFootBall = $@"select 1 from Style s WITH(NOLOCK) where s.id = @StyleID AND s.BrandID = @BrandID AND s.SeasonID = @SeasonID AND s.ProgramID like '%FootBall%'";
                     DataTable dtRugbyFootBall = ExecuteDataTableByServiceConn(CommandType.Text, sql_RugbyFootBall, objParameter_Loctions);
                     bool isRugbyFootBall = dtRugbyFootBall.Rows.Count > 0 && item.MtlTypeID.ToString().ToUpper() == "WOVEN";
 
@@ -431,7 +431,7 @@ INSERT INTO GarmentTest_Detail_FGPT
                     }
 
                     // 找不到才Insert
-                    string sql_Chk_FGPT = $"SELECT 1 FROM GarmentTest_Detail_FGPT WHERE ID ='{master.ID}' AND NO='{item.No}'";
+                    string sql_Chk_FGPT = $"SELECT 1 FROM GarmentTest_Detail_FGPT WITH(NOLOCK) WHERE ID ='{master.ID}' AND NO='{item.No}'";
                     DataTable dtChk_FGPT = ExecuteDataTableByServiceConn(CommandType.Text, sql_Chk_FGPT, new SQLParameterCollection());
                     if (dtChk_FGPT.Rows.Count == 0)
                     {
@@ -760,16 +760,16 @@ set g.SeamBreakageResult = ISNULL(SResult.SeamBreakageResult, '')
 	,g.WashResult = ISNULL(All_Result.WashResult, '')
 	,g.Result = ISNULL(All_Result.Result,'')
 	,g.Date = All_Result.inspdate
-from GarmentTest g
+from GarmentTest g WITH(NOLOCK)
 outer apply(
 	select top 1 SeamBreakageResult,gd1.inspdate ,gd1.OdourResult,gd1.WashResult,gd1.Result
-	from GarmentTest_Detail gd1
+	from GarmentTest_Detail gd1 WITH(NOLOCK)
 	where gd1.id=g.ID
 	order by gd1.inspdate desc , gd1.EditDate desc , gd1.AddDate desc
 )All_Result
 outer apply(
 	select top 1 SeamBreakageResult,gd1.inspdate 
-	from GarmentTest_Detail gd1
+	from GarmentTest_Detail gd1 WITH(NOLOCK)
 	where gd1.id=g.ID and gd1.NonSeamBreakageTest = 0
 	order by gd1.inspdate desc , gd1.EditDate desc , gd1.AddDate desc
 ) SResult
@@ -822,7 +822,7 @@ where ID = @ID
             SbSql.Append("        ,SeamBreakageLastTestDate"+ Environment.NewLine);
             SbSql.Append("        ,OdourResult"+ Environment.NewLine);
             SbSql.Append("        ,WashResult"+ Environment.NewLine);
-            SbSql.Append("FROM [GarmentTest]"+ Environment.NewLine);
+            SbSql.Append("FROM [GarmentTest] WITH(NOLOCK)" + Environment.NewLine);
             SbSql.Append("where ID = @ID" + Environment.NewLine);
 
 
@@ -874,7 +874,7 @@ where ID = @ID
             SbSql.Append("        ,WashResult" + Environment.NewLine);
             SbSql.Append("        ,TestBeforePicture" + Environment.NewLine);
             SbSql.Append("        ,TestAfterPicture" + Environment.NewLine);
-            SbSql.Append("FROM [GarmentTest_Detail]" + Environment.NewLine);
+            SbSql.Append("FROM [GarmentTest_Detail] WITH(NOLOCK)" + Environment.NewLine);
             SbSql.Append("where ID = @ID" + Environment.NewLine);
 
             return ExecuteList<GarmentTest_Detail_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);

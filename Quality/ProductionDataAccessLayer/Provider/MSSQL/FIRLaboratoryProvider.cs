@@ -66,7 +66,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,HeatTestAfterPicture"+ Environment.NewLine);
             SbSql.Append("        ,WashTestBeforePicture"+ Environment.NewLine);
             SbSql.Append("        ,WashTestAfterPicture"+ Environment.NewLine);
-            SbSql.Append("FROM [FIR_Laboratory]"+ Environment.NewLine);
+            SbSql.Append("FROM [FIR_Laboratory] WITH(NOLOCK)" + Environment.NewLine);
 
 
 

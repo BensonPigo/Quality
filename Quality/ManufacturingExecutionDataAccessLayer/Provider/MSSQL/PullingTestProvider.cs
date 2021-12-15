@@ -24,7 +24,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 
             string SbSql = $@"
 select  [Text]=p.ReportNo, [Value]=p.ReportNo
-from PullingTest p 
+from PullingTest p  WITH(NOLOCK)
 WHERE 1=1
 ";
 
@@ -92,11 +92,11 @@ select    p.ReportNo
 		,PullForce_Standard = s.PullForce
 		,Time_Standard = s.Time
         ,TestDateText = convert(varchar, p.TestDate, 111)
-from PullingTest p 
-left join Production.dbo.Pass1 a ON a.ID=p.AddName 
-left join Production.dbo.Pass1 e ON e.ID=p.EditName
-left join Production.dbo.Pass1 i ON i.ID=p.Inspector
-left join Production.dbo.Brand_PullingTestStandarList s ON s.BrandID = p.BrandID AND s.TestItem = p.TestItem AND s.PullForceUnit = p.PullForceUnit
+from PullingTest p  WITH(NOLOCK)
+left join Production.dbo.Pass1 a WITH(NOLOCK) ON a.ID=p.AddName 
+left join Production.dbo.Pass1 e WITH(NOLOCK) ON e.ID=p.EditName
+left join Production.dbo.Pass1 i WITH(NOLOCK) ON i.ID=p.Inspector
+left join Production.dbo.Brand_PullingTestStandarList s WITH(NOLOCK) ON s.BrandID = p.BrandID AND s.TestItem = p.TestItem AND s.PullForceUnit = p.PullForceUnit
 where p.ReportNo = @ReportNo
 ";
 
@@ -117,11 +117,11 @@ select distinct POID =  o.ID
 	,o.SeasonID
 	,o.StyleID
 	,Article = IIF(Article.CTN = 1 , oqq.Article, '')
-from Production.dbo.Orders o 
-left join Production.dbo.Order_Qty oqq ON o.id = oqq.ID
+from Production.dbo.Orders o  WITH(NOLOCK)
+left join Production.dbo.Order_Qty oqq WITH(NOLOCK) ON o.id = oqq.ID
 outer apply(
 	select Ctn = COUNT(DISTINCT Article)
-	from Production.dbo.Order_Qty oq 
+	from Production.dbo.Order_Qty oq  WITH(NOLOCK)
 	where o.id = oq.ID
 )Article
 where o.Category='B'
@@ -142,7 +142,7 @@ and o.id = @POID
 
             string SbSql = $@"
 select PullForceUnit = PullingTest_PullForceUnit
-from Production.dbo.QABrandSetting 
+from Production.dbo.QABrandSetting  WITH(NOLOCK)
 where BrandID = @BrandID 
 ";
 
@@ -159,7 +159,7 @@ where BrandID = @BrandID
             string SbSql = $@"
 select PullForce_Standard = PullForce
     ,Time_Standard = Time
-from Production.dbo.Brand_PullingTestStandarList 
+from Production.dbo.Brand_PullingTestStandarList  WITH(NOLOCK)
 where BrandID = @BrandID 
 AND TestItem = @TestItem 
 AND PullForceUnit = @PullForceUnit 
@@ -244,7 +244,7 @@ INSERT INTO PullingTest
 VALUES(    
             (   ---流水號處理
                 select REPLACE( @ReportNo ,'%','') + ISNULL(REPLICATE('0',4-len( CAST( CAST( RIGHT( max(ReportNo),3) as int) + 1 as varchar) ))+ CAST( CAST( RIGHT( max(ReportNo),3) as int) + 1 as varchar),'0001')
-                from PullingTest
+                from PullingTest WITH(NOLOCK)
                 where ReportNo LIKE @ReportNo
             )
            ,@POID

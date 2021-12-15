@@ -60,7 +60,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,SkewnessTest3"+ Environment.NewLine);
             SbSql.Append("        ,SkewnessTest4"+ Environment.NewLine);
             SbSql.Append("        ,SkewnessRate"+ Environment.NewLine);
-            SbSql.Append("FROM [FIR_Laboratory_Wash]"+ Environment.NewLine);
+            SbSql.Append("FROM [FIR_Laboratory_Wash] WITH(NOLOCK)" + Environment.NewLine);
 
 
 

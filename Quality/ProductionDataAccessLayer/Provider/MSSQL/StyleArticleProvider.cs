@@ -50,7 +50,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,TissuePaper"+ Environment.NewLine);
             SbSql.Append("        ,ArticleName"+ Environment.NewLine);
             SbSql.Append("        ,Contents"+ Environment.NewLine);
-            SbSql.Append("FROM [Style_Article]"+ Environment.NewLine);
+            SbSql.Append("FROM [Style_Article] WITH(NOLOCK)" + Environment.NewLine);
 
 
 

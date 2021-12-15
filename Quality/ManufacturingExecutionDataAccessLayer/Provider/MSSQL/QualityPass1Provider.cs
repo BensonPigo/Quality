@@ -48,7 +48,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             };
 
             SbSql.Append("SELECT *" + Environment.NewLine);
-            SbSql.Append("FROM [Quality_Pass1]"+ Environment.NewLine);
+            SbSql.Append("FROM [Quality_Pass1] WITH(NOLOCK)" + Environment.NewLine);
 
             if (!string.IsNullOrEmpty(Item.ID))
             {

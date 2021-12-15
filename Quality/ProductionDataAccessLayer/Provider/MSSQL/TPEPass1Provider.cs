@@ -38,7 +38,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,Name"+ Environment.NewLine);
             SbSql.Append("        ,ExtNo"+ Environment.NewLine);
             SbSql.Append("        ,EMail"+ Environment.NewLine);
-            SbSql.Append("FROM [TPEPass1]"+ Environment.NewLine);
+            SbSql.Append("FROM [TPEPass1] WITH(NOLOCK)" + Environment.NewLine);
 
 
 
