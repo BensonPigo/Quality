@@ -707,7 +707,7 @@ Where 1=1
 select [BrforeImage]={BeforeColumn}
 , [AfterImage]={AfterColumn}
 {selectColumn}
-From {Table} 
+From [ExtendServer].PMSFile.dbo.{Table} 
 Where 1=1
 ");
 

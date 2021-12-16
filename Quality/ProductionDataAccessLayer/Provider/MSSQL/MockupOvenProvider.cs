@@ -417,7 +417,7 @@ FROM MockupOven m
             }
             SbSql.Append($@"
 SELECT {top1}
-         ReportNo
+         m.ReportNo
         ,POID
         ,StyleID
         ,SeasonID
@@ -452,15 +452,15 @@ SELECT {top1}
 		,m.HTPressure
 		,m.HTCoolingTime
         ,Type
-        ,TestBeforePicture
-        ,TestAfterPicture
+        ,mi.TestBeforePicture
+        ,mi.TestAfterPicture
         ,AddDate
         ,AddName
         ,EditDate
         ,EditName
         ,Signature = (select t.Signature from Technician t where t.ID = Technician)
 FROM MockupOven m
-left join [ExtendServer].PMSFile.dbo.MockupOven mi on m.ReportNo=mo.ReportNo
+left join [ExtendServer].PMSFile.dbo.MockupOven mi on m.ReportNo=mi.ReportNo
 outer apply (select Name, ExtNo from pass1 p inner join Technician t on t.ID = p.ID where t.id = m.Technician) Technician_ne
 outer apply (select Name, ExtNo, EMail from pass1 where id = m.MR) MR_ne
 outer apply (select Name from Pass1 where id = m.AddName) AddName
