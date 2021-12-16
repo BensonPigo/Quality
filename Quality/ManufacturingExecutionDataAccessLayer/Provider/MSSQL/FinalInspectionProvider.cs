@@ -119,7 +119,7 @@ select [InspectionTimes] = isnull(max(InspectionTimes), 0) + 1
 
             string sqlGetCurMaxID = $@"
 select  [MaxSerID] =  cast(Replace(isnull(MAX(ID), '0'), '{idHead}', '') as int)
-from    ExtendServer.ManufacturingExecution.dbo.FinalInspection with (nolock)
+from    ManufacturingExecution.dbo.FinalInspection with (nolock)
 where   ID like '{idHead}%'
 ";
             int newSer = (int)ExecuteDataTable(CommandType.Text, sqlGetCurMaxID, new SQLParameterCollection()).Rows[0]["MaxSerID"] + 1;
