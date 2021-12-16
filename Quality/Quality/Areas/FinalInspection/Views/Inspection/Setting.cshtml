@@ -108,6 +108,7 @@
     {
         @Html.HiddenFor(o => o.FinalInspectionID)
         @Html.HiddenFor(o => o.AcceptableQualityLevelsUkey)
+        @Html.HiddenFor(o => o.BrandID)
         <div style="padding:2em 3em 2em 3em">
             <div class="col-auto"><h1 style="font-size:2em">Inspection Setting</h1></div>
 
@@ -1002,6 +1003,7 @@
 
             currentStage = value;
 
+            /* ISP20211490 拔掉
             var availableQtycheck = $('input[col=AvailableQty]');
 
             $.each(availableQtycheck, function () {
@@ -1012,6 +1014,7 @@
                     $($(this)[0]).removeAttr("readonly");
                 }
             });
+            */
         }
 
         function ClearSewing(obj) {

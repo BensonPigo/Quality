@@ -86,6 +86,8 @@ namespace Quality.Areas.FinalInspection.Controllers
                 if (selected.Any())
                 {
                     string CustPONO = selected[0].CustPONO;
+                    string BrandID = selected[0].CustPONO;
+                    setting.BrandID = BrandID;
                     List<string> listOrderID = selected.Select(s => s.ID).ToList();
                     setting = finalInspectionSettingService.GetSettingForInspection(CustPONO, listOrderID, this.FactoryID, this.UserID);
                 }
