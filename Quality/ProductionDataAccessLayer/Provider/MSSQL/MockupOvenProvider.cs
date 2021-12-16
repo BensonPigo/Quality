@@ -440,7 +440,7 @@ SELECT {top1}
         ,AddName
         ,EditDate
         ,EditName
-        ,Signature = (select t.Signature from Technician WITH(NOLOCK) t where t.ID = Technician)
+        ,Signature = (select t.Signature from Technician t WITH(NOLOCK) where t.ID = Technician)
 FROM MockupOven m WITH(NOLOCK)
 outer apply (select Name, ExtNo from pass1 p WITH(NOLOCK) inner join Technician t WITH(NOLOCK) on t.ID = p.ID where t.id = m.Technician) Technician_ne
 outer apply (select Name, ExtNo, EMail from pass1 WITH(NOLOCK) where id = m.MR) MR_ne
