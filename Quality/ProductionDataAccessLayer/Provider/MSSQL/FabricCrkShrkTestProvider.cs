@@ -217,16 +217,19 @@ where   ID = @ID
             using (TransactionScope transaction = new TransactionScope())
             {
 
-                foreach (FabricCrkShrkTest_Detail fabricCrkShrkTest_Detail in fabricCrkShrkTest_Result.Details)
+                if (fabricCrkShrkTest_Result.Details != null)
                 {
-                    SQLParameterCollection listDetailPar = new SQLParameterCollection();
-                    listDetailPar.Add("@ID", fabricCrkShrkTest_Detail.ID);
-                    listDetailPar.Add("@ReceiveSampleDate", fabricCrkShrkTest_Detail.ReceiveSampleDate);
-                    listDetailPar.Add("@nonCrocking", fabricCrkShrkTest_Detail.NonCrocking);
-                    listDetailPar.Add("@nonHeat", fabricCrkShrkTest_Detail.NonHeat);
-                    listDetailPar.Add("@nonWash", fabricCrkShrkTest_Detail.NonWash);
+                    foreach (FabricCrkShrkTest_Detail fabricCrkShrkTest_Detail in fabricCrkShrkTest_Result.Details)
+                    {
+                        SQLParameterCollection listDetailPar = new SQLParameterCollection();
+                        listDetailPar.Add("@ID", fabricCrkShrkTest_Detail.ID);
+                        listDetailPar.Add("@ReceiveSampleDate", fabricCrkShrkTest_Detail.ReceiveSampleDate);
+                        listDetailPar.Add("@nonCrocking", fabricCrkShrkTest_Detail.NonCrocking);
+                        listDetailPar.Add("@nonHeat", fabricCrkShrkTest_Detail.NonHeat);
+                        listDetailPar.Add("@nonWash", fabricCrkShrkTest_Detail.NonWash);
 
-                    ExecuteNonQuery(CommandType.Text, sqlUpdateFIR_Laboratory, listDetailPar);
+                        ExecuteNonQuery(CommandType.Text, sqlUpdateFIR_Laboratory, listDetailPar);
+                    }
                 }
 
                 ExecuteNonQuery(CommandType.Text, sqlUpdatePO, listPar);
@@ -355,8 +358,7 @@ update  FIR_Laboratory set  CrockingRemark = @CrockingRemark,
                             CrockingTestAfterPicture = @CrockingTestAfterPicture
 where   ID = @ID 
 
-update  [ExtendServer].PMSFile.dbo.FIR_Laboratory set  CrockingRemark = @CrockingRemark,
-                            CrockingTestBeforePicture = @CrockingTestBeforePicture,
+update  [ExtendServer].PMSFile.dbo.FIR_Laboratory set  CrockingTestBeforePicture = @CrockingTestBeforePicture,
                             CrockingTestAfterPicture = @CrockingTestAfterPicture
 where   ID = @ID 
 ";
@@ -796,8 +798,7 @@ update  FIR_Laboratory set  HeatRemark = @HeatRemark,
                             HeatTestAfterPicture = @HeatTestAfterPicture
 where   ID = @ID 
 ;
-update  [ExtendServer].PMSFile.dbo.FIR_Laboratory set  HeatRemark = @HeatRemark,
-                            HeatTestBeforePicture = @HeatTestBeforePicture,
+update  [ExtendServer].PMSFile.dbo.FIR_Laboratory set HeatTestBeforePicture = @HeatTestBeforePicture,
                             HeatTestAfterPicture = @HeatTestAfterPicture
 where   ID = @ID 
 ";
@@ -1197,9 +1198,7 @@ update  FIR_Laboratory set  WashRemark = @WashRemark,
                             WashTestAfterPicture = @WashTestAfterPicture
 where   ID = @ID 
 
-update  [ExtendServer].PMSFile.dbo.FIR_Laboratory set  WashRemark = @WashRemark, 
-                            SkewnessOptionID = @SkewnessOptionID, 
-                            WashTestBeforePicture = @WashTestBeforePicture, 
+update  [ExtendServer].PMSFile.dbo.FIR_Laboratory set WashTestBeforePicture = @WashTestBeforePicture, 
                             WashTestAfterPicture = @WashTestAfterPicture
 where   ID = @ID 
 ";

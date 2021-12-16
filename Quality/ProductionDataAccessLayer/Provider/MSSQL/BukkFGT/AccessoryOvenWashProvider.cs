@@ -241,7 +241,10 @@ select   al.POID
         ,AIR_LaboratoryID = al.ID
         ,al.Seq1
         ,al.Seq2
+		,ali.OvenTestBeforePicture
+		,ali.OvenTestAfterPicture
 from AIR_Laboratory al
+left join  [ExtendServer].PMSFile.dbo.AIR_Laboratory ali ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
 inner join AIR a ON a.ID = al.ID
 left join Receiving r on a.ReceivingID = r.Id
 left join Supp s on a.Suppid = s.ID
@@ -506,7 +509,10 @@ select   al.POID
         ,AIR_LaboratoryID = al.ID
         ,al.Seq1
         ,al.Seq2
+		,ali.WashTestBeforePicture
+		,ali.WashTestAfterPicture
 from AIR_Laboratory al
+left join  [ExtendServer].PMSFile.dbo.AIR_Laboratory ali ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
 inner join AIR a ON a.ID = al.ID
 left join Receiving r on a.ReceivingID = r.Id
 left join Supp s on a.Suppid = s.ID

@@ -169,7 +169,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append(")" + Environment.NewLine);
 
             SbSql.Append($@"
-INSERT INTO MockupWash (ReportNo,TestBeforePicture,TestAfterPicture)
+INSERT INTO ExtendServer.PMSFile.dbo.MockupWash (ReportNo,TestBeforePicture,TestAfterPicture)
 VALUES (@ReportNo,@TestBeforePicture,@TestAfterPicture)
 ");
 

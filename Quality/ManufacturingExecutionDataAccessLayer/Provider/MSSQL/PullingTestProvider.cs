@@ -301,6 +301,7 @@ VALUES(
             };
 
             string modifyCol = string.Empty;
+            string modifyPicCol = string.Empty;
 
             #region 欄位SQL
             if (!string.IsNullOrEmpty(Req.Article))
@@ -373,8 +374,8 @@ VALUES(
             }
 
 
-            modifyCol += $@"        ,TestBeforePicture = @TestBeforePicture " + Environment.NewLine;
-            modifyCol += $@"        ,TestAfterPicture = @TestAfterPicture " + Environment.NewLine;
+            modifyPicCol += $@"        ,TestBeforePicture = @TestBeforePicture " + Environment.NewLine;
+            modifyPicCol += $@"        ,TestAfterPicture = @TestAfterPicture " + Environment.NewLine;
             if (Req.TestBeforePicture != null)
             {
                 objParameter.Add("@TestBeforePicture", Req.TestBeforePicture);
@@ -395,9 +396,16 @@ VALUES(
             #endregion
 
             SbSql.Append($@"
+SET XACT_ABORT ON
+
 UPDATE PullingTest
     SET EditDate = GETDATE()
 {modifyCol}
+WHERE ReportNo=@ReportNo
+
+UPDATE [ExtendServer].PMSFile.dbo.PullingTest
+    SET ReportNo = ReportNo
+{modifyPicCol}
 WHERE ReportNo=@ReportNo
 ");
 
