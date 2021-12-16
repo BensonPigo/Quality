@@ -611,8 +611,8 @@ drop table #tmpFGPTResult,#tmpFGWTResult
             SbSql.Append("        ,SeamBreakageResult"+ Environment.NewLine);
             SbSql.Append("        ,OdourResult"+ Environment.NewLine);
             SbSql.Append("        ,WashResult"+ Environment.NewLine);
-            SbSql.Append("        ,gdiTestBeforePicture" + Environment.NewLine);
-            SbSql.Append("        ,gdiTestAfterPicture" + Environment.NewLine);
+            SbSql.Append("        ,gdi.TestBeforePicture" + Environment.NewLine);
+            SbSql.Append("        ,gdi.TestAfterPicture" + Environment.NewLine);
             SbSql.Append($@"FROM [GarmentTest_Detail] gd
 left join [ExtendServer].PMSFile.dbo.GarmentTest_Detail gdi on gd.ID=gdi.ID AND gd.No = gdi.No
 
