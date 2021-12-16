@@ -282,7 +282,7 @@ values(
     {picValue}
     ,GetDate())
 
-INSERT INTO [ExtendServer].PMSFile.dbo[RFT_Inspection_Detail](
+INSERT INTO [ExtendServer].PMSFile.dbo.[RFT_Inspection_Detail](
      [ID],Ukey
     {picColumn}) 
 values(
@@ -350,7 +350,7 @@ values(
     ,@DefectPicture
     ,GetDate())
 
-INSERT INTO [ExtendServer].PMSFile.dbo[RFT_Inspection_Detail](
+INSERT INTO [ExtendServer].PMSFile.dbo.[RFT_Inspection_Detail](
      [ID],Ukey,DefectPicture) 
 values(
     @ID,(SELECT Max(Ukey) + 1 from RFT_Inspection_Detail where id=@ID)
