@@ -76,7 +76,7 @@ select  ID                             ,
         AddDate                        ,
         EditName                       ,
         EditDate                       ,
-        HasOtherImage = Cast(IIF(exists(select 1 from FinalInspection_OtherImage WITH(NOLOCK) b where a.id= b.id),1,0) as bit)
+        HasOtherImage = Cast(IIF(exists(select 1 from FinalInspection_OtherImage b WITH(NOLOCK) where a.id= b.id),1,0) as bit)
 from FinalInspection a with (nolock)
 where   ID = @ID
 ";
