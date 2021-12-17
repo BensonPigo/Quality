@@ -454,6 +454,7 @@ where ID = @ID
                     detail, oldDetailData, "ID,No", "OrderID,SizeCode,MtlTypeID,inspdate,inspector,NonSeamBreakageTest,Remark");
 
                 string sqlInsertGarmentTestDetail = $@"
+SET XACT_ABORT ON
 declare @MaxNo int = (select MaxNo = isnull(max(No),0) from GarmentTest_Detail with(nolock) where  id = '{master.ID}')
 
 insert into GarmentTest_Detail(
@@ -476,6 +477,9 @@ values(
     ,@UserID, GetDate()
     ,'New'
 )
+
+insert into [ExtendServer].PMSFile.dbo.GarmentTest_Detail(ID,No)
+values(@ID, @MaxNo +1)
 ";
                 string sqlUpdateDetail = $@"
 update GarmentTest_Detail

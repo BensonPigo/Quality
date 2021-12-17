@@ -388,8 +388,9 @@ select  [OvenID] = ID, TestNo
 from @OvenID
 
 insert into [ExtendServer].PMSFile.dbo.Oven(ID, POID, TestNo, TestBeforePicture, TestAfterPicture)
-        OUTPUT INSERTED.ID, INSERTED.TestNo into @OvenID
-        values(@OvenID, @POID, @TestNo, @TestBeforePicture, @TestAfterPicture)
+        values(
+(select ID from @OvenID)
+, @POID, @TestNo, @TestBeforePicture, @TestAfterPicture)
 ";
 
             string sqlInsertOvenDetail = @"

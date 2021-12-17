@@ -278,7 +278,7 @@ INSERT INTO ExtendServer.PMSFile.dbo.PullingTest
             ,TestAfterPicture)
 VALUES(    
             (   ---流水號處理
-                select REPLACE( @ReportNo ,'%','') + ISNULL(REPLICATE('0',4-len( CAST( CAST( RIGHT( max(ReportNo),3) as int) + 1 as varchar) ))+ CAST( CAST( RIGHT( max(ReportNo),3) as int) + 1 as varchar),'0001')
+                select max(ReportNo)
                 from PullingTest
                 where ReportNo LIKE @ReportNo
             )
