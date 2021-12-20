@@ -599,7 +599,9 @@
                             var index = $("#currnetSelectedPO").val();
                             document.getElementById("SelectedPO[" + index + "].Cartons").value = checkedList.join(',');
 
-                            if (currentStage != 'Final') {
+                            var brandid = $('#BrandID').val();
+
+                            if ((currentStage != 'Final' || brandid == "ADIDAS") || brandid != "ADIDAS") {
                                 var orderID = document.getElementById("SelectedPO[" + index + "].AvailableQty").getAttribute("OrderId");
                                 document.getElementById("SelectedPO[" + index + "].AvailableQty").value = totalQty;
 
@@ -642,7 +644,9 @@
 
                             document.getElementById("SelectedPO[" + index + "].Seq").value = checkedList.join(',');
 
-                            if (currentStage == 'Final') {
+                            var brandid = $('#BrandID').val();
+
+                            if (currentStage == 'Final' && brandid == "ADIDAS") {
 
                                 var orderID = document.getElementById("SelectedPO[" + index + "].AvailableQty").getAttribute("OrderId");
                                 document.getElementById("SelectedPO[" + index + "].AvailableQty").value = totalQty;
@@ -1019,7 +1023,7 @@
             var brandid = $('#BrandID').val();
             var availableQtycheck = $('input[col=AvailableQty]');
 
-            if (brandid = 'ADIDAS') {
+            if (brandid == 'ADIDAS') {
 
                 if (currentStage == "Final") {
 
