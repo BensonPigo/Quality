@@ -96,7 +96,7 @@ from PullingTest p  WITH(NOLOCK)
 left join Production.dbo.Pass1 a WITH(NOLOCK) ON a.ID=p.AddName 
 left join Production.dbo.Pass1 e WITH(NOLOCK) ON e.ID=p.EditName
 left join Production.dbo.Pass1 i WITH(NOLOCK) ON i.ID=p.Inspector
-left join Production.dbo.Brand_PullingTestStandarList s WITH(NOLOCK) ON s.BrandID = p.BrandID AND s.TestItem = p.TestItem AND s.PullForceUnit = p.PullForceUnit
+left join MainServer.Production.dbo.Brand_PullingTestStandarList s WITH(NOLOCK) ON s.BrandID = p.BrandID AND s.TestItem = p.TestItem AND s.PullForceUnit = p.PullForceUnit
 where p.ReportNo = @ReportNo
 ";
 
