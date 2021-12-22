@@ -50,8 +50,8 @@ set
     [TestUnit]	    = @TestUnit{idx},
     [TypeSelection_Seq]	= @TypeSelection_Seq{idx},
     [TypeSelection_VersionID]	= @TypeSelection_VersionID{idx}
-from GarmentTest_Detail_FGPT g
-left join DropDownList d on d.ID = g.TestName and d.Type = 'PMS_FGPT_TestName' 
+from GarmentTest_Detail_FGPT g WITH(NOLOCK)
+left join DropDownList d WITH(NOLOCK) on d.ID = g.TestName and d.Type = 'PMS_FGPT_TestName' 
 where g.ID = @ID{idx} and g.No = @No{idx} and g.Type = @Type{idx} and g.Location = @Location{idx} 
 and g.Seq = @Seq{idx} 
 and isnull(d.Description, g.TestName) = @TestName{idx} 
@@ -95,12 +95,12 @@ select
   WHEN  t.TestUnit = 'Pass/Fail'  THEN t.[TestResult]
    ELSE ''
 END
-from GarmentTest_Detail_FGPT t
-left join TypeSelection ts on ts.VersionID = t.TypeSelection_VersionID 
+from GarmentTest_Detail_FGPT t WITH(NOLOCK)
+left join TypeSelection ts WITH(NOLOCK) on ts.VersionID = t.TypeSelection_VersionID 
         and ts.Seq = t.TypeSelection_Seq
 outer apply(
 	select Description
-	from DropDownList 
+	from DropDownList  WITH(NOLOCK)
 	where Type = 'PMS_FGPT_TestName' 
 	and ID = t.TestName
 )PMS_FGPT_TestName
@@ -128,7 +128,7 @@ order by PMS_FGPT_TestName.Description,t.[Seq]
             SbSql.Append("        ,Seq"+ Environment.NewLine);
             SbSql.Append("        ,TypeSelection_VersionID"+ Environment.NewLine);
             SbSql.Append("        ,TypeSelection_Seq"+ Environment.NewLine);
-            SbSql.Append("FROM [GarmentTest_Detail_FGPT]"+ Environment.NewLine);
+            SbSql.Append("FROM [GarmentTest_Detail_FGPT] WITH(NOLOCK)" + Environment.NewLine);
 
 
 

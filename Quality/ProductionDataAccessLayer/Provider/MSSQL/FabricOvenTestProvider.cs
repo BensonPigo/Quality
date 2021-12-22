@@ -54,7 +54,7 @@ select	[TestNo] = cast(o.TestNo as varchar),
         [TestAfterPicture] = oi.TestAfterPicture
 from Oven o with (nolock)
 LEFT JOIN [ExtendServer].PMSFile.dbo.Oven oi with (nolock) ON o.ID = oi.ID
-left join pass1 pass1Inspector on o.Inspector = pass1Inspector.ID
+left join pass1 pass1Inspector WITH(NOLOCK) on o.Inspector = pass1Inspector.ID
 where o.POID = @POID and o.TestNo = @TestNo
 ";
 
@@ -108,7 +108,7 @@ where   o.POID = @POID and o.TestNo = @TestNo
 declare @MtlLeadTime tinyint
 
 select @MtlLeadTime = isnull(MtlLeadTime, 0)
-from system
+from system WITH(NOLOCK)
 
 
 select	[POID] = p.ID,
@@ -120,15 +120,15 @@ select	[POID] = p.ID,
 		[TargetLeadTime] = case when p.MinSciDelivery is null then null
 								when o.CutInline < dateadd(Day, @MtlLeadTime, p.MinSciDelivery) then o.CutInline
 								else dateadd(Day, @MtlLeadTime, p.MinSciDelivery) end,
-		[CompletionDate] = iif(p.LabOvenPercent >= 100, (select max(InspDate) from oven where POID = p.ID), null),
+		[CompletionDate] = iif(p.LabOvenPercent >= 100, (select max(InspDate) from oven WITH(NOLOCK) where POID = p.ID), null),
 		[LabOvenPercent] = p.LabOvenPercent,
 		[Remark] = p.OvenLaboratoryRemark,
 		[CreateBy] = Concat(p.AddName, '-', pass1AddName.Name, ' ', Format(p.AddDate, 'yyyy/MM/dd HH:mm:ss')),
 		[EditBy] = Concat(p.EditName, '-', pass1EditName.Name, ' ', Format(p.EditDate, 'yyyy/MM/dd HH:mm:ss'))
 from PO p with (nolock)
 inner join Orders o with (nolock) on p.ID = o.ID
-left join pass1 pass1AddName on p.AddName = pass1AddName.ID
-left join pass1 pass1EditName on p.EditName = pass1EditName.ID
+left join pass1 pass1AddName WITH(NOLOCK) on p.AddName = pass1AddName.ID
+left join pass1 pass1EditName WITH(NOLOCK) on p.EditName = pass1EditName.ID
 where p.id = @POID
 ";
 
@@ -153,8 +153,8 @@ select	[TestNo] = cast(o.TestNo as varchar),
 							Concat(pass1EditName.Name, ' ', Format(o.EditDate, 'yyyy/MM/dd HH:mm:ss'))),
 		[Status] = o.Status
 from Oven o with (nolock)
-left join pass1 pass1AddName on o.AddName = pass1AddName.ID
-left join pass1 pass1EditName on o.EditName = pass1EditName.ID
+left join pass1 pass1AddName WITH(NOLOCK) on o.AddName = pass1AddName.ID
+left join pass1 pass1EditName WITH(NOLOCK) on o.EditName = pass1EditName.ID
 where o.POID = @POID
 ";
 
@@ -196,7 +196,7 @@ where   POID = @POID and TestNo = @TestNo
 
 
 select  [OvenID] = ID
-from    Oven
+from    Oven WITH(NOLOCK)
 where   POID = @POID and TestNo = @TestNo
 ";
 
@@ -377,7 +377,7 @@ declare @TestNo numeric(2,0)
 DECLARE @OvenID table (ID bigint, TestNo numeric(2, 0))
 
 select  @TestNo = isnull(Max(TestNo), 0) + 1
-from    Oven 
+from    Oven  WITH(NOLOCK)
 where POID = @POID
 
 insert into Oven(POID, TestNo, InspDate, Article, Status, Inspector, Remark, addName, addDate, TestBeforePicture, TestAfterPicture)
@@ -576,7 +576,7 @@ inner join Oven o with (nolock) on o.ID = od.ID
 left join PO_Supp_Detail psd with (nolock) on o.POID = psd.ID and od.SEQ1 = psd.SEQ1 and od.SEQ2 = psd.SEQ2
 left join PO_Supp ps WITH (NOLOCK) on psd.ID = ps.ID and psd.Seq1 = ps.Seq1
 left join supp s with (nolock) on ps.SuppID = s.ID
-left join pass1 pass1EditName on od.EditName = pass1EditName.ID
+left join pass1 pass1EditName WITH(NOLOCK) on od.EditName = pass1EditName.ID
 where   o.POID = @POID and o.TestNo = @TestNo
 ";
 
@@ -607,7 +607,7 @@ select  ov.ID
         ,ov.Time
         ,oi.TestBeforePicture
         ,oi.TestAfterPicture
-        ,[InspectorName] = (select Name from Pass1 where ID = ov.Inspector)
+        ,[InspectorName] = (select Name from Pass1 WITH(NOLOCK) where ID = ov.Inspector)
 from    Oven ov with (nolock)
 left join [ExtendServer].PMSFile.dbo.Oven oi with (nolock) on oi.ID=ov.ID
 where   ov.POID = @poID and ov.TestNo = @TestNo

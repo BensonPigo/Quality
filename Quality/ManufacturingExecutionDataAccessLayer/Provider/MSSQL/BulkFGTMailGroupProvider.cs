@@ -26,7 +26,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             StringBuilder SbSql = new StringBuilder();
             SbSql.Append(@"
 select q.FactoryID, q.Type, q.GroupName, q.ToAddress, q.CcAddress 
-from Quality_MailGroup q 
+from Quality_MailGroup q  WITH(NOLOCK)
 where q.Type = @Type 
 ");
 

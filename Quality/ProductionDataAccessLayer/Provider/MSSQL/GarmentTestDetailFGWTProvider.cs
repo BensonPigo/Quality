@@ -80,7 +80,7 @@ select
    ,''
  )
 )
-from GarmentTest_Detail_FGWT f
+from GarmentTest_Detail_FGWT f WITH(NOLOCK)
 outer apply(
 	select value =
 	cast((
@@ -107,7 +107,7 @@ order by Seq asc , Location
             };
 
             string sqlcmd = @"
-SELECT 1 FROM GarmentTest_Detail_FGWT WHERE ID = @ID and No = @No
+SELECT 1 FROM GarmentTest_Detail_FGWT WITH(NOLOCK) WHERE ID = @ID and No = @No
 ";
             return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
         }
@@ -150,8 +150,8 @@ SELECT 1 FROM GarmentTest_Detail_FGWT WHERE ID = @ID and No = @No
 SELECT locations = STUFF(
 	(
         select DISTINCT ',' + sl.Location
-	    from Style s
-	    INNER JOIN Style_Location sl ON s.Ukey = sl.StyleUkey 
+	    from Style s WITH(NOLOCK)
+	    INNER JOIN Style_Location sl WITH(NOLOCK) ON s.Ukey = sl.StyleUkey 
 	    where s.id = @StyleID AND s.BrandID = @BrandID AND s.SeasonID = @SeasonID
 	    FOR XML PATH('')
 	) 
@@ -340,16 +340,16 @@ INSERT INTO GarmentTest_Detail_FGWT
                 		gf.[AfterWash]	= @AfterWash{idx},
                 		gf.[Shrinkage]	= @Shrinkage{idx},
                 		gf.[Scale]	= IIF( (gf.TestDetail = 'grade' OR gf.TestDetail ='pass/fail' ) AND @Scale{idx} IS NULL , '', @Scale{idx})
-                from GarmentTest_Detail_FGWT gf
+                from GarmentTest_Detail_FGWT gf WITH(NOLOCK)
                 outer apply (
                 	select distinct
                 		[Location] = iif (slC.cnt > 1, 'S', sl.Location)
-                	from GarmentTest g
-                	inner join Style s on g.StyleID = s.ID and g.BrandID = s.BrandID and g.SeasonID = s.SeasonID
-                	inner join Style_Location sl on s.Ukey = sl.StyleUkey
+                	from GarmentTest g WITH(NOLOCK)
+                	inner join Style s WITH(NOLOCK) on g.StyleID = s.ID and g.BrandID = s.BrandID and g.SeasonID = s.SeasonID
+                	inner join Style_Location sl WITH(NOLOCK) on s.Ukey = sl.StyleUkey
                 	outer apply (
                 		select cnt = count(*)
-                		from Style_Location sl 
+                		from Style_Location sl  WITH(NOLOCK)
                 		where s.Ukey = sl.StyleUkey
                 		and sl.Location in ('B', 'T')
                 	)slC
@@ -419,7 +419,7 @@ and t.Type = 'spirality: Garment - in percentage (average) (Bottom Method B)'
                 { "@No", NO } ,
             };
             string sql_Spirality = $@"
-select * from Garment_Detail_Spirality where ID = @ID and No = @No
+select * from Garment_Detail_Spirality WITH(NOLOCK) where ID = @ID and No = @No
 ";
             DataTable dtSpirality = ExecuteDataTableByServiceConn(CommandType.Text, sql_Spirality, objParameter_Spirality);
             string strResut = string.Empty;

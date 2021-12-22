@@ -25,13 +25,13 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SQLParameterCollection objParameter = new SQLParameterCollection();
             SbSql.Append(@"
 select distinct ArtworkTypeID
-from Style_Artwork
+from Style_Artwork WITH(NOLOCK)
 Where 1 = 1
 ");
 
             if (!string.IsNullOrEmpty(Item.BrandID) && !string.IsNullOrEmpty(Item.SeasonID) && !string.IsNullOrEmpty(Item.StyleID))
             {
-                SbSql.Append("And StyleUkey = (select ukey from Style where ID = @StyleID and SeasonID = @SeasonID and BrandID = @BrandID)" + Environment.NewLine);
+                SbSql.Append("And StyleUkey = (select ukey from Style WITH(NOLOCK) where ID = @StyleID and SeasonID = @SeasonID and BrandID = @BrandID)" + Environment.NewLine);
                 objParameter.Add("@StyleID", DbType.String, Item.StyleID);
                 objParameter.Add("@SeasonID", DbType.String, Item.SeasonID);
                 objParameter.Add("@BrandID", DbType.String, Item.BrandID);
@@ -39,7 +39,7 @@ Where 1 = 1
 
             if (!string.IsNullOrEmpty(Item.POID))
             {
-                SbSql.Append("AND StyleUkey = (SELECT StyleUkey From Orders o  WHERE o.ID = @POID )" + Environment.NewLine);
+                SbSql.Append("AND StyleUkey = (SELECT StyleUkey From Orders o WITH(NOLOCK)  WHERE o.ID = @POID )" + Environment.NewLine);
                 objParameter.Add("@POID", DbType.String, Item.POID);
             }
 

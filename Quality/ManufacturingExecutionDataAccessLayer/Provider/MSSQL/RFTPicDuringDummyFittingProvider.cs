@@ -47,7 +47,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,Front"+ Environment.NewLine);
             SbSql.Append("        ,Side"+ Environment.NewLine);
             SbSql.Append("        ,Back"+ Environment.NewLine);
-            SbSql.Append(@"FROM [ExtendServer].PMSFile.dbo.[RFT_PicDuringDummyFitting]" + Environment.NewLine);
+            SbSql.Append("FROM [ExtendServer].PMSFile.dbo.[RFT_PicDuringDummyFitting]  WITH(NOLOCK)" + Environment.NewLine);
             SbSql.Append("where 1 = 1" + Environment.NewLine);
             if (!string.IsNullOrEmpty(Item.OrderID)) { SbSql.Append(" and OrderID = @OrderID" + Environment.NewLine); }
             if (!string.IsNullOrEmpty(Item.Article)) { SbSql.Append(" and Article = @Article" + Environment.NewLine); }
@@ -170,8 +170,9 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             else{objParameter.Add("@Back", System.Data.SqlTypes.SqlBinary.Null);}
 
             sqlcmd += $@"
+
 SET XACT_ABORT ON
-if exists(select 1 from RFT_PicDuringDummyFitting where OrderID = @OrderID and Article = @Article and Size = @Size)
+if exists(select 1 from RFT_PicDuringDummyFitting WITH(NOLOCK) where OrderID = @OrderID and Article = @Article and Size = @Size)
 begin
 	UPDATE [RFT_PicDuringDummyFitting]
 	set Front = @Front
@@ -212,8 +213,8 @@ SELECT oq.Article
 	,p.Front
 	,p.Side
 	,p.Back
-from SciProduction_Order_Qty oq 
-left join [ExtendServer].PMSFile.dbo.RFT_PicDuringDummyFitting p ON oq.ID = p.OrderID AND oq.Article = p.Article AND oq.SizeCode=p.Size
+from SciProduction_Order_Qty oq WITH(NOLOCK) 
+left join [ExtendServer].PMSFile.dbo.RFT_PicDuringDummyFitting p WITH(NOLOCK) ON oq.ID = p.OrderID AND oq.Article = p.Article AND oq.SizeCode=p.Size
 WHERE 1=1
 ");
             if (!string.IsNullOrEmpty(Req.OrderID))
@@ -233,7 +234,7 @@ WHERE 1=1
 
             SbSql.Append($@"
 SELECT OrderID = ID, StyleID ,OrderTypeID ,SeasonID
-FROM SciProduction_Orders o
+FROM SciProduction_Orders o WITH(NOLOCK)
 where o.Junk=0
 and o.Category='S'
 --and o.OnSiteSample!=1

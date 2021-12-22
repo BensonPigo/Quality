@@ -31,12 +31,12 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             string sqlcmd = string.Empty;
             if (string.IsNullOrEmpty(OrderID))
             {
-                sqlcmd = "select distinct SizeCode from Style_SizeCode order by SizeCode";
+                sqlcmd = "select distinct SizeCode from Style_SizeCode WITH(NOLOCK) order by SizeCode";
             }
             else
             {
                 sqlcmd = @"
-select distinct SizeCode from Order_Qty
+select distinct SizeCode from Order_Qty WITH(NOLOCK)
 where ID = @OrderID and Article = @Article 
 order by SizeCode";
             }
@@ -55,8 +55,8 @@ order by SizeCode";
 
             string sqlcmd = @"
 select distinct SizeCode 
-from Style s
-inner join Style_SizeCode sc on s.Ukey = sc.StyleUkey
+from Style s WITH(NOLOCK)
+inner join Style_SizeCode sc WITH(NOLOCK) on s.Ukey = sc.StyleUkey
 where s.ID = @StyleID and s.SeasonID = @SeasonID and s.BrandID = @BrandID
 ";
 
@@ -68,7 +68,7 @@ where s.ID = @StyleID and s.SeasonID = @SeasonID and s.BrandID = @BrandID
             string sqlcmd = @"
 select ID = ''
 union all
-select ID from Scale  WHERE Junk=0 
+select ID from Scale WITH(NOLOCK)  WHERE Junk=0 
 order by ID
 ";
             DataTable dt = ExecuteDataTable(CommandType.Text, sqlcmd, new SQLParameterCollection());
@@ -115,10 +115,10 @@ gd.No
 ,gd.SubmitDate,gd.ArrivedQty,gd.LineDry,gd.Temperature,gd.TumbleDry,gd.Machine,gd.HandWash
 ,gd.Composition,gd.Neck,gd.Status,gd.LOtoFactory,gd.MtlTypeID,gd.Above50NaturalFibres,gd.Above50SyntheticFibres
 ,gdi.TestAfterPicture,gdi.TestBeforePicture
-from GarmentTest_Detail gd
-left join [ExtendServer].PMSFile.dbo.GarmentTest_Detail gdi on gd.ID = gdi.ID AND gd.No = gdi.No
-left join Pass1 CreatBy on CreatBy.ID = gd.AddName
-left join Pass1 EditBy on EditBy.ID = gd.EditName
+from GarmentTest_Detail gd WITH(NOLOCK)
+left join [ExtendServer].PMSFile.dbo.GarmentTest_Detail gdi WITH(NOLOCK) on gd.ID = gdi.ID AND gd.No = gdi.No
+left join Pass1 CreatBy WITH(NOLOCK) on CreatBy.ID = gd.AddName
+left join Pass1 EditBy WITH(NOLOCK) on EditBy.ID = gd.EditName
 outer apply(
 	select Name_Extno 
 	from View_ShowName
@@ -210,7 +210,7 @@ select distinct [Result] = CASE WHEN  t.TestUnit = 'N' AND t.[TestResult] !='' T
   WHEN  t.TestUnit = 'Pass/Fail'  THEN t.[TestResult]
    ELSE ''
 END
-from GarmentTest_Detail_FGPT t
+from GarmentTest_Detail_FGPT t WITH(NOLOCK)
 where t.ID = @ID
 and t.No = @No
 
@@ -243,7 +243,7 @@ select distinct
    ,''
  )
 )
-from GarmentTest_Detail_FGWT f
+from GarmentTest_Detail_FGWT f WITH(NOLOCK)
 where ID = @ID
 and No = @No
 
@@ -274,9 +274,9 @@ and No = @No
 
             string sqlcmd = @"
 select Result 
-from  GarmentTest_Detail t
+from  GarmentTest_Detail t WITH(NOLOCK)
 where No = (
-	select Max(No) from GarmentTest_Detail s
+	select Max(No) from GarmentTest_Detail s WITH(NOLOCK)
 	where s.ID = t.ID
 )
 and ID = @ID
@@ -418,11 +418,11 @@ g.StyleID
 ,[701 Result] = case when gd.WashResult = 'P' then 'Pass' when gd.WashResult = 'F' then 'Fail' else '' end
 ,gd.inspector
 ,[Comments] = gd.Remark
-from GarmentTest g
-inner join GarmentTest_Detail gd on g.ID = gd.ID
+from GarmentTest g WITH(NOLOCK)
+inner join GarmentTest_Detail gd WITH(NOLOCK) on g.ID = gd.ID
 outer apply(
 	select Value =  r.Name 
-	from Style s
+	from Style s WITH(NOLOCK)
 	inner join Reason r on s.SpecialMark = r.ID and r.ReasonTypeID = 'Style_SpecialMark'
 	where s.ID = g.StyleID
 	and s.BrandID = g.BrandID
@@ -447,7 +447,7 @@ set Result = ''
 ,SeamBreakageResult = ''
 ,OdourResult = ''
 ,WashResult = ''
-from GarmentTest_Detail gd 
+from GarmentTest_Detail gd  WITH(NOLOCK)
 where gd.id=@ID and No=@No
 ";
             return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
@@ -475,7 +475,7 @@ select s1.*,Result =
 		 WHEN  s1.TestUnit = 'Pass/Fail'  THEN s1.[TestResult]
 		 ELSE '' 
 	END 
-	From GarmentTest_Detail_FGPT s1
+	From GarmentTest_Detail_FGPT s1 WITH(NOLOCK)
 	left join DropDownList ddl with (nolock) on  ddl.Type = 'PMS_FGPT_TestName' and ddl.ID = s1.TestName
 	where s1.ID = @ID and No = @No
 ) a
@@ -512,7 +512,7 @@ select s1.*,Result =
    ,''
  )
 )
-	From GarmentTest_Detail_FGWT s1
+	From GarmentTest_Detail_FGWT s1 WITH(NOLOCK)
 	where s1.ID = @ID and No = @No
 ) a
 group by Result
@@ -535,7 +535,7 @@ set
 	when  (select count(1) from #tmpFGWTResult where Result = 'Pass') > 0 then 'P'
 	when  (select count(1) from #tmpFGWTResult where Result = '') > 0 then ''
 	else ''  End
-from GarmentTest_Detail gd 
+from GarmentTest_Detail gd  WITH(NOLOCK)
 where gd.id=@ID and No=@No
 
 update gd
@@ -546,7 +546,7 @@ set
 	when OdourResult = '' or WashResult = '' then '' 
 	when (NonSeamBreakageTest = 0 and SeamBreakageResult = '') then ''
 	else '' end
-from GarmentTest_Detail gd 
+from GarmentTest_Detail gd  WITH(NOLOCK)
 where gd.id=@ID and No=@No
 
 drop table #tmpFGPTResult,#tmpFGWTResult
@@ -613,8 +613,8 @@ drop table #tmpFGPTResult,#tmpFGWTResult
             SbSql.Append("        ,WashResult"+ Environment.NewLine);
             SbSql.Append("        ,gdi.TestBeforePicture" + Environment.NewLine);
             SbSql.Append("        ,gdi.TestAfterPicture" + Environment.NewLine);
-            SbSql.Append($@"FROM [GarmentTest_Detail] gd
-left join [ExtendServer].PMSFile.dbo.GarmentTest_Detail gdi on gd.ID=gdi.ID AND gd.No = gdi.No
+            SbSql.Append($@"FROM [GarmentTest_Detail] gd WITH(NOLOCK)
+left join [ExtendServer].PMSFile.dbo.GarmentTest_Detail gdi WITH(NOLOCK) on gd.ID=gdi.ID AND gd.No = gdi.No
 
 " + Environment.NewLine);
             SbSql.Append("where gd.ID = @ID" + Environment.NewLine);

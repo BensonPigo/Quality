@@ -73,7 +73,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,TestBeforePicture" + Environment.NewLine);
             SbSql.Append("        ,TestAfterPicture" + Environment.NewLine);
             SbSql.Append("        ,Type" + Environment.NewLine);
-            SbSql.Append("FROM [MockupWash]" + Environment.NewLine);
+            SbSql.Append("FROM [MockupWash] WITH(NOLOCK)" + Environment.NewLine);
 
             SbSql.Append("Where 1 = 1" + Environment.NewLine);
             if (!string.IsNullOrEmpty(Item.ReportNo))
@@ -382,7 +382,7 @@ WHERE UKey = @Ukey
             SQLParameterCollection objParameter = new SQLParameterCollection();
             SbSql.Append(@"
 SELECT ReportNo
-FROM MockupWash m
+FROM MockupWash m WITH(NOLOCK)
 ");
             SbSql.Append("Where 1 = 1" + Environment.NewLine);
 
@@ -444,9 +444,9 @@ SELECT {top1}
         ,ArtworkTypeID
         ,Remark
         ,T1Subcon
-		,T1SubconAbb = (select Abb from LocalSupp where ID = T1Subcon)
+		,T1SubconAbb = (select Abb from LocalSupp WITH(NOLOCK) where ID = T1Subcon)
         ,T2Supplier
-		,T2SupplierAbb = (select top 1 Abb from (select Abb from LocalSupp where ID = m.T2Supplier and Junk = 0 union select AbbEN from Supp where ID = m.T2Supplier and Junk = 0)x)
+		,T2SupplierAbb = (select top 1 Abb from (select Abb from LocalSupp WITH(NOLOCK) where ID = m.T2Supplier and Junk = 0 union select AbbEN from Supp WITH(NOLOCK) where ID = m.T2Supplier and Junk = 0)x)
         ,TestDate
         ,ReceivedDate
         ,ReleasedDate
@@ -462,7 +462,7 @@ SELECT {top1}
 		,m.OtherMethod
         ,m.MethodID
         ,m.TestingMethod
-        ,MethodDescription = iif(m.OtherMethod = 1, m.TestingMethod, (select Description from DropDownList where type = 'PMS_MockupWashMethod' and id = m.MethodID))
+        ,MethodDescription = iif(m.OtherMethod = 1, m.TestingMethod, (select Description from DropDownList WITH(NOLOCK) where type = 'PMS_MockupWashMethod' and id = m.MethodID))
 		,m.HTPlate
 		,m.HTPellOff
 		,m.HTFlim
@@ -479,12 +479,12 @@ SELECT {top1}
         ,EditDate
         ,EditName
         ,Signature = (select t.Signature from Technician t where t.ID = Technician)
-FROM MockupWash m
-left join [ExtendServer].PMSFile.dbo.MockupWash mi on m.ReportNo=mi.ReportNo
-outer apply (select Name, ExtNo from pass1 p inner join Technician t on t.ID = p.ID where t.id = m.Technician) Technician_ne
-outer apply (select Name, ExtNo, EMail from pass1 where id = m.MR) MR_ne
-outer apply (select Name from Pass1 where id = m.AddName) AddName
-outer apply (select Name from Pass1 where id = m.EditName) EditName
+FROM MockupWash m WITH(NOLOCK)
+left join [ExtendServer].PMSFile.dbo.MockupWash mi WITH(NOLOCK) on m.ReportNo=mi.ReportNo
+outer apply (select Name, ExtNo from pass1 p WITH(NOLOCK) inner join Technician t WITH(NOLOCK) on t.ID = p.ID where t.id = m.Technician) Technician_ne
+outer apply (select Name, ExtNo, EMail from pass1 WITH(NOLOCK) where id = m.MR) MR_ne
+outer apply (select Name from Pass1 WITH(NOLOCK) where id = m.AddName) AddName
+outer apply (select Name from Pass1 WITH(NOLOCK) where id = m.EditName) EditName
 ");
             SbSql.Append("Where 1 = 1" + Environment.NewLine);
 
@@ -539,17 +539,17 @@ SELECT
         ,[Article] = Article
         ,[Artwork] = ArtworkTypeID
         ,[Remark] = Remark
-        ,[T1 Subcon Name] = Concat(T1Subcon, '-' + (select Abb from LocalSupp where ID = T1Subcon))
-        ,[T2 Supplier Name] = Concat(T2Supplier, '-' + (select top 1 Abb from (select Abb from LocalSupp where ID = m.T2Supplier and Junk = 0 union select AbbEN from Supp where ID = m.T2Supplier and Junk = 0)x))
+        ,[T1 Subcon Name] = Concat(T1Subcon, '-' + (select Abb from LocalSupp WITH(NOLOCK) where ID = T1Subcon))
+        ,[T2 Supplier Name] = Concat(T2Supplier, '-' + (select top 1 Abb from (select Abb from LocalSupp WITH(NOLOCK) where ID = m.T2Supplier and Junk = 0 union select AbbEN from Supp WITH(NOLOCK) where ID = m.T2Supplier and Junk = 0)x))
         ,[Test Date] = format(TestDate,'yyyy/MM/dd')
         ,[Received Date] = format(ReceivedDate,'yyyy/MM/dd')
         ,[Released Date] = format(ReleasedDate,'yyyy/MM/dd')
         ,[Result] = Result
         ,[Technician] = Concat(Technician, '-', Technician_ne.Name, ' Ext.', Technician_ne.ExtNo)
         ,[MR] = Concat(MR, '-', MR_ne.Name, ' Ext.', MR_ne.ExtNo)
-FROM MockupWash m
-outer apply (select Name, ExtNo from pass1 p inner join Technician t on t.ID = p.ID where t.id = m.Technician) Technician_ne
-outer apply (select Name, ExtNo from pass1 where id = m.MR) MR_ne
+FROM MockupWash m WITH(NOLOCK)
+outer apply (select Name, ExtNo from pass1 p WITH(NOLOCK) inner join Technician t WITH(NOLOCK) on t.ID = p.ID where t.id = m.Technician) Technician_ne
+outer apply (select Name, ExtNo from pass1 WITH(NOLOCK) where id = m.MR) MR_ne
 where ReportNo = @ReportNo
 ");
             return ExecuteDataTableByServiceConn(CommandType.Text, SbSql.ToString(), objParameter);

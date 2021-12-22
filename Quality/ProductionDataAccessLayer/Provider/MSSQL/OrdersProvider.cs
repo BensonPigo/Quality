@@ -215,7 +215,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,HangerPack" + Environment.NewLine);
             SbSql.Append("        ,CDCodeNew" + Environment.NewLine);
             SbSql.Append("        ,SizeUnitWeight" + Environment.NewLine);
-            SbSql.Append("FROM [Orders]" + Environment.NewLine);
+            SbSql.Append("FROM [Orders] WITH(NOLOCK)" + Environment.NewLine);
             SbSql.Append("Where 1 = 1" + Environment.NewLine);
             #endregion
 
@@ -427,7 +427,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,HangerPack" + Environment.NewLine);
             SbSql.Append("        ,CDCodeNew" + Environment.NewLine);
             SbSql.Append("        ,SizeUnitWeight" + Environment.NewLine);
-            SbSql.Append("FROM [Orders]" + Environment.NewLine);
+            SbSql.Append("FROM [Orders] WITH(NOLOCK)" + Environment.NewLine);
             SbSql.Append("Where ID = @ID" + Environment.NewLine);
             if (!string.IsNullOrEmpty(Item.Category)) { SbSql.Append("And Category = @Category" + Environment.NewLine); objParameter.Add("@Category", DbType.String, Item.Category); }
 
@@ -1089,8 +1089,8 @@ select o.ID
      , o.StyleID  
      , o.SeasonID 
      , o.BrandID 
-     , [Article] = (SELECT Stuff((select concat( ',',Article)   from Order_Article where ID = o.ID FOR XML PATH('')),1,1,'') )
-  from orders o
+     , [Article] = (SELECT Stuff((select concat( ',',Article)   from Order_Article WITH(NOLOCK) where ID = o.ID FOR XML PATH('')),1,1,'') )
+  from orders o WITH(NOLOCK)
 where o.ftygroup = @Ftygroup and o.Qty > 0
         {where}
 ";
@@ -1131,8 +1131,8 @@ select o.ID
      , o.StyleID  
      , o.SeasonID 
      , o.BrandID 
-     , [Article] = (SELECT Stuff((select concat( ',',Article)   from Order_Article where ID = o.ID FOR XML PATH('')),1,1,'') )
-  from orders o
+     , [Article] = (SELECT Stuff((select concat( ',',Article)   from Order_Article WITH(NOLOCK) where ID = o.ID FOR XML PATH('')),1,1,'') )
+  from orders o WITH(NOLOCK)
 where o.ftygroup = @Ftygroup and o.Qty > 0
         {where}
 ";
@@ -1153,7 +1153,7 @@ select  [OrderID] = o.id,
         o.Qty,
         [AvailableQty] = 0,
         [Cartons] = ''
-  from orders o
+  from orders o WITH(NOLOCK)
  where  o.id in ({whereOrderID})
 ";
             return ExecuteList<SelectedPO>(CommandType.Text, sqlGetData, listPar);
@@ -1170,7 +1170,7 @@ select  [OrderID] = o.id,
             };
 
             string sqlcmd = @"
-select 1 from Production.dbo.Orders oinner join Production.dbo.Style s on o.StyleUkey = s.Ukeywhere Category = 'B'and o.Junk = 0and s.BrandID = @BrandID and s.SeasonID = @SeasonID and s.ID = @StyleIDand o.ID = @OrderID
+select 1 from Production.dbo.Orders o WITH(NOLOCK)inner join Production.dbo.Style s WITH(NOLOCK) on o.StyleUkey = s.Ukeywhere Category = 'B'and o.Junk = 0and s.BrandID = @BrandID and s.SeasonID = @SeasonID and s.ID = @StyleIDand o.ID = @OrderID
 ";
             DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
 

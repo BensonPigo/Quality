@@ -37,7 +37,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("         VersionID"+ Environment.NewLine);
             SbSql.Append("        ,Seq"+ Environment.NewLine);
             SbSql.Append("        ,Code"+ Environment.NewLine);
-            SbSql.Append("FROM [TypeSelection]"+ Environment.NewLine);
+            SbSql.Append("FROM [TypeSelection] WITH(NOLOCK)" + Environment.NewLine);
 
 
 

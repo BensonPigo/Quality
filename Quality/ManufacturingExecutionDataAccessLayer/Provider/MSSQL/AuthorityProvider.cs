@@ -31,9 +31,9 @@ select   UserID = p.ID
 		,[Name] = IIF(isnull(pp1.Name,'') = '', mp1.name,pp1.name) 
 		,p.Position
         ,p.Pivot88UserName
-from Quality_Pass1 p
-left join ManufacturingExecution.dbo.Pass1 mp1 ON p.ID= mp1.ID
-left join Production.dbo.Pass1 pp1 on p.ID = pp1.id
+from Quality_Pass1 p WITH(NOLOCK)
+left join ManufacturingExecution.dbo.Pass1 mp1 WITH(NOLOCK) ON p.ID= mp1.ID
+left join Production.dbo.Pass1 pp1 WITH(NOLOCK) on p.ID = pp1.id
 WHERE p.ID != 'SCIMIS'
 
 ");
@@ -52,10 +52,10 @@ select TOp 1 UserID = p.ID
 		,[Email] = IIF(isnull(pp1.Email,'')='', mp1.Email, pp1.Email)
 		,p.Position
         ,p.Pivot88UserName
-from Quality_Pass1 p
-left join ManufacturingExecution.dbo.Pass1 mp1 ON p.ID= mp1.ID
-left join Production.dbo.Pass1 pp1 on p.ID = pp1.id
-inner join Quality_Position pos on pos.ID=p.Position
+from Quality_Pass1 p WITH(NOLOCK)
+left join ManufacturingExecution.dbo.Pass1 mp1 WITH(NOLOCK) ON p.ID= mp1.ID
+left join Production.dbo.Pass1 pp1 WITH(NOLOCK) on p.ID = pp1.id
+inner join Quality_Position pos WITH(NOLOCK) on pos.ID=p.Position
 where p.ID='{UserID}'
 
 
@@ -73,10 +73,10 @@ select   MenuID = m.ID
 		,m.ModuleName
 		,m.FunctionName
 		,p2.Used
-from Quality_Pass1 p
-inner join Quality_Position pos on pos.ID=p.Position
-inner join Quality_Pass2 p2 on p2.PositionID=pos.ID
-inner join Quality_Menu m on p2.MenuID=m.id
+from Quality_Pass1 p WITH(NOLOCK)
+inner join Quality_Position pos WITH(NOLOCK) on pos.ID=p.Position
+inner join Quality_Pass2 p2 WITH(NOLOCK) on p2.PositionID=pos.ID
+inner join Quality_Menu m WITH(NOLOCK) on p2.MenuID=m.id
 where p.ID='{UserID}'
 order by m.ModuleSeq, m.FunctionSeq
 
@@ -113,7 +113,7 @@ WHERE Id='{Req.UserID}'
                 ,Description
                 ,IsAdmin
                 ,Junk
-        from Quality_Position
+        from Quality_Position WITH(NOLOCK)
         where ID='{Position}'
 
         ");
@@ -135,7 +135,7 @@ select   MenuID = m.ID
 	    ,m.ModuleName
 	    ,m.FunctionName
 	    , Used = Cast(0 as bit)
-from Quality_Menu m
+from Quality_Menu m WITH(NOLOCK)
 where m.Junk = 0
 order by m.ModuleSeq, m.FunctionSeq
 
@@ -151,9 +151,9 @@ select   MenuID = m.ID
 	    ,m.ModuleName
 	    ,m.FunctionName
 	    ,p2.Used
-from Quality_Menu m
-inner join Quality_Pass2 p2 ON p2.MenuID = m.id
-inner join Quality_Position p on p.ID=p2.PositionID
+from Quality_Menu m WITH(NOLOCK)
+inner join Quality_Pass2 p2 WITH(NOLOCK) ON p2.MenuID = m.id
+inner join Quality_Position p WITH(NOLOCK) on p.ID=p2.PositionID
 where p.ID = @ID
 order by m.ModuleSeq, m.FunctionSeq
 
@@ -186,9 +186,9 @@ WHERE ID=@ID
                 SbSql.Append($@"
 UPDATE p2
 SET p2.Used='{(data.Used ? "1" : "0")}'
-from Quality_Pass2 p2
-inner join Quality_Position p on p.ID=p2.PositionID 
-inner join Quality_Menu m ON p2.MenuID = m.id
+from Quality_Pass2 p2 WITH(NOLOCK)
+inner join Quality_Position p WITH(NOLOCK) on p.ID=p2.PositionID 
+inner join Quality_Menu m WITH(NOLOCK) ON p2.MenuID = m.id
 where p.ID=@ID AND m.ID='{data.MenuID}'
 ;
 ");
@@ -205,7 +205,7 @@ where p.ID=@ID AND m.ID='{data.MenuID}'
 
             SbSql.Append($@"
         SELECT COUNT(1)
-        FROM Quality_Position
+        FROM Quality_Position WITH(NOLOCK)
         WHERE ID = @ID
         ");
 
@@ -263,13 +263,13 @@ select DISTINCT
 [Select] = Cast(0 as bit)
 , UserID = p.ID
 ,p.Name
-,Position = (select TOP 1 ID from Quality_Position)
-from [MainServer].Production.dbo.Pass1 p 
+,Position = (select TOP 1 ID from Quality_Position WITH(NOLOCK))
+from [MainServer].Production.dbo.Pass1 p  WITH(NOLOCK)
 WHERE 1=1
 AND NOT EXISTS
 (
 	SELECT 1 
-	FROM Quality_Pass1 p1
+	FROM Quality_Pass1 p1 WITH(NOLOCK)
 	WHERE p.ID=p1.ID
 ) 
 
@@ -279,13 +279,13 @@ select DISTINCT
 [Select] = Cast(0 as bit)
 , UserID = p.ID
 ,p.Name
-,Position = (select TOP 1 ID from Quality_Position)
-from Pass1 p 
+,Position = (select TOP 1 ID from Quality_Position WITH(NOLOCK))
+from Pass1 p  WITH(NOLOCK)
 WHERE 1=1
 AND NOT EXISTS
 (
 	SELECT 1 
-	FROM Quality_Pass1 p1
+	FROM Quality_Pass1 p1 WITH(NOLOCK)
 	WHERE p.ID=p1.ID
 ) 
 
@@ -326,7 +326,7 @@ INSERT INTO dbo.Quality_Pass1
 /*取得Position下拉選單資料來源*/
 
 SELECT [Text] = ID, [Value]= ID
-FROM Quality_Position
+FROM Quality_Position WITH(NOLOCK)
 ");
 
 
@@ -342,7 +342,7 @@ select Position = ID
 	,IsAdmin
 	,Description
 	,Junk
-from Quality_Position 
+from Quality_Position  WITH(NOLOCK)
 where 1=1
 ");
 
@@ -373,7 +373,7 @@ where id = @ID
 
             SbSql.Append($@"
 select ID 
-from Production.dbo.Brand 
+from Production.dbo.Brand  WITH(NOLOCK)
 where Junk = 0
 ");
 
@@ -390,8 +390,8 @@ where Junk = 0
 
             SbSql.Append($@"
 select FunctionName = IIF(isnull(qmd.FunctionName,'') = '', qm.FunctionName,qmd.FunctionName)
-from Quality_Menu qm
-left join Quality_Menu_Detail qmd on qmd.ID = qm.ID
+from Quality_Menu qm WITH(NOLOCK)
+left join Quality_Menu_Detail qmd WITH(NOLOCK) on qmd.ID = qm.ID
 where qmd.Type = @BulkFGT_Brand
 ");
 

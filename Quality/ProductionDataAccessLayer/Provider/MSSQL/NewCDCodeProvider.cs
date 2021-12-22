@@ -47,7 +47,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,AddDate"+ Environment.NewLine);
             SbSql.Append("        ,EditName"+ Environment.NewLine);
             SbSql.Append("        ,EditDate"+ Environment.NewLine);
-            SbSql.Append("FROM [NewCDCode]"+ Environment.NewLine);
+            SbSql.Append("FROM [NewCDCode] WITH(NOLOCK)" + Environment.NewLine);
 
 
 

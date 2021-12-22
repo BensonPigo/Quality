@@ -31,12 +31,12 @@ select
 	,ExpectionFormStatus = d.Name
 	,s.ExpectionFormDate
 	,s.ExpectionFormRemark
-from Style s
+from Style s WITH(NOLOCK)
 left join DropDownList d ON d.Type = 'FactoryDisclaimer' AND s.ExpectionFormStatus = d.ID
 outer apply(
 	select Val = STUFF((
 		select DISTINCt ',' + Article
-		from Style_Article sa
+		from Style_Article sa WITH(NOLOCK)
 		where sa.StyleUkey = s.Ukey
 		for xml path('')
 		),1,1,'')
@@ -60,12 +60,12 @@ select
 	,ExpectionFormStatus = d.Name
 	,s.ExpectionFormDate
 	,s.ExpectionFormRemark
-from Style s
+from Style s WITH(NOLOCK)
 left join DropDownList d ON d.Type = 'FactoryDisclaimer' AND s.ExpectionFormStatus = d.ID
 outer apply(
 	select Val = STUFF((
 		select DISTINCt ',' + Article
-		from Style_Article sa
+		from Style_Article sa WITH(NOLOCK)
 		where sa.StyleUkey = s.Ukey
 		for xml path('')
 		),1,1,'')

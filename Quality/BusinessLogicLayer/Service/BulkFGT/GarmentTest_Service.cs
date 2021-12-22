@@ -954,11 +954,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         if (!IsNewData)
                         {
                             #region 最下面 Signature
-                            if (MyUtility.Convert.GetString(all_Data.Detail.Result).EqualString("P"))
+                            if (MyUtility.Convert.GetString(all_Data.Detail.WashResult).EqualString("P"))
                             {
                                 worksheet.Cells[75, 4] = "V";
                             }
-                            else
+                            else if (MyUtility.Convert.GetString(all_Data.Detail.WashResult).EqualString("F"))
                             {
                                 worksheet.Cells[75, 6] = "V";
                             }
@@ -1637,11 +1637,11 @@ and t.GarmentTest=1
                             worksheet.get_Range("64:64", Type.Missing).Delete();
 
                             #region 最下面 Signature
-                            if (MyUtility.Convert.GetString(all_Data.Detail.Result).EqualString("P"))
+                            if (MyUtility.Convert.GetString(all_Data.Detail.WashResult).EqualString("P"))
                             {
                                 worksheet.Cells[74, 4] = "V";
                             }
-                            else
+                            else if (MyUtility.Convert.GetString(all_Data.Detail.WashResult).EqualString("F"))
                             {
                                 worksheet.Cells[74, 6] = "V";
                             }

@@ -8,6 +8,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
     public class Setting : BaseResult
     {
         public string FinalInspectionID { get; set; } = string.Empty;
+        public string BrandID { get; set; } = string.Empty;
         public string InspectionStage { get; set; } = string.Empty;
         public DateTime? AuditDate { get; set; } 
         public string SewingLineID { get; set; } = string.Empty;

@@ -42,8 +42,8 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,PMS_RFTCommentsID = dd.ID" + Environment.NewLine);
             SbSql.Append("        ,oc.Comnments"+ Environment.NewLine);
             SbSql.Append("        ,[PMS_RFTCommentsDescription] = dd.Description" + Environment.NewLine);
-            SbSql.Append("from Production..DropdownList dd" + Environment.NewLine);
-            SbSql.Append("left join RFT_OrderComments oc on dd.ID = oc.PMS_RFTCommentsID" + Environment.NewLine);
+            SbSql.Append("from Production..DropdownList dd WITH(NOLOCK)" + Environment.NewLine);
+            SbSql.Append("left join RFT_OrderComments oc WITH(NOLOCK) on dd.ID = oc.PMS_RFTCommentsID" + Environment.NewLine);
             SbSql.Append("and oc.OrderID = @OrderID" + Environment.NewLine);
             SbSql.Append("where dd.Type='PMS_RFTComments'" + Environment.NewLine);
             
@@ -166,7 +166,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
                 objParameter.Add($"@PMS_RFTCommentsID{rowSeq}", DbType.String, item.PMS_RFTCommentsID);
 
                 sqlcmd += $@"
-if exists(select 1 from RFT_OrderComments where OrderID = @OrderID{rowSeq} and PMS_RFTCommentsID = @PMS_RFTCommentsID{rowSeq})
+if exists(select 1 from RFT_OrderComments WITH(NOLOCK) where OrderID = @OrderID{rowSeq} and PMS_RFTCommentsID = @PMS_RFTCommentsID{rowSeq})
 begin
 	UPDATE [RFT_OrderComments]
 	set Comnments = @Comnments{rowSeq}

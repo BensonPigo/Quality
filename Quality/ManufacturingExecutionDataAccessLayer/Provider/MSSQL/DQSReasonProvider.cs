@@ -46,7 +46,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,AddDate"+ Environment.NewLine);
             SbSql.Append("        ,EditName"+ Environment.NewLine);
             SbSql.Append("        ,EditDate"+ Environment.NewLine);
-            SbSql.Append("FROM [DQSReason]"+ Environment.NewLine);
+            SbSql.Append("FROM [DQSReason] WITH(NOLOCK)" + Environment.NewLine);
             SbSql.Append("where 1=1" + Environment.NewLine);
             SbSql.Append("and Junk = 0" + Environment.NewLine);
             if (Item.Type != null) { SbSql.Append(" and Type=@Type" + Environment.NewLine); }

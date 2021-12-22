@@ -53,7 +53,7 @@ AND FactoryID=@FactoryID
             //台北
             SbSql.Append($@"
 Select SewingTeamID = ID
-from Production.dbo.SewingTeam 
+from Production.dbo.SewingTeam  WITH(NOLOCK)
 Where Junk = 0
 ");
 
@@ -75,7 +75,7 @@ select  [OrderID] = o.id,
         [AvailableQty] = 0,
         [Cartons] = '',
         [Seq] = '',
-        [Article] = (SELECT Stuff((select concat( ',',Article)   from Order_Article where ID = o.ID FOR XML PATH('')),1,1,'') )
+        [Article] = (SELECT Stuff((select concat( ',',Article)   from Order_Article WITH(NOLOCK) where ID = o.ID FOR XML PATH('')),1,1,'') )
   from  Orders o with (nolock)
  where  o.id in ({whereOrderID})
 ";
@@ -119,7 +119,7 @@ select  [Selected] = Cast(0 as bit),
         [CTNNo] = CTNStartNo,
         [Seq] = pld.OrderShipmodeSeq
 		,ShipQty = SUM(pld.ShipQty)
- from PackingList_Detail pld
+ from PackingList_Detail pld WITH(NOLOCK)
  where  pld.OrderID in ({whereOrderID}) 
     --and CTNQty = 1
  group by  OrderID,ID,CTNStartNo,OrderShipmodeSeq
@@ -152,7 +152,7 @@ select  [Selected] = cast(isnull(fc.Selected, 0) as bit),
         [PackingListID] = pld.id, 
         [CTNNo] = CTNStartNo,
         [Seq] = pld.OrderShipmodeSeq
-from PackingList_Detail pld
+from PackingList_Detail pld WITH(NOLOCK)
 left join   #FinalInspection_OrderCarton fc on  fc.OrderID = pld.OrderID and 
                                                 fc.PackinglistID = pld.ID and 
                                                 fc.CTNNo = pld.CTNStartNo and
@@ -212,7 +212,7 @@ select	InspectionLevels ,
 		Junk			 ,
 		AQLType			 ,
 		AcceptedQty
-from AcceptableQualityLevels
+from AcceptableQualityLevels WITH(NOLOCK)
 where AQLType in (1,1.5,2.5) and InspectionLevels < 3 and AcceptedQty is not null 
 order by AQLType , InspectionLevels
 ";
@@ -293,7 +293,7 @@ where exists (select 1 from #FinalInspection_Order_QtyShip where OrderID = oqd.I
 select  [Text] = '', [Value] = ''
 union
 select  [Text] = Name, [Value] = Name 
-from DropDownList ddl where
+from DropDownList ddl WITH(NOLOCK) where
 type='PMS_MoistureAction'
 
 ";
@@ -335,10 +335,10 @@ where ID = @finalInspectionID
 ----避免沒有Order_Location資料，預先塞入
 INSERT into  Order_Location(OrderId,Location,Rate,AddName,AddDate,EditName,EditDate)
 SELECT o.id,sl.Location,sl.Rate,sl.AddName,sl.AddDate,sl.EditName,sl.EditDate
-FROM orders o
+FROM orders o WITH(NOLOCK)
 inner join Style_Location sl WITH (NOLOCK) on o.StyleUkey = sl.StyleUkey
 WHERE o.ID IN (select OrderID from #FinalInspection_Order)
-AND  o.ID NOT IN (select OrderID from Order_Location)
+AND  o.ID NOT IN (select OrderID from Order_Location WITH(NOLOCK))
 
 select distinct Location 
 from Order_Location with (nolock)

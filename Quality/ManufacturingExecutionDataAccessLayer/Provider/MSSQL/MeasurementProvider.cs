@@ -51,7 +51,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,Junk"+ Environment.NewLine);
             SbSql.Append("        ,SizeGroup"+ Environment.NewLine);
             SbSql.Append("        ,MeasurementTranslateUkey"+ Environment.NewLine);
-            SbSql.Append("FROM [Measurement]"+ Environment.NewLine);
+            SbSql.Append("FROM [Measurement] WITH(NOLOCK)" + Environment.NewLine);
 
 
 
@@ -181,7 +181,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             };
             string sqlcmd = @"
 Select distinct Article
-From MainServer.Production.dbo.Order_Qty
+From MainServer.Production.dbo.Order_Qty WITH(NOLOCK)
 where ID = @OrderID
 ";
              return ExecuteList<Order_Qty>(CommandType.Text, sqlcmd, objParameter);
@@ -198,8 +198,8 @@ where ID = @OrderID
 select o.OrderTypeID,[OrderID] = o.ID,o.StyleID,o.SeasonID
 ,[Unit] = IIF(isnull(o.sizeUnit,'') = '',s.SizeUnit,o.SizeUnit)
 ,[Factory] = o.FactoryID
-from MainServer.Production.dbo.Orders o
-left join MainServer.Production.dbo.Style s on o.StyleUkey = s.Ukey
+from MainServer.Production.dbo.Orders o WITH(NOLOCK)
+left join MainServer.Production.dbo.Style s WITH(NOLOCK) on o.StyleUkey = s.Ukey
 where o.ID = @OrderID
 --and o.FactoryID = @FactoryID
 ";
@@ -213,7 +213,7 @@ where o.ID = @OrderID
 select [ttlCnt] = count (1)
 from (
     select distinct styleukey, sizecode, no
-    from RFT_Inspection_Measurement
+    from RFT_Inspection_Measurement WITH(NOLOCK)
     where format (adddate, 'yyyy/MM/dd') = format (getdate(), 'yyyy/MM/dd')
 ) rim
 ";
@@ -240,7 +240,7 @@ from (
 select [ttlCnt] = count (1) 
 from (
     select distinct styleukey, sizecode, no
-    from RFT_Inspection_Measurement
+    from RFT_Inspection_Measurement WITH(NOLOCK)
     where OrderID = @OrderID
         and Article = @Article
 ) rim
@@ -272,7 +272,7 @@ select value = dbo.calculateSizeSpec(@DiffValue, @Tol,'INCH');
         public DataTable Get_Measured_Detail(Measurement_Request measurement)
         {
             string styleUkey = string.Empty;
-            DataTable dtStyle = ExecuteDataTable(CommandType.Text, $@"Select StyleUkey from MainServer.Production.dbo.Orders where id = '{measurement.OrderID}'", new SQLParameterCollection());
+            DataTable dtStyle = ExecuteDataTable(CommandType.Text, $@"Select StyleUkey from MainServer.Production.dbo.Orders WITH(NOLOCK) where id = '{measurement.OrderID}'", new SQLParameterCollection());
             if (dtStyle.Rows.Count > 0)
             {
                 styleUkey = dtStyle.Rows[0]["StyleUkey"].ToString();
@@ -306,7 +306,7 @@ declare @no nvarchar(66)
 declare @time nvarchar(5)
 declare @diffno int='1'
 declare @orderid nvarchar(16) = @_OrderID
-declare @MDivision nvarchar(5) = (select MDivisionID from MainServer.Production.dbo.Factory where id = @Factory)
+declare @MDivision nvarchar(5) = (select MDivisionID from MainServer.Production.dbo.Factory WITH(NOLOCK) where id = @Factory)
 --declare @shiftTabele table(MDivision varchar(8),Shift varchar(5),StartDate date,BeginTime time,EndTime time,ActualBeginTime datetime,ActualEndTime datetime)
 --declare @workStartDatetime datetime
 --declare @workEndDatetime datetime
@@ -320,7 +320,7 @@ declare @MDivision nvarchar(5) = (select MDivisionID from MainServer.Production.
 
 select *
 into #tmp_Inspection_Measurement
-from RFT_Inspection_Measurement im
+from RFT_Inspection_Measurement im WITH(NOLOCK)
 where im.StyleUkey = @styleukey 
 --and (@workStartDatetime <= im.AddDate AND im.AddDate <= @workEndDatetime)
 --and im.Team = @team
@@ -410,14 +410,14 @@ select  @StyleUkey = StyleUkey
 from    SciProduction_Orders with (nolock)
 where   ID IN (
     select POID
-    from SciProduction_Orders
+    from SciProduction_Orders WITH(NOLOCK)
     where CustPONO = @CustPONO
 )
 
 exec CopyStyle_ToMeasurement @userID,@StyleUkey;
 
 select  @SizeUnit = SizeUnit
-from    MainServer.Production.dbo.Style
+from    MainServer.Production.dbo.Style WITH(NOLOCK)
 where   Ukey = @StyleUkey
 
 SELECT  a.StyleUkey

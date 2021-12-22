@@ -48,7 +48,7 @@ namespace ManufacturingExecutionDataAccessLayer.DataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,Description"+ Environment.NewLine);
             SbSql.Append("        ,IsAdmin"+ Environment.NewLine);
             SbSql.Append("        ,Junk"+ Environment.NewLine);
-            SbSql.Append("FROM [Quality_Position]"+ Environment.NewLine);
+            SbSql.Append("FROM [Quality_Position] WITH(NOLOCK)" + Environment.NewLine);
 
 
 

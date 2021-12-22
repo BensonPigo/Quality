@@ -53,8 +53,8 @@ select	[TestNo] = cast(o.TestNo as varchar),
         [TestAfterPicture] = oi.TestAfterPicture
 from Oven o with (nolock)
 LEFT JOIN [ExtendServer].PMSFile.dbo.Oven oi with (nolock) ON o.ID = oi.ID
-left join pass1 pass1AddName on o.AddName = pass1AddName.ID
-left join pass1 pass1EditName on o.EditName = pass1EditName.ID
+left join pass1 pass1AddName WITH(NOLOCK) on o.AddName = pass1AddName.ID
+left join pass1 pass1EditName WITH(NOLOCK) on o.EditName = pass1EditName.ID
 where o.POID = @POID and o.TestNo = @TestNo
 ";
 
@@ -108,7 +108,7 @@ where   o.POID = @POID and o.TestNo = @TestNo
 declare @MtlLeadTime tinyint
 
 select @MtlLeadTime = isnull(MtlLeadTime, 0)
-from system
+from system WITH(NOLOCK)
 
 
 select	[POID] = p.ID,
@@ -128,15 +128,15 @@ select	[POID] = p.ID,
 		[EditBy] = Concat(p.EditName, '-', pass1EditName.Name, ' ', Format(p.EditDate, 'yyyy/MM/dd HH:mm:ss'))
 from PO p with (nolock)
 inner join Orders o with (nolock) on p.ID = o.ID
-left join pass1 pass1AddName on p.AddName = pass1AddName.ID
-left join pass1 pass1EditName on p.EditName = pass1EditName.ID
+left join pass1 pass1AddName WITH(NOLOCK) on p.AddName = pass1AddName.ID
+left join pass1 pass1EditName WITH(NOLOCK) on p.EditName = pass1EditName.ID
 outer apply (    select [val] = max(CompletionDate)
                 from    (
-                 select [CompletionDate] = Max(CrockingDate) from FIR_Laboratory where POID = p.ID
+                 select [CompletionDate] = Max(CrockingDate) from FIR_Laboratory WITH(NOLOCK) where POID = p.ID
                  union all
-                 select [CompletionDate] = Max(HeatDate) from FIR_Laboratory where POID = p.ID
+                 select [CompletionDate] = Max(HeatDate) from FIR_Laboratory WITH(NOLOCK) where POID = p.ID
                  union all
-                 select [CompletionDate] = Max(WashDate) from FIR_Laboratory where POID = p.ID
+                 select [CompletionDate] = Max(WashDate) from FIR_Laboratory WITH(NOLOCK) where POID = p.ID
                 ) a
             ) FIR_CompletionDate
 where p.id = @POID
@@ -258,7 +258,7 @@ select	[POID] = f.POID,
         [CrockingDate] = fl.CrockingDate,
         [StyleID] = o.StyleID,
         [SCIRefno] = f.SCIRefno,
-        [Name] = (select Name from pass1 where ID = fl.CrockingInspector),
+        [Name] = (select Name from pass1 WITH(NOLOCK) where ID = fl.CrockingInspector),
         [BrandID] = o.BrandID,
         [Refno] = f.Refno,
         [NonCrocking] = fl.NonCrocking,
@@ -518,7 +518,7 @@ update  FIR_Laboratory_Crocking set DryScale       = @DryScale      ,
             SQLParameterCollection listPar = new SQLParameterCollection();
             string sqlGet = $@"
 select top 1 POID
-from    FIR_Laboratory
+from    FIR_Laboratory WITH(NOLOCK)
 where   Result <> '' and CrockingDate between getdate() - 160 and getdate() + 160
 {where}
 ";
@@ -530,7 +530,7 @@ where   Result <> '' and CrockingDate between getdate() - 160 and getdate() + 16
             SQLParameterCollection listPar = new SQLParameterCollection();
             string sqlGet = $@"
 select top 1 ID
-from    FIR_Laboratory
+from    FIR_Laboratory WITH(NOLOCK)
 where   Result <> '' and CrockingDate between getdate() - 160 and getdate() + 160
 {where}
 ";
@@ -556,7 +556,7 @@ update  FIR_Laboratory  set Crocking = @testResult,
 
 declare @POID varchar(13)
 
-select @POID = POID from FIR_Laboratory where ID = @ID
+select @POID = POID from FIR_Laboratory WITH(NOLOCK) where ID = @ID
 
 exec UpdateInspPercent 'FIRLab',@POID 
 ";
@@ -618,7 +618,7 @@ update  FIR_Laboratory  set Crocking = '',
 
 declare @POID varchar(13)
 
-select @POID = POID from FIR_Laboratory where ID = @ID
+select @POID = POID from FIR_Laboratory WITH(NOLOCK) where ID = @ID
 
 exec UpdateInspPercent 'FIRLab',@POID 
 ";
@@ -678,17 +678,17 @@ SELECT distinct fd.InspDate,
                 fd.Dyelot,
                 fd.Result,
                 a.Name
-FROM Order_BOF bof
-inner join PO_Supp_Detail p on p.id=bof.id and bof.SCIRefno=p.SCIRefno
-inner join Order_ColorCombo OC on oc.id=p.id and oc.FabricCode=bof.FabricCode
-inner join orders o on o.id = bof.id
-inner join FIR_Laboratory f on f.poid = o.poid and f.seq1 = p.seq1 and f.seq2 = p.seq2
-inner join FIR_Laboratory_Crocking fd on fd.id = f.id
+FROM Order_BOF bof WITH(NOLOCK)
+inner join PO_Supp_Detail p WITH(NOLOCK) on p.id=bof.id and bof.SCIRefno=p.SCIRefno
+inner join Order_ColorCombo OC WITH(NOLOCK) on oc.id=p.id and oc.FabricCode=bof.FabricCode
+inner join orders o WITH(NOLOCK) on o.id = bof.id
+inner join FIR_Laboratory f WITH(NOLOCK) on f.poid = o.poid and f.seq1 = p.seq1 and f.seq2 = p.seq2
+inner join FIR_Laboratory_Crocking fd WITH(NOLOCK) on fd.id = f.id
 outer apply
 (
 	select Name = stuff((
 		select concat(',',Name)
-		from pass1 
+		from pass1  WITH(NOLOCK)
 		where id = fd.Inspector
 		for xml path('')
 	),1,1,'')
@@ -718,7 +718,7 @@ select	[POID] = f.POID,
         [HeatDate] = fl.HeatDate,
         [StyleID] = o.StyleID,
         [SCIRefno] = f.SCIRefno,
-        [Name] = (select Name from pass1 where ID = fl.HeatInspector),
+        [Name] = (select Name from pass1 WITH(NOLOCK) where ID = fl.HeatInspector),
         [BrandID] = o.BrandID,
         [Refno] = f.Refno,
         [NonHeat] = fl.NonHeat,
@@ -772,7 +772,7 @@ select	[Roll] = flc.Roll,
         [VerticalAverage] = Cast(Round((isnull(flc.VerticalTest1, 0) + isnull(flc.VerticalTest2, 0)  + isnull(flc.VerticalTest3, 0)) / 3.0, 2) as numeric(5, 2)),
         [Inspdate] = flc.Inspdate,
         [Inspector] = flc.Inspector,
-        [Name] = (select Concat(Name, 'Ext.', ExtNo) from pass1 where ID = flc.Inspector),
+        [Name] = (select Concat(Name, 'Ext.', ExtNo) from pass1 WITH(NOLOCK) where ID = flc.Inspector),
         [Remark] = flc.Remark,
         [LastUpdate] = Concat(LastUpdateName.val, ' - ', isnull(Format(flc.EditDate, 'yyyy/MM/dd HH:mm:ss'), Format(flc.AddDate, 'yyyy/MM/dd HH:mm:ss')))
 from FIR_Laboratory_Heat flc with (nolock)
@@ -982,7 +982,7 @@ update  FIR_Laboratory  set Heat = @testResult,
 
 declare @POID varchar(13)
 
-select @POID = POID from FIR_Laboratory where ID = @ID
+select @POID = POID from FIR_Laboratory WITH(NOLOCK) where ID = @ID
 
 exec UpdateInspPercent 'FIRLab',@POID 
 ";
@@ -1044,7 +1044,7 @@ update  FIR_Laboratory  set Heat = '',
 
 declare @POID varchar(13)
 
-select @POID = POID from FIR_Laboratory where ID = @ID
+select @POID = POID from FIR_Laboratory WITH(NOLOCK) where ID = @ID
 
 exec UpdateInspPercent 'FIRLab',@POID 
 ";
@@ -1080,7 +1080,7 @@ select	[Roll] = flc.Roll,
         [VerticalAverage] = (isnull(flc.VerticalTest1, 0) + isnull(flc.VerticalTest2, 0)  + isnull(flc.VerticalTest3, 0)) / 3.0,
         [Inspdate] = flc.Inspdate,
         [Inspector] = flc.Inspector,
-        [Name] = (select Concat(Name, ' Ext.', ExtNo) from pass1 where ID = flc.Inspector),
+        [Name] = (select Concat(Name, ' Ext.', ExtNo) from pass1 WITH(NOLOCK) where ID = flc.Inspector),
         [Remark] = flc.Remark,
         [LastUpdate] = Concat(LastUpdateName.val, ' - ', isnull(Format(flc.EditDate, 'yyyy/MM/dd HH:mm:ss'), Format(flc.AddDate, 'yyyy/MM/dd HH:mm:ss')))
 from FIR_Laboratory_Heat flc with (nolock)
@@ -1109,7 +1109,7 @@ select	[POID] = f.POID,
         [WashDate] = fl.WashDate,
         [StyleID] = o.StyleID,
         [SCIRefno] = f.SCIRefno,
-        [Name] = (select Name from pass1 where ID = fl.WashInspector),
+        [Name] = (select Name from pass1 WITH(NOLOCK) where ID = fl.WashInspector),
         [BrandID] = o.BrandID,
         [Refno] = f.Refno,
         [NonWash] = fl.NonWash,
@@ -1169,7 +1169,7 @@ select	[Roll] = flc.Roll,
         [SkewnessRate] = flc.SkewnessRate,
         [Inspdate] = flc.Inspdate,
         [Inspector] = flc.Inspector,
-        [Name] = (select Concat(Name, ' Ext.', ExtNo) from pass1 where ID = flc.Inspector),
+        [Name] = (select Concat(Name, ' Ext.', ExtNo) from pass1 WITH(NOLOCK) where ID = flc.Inspector),
         [Remark] = flc.Remark,
         [LastUpdate] = Concat(LastUpdateName.val, ' - ', isnull(Format(flc.EditDate, 'yyyy/MM/dd HH:mm:ss'), Format(flc.AddDate, 'yyyy/MM/dd HH:mm:ss')))
 from FIR_Laboratory_Wash flc with (nolock)
@@ -1406,7 +1406,7 @@ update  FIR_Laboratory  set Wash = @testResult,
 
 declare @POID varchar(13)
 
-select @POID = POID from FIR_Laboratory where ID = @ID
+select @POID = POID from FIR_Laboratory WITH(NOLOCK) where ID = @ID
 
 exec UpdateInspPercent 'FIRLab',@POID 
 ";
@@ -1469,7 +1469,7 @@ update  FIR_Laboratory  set Wash = '',
 
 declare @POID varchar(13)
 
-select @POID = POID from FIR_Laboratory where ID = @ID
+select @POID = POID from FIR_Laboratory WITH(NOLOCK) where ID = @ID
 
 exec UpdateInspPercent 'FIRLab',@POID 
 ";
@@ -1510,7 +1510,7 @@ select	[Roll] = flc.Roll,
         [SkewnessRate] = flc.SkewnessRate,
         [Inspdate] = flc.Inspdate,
         [Inspector] = flc.Inspector,
-        [Name] = (select Concat(Name, ' Ext.', ExtNo) from pass1 where ID = flc.Inspector),
+        [Name] = (select Concat(Name, ' Ext.', ExtNo) from pass1 WITH(NOLOCK) where ID = flc.Inspector),
         [Remark] = flc.Remark,
         [LastUpdate] = Concat(LastUpdateName.val, ' - ', isnull(Format(flc.EditDate, 'yyyy/MM/dd HH:mm:ss'), Format(flc.AddDate, 'yyyy/MM/dd HH:mm:ss')))
 from FIR_Laboratory_Wash flc with (nolock)

@@ -24,7 +24,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append(
                 @"
 select distinct FTYGroup
-from Factory
+from Factory WITH(NOLOCK)
 where Junk = 0
 and IsProduceFty = 1
 " + Environment.NewLine);
@@ -35,7 +35,7 @@ and IsProduceFty = 1
         public IList<Factory> GetMDivisionID(string fty)
         {
             string sqlcmd = $@"
-select MDivisionID from Factory 
+select MDivisionID from Factory  WITH(NOLOCK)
 where ID = '{fty}'
 ";
 

@@ -49,7 +49,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,EditDate" + Environment.NewLine);
             SbSql.Append("        ,EditName" + Environment.NewLine);
             SbSql.Append("        ,Status" + Environment.NewLine);
-            SbSql.Append("FROM [ReworkCard]" + Environment.NewLine);
+            SbSql.Append("FROM [ReworkCard] WITH(NOLOCK)" + Environment.NewLine);
             SbSql.Append("WHERE 1 = 1" + Environment.NewLine);
             if (!string.IsNullOrEmpty(Item.FactoryID)) { SbSql.Append(" and FactoryID = @FactoryID" + Environment.NewLine); }
             if (!string.IsNullOrEmpty(Item.Line)) { SbSql.Append(" and Line = @Line" + Environment.NewLine); }

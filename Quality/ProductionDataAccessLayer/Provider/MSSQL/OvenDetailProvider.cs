@@ -53,7 +53,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,SubmitDate"+ Environment.NewLine);
             SbSql.Append("        ,Temperature"+ Environment.NewLine);
             SbSql.Append("        ,Time"+ Environment.NewLine);
-            SbSql.Append("FROM [Oven_Detail]"+ Environment.NewLine);
+            SbSql.Append("FROM [Oven_Detail] WITH(NOLOCK)" + Environment.NewLine);
 
 
 

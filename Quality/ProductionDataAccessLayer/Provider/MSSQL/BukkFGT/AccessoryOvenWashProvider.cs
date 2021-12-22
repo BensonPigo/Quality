@@ -38,8 +38,8 @@ select OrderID= o.ID
 	,EarliestCutDate = o.CutInLine
 	,EarliestSCIDel = p.MinSciDelivery
 	,TargetLeadTime =   CASE WHEN p.MinSciDelivery IS NULL THEN NULL
-							 WHEN o.CutInline < (SELECT DATEADD(DAY, (SELECT MtlLeadTime from System) ,'2021-10-30')) THEN  o.CutInline
-							 ELSE  (SELECT DATEADD(DAY, (SELECT MtlLeadTime from System) ,'2021-10-30'))
+							 WHEN o.CutInline < (SELECT DATEADD(DAY, (SELECT MtlLeadTime from System WITH(NOLOCK)) ,'2021-10-30')) THEN  o.CutInline
+							 ELSE  (SELECT DATEADD(DAY, (SELECT MtlLeadTime from System WITH(NOLOCK)) ,'2021-10-30'))
 						END	
 	,CompletionDate = IIF( p.AIRLabInspPercent = 100,CompletionDate.Val,NULL)
 	,ArticlePercent = p.AIRLabInspPercent
@@ -47,18 +47,18 @@ select OrderID= o.ID
 	,Remark = p.AIRLaboratoryRemark
 	,CreateBy = Concat (p.AddName, '-', c.Name, ' ', convert(varchar,  p.AddDate, 120) )
 	,EditBy = Concat (p.EditName, '-', e.Name, ' ', convert(varchar,  p.EditDate, 120) )
-from PO p
-inner join Orders o ON o.ID = p.ID
-left join Pass1 c on p.AddName = c.ID
-left join Pass1 e on p.AddName = e.ID
+from PO p WITH(NOLOCK)
+inner join Orders o WITH(NOLOCK) ON o.ID = p.ID
+left join Pass1 c WITH(NOLOCK) on p.AddName = c.ID
+left join Pass1 e WITH(NOLOCK) on p.AddName = e.ID
 OUTER APPLY(	
 	SELECT Val = MAX(MaxDate) FROM (
 		select MaxDate = MAX(OvenDate)
-		from AIR_Laboratory
+		from AIR_Laboratory WITH(NOLOCK)
 		where POID= p.ID
 		UNION
 		select MaxDate =MAX(WashDate)
-		from AIR_Laboratory
+		from AIR_Laboratory WITH(NOLOCK)
 		where POID= p.ID
 	)a
 )CompletionDate
@@ -112,11 +112,11 @@ select
 	,AIR_LaboratoryID = al.ID
 	,a.Seq1
 	,a.Seq2
-from AIR_Laboratory al
-inner join Air a ON a.ID = al.ID
-left join Receiving r on a.ReceivingID = r.ID
-left join Supp s ON s.ID = a.Suppid
-left join  Po_Supp_Detail psd on a.POID = psd.ID and a.SEQ1=psd.SEQ1  and a.SEQ2=psd.SEQ2
+from AIR_Laboratory al WITH(NOLOCK)
+inner join Air a WITH(NOLOCK) ON a.ID = al.ID
+left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.ID
+left join Supp s WITH(NOLOCK) ON s.ID = a.Suppid
+left join  Po_Supp_Detail psd WITH(NOLOCK) on a.POID = psd.ID and a.SEQ1=psd.SEQ1  and a.SEQ2=psd.SEQ2
 where a.POID = @ID
 ORDER BY a.SEQ1, a.SEQ2, r.ExportID
 
@@ -243,13 +243,13 @@ select   al.POID
         ,al.Seq2
 		,ali.OvenTestBeforePicture
 		,ali.OvenTestAfterPicture
-from AIR_Laboratory al
-left join  [ExtendServer].PMSFile.dbo.AIR_Laboratory ali ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
-inner join AIR a ON a.ID = al.ID
-left join Receiving r on a.ReceivingID = r.Id
-left join Supp s on a.Suppid = s.ID
-left join PO_Supp_Detail psd ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
-left join Pass1 q on q.ID = al.OvenInspector
+from AIR_Laboratory al WITH(NOLOCK)
+left join  [ExtendServer].PMSFile.dbo.AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
+inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
+left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
+left join Supp s WITH(NOLOCK) on a.Suppid = s.ID
+left join PO_Supp_Detail psd WITH(NOLOCK) ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
+left join Pass1 q WITH(NOLOCK) on q.ID = al.OvenInspector
 where   al.ID=@AIR_LaboratoryID
     and al.POID=@POID
     and al.Seq1=@Seq1
@@ -461,12 +461,12 @@ select  [SP#] = al.POID
         ,[Oven Last Test Date]= convert(varchar, al.OvenDate , 111)  
 		,[Oven Lab Tech	AIR_Laboratory]=al.OvenInspector
         ,Remark = al.OvenRemark
-from AIR_Laboratory al
-inner join AIR a ON a.ID = al.ID
-INNER JOIn Orders o ON o.ID = a.POID
-left join Receiving r on a.ReceivingID = r.Id
-left join Supp s on a.Suppid = s.ID
-left join PO_Supp_Detail psd ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
+from AIR_Laboratory al WITH(NOLOCK)
+inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
+INNER JOIn Orders o WITH(NOLOCK) ON o.ID = a.POID
+left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
+left join Supp s WITH(NOLOCK) on a.Suppid = s.ID
+left join PO_Supp_Detail psd WITH(NOLOCK) ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
 where   al.ID=@AIR_LaboratoryID
     and al.POID=@POID
     and al.Seq1=@Seq1
@@ -511,13 +511,13 @@ select   al.POID
         ,al.Seq2
 		,ali.WashTestBeforePicture
 		,ali.WashTestAfterPicture
-from AIR_Laboratory al
-left join  [ExtendServer].PMSFile.dbo.AIR_Laboratory ali ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
-inner join AIR a ON a.ID = al.ID
-left join Receiving r on a.ReceivingID = r.Id
-left join Supp s on a.Suppid = s.ID
-left join PO_Supp_Detail psd ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
-left join Pass1 q on q.ID = al.WashInspector
+from AIR_Laboratory al WITH(NOLOCK)
+left join  [ExtendServer].PMSFile.dbo.AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
+inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
+left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
+left join Supp s WITH(NOLOCK) on a.Suppid = s.ID
+left join PO_Supp_Detail psd WITH(NOLOCK) ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
+left join Pass1 q WITH(NOLOCK) on q.ID = al.WashInspector
 where   al.ID=@AIR_LaboratoryID
     and al.POID=@POID
     and al.Seq1=@Seq1
@@ -729,12 +729,12 @@ select  [SP#] = al.POID
         ,[Wash Last Test Date]=  convert(varchar, al.WashDate , 111)  
 		,[Wash Lab Tech	AIR_Laboratory]=al.WashInspector
         ,Remark = al.WashRemark
-from AIR_Laboratory al
-inner join AIR a ON a.ID = al.ID
-INNER JOIn Orders o ON o.ID = a.POID
-left join Receiving r on a.ReceivingID = r.Id
-left join Supp s on a.Suppid = s.ID
-left join PO_Supp_Detail psd ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
+from AIR_Laboratory al WITH(NOLOCK)
+inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
+INNER JOIn Orders o WITH(NOLOCK) ON o.ID = a.POID
+left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
+left join Supp s WITH(NOLOCK) on a.Suppid = s.ID
+left join PO_Supp_Detail psd WITH(NOLOCK) ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
 where   al.ID=@AIR_LaboratoryID
     and al.POID=@POID
     and al.Seq1=@Seq1

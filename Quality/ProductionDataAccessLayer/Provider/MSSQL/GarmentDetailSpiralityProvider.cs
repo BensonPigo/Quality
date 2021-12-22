@@ -38,7 +38,7 @@ select
 ,[CM]
 ,[MethodA]
 ,[MethodB]
-from Garment_Detail_Spirality
+from Garment_Detail_Spirality WITH(NOLOCK)
 where ID = @ID
 and No = @No
 ";
@@ -98,7 +98,7 @@ WHERE id = @ID{idx} and No = @No{idx} and Location = @Location{idx}
             SbSql.Append("        ,CM"+ Environment.NewLine);
             SbSql.Append("        ,MethodA"+ Environment.NewLine);
             SbSql.Append("        ,MethodB"+ Environment.NewLine);
-            SbSql.Append("FROM [Garment_Detail_Spirality]"+ Environment.NewLine);
+            SbSql.Append("FROM [Garment_Detail_Spirality] WITH(NOLOCK)" + Environment.NewLine);
 
 
 

@@ -37,8 +37,8 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,md.Remark" + Environment.NewLine);
             SbSql.Append("        ,md.EditName" + Environment.NewLine);
             SbSql.Append("        ,md.EditDate" + Environment.NewLine);
-            SbSql.Append("FROM [MockupCrocking_Detail] md" + Environment.NewLine);
-            SbSql.Append("inner join MockupCrocking m on m.ReportNo = md.ReportNo" + Environment.NewLine);
+            SbSql.Append("FROM [MockupCrocking_Detail] md WITH(NOLOCK)" + Environment.NewLine);
+            SbSql.Append("inner join MockupCrocking m WITH(NOLOCK) on m.ReportNo = md.ReportNo" + Environment.NewLine);
             SbSql.Append("Where 1=1" + Environment.NewLine);
 
             if (!string.IsNullOrEmpty(Item.ReportNo))
@@ -148,11 +148,11 @@ SELECT
         ,md.Remark
         ,md.EditName
         ,md.EditDate
-		,ArtworkColorName = (select stuff((select concat(';', Name) from Color where ID in (select Data from SplitString(md.ArtworkColor,';')) and BrandID = m.BrandID for xml path('')),1,1,''))
-        ,FabricColorName = (select stuff((select concat(';', Name) from Color where ID in (select Data from SplitString(md.FabricColor,';')) and BrandID = m.BrandID for xml path('')),1,1,''))
+		,ArtworkColorName = (select stuff((select concat(';', Name) from Color WITH(NOLOCK) where ID in (select Data from SplitString(md.ArtworkColor,';')) and BrandID = m.BrandID for xml path('')),1,1,''))
+        ,FabricColorName = (select stuff((select concat(';', Name) from Color WITH(NOLOCK) where ID in (select Data from SplitString(md.FabricColor,';')) and BrandID = m.BrandID for xml path('')),1,1,''))
 		,LastUpdate = iif(isnull(md.EditName, '') <> '', Concat(md.EditName, '-' + Format(md.EditDate,'yyyy/MM/dd HH:mm:ss')), Format(md.EditDate,'yyyy/MM/dd HH:mm:ss'))
-FROM [MockupCrocking_Detail] md
-inner join MockupCrocking m on m.ReportNo = md.ReportNo
+FROM [MockupCrocking_Detail] md WITH(NOLOCK)
+inner join MockupCrocking m WITH(NOLOCK) on m.ReportNo = md.ReportNo
 Where 1=1
 ");
             if (!string.IsNullOrEmpty(Item.ReportNo))
