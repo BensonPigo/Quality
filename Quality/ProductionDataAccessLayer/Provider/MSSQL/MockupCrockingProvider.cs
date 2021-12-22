@@ -29,7 +29,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
             SbSql.Append("SELECT" + Environment.NewLine);
-            SbSql.Append("         ReportNo" + Environment.NewLine);
+            SbSql.Append("         m.ReportNo" + Environment.NewLine);
             SbSql.Append("        ,POID" + Environment.NewLine);
             SbSql.Append("        ,StyleID" + Environment.NewLine);
             SbSql.Append("        ,SeasonID" + Environment.NewLine);
@@ -45,19 +45,21 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,Technician" + Environment.NewLine);
             SbSql.Append("        ,MR" + Environment.NewLine);
             SbSql.Append("        ,Type" + Environment.NewLine);
-            SbSql.Append("        ,TestBeforePicture" + Environment.NewLine);
-            SbSql.Append("        ,TestAfterPicture" + Environment.NewLine);
+            SbSql.Append("        ,mi.TestBeforePicture" + Environment.NewLine);
+            SbSql.Append("        ,mi.TestAfterPicture" + Environment.NewLine);
             SbSql.Append("        ,AddDate" + Environment.NewLine);
             SbSql.Append("        ,AddName" + Environment.NewLine);
             SbSql.Append("        ,EditDate" + Environment.NewLine);
             SbSql.Append("        ,EditName" + Environment.NewLine);
             SbSql.Append("        ,EditName" + Environment.NewLine);
-            SbSql.Append("FROM [MockupCrocking] WITH(NOLOCK)" + Environment.NewLine);
+            SbSql.Append($@"FROM [MockupCrocking] m WITH(NOLOCK)
+left join [ExtendServer].PMSFile.dbo.MockupCrocking mi WITH(NOLOCK) on m.ReportNo=mi.ReportNo
+" + Environment.NewLine);
 
             SbSql.Append("Where 1 = 1" + Environment.NewLine);
             if (!string.IsNullOrEmpty(Item.ReportNo))
             {
-                SbSql.Append("And ReportNo = @ReportNo" + Environment.NewLine);
+                SbSql.Append("And m.ReportNo = @ReportNo" + Environment.NewLine);
                 objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
             }
 
@@ -69,6 +71,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             NewReportNo = GetID(Mdivision + "CK", "MockupCrocking", DateTime.Today, 2, "ReportNo");
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
+            SbSql.Append("SET XACT_ABORT ON" + Environment.NewLine);
             SbSql.Append("INSERT INTO [MockupCrocking]" + Environment.NewLine);
             SbSql.Append("(" + Environment.NewLine);
             SbSql.Append("         ReportNo" + Environment.NewLine);
@@ -122,6 +125,12 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,@AddName"); objParameter.Add("@AddName", DbType.String, HttpUtility.HtmlDecode(Item.AddName) ?? string.Empty);
             SbSql.Append(")" + Environment.NewLine);
 
+            SbSql.Append($@"
+
+INSERT INTO [ExtendServer].PMSFile.dbo.[MockupCrocking] (ReportNo,TestBeforePicture,TestAfterPicture)
+VALUES(@ReportNo,@TestBeforePicture,@TestAfterPicture)
+");
+
 
 
 
@@ -133,6 +142,8 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
             SbSql.Append($@"
+SET XACT_ABORT ON
+
 UPDATE [MockupCrocking] SET
     EditDate = GETDATE()
     ,EditName=@EditName
@@ -153,6 +164,12 @@ UPDATE [MockupCrocking] SET
     ,TestBeforePicture=@TestBeforePicture
     ,TestAfterPicture=@TestAfterPicture
 WHERE ReportNo = @ReportNo
+
+UPDATE [ExtendServer].PMSFile.dbo.[MockupCrocking] SET
+    TestBeforePicture=@TestBeforePicture
+    ,TestAfterPicture=@TestAfterPicture
+WHERE ReportNo = @ReportNo
+
 " + Environment.NewLine);
             objParameter.Add("@EditName", DbType.String, HttpUtility.HtmlDecode(Item.EditName) ?? string.Empty);
             objParameter.Add("@POID", DbType.String, HttpUtility.HtmlDecode(Item.POID) ?? string.Empty);
@@ -285,8 +302,13 @@ WHERE UKey = @Ukey
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
+            SbSql.Append("SET XACT_ABORT ON" + Environment.NewLine);
             SbSql.Append("DELETE [MockupCrocking]" + Environment.NewLine);
             SbSql.Append("WHERE ReportNo = @ReportNo" + Environment.NewLine);
+
+            SbSql.Append(@"DELETE [ExtendServer].PMSFile.dbo.[MockupCrocking]" + Environment.NewLine);
+            SbSql.Append("WHERE ReportNo = @ReportNo" + Environment.NewLine);
+
             objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
@@ -351,7 +373,7 @@ FROM [MockupCrocking] m WITH(NOLOCK)
             }
             SbSql.Append($@"
 SELECT {top1}
-         ReportNo
+          m.ReportNo
         ,POID
         ,StyleID
         ,SeasonID
@@ -373,8 +395,8 @@ SELECT {top1}
 		,MRExtNo = MR_ne.Extno
         ,MRMail = MR_ne.EMail
         ,Type
-        ,TestBeforePicture
-        ,TestAfterPicture
+        ,mi.TestBeforePicture
+        ,mi.TestAfterPicture
         ,AddDate
         ,AddName
         ,EditDate
@@ -382,7 +404,8 @@ SELECT {top1}
         ,Signature = (select t.Signature from Technician t WITH(NOLOCK) where t.ID = Technician)
 		,LastEditName = iif(EditName <> '', Concat (EditName, '-', EditName.Name, ' ', Format(EditDate,'yyyy/MM/dd HH:mm:ss')), Concat (AddName, '-', AddName.Name, ' ', Format(AddDate,'yyyy/MM/dd HH:mm:ss')))
 FROM [MockupCrocking] m WITH(NOLOCK)
-outer apply (select Name, ExtNo from pass1 p WITH(NOLOCK) inner join Technician t WITH(NOLOCK) on t.ID = p.ID where t.id = m.Technician) Technician_ne
+left join [ExtendServer].PMSFile.dbo.MockupCrocking mi WITH(NOLOCK) on m.ReportNo=mi.ReportNo
+outer apply (select Name, ExtNo from pass1 WITH(NOLOCK) p inner join Technician t WITH(NOLOCK) on t.ID = p.ID where t.id = m.Technician) Technician_ne
 outer apply (select Name, ExtNo, EMail from pass1 WITH(NOLOCK) where id = m.MR) MR_ne
 outer apply (select Name from Pass1 WITH(NOLOCK) where id = m.AddName) AddName
 outer apply (select Name from Pass1 WITH(NOLOCK) where id = m.EditName) EditName
@@ -391,7 +414,7 @@ outer apply (select Name from Pass1 WITH(NOLOCK) where id = m.EditName) EditName
 
             if (!string.IsNullOrEmpty(Item.ReportNo))
             {
-                SbSql.Append("And ReportNo = @ReportNo" + Environment.NewLine);
+                SbSql.Append("And m.ReportNo = @ReportNo" + Environment.NewLine);
                 objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
             }
             if (!string.IsNullOrEmpty(Item.BrandID))
