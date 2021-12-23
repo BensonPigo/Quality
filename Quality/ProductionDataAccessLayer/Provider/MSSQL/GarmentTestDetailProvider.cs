@@ -114,8 +114,9 @@ gd.No
 ,[GarmentTest_Detail_EditName] = CONCAT(gd.EditName,'-',EditBy.Name,'',gd.EditDate)
 ,gd.SubmitDate,gd.ArrivedQty,gd.LineDry,gd.Temperature,gd.TumbleDry,gd.Machine,gd.HandWash
 ,gd.Composition,gd.Neck,gd.Status,gd.LOtoFactory,gd.MtlTypeID,gd.Above50NaturalFibres,gd.Above50SyntheticFibres
-,gd.TestAfterPicture,gd.TestBeforePicture
+,gdi.TestAfterPicture,gdi.TestBeforePicture
 from GarmentTest_Detail gd WITH(NOLOCK)
+left join [ExtendServer].PMSFile.dbo.GarmentTest_Detail gdi WITH(NOLOCK) on gd.ID = gdi.ID AND gd.No = gdi.No
 left join Pass1 CreatBy WITH(NOLOCK) on CreatBy.ID = gd.AddName
 left join Pass1 EditBy WITH(NOLOCK) on EditBy.ID = gd.EditName
 outer apply(
@@ -144,6 +145,8 @@ where gd.ID = @ID
             };
 
             string sqlcmd = @"
+SET XACT_ABORT ON
+
 Delete GarmentTest_Detail_Shrinkage  where id = @ID and NO = @No
 Delete GarmentTest_Detail_Apperance where id = @ID and NO = @No
 Delete GarmentTest_Detail_FGWT where id = @ID and NO = @No
@@ -151,6 +154,7 @@ Delete GarmentTest_Detail_FGPT where id = @ID and NO = @No
 Delete Garment_Detail_Spirality where id = @ID and NO = @No
 
 Delete GarmentTest_Detail where id = @ID and NO = @No
+Delete [ExtendServer].PMSFile.dbo.GarmentTest_Detail where id = @ID and NO = @No
 ";
             return ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter);
         }
@@ -311,6 +315,8 @@ and ID = @ID
             else { objParameter.Add("@TestAfterPicture", System.Data.SqlTypes.SqlBinary.Null); }
 
             string sqlcmd = $@"
+SET XACT_ABORT ON
+
 update GarmentTest_Detail set
     SubmitDate = @SubmitDate,
     ArrivedQty =  @ArrivedQty,
@@ -328,6 +334,11 @@ update GarmentTest_Detail set
     NonSeamBreakageTest = @NonSeamBreakageTest,
     EditName = @EditName,
     EditDate = GetDate(),
+    TestBeforePicture = @TestBeforePicture,
+    TestAfterPicture = @TestAfterPicture
+where ID = @ID and No = @No
+
+update [ExtendServer].PMSFile.dbo.GarmentTest_Detail set
     TestBeforePicture = @TestBeforePicture,
     TestAfterPicture = @TestAfterPicture
 where ID = @ID and No = @No
@@ -350,7 +361,15 @@ where ID = @ID and No = @No
             else { objParameter.Add("@TestAfterPicture", System.Data.SqlTypes.SqlBinary.Null); }
 
             string sqlcmd = $@"
+SET XACT_ABORT ON
+
 update GarmentTest_Detail 
+set
+    TestBeforePicture = @TestBeforePicture,
+    TestAfterPicture = @TestAfterPicture
+where ID = @ID and No = @No
+
+update [ExtendServer].PMSFile.dbo.GarmentTest_Detail 
 set
     TestBeforePicture = @TestBeforePicture,
     TestAfterPicture = @TestAfterPicture
@@ -557,8 +576,8 @@ drop table #tmpFGPTResult,#tmpFGWTResult
                 { "@No", DbType.String, No } ,
             };
             SbSql.Append("SELECT"+ Environment.NewLine);
-            SbSql.Append("         ID"+ Environment.NewLine);
-            SbSql.Append("        ,No"+ Environment.NewLine);
+            SbSql.Append("         gd.ID" + Environment.NewLine);
+            SbSql.Append("        ,gd.No" + Environment.NewLine);
             SbSql.Append("        ,Result"+ Environment.NewLine);
             SbSql.Append("        ,inspdate"+ Environment.NewLine);
             SbSql.Append("        ,inspector"+ Environment.NewLine);
@@ -592,11 +611,14 @@ drop table #tmpFGPTResult,#tmpFGWTResult
             SbSql.Append("        ,SeamBreakageResult"+ Environment.NewLine);
             SbSql.Append("        ,OdourResult"+ Environment.NewLine);
             SbSql.Append("        ,WashResult"+ Environment.NewLine);
-            SbSql.Append("        ,TestBeforePicture"+ Environment.NewLine);
-            SbSql.Append("        ,TestAfterPicture"+ Environment.NewLine);
-            SbSql.Append("FROM [GarmentTest_Detail] WITH(NOLOCK)" + Environment.NewLine);
-            SbSql.Append("where ID = @ID" + Environment.NewLine);
-            SbSql.Append("and No = @No" + Environment.NewLine);
+            SbSql.Append("        ,gdi.TestBeforePicture" + Environment.NewLine);
+            SbSql.Append("        ,gdi.TestAfterPicture" + Environment.NewLine);
+            SbSql.Append($@"FROM [GarmentTest_Detail] gd WITH(NOLOCK)
+left join [ExtendServer].PMSFile.dbo.GarmentTest_Detail gdi WITH(NOLOCK) on gd.ID=gdi.ID AND gd.No = gdi.No
+
+" + Environment.NewLine);
+            SbSql.Append("where gd.ID = @ID" + Environment.NewLine);
+            SbSql.Append("and gd.No = @No" + Environment.NewLine);
 
             return ExecuteList<GarmentTest_Detail_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
         }

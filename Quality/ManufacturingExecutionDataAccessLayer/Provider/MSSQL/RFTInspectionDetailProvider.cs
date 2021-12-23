@@ -224,6 +224,7 @@ from DefectCntDt
             };
 
             string sqlcmd = $@"
+SET XACT_ABORT ON
 declare @ID as bigint
 
 INSERT INTO [RFT_Inspection](
@@ -280,6 +281,13 @@ values(
     ,@GarmentDefectCodeID{detailcnt}
     {picValue}
     ,GetDate())
+
+INSERT INTO [ExtendServer].PMSFile.dbo.[RFT_Inspection_Detail](
+     [ID],Ukey
+    {picColumn}) 
+values(
+    @ID,(SELECT Max(Ukey) + 1 from RFT_Inspection_Detail where id=@ID)
+    {picValue})
 ";
                 detailcnt++;
             }
@@ -318,6 +326,7 @@ and  FactoryID = @FactoryID
             else { objParameter.Add("@DefectPicture", System.Data.SqlTypes.SqlBinary.Null); }
 
             sqlcmd += $@"
+SET XACT_ABORT ON
 INSERT INTO [RFT_Inspection_Detail](
      [ID]
     ,[DefectCode]
@@ -340,6 +349,13 @@ values(
     ,@GarmentDefectCodeID
     ,@DefectPicture
     ,GetDate())
+
+INSERT INTO [ExtendServer].PMSFile.dbo.[RFT_Inspection_Detail](
+     [ID],Ukey,DefectPicture) 
+values(
+    @ID,(SELECT Max(Ukey) + 1 from RFT_Inspection_Detail where id=@ID)
+    ,@DefectPicture
+)
 ";
            
             return ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter);

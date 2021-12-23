@@ -1029,6 +1029,8 @@
             EditMode = true;
             EditType = "New";
             $("#Save").attr("name", "Action:New");
+            $("#TestBeforePicture").val('');
+            $("#TestAfterPicture").val('');
             IsEditModeChange();
             GetArtworkDropDown();
 
@@ -1115,6 +1117,8 @@
         $('#Picture').on('click', function () {
             var para = "?Title=" + $('.page-header span').html() + "&EditMode=" + EditMode;
             para += "&" + "Table=MockupOven";
+            para += "&" + "TargetBeforeColumn=TestBeforePicture";
+            para += "&" + "TargetAfterColumn=TestAfterPicture";
             para += "&" + "BeforeColumn=TestBeforePicture";
             para += "&" + "AfterColumn=TestAfterPicture";
             para += "&" + "PKey_1=ReportNo";

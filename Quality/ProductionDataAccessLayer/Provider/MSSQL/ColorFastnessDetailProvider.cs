@@ -194,6 +194,8 @@ where id = @ID
                 objParameter.Add(new SqlParameter($"@ID", sources.Main.ID));
                 // update 
                 sqlcmd += @"
+SET XACT_ABORT ON
+
 update ColorFastness
 set	   [POID] = @POID
       ,[InspDate] = @InspDate
@@ -213,6 +215,12 @@ set	   [POID] = @POID
       ,[TestAfterPicture] = @TestAfterPicture
 where ID = @ID
 
+update [ExtendServer].PMSFile.dbo.ColorFastness
+set	   [TestBeforePicture] = @TestBeforePicture
+      ,[TestAfterPicture] = @TestAfterPicture
+where ID = @ID
+
+
 exec UpdateInspPercent 'LabColorFastness', @POID
 " + Environment.NewLine;
             }
@@ -222,8 +230,15 @@ exec UpdateInspPercent 'LabColorFastness', @POID
                 ID = NewID;
                 objParameter.Add(new SqlParameter($"@ID", NewID));
                 sqlcmd += @"
+SET XACT_ABORT ON
+
 insert into ColorFastness(ID,POID,TestNo,InspDate,Article,Status,Inspector,Remark,addName,addDate,Temperature,Cycle,CycleTime,Detergent,Machine,Drying,TestBeforePicture,TestAfterPicture)
 values(@ID ,@POID,@TestNo,GETDATE(),@Article,'New',@UserID,@Remark,@UserID,GETDATE(),@Temperature,@Cycle,@CycleTime,@Detergent,@Machine,@Drying,@TestBeforePicture,@TestAfterPicture)
+
+insert into [ExtendServer].PMSFile.dbo.ColorFastness(ID,TestBeforePicture,TestAfterPicture)
+values(@ID ,@TestBeforePicture,@TestAfterPicture)
+
+
 ";
             }
             #endregion
