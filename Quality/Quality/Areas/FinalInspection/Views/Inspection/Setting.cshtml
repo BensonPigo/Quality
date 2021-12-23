@@ -108,6 +108,7 @@
     {
         @Html.HiddenFor(o => o.FinalInspectionID)
         @Html.HiddenFor(o => o.AcceptableQualityLevelsUkey)
+        @Html.HiddenFor(o => o.BrandID)
         <div style="padding:2em 3em 2em 3em">
             <div class="col-auto"><h1 style="font-size:2em">Inspection Setting</h1></div>
 
@@ -291,7 +292,7 @@
                         {
                             <tr class="row-content" style="vertical-align: middle; text-align: center;">
                                 <td>
-                                    <input type="checkbox" ID="ShipmodeSeq_Select_[@i]" class="messageCheckbox" Idx=@i Seq=@Model.SelectOrderShipSeq[i].Seq OrderID=@Model.SelectOrderShipSeq[i].OrderID onclick="SelectOrderShipSeqChange(this)" style="width: 1.4em;" />
+                                    <input type="checkbox" ID="ShipmodeSeq_Select_[@i]" class="messageCheckbox" Idx=@i Seq=@Model.SelectOrderShipSeq[i].Seq OrderID=@Model.SelectOrderShipSeq[i].OrderID onclick="SelectOrderShipSeqChange(this)" style="width: 1.4em;" qty=" @Model.SelectOrderShipSeq[i].Qty"/>
                                 </td>
                                 <td>
                                     @Html.DisplayFor(o => Model.SelectOrderShipSeq[i].Seq)
@@ -598,13 +599,16 @@
                             var index = $("#currnetSelectedPO").val();
                             document.getElementById("SelectedPO[" + index + "].Cartons").value = checkedList.join(',');
 
-                            var orderID = document.getElementById("SelectedPO[" + index + "].AvailableQty").getAttribute("OrderId");
-                            document.getElementById("SelectedPO[" + index + "].AvailableQty").value = totalQty;
+                            var brandid = $('#BrandID').val();
 
-                            table.row($("#SelectPO_" + orderID).closest('tr')).data()[9] = totalQty;
-                            Order_AvailableQty[orderID] = totalQty;
-                            Cacu_AvailableQty();
+                            if ((currentStage != 'Final' || brandid == "ADIDAS") || brandid != "ADIDAS") {
+                                var orderID = document.getElementById("SelectedPO[" + index + "].AvailableQty").getAttribute("OrderId");
+                                document.getElementById("SelectedPO[" + index + "].AvailableQty").value = totalQty;
 
+                                table.row($("#SelectPO_" + orderID).closest('tr')).data()[9] = totalQty;
+                                Order_AvailableQty[orderID] = totalQty;
+                                Cacu_AvailableQty();
+                            }
                             $(this).dialog("close");
                         }
                         , "class": "button"
@@ -622,11 +626,12 @@
                         click: function () {
 
                             var checkedList = [];
-
+                            var totalQty = 0;
                             $('[id^=ShipmodeSeq_Select_]').each(function () {
 
                                 if ($(this).prop('checked')) {
                                     //checkedList.push($(this).val());
+                                    totalQty = totalQty + parseInt($(this).attr("Qty"));
                                     checkedList.push($(this).attr("seq"));
                                 }
                             });
@@ -638,6 +643,19 @@
                             }
 
                             document.getElementById("SelectedPO[" + index + "].Seq").value = checkedList.join(',');
+
+                            var brandid = $('#BrandID').val();
+
+                            if (currentStage == 'Final' && brandid == "ADIDAS") {
+
+                                var orderID = document.getElementById("SelectedPO[" + index + "].AvailableQty").getAttribute("OrderId");
+                                document.getElementById("SelectedPO[" + index + "].AvailableQty").value = totalQty;
+
+                                table.row($("#SelectPO_" + orderID).closest('tr')).data()[9] = totalQty;
+                                Order_AvailableQty[orderID] = totalQty;
+                                Cacu_AvailableQty();
+                            }
+
                             $(this).dialog("close");
                         }
                         , "class": "button"
@@ -1002,7 +1020,29 @@
 
             currentStage = value;
 
+            var brandid = $('#BrandID').val();
             var availableQtycheck = $('input[col=AvailableQty]');
+
+            if (brandid == 'ADIDAS') {
+
+                if (currentStage == "Final") {
+
+                    $.each(availableQtycheck, function () {
+                        $($(this)[0]).attr("readonly", "readonly");
+                    });
+                }
+                else {
+                    $.each(availableQtycheck, function () {
+                        $($(this)[0]).removeAttr("readonly");
+                    });
+                }
+            }
+            else {
+                $.each(availableQtycheck, function () {
+                    $($(this)[0]).removeAttr("readonly");
+                });
+            }
+            /* ISP20211490 拔掉
 
             $.each(availableQtycheck, function () {
                 if (currentStage == "Final") {
@@ -1012,6 +1052,7 @@
                     $($(this)[0]).removeAttr("readonly");
                 }
             });
+            */
         }
 
         function ClearSewing(obj) {

@@ -64,7 +64,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             try
             {
-                _PullingTestProvider = new PullingTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+                _PullingTestProvider = new PullingTestProvider(Common.ProductionDataAccessLayer);
                 result = _PullingTestProvider.CheckSP(POID);
 
                 // 透過Brand得到PullForceUnit
@@ -87,7 +87,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             try
             {
-                _PullingTestProvider = new PullingTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+                _PullingTestProvider = new PullingTestProvider(Common.ProductionDataAccessLayer);
                 result = _PullingTestProvider.GetStandard(BrandID, TestItem, PullForceUnit);
             }
             catch (Exception ex)
@@ -104,7 +104,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             try
             {
-                _PullingTestProvider = new PullingTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+                _PullingTestProvider = new PullingTestProvider(Common.ProductionDataAccessLayer);
                 result = _PullingTestProvider.GetPullForceUnit(BrandID);
             }
             catch (Exception ex)
