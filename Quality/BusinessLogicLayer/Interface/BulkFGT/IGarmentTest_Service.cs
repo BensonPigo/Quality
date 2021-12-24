@@ -62,6 +62,7 @@ namespace BusinessLogicLayer.Interface.BulkFGT
         GarmentTest_Result SentMail(string ID, string No, List<Quality_MailGroup> mailGroups);
 
         GarmentTest_Detail_Result ToReport(string ID, string No, ReportType type, bool IsToPDF, bool test = false);
+        GarmentTest_ViewModel Import_FGPT_Item(GarmentTest_Detail_FGPT_ViewModel newItem);
 
     }
 }

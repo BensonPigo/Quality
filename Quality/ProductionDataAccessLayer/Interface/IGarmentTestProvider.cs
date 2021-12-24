@@ -22,5 +22,6 @@ namespace ProductionDataAccessLayer.Interface
         void Save_GarmentTest(GarmentTest_ViewModel master, List<GarmentTest_Detail_ViewModel> detail, string UserID);
 
         bool Update_GarmentTest_Result(string ID);
+        void Save_New_FGPT_Item(GarmentTest_Detail_FGPT_ViewModel newItem);
     }
 }

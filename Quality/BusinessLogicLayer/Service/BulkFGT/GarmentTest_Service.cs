@@ -239,6 +239,27 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
+        public GarmentTest_ViewModel Import_FGPT_Item(GarmentTest_Detail_FGPT_ViewModel newItem)
+        {
+            // 僅傳入 List<GarmentTest_Detail> detail
+
+            GarmentTest_ViewModel result = new GarmentTest_ViewModel();
+            _IGarmentTestProvider = new GarmentTestProvider(Common.ProductionDataAccessLayer);
+            try
+            {
+                newItem.TestDetail = newItem.TestUnit;
+                _IGarmentTestProvider.Save_New_FGPT_Item(newItem);
+                result.SaveResult = true;
+            }
+            catch (Exception ex)
+            {
+                result.SaveResult = false;
+                result.ErrMsg = ex.Message;
+            }
+
+            return result;
+        }
+
         public GarmentTest_Detail_Result Save_GarmentTestDetail(GarmentTest_Detail_Result source)
         {
             GarmentTest_Detail_Result result = new GarmentTest_Detail_Result();

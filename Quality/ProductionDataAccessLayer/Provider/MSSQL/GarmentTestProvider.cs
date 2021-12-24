@@ -563,6 +563,43 @@ Delete [ExtendServer].PMSFile.dbo.GarmentTest_Detail where id = @ID and NO = @No
             }
         }
 
+
+        public void Save_New_FGPT_Item(GarmentTest_Detail_FGPT_ViewModel newItem)
+        {
+            using (TransactionScope transaction = new TransactionScope())
+            {
+
+                SQLParameterCollection objParameter = new SQLParameterCollection
+                {
+                    { "@ID", DbType.Int64, newItem.ID } ,
+                    { "@No", DbType.Int32, newItem.No } ,
+                    { "@Location", DbType.String, newItem.Location } ,
+                    { "@Type", DbType.String, newItem.Type } ,
+                    { "@TestName", DbType.String, newItem.TestName } ,
+                    { "@Criteria", DbType.Int32, newItem.Criteria } ,
+                    { "@TestUnit", DbType.String, newItem.TestUnit } ,
+                    { "@TestDetail", DbType.String, newItem.TestDetail } ,
+                };
+
+                string cmd = $@"
+INSERT INTO dbo.GarmentTest_Detail_FGPT
+           (ID, No, Location, Type, TestName, TestDetail, Criteria, TestUnit, Seq)
+VALUES
+           (@ID, @No, @Location, @Type, @TestName, @TestDetail, @Criteria, @TestUnit, 
+                (
+                    select Max(Seq) 
+                    from GarmentTest_Detail_FGPT WITH(NOLOCK)
+                    where ID = @ID
+                    and No = @No
+                )
+            )
+";
+
+                ExecuteNonQuery(CommandType.Text, cmd, objParameter);
+                transaction.Complete();
+            }
+        }
+
         /// <summary>
         /// 取得預設FGPT
         /// </summary>

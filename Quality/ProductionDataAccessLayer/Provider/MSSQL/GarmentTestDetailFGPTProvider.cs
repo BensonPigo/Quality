@@ -78,11 +78,11 @@ select
 ,[LocationText]= CASE WHEN Location='B' THEN 'Bottom'
 						WHEN Location='T' THEN 'Top'
 						WHEN Location='S' THEN 'Top+Bottom'
-						ELSE ''
+						ELSE Location
 					END
 ,[Type] = IIF(t.TypeSelection_VersionID > 0, Replace(t.type, '{0}', ts.Code), t.type)
 ,[TypeOri] = t.type
-,[TestName] = PMS_FGPT_TestName.Description
+,[TestName] = ISNULL(PMS_FGPT_TestName.Description, t.TestName)
 ,[TestDetail]
 ,[Criteria]
 ,[TestResult]
