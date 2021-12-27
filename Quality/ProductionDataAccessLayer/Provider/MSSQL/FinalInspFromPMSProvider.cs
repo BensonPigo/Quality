@@ -245,7 +245,7 @@ select  [Ukey] = isnull(fd.Ukey, -1),
     from GarmentDefectType gdt with (nolock)
     inner join GarmentDefectCode gdc with (nolock) on gdt.id=gdc.GarmentDefectTypeID
     left join   #FinalInspection_Detail fd on fd.GarmentDefectTypeID = gdt.ID and fd.GarmentDefectCodeID = gdc.ID
-    left join [ExtendServer].ManufacturingExecution.dbo.FinalInspection_DetailImage img on img.FinalInspection_DetailUkey = isnull(fd.Ukey, -1)
+    left join [ExtendServer].PMSFile.dbo.FinalInspection_DetailImage img on img.FinalInspection_DetailUkey = isnull(fd.Ukey, -1)
     where   gdt.Junk =0 and
             gdc.Junk =0
  order by gdt.id,gdc.id
