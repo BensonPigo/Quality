@@ -158,6 +158,7 @@
 
                         <div class="col-auto">
                             <button id="btnQuery" type="submit" name="Action:Query" class="site-btn btn-gy font1rem Black" style="padding: 0.4em;">Query</button>
+                            <button id="btnDropdownQuery" type="submit" name="Action:DropdownQuery" class="site-btn btn-gy font1rem Black" style="padding: 0.4em;display:none">Query</button>
                         </div>
                     </div>
 
@@ -901,7 +902,7 @@
 
     function ReloadDetail(obj) {
         var reportNo = $(obj).val();
-        $("#btnQuery").click();
+        $("#btnDropdownQuery").click();
     }
 
     function TestItemChange(obj) {
