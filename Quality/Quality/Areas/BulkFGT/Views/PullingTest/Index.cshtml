@@ -485,10 +485,16 @@
             });
 
             $('#Picture').on('click', function () {
-                var para = "?EditMode=" + EditMode + "&Title=PullingTest&TargetBeforeColumn=Detail_TestBeforePicture&TargetAfterColumn=Detail_TestAfterPicture&Table=ExtendServer.ManufacturingExecution.dbo.PullingTest&BeforeColumn=TestBeforePicture&AfterColumn=TestAfterPicture&PKey_1=ReportNo&PKey_1_Val=" + $('#Detail_ReportNo').val();
-
-                window.open('@Url.Action("PictureList","PublicWondow",new{Area=""})' + para, 'Article', config = 'toolbar=no,status=no,location=no,width=1000,height=650');
+                var para = "?Title=PullingTest&EditMode=" + EditMode;
+                para += "&" + "Table=ExtendServer.ManufacturingExecution.dbo.PullingTest";
+                para += "&" + "TargetBeforeColumn=Detail_TestBeforePicture";
+                para += "&" + "TargetAfterColumn=Detail_TestAfterPicture";
+                para += "&" + "BeforeColumn=TestBeforePicture";
+                para += "&" + "AfterColumn=TestAfterPicture";
+                para += "&" + "PKey_1=ReportNo";
+                para += "&" + "PKey_1_Val=" + $('#Detail_ReportNo').val();
                 
+                window.open('@Url.Action("PictureList", "PublicWondow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1024,height=750');
             });
         }
 

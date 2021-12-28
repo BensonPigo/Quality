@@ -47,7 +47,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,Front"+ Environment.NewLine);
             SbSql.Append("        ,Side"+ Environment.NewLine);
             SbSql.Append("        ,Back"+ Environment.NewLine);
-            SbSql.Append("FROM [RFT_PicDuringDummyFitting] WITH(NOLOCK)" + Environment.NewLine);
+            SbSql.Append("FROM [ExtendServer].PMSFile.dbo.[RFT_PicDuringDummyFitting]  WITH(NOLOCK)" + Environment.NewLine);
             SbSql.Append("where 1 = 1" + Environment.NewLine);
             if (!string.IsNullOrEmpty(Item.OrderID)) { SbSql.Append(" and OrderID = @OrderID" + Environment.NewLine); }
             if (!string.IsNullOrEmpty(Item.Article)) { SbSql.Append(" and Article = @Article" + Environment.NewLine); }
@@ -170,9 +170,17 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             else{objParameter.Add("@Back", System.Data.SqlTypes.SqlBinary.Null);}
 
             sqlcmd += $@"
+
+SET XACT_ABORT ON
 if exists(select 1 from RFT_PicDuringDummyFitting WITH(NOLOCK) where OrderID = @OrderID and Article = @Article and Size = @Size)
 begin
 	UPDATE [RFT_PicDuringDummyFitting]
+	set Front = @Front
+    ,Side = @Side
+    ,Back = @Back
+	where OrderID = @OrderID and Article = @Article and Size = @Size
+
+	UPDATE [ExtendServer].PMSFile.dbo.[RFT_PicDuringDummyFitting]
 	set Front = @Front
     ,Side = @Side
     ,Back = @Back
@@ -181,6 +189,9 @@ end
 else
 begin
 	insert into RFT_PicDuringDummyFitting(OrderID,Article,Size,Front,Side,Back)
+	values(@OrderID, @Article,@Size,@Front,@Side,@Back)
+
+	insert into [ExtendServer].PMSFile.dbo.RFT_PicDuringDummyFitting(OrderID,Article,Size,Front,Side,Back)
 	values(@OrderID, @Article,@Size,@Front,@Side,@Back)
 end
 ";
@@ -203,7 +214,7 @@ SELECT oq.Article
 	,p.Side
 	,p.Back
 from SciProduction_Order_Qty oq WITH(NOLOCK) 
-left join RFT_PicDuringDummyFitting p WITH(NOLOCK) ON oq.ID = p.OrderID AND oq.Article = p.Article AND oq.SizeCode=p.Size
+left join [ExtendServer].PMSFile.dbo.RFT_PicDuringDummyFitting p WITH(NOLOCK) ON oq.ID = p.OrderID AND oq.Article = p.Article AND oq.SizeCode=p.Size
 WHERE 1=1
 ");
             if (!string.IsNullOrEmpty(Req.OrderID))

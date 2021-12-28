@@ -119,7 +119,7 @@ select [InspectionTimes] = isnull(max(InspectionTimes), 0) + 1
 
             string sqlGetCurMaxID = $@"
 select  [MaxSerID] =  cast(Replace(isnull(MAX(ID), '0'), '{idHead}', '') as int)
-from    ExtendServer.ManufacturingExecution.dbo.FinalInspection with (nolock)
+from    ManufacturingExecution.dbo.FinalInspection with (nolock)
 where   ID like '{idHead}%'
 ";
             int newSer = (int)ExecuteDataTable(CommandType.Text, sqlGetCurMaxID, new SQLParameterCollection()).Rows[0]["MaxSerID"] + 1;
@@ -435,7 +435,7 @@ where   ID = @FinalInspectionID
 
             string sqlGetData = @"
 select  Image
-    from FinalInspection_DetailImage with (nolock)
+    from [ExtendServer].PMSFile.dbo.FinalInspection_DetailImage with (nolock)
     where   FinalInspection_DetailUkey = @FinalInspection_DetailUkey
 ";
 
@@ -516,7 +516,10 @@ where   ID = @FinalInspectionID
                         foreach (byte[] image in defectItem.ListFinalInspectionDefectImage)
                         {
                             string sqlInsertFinalInspection_DetailImage = @"
+SET XACT_ABORT ON
     insert into FinalInspection_DetailImage(ID, FinalInspection_DetailUkey, Image)
+                values(@FinalInspectionID, @FinalInspection_DetailUkey, @Image)
+    insert into [ExtendServer].PMSFile.dbo.FinalInspection_DetailImage(ID, FinalInspection_DetailUkey, Image)
                 values(@FinalInspectionID, @FinalInspection_DetailUkey, @Image)
 ";
                             SQLParameterCollection imgParameter = new SQLParameterCollection() {
@@ -628,7 +631,11 @@ where   ID = @FinalInspectionID
                         foreach (byte[] image in criteriaItem.ListBACriteriaImage)
                         {
                             string sqlInsertFinalInspection_NonBACriteriaImage = @"
+    SET XACT_ABORT ON
     insert into FinalInspection_NonBACriteriaImage(ID, FinalInspection_NonBACriteriaUkey, Image)
+                values(@FinalInspectionID, @FinalInspection_NonBACriteriaUkey, @Image)
+
+    insert into [ExtendServer].PMSFile.dbo.FinalInspection_NonBACriteriaImage(ID, FinalInspection_NonBACriteriaUkey, Image)
                 values(@FinalInspectionID, @FinalInspection_NonBACriteriaUkey, @Image)
 ";
                             SQLParameterCollection imgParameter = new SQLParameterCollection() {
@@ -654,7 +661,7 @@ where   ID = @FinalInspectionID
 
             string sqlGetData = @"
 select  Image
-    from FinalInspection_NonBACriteriaImage with (nolock)
+    from [ExtendServer].PMSFile.dbo.FinalInspection_NonBACriteriaImage with (nolock)
     where   FinalInspection_NonBACriteriaUkey = @FinalInspection_NonBACriteriaUkey
 ";
 
@@ -1039,7 +1046,7 @@ select  Ukey
     , ID
     , Image
     ,[RowIndex]=ROW_NUMBER() OVER(ORDER BY Ukey) -1
-from FinalInspection_OtherImage with (nolock)
+from [ExtendServer].PMSFile.dbo.FinalInspection_OtherImage with (nolock)
 where   ID = @finalInspectionID
 
 ";
@@ -1054,7 +1061,7 @@ where   ID = @finalInspectionID
 
             string sqlGetData = @"
 select  Image
-    from FinalInspection_OtherImage with (nolock)
+    from [ExtendServer].PMSFile.dbo.FinalInspection_OtherImage with (nolock)
     where   ID = @finalInspectionID
 ";
 
@@ -1075,7 +1082,12 @@ select  Image
             foreach (byte[] image in images)
             {
                 string sqlFinalInspection_OtherImage = @"
+SET XACT_ABORT ON
+
     insert into FinalInspection_OtherImage(ID, Image)
+                values(@FinalInspectionID, @Image)
+
+    insert into [ExtendServer].PMSFile.dbo.FinalInspection_OtherImage(ID, Image)
                 values(@FinalInspectionID, @Image)
 ";
                 SQLParameterCollection imgParameter = new SQLParameterCollection() {

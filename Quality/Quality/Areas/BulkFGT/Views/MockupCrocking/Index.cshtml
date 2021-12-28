@@ -908,6 +908,8 @@
             EditMode = true;
             EditType = "New";
             $("#Save").attr("name", "action:New");
+            $("#TestBeforePicture").val('');
+            $("#TestAfterPicture").val('');
             IsEditModeChange();
             GetArtworkTypeIDList();
 
@@ -990,6 +992,8 @@
         $('#Picture').on('click', function () {
             var para = "?Title=" + $('.page-header span').html() + "&EditMode=" + EditMode;
             para += "&" + "Table=MockupCrocking";
+            para += "&" + "TargetBeforeColumn=TestBeforePicture";
+            para += "&" + "TargetAfterColumn=TestAfterPicture";
             para += "&" + "BeforeColumn=TestBeforePicture";
             para += "&" + "AfterColumn=TestAfterPicture";
             para += "&" + "PKey_1=ReportNo";

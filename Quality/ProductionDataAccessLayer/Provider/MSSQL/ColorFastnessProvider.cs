@@ -230,8 +230,11 @@ exec UpdateInspPercent 'LabColorFastness',@PoID
             };
             
             string sqlcmd = $@"
+SET XACT_ABORT ON
+
 delete from ColorFastness_Detail where id = @ID
 delete from ColorFastness where id = @ID
+delete from [ExtendServer].PMSFile.dbo.ColorFastness where id = @ID
 
 declare @POID varchar(13) = (select POID from ColorFastness where ID = @ID)
 exec UpdateInspPercent 'LabColorFastness', @POID
@@ -299,7 +302,7 @@ exec UpdateInspPercent 'LabColorFastness', @POID
 
             StringBuilder SbSql = new StringBuilder();
             SbSql.Append("SELECT"+ Environment.NewLine);
-            SbSql.Append("         ID"+ Environment.NewLine);
+            SbSql.Append("         c.ID"+ Environment.NewLine);
             SbSql.Append("        ,POID"+ Environment.NewLine);
             SbSql.Append("        ,TestNo"+ Environment.NewLine);
             SbSql.Append("        ,InspDate"+ Environment.NewLine);
@@ -317,10 +320,12 @@ exec UpdateInspPercent 'LabColorFastness', @POID
             SbSql.Append("        ,Detergent"+ Environment.NewLine);
             SbSql.Append("        ,Machine"+ Environment.NewLine);
             SbSql.Append("        ,Drying"+ Environment.NewLine);
-            SbSql.Append("        ,TestBeforePicture"+ Environment.NewLine);
-            SbSql.Append("        ,TestAfterPicture"+ Environment.NewLine);
-            SbSql.Append("FROM [ColorFastness]"+ Environment.NewLine);
-            SbSql.Append("where ID = @ID" + Environment.NewLine);
+            SbSql.Append("        ,ci.TestBeforePicture"+ Environment.NewLine);
+            SbSql.Append("        ,ci.TestAfterPicture" + Environment.NewLine);
+            SbSql.Append($@"FROM [ColorFastness] c
+left join [ExtendServer].PMSFile.dbo.ColorFastness ci on c.ID=ci.ID
+" + Environment.NewLine);
+            SbSql.Append("where c.ID = @ID" + Environment.NewLine);
 
             return ExecuteList<ColorFastness_Result>(CommandType.Text, SbSql.ToString(), objParameter);
         }
