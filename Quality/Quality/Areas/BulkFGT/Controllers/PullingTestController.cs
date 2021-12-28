@@ -84,7 +84,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             if (model.ReportNo_Source != null && model.ReportNo_Source.Any())
             {
-                if (string.IsNullOrEmpty(model.ReportNo_Query))
+                if (!string.IsNullOrEmpty(model.ReportNo_Query))
                 {
                     model.ReportNo_Query = model.ReportNo_Source.FirstOrDefault().Value;
                 }
