@@ -326,32 +326,43 @@ namespace Quality.Areas.SampleRFT.Controllers
         {
             this.CheckSession();
             Inspection_ViewModel viewModel = new Inspection_ViewModel();
-            InspectionSave_ViewModel inspectionSave_View = new InspectionSave_ViewModel()
+
+            List<Inspection_ChkOrderID_ViewModel> result2 = _InspectionService.CheckSelectItemData_SP(new Inspection_ViewModel() { FactoryID = this.FactoryID, OrderID = OrderID, Brand = this.Brand, }).ToList();
+            if (result2.Any() && result2.FirstOrDefault().Inpsected)
             {
-                rft_Inspection = new RFT_Inspection(),
-                fT_Inspection_Details = new List<RFT_Inspection_Detail>(),
-            };
-
-            RFT_Inspection rFT_Inspection = new RFT_Inspection()
+                viewModel.Result = false;
+                viewModel.ErrMsg = "Already inpsected!";
+            }
+            else
             {
-                OrderID = OrderID,
-                Article = Article,
-                Location = ProductType,
-                Size = Size,
-                Line = this.Line,
-                FactoryID = this.FactoryID,
-                Status = "Pass",
-                AddDate = DateTime.Now,
-                AddName = this.UserID,
-                InspectionDate = this.WorkDate,
-            };
+                InspectionSave_ViewModel inspectionSave_View = new InspectionSave_ViewModel()
+                {
+                    rft_Inspection = new RFT_Inspection(),
+                    fT_Inspection_Details = new List<RFT_Inspection_Detail>(),
+                };
 
-            inspectionSave_View.StyleID = StyleID;
-            inspectionSave_View.rft_Inspection = rFT_Inspection;
-            InspectionSave_ViewModel save_ViewModel = _InspectionService.SaveRFTInspection(inspectionSave_View);
+                RFT_Inspection rFT_Inspection = new RFT_Inspection()
+                {
+                    OrderID = OrderID,
+                    Article = Article,
+                    Location = ProductType,
+                    Size = Size,
+                    Line = this.Line,
+                    FactoryID = this.FactoryID,
+                    Status = "Pass",
+                    AddDate = DateTime.Now,
+                    AddName = this.UserID,
+                    InspectionDate = this.WorkDate,
+                };
 
-            viewModel.Result = save_ViewModel.Result;
-            viewModel.ErrMsg = save_ViewModel.ErrMsg;
+                inspectionSave_View.StyleID = StyleID;
+                inspectionSave_View.rft_Inspection = rFT_Inspection;
+                InspectionSave_ViewModel save_ViewModel = _InspectionService.SaveRFTInspection(inspectionSave_View);
+
+                viewModel.Result = save_ViewModel.Result;
+                viewModel.ErrMsg = save_ViewModel.ErrMsg;
+            }
+
             return Json(viewModel);
         }
 
@@ -365,11 +376,22 @@ namespace Quality.Areas.SampleRFT.Controllers
             {
                 return Json(new { Result = false, ErrMsg = "OrderID, Size is Empty" }) ;
             }
-            inspectionSave_View.rft_Inspection.OrderID = OrderID;
-            inspectionSave_View.rft_Inspection.Size = Size;
-            inspectionSave_View.rft_Inspection.Article = Article;
+            InspectionSave_ViewModel result = new InspectionSave_ViewModel();
+            List <Inspection_ChkOrderID_ViewModel> result2 = _InspectionService.CheckSelectItemData_SP(new Inspection_ViewModel() { FactoryID = this.FactoryID, OrderID = OrderID, Brand = this.Brand, }).ToList();
+            if (result2.Any() && result2.FirstOrDefault().Inpsected)
+            {
+                result.Result = false;
+                result.ErrMsg = "Already inpsected!";
+            }
+            else
+            {
+                inspectionSave_View.rft_Inspection.OrderID = OrderID;
+                inspectionSave_View.rft_Inspection.Size = Size;
+                inspectionSave_View.rft_Inspection.Article = Article;
 
-            InspectionSave_ViewModel result = _InspectionService.ChkInspQty(inspectionSave_View);
+                result = _InspectionService.ChkInspQty(inspectionSave_View);
+            }
+
             return Json(new { result.Result, result .ErrMsg} );
         }
 
