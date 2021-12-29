@@ -2115,6 +2115,31 @@
             success: function (data) {
                 if (data.Result == 0) {
                     $('#txtSP').val("");
+
+                    $('#txtStyle').val("");
+                    $('#txtBrand').val("");
+                    $('#txtSeason').val("");
+                    $('#txtProductTypePMS').val("");
+                    $('#txtSampleStage').val("");
+                    $('#txtOriginalLine').val("");
+                    $('#txtOrderQty').val("");
+
+                    $('#txtArticle').val("");
+                    $('#txtSize').val("");
+                    $('#txtProductType').val("");
+                    $('#txtSizeQty').val("");
+                    $('#txtSizeBalanceQty').val("");
+                    $('#txtOrderBalanceQty').val("");
+
+                    $('#txtPass').val("");
+                    $('#txtReject').val("");
+                    $('#txtHard').val("");
+                    $('#txtQuick').val("");
+                    $('#txtWash').val("");
+                    $('#txtRepl').val("");
+                    $('#txtPrint').val("");
+                    $('#txtShade').val("");
+                    $('#txtDispose').val("");
                     msg.WithError(data.ErrMsg);
                 }
                 else {
@@ -2353,6 +2378,7 @@
                 if (data.Result) {
                     msg.WithSuccesCheck("You pass 1 garment.", function () {
                         $('#btnRefresh').click();
+                        SPCheck(OrderID);
                     });
                 }
                 else {
