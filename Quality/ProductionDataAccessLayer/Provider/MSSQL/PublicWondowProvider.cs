@@ -688,7 +688,7 @@ Where 1=1
 select [BrforeImage]={BeforeColumn}
 , [AfterImage]={AfterColumn}
 {selectColumn}
-From {Table}  WITH(NOLOCK)
+From [ExtendServer].PMSFile.dbo.{Table}  WITH(NOLOCK)
 Where 1=1
 ");
 

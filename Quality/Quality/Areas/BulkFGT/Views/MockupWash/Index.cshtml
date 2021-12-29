@@ -412,7 +412,7 @@
                                         <select id="MethodID" name="MethodID" style="width:70%;" class="OnlyEdit">
                                             @foreach (var item in (List<SelectListItem>)Model.TestingMethod_Source)
                                             {
-                                                string selected = item.Text.Equals(Model.MethodID) ? "selected" : "";
+                                                string selected = item.Value.Equals(Model.MethodID) ? "selected" : "";
                                                 <option value="@item.Value" @selected>@item.Text</option>
                                             }
                                         </select>
@@ -1021,6 +1021,8 @@
             EditMode = true;
             EditType = "New";
             $("#Save").attr("name", "Action:New");
+            $("#TestBeforePicture").val('');
+            $("#TestAfterPicture").val('');
             IsEditModeChange();
             GetArtworkTypeIDList();
 
@@ -1107,6 +1109,8 @@
         $('#Picture').on('click', function () {
             var para = "?Title=" + $('.page-header span').html() + "&EditMode=" + EditMode;
             para += "&" + "Table=MockupWash";
+            para += "&" + "TargetBeforeColumn=TestBeforePicture";
+            para += "&" + "TargetAfterColumn=TestAfterPicture";
             para += "&" + "BeforeColumn=TestBeforePicture";
             para += "&" + "AfterColumn=TestAfterPicture";
             para += "&" + "PKey_1=ReportNo";

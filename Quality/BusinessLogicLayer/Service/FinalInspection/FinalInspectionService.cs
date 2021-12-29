@@ -133,13 +133,6 @@ namespace BusinessLogicLayer.Service
             }
             );
 
-            sections.Add(new
-            {
-                type = "checklists",
-                title = "checklists",
-                section_result_id = 0,
-            });
-
             object defects;
 
             if (dtDefectsDetail.Rows.Count > 0)
@@ -197,15 +190,6 @@ namespace BusinessLogicLayer.Service
                 max_major_b_defects = drFinalInspection["DefectQty"],
                 max_critical_defects = 0,
                 defects,
-            });
-
-
-            sections.Add(new
-            {
-                type = "qualityPlan",
-                title = "quality_plan",
-                section_result_id = 0,
-                defective_parts = 0,
             });
 
             List<object> assignment_items = listSku_number.Select(
