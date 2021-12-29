@@ -412,7 +412,7 @@
                                         <select id="MethodID" name="MethodID" style="width:70%;" class="OnlyEdit">
                                             @foreach (var item in (List<SelectListItem>)Model.TestingMethod_Source)
                                             {
-                                                string selected = item.Text.Equals(Model.MethodID) ? "selected" : "";
+                                                string selected = item.Value.Equals(Model.MethodID) ? "selected" : "";
                                                 <option value="@item.Value" @selected>@item.Text</option>
                                             }
                                         </select>

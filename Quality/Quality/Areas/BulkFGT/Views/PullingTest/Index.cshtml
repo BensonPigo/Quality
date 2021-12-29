@@ -158,6 +158,7 @@
 
                         <div class="col-auto">
                             <button id="btnQuery" type="submit" name="Action:Query" class="site-btn btn-gy font1rem Black" style="padding: 0.4em;">Query</button>
+                            <button id="btnDropdownQuery" type="submit" name="Action:DropdownQuery" class="site-btn btn-gy font1rem Black" style="padding: 0.4em;display:none">Query</button>
                         </div>
                     </div>
 
@@ -353,7 +354,7 @@
             $('#btnQuery').addClass("IsEditModeQuery");
 
             $("#Edit, #Delete").removeClass("IsEditMode");
-            $('#Save, #Undo, #New').addClass("IsEditMode");
+            $('#Save, #Undo, #New, #Picture').addClass("IsEditMode");
 
             if (EditType == "New") {
                 $(".DetailTable input:not(#ReportNoText,#Detail_LastEditName,#ResultText,#PullForceUnitText,#Detail_InspectorName), .DetailTable select").removeAttr("disabled");
@@ -424,6 +425,7 @@
 
                 $('#Detail_TestBeforePicture').val('');
                 $('#Detail_TestAfterPicture').val('');
+
                 IsEditModeChange();
             });
 
@@ -483,20 +485,16 @@
             });
 
             $('#Picture').on('click', function () {
-                @*if ($('#Detail_ReportNo').val() != null && $('#Detail_ReportNo').val() != "") {
-                    var para = "?EditMode=" + EditMode + "&Title=PullingTest&TargetBeforeColumn=Detail_TestBeforePicture&TargetAfterColumn=Detail_TestAfterPicture&Table=PullingTest&BeforeColumn=TestBeforePicture&AfterColumn=TestAfterPicture&PKey_1=ReportNo&PKey_1_Val=" + $('#Detail_ReportNo').val();
-                    window.open('@Url.Action("PictureList","PublicWondow",new{Area=""})' + para, 'Article', config = 'toolbar=no,status=no,location=no,width=1000,height=650');
-                }*@
-
                 var para = "?Title=PullingTest&EditMode=" + EditMode;
-                para += "&" + "Table=PullingTest";
+                para += "&" + "Table=ExtendServer.ManufacturingExecution.dbo.PullingTest";
                 para += "&" + "TargetBeforeColumn=Detail_TestBeforePicture";
                 para += "&" + "TargetAfterColumn=Detail_TestAfterPicture";
                 para += "&" + "BeforeColumn=TestBeforePicture";
                 para += "&" + "AfterColumn=TestAfterPicture";
                 para += "&" + "PKey_1=ReportNo";
-                para += "&" + "PKey_1_Val=" + $('#ReportNoText').val();
-            window.open('@Url.Action("PictureList", "PublicWondow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1024,height=750');
+                para += "&" + "PKey_1_Val=" + $('#Detail_ReportNo').val();
+                
+                window.open('@Url.Action("PictureList", "PublicWondow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1024,height=750');
             });
         }
 
@@ -910,7 +908,7 @@
 
     function ReloadDetail(obj) {
         var reportNo = $(obj).val();
-        $("#btnQuery").click();
+        $("#btnDropdownQuery").click();
     }
 
     function TestItemChange(obj) {
