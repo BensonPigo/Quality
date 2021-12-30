@@ -30,7 +30,6 @@ namespace BusinessLogicLayer.Service
         private IDropDownListProvider _DropDownListProvider;
         private IOrdersProvider _OrdersProvider;
         private IOrderQtyProvider _OrderQtyProvider;
-        List<SelectListItem> x = new List<SelectListItem>();
 
         public MockupWash_ViewModel GetMockupWash(MockupWash_Request MockupWash)
         {
@@ -242,6 +241,65 @@ namespace BusinessLogicLayer.Service
 
                     img.Save(imgPath);
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
+                }
+
+                Range cellBefore = worksheet.Cells[16 + haveHTrow, 1];
+                if (mockupWash.TestBeforePicture != null)
+                {
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    string imgPath;
+                    if (test)
+                    {
+                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                    }
+                    else
+                    {
+                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                    }
+
+                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
+                    {
+                        imageFile.Write(mockupWash.TestBeforePicture, 0, mockupWash.TestBeforePicture.Length);
+                        imageFile.Flush();
+                    }
+
+                    if (haveHT)
+                    {
+                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBefore.Left + 5, cellBefore.Top + 38, 323, 200);
+                    }
+                    else
+                    {
+                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBefore.Left + 5, cellBefore.Top + 38, 266, 198);
+                    }
+                }
+
+                Range cellAfter = worksheet.Cells[16 + haveHTrow, 4];
+                if (mockupWash.TestAfterPicture != null)
+                {
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    string imgPath;
+                    if (test)
+                    {
+                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                    }
+                    else
+                    {
+                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                    }
+
+                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
+                    {
+                        imageFile.Write(mockupWash.TestAfterPicture, 0, mockupWash.TestAfterPicture.Length);
+                        imageFile.Flush();
+                    }
+                    if (haveHT)
+                    {
+                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfter.Left + 5, cellAfter.Top + 38, 266, 200);
+                    }
+                    else
+                    {
+                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfter.Left + 5, cellAfter.Top + 38, 279, 197);
+                    }                        
                 }
 
                 #region 表身資料
