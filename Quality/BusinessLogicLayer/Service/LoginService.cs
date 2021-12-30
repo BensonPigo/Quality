@@ -21,17 +21,11 @@ namespace BusinessLogicLayer.Service
         private ProductionDataAccessLayer.Interface.IPass1Provider PMSPass1Provider;
         public LogIn_Result LoginValidate(LogIn_Request logIn_Request)
         {
-            QualityPass1Provider = new QualityPass1Provider(Common.ManufacturingExecutionDataAccessLayer);
-            QualityMenuProvider = new QualityMenuProvider(Common.ManufacturingExecutionDataAccessLayer);
-            MESPass1Provider = new Pass1Provider(Common.ManufacturingExecutionDataAccessLayer);
-            FactoryProvider = new ProductionDataAccessLayer.Provider.MSSQL.FactoryProvider(Common.ProductionDataAccessLayer);
-            SewingLineProvider = new ProductionDataAccessLayer.Provider.MSSQL.SewingLineProvider(Common.ProductionDataAccessLayer);
-            PMSPass1Provider = new ProductionDataAccessLayer.Provider.MSSQL.Pass1Provider(Common.ProductionDataAccessLayer);
-            BrandProvider = new ProductionDataAccessLayer.Provider.MSSQL.BrandProvider(Common.ProductionDataAccessLayer);
             LogIn_Result result = new LogIn_Result();
 
             try
             {
+                QualityPass1Provider = new QualityPass1Provider(Common.ManufacturingExecutionDataAccessLayer);
                 List<Quality_Pass1> quality_Pass1s = QualityPass1Provider.Get(new Quality_Pass1() { ID = logIn_Request.UserID }).ToList();
                 if (quality_Pass1s.Count == 0)
                 {
@@ -40,11 +34,13 @@ namespace BusinessLogicLayer.Service
 
                 // 先判斷ID，在判斷密碼。
                 // ID 不存在改抓MES PASS1
+                PMSPass1Provider = new ProductionDataAccessLayer.Provider.MSSQL.Pass1Provider(Common.ProductionDataAccessLayer);
                 List<DatabaseObject.ProductionDB.Pass1> pmsPass1 = PMSPass1Provider.Get(new DatabaseObject.ProductionDB.Pass1() { ID = logIn_Request.UserID }).ToList();
                 List<Pass1> mesPass1 = new List<Pass1>();
                 if (pmsPass1.Count == 0)
                 {
                     // 改抓MES PASS1
+                    MESPass1Provider = new Pass1Provider(Common.ManufacturingExecutionDataAccessLayer);
                     mesPass1 = MESPass1Provider.Get(new Pass1() { ID = logIn_Request.UserID, Password = logIn_Request.Password.ToUpper() }).ToList();
                     if (mesPass1.Count == 0)
                     {
@@ -60,6 +56,7 @@ namespace BusinessLogicLayer.Service
                         mesPass1.FirstOrDefault().Factory.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList() :
                         pmsPass1.FirstOrDefault().Factory.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList();
 
+                FactoryProvider = new ProductionDataAccessLayer.Provider.MSSQL.FactoryProvider(Common.ProductionDataAccessLayer);
                 var M = FactoryProvider.GetMDivisionID(logIn_Request.FactoryID);
 
                 if (!result.Factorys.Where(x => x.Equals(logIn_Request.FactoryID)).Any())
@@ -69,10 +66,16 @@ namespace BusinessLogicLayer.Service
 
                 result.UserMail = pmsPass1.Count == 0 ? mesPass1.FirstOrDefault().EMail : pmsPass1.FirstOrDefault().EMail;
                 result.pass1 = quality_Pass1s.FirstOrDefault();
+
+                QualityMenuProvider = new QualityMenuProvider(Common.ManufacturingExecutionDataAccessLayer);
                 result.Menus = QualityMenuProvider.Get(result.pass1).ToList();
                 result.MDivisionID = M.Any() ? M.FirstOrDefault().MDivisionID : string.Empty;
                 result.FactoryID = result.Factorys.Where(x => x.Equals(logIn_Request.FactoryID)).Any() ? logIn_Request.FactoryID.Trim() : result.Factorys.FirstOrDefault().Trim();
+
+                SewingLineProvider = new ProductionDataAccessLayer.Provider.MSSQL.SewingLineProvider(Common.ProductionDataAccessLayer);
                 result.Lines = SewingLineProvider.GetSewinglineID().GroupBy(x => x.ID).Select(x => x.Key).ToList();
+
+                BrandProvider = new ProductionDataAccessLayer.Provider.MSSQL.BrandProvider(Common.ProductionDataAccessLayer);
                 result.Brands = BrandProvider.Get().GroupBy(x => x.ID).Select(x => x.Key).ToList();
                 result.Result = true;
             }

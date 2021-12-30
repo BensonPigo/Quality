@@ -269,7 +269,6 @@ namespace BusinessLogicLayer.Service
             List<SentPivot88Result> sentPivot88Results = new List<SentPivot88Result>();
 
             _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
-            _AutomationErrMsgProvider = new AutomationErrMsgProvider(Common.ProductionDataAccessLayer);
 
             listInspectionID = _FinalInspectionProvider.GetPivot88FinalInspectionID(pivotTransferRequest.InspectionID);
 
@@ -329,6 +328,8 @@ namespace BusinessLogicLayer.Service
                     automationErrMsg.errorMsg = errorMsg;
                     automationErrMsg.json = postBody;
                     automationErrMsg.addName = "SCIMIS";
+
+                    _AutomationErrMsgProvider = new AutomationErrMsgProvider(Common.ProductionDataAccessLayer);
                     _AutomationErrMsgProvider.Insert(automationErrMsg);
                 }
 

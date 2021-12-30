@@ -29,8 +29,6 @@ namespace BusinessLogicLayer.Service
             try
             {
                 _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
-                _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
-
                 DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection =
                     _FinalInspectionProvider.GetFinalInspection(finalInspectionID);
 
@@ -46,6 +44,8 @@ namespace BusinessLogicLayer.Service
                 {
                     addDefect.RejectQty = finalInspection.RejectQty;
                 }
+
+                _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
 
                 addDefect.ListFinalInspectionDefectItem = _FinalInspFromPMSProvider.GetFinalInspectionDefectItems(finalInspectionID).ToList();
 

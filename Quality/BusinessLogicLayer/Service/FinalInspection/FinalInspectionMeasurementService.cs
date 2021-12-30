@@ -29,9 +29,6 @@ namespace BusinessLogicLayer.Service
             try
             {
                 _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
-                _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
-                _StyleProvider = new StyleProvider(Common.ProductionDataAccessLayer);
-                _MeasurementProvider = new MeasurementProvider(Common.ManufacturingExecutionDataAccessLayer);
 
                 DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection =
                     _FinalInspectionProvider.GetFinalInspection(finalInspectionID);
@@ -39,6 +36,8 @@ namespace BusinessLogicLayer.Service
                 
 
                 measurement.FinalInspectionID = finalInspectionID;
+
+                _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
                 measurement.ListArticle = _FinalInspFromPMSProvider.GetArticleList(finalInspectionID)
                             .Select(s => new SelectListItem() { 
                                 Text = s,
@@ -52,8 +51,10 @@ namespace BusinessLogicLayer.Service
                                 Value = s,
                             }).ToList();
 
+                _StyleProvider = new StyleProvider(Common.ProductionDataAccessLayer);
                 measurement.SizeUnit = _StyleProvider.GetSizeUnitByCustPONO(finalInspection.CustPONO);
 
+                _MeasurementProvider = new MeasurementProvider(Common.ManufacturingExecutionDataAccessLayer);
                 List<DatabaseObject.ManufacturingExecutionDB.Measurement> baseMeasurementItems = _MeasurementProvider.GetMeasurementsByPOID(finalInspection.CustPONO, userID).ToList();
                 measurement.ListMeasurementItem = baseMeasurementItems.Select( s =>
                         new MeasurementItem() {
