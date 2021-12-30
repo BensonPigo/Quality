@@ -56,8 +56,8 @@ namespace Quality.Areas.SampleRFT.Controllers
         public ActionResult Index(Inspection_ViewModel request)
         {
             this.CheckSession();
-            this.FactoryID = request.FactoryID;
-            this.Line = request.Line;
+            this.FactoryID = string.IsNullOrEmpty(request.FactoryID) ? this.FactoryID : request.FactoryID;
+            this.Line = string.IsNullOrEmpty(request.Line) ? this.Line : request.Line;
             this.WorkDate = request.InspectionDate = CheckWorkDate.Check(request.InspectionDate);
             this.Brand = request.Brand;
             this.SelectItemData = _InspectionService.GetSelectItemData(new Inspection_ViewModel() { FactoryID = this.FactoryID, Brand = this.Brand }).ToList();
@@ -598,6 +598,11 @@ namespace Quality.Areas.SampleRFT.Controllers
         public JsonResult MeasurementSave(List<RFT_Inspection_Measurement> measurement)
         {
             this.CheckSession();
+            if (string.IsNullOrEmpty(this.FactoryID) || string.IsNullOrEmpty(this.Line))
+            {
+                return Json(new { Result = false, ErrMsg = "Save Error" });
+            }
+
             foreach (RFT_Inspection_Measurement item in measurement)
             {
                 item.FactoryID = this.FactoryID;
