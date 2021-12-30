@@ -24,18 +24,18 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
                 _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
 
                 moisture.FinalInspectionID = finalInspectionID;
                 moisture.ListArticle = _FinalInspFromPMSProvider.GetArticleList(finalInspectionID);
                 moisture.ActionSelectListItem = _FinalInspFromPMSProvider.GetActionSelectListItem().ToList();
 
+                _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
                 DatabaseObject.ProductionDB.System system = _FinalInspectionProvider.GetSystem()[0];
                 moisture.FinalInspection_CTNMoistureStandard = system.FinalInspection_CTNMoistureStandard;
                 moisture.FinalInspection_CTNMoistureStandardBM = system.FinalInspection_CTNMoistureStandardBM;
                 moisture.ListEndlineMoisture = _FinalInspectionProvider.GetEndlineMoisture().ToList();
-                _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
+
                 moisture.ListCartonItem = _FinalInspectionProvider.GetMoistureListCartonItem(finalInspectionID).ToList();
             }
             catch (Exception ex)

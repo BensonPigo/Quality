@@ -256,8 +256,6 @@ namespace BusinessLogicLayer.Service
         public InspectionSave_ViewModel SaveRFTInspection(InspectionSave_ViewModel inspections)
         {
             _RFTInspectionDetailProvider = new RFTInspectionDetailProvider(Common.ManufacturingExecutionDataAccessLayer);
-            _IOrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
-            _IMailToProvider = new MailToProvider(Common.ManufacturingExecutionDataAccessLayer);
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ManufacturingExecutionDataAccessLayer);
             try
             {
@@ -269,6 +267,8 @@ namespace BusinessLogicLayer.Service
                 }
 
                 string OrderID = inspections.rft_Inspection.OrderID;
+
+                _IOrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
                 IList<Orders> orders = _IOrdersProvider.Get(new Orders() { ID = OrderID });
                 if (orders.Count > 0)
                 {
@@ -543,7 +543,6 @@ namespace BusinessLogicLayer.Service
         public InspectionSave_ViewModel SaveReworkListDelete(LogIn_Request logIn_Request, List<RFT_Inspection> rFT_Inspection)
         {
             IQualityPass1Provider QualityPass1Provider = QualityPass1Provider = new QualityPass1Provider(Common.ManufacturingExecutionDataAccessLayer);
-            ProductionDataAccessLayer.Interface.IPass1Provider PMSPass1Provider = PMSPass1Provider = new ProductionDataAccessLayer.Provider.MSSQL.Pass1Provider(Common.ProductionDataAccessLayer);
             ManufacturingExecutionDataAccessLayer.Interface.IPass1Provider MESPass1Provider = MESPass1Provider = new ManufacturingExecutionDataAccessLayer.Provider.MSSQL.Pass1Provider(Common.ManufacturingExecutionDataAccessLayer);
             _RFTInspectionProvider = new RFTInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ManufacturingExecutionDataAccessLayer);
@@ -564,6 +563,7 @@ namespace BusinessLogicLayer.Service
 
                 // 先判斷ID，在判斷密碼。
                 // ID 不存在改抓MES PASS1
+                ProductionDataAccessLayer.Interface.IPass1Provider PMSPass1Provider = PMSPass1Provider = new ProductionDataAccessLayer.Provider.MSSQL.Pass1Provider(Common.ProductionDataAccessLayer);
                 List<DatabaseObject.ProductionDB.Pass1> pmsPass1 = PMSPass1Provider.Get(new DatabaseObject.ProductionDB.Pass1() { ID = logIn_Request.UserID }).ToList();
                 if (pmsPass1.Count == 0)
                 {
@@ -647,7 +647,6 @@ namespace BusinessLogicLayer.Service
 
         public List<RFT_Inspection_Measurement_ViewModel> GetMeasurement(string OrderID, string SizeCode, string UserID)
         {
-            _IRFTInspectionMeasurementProvider = new RFTInspectionMeasurementProvider(Common.ManufacturingExecutionDataAccessLayer);
             _IOrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
             _IStyleProvider = new StyleProvider(Common.ProductionDataAccessLayer);
             List<RFT_Inspection_Measurement_ViewModel> _Inspection_Measurement_ViewModels = new List<RFT_Inspection_Measurement_ViewModel>();
@@ -664,6 +663,7 @@ namespace BusinessLogicLayer.Service
                     strSizeUnit = StyleList[0].SizeUnit;
                 }
 
+                _IRFTInspectionMeasurementProvider = new RFTInspectionMeasurementProvider(Common.ManufacturingExecutionDataAccessLayer);
                 _Inspection_Measurement_ViewModels = _IRFTInspectionMeasurementProvider.Get(Convert.ToInt64(longStyleUkey), SizeCode, UserID).ToList();
                     
             }
@@ -757,17 +757,16 @@ namespace BusinessLogicLayer.Service
 
         public RFT_OrderComments_ViewModel SendMailRFT_OrderComments(RFT_OrderComments rFT_OrderComments, string UserID)
         {
-            _IRFTOrderCommentsProvider = new RFTOrderCommentsProvider(Common.ManufacturingExecutionDataAccessLayer);
-            _IMailToProvider = new MailToProvider(Common.ManufacturingExecutionDataAccessLayer);
-            _IOrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
             RFT_OrderComments_ViewModel rFT_OrderComments_ViewModel = new RFT_OrderComments_ViewModel();
             try
             {
                 // 撈資料
                 List<RFT_OrderComments_ViewModel> queryData = GetRFT_OrderComments(rFT_OrderComments);
+                _IOrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
                 Orders orders = _IOrdersProvider.Get(new Orders { ID = rFT_OrderComments.OrderID }).FirstOrDefault();
                 #region 寄信
                 // 取得 mail to address
+                _IMailToProvider = new MailToProvider(Common.ManufacturingExecutionDataAccessLayer);
                 List<MailTo> mailToAddress = _IMailToProvider.GetMR_SMR_MailAddress(
                   new RFT_OrderComments()
                   {
@@ -775,7 +774,6 @@ namespace BusinessLogicLayer.Service
                   }, "201").ToList();
 
 
-                _IMailToProvider = new MailToProvider(Common.ManufacturingExecutionDataAccessLayer);
                 List<MailTo> mailToSubject = _IMailToProvider.Get(
                    new MailTo()
                    {

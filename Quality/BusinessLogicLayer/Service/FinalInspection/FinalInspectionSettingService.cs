@@ -28,7 +28,6 @@ namespace BusinessLogicLayer.Service
             try
             {
                 _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
-                _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
 
                 FinalInspectionService f = new FinalInspectionService();
 
@@ -40,6 +39,8 @@ namespace BusinessLogicLayer.Service
                     result.ErrorMessage = finalInspection.ErrorMessage;
                     return result;
                 }
+
+                _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
 
                 result.FinalInspectionID = finalInspectionID;
                 result.InspectionStage = finalInspection.InspectionStage;
@@ -99,12 +100,13 @@ namespace BusinessLogicLayer.Service
             try
             {
                 _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
-                _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
                 _QualityPass1 = new QualityPass1Provider(Common.ManufacturingExecutionDataAccessLayer);
 
                 var tmp = _QualityPass1.Get(new Quality_Pass1() { ID = UserID });
 
                 result.InspectionTimes = _FinalInspectionProvider.GetInspectionTimes(CustPONO);
+
+                _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
                 result.SelectedSewing = _FinalInspFromPMSProvider.GetSelectedSewingLine(FactoryID).ToList();
                 result.SelectedSewingTeam = _FinalInspFromPMSProvider.GetSelectedSewingTeam().ToList();
                 result.SelectedPO = _FinalInspFromPMSProvider.GetSelectedPOForInspection(listOrderID).ToList();
@@ -135,7 +137,6 @@ namespace BusinessLogicLayer.Service
 
         public BaseResult UpdateFinalInspection(Setting setting, string UserID, string factoryID, string MDivisionid, out string finalInspectionID)
         {
-            _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
             _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
             BaseResult result = new BaseResult();
             finalInspectionID = string.Empty;
@@ -242,6 +243,8 @@ namespace BusinessLogicLayer.Service
 
                 var selectOrderShipSeq = setting.SelectOrderShipSeq.Where(s => s.Selected);
                 setting.SelectOrderShipSeq = selectOrderShipSeq.Any() ? selectOrderShipSeq.ToList() : new List<SelectOrderShipSeq>();
+
+                _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
                 string newfinalInspectionID = _FinalInspectionProvider.GetNewFinalInspectionID(factoryID);
                 finalInspectionID = _FinalInspectionProvider.UpdateFinalInspection(setting, UserID, factoryID, MDivisionid, newfinalInspectionID);
                 result.Result = true;
@@ -250,7 +253,7 @@ namespace BusinessLogicLayer.Service
             {
                 result.Result = false;
                 result.ErrorMessage = $@"
-msg.WithError('{ex.Message}');
+msg.WithError(''{ex.Message}'');
 ";
             }
             return result;

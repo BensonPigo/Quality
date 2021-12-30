@@ -197,7 +197,7 @@ where ID = @OrderID
             string sqlcmd = @"
 select o.OrderTypeID,[OrderID] = o.ID,o.StyleID,o.SeasonID
 ,[Unit] = IIF(isnull(o.sizeUnit,'') = '',s.SizeUnit,o.SizeUnit)
-,[Factory] = o.FactoryID
+,[Factory] = o.FtyGroup--o.FactoryID
 from MainServer.Production.dbo.Orders o WITH(NOLOCK)
 left join MainServer.Production.dbo.Style s WITH(NOLOCK) on o.StyleUkey = s.Ukey
 where o.ID = @OrderID
