@@ -156,9 +156,9 @@ namespace BusinessLogicLayer.Service
                 worksheet.Cells[5, 2] = mockupCrocking.T1Subcon + "-" + mockupCrocking.T1SubconAbb;
 
                 worksheet.Cells[6, 2] = mockupCrocking.BrandID;
-                worksheet.Cells[4, 6] = mockupCrocking.ReleasedDate;
-                worksheet.Cells[5, 6] = mockupCrocking.TestDate;
-                worksheet.Cells[6, 6] = mockupCrocking.SeasonID;
+                worksheet.Cells[4, 7] = mockupCrocking.ReleasedDate;
+                worksheet.Cells[5, 7] = mockupCrocking.TestDate;
+                worksheet.Cells[6, 7] = mockupCrocking.SeasonID;
 
                 worksheet.Cells[13, 2] = mockupCrocking.TechnicianName;
                 Excel.Range cell = worksheet.Cells[12, 2];
@@ -182,6 +182,50 @@ namespace BusinessLogicLayer.Service
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
                 }
 
+                Excel.Range cellBefore = worksheet.Cells[16, 1];
+                if (mockupCrocking.TestBeforePicture != null)
+                {
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    string imgPath;
+                    if (test)
+                    {
+                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                    }
+                    else
+                    {
+                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                    }
+
+                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
+                    {
+                        imageFile.Write(mockupCrocking.TestBeforePicture, 0, mockupCrocking.TestBeforePicture.Length);
+                        imageFile.Flush();
+                    }
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBefore.Left + 5, cellBefore.Top + 5, 288, 272);
+                }
+
+                Excel.Range cellAfter = worksheet.Cells[16, 5];
+                if (mockupCrocking.TestAfterPicture != null)
+                {
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    string imgPath;
+                    if (test)
+                    {
+                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                    }
+                    else
+                    {
+                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                    }
+
+                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
+                    {
+                        imageFile.Write(mockupCrocking.TestAfterPicture, 0, mockupCrocking.TestAfterPicture.Length);
+                        imageFile.Flush();
+                    }
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfter.Left + 5, cellAfter.Top + 5, 265, 272);              
+                }
+
                 #region 表身資料
                 // 插入多的row
                 if (mockupCrocking_Detail.Count > 0)
@@ -203,10 +247,10 @@ namespace BusinessLogicLayer.Service
                     worksheet.Cells[start_row, 1] = mockupCrocking.StyleID;
                     worksheet.Cells[start_row, 2] = string.IsNullOrEmpty(item.FabricColorName) ? item.FabricRefNo : item.FabricRefNo + " - " + item.FabricColorName;
                     worksheet.Cells[start_row, 3] = string.IsNullOrEmpty(mockupCrocking.ArtworkTypeID) ? item.Design + " - " + item.ArtworkColorName : mockupCrocking.ArtworkTypeID + "/" + item.Design + " - " + item.ArtworkColorName;
-                    worksheet.Cells[start_row, 4] = string.IsNullOrEmpty(item.DryScale) ? string.Empty : "GRADE" + item.DryScale;
-                    worksheet.Cells[start_row, 5] = string.IsNullOrEmpty(item.WetScale) ? string.Empty : "GRADE" + item.WetScale;
-                    worksheet.Cells[start_row, 6] = item.Result;
-                    worksheet.Cells[start_row, 7] = item.Remark;
+                    worksheet.Cells[start_row, 5] = string.IsNullOrEmpty(item.DryScale) ? string.Empty : "GRADE" + item.DryScale;
+                    worksheet.Cells[start_row, 6] = string.IsNullOrEmpty(item.WetScale) ? string.Empty : "GRADE" + item.WetScale;
+                    worksheet.Cells[start_row, 7] = item.Result;
+                    worksheet.Cells[start_row, 8] = item.Remark;
                     worksheet.Rows[start_row].Font.Bold = false;
                     worksheet.Rows[start_row].WrapText = true;
                     worksheet.Rows[start_row].HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
