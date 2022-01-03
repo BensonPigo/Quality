@@ -41,7 +41,7 @@ outer apply(
 where oq.id = @OrderID and SizeCode = @Size and Article = @Article
 and oq.Qty - isnull(insp.cnt,0) > 0
 ";
-            DataTable dt = ExecuteDataTable(CommandType.Text, sqlcmd, objParameter);
+            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
             return dt;
         }
 
