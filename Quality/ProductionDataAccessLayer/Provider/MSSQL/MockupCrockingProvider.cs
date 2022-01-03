@@ -405,7 +405,7 @@ SELECT {top1}
 		,LastEditName = iif(EditName <> '', Concat (EditName, '-', EditName.Name, ' ', Format(EditDate,'yyyy/MM/dd HH:mm:ss')), Concat (AddName, '-', AddName.Name, ' ', Format(AddDate,'yyyy/MM/dd HH:mm:ss')))
 FROM [MockupCrocking] m WITH(NOLOCK)
 left join [ExtendServer].PMSFile.dbo.MockupCrocking mi WITH(NOLOCK) on m.ReportNo=mi.ReportNo
-outer apply (select Name, ExtNo from pass1 WITH(NOLOCK) p inner join Technician t WITH(NOLOCK) on t.ID = p.ID where t.id = m.Technician) Technician_ne
+outer apply (select Name, ExtNo from pass1 p WITH(NOLOCK) inner join Technician t WITH(NOLOCK) on t.ID = p.ID where t.id = m.Technician) Technician_ne
 outer apply (select Name, ExtNo, EMail from pass1 WITH(NOLOCK) where id = m.MR) MR_ne
 outer apply (select Name from Pass1 WITH(NOLOCK) where id = m.AddName) AddName
 outer apply (select Name from Pass1 WITH(NOLOCK) where id = m.EditName) EditName

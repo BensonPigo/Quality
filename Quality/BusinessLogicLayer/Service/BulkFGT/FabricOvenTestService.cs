@@ -10,8 +10,10 @@ using ProductionDataAccessLayer.Provider.MSSQL;
 using Sci;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -27,6 +29,8 @@ namespace BusinessLogicLayer.Service
         IScaleProvider _ScaleProvider;
         IOrdersProvider _OrdersProvider;
         IStyleProvider _StyleProvider;
+
+        private string IsTest = ConfigurationManager.AppSettings["IsTest"];
 
         public BaseResult AmendFabricOvenTestDetail(string poID, string TestNo)
         {
@@ -382,6 +386,64 @@ namespace BusinessLogicLayer.Service
                 worksheet.Cells[2, 8] = dtOven.Rows[0]["Inspector"].ToString();
                 worksheet.Cells[2, 10] = brandID;
 
+                Excel.Range cellBefore = worksheet.Cells[11, 1];
+                if (dtOven.Rows[0]["TestBeforePicture"] != DBNull.Value)
+                {
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    string imgPath;
+                    if (IsTest.ToLower() == "true")
+                    {
+                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                    }
+                    else
+                    {
+                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                    }
+
+                    byte[] bytes = (byte[])dtOven.Rows[0]["TestBeforePicture"];
+                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
+                    {
+                        imageFile.Write(bytes, 0, bytes.Length);
+                        imageFile.Flush();
+                    }
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBefore.Left + 5, cellBefore.Top + 5, 370, 240);
+                }
+
+                Excel.Range cellAfter = worksheet.Cells[11, 7];
+                if (dtOven.Rows[0]["TestAfterPicture"] != DBNull.Value)
+                {
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    string imgPath;
+                    if (IsTest.ToLower() == "true")
+                    {
+                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                    }
+                    else
+                    {
+                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                    }
+
+                    byte[] bytes = (byte[])dtOven.Rows[0]["TestAfterPicture"];
+                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
+                    {
+                        imageFile.Write(bytes, 0, bytes.Length);
+                        imageFile.Flush();
+                    }
+                    
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfter.Left + 5, cellAfter.Top + 5, 358, 240);
+                }
+
+                if (dtOvenDetail.Rows.Count > 0)
+                {
+                    Excel.Range rngToInsert = worksheet.get_Range("A4:K4", Type.Missing).EntireRow;
+                    for (int i = 1; i < dtOvenDetail.Rows.Count; i++)
+                    {
+                        rngToInsert.Insert(Excel.XlInsertShiftDirection.xlShiftDown);
+                    }
+
+                    Marshal.ReleaseComObject(rngToInsert);
+                }
+
                 int startRow = 4;
                 for (int i = 0; i < dtOvenDetail.Rows.Count; i++)
                 {
@@ -494,9 +556,9 @@ namespace BusinessLogicLayer.Service
 
                 excel.DisplayAlerts = false;
 
-                // 預設頁在第4頁，前3頁是用來複製的格式，最後在刪除
+                // 預設頁在第5頁，前4頁是用來複製的格式，最後在刪除
                 // 依據 submitDate 複製分頁
-                int defaultSheet = 4;
+                int defaultSheet = 5;
                 for (int c = 1; c < distOvenDetailSubmitDate.Count(); c++)
                 {
                     Excel.Worksheet worksheetFirst = excel.ActiveWorkbook.Worksheets[defaultSheet];
@@ -504,8 +566,57 @@ namespace BusinessLogicLayer.Service
                     worksheetFirst.Copy(worksheetn);
                 }
 
-                Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1];
+                #region Set Picture
+                Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[4];
+                Excel.Range cellBefore = worksheet.Cells[3, 2];
+                if (dtOven.Rows[0]["TestBeforePicture"] != DBNull.Value)
+                {
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    string imgPath;
+                    if (IsTest.ToLower() == "true")
+                    {
+                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                    }
+                    else
+                    {
+                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                    }
 
+                    byte[] bytes = (byte[])dtOven.Rows[0]["TestBeforePicture"];
+                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
+                    {
+                        imageFile.Write(bytes, 0, bytes.Length);
+                        imageFile.Flush();
+                    }
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBefore.Left + 10, cellBefore.Top + 10, 420, 380);
+                }
+
+                Excel.Range cellAfter = worksheet.Cells[3, 10];
+                if (dtOven.Rows[0]["TestAfterPicture"] != DBNull.Value)
+                {
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    string imgPath;
+                    if (IsTest.ToLower() == "true")
+                    {
+                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                    }
+                    else
+                    {
+                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                    }
+
+                    byte[] bytes = (byte[])dtOven.Rows[0]["TestAfterPicture"];
+                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
+                    {
+                        imageFile.Write(bytes, 0, bytes.Length);
+                        imageFile.Flush();
+                    }
+
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfter.Left + 10, cellAfter.Top + 10, 420, 380);
+                }
+                #endregion
+
+                worksheet = excel.ActiveWorkbook.Worksheets[1];
                 // 依據 submitDate 填入表頭資訊
                 for (int i = 0; i < distOvenDetailSubmitDate.Count(); i++)
                 {
@@ -532,6 +643,7 @@ namespace BusinessLogicLayer.Service
                 Excel.Worksheet worksheetDetail = excel.ActiveWorkbook.Worksheets[1];
                 Excel.Worksheet worksheetSignature = excel.ActiveWorkbook.Worksheets[2];
                 Excel.Worksheet worksheetFrame = excel.ActiveWorkbook.Worksheets[3];
+                Excel.Worksheet worksheetPicture = excel.ActiveWorkbook.Worksheets[4];
 
                 for (int i = 0; i < distOvenDetailSubmitDate.Count; i++)
                 {
@@ -657,6 +769,20 @@ namespace BusinessLogicLayer.Service
 
                                 g1 = !g1;
                             }
+
+                            if (frameNum == 0 || !g1)
+                            {
+                                worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
+                                Excel.Range paste2 = worksheetn.get_Range($"A52", Type.Missing);
+                                Excel.Range r2 = worksheetPicture.get_Range("A2:A29").EntireRow;
+                                paste2.Insert(Excel.XlInsertShiftDirection.xlShiftDown, r2.Copy(Type.Missing));
+                            }
+                            else
+                            {
+                                alladdSheet++;
+                                Excel.Worksheet worksheepic = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
+                                worksheetPicture.Copy(worksheepic);
+                            }
                             #endregion
                         }
 
@@ -743,10 +869,24 @@ namespace BusinessLogicLayer.Service
                             g1 = !g1;
                         }
                         #endregion
+                        
+                        if (frameNum == 0 || !g1)
+                        {
+                            Excel.Worksheet worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
+                            Excel.Range paste2 = worksheetn.get_Range($"A52", Type.Missing);
+                            Excel.Range r2 = worksheetPicture.get_Range("A2:A29").EntireRow;
+                            paste2.Insert(Excel.XlInsertShiftDirection.xlShiftDown, r2.Copy(Type.Missing));
+                        }
+                        else
+                        {
+                            alladdSheet++;
+                            Excel.Worksheet worksheepic = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
+                            worksheetPicture.Copy(worksheepic);
+                        }
                     }
                 }
 
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < 4; i++)
                 {
                     worksheet = excel.ActiveWorkbook.Worksheets[1];
                     worksheet.Delete();

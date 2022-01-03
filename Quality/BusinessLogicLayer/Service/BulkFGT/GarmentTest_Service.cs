@@ -953,6 +953,52 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         #region 舊資料
                         if (!IsNewData)
                         {
+                            #region 照片
+                            if (all_Data.Detail.TestBeforePicture != null)
+                            {
+                                Excel.Range cell = worksheet.Cells[80, 2];
+                                string imageName = $"{Guid.NewGuid()}.jpg";
+                                string imgPath;
+                                if (test)
+                                {
+                                    imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                                }
+                                else
+                                {
+                                    imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                                }
+
+                                using (var imageFile = new FileStream(imgPath, FileMode.Create))
+                                {
+                                    imageFile.Write(all_Data.Detail.TestBeforePicture, 0, all_Data.Detail.TestBeforePicture.Length);
+                                    imageFile.Flush();
+                                }
+                                worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 328, 247);
+                            }
+
+                            if (all_Data.Detail.TestAfterPicture != null)
+                            {
+                                Excel.Range cell = worksheet.Cells[80, 7];
+                                string imageName = $"{Guid.NewGuid()}.jpg";
+                                string imgPath;
+                                if (test)
+                                {
+                                    imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                                }
+                                else
+                                {
+                                    imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                                }
+
+                                using (var imageFile = new FileStream(imgPath, FileMode.Create))
+                                {
+                                    imageFile.Write(all_Data.Detail.TestAfterPicture, 0, all_Data.Detail.TestAfterPicture.Length);
+                                    imageFile.Flush();
+                                }
+                                worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 300, 248);
+                            }
+                            #endregion
+
                             #region 最下面 Signature
                             if (MyUtility.Convert.GetString(all_Data.Detail.WashResult).EqualString("P"))
                             {
@@ -1634,6 +1680,52 @@ and t.GarmentTest=1
                         #region 新資料
                         if (IsNewData)
                         {
+                            #region 照片
+                            if (all_Data.Detail.TestBeforePicture != null)
+                            {
+                                Excel.Range cell = worksheet.Cells[80, 2];
+                                string imageName = $"{Guid.NewGuid()}.jpg";
+                                string imgPath;
+                                if (test)
+                                {
+                                    imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                                }
+                                else
+                                {
+                                    imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                                }
+
+                                using (var imageFile = new FileStream(imgPath, FileMode.Create))
+                                {
+                                    imageFile.Write(all_Data.Detail.TestBeforePicture, 0, all_Data.Detail.TestBeforePicture.Length);
+                                    imageFile.Flush();
+                                }
+                                worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 328, 247);
+                            }
+
+                            if (all_Data.Detail.TestAfterPicture != null)
+                            {
+                                Excel.Range cell = worksheet.Cells[80, 7];
+                                string imageName = $"{Guid.NewGuid()}.jpg";
+                                string imgPath;
+                                if (test)
+                                {
+                                    imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                                }
+                                else
+                                {
+                                    imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                                }
+
+                                using (var imageFile = new FileStream(imgPath, FileMode.Create))
+                                {
+                                    imageFile.Write(all_Data.Detail.TestAfterPicture, 0, all_Data.Detail.TestAfterPicture.Length);
+                                    imageFile.Flush();
+                                }
+                                worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 300, 248);
+                            }
+                            #endregion
+
                             worksheet.get_Range("64:64", Type.Missing).Delete();
 
                             #region 最下面 Signature
