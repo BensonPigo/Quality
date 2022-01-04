@@ -149,7 +149,7 @@ outer apply(
 	),1,1,'')
 )c
 ");
-            return ExecuteDataTable(CommandType.Text, SbSql.ToString(), objParameter);
+            return ExecuteDataTableByServiceConn(CommandType.Text, SbSql.ToString(), objParameter);
         }
     }
 }

@@ -122,7 +122,7 @@ select  [MaxSerID] =  cast(Replace(isnull(MAX(ID), '0'), '{idHead}', '') as int)
 from    ManufacturingExecution.dbo.FinalInspection with (nolock)
 where   ID like '{idHead}%'
 ";
-            int newSer = (int)ExecuteDataTable(CommandType.Text, sqlGetCurMaxID, new SQLParameterCollection()).Rows[0]["MaxSerID"] + 1;
+            int newSer = (int)ExecuteDataTableByServiceConn(CommandType.Text, sqlGetCurMaxID, new SQLParameterCollection()).Rows[0]["MaxSerID"] + 1;
             string newID = idHead + newSer.ToString().PadLeft(4, '0');
             return newID;
         }
@@ -1031,7 +1031,7 @@ drop table #tmp,#Style_Size,#tmp_Inspection_Measurement
 
 ";
 
-            DataTable dt = ExecuteDataTable(CommandType.Text, sqlcmd, objParameter);
+            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
             return dt;
         }
 

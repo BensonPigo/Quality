@@ -314,7 +314,7 @@ UPDATE [dbo].[MockupWash_Detail]
 WHERE UKey = @Ukey
 ";
 
-            DataTable dtResult = ExecuteDataTable(CommandType.Text, SbSql.ToString(), objParameter);
+            DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, SbSql.ToString(), objParameter);
             foreach (var detailItem in needUpdateDetailList)
             {
                 SQLParameterCollection listDetailPar = new SQLParameterCollection();

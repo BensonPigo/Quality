@@ -73,7 +73,7 @@ outer apply(
 where s.ExpectionFormDate >= DATEADD(Year,-2, GETDATE())
 ");
 
-			return ExecuteDataTable(CommandType.Text, SbSql.ToString(), new SQLParameterCollection());
+			return ExecuteDataTableByServiceConn(CommandType.Text, SbSql.ToString(), new SQLParameterCollection());
 		}
 
 	}

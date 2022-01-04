@@ -356,7 +356,7 @@ outer apply(
 where 1=1
 {sqlWhere}
 ";
-            return ExecuteDataTable(CommandType.Text, SbSql.ToString(), listPar);
+            return ExecuteDataTableByServiceConn(CommandType.Text, SbSql.ToString(), listPar);
         }
 
         public IList<StyleResult_FTYDisclaimer> Get_StyleResult_FTYDisclaimer(StyleResult_Request styleResult_Request)

@@ -210,8 +210,7 @@ NOTE: This is an automated reply from a system mailbox. Please do not reply to t
                 //寄件者 & 收件者
 
                 SQLParameterCollection objParameter = new SQLParameterCollection();
-
-                DataTable dt = SQLDAL.ExecuteDataTable(CommandType.Text, "select * from Production.dbo.System", objParameter);
+                DataTable dt = SQLDAL.ExecuteDataTable(CommandType.Text, "select * from Production.dbo.System", objParameter, ADOHelper.DBToolKit.Common.ProductionDataAccessLayer);
                 if (dt != null || dt.Rows.Count > 0)
                 {
                     mailFrom = dt.Rows[0]["Sendfrom"].ToString();

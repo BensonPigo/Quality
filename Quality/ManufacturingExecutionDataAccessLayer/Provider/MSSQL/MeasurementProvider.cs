@@ -217,7 +217,7 @@ from (
     where format (adddate, 'yyyy/MM/dd') = format (getdate(), 'yyyy/MM/dd')
 ) rim
 ";
-            DataTable dt = ExecuteDataTable(CommandType.Text, sqlcmd, new SQLParameterCollection());
+            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, new SQLParameterCollection());
             if (dt != null)
             {
                 rtQty = Convert.ToInt32(dt.Rows[0]["ttlCnt"]);
@@ -245,7 +245,7 @@ from (
         and Article = @Article
 ) rim
 ";
-            DataTable dt = ExecuteDataTable(CommandType.Text, sqlcmd, objParameter);
+            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
             if (dt != null)
             {
                 rtQty = Convert.ToInt32(dt.Rows[0]["ttlCnt"]);
@@ -265,14 +265,14 @@ from (
             string sqlcmd = @"
 select value = dbo.calculateSizeSpec(@DiffValue, @Tol,'INCH');
 ";
-            DataTable dt = ExecuteDataTable(CommandType.Text, sqlcmd, objParameter);
+            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
             return dt;
         }
 
         public DataTable Get_Measured_Detail(Measurement_Request measurement)
         {
             string styleUkey = string.Empty;
-            DataTable dtStyle = ExecuteDataTable(CommandType.Text, $@"Select StyleUkey from MainServer.Production.dbo.Orders WITH(NOLOCK) where id = '{measurement.OrderID}'", new SQLParameterCollection());
+            DataTable dtStyle = ExecuteDataTableByServiceConn(CommandType.Text, $@"Select StyleUkey from MainServer.Production.dbo.Orders WITH(NOLOCK) where id = '{measurement.OrderID}'", new SQLParameterCollection());
             if (dtStyle.Rows.Count > 0)
             {
                 styleUkey = dtStyle.Rows[0]["StyleUkey"].ToString();
@@ -389,7 +389,7 @@ drop table #tmp
 
 ";
 
-            DataTable dt = ExecuteDataTable(CommandType.Text, sqlcmd, objParameter);
+            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
             return dt;
         }
 

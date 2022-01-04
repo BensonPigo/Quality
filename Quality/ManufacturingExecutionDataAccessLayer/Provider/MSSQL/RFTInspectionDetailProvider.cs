@@ -40,9 +40,8 @@ outer apply(
 )insp
 where oq.id = @OrderID and SizeCode = @Size and Article = @Article
 and oq.Qty - isnull(insp.cnt,0) > 0
-";
-            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
-            return dt;
+";         
+            return ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
         }
 
         public IList<RFT_Inspection_Detail> Top3Defects(RFT_Inspection Item)
