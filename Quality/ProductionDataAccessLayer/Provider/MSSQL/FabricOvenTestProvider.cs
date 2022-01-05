@@ -287,7 +287,7 @@ update  Oven_Detail set Roll           =  @Roll         ,
 
             using (TransactionScope transaction = new TransactionScope())
             {
-                DataTable dtResult = ExecuteDataTable(CommandType.Text, sqlUpdateOven, listPar);
+                DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlUpdateOven, listPar);
                 long ovenID = (long)dtResult.Rows[0]["OvenID"];
                 foreach (FabricOvenTest_Detail_Detail detailItem in needUpdateDetailList)
                 {
@@ -438,7 +438,7 @@ getdate()        ,
 
             using (TransactionScope transaction = new TransactionScope())
             {
-                DataTable dtResult = ExecuteDataTable(CommandType.Text, sqlInsertOven, listPar);
+                DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlInsertOven, listPar);
                 long ovenID = (long)dtResult.Rows[0]["OvenID"];
                 TestNo = dtResult.Rows[0]["TestNo"].ToString();
                 foreach (FabricOvenTest_Detail_Detail detailItem in fabricOvenTest_Detail_Result.Details)

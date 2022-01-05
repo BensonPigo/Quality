@@ -32,7 +32,7 @@ namespace ADOHelper.Utility
                 if (!isTest)
                 {
                     //ExecuteDataTable()
-                    DataTable dt = SQLDAL.ExecuteDataTable(CommandType.Text, "select * from Production.dbo.System", new SQLParameterCollection());
+                    DataTable dt = SQLDAL.ExecuteDataTable(CommandType.Text, "select * from Production.dbo.System", new SQLParameterCollection(), DBToolKit.Common.ProductionDataAccessLayer);
                     if (dt != null || dt.Rows.Count > 0)
                     {
                         mailFrom = dt.Rows[0]["Sendfrom"].ToString();

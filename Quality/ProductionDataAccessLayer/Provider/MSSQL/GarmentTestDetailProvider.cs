@@ -71,7 +71,7 @@ union all
 select ID from Scale WITH(NOLOCK)  WHERE Junk=0 
 order by ID
 ";
-            DataTable dt = ExecuteDataTable(CommandType.Text, sqlcmd, new SQLParameterCollection());
+            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, new SQLParameterCollection());
 
             return dt.Rows.OfType<DataRow>().Select(dr => dr.Field<string>("ID")).ToList();
         }
