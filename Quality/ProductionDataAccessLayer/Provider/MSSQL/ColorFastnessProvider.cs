@@ -93,7 +93,7 @@ left join ColorFastness c WITH (NOLOCK) on a.ID=c.POID
 where a.id= @POID
 and c.ID = @ID
 ";
-            return ExecuteDataTable(CommandType.Text, sqlcmd, objParameter);
+            return ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
         }
 
         public string Get_InspectName(string Inspector)
@@ -133,7 +133,7 @@ and a.seq1 = @Seq1
         public List<string> GetScales()
         {
             string sqlcmd = @"select ID from Scale  WITH(NOLOCK) WHERE Junk=0 order by ID";
-            DataTable dt = ExecuteDataTable(CommandType.Text, sqlcmd, new SQLParameterCollection());
+            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, new SQLParameterCollection());
 
             return dt.Rows.OfType<DataRow>().Select(dr => dr.Field<string>("ID")).ToList();
         }

@@ -1025,7 +1025,7 @@ where t.ID = '{all_Data.Detail.inspector}'
 and t.GarmentTest=1
 ";
                                 string technicianName = string.Empty;
-                                DataTable dtTechnicianInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sql_cmd, new ADOHelper.Template.MSSQL.SQLParameterCollection());
+                                DataTable dtTechnicianInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sql_cmd, new ADOHelper.Template.MSSQL.SQLParameterCollection(), Common.ProductionDataAccessLayer);
 
                                 if (dtTechnicianInfo != null && dtTechnicianInfo.Rows.Count > 0 && dtTechnicianInfo.Rows[0]["SignaturePic"] != null)
                                 {

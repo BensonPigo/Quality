@@ -554,7 +554,7 @@ Delete [ExtendServer].PMSFile.dbo.GarmentTest_Detail where id = @ID and NO = @No
                             break;
                     }
 
-                    ExecuteDataTable(CommandType.Text, sqlUpdateMaster, objParameterDetail);
+                    ExecuteDataTableByServiceConn(CommandType.Text, sqlUpdateMaster, objParameterDetail);
                 }
 
                 #endregion

@@ -188,7 +188,7 @@ namespace ADOHelper.Template.MSSQL
 			return dataSet;
 		}
 
-		public static DataTable ExecuteDataTable(CommandType cmdType, string cmdText, SQLParameterCollection cmdParameter)
+		public static DataTable ExecuteDataTable(CommandType cmdType, string cmdText, SQLParameterCollection cmdParameter, string ConnectionString = "")
 		{
 			DataTable dataTable;
 			try
@@ -196,7 +196,8 @@ namespace ADOHelper.Template.MSSQL
 				DataTable dataTable1 = new DataTable();
 				string str = cmdText;
                 SqlDataAdapter adapter = new SqlDataAdapter();
-                SqlConnection cn = new SqlConnection(ConfigurationManager.ConnectionStrings[_ConnectionString].ConnectionString);
+				ConnectionString = string.IsNullOrEmpty(ConnectionString) ? _ConnectionString : ConnectionString;
+				SqlConnection cn = new SqlConnection(ConfigurationManager.ConnectionStrings[ConnectionString].ConnectionString);
                 adapter = new SqlDataAdapter(string.Empty, cn);
                 for (int i = 0; i < cmdParameter.Count; i++)
 				{
