@@ -122,6 +122,13 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string CcAddress { get; set; }
     }
 
+    public class Accessory_OvenExcel : Accessory_Oven
+    {
+        public string BrandID { get; set; }
+        public string SeasonID { get; set; }
+        public string StyleID { get; set; }
+    }
+
     public class Accessory_Wash
     {
         public Int64 AIR_LaboratoryID { get; set; }
@@ -175,5 +182,12 @@ namespace DatabaseObject.ViewModel.BulkFGT
         // Result = Fail時，要收信的人
         public string ToAddress { get; set; }
         public string CcAddress { get; set; }
+    }
+
+    public class Accessory_WashExcel : Accessory_Wash
+    {
+        public string BrandID { get; set; }
+        public string SeasonID { get; set; }
+        public string StyleID { get; set; }
     }
 }

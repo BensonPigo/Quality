@@ -228,7 +228,7 @@ select   al.POID
         ,Supplier = Concat (a.SuppID, s.AbbEn)
         ,Unit = psd.StockUnit
         ,Color = psd.ColorID
-        ,psd.SizeSpec
+        ,Size = psd.SizeSpec
         ,Scale = al.OvenScale
         ,OvenResult = al.Oven
         ,Remark = al.OvenRemark
@@ -256,6 +256,66 @@ where   al.ID=@AIR_LaboratoryID
     and al.Seq2=@Seq2
 ";
             IList<Accessory_Oven> listResult = ExecuteList<Accessory_Oven>(CommandType.Text, sqlCmd, listPar);
+
+            if (listResult.Count == 0)
+            {
+                throw new Exception("No data found");
+            }
+
+            return listResult.FirstOrDefault();
+        }
+
+        /// <summary>
+        /// 取得匯出報表資訊
+        /// </summary>
+        /// <param name="Req"></param>
+        /// <returns></returns>
+        public Accessory_OvenExcel GetOvenTestExcel(Accessory_Oven Req)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@AIR_LaboratoryID", Req.AIR_LaboratoryID);
+            listPar.Add("@POID", Req.POID);
+            listPar.Add("@Seq1", Req.Seq1);
+            listPar.Add("@Seq2", Req.Seq2);
+
+            string sqlCmd = @"
+select   al.POID
+		,o.BrandID
+		,o.SeasonID
+		,o.StyleID
+        ,WKNo = r.ExportId
+        ,a.Refno
+        ,Supplier = Concat (a.SuppID, s.AbbEn)
+        ,Color = psd.ColorID
+        ,Size = psd.SizeSpec
+        ,OvenResult = al.Oven
+        ,Remark = al.OvenRemark
+        ,al.OvenInspector
+        ,OvenInspectorName = q.Name
+        ,al.OvenDate
+        ,al.OvenEncode 
+	    ,Seq = al.Seq1 + ' ' + al.Seq2
+        ,OverAllResult = al.Result
+        ,AIR_LaboratoryID = al.ID
+        ,al.Seq1
+        ,al.Seq2
+		,ali.OvenTestBeforePicture
+		,ali.OvenTestAfterPicture
+from AIR_Laboratory al WITH(NOLOCK)
+inner join Orders o WITH(NOLOCK) ON o.ID = al.POID
+left join  [ExtendServer].PMSFile.dbo.AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
+inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
+left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
+left join Supp s WITH(NOLOCK) on a.Suppid = s.ID
+left join PO_Supp_Detail psd WITH(NOLOCK) ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
+left join Pass1 q WITH(NOLOCK) on q.ID = al.OvenInspector
+where   al.ID=@AIR_LaboratoryID
+    and al.POID=@POID
+    and al.Seq1=@Seq1
+    and al.Seq2=@Seq2
+";
+
+            IList<Accessory_OvenExcel> listResult = ExecuteList<Accessory_OvenExcel>(CommandType.Text, sqlCmd, listPar);
 
             if (listResult.Count == 0)
             {
@@ -496,7 +556,7 @@ select   al.POID
         ,Supplier = Concat (a.SuppID, s.AbbEn)
         ,Unit = psd.StockUnit
         ,Color = psd.ColorID
-        ,psd.SizeSpec
+        ,Size = psd.SizeSpec
         ,Scale = al.WashScale
         ,WashResult = al.Wash
         ,Remark = al.WashRemark
@@ -744,6 +804,66 @@ where   al.ID=@AIR_LaboratoryID
             return ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, objParameter);
         }
 
+
+        /// <summary>
+        /// 取得匯出報表資訊
+        /// </summary>
+        /// <param name="Req"></param>
+        /// <returns></returns>
+        public Accessory_WashExcel GetWashTestExcel(Accessory_Wash Req)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@AIR_LaboratoryID", Req.AIR_LaboratoryID);
+            listPar.Add("@POID", Req.POID);
+            listPar.Add("@Seq1", Req.Seq1);
+            listPar.Add("@Seq2", Req.Seq2);
+
+            string sqlCmd = @"
+select   al.POID
+		,o.BrandID
+		,o.SeasonID
+		,o.StyleID
+        ,WKNo = r.ExportId
+        ,a.Refno
+        ,Supplier = Concat (a.SuppID, s.AbbEn)
+        ,Color = psd.ColorID
+        ,Size = psd.SizeSpec
+        ,WashResult = al.Wash
+        ,Remark = al.WashRemark
+        ,al.WashInspector
+        ,WashInspectorName = q.Name
+        ,al.WashDate
+        ,al.WashEncode 
+	    ,Seq = al.Seq1 + ' ' + al.Seq2
+        ,OverAllResult = al.Result
+        ,AIR_LaboratoryID = al.ID
+        ,al.Seq1
+        ,al.Seq2
+		,ali.WashTestBeforePicture
+		,ali.WashTestAfterPicture
+from AIR_Laboratory al WITH(NOLOCK)
+inner join Orders o WITH(NOLOCK) ON o.ID = al.POID
+left join  [ExtendServer].PMSFile.dbo.AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
+inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
+left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
+left join Supp s WITH(NOLOCK) on a.Suppid = s.ID
+left join PO_Supp_Detail psd WITH(NOLOCK) ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
+left join Pass1 q WITH(NOLOCK) on q.ID = al.WashInspector
+where   al.ID=@AIR_LaboratoryID
+    and al.POID=@POID
+    and al.Seq1=@Seq1
+    and al.Seq2=@Seq2
+";
+
+            IList<Accessory_WashExcel> listResult = ExecuteList<Accessory_WashExcel>(CommandType.Text, sqlCmd, listPar);
+
+            if (listResult.Count == 0)
+            {
+                throw new Exception("No data found");
+            }
+
+            return listResult.FirstOrDefault();
+        }
         #endregion
 
 

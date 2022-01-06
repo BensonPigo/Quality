@@ -1,14 +1,20 @@
 ﻿using ADOHelper.Utility;
+using DatabaseObject;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
+using Library;
 using ProductionDataAccessLayer.Provider.MSSQL.BukkFGT;
+using Sci;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -165,6 +171,157 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
+
+        public BaseResult OvenTestExcel(string AIR_LaboratoryID, string POID, string Seq1, string Seq2 ,bool isPDF, out string FileName)
+        {
+            _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(Common.ProductionDataAccessLayer);
+
+            BaseResult result = new BaseResult();
+
+            Accessory_OvenExcel Model = new Accessory_OvenExcel();
+
+            FileName = string.Empty;
+
+            try
+            {
+                string baseFilePath =  System.Web.HttpContext.Current.Server.MapPath("~/");
+                //DataTable dtOvenDetail = _AccessoryOvenWashProvider.GetOvenTestDataTable(new Accessory_Oven() 
+                //{ 
+                //    AIR_LaboratoryID = Convert.ToInt64( AIR_LaboratoryID),
+                //    POID = POID,
+                //    Seq1 = Seq1,
+                //    Seq2 = Seq2,
+                //});
+
+                Model =  _AccessoryOvenWashProvider.GetOvenTestExcel(new Accessory_Oven()
+                {
+                    AIR_LaboratoryID = Convert.ToInt64(AIR_LaboratoryID),
+                    POID = POID,
+                    Seq1 = Seq1,
+                    Seq2 = Seq2,
+                });
+
+                if (Model == null)
+                {
+                    result.ErrorMessage = "Data not found!";
+                    result.Result = false;
+                    return result;
+                }
+
+                string strXltName = baseFilePath + "\\XLT\\AccessoryOvenTest.xltx";
+                Excel.Application excel = MyUtility.Excel.ConnectExcel(strXltName);
+                if (excel == null)
+                {
+                    result.ErrorMessage = "Excel template not found!";
+                    result.Result = false;
+                    return result;
+                }
+
+                excel.DisplayAlerts = false;
+                Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1];
+
+                worksheet.Cells[2, 6] = Model.POID;
+                worksheet.Cells[2, 10] = Model.Supplier;
+
+                worksheet.Cells[3, 2] = Model.BrandID;
+                worksheet.Cells[3, 6] = Model.Refno;
+                worksheet.Cells[3, 10] = Model.WKNo;
+
+                worksheet.Cells[4, 2] = "Bulk";
+                worksheet.Cells[4, 6] = Model.Color;
+                worksheet.Cells[4, 10] = string.Empty;
+
+                worksheet.Cells[5, 2] = Model.StyleID;
+                worksheet.Cells[5, 6] = Model.Size;
+                worksheet.Cells[5, 10] =Model.SeasonID;
+                worksheet.Cells[5, 12] = Model.Seq;
+
+                worksheet.Cells[9, 2] = Model.OvenDate.HasValue ? Model.OvenDate.Value.ToString("yyyy/MM/dd") : string.Empty;
+                worksheet.Cells[9, 10] = DateTime.Now.ToString("yyyy/MM/dd");
+
+                worksheet.Cells[12, 2] = Model.OvenResult;
+                worksheet.Cells[12, 5] = string.Empty;
+                worksheet.Cells[12, 10] = string.Empty;
+
+                worksheet.Cells[13, 2] = Model.Remark;
+
+                worksheet.Cells[22, 3] = Model.OvenInspector;
+                worksheet.Cells[22, 9] = Model.OvenInspector;
+
+                #region 添加圖片
+                Excel.Range cellBeforePicture = worksheet.Cells[20, 1];
+                if (Model.OvenTestBeforePicture != null)
+                {
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    string imgPath;
+                    imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+
+                    byte[] bytes = Model.OvenTestBeforePicture;
+                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
+                    {
+                        imageFile.Write(bytes, 0, bytes.Length);
+                        imageFile.Flush();
+                    }
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 300, 300);
+                }
+
+                Excel.Range cellAfterPicture = worksheet.Cells[20, 7];
+                if (Model.OvenTestAfterPicture != null)
+                {
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    string imgPath;
+                    imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+
+                    byte[] bytes = Model.OvenTestAfterPicture;
+                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
+                    {
+                        imageFile.Write(bytes, 0, bytes.Length);
+                        imageFile.Flush();
+                    }
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 2, 300, 300);
+                }
+
+                #endregion
+
+
+                #region Save & Show Excel
+
+                string pdfFileName = $"AccessoryOvenTest{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
+                FileName = $"AccessoryOvenTest{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+
+                string pdfPath = Path.Combine(baseFilePath, "TMP", pdfFileName);
+                string excelPath = Path.Combine(baseFilePath, "TMP", FileName);
+
+                excel.ActiveWorkbook.SaveAs(excelPath);
+                excel.Quit();
+
+                if (isPDF)
+                {
+                    bool isCreatePdfOK = ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
+                    FileName = pdfFileName;
+                    if (!isCreatePdfOK)
+                    {
+                        result.Result = false;
+                        result.ErrorMessage = "ConvertToPDF fail";
+                        return result;
+                    }
+                }
+
+                Marshal.ReleaseComObject(worksheet);
+                Marshal.ReleaseComObject(excel);
+                #endregion
+            }
+            catch (Exception ex)
+            {
+
+                result.Result = false;
+                result.ErrorMessage = ex.ToString();
+            }
+
+
+
+            return result;
+        }
         #endregion
 
 
@@ -257,6 +414,154 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
+        public BaseResult WashTestExcel(string AIR_LaboratoryID, string POID, string Seq1, string Seq2, bool isPDF, out string FileName)
+        {
+            _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(Common.ProductionDataAccessLayer);
+
+            BaseResult result = new BaseResult();
+
+            Accessory_WashExcel Model = new Accessory_WashExcel();
+
+            FileName = string.Empty;
+
+            try
+            {
+                string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
+                //DataTable dtOvenDetail = _AccessoryOvenWashProvider.GetOvenTestDataTable(new Accessory_Oven() 
+                //{ 
+                //    AIR_LaboratoryID = Convert.ToInt64( AIR_LaboratoryID),
+                //    POID = POID,
+                //    Seq1 = Seq1,
+                //    Seq2 = Seq2,
+                //});
+
+                Model = _AccessoryOvenWashProvider.GetWashTestExcel(new Accessory_Wash()
+                {
+                    AIR_LaboratoryID = Convert.ToInt64(AIR_LaboratoryID),
+                    POID = POID,
+                    Seq1 = Seq1,
+                    Seq2 = Seq2,
+                });
+
+                if (Model == null)
+                {
+                    result.ErrorMessage = "Data not found!";
+                    result.Result = false;
+                    return result;
+                }
+
+                string strXltName = baseFilePath + "\\XLT\\AccessoryWashTest.xltx";
+                Excel.Application excel = MyUtility.Excel.ConnectExcel(strXltName);
+                if (excel == null)
+                {
+                    result.ErrorMessage = "Excel template not found!";
+                    result.Result = false;
+                    return result;
+                }
+
+                excel.DisplayAlerts = false;
+                Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1];
+
+                worksheet.Cells[2, 6] = Model.POID;
+                worksheet.Cells[2, 10] = Model.Supplier;
+
+                worksheet.Cells[3, 2] = Model.BrandID;
+                worksheet.Cells[3, 6] = Model.Refno;
+                worksheet.Cells[3, 10] = Model.WKNo;
+
+                worksheet.Cells[4, 2] = "Bulk";
+                worksheet.Cells[4, 6] = Model.Color;
+                worksheet.Cells[4, 10] = string.Empty;
+
+                worksheet.Cells[5, 2] = Model.StyleID;
+                worksheet.Cells[5, 6] = Model.Size;
+                worksheet.Cells[5, 10] = Model.SeasonID;
+                worksheet.Cells[5, 12] = Model.Seq;
+
+                worksheet.Cells[9, 2] = Model.WashDate.HasValue ? Model.WashDate.Value.ToString("yyyy/MM/dd") : string.Empty;
+                worksheet.Cells[9, 10] = DateTime.Now.ToString("yyyy/MM/dd");
+
+                worksheet.Cells[15, 2] = Model.WashResult;
+
+                worksheet.Cells[17, 2] = Model.Remark;
+
+                worksheet.Cells[22, 3] = Model.WashInspector;
+                worksheet.Cells[22, 9] = Model.WashInspector;
+
+                #region 添加圖片
+                Excel.Range cellBeforePicture = worksheet.Cells[24, 1];
+                if (Model.WashTestBeforePicture != null)
+                {
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    string imgPath;
+                    imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+
+                    byte[] bytes = Model.WashTestBeforePicture;
+                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
+                    {
+                        imageFile.Write(bytes, 0, bytes.Length);
+                        imageFile.Flush();
+                    }
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 300, 300);
+                }
+
+                Excel.Range cellAfterPicture = worksheet.Cells[24, 7];
+                if (Model.WashTestAfterPicture != null)
+                {
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    string imgPath;
+                    imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+
+                    byte[] bytes = Model.WashTestAfterPicture;
+                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
+                    {
+                        imageFile.Write(bytes, 0, bytes.Length);
+                        imageFile.Flush();
+                    }
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 2, 300, 300);
+                }
+
+                #endregion
+
+
+                #region Save & Show Excel
+
+                string pdfFileName = $"AccessoryWashTest{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
+                FileName = $"AccessoryWashTest{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+
+                string pdfPath = Path.Combine(baseFilePath, "TMP", pdfFileName);
+                string excelPath = Path.Combine(baseFilePath, "TMP", FileName);
+
+                excel.ActiveWorkbook.SaveAs(excelPath);
+                excel.Quit();
+
+                if (isPDF)
+                {
+                    bool isCreatePdfOK = ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
+                    FileName = pdfFileName;
+                    if (!isCreatePdfOK)
+                    {
+                        result.Result = false;
+                        result.ErrorMessage = "ConvertToPDF fail";
+                        return result;
+                    }
+                }
+
+                Marshal.ReleaseComObject(worksheet);
+                Marshal.ReleaseComObject(excel);
+                #endregion
+            }
+            catch (Exception ex)
+            {
+
+                result.Result = false;
+                result.ErrorMessage = ex.ToString();
+            }
+
+
+
+            return result;
+        }
         #endregion
     }
 }

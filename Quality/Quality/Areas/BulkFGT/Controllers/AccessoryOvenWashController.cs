@@ -1,4 +1,5 @@
 ﻿using BusinessLogicLayer.Service.BulkFGT;
+using DatabaseObject;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using FactoryDashBoardWeb.Helper;
@@ -207,6 +208,18 @@ namespace Quality.Areas.BulkFGT.Controllers
             SendMail_Result result = _Service.SendOvenMail(Req);
             return Json(result);
         }
+
+        [HttpPost]
+        public JsonResult OvenReport(string AIR_LaboratoryID, string POID, string Seq1, string Seq2, bool IsToPDF)
+        {
+            BaseResult result = null;
+            string FileName = string.Empty;
+            
+            result = _Service.OvenTestExcel(AIR_LaboratoryID, POID, Seq1, Seq2, IsToPDF, out FileName);
+
+            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
+            return Json(new { result.Result, result.ErrorMessage, reportPath });
+        }
         #endregion
 
         #region WashTest頁面
@@ -328,6 +341,18 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             SendMail_Result result = _Service.SendWashMail(Req);
             return Json(result);
+        }
+
+        [HttpPost]
+        public JsonResult WashReport(string AIR_LaboratoryID, string POID, string Seq1, string Seq2, bool IsToPDF)
+        {
+            BaseResult result = null;
+            string FileName = string.Empty;
+
+            result = _Service.WashTestExcel(AIR_LaboratoryID, POID, Seq1, Seq2, IsToPDF, out FileName);
+
+            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
+            return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
         #endregion
 
