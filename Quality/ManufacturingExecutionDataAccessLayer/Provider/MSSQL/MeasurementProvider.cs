@@ -280,22 +280,17 @@ select value = dbo.calculateSizeSpec(@DiffValue, @Tol,'INCH');
 
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
-                { "@_OrderID", DbType.String, measurement.OrderID } ,
-                { "@_StyleUkey", DbType.String, styleUkey } ,
+                { "@OrderID", DbType.String, measurement.OrderID } ,
+                { "@StyleUkey", DbType.String, styleUkey } ,
                 //{ "@Team", DbType.String, measurement.Team } ,
                 //{ "@Line", DbType.String, measurement.Line } ,
-                { "@_Factory", DbType.String, measurement.Factory } ,
-                { "@_TypeUnit", DbType.String, measurement.Unit } ,
+                { "@Factory", DbType.String, measurement.Factory } ,
+                { "@TypeUnit", DbType.String, measurement.Unit } ,
             };
 
 
             string sqlcmd = @"
 
-declare @styleukey nvarchar(10) = @_StyleUkey 
---declare @team nvarchar(1) = @Team
---declare @line nvarchar(3) = @Line
-declare @factory nvarchar(3) = @_Factory
-declare @typeUnit nvarchar(5)= @_TypeUnit
 declare @ex nvarchar(max)=''
 declare @ex2 nvarchar(max)=''
 declare @col nvarchar(max)=''
@@ -305,28 +300,14 @@ declare @OldSizeCode nvarchar(8)=''
 declare @no nvarchar(66)
 declare @time nvarchar(5)
 declare @diffno int='1'
-declare @orderid nvarchar(16) = @_OrderID
 declare @MDivision nvarchar(5) = (select MDivisionID from MainServer.Production.dbo.Factory WITH(NOLOCK) where id = @Factory)
---declare @shiftTabele table(MDivision varchar(8),Shift varchar(5),StartDate date,BeginTime time,EndTime time,ActualBeginTime datetime,ActualEndTime datetime)
---declare @workStartDatetime datetime
---declare @workEndDatetime datetime
-
---
---INSERT INTO @shiftTabele
---SELECT * FROM [dbo].[GetWorkShiftTable](@MDivision,GETDATE(),@factory)
-
---SELECT  @workStartDatetime=ActualBeginTime,@workEndDatetime=ActualEndTime
---FROM @shiftTabele
 
 select *
 into #tmp_Inspection_Measurement
 from RFT_Inspection_Measurement im WITH(NOLOCK)
-where im.StyleUkey = @styleukey 
---and (@workStartDatetime <= im.AddDate AND im.AddDate <= @workEndDatetime)
---and im.Team = @team
---and im.Line = @line
-and im.FactoryID = @factory 
-and im.OrderID = @orderid 
+where im.StyleUkey = @StyleUkey 
+and im.FactoryID = @Factory 
+and im.OrderID = @OrderID
 
 
 select m.Ukey
@@ -337,7 +318,7 @@ select m.Ukey
 	,m.SizeCode 
 	,[MeasurementSizeSpec] = m.SizeSpec 
 	,[InspectionMeasurementSizeSpec] = im.SizeSpec
-	,[diff]= max(dbo.calculateSizeSpec(m.SizeSpec,im.SizeSpec, @typeUnit))
+	,[diff]= max(dbo.calculateSizeSpec(m.SizeSpec,im.SizeSpec, @TypeUnit))
 	,im.AddDate
 	,[HeadSizeCode] = FORMAT(im.AddDate,'yyyy/MM/dd HH:mm:ss')
 into #tmp 
