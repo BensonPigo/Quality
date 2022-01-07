@@ -8,6 +8,7 @@ using ProductionDataAccessLayer.Provider.MSSQL.BukkFGT;
 using Sci;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -21,6 +22,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
     public class AccessoryOvenWashService
     {
         private AccessoryOvenWashProvider _AccessoryOvenWashProvider;
+        private string IsTest = ConfigurationManager.AppSettings["IsTest"].ToString();
 
         public Accessory_ViewModel GetMainData(Accessory_ViewModel Req)
         {
@@ -254,7 +256,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     string imageName = $"{Guid.NewGuid()}.jpg";
                     string imgPath;
-                    imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+
+                    if (IsTest.ToLower() == "true")
+                    {
+                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                    }
+                    else
+                    {
+                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                    }
 
                     byte[] bytes = Model.OvenTestBeforePicture;
                     using (var imageFile = new FileStream(imgPath, FileMode.Create))
@@ -270,7 +280,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     string imageName = $"{Guid.NewGuid()}.jpg";
                     string imgPath;
-                    imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+
+                    if (IsTest.ToLower() == "true")
+                    {
+                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                    }
+                    else
+                    {
+                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                    }
 
                     byte[] bytes = Model.OvenTestAfterPicture;
                     using (var imageFile = new FileStream(imgPath, FileMode.Create))
@@ -494,7 +512,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     string imageName = $"{Guid.NewGuid()}.jpg";
                     string imgPath;
-                    imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+
+                    if (IsTest.ToLower() == "true")
+                    {
+                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                    }
+                    else
+                    {
+                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                    }
 
                     byte[] bytes = Model.WashTestBeforePicture;
                     using (var imageFile = new FileStream(imgPath, FileMode.Create))
@@ -510,7 +536,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     string imageName = $"{Guid.NewGuid()}.jpg";
                     string imgPath;
-                    imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+
+                    if (IsTest.ToLower() == "true")
+                    {
+                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                    }
+                    else
+                    {
+                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                    }
 
                     byte[] bytes = Model.WashTestAfterPicture;
                     using (var imageFile = new FileStream(imgPath, FileMode.Create))
