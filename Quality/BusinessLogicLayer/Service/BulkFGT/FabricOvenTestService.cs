@@ -567,56 +567,56 @@ namespace BusinessLogicLayer.Service
                 }
 
                 #region Set Picture
-                Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[4];
-                Excel.Range cellBefore = worksheet.Cells[3, 2];
+                //Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[4];
+                //Excel.Range cellBefore = worksheet.Cells[3, 2];
+                string imgPath_BeforePicture = string.Empty;
+                string imgPath_AfterPicture = string.Empty;
                 if (dtOven.Rows[0]["TestBeforePicture"] != DBNull.Value)
                 {
                     string imageName = $"{Guid.NewGuid()}.jpg";
-                    string imgPath;
                     if (IsTest.ToLower() == "true")
                     {
-                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                        imgPath_BeforePicture = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
                     }
                     else
                     {
-                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                        imgPath_BeforePicture = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
                     }
 
                     byte[] bytes = (byte[])dtOven.Rows[0]["TestBeforePicture"];
-                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
+                    using (var imageFile = new FileStream(imgPath_BeforePicture, FileMode.Create))
                     {
                         imageFile.Write(bytes, 0, bytes.Length);
                         imageFile.Flush();
                     }
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBefore.Left + 10, cellBefore.Top + 10, 420, 380);
+                    //worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBefore.Left + 5, cellBefore.Top + 5, 430, 295);
                 }
 
-                Excel.Range cellAfter = worksheet.Cells[3, 10];
+                //Excel.Range cellAfter = worksheet.Cells[3, 10];
                 if (dtOven.Rows[0]["TestAfterPicture"] != DBNull.Value)
                 {
                     string imageName = $"{Guid.NewGuid()}.jpg";
-                    string imgPath;
                     if (IsTest.ToLower() == "true")
                     {
-                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                        imgPath_AfterPicture = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
                     }
                     else
                     {
-                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                        imgPath_AfterPicture = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
                     }
 
                     byte[] bytes = (byte[])dtOven.Rows[0]["TestAfterPicture"];
-                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
+                    using (var imageFile = new FileStream(imgPath_AfterPicture, FileMode.Create))
                     {
                         imageFile.Write(bytes, 0, bytes.Length);
                         imageFile.Flush();
                     }
 
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfter.Left + 10, cellAfter.Top + 10, 420, 380);
+                    //worksheet.Shapes.AddPicture(imgPath_AfterPicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfter.Left + 5, cellAfter.Top + 5, 430, 295);
                 }
                 #endregion
 
-                worksheet = excel.ActiveWorkbook.Worksheets[1];
+                Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1];
                 // 依據 submitDate 填入表頭資訊
                 for (int i = 0; i < distOvenDetailSubmitDate.Count(); i++)
                 {
@@ -666,6 +666,7 @@ namespace BusinessLogicLayer.Service
                             // 細項資料
                             this.SetDetailData(worksheet, j + headerRow + 1, dr[j]);
                         }
+                        worksheet.Cells.EntireRow.AutoFit();
 
                         // 額外細項分頁
                         for (int k = 0; k < addSheets; k++)
@@ -770,18 +771,60 @@ namespace BusinessLogicLayer.Service
                                 g1 = !g1;
                             }
 
-                            if (frameNum == 0 || !g1)
+                            Excel.Range cell;
+                            if (frameNum == 0)
                             {
                                 worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
                                 Excel.Range paste2 = worksheetn.get_Range($"A52", Type.Missing);
-                                Excel.Range r2 = worksheetPicture.get_Range("A2:A29").EntireRow;
-                                paste2.Insert(Excel.XlInsertShiftDirection.xlShiftDown, r2.Copy(Type.Missing));
+                                Excel.Range r2 = worksheetPicture.get_Range("A1:A20").EntireRow;
+                                paste2.Insert(Excel.XlInsertShiftDirection.xlShiftToRight, r2.Copy(Type.Missing));
+
+                                if (!string.IsNullOrEmpty(imgPath_BeforePicture))
+                                {
+                                    cell = worksheetn.Cells[54, 2];
+                                    worksheetn.Shapes.AddPicture(imgPath_BeforePicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 435, 280);
+                                }
+                                if (!string.IsNullOrEmpty(imgPath_AfterPicture))
+                                {
+                                    cell = worksheetn.Cells[54, 10];
+                                    worksheetn.Shapes.AddPicture(imgPath_AfterPicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 435, 280);
+                                }
+                            }
+                            else if (!g1)
+                            {
+                                worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
+                                Excel.Range paste2 = worksheetn.get_Range($"A46", Type.Missing);
+                                Excel.Range r2 = worksheetPicture.get_Range("A1:A20").EntireRow;
+                                paste2.Insert(Excel.XlInsertShiftDirection.xlShiftToRight, r2.Copy(Type.Missing));
+
+                                if (!string.IsNullOrEmpty(imgPath_BeforePicture))
+                                {
+                                    cell = worksheetn.Cells[48, 2];
+                                    worksheetn.Shapes.AddPicture(imgPath_BeforePicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 435, 285);
+                                }
+                                if (!string.IsNullOrEmpty(imgPath_AfterPicture))
+                                {
+                                    cell = worksheetn.Cells[48, 10];
+                                    worksheetn.Shapes.AddPicture(imgPath_AfterPicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 435, 285);
+                                }
                             }
                             else
                             {
                                 alladdSheet++;
                                 Excel.Worksheet worksheepic = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
                                 worksheetPicture.Copy(worksheepic);
+
+                                worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
+                                if (!string.IsNullOrEmpty(imgPath_BeforePicture))
+                                {
+                                    cell = worksheetn.Cells[3, 2];
+                                    worksheetn.Shapes.AddPicture(imgPath_BeforePicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 430, 285);
+                                }
+                                if (!string.IsNullOrEmpty(imgPath_AfterPicture))
+                                {
+                                    cell = worksheetn.Cells[3, 10];
+                                    worksheetn.Shapes.AddPicture(imgPath_AfterPicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 430, 285);
+                                }
                             }
                             #endregion
                         }
@@ -801,6 +844,7 @@ namespace BusinessLogicLayer.Service
                             // 細項資料
                             this.SetDetailData(worksheet, j + headerRow + 1, dr[j]);
                         }
+                        worksheet.Cells.EntireRow.AutoFit();
 
                         int afterSignatureRow;
 
@@ -869,19 +913,60 @@ namespace BusinessLogicLayer.Service
                             g1 = !g1;
                         }
                         #endregion
-                        
-                        if (frameNum == 0 || !g1)
+
+                        Excel.Range cell;
+                        if (frameNum == 0)
                         {
                             Excel.Worksheet worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
                             Excel.Range paste2 = worksheetn.get_Range($"A52", Type.Missing);
-                            Excel.Range r2 = worksheetPicture.get_Range("A2:A29").EntireRow;
-                            paste2.Insert(Excel.XlInsertShiftDirection.xlShiftDown, r2.Copy(Type.Missing));
+                            Excel.Range r2 = worksheetPicture.get_Range("A1:A20").EntireRow;
+                            paste2.Insert(Excel.XlInsertShiftDirection.xlShiftToRight, r2.Copy(Type.Missing));
+
+                            if(!string.IsNullOrEmpty(imgPath_BeforePicture))
+                            {
+                                cell = worksheetn.Cells[54, 2];
+                                worksheetn.Shapes.AddPicture(imgPath_BeforePicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 435, 280);
+                            }
+                            if (!string.IsNullOrEmpty(imgPath_AfterPicture))
+                            {
+                                cell = worksheetn.Cells[54, 10];
+                                worksheetn.Shapes.AddPicture(imgPath_AfterPicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 435, 280);
+                            }
+                        }
+                        else if (!g1) {
+                            Excel.Worksheet worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
+                            Excel.Range paste2 = worksheetn.get_Range($"A46", Type.Missing);
+                            Excel.Range r2 = worksheetPicture.get_Range("A1:A20").EntireRow;
+                            paste2.Insert(Excel.XlInsertShiftDirection.xlShiftToRight, r2.Copy(Type.Missing));
+
+                            if (!string.IsNullOrEmpty(imgPath_BeforePicture))
+                            {
+                                cell = worksheetn.Cells[48, 2];
+                                worksheetn.Shapes.AddPicture(imgPath_BeforePicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 435, 285);
+                            }
+                            if (!string.IsNullOrEmpty(imgPath_AfterPicture))
+                            {
+                                cell = worksheetn.Cells[48, 10];
+                                worksheetn.Shapes.AddPicture(imgPath_AfterPicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 435, 285);
+                            }
                         }
                         else
                         {
                             alladdSheet++;
-                            Excel.Worksheet worksheepic = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
-                            worksheetPicture.Copy(worksheepic);
+                            Excel.Worksheet worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
+                            worksheetPicture.Copy(worksheetn);
+
+                            worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
+                            if (!string.IsNullOrEmpty(imgPath_BeforePicture))
+                            {
+                                cell = worksheetn.Cells[3, 2];
+                                worksheetn.Shapes.AddPicture(imgPath_BeforePicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 430, 285);
+                            }
+                            if (!string.IsNullOrEmpty(imgPath_AfterPicture))
+                            {
+                                cell = worksheetn.Cells[3, 10];
+                                worksheetn.Shapes.AddPicture(imgPath_AfterPicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 430, 285);
+                            }
                         }
                     }
                 }
