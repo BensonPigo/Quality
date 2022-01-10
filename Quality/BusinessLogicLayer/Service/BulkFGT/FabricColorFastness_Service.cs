@@ -141,6 +141,22 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
+        public List<ColorFastness_Excel> GetExcel(string ID)
+        {
+            _IColorFastnessDetailProvider = new ColorFastnessDetailProvider(Common.ProductionDataAccessLayer);
+            List<ColorFastness_Excel> result = new List<ColorFastness_Excel>();
+            try
+            {
+                result = _IColorFastnessDetailProvider.GetExcel(ID).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
         public IList<PO_Supp_Detail> GetSeq(string POID, string Seq1 = "", string Seq2 = "")
         {
             _IColorFastnessDetailProvider = new ColorFastnessDetailProvider(Common.ProductionDataAccessLayer);
@@ -524,6 +540,9 @@ namespace BusinessLogicLayer.Service.BulkFGT
             Fabric_ColorFastness_Detail_ViewModel result = new Fabric_ColorFastness_Detail_ViewModel();
             _IColorFastnessDetailProvider = new ColorFastnessDetailProvider(Common.ProductionDataAccessLayer);
             _IColorFastnessProvider = new ColorFastnessProvider(Common.ProductionDataAccessLayer);
+
+
+            List<ColorFastness_Excel> dataList = new List<ColorFastness_Excel>();
             result = GetDetailBody(ID);
 
             if (string.IsNullOrEmpty(result.Main.ID))
