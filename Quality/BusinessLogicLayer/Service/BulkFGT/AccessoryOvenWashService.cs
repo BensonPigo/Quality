@@ -241,9 +241,9 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 worksheet.Cells[9, 2] = Model.OvenDate.HasValue ? Model.OvenDate.Value.ToString("yyyy/MM/dd") : string.Empty;
                 worksheet.Cells[9, 10] = DateTime.Now.ToString("yyyy/MM/dd");
 
-                worksheet.Cells[12, 2] = Model.OvenResult;
-                worksheet.Cells[12, 5] = string.Empty;
-                worksheet.Cells[12, 10] = string.Empty;
+                worksheet.Cells[11, 2] = Model.OvenResult;
+                worksheet.Cells[11, 5] = string.Empty;
+                worksheet.Cells[11, 10] = string.Empty;
 
                 worksheet.Cells[13, 2] = Model.Remark;
 
@@ -272,7 +272,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         imageFile.Write(bytes, 0, bytes.Length);
                         imageFile.Flush();
                     }
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 300, 300);
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 400, 300);
                 }
 
                 Excel.Range cellAfterPicture = worksheet.Cells[20, 7];
@@ -296,7 +296,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         imageFile.Write(bytes, 0, bytes.Length);
                         imageFile.Flush();
                     }
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 2, 300, 300);
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 2, 400, 300);
                 }
 
                 #endregion
@@ -503,8 +503,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 worksheet.Cells[17, 2] = Model.Remark;
 
-                worksheet.Cells[22, 3] = Model.WashInspector;
-                worksheet.Cells[22, 9] = Model.WashInspector;
+                worksheet.Cells[26, 3] = Model.WashInspector;
+                worksheet.Cells[26, 9] = Model.WashInspector;
 
                 #region 添加圖片
                 Excel.Range cellBeforePicture = worksheet.Cells[24, 1];
@@ -528,7 +528,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         imageFile.Write(bytes, 0, bytes.Length);
                         imageFile.Flush();
                     }
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 300, 300);
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 400, 300);
                 }
 
                 Excel.Range cellAfterPicture = worksheet.Cells[24, 7];
@@ -552,7 +552,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         imageFile.Write(bytes, 0, bytes.Length);
                         imageFile.Flush();
                     }
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 2, 300, 300);
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 2, 400, 300);
                 }
 
                 #endregion
