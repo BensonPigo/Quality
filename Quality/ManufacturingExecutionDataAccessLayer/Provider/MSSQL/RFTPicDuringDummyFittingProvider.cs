@@ -180,7 +180,7 @@ begin
     ,Back = @Back
 	where OrderID = @OrderID and Article = @Article and Size = @Size
 
-	UPDATE [ExtendServer].PMSFile.dbo.[RFT_PicDuringDummyFitting]
+	UPDATE PMSFile.dbo.[RFT_PicDuringDummyFitting]
 	set Front = @Front
     ,Side = @Side
     ,Back = @Back
@@ -191,7 +191,7 @@ begin
 	insert into RFT_PicDuringDummyFitting(OrderID,Article,Size,Front,Side,Back)
 	values(@OrderID, @Article,@Size,@Front,@Side,@Back)
 
-	insert into [ExtendServer].PMSFile.dbo.RFT_PicDuringDummyFitting(OrderID,Article,Size,Front,Side,Back)
+	insert into PMSFile.dbo.RFT_PicDuringDummyFitting(OrderID,Article,Size,Front,Side,Back)
 	values(@OrderID, @Article,@Size,@Front,@Side,@Back)
 end
 ";
