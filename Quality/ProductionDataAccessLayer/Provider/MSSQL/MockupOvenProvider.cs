@@ -146,10 +146,12 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,@HT2ndPressreversed"); objParameter.Add("@HT2ndPressreversed", DbType.Int32, Item.HT2ndPressreversed);
             SbSql.Append("        ,@HTCoolingTime"); objParameter.Add("@HTCoolingTime", DbType.Int32, Item.HTCoolingTime);
 
-            SbSql.Append("        ,@TestBeforePicture");
+            // SbSql.Append("        ,@TestBeforePicture"); 2022/01/10 PMSFile上線，因此去掉Image寫入原本DB的部分
+            // SbSql.Append("        ,@TestAfterPicture");
+            
             if (Item.TestBeforePicture != null) { objParameter.Add("@TestBeforePicture", Item.TestBeforePicture); }
             else { objParameter.Add("@TestBeforePicture", System.Data.SqlTypes.SqlBinary.Null); }
-            SbSql.Append("        ,@TestAfterPicture");
+
             if (Item.TestAfterPicture != null) { objParameter.Add("@TestAfterPicture", Item.TestAfterPicture); }
             else { objParameter.Add("@TestAfterPicture", System.Data.SqlTypes.SqlBinary.Null); }
 
@@ -172,6 +174,7 @@ VALUES (@ReportNo,@TestBeforePicture,@TestAfterPicture)
             SbSql.Append($@"
 SET XACT_ABORT ON
 
+-----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
 UPDATE [MockupOven]
 SET
     EditDate = GETDATE()
@@ -195,8 +198,6 @@ SET
     ,HT2ndPressnoreverse=@HT2ndPressnoreverse
     ,HT2ndPressreversed=@HT2ndPressreversed
     ,HTCoolingTime=@HTCoolingTime
-    ,TestBeforePicture=@TestBeforePicture
-    ,TestAfterPicture=@TestAfterPicture
 WHERE ReportNo = @ReportNo
 
 UPDATE [ExtendServer].PMSFile.dbo.MockupOven

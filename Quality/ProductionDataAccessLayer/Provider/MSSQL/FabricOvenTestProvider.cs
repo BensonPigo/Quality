@@ -178,15 +178,13 @@ where o.POID = @POID
 
             string sqlUpdateOven = @"
 SET XACT_ABORT ON
-
+-----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
 update  Oven set    InspDate = @InspDate,
                     Article = @Article,
                     Inspector = @Inspector,
                     Remark = @Remark,
                     EditName = @editName,
-                    EditDate = getdate(),
-                    TestBeforePicture = @TestBeforePicture,
-                    TestAfterPicture = @TestAfterPicture
+                    EditDate = getdate()
 where   POID = @POID and TestNo = @TestNo
 
 update  [ExtendServer].PMSFile.dbo.Oven set  
@@ -380,9 +378,10 @@ select  @TestNo = isnull(Max(TestNo), 0) + 1
 from    Oven  WITH(NOLOCK)
 where POID = @POID
 
-insert into Oven(POID, TestNo, InspDate, Article, Status, Inspector, Remark, addName, addDate, TestBeforePicture, TestAfterPicture)
+----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
+insert into Oven(POID, TestNo, InspDate, Article, Status, Inspector, Remark, addName, addDate)
         OUTPUT INSERTED.ID, INSERTED.TestNo into @OvenID
-        values(@POID, @TestNo, @InspDate, @Article, 'New', @Inspector, @Remark, @addName, getdate(), @TestBeforePicture, @TestAfterPicture)
+        values(@POID, @TestNo, @InspDate, @Article, 'New', @Inspector, @Remark, @addName, getdate())
 
 select  [OvenID] = ID, TestNo
 from @OvenID

@@ -517,8 +517,8 @@ where   ID = @FinalInspectionID
                         {
                             string sqlInsertFinalInspection_DetailImage = @"
 SET XACT_ABORT ON
-    insert into FinalInspection_DetailImage(ID, FinalInspection_DetailUkey, Image)
-                values(@FinalInspectionID, @FinalInspection_DetailUkey, @Image)
+    insert into FinalInspection_DetailImage(ID, FinalInspection_DetailUkey)
+                values(@FinalInspectionID, @FinalInspection_DetailUkey) ----2022/01/10 PMSFile上線，因此去掉Image寫入原本DB的部分
     insert into [ExtendServer].PMSFile.dbo.FinalInspection_DetailImage(ID, FinalInspection_DetailUkey, Image)
                 values(@FinalInspectionID, @FinalInspection_DetailUkey, @Image)
 ";
@@ -632,8 +632,8 @@ where   ID = @FinalInspectionID
                         {
                             string sqlInsertFinalInspection_NonBACriteriaImage = @"
     SET XACT_ABORT ON
-    insert into FinalInspection_NonBACriteriaImage(ID, FinalInspection_NonBACriteriaUkey, Image)
-                values(@FinalInspectionID, @FinalInspection_NonBACriteriaUkey, @Image)
+    insert into FinalInspection_NonBACriteriaImage(ID, FinalInspection_NonBACriteriaUkey)
+                values(@FinalInspectionID, @FinalInspection_NonBACriteriaUkey) --2022/01/10 PMSFile上線，因此去掉Image寫入原本DB的部分
 
     insert into [ExtendServer].PMSFile.dbo.FinalInspection_NonBACriteriaImage(ID, FinalInspection_NonBACriteriaUkey, Image)
                 values(@FinalInspectionID, @FinalInspection_NonBACriteriaUkey, @Image)
@@ -1084,8 +1084,8 @@ select  Image
                 string sqlFinalInspection_OtherImage = @"
 SET XACT_ABORT ON
 
-    insert into FinalInspection_OtherImage(ID, Image)
-                values(@FinalInspectionID, @Image)
+    insert into FinalInspection_OtherImage(ID)
+                values(@FinalInspectionID) ----2022/01/10 PMSFile上線，因此去掉Image寫入原本DB的部分
 
     insert into [ExtendServer].PMSFile.dbo.FinalInspection_OtherImage(ID, Image)
                 values(@FinalInspectionID, @Image)
