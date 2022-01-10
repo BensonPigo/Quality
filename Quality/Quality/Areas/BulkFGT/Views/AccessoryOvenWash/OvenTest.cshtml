@@ -128,6 +128,18 @@
                                             </h4>
                                         </td>
                                         <td>
+                                            <h4 id="Excel" style="margin-right: 1em;">
+                                                <img src="~/Image/Icon/XLS.png" width="30" />
+                                                Excel
+                                            </h4>
+                                        </td>
+                                        <td>
+                                            <h4 id="PDF" style="margin-right: 1em;">
+                                                <img src="~/Image/Icon/PDF.png" width="30" />
+                                                PDF
+                                            </h4>
+                                        </td>
+                                        <td>
                                             <h4 id="Picture" style="margin-right: 1em;">
                                                 <img src="~/Image/Icon/Camera.png" width="30" />
                                                 Picture
@@ -209,7 +221,7 @@
                                         </td>
                                         <td><h5>Result</h5></td>
                                         <td>
-                                            @Html.DropDownListFor(o => o.OvenResult, Model.ResultData,new { @onchange="ResultChange()"})
+                                            @Html.DropDownListFor(o => o.OvenResult, Model.ResultData, new { @onchange = "ResultChange()" })
                                         </td>
                                         <td></td>
                                         <td></td>
@@ -276,9 +288,9 @@
                 // Edit文字顏色變得跟其他Submit按鈕一樣
                 $("#Edit").css("color", "rgba(66,66,66,255)");
 
-                $("#Edit,#Encode,#Amend").removeClass("IsEditMode");
+                $("#Edit,#Encode,#Amend, #Excel, #PDF").removeClass("IsEditMode");
                 $("#Edit,#Encode,#Amend").attr("disabled", "disabled");
-                $('#Encode,#Amend').unbind('click');
+                $('#Encode,#Amend, #Excel, #PDF').unbind('click');
                 $('#Save').addClass("IsEditMode");
                 $("#Save").removeAttr("disabled", "disabled");
                 $(".DataTable input[type='text'],.DataTable select").removeAttr("disabled", "disabled");
@@ -289,6 +301,7 @@
                 $('#Save').unbind('click').removeClass("IsEditMode");
                 $("#Save").attr("disabled", "disabled");
                 $("#Edit,#Encode,#Amend").removeAttr("disabled", "disabled");
+                $('#Excel, #PDF').addClass("IsEditMode");
                 $(".DataTable input[type='text'],.DataTable select").attr("disabled", "disabled");
 
                 if ('@Model.AIR_LaboratoryID' != '') {
@@ -342,6 +355,42 @@
 
                 window.open('@Url.Action("PictureList","PublicWondow",new{Area=""})' + para, 'Picture', config = 'toolbar=no,status=no,location=no,width=1000,height=650');
             });
+
+            $('#Excel').unbind('click').on('click', function () {
+                ToReport(false);
+            });
+
+            $('#PDF').unbind('click').on('click', function () {
+                ToReport(true);
+            });
+    }
+
+
+    function ToReport(IsToPDF) {
+        $.ajax({
+            url: "@Url.Action("OvenReport", "AccessoryOvenWash", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({
+                AIR_LaboratoryID: $("#AIR_LaboratoryID").val(),
+                POID: $("#POID").val(),
+                Seq1: $("#Seq1").val(),
+                Seq2: $("#Seq2").val(),
+                IsToPDF: IsToPDF
+            }),
+            async: false,
+            success: function (data) {
+                if (data.Result) {
+                    window.location.href = data.reportPath;
+                }
+                else {
+                    msg.WithError(data.ErrorMessage);
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
     }
 
     function ResultChange() {
@@ -368,7 +417,7 @@
             cc += value.CC + ';';
         });
 
-        if (to != "") {            
+        if (to != "") {
             var data = {
                 AIR_LaboratoryID: $("#AIR_LaboratoryID").val(),
                 POID: $("#POID").val(),
