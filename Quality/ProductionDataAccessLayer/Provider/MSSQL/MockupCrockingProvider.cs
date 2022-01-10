@@ -90,8 +90,8 @@ left join [ExtendServer].PMSFile.dbo.MockupCrocking mi WITH(NOLOCK) on m.ReportN
             SbSql.Append("        ,Technician" + Environment.NewLine);
             SbSql.Append("        ,MR" + Environment.NewLine);
             SbSql.Append("        ,Type" + Environment.NewLine);
-            SbSql.Append("        ,TestBeforePicture" + Environment.NewLine);
-            SbSql.Append("        ,TestAfterPicture" + Environment.NewLine);
+            //SbSql.Append("        ,TestBeforePicture" + Environment.NewLine);
+            //SbSql.Append("        ,TestAfterPicture" + Environment.NewLine);
             SbSql.Append("        ,AddDate" + Environment.NewLine);
             SbSql.Append("        ,AddName" + Environment.NewLine);
             SbSql.Append(")" + Environment.NewLine);
@@ -114,10 +114,13 @@ left join [ExtendServer].PMSFile.dbo.MockupCrocking mi WITH(NOLOCK) on m.ReportN
             SbSql.Append("        ,@MR"); objParameter.Add("@MR", DbType.String, HttpUtility.HtmlDecode(Item.MR) ?? string.Empty);
             SbSql.Append("        ,@Type"); objParameter.Add("@Type", DbType.String, HttpUtility.HtmlDecode(Item.Type) ?? string.Empty);
 
-            SbSql.Append("        ,@TestBeforePicture");
+            // 2022/01/10 PMSFile上線，因此去掉Image寫入Production DB的部分
+            //SbSql.Append("        ,@TestBeforePicture"); 
+            //SbSql.Append("        ,@TestAfterPicture");
+
             if (Item.TestBeforePicture != null) { objParameter.Add("@TestBeforePicture", Item.TestBeforePicture); }
             else { objParameter.Add("@TestBeforePicture", System.Data.SqlTypes.SqlBinary.Null); }
-            SbSql.Append("        ,@TestAfterPicture");
+
             if (Item.TestAfterPicture != null) { objParameter.Add("@TestAfterPicture", Item.TestAfterPicture); }
             else { objParameter.Add("@TestAfterPicture", System.Data.SqlTypes.SqlBinary.Null); }
 
@@ -144,6 +147,8 @@ VALUES(@ReportNo,@TestBeforePicture,@TestAfterPicture)
             SbSql.Append($@"
 SET XACT_ABORT ON
 
+-----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
+
 UPDATE [MockupCrocking] SET
     EditDate = GETDATE()
     ,EditName=@EditName
@@ -161,8 +166,7 @@ UPDATE [MockupCrocking] SET
     ,Result=@Result
     ,Technician=@Technician
     ,MR=@MR
-    ,TestBeforePicture=@TestBeforePicture
-    ,TestAfterPicture=@TestAfterPicture
+
 WHERE ReportNo = @ReportNo
 
 UPDATE [ExtendServer].PMSFile.dbo.[MockupCrocking] SET

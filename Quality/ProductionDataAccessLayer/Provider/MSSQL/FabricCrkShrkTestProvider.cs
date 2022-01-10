@@ -352,10 +352,8 @@ where   BrandID = (select BrandID from orders with (nolock) where ID = (select P
 
             string sqlUpdateCrocking = @"
 SET XACT_ABORT ON
-
-update  FIR_Laboratory set  CrockingRemark = @CrockingRemark,
-                            CrockingTestBeforePicture = @CrockingTestBeforePicture,
-                            CrockingTestAfterPicture = @CrockingTestAfterPicture
+-- 2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
+update  FIR_Laboratory set  CrockingRemark = @CrockingRemark
 where   ID = @ID 
 
 update  [ExtendServer].PMSFile.dbo.FIR_Laboratory set  CrockingTestBeforePicture = @CrockingTestBeforePicture,
@@ -793,9 +791,8 @@ where flc.ID = @ID
 
             string sqlUpdateCrocking = @"
 SET XACT_ABORT ON
-update  FIR_Laboratory set  HeatRemark = @HeatRemark,
-                            HeatTestBeforePicture = @HeatTestBeforePicture,
-                            HeatTestAfterPicture = @HeatTestAfterPicture
+-----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
+update  FIR_Laboratory set  HeatRemark = @HeatRemark
 where   ID = @ID 
 ;
 update  [ExtendServer].PMSFile.dbo.FIR_Laboratory set HeatTestBeforePicture = @HeatTestBeforePicture,
@@ -1191,11 +1188,9 @@ where flc.ID = @ID
 
             string sqlUpdateCrocking = @"
 SET XACT_ABORT ON
-
+-----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
 update  FIR_Laboratory set  WashRemark = @WashRemark, 
-                            SkewnessOptionID = @SkewnessOptionID, 
-                            WashTestBeforePicture = @WashTestBeforePicture, 
-                            WashTestAfterPicture = @WashTestAfterPicture
+                            SkewnessOptionID = @SkewnessOptionID
 where   ID = @ID 
 
 update  [ExtendServer].PMSFile.dbo.FIR_Laboratory set WashTestBeforePicture = @WashTestBeforePicture, 
