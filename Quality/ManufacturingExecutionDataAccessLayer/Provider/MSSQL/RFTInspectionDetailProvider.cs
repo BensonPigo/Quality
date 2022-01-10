@@ -267,7 +267,7 @@ INSERT INTO [RFT_Inspection_Detail](
     ,[PMS_RFTRespID]
     ,[GarmentDefectTypeID]
     ,[GarmentDefectCodeID]
-    {picColumn}
+                                /*2022/01/10 PMSFile上線，因此去掉Image寫入原本DB的部分*/
     ,[AddDate]) 
 values(
     @ID
@@ -278,7 +278,7 @@ values(
     ,@PMS_RFTRespID{detailcnt}
     ,@GarmentDefectTypeID{detailcnt}
     ,@GarmentDefectCodeID{detailcnt}
-    {picValue}
+    
     ,GetDate())
 
 INSERT INTO [ExtendServer].PMSFile.dbo.[RFT_Inspection_Detail](
@@ -335,7 +335,7 @@ INSERT INTO [RFT_Inspection_Detail](
     ,[PMS_RFTRespID]
     ,[GarmentDefectTypeID]
     ,[GarmentDefectCodeID]
-    ,DefectPicture
+                        ----2022/01/10 PMSFile上線，因此去掉Image寫入原本DB的部分
     ,[AddDate])
 values(
      @ID
@@ -346,7 +346,7 @@ values(
     ,@PMS_RFTRespID
     ,@GarmentDefectTypeID
     ,@GarmentDefectCodeID
-    ,@DefectPicture
+
     ,GetDate())
 
 INSERT INTO [ExtendServer].PMSFile.dbo.[RFT_Inspection_Detail](

@@ -174,11 +174,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 SET XACT_ABORT ON
 if exists(select 1 from RFT_PicDuringDummyFitting WITH(NOLOCK) where OrderID = @OrderID and Article = @Article and Size = @Size)
 begin
-	UPDATE [RFT_PicDuringDummyFitting]
-	set Front = @Front
-    ,Side = @Side
-    ,Back = @Back
-	where OrderID = @OrderID and Article = @Article and Size = @Size
+    ---- 2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
 
 	UPDATE [ExtendServer].PMSFile.dbo.[RFT_PicDuringDummyFitting]
 	set Front = @Front
@@ -188,8 +184,9 @@ begin
 end
 else
 begin
-	insert into RFT_PicDuringDummyFitting(OrderID,Article,Size,Front,Side,Back)
-	values(@OrderID, @Article,@Size,@Front,@Side,@Back)
+    ----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
+	insert into RFT_PicDuringDummyFitting(OrderID,Article,Size)
+	values(@OrderID, @Article,@Size)
 
 	insert into [ExtendServer].PMSFile.dbo.RFT_PicDuringDummyFitting(OrderID,Article,Size,Front,Side,Back)
 	values(@OrderID, @Article,@Size,@Front,@Side,@Back)

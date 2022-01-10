@@ -316,7 +316,7 @@ and ID = @ID
 
             string sqlcmd = $@"
 SET XACT_ABORT ON
-
+/*
 update GarmentTest_Detail set
     SubmitDate = @SubmitDate,
     ArrivedQty =  @ArrivedQty,
@@ -333,11 +333,9 @@ update GarmentTest_Detail set
     Above50SyntheticFibres =  @Above50SyntheticFibres,
     NonSeamBreakageTest = @NonSeamBreakageTest,
     EditName = @EditName,
-    EditDate = GetDate(),
-    TestBeforePicture = @TestBeforePicture,
-    TestAfterPicture = @TestAfterPicture
+    EditDate = GetDate()
 where ID = @ID and No = @No
-
+*/
 update [ExtendServer].PMSFile.dbo.GarmentTest_Detail set
     TestBeforePicture = @TestBeforePicture,
     TestAfterPicture = @TestAfterPicture
@@ -363,11 +361,13 @@ where ID = @ID and No = @No
             string sqlcmd = $@"
 SET XACT_ABORT ON
 
+/* 2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
 update GarmentTest_Detail 
 set
     TestBeforePicture = @TestBeforePicture,
     TestAfterPicture = @TestAfterPicture
 where ID = @ID and No = @No
+*/
 
 update [ExtendServer].PMSFile.dbo.GarmentTest_Detail 
 set

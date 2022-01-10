@@ -211,8 +211,7 @@ set	   [POID] = @POID
       ,[Detergent] = @Detergent
       ,[Machine] = @Machine
       ,[Drying] = @Drying
-      ,[TestBeforePicture] = @TestBeforePicture
-      ,[TestAfterPicture] = @TestAfterPicture
+        ---------2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
 where ID = @ID
 
 update [ExtendServer].PMSFile.dbo.ColorFastness
@@ -232,8 +231,9 @@ exec UpdateInspPercent 'LabColorFastness', @POID
                 sqlcmd += @"
 SET XACT_ABORT ON
 
-insert into ColorFastness(ID,POID,TestNo,InspDate,Article,Status,Inspector,Remark,addName,addDate,Temperature,Cycle,CycleTime,Detergent,Machine,Drying,TestBeforePicture,TestAfterPicture)
-values(@ID ,@POID,@TestNo,GETDATE(),@Article,'New',@UserID,@Remark,@UserID,GETDATE(),@Temperature,@Cycle,@CycleTime,@Detergent,@Machine,@Drying,@TestBeforePicture,@TestAfterPicture)
+----2022/01/10 PMSFile上線，因此去掉Image寫入原本DB的部分
+insert into ColorFastness(ID,POID,TestNo,InspDate,Article,Status,Inspector,Remark,addName,addDate,Temperature,Cycle,CycleTime,Detergent,Machine,Drying)
+values(@ID ,@POID,@TestNo,GETDATE(),@Article,'New',@UserID,@Remark,@UserID,GETDATE(),@Temperature,@Cycle,@CycleTime,@Detergent,@Machine,@Drying)
 
 insert into [ExtendServer].PMSFile.dbo.ColorFastness(ID,TestBeforePicture,TestAfterPicture)
 values(@ID ,@TestBeforePicture,@TestAfterPicture)
