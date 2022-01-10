@@ -211,7 +211,7 @@ set	   [POID] = @POID
       ,[Detergent] = @Detergent
       ,[Machine] = @Machine
       ,[Drying] = @Drying
-        ---------2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
+      -----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
 where ID = @ID
 
 update [ExtendServer].PMSFile.dbo.ColorFastness

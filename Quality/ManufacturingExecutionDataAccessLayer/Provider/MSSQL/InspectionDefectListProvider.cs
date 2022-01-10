@@ -32,10 +32,11 @@ Select OrderID = o.ID
 	,rf.Size
 	,rf.InspectionDate
 	,DefectType = Concat (rfd.AreaCode,  ' -', rfd.DefectCode, ' -', d.Description, ' -', rfd.PMS_RFTBACriteriaID)
-	,rfd.DefectPicture
+	,pmsFile.DefectPicture
 from Orders o  WITH(NOLOCK)
 INNER JOIN ExtendServer.ManufacturingExecution.dbo.RFT_Inspection rf WITH(NOLOCK) on o.ID = rf.OrderID 
 INNER JOIN ExtendServer.ManufacturingExecution.dbo.RFT_Inspection_Detail rfd WITH(NOLOCK) ON rf.ID = rfd.ID
+LEFT JOIN ExtendServer.PMSFile.dbo.RFT_Inspection_Detail pmsFile WITH(NOLOCK) ON pmsFile.Ukey = rfd.Ukey
 LEFT JOIN DropdownList d WITH(NOLOCK) ON d.Type='PMS_RFTResp' AND d.ID = rfd.PMS_RFTRespID
 where o.ID = @OrderID
 ";
