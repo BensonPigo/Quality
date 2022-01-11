@@ -600,7 +600,8 @@ namespace Quality.Areas.SampleRFT.Controllers
             this.CheckSession();
             if (string.IsNullOrEmpty(this.FactoryID) || string.IsNullOrEmpty(this.Line))
             {
-                return Json(new { Result = false, ErrMsg = "Save Error" });
+                Session.Abandon();
+                this.CheckSession();
             }
 
             foreach (RFT_Inspection_Measurement item in measurement)
