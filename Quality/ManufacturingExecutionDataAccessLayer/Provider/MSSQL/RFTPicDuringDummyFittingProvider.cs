@@ -211,7 +211,7 @@ SELECT oq.Article
 	,p.Side
 	,p.Back
 from SciProduction_Order_Qty oq WITH(NOLOCK) 
-left join [ExtendServer].PMSFile.dbo.RFT_PicDuringDummyFitting p WITH(NOLOCK) ON oq.ID = p.OrderID AND oq.Article = p.Article AND oq.SizeCode=p.Size
+left join PMSFile.dbo.RFT_PicDuringDummyFitting p WITH(NOLOCK) ON oq.ID = p.OrderID AND oq.Article = p.Article AND oq.SizeCode=p.Size
 WHERE 1=1
 ");
             if (!string.IsNullOrEmpty(Req.OrderID))
