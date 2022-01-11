@@ -531,11 +531,11 @@
 
                                 <td style="width:10vw;">
                                     <select id="Detail_@{@i}__NylonScale" name="Detail[@i].NylonScale">
-                                        @foreach (var item in (List<SelectListItem>)ViewBag.ResultChangeList)
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
                                         {
                                             if (Model.Detail[i].NylonScale == null || Model.Detail[i].NylonScale == "")
                                             {
-                                                string selected = item.Text.Equals(((List<SelectListItem>)ViewBag.ResultChangeList).FirstOrDefault().Text) ? "selected" : "";
+                                                string selected = item.Text.Equals(((List<SelectListItem>)ViewBag.ChangeScaleList).FirstOrDefault().Text) ? "selected" : "";
                                                 <option value="@item.Value" @selected>@item.Text</option>
 
                                             }
