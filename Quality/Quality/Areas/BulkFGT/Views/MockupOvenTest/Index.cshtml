@@ -481,6 +481,10 @@
                                     <th><h4>Fabric Ref No.</h4></th>
                                     <th><h4>Fabric Color</h4></th>
                                     <th><h4>Result</h4></th>
+                                    <th><h4>Color Change Scale</h4></th>
+                                    <th><h4>Result (Change)</h4></th>
+                                    <th><h4>Color Staining Scale</h4></th>
+                                    <th><h4>Result (Staining)</h4></th>
                                     <th><h4>Remark</h4></th>
                                     <th><h4>Last Update</h4></th>
                                     <th><h4></h4></th>
@@ -490,77 +494,112 @@
                             <tbody>
                                 @for (int i = 0; i <= Model.MockupOven_Detail.Count - 1; i++)
                                 {
-                                    <tr idx="@i">
-                                        <td>
-                                            @Html.Hidden("Seq", "", new { @idx = i })
-                                            @Html.HiddenFor(o=>Model.MockupOven_Detail[i].Ukey)
-                                            @Html.TextBoxFor(o => Model.MockupOven_Detail[i].TypeofPrint, "", new { @class = "OnlyEdit" })
-                                        </td>
-                                        <td style="width:10vw;">
-                                            @Html.TextBoxFor(o => Model.MockupOven_Detail[i].Design, "", new { @class = "OnlyEdit" })
-                                        </td>
-                                        <td>
-                                            <div class="input-group">
-                                                @Html.HiddenFor(modelItem => Model.MockupOven_Detail[i].ArtworkColor, new { @class = "AFColor" })
-                                                @Html.TextBoxFor(modelItem => Model.MockupOven_Detail[i].ArtworkColorName, new { @class = "AFColor", @readonly = "readonly" })
-                                                <input type="button" idv=@(i.ToString()) class="site-btn btn-blue btnArtworkColorItem" style="margin:0;border:0;" value="..." />
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <select id="MockupOven_Detail_@{@i}__AccessoryRefno" name="MockupOven_Detail[@i].AccessoryRefno" class="OnlyEdit AccessoryRefno" >
-                                                @foreach (var item in (List<SelectListItem>)ViewBag.AccessoryRefNo_Source)
-                                                {
-                                                    string selected = item.Text.Equals(Model.MockupOven_Detail[i].AccessoryRefno) ? "selected" : "";
-                                                    <option value="@item.Value" @selected>@item.Text</option>
-                                                }
-                                                                                    </select>
-                                            @*@Html.DropDownList("MockupOven_Detail_0__AccessoryRefno", (List<SelectListItem>)ViewData["AccessoryRefNo_Source"], new { @name= "MockupOven_Detail[0].AccessoryRefno",@value=Model.MockupOven_Detail[i].AccessoryRefno,  @class = "OnlyEdit AccessoryRefno" })*@
-                                        </td>
-                                        <td>
-                                            @Html.TextBoxFor(o => Model.MockupOven_Detail[i].FabricRefNo, "", new { @class = "OnlyEdit" })
-                                        </td>
-                                        <td>
-                                            <div class="input-group">
-                                                @Html.HiddenFor(modelItem => Model.MockupOven_Detail[i].FabricColor, new { @class = "AFColor" })
-                                                @Html.TextBoxFor(modelItem => Model.MockupOven_Detail[i].FabricColorName, new { @class = "AFColor", @readonly = "readonly" })
-                                                <input type="button" idv=@(i.ToString()) class="site-btn btn-blue btnFabricColorItem" style="margin:0;border:0;" value="..." />
-                                            </div>
-                                        </td>
-                                        <td>
-                                            @{
-                                                styleColor = "red";
-                                                if (Model.MockupOven_Detail[i].Result == "Pass")
-                                                {
-                                                    styleColor = "blue";
-                                                }
+                                <tr idx="@i">
+                                    <td>
+                                        @Html.Hidden("Seq", "", new { @idx = i })
+                                        @Html.HiddenFor(o => Model.MockupOven_Detail[i].Ukey)
+                                        @Html.TextBoxFor(o => Model.MockupOven_Detail[i].TypeofPrint, "", new { @class = "OnlyEdit" })
+                                    </td>
+                                    <td style="width:10vw;">
+                                        @Html.TextBoxFor(o => Model.MockupOven_Detail[i].Design, "", new { @class = "OnlyEdit" })
+                                    </td>
+                                    <td>
+                                        <div class="input-group">
+                                            @Html.HiddenFor(modelItem => Model.MockupOven_Detail[i].ArtworkColor, new { @class = "AFColor" })
+                                            @Html.TextBoxFor(modelItem => Model.MockupOven_Detail[i].ArtworkColorName, new { @class = "AFColor", @readonly = "readonly" })
+                                            <input type="button" idv=@(i.ToString()) class="site-btn btn-blue btnArtworkColorItem" style="margin:0;border:0;" value="..." />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <select id="MockupOven_Detail_@{@i}__AccessoryRefno" name="MockupOven_Detail[@i].AccessoryRefno" class="OnlyEdit AccessoryRefno">
+                                            @foreach (var item in (List<SelectListItem>)ViewBag.AccessoryRefNo_Source)
+                                            {
+                                                string selected = item.Text.Equals(Model.MockupOven_Detail[i].AccessoryRefno) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
                                             }
-                                            @*<select id="MockupOven_Detail_@{@i}Result" name="MockupOven_Detail[@i].Result" class="OnlyEdit result @styleColor" onchange="changeResult()">
-                                                    @foreach (var item in (List<SelectListItem>)ViewBag.ResultList)
-                                                    {
-                                                        string selected = item.Text.Equals(Model.MockupOven_Detail[i].Result) ? "selected" : "";
-                                                        <option value="@item.Value" @selected>@item.Text</option>
-                                                    }
-                                                </select>*@
+                                        </select>
+                                        @*@Html.DropDownList("MockupOven_Detail_0__AccessoryRefno", (List<SelectListItem>)ViewData["AccessoryRefNo_Source"], new { @name= "MockupOven_Detail[0].AccessoryRefno",@value=Model.MockupOven_Detail[i].AccessoryRefno,  @class = "OnlyEdit AccessoryRefno" })*@
+                                    </td>
+                                    <td>
+                                        @Html.TextBoxFor(o => Model.MockupOven_Detail[i].FabricRefNo, "", new { @class = "OnlyEdit" })
+                                    </td>
+                                    <td>
+                                        <div class="input-group">
+                                            @Html.HiddenFor(modelItem => Model.MockupOven_Detail[i].FabricColor, new { @class = "AFColor" })
+                                            @Html.TextBoxFor(modelItem => Model.MockupOven_Detail[i].FabricColorName, new { @class = "AFColor", @readonly = "readonly" })
+                                            <input type="button" idv=@(i.ToString()) class="site-btn btn-blue btnFabricColorItem" style="margin:0;border:0;" value="..." />
+                                        </div>
+                                    </td>
+                                    @{
+                                        string detailResultColor = Model.MockupOven_Detail[i].Result == "Pass" ? "blue" : "red";
+                                    }
+                                    <td style="width:10vw;">
+                                        @Html.TextBoxFor(o => Model.MockupOven_Detail[i].Result, "", new { @class = detailResultColor, @readonly = "readonly" })
+                                    </td>
 
-                                            @Html.DropDownListFor(o => Model.MockupOven_Detail[i].Result, (List<SelectListItem>)ViewBag.ResultList, new
-                                           {
-                                               @value = Model.Request.ReportNo,
-                                               @class = "OnlyEdit result " + styleColor,
-                                               @onchange = "changeResult()"
-                                           })
-                                        </td>
-                                        <td>
-                                            <input id="MockupOven_Detail_@{@i}__Remark" name="MockupOven_Detail[@{@i}].Remark" type="text" class="OnlyEdit" value="@Model.MockupOven_Detail[i].Remark" />
-                                        </td>
-                                        <td>
-                                            <input id="MockupOven_Detail_@{@i}__LastUpdate" name="MockupOven_Detail[@{@i}].LastUpdate" readonly="readonly" type="text" value="@Model.MockupOven_Detail[i].LastUpdate" />
-                                        </td>
-                                        <td>
-                                            <div style="width:5vw;">
-                                                <img class="detailDelete" src="~/Image/Icon/Delete.png" width="30" style="min-width:30px" />
-                                            </div>
-                                        </td>
-                                    </tr>
+                                    <td style="width:10vw;">
+                                        <select id="MockupOven_Detail_@{@i}__ChangeScale" name="MockupOven_Detail[@{@i}].ChangeScale">
+                                            @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
+                                            {
+                                                string selected = item.Text.Equals(Model.MockupOven_Detail[i].ChangeScale) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td style="width:10vw;">
+                                        @{
+                                            styleColor = "blue";
+                                            if (Model.MockupOven_Detail[i].ResultChange == "Fail")
+                                            {
+                                                styleColor = "red";
+                                            }
+                                        }
+                                        <select onchange='selectChange(this)' id="MockupOven_Detail_@{@i}__ResultChange" name="MockupOven_Detail[@i].ResultChange" class="@styleColor">
+                                            @foreach (var item in (List<SelectListItem>)ViewBag.ResultChangeList)
+                                            {
+                                                string selected = item.Text.Equals(Model.MockupOven_Detail[i].ResultChange) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        </select>
+
+                                    </td>
+                                    <td style="width:10vw;">
+                                        <select id="MockupOven_Detail_@{@i}__StainingScale" name="MockupOven_Detail[@{@i}].StainingScale">
+                                            @foreach (var item in (List<SelectListItem>)ViewBag.StainingScaleList)
+                                            {
+                                                string selected = item.Text.Equals(Model.MockupOven_Detail[i].StainingScale) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td style="width:10vw;">
+                                        @{
+                                            styleColor = "blue";
+                                            if (Model.MockupOven_Detail[i].ResultChange == "Fail")
+                                            {
+                                                styleColor = "red";
+                                            }
+                                        }
+                                        <select onchange='selectChange(this)' id="MockupOven_Detail_@{@i}__ResultStain" name="MockupOven_Detail[@i].ResultStain" class="@styleColor">
+                                            @foreach (var item in (List<SelectListItem>)ViewBag.ResultStainList)
+                                            {
+                                                string selected = item.Text.Equals(Model.MockupOven_Detail[i].ResultStain) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input id="MockupOven_Detail_@{@i}__Remark" name="MockupOven_Detail[@{@i}].Remark" type="text" class="OnlyEdit" value="@Model.MockupOven_Detail[i].Remark" />
+                                    </td>
+                                    <td>
+                                        <input id="MockupOven_Detail_@{@i}__LastUpdate" name="MockupOven_Detail[@{@i}].LastUpdate" readonly="readonly" type="text" value="@Model.MockupOven_Detail[i].LastUpdate" />
+                                    </td>
+                                    <td>
+                                        <div style="width:5vw;">
+                                            <img class="detailDelete" src="~/Image/Icon/Delete.png" width="30" style="min-width:30px" />
+                                        </div>
+                                    </td>
+                                </tr>
                                 }
                             </tbody>
                         </table>
@@ -1390,18 +1429,31 @@
         });
     }
 
-    function changeResult() {
-        var result = 'Pass';
-        var color = 'blue';
-        $(".result").each(function () {
-            if ($(this).val() != "Pass") {
-                result = 'Fail';
-                color = 'red';
-            }
-            $(this).removeClass('blue').removeClass('red').addClass(color);
-        });
+    function selectChange(obj) {
+        var result = $(obj).val();
+        if (result == "Pass") {
+            $(obj).removeClass('red').addClass('blue');
+        }
+        else {
+            $(obj).removeClass('blue').addClass('red');
+        }
 
-        $('#Result').html(result).removeClass('blue').removeClass('red').addClass(color);
+        var key = $(obj).parents('td').parents('tr').children('td').find("input[type='hidden']").attr('idx');
+
+        var resultChange = document.getElementById("MockupOven_Detail_" + key + "__ResultChange").value;
+        var resultStain = document.getElementById("MockupOven_Detail_" + key + "__ResultStain").value;
+
+        if (resultChange == "Fail" || resultStain == "Fail") {
+            document.getElementById("MockupOven_Detail_" + key + "__Result").value = 'Fail';
+        }
+        else {
+            document.getElementById("MockupOven_Detail_" + key + "__Result").value = 'Pass';
+        }
+
+        $("#MockupOven_Detail_" + key + "__Result").removeClass("blue").removeClass("red");;
+        var detailResultColor = document.getElementById("MockupOven_Detail_" + key + "__Result").value == "Pass" ? "blue" : "red";
+        $("#MockupOven_Detail_" + key + "__Result").addClass(detailResultColor);
+
     }
 
     function AddDetailRow() {
@@ -1426,7 +1478,6 @@
             success: function (data) {
                 $('.DetailTable > tbody').append(data);
                 DetailDetailButtonBind();
-                changeResult();
                 ArtworkTypeChange();
             },
             error: function (xhr, ajaxOptions, thrownError) {

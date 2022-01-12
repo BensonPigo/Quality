@@ -12,6 +12,7 @@ using ProductionDataAccessLayer.Provider.MSSQL;
 using Sci;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -29,7 +30,9 @@ namespace BusinessLogicLayer.Service
         private IStyleArtworkProvider _IStyleArtworkProvider;
         private IOrdersProvider _OrdersProvider;
         private IOrderQtyProvider _OrderQtyProvider;
-        List<SelectListItem> x = new List<SelectListItem>();
+        private IScaleProvider _ScaleProvider;
+
+        private string IsTest = ConfigurationManager.AppSettings["IsTest"];
 
         public MockupOven_ViewModel GetMockupOven(MockupOven_Request MockupOven)
         {
@@ -41,6 +44,7 @@ namespace BusinessLogicLayer.Service
                 _MockupOvenProvider = new MockupOvenProvider(Common.ProductionDataAccessLayer);
                 _MockupOvenDetailProvider = new MockupOvenDetailProvider(Common.ProductionDataAccessLayer);
                 mockupOven_model = _MockupOvenProvider.GetMockupOven(MockupOven, istop1: true).ToList().FirstOrDefault();
+                mockupOven_model.ScaleID_Source = GetScale();
                 if (mockupOven_model != null)
                 {
                     mockupOven_model.ReportNo_Source = _MockupOvenProvider.GetMockupOvenReportNoList(MockupOven).Select(s => s.ReportNo).ToList();
@@ -98,6 +102,25 @@ namespace BusinessLogicLayer.Service
             return selectListItems;
         }
 
+        public List<SelectListItem> GetScale()
+        {
+            _ScaleProvider = new ScaleProvider(Common.ProductionDataAccessLayer);
+            List<SelectListItem> selectListItems = new List<SelectListItem>();
+            try
+            {
+                foreach (string item in _ScaleProvider.Get().Select(s => s.ID))
+                {
+                    selectListItems.Add(new SelectListItem { Value = item, Text = item });
+                }
+            }
+            catch(Exception)
+            {
+                
+            }
+
+            return selectListItems;
+        }
+
         public List<Orders> GetOrders(Orders orders)
         {
             _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
@@ -125,7 +148,7 @@ namespace BusinessLogicLayer.Service
             }
         }
 
-        public Report_Result GetPDF(MockupOven_ViewModel mockupOven, bool test = false)
+        public Report_Result GetPDF(MockupOven_ViewModel mockupOven)
         {
             Report_Result result = new Report_Result();
             if (mockupOven == null)
@@ -138,7 +161,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                if (!test)
+                if (!(IsTest.ToLower() == "true"))
                 {
                     if (!System.IO.Directory.Exists(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\"))
                     {
@@ -158,7 +181,7 @@ namespace BusinessLogicLayer.Service
                 bool haveHT = mockupOven.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER");
                 string basefileName = haveHT ? "MockupOven2" : "MockupOven";
                 string openfilepath;
-                if (test)
+                if (IsTest.ToLower() == "true")
                 {
                     openfilepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "XLT", $"{basefileName}.xltx");
                 }
@@ -181,9 +204,9 @@ namespace BusinessLogicLayer.Service
                 worksheet.Cells[7, 2] = mockupOven.BrandID;
                 worksheet.Cells[8, 2] = $"5.14 color migration test({mockupOven.TestTemperature} degree @ {mockupOven.TestTime} hours)";
 
-                worksheet.Cells[4, 6] = mockupOven.ReleasedDate;
-                worksheet.Cells[5, 6] = mockupOven.TestDate;
-                worksheet.Cells[6, 6] = mockupOven.SeasonID;
+                worksheet.Cells[4, 8] = mockupOven.ReleasedDate;
+                worksheet.Cells[5, 8] = mockupOven.TestDate;
+                worksheet.Cells[6, 8] = mockupOven.SeasonID;
 
                 if (haveHT)
                 {
@@ -191,23 +214,22 @@ namespace BusinessLogicLayer.Service
                     worksheet.Cells[11, 2] = mockupOven.HTFlim;
                     worksheet.Cells[12, 2] = mockupOven.HTTime;
                     worksheet.Cells[13, 2] = mockupOven.HTPressure;
-                    worksheet.Cells[10, 6] = mockupOven.HTPellOff;
-                    worksheet.Cells[11, 6] = mockupOven.HT2ndPressnoreverse;
-                    worksheet.Cells[12, 6] = mockupOven.HT2ndPressreversed;
-                    worksheet.Cells[13, 6] = mockupOven.HTCoolingTime;
+                    worksheet.Cells[10, 8] = mockupOven.HTPellOff;
+                    worksheet.Cells[11, 8] = mockupOven.HT2ndPressnoreverse;
+                    worksheet.Cells[12, 8] = mockupOven.HT2ndPressreversed;
+                    worksheet.Cells[13, 8] = mockupOven.HTCoolingTime;
                 }
 
                 worksheet.Cells[13 + haveHTrow, 2] = mockupOven.TechnicianName;
 
                 Range cell = worksheet.Cells[12 + haveHTrow, 2];
-
                 if (mockupOven.Signature != null)
                 {
                     MemoryStream ms = new MemoryStream(mockupOven.Signature);
                     Image img = Image.FromStream(ms);
                     string imageName = $"{Guid.NewGuid()}.jpg";
                     string imgPath;
-                    if (test)
+                    if (IsTest.ToLower() == "true")
                     {
                         imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
                     }
@@ -218,6 +240,65 @@ namespace BusinessLogicLayer.Service
 
                     img.Save(imgPath);
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
+                }
+
+                cell = worksheet.Cells[13 + haveHTrow + 3, 1];
+                if (mockupOven.TestBeforePicture != null)
+                {
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    string imgPath;
+                    if (IsTest.ToLower() == "true")
+                    {
+                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                    }
+                    else
+                    {
+                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                    }
+
+                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
+                    {
+                        imageFile.Write(mockupOven.TestBeforePicture, 0, mockupOven.TestBeforePicture.Length);
+                        imageFile.Flush();
+                    }
+
+                    if (haveHT)
+                    {
+                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 365, 190);
+                    }
+                    else
+                    {
+                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 342, 190);
+                    }
+                }
+
+                cell = worksheet.Cells[13 + haveHTrow + 3, 6];
+                if (mockupOven.TestAfterPicture != null)
+                {
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    string imgPath;
+                    if (IsTest.ToLower() == "true")
+                    {
+                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                    }
+                    else
+                    {
+                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                    }
+
+                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
+                    {
+                        imageFile.Write(mockupOven.TestAfterPicture, 0, mockupOven.TestAfterPicture.Length);
+                        imageFile.Flush();
+                    }
+                    if (haveHT)
+                    {
+                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 390, 190);
+                    }
+                    else
+                    {
+                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 375, 190);
+                    }                        
                 }
 
                 #region 表身資料
@@ -244,8 +325,11 @@ namespace BusinessLogicLayer.Service
                     worksheet.Cells[start_row, 1] = mockupOven.StyleID;
                     worksheet.Cells[start_row, 2] = fabric;
                     worksheet.Cells[start_row, 3] = artwork;
-                    worksheet.Cells[start_row, 4] = item.Result;
-                    worksheet.Cells[start_row, 5] = item.Remark;
+                    worksheet.Cells[start_row, 5] = item.ChangeScale;
+                    worksheet.Cells[start_row, 6] = item.ResultChange;
+                    worksheet.Cells[start_row, 7] = item.StainingScale;
+                    worksheet.Cells[start_row, 8] = item.ResultStain;
+                    worksheet.Cells[start_row, 9] = item.Remark;
                     worksheet.Rows[start_row].Font.Bold = false;
                     worksheet.Rows[start_row].WrapText = true;
                     worksheet.Rows[start_row].HorizontalAlignment = XlHAlign.xlHAlignCenter;
@@ -270,7 +354,7 @@ namespace BusinessLogicLayer.Service
 
                 string filepath;
                 string filepathpdf;
-                if (test)
+                if (IsTest.ToLower() == "true")
                 {
                     filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", filexlsx);
                     filepathpdf = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", fileNamePDF);

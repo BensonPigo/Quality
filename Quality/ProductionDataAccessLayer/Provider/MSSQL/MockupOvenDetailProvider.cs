@@ -60,6 +60,10 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,AccessoryRefno" + Environment.NewLine);
             SbSql.Append("        ,FabricColor" + Environment.NewLine);
             SbSql.Append("        ,Result" + Environment.NewLine);
+            SbSql.Append("        ,ChangeScale" + Environment.NewLine);
+            SbSql.Append("        ,ResultChange" + Environment.NewLine);
+            SbSql.Append("        ,StainingScale" + Environment.NewLine);
+            SbSql.Append("        ,ResultStain" + Environment.NewLine);
             SbSql.Append("        ,Remark" + Environment.NewLine);
             SbSql.Append("        ,EditName" + Environment.NewLine);
             SbSql.Append("        ,EditDate" + Environment.NewLine);
@@ -74,6 +78,10 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,@AccessoryRefno"); objParameter.Add("@AccessoryRefno", DbType.String, Item.AccessoryRefno ?? string.Empty);
             SbSql.Append("        ,@FabricColor"); objParameter.Add("@FabricColor", DbType.String, Item.FabricColor ?? string.Empty);
             SbSql.Append("        ,@Result"); objParameter.Add("@Result", DbType.String, Item.Result ?? string.Empty);
+            SbSql.Append("        ,@ChangeScale"); objParameter.Add("@ChangeScale", DbType.String, Item.ChangeScale ?? string.Empty);
+            SbSql.Append("        ,@ResultChange"); objParameter.Add("@ResultChange", DbType.String, Item.ResultChange ?? string.Empty);
+            SbSql.Append("        ,@StainingScale"); objParameter.Add("@StainingScale", DbType.String, Item.StainingScale ?? string.Empty);
+            SbSql.Append("        ,@ResultStain"); objParameter.Add("@ResultStain", DbType.String, Item.ResultStain ?? string.Empty);
             SbSql.Append("        ,@Remark"); objParameter.Add("@Remark", DbType.String, Item.Remark ?? string.Empty);
             SbSql.Append("        ,@EditName"); objParameter.Add("@EditName", DbType.String, Item.EditName ?? string.Empty);
             SbSql.Append("        ,GETDATE()");
@@ -95,6 +103,10 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             if (Item.FabricRefNo != null) { SbSql.Append(",FabricRefNo=@FabricRefNo" + Environment.NewLine); objParameter.Add("@FabricRefNo", DbType.String, Item.FabricRefNo); }
             if (Item.FabricColor != null) { SbSql.Append(",FabricColor=@FabricColor" + Environment.NewLine); objParameter.Add("@FabricColor", DbType.String, Item.FabricColor); }
             if (Item.Result != null) { SbSql.Append(",Result=@Result" + Environment.NewLine); objParameter.Add("@Result", DbType.String, Item.Result); }
+            if (Item.ChangeScale != null) { SbSql.Append(",ChangeScale=@ChangeScale" + Environment.NewLine); objParameter.Add("@ChangeScale", DbType.String, Item.ChangeScale); }
+            if (Item.ResultChange != null) { SbSql.Append(",ResultChange=@ResultChange" + Environment.NewLine); objParameter.Add("@ResultChange", DbType.String, Item.ResultChange); }
+            if (Item.StainingScale != null) { SbSql.Append(",StainingScale=@StainingScale" + Environment.NewLine); objParameter.Add("@StainingScale", DbType.String, Item.StainingScale); }
+            if (Item.ResultStain != null) { SbSql.Append(",ResultStain=@ResultStain" + Environment.NewLine); objParameter.Add("@ResultStain", DbType.String, Item.ResultStain); }
             if (Item.Remark != null) { SbSql.Append(",Remark=@Remark" + Environment.NewLine); objParameter.Add("@Remark", DbType.String, Item.Remark); }
             SbSql.Append("WHERE 1 = 1" + Environment.NewLine);
             SbSql.Append("And Ukey = @Ukey" + Environment.NewLine);
@@ -137,6 +149,10 @@ SELECT
         ,md.FabricRefNo
         ,md.FabricColor
         ,md.Result
+        ,md.ChangeScale
+        ,md.ResultChange
+        ,md.StainingScale
+        ,md.ResultStain
         ,md.Remark
         ,md.EditName
         ,md.EditDate

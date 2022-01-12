@@ -16,6 +16,8 @@ namespace BusinessLogicLayer.Interface.BulkFGT
 
         List<SelectListItem> GetArtworkTypeID(StyleArtwork_Request Request);
 
+        List<SelectListItem> GetScale();
+
         List<Orders> GetOrders(Orders Orders);
 
         List<Order_Qty> GetDistinctArticle(Order_Qty Orders);
@@ -28,7 +30,7 @@ namespace BusinessLogicLayer.Interface.BulkFGT
 
         BaseResult DeleteDetail(List<MockupOven_Detail_ViewModel> MockupWashDetail);
 
-        Report_Result GetPDF(MockupOven_ViewModel MockupOven, bool test = false);
+        Report_Result GetPDF(MockupOven_ViewModel MockupOven);
 
         SendMail_Result FailSendMail(MockupFailMail_Request mail_Request);
     }
