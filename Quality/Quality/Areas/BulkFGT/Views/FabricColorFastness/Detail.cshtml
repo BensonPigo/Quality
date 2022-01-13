@@ -318,10 +318,22 @@
                                 <th><h4>SCI Refno</h4></th>
                                 <th><h4>Color</h4></th>
                                 <th><h4>Result</h4></th>
+
                                 <th><h4>Color Change Scale</h4></th>
                                 <th><h4>Result (Change)</h4></th>
-                                <th><h4>Color Staining Scale</h4></th>
-                                <th><h4>Result (Staining)</h4></th>
+                                <th><h4>Color Staining Acetate Scale</h4></th>
+                                <th><h4>Result (Acetate)</h4></th>
+                                <th><h4>Color Staining Cotton Scale</h4></th>
+                                <th><h4>Result (Cotton)</h4></th>
+                                <th><h4>Color Staining Nylon Scale</h4></th>
+                                <th><h4>Result (Nylon)</h4></th>
+                                <th><h4>Color Staining Polyester Scale</h4></th>
+                                <th><h4>Result (Polyester)</h4></th>
+                                <th><h4>Color Staining Acrylic Scale</h4></th>
+                                <th><h4>Result (Acrylic)</h4></th>
+                                <th><h4>Color Staining Wool Scale</h4></th>
+                                <th><h4>Result (Wool)</h4></th>
+
                                 <th><h4>Remark</h4></th>
                                 <th><h4>LastUpdate</h4></th>
                                 <th><h4></h4></th>
@@ -330,7 +342,8 @@
                         </thead>
                         <tbody>
                             @for (int i = 0; i <= Model.Detail.Count - 1; i++)
-                                {
+                            {
+                                int QQ = 0;
                             <tr>
                                 <td style="width:10vw;">
                                     <input id='Seq@{@i}' idx='@i' type='hidden'>
@@ -338,7 +351,15 @@
                                     @Html.TextBoxFor(o => Model.Detail[i].SubmitDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
                                 </td>
                                 <td style="width:10vw;">
-                                    @Html.TextBoxFor(o => Model.Detail[i].ColorFastnessGroup, "", new { @maxlength = "2", @type = "number", @step = "1", @min = "0", @max = "99", @oninput = "value=OvenGroupCheck(value)" })
+                                    @if (int.TryParse(Model.Detail[i].ColorFastnessGroup, out QQ))
+                                    {
+                                        @Html.TextBoxFor(o => Model.Detail[i].ColorFastnessGroup, "", new { @maxlength = "2", @type = "number", @step = "1", @min = "0", @max = "99", @oninput = "value=OvenGroupCheck(value)" })
+                                    }
+                                    else
+                                    {
+                                        @*@Html.TextBox($"Detail_{i}__ColorFastnessGroup", (Model.Detail.Count + 1).ToString("00"), new { @maxlength = "2", @type = "number", @step = "1", @min = "0", @max = "99", @oninput = "value=OvenGroupCheck(value)" })*@
+                                        @Html.TextBoxFor(o => Model.Detail[i].ColorFastnessGroup, "", new { @maxlength = "2", @type = "text"})
+                                    }
                                 </td>
                                 <td style="width:11vw;">
                                     <div style="width:10vw;">
@@ -374,13 +395,23 @@
                                 <td style="width:10vw;">
                                     @Html.TextBoxFor(o => Model.Detail[i].Result, "", new { @class = detailResultColor, @readonly = "readonly" })
                                 </td>
+
                                 <td style="width:10vw;">
                                     <select id="Detail_@{@i}__changeScale" name="Detail[@i].changeScale">
                                         @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
-                                                {
-                                                    string selected = item.Text.Equals(Model.Detail[i].changeScale) ? "selected" : "";
-                                        <option value="@item.Value" @selected>@item.Text</option>
-                                                }
+                                        {
+                                            if (Model.Detail[i].changeScale == null || Model.Detail[i].changeScale == "")
+                                            {
+                                                string selected = item.Text.Equals(((List<SelectListItem>)ViewBag.ChangeScaleList).FirstOrDefault().Text) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+
+                                            }
+                                            else
+                                            {
+                                                string selected = item.Text.Equals(Model.Detail[i].changeScale) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        }
                                     </select>
                                 </td>
                                 <td style="width:10vw;">
@@ -394,37 +425,281 @@
                                     <select id="Detail_@{@i}__ResultChange" name="Detail[@i].ResultChange" onchange='selectChange(this)' class="@styleColor">
                                         @foreach (var item in (List<SelectListItem>)ViewBag.ResultChangeList)
                                         {
-                                            string selected = item.Text.Equals(Model.Detail[i].ResultChange) ? "selected" : "";
-                                            <option value="@item.Value" @selected>@item.Text</option>
+                                            if (Model.Detail[i].ResultChange == null || Model.Detail[i].ResultChange == "")
+                                            {
+                                                string selected = item.Text.Equals(((List<SelectListItem>)ViewBag.ResultChangeList).FirstOrDefault().Text) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+
+                                            }
+                                            else
+                                            {
+                                                string selected = item.Text.Equals(Model.Detail[i].ResultChange) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
                                         }
                                     </select>
 
                                 </td>
+
                                 <td style="width:10vw;">
-                                    <select id="Detail_@{@i}__StainingScale" name="Detail[@i].StainingScale">
-                                        @foreach (var item in (List<SelectListItem>)ViewBag.StainingScaleList)
-                                                {
-                                                    string selected = item.Text.Equals(Model.Detail[i].StainingScale) ? "selected" : "";
-                                        <option value="@item.Value" @selected>@item.Text</option>
-                                                }
+                                    <select id="Detail_@{@i}__AcetateScale" name="Detail[@i].AcetateScale">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
+                                        {
+                                            if (Model.Detail[i].AcetateScale == null || Model.Detail[i].AcetateScale == "")
+                                            {
+                                                string selected = item.Text.Equals(((List<SelectListItem>)ViewBag.ChangeScaleList).FirstOrDefault().Text) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+
+                                            }
+                                            else
+                                            {
+                                                string selected = item.Text.Equals(Model.Detail[i].AcetateScale) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        }
                                     </select>
                                 </td>
                                 <td style="width:10vw;">
                                     @{
                                         styleColor = "red";
-                                        if (Model.Detail[i].ResultStain == "Pass")
+                                        if (Model.Detail[i].ResultAcetate == "Pass" || Model.Detail[i].ResultAcetate == null || Model.Detail[i].ResultAcetate == string.Empty)
                                         {
                                             styleColor = "blue";
                                         }
                                     }
-                                    <select id="Detail_@{@i}__ResultStain" name="Detail[@i].ResultStain" onchange='selectChange(this)' class="@styleColor">
-                                        @foreach (var item in (List<SelectListItem>)ViewBag.ResultStainList)
+                                    <select id="Detail_@{@i}__ResultAcetate" name="Detail[@i].ResultAcetate" onchange='selectChange(this)' class="@styleColor">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.ResultChangeList)
                                         {
-                                            string selected = item.Text.Equals(Model.Detail[i].ResultStain) ? "selected" : "";
-                                            <option value="@item.Value" @selected>@item.Text</option>
+                                            if (Model.Detail[i].ResultAcetate == null || Model.Detail[i].ResultAcetate == "")
+                                            {
+                                                string selected = item.Text.Equals(((List<SelectListItem>)ViewBag.ResultChangeList).FirstOrDefault().Text) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>                                                
+                                            }
+                                            else
+                                            {
+                                                string selected = item.Text.Equals(Model.Detail[i].ResultAcetate) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
                                         }
                                     </select>
                                 </td>
+
+                                <td style="width:10vw;">
+                                    <select id="Detail_@{@i}__CottonScale" name="Detail[@i].CottonScale">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
+                                        {
+                                            if (Model.Detail[i].CottonScale == null || Model.Detail[i].CottonScale == "")
+                                            {
+                                                string selected = item.Text.Equals(((List<SelectListItem>)ViewBag.ChangeScaleList).FirstOrDefault().Text) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+
+                                            }
+                                            else
+                                            {
+                                                string selected = item.Text.Equals(Model.Detail[i].CottonScale) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                </td>
+                                <td style="width:10vw;">
+                                    @{
+                                        styleColor = "red";
+
+                                        if (Model.Detail[i].ResultCotton == "Pass" || Model.Detail[i].ResultCotton == null || Model.Detail[i].ResultCotton == string.Empty)
+                                        {
+                                            styleColor = "blue";
+                                        }
+                                    }
+                                    <select id="Detail_@{@i}__ResultCotton" name="Detail[@i].ResultCotton" onchange='selectChange(this)' class="@styleColor">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.ResultChangeList)
+                                        {
+                                            if (Model.Detail[i].ResultCotton == null || Model.Detail[i].ResultCotton == "")
+                                            {
+                                                string selected = item.Text.Equals(((List<SelectListItem>)ViewBag.ResultChangeList).FirstOrDefault().Text) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+
+                                            }
+                                            else
+                                            {
+                                                string selected = item.Text.Equals(Model.Detail[i].ResultCotton) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                </td>
+
+                                <td style="width:10vw;">
+                                    <select id="Detail_@{@i}__NylonScale" name="Detail[@i].NylonScale">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
+                                        {
+                                            if (Model.Detail[i].NylonScale == null || Model.Detail[i].NylonScale == "")
+                                            {
+                                                string selected = item.Text.Equals(((List<SelectListItem>)ViewBag.ChangeScaleList).FirstOrDefault().Text) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+
+                                            }
+                                            else
+                                            {
+                                                string selected = item.Text.Equals(Model.Detail[i].NylonScale) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                </td>
+                                <td style="width:10vw;">
+                                    @{
+                                        styleColor = "red";
+                                        if (Model.Detail[i].ResultNylon == "Pass" || Model.Detail[i].ResultNylon == null || Model.Detail[i].ResultNylon == string.Empty)
+                                        {
+                                            styleColor = "blue";
+                                        }
+                                    }
+                                    <select id="Detail_@{@i}__ResultNylon" name="Detail[@i].ResultNylon" onchange='selectChange(this)' class="@styleColor">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.ResultChangeList)
+                                        {
+                                            if (Model.Detail[i].ResultNylon == null || Model.Detail[i].ResultNylon == "")
+                                            {
+                                                string selected = item.Text.Equals(((List<SelectListItem>)ViewBag.ResultChangeList).FirstOrDefault().Text) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+
+                                            }
+                                            else
+                                            {
+                                                string selected = item.Text.Equals(Model.Detail[i].ResultNylon) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                </td>
+
+                                <td style="width:10vw;">
+                                    <select id="Detail_@{@i}__PolyesterScale" name="Detail[@i].PolyesterScale">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
+                                        {
+                                            if (Model.Detail[i].PolyesterScale == null || Model.Detail[i].PolyesterScale == "")
+                                            {
+                                                string selected = item.Text.Equals(((List<SelectListItem>)ViewBag.ChangeScaleList).FirstOrDefault().Text) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+
+                                            }
+                                            else
+                                            {
+                                                string selected = item.Text.Equals(Model.Detail[i].PolyesterScale) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                </td>
+                                <td style="width:10vw;">
+                                    @{
+                                        styleColor = "red";
+                                        if (Model.Detail[i].ResultPolyester == "Pass" || Model.Detail[i].ResultPolyester == null || Model.Detail[i].ResultPolyester == string.Empty)
+                                        {
+                                            styleColor = "blue";
+                                        }
+                                    }
+                                    <select id="Detail_@{@i}__ResultPolyester" name="Detail[@i].ResultPolyester" onchange='selectChange(this)' class="@styleColor">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.ResultChangeList)
+                                        {
+                                            if (Model.Detail[i].ResultPolyester == null || Model.Detail[i].ResultPolyester == "")
+                                            {
+                                                string selected = item.Text.Equals(((List<SelectListItem>)ViewBag.ResultChangeList).FirstOrDefault().Text) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                string selected = item.Text.Equals(Model.Detail[i].ResultPolyester) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                </td>
+
+                                <td style="width:10vw;">
+                                    <select id="Detail_@{@i}__AcrylicScale" name="Detail[@i].AcrylicScale">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
+                                        {
+                                            if (Model.Detail[i].AcrylicScale == null || Model.Detail[i].AcrylicScale == "")
+                                            {
+                                                string selected = item.Text.Equals(((List<SelectListItem>)ViewBag.ChangeScaleList).FirstOrDefault().Text) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                string selected = item.Text.Equals(Model.Detail[i].AcrylicScale) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                </td>
+                                <td style="width:10vw;">
+                                    @{
+                                        styleColor = "red";
+                                        if (Model.Detail[i].ResultAcrylic == "Pass" || Model.Detail[i].ResultAcrylic == null || Model.Detail[i].ResultPolyester == string.Empty)
+                                        {
+                                            styleColor = "blue";
+                                        }
+                                    }
+                                    <select id="Detail_@{@i}__ResultAcrylic" name="Detail[@i].ResultAcrylic" onchange='selectChange(this)' class="@styleColor">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.ResultChangeList)
+                                        {
+                                            if (Model.Detail[i].ResultAcrylic == null || Model.Detail[i].ResultAcrylic == "")
+                                            {
+                                                string selected = item.Text.Equals(((List<SelectListItem>)ViewBag.ResultChangeList).FirstOrDefault().Text) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                string selected = item.Text.Equals(Model.Detail[i].ResultAcrylic) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                </td>
+
+                                <td style="width:10vw;">
+                                    <select id="Detail_@{@i}__WoolScale" name="Detail[@i].WoolScale">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
+                                        {
+                                            if (Model.Detail[i].WoolScale == null || Model.Detail[i].WoolScale == "")
+                                            {
+                                                string selected = item.Text.Equals(((List<SelectListItem>)ViewBag.ChangeScaleList).FirstOrDefault().Text) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                string selected = item.Text.Equals(Model.Detail[i].WoolScale) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                </td>
+                                <td style="width:10vw;">
+                                    @{
+                                        styleColor = "red";
+                                        if (Model.Detail[i].ResultWool == "Pass" || Model.Detail[i].ResultWool == null || Model.Detail[i].ResultWool == string.Empty)
+                                        {
+                                            styleColor = "blue";
+                                        }
+                                    }
+                                    <select id="Detail_@{@i}__ResultWool" name="Detail[@i].ResultWool" onchange='selectChange(this)' class="@styleColor">
+                                        @foreach (var item in (List<SelectListItem>)ViewBag.ResultChangeList)
+                                        {
+                                            if (Model.Detail[i].ResultWool == null || Model.Detail[i].WoolScale == "")
+                                            {
+                                                string selected = item.Text.Equals(((List<SelectListItem>)ViewBag.ResultChangeList).FirstOrDefault().Text) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                string selected = item.Text.Equals(Model.Detail[i].ResultWool) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                </td>
+
                                 <td style="width:10vw;">
                                     @Html.TextBoxFor(o => Model.Detail[i].Remark, "", "")
                                 </td>
@@ -780,14 +1055,35 @@
                 }
 
                 var Body, SEQ, Result;
-                var ChangeScale, StainingScale, ResultChange, ResultStain;
-                $(this).children().find("input[type='number']").each(function (index, value) {
-                    switch (index) {
-                        case 0:
-                            Body = $(this).val();
-                            break;
-                    }
-                })
+
+                var ChangeScale, ResultChange;
+                var AcetateScale, ResultAcetate;
+                var CottonScale, ResultCotton;
+                var NylonScale, ResultNylon;
+                var PolyesterScale, ResultPolyester;
+                var AcrylicScale, ResultAcrylic;
+                var WoolScale, ResultWool;
+
+                if ($(this).children().find("input[type='number']").length > 0) {
+
+                    $(this).children().find("input[type='number']").each(function (index, value) {
+                        switch (index) {
+                            case 0:
+                                Body = $(this).val();
+                                break;
+                        }
+                    })
+
+                }
+                else {
+                    $(this).children().find("input[type='text']").each(function (index, value) {
+                        switch (index) {
+                            case 1:
+                                Body = $(this).val();
+                                break;
+                        }
+                    })
+                }
 
                 $(this).children().find("input[type='text']").each(function (index, value) {
                     switch (index) {
@@ -810,10 +1106,35 @@
                             ResultChange = $(this).children("option:selected").val();
                             break;
                         case 2:
-                            StainingScale = $(this).children("option:selected").val();
+                            AcetateScale = $(this).children("option:selected").val();
                             break;
                         case 3:
-                            ResultStain = $(this).children("option:selected").val();
+                            ResultAcetate = $(this).children("option:selected").val();
+                        case 4:
+                            CottonScale = $(this).children("option:selected").val();
+                            break;
+                        case 5:
+                            ResultCotton = $(this).children("option:selected").val();
+                        case 6:
+                            NylonScale = $(this).children("option:selected").val();
+                            break;
+                        case 7:
+                            ResultNylon = $(this).children("option:selected").val();
+                        case 8:
+                            PolyesterScale = $(this).children("option:selected").val();
+                            break;
+                        case 9:
+                            ResultPolyester = $(this).children("option:selected").val();
+                        case 10:
+                            AcrylicScale = $(this).children("option:selected").val();
+                            break;
+                        case 11:
+                            ResultAcrylic = $(this).children("option:selected").val();
+                        case 12:
+                            WoolScale = $(this).children("option:selected").val();
+                            break;
+                        case 13:
+                            ResultWool = $(this).children("option:selected").val();
                             break;
                     }
                 })
@@ -829,7 +1150,23 @@
                     return false;
                 }
 
-                if (Result == "" || Result == undefined || ResultChange == "" || ResultChange == undefined || ResultStain == "" || ResultStain == undefined || ChangeScale == "" || ChangeScale == undefined || StainingScale == "" || StainingScale == undefined) {
+                if (Result == "" || Result == undefined || ResultChange == "" || ResultChange == undefined
+                    || ResultAcetate == "" || ResultAcetate == undefined 
+                    || ResultCotton == "" || ResultCotton == undefined
+                    || ResultNylon == "" || ResultNylon == undefined
+                    || ResultPolyester == "" || ResultPolyester == undefined
+                    || ResultAcrylic == "" || ResultAcrylic == undefined
+                    || ResultWool == "" || ResultWool == undefined
+
+                    || ChangeScale == "" || ChangeScale == undefined
+
+                    || AcetateScale == "" || AcetateScale == undefined
+                    || CottonScale == "" || CottonScale == undefined
+                    || NylonScale == "" || NylonScale == undefined
+                    || PolyesterScale == "" || PolyesterScale == undefined
+                    || AcrylicScale == "" || AcrylicScale == undefined
+                    || WoolScale == "" || WoolScale == undefined
+                ) {
                     ErrMsg += "Color Change Scale, Color Staining Scale and Result cannot be empty.";
                     return false;
                 }
@@ -840,8 +1177,18 @@
                     Result: Result,
                     ChangeScale: ChangeScale,
                     ResultChange: ResultChange,
-                    StainingScale: StainingScale,
-                    ResultStain: ResultStain
+                    AcetateScale: AcetateScale,
+                    ResultAcetate: ResultAcetate,
+                    CottonScale: CottonScale,
+                    ResultCotton: ResultCotton,
+                    NylonScale: NylonScale,
+                    ResultNylon: ResultNylon,
+                    PolyesterScale: PolyesterScale,
+                    ResultPolyester: ResultPolyester,
+                    AcrylicScale: AcrylicScale,
+                    ResultAcrylic: ResultAcrylic,
+                    WoolScale: WoolScale,
+                    ResultWool: ResultWool
                 });
 
 
@@ -1020,9 +1367,14 @@
         var key = $(obj).parents('td').parents('tr').children('td').find("input[type='hidden']").attr('idx');
 
         var resultChange = document.getElementById("Detail_" + key + "__ResultChange").value;
-        var resultStain = document.getElementById("Detail_" + key + "__ResultStain").value;
+        var resultAcetate = document.getElementById("Detail_" + key + "__ResultAcetate").value;
+        var resultCotton = document.getElementById("Detail_" + key + "__ResultCotton").value;
+        var resultNylon = document.getElementById("Detail_" + key + "__ResultNylon").value;
+        var resultPolyester = document.getElementById("Detail_" + key + "__ResultPolyester").value;
+        var resultAcrylic = document.getElementById("Detail_" + key + "__ResultAcrylic").value;
+        var resultWool = document.getElementById("Detail_" + key + "__ResultWool").value;
 
-        if (resultChange == "Fail" || resultStain == "Fail") {
+        if (resultChange == "Fail" || resultAcetate == "Fail" || resultCotton == "Fail" || resultNylon == "Fail" || resultPolyester == "Fail" || resultAcrylic == "Fail" || resultWool == "Fail") {
             document.getElementById("Detail_" + key + "__Result").value = 'Fail';
         }
         else {

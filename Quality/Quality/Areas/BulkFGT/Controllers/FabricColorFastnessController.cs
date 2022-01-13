@@ -121,7 +121,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.Drying_List = FabricColorFastnessModel.Drying_List;
             ViewBag.ChangeScaleList = ScalesList;
             ViewBag.ResultChangeList = FabricColorFastnessModel.Result_Source;
-            ViewBag.StainingScaleList = ScalesList;
+            //ViewBag.StainingScaleList = ScalesList;
             ViewBag.ResultStainList = FabricColorFastnessModel.Result_Source;
             ViewBag.EditMode = EditMode;
             ViewBag.FactoryID = this.FactoryID;
@@ -162,14 +162,87 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
             html += "</select></td>";
 
-            html += "<td><select id='Detail_" + i + "__StainingScale' name='Detail[" + i + "].StainingScale'>"; // StainingScale
+            //Acetate
+            html += "<td><select id='Detail_" + i + "__AcetateScale' name='Detail[" + i + "].AcetateScale'>"; // AcetateScale
             foreach (string val in Scales)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select id='Detail_" + i + "__ResultStain' name='Detail[" + i + "].ResultStain' class='blue' onchange='selectChange(this)'>"; // ResultStain
+            html += "<td><select id='Detail_" + i + "__ResultAcetate' name='Detail[" + i + "].ResultAcetate' class='blue' onchange='selectChange(this)'>"; // ResultAcetate
+            foreach (var val in FabricColorFastnessModel.Result_Source)
+            {
+                html += "<option value='" + val.Value + "'>" + val.Text + "</option>";
+            }
+            html += "</select></td>";
+
+
+            //Cotton
+            html += "<td><select id='Detail_" + i + "__CottonScale' name='Detail[" + i + "].CottonScale'>"; // CottonScale
+            foreach (string val in Scales)
+            {
+                html += "<option value='" + val + "'>" + val + "</option>";
+            }
+            html += "</select></td>";
+
+            html += "<td><select id='Detail_" + i + "__ResultCotton' name='Detail[" + i + "].ResultCotton' class='blue' onchange='selectChange(this)'>"; // ResultCotton
+            foreach (var val in FabricColorFastnessModel.Result_Source)
+            {
+                html += "<option value='" + val.Value + "'>" + val.Text + "</option>";
+            }
+            html += "</select></td>";
+            //Nylon
+            html += "<td><select id='Detail_" + i + "__NylonScale' name='Detail[" + i + "].NylonScale'>"; // NylonScale
+            foreach (string val in Scales)
+            {
+                html += "<option value='" + val + "'>" + val + "</option>";
+            }
+            html += "</select></td>";
+
+            html += "<td><select id='Detail_" + i + "__ResultNylon' name='Detail[" + i + "].ResultNylon' class='blue' onchange='selectChange(this)'>"; // ResultNylon
+            foreach (var val in FabricColorFastnessModel.Result_Source)
+            {
+                html += "<option value='" + val.Value + "'>" + val.Text + "</option>";
+            }
+            html += "</select></td>";
+            //Polyester
+            html += "<td><select id='Detail_" + i + "__PolyesterScale' name='Detail[" + i + "].PolyesterScale'>"; // PolyesterScale
+            foreach (string val in Scales)
+            {
+                html += "<option value='" + val + "'>" + val + "</option>";
+            }
+            html += "</select></td>";
+
+            html += "<td><select id='Detail_" + i + "__ResultPolyester' name='Detail[" + i + "].ResultPolyester' class='blue' onchange='selectChange(this)'>"; // ResultPolyester
+            foreach (var val in FabricColorFastnessModel.Result_Source)
+            {
+                html += "<option value='" + val.Value + "'>" + val.Text + "</option>";
+            }
+            html += "</select></td>";
+            //Acrylic
+            html += "<td><select id='Detail_" + i + "__AcrylicScale' name='Detail[" + i + "].AcrylicScale'>"; // AcrylicScale
+            foreach (string val in Scales)
+            {
+                html += "<option value='" + val + "'>" + val + "</option>";
+            }
+            html += "</select></td>";
+
+            html += "<td><select id='Detail_" + i + "__ResultAcrylic' name='Detail[" + i + "].ResultAcrylic' class='blue' onchange='selectChange(this)'>"; // ResultAcrylic
+            foreach (var val in FabricColorFastnessModel.Result_Source)
+            {
+                html += "<option value='" + val.Value + "'>" + val.Text + "</option>";
+            }
+            html += "</select></td>";
+            //Wool
+            html += "<td><select id='Detail_" + i + "__WoolScale' name='Detail[" + i + "].WoolScale'>"; // WoolScale
+            foreach (string val in Scales)
+            {
+                html += "<option value='" + val + "'>" + val + "</option>";
+            }
+            html += "</select></td>";
+
+            html += "<td><select id='Detail_" + i + "__ResultWool' name='Detail[" + i + "].ResultWool' class='blue' onchange='selectChange(this)'>"; // ResultWool
             foreach (var val in FabricColorFastnessModel.Result_Source)
             {
                 html += "<option value='" + val.Value + "'>" + val.Text + "</option>";
