@@ -321,7 +321,7 @@ values(@ID ,@TestBeforePicture,@TestAfterPicture)
                     sources.Detail,
                     oldDetailData,
                     "ID,ColorFastnessGroup,SEQ1,SEQ2",
-                    "Roll,Dyelot,changeScale,StainingScale,Remark,SubmitDate,ResultChange,ResultStain");
+                    "Roll,Dyelot,Remark,SubmitDate,Result,changeScale,ResultChange,AcetateScale,ResultAcetate,CottonScale,ResultCotton,NylonScale,ResultNylon,PolyesterScale,ResultPolyester,AcrylicScale,ResultAcrylic,WoolScale,ResultWool");
 
             #region save Details
 
@@ -428,7 +428,13 @@ and SEQ2 = @Seq2
             foreach (var detailItem in needUpdateDetailList)
             {   
                 SQLParameterCollection listDetailPar = new SQLParameterCollection();
-                string DetailResult = (detailItem.ResultChange.EqualString("Pass") && detailItem.ResultStain.EqualString("Pass")) ? "Pass" : "Fail";
+                string DetailResult = (detailItem.ResultChange.EqualString("Pass") 
+                    && detailItem.ResultAcetate.EqualString("Pass") 
+                    && detailItem.ResultCotton.EqualString("Pass") 
+                    && detailItem.ResultNylon.EqualString("Pass") 
+                    && detailItem.ResultPolyester.EqualString("Pass") 
+                    && detailItem.ResultAcrylic.EqualString("Pass") 
+                    && detailItem.ResultWool.EqualString("Pass")) ? "Pass" : "Fail";
 
                 switch (detailItem.StateType)
                 {
