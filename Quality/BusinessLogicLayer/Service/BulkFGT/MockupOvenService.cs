@@ -305,11 +305,12 @@ namespace BusinessLogicLayer.Service
                 // 插入多的row
                 if (mockupOven_Detail.Count > 0)
                 {
-                    Range rngToInsert = worksheet.get_Range($"A{10 + haveHTrow}:G{10 + haveHTrow}", Type.Missing).EntireRow;
+                    Range rngToInsert = worksheet.get_Range($"A{10 + haveHTrow}:K{10 + haveHTrow}", Type.Missing).EntireRow;
                     for (int i = 1; i < mockupOven_Detail.Count; i++)
                     {
                         rngToInsert.Insert(XlInsertShiftDirection.xlShiftDown);
-                        worksheet.get_Range(string.Format("E{0}:G{0}", (10 + haveHTrow + i - 1).ToString())).Merge(false);
+                        worksheet.get_Range(string.Format("C{0}:D{0}", (10 + haveHTrow + i - 1).ToString())).Merge(false);
+                        worksheet.get_Range(string.Format("I{0}:K{0}", (10 + haveHTrow + i - 1).ToString())).Merge(false);
                     }
 
                     Marshal.ReleaseComObject(rngToInsert);
