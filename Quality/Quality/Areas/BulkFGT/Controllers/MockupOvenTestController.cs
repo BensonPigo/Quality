@@ -81,6 +81,17 @@ namespace Quality.Areas.BulkFGT.Controllers
                 };
             }
 
+            if (!model.ReturnResult)
+            {
+                model = new MockupOven_ViewModel()
+                {
+                    MockupOven_Detail = new List<MockupOven_Detail_ViewModel>(),
+                    ReportNo_Source = new List<string>(),
+                    ErrorMessage = $"msg.WithInfo('{model.ErrorMessage.Replace("'", string.Empty).Replace("\r\n", "<br />")}');",
+                    ScaleID_Source = _MockupOvenService.GetScale(),
+                };
+            }
+
             model.Request = Req.Request;
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(model.ReportNo_Source);
             ViewBag.ResultList = model.Result_Source;
@@ -108,6 +119,17 @@ namespace Quality.Areas.BulkFGT.Controllers
                     MockupOven_Detail = new List<MockupOven_Detail_ViewModel>(),
                     ReportNo_Source = new List<string>(),
                     ErrorMessage = $@"msg.WithInfo(""No Data Found"");",
+                    ScaleID_Source = _MockupOvenService.GetScale(),
+                };
+            }
+
+            if (!model.ReturnResult)
+            {
+                model = new MockupOven_ViewModel()
+                {
+                    MockupOven_Detail = new List<MockupOven_Detail_ViewModel>(),
+                    ReportNo_Source = new List<string>(),
+                    ErrorMessage = $"msg.WithInfo('{model.ErrorMessage.Replace("'", string.Empty).Replace("\r\n", "<br />")}');",
                     ScaleID_Source = _MockupOvenService.GetScale(),
                 };
             }
@@ -161,7 +183,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             if (!result.Result)
             {
-                model.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.ToString()}"");EditMode=true;";
+                model.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.Replace("'", string.Empty).Replace("\r\n", "<br />")}"");EditMode=true;";
             }
             else if (result.Result && model.Result == "Fail")
             {
@@ -223,7 +245,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             Req.MockupOven_Detail = model.MockupOven_Detail;
             if (!result.Result)
             {
-                Req.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.ToString()}"");EditMode=true;";
+                Req.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.Replace("'", string.Empty).Replace("\r\n", "<br />")}"");EditMode=true;";
             }
             else if (result.Result && model.Result == "Fail")
             {
@@ -264,7 +286,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
             if (!result.Result)
             {
-                model.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.ToString()}"");";
+                model.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.Replace("'", string.Empty).Replace("\r\n", "<br />")}"");";
             }
             model.Request = Req.Request;
 
