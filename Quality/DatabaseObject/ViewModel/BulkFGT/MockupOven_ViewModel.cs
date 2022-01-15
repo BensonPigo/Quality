@@ -27,6 +27,8 @@ namespace DatabaseObject.ViewModel.BulkFGT
             set { }
         }
 
+        public List<SelectListItem> ScaleID_Source { get; set; }
+
         [Display(Name = "T1 廠商 名稱")]
         public string T1SubconAbb { get; set; }
 

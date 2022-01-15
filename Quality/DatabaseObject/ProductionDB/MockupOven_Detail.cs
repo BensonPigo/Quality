@@ -30,6 +30,18 @@ namespace DatabaseObject.ProductionDB
         [Display(Name = "測試結果")]
         public string Result { get; set; }
 
+        [Display(Name = "色差灰階")]
+        public string ChangeScale { get; set; }
+
+        [Display(Name = "色差檢驗結果")]
+        public string ResultChange { get; set; }
+
+        [Display(Name = "染色灰階")]
+        public string StainingScale { get; set; }
+
+        [Display(Name = "染色檢驗結果")]
+        public string ResultStain { get; set; }
+
         [Display(Name = "備註")]
         public string Remark { get; set; }
 
