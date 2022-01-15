@@ -188,6 +188,7 @@
     <Compile Include="Areas\BulkFGT\Controllers\MockupWashController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\PullingTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\SearchListController.cs" />
+    <Compile Include="Areas\BulkFGT\WaterFastnessController.cs" />
     <Compile Include="Areas\FinalInspection\Controllers\InspectionController.cs" />
     <Compile Include="Areas\FinalInspection\Controllers\QueryController.cs" />
     <Compile Include="Areas\FinalInspection\FinalInspectionAreaRegistration.cs" />
@@ -390,6 +391,8 @@
     <Content Include="Areas\StyleManagement\Views\StyleResult\_Tab1_Layout.cshtml" />
     <Content Include="Areas\SampleRFT\Views\InspectionDefectList\Index.cshtml" />
     <Content Include="Areas\StyleManagement\Views\ExceptionFD\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\WaterFastness\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\WaterFastness\Detail.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />

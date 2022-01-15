@@ -23,7 +23,7 @@ namespace DatabaseObject.ResultModel
         public DateTime? MinSciDelivery { get; set; }
         public DateTime? TargetLeadTime { get; set; }
         public DateTime? CompletionDate { get; set; }
-        public decimal LabOvenPercent { get; set; }
+        public decimal LabWaterFastnessPercent { get; set; }
         public string Remark { get; set; }
         public string CreateBy { get; set; }
         public string EditBy { get; set; }
@@ -51,6 +51,7 @@ namespace DatabaseObject.ResultModel
 
     public class WaterFastness_Detail_Main
     {
+        public long ID { get; set; }
         public string TestNo { get; set; }
         public string POID { get; set; }
         public DateTime? InspDate { get; set; }
@@ -60,6 +61,8 @@ namespace DatabaseObject.ResultModel
         public string Result { get; set; }
         public string Remark { get; set; }
         public string Status { get; set; }
+        public string Temperature { get; set; }
+        public string Time { get; set; }
         public byte[] TestBeforePicture { get; set; }
         public byte[] TestAfterPicture { get; set; }
     }
@@ -67,7 +70,7 @@ namespace DatabaseObject.ResultModel
     public class WaterFastness_Detail_Detail : CompareBase
     {
         public DateTime? SubmitDate { get; set; }
-        public string OvenGroup { get; set; }
+        public string WaterFastnessGroup { get; set; }
         public string SEQ { get; set; }
         public string Roll { get; set; }
         public string Dyelot { get; set; }
