@@ -248,6 +248,7 @@ insert into FinalInspection_OrderCarton(ID, OrderID, PackingListID, CTNNo, Seq)
             return setting.FinalInspectionID;
         }
 
+
         public void UpdateFinalInspectionByStep(FinalInspection finalInspection, string currentStep, string userID)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();
