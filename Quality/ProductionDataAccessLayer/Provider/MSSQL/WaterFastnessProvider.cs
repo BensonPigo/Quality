@@ -593,7 +593,7 @@ getdate()        ,
         public void SaveWaterFastnessMain(WaterFastness_Main WaterFastness_Main)
         {
             SQLParameterCollection listPar = new SQLParameterCollection();
-            listPar.Add("@Remark", WaterFastness_Main.Remark);
+            listPar.Add("@Remark", WaterFastness_Main.Remark ?? "");
             listPar.Add("@POID", WaterFastness_Main.POID);
 
             string sqlUpdateWaterFastnessMain = @"

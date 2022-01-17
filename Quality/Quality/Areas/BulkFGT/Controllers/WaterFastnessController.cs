@@ -12,7 +12,7 @@ using System.Web;
 using System.Web.Mvc;
 
 
-namespace Quality.Areas.BulkFGT
+namespace Quality.Areas.BulkFGT.Controllers
 {
     public class WaterFastnessController : BaseController
     {

@@ -265,7 +265,7 @@
                                 <tr>
                                     <td><h5>Temperature(˚C)</h5></td>
                                     <td>
-                                        <select id="Main_Temperature" name="Main.Temperature">
+                                        <select id="Main_Temperature" name="Main.Temperature" class="HeaderSelect">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.TemperatureList)
                                             {
                                                 string selected = item.Text.Equals(Model.Main.Temperature) ? "selected" : "";
@@ -275,7 +275,7 @@
                                     </td>
                                     <td><h5>Time(hrs)</h5></td>
                                     <td>
-                                        <select id="Main_Time" name="Main.Time">
+                                        <select id="Main_Time" name="Main.Time" class="HeaderSelect">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.TimeList)
                                             {
                                                 string selected = item.Text.Equals(Model.Main.Time) ? "selected" : "";
@@ -636,7 +636,7 @@
         if (EditMode) {
             $("#Edit, #Encode, #Amend, #Excel, #PDF").removeClass("IsEditMode");
             $('#Save, #New').addClass("IsEditMode");
-            $(".DataTable input[type='text'], .DataTable input[type='number'], .DetailTable select").removeAttr("disabled");
+            $(".DataTable input[type='text'], .DataTable input[type='number'], .DetailTable select, .HeaderSelect").removeAttr("disabled");
             $('#Encode, #Amend, #Excel, #PDF').unbind('click');
             $(".DetailTable img").removeClass('display-None');
             DetailButtonBind();
@@ -646,7 +646,7 @@
         else {
             $(".DetailTable img").addClass('display-None');
             $('#Save').unbind('click').removeClass("IsEditMode");
-            $(".DataTable input[type='text'], .DataTable input[type='number'], .DetailTable select").attr("disabled", "disabled");
+            $(".DataTable input[type='text'], .DataTable input[type='number'], .DetailTable select, .HeaderSelect").attr("disabled", "disabled");
             $('#Excel, #PDF').addClass("IsEditMode");
             if ($('#Main_Status').val() == "New") {
                 $('#Edit, #Encode').addClass("IsEditMode");
