@@ -111,8 +111,8 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,HT2ndPressnoreverse" + Environment.NewLine);
             SbSql.Append("        ,HT2ndPressreversed" + Environment.NewLine);
             SbSql.Append("        ,HTCoolingTime" + Environment.NewLine);
-            SbSql.Append("        ,TestBeforePicture" + Environment.NewLine);
-            SbSql.Append("        ,TestAfterPicture" + Environment.NewLine);
+            // SbSql.Append("        ,TestBeforePicture" + Environment.NewLine);
+            // SbSql.Append("        ,TestAfterPicture" + Environment.NewLine);
             SbSql.Append("        ,Type" + Environment.NewLine);
             SbSql.Append(")" + Environment.NewLine);
             SbSql.Append("VALUES" + Environment.NewLine);
@@ -249,7 +249,7 @@ WHERE ReportNo = @ReportNo
                     Item.MockupOven_Detail,
                     oldOvenData,
                     "Ukey",
-                    "TypeofPrint,Design,ArtworkColor,AccessoryRefno,FabricRefNo,FabricColor,Result,Remark");
+                    "TypeofPrint,Design,ArtworkColor,AccessoryRefno,FabricRefNo,FabricColor,Result,ChangeScale,ResultChange,StainingScale,ResultStain,Remark");
 
             string insertDetail = @"
 INSERT INTO [dbo].[MockupOven_Detail]
@@ -261,6 +261,10 @@ INSERT INTO [dbo].[MockupOven_Detail]
            ,FabricRefNo
            ,FabricColor
            ,Result
+           ,ChangeScale
+           ,ResultChange
+           ,StainingScale
+           ,ResultStain
            ,Remark
            ,EditName
            ,EditDate
@@ -274,6 +278,10 @@ INSERT INTO [dbo].[MockupOven_Detail]
            ,@FabricRefNo
            ,@FabricColor
            ,@Result
+           ,@ChangeScale
+           ,@ResultChange
+           ,@StainingScale
+           ,@ResultStain
            ,@Remark
            ,@EditName
            ,GETDATE()
@@ -292,6 +300,10 @@ UPDATE [dbo].[MockupOven_Detail]
       ,[FabricRefNo] =    @FabricRefNo
       ,[FabricColor] =    @FabricColor
       ,[Result] =         @Result
+      ,[ChangeScale] =    @ChangeScale
+      ,[ResultChange] =   @ResultChange
+      ,[StainingScale] =  @StainingScale
+      ,[ResultStain] =    @ResultStain
       ,[Remark] =         @Remark
       ,[EditName] =       @EditName
       ,[EditDate] = GETDATE()
@@ -314,6 +326,10 @@ WHERE UKey = @Ukey
                         listDetailPar.Add("@AccessoryRefno", DbType.String, HttpUtility.HtmlDecode(detailItem.AccessoryRefno) ?? string.Empty);
                         listDetailPar.Add("@FabricColor", DbType.String, HttpUtility.HtmlDecode(detailItem.FabricColor) ?? string.Empty);
                         listDetailPar.Add("@Result", DbType.String, HttpUtility.HtmlDecode(detailItem.Result) ?? string.Empty);
+                        listDetailPar.Add("@ChangeScale", DbType.String, HttpUtility.HtmlDecode(detailItem.ChangeScale) ?? string.Empty);
+                        listDetailPar.Add("@ResultChange", DbType.String, HttpUtility.HtmlDecode(detailItem.ResultChange) ?? string.Empty);
+                        listDetailPar.Add("@StainingScale", DbType.String, HttpUtility.HtmlDecode(detailItem.StainingScale) ?? string.Empty);
+                        listDetailPar.Add("@ResultStain", DbType.String, HttpUtility.HtmlDecode(detailItem.ResultStain) ?? string.Empty);
                         listDetailPar.Add("@Remark", DbType.String, HttpUtility.HtmlDecode(detailItem.Remark) ?? string.Empty);
                         listDetailPar.Add("@EditName", DbType.String, HttpUtility.HtmlDecode(detailItem.EditName) ?? string.Empty);
 
@@ -327,6 +343,10 @@ WHERE UKey = @Ukey
                         listDetailPar.Add("@AccessoryRefno", DbType.String, HttpUtility.HtmlDecode(detailItem.AccessoryRefno) ?? string.Empty);
                         listDetailPar.Add("@FabricColor", DbType.String, HttpUtility.HtmlDecode(detailItem.FabricColor) ?? string.Empty);
                         listDetailPar.Add("@Result", DbType.String, HttpUtility.HtmlDecode(detailItem.Result) ?? string.Empty);
+                        listDetailPar.Add("@ChangeScale", DbType.String, HttpUtility.HtmlDecode(detailItem.ChangeScale) ?? string.Empty);
+                        listDetailPar.Add("@ResultChange", DbType.String, HttpUtility.HtmlDecode(detailItem.ResultChange) ?? string.Empty);
+                        listDetailPar.Add("@StainingScale", DbType.String, HttpUtility.HtmlDecode(detailItem.StainingScale) ?? string.Empty);
+                        listDetailPar.Add("@ResultStain", DbType.String, HttpUtility.HtmlDecode(detailItem.ResultStain) ?? string.Empty);
                         listDetailPar.Add("@Remark", DbType.String, HttpUtility.HtmlDecode(detailItem.Remark) ?? string.Empty);
                         listDetailPar.Add("@EditName", DbType.String, HttpUtility.HtmlDecode(detailItem.EditName) ?? string.Empty);
                         listDetailPar.Add("@ukey", detailItem.Ukey);

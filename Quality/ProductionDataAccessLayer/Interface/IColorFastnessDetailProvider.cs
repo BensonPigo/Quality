@@ -19,5 +19,6 @@ namespace MICS.DataAccessLayer.Interface
         bool Delete_ColorFastness_Detail(string ID, List<Fabric_ColorFastness_Detail_Result> source);
 
         DataTable Get_SubmitDate(string ID);
+        IList<ColorFastness_Excel> GetExcel(string ID);
     }
 }
