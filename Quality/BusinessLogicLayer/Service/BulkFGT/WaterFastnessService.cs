@@ -358,194 +358,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public BaseResult ToExcelWaterFastnessDetail(string poID, string TestNo, out string excelFileName, bool isTest = false)
-        {
-            _WaterFastnessProvider = new WaterFastnessProvider(Common.ProductionDataAccessLayer);
-            _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
-            BaseResult result = new BaseResult();
-            excelFileName = string.Empty;
-
-            try
-            {
-                string baseFilePath = isTest ? Directory.GetCurrentDirectory() : System.Web.HttpContext.Current.Server.MapPath("~/");
-
-                DataTable dtOvenDetail = _WaterFastnessProvider.GetWaterFastnessDetailForExcel(poID, TestNo);
-                DataTable dtOven = _WaterFastnessProvider.GetWaterFastness(poID, TestNo);
-
-                string[] columnNames = new string[] { "WaterFastnessGroup", "SEQ", "Roll", "Dyelot", "SCIRefno", "ColorID", "Supplier"
-                    , "Changescale"
-                    , "AcetateScale"
-                    , "CottonScale"
-                    , "NylonScale"
-                    , "PolyesterScale"
-                    , "AcrylicScale"
-                    , "WoolScale"
-                    , "Result", "Remark" };
-                var ret = Array.CreateInstance(typeof(object), dtOvenDetail.Rows.Count, 11) as object[,];
-                for (int i = 0; i < dtOvenDetail.Rows.Count; i++)
-                {
-                    DataRow row = dtOvenDetail.Rows[i];
-                    for (int j = 0; j < columnNames.Length; j++)
-                    {
-                        ret[i, j] = row[columnNames[j]];
-                    }
-                }
-
-                if (dtOvenDetail.Rows.Count == 0)
-                {
-                    result.ErrorMessage = "Data not found!";
-                    result.Result = false;
-                    return result;
-                }
-
-                string styleID;
-                string seasonID;
-                string status;
-                string brandID;
-                List<Orders> listOrders = _OrdersProvider.Get(new Orders() { ID = poID }).ToList();
-
-                if (listOrders.Count == 0)
-                {
-                    styleID = string.Empty;
-                    seasonID = string.Empty;
-                    status = string.Empty;
-                    brandID = string.Empty;
-                }
-                else
-                {
-                    styleID = listOrders[0].StyleID;
-                    seasonID = listOrders[0].SeasonID;
-                    status = dtOven.Rows[0]["status"].ToString();
-                    brandID = listOrders[0].BrandID;
-                }
-
-                string strXltName = baseFilePath + "\\XLT\\WaterFastnessDetailReport.xltx";
-                Excel.Application excel = MyUtility.Excel.ConnectExcel(strXltName);
-                if (excel == null)
-                {
-                    result.ErrorMessage = "Excel template not found!";
-                    result.Result = false;
-                    return result;
-                }
-
-                Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1];
-
-                worksheet.Cells[1, 2] = poID;
-                worksheet.Cells[1, 4] = styleID;
-                worksheet.Cells[1, 6] = seasonID;
-                worksheet.Cells[1, 8] = dtOven.Rows[0]["Article"].ToString();
-                worksheet.Cells[1, 10] = TestNo;
-                worksheet.Cells[2, 2] = status;
-                worksheet.Cells[2, 4] = dtOven.Rows[0]["Result"].ToString();
-                worksheet.Cells[2, 6] = dtOven.Rows[0]["InspDate"] == DBNull.Value ? string.Empty : ((DateTime)dtOven.Rows[0]["InspDate"]).ToString("yyyy/MM/dd");
-                worksheet.Cells[2, 8] = dtOven.Rows[0]["Inspector"].ToString();
-                worksheet.Cells[2, 10] = brandID;
-
-                Excel.Range cellBefore = worksheet.Cells[11, 1];
-                if (dtOven.Rows[0]["TestBeforePicture"] != DBNull.Value)
-                {
-                    string imageName = $"{Guid.NewGuid()}.jpg";
-                    string imgPath;
-                    if (IsTest.ToLower() == "true")
-                    {
-                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                    }
-                    else
-                    {
-                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                    }
-
-                    byte[] bytes = (byte[])dtOven.Rows[0]["TestBeforePicture"];
-                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
-                    {
-                        imageFile.Write(bytes, 0, bytes.Length);
-                        imageFile.Flush();
-                    }
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBefore.Left + 5, cellBefore.Top + 5, 370, 240);
-                }
-
-                Excel.Range cellAfter = worksheet.Cells[11, 7];
-                if (dtOven.Rows[0]["TestAfterPicture"] != DBNull.Value)
-                {
-                    string imageName = $"{Guid.NewGuid()}.jpg";
-                    string imgPath;
-                    if (IsTest.ToLower() == "true")
-                    {
-                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                    }
-                    else
-                    {
-                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                    }
-
-                    byte[] bytes = (byte[])dtOven.Rows[0]["TestAfterPicture"];
-                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
-                    {
-                        imageFile.Write(bytes, 0, bytes.Length);
-                        imageFile.Flush();
-                    }
-
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfter.Left + 5, cellAfter.Top + 5, 358, 240);
-                }
-
-                if (dtOvenDetail.Rows.Count > 0)
-                {
-                    Excel.Range rngToInsert = worksheet.get_Range("A4:K4", Type.Missing).EntireRow;
-                    for (int i = 1; i < dtOvenDetail.Rows.Count; i++)
-                    {
-                        rngToInsert.Insert(Excel.XlInsertShiftDirection.xlShiftDown);
-                    }
-
-                    Marshal.ReleaseComObject(rngToInsert);
-                }
-
-                int startRow = 4;
-                for (int i = 0; i < dtOvenDetail.Rows.Count; i++)
-                {
-                    worksheet.Cells[startRow + i, 1] = ret[i, 0];
-                    worksheet.Cells[startRow + i, 2] = ret[i, 1];
-                    worksheet.Cells[startRow + i, 3] = ret[i, 2];
-                    worksheet.Cells[startRow + i, 4] = ret[i, 3];
-                    worksheet.Cells[startRow + i, 5] = ret[i, 4];
-                    worksheet.Cells[startRow + i, 6] = ret[i, 5];
-                    worksheet.Cells[startRow + i, 7] = ret[i, 6];
-                    worksheet.Cells[startRow + i, 8] = ret[i, 7];
-                    worksheet.Cells[startRow + i, 9] = ret[i, 8];
-                    worksheet.Cells[startRow + i, 10] = ret[i, 9];
-                    worksheet.Cells[startRow + i, 11] = ret[i, 10];
-                    worksheet.Cells[startRow + i, 12] = ret[i, 11];
-                    worksheet.Cells[startRow + i, 13] = ret[i, 12];
-                    worksheet.Cells[startRow + i, 14] = ret[i, 13];
-                    worksheet.Cells[startRow + i, 15] = ret[i, 14];
-                    worksheet.Cells[startRow + i, 16] = ret[i, 15];
-                }
-
-                worksheet.Cells.EntireColumn.AutoFit();
-                worksheet.Cells.EntireRow.AutoFit();
-
-                worksheet.Select();
-
-                excelFileName = $"WaterFastnessDetailReport{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
-                string filepath = Path.Combine(baseFilePath, "TMP", excelFileName);
-
-                Excel.Workbook workbook = excel.ActiveWorkbook;
-                workbook.SaveAs(filepath);
-
-                workbook.Close();
-                excel.Quit();
-                Marshal.ReleaseComObject(worksheet);
-                Marshal.ReleaseComObject(workbook);
-                Marshal.ReleaseComObject(excel);
-            }
-            catch (Exception ex)
-            {
-                result.Result = false;
-                result.ErrorMessage = ex.ToString();
-            }
-
-            return result;
-        }
-
         private void SetDetailData(Excel.Worksheet worksheet, int setRow, DataRow dr)
         {
             worksheet.Cells[setRow, 2] = dr["Refno"];
@@ -571,514 +383,200 @@ namespace BusinessLogicLayer.Service.BulkFGT
             worksheet.Cells[setRow, 23] = dr["Remark"];
         }
 
-        public BaseResult ToPdfWaterFastnessDetail(string poID, string TestNo, out string pdfFileName, bool isTest)
+        public BaseResult ToReport(string ID, out string FileName, bool isPDF, bool isTest = false)
         {
-            _WaterFastnessProvider = new WaterFastnessProvider(Common.ProductionDataAccessLayer);
-            _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
-            _StyleProvider = new StyleProvider(Common.ProductionDataAccessLayer);
-
             BaseResult result = new BaseResult();
-            pdfFileName = string.Empty;
+            _WaterFastnessProvider = new WaterFastnessProvider(Common.ProductionDataAccessLayer);
+            List<WaterFastness_Excel> dataList = new List<WaterFastness_Excel>();
+
+            FileName = string.Empty;
 
             try
             {
-                string baseFilePath = isTest ? Directory.GetCurrentDirectory() : System.Web.HttpContext.Current.Server.MapPath("~/");
-                DataTable dtWaterFastnessDetail = _WaterFastnessProvider.GetWaterFastnessDetailForExcel(poID, TestNo);
-                DataTable dtWaterFastness = _WaterFastnessProvider.GetWaterFastness(poID, TestNo);
+                dataList = _WaterFastnessProvider.GetExcel(ID).ToList();
 
-                if (dtWaterFastnessDetail.Rows.Count < 1)
+                if (!dataList.Any())
                 {
+                    result.Result = false;
                     result.ErrorMessage = "Data not found!";
-                    result.Result = false;
                     return result;
                 }
 
-                var distWaterFastnessDetailSubmitDate = dtWaterFastnessDetail.AsEnumerable()
-                    .Select(s => s["SubmitDate"] == DBNull.Value ? string.Empty : ((DateTime)s["SubmitDate"]).ToString("yyyy/MM/dd"))
-                    .Distinct().ToList();
+                string basefileName = "WaterFastness_ToExcel";
+                string openfilepath;
 
-                List<Orders> listOrders = _OrdersProvider.Get(new Orders() { ID = poID }).ToList();
-                List<Style> listStyle = _StyleProvider.Get(new Style() { Ukey = listOrders[0].StyleUkey }).ToList();
-
-                string styleUkey = string.Empty;
-                string styleID = string.Empty;
-                string seasonID = string.Empty;
-                string CustPONO = string.Empty;
-                string brandID = string.Empty;
-
-                if (listOrders.Count > 0)
+                if (isTest)
                 {
-                    styleUkey = listOrders[0].StyleUkey.ToString();
-                    styleID = listOrders[0].StyleID;
-                    seasonID = listOrders[0].SeasonID;
-                    CustPONO = listOrders[0].CustPONO;
-                    brandID = listOrders[0].BrandID;
+                    openfilepath = $"C:\\Willy_Repository\\Quality_KPI\\Quality\\Quality\\bin\\XLT\\{basefileName}.xltx";
+                }
+                else
+                {
+                    openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
                 }
 
-                string strXltName = baseFilePath + "\\XLT\\FabricOvenTestDetailReportToPDF.xltx";
-                Excel.Application excel = MyUtility.Excel.ConnectExcel(strXltName);
-                if (excel == null)
+                Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
+                excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
+                Microsoft.Office.Interop.Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
+
+                Excel.Worksheet worksheetn;
+                // 複製分頁：表身幾筆，就幾個sheet
+                for (int j = 1; j < dataList.Count; j++)
                 {
-                    result.ErrorMessage = "Excel template not found!";
-                    result.Result = false;
-                    return result;
+                    //Excel.Worksheet worksheetFirst = excel.Worksheets[1];
+                    worksheetn = (Excel.Worksheet)excel.ActiveWorkbook.Worksheets[j];
+
+                    worksheet.Copy(worksheetn);
                 }
-
-                excel.DisplayAlerts = false;
-
-                // 預設頁在第5頁，前4頁是用來複製的格式，最後在刪除
-                // 依據 submitDate 複製分頁
-                int defaultSheet = 5;
-                for (int c = 1; c < distWaterFastnessDetailSubmitDate.Count(); c++)
+                //開始填資料
+                for (int j = 1; j <= dataList.Count; j++)
                 {
-                    Excel.Worksheet worksheetFirst = excel.ActiveWorkbook.Worksheets[defaultSheet];
-                    Excel.Worksheet worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + c];
-                    worksheetFirst.Copy(worksheetn);
-                }
+                    Excel.Worksheet currenSheet = excel.ActiveWorkbook.Worksheets[j];
+                    currenSheet.Name = j.ToString();
+                    WaterFastness_Excel currenData = dataList[j - 1];
 
-                #region Set Picture
-                //Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[4];
-                //Excel.Range cellBefore = worksheet.Cells[3, 2];
-                string imgPath_BeforePicture = string.Empty;
-                string imgPath_AfterPicture = string.Empty;
-                if (dtWaterFastness.Rows[0]["TestBeforePicture"] != DBNull.Value)
-                {
-                    string imageName = $"{Guid.NewGuid()}.jpg";
-                    if (IsTest.ToLower() == "true")
+                    currenSheet.Cells[2, 3] = currenData.SubmitDate.HasValue ? currenData.SubmitDate.Value.ToString("yyyy/MM/dd") : string.Empty;
+                    currenSheet.Cells[2, 8] = DateTime.Now.ToString("yyyy/MM/dd");
+
+                    currenSheet.Cells[3, 3] = currenData.SeasonID;
+                    currenSheet.Cells[3, 8] = currenData.BrandID;
+
+                    currenSheet.Cells[4, 3] = currenData.StyleID;
+                    currenSheet.Cells[4, 8] = currenData.POID;
+
+                    currenSheet.Cells[5, 3] = currenData.Roll;
+                    currenSheet.Cells[5, 8] = currenData.Dyelot;
+
+                    currenSheet.Cells[6, 3] = currenData.SCIRefno_Color;
+
+                    // Test Request
+                    currenSheet.Cells[8, 3] = currenData.Temperature;
+                    currenSheet.Cells[8, 8] = currenData.Time;
+
+                    currenSheet.Cells[12, 2] = currenData.ChangeScale;
+                    currenSheet.Cells[12, 3] = currenData.AcetateScale;
+                    currenSheet.Cells[12, 4] = currenData.CottonScale;
+                    currenSheet.Cells[12, 5] = currenData.NylonScale;
+                    currenSheet.Cells[12, 6] = currenData.PolyesterScale;
+                    currenSheet.Cells[12, 7] = currenData.AcrylicScale;
+                    currenSheet.Cells[12, 8] = currenData.WoolScale;
+
+                    currenSheet.Cells[13, 2] = currenData.ResultChange;
+                    currenSheet.Cells[13, 3] = currenData.ResultAcetate;
+                    currenSheet.Cells[13, 4] = currenData.ResultCotton;
+                    currenSheet.Cells[13, 5] = currenData.ResultNylon;
+                    currenSheet.Cells[13, 6] = currenData.ResultPolyester;
+                    currenSheet.Cells[13, 7] = currenData.ResultAcrylic;
+                    currenSheet.Cells[13, 8] = currenData.ResultWool;
+
+                    currenSheet.Cells[14, 2] = currenData.Remark;
+                    currenSheet.Cells[70, 3] = currenData.Inspector;
+                    currenSheet.Cells[70, 7] = currenData.Inspector;
+
+
+                    #region 添加圖片
+                    Excel.Range cellBeforePicture = currenSheet.Cells[45, 1];
+                    if (currenData.TestBeforePicture != null)
                     {
-                        imgPath_BeforePicture = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                    }
-                    else
-                    {
-                        imgPath_BeforePicture = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                    }
+                        string imageName = $"{Guid.NewGuid()}.jpg";
+                        string imgPath;
 
-                    byte[] bytes = (byte[])dtWaterFastness.Rows[0]["TestBeforePicture"];
-                    using (var imageFile = new FileStream(imgPath_BeforePicture, FileMode.Create))
-                    {
-                        imageFile.Write(bytes, 0, bytes.Length);
-                        imageFile.Flush();
-                    }
-                    //worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBefore.Left + 5, cellBefore.Top + 5, 430, 295);
-                }
-
-                //Excel.Range cellAfter = worksheet.Cells[3, 10];
-                if (dtWaterFastness.Rows[0]["TestAfterPicture"] != DBNull.Value)
-                {
-                    string imageName = $"{Guid.NewGuid()}.jpg";
-                    if (IsTest.ToLower() == "true")
-                    {
-                        imgPath_AfterPicture = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                    }
-                    else
-                    {
-                        imgPath_AfterPicture = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                    }
-
-                    byte[] bytes = (byte[])dtWaterFastness.Rows[0]["TestAfterPicture"];
-                    using (var imageFile = new FileStream(imgPath_AfterPicture, FileMode.Create))
-                    {
-                        imageFile.Write(bytes, 0, bytes.Length);
-                        imageFile.Flush();
-                    }
-
-                    //worksheet.Shapes.AddPicture(imgPath_AfterPicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfter.Left + 5, cellAfter.Top + 5, 430, 295);
-                }
-                #endregion
-
-                Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1];
-                // 依據 submitDate 填入表頭資訊
-                for (int i = 0; i < distWaterFastnessDetailSubmitDate.Count(); i++)
-                {
-                    worksheet = excel.ActiveWorkbook.Worksheets[i + defaultSheet];
-                    worksheet.Cells[4, 3] = distWaterFastnessDetailSubmitDate[i];
-                    worksheet.Cells[4, 6] = dtWaterFastness.Rows[0]["InspDate"] == DBNull.Value ? string.Empty : ((DateTime)dtWaterFastness.Rows[0]["InspDate"]).ToString("yyyy/MM/dd");
-                    worksheet.Cells[4, 9] = poID;
-                    worksheet.Cells[4, 14] = brandID;
-                    worksheet.Cells[6, 3] = styleID;
-                    worksheet.Cells[6, 9] = CustPONO;
-                    worksheet.Cells[6, 14] = dtWaterFastness.Rows[0]["Article"].ToString();
-                    worksheet.Cells[7, 3] = listStyle[0].StyleName;
-                    worksheet.Cells[7, 9] = seasonID;
-                }
-
-                // 細項
-                int setRow = 78; // 78 列為一頁
-                int headerRow = 9; // 表頭那頁前9列為固定
-                int signatureRow = 4; // 簽名有4列
-                int frameRow = 34; // 框 33列 + 1 列空白
-                int alladdSheet = 0;
-
-                string signature = dtWaterFastness.Rows[0]["InspectorName"].ToString();
-                Excel.Worksheet worksheetDetail = excel.ActiveWorkbook.Worksheets[1];
-                Excel.Worksheet worksheetSignature = excel.ActiveWorkbook.Worksheets[2];
-                Excel.Worksheet worksheetFrame = excel.ActiveWorkbook.Worksheets[3];
-                Excel.Worksheet worksheetPicture = excel.ActiveWorkbook.Worksheets[4];
-
-                for (int i = 0; i < distWaterFastnessDetailSubmitDate.Count; i++)
-                {
-                    DataRow[] dr = dtWaterFastnessDetail.Select(MyUtility.Check.Empty(distWaterFastnessDetailSubmitDate[i]) ? $@"submitDate is null" : $"submitDate = '{distWaterFastnessDetailSubmitDate[i]}'");
-
-                    int underHeaderRow = setRow - headerRow;
-                    if (dr.Length > underHeaderRow)
-                    {
-                        int overRow = dr.Length - underHeaderRow;
-                        int addSheets = (int)Math.Ceiling(overRow * 1.0 / setRow);
-
-                        // 有表頭那頁下方的細項格線
-                        worksheet = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
-                        for (int j = 0; j < underHeaderRow; j++)
+                        if (isTest)
                         {
-                            Excel.Range paste1 = worksheet.get_Range($"A{headerRow + 1 + j}", Type.Missing);
-                            Excel.Range r = worksheetDetail.get_Range("A1").EntireRow;
-                            paste1.Insert(Excel.XlInsertShiftDirection.xlShiftDown, r.Copy(Type.Missing));
-
-                            // 細項資料
-                            this.SetDetailData(worksheet, j + headerRow + 1, dr[j]);
-                        }
-                        worksheet.Cells.EntireRow.AutoFit();
-
-                        // 額外細項分頁
-                        for (int k = 0; k < addSheets; k++)
-                        {
-                            // 新增細項分頁
-                            Excel.Worksheet worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i + k + 1];
-                            worksheetDetail.Copy(worksheetn);
-
-                            #region worksheetn 的細項格線
-                            worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i + k + 1];
-                            worksheetn.get_Range("A1").EntireRow.Delete();
-
-                            int addrow = overRow;
-                            if (overRow > setRow)
-                            {
-                                addrow = setRow;
-                                overRow -= setRow;
-                            }
-                            else
-                            {
-                                overRow = 0;
-                            }
-
-                            for (int j = 0; j < addrow; j++)
-                            {
-                                Excel.Range paste1 = worksheetn.get_Range($"A{j + 1}", Type.Missing);
-                                Excel.Range r = worksheetDetail.get_Range("A1").EntireRow;
-                                paste1.Insert(Excel.XlInsertShiftDirection.xlShiftDown, r.Copy(Type.Missing));
-
-                                // 細項資料
-                                this.SetDetailData(worksheetn, j + 1, dr[j + underHeaderRow + (k * setRow)]);
-                            }
-                            #endregion
-
-                            int afterSignatureRow = 0;
-
-                            // 簽名列
-                            if (overRow <= 0)
-                            {
-                                if (addrow < setRow - signatureRow)
-                                {
-                                    Excel.Range paste2 = worksheetn.get_Range($"A{addrow + 1}", Type.Missing);
-                                    Excel.Range r2 = worksheetSignature.get_Range("A1:A4").EntireRow;
-                                    paste2.Insert(Excel.XlInsertShiftDirection.xlShiftDown, r2.Copy(Type.Missing));
-                                    worksheetn.Cells[addrow + 3, 13] = signature;
-                                    afterSignatureRow = addrow + 1 + signatureRow;
-                                }
-                                else
-                                {
-                                    // 因簽名列塞不小，增加分頁
-                                    alladdSheet++;
-                                    worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i + k + 1];
-                                    worksheetSignature.Copy(worksheetn);
-                                    worksheetn.Cells[3, 13] = signature;
-                                    afterSignatureRow = signatureRow;
-                                }
-                            }
-
-                            #region 加入 4*10 的框
-                            worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i + k + 1];
-
-                            // 共要加入幾組 frameNum
-                            int frameNum = (int)Math.Ceiling(dr.Length * 1.0 / 2);
-
-                            // 有簽名列那頁下方還有空間放下
-                            if (afterSignatureRow <= setRow - frameRow)
-                            {
-                                Excel.Range paste2 = worksheetn.get_Range($"A{afterSignatureRow + 1}", Type.Missing);
-                                Excel.Range r2 = worksheetFrame.get_Range("A9:A42").EntireRow;
-                                paste2.Insert(Excel.XlInsertShiftDirection.xlShiftDown, r2.Copy(Type.Missing));
-                                frameNum--;
-                                afterSignatureRow += frameRow;
-
-                                if (afterSignatureRow <= setRow - frameRow)
-                                {
-                                    paste2 = worksheetn.get_Range($"A{afterSignatureRow + 1}", Type.Missing);
-                                    paste2.Insert(Excel.XlInsertShiftDirection.xlShiftDown, r2.Copy(Type.Missing));
-                                    frameNum--;
-                                }
-                            }
-
-                            bool g1 = true;
-                            for (int f = 0; f < frameNum; f++)
-                            {
-                                // 此頁第一組
-                                if (g1)
-                                {
-                                    alladdSheet++;
-                                    worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i + k + 1];
-                                    worksheetFrame.Copy(worksheetn);
-                                }
-
-                                // 此頁第2組
-                                else
-                                {
-                                    worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i + k + 1];
-                                    Excel.Range paste2 = worksheetn.get_Range($"A43", Type.Missing);
-                                    Excel.Range r2 = worksheetFrame.get_Range("A9:A42").EntireRow;
-                                    paste2.Insert(Excel.XlInsertShiftDirection.xlShiftDown, r2.Copy(Type.Missing));
-                                }
-
-                                g1 = !g1;
-                            }
-
-                            Excel.Range cell;
-                            if (frameNum == 0)
-                            {
-                                worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
-                                Excel.Range paste2 = worksheetn.get_Range($"A52", Type.Missing);
-                                Excel.Range r2 = worksheetPicture.get_Range("A1:A20").EntireRow;
-                                paste2.Insert(Excel.XlInsertShiftDirection.xlShiftToRight, r2.Copy(Type.Missing));
-
-                                if (!string.IsNullOrEmpty(imgPath_BeforePicture))
-                                {
-                                    cell = worksheetn.Cells[54, 2];
-                                    worksheetn.Shapes.AddPicture(imgPath_BeforePicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 435, 280);
-                                }
-                                if (!string.IsNullOrEmpty(imgPath_AfterPicture))
-                                {
-                                    cell = worksheetn.Cells[54, 10];
-                                    worksheetn.Shapes.AddPicture(imgPath_AfterPicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 435, 280);
-                                }
-                            }
-                            else if (!g1)
-                            {
-                                worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
-                                Excel.Range paste2 = worksheetn.get_Range($"A46", Type.Missing);
-                                Excel.Range r2 = worksheetPicture.get_Range("A1:A20").EntireRow;
-                                paste2.Insert(Excel.XlInsertShiftDirection.xlShiftToRight, r2.Copy(Type.Missing));
-
-                                if (!string.IsNullOrEmpty(imgPath_BeforePicture))
-                                {
-                                    cell = worksheetn.Cells[48, 2];
-                                    worksheetn.Shapes.AddPicture(imgPath_BeforePicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 435, 285);
-                                }
-                                if (!string.IsNullOrEmpty(imgPath_AfterPicture))
-                                {
-                                    cell = worksheetn.Cells[48, 10];
-                                    worksheetn.Shapes.AddPicture(imgPath_AfterPicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 435, 285);
-                                }
-                            }
-                            else
-                            {
-                                alladdSheet++;
-                                Excel.Worksheet worksheepic = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
-                                worksheetPicture.Copy(worksheepic);
-
-                                worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
-                                if (!string.IsNullOrEmpty(imgPath_BeforePicture))
-                                {
-                                    cell = worksheetn.Cells[3, 2];
-                                    worksheetn.Shapes.AddPicture(imgPath_BeforePicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 430, 285);
-                                }
-                                if (!string.IsNullOrEmpty(imgPath_AfterPicture))
-                                {
-                                    cell = worksheetn.Cells[3, 10];
-                                    worksheetn.Shapes.AddPicture(imgPath_AfterPicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 430, 285);
-                                }
-                            }
-                            #endregion
-                        }
-
-                        alladdSheet += addSheets;
-                    }
-                    else
-                    {
-                        // 有表頭那頁下方的細項格線
-                        worksheet = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
-                        for (int j = 0; j < dr.Length; j++)
-                        {
-                            Excel.Range paste1 = worksheet.get_Range($"A{headerRow + 1 + j}", Type.Missing);
-                            Excel.Range r = worksheetDetail.get_Range("A1").EntireRow;
-                            paste1.Insert(Excel.XlInsertShiftDirection.xlShiftDown, r.Copy(Type.Missing));
-
-                            // 細項資料
-                            this.SetDetailData(worksheet, j + headerRow + 1, dr[j]);
-                        }
-                        worksheet.Cells.EntireRow.AutoFit();
-
-                        int afterSignatureRow;
-
-                        // 簽名列
-                        if (dr.Length < underHeaderRow - signatureRow)
-                        {
-                            Excel.Range paste2 = worksheet.get_Range($"A{dr.Length + headerRow + 1}", Type.Missing);
-                            Excel.Range r2 = worksheetSignature.get_Range("A1:A4").EntireRow;
-                            paste2.Insert(Excel.XlInsertShiftDirection.xlShiftDown, r2.Copy(Type.Missing));
-                            worksheet.Cells[dr.Length + headerRow + 3, 13] = signature;
-                            afterSignatureRow = dr.Length + headerRow + signatureRow;
+                            imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
                         }
                         else
                         {
-                            // 因簽名列塞不小，增加分頁
-                            alladdSheet++;
-                            Excel.Worksheet worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
-                            worksheetSignature.Copy(worksheetn);
-                            worksheetn.Cells[3, 13] = signature;
-                            afterSignatureRow = signatureRow;
+                            imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
                         }
 
-                        #region 加入 4*10 的框
-                        worksheet = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
-
-                        // 共要加入幾組 frameNum
-                        int frameNum = (int)Math.Ceiling(dr.Length * 1.0 / 2);
-
-                        // 有簽名列那頁下方還有空間放下
-                        if (afterSignatureRow <= setRow - frameRow)
+                        byte[] bytes = currenData.TestBeforePicture;
+                        using (var imageFile = new FileStream(imgPath, FileMode.Create))
                         {
-                            Excel.Range paste2 = worksheet.get_Range($"A{afterSignatureRow + 1}", Type.Missing);
-                            Excel.Range r2 = worksheetFrame.get_Range("A9:A42").EntireRow;
-                            paste2.Insert(Excel.XlInsertShiftDirection.xlShiftDown, r2.Copy(Type.Missing));
-                            frameNum--;
-                            afterSignatureRow += frameRow;
-
-                            if (afterSignatureRow <= setRow - frameRow)
-                            {
-                                paste2 = worksheet.get_Range($"A{afterSignatureRow + 1}", Type.Missing);
-                                paste2.Insert(Excel.XlInsertShiftDirection.xlShiftDown, r2.Copy(Type.Missing));
-                                frameNum--;
-                            }
+                            imageFile.Write(bytes, 0, bytes.Length);
+                            imageFile.Flush();
                         }
+                        currenSheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 380, 300);
+                    }
 
-                        bool g1 = true;
-                        for (int f = 0; f < frameNum; f++)
+                    Excel.Range cellAfterPicture = currenSheet.Cells[45, 5];
+                    if (currenData.TestAfterPicture != null)
+                    {
+                        string imageName = $"{Guid.NewGuid()}.jpg";
+                        string imgPath;
+
+                        if (isTest)
                         {
-                            // 此頁第一組
-                            if (g1)
-                            {
-                                alladdSheet++;
-                                Excel.Worksheet worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
-                                worksheetFrame.Copy(worksheetn);
-                            }
-
-                            // 此頁第2組
-                            else
-                            {
-                                Excel.Worksheet worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
-                                Excel.Range paste2 = worksheetn.get_Range($"A43", Type.Missing);
-                                Excel.Range r2 = worksheetFrame.get_Range("A9:A42").EntireRow;
-                                paste2.Insert(Excel.XlInsertShiftDirection.xlShiftDown, r2.Copy(Type.Missing));
-                            }
-
-                            g1 = !g1;
-                        }
-                        #endregion
-
-                        Excel.Range cell;
-                        if (frameNum == 0)
-                        {
-                            Excel.Worksheet worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
-                            Excel.Range paste2 = worksheetn.get_Range($"A52", Type.Missing);
-                            Excel.Range r2 = worksheetPicture.get_Range("A1:A20").EntireRow;
-                            paste2.Insert(Excel.XlInsertShiftDirection.xlShiftToRight, r2.Copy(Type.Missing));
-
-                            if (!string.IsNullOrEmpty(imgPath_BeforePicture))
-                            {
-                                cell = worksheetn.Cells[54, 2];
-                                worksheetn.Shapes.AddPicture(imgPath_BeforePicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 435, 280);
-                            }
-                            if (!string.IsNullOrEmpty(imgPath_AfterPicture))
-                            {
-                                cell = worksheetn.Cells[54, 10];
-                                worksheetn.Shapes.AddPicture(imgPath_AfterPicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 435, 280);
-                            }
-                        }
-                        else if (!g1)
-                        {
-                            Excel.Worksheet worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
-                            Excel.Range paste2 = worksheetn.get_Range($"A46", Type.Missing);
-                            Excel.Range r2 = worksheetPicture.get_Range("A1:A20").EntireRow;
-                            paste2.Insert(Excel.XlInsertShiftDirection.xlShiftToRight, r2.Copy(Type.Missing));
-
-                            if (!string.IsNullOrEmpty(imgPath_BeforePicture))
-                            {
-                                cell = worksheetn.Cells[48, 2];
-                                worksheetn.Shapes.AddPicture(imgPath_BeforePicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 435, 285);
-                            }
-                            if (!string.IsNullOrEmpty(imgPath_AfterPicture))
-                            {
-                                cell = worksheetn.Cells[48, 10];
-                                worksheetn.Shapes.AddPicture(imgPath_AfterPicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 435, 285);
-                            }
+                            imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
                         }
                         else
                         {
-                            alladdSheet++;
-                            Excel.Worksheet worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
-                            worksheetPicture.Copy(worksheetn);
-
-                            worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
-                            if (!string.IsNullOrEmpty(imgPath_BeforePicture))
-                            {
-                                cell = worksheetn.Cells[3, 2];
-                                worksheetn.Shapes.AddPicture(imgPath_BeforePicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 430, 285);
-                            }
-                            if (!string.IsNullOrEmpty(imgPath_AfterPicture))
-                            {
-                                cell = worksheetn.Cells[3, 10];
-                                worksheetn.Shapes.AddPicture(imgPath_AfterPicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 430, 285);
-                            }
+                            imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
                         }
-                    }
-                }
 
-                for (int i = 0; i < 4; i++)
-                {
-                    worksheet = excel.ActiveWorkbook.Worksheets[1];
-                    worksheet.Delete();
+                        byte[] bytes = currenData.TestAfterPicture;
+                        using (var imageFile = new FileStream(imgPath, FileMode.Create))
+                        {
+                            imageFile.Write(bytes, 0, bytes.Length);
+                            imageFile.Flush();
+                        }
+                        currenSheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 2, 380, 300);
+                    }
+                    #endregion
+
                 }
 
                 #region Save & Show Excel
 
-                pdfFileName = $"WaterFastnessDetailReportToPDF{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
-                string excelFileName = $"WaterFastnessDetailReportToPDF{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                string fileName = $"{basefileName}_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+                string filexlsx = fileName + ".xlsx";
+                string fileNamePDF = fileName + ".pdf";
 
-                string pdfPath = Path.Combine(baseFilePath, "TMP", pdfFileName);
-                string excelPath = Path.Combine(baseFilePath, "TMP", excelFileName);
-
-                excel.ActiveWorkbook.SaveAs(excelPath);
-                excel.Quit();
-
-                bool isCreatePdfOK = ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
-                if (!isCreatePdfOK)
+                string filepath;
+                string filepathpdf;
+                if (isTest)
                 {
-                    result.Result = false;
-                    result.ErrorMessage = "ConvertToPDF fail";
-                    return result;
+                    filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", filexlsx);
+                    filepathpdf = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", fileNamePDF);
+                }
+                else
+                {
+                    filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filexlsx);
+                    filepathpdf = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileNamePDF);
+                }
+
+                Excel.Workbook workbook = excel.ActiveWorkbook;
+                workbook.SaveAs(filepath);
+                workbook.Close();
+                excel.Quit();
+                Marshal.ReleaseComObject(worksheet);
+                Marshal.ReleaseComObject(workbook);
+                Marshal.ReleaseComObject(excel);
+
+                FileName = filexlsx;
+                result.Result = true;
+
+                if (isPDF)
+                {
+                    if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
+                    {
+                        FileName = fileNamePDF;
+                        result.Result = true;
+                    }
+                    else
+                    {
+                        result.ErrorMessage = "Convert To PDF Fail";
+                        result.Result = false;
+                    }
                 }
 
                 #endregion
-                Marshal.ReleaseComObject(worksheet);
-                Marshal.ReleaseComObject(excel);
+
             }
             catch (Exception ex)
             {
-
                 result.Result = false;
                 result.ErrorMessage = ex.ToString();
             }
-
-
 
             return result;
         }

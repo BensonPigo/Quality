@@ -140,4 +140,39 @@ namespace DatabaseObject.ResultModel
             }
         }
     }
+
+    public class WaterFastness_Excel
+    {
+        public DateTime? SubmitDate { get; set; }
+        public string SeasonID { get; set; }
+        public string BrandID { get; set; }
+        public string StyleID { get; set; }
+        public string POID { get; set; }
+        public string Roll { get; set; }
+        public string Dyelot { get; set; }
+        public int Temperature { get; set; }
+        public int Time { get; set; }
+        public string SCIRefno_Color { get; set; }
+        public string ChangeScale { get; set; }
+        public string ResultChange { get; set; }
+        public string AcetateScale { get; set; }
+        public string ResultAcetate { get; set; }
+        public string CottonScale { get; set; }
+        public string ResultCotton { get; set; }
+        public string NylonScale { get; set; }
+        public string ResultNylon { get; set; }
+        public string PolyesterScale { get; set; }
+        public string ResultPolyester { get; set; }
+        public string AcrylicScale { get; set; }
+        public string ResultAcrylic { get; set; }
+        public string WoolScale { get; set; }
+        public string ResultWool { get; set; }
+        public string Remark { get; set; }
+        public string Inspector { get; set; }
+
+        public Byte[] TestBeforePicture { get; set; }
+
+        public Byte[] TestAfterPicture { get; set; }
+
+    }
 }

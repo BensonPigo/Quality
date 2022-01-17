@@ -316,11 +316,13 @@ namespace Quality.Areas.BulkFGT
             string FileName;
             if (IsToPDF)
             {
-                result = _WaterFastnessService.ToPdfWaterFastnessDetail(ID, No, out FileName, false);
+                //result = _WaterFastnessService.ToPdfWaterFastnessDetail(ID, No, out FileName, false);
+                result = _WaterFastnessService.ToReport(ID, out FileName, true, false);
             }
             else
             {
-                result = _WaterFastnessService.ToExcelWaterFastnessDetail(ID, No, out FileName, false);
+                //result = _WaterFastnessService.ToExcelWaterFastnessDetail(ID, No, out FileName, false);
+                result = _WaterFastnessService.ToReport(ID, out FileName, false, false);
             }
 
             string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;

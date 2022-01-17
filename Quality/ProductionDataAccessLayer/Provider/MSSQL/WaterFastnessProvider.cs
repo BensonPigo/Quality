@@ -769,5 +769,57 @@ exec UpdateInspPercent 'LabWaterFastness',@poID
                 transaction.Complete();
             }
         }
+
+        public IList<WaterFastness_Excel> GetExcel(string ID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.String, ID } ,
+            };
+
+            string sqlcmd = @"
+select cd.SubmitDate
+        ,o.SeasonID
+        ,o.BrandID
+        ,o.StyleID
+        ,c.POID
+        ,cd.Roll
+        ,cd.Dyelot
+        ,SCIRefno_Color = po3.SCIRefno + ' ' +po3.ColorID
+        ,c.Temperature
+        ,c.Time
+        ,cd.ChangeScale
+        ,cd.AcetateScale
+        ,cd.CottonScale
+        ,cd.NylonScale
+        ,cd.PolyesterScale
+        ,cd.AcrylicScale
+        ,cd.WoolScale
+        ,cd.ResultChange
+        ,cd.ResultAcetate
+        ,cd.ResultCotton
+        ,cd.ResultNylon
+        ,cd.ResultPolyester
+        ,cd.ResultAcrylic
+        ,cd.ResultWool
+        ,cd.Remark
+        ,c.Inspector
+        ,pmsFile.TestBeforePicture
+        ,pmsFile.TestAfterPicture
+from WaterFastness_Detail cd WITH(NOLOCK)
+left join WaterFastness c WITH(NOLOCK) on c.ID =  cd.ID
+left join ExtendServer.PMSFile.dbo.WaterFastness pmsFile WITH(NOLOCK) on pmsFile.ID =  cd.ID
+left join Orders o WITH(NOLOCK) on o.ID=c.POID
+left join PO_Supp_Detail po3 WITH(NOLOCK) on c.POID = po3.ID 
+	and cd.SEQ1 = po3.SEQ1 and cd.SEQ2 = po3.SEQ2
+left join Pass1 pEdit WITH(NOLOCK) on pEdit.ID = cd.EditName
+left join pass1 pAdd WITH(NOLOCK) on pAdd.ID = cd.AddName
+where cd.ID = @ID
+order by cd.SubmitDate
+";
+            var detail = ExecuteList<WaterFastness_Excel>(CommandType.Text, sqlcmd, objParameter);
+
+            return detail.Any() ? detail : new List<WaterFastness_Excel>();
+        }
     }
 }

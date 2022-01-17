@@ -1153,7 +1153,7 @@
             url: "@Url.Action("Report", "WaterFastness", new { Area = "BulkFGT" })",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
-            data: JSON.stringify({ ID: $('#Main_POID').val(), No: $('#Main_TestNo').val(), IsToPDF: IsToPDF }),
+            data: JSON.stringify({ ID: $('#Main_ID').val(), No: $('#Main_TestNo').val(), IsToPDF: IsToPDF }),
             async: false,
             success: function (data) {
                 if (data.Result) {
