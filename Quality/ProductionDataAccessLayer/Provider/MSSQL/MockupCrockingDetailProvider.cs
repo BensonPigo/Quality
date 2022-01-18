@@ -87,28 +87,6 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
 
-        public int Update(MockupCrocking_Detail Item)
-        {
-            StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append("UPDATE [MockupCrocking_Detail]" + Environment.NewLine);
-            SbSql.Append("SET EditDate=GETDATE()" + Environment.NewLine);
-            if (Item.EditName != null) { SbSql.Append(",EditName=@EditName" + Environment.NewLine); objParameter.Add("@EditName", DbType.String, Item.EditName); }
-            if (Item.Design != null) { SbSql.Append(",Design=@Design" + Environment.NewLine); objParameter.Add("@Design", DbType.String, Item.Design); }
-            if (Item.ArtworkColor != null) { SbSql.Append(",ArtworkColor=@ArtworkColor" + Environment.NewLine); objParameter.Add("@ArtworkColor", DbType.String, Item.ArtworkColor); }
-            if (Item.FabricRefNo != null) { SbSql.Append(",FabricRefNo=@FabricRefNo" + Environment.NewLine); objParameter.Add("@FabricRefNo", DbType.String, Item.FabricRefNo); }
-            if (Item.FabricColor != null) { SbSql.Append(",FabricColor=@FabricColor" + Environment.NewLine); objParameter.Add("@FabricColor", DbType.String, Item.FabricColor); }
-            if (Item.DryScale != null) { SbSql.Append(",DryScale=@DryScale" + Environment.NewLine); objParameter.Add("@DryScale", DbType.String, Item.DryScale); }
-            if (Item.WetScale != null) { SbSql.Append(",WetScale=@WetScale" + Environment.NewLine); objParameter.Add("@WetScale", DbType.String, Item.WetScale); }
-            if (Item.Result != null) { SbSql.Append(",Result=@Result" + Environment.NewLine); objParameter.Add("@Result", DbType.String, Item.Result); }
-            if (Item.Remark != null) { SbSql.Append(",Remark=@Remark" + Environment.NewLine); objParameter.Add("@Remark", DbType.String, Item.Remark); }
-            SbSql.Append("WHERE 1 = 1" + Environment.NewLine);
-            SbSql.Append("And Ukey = @Ukey" + Environment.NewLine);
-            objParameter.Add("@Ukey", DbType.Int64, Item.Ukey);
-
-
-            return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
-        }
 
         public int Delete(MockupCrocking_Detail Item)
         {

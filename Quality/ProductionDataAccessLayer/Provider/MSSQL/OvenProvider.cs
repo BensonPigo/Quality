@@ -57,68 +57,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 
             return ExecuteList<Oven>(CommandType.Text, SbSql.ToString(), objParameter);
         }
-		/*建立Fabric Oven Test(Create) 詳細敘述如下*/
-        /// <summary>
-        /// 建立Fabric Oven Test
-        /// </summary>
-        /// <param name="Item">Fabric Oven Test成員</param>
-        /// <returns>回傳異動筆數</returns>
-		/// <info>Author: Admin; Date: 2021/08/26  </info>
-        /// <history>
-        /// xx.  YYYY/MM/DD   Ver   Author      Comments
-        /// ===  ==========  ====  ==========  ==========
-        /// 01.  2021/08/26  1.00    Admin        Create
-        /// </history>
-        public int Create(Oven Item)
-        {
-            StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append("INSERT INTO [Oven]"+ Environment.NewLine);
-            SbSql.Append("(" + Environment.NewLine);
-            SbSql.Append("         ID"+ Environment.NewLine);
-            SbSql.Append("        ,POID"+ Environment.NewLine);
-            SbSql.Append("        ,TestNo"+ Environment.NewLine);
-            SbSql.Append("        ,InspDate"+ Environment.NewLine);
-            SbSql.Append("        ,Article"+ Environment.NewLine);
-            SbSql.Append("        ,Result"+ Environment.NewLine);
-            SbSql.Append("        ,Status"+ Environment.NewLine);
-            SbSql.Append("        ,Inspector"+ Environment.NewLine);
-            SbSql.Append("        ,Remark"+ Environment.NewLine);
-            SbSql.Append("        ,addName"+ Environment.NewLine);
-            SbSql.Append("        ,addDate"+ Environment.NewLine);
-            SbSql.Append("        ,EditName"+ Environment.NewLine);
-            SbSql.Append("        ,EditDate"+ Environment.NewLine);
-            SbSql.Append("        ,Temperature"+ Environment.NewLine);
-            SbSql.Append("        ,Time"+ Environment.NewLine);
-            SbSql.Append("        ,TestBeforePicture"+ Environment.NewLine);
-            SbSql.Append("        ,TestAfterPicture"+ Environment.NewLine);
-            SbSql.Append(")"+ Environment.NewLine);
-            SbSql.Append("VALUES"+ Environment.NewLine);
-            SbSql.Append("(" + Environment.NewLine);
-            SbSql.Append("         @ID"); objParameter.Add("@ID", DbType.String, Item.ID);
-            SbSql.Append("        ,@POID"); objParameter.Add("@POID", DbType.String, Item.POID);
-            SbSql.Append("        ,@TestNo"); objParameter.Add("@TestNo", DbType.String, Item.TestNo);
-            SbSql.Append("        ,@InspDate"); objParameter.Add("@InspDate", DbType.String, Item.InspDate);
-            SbSql.Append("        ,@Article"); objParameter.Add("@Article", DbType.String, Item.Article);
-            SbSql.Append("        ,@Result"); objParameter.Add("@Result", DbType.String, Item.Result);
-            SbSql.Append("        ,@Status"); objParameter.Add("@Status", DbType.String, Item.Status);
-            SbSql.Append("        ,@Inspector"); objParameter.Add("@Inspector", DbType.String, Item.Inspector);
-            SbSql.Append("        ,@Remark"); objParameter.Add("@Remark", DbType.String, Item.Remark);
-            SbSql.Append("        ,@addName"); objParameter.Add("@addName", DbType.String, Item.addName);
-            SbSql.Append("        ,@addDate"); objParameter.Add("@addDate", DbType.DateTime, Item.addDate);
-            SbSql.Append("        ,@EditName"); objParameter.Add("@EditName", DbType.String, Item.EditName);
-            SbSql.Append("        ,@EditDate"); objParameter.Add("@EditDate", DbType.DateTime, Item.EditDate);
-            SbSql.Append("        ,@Temperature"); objParameter.Add("@Temperature", DbType.Int32, Item.Temperature);
-            SbSql.Append("        ,@Time"); objParameter.Add("@Time", DbType.Int32, Item.Time);
-            SbSql.Append("        ,@TestBeforePicture"); objParameter.Add("@TestBeforePicture", DbType.String, Item.TestBeforePicture);
-            SbSql.Append("        ,@TestAfterPicture"); objParameter.Add("@TestAfterPicture", DbType.String, Item.TestAfterPicture);
-            SbSql.Append(")"+ Environment.NewLine);
 
-
-
-
-            return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
-        }
 		/*更新Fabric Oven Test(Update) 詳細敘述如下*/
         /// <summary>
         /// 更新Fabric Oven Test
@@ -145,7 +84,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             if (Item.Result != null) { SbSql.Append(",Result=@Result"+ Environment.NewLine); objParameter.Add("@Result", DbType.String, Item.Result);}
             if (Item.Status != null) { SbSql.Append(",Status=@Status"+ Environment.NewLine); objParameter.Add("@Status", DbType.String, Item.Status);}
             if (Item.Inspector != null) { SbSql.Append(",Inspector=@Inspector"+ Environment.NewLine); objParameter.Add("@Inspector", DbType.String, Item.Inspector);}
-            if (Item.Remark != null) { SbSql.Append(",Remark=@Remark"+ Environment.NewLine); objParameter.Add("@Remark", DbType.String, Item.Remark);}
+            if (Item.Remark != null) { SbSql.Append(",Remark=@Remark"+ Environment.NewLine); objParameter.Add("@Remark", DbType.String, Item.Remark ?? "");}
             if (Item.addName != null) { SbSql.Append(",addName=@addName"+ Environment.NewLine); objParameter.Add("@addName", DbType.String, Item.addName);}
             if (Item.addDate != null) { SbSql.Append(",addDate=@addDate"+ Environment.NewLine); objParameter.Add("@addDate", DbType.DateTime, Item.addDate);}
             if (Item.EditName != null) { SbSql.Append(",EditName=@EditName"+ Environment.NewLine); objParameter.Add("@EditName", DbType.String, Item.EditName);}

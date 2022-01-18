@@ -179,6 +179,7 @@
     <Compile Include="ResultModel\UserList.cs" />
     <Compile Include="ResultModel\UserList_Authority.cs" />
     <Compile Include="ResultModel\UserList_Browse.cs" />
+    <Compile Include="ResultModel\WaterFastness_Result.cs" />
     <Compile Include="ViewModel\BACriteria_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\Accessory_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\FabricColorFastness_ViewModel.cs" />

@@ -107,7 +107,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             if (Item.ResultChange != null) { SbSql.Append(",ResultChange=@ResultChange" + Environment.NewLine); objParameter.Add("@ResultChange", DbType.String, Item.ResultChange); }
             if (Item.StainingScale != null) { SbSql.Append(",StainingScale=@StainingScale" + Environment.NewLine); objParameter.Add("@StainingScale", DbType.String, Item.StainingScale); }
             if (Item.ResultStain != null) { SbSql.Append(",ResultStain=@ResultStain" + Environment.NewLine); objParameter.Add("@ResultStain", DbType.String, Item.ResultStain); }
-            if (Item.Remark != null) { SbSql.Append(",Remark=@Remark" + Environment.NewLine); objParameter.Add("@Remark", DbType.String, Item.Remark); }
+            if (Item.Remark != null) { SbSql.Append(",Remark=@Remark" + Environment.NewLine); objParameter.Add("@Remark", DbType.String, Item.Remark ?? ""); }
             SbSql.Append("WHERE 1 = 1" + Environment.NewLine);
             SbSql.Append("And Ukey = @Ukey" + Environment.NewLine);
             objParameter.Add("@Ukey", DbType.Int64, Item.Ukey);
