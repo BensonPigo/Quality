@@ -382,7 +382,11 @@ values
         ,@ResultAcrylic
         ,@WoolScale
         ,@ResultWool
-)";
+)
+
+declare @POID varchar(13) = (select POID from ColorFastness WITH(NOLOCK) where ID = @ID)
+exec UpdateInspPercent 'LabColorFastness', @POID
+";
             string deleteDetail = $@"
 delete from ColorFastness_Detail 
 where id = @ID
@@ -422,6 +426,9 @@ where ID = @ID
 and ColorFastnessGroup = @ColorFastnessGroup
 and SEQ1 = @Seq1
 and SEQ2 = @Seq2
+
+declare @POID varchar(13) = (select POID from ColorFastness WITH(NOLOCK) where ID = @ID)
+exec UpdateInspPercent 'LabColorFastness', @POID
 ";
 
             ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter);

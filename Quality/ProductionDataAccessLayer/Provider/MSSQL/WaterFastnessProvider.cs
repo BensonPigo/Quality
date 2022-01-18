@@ -186,7 +186,7 @@ where o.POID = @POID
             listPar.Add("@InspDate", WaterFastness_Detail_Result.Main.InspDate);
             listPar.Add("@Article", WaterFastness_Detail_Result.Main.Article);
             listPar.Add("@Inspector", WaterFastness_Detail_Result.Main.Inspector);
-            listPar.Add("@Remark", WaterFastness_Detail_Result.Main.Remark);
+            listPar.Add("@Remark", WaterFastness_Detail_Result.Main.Remark ?? "");
             listPar.Add("@editName", userID);
             listPar.Add("@TestBeforePicture", WaterFastness_Detail_Result.Main.TestBeforePicture);
             listPar.Add("@TestAfterPicture", WaterFastness_Detail_Result.Main.TestAfterPicture);
@@ -379,7 +379,7 @@ update  WaterFastness_Detail set Roll           =  @Roll         ,
                             listDetailPar.Add("@WoolScale", detailItem.WoolScale);
                             listDetailPar.Add("@ResultWool", detailItem.ResultWool);
 
-                            listDetailPar.Add("@Remark", detailItem.Remark);
+                            listDetailPar.Add("@Remark", detailItem.Remark ?? "");
                             listDetailPar.Add("@AddName", userID);
                             listDetailPar.Add("@SubmitDate", detailItem.SubmitDate);
 
@@ -395,7 +395,7 @@ update  WaterFastness_Detail set Roll           =  @Roll         ,
                             listDetailPar.Add("@Result", detailItem.Result);
                             listDetailPar.Add("@ChangeScale", detailItem.ChangeScale);
                             listDetailPar.Add("@ResultChange", detailItem.ResultChange);
-                            listDetailPar.Add("@Remark", detailItem.Remark);
+                            listDetailPar.Add("@Remark", detailItem.Remark ?? "");
                             listDetailPar.Add("@EditName", userID);
 
 
@@ -440,6 +440,9 @@ update  WaterFastness_Detail set Roll           =  @Roll         ,
                     }
                 }
 
+                string UpdateInspPercent = "exec UpdateInspPercent 'LabWaterFastness',@POID";
+                ExecuteDataTableByServiceConn(CommandType.Text, UpdateInspPercent, listPar);
+
                 transaction.Complete();
             }
         }
@@ -451,7 +454,7 @@ update  WaterFastness_Detail set Roll           =  @Roll         ,
             listPar.Add("@InspDate", waterFastness_Detail_Result.Main.InspDate);
             listPar.Add("@Article", waterFastness_Detail_Result.Main.Article);
             listPar.Add("@Inspector", waterFastness_Detail_Result.Main.Inspector);
-            listPar.Add("@Remark", waterFastness_Detail_Result.Main.Remark);
+            listPar.Add("@Remark", waterFastness_Detail_Result.Main.Remark ?? "");
             listPar.Add("@addName", userID);
             listPar.Add("@TestBeforePicture", waterFastness_Detail_Result.Main.TestBeforePicture);
             listPar.Add("@TestAfterPicture", waterFastness_Detail_Result.Main.TestAfterPicture);
@@ -579,12 +582,15 @@ getdate()        ,
                     listDetailPar.Add("@WoolScale", detailItem.WoolScale);
                     listDetailPar.Add("@ResultWool", detailItem.ResultWool);
 
-                    listDetailPar.Add("@Remark", detailItem.Remark);
+                    listDetailPar.Add("@Remark", detailItem.Remark ?? "");
                     listDetailPar.Add("@AddName", userID);
                     listDetailPar.Add("@SubmitDate", detailItem.SubmitDate);
 
                     ExecuteNonQuery(CommandType.Text, sqlInsertWaterFastnessDetail, listDetailPar);
                 }
+
+                string UpdateInspPercent = "exec UpdateInspPercent 'LabWaterFastness',@POID";
+                ExecuteDataTableByServiceConn(CommandType.Text, UpdateInspPercent, listPar);
 
                 transaction.Complete();
             }
@@ -759,8 +765,8 @@ where   ov.POID = @poID and ov.TestNo = @TestNo
             string sqlDeleteWaterFastness = @"
 SET XACT_ABORT ON
 delete  WaterFastness_Detail where ID = (select ID from WaterFastness where POID = @poID and TestNo = @TestNo)
+delete  [ExtendServer].PMSFile.dbo.WaterFastness where ID = (select ID from WaterFastness where POID = @poID and TestNo = @TestNo)
 delete  WaterFastness where POID = @poID and TestNo = @TestNo
-delete  [ExtendServer].PMSFile.dbo.WaterFastness where POID = @poID and TestNo = @TestNo
 exec UpdateInspPercent 'LabWaterFastness',@poID
 ";
             using (TransactionScope transaction = new TransactionScope())

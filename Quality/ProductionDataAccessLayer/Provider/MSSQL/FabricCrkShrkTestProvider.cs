@@ -507,6 +507,11 @@ update  FIR_Laboratory_Crocking set DryScale       = @DryScale      ,
                     }
                 }
 
+                string UpdateInspPercent = $@"
+DECLARE @POID as varchar(15)= (SELECT TOP 1  POID from FIR_Laboratory where ID = @ID)
+exec UpdateInspPercent 'FIRLab', @POID";
+                ExecuteDataTableByServiceConn(CommandType.Text, UpdateInspPercent, listPar);
+
                 transaction.Complete();
             }
         }
@@ -956,6 +961,11 @@ update  FIR_Laboratory_Heat set Inspdate            = @Inspdate             ,
                     }
                 }
 
+                string UpdateInspPercent = $@"
+DECLARE @POID as varchar(15)= (SELECT TOP 1  POID from FIR_Laboratory where ID = @ID)
+exec UpdateInspPercent 'FIRLab', @POID";
+                ExecuteDataTableByServiceConn(CommandType.Text, UpdateInspPercent, listPar);
+
                 transaction.Complete();
             }
         }
@@ -1377,6 +1387,12 @@ update  FIR_Laboratory_Wash set Inspdate            = @Inspdate             ,
                             break;
                     }
                 }
+
+
+                string UpdateInspPercent = $@"
+DECLARE @POID as varchar(15)= (SELECT TOP 1  POID from FIR_Laboratory where ID = @ID)
+exec UpdateInspPercent 'FIRLab', @POID";
+                ExecuteDataTableByServiceConn(CommandType.Text, UpdateInspPercent, listPar);
 
                 transaction.Complete();
             }
