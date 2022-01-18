@@ -139,7 +139,7 @@ ORDER BY a.SEQ1, a.SEQ2, r.ExportID
         {
             SQLParameterCollection listPar = new SQLParameterCollection();
             listPar.Add("@ID", Req.OrderID);
-            listPar.Add("@AIRLaboratoryRemark", Req.Remark);
+            listPar.Add("@AIRLaboratoryRemark", Req.Remark ?? "");
             listPar.Add("@EditName", Req.EditBy);
 
             string sqlCmd = @"
@@ -175,7 +175,7 @@ AND Seq2 = @Seq2_{idx}
         {
             SQLParameterCollection listPar = new SQLParameterCollection();
             listPar.Add("@ID", Req.OrderID);
-            listPar.Add("@AIRLaboratoryRemark", Req.Remark);
+            listPar.Add("@AIRLaboratoryRemark", Req.Remark ?? "");
             listPar.Add("@EditName", Req.EditBy);
 
             string sqlCmd = string.Empty;

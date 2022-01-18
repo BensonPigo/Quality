@@ -70,82 +70,6 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 
             return ExecuteList<Pass1>(CommandType.Text, SbSql.ToString(), objParameter);
         }
-		/*建立(Create) 詳細敘述如下*/
-        /// <summary>
-        /// 建立
-        /// </summary>
-        /// <param name="Item">成員</param>
-        /// <returns>回傳異動筆數</returns>
-		/// <info>Author: Admin; Date: 2021/07/30  </info>
-        /// <history>
-        /// xx.  YYYY/MM/DD   Ver   Author      Comments
-        /// ===  ==========  ====  ==========  ==========
-        /// 01.  2021/07/30  1.00    Admin        Create
-        /// </history>
-        public int Create(Pass1 Item)
-        {
-            StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append("INSERT INTO [Pass1]"+ Environment.NewLine);
-            SbSql.Append("(" + Environment.NewLine);
-            SbSql.Append("         ID"+ Environment.NewLine);
-            SbSql.Append("        ,Name"+ Environment.NewLine);
-            SbSql.Append("        ,Password"+ Environment.NewLine);
-            SbSql.Append("        ,Position"+ Environment.NewLine);
-            SbSql.Append("        ,FKPass0"+ Environment.NewLine);
-            SbSql.Append("        ,IsAdmin"+ Environment.NewLine);
-            SbSql.Append("        ,IsMIS"+ Environment.NewLine);
-            SbSql.Append("        ,OrderGroup"+ Environment.NewLine);
-            SbSql.Append("        ,EMail"+ Environment.NewLine);
-            SbSql.Append("        ,ExtNo"+ Environment.NewLine);
-            SbSql.Append("        ,OnBoard"+ Environment.NewLine);
-            SbSql.Append("        ,Resign"+ Environment.NewLine);
-            SbSql.Append("        ,Supervisor"+ Environment.NewLine);
-            SbSql.Append("        ,Manager"+ Environment.NewLine);
-            SbSql.Append("        ,Deputy"+ Environment.NewLine);
-            SbSql.Append("        ,Factory"+ Environment.NewLine);
-            SbSql.Append("        ,CodePage"+ Environment.NewLine);
-            SbSql.Append("        ,AddName"+ Environment.NewLine);
-            SbSql.Append("        ,AddDate"+ Environment.NewLine);
-            SbSql.Append("        ,EditName"+ Environment.NewLine);
-            SbSql.Append("        ,EditDate"+ Environment.NewLine);
-            SbSql.Append("        ,LastLoginTime"+ Environment.NewLine);
-            SbSql.Append("        ,ESignature"+ Environment.NewLine);
-            SbSql.Append("        ,Remark"+ Environment.NewLine);
-            SbSql.Append(")"+ Environment.NewLine);
-            SbSql.Append("VALUES"+ Environment.NewLine);
-            SbSql.Append("(" + Environment.NewLine);
-            SbSql.Append("         @ID"); objParameter.Add("@ID", DbType.String, Item.ID);
-            SbSql.Append("        ,@Name"); objParameter.Add("@Name", DbType.String, Item.Name);
-            SbSql.Append("        ,@Password"); objParameter.Add("@Password", DbType.String, Item.Password);
-            SbSql.Append("        ,@Position"); objParameter.Add("@Position", DbType.String, Item.Position);
-            SbSql.Append("        ,@FKPass0"); objParameter.Add("@FKPass0", DbType.String, Item.FKPass0);
-            SbSql.Append("        ,@IsAdmin"); objParameter.Add("@IsAdmin", DbType.String, Item.IsAdmin);
-            SbSql.Append("        ,@IsMIS"); objParameter.Add("@IsMIS", DbType.String, Item.IsMIS);
-            SbSql.Append("        ,@OrderGroup"); objParameter.Add("@OrderGroup", DbType.String, Item.OrderGroup);
-            SbSql.Append("        ,@EMail"); objParameter.Add("@EMail", DbType.String, Item.EMail);
-            SbSql.Append("        ,@ExtNo"); objParameter.Add("@ExtNo", DbType.String, Item.ExtNo);
-            SbSql.Append("        ,@OnBoard"); objParameter.Add("@OnBoard", DbType.DateTime, Item.OnBoard);
-            SbSql.Append("        ,@Resign"); objParameter.Add("@Resign", DbType.DateTime, Item.Resign);
-            SbSql.Append("        ,@Supervisor"); objParameter.Add("@Supervisor", DbType.String, Item.Supervisor);
-            SbSql.Append("        ,@Manager"); objParameter.Add("@Manager", DbType.String, Item.Manager);
-            SbSql.Append("        ,@Deputy"); objParameter.Add("@Deputy", DbType.String, Item.Deputy);
-            SbSql.Append("        ,@Factory"); objParameter.Add("@Factory", DbType.String, Item.Factory);
-            SbSql.Append("        ,@CodePage"); objParameter.Add("@CodePage", DbType.String, Item.CodePage);
-            SbSql.Append("        ,@AddName"); objParameter.Add("@AddName", DbType.String, Item.AddName);
-            SbSql.Append("        ,@AddDate"); objParameter.Add("@AddDate", DbType.DateTime, Item.AddDate);
-            SbSql.Append("        ,@EditName"); objParameter.Add("@EditName", DbType.String, Item.EditName);
-            SbSql.Append("        ,@EditDate"); objParameter.Add("@EditDate", DbType.DateTime, Item.EditDate);
-            SbSql.Append("        ,@LastLoginTime"); objParameter.Add("@LastLoginTime", DbType.DateTime, Item.LastLoginTime);
-            SbSql.Append("        ,@ESignature"); objParameter.Add("@ESignature", DbType.String, Item.ESignature);
-            SbSql.Append("        ,@Remark"); objParameter.Add("@Remark", DbType.String, Item.Remark);
-            SbSql.Append(")"+ Environment.NewLine);
-
-
-
-
-            return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
-        }
 		/*更新(Update) 詳細敘述如下*/
         /// <summary>
         /// 更新
@@ -187,7 +111,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             if (Item.EditDate != null) { SbSql.Append(",EditDate=@EditDate"+ Environment.NewLine); objParameter.Add("@EditDate", DbType.DateTime, Item.EditDate);}
             if (Item.LastLoginTime != null) { SbSql.Append(",LastLoginTime=@LastLoginTime"+ Environment.NewLine); objParameter.Add("@LastLoginTime", DbType.DateTime, Item.LastLoginTime);}
             if (Item.ESignature != null) { SbSql.Append(",ESignature=@ESignature"+ Environment.NewLine); objParameter.Add("@ESignature", DbType.String, Item.ESignature);}
-            if (Item.Remark != null) { SbSql.Append(",Remark=@Remark"+ Environment.NewLine); objParameter.Add("@Remark", DbType.String, Item.Remark);}
+            if (Item.Remark != null) { SbSql.Append(",Remark=@Remark"+ Environment.NewLine); objParameter.Add("@Remark", DbType.String, Item.Remark ?? "");}
             SbSql.Append("WHERE 1 = 1" + Environment.NewLine);
 
 

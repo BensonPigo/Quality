@@ -232,7 +232,7 @@ where id = @ID
                 { "@Result", sources.Main.Result } ,
                 { "@Status", sources.Main.Status } ,
                 { "@Inspector", sources.Main.Inspector } ,
-                { "@Remark", sources.Main.Remark } ,
+                { "@Remark", sources.Main.Remark ?? ""} ,
                 { "@Temperature", sources.Main.Temperature } ,
                 { "@Cycle", sources.Main.Cycle } ,
                 { "@CycleTime", sources.Main.CycleTime } ,
@@ -455,7 +455,7 @@ exec UpdateInspPercent 'LabColorFastness', @POID
                         listDetailPar.Add(new SqlParameter($"@Result", DetailResult));
                         listDetailPar.Add(new SqlParameter($"@changeScale", detailItem.changeScale));
                         listDetailPar.Add(new SqlParameter($"@ResultChange", detailItem.ResultChange));
-                        listDetailPar.Add(new SqlParameter($"@Remark", detailItem.Remark));
+                        listDetailPar.Add(new SqlParameter($"@Remark", detailItem.Remark ?? ""));
                         listDetailPar.Add(new SqlParameter($"@UserID", UserID));
                         listDetailPar.Add($"@SubmitDate", DbType.Date, detailItem.SubmitDate);
 
@@ -484,7 +484,7 @@ exec UpdateInspPercent 'LabColorFastness', @POID
                         listDetailPar.Add(new SqlParameter($"@Result", DetailResult));
                         listDetailPar.Add(new SqlParameter($"@changeScale", detailItem.changeScale));
                         listDetailPar.Add(new SqlParameter($"@ResultChange", detailItem.ResultChange));
-                        listDetailPar.Add(new SqlParameter($"@Remark", detailItem.Remark));
+                        listDetailPar.Add(new SqlParameter($"@Remark", detailItem.Remark ?? ""));
                         listDetailPar.Add(new SqlParameter($"@UserID", UserID));
                         listDetailPar.Add($"@SubmitDate", DbType.Date, detailItem.SubmitDate);
 

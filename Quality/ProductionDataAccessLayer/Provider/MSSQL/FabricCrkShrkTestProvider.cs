@@ -462,7 +462,7 @@ update  FIR_Laboratory_Crocking set DryScale       = @DryScale      ,
                             listDetailPar.Add("@Inspdate", detailItem.Inspdate);
                             listDetailPar.Add("@Inspector", detailItem.Inspector);
                             listDetailPar.Add("@Result", detailItem.Result);
-                            listDetailPar.Add("@Remark", detailItem.Remark);
+                            listDetailPar.Add("@Remark", detailItem.Remark ?? "");
                             listDetailPar.Add("@AddName", userID);
                             listDetailPar.Add("@ResultDry", detailItem.ResultDry);
                             listDetailPar.Add("@ResultWet", detailItem.ResultWet);
@@ -482,7 +482,7 @@ update  FIR_Laboratory_Crocking set DryScale       = @DryScale      ,
                             listDetailPar.Add("@Inspdate", detailItem.Inspdate);
                             listDetailPar.Add("@Inspector", detailItem.Inspector);
                             listDetailPar.Add("@Result", detailItem.Result);
-                            listDetailPar.Add("@Remark", detailItem.Remark);
+                            listDetailPar.Add("@Remark", detailItem.Remark ?? "");
                             listDetailPar.Add("@EditName", userID);
                             listDetailPar.Add("@ResultDry", detailItem.ResultDry);
                             listDetailPar.Add("@ResultWet", detailItem.ResultWet);
@@ -910,7 +910,7 @@ update  FIR_Laboratory_Heat set Inspdate            = @Inspdate             ,
                             listDetailPar.Add("@Inspdate", detailItem.Inspdate);
                             listDetailPar.Add("@Inspector", detailItem.Inspector);
                             listDetailPar.Add("@Result", detailItem.Result);
-                            listDetailPar.Add("@Remark", detailItem.Remark);
+                            listDetailPar.Add("@Remark", detailItem.Remark ?? "");
                             listDetailPar.Add("@AddName", userID);
                             listDetailPar.Add("@HorizontalRate", detailItem.HorizontalRate);
                             listDetailPar.Add("@HorizontalOriginal", detailItem.HorizontalOriginal);
@@ -932,7 +932,7 @@ update  FIR_Laboratory_Heat set Inspdate            = @Inspdate             ,
                             listDetailPar.Add("@Inspdate", detailItem.Inspdate);
                             listDetailPar.Add("@Inspector", detailItem.Inspector);
                             listDetailPar.Add("@Result", detailItem.Result);
-                            listDetailPar.Add("@Remark", detailItem.Remark);
+                            listDetailPar.Add("@Remark", detailItem.Remark ?? "");
                             listDetailPar.Add("@EditName", userID);
                             listDetailPar.Add("@HorizontalRate", detailItem.HorizontalRate);
                             listDetailPar.Add("@HorizontalOriginal", detailItem.HorizontalOriginal);
@@ -1327,7 +1327,7 @@ update  FIR_Laboratory_Wash set Inspdate            = @Inspdate             ,
                             listDetailPar.Add("@Inspdate", detailItem.Inspdate);
                             listDetailPar.Add("@Inspector", detailItem.Inspector);
                             listDetailPar.Add("@Result", detailItem.Result);
-                            listDetailPar.Add("@Remark", detailItem.Remark);
+                            listDetailPar.Add("@Remark", detailItem.Remark ?? "");
                             listDetailPar.Add("@AddName", userID);
                             listDetailPar.Add("@HorizontalRate", detailItem.HorizontalRate);
                             listDetailPar.Add("@HorizontalOriginal", detailItem.HorizontalOriginal);
@@ -1354,7 +1354,7 @@ update  FIR_Laboratory_Wash set Inspdate            = @Inspdate             ,
                             listDetailPar.Add("@Inspdate", detailItem.Inspdate);
                             listDetailPar.Add("@Inspector", detailItem.Inspector);
                             listDetailPar.Add("@Result", detailItem.Result);
-                            listDetailPar.Add("@Remark", detailItem.Remark);
+                            listDetailPar.Add("@Remark", detailItem.Remark ?? "");
                             listDetailPar.Add("@EditName", userID);
                             listDetailPar.Add("@HorizontalRate", detailItem.HorizontalRate);
                             listDetailPar.Add("@HorizontalOriginal", detailItem.HorizontalOriginal);
