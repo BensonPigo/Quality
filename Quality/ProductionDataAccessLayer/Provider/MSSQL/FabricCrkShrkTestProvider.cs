@@ -462,7 +462,7 @@ update  FIR_Laboratory_Crocking set DryScale       = @DryScale      ,
                             listDetailPar.Add("@Inspdate", detailItem.Inspdate);
                             listDetailPar.Add("@Inspector", detailItem.Inspector);
                             listDetailPar.Add("@Result", detailItem.Result);
-                            listDetailPar.Add("@Remark", detailItem.Remark);
+                            listDetailPar.Add("@Remark", detailItem.Remark ?? "");
                             listDetailPar.Add("@AddName", userID);
                             listDetailPar.Add("@ResultDry", detailItem.ResultDry);
                             listDetailPar.Add("@ResultWet", detailItem.ResultWet);
@@ -482,7 +482,7 @@ update  FIR_Laboratory_Crocking set DryScale       = @DryScale      ,
                             listDetailPar.Add("@Inspdate", detailItem.Inspdate);
                             listDetailPar.Add("@Inspector", detailItem.Inspector);
                             listDetailPar.Add("@Result", detailItem.Result);
-                            listDetailPar.Add("@Remark", detailItem.Remark);
+                            listDetailPar.Add("@Remark", detailItem.Remark ?? "");
                             listDetailPar.Add("@EditName", userID);
                             listDetailPar.Add("@ResultDry", detailItem.ResultDry);
                             listDetailPar.Add("@ResultWet", detailItem.ResultWet);
@@ -506,6 +506,11 @@ update  FIR_Laboratory_Crocking set DryScale       = @DryScale      ,
                             break;
                     }
                 }
+
+                string UpdateInspPercent = $@"
+DECLARE @POID as varchar(15)= (SELECT TOP 1  POID from FIR_Laboratory where ID = @ID)
+exec UpdateInspPercent 'FIRLab', @POID";
+                ExecuteDataTableByServiceConn(CommandType.Text, UpdateInspPercent, listPar);
 
                 transaction.Complete();
             }
@@ -905,7 +910,7 @@ update  FIR_Laboratory_Heat set Inspdate            = @Inspdate             ,
                             listDetailPar.Add("@Inspdate", detailItem.Inspdate);
                             listDetailPar.Add("@Inspector", detailItem.Inspector);
                             listDetailPar.Add("@Result", detailItem.Result);
-                            listDetailPar.Add("@Remark", detailItem.Remark);
+                            listDetailPar.Add("@Remark", detailItem.Remark ?? "");
                             listDetailPar.Add("@AddName", userID);
                             listDetailPar.Add("@HorizontalRate", detailItem.HorizontalRate);
                             listDetailPar.Add("@HorizontalOriginal", detailItem.HorizontalOriginal);
@@ -927,7 +932,7 @@ update  FIR_Laboratory_Heat set Inspdate            = @Inspdate             ,
                             listDetailPar.Add("@Inspdate", detailItem.Inspdate);
                             listDetailPar.Add("@Inspector", detailItem.Inspector);
                             listDetailPar.Add("@Result", detailItem.Result);
-                            listDetailPar.Add("@Remark", detailItem.Remark);
+                            listDetailPar.Add("@Remark", detailItem.Remark ?? "");
                             listDetailPar.Add("@EditName", userID);
                             listDetailPar.Add("@HorizontalRate", detailItem.HorizontalRate);
                             listDetailPar.Add("@HorizontalOriginal", detailItem.HorizontalOriginal);
@@ -955,6 +960,11 @@ update  FIR_Laboratory_Heat set Inspdate            = @Inspdate             ,
                             break;
                     }
                 }
+
+                string UpdateInspPercent = $@"
+DECLARE @POID as varchar(15)= (SELECT TOP 1  POID from FIR_Laboratory where ID = @ID)
+exec UpdateInspPercent 'FIRLab', @POID";
+                ExecuteDataTableByServiceConn(CommandType.Text, UpdateInspPercent, listPar);
 
                 transaction.Complete();
             }
@@ -1317,7 +1327,7 @@ update  FIR_Laboratory_Wash set Inspdate            = @Inspdate             ,
                             listDetailPar.Add("@Inspdate", detailItem.Inspdate);
                             listDetailPar.Add("@Inspector", detailItem.Inspector);
                             listDetailPar.Add("@Result", detailItem.Result);
-                            listDetailPar.Add("@Remark", detailItem.Remark);
+                            listDetailPar.Add("@Remark", detailItem.Remark ?? "");
                             listDetailPar.Add("@AddName", userID);
                             listDetailPar.Add("@HorizontalRate", detailItem.HorizontalRate);
                             listDetailPar.Add("@HorizontalOriginal", detailItem.HorizontalOriginal);
@@ -1344,7 +1354,7 @@ update  FIR_Laboratory_Wash set Inspdate            = @Inspdate             ,
                             listDetailPar.Add("@Inspdate", detailItem.Inspdate);
                             listDetailPar.Add("@Inspector", detailItem.Inspector);
                             listDetailPar.Add("@Result", detailItem.Result);
-                            listDetailPar.Add("@Remark", detailItem.Remark);
+                            listDetailPar.Add("@Remark", detailItem.Remark ?? "");
                             listDetailPar.Add("@EditName", userID);
                             listDetailPar.Add("@HorizontalRate", detailItem.HorizontalRate);
                             listDetailPar.Add("@HorizontalOriginal", detailItem.HorizontalOriginal);
@@ -1377,6 +1387,12 @@ update  FIR_Laboratory_Wash set Inspdate            = @Inspdate             ,
                             break;
                     }
                 }
+
+
+                string UpdateInspPercent = $@"
+DECLARE @POID as varchar(15)= (SELECT TOP 1  POID from FIR_Laboratory where ID = @ID)
+exec UpdateInspPercent 'FIRLab', @POID";
+                ExecuteDataTableByServiceConn(CommandType.Text, UpdateInspPercent, listPar);
 
                 transaction.Complete();
             }

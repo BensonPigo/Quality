@@ -232,7 +232,7 @@ where id = @ID
                 { "@Result", sources.Main.Result } ,
                 { "@Status", sources.Main.Status } ,
                 { "@Inspector", sources.Main.Inspector } ,
-                { "@Remark", sources.Main.Remark } ,
+                { "@Remark", sources.Main.Remark ?? ""} ,
                 { "@Temperature", sources.Main.Temperature } ,
                 { "@Cycle", sources.Main.Cycle } ,
                 { "@CycleTime", sources.Main.CycleTime } ,
@@ -382,7 +382,11 @@ values
         ,@ResultAcrylic
         ,@WoolScale
         ,@ResultWool
-)";
+)
+
+declare @POID varchar(13) = (select POID from ColorFastness WITH(NOLOCK) where ID = @ID)
+exec UpdateInspPercent 'LabColorFastness', @POID
+";
             string deleteDetail = $@"
 delete from ColorFastness_Detail 
 where id = @ID
@@ -422,6 +426,9 @@ where ID = @ID
 and ColorFastnessGroup = @ColorFastnessGroup
 and SEQ1 = @Seq1
 and SEQ2 = @Seq2
+
+declare @POID varchar(13) = (select POID from ColorFastness WITH(NOLOCK) where ID = @ID)
+exec UpdateInspPercent 'LabColorFastness', @POID
 ";
 
             ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter);
@@ -448,7 +455,7 @@ and SEQ2 = @Seq2
                         listDetailPar.Add(new SqlParameter($"@Result", DetailResult));
                         listDetailPar.Add(new SqlParameter($"@changeScale", detailItem.changeScale));
                         listDetailPar.Add(new SqlParameter($"@ResultChange", detailItem.ResultChange));
-                        listDetailPar.Add(new SqlParameter($"@Remark", detailItem.Remark));
+                        listDetailPar.Add(new SqlParameter($"@Remark", detailItem.Remark ?? ""));
                         listDetailPar.Add(new SqlParameter($"@UserID", UserID));
                         listDetailPar.Add($"@SubmitDate", DbType.Date, detailItem.SubmitDate);
 
@@ -477,7 +484,7 @@ and SEQ2 = @Seq2
                         listDetailPar.Add(new SqlParameter($"@Result", DetailResult));
                         listDetailPar.Add(new SqlParameter($"@changeScale", detailItem.changeScale));
                         listDetailPar.Add(new SqlParameter($"@ResultChange", detailItem.ResultChange));
-                        listDetailPar.Add(new SqlParameter($"@Remark", detailItem.Remark));
+                        listDetailPar.Add(new SqlParameter($"@Remark", detailItem.Remark ?? ""));
                         listDetailPar.Add(new SqlParameter($"@UserID", UserID));
                         listDetailPar.Add($"@SubmitDate", DbType.Date, detailItem.SubmitDate);
 

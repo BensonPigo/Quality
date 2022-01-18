@@ -294,7 +294,7 @@ and ID = @ID
                 { "@SubmitDate", DbType.Date, source.SubmitDate},
                 { "@ArrivedQty", source.ArrivedQty } ,
                 { "@LOtoFactory", LOtoFactory} ,
-                { "@Remark", source.Remark } ,
+                { "@Remark", source.Remark ?? ""} ,
                 { "@LineDry", DbType.Boolean, source.LineDry } ,
                 { "@Temperature", source.Temperature } ,
                 { "@TumbleDry", DbType.Boolean, source.TumbleDry } ,

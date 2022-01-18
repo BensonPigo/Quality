@@ -776,7 +776,7 @@ from    EndlineMoisture with (nolock)
             objParameter.Add("@CTNOutside", moistureResult.CTNOutside);
             objParameter.Add("@Result",DbType.String, moistureResult.Result);
             objParameter.Add("@Action", moistureResult.Action);
-            objParameter.Add("@Remark", moistureResult.Remark);
+            objParameter.Add("@Remark", moistureResult.Remark ?? "");
             objParameter.Add("@AddName", moistureResult.AddName);
 
             string sqlInsertFinalInspection_Moisture = @"
