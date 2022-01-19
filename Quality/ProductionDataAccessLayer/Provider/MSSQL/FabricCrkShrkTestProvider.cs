@@ -330,6 +330,7 @@ select	SubmitDate = fl.CrockingDate
 		,o.SeasonID
 		,o.BrandID
 		,o.StyleID
+		,sa.Article
 		,f.POID
 		,fd.Roll
 		,fd.Dyelot
@@ -355,6 +356,7 @@ left join [ExtendServer].PMSFile.dbo.FIR_Laboratory fli WITH (NOLOCK) on fli.ID 
 left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
 left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
 left join Orders o with (nolock) on o.ID = f.POID
+left join Style_Article sa ON o.StyleUkey=sa.StyleUkey
 where f.ID = @ID
 ";
 

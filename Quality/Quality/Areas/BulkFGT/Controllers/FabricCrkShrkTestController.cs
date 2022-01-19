@@ -250,11 +250,13 @@ namespace Quality.Areas.BulkFGT.Controllers
             string FileName;
             if (IsToPDF)
             {
-                result = _FabricCrkShrkTest_Service.ToPdfFabricCrkShrkTestCrockingDetail(ID, out FileName, false);
+                //result = _FabricCrkShrkTest_Service.ToPdfFabricCrkShrkTestCrockingDetail(ID, out FileName, false);  ISP20220019註解
+                result = _FabricCrkShrkTest_Service.ToExcel(ID, true, out FileName, false);
             }
             else
             {
-                result = _FabricCrkShrkTest_Service.ToExcelFabricCrkShrkTestCrockingDetail(ID, out FileName, false);
+                //result = _FabricCrkShrkTest_Service.ToExcelFabricCrkShrkTestCrockingDetail(ID, out FileName, false);  ISP20220019註解
+                result = _FabricCrkShrkTest_Service.ToExcel(ID, false, out FileName, false);
             }
 
             string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;

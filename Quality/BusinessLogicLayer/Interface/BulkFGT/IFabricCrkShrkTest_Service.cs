@@ -28,9 +28,9 @@ namespace BusinessLogicLayer.Interface
 
         BaseResult AmendFabricCrkShrkTestCrockingDetail(long ID);
 
-        BaseResult ToExcelFabricCrkShrkTestCrockingDetail(long ID, out string excelFileName, bool isTest);
-
-        BaseResult ToPdfFabricCrkShrkTestCrockingDetail(long ID, out string pdfFileName, bool isTest);
+        //BaseResult ToExcelFabricCrkShrkTestCrockingDetail(long ID, out string excelFileName, bool isTest);   ISP20220019註解
+        BaseResult ToExcel(long ID, bool IsPDF, out string excelFileName, bool test);
+        //BaseResult ToPdfFabricCrkShrkTestCrockingDetail(long ID, out string pdfFileName, bool isTest);   ISP20220019註解
 
         // Heat
         FabricCrkShrkTestHeat_Result GetFabricCrkShrkTestHeat_Result(long ID);

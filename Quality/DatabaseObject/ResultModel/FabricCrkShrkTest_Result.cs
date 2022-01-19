@@ -102,6 +102,7 @@ namespace DatabaseObject.ResultModel
         public string SeasonID { get; set; }
         public string BrandID { get; set; }
         public string StyleID { get; set; }
+        public string Article { get; set; }
         public string POID { get; set; }
         public string Roll { get; set; }
         public string Dyelot { get; set; }
@@ -117,8 +118,8 @@ namespace DatabaseObject.ResultModel
         public string ResultWet_Weft { get; set; }
         public string Remark { get; set; }
         public string Inspector { get; set; }
-        public Byte[] TestBeforePicture { get; set; }
-        public Byte[] TestAfterPicture { get; set; }
+        public Byte[] CrockingTestBeforePicture { get; set; }
+        public Byte[] CrockingTestAfterPicture { get; set; }
 
     }
 
