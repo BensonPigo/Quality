@@ -96,6 +96,32 @@ namespace DatabaseObject.ResultModel
         public byte[] CrockingTestAfterPicture { get; set; }
     }
 
+    public class Crocking_Excel
+    {
+        public DateTime? SubmitDate { get; set; }
+        public string SeasonID { get; set; }
+        public string BrandID { get; set; }
+        public string StyleID { get; set; }
+        public string POID { get; set; }
+        public string Roll { get; set; }
+        public string Dyelot { get; set; }
+        public string SCIRefno_Color { get; set; }
+        public string Color { get; set; }
+        public string DryScale { get; set; }
+        public string DryScale_Weft { get; set; }
+        public string WetScale{ get; set; }
+        public string WetScale_Weft { get; set; }
+        public string ResultDry { get; set; }
+        public string ResultDry_Weft { get; set; }
+        public string ResultWet { get; set; }
+        public string ResultWet_Weft { get; set; }
+        public string Remark { get; set; }
+        public string Inspector { get; set; }
+        public Byte[] TestBeforePicture { get; set; }
+        public Byte[] TestAfterPicture { get; set; }
+
+    }
+
     public class FabricCrkShrkTestCrocking_Detail : CompareBase
     {
         public string Roll { get;set; }
