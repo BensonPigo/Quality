@@ -387,6 +387,7 @@ update FinalInspection
  set    ProductionStatus = @ProductionStatus  ,
         OthersRemark= @OthersRemark    ,
         CFA= @CFA   ,
+        InspectionResult= @InspectionResult   ,
         InspectionStep = @InspectionStep,
         EditName= @userID,
         EditDate= getdate()
@@ -394,6 +395,7 @@ where   ID = @FinalInspectionID
 ";
                     objParameter.Add("@FinalInspectionID", finalInspection.ID);
                     objParameter.Add("@userID", userID);
+                    objParameter.Add("@InspectionResult", finalInspection.InspectionResult);
                     objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
                     objParameter.Add("@ProductionStatus", finalInspection.ProductionStatus);
                     objParameter.Add("@OthersRemark", finalInspection.OthersRemark);
