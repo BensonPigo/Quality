@@ -122,8 +122,8 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,HT2ndPressnoreverse" + Environment.NewLine);
             SbSql.Append("        ,HT2ndPressreversed" + Environment.NewLine);
             SbSql.Append("        ,HTCoolingTime" + Environment.NewLine);
-            SbSql.Append("        ,TestBeforePicture" + Environment.NewLine);
-            SbSql.Append("        ,TestAfterPicture" + Environment.NewLine);
+            //SbSql.Append("        ,TestBeforePicture" + Environment.NewLine);
+            //SbSql.Append("        ,TestAfterPicture" + Environment.NewLine);
             SbSql.Append("        ,Type" + Environment.NewLine);
             SbSql.Append(")" + Environment.NewLine);
             SbSql.Append("VALUES" + Environment.NewLine);
