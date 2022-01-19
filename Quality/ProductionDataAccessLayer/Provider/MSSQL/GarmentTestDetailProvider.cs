@@ -316,7 +316,7 @@ and ID = @ID
 
             string sqlcmd = $@"
 SET XACT_ABORT ON
-/*
+
 update GarmentTest_Detail set
     SubmitDate = @SubmitDate,
     ArrivedQty =  @ArrivedQty,
@@ -335,7 +335,7 @@ update GarmentTest_Detail set
     EditName = @EditName,
     EditDate = GetDate()
 where ID = @ID and No = @No
-*/
+
 update [ExtendServer].PMSFile.dbo.GarmentTest_Detail set
     TestBeforePicture = @TestBeforePicture,
     TestAfterPicture = @TestAfterPicture
