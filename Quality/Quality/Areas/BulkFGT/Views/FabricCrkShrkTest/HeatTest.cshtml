@@ -575,6 +575,8 @@
         $('#Picture').on('click', function () {
             var para = "?Title=" + $('.page-header span').html() + "&EditMode=" + EditMode;
             para += "&" + "Table=FIR_Laboratory";
+            para += "&" + "TargetBeforeColumn=Heat_Main_HeatTestBeforePicture";
+            para += "&" + "TargetAfterColumn=Heat_Main_HeatTestAfterPicture";            
             para += "&" + "BeforeColumn=HeatTestBeforePicture";
             para += "&" + "AfterColumn=HeatTestAfterPicture";
             para += "&" + "PKey_1=ID";

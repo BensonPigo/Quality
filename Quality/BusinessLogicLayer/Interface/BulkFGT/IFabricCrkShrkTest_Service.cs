@@ -29,7 +29,7 @@ namespace BusinessLogicLayer.Interface
         BaseResult AmendFabricCrkShrkTestCrockingDetail(long ID);
 
         //BaseResult ToExcelFabricCrkShrkTestCrockingDetail(long ID, out string excelFileName, bool isTest);   ISP20220019註解
-        BaseResult ToExcel(long ID, bool IsPDF, out string excelFileName, bool test);
+        BaseResult Crocking_ToExcel(long ID, bool IsPDF, out string excelFileName);
         //BaseResult ToPdfFabricCrkShrkTestCrockingDetail(long ID, out string pdfFileName, bool isTest);   ISP20220019註解
 
         // Heat
@@ -41,7 +41,7 @@ namespace BusinessLogicLayer.Interface
         SendMail_Result SendHeatFailResultMail(string toAddress, string ccAddress, long ID, bool isTest);
         BaseResult AmendFabricCrkShrkTestHeatDetail(long ID);
 
-        BaseResult ToExcelFabricCrkShrkTestHeatDetail(long ID, out string excelFileName, bool isTest);
+        BaseResult ToExcelFabricCrkShrkTestHeatDetail(long ID, out string excelFileName);
 
         // Wash
         FabricCrkShrkTestWash_Result GetFabricCrkShrkTestWash_Result(long ID);
@@ -54,7 +54,7 @@ namespace BusinessLogicLayer.Interface
 
         BaseResult AmendFabricCrkShrkTestWashDetail(long ID);
 
-        BaseResult ToExcelFabricCrkShrkTestWashDetail(long ID, out string excelFileName, bool isTest);
+        BaseResult ToExcelFabricCrkShrkTestWashDetail(long ID, out string excelFileName);
 
 
     }

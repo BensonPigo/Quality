@@ -615,6 +615,8 @@
         $('#Picture').on('click', function () {
             var para = "?Title=" + $('.page-header span').html() + "&EditMode=" + EditMode;
             para += "&" + "Table=FIR_Laboratory";
+            para += "&" + "TargetBeforeColumn=Wash_Main_WashTestBeforePicture";
+            para += "&" + "TargetAfterColumn=Wash_Main_WashTestAfterPicture";
             para += "&" + "BeforeColumn=WashTestBeforePicture";
             para += "&" + "AfterColumn=WashTestAfterPicture";
             para += "&" + "PKey_1=ID";

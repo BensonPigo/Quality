@@ -821,7 +821,7 @@ namespace BusinessLogicLayer.Service
             return result;
         }
         */
-        public BaseResult ToExcelFabricCrkShrkTestHeatDetail(long ID, out string excelFileName, bool isTest)
+        public BaseResult ToExcelFabricCrkShrkTestHeatDetail(long ID, out string excelFileName)
         {
             _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
             _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
@@ -830,7 +830,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                string baseFilePath = isTest ? Directory.GetCurrentDirectory() : System.Web.HttpContext.Current.Server.MapPath("~/");
+                string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
                 DataTable dtHeatDetail = _FabricCrkShrkTestProvider.GetHeatDetailForReport(ID);
                 FabricCrkShrkTestHeat_Main fabricCrkShrkTestHeat_Main = _FabricCrkShrkTestProvider.GetFabricHeatTest_Main(ID);
 
@@ -912,14 +912,7 @@ namespace BusinessLogicLayer.Service
                     string imageName = $"{Guid.NewGuid()}.jpg";
                     string imgPath;
 
-                    if (isTest)
-                    {
-                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                    }
-                    else
-                    {
-                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                    }
+                    imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
 
                     byte[] bytes = fabricCrkShrkTestHeat_Main.HeatTestBeforePicture;
                     using (var imageFile = new FileStream(imgPath, FileMode.Create))
@@ -936,14 +929,7 @@ namespace BusinessLogicLayer.Service
                     string imageName = $"{Guid.NewGuid()}.jpg";
                     string imgPath;
 
-                    if (isTest)
-                    {
-                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                    }
-                    else
-                    {
-                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                    }
+                    imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
 
                     byte[] bytes = fabricCrkShrkTestHeat_Main.HeatTestAfterPicture;
                     using (var imageFile = new FileStream(imgPath, FileMode.Create))
@@ -981,7 +967,7 @@ namespace BusinessLogicLayer.Service
 
         }
 
-        public BaseResult ToExcelFabricCrkShrkTestWashDetail(long ID, out string excelFileName, bool isTest)
+        public BaseResult ToExcelFabricCrkShrkTestWashDetail(long ID, out string excelFileName)
         {
             _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
             _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
@@ -991,7 +977,7 @@ namespace BusinessLogicLayer.Service
             try
             {
 
-                string baseFilePath = isTest ? Directory.GetCurrentDirectory() : System.Web.HttpContext.Current.Server.MapPath("~/");
+                string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
 
                 DataTable dtWashDetail = _FabricCrkShrkTestProvider.GetWashDetailForReport(ID);
                 FabricCrkShrkTestWash_Main fabricCrkShrkTestWash_Main = _FabricCrkShrkTestProvider.GetFabricWashTest_Main(ID);
@@ -1115,14 +1101,7 @@ namespace BusinessLogicLayer.Service
                     string imageName = $"{Guid.NewGuid()}.jpg";
                     string imgPath;
 
-                    if (isTest)
-                    {
-                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                    }
-                    else
-                    {
-                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                    }
+                    imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
 
                     byte[] bytes = fabricCrkShrkTestWash_Main.WashTestBeforePicture;
                     using (var imageFile = new FileStream(imgPath, FileMode.Create))
@@ -1139,14 +1118,7 @@ namespace BusinessLogicLayer.Service
                     string imageName = $"{Guid.NewGuid()}.jpg";
                     string imgPath;
 
-                    if (isTest)
-                    {
-                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                    }
-                    else
-                    {
-                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                    }
+                    imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
 
                     byte[] bytes = fabricCrkShrkTestWash_Main.WashTestAfterPicture;
                     using (var imageFile = new FileStream(imgPath, FileMode.Create))
@@ -1759,7 +1731,7 @@ namespace BusinessLogicLayer.Service
             }
         }
 
-        public BaseResult ToExcel(long ID, bool IsPDF, out string excelFileName, bool test)
+        public BaseResult Crocking_ToExcel(long ID, bool IsPDF, out string excelFileName)
         {
             BaseResult result = new BaseResult();
             _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
@@ -1775,15 +1747,7 @@ namespace BusinessLogicLayer.Service
             }
 
             string basefileName = "FabricCrockingTest";
-            string openfilepath;
-            if (test)
-            {
-                openfilepath = $"C:\\Willy_Repository\\Quality_KPI\\Quality\\Quality\\bin\\XLT\\{basefileName}.xltx";
-            }
-            else
-            {
-                openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
-            }
+            string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
 
             Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
             excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
@@ -1847,14 +1811,7 @@ namespace BusinessLogicLayer.Service
                     string imageName = $"{Guid.NewGuid()}.jpg";
                     string imgPath;
 
-                    if (test)
-                    {
-                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                    }
-                    else
-                    {
-                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                    }
+                    imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
 
                     byte[] bytes = currenData.CrockingTestBeforePicture;
                     using (var imageFile = new FileStream(imgPath, FileMode.Create))
@@ -1871,14 +1828,7 @@ namespace BusinessLogicLayer.Service
                     string imageName = $"{Guid.NewGuid()}.jpg";
                     string imgPath;
 
-                    if (test)
-                    {
-                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                    }
-                    else
-                    {
-                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                    }
+                    imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
 
                     byte[] bytes = currenData.CrockingTestAfterPicture;
                     using (var imageFile = new FileStream(imgPath, FileMode.Create))
@@ -1898,18 +1848,9 @@ namespace BusinessLogicLayer.Service
             string filexlsx = fileName + ".xlsx";
             string fileNamePDF = fileName + ".pdf";
 
-            string filepathpdf;
-            string filepath;
-            if (test)
-            {
-                filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", filexlsx);
-                filepathpdf = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", fileNamePDF);
-            }
-            else
-            {
-                filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filexlsx);
-                filepathpdf = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileNamePDF);
-            }
+            string filepathpdf = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileNamePDF);
+            string filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filexlsx);
+            
 
             Excel.Workbook workbook = excel.ActiveWorkbook;
             workbook.SaveAs(filepath);
