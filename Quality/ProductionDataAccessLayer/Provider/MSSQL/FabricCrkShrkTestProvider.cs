@@ -320,6 +320,50 @@ where flc.ID = @ID
 
         }
 
+        public List<Crocking_Excel> CrockingTest_ToExcel(long ID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@ID", ID);
+
+            string sql = @"
+select	SubmitDate = fl.CrockingDate
+		,o.SeasonID
+		,o.BrandID
+		,o.StyleID
+		,sa.Article
+		,f.POID
+		,fd.Roll
+		,fd.Dyelot
+		,SCIRefno_Color = f.SCIRefno　+' '+psd.ColorID
+		,Color = psd.ColorID
+		,fd.DryScale
+		,fd.DryScale_Weft
+		,fd.WetScale
+		,fd.WetScale_Weft
+		,fd.ResultDry
+		,fd.ResultDry_Weft
+		,fd.ResultWet
+		,fd.ResultWet_Weft
+		,fd.Remark
+		,fd.Inspector
+		,fli.CrockingTestBeforePicture
+        ,fli.CrockingTestAfterPicture
+		,f.ID
+from FIR f with (nolock)
+left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
+inner join FIR_Laboratory_Crocking fd WITH(NOLOCK) on fd.id = fl.id
+left join [ExtendServer].PMSFile.dbo.FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
+left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
+left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
+left join Orders o with (nolock) on o.ID = f.POID
+left join Style_Article sa ON o.StyleUkey=sa.StyleUkey
+where f.ID = @ID
+";
+
+            return ExecuteList<Crocking_Excel>(CommandType.Text, sql, listPar).ToList();
+
+        }
+
         public int GetCrockingTestOption(long ID)
         {
             SQLParameterCollection listPar = new SQLParameterCollection();
