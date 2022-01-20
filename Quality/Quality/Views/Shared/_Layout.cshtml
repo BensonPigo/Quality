@@ -27,6 +27,7 @@
 
     @RenderSection("head", required: false)
 
+    <link rel="icon" href="@Url.Content("~/favicon.ico")" />
     <title>Quality Web</title>
 
     @{
@@ -124,9 +125,11 @@
         .mfp-with-zoom.mfp-removing.mfp-bg {
             opacity: 0;
         }
-        .mfp-bottom-bar{
-            display:none
+
+        .mfp-bottom-bar {
+            display: none
         }
+
         .swal2-title {
             font-size: 10px;
         }
