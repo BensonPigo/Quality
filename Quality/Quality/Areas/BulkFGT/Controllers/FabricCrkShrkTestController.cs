@@ -250,11 +250,13 @@ namespace Quality.Areas.BulkFGT.Controllers
             string FileName;
             if (IsToPDF)
             {
-                result = _FabricCrkShrkTest_Service.ToPdfFabricCrkShrkTestCrockingDetail(ID, out FileName, false);
+                //result = _FabricCrkShrkTest_Service.ToPdfFabricCrkShrkTestCrockingDetail(ID, out FileName, false);  ISP20220019註解
+                result = _FabricCrkShrkTest_Service.Crocking_ToExcel(ID, true, out FileName);
             }
             else
             {
-                result = _FabricCrkShrkTest_Service.ToExcelFabricCrkShrkTestCrockingDetail(ID, out FileName, false);
+                //result = _FabricCrkShrkTest_Service.ToExcelFabricCrkShrkTestCrockingDetail(ID, out FileName, false);  ISP20220019註解
+                result = _FabricCrkShrkTest_Service.Crocking_ToExcel(ID, false, out FileName);
             }
 
             string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
@@ -420,7 +422,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         public JsonResult Report_Heat(long ID)
         {
             BaseResult result;
-            result = _FabricCrkShrkTest_Service.ToExcelFabricCrkShrkTestHeatDetail(ID, out string FileName, false);
+            result = _FabricCrkShrkTest_Service.ToExcelFabricCrkShrkTestHeatDetail(ID, out string FileName);
             string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
@@ -605,7 +607,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         public JsonResult Report_Wash(long ID)
         {
             BaseResult result;
-            result = _FabricCrkShrkTest_Service.ToExcelFabricCrkShrkTestWashDetail(ID, out string FileName, false);
+            result = _FabricCrkShrkTest_Service.ToExcelFabricCrkShrkTestWashDetail(ID, out string FileName);
             string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }

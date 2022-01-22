@@ -36,6 +36,8 @@ namespace ProductionDataAccessLayer.Interface
         DataTable GetCrockingDetailForReport(long ID);
 
         DataTable GetCrockingArticleForPdfReport(long ID);
+        
+        List<Crocking_Excel> CrockingTest_ToExcel(long ID);
 
         // Heat
         FabricCrkShrkTestHeat_Main GetFabricHeatTest_Main(long ID);
