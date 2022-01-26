@@ -171,22 +171,20 @@ where o.POID = @POID
             listPar.Add("@InspDate", fabricOvenTest_Detail_Result.Main.InspDate);
             listPar.Add("@Article", fabricOvenTest_Detail_Result.Main.Article);
             listPar.Add("@Inspector", fabricOvenTest_Detail_Result.Main.Inspector);            
-            listPar.Add("@Remark", fabricOvenTest_Detail_Result.Main.Remark);
+            listPar.Add("@Remark", fabricOvenTest_Detail_Result.Main.Remark ?? "");
             listPar.Add("@editName", userID);
             listPar.Add("@TestBeforePicture", fabricOvenTest_Detail_Result.Main.TestBeforePicture);
             listPar.Add("@TestAfterPicture", fabricOvenTest_Detail_Result.Main.TestAfterPicture);
 
             string sqlUpdateOven = @"
 SET XACT_ABORT ON
-
+-----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
 update  Oven set    InspDate = @InspDate,
                     Article = @Article,
                     Inspector = @Inspector,
                     Remark = @Remark,
                     EditName = @editName,
-                    EditDate = getdate(),
-                    TestBeforePicture = @TestBeforePicture,
-                    TestAfterPicture = @TestAfterPicture
+                    EditDate = getdate()
 where   POID = @POID and TestNo = @TestNo
 
 update  [ExtendServer].PMSFile.dbo.Oven set  
@@ -287,7 +285,7 @@ update  Oven_Detail set Roll           =  @Roll         ,
 
             using (TransactionScope transaction = new TransactionScope())
             {
-                DataTable dtResult = ExecuteDataTable(CommandType.Text, sqlUpdateOven, listPar);
+                DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlUpdateOven, listPar);
                 long ovenID = (long)dtResult.Rows[0]["OvenID"];
                 foreach (FabricOvenTest_Detail_Detail detailItem in needUpdateDetailList)
                 {
@@ -308,7 +306,7 @@ update  Oven_Detail set Roll           =  @Roll         ,
                             listDetailPar.Add("@Result", detailItem.Result);
                             listDetailPar.Add("@changeScale", detailItem.ChangeScale);
                             listDetailPar.Add("@StainingScale", detailItem.StainingScale);
-                            listDetailPar.Add("@Remark", detailItem.Remark);
+                            listDetailPar.Add("@Remark", detailItem.Remark ?? "");
                             listDetailPar.Add("@AddName", userID);
                             listDetailPar.Add("@ResultChange", detailItem.ResultChange);
                             listDetailPar.Add("@ResultStain", detailItem.ResultStain);
@@ -328,7 +326,7 @@ update  Oven_Detail set Roll           =  @Roll         ,
                             listDetailPar.Add("@Result", detailItem.Result);
                             listDetailPar.Add("@changeScale", detailItem.ChangeScale);
                             listDetailPar.Add("@StainingScale", detailItem.StainingScale);
-                            listDetailPar.Add("@Remark", detailItem.Remark);
+                            listDetailPar.Add("@Remark", detailItem.Remark ?? "");
                             listDetailPar.Add("@EditName", userID);
                             listDetailPar.Add("@ResultChange", detailItem.ResultChange);
                             listDetailPar.Add("@ResultStain", detailItem.ResultStain);
@@ -354,6 +352,9 @@ update  Oven_Detail set Roll           =  @Roll         ,
                     }
                 }
 
+                string UpdateInspPercent = "exec UpdateInspPercent 'LabOven',@POID";
+                ExecuteDataTableByServiceConn(CommandType.Text, UpdateInspPercent, listPar);
+
                 transaction.Complete();
             }
         }
@@ -365,7 +366,7 @@ update  Oven_Detail set Roll           =  @Roll         ,
             listPar.Add("@InspDate", fabricOvenTest_Detail_Result.Main.InspDate);
             listPar.Add("@Article", fabricOvenTest_Detail_Result.Main.Article);
             listPar.Add("@Inspector", fabricOvenTest_Detail_Result.Main.Inspector);
-            listPar.Add("@Remark", fabricOvenTest_Detail_Result.Main.Remark);
+            listPar.Add("@Remark", fabricOvenTest_Detail_Result.Main.Remark ?? "");
             listPar.Add("@addName", userID);
             listPar.Add("@TestBeforePicture", fabricOvenTest_Detail_Result.Main.TestBeforePicture);
             listPar.Add("@TestAfterPicture", fabricOvenTest_Detail_Result.Main.TestAfterPicture);
@@ -380,9 +381,10 @@ select  @TestNo = isnull(Max(TestNo), 0) + 1
 from    Oven  WITH(NOLOCK)
 where POID = @POID
 
-insert into Oven(POID, TestNo, InspDate, Article, Status, Inspector, Remark, addName, addDate, TestBeforePicture, TestAfterPicture)
+----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
+insert into Oven(POID, TestNo, InspDate, Article, Status, Inspector, Remark, addName, addDate)
         OUTPUT INSERTED.ID, INSERTED.TestNo into @OvenID
-        values(@POID, @TestNo, @InspDate, @Article, 'New', @Inspector, @Remark, @addName, getdate(), @TestBeforePicture, @TestAfterPicture)
+        values(@POID, @TestNo, @InspDate, @Article, 'New', @Inspector, @Remark, @addName, getdate())
 
 select  [OvenID] = ID, TestNo
 from @OvenID
@@ -438,7 +440,7 @@ getdate()        ,
 
             using (TransactionScope transaction = new TransactionScope())
             {
-                DataTable dtResult = ExecuteDataTable(CommandType.Text, sqlInsertOven, listPar);
+                DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlInsertOven, listPar);
                 long ovenID = (long)dtResult.Rows[0]["OvenID"];
                 TestNo = dtResult.Rows[0]["TestNo"].ToString();
                 foreach (FabricOvenTest_Detail_Detail detailItem in fabricOvenTest_Detail_Result.Details)
@@ -453,7 +455,7 @@ getdate()        ,
                     listDetailPar.Add("@Result", detailItem.Result);
                     listDetailPar.Add("@changeScale", detailItem.ChangeScale);
                     listDetailPar.Add("@StainingScale", detailItem.StainingScale);
-                    listDetailPar.Add("@Remark", detailItem.Remark);
+                    listDetailPar.Add("@Remark", detailItem.Remark ?? "");
                     listDetailPar.Add("@AddName", userID);
                     listDetailPar.Add("@ResultChange", detailItem.ResultChange);
                     listDetailPar.Add("@ResultStain", detailItem.ResultStain);
@@ -464,6 +466,9 @@ getdate()        ,
                     ExecuteNonQuery(CommandType.Text, sqlInsertOvenDetail, listDetailPar);
                 }
 
+                string UpdateInspPercent = "exec UpdateInspPercent 'LabOven',@POID";
+                ExecuteDataTableByServiceConn(CommandType.Text, UpdateInspPercent, listPar);
+
                 transaction.Complete();
             }
         }
@@ -471,7 +476,7 @@ getdate()        ,
         public void SaveFabricOvenTestMain(FabricOvenTest_Main fabricOvenTest_Main)
         {
             SQLParameterCollection listPar = new SQLParameterCollection();
-            listPar.Add("@Remark", fabricOvenTest_Main.Remark);
+            listPar.Add("@Remark", fabricOvenTest_Main.Remark ?? "");
             listPar.Add("@POID", fabricOvenTest_Main.POID);
 
             string sqlUpdateOvenMain = @"

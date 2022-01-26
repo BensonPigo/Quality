@@ -66,86 +66,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 
             return ExecuteList<FIR_Laboratory_Wash>(CommandType.Text, SbSql.ToString(), objParameter);
         }
-		/*建立Laboratory - WashTest(Create) 詳細敘述如下*/
-        /// <summary>
-        /// 建立Laboratory - WashTest
-        /// </summary>
-        /// <param name="Item">Laboratory - WashTest成員</param>
-        /// <returns>回傳異動筆數</returns>
-		/// <info>Author: Admin; Date: 2021/08/25  </info>
-        /// <history>
-        /// xx.  YYYY/MM/DD   Ver   Author      Comments
-        /// ===  ==========  ====  ==========  ==========
-        /// 01.  2021/08/25  1.00    Admin        Create
-        /// </history>
-        public int Create(FIR_Laboratory_Wash Item)
-        {
-            StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append("INSERT INTO [FIR_Laboratory_Wash]"+ Environment.NewLine);
-            SbSql.Append("(" + Environment.NewLine);
-            SbSql.Append("         ID"+ Environment.NewLine);
-            SbSql.Append("        ,Roll"+ Environment.NewLine);
-            SbSql.Append("        ,Dyelot"+ Environment.NewLine);
-            SbSql.Append("        ,Inspdate"+ Environment.NewLine);
-            SbSql.Append("        ,Inspector"+ Environment.NewLine);
-            SbSql.Append("        ,Result"+ Environment.NewLine);
-            SbSql.Append("        ,Remark"+ Environment.NewLine);
-            SbSql.Append("        ,AddName"+ Environment.NewLine);
-            SbSql.Append("        ,AddDate"+ Environment.NewLine);
-            SbSql.Append("        ,EditName"+ Environment.NewLine);
-            SbSql.Append("        ,EditDate"+ Environment.NewLine);
-            SbSql.Append("        ,HorizontalRate"+ Environment.NewLine);
-            SbSql.Append("        ,HorizontalOriginal"+ Environment.NewLine);
-            SbSql.Append("        ,HorizontalTest1"+ Environment.NewLine);
-            SbSql.Append("        ,HorizontalTest2"+ Environment.NewLine);
-            SbSql.Append("        ,HorizontalTest3"+ Environment.NewLine);
-            SbSql.Append("        ,VerticalRate"+ Environment.NewLine);
-            SbSql.Append("        ,VerticalOriginal"+ Environment.NewLine);
-            SbSql.Append("        ,VerticalTest1"+ Environment.NewLine);
-            SbSql.Append("        ,VerticalTest2"+ Environment.NewLine);
-            SbSql.Append("        ,VerticalTest3"+ Environment.NewLine);
-            SbSql.Append("        ,SkewnessTest1"+ Environment.NewLine);
-            SbSql.Append("        ,SkewnessTest2"+ Environment.NewLine);
-            SbSql.Append("        ,SkewnessTest3"+ Environment.NewLine);
-            SbSql.Append("        ,SkewnessTest4"+ Environment.NewLine);
-            SbSql.Append("        ,SkewnessRate"+ Environment.NewLine);
-            SbSql.Append(")"+ Environment.NewLine);
-            SbSql.Append("VALUES"+ Environment.NewLine);
-            SbSql.Append("(" + Environment.NewLine);
-            SbSql.Append("         @ID"); objParameter.Add("@ID", DbType.String, Item.ID);
-            SbSql.Append("        ,@Roll"); objParameter.Add("@Roll", DbType.String, Item.Roll);
-            SbSql.Append("        ,@Dyelot"); objParameter.Add("@Dyelot", DbType.String, Item.Dyelot);
-            SbSql.Append("        ,@Inspdate"); objParameter.Add("@Inspdate", DbType.String, Item.Inspdate);
-            SbSql.Append("        ,@Inspector"); objParameter.Add("@Inspector", DbType.String, Item.Inspector);
-            SbSql.Append("        ,@Result"); objParameter.Add("@Result", DbType.String, Item.Result);
-            SbSql.Append("        ,@Remark"); objParameter.Add("@Remark", DbType.String, Item.Remark);
-            SbSql.Append("        ,@AddName"); objParameter.Add("@AddName", DbType.String, Item.AddName);
-            SbSql.Append("        ,@AddDate"); objParameter.Add("@AddDate", DbType.DateTime, Item.AddDate);
-            SbSql.Append("        ,@EditName"); objParameter.Add("@EditName", DbType.String, Item.EditName);
-            SbSql.Append("        ,@EditDate"); objParameter.Add("@EditDate", DbType.DateTime, Item.EditDate);
-            SbSql.Append("        ,@HorizontalRate"); objParameter.Add("@HorizontalRate", DbType.String, Item.HorizontalRate);
-            SbSql.Append("        ,@HorizontalOriginal"); objParameter.Add("@HorizontalOriginal", DbType.String, Item.HorizontalOriginal);
-            SbSql.Append("        ,@HorizontalTest1"); objParameter.Add("@HorizontalTest1", DbType.String, Item.HorizontalTest1);
-            SbSql.Append("        ,@HorizontalTest2"); objParameter.Add("@HorizontalTest2", DbType.String, Item.HorizontalTest2);
-            SbSql.Append("        ,@HorizontalTest3"); objParameter.Add("@HorizontalTest3", DbType.String, Item.HorizontalTest3);
-            SbSql.Append("        ,@VerticalRate"); objParameter.Add("@VerticalRate", DbType.String, Item.VerticalRate);
-            SbSql.Append("        ,@VerticalOriginal"); objParameter.Add("@VerticalOriginal", DbType.String, Item.VerticalOriginal);
-            SbSql.Append("        ,@VerticalTest1"); objParameter.Add("@VerticalTest1", DbType.String, Item.VerticalTest1);
-            SbSql.Append("        ,@VerticalTest2"); objParameter.Add("@VerticalTest2", DbType.String, Item.VerticalTest2);
-            SbSql.Append("        ,@VerticalTest3"); objParameter.Add("@VerticalTest3", DbType.String, Item.VerticalTest3);
-            SbSql.Append("        ,@SkewnessTest1"); objParameter.Add("@SkewnessTest1", DbType.String, Item.SkewnessTest1);
-            SbSql.Append("        ,@SkewnessTest2"); objParameter.Add("@SkewnessTest2", DbType.String, Item.SkewnessTest2);
-            SbSql.Append("        ,@SkewnessTest3"); objParameter.Add("@SkewnessTest3", DbType.String, Item.SkewnessTest3);
-            SbSql.Append("        ,@SkewnessTest4"); objParameter.Add("@SkewnessTest4", DbType.String, Item.SkewnessTest4);
-            SbSql.Append("        ,@SkewnessRate"); objParameter.Add("@SkewnessRate", DbType.String, Item.SkewnessRate);
-            SbSql.Append(")"+ Environment.NewLine);
 
-
-
-
-            return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
-        }
 		/*更新Laboratory - WashTest(Update) 詳細敘述如下*/
         /// <summary>
         /// 更新Laboratory - WashTest
@@ -170,7 +91,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             if (Item.Inspdate != null) { SbSql.Append(",Inspdate=@Inspdate"+ Environment.NewLine); objParameter.Add("@Inspdate", DbType.String, Item.Inspdate);}
             if (Item.Inspector != null) { SbSql.Append(",Inspector=@Inspector"+ Environment.NewLine); objParameter.Add("@Inspector", DbType.String, Item.Inspector);}
             if (Item.Result != null) { SbSql.Append(",Result=@Result"+ Environment.NewLine); objParameter.Add("@Result", DbType.String, Item.Result);}
-            if (Item.Remark != null) { SbSql.Append(",Remark=@Remark"+ Environment.NewLine); objParameter.Add("@Remark", DbType.String, Item.Remark);}
+            if (Item.Remark != null) { SbSql.Append(",Remark=@Remark"+ Environment.NewLine); objParameter.Add("@Remark", DbType.String, Item.Remark ?? "");}
             if (Item.AddName != null) { SbSql.Append(",AddName=@AddName"+ Environment.NewLine); objParameter.Add("@AddName", DbType.String, Item.AddName);}
             if (Item.AddDate != null) { SbSql.Append(",AddDate=@AddDate"+ Environment.NewLine); objParameter.Add("@AddDate", DbType.DateTime, Item.AddDate);}
             if (Item.EditName != null) { SbSql.Append(",EditName=@EditName"+ Environment.NewLine); objParameter.Add("@EditName", DbType.String, Item.EditName);}

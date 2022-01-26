@@ -162,7 +162,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "<td><input id='Details_" + i + "__Refno' name='Details[" + i + "].Refno' type='text' readonly='readonly'></td>"; // Refno
             html += "<td><input id='Details_" + i + "__SCIRefno' name='Details[" + i + "].SCIRefno' type='text' readonly='readonly'></td>"; // SCIRefno
             html += "<td><input id='Details_" + i + "__ColorID' name='Details[" + i + "].ColorID' type='text' readonly='readonly'></td>"; // ColorID
-            html += "<td><input  readonly='readonly'  id='Details_" + i + "__Result' name='Details[" + i + "].Result'  class='detailResultColor' type='text'></td>"; // Result
+            html += "<td><input  readonly='readonly'  id='Details_" + i + "__Result' name='Details[" + i + "].Result'  class='blue' type='text'></td>"; // Result
 
             html += "<td><select id='Details_" + i + "__ChangeScale' name='Details[" + i + "].ChangeScale'>"; // ChangeScale
             foreach (string val in model.ScaleIDs)

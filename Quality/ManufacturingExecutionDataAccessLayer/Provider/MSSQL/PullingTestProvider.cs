@@ -240,8 +240,7 @@ INSERT INTO PullingTest
            ,AccRefno
            ,SnapOperator
            ,Remark
-            ,TestBeforePicture
-            ,TestAfterPicture
+                    ----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
            ,AddDate
            ,AddName)
 VALUES(    
@@ -267,8 +266,7 @@ VALUES(
            ,@AccRefno
            ,@SnapOperator
            ,@Remark
-            ,@TestBeforePicture
-            ,@TestAfterPicture
+
            ,GETDATE()
            ,@AddName)
 

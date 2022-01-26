@@ -41,8 +41,6 @@ namespace BusinessLogicLayer.Service.FinalInspection
         public QueryReport GetFinalInspectionReport(string finalInspectionID)
         {
             _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
-            _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
-            _StyleProvider = new StyleProvider(Common.ProductionDataAccessLayer);
 
             QueryReport queryReport = new QueryReport();
 
@@ -60,8 +58,10 @@ namespace BusinessLogicLayer.Service.FinalInspection
 
                 queryReport.AQLPlan = new FinalInspectionService().GetAQLPlanDesc(queryReport.FinalInspection.AcceptableQualityLevelsUkey);
 
+                _StyleProvider = new StyleProvider(Common.ProductionDataAccessLayer);
                 queryReport.MeasurementUnit = _StyleProvider.GetSizeUnitByCustPONO(queryReport.FinalInspection.CustPONO);
 
+                _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
                 List<FinalInspectionDefectItem> finalInspectionDefectItems = _FinalInspFromPMSProvider.GetFinalInspectionDefectItems(finalInspectionID).ToList();
                 if (finalInspectionDefectItems.Any(s => s.Qty > 0))
                 {
@@ -74,6 +74,7 @@ namespace BusinessLogicLayer.Service.FinalInspection
 
                 queryReport.ListDefectItem = finalInspectionDefectItems;
 
+                _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
                 List<BACriteriaItem> bACriteriaItems = _FinalInspectionProvider.GetBeautifulProductAuditForInspection(finalInspectionID).ToList();
                 if (bACriteriaItems.Any(s => s.Qty > 0))
                 {
@@ -209,8 +210,7 @@ NOTE: This is an automated reply from a system mailbox. Please do not reply to t
                 //寄件者 & 收件者
 
                 SQLParameterCollection objParameter = new SQLParameterCollection();
-
-                DataTable dt = SQLDAL.ExecuteDataTable(CommandType.Text, "select * from Production.dbo.System", objParameter);
+                DataTable dt = SQLDAL.ExecuteDataTable(CommandType.Text, "select * from Production.dbo.System", objParameter, ADOHelper.DBToolKit.Common.ProductionDataAccessLayer);
                 if (dt != null || dt.Rows.Count > 0)
                 {
                     mailFrom = dt.Rows[0]["Sendfrom"].ToString();

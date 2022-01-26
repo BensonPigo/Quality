@@ -122,7 +122,7 @@ select  [MaxSerID] =  cast(Replace(isnull(MAX(ID), '0'), '{idHead}', '') as int)
 from    ManufacturingExecution.dbo.FinalInspection with (nolock)
 where   ID like '{idHead}%'
 ";
-            int newSer = (int)ExecuteDataTable(CommandType.Text, sqlGetCurMaxID, new SQLParameterCollection()).Rows[0]["MaxSerID"] + 1;
+            int newSer = (int)ExecuteDataTableByServiceConn(CommandType.Text, sqlGetCurMaxID, new SQLParameterCollection()).Rows[0]["MaxSerID"] + 1;
             string newID = idHead + newSer.ToString().PadLeft(4, '0');
             return newID;
         }
@@ -517,8 +517,8 @@ where   ID = @FinalInspectionID
                         {
                             string sqlInsertFinalInspection_DetailImage = @"
 SET XACT_ABORT ON
-    insert into FinalInspection_DetailImage(ID, FinalInspection_DetailUkey, Image)
-                values(@FinalInspectionID, @FinalInspection_DetailUkey, @Image)
+    insert into FinalInspection_DetailImage(ID, FinalInspection_DetailUkey)
+                values(@FinalInspectionID, @FinalInspection_DetailUkey) ----2022/01/10 PMSFile上線，因此去掉Image寫入原本DB的部分
     insert into [ExtendServer].PMSFile.dbo.FinalInspection_DetailImage(ID, FinalInspection_DetailUkey, Image)
                 values(@FinalInspectionID, @FinalInspection_DetailUkey, @Image)
 ";
@@ -632,8 +632,8 @@ where   ID = @FinalInspectionID
                         {
                             string sqlInsertFinalInspection_NonBACriteriaImage = @"
     SET XACT_ABORT ON
-    insert into FinalInspection_NonBACriteriaImage(ID, FinalInspection_NonBACriteriaUkey, Image)
-                values(@FinalInspectionID, @FinalInspection_NonBACriteriaUkey, @Image)
+    insert into FinalInspection_NonBACriteriaImage(ID, FinalInspection_NonBACriteriaUkey)
+                values(@FinalInspectionID, @FinalInspection_NonBACriteriaUkey) --2022/01/10 PMSFile上線，因此去掉Image寫入原本DB的部分
 
     insert into [ExtendServer].PMSFile.dbo.FinalInspection_NonBACriteriaImage(ID, FinalInspection_NonBACriteriaUkey, Image)
                 values(@FinalInspectionID, @FinalInspection_NonBACriteriaUkey, @Image)
@@ -776,7 +776,7 @@ from    EndlineMoisture with (nolock)
             objParameter.Add("@CTNOutside", moistureResult.CTNOutside);
             objParameter.Add("@Result",DbType.String, moistureResult.Result);
             objParameter.Add("@Action", moistureResult.Action);
-            objParameter.Add("@Remark", moistureResult.Remark);
+            objParameter.Add("@Remark", moistureResult.Remark ?? "");
             objParameter.Add("@AddName", moistureResult.AddName);
 
             string sqlInsertFinalInspection_Moisture = @"
@@ -1031,7 +1031,7 @@ drop table #tmp,#Style_Size,#tmp_Inspection_Measurement
 
 ";
 
-            DataTable dt = ExecuteDataTable(CommandType.Text, sqlcmd, objParameter);
+            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
             return dt;
         }
 
@@ -1084,8 +1084,8 @@ select  Image
                 string sqlFinalInspection_OtherImage = @"
 SET XACT_ABORT ON
 
-    insert into FinalInspection_OtherImage(ID, Image)
-                values(@FinalInspectionID, @Image)
+    insert into FinalInspection_OtherImage(ID)
+                values(@FinalInspectionID) ----2022/01/10 PMSFile上線，因此去掉Image寫入原本DB的部分
 
     insert into [ExtendServer].PMSFile.dbo.FinalInspection_OtherImage(ID, Image)
                 values(@FinalInspectionID, @Image)

@@ -47,7 +47,26 @@ select cd.ID
 ,cd.Roll
 ,cd.Dyelot
 ,po3.Refno,po3.SCIRefno,po3.ColorID
-,cd.Result,cd.changeScale,cd.ResultChange,cd.StainingScale
+
+,cd.Result  --所有檢驗過的匯總
+
+,cd.changeScale
+,cd.ResultChange
+,cd.StainingScale
+,cd.ResultStain
+,cd.AcetateScale
+,cd.ResultAcetate
+,cd.CottonScale
+,cd.ResultCotton
+,cd.NylonScale
+,cd.ResultNylon
+,cd.PolyesterScale
+,cd.ResultPolyester
+,cd.AcrylicScale
+,cd.ResultAcrylic
+,cd.WoolScale
+,cd.ResultWool
+
 ,cd.ResultStain,cd.Remark
 ,[LastUpdate] = case 
     when cd.EditName !='' then CONCAT(cd.EditName,'-',pEdit.Name,pEdit.ExtNo)
@@ -74,6 +93,57 @@ order by cd.id,cd.ColorFastnessGroup
             return result;
         }
 
+        public IList<ColorFastness_Excel> GetExcel(string ID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.String, ID } ,
+            };
+
+            string sqlcmd = @"
+select cd.SubmitDate
+        ,o.SeasonID
+        ,o.BrandID
+        ,o.StyleID
+        ,c.POID
+        ,cd.Roll
+        ,cd.Dyelot
+        ,SCIRefno_Color = po3.SCIRefno + ' ' +po3.ColorID
+        ,c.Temperature
+        ,c.CycleTime
+        ,cd.ChangeScale
+        ,cd.AcetateScale
+        ,cd.CottonScale
+        ,cd.NylonScale
+        ,cd.PolyesterScale
+        ,cd.AcrylicScale
+        ,cd.WoolScale
+        ,cd.ResultChange
+        ,cd.ResultAcetate
+        ,cd.ResultCotton
+        ,cd.ResultNylon
+        ,cd.ResultPolyester
+        ,cd.ResultAcrylic
+        ,cd.ResultWool
+        ,cd.Remark
+        ,c.Inspector
+        ,pmsFile.TestBeforePicture
+        ,pmsFile.TestAfterPicture
+from ColorFastness_Detail cd WITH(NOLOCK)
+left join ColorFastness c WITH(NOLOCK) on c.ID =  cd.ID
+left join ExtendServer.PMSFile.dbo.ColorFastness pmsFile WITH(NOLOCK) on pmsFile.ID =  cd.ID
+left join Orders o WITH(NOLOCK) on o.ID=c.POID
+left join PO_Supp_Detail po3 WITH(NOLOCK) on c.POID = po3.ID 
+	and cd.SEQ1 = po3.SEQ1 and cd.SEQ2 = po3.SEQ2
+left join Pass1 pEdit WITH(NOLOCK) on pEdit.ID = cd.EditName
+left join pass1 pAdd WITH(NOLOCK) on pAdd.ID = cd.AddName
+where cd.ID = @ID
+order by cd.SubmitDate
+";
+            var detail = ExecuteList<ColorFastness_Excel>(CommandType.Text, sqlcmd, objParameter);
+
+            return detail.Any() ? detail : new List<ColorFastness_Excel>();
+        }
         public IList<PO_Supp_Detail> Get_Seq(string POID, string Seq1,string Seq2)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection
@@ -162,7 +232,7 @@ where id = @ID
                 { "@Result", sources.Main.Result } ,
                 { "@Status", sources.Main.Status } ,
                 { "@Inspector", sources.Main.Inspector } ,
-                { "@Remark", sources.Main.Remark } ,
+                { "@Remark", sources.Main.Remark ?? ""} ,
                 { "@Temperature", sources.Main.Temperature } ,
                 { "@Cycle", sources.Main.Cycle } ,
                 { "@CycleTime", sources.Main.CycleTime } ,
@@ -211,8 +281,7 @@ set	   [POID] = @POID
       ,[Detergent] = @Detergent
       ,[Machine] = @Machine
       ,[Drying] = @Drying
-      ,[TestBeforePicture] = @TestBeforePicture
-      ,[TestAfterPicture] = @TestAfterPicture
+      -----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
 where ID = @ID
 
 update [ExtendServer].PMSFile.dbo.ColorFastness
@@ -232,8 +301,9 @@ exec UpdateInspPercent 'LabColorFastness', @POID
                 sqlcmd += @"
 SET XACT_ABORT ON
 
-insert into ColorFastness(ID,POID,TestNo,InspDate,Article,Status,Inspector,Remark,addName,addDate,Temperature,Cycle,CycleTime,Detergent,Machine,Drying,TestBeforePicture,TestAfterPicture)
-values(@ID ,@POID,@TestNo,GETDATE(),@Article,'New',@UserID,@Remark,@UserID,GETDATE(),@Temperature,@Cycle,@CycleTime,@Detergent,@Machine,@Drying,@TestBeforePicture,@TestAfterPicture)
+----2022/01/10 PMSFile上線，因此去掉Image寫入原本DB的部分
+insert into ColorFastness(ID,POID,TestNo,InspDate,Article,Status,Inspector,Remark,addName,addDate,Temperature,Cycle,CycleTime,Detergent,Machine,Drying)
+values(@ID ,@POID,@TestNo,GETDATE(),@Article,'New',@UserID,@Remark,@UserID,GETDATE(),@Temperature,@Cycle,@CycleTime,@Detergent,@Machine,@Drying)
 
 insert into [ExtendServer].PMSFile.dbo.ColorFastness(ID,TestBeforePicture,TestAfterPicture)
 values(@ID ,@TestBeforePicture,@TestAfterPicture)
@@ -251,46 +321,72 @@ values(@ID ,@TestBeforePicture,@TestAfterPicture)
                     sources.Detail,
                     oldDetailData,
                     "ID,ColorFastnessGroup,SEQ1,SEQ2",
-                    "Roll,Dyelot,changeScale,StainingScale,Remark,SubmitDate,ResultChange,ResultStain");
+                    "Roll,Dyelot,Remark,SubmitDate,Result,changeScale,ResultChange,AcetateScale,ResultAcetate,CottonScale,ResultCotton,NylonScale,ResultNylon,PolyesterScale,ResultPolyester,AcrylicScale,ResultAcrylic,WoolScale,ResultWool");
 
             #region save Details
 
             string insertDetail = $@"
 insert into ColorFastness_Detail 
-(      [ID]
-      ,[ColorFastnessGroup]
-      ,[SEQ1]
-      ,[SEQ2]
-      ,[Roll]
-      ,[Dyelot]
-      ,[Result]
-      ,[changeScale]
-      ,[StainingScale]
-      ,[Remark]
-      ,[AddName]
-      ,[AddDate]
-      ,[SubmitDate]
-      ,[ResultChange]
-      ,[ResultStain]
+(        [ID]
+        ,[ColorFastnessGroup]
+        ,[SEQ1]
+        ,[SEQ2]
+        ,[Roll]
+        ,[Dyelot]
+        ,[Result]
+        ,[changeScale]
+        ,[ResultChange]
+        ,[Remark]
+        ,[AddName]
+        ,[AddDate]
+        ,[SubmitDate]
+
+        ,[AcetateScale]
+        ,[ResultAcetate]
+        ,[CottonScale]
+        ,[ResultCotton]
+        ,[NylonScale]
+        ,[ResultNylon]
+        ,[PolyesterScale]
+        ,[ResultPolyester]
+        ,[AcrylicScale]
+        ,[ResultAcrylic]
+        ,[WoolScale]
+        ,[ResultWool]
 ) 
 values
 (
-       @ID
-      ,@ColorFastnessGroup
-      ,@Seq1
-      ,@Seq2
-      ,@Roll
-      ,@Dyelot
-      ,@Result
-      ,@changeScale
-      ,@StainingScale
-      ,@Remark
-      ,@UserID
-      ,GetDate()      
-      ,@SubmitDate
-      ,@ResultChange
-      ,@ResultStain
-)";
+         @ID
+        ,@ColorFastnessGroup
+        ,@Seq1
+        ,@Seq2
+        ,@Roll
+        ,@Dyelot
+        ,@Result
+        ,@changeScale
+        ,@ResultChange
+        ,@Remark
+        ,@UserID
+        ,GetDate()      
+        ,@SubmitDate
+
+        ,@AcetateScale
+        ,@ResultAcetate
+        ,@CottonScale
+        ,@ResultCotton
+        ,@NylonScale
+        ,@ResultNylon
+        ,@PolyesterScale
+        ,@ResultPolyester
+        ,@AcrylicScale
+        ,@ResultAcrylic
+        ,@WoolScale
+        ,@ResultWool
+)
+
+declare @POID varchar(13) = (select POID from ColorFastness WITH(NOLOCK) where ID = @ID)
+exec UpdateInspPercent 'LabColorFastness', @POID
+";
             string deleteDetail = $@"
 delete from ColorFastness_Detail 
 where id = @ID
@@ -305,27 +401,47 @@ exec UpdateInspPercent 'LabColorFastness', @POID
 update ColorFastness_Detail
 set 
        [Roll] = @Roll
-      ,[Dyelot] = @Dyelot
-      ,[Result] = @Result
-      ,[changeScale] = @changeScale
-      ,[StainingScale] = @StainingScale
-      ,[Remark] = @Remark
-      ,[EditName] = @UserID
-      ,[EditDate] = GetDate()
-      ,[SubmitDate] = @SubmitDate
-      ,[ResultChange] = @ResultChange
-      ,[ResultStain] = @ResultStain
+        ,[Dyelot] = @Dyelot
+        ,[Result] = @Result
+        ,[changeScale] = @changeScale
+        ,[ResultChange] = @ResultChange
+        ,[Remark] = @Remark
+        ,[EditName] = @UserID
+        ,[EditDate] = GetDate()
+        ,[SubmitDate] = @SubmitDate
+
+        ,AcetateScale=@AcetateScale
+        ,ResultAcetate=@ResultAcetate
+        ,CottonScale=@CottonScale
+        ,ResultCotton=@ResultCotton
+        ,NylonScale=@NylonScale
+        ,ResultNylon=@ResultNylon
+        ,PolyesterScale=@PolyesterScale
+        ,ResultPolyester=@ResultPolyester
+        ,AcrylicScale=@AcrylicScale
+        ,ResultAcrylic=@ResultAcrylic
+        ,WoolScale=@WoolScale
+        ,ResultWool=@ResultWool
 where ID = @ID
 and ColorFastnessGroup = @ColorFastnessGroup
 and SEQ1 = @Seq1
 and SEQ2 = @Seq2
+
+declare @POID varchar(13) = (select POID from ColorFastness WITH(NOLOCK) where ID = @ID)
+exec UpdateInspPercent 'LabColorFastness', @POID
 ";
 
             ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter);
             foreach (var detailItem in needUpdateDetailList)
             {   
                 SQLParameterCollection listDetailPar = new SQLParameterCollection();
-                string DetailResult = (detailItem.ResultChange.EqualString("Pass") && detailItem.ResultStain.EqualString("Pass")) ? "Pass" : "Fail";
+                string DetailResult = (detailItem.ResultChange.EqualString("Pass") 
+                    && detailItem.ResultAcetate.EqualString("Pass") 
+                    && detailItem.ResultCotton.EqualString("Pass") 
+                    && detailItem.ResultNylon.EqualString("Pass") 
+                    && detailItem.ResultPolyester.EqualString("Pass") 
+                    && detailItem.ResultAcrylic.EqualString("Pass") 
+                    && detailItem.ResultWool.EqualString("Pass")) ? "Pass" : "Fail";
 
                 switch (detailItem.StateType)
                 {
@@ -338,12 +454,23 @@ and SEQ2 = @Seq2
                         listDetailPar.Add(new SqlParameter($"@Dyelot", string.IsNullOrEmpty(detailItem.Dyelot) ? "" : detailItem.Dyelot));
                         listDetailPar.Add(new SqlParameter($"@Result", DetailResult));
                         listDetailPar.Add(new SqlParameter($"@changeScale", detailItem.changeScale));
-                        listDetailPar.Add(new SqlParameter($"@StainingScale", detailItem.StainingScale));
-                        listDetailPar.Add(new SqlParameter($"@Remark", detailItem.Remark));
+                        listDetailPar.Add(new SqlParameter($"@ResultChange", detailItem.ResultChange));
+                        listDetailPar.Add(new SqlParameter($"@Remark", detailItem.Remark ?? ""));
                         listDetailPar.Add(new SqlParameter($"@UserID", UserID));
                         listDetailPar.Add($"@SubmitDate", DbType.Date, detailItem.SubmitDate);
-                        listDetailPar.Add(new SqlParameter($"@ResultChange", detailItem.ResultChange));
-                        listDetailPar.Add(new SqlParameter($"@ResultStain", detailItem.ResultStain));
+
+                        listDetailPar.Add(new SqlParameter($"@AcetateScale", detailItem.AcetateScale));
+                        listDetailPar.Add(new SqlParameter($"@ResultAcetate", detailItem.ResultAcetate));
+                        listDetailPar.Add(new SqlParameter($"@CottonScale", detailItem.CottonScale));
+                        listDetailPar.Add(new SqlParameter($"@ResultCotton", detailItem.ResultCotton));
+                        listDetailPar.Add(new SqlParameter($"@NylonScale", detailItem.NylonScale));
+                        listDetailPar.Add(new SqlParameter($"@ResultNylon", detailItem.ResultNylon));
+                        listDetailPar.Add(new SqlParameter($"@PolyesterScale", detailItem.PolyesterScale));
+                        listDetailPar.Add(new SqlParameter($"@ResultPolyester", detailItem.ResultPolyester));
+                        listDetailPar.Add(new SqlParameter($"@AcrylicScale", detailItem.AcrylicScale));
+                        listDetailPar.Add(new SqlParameter($"@ResultAcrylic", detailItem.ResultAcrylic));
+                        listDetailPar.Add(new SqlParameter($"@WoolScale", detailItem.WoolScale));
+                        listDetailPar.Add(new SqlParameter($"@ResultWool", detailItem.ResultWool));
 
                         ExecuteNonQuery(CommandType.Text, insertDetail, listDetailPar);
                         break;
@@ -356,13 +483,23 @@ and SEQ2 = @Seq2
                         listDetailPar.Add(new SqlParameter($"@Dyelot", string.IsNullOrEmpty(detailItem.Dyelot) ? "" : detailItem.Dyelot));
                         listDetailPar.Add(new SqlParameter($"@Result", DetailResult));
                         listDetailPar.Add(new SqlParameter($"@changeScale", detailItem.changeScale));
-                        listDetailPar.Add(new SqlParameter($"@StainingScale", detailItem.StainingScale));
-                        listDetailPar.Add(new SqlParameter($"@Remark", detailItem.Remark));
+                        listDetailPar.Add(new SqlParameter($"@ResultChange", detailItem.ResultChange));
+                        listDetailPar.Add(new SqlParameter($"@Remark", detailItem.Remark ?? ""));
                         listDetailPar.Add(new SqlParameter($"@UserID", UserID));
                         listDetailPar.Add($"@SubmitDate", DbType.Date, detailItem.SubmitDate);
-                        listDetailPar.Add(new SqlParameter($"@ResultChange", detailItem.ResultChange));
-                        listDetailPar.Add(new SqlParameter($"@ResultStain", detailItem.ResultStain));
 
+                        listDetailPar.Add(new SqlParameter($"@AcetateScale", detailItem.AcetateScale));
+                        listDetailPar.Add(new SqlParameter($"@ResultAcetate", detailItem.ResultAcetate));
+                        listDetailPar.Add(new SqlParameter($"@CottonScale", detailItem.CottonScale));
+                        listDetailPar.Add(new SqlParameter($"@ResultCotton", detailItem.ResultCotton));
+                        listDetailPar.Add(new SqlParameter($"@NylonScale", detailItem.NylonScale));
+                        listDetailPar.Add(new SqlParameter($"@ResultNylon", detailItem.ResultNylon));
+                        listDetailPar.Add(new SqlParameter($"@PolyesterScale", detailItem.PolyesterScale));
+                        listDetailPar.Add(new SqlParameter($"@ResultPolyester", detailItem.ResultPolyester));
+                        listDetailPar.Add(new SqlParameter($"@AcrylicScale", detailItem.AcrylicScale));
+                        listDetailPar.Add(new SqlParameter($"@ResultAcrylic", detailItem.ResultAcrylic));
+                        listDetailPar.Add(new SqlParameter($"@WoolScale", detailItem.WoolScale));
+                        listDetailPar.Add(new SqlParameter($"@ResultWool", detailItem.ResultWool));
                         ExecuteNonQuery(CommandType.Text, updateDetail, listDetailPar);
                         break;
                     case DatabaseObject.Public.CompareStateType.Delete:

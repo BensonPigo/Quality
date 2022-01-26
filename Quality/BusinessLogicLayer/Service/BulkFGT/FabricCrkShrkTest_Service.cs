@@ -701,6 +701,7 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
+        /*
         public BaseResult ToExcelFabricCrkShrkTestCrockingDetail(long ID, out string excelFileName, bool isTest)
         {
             _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
@@ -819,8 +820,8 @@ namespace BusinessLogicLayer.Service
 
             return result;
         }
-
-        public BaseResult ToExcelFabricCrkShrkTestHeatDetail(long ID, out string excelFileName, bool isTest)
+        */
+        public BaseResult ToExcelFabricCrkShrkTestHeatDetail(long ID, out string excelFileName)
         {
             _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
             _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
@@ -829,7 +830,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                string baseFilePath = isTest ? Directory.GetCurrentDirectory() : System.Web.HttpContext.Current.Server.MapPath("~/");
+                string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
                 DataTable dtHeatDetail = _FabricCrkShrkTestProvider.GetHeatDetailForReport(ID);
                 FabricCrkShrkTestHeat_Main fabricCrkShrkTestHeat_Main = _FabricCrkShrkTestProvider.GetFabricHeatTest_Main(ID);
 
@@ -904,6 +905,42 @@ namespace BusinessLogicLayer.Service
                     RowIdx++;
                 }
 
+                #region 添加圖片
+                Excel.Range cellBeforePicture = excelSheets.Cells[21, 1];
+                if (fabricCrkShrkTestHeat_Main.HeatTestBeforePicture != null)
+                {
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    string imgPath;
+
+                    imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+
+                    byte[] bytes = fabricCrkShrkTestHeat_Main.HeatTestBeforePicture;
+                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
+                    {
+                        imageFile.Write(bytes, 0, bytes.Length);
+                        imageFile.Flush();
+                    }
+                    excelSheets.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 323, 255);
+                }
+
+                Excel.Range cellAfterPicture = excelSheets.Cells[21, 7];
+                if (fabricCrkShrkTestHeat_Main.HeatTestAfterPicture != null)
+                {
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    string imgPath;
+
+                    imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+
+                    byte[] bytes = fabricCrkShrkTestHeat_Main.HeatTestAfterPicture;
+                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
+                    {
+                        imageFile.Write(bytes, 0, bytes.Length);
+                        imageFile.Flush();
+                    }
+                    excelSheets.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 2, 323, 255);
+                }
+                #endregion
+
                 excel.Cells.EntireColumn.AutoFit();    // 自動欄寬
                 excel.Cells.EntireRow.AutoFit();       ////自動欄高
 
@@ -930,7 +967,7 @@ namespace BusinessLogicLayer.Service
 
         }
 
-        public BaseResult ToExcelFabricCrkShrkTestWashDetail(long ID, out string excelFileName, bool isTest)
+        public BaseResult ToExcelFabricCrkShrkTestWashDetail(long ID, out string excelFileName)
         {
             _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
             _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
@@ -940,7 +977,7 @@ namespace BusinessLogicLayer.Service
             try
             {
 
-                string baseFilePath = isTest ? Directory.GetCurrentDirectory() : System.Web.HttpContext.Current.Server.MapPath("~/");
+                string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
 
                 DataTable dtWashDetail = _FabricCrkShrkTestProvider.GetWashDetailForReport(ID);
                 FabricCrkShrkTestWash_Main fabricCrkShrkTestWash_Main = _FabricCrkShrkTestProvider.GetFabricWashTest_Main(ID);
@@ -1057,6 +1094,42 @@ namespace BusinessLogicLayer.Service
                     excelSheets.get_Range("S:S").EntireColumn.Hidden = true;
                 }
 
+                #region 添加圖片
+                Excel.Range cellBeforePicture = excelSheets.Cells[33, 1];
+                if (fabricCrkShrkTestWash_Main.WashTestBeforePicture != null)
+                {
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    string imgPath;
+
+                    imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+
+                    byte[] bytes = fabricCrkShrkTestWash_Main.WashTestBeforePicture;
+                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
+                    {
+                        imageFile.Write(bytes, 0, bytes.Length);
+                        imageFile.Flush();
+                    }
+                    excelSheets.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 20, 323, 255);
+                }
+
+                Excel.Range cellAfterPicture = excelSheets.Cells[33, 7];
+                if (fabricCrkShrkTestWash_Main.WashTestAfterPicture != null)
+                {
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    string imgPath;
+
+                    imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+
+                    byte[] bytes = fabricCrkShrkTestWash_Main.WashTestAfterPicture;
+                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
+                    {
+                        imageFile.Write(bytes, 0, bytes.Length);
+                        imageFile.Flush();
+                    }
+                    excelSheets.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 20, 323, 255);
+                }
+                #endregion
+
                 #region Save & Show Excel
                 excelFileName = $"FabricWashTest{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
                 string filepath = Path.Combine(baseFilePath, "TMP", excelFileName);
@@ -1078,7 +1151,7 @@ namespace BusinessLogicLayer.Service
 
             return result;
         }
-
+        /*
         public BaseResult ToPdfFabricCrkShrkTestCrockingDetail(long ID, out string pdfFileName, bool isTest)
         {
             _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
@@ -1108,7 +1181,7 @@ namespace BusinessLogicLayer.Service
 
             return result;
         }
-
+        */
         private string CreateExcelOnlyWetDry(long ID, bool isTest)
         {
             _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
@@ -1656,6 +1729,165 @@ namespace BusinessLogicLayer.Service
             {
                 throw ex;
             }
+        }
+
+        public BaseResult Crocking_ToExcel(long ID, bool IsPDF, out string excelFileName)
+        {
+            BaseResult result = new BaseResult();
+            _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
+            List<Crocking_Excel> dataList = new List<Crocking_Excel>();
+            excelFileName = string.Empty;
+
+            dataList = _FabricCrkShrkTestProvider.CrockingTest_ToExcel(ID).ToList();
+            if (!dataList.Any())
+            {
+                result.Result = false;
+                result.ErrorMessage = "Data not found!";
+                return result;
+            }
+
+            string basefileName = "FabricCrockingTest";
+            string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
+
+            Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
+            excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
+            //excel.Visible = true;
+            Microsoft.Office.Interop.Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
+
+            Excel.Worksheet worksheetn;
+            // 複製分頁：表身幾筆，就幾個sheet
+            for (int j = 1; j < dataList.Count; j++)
+            {
+                //Excel.Worksheet worksheetFirst = excel.Worksheets[1];
+                worksheetn = (Excel.Worksheet)excel.ActiveWorkbook.Worksheets[j];
+
+                worksheet.Copy(worksheetn);
+            }
+
+            //開始填資料
+            for (int j = 1; j <= dataList.Count; j++)
+            {
+                Excel.Worksheet currenSheet = excel.ActiveWorkbook.Worksheets[j];
+                Crocking_Excel currenData = dataList[j - 1];
+                currenSheet.Select();
+                currenSheet.Name = currenData.Article;
+
+                currenSheet.Cells[2, 3] = currenData.SubmitDate.HasValue ? currenData.SubmitDate.Value.ToString("yyyy/MM/dd") : string.Empty;
+                currenSheet.Cells[2, 8] = DateTime.Now.ToString("yyyy/MM/dd");
+
+                currenSheet.Cells[3, 3] = currenData.SeasonID;
+                currenSheet.Cells[3, 8] = currenData.BrandID;
+
+                currenSheet.Cells[4, 3] = currenData.StyleID;
+                currenSheet.Cells[4, 8] = currenData.POID;
+
+                currenSheet.Cells[5, 3] = currenData.Article;
+
+                currenSheet.Cells[6, 3] = currenData.Roll;
+                currenSheet.Cells[6, 8] = currenData.Dyelot;
+
+                currenSheet.Cells[7, 3] = currenData.SCIRefno_Color;
+                currenSheet.Cells[8, 8] = currenData.Color;
+
+                // Test Request
+
+                currenSheet.Cells[13, 2] = currenData.DryScale;
+                currenSheet.Cells[13, 4] = currenData.DryScale_Weft;
+                currenSheet.Cells[13, 6] = currenData.WetScale;
+                currenSheet.Cells[13, 8] = currenData.WetScale_Weft;
+
+                currenSheet.Cells[14, 2] = currenData.ResultDry;
+                currenSheet.Cells[14, 4] = currenData.ResultDry_Weft;
+                currenSheet.Cells[14, 6] = currenData.ResultWet;
+                currenSheet.Cells[14, 8] = currenData.ResultWet_Weft;
+
+                currenSheet.Cells[16, 2] = currenData.Remark;
+                currenSheet.Cells[72, 3] = currenData.Inspector;
+
+
+                #region 添加圖片
+                Excel.Range cellBeforePicture = currenSheet.Cells[46, 1];
+                if (currenData.CrockingTestBeforePicture != null)
+                {
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    string imgPath;
+
+                    imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+
+                    byte[] bytes = currenData.CrockingTestBeforePicture;
+                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
+                    {
+                        imageFile.Write(bytes, 0, bytes.Length);
+                        imageFile.Flush();
+                    }
+                    currenSheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 323, 255);
+                }
+
+                Excel.Range cellAfterPicture = currenSheet.Cells[46, 5];
+                if (currenData.CrockingTestAfterPicture != null)
+                {
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    string imgPath;
+
+                    imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+
+                    byte[] bytes = currenData.CrockingTestAfterPicture;
+                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
+                    {
+                        imageFile.Write(bytes, 0, bytes.Length);
+                        imageFile.Flush();
+                    }
+                    currenSheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 2, 323, 255);
+                }
+                #endregion
+
+            }
+
+            // 游標回到第一頁
+            worksheet = excel.ActiveWorkbook.Worksheets[1];
+            worksheet.Select();
+
+            #region Save & Show Excel
+
+            string fileName = $"{basefileName}_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+            string filexlsx = fileName + ".xlsx";
+            string fileNamePDF = fileName + ".pdf";
+
+            string filepathpdf = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileNamePDF);
+            string filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filexlsx);
+            
+
+            Excel.Workbook workbook = excel.ActiveWorkbook;
+            workbook.SaveAs(filepath);
+
+            excelFileName = filexlsx;
+
+            if (IsPDF)
+            {
+                if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
+                {
+                    excelFileName = fileNamePDF;
+                    result.Result = true;
+                }
+                else
+                {
+                    result.ErrorMessage = "Convert To PDF Fail";
+                    result.Result = false;
+                }
+
+            }
+
+            workbook.Close();
+            excel.Quit();
+            Marshal.ReleaseComObject(worksheet);
+            Marshal.ReleaseComObject(workbook);
+            Marshal.ReleaseComObject(excel);
+
+
+            result.Result = true;
+            #endregion
+
+            return result;
         }
     }
 }

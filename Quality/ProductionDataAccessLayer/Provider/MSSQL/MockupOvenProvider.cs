@@ -111,8 +111,8 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,HT2ndPressnoreverse" + Environment.NewLine);
             SbSql.Append("        ,HT2ndPressreversed" + Environment.NewLine);
             SbSql.Append("        ,HTCoolingTime" + Environment.NewLine);
-            SbSql.Append("        ,TestBeforePicture" + Environment.NewLine);
-            SbSql.Append("        ,TestAfterPicture" + Environment.NewLine);
+            // SbSql.Append("        ,TestBeforePicture" + Environment.NewLine);
+            // SbSql.Append("        ,TestAfterPicture" + Environment.NewLine);
             SbSql.Append("        ,Type" + Environment.NewLine);
             SbSql.Append(")" + Environment.NewLine);
             SbSql.Append("VALUES" + Environment.NewLine);
@@ -146,10 +146,12 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,@HT2ndPressreversed"); objParameter.Add("@HT2ndPressreversed", DbType.Int32, Item.HT2ndPressreversed);
             SbSql.Append("        ,@HTCoolingTime"); objParameter.Add("@HTCoolingTime", DbType.Int32, Item.HTCoolingTime);
 
-            SbSql.Append("        ,@TestBeforePicture");
+            // SbSql.Append("        ,@TestBeforePicture"); 2022/01/10 PMSFile上線，因此去掉Image寫入原本DB的部分
+            // SbSql.Append("        ,@TestAfterPicture");
+            
             if (Item.TestBeforePicture != null) { objParameter.Add("@TestBeforePicture", Item.TestBeforePicture); }
             else { objParameter.Add("@TestBeforePicture", System.Data.SqlTypes.SqlBinary.Null); }
-            SbSql.Append("        ,@TestAfterPicture");
+
             if (Item.TestAfterPicture != null) { objParameter.Add("@TestAfterPicture", Item.TestAfterPicture); }
             else { objParameter.Add("@TestAfterPicture", System.Data.SqlTypes.SqlBinary.Null); }
 
@@ -172,6 +174,7 @@ VALUES (@ReportNo,@TestBeforePicture,@TestAfterPicture)
             SbSql.Append($@"
 SET XACT_ABORT ON
 
+-----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
 UPDATE [MockupOven]
 SET
     EditDate = GETDATE()
@@ -195,8 +198,6 @@ SET
     ,HT2ndPressnoreverse=@HT2ndPressnoreverse
     ,HT2ndPressreversed=@HT2ndPressreversed
     ,HTCoolingTime=@HTCoolingTime
-    ,TestBeforePicture=@TestBeforePicture
-    ,TestAfterPicture=@TestAfterPicture
 WHERE ReportNo = @ReportNo
 
 UPDATE [ExtendServer].PMSFile.dbo.MockupOven
@@ -248,7 +249,7 @@ WHERE ReportNo = @ReportNo
                     Item.MockupOven_Detail,
                     oldOvenData,
                     "Ukey",
-                    "TypeofPrint,Design,ArtworkColor,AccessoryRefno,FabricRefNo,FabricColor,Result,Remark");
+                    "TypeofPrint,Design,ArtworkColor,AccessoryRefno,FabricRefNo,FabricColor,Result,ChangeScale,ResultChange,StainingScale,ResultStain,Remark");
 
             string insertDetail = @"
 INSERT INTO [dbo].[MockupOven_Detail]
@@ -260,6 +261,10 @@ INSERT INTO [dbo].[MockupOven_Detail]
            ,FabricRefNo
            ,FabricColor
            ,Result
+           ,ChangeScale
+           ,ResultChange
+           ,StainingScale
+           ,ResultStain
            ,Remark
            ,EditName
            ,EditDate
@@ -273,6 +278,10 @@ INSERT INTO [dbo].[MockupOven_Detail]
            ,@FabricRefNo
            ,@FabricColor
            ,@Result
+           ,@ChangeScale
+           ,@ResultChange
+           ,@StainingScale
+           ,@ResultStain
            ,@Remark
            ,@EditName
            ,GETDATE()
@@ -291,13 +300,17 @@ UPDATE [dbo].[MockupOven_Detail]
       ,[FabricRefNo] =    @FabricRefNo
       ,[FabricColor] =    @FabricColor
       ,[Result] =         @Result
+      ,[ChangeScale] =    @ChangeScale
+      ,[ResultChange] =   @ResultChange
+      ,[StainingScale] =  @StainingScale
+      ,[ResultStain] =    @ResultStain
       ,[Remark] =         @Remark
       ,[EditName] =       @EditName
       ,[EditDate] = GETDATE()
 WHERE UKey = @Ukey
 ";
 
-            DataTable dtResult = ExecuteDataTable(CommandType.Text, SbSql.ToString(), objParameter);
+            DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, SbSql.ToString(), objParameter);
 
             foreach (var detailItem in needUpdateDetailList)
             {
@@ -313,6 +326,10 @@ WHERE UKey = @Ukey
                         listDetailPar.Add("@AccessoryRefno", DbType.String, HttpUtility.HtmlDecode(detailItem.AccessoryRefno) ?? string.Empty);
                         listDetailPar.Add("@FabricColor", DbType.String, HttpUtility.HtmlDecode(detailItem.FabricColor) ?? string.Empty);
                         listDetailPar.Add("@Result", DbType.String, HttpUtility.HtmlDecode(detailItem.Result) ?? string.Empty);
+                        listDetailPar.Add("@ChangeScale", DbType.String, HttpUtility.HtmlDecode(detailItem.ChangeScale) ?? string.Empty);
+                        listDetailPar.Add("@ResultChange", DbType.String, HttpUtility.HtmlDecode(detailItem.ResultChange) ?? string.Empty);
+                        listDetailPar.Add("@StainingScale", DbType.String, HttpUtility.HtmlDecode(detailItem.StainingScale) ?? string.Empty);
+                        listDetailPar.Add("@ResultStain", DbType.String, HttpUtility.HtmlDecode(detailItem.ResultStain) ?? string.Empty);
                         listDetailPar.Add("@Remark", DbType.String, HttpUtility.HtmlDecode(detailItem.Remark) ?? string.Empty);
                         listDetailPar.Add("@EditName", DbType.String, HttpUtility.HtmlDecode(detailItem.EditName) ?? string.Empty);
 
@@ -326,6 +343,10 @@ WHERE UKey = @Ukey
                         listDetailPar.Add("@AccessoryRefno", DbType.String, HttpUtility.HtmlDecode(detailItem.AccessoryRefno) ?? string.Empty);
                         listDetailPar.Add("@FabricColor", DbType.String, HttpUtility.HtmlDecode(detailItem.FabricColor) ?? string.Empty);
                         listDetailPar.Add("@Result", DbType.String, HttpUtility.HtmlDecode(detailItem.Result) ?? string.Empty);
+                        listDetailPar.Add("@ChangeScale", DbType.String, HttpUtility.HtmlDecode(detailItem.ChangeScale) ?? string.Empty);
+                        listDetailPar.Add("@ResultChange", DbType.String, HttpUtility.HtmlDecode(detailItem.ResultChange) ?? string.Empty);
+                        listDetailPar.Add("@StainingScale", DbType.String, HttpUtility.HtmlDecode(detailItem.StainingScale) ?? string.Empty);
+                        listDetailPar.Add("@ResultStain", DbType.String, HttpUtility.HtmlDecode(detailItem.ResultStain) ?? string.Empty);
                         listDetailPar.Add("@Remark", DbType.String, HttpUtility.HtmlDecode(detailItem.Remark) ?? string.Empty);
                         listDetailPar.Add("@EditName", DbType.String, HttpUtility.HtmlDecode(detailItem.EditName) ?? string.Empty);
                         listDetailPar.Add("@ukey", detailItem.Ukey);

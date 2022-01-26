@@ -71,7 +71,7 @@ union all
 select ID from Scale WITH(NOLOCK)  WHERE Junk=0 
 order by ID
 ";
-            DataTable dt = ExecuteDataTable(CommandType.Text, sqlcmd, new SQLParameterCollection());
+            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, new SQLParameterCollection());
 
             return dt.Rows.OfType<DataRow>().Select(dr => dr.Field<string>("ID")).ToList();
         }
@@ -294,7 +294,7 @@ and ID = @ID
                 { "@SubmitDate", DbType.Date, source.SubmitDate},
                 { "@ArrivedQty", source.ArrivedQty } ,
                 { "@LOtoFactory", LOtoFactory} ,
-                { "@Remark", source.Remark } ,
+                { "@Remark", source.Remark ?? ""} ,
                 { "@LineDry", DbType.Boolean, source.LineDry } ,
                 { "@Temperature", source.Temperature } ,
                 { "@TumbleDry", DbType.Boolean, source.TumbleDry } ,
@@ -333,9 +333,7 @@ update GarmentTest_Detail set
     Above50SyntheticFibres =  @Above50SyntheticFibres,
     NonSeamBreakageTest = @NonSeamBreakageTest,
     EditName = @EditName,
-    EditDate = GetDate(),
-    TestBeforePicture = @TestBeforePicture,
-    TestAfterPicture = @TestAfterPicture
+    EditDate = GetDate()
 where ID = @ID and No = @No
 
 update [ExtendServer].PMSFile.dbo.GarmentTest_Detail set
@@ -363,11 +361,13 @@ where ID = @ID and No = @No
             string sqlcmd = $@"
 SET XACT_ABORT ON
 
+/* 2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
 update GarmentTest_Detail 
 set
     TestBeforePicture = @TestBeforePicture,
     TestAfterPicture = @TestAfterPicture
 where ID = @ID and No = @No
+*/
 
 update [ExtendServer].PMSFile.dbo.GarmentTest_Detail 
 set

@@ -197,7 +197,7 @@ where ID = @OrderID
             string sqlcmd = @"
 select o.OrderTypeID,[OrderID] = o.ID,o.StyleID,o.SeasonID
 ,[Unit] = IIF(isnull(o.sizeUnit,'') = '',s.SizeUnit,o.SizeUnit)
-,[Factory] = o.FactoryID
+,[Factory] = o.FtyGroup--o.FactoryID
 from MainServer.Production.dbo.Orders o WITH(NOLOCK)
 left join MainServer.Production.dbo.Style s WITH(NOLOCK) on o.StyleUkey = s.Ukey
 where o.ID = @OrderID
@@ -217,7 +217,7 @@ from (
     where format (adddate, 'yyyy/MM/dd') = format (getdate(), 'yyyy/MM/dd')
 ) rim
 ";
-            DataTable dt = ExecuteDataTable(CommandType.Text, sqlcmd, new SQLParameterCollection());
+            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, new SQLParameterCollection());
             if (dt != null)
             {
                 rtQty = Convert.ToInt32(dt.Rows[0]["ttlCnt"]);
@@ -245,7 +245,7 @@ from (
         and Article = @Article
 ) rim
 ";
-            DataTable dt = ExecuteDataTable(CommandType.Text, sqlcmd, objParameter);
+            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
             if (dt != null)
             {
                 rtQty = Convert.ToInt32(dt.Rows[0]["ttlCnt"]);
@@ -265,14 +265,14 @@ from (
             string sqlcmd = @"
 select value = dbo.calculateSizeSpec(@DiffValue, @Tol,'INCH');
 ";
-            DataTable dt = ExecuteDataTable(CommandType.Text, sqlcmd, objParameter);
+            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
             return dt;
         }
 
         public DataTable Get_Measured_Detail(Measurement_Request measurement)
         {
             string styleUkey = string.Empty;
-            DataTable dtStyle = ExecuteDataTable(CommandType.Text, $@"Select StyleUkey from MainServer.Production.dbo.Orders WITH(NOLOCK) where id = '{measurement.OrderID}'", new SQLParameterCollection());
+            DataTable dtStyle = ExecuteDataTableByServiceConn(CommandType.Text, $@"Select StyleUkey from MainServer.Production.dbo.Orders WITH(NOLOCK) where id = '{measurement.OrderID}'", new SQLParameterCollection());
             if (dtStyle.Rows.Count > 0)
             {
                 styleUkey = dtStyle.Rows[0]["StyleUkey"].ToString();
@@ -280,22 +280,17 @@ select value = dbo.calculateSizeSpec(@DiffValue, @Tol,'INCH');
 
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
-                { "@_OrderID", DbType.String, measurement.OrderID } ,
-                { "@_StyleUkey", DbType.String, styleUkey } ,
+                { "@OrderID", DbType.String, measurement.OrderID } ,
+                { "@StyleUkey", DbType.String, styleUkey } ,
                 //{ "@Team", DbType.String, measurement.Team } ,
                 //{ "@Line", DbType.String, measurement.Line } ,
-                { "@_Factory", DbType.String, measurement.Factory } ,
-                { "@_TypeUnit", DbType.String, measurement.Unit } ,
+                { "@Factory", DbType.String, measurement.Factory } ,
+                { "@TypeUnit", DbType.String, measurement.Unit } ,
             };
 
 
             string sqlcmd = @"
 
-declare @styleukey nvarchar(10) = @_StyleUkey 
---declare @team nvarchar(1) = @Team
---declare @line nvarchar(3) = @Line
-declare @factory nvarchar(3) = @_Factory
-declare @typeUnit nvarchar(5)= @_TypeUnit
 declare @ex nvarchar(max)=''
 declare @ex2 nvarchar(max)=''
 declare @col nvarchar(max)=''
@@ -305,28 +300,14 @@ declare @OldSizeCode nvarchar(8)=''
 declare @no nvarchar(66)
 declare @time nvarchar(5)
 declare @diffno int='1'
-declare @orderid nvarchar(16) = @_OrderID
 declare @MDivision nvarchar(5) = (select MDivisionID from MainServer.Production.dbo.Factory WITH(NOLOCK) where id = @Factory)
---declare @shiftTabele table(MDivision varchar(8),Shift varchar(5),StartDate date,BeginTime time,EndTime time,ActualBeginTime datetime,ActualEndTime datetime)
---declare @workStartDatetime datetime
---declare @workEndDatetime datetime
-
---
---INSERT INTO @shiftTabele
---SELECT * FROM [dbo].[GetWorkShiftTable](@MDivision,GETDATE(),@factory)
-
---SELECT  @workStartDatetime=ActualBeginTime,@workEndDatetime=ActualEndTime
---FROM @shiftTabele
 
 select *
 into #tmp_Inspection_Measurement
 from RFT_Inspection_Measurement im WITH(NOLOCK)
-where im.StyleUkey = @styleukey 
---and (@workStartDatetime <= im.AddDate AND im.AddDate <= @workEndDatetime)
---and im.Team = @team
---and im.Line = @line
-and im.FactoryID = @factory 
-and im.OrderID = @orderid 
+where im.StyleUkey = @StyleUkey 
+and im.FactoryID = @Factory 
+and im.OrderID = @OrderID
 
 
 select m.Ukey
@@ -337,7 +318,7 @@ select m.Ukey
 	,m.SizeCode 
 	,[MeasurementSizeSpec] = m.SizeSpec 
 	,[InspectionMeasurementSizeSpec] = im.SizeSpec
-	,[diff]= max(dbo.calculateSizeSpec(m.SizeSpec,im.SizeSpec, @typeUnit))
+	,[diff]= max(dbo.calculateSizeSpec(m.SizeSpec,im.SizeSpec, @TypeUnit))
 	,im.AddDate
 	,[HeadSizeCode] = FORMAT(im.AddDate,'yyyy/MM/dd HH:mm:ss')
 into #tmp 
@@ -389,7 +370,7 @@ drop table #tmp
 
 ";
 
-            DataTable dt = ExecuteDataTable(CommandType.Text, sqlcmd, objParameter);
+            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
             return dt;
         }
 

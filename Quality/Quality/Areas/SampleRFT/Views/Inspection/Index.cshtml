@@ -196,7 +196,7 @@
     }
 
     #AddDefect {
-        width: 72vw;
+        width: 62vw;
         height: 82vh;
         position: absolute;
         left: 15vw;
@@ -206,9 +206,12 @@
         border: solid 1px black;
         vertical-align: middle;
         text-align: center;
-        font-size: 1em;
+        font-size: 10px;
         font-weight: bold;
+        overflow-x: auto;
     }
+
+    
 
     #ReworkCardNoSelect {
         width: 52vw;
@@ -252,7 +255,7 @@
         }
 
             .DefectTable > thead > tr > th {
-                padding: 1em 2em 1em 2em;
+                /* padding: 1em 2em 1em 2em; */
             }
 
         .DefectTable > tbody > tr > td {
@@ -834,31 +837,31 @@
 
     <div id="AddDefect" class="display-None">
         <div>
-            <table style="width: 69vw;">
+            <table style=" width: 99%;">
                 <tbody>
                     <tr>
-                        <td align="left" valign="middle" style="width: 20%;">
+                        <td align="left" valign="middle">
                             <p style="padding-left: 1em; font-size: 1.5em; font-weight: bold;">Add Defect</p>
                             <p class="RewoekListSetting display-None" idx="F"></p>
                         </td>
                         <td align="right" valign="middle">
-                            <input id="btnDefectSave" type="button" class="site-btn btn-blue font1rem" style="margin:0;border:0;padding: 7px 2em;" name="DefectSave" value="Save" />
-                            <input id="btnDefectCamera" type="button" class="site-btn btn-gy font1rem" style="margin:0;border:0;padding: 7px 2em;margin-left: 1em;" name="DefectCamera" value="Camera" />
-                            <input id="btnDefectPicture" type="button" class="site-btn btn-gy font1rem" style="margin:0;border:0;padding: 7px 2em;margin: 0 1em;" name="DefectPicture" value="Picture" />
+                            <input id="btnDefectSave" type="button" class="site-btn btn-blue" style="margin:0;border:0;padding: 7px 2em;" name="DefectSave" value="Save" />
+                            <input id="btnDefectCamera" type="button" class="site-btn btn-gy" style="margin:0;border:0;padding: 7px 2em;margin-left: 1em;" name="DefectCamera" value="Camera" />
+                            <input id="btnDefectPicture" type="button" class="site-btn btn-gy" style="margin:0;border:0;padding: 7px 2em;margin: 0 1em;" name="DefectPicture" value="Picture" />
                             <div class="zoom-gallery display-None DefectPicture">
                                 <a id="aimgDefect" href="" data-source="" title="Defect Picture" style="width:640px;height:480px;">
                                     <img id="imgDefect" width="30" />
                                 </a>
                             </div>
-                            <input id="btnDefectExit" type="button" class="site-btn btn-gy font1rem" style="margin:0;border:0;padding: 7px 2em;" name="DefectExit" value="Exit" />
+                            <input id="btnDefectExit" type="button" class="site-btn btn-gy" style="margin:0;border:0;padding: 7px 2em;" name="DefectExit" value="Exit" />
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
-        <div>
-            <div style="float:left; width:12vw; height:73vh; margin:0 1em 0 1.5em;">
-                <table class="DefectTable DefectCategory" style="width: 12vw;">
+        <div style="width: 120%;">
+            <div style="float:left; height:73vh; margin:0 1em 0 1.5em;">
+                <table class="DefectTable DefectCategory" style="width: 6vw; font-size:10px;">
                     <thead>
                         <tr>
                             <th>Defect Category</th>
@@ -876,8 +879,8 @@
                     </tbody>
                 </table>
             </div>
-            <div style="float:left; width:20vw; height: 73vh; margin:0 1em; overflow-x: hidden; overflow-y: auto;">
-                <table class="DefectTable ADDDefectType" style="width: 20vw;">
+            <div style="float:left; height: 73vh; margin:0 1em; overflow-x: hidden; overflow-y: auto;">
+                <table class="DefectTable ADDDefectType" style="width: 12vw; font-size:10px;">
                     <thead>
                         <tr>
                             <th colspan="2">Defect Type</th>
@@ -895,9 +898,9 @@
                     </tbody>
                 </table>
             </div>
-            <div style="float:left; width:20vw; height:73vh; margin:0 1em;">
+            <div style="float:left; height:73vh; margin:0 1em;">
                 <div>
-                    <table class="DefectTable Area1" style="width: 20vw;">
+                    <table class="DefectTable Area1" style="width: 18vw; font-size:10px;">
                         <thead>
                             <tr>
                                 <th colspan="2">Area-1</th>
@@ -912,7 +915,7 @@
                     </table>
                 </div>
                 <div style="margin-top:1em; overflow-x: hidden; overflow-y: auto; height: 57vh;">
-                    <table class="DefectTable Area2" style="width: 20vw;">
+                    <table class="DefectTable Area2" style="width: 12vw; font-size:10px;">
                         <thead>
                             <tr>
                                 <th colspan="2">Area-2</th>
@@ -923,9 +926,9 @@
                     </table>
                 </div>
             </div>
-            <div style="float:left; width:12vw; height:73vh; margin:0 1em;">
+            <div style="float:left; height:73vh; margin:0 1em;">
                 <div style="height: 33vh; overflow-y: auto; overflow-x: hidden;">
-                    <table class="DefectTable Responsibility" style="width: 12vw;">
+                    <table class="DefectTable Responsibility" style="width: 12vw; font-size:10px;">
                         <thead>
                             <tr>
                                 <th>Responsibility</th>
@@ -936,10 +939,10 @@
                     </table>
                 </div>
                 <div style="margin-top:1em; height: 37vh; overflow-y: auto; overflow-x: hidden;">
-                    <table class="DefectTable BAAuditCriteria" style="width: 12vw;">
+                    <table class="DefectTable BAAuditCriteria" style="width: 12vw; font-size:10px;">
                         <thead>
                             <tr>
-                                <th style="padding: 1em;">BA Audit Criteria</th>
+                                <th>BA Audit Criteria</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -2115,6 +2118,31 @@
             success: function (data) {
                 if (data.Result == 0) {
                     $('#txtSP').val("");
+
+                    $('#txtStyle').val("");
+                    $('#txtBrand').val("");
+                    $('#txtSeason').val("");
+                    $('#txtProductTypePMS').val("");
+                    $('#txtSampleStage').val("");
+                    $('#txtOriginalLine').val("");
+                    $('#txtOrderQty').val("");
+
+                    $('#txtArticle').val("");
+                    $('#txtSize').val("");
+                    $('#txtProductType').val("");
+                    $('#txtSizeQty').val("");
+                    $('#txtSizeBalanceQty').val("");
+                    $('#txtOrderBalanceQty').val("");
+
+                    $('#txtPass').val("");
+                    $('#txtReject').val("");
+                    $('#txtHard').val("");
+                    $('#txtQuick').val("");
+                    $('#txtWash').val("");
+                    $('#txtRepl').val("");
+                    $('#txtPrint').val("");
+                    $('#txtShade').val("");
+                    $('#txtDispose').val("");
                     msg.WithError(data.ErrMsg);
                 }
                 else {
@@ -2353,6 +2381,7 @@
                 if (data.Result) {
                     msg.WithSuccesCheck("You pass 1 garment.", function () {
                         $('#btnRefresh').click();
+                        SPCheck(OrderID);
                     });
                 }
                 else {

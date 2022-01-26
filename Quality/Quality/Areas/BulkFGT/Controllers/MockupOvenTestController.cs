@@ -19,7 +19,7 @@ namespace Quality.Areas.BulkFGT.Controllers
     public class MockupOvenTestController : BaseController
     {
         private IMockupOvenService _MockupOvenService;
-
+        
         public MockupOvenTestController()
         {
             _MockupOvenService = new MockupOvenService();
@@ -34,10 +34,15 @@ namespace Quality.Areas.BulkFGT.Controllers
                 MockupOven_Detail = new List<MockupOven_Detail_ViewModel>(),
                 ReportNo_Source = new List<string>(),
                 Request = new MockupOven_Request(),
+                ScaleID_Source = _MockupOvenService.GetScale(),
             };
 
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(model.ReportNo_Source);
             ViewBag.ResultList = model.Result_Source;
+            ViewBag.ChangeScaleList = model.ScaleID_Source;
+            ViewBag.ResultChangeList = model.Result_Source;
+            ViewBag.StainingScaleList = model.ScaleID_Source;
+            ViewBag.ResultStainList = model.Result_Source;
             ViewBag.ArtworkTypeID_Source = new SetListItem().ItemListBinding(new List<string>());
             ViewBag.AccessoryRefNo_Source = new SetListItem().ItemListBinding(new List<string>());
             ViewBag.FactoryID = this.FactoryID;
@@ -72,13 +77,28 @@ namespace Quality.Areas.BulkFGT.Controllers
                     MockupOven_Detail = new List<MockupOven_Detail_ViewModel>(),
                     ReportNo_Source = new List<string>(),
                     ErrorMessage = $@"msg.WithInfo(""No Data Found"");",
+                    ScaleID_Source = _MockupOvenService.GetScale(),
                 };
             }
 
+            if (!model.ReturnResult)
+            {
+                model = new MockupOven_ViewModel()
+                {
+                    MockupOven_Detail = new List<MockupOven_Detail_ViewModel>(),
+                    ReportNo_Source = new List<string>(),
+                    ErrorMessage = $"msg.WithInfo('{model.ErrorMessage.Replace("'", string.Empty).Replace("\r\n", "<br />")}');",
+                    ScaleID_Source = _MockupOvenService.GetScale(),
+                };
+            }
 
             model.Request = Req.Request;
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(model.ReportNo_Source);
-            ViewBag.ResultList = model.Result_Source; ;
+            ViewBag.ResultList = model.Result_Source;
+            ViewBag.ChangeScaleList = model.ScaleID_Source;
+            ViewBag.ResultChangeList = model.Result_Source;
+            ViewBag.StainingScaleList = model.ScaleID_Source;
+            ViewBag.ResultStainList = model.Result_Source;
             ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(model.Request.BrandID, model.Request.SeasonID, model.Request.StyleID);
             ViewBag.AccessoryRefNo_Source = GetAccessoryRefNoList(model.Request.BrandID, model.Request.SeasonID, model.Request.StyleID);
             ViewBag.FactoryID = this.FactoryID;
@@ -99,13 +119,28 @@ namespace Quality.Areas.BulkFGT.Controllers
                     MockupOven_Detail = new List<MockupOven_Detail_ViewModel>(),
                     ReportNo_Source = new List<string>(),
                     ErrorMessage = $@"msg.WithInfo(""No Data Found"");",
+                    ScaleID_Source = _MockupOvenService.GetScale(),
                 };
             }
 
+            if (!model.ReturnResult)
+            {
+                model = new MockupOven_ViewModel()
+                {
+                    MockupOven_Detail = new List<MockupOven_Detail_ViewModel>(),
+                    ReportNo_Source = new List<string>(),
+                    ErrorMessage = $"msg.WithInfo('{model.ErrorMessage.Replace("'", string.Empty).Replace("\r\n", "<br />")}');",
+                    ScaleID_Source = _MockupOvenService.GetScale(),
+                };
+            }
 
             model.Request = Req.Request;
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(model.ReportNo_Source);
-            ViewBag.ResultList = model.Result_Source; ;
+            ViewBag.ResultList = model.Result_Source;
+            ViewBag.ChangeScaleList = model.ScaleID_Source;
+            ViewBag.ResultChangeList = model.Result_Source;
+            ViewBag.StainingScaleList = model.ScaleID_Source; 
+            ViewBag.ResultStainList = model.Result_Source;
             ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(model.Request.BrandID, model.Request.SeasonID, model.Request.StyleID);
             ViewData["AccessoryRefNo_Source"] = GetAccessoryRefNoList(model.Request.BrandID, model.Request.SeasonID, model.Request.StyleID);
             ViewBag.FactoryID = this.FactoryID;
@@ -142,12 +177,13 @@ namespace Quality.Areas.BulkFGT.Controllers
                     MockupOven_Detail = new List<MockupOven_Detail_ViewModel>(),
                     ReportNo_Source = new List<string>(),
                     Request = new MockupOven_Request(),
+                    ScaleID_Source = _MockupOvenService.GetScale(),
                 };
             }
 
             if (!result.Result)
             {
-                model.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.ToString()}"");EditMode=true;";
+                model.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.Replace("'", string.Empty).Replace("\r\n", "<br />")}"");EditMode=true;";
             }
             else if (result.Result && model.Result == "Fail")
             {
@@ -156,7 +192,11 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             model.Request = Req.Request;
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(model.ReportNo_Source);
-            ViewBag.ResultList = model.Result_Source; ;
+            ViewBag.ResultList = model.Result_Source;
+            ViewBag.ChangeScaleList = model.ScaleID_Source;
+            ViewBag.ResultChangeList = model.Result_Source;
+            ViewBag.StainingScaleList = model.ScaleID_Source;
+            ViewBag.ResultStainList = model.Result_Source;
             ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(model.Request.BrandID, model.Request.SeasonID, model.Request.StyleID);
             ViewBag.AccessoryRefNo_Source = GetAccessoryRefNoList(model.Request.BrandID, model.Request.SeasonID, model.Request.StyleID);
             ViewBag.FactoryID = this.FactoryID;
@@ -193,6 +233,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                     MockupOven_Detail = new List<MockupOven_Detail_ViewModel>(),
                     ReportNo_Source = new List<string>(),
                     Request = new MockupOven_Request(),
+                    ScaleID_Source = _MockupOvenService.GetScale(),
                 };
             }
 
@@ -204,7 +245,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             Req.MockupOven_Detail = model.MockupOven_Detail;
             if (!result.Result)
             {
-                Req.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.ToString()}"");EditMode=true;";
+                Req.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.Replace("'", string.Empty).Replace("\r\n", "<br />")}"");EditMode=true;";
             }
             else if (result.Result && model.Result == "Fail")
             {
@@ -212,7 +253,11 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
 
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(model.ReportNo_Source);
-            ViewBag.ResultList = model.Result_Source; ;
+            ViewBag.ResultList = model.Result_Source;
+            ViewBag.ChangeScaleList = model.ScaleID_Source;
+            ViewBag.ResultChangeList = model.Result_Source;
+            ViewBag.StainingScaleList = model.ScaleID_Source;
+            ViewBag.ResultStainList = model.Result_Source;
             ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(Req.Request.BrandID, Req.Request.SeasonID, Req.Request.StyleID);
             ViewBag.AccessoryRefNo_Source = GetAccessoryRefNoList(Req.Request.BrandID, Req.Request.SeasonID, Req.Request.StyleID);
             ViewBag.FactoryID = this.FactoryID;
@@ -236,16 +281,21 @@ namespace Quality.Areas.BulkFGT.Controllers
                     MockupOven_Detail = new List<MockupOven_Detail_ViewModel>(),
                     ReportNo_Source = new List<string>(),
                     Request = new MockupOven_Request(),
+                    ScaleID_Source = _MockupOvenService.GetScale(),
                 };
             }
             if (!result.Result)
             {
-                model.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.ToString()}"");";
+                model.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.Replace("'", string.Empty).Replace("\r\n", "<br />")}"");";
             }
             model.Request = Req.Request;
 
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(model.ReportNo_Source);
-            ViewBag.ResultList = model.Result_Source; ;
+            ViewBag.ResultList = model.Result_Source;
+            ViewBag.ChangeScaleList = model.ScaleID_Source;
+            ViewBag.ResultChangeList = model.Result_Source;
+            ViewBag.StainingScaleList = model.ScaleID_Source;
+            ViewBag.ResultStainList = model.Result_Source;
             ViewBag.ArtworkTypeID_Source = GetArtworkTypeIDList(model.Request.BrandID, model.Request.SeasonID, model.Request.StyleID);
             ViewBag.AccessoryRefNo_Source = GetAccessoryRefNoList(model.Request.BrandID, model.Request.SeasonID, model.Request.StyleID);
             ViewBag.FactoryID = this.FactoryID;
@@ -377,7 +427,8 @@ namespace Quality.Areas.BulkFGT.Controllers
         [HttpPost]
         public ActionResult AddDetailRow(int lastNO,string BrandID, string SeasonID, string StyleID)
         {
-            List<SelectListItem> AccessoryRefNo_Source= new SetListItem().ItemListBinding(new List<string>()); 
+            List<SelectListItem> AccessoryRefNo_Source= new SetListItem().ItemListBinding(new List<string>());
+            List<SelectListItem> Scales = _MockupOvenService.GetScale();
 
             if (!string.IsNullOrWhiteSpace(BrandID) && !string.IsNullOrWhiteSpace(SeasonID) && !string.IsNullOrWhiteSpace(StyleID))
             {
@@ -400,19 +451,33 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "</select></td>";
             html += $"<td><input id='MockupOven_Detail_{lastNO}__FabricRefNo' name='MockupOven_Detail[{lastNO}].FabricRefNo' type='text' ></td>";
             html += $"<td><div class='input-group'><input id='MockupOven_Detail_{lastNO}__FabricColor' name='MockupOven_Detail[{lastNO}].FabricColor'  class ='AFColor' type='hidden'><input id='MockupOven_Detail_{lastNO}__FabricColorName' name='MockupOven_Detail[{ lastNO}].FabricColorName'  class ='AFColor' type='text' readonly='readonly'> <input idv='{lastNO}' type='button' class='btnFabricColorItem  site-btn btn-blue' style='margin: 0; border: 0; ' value='...' /></div></td>";
+            html += $"<td><input  readonly='readonly'  id='MockupOven_Detail_{lastNO}__Result' name='MockupOven_Detail[{lastNO}].Result' class='blue' type='text' value='Pass'></td>"; // Result
 
-            html += $"<td><select id='MockupOven_Detail_{lastNO}__Result' name='MockupOven_Detail[{lastNO}].Result' class='OnlyEdit result blue' onchange='changeResult()' ><option value=''></option>"; 
+            html += $"<td><select id='MockupOven_Detail_{lastNO}__ChangeScale' name='MockupOven_Detail[{lastNO}].ChangeScale'>"; // ChangeScale
+            foreach (var val in Scales)
+            {
+                html += "<option value='" + val.Value + "'>" + val.Text + "</option>";
+            }
+            html += "</select></td>";
+
+            html += $"<td><select onchange='selectChange(this)' id='MockupOven_Detail_{lastNO}__ResultChange' name='MockupOven_Detail[{lastNO}].ResultChange' class='blue'>"; // ResultChange
             foreach (var val in model.Result_Source)
             {
-                if (val.Value == "Pass")
-                {
-                    html += "<option value='" + val.Value + "' SELECTED>" + val.Text + "</option>";
-                }
-                else
-                {
-                    html += "<option value='" + val.Value + "'>" + val.Text + "</option>";
-                }
+                html += "<option value='" + val.Value + "'>" + val.Text + "</option>";
+            }
+            html += "</select></td>";
 
+            html += $"<td><select id='MockupOven_Detail_{lastNO}__StainingScale' name='MockupOven_Detail[{lastNO}].StainingScale'>"; // StainingScale
+            foreach (var val in Scales)
+            {
+                html += "<option value='" + val.Value + "'>" + val.Text + "</option>";
+            }
+            html += "</select></td>";
+
+            html += $"<td><select onchange='selectChange(this)' id='MockupOven_Detail_{lastNO}__ResultStain' name='MockupOven_Detail[{lastNO}].ResultStain' class='blue'>"; // ResultStain
+            foreach (var val in model.Result_Source)
+            {
+                html += "<option value='" + val.Value + "'>" + val.Text + "</option>";
             }
             html += "</select></td>";
 

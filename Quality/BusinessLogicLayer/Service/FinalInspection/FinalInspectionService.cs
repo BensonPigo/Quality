@@ -133,13 +133,6 @@ namespace BusinessLogicLayer.Service
             }
             );
 
-            sections.Add(new
-            {
-                type = "checklists",
-                title = "checklists",
-                section_result_id = 0,
-            });
-
             object defects;
 
             if (dtDefectsDetail.Rows.Count > 0)
@@ -180,7 +173,7 @@ namespace BusinessLogicLayer.Service
                 qty_inspected = drFinalInspection["AvailableQty"],
                 sampled_inspected = drFinalInspection["SampleSize"],
                 inspection_level = drFinalInspection["InspectionLevel"],
-                inspection_method = "Normal",
+                inspection_method = "normal",
                 aql_minor = 1,
                 aql_major = 1,
                 aql_major_a = 0.4,
@@ -199,15 +192,6 @@ namespace BusinessLogicLayer.Service
                 defects,
             });
 
-
-            sections.Add(new
-            {
-                type = "qualityPlan",
-                title = "quality_plan",
-                section_result_id = 0,
-                defective_parts = 0,
-            });
-
             List<object> assignment_items = listSku_number.Select(
                 sku_number => new
                 {
@@ -219,11 +203,18 @@ namespace BusinessLogicLayer.Service
                     total_inspection_minutes = drFinalInspection["InspectionMinutes"],
                     sampling_size = drFinalInspection["SampleSize"],
                     qty_to_inspect = sku_number.qty_to_inspect,
+                    aql_minor = 4,
+                    aql_major = 1,
+                    aql_major_a = 1,
+                    aql_major_b = 1,
+                    aql_critical = 1,
                     assignment = new
                     {
                         report_type = new { id = drFinalInspection["ReportTypeID"] },
                         inspector = new { username = drFinalInspection["CFA"] },
-                        date_inspection = drFinalInspection["AuditDate"]
+                        date_inspection = drFinalInspection["AuditDate"],
+                        inspection_level = drFinalInspection["InspectionLevel"],
+                        inspection_method = "normal",
                     },
                     po_line = new
                     {
@@ -278,7 +269,6 @@ namespace BusinessLogicLayer.Service
             List<SentPivot88Result> sentPivot88Results = new List<SentPivot88Result>();
 
             _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
-            _AutomationErrMsgProvider = new AutomationErrMsgProvider(Common.ProductionDataAccessLayer);
 
             listInspectionID = _FinalInspectionProvider.GetPivot88FinalInspectionID(pivotTransferRequest.InspectionID);
 
@@ -338,6 +328,8 @@ namespace BusinessLogicLayer.Service
                     automationErrMsg.errorMsg = errorMsg;
                     automationErrMsg.json = postBody;
                     automationErrMsg.addName = "SCIMIS";
+
+                    _AutomationErrMsgProvider = new AutomationErrMsgProvider(Common.ProductionDataAccessLayer);
                     _AutomationErrMsgProvider.Insert(automationErrMsg);
                 }
 

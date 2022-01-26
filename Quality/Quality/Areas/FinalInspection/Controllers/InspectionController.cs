@@ -336,7 +336,6 @@ namespace Quality.Areas.FinalInspection.Controllers
             // 錯誤回到Setting頁
             if (!result)
             {
-                setting.ErrorMessage = result.ErrorMessage;
                 FinalInspectionSettingService finalInspectionSettingService = new FinalInspectionSettingService();
                 setting = finalInspectionSettingService.GetSettingForInspection(setting.SelectedPO[0].CustPONO, setting.SelectedPO.Select(o => o.OrderID).ToList(), this.FactoryID, this.UserID);
 
@@ -351,6 +350,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                 }
                 // 預設值
                 setting.Team = "A";
+                setting.ErrorMessage = result.ErrorMessage;
 
                 return View("Setting", setting);
             }

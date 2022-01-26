@@ -174,13 +174,9 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 SET XACT_ABORT ON
 if exists(select 1 from RFT_PicDuringDummyFitting WITH(NOLOCK) where OrderID = @OrderID and Article = @Article and Size = @Size)
 begin
-	UPDATE [RFT_PicDuringDummyFitting]
-	set Front = @Front
-    ,Side = @Side
-    ,Back = @Back
-	where OrderID = @OrderID and Article = @Article and Size = @Size
+    ---- 2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
 
-	UPDATE [ExtendServer].PMSFile.dbo.[RFT_PicDuringDummyFitting]
+	UPDATE PMSFile.dbo.[RFT_PicDuringDummyFitting]
 	set Front = @Front
     ,Side = @Side
     ,Back = @Back
@@ -188,10 +184,11 @@ begin
 end
 else
 begin
-	insert into RFT_PicDuringDummyFitting(OrderID,Article,Size,Front,Side,Back)
-	values(@OrderID, @Article,@Size,@Front,@Side,@Back)
+    ----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
+	insert into RFT_PicDuringDummyFitting(OrderID,Article,Size)
+	values(@OrderID, @Article,@Size)
 
-	insert into [ExtendServer].PMSFile.dbo.RFT_PicDuringDummyFitting(OrderID,Article,Size,Front,Side,Back)
+	insert into PMSFile.dbo.RFT_PicDuringDummyFitting(OrderID,Article,Size,Front,Side,Back)
 	values(@OrderID, @Article,@Size,@Front,@Side,@Back)
 end
 ";
@@ -214,7 +211,7 @@ SELECT oq.Article
 	,p.Side
 	,p.Back
 from SciProduction_Order_Qty oq WITH(NOLOCK) 
-left join [ExtendServer].PMSFile.dbo.RFT_PicDuringDummyFitting p WITH(NOLOCK) ON oq.ID = p.OrderID AND oq.Article = p.Article AND oq.SizeCode=p.Size
+left join PMSFile.dbo.RFT_PicDuringDummyFitting p WITH(NOLOCK) ON oq.ID = p.OrderID AND oq.Article = p.Article AND oq.SizeCode=p.Size
 WHERE 1=1
 ");
             if (!string.IsNullOrEmpty(Req.OrderID))
