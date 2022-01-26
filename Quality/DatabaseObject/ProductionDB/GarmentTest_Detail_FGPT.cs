@@ -62,5 +62,7 @@ namespace DatabaseObject.ProductionDB
         
         public int? TypeSelection_Seq { get; set; }
 
+        public bool IsOriginal { get; set; }
+
     }
 }

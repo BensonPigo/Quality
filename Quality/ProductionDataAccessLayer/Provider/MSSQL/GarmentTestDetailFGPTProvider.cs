@@ -95,6 +95,7 @@ select
   WHEN  t.TestUnit = 'Pass/Fail'  THEN t.[TestResult]
    ELSE ''
 END
+,t.IsOriginal
 from GarmentTest_Detail_FGPT t WITH(NOLOCK)
 left join TypeSelection ts WITH(NOLOCK) on ts.VersionID = t.TypeSelection_VersionID 
         and ts.Seq = t.TypeSelection_Seq

@@ -579,13 +579,14 @@ Delete [ExtendServer].PMSFile.dbo.GarmentTest_Detail where id = @ID and NO = @No
                     { "@Criteria", DbType.Int32, newItem.Criteria } ,
                     { "@TestUnit", DbType.String, newItem.TestUnit } ,
                     { "@TestDetail", DbType.String, newItem.TestDetail } ,
+                    { "@IsOriginal", DbType.Boolean, true} ,
                 };
 
                 string cmd = $@"
 INSERT INTO dbo.GarmentTest_Detail_FGPT
-           (ID, No, Location, Type, TestName, TestDetail, Criteria, TestUnit, Seq)
+           (ID, No, Location, Type, TestName, TestDetail, Criteria, TestUnit, IsOriginal, Seq)
 VALUES
-           (@ID, @No, @Location, @Type, @TestName, @TestDetail, @Criteria, @TestUnit, 
+           (@ID, @No, @Location, @Type, @TestName, @TestDetail, @Criteria, @TestUnit, @IsOriginal, 
                 (
                     select Max(Seq) 
                     from GarmentTest_Detail_FGPT WITH(NOLOCK)

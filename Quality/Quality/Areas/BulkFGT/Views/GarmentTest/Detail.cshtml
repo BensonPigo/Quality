@@ -725,12 +725,14 @@
                                         <th><h4>Test Result</h4></th>
                                         <th><h4>Test Detail</h4></th>
                                         <th><h4>Result</h4></th>
+                                        <th><h4>Action</h4></th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @for (int i = 0; i <= Model.FGPT.Count - 1; i++)
                                     {
                                         string Location = Model.FGPT[i].Location;
+                                        bool canEdit = Model.FGPT[i].IsOriginal;
                                         switch (Model.FGPT[i].Location)
                                         {
                                             case "T":
@@ -754,6 +756,7 @@
                                                 @Html.HiddenFor(o => Model.FGPT[i].Seq)
                                                 @Html.HiddenFor(o => Model.FGPT[i].TypeSelection_VersionID)
                                                 @Html.HiddenFor(o => Model.FGPT[i].TestName)
+                                                @Html.HiddenFor(o => Model.FGPT[i].Criteria)
                                                 @Html.TextBoxFor(o => Model.FGPT[i].Type, new { @readonly = "readonly", @class = "display-None txtFGPTType" })
                                                 @Html.HiddenFor(o => Model.FGPT[i].TypeSelection_Seq, new { @class = "TypeSelection_Seq" })
                                             </td>
@@ -809,6 +812,12 @@
                                             }
                                             <td class="@FGPTFontColor">
                                                 @FGPTVal
+                                            </td>
+                                            <td>
+                                                @if (canEdit)
+                                                {
+                                                    <img src="~/Image/Icon/Edit.png" width="30" class="FgptEdit" idx="@i" style="cursor:pointer;" />
+                                                }
                                             </td>
                                         </tr>
                                     }
@@ -926,6 +935,15 @@
 
         });
 
+        $(".FgptEdit").click(function () {
+
+            if (EditMode == true) {
+                EditFgptItem(this);
+            }
+
+        });
+
+
         $(".detail-dialog").dialog({
             autoOpen: false,
             modal: true,
@@ -1018,6 +1036,88 @@
         $(".to-edit-detail").dialog("open");
         $(".to-edit-detail").on("dialogclose", function (event, ui) {
             EditMode = false;
+
+            //對話窗關閉，Table的內容要清除
+            $("#moduleTable tbody").remove();
+        });
+    }
+
+
+    function EditFgptItem(self) {
+
+        // 取得那一列的值
+        var seq = $(self).attr('idx');
+        $("#NewLocation").val($(`#FGPT_${seq}__Location`).val());
+        $("#NewTestName").val($(`#FGPT_${seq}__TestName`).val());
+        $("#NewType").val($(`#FGPT_${seq}__Type`).val());
+        $("#NewCriteria").val($(`#FGPT_${seq}__Criteria`).val());
+        $("#NewTestUnit").val($(`#FGPT_${seq}__TestUnit`).val());
+
+
+        $(".to-edit-detail").dialog({
+            width: "70%",
+            dialogClass: "add-contact-box",
+            buttons: {
+                "1": {
+                    text: 'Edit',
+                    click: function (btn, obj) {
+
+                        if (EditMode == true) {
+                            var ID = '@Model.Detail.ID';
+                            var No = '@Model.Detail.No';
+                            var Location = $("#NewLocation").val();
+                            var Type = $("#NewType").val();
+                            var TestName = $("#NewTestName").val();
+                            var Criteria = $("#NewCriteria").val();
+                            var TestUnit = $("#NewTestUnit").val();
+
+                            $.ajax({
+                                url: "@Url.Action("ImportNewItem", "GarmentTest", new { Area = "BulkFGT" })",
+                                type: 'POST',
+                                contentType: "application/json; charset=utf-8",
+                                data: JSON.stringify({
+                                    ID: ID,
+                                    No: No,
+                                    Location: Location,
+                                    Type: Type,
+                                    TestName: TestName,
+                                    Criteria: Criteria,
+                                    TestUnit: TestUnit,
+
+                                }),
+                                async: false,
+                                success: function (data) {
+                                    if (data.SaveResult) {
+                                        msg.WithSuccesCheck("Success", function () {
+                                            location.reload();
+                                        });
+                                    }
+                                    else {
+                                        msg.WithError(data.ErrMsg);
+                                    }
+                                },
+                                error: function (xhr, ajaxOptions, thrownError) {
+                                    console.log(xhr.responseText);
+                                }
+                            });
+
+                        }
+
+                    },
+                    "class": "site-btn btn-red btn-lg",
+                    "ID": "dialogEdit"
+                },
+                "2": {
+                    text: 'Exit',
+                    click: function () {
+                        $(this).dialog("close");
+                    }
+                    , "class": "site-btn btn-gy btn-lg"
+                },
+            },
+        });
+        $(".to-edit-detail").dialog("open");
+        $(".to-edit-detail").on("dialogclose", function (event, ui) {
 
             //對話窗關閉，Table的內容要清除
             $("#moduleTable tbody").remove();
