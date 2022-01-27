@@ -420,48 +420,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        private void SetDetailData(Excel.Worksheet worksheet, int setRow, DataRow dr)
-        {
-            worksheet.Cells[setRow, 2] = dr["Refno"];
-            worksheet.Cells[setRow, 3] = dr["Colorid"];
-            worksheet.Cells[setRow, 4] = dr["Dyelot"];
-            worksheet.Cells[setRow, 6] = dr["Roll"];
-
-            worksheet.Cells[setRow, 7] = dr["AlkalineChangescale"];
-            worksheet.Cells[setRow, 8] = dr["AlkalineResultChange"];
-            worksheet.Cells[setRow, 9] = dr["AlkalineAcetatescale"];
-            worksheet.Cells[setRow, 10] = dr["AlkalineResultAcetate"];
-            worksheet.Cells[setRow, 11] = dr["AlkalineCottonscale"];
-            worksheet.Cells[setRow, 12] = dr["AlkalineResultCotton"];
-            worksheet.Cells[setRow, 13] = dr["AlkalineNylonscale"];
-            worksheet.Cells[setRow, 14] = dr["AlkalineResultNylon"];
-            worksheet.Cells[setRow, 15] = dr["AlkalinePolyesterscale"];
-            worksheet.Cells[setRow, 16] = dr["AlkalineResultPolyester"];
-            worksheet.Cells[setRow, 17] = dr["AlkalineAcrylicscale"];
-            worksheet.Cells[setRow, 18] = dr["AlkalineResultAcrylic"];
-            worksheet.Cells[setRow, 19] = dr["AlkalineWoolscale"];
-            worksheet.Cells[setRow, 20] = dr["AlkalineResultWool"];
-
-            worksheet.Cells[setRow, 7] = dr["AcidChangescale"];
-            worksheet.Cells[setRow, 8] = dr["AcidResultChange"];
-            worksheet.Cells[setRow, 9] = dr["AcidAcetatescale"];
-            worksheet.Cells[setRow, 10] = dr["AcidResultAcetate"];
-            worksheet.Cells[setRow, 11] = dr["AcidCottonscale"];
-            worksheet.Cells[setRow, 12] = dr["AcidResultCotton"];
-            worksheet.Cells[setRow, 13] = dr["AcidNylonscale"];
-            worksheet.Cells[setRow, 14] = dr["AcidResultNylon"];
-            worksheet.Cells[setRow, 15] = dr["AcidPolyesterscale"];
-            worksheet.Cells[setRow, 16] = dr["AcidResultPolyester"];
-            worksheet.Cells[setRow, 17] = dr["AcidAcrylicscale"];
-            worksheet.Cells[setRow, 18] = dr["AcidResultAcrylic"];
-            worksheet.Cells[setRow, 19] = dr["AcidWoolscale"];
-            worksheet.Cells[setRow, 20] = dr["AcidResultWool"];
-
-
-            worksheet.Cells[setRow, 21] = MyUtility.Convert.GetString(dr["Temperature"]) + "˚C";
-            worksheet.Cells[setRow, 22] = MyUtility.Convert.GetString(dr["Time"]) + " hrs";
-            worksheet.Cells[setRow, 23] = dr["Remark"];
-        }
 
         public BaseResult ToReport(string ID, out string FileName, bool isPDF, bool isTest = false)
         {
@@ -527,50 +485,51 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     currenSheet.Cells[5, 8] = currenData.Dyelot;
 
                     currenSheet.Cells[6, 3] = currenData.SCIRefno_Color;
+                    currenSheet.Cells[7, 3] = currenData.MetalContent;
 
                     // Test Request
-                    currenSheet.Cells[8, 3] = currenData.Temperature;
-                    currenSheet.Cells[8, 8] = currenData.Time;
+                    currenSheet.Cells[9, 3] = currenData.Temperature;
+                    currenSheet.Cells[9, 8] = currenData.Time;
 
-                    currenSheet.Cells[12, 2] = currenData.AlkalineChangeScale;
-                    currenSheet.Cells[12, 3] = currenData.AlkalineAcetateScale;
-                    currenSheet.Cells[12, 4] = currenData.AlkalineCottonScale;
-                    currenSheet.Cells[12, 5] = currenData.AlkalineNylonScale;
-                    currenSheet.Cells[12, 6] = currenData.AlkalinePolyesterScale;
-                    currenSheet.Cells[12, 7] = currenData.AlkalineAcrylicScale;
-                    currenSheet.Cells[12, 8] = currenData.AlkalineWoolScale;
+                    currenSheet.Cells[13, 2] = currenData.AlkalineChangeScale;
+                    currenSheet.Cells[13, 3] = currenData.AlkalineAcetateScale;
+                    currenSheet.Cells[13, 4] = currenData.AlkalineCottonScale;
+                    currenSheet.Cells[13, 5] = currenData.AlkalineNylonScale;
+                    currenSheet.Cells[13, 6] = currenData.AlkalinePolyesterScale;
+                    currenSheet.Cells[13, 7] = currenData.AlkalineAcrylicScale;
+                    currenSheet.Cells[13, 8] = currenData.AlkalineWoolScale;
 
-                    currenSheet.Cells[13, 2] = currenData.AlkalineResultChange;
-                    currenSheet.Cells[13, 3] = currenData.AlkalineResultAcetate;
-                    currenSheet.Cells[13, 4] = currenData.AlkalineResultCotton;
-                    currenSheet.Cells[13, 5] = currenData.AlkalineResultNylon;
-                    currenSheet.Cells[13, 6] = currenData.AlkalineResultPolyester;
-                    currenSheet.Cells[13, 7] = currenData.AlkalineResultAcrylic;
-                    currenSheet.Cells[13, 8] = currenData.AlkalineResultWool;
+                    currenSheet.Cells[14, 2] = currenData.AlkalineResultChange;
+                    currenSheet.Cells[14, 3] = currenData.AlkalineResultAcetate;
+                    currenSheet.Cells[14, 4] = currenData.AlkalineResultCotton;
+                    currenSheet.Cells[14, 5] = currenData.AlkalineResultNylon;
+                    currenSheet.Cells[14, 6] = currenData.AlkalineResultPolyester;
+                    currenSheet.Cells[14, 7] = currenData.AlkalineResultAcrylic;
+                    currenSheet.Cells[14, 8] = currenData.AlkalineResultWool;
 
-                    currenSheet.Cells[17, 2] = currenData.AcidChangeScale;
-                    currenSheet.Cells[17, 3] = currenData.AcidAcetateScale;
-                    currenSheet.Cells[17, 4] = currenData.AcidCottonScale;
-                    currenSheet.Cells[17, 5] = currenData.AcidNylonScale;
-                    currenSheet.Cells[17, 6] = currenData.AcidPolyesterScale;
-                    currenSheet.Cells[17, 7] = currenData.AcidAcrylicScale;
-                    currenSheet.Cells[17, 8] = currenData.AcidWoolScale;
+                    currenSheet.Cells[18, 2] = currenData.AcidChangeScale;
+                    currenSheet.Cells[18, 3] = currenData.AcidAcetateScale;
+                    currenSheet.Cells[18, 4] = currenData.AcidCottonScale;
+                    currenSheet.Cells[18, 5] = currenData.AcidNylonScale;
+                    currenSheet.Cells[18, 6] = currenData.AcidPolyesterScale;
+                    currenSheet.Cells[18, 7] = currenData.AcidAcrylicScale;
+                    currenSheet.Cells[18, 8] = currenData.AcidWoolScale;
 
-                    currenSheet.Cells[18, 2] = currenData.AcidResultChange;
-                    currenSheet.Cells[18, 3] = currenData.AcidResultAcetate;
-                    currenSheet.Cells[18, 4] = currenData.AcidResultCotton;
-                    currenSheet.Cells[18, 5] = currenData.AcidResultNylon;
-                    currenSheet.Cells[18, 6] = currenData.AcidResultPolyester;
-                    currenSheet.Cells[18, 7] = currenData.AcidResultAcrylic;
-                    currenSheet.Cells[18, 8] = currenData.AcidResultWool;
+                    currenSheet.Cells[19, 2] = currenData.AcidResultChange;
+                    currenSheet.Cells[19, 3] = currenData.AcidResultAcetate;
+                    currenSheet.Cells[19, 4] = currenData.AcidResultCotton;
+                    currenSheet.Cells[19, 5] = currenData.AcidResultNylon;
+                    currenSheet.Cells[19, 6] = currenData.AcidResultPolyester;
+                    currenSheet.Cells[19, 7] = currenData.AcidResultAcrylic;
+                    currenSheet.Cells[19, 8] = currenData.AcidResultWool;
 
-                    currenSheet.Cells[19, 2] = currenData.Remark;
-                    currenSheet.Cells[75, 3] = currenData.Inspector;
-                    currenSheet.Cells[75, 7] = currenData.Inspector;
+                    currenSheet.Cells[20, 2] = currenData.Remark;
+                    currenSheet.Cells[76, 3] = currenData.Inspector;
+                    currenSheet.Cells[76, 7] = currenData.Inspector;
 
 
                     #region 添加圖片
-                    Excel.Range cellBeforePicture = currenSheet.Cells[50, 1];
+                    Excel.Range cellBeforePicture = currenSheet.Cells[51, 1];
                     if (currenData.TestBeforePicture != null)
                     {
                         string imageName = $"{Guid.NewGuid()}.jpg";
@@ -594,7 +553,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         currenSheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 380, 300);
                     }
 
-                    Excel.Range cellAfterPicture = currenSheet.Cells[50, 5];
+                    Excel.Range cellAfterPicture = currenSheet.Cells[51, 5];
                     if (currenData.TestAfterPicture != null)
                     {
                         string imageName = $"{Guid.NewGuid()}.jpg";

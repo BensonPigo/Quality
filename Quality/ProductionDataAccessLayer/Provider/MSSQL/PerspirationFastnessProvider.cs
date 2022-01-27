@@ -55,6 +55,7 @@ select	[TestNo] = cast(o.TestNo as varchar),
 		[Status] = o.Status,
         Temperature = Cast( o.Temperature as varchar),
         Time = Cast(  o.Time as varchar),
+        o.MetalContent,
         [TestBeforePicture] = oi.TestBeforePicture,
         [TestAfterPicture] = oi.TestAfterPicture
 from PerspirationFastness o with (nolock)
@@ -203,6 +204,7 @@ where o.POID = @POID
             listPar.Add("@Inspector", PerspirationFastness_Detail_Result.Main.Inspector);
             listPar.Add("@Remark", PerspirationFastness_Detail_Result.Main.Remark ?? "");
             listPar.Add("@editName", userID);
+            listPar.Add("@MetalContent", PerspirationFastness_Detail_Result.Main.MetalContent ?? "");
             listPar.Add("@TestBeforePicture", PerspirationFastness_Detail_Result.Main.TestBeforePicture);
             listPar.Add("@TestAfterPicture", PerspirationFastness_Detail_Result.Main.TestAfterPicture);
             listPar.Add("@Temperature", DbType.Int32, PerspirationFastness_Detail_Result.Main.Temperature);
@@ -216,6 +218,7 @@ update  PerspirationFastness set    InspDate = @InspDate,
                     Inspector = @Inspector,
                     Temperature = @Temperature,
                     Time = @Time,
+                    MetalContent = @MetalContent,
                     Remark = @Remark,
                     EditName = @editName,
                     EditDate = getdate()
@@ -568,6 +571,8 @@ update  PerspirationFastness_Detail set Roll           =  @Roll         ,
             listPar.Add("@addName", userID);
             listPar.Add("@TestBeforePicture", PerspirationFastness_Detail_Result.Main.TestBeforePicture);
             listPar.Add("@TestAfterPicture", PerspirationFastness_Detail_Result.Main.TestAfterPicture);
+            listPar.Add("@Remark", PerspirationFastness_Detail_Result.Main.Remark ?? "");
+            listPar.Add("@MetalContent", PerspirationFastness_Detail_Result.Main.MetalContent);
             listPar.Add("@Temperature", DbType.Int32, PerspirationFastness_Detail_Result.Main.Temperature);
             listPar.Add("@Time", DbType.Int32, PerspirationFastness_Detail_Result.Main.Time);
 
@@ -583,9 +588,9 @@ from    PerspirationFastness  WITH(NOLOCK)
 where POID = @POID
 
 ----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
-insert into PerspirationFastness(POID, TestNo, InspDate, Article, Status, Inspector, Temperature, Time , Remark, addName, addDate)
+insert into PerspirationFastness(POID, TestNo, InspDate, Article, Status, Inspector, Temperature, MetalContent, Time , Remark, addName, addDate)
         OUTPUT INSERTED.ID, INSERTED.TestNo into @PerspirationFastnessID
-        values(@POID, @TestNo, @InspDate, @Article, 'New', @Inspector, @Temperature, @Time, @Remark, @addName, getdate())
+        values(@POID, @TestNo, @InspDate, @Article, 'New', @Inspector, @Temperature, @MetalContent, @Time, @Remark, @addName, getdate())
 
 select  [PerspirationFastnessID] = ID, TestNo
 from @PerspirationFastnessID
@@ -641,8 +646,6 @@ Remark         ,
 AddName        ,
 AddDate        ,
 SubmitDate     
---Temperature    ,
---Time
 )
 values
 (
@@ -687,8 +690,6 @@ values
 @AddName        ,
 getdate()        ,
 @SubmitDate     
---@Temperature    ,
---@Time
 )
 
 ";
@@ -843,103 +844,6 @@ where ov.POID = @poID and ov.TestNo = @TestNo
             return ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, listPar);
         }
 
-        public DataTable GetPerspirationFastnessDetailForExcel(string poID, string TestNo)
-        {
-            SQLParameterCollection listPar = new SQLParameterCollection();
-            listPar.Add("@poID", poID);
-            listPar.Add("@TestNo", TestNo);
-
-            string sqlGetData = @"
-select	[SubmitDate] = od.SubmitDate,
-        [PerspirationFastnessGroup] = od.PerspirationFastnessGroup,
-        [SEQ] = Concat(od.Seq1, '-', od.Seq2),
-        [Roll] = od.Roll,
-        [Dyelot] = od.Dyelot,
-        [Refno] = psd.Refno,
-        [SCIRefno] = psd.SCIRefno,
-        [ColorID] = psd.ColorID,
-        [Result] = od.Result,
-
-        [AlkalineChangeScale] = od.AlkalineChangeScale,
-        [AlkalineResultChange] = od.AlkalineResultChange,
-        [AlkalineAcetateScale] = od.AlkalineAcetateScale,
-        [AlkalineResultAcetate] = od.AlkalineResultAcetate,
-        [AlkalineCottonScale] = od.AlkalineCottonScale,
-        [AlkalineResultCotton] = od.AlkalineResultCotton,
-        [AlkalineNylonScale] = od.AlkalineNylonScale,
-        [AlkalineResultNylon] = od.AlkalineResultNylon,
-        [AlkalinePolyesterScale] = od.AlkalinePolyesterScale,
-        [AlkalineResultPolyester] = od.AlkalineResultPolyester,
-        [AlkalineAcrylicScale] = od.AlkalineAcrylicScale,
-        [AlkalineResultAcrylic] = od.AlkalineResultAcrylic,
-        [AlkalineWoolScale] = od.AlkalineWoolScale,
-        [AlkalineResultWool] = od.AlkalineResultWool,
-
-        [AcidChangeScale] = od.AcidChangeScale,
-        [AcidResultChange] = od.AcidResultChange,
-        [AcidAcetateScale] = od.AcidAcetateScale,
-        [AcidResultAcetate] = od.AcidResultAcetate,
-        [AcidCottonScale] = od.AcidCottonScale,
-        [AcidResultCotton] = od.AcidResultCotton,
-        [AcidNylonScale] = od.AcidNylonScale,
-        [AcidResultNylon] = od.AcidResultNylon,
-        [AcidPolyesterScale] = od.AcidPolyesterScale,
-        [AcidResultPolyester] = od.AcidResultPolyester,
-        [AcidAcrylicScale] = od.AcidAcrylicScale,
-        [AcidResultAcrylic] = od.AcidResultAcrylic,
-        [AcidWoolScale] = od.AcidWoolScale,
-        [AcidResultWool] = od.AcidResultWool,
-
-        [Remark] = od.Remark,
-        [LastUpdate] = Concat(od.EditName, '-', pass1EditName.Name, ' ', pass1EditName.Extno),
-        [Temperature] = cast(o.Temperature as varchar),
-        [Time] = cast(o.Time as varchar),
-        [Supplier] = ps.SuppID+'-'+s.AbbEN
-from PerspirationFastness_Detail od with (nolock)
-inner join PerspirationFastness o with (nolock) on o.ID = od.ID
-left join PO_Supp_Detail psd with (nolock) on o.POID = psd.ID and od.SEQ1 = psd.SEQ1 and od.SEQ2 = psd.SEQ2
-left join PO_Supp ps WITH (NOLOCK) on psd.ID = ps.ID and psd.Seq1 = ps.Seq1
-left join supp s with (nolock) on ps.SuppID = s.ID
-left join pass1 pass1EditName WITH(NOLOCK) on od.EditName = pass1EditName.ID
-where   o.POID = @POID and o.TestNo = @TestNo
-";
-
-            return ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, listPar);
-        }
-
-        public DataTable GetPerspirationFastness(string poID, string TestNo)
-        {
-            SQLParameterCollection listPar = new SQLParameterCollection();
-            listPar.Add("@poID", poID);
-            listPar.Add("@TestNo", TestNo);
-
-            string sqlGetData = @"
-select  ov.ID
-        ,ov.POID
-        ,ov.TestNo
-        ,ov.InspDate
-        ,ov.Article
-        ,ov.Result
-        ,ov.Status
-        ,ov.Inspector
-        ,ov.Remark
-        ,ov.addName
-        ,ov.addDate
-        ,ov.EditName
-        ,ov.EditDate
-        ,ov.Temperature
-        ,ov.Time
-        ,oi.TestBeforePicture
-        ,oi.TestAfterPicture
-        ,[InspectorName] = (select Name from Pass1 WITH(NOLOCK) where ID = ov.Inspector)
-from    PerspirationFastness ov with (nolock)
-left join [ExtendServer].PMSFile.dbo.PerspirationFastness oi with (nolock) on oi.ID=ov.ID
-where   ov.POID = @poID and ov.TestNo = @TestNo
-";
-
-            return ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, listPar);
-        }
-
         public void DeletePerspirationFastness(string poID, string TestNo)
         {
             SQLParameterCollection listPar = new SQLParameterCollection();
@@ -976,6 +880,7 @@ select cd.SubmitDate
         ,cd.Roll
         ,cd.Dyelot
         ,SCIRefno_Color = po3.SCIRefno + ' ' +po3.ColorID
+        ,c.MetalContent
         ,c.Temperature
         ,c.Time
         ,cd.AlkalineChangeScale

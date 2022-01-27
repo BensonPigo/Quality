@@ -20,6 +20,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         private List<string> Results = new List<string>() { "Pass", "Fail" };
         private List<string> Temperatures = new List<string>() { "35", "36", "37", "38", "39" };
         private List<string> Times = new List<string>() { "4", "8", "12", "24" };
+        private List<string> MetalContents = new List<string>() { "None", "Metail Printing", "Metal Thread" };
 
         public PerspirationFastnessController()
         {
@@ -76,6 +77,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             List<SelectListItem> ResultStainList = new SetListItem().ItemListBinding(Results);
             List<SelectListItem> TemperatureList = new SetListItem().ItemListBinding(Temperatures);
             List<SelectListItem> TimeList = new SetListItem().ItemListBinding(Times);
+            List<SelectListItem> MetalContentList = new SetListItem().ItemListBinding(MetalContents);
 
             if (Convert.ToBoolean(EditMode) && string.IsNullOrEmpty(TestNo))
             {
@@ -103,6 +105,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.TemperatureList = TemperatureList;
             ViewBag.TimeList = TimeList;
             ViewBag.EditMode = EditMode;
+            ViewBag.MetalContentList = MetalContentList;
             ViewBag.FactoryID = this.FactoryID;
             ViewBag.ErrorMessage = string.Empty;
             return View(model);

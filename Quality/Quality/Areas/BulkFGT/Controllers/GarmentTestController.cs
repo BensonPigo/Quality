@@ -25,6 +25,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         private List<string> Washs = new List<string>() { "N/A", "Accepted", "Rejected" };
         private List<string> TestResultPass = new List<string>() { "Pass", "Fail" };
         private List<string> TestResultmm = new List<string>()  { "<=4", ">4" };
+        private List<string> MetalContents = new List<string>() { "None", "Metail Printing", "Metal Thread" };
         public GarmentTestController()
         {
             _GarmentTest_Service = new GarmentTest_Service();
@@ -261,6 +262,8 @@ namespace Quality.Areas.BulkFGT.Controllers
             List<SelectListItem> WashList = new SetListItem().ItemListBinding(Washs);
             List<SelectListItem> TestResultPassList = new SetListItem().ItemListBinding(TestResultPass);
             List<SelectListItem> TestResultmmList = new SetListItem().ItemListBinding(TestResultmm);
+            List<SelectListItem> MetalContentList = new SetListItem().ItemListBinding(MetalContents);
+            
 
             GarmentTest_Detail_Result Detail_Result = _GarmentTest_Service.Get_All_Detail(ID, No);
             if (TempData["Model"] != null)
@@ -287,6 +290,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.ScaleList = ScaleList;
             ViewBag.TestResultPassList = TestResultPassList;
             ViewBag.TestResultmmList = TestResultmmList;
+            ViewBag.MetalContentList = MetalContentList;
             ViewBag.FactoryID = this.FactoryID;
             return View(Detail_Result);
         }
@@ -340,6 +344,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             Detail_Result.ErrMsg = saveresult.ErrMsg;
 
             List<SelectListItem> TemperatureList = new SetListItem().ItemListBinding(Temperatures);
+            List<SelectListItem> MetalContentList = new SetListItem().ItemListBinding(MetalContents);
             List<SelectListItem> MachineList = new SetListItem().ItemListBinding(Machines);
             List<SelectListItem> NeckList = new SetListItem().ItemListBinding(Necks);
             List<SelectListItem> WashList = new SetListItem().ItemListBinding(Washs);
@@ -353,6 +358,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.ScaleList = ScaleList;
             ViewBag.TestResultPassList = TestResultPassList;
             ViewBag.TestResultmmList = TestResultmmList;
+            ViewBag.MetalContentList = MetalContentList;
             ViewBag.FactoryID = this.FactoryID;
 
             return View("Detail", Detail_Result);

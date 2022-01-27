@@ -96,6 +96,12 @@
         color: white !important;
         cursor: pointer;
     }
+    .Alkaline {
+        background-color: #f8d2b6;
+    }
+    .Acid{
+        background-color: #f2ecae;
+    }
 
     .IsEditModeQuery {
         color: gray !important;
@@ -258,6 +264,19 @@
                                 </tr>
                                 <tr>
 
+                                    <td><h5>Metal Content</h5></td>
+                                    <td>
+                                        <select id="Main_MetalContent" name="Main.MetalContent" class="HeaderSelect">
+                                            @foreach (var item in (List<SelectListItem>)ViewBag.MetalContentList)
+                                            {
+                                                string selected = item.Text.Equals(Model.Main.MetalContent) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+
                                     <td><h5>Testing Method</h5></td>
                                     <td colspan="5"></td>
 
@@ -400,7 +419,7 @@
                                     </td>
 
                                     @*ChangeScale*@
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Alkaline">
                                         <select id="Details_@{@i}__AlkalineChangeScale" name="Details[@{@i}].AlkalineChangeScale">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
                                             {
@@ -409,7 +428,7 @@
                                             }
                                         </select>
                                     </td>
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Alkaline">
                                         @{
                                             string styleColor = "red";
                                             if (Model.Details[i].AlkalineResultChange == "Pass")
@@ -428,7 +447,7 @@
                                     </td>
 
                                     @*Acetate*@
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Alkaline">
                                         <select id="Details_@{@i}__AlkalineAcetateScale" name="Details[@{@i}].AlkalineAcetateScale">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
                                             {
@@ -437,7 +456,7 @@
                                             }
                                         </select>
                                     </td>
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Alkaline">
                                         @{
                                             styleColor = "red";
                                             if (Model.Details[i].AlkalineResultAcetate == "Pass")
@@ -455,7 +474,7 @@
 
                                     </td>
                                     @*Cotton*@
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Alkaline">
                                         <select id="Details_@{@i}__AlkalineCottonScale" name="Details[@{@i}].AlkalineCottonScale">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
                                             {
@@ -464,7 +483,7 @@
                                             }
                                         </select>
                                     </td>
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Alkaline">
                                         @{
                                             styleColor = "red";
                                             if (Model.Details[i].AlkalineResultCotton == "Pass")
@@ -482,7 +501,7 @@
 
                                     </td>
                                     @*Nylon*@
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Alkaline">
                                         <select id="Details_@{@i}__AlkalineNylonScale" name="Details[@{@i}].AlkalineNylonScale">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
                                             {
@@ -491,7 +510,7 @@
                                             }
                                         </select>
                                     </td>
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Alkaline">
                                         @{
                                             styleColor = "red";
                                             if (Model.Details[i].AlkalineResultNylon == "Pass")
@@ -509,7 +528,7 @@
 
                                     </td>
                                     @*Polyester*@
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Alkaline">
                                         <select id="Details_@{@i}__AlkalinePolyesterScale" name="Details[@{@i}].AlkalinePolyesterScale">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
                                             {
@@ -518,7 +537,7 @@
                                             }
                                         </select>
                                     </td>
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Alkaline">
                                         @{
                                             styleColor = "red";
                                             if (Model.Details[i].AlkalineResultPolyester == "Pass")
@@ -536,7 +555,7 @@
 
                                     </td>
                                     @*Acrylic*@
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Alkaline">
                                         <select id="Details_@{@i}__AlkalineAcrylicScale" name="Details[@{@i}].AlkalineAcrylicScale">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
                                             {
@@ -545,7 +564,7 @@
                                             }
                                         </select>
                                     </td>
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Alkaline">
                                         @{
                                             styleColor = "red";
                                             if (Model.Details[i].AlkalineResultAcrylic == "Pass")
@@ -563,7 +582,7 @@
 
                                     </td>
                                     @*Wool*@
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Alkaline">
                                         <select id="Details_@{@i}__AlkalineWoolScale" name="Details[@{@i}].AlkalineWoolScale">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
                                             {
@@ -572,7 +591,7 @@
                                             }
                                         </select>
                                     </td>
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Alkaline">
                                         @{
                                             styleColor = "red";
                                             if (Model.Details[i].AlkalineResultWool == "Pass")
@@ -591,7 +610,7 @@
                                     </td>
 
                                     @*ChangeScale*@
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Acid">
                                         <select id="Details_@{@i}__AcidChangeScale" name="Details[@{@i}].AcidChangeScale">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
                                             {
@@ -600,7 +619,7 @@
                                             }
                                         </select>
                                     </td>
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Acid">
                                         @{
                                             styleColor = "red";
                                             if (Model.Details[i].AcidResultChange == "Pass")
@@ -619,7 +638,7 @@
                                     </td>
 
                                     @*Acetate*@
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Acid">
                                         <select id="Details_@{@i}__AcidAcetateScale" name="Details[@{@i}].AcidAcetateScale">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
                                             {
@@ -628,7 +647,7 @@
                                             }
                                         </select>
                                     </td>
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Acid">
                                         @{
                                             styleColor = "red";
                                             if (Model.Details[i].AcidResultAcetate == "Pass")
@@ -646,7 +665,7 @@
 
                                     </td>
                                     @*Cotton*@
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Acid">
                                         <select id="Details_@{@i}__AcidCottonScale" name="Details[@{@i}].AcidCottonScale">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
                                             {
@@ -655,7 +674,7 @@
                                             }
                                         </select>
                                     </td>
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Acid">
                                         @{
                                             styleColor = "red";
                                             if (Model.Details[i].AcidResultCotton == "Pass")
@@ -673,7 +692,7 @@
 
                                     </td>
                                     @*Nylon*@
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Acid">
                                         <select id="Details_@{@i}__AcidNylonScale" name="Details[@{@i}].AcidNylonScale">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
                                             {
@@ -682,7 +701,7 @@
                                             }
                                         </select>
                                     </td>
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Acid">
                                         @{
                                             styleColor = "red";
                                             if (Model.Details[i].AcidResultNylon == "Pass")
@@ -700,7 +719,7 @@
 
                                     </td>
                                     @*Polyester*@
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Acid">
                                         <select id="Details_@{@i}__AcidPolyesterScale" name="Details[@{@i}].AcidPolyesterScale">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
                                             {
@@ -709,7 +728,7 @@
                                             }
                                         </select>
                                     </td>
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Acid">
                                         @{
                                             styleColor = "red";
                                             if (Model.Details[i].AcidResultPolyester == "Pass")
@@ -727,7 +746,7 @@
 
                                     </td>
                                     @*Acrylic*@
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Acid">
                                         <select id="Details_@{@i}__AcidAcrylicScale" name="Details[@{@i}].AcidAcrylicScale">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
                                             {
@@ -736,7 +755,7 @@
                                             }
                                         </select>
                                     </td>
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Acid">
                                         @{
                                             styleColor = "red";
                                             if (Model.Details[i].AcidResultAcrylic == "Pass")
@@ -754,7 +773,7 @@
 
                                     </td>
                                     @*Wool*@
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Acid">
                                         <select id="Details_@{@i}__AcidWoolScale" name="Details[@{@i}].AcidWoolScale">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
                                             {
@@ -763,7 +782,7 @@
                                             }
                                         </select>
                                     </td>
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Acid">
                                         @{
                                             styleColor = "red";
                                             if (Model.Details[i].AcidResultWool == "Pass")

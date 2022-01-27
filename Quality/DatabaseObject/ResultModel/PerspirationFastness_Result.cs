@@ -61,6 +61,7 @@ namespace DatabaseObject.ResultModel
         public string Result { get; set; }
         public string Remark { get; set; }
         public string Status { get; set; }
+        public string MetalContent { get; set; }
         public string Temperature { get; set; }
         public string Time { get; set; }
         public byte[] TestBeforePicture { get; set; }
@@ -177,6 +178,7 @@ namespace DatabaseObject.ResultModel
         public int Time { get; set; }
         public string SCIRefno_Color { get; set; }
 
+        public string MetalContent { get; set; }
         public string AlkalineChangeScale { get; set; }
         public string AlkalineResultChange { get; set; }
 
