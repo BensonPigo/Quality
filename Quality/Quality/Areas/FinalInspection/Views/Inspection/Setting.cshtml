@@ -708,6 +708,11 @@
                 var aql = $(this).val()
                 var TotalAvailableQty = $("#totalAvailableQty").text();
 
+                if (TotalAvailableQty == 0) {
+                    msg.WithError("Total Available Qty cann't be 0.");
+                    $(this).val('');
+                    return;
+                }
 
                 // 若不是100% Inspection，則AJAX回去取資料
                 if (aql != "100% Inspection") {
