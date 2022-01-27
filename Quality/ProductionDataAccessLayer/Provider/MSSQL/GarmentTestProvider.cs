@@ -588,13 +588,46 @@ INSERT INTO dbo.GarmentTest_Detail_FGPT
 VALUES
            (@ID, @No, @Location, @Type, @TestName, @TestDetail, @Criteria, @TestUnit, @IsOriginal, 
                 (
-                    select Max(Seq) 
+                    select Max(Seq) +1
                     from GarmentTest_Detail_FGPT WITH(NOLOCK)
                     where ID = @ID
                     and No = @No
                 )
             )
 ";
+
+                ExecuteNonQuery(CommandType.Text, cmd, objParameter);
+                transaction.Complete();
+            }
+        }
+
+
+        public void Delete_Original_FGPT_Item(GarmentTest_Detail_FGPT_ViewModel newItem)
+        {
+            using (TransactionScope transaction = new TransactionScope())
+            {
+
+                SQLParameterCollection objParameter = new SQLParameterCollection
+                {
+                    { "@ID", DbType.Int64, newItem.ID } ,
+                    { "@No", DbType.Int32, newItem.No } ,
+                    { "@Location", DbType.String, newItem.Location } ,
+                    { "@Type", DbType.String, newItem.Type } ,
+                    { "@TestName", DbType.String, newItem.TestName } ,
+                    { "@Seq", DbType.Int32, newItem.Seq } ,
+                };
+
+                string cmd = $@"Delete GarmentTest_Detail_FGPT" + Environment.NewLine;
+
+                if (newItem.ID == null || newItem.No == null || newItem.Location == null || newItem.Type == null || newItem.TestName == null || newItem.Seq == null )
+                {
+                    cmd += "where 1=0";
+                }
+                else
+                {
+
+                    cmd += "where ID=@ID AND No=@No AND Location=@Location AND Type=@Type AND TestName=@TestName AND Seq=@Seq ";
+                }
 
                 ExecuteNonQuery(CommandType.Text, cmd, objParameter);
                 transaction.Complete();

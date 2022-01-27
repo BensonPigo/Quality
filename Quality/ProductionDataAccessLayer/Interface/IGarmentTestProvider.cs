@@ -23,5 +23,6 @@ namespace ProductionDataAccessLayer.Interface
 
         bool Update_GarmentTest_Result(string ID);
         void Save_New_FGPT_Item(GarmentTest_Detail_FGPT_ViewModel newItem);
+        void Delete_Original_FGPT_Item(GarmentTest_Detail_FGPT_ViewModel newItem);
     }
 }

@@ -338,6 +338,13 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Json(new { Detail_Result.SaveResult, Detail_Result.ErrMsg });
         }
 
+        public ActionResult DeleteOriginalItem(GarmentTest_Detail_FGPT_ViewModel newItem)
+        {
+            GarmentTest_ViewModel Detail_Result = _GarmentTest_Service.Delete_Original_FGPT_Item(newItem);
+
+            return Json(new { Detail_Result.SaveResult, Detail_Result.ErrMsg });
+        }
+
 
         [HttpPost]
         public ActionResult DetailSave(GarmentTest_Detail_Result result)

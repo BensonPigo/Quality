@@ -816,7 +816,7 @@
                                             <td>
                                                 @if (canEdit)
                                                 {
-                                                    <img src="~/Image/Icon/Edit.png" width="30" class="FgptEdit" idx="@i" style="cursor:pointer;" />
+                                                    <img src="~/Image/Icon/Delete.png" width="30" class="FgptDelete" idx="@i" style="cursor:pointer;" />
                                                 }
                                             </td>
                                         </tr>
@@ -935,10 +935,10 @@
 
         });
 
-        $(".FgptEdit").click(function () {
+        $(".FgptDelete").click(function () {
 
-            if (EditMode == true) {
-                EditFgptItem(this);
+            if (EditMode == false) {
+                DeleteFgptItem(this);
             }
 
         });
@@ -1043,84 +1043,46 @@
     }
 
 
-    function EditFgptItem(self) {
+    function DeleteFgptItem(self) {
 
         // 取得那一列的值
-        var seq = $(self).attr('idx');
-        $("#NewLocation").val($(`#FGPT_${seq}__Location`).val());
-        $("#NewTestName").val($(`#FGPT_${seq}__TestName`).val());
-        $("#NewType").val($(`#FGPT_${seq}__Type`).val());
-        $("#NewCriteria").val($(`#FGPT_${seq}__Criteria`).val());
-        $("#NewTestUnit").val($(`#FGPT_${seq}__TestUnit`).val());
+        var idx = $(self).attr('idx');
 
 
-        $(".to-edit-detail").dialog({
-            width: "70%",
-            dialogClass: "add-contact-box",
-            buttons: {
-                "1": {
-                    text: 'Edit',
-                    click: function (btn, obj) {
+        var ID = $(`#FGPT_${idx}__ID`).val();
+        var No = $(`#FGPT_${idx}__No`).val();
+        var Location = $(`#FGPT_${idx}__Location`).val();
+        var TestName = $(`#FGPT_${idx}__TestName`).val();
+        var Type = $(`#FGPT_${idx}__Type`).val();
+        var Seq = $(`#FGPT_${idx}__Seq`).val();
 
-                        if (EditMode == true) {
-                            var ID = '@Model.Detail.ID';
-                            var No = '@Model.Detail.No';
-                            var Location = $("#NewLocation").val();
-                            var Type = $("#NewType").val();
-                            var TestName = $("#NewTestName").val();
-                            var Criteria = $("#NewCriteria").val();
-                            var TestUnit = $("#NewTestUnit").val();
+        $.ajax({
+            url: "@Url.Action("DeleteOriginalItem", "GarmentTest", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({
+                ID: ID,
+                No: No,
+                Location: Location,
+                Type: Type,
+                TestName: TestName,
+                Seq: Seq,
 
-                            $.ajax({
-                                url: "@Url.Action("ImportNewItem", "GarmentTest", new { Area = "BulkFGT" })",
-                                type: 'POST',
-                                contentType: "application/json; charset=utf-8",
-                                data: JSON.stringify({
-                                    ID: ID,
-                                    No: No,
-                                    Location: Location,
-                                    Type: Type,
-                                    TestName: TestName,
-                                    Criteria: Criteria,
-                                    TestUnit: TestUnit,
-
-                                }),
-                                async: false,
-                                success: function (data) {
-                                    if (data.SaveResult) {
-                                        msg.WithSuccesCheck("Success", function () {
-                                            location.reload();
-                                        });
-                                    }
-                                    else {
-                                        msg.WithError(data.ErrMsg);
-                                    }
-                                },
-                                error: function (xhr, ajaxOptions, thrownError) {
-                                    console.log(xhr.responseText);
-                                }
-                            });
-
-                        }
-
-                    },
-                    "class": "site-btn btn-red btn-lg",
-                    "ID": "dialogEdit"
-                },
-                "2": {
-                    text: 'Exit',
-                    click: function () {
-                        $(this).dialog("close");
-                    }
-                    , "class": "site-btn btn-gy btn-lg"
-                },
+            }),
+            async: false,
+            success: function (data) {
+                if (data.SaveResult) {
+                    msg.WithSuccesCheck("Success", function () {
+                        location.reload();
+                    });
+                }
+                else {
+                    msg.WithError(data.ErrMsg);
+                }
             },
-        });
-        $(".to-edit-detail").dialog("open");
-        $(".to-edit-detail").on("dialogclose", function (event, ui) {
-
-            //對話窗關閉，Table的內容要清除
-            $("#moduleTable tbody").remove();
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
         });
     }
 
@@ -1134,6 +1096,7 @@
 
             $('.DataTable input, .DataTable select').removeAttr("disabled");
             $('.AppearanceList, .FGPTList').removeClass('display-None');
+            $('.FgptDelete').addClass('display-None');
         }
         else {
             $("#Report").addClass("IsEditMode");
@@ -1153,6 +1116,7 @@
 
             $('.DataTable input, .DataTable select').attr("disabled", "disabled");
             $('.AppearanceList, .FGPTList').addClass('display-None');
+            $('.FgptDelete').removeClass('display-None');
         }
 
         $('#Picture').addClass("IsEditMode");
