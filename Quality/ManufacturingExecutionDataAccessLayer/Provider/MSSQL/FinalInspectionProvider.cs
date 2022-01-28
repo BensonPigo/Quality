@@ -248,6 +248,7 @@ insert into FinalInspection_OrderCarton(ID, OrderID, PackingListID, CTNNo, Seq)
             return setting.FinalInspectionID;
         }
 
+
         public void UpdateFinalInspectionByStep(FinalInspection finalInspection, string currentStep, string userID)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();
@@ -386,19 +387,24 @@ update FinalInspection
  set    ProductionStatus = @ProductionStatus  ,
         OthersRemark= @OthersRemark    ,
         CFA= @CFA   ,
+        InspectionResult= @InspectionResult   ,
         InspectionStep = @InspectionStep,
+        ShipmentStatus= @ShipmentStatus   ,
+        SubmitDate=getdate(),
         EditName= @userID,
         EditDate= getdate()
 where   ID = @FinalInspectionID
 ";
                     objParameter.Add("@FinalInspectionID", finalInspection.ID);
                     objParameter.Add("@userID", userID);
+                    objParameter.Add("@InspectionResult", finalInspection.InspectionResult);
+                    objParameter.Add("@ShipmentStatus", finalInspection.ShipmentStatus);
                     objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
                     objParameter.Add("@ProductionStatus", finalInspection.ProductionStatus);
                     objParameter.Add("@OthersRemark", finalInspection.OthersRemark);
                     objParameter.Add("@CFA", finalInspection.CFA);
                     break;
-                case "Submit":
+                /*case "Submit": ISP20220081 不需要這個步驟，合併到case "Insp-Others"去
                     sqlUpdCmd += $@"
 update FinalInspection
  set    ProductionStatus = @ProductionStatus  ,
@@ -419,7 +425,7 @@ where   ID = @FinalInspectionID
                     objParameter.Add("@ProductionStatus", finalInspection.ProductionStatus);
                     objParameter.Add("@OthersRemark", finalInspection.OthersRemark);
                     objParameter.Add("@CFA", finalInspection.CFA);
-                    break;
+                    break;*/
                 default:
                     break;
             }

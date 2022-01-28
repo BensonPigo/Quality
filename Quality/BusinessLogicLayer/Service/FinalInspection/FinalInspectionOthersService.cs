@@ -82,7 +82,7 @@ namespace BusinessLogicLayer.Service
 
                     DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection = new DatabaseObject.ManufacturingExecutionDB.FinalInspection();
                     finalInspection.ID = others.FinalInspectionID;
-                    finalInspection.InspectionStep = "Insp-Measurement";
+                    finalInspection.InspectionStep = "Insp-Moisture";
 
                     if (others.ProductionStatus != null)
                     {
@@ -92,7 +92,7 @@ namespace BusinessLogicLayer.Service
                     finalInspection.OthersRemark = others.OthersRemark;
                     finalInspection.CFA = UserID;
 
-                    _FinalInspectionProvider.UpdateFinalInspectionByStep(finalInspection, "Insp-Others", UserID);
+                    //_FinalInspectionProvider.UpdateFinalInspectionByStep(finalInspection, "Insp-Others", UserID);
                     _FinalInspectionProvider.UpdateFinalInspection_OtherImage(others.FinalInspectionID, others.ListOthersImageItem.Select(o=>o.Image).ToList());
 
                     transactionScope.Complete();
@@ -126,9 +126,6 @@ namespace BusinessLogicLayer.Service
                 {
                     _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
 
-                    //DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection = new DatabaseObject.ManufacturingExecutionDB.FinalInspection();
-
-
                     DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection =
                         _FinalInspectionProvider.GetFinalInspection(others.FinalInspectionID);
 
@@ -143,8 +140,9 @@ namespace BusinessLogicLayer.Service
                     finalInspection.CFA = UserID;
                     finalInspection.ShipmentStatus = others.ShipmentStatus;
                     finalInspection.InspectionResult = finalInspection.AcceptQty < finalInspection.RejectQty && finalInspection.RejectQty > 0 ? "Fail" : "Pass";
-
-                    _FinalInspectionProvider.UpdateFinalInspectionByStep(finalInspection, "Submit", UserID);
+                    
+                    finalInspection.InspectionStep = "Submit";
+                    _FinalInspectionProvider.UpdateFinalInspectionByStep(finalInspection, "Insp-Others", UserID);
                     _FinalInspectionProvider.UpdateFinalInspection_OtherImage(others.FinalInspectionID, others.ListOthersImageItem.Select(o => o.Image).ToList());
                     transactionScope.Complete();
                     transactionScope.Dispose();

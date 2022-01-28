@@ -276,6 +276,8 @@ namespace Quality.Areas.FinalInspection.Controllers
         [HttpPost]
         public ActionResult GoGeneral(Setting setting)
         {
+            this.CheckSession();
+
             FinalInspectionService fsevice = new FinalInspectionService();
             FinalInspectionSettingService sevice = new FinalInspectionSettingService();
 
@@ -385,6 +387,8 @@ namespace Quality.Areas.FinalInspection.Controllers
         [HttpPost]
         public ActionResult GoCheckList(DatabaseObject.ManufacturingExecutionDB.FinalInspection model, string goPage)
         {
+            this.CheckSession();
+
             FinalInspectionService sevice = new FinalInspectionService();
             string FinalInspectionID = model.ID;
 
@@ -419,6 +423,8 @@ namespace Quality.Areas.FinalInspection.Controllers
         [HttpPost]
         public ActionResult CheckList(DatabaseObject.ManufacturingExecutionDB.FinalInspection finalinspection, string goPage)
         {
+            this.CheckSession();
+
             FinalInspectionService sevice = new FinalInspectionService();
             if (goPage == "Back")
             {
@@ -512,6 +518,8 @@ namespace Quality.Areas.FinalInspection.Controllers
         [HttpPost]
         public ActionResult Measurement(Measurement model, string goPage)
         {
+            this.CheckSession();
+
             // model的ListMeasurementItem一定會是空的
 
             FinalInspectionService fservice = new FinalInspectionService();
@@ -615,6 +623,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         [HttpPost]
         public ActionResult AddDefect(AddDefect addDefct, string goPage)
         {
+            this.CheckSession();
 
             FinalInspectionService fservice = new FinalInspectionService();
             AddDefect latestModel = new AddDefect();
@@ -745,6 +754,8 @@ namespace Quality.Areas.FinalInspection.Controllers
         [HttpPost]
         public ActionResult BeautifulProductAudit(BeautifulProductAudit Req, string goPage)
         {
+            this.CheckSession();
+
             FinalInspectionService fservice = new FinalInspectionService();
             BeautifulProductAudit latestModel = new BeautifulProductAudit();
             UpdateModel(latestModel);
@@ -895,6 +906,8 @@ namespace Quality.Areas.FinalInspection.Controllers
         [HttpPost]
         public ActionResult Moisture(DatabaseObject.ViewModel.FinalInspection.MoistureResult moistureResult, string goPage)
         {
+            this.CheckSession();
+
             FinalInspectionService fservice = new FinalInspectionService();
             if (goPage == "Back")
             {
@@ -994,6 +1007,8 @@ namespace Quality.Areas.FinalInspection.Controllers
         [HttpPost]
         public ActionResult Others(Others model, string goPage)
         {
+            this.CheckSession();
+
             FinalInspectionService fservice = new FinalInspectionService();
             FinalInspectionOthersService oService = new FinalInspectionOthersService();
             QueryService Qservice = new QueryService();
@@ -1022,12 +1037,6 @@ namespace Quality.Areas.FinalInspection.Controllers
                     o.Image = item.TempImage;
                     model.ListOthersImageItem.Add(o);
                 }
-
-                fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
-                {
-                    ID = model.FinalInspectionID,
-                    InspectionStep = "Submit"
-                }, "Insp-Others", this.UserID);
 
                 // Submit 紀錄
                 BaseResult r = oService.UpdateOthersSubmit(model, this.UserID);
