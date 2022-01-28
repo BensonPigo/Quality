@@ -12,7 +12,7 @@
 <script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
 <link href="~/ThirdParty/plugins/jquery-ui/jquery-ui.css" rel="stylesheet" />
 
-@model WaterFastness_Detail_Result
+@model PerspirationFastness_Detail_Result
 
 <style type="text/css">
     #tab-Change {
@@ -96,6 +96,12 @@
         color: white !important;
         cursor: pointer;
     }
+    .Alkaline {
+        background-color: #f8d2b6;
+    }
+    .Acid{
+        background-color: #f2ecae;
+    }
 
     .IsEditModeQuery {
         color: gray !important;
@@ -133,11 +139,11 @@
 <div class="main-content">
     <header class="page-header">
         <h3>
-            <i class="icon-users"></i><span>Water Fastness Test</span>
+            <i class="icon-users"></i><span>Perspiration Fastness Test</span>
         </h3>
         <div class="breadcrumb">
             <div>Home</div>
-            <div>Water Fastness Test</div>
+            <div>Perspiration Fastness Test</div>
             <div class="current">Detail</div>
         </div>
     </header>
@@ -153,7 +159,7 @@
                                 <tr>
                                     <td>
                                         <h4 id="Exit" style=" margin-right: 1em;width:5vw ">
-                                            <a href="@Url.Action("IndexBack", "WaterFastness", new { POID = Model.Main.POID})">
+                                            <a href="@Url.Action("IndexBack", "PerspirationFastness", new { POID = Model.Main.POID})">
                                                 <img src="~/Image/Icon/Exit.png" width="30" />
                                                 Exit
                                             </a>
@@ -258,6 +264,19 @@
                                 </tr>
                                 <tr>
 
+                                    <td><h5>Metal Content</h5></td>
+                                    <td>
+                                        <select id="Main_MetalContent" name="Main.MetalContent" class="HeaderSelect">
+                                            @foreach (var item in (List<SelectListItem>)ViewBag.MetalContentList)
+                                            {
+                                                string selected = item.Text.Equals(Model.Main.MetalContent) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+
                                     <td><h5>Testing Method</h5></td>
                                     <td colspan="5"></td>
 
@@ -315,26 +334,41 @@
                                     <th><h4>SCI Refno</h4></th>
                                     <th><h4>Color</h4></th>
                                     <th><h4>Result</h4></th>
-                                    <th><h4>Color Change Scale</h4></th>
-                                    <th><h4>Result (Change)</h4></th>
 
-                                    <th><h4>Color Acetate Scale</h4></th>
-                                    <th><h4>Result (Acetate)</h4></th>
-                                    <th><h4>Color Cotton Scale</h4></th>
-                                    <th><h4>Result (Cotton)</h4></th>
-                                    <th><h4>Color Nylon Scale</h4></th>
-                                    <th><h4>Result (Nylon)</h4></th>
-                                    <th><h4>Color Polyester Scale</h4></th>
-                                    <th><h4>Result (Polyester)</h4></th>
-                                    <th><h4>Color Acrylic Scale</h4></th>
-                                    <th><h4>Result (Acrylic)</h4></th>
-                                    <th><h4>Color Wool Scale</h4></th>
-                                    <th><h4>Result (Wool)</h4></th>
+                                    <th><h4>Alkaline Color Change Scale</h4></th>
+                                    <th><h4>Alkaline Result (Change)</h4></th>
+                                    <th><h4>Alkaline Color Acetate Scale</h4></th>
+                                    <th><h4>Alkaline Result (Acetate)</h4></th>
+                                    <th><h4>Alkaline Color Cotton Scale</h4></th>
+                                    <th><h4>Alkaline Result (Cotton)</h4></th>
+                                    <th><h4>Alkaline Color Nylon Scale</h4></th>
+                                    <th><h4>Alkaline Result (Nylon)</h4></th>
+                                    <th><h4>Alkaline Color Polyester Scale</h4></th>
+                                    <th><h4>Alkaline Result (Polyester)</h4></th>
+                                    <th><h4>Alkaline Color Acrylic Scale</h4></th>
+                                    <th><h4>Alkaline Result (Acrylic)</h4></th>
+                                    <th><h4>Alkaline Color Wool Scale</h4></th>
+                                    <th><h4>Alkaline Result (Wool)</h4></th>
+
+                                    <th><h4>Acid Color Change Scale</h4></th>
+                                    <th><h4>Acid Result (Change)</h4></th>
+                                    <th><h4>Acid Color Acetate Scale</h4></th>
+                                    <th><h4>Acid Result (Acetate)</h4></th>
+                                    <th><h4>Acid Color Cotton Scale</h4></th>
+                                    <th><h4>Acid Result (Cotton)</h4></th>
+                                    <th><h4>Acid Color Nylon Scale</h4></th>
+                                    <th><h4>Acid Result (Nylon)</h4></th>
+                                    <th><h4>Acid Color Polyester Scale</h4></th>
+                                    <th><h4>Acid Result (Polyester)</h4></th>
+                                    <th><h4>Acid Color Acrylic Scale</h4></th>
+                                    <th><h4>Acid Result (Acrylic)</h4></th>
+                                    <th><h4>Acid Color Wool Scale</h4></th>
+                                    <th><h4>Acid Result (Wool)</h4></th>
 
                                     <th><h4>Remark</h4></th>
                                     <th><h4>LastUpdate</h4></th>
                                     @*<th><h4>Temperature(˚C)</h4></th>
-                                    <th><h4>Time(hrs)</h4></th>*@
+        <th><h4>Time(hrs)</h4></th>*@
                                     <th><h4></h4></th>
                                 </tr>
 
@@ -348,7 +382,7 @@
                                         @Html.TextBoxFor(o => Model.Details[i].SubmitDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
                                     </td>
                                     <td style="width:10vw;">
-                                        @Html.TextBoxFor(o => Model.Details[i].WaterFastnessGroup, "", new { @maxlength = "2", @type = "number", @step = "1", @min = "0", @max = "99", @oninput = "value=WaterFastnessGroupCheck(value)" })
+                                        @Html.TextBoxFor(o => Model.Details[i].PerspirationFastnessGroup, "", new { @maxlength = "2", @type = "number", @step = "1", @min = "0", @max = "99", @oninput = "value=PerspirationFastnessGroupCheck(value)" })
                                     </td>
                                     <td style="width:11vw;">
                                         <div style="width:10vw;">
@@ -384,27 +418,28 @@
                                         @Html.TextBoxFor(o => Model.Details[i].Result, "", new { @class = detailResultColor, @readonly = "readonly" })
                                     </td>
 
-                                    <td style="width:10vw;">
-                                        <select id="Details_@{@i}__ChangeScale" name="Details[@{@i}].ChangeScale">
+                                    @*ChangeScale*@
+                                    <td style="width:10vw;" class="Alkaline">
+                                        <select id="Details_@{@i}__AlkalineChangeScale" name="Details[@{@i}].AlkalineChangeScale">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
                                             {
-                                                string selected = item.Text.Equals(Model.Details[i].ChangeScale) ? "selected" : "";
+                                                string selected = item.Text.Equals(Model.Details[i].AlkalineChangeScale) ? "selected" : "";
                                                 <option value="@item.Value" @selected>@item.Text</option>
                                             }
                                         </select>
                                     </td>
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Alkaline">
                                         @{
                                             string styleColor = "red";
-                                            if (Model.Details[i].ResultChange == "Pass")
+                                            if (Model.Details[i].AlkalineResultChange == "Pass")
                                             {
                                                 styleColor = "blue";
                                             }
                                         }
-                                        <select onchange='selectChange(this)' id="Details_@{@i}__ResultChange" name="Details[@i].ResultChange" class="@styleColor">
+                                        <select onchange='selectChange(this)' id="Details_@{@i}__AlkalineResultChange" name="Details[@i].AlkalineResultChange" class="@styleColor">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ResultChangeList)
                                             {
-                                                string selected = item.Text.Equals(Model.Details[i].ResultChange) ? "selected" : "";
+                                                string selected = item.Text.Equals(Model.Details[i].AlkalineResultChange) ? "selected" : "";
                                                 <option value="@item.Value" @selected>@item.Text</option>
                                             }
                                         </select>
@@ -412,167 +447,359 @@
                                     </td>
 
                                     @*Acetate*@
-                                    <td style="width:10vw;">
-                                        <select id="Details_@{@i}__AcetateScale" name="Details[@{@i}].AcetateScale">
+                                    <td style="width:10vw;" class="Alkaline">
+                                        <select id="Details_@{@i}__AlkalineAcetateScale" name="Details[@{@i}].AlkalineAcetateScale">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
                                             {
-                                                string selected = item.Text.Equals(Model.Details[i].AcetateScale) ? "selected" : "";
+                                                string selected = item.Text.Equals(Model.Details[i].AlkalineAcetateScale) ? "selected" : "";
                                                 <option value="@item.Value" @selected>@item.Text</option>
                                             }
                                         </select>
                                     </td>
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Alkaline">
                                         @{
                                             styleColor = "red";
-                                            if (Model.Details[i].ResultAcetate == "Pass")
+                                            if (Model.Details[i].AlkalineResultAcetate == "Pass")
                                             {
                                                 styleColor = "blue";
                                             }
                                         }
-                                        <select onchange='selectChange(this)' id="Details_@{@i}__ResultAcetate" name="Details[@i].ResultAcetate" class="@styleColor">
+                                        <select onchange='selectChange(this)' id="Details_@{@i}__AlkalineResultAcetate" name="Details[@i].AlkalineResultAcetate" class="@styleColor">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ResultChangeList)
                                             {
-                                                string selected = item.Text.Equals(Model.Details[i].ResultAcetate) ? "selected" : "";
+                                                string selected = item.Text.Equals(Model.Details[i].AlkalineResultAcetate) ? "selected" : "";
                                                 <option value="@item.Value" @selected>@item.Text</option>
                                             }
                                         </select>
 
                                     </td>
                                     @*Cotton*@
-                                    <td style="width:10vw;">
-                                        <select id="Details_@{@i}__CottonScale" name="Details[@{@i}].CottonScale">
+                                    <td style="width:10vw;" class="Alkaline">
+                                        <select id="Details_@{@i}__AlkalineCottonScale" name="Details[@{@i}].AlkalineCottonScale">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
                                             {
-                                                string selected = item.Text.Equals(Model.Details[i].CottonScale) ? "selected" : "";
+                                                string selected = item.Text.Equals(Model.Details[i].AlkalineCottonScale) ? "selected" : "";
                                                 <option value="@item.Value" @selected>@item.Text</option>
                                             }
                                         </select>
                                     </td>
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Alkaline">
                                         @{
                                             styleColor = "red";
-                                            if (Model.Details[i].ResultCotton == "Pass")
+                                            if (Model.Details[i].AlkalineResultCotton == "Pass")
                                             {
                                                 styleColor = "blue";
                                             }
                                         }
-                                        <select onchange='selectChange(this)' id="Details_@{@i}__ResultCotton" name="Details[@i].ResultCotton" class="@styleColor">
+                                        <select onchange='selectChange(this)' id="Details_@{@i}__AlkalineResultCotton" name="Details[@i].AlkalineResultCotton" class="@styleColor">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ResultChangeList)
                                             {
-                                                string selected = item.Text.Equals(Model.Details[i].ResultCotton) ? "selected" : "";
+                                                string selected = item.Text.Equals(Model.Details[i].AlkalineResultCotton) ? "selected" : "";
                                                 <option value="@item.Value" @selected>@item.Text</option>
                                             }
                                         </select>
 
                                     </td>
                                     @*Nylon*@
-                                    <td style="width:10vw;">
-                                        <select id="Details_@{@i}__NylonScale" name="Details[@{@i}].NylonScale">
+                                    <td style="width:10vw;" class="Alkaline">
+                                        <select id="Details_@{@i}__AlkalineNylonScale" name="Details[@{@i}].AlkalineNylonScale">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
                                             {
-                                                string selected = item.Text.Equals(Model.Details[i].NylonScale) ? "selected" : "";
+                                                string selected = item.Text.Equals(Model.Details[i].AlkalineNylonScale) ? "selected" : "";
                                                 <option value="@item.Value" @selected>@item.Text</option>
                                             }
                                         </select>
                                     </td>
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Alkaline">
                                         @{
                                             styleColor = "red";
-                                            if (Model.Details[i].ResultNylon == "Pass")
+                                            if (Model.Details[i].AlkalineResultNylon == "Pass")
                                             {
                                                 styleColor = "blue";
                                             }
                                         }
-                                        <select onchange='selectChange(this)' id="Details_@{@i}__ResultNylon" name="Details[@i].ResultNylon" class="@styleColor">
+                                        <select onchange='selectChange(this)' id="Details_@{@i}__AlkalineResultNylon" name="Details[@i].AlkalineResultNylon" class="@styleColor">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ResultChangeList)
                                             {
-                                                string selected = item.Text.Equals(Model.Details[i].ResultNylon) ? "selected" : "";
+                                                string selected = item.Text.Equals(Model.Details[i].AlkalineResultNylon) ? "selected" : "";
                                                 <option value="@item.Value" @selected>@item.Text</option>
                                             }
                                         </select>
 
                                     </td>
                                     @*Polyester*@
-                                    <td style="width:10vw;">
-                                        <select id="Details_@{@i}__PolyesterScale" name="Details[@{@i}].PolyesterScale">
+                                    <td style="width:10vw;" class="Alkaline">
+                                        <select id="Details_@{@i}__AlkalinePolyesterScale" name="Details[@{@i}].AlkalinePolyesterScale">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
                                             {
-                                                string selected = item.Text.Equals(Model.Details[i].PolyesterScale) ? "selected" : "";
+                                                string selected = item.Text.Equals(Model.Details[i].AlkalinePolyesterScale) ? "selected" : "";
                                                 <option value="@item.Value" @selected>@item.Text</option>
                                             }
                                         </select>
                                     </td>
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Alkaline">
                                         @{
                                             styleColor = "red";
-                                            if (Model.Details[i].ResultPolyester == "Pass")
+                                            if (Model.Details[i].AlkalineResultPolyester == "Pass")
                                             {
                                                 styleColor = "blue";
                                             }
                                         }
-                                        <select onchange='selectChange(this)' id="Details_@{@i}__ResultPolyester" name="Details[@i].ResultPolyester" class="@styleColor">
+                                        <select onchange='selectChange(this)' id="Details_@{@i}__AlkalineResultPolyester" name="Details[@i].AlkalineResultPolyester" class="@styleColor">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ResultChangeList)
                                             {
-                                                string selected = item.Text.Equals(Model.Details[i].ResultPolyester) ? "selected" : "";
+                                                string selected = item.Text.Equals(Model.Details[i].AlkalineResultPolyester) ? "selected" : "";
                                                 <option value="@item.Value" @selected>@item.Text</option>
                                             }
                                         </select>
 
                                     </td>
                                     @*Acrylic*@
-                                    <td style="width:10vw;">
-                                        <select id="Details_@{@i}__AcrylicScale" name="Details[@{@i}].AcrylicScale">
+                                    <td style="width:10vw;" class="Alkaline">
+                                        <select id="Details_@{@i}__AlkalineAcrylicScale" name="Details[@{@i}].AlkalineAcrylicScale">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
                                             {
-                                                string selected = item.Text.Equals(Model.Details[i].AcrylicScale) ? "selected" : "";
+                                                string selected = item.Text.Equals(Model.Details[i].AlkalineAcrylicScale) ? "selected" : "";
                                                 <option value="@item.Value" @selected>@item.Text</option>
                                             }
                                         </select>
                                     </td>
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Alkaline">
                                         @{
                                             styleColor = "red";
-                                            if (Model.Details[i].ResultAcrylic == "Pass")
+                                            if (Model.Details[i].AlkalineResultAcrylic == "Pass")
                                             {
                                                 styleColor = "blue";
                                             }
                                         }
-                                        <select onchange='selectChange(this)' id="Details_@{@i}__ResultAcrylic" name="Details[@i].ResultAcrylic" class="@styleColor">
+                                        <select onchange='selectChange(this)' id="Details_@{@i}__AlkalineResultAcrylic" name="Details[@i].AlkalineResultAcrylic" class="@styleColor">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ResultChangeList)
                                             {
-                                                string selected = item.Text.Equals(Model.Details[i].ResultAcrylic) ? "selected" : "";
+                                                string selected = item.Text.Equals(Model.Details[i].AlkalineResultAcrylic) ? "selected" : "";
                                                 <option value="@item.Value" @selected>@item.Text</option>
                                             }
                                         </select>
 
                                     </td>
                                     @*Wool*@
-                                    <td style="width:10vw;">
-                                        <select id="Details_@{@i}__WoolScale" name="Details[@{@i}].WoolScale">
+                                    <td style="width:10vw;" class="Alkaline">
+                                        <select id="Details_@{@i}__AlkalineWoolScale" name="Details[@{@i}].AlkalineWoolScale">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
                                             {
-                                                string selected = item.Text.Equals(Model.Details[i].WoolScale) ? "selected" : "";
+                                                string selected = item.Text.Equals(Model.Details[i].AlkalineWoolScale) ? "selected" : "";
                                                 <option value="@item.Value" @selected>@item.Text</option>
                                             }
                                         </select>
                                     </td>
-                                    <td style="width:10vw;">
+                                    <td style="width:10vw;" class="Alkaline">
                                         @{
                                             styleColor = "red";
-                                            if (Model.Details[i].ResultWool == "Pass")
+                                            if (Model.Details[i].AlkalineResultWool == "Pass")
                                             {
                                                 styleColor = "blue";
                                             }
                                         }
-                                        <select onchange='selectChange(this)' id="Details_@{@i}__ResultWool" name="Details[@i].ResultWool" class="@styleColor">
+                                        <select onchange='selectChange(this)' id="Details_@{@i}__AlkalineResultWool" name="Details[@i].AlkalineResultWool" class="@styleColor">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.ResultChangeList)
                                             {
-                                                string selected = item.Text.Equals(Model.Details[i].ResultWool) ? "selected" : "";
+                                                string selected = item.Text.Equals(Model.Details[i].AlkalineResultWool) ? "selected" : "";
                                                 <option value="@item.Value" @selected>@item.Text</option>
                                             }
                                         </select>
 
                                     </td>
+
+                                    @*ChangeScale*@
+                                    <td style="width:10vw;" class="Acid">
+                                        <select id="Details_@{@i}__AcidChangeScale" name="Details[@{@i}].AcidChangeScale">
+                                            @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
+                                            {
+                                                string selected = item.Text.Equals(Model.Details[i].AcidChangeScale) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td style="width:10vw;" class="Acid">
+                                        @{
+                                            styleColor = "red";
+                                            if (Model.Details[i].AcidResultChange == "Pass")
+                                            {
+                                                styleColor = "blue";
+                                            }
+                                        }
+                                        <select onchange='selectChange(this)' id="Details_@{@i}__AcidResultChange" name="Details[@i].AcidResultChange" class="@styleColor">
+                                            @foreach (var item in (List<SelectListItem>)ViewBag.ResultChangeList)
+                                            {
+                                                string selected = item.Text.Equals(Model.Details[i].AcidResultChange) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        </select>
+
+                                    </td>
+
+                                    @*Acetate*@
+                                    <td style="width:10vw;" class="Acid">
+                                        <select id="Details_@{@i}__AcidAcetateScale" name="Details[@{@i}].AcidAcetateScale">
+                                            @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
+                                            {
+                                                string selected = item.Text.Equals(Model.Details[i].AcidAcetateScale) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td style="width:10vw;" class="Acid">
+                                        @{
+                                            styleColor = "red";
+                                            if (Model.Details[i].AcidResultAcetate == "Pass")
+                                            {
+                                                styleColor = "blue";
+                                            }
+                                        }
+                                        <select onchange='selectChange(this)' id="Details_@{@i}__AcidResultAcetate" name="Details[@i].AcidResultAcetate" class="@styleColor">
+                                            @foreach (var item in (List<SelectListItem>)ViewBag.ResultChangeList)
+                                            {
+                                                string selected = item.Text.Equals(Model.Details[i].AcidResultAcetate) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        </select>
+
+                                    </td>
+                                    @*Cotton*@
+                                    <td style="width:10vw;" class="Acid">
+                                        <select id="Details_@{@i}__AcidCottonScale" name="Details[@{@i}].AcidCottonScale">
+                                            @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
+                                            {
+                                                string selected = item.Text.Equals(Model.Details[i].AcidCottonScale) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td style="width:10vw;" class="Acid">
+                                        @{
+                                            styleColor = "red";
+                                            if (Model.Details[i].AcidResultCotton == "Pass")
+                                            {
+                                                styleColor = "blue";
+                                            }
+                                        }
+                                        <select onchange='selectChange(this)' id="Details_@{@i}__AcidResultCotton" name="Details[@i].AcidResultCotton" class="@styleColor">
+                                            @foreach (var item in (List<SelectListItem>)ViewBag.ResultChangeList)
+                                            {
+                                                string selected = item.Text.Equals(Model.Details[i].AcidResultCotton) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        </select>
+
+                                    </td>
+                                    @*Nylon*@
+                                    <td style="width:10vw;" class="Acid">
+                                        <select id="Details_@{@i}__AcidNylonScale" name="Details[@{@i}].AcidNylonScale">
+                                            @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
+                                            {
+                                                string selected = item.Text.Equals(Model.Details[i].AcidNylonScale) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td style="width:10vw;" class="Acid">
+                                        @{
+                                            styleColor = "red";
+                                            if (Model.Details[i].AcidResultNylon == "Pass")
+                                            {
+                                                styleColor = "blue";
+                                            }
+                                        }
+                                        <select onchange='selectChange(this)' id="Details_@{@i}__AcidResultNylon" name="Details[@i].AcidResultNylon" class="@styleColor">
+                                            @foreach (var item in (List<SelectListItem>)ViewBag.ResultChangeList)
+                                            {
+                                                string selected = item.Text.Equals(Model.Details[i].AcidResultNylon) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        </select>
+
+                                    </td>
+                                    @*Polyester*@
+                                    <td style="width:10vw;" class="Acid">
+                                        <select id="Details_@{@i}__AcidPolyesterScale" name="Details[@{@i}].AcidPolyesterScale">
+                                            @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
+                                            {
+                                                string selected = item.Text.Equals(Model.Details[i].AcidPolyesterScale) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td style="width:10vw;" class="Acid">
+                                        @{
+                                            styleColor = "red";
+                                            if (Model.Details[i].AcidResultPolyester == "Pass")
+                                            {
+                                                styleColor = "blue";
+                                            }
+                                        }
+                                        <select onchange='selectChange(this)' id="Details_@{@i}__AcidResultPolyester" name="Details[@i].AcidResultPolyester" class="@styleColor">
+                                            @foreach (var item in (List<SelectListItem>)ViewBag.ResultChangeList)
+                                            {
+                                                string selected = item.Text.Equals(Model.Details[i].AcidResultPolyester) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        </select>
+
+                                    </td>
+                                    @*Acrylic*@
+                                    <td style="width:10vw;" class="Acid">
+                                        <select id="Details_@{@i}__AcidAcrylicScale" name="Details[@{@i}].AcidAcrylicScale">
+                                            @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
+                                            {
+                                                string selected = item.Text.Equals(Model.Details[i].AcidAcrylicScale) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td style="width:10vw;" class="Acid">
+                                        @{
+                                            styleColor = "red";
+                                            if (Model.Details[i].AcidResultAcrylic == "Pass")
+                                            {
+                                                styleColor = "blue";
+                                            }
+                                        }
+                                        <select onchange='selectChange(this)' id="Details_@{@i}__AcidResultAcrylic" name="Details[@i].AcidResultAcrylic" class="@styleColor">
+                                            @foreach (var item in (List<SelectListItem>)ViewBag.ResultChangeList)
+                                            {
+                                                string selected = item.Text.Equals(Model.Details[i].AcidResultAcrylic) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        </select>
+
+                                    </td>
+                                    @*Wool*@
+                                    <td style="width:10vw;" class="Acid">
+                                        <select id="Details_@{@i}__AcidWoolScale" name="Details[@{@i}].AcidWoolScale">
+                                            @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
+                                            {
+                                                string selected = item.Text.Equals(Model.Details[i].AcidWoolScale) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td style="width:10vw;" class="Acid">
+                                        @{
+                                            styleColor = "red";
+                                            if (Model.Details[i].AcidResultWool == "Pass")
+                                            {
+                                                styleColor = "blue";
+                                            }
+                                        }
+                                        <select onchange='selectChange(this)' id="Details_@{@i}__AcidResultWool" name="Details[@i].AcidResultWool" class="@styleColor">
+                                            @foreach (var item in (List<SelectListItem>)ViewBag.ResultChangeList)
+                                            {
+                                                string selected = item.Text.Equals(Model.Details[i].AcidResultWool) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        </select>
+
+                                    </td>
+
 
                                     <td style="width:10vw;">
                                         @Html.TextBoxFor(o => Model.Details[i].Remark, "", "")
@@ -581,24 +808,24 @@
                                         @Html.DisplayFor(o => Model.Details[i].LastUpdate, "", "")
                                     </td>
                                     @*<td style="width:10vw;">
-                                        <select id="Details_@{@i}__Temperature" name="Details[@{@i}].Temperature">
-                                            @foreach (var item in (List<SelectListItem>)ViewBag.TemperatureList)
-                                            {
-                                                string selected = item.Text.Equals(Model.Details[i].Temperature) ? "selected" : "";
-                                                <option value="@item.Value" @selected>@item.Text</option>
-                                            }
-                                        </select>
-                                    </td>
+            <select id="Details_@{@i}__Temperature" name="Details[@{@i}].Temperature">
+                @foreach (var item in (List<SelectListItem>)ViewBag.TemperatureList)
+                {
+                    string selected = item.Text.Equals(Model.Details[i].Temperature) ? "selected" : "";
+                    <option value="@item.Value" @selected>@item.Text</option>
+                }
+            </select>
+        </td>
                                     *@
                                     @*<td style="width:10vw;">
-                                        <select id="Details_@{@i}__Time" name="Details[@{@i}].Time">
-                                            @foreach (var item in (List<SelectListItem>)ViewBag.TimeList)
-                                            {
-                                                string selected = item.Text.Equals(Model.Details[i].Time) ? "selected" : "";
-                                                <option value="@item.Value" @selected>@item.Text</option>
-                                            }
-                                        </select>
-                                    </td>
+            <select id="Details_@{@i}__Time" name="Details[@{@i}].Time">
+                @foreach (var item in (List<SelectListItem>)ViewBag.TimeList)
+                {
+                    string selected = item.Text.Equals(Model.Details[i].Time) ? "selected" : "";
+                    <option value="@item.Value" @selected>@item.Text</option>
+                }
+            </select>
+        </td>
                                     *@
                                     <td style="width:10vw;">
                                         <div style="width:5vw;">
@@ -920,7 +1147,7 @@
 
         $('#Picture').on('click', function () {
             var para = "?Title=" + $('.page-header span').html() + "&EditMode=" + EditMode;
-            para += "&" + "Table=WaterFastness";
+            para += "&" + "Table=PerspirationFastness";
             para += "&" + "TargetBeforeColumn=Main_TestBeforePicture";
             para += "&" + "TargetAfterColumn=Main_TestAfterPicture";
             para += "&" + "BeforeColumn=TestBeforePicture";
@@ -952,18 +1179,26 @@
             var ErrMsg = "";
             $('.DetailTable > tbody > tr').each(function (index, value) {
 
-                var WaterFastnessGroup, SEQ, Result;
-                var ChangeScale, ResultChange
-                    , AcetateScale, ResultAcetate
-                    , CottonScale, ResultCotton
-                    , NylonScale, ResultNylon
-                    , PolyesterScale, ResultPolyester
-                    , AcrylicScale, ResultAcrylic
-                    , WoolScale, ResultWool;
+                var PerspirationFastnessGroup, SEQ, Result;
+                var AlkalineChangeScale, AlkalineResultChange
+                    , AlkalineAcetateScale, AlkalineResultAcetate
+                    , AlkalineCottonScale, AlkalineResultCotton
+                    , AlkalineNylonScale, AlkalineResultNylon
+                    , AlkalinePolyesterScale, AlkalineResultPolyester
+                    , AlkalineAcrylicScale, AlkalineResultAcrylic
+                    , AlkalineWoolScale, AlkalineResultWool;
+
+                var AcidChangeScale, AcidResultChange
+                    , AcidAcetateScale, AcidResultAcetate
+                    , AcidCottonScale, AcidResultCotton
+                    , AcidNylonScale, AcidResultNylon
+                    , AcidPolyesterScale, AcidResultPolyester
+                    , AcidAcrylicScale, AcidResultAcrylic
+                    , AcidWoolScale, AcidResultWool;
                 $(this).children().find("input[type='number']").each(function (index, value) {
                     switch (index) {
                         case 0:
-                            WaterFastnessGroup = $(this).val();
+                            PerspirationFastnessGroup = $(this).val();
                             break;
                     }
                 })
@@ -982,52 +1217,94 @@
                 $(this).children().find("select").each(function (index, value) {
                     switch (index) {
                         case 0:
-                            ChangeScale = $(this).children("option:selected").val();
+                            AlkalineChangeScale = $(this).children("option:selected").val();
                             break;
                         case 1:
-                            ResultChange = $(this).children("option:selected").val();
+                            AlkalineResultChange = $(this).children("option:selected").val();
                             break;
                         case 2:
-                            AcetateScale = $(this).children("option:selected").val();
+                            AlkalineAcetateScale = $(this).children("option:selected").val();
                             break;
                         case 3:
-                            ResultAcetate= $(this).children("option:selected").val();
+                            AlkalineResultAcetate= $(this).children("option:selected").val();
                             break;
                         case 4:
-                            CottonScale = $(this).children("option:selected").val();
+                            AlkalineCottonScale = $(this).children("option:selected").val();
                             break;
                         case 5:
-                            ResultCotton = $(this).children("option:selected").val();
+                            AlkalineResultCotton = $(this).children("option:selected").val();
                             break;
                         case 6:
-                            NylonScale = $(this).children("option:selected").val();
+                            AlkalineNylonScale = $(this).children("option:selected").val();
                             break;
                         case 7:
-                            ResultNylon = $(this).children("option:selected").val();
+                            AlkalineResultNylon = $(this).children("option:selected").val();
                             break;
                         case 8:
-                            PolyesterScale = $(this).children("option:selected").val();
+                            AlkalinePolyesterScale = $(this).children("option:selected").val();
                             break;
                         case 9:
-                            ResultPolyester = $(this).children("option:selected").val();
+                            AlkalineResultPolyester = $(this).children("option:selected").val();
                             break;
                         case 10:
-                            AcrylicScale = $(this).children("option:selected").val();
+                            AlkalineAcrylicScale = $(this).children("option:selected").val();
                             break;
                         case 11:
-                            ResultAcrylic = $(this).children("option:selected").val();
+                            AlkalineResultAcrylic = $(this).children("option:selected").val();
                             break;
                         case 12:
-                            WoolScale = $(this).children("option:selected").val();
+                            AlkalineWoolScale = $(this).children("option:selected").val();
                             break;
                         case 13:
-                            ResultWool = $(this).children("option:selected").val();
+                            AlkalineResultWool = $(this).children("option:selected").val();
+                            break;
+                        case 14:
+                            AcidChangeScale = $(this).children("option:selected").val();
+                            break;
+                        case 15:
+                            AcidResultChange = $(this).children("option:selected").val();
+                            break;
+                        case 16:
+                            AcidAcetateScale = $(this).children("option:selected").val();
+                            break;
+                        case 17:
+                            AcidResultAcetate = $(this).children("option:selected").val();
+                            break;
+                        case 18:
+                            AcidCottonScale = $(this).children("option:selected").val();
+                            break;
+                        case 19:
+                            AcidResultCotton = $(this).children("option:selected").val();
+                            break;
+                        case 20:
+                            AcidNylonScale = $(this).children("option:selected").val();
+                            break;
+                        case 21:
+                            AcidResultNylon = $(this).children("option:selected").val();
+                            break;
+                        case 22:
+                            AcidPolyesterScale = $(this).children("option:selected").val();
+                            break;
+                        case 23:
+                            AcidResultPolyester = $(this).children("option:selected").val();
+                            break;
+                        case 24:
+                            AcidAcrylicScale = $(this).children("option:selected").val();
+                            break;
+                        case 25:
+                            AcidResultAcrylic = $(this).children("option:selected").val();
+                            break;
+                        case 26:
+                            AcidWoolScale = $(this).children("option:selected").val();
+                            break;
+                        case 27:
+                            AcidResultWool = $(this).children("option:selected").val();
                             break;
                     }
                 })
 
 
-                if (WaterFastnessGroup == "" || WaterFastnessGroup == undefined) {
+                if (PerspirationFastnessGroup == "" || PerspirationFastnessGroup == undefined) {
                     ErrMsg += "Group cannot be empty.";
                     return false;
                 }
@@ -1038,43 +1315,74 @@
                 }
 
                 if (Result == "" || Result == undefined ||
-                    ResultChange == "" || ResultChange == undefined ||
-                    ChangeScale == "" || ChangeScale == undefined ||
-                    ResultAcetate == "" || ResultAcetate == undefined ||
-                    AcetateScale == "" || AcetateScale == undefined ||
-                    ResultCotton == "" || ResultCotton == undefined ||
-                    CottonScale == "" || CottonScale == undefined ||
-                    ResultNylon == "" || ResultNylon == undefined ||
-                    NylonScale == "" || NylonScale == undefined ||
-                    ResultPolyester == "" || ResultPolyester == undefined ||
-                    PolyesterScale == "" || PolyesterScale == undefined ||
-                    ResultAcrylic == "" || ResultAcrylic == undefined ||
-                    AcrylicScale == "" || AcrylicScale == undefined ||
-                    ResultWool == "" || ResultWool == undefined ||
-                    WoolScale == "" || WoolScale == undefined
+                    AlkalineResultChange == "" || AlkalineResultChange == undefined ||
+                    AlkalineChangeScale == "" || AlkalineChangeScale == undefined ||
+                    AlkalineResultAcetate == "" || AlkalineResultAcetate == undefined ||
+                    AlkalineAcetateScale == "" || AlkalineAcetateScale == undefined ||
+                    AlkalineResultCotton == "" || AlkalineResultCotton == undefined ||
+                    AlkalineCottonScale == "" || AlkalineCottonScale == undefined ||
+                    AlkalineResultNylon == "" || AlkalineResultNylon == undefined ||
+                    AlkalineNylonScale == "" || AlkalineNylonScale == undefined ||
+                    AlkalineResultPolyester == "" || AlkalineResultPolyester == undefined ||
+                    AlkalinePolyesterScale == "" || AlkalinePolyesterScale == undefined ||
+                    AlkalineResultAcrylic == "" || AlkalineResultAcrylic == undefined ||
+                    AlkalineAcrylicScale == "" || AlkalineAcrylicScale == undefined ||
+                    AlkalineResultWool == "" || AlkalineResultWool == undefined ||
+                    AlkalineWoolScale == "" || AlkalineWoolScale == undefined ||
+
+                    AcidResultChange == "" || AcidResultChange == undefined ||
+                    AcidChangeScale == "" || AcidChangeScale == undefined ||
+                    AcidResultAcetate == "" || AcidResultAcetate == undefined ||
+                    AcidAcetateScale == "" || AcidAcetateScale == undefined ||
+                    AcidResultCotton == "" || AcidResultCotton == undefined ||
+                    AcidCottonScale == "" || AcidCottonScale == undefined ||
+                    AcidResultNylon == "" || AcidResultNylon == undefined ||
+                    AcidNylonScale == "" || AcidNylonScale == undefined ||
+                    AcidResultPolyester == "" || AcidResultPolyester == undefined ||
+                    AcidPolyesterScale == "" || AcidPolyesterScale == undefined ||
+                    AcidResultAcrylic == "" || AcidResultAcrylic == undefined ||
+                    AcidAcrylicScale == "" || AcidAcrylicScale == undefined ||
+                    AcidResultWool == "" || AcidResultWool == undefined ||
+                    AcidWoolScale == "" || AcidWoolScale == undefined
                 ) {
                     ErrMsg += "Color Change ,Acetate,Cotton,Nylon,Polyester,Acrylic,Wool Scale and Result cannot be empty.";
                     return false;
                 }
 
                 detail.push({
-                    WaterFastnessGroup: WaterFastnessGroup,
+                    PerspirationFastnessGroup: PerspirationFastnessGroup,
                     SEQ: SEQ,
                     Result: Result,
-                    ChangeScale: ChangeScale,
-                    ResultChange: ResultChange,
-                    AcetateScale: AcetateScale,
-                    ResultAcetate: ResultAcetate,
-                    CottonScale: CottonScale,
-                    ResultCotton: ResultCotton,
-                    NylonScale: NylonScale,
-                    ResultNylon: ResultNylon,
-                    PolyesterScale: PolyesterScale,
-                    ResultPolyester: ResultPolyester,
-                    AcrylicScale: AcrylicScale,
-                    ResultAcrylic: ResultAcrylic,
-                    WoolScale: WoolScale,
-                    ResultWool: ResultWool,
+                    AlkalineChangeScale: AlkalineChangeScale,
+                    AlkalineResultChange: AlkalineResultChange,
+                    AlkalineAcetateScale: AlkalineAcetateScale,
+                    AlkalineResultAcetate: AlkalineResultAcetate,
+                    AlkalineCottonScale: AlkalineCottonScale,
+                    AlkalineResultCotton: AlkalineResultCotton,
+                    AlkalineNylonScale: AlkalineNylonScale,
+                    AlkalineResultNylon: AlkalineResultNylon,
+                    AlkalinePolyesterScale: AlkalinePolyesterScale,
+                    AlkalineResultPolyester: AlkalineResultPolyester,
+                    AlkalineAcrylicScale: AlkalineAcrylicScale,
+                    AlkalineResultAcrylic: AlkalineResultAcrylic,
+                    AlkalineWoolScale: AlkalineWoolScale,
+                    AlkalineResultWool: AlkalineResultWool,
+
+                    AcidChangeScale: AcidChangeScale,
+                    AcidResultChange: AcidResultChange,
+                    AcidAcetateScale: AcidAcetateScale,
+                    AcidResultAcetate: AcidResultAcetate,
+                    AcidCottonScale: AcidCottonScale,
+                    AcidResultCotton: AcidResultCotton,
+                    AcidNylonScale: AcidNylonScale,
+                    AcidResultNylon: AcidResultNylon,
+                    AcidPolyesterScale: AcidPolyesterScale,
+                    AcidResultPolyester: AcidResultPolyester,
+                    AcidAcrylicScale: AcidAcrylicScale,
+                    AcidResultAcrylic: AcidResultAcrylic,
+                    AcidWoolScale: AcidWoolScale,
+                    AcidResultWool: AcidResultWool,
+
                 });
 
 
@@ -1091,14 +1399,14 @@
 
 
             $.ajax({
-                url: "@Url.Action("Encode_Detail", "WaterFastness", new { Area = "BulkFGT" })",
+                url: "@Url.Action("Encode_Detail", "PerspirationFastness", new { Area = "BulkFGT" })",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ POID: $('#Main_POID').val(), TestNo: $('#Main_TestNo').val() }),
                 async: false,
                 success: function (data) {
                     if (data.Result) {
-                        if (data.waterFastnessResult == "Fail") {
+                        if (data.PerspirationFastnessResult == "Fail") {
                             FailMail();
                         }
                         else {
@@ -1120,7 +1428,7 @@
 
         $('#Amend').unbind('click').on('click', function () {
             $.ajax({
-                url: "@Url.Action("Amend_Detail", "WaterFastness", new { Area = "BulkFGT" })",
+                url: "@Url.Action("Amend_Detail", "PerspirationFastness", new { Area = "BulkFGT" })",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ POID: $('#Main_POID').val(), TestNo: $('#Main_TestNo').val() }),
@@ -1152,7 +1460,7 @@
 
     function ToReport(IsToPDF) {
         $.ajax({
-            url: "@Url.Action("Report", "WaterFastness", new { Area = "BulkFGT" })",
+            url: "@Url.Action("Report", "PerspirationFastness", new { Area = "BulkFGT" })",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({ ID: $('#Main_ID').val(), No: $('#Main_TestNo').val(), IsToPDF: IsToPDF }),
@@ -1185,7 +1493,7 @@
         });
 
         $.ajax({
-            url: "@Url.Action("FailMail", "WaterFastness", new { Area = "BulkFGT" })",
+            url: "@Url.Action("FailMail", "PerspirationFastness", new { Area = "BulkFGT" })",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({ ID: $('#Main_POID').val(), No: $('#Main_TestNo').val(), TO: to, CC: cc }),
@@ -1217,7 +1525,7 @@
         var GroupNO;
         if ($('.DetailTable > tbody > tr').length > 0) {
             lastNO = parseInt($('.DetailTable > tbody > tr:last-child > td > input[type="hidden"] ').attr('idx')) + 1;
-            GroupNO = WaterFastnessGroupCheck($('.DetailTable>tbody>tr').length + 1);
+            GroupNO = PerspirationFastnessGroupCheck($('.DetailTable>tbody>tr').length + 1);
         }
         else {
             lastNO = 0;
@@ -1226,7 +1534,7 @@
 
         var POID = $('#Main_POID').val();
         $.ajax({
-            url: "@Url.Action("AddDetailRow", "WaterFastness", new { Area = "BulkFGT" })",
+            url: "@Url.Action("AddDetailRow", "PerspirationFastness", new { Area = "BulkFGT" })",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({ POID: POID, lastNO: lastNO, GroupNO: GroupNO }),
@@ -1253,15 +1561,24 @@
 
         var key = $(obj).parents('td').parents('tr').children('td').find("input[type='hidden']").attr('idx');
 
-        var resultChange = document.getElementById("Details_" + key + "__ResultChange").value;
-        var resultAcetate = document.getElementById("Details_" + key + "__ResultAcetate").value;
-        var resultCotton = document.getElementById("Details_" + key + "__ResultCotton").value;
-        var resultNylon = document.getElementById("Details_" + key + "__ResultNylon").value;
-        var resultPolyester = document.getElementById("Details_" + key + "__ResultPolyester").value;
-        var resultAcrylic = document.getElementById("Details_" + key + "__ResultAcrylic").value;
-        var resultWool = document.getElementById("Details_" + key + "__ResultWool").value;
+        var AlkalineresultChange = document.getElementById("Details_" + key + "__AlkalineResultChange").value;
+        var AlkalineresultAcetate = document.getElementById("Details_" + key + "__AlkalineResultAcetate").value;
+        var AlkalineresultCotton = document.getElementById("Details_" + key + "__AlkalineResultCotton").value;
+        var AlkalineresultNylon = document.getElementById("Details_" + key + "__AlkalineResultNylon").value;
+        var AlkalineresultPolyester = document.getElementById("Details_" + key + "__AlkalineResultPolyester").value;
+        var AlkalineresultAcrylic = document.getElementById("Details_" + key + "__AlkalineResultAcrylic").value;
+        var AlkalineresultWool = document.getElementById("Details_" + key + "__AlkalineResultWool").value;
 
-        if (resultChange == "Fail" || resultAcetate == "Fail" || resultCotton == "Fail" || resultNylon == "Fail" || resultPolyester == "Fail" || resultAcrylic == "Fail" || resultWool == "Fail") {
+        var AcidresultChange = document.getElementById("Details_" + key + "__AcidResultChange").value;
+        var AcidresultAcetate = document.getElementById("Details_" + key + "__AcidResultAcetate").value;
+        var AcidresultCotton = document.getElementById("Details_" + key + "__AcidResultCotton").value;
+        var AcidresultNylon = document.getElementById("Details_" + key + "__AcidResultNylon").value;
+        var AcidresultPolyester = document.getElementById("Details_" + key + "__AcidResultPolyester").value;
+        var AcidresultAcrylic = document.getElementById("Details_" + key + "__AcidResultAcrylic").value;
+        var AcidresultWool = document.getElementById("Details_" + key + "__AcidResultWool").value;
+
+
+        if (AlkalineresultChange == "Fail" || AlkalineresultAcetate == "Fail" || AlkalineresultCotton == "Fail" || AlkalineresultNylon == "Fail" || AlkalineresultPolyester == "Fail" || AlkalineresultAcrylic == "Fail" || AlkalineresultWool == "Fail" || AcidresultChange == "Fail" || AcidresultAcetate == "Fail" || AcidresultCotton == "Fail" || AcidresultNylon == "Fail" || AcidresultPolyester == "Fail" || AcidresultAcrylic == "Fail" || AcidresultWool == "Fail") {
             document.getElementById("Details_" + key + "__Result").value = 'Fail';
         }
         else {
@@ -1300,7 +1617,7 @@
         $('#Main_TestAfterPicture').val(data.AfterPicture.replace("data:image/png;base64,", ""));
     }
 
-    function WaterFastnessGroupCheck(value) {
+    function PerspirationFastnessGroupCheck(value) {
         if (parseInt(value) >= 99) {
             return 99;
         }
