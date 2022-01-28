@@ -165,98 +165,98 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "<td><input id='Details_" + i + "__ColorID' name='Details[" + i + "].ColorID' type='text' readonly='readonly'></td>"; // ColorID
             html += "<td><input  readonly='readonly'  id='Details_" + i + "__Result' name='Details[" + i + "].Result'  class='detailResultColor' type='text'></td>"; // Result
 
-            html += "<td><select id='Details_" + i + "__AlkalineChangeScale' name='Details[" + i + "].AlkalineChangeScale'>"; // ChangeScale
+            html += @"<td class=""Alkaline""><select id='Details_" + i + "__AlkalineChangeScale' name='Details[" + i + "].AlkalineChangeScale'>"; // ChangeScale
             foreach (string val in model.ScaleIDs)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select onchange='selectChange(this)' id='Details_" + i + "__AlkalineResultChange' name='Details[" + i + "].AlkalineResultChange' >"; // ResultAcetate
+            html += @"<td class=""Alkaline""><select onchange='selectChange(this)' class='blue' id='Details_" + i + "__AlkalineResultChange' name='Details[" + i + "].AlkalineResultChange' >"; // ResultAcetate
             foreach (string val in Results)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select id='Details_" + i + "__AlkalineAcetateScale' name='Details[" + i + "].AlkalineAcetateScale'>"; // AcetateScale
+            html += @"<td class=""Alkaline""><select id='Details_" + i + "__AlkalineAcetateScale' name='Details[" + i + "].AlkalineAcetateScale'>"; // AcetateScale
             foreach (string val in model.ScaleIDs)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select onchange='selectChange(this)' id='Details_" + i + "__AlkalineResultAcetate' name='Details[" + i + "].AlkalineResultAcetate' >"; // ResultAcetate
+            html += @"<td class=""Alkaline""><select onchange='selectChange(this)' class='blue' id='Details_" + i + "__AlkalineResultAcetate' name='Details[" + i + "].AlkalineResultAcetate' >"; // ResultAcetate
             foreach (string val in Results)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select id='Details_" + i + "__AlkalineCottonScale' name='Details[" + i + "].AlkalineCottonScale'>"; // CottonScale
+            html += @"<td class=""Alkaline""><select id='Details_" + i + "__AlkalineCottonScale' name='Details[" + i + "].AlkalineCottonScale'>"; // CottonScale
             foreach (string val in model.ScaleIDs)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select onchange='selectChange(this)' id='Details_" + i + "__AlkalineResultCotton' name='Details[" + i + "].AlkalineResultCotton' >"; // ResultCotton
+            html += @"<td class=""Alkaline""><select onchange='selectChange(this)' class='blue' id='Details_" + i + "__AlkalineResultCotton' name='Details[" + i + "].AlkalineResultCotton' >"; // ResultCotton
             foreach (string val in Results)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select id='Details_" + i + "__AlkalineNylonScale' name='Details[" + i + "].AlkalineNylonScale'>"; // NylonScale
+            html += @"<td class=""Alkaline""><select id='Details_" + i + "__AlkalineNylonScale' name='Details[" + i + "].AlkalineNylonScale'>"; // NylonScale
             foreach (string val in model.ScaleIDs)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select onchange='selectChange(this)' id='Details_" + i + "__AlkalineResultNylon' name='Details[" + i + "].AlkalineResultNylon' >"; // ResultNylon
+            html += @"<td class=""Alkaline""><select onchange='selectChange(this)' class='blue' id='Details_" + i + "__AlkalineResultNylon' name='Details[" + i + "].AlkalineResultNylon' >"; // ResultNylon
             foreach (string val in Results)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select id='Details_" + i + "__AlkalinePolyesterScale' name='Details[" + i + "].AlkalinePolyesterScale'>"; // PolyesterScale
+            html += @"<td class=""Alkaline""><select id='Details_" + i + "__AlkalinePolyesterScale' name='Details[" + i + "].AlkalinePolyesterScale'>"; // PolyesterScale
             foreach (string val in model.ScaleIDs)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select onchange='selectChange(this)' id='Details_" + i + "__AlkalineResultPolyester' name='Details[" + i + "].AlkalineResultPolyester' >"; // ResultPolyester
+            html += @"<td class=""Alkaline""><select onchange='selectChange(this)' class='blue' id='Details_" + i + "__AlkalineResultPolyester' name='Details[" + i + "].AlkalineResultPolyester' >"; // ResultPolyester
             foreach (string val in Results)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select id='Details_" + i + "__AlkalineAcrylicScale' name='Details[" + i + "].AlkalineAcrylicScale'>"; // AcrylicScale
+            html += @"<td class=""Alkaline""><select id='Details_" + i + "__AlkalineAcrylicScale' name='Details[" + i + "].AlkalineAcrylicScale'>"; // AcrylicScale
             foreach (string val in model.ScaleIDs)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select onchange='selectChange(this)' id='Details_" + i + "__AlkalineResultAcrylic' name='Details[" + i + "].AlkalineResultAcrylic' >"; // ResultAcrylic
+            html += @"<td class=""Alkaline""><select onchange='selectChange(this)' class='blue' id='Details_" + i + "__AlkalineResultAcrylic' name='Details[" + i + "].AlkalineResultAcrylic' >"; // ResultAcrylic
             foreach (string val in Results)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select id='Details_" + i + "__AlkalineWoolScale' name='Details[" + i + "].AlkalineWoolScale'>"; // WoolScale
+            html += @"<td class=""Alkaline""><select id='Details_" + i + "__AlkalineWoolScale' name='Details[" + i + "].AlkalineWoolScale'>"; // WoolScale
             foreach (string val in model.ScaleIDs)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select onchange='selectChange(this)' id='Details_" + i + "__AlkalineResultWool' name='Details[" + i + "].AlkalineResultWool' >"; // ResultWool
+            html += @"<td class=""Alkaline""><select onchange='selectChange(this)' class='blue' id='Details_" + i + "__AlkalineResultWool' name='Details[" + i + "].AlkalineResultWool' >"; // ResultWool
             foreach (string val in Results)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
@@ -264,98 +264,98 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "</select></td>";
 
 
-            html += "<td><select id='Details_" + i + "__AcidChangeScale' name='Details[" + i + "].AcidChangeScale'>"; // ChangeScale
+            html += @"<td class=""Acid""><select id='Details_" + i + "__AcidChangeScale' name='Details[" + i + "].AcidChangeScale'>"; // ChangeScale
             foreach (string val in model.ScaleIDs)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select onchange='selectChange(this)' id='Details_" + i + "__AcidResultChange' name='Details[" + i + "].AcidResultChange' >"; // ResultAcetate
+            html += @"<td class=""Acid""><select onchange='selectChange(this)' class='blue' id='Details_" + i + "__AcidResultChange' name='Details[" + i + "].AcidResultChange' >"; // ResultAcetate
             foreach (string val in Results)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select id='Details_" + i + "__AcidAcetateScale' name='Details[" + i + "].AcidAcetateScale'>"; // AcetateScale
+            html += @"<td class=""Acid""><select id='Details_" + i + "__AcidAcetateScale' name='Details[" + i + "].AcidAcetateScale'>"; // AcetateScale
             foreach (string val in model.ScaleIDs)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select onchange='selectChange(this)' id='Details_" + i + "__AcidResultAcetate' name='Details[" + i + "].AcidResultAcetate' >"; // ResultAcetate
+            html += @"<td class=""Acid""><select onchange='selectChange(this)' class='blue' id='Details_" + i + "__AcidResultAcetate' name='Details[" + i + "].AcidResultAcetate' >"; // ResultAcetate
             foreach (string val in Results)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select id='Details_" + i + "__AcidCottonScale' name='Details[" + i + "].AcidCottonScale'>"; // CottonScale
+            html += @"<td class=""Acid""><select id='Details_" + i + "__AcidCottonScale' name='Details[" + i + "].AcidCottonScale'>"; // CottonScale
             foreach (string val in model.ScaleIDs)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select onchange='selectChange(this)' id='Details_" + i + "__AcidResultCotton' name='Details[" + i + "].AcidResultCotton' >"; // ResultCotton
+            html += @"<td class=""Acid""><select onchange='selectChange(this)' class='blue' id='Details_" + i + "__AcidResultCotton' name='Details[" + i + "].AcidResultCotton' >"; // ResultCotton
             foreach (string val in Results)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select id='Details_" + i + "__AcidNylonScale' name='Details[" + i + "].AcidNylonScale'>"; // NylonScale
+            html += @"<td class=""Acid""><select id='Details_" + i + "__AcidNylonScale' name='Details[" + i + "].AcidNylonScale'>"; // NylonScale
             foreach (string val in model.ScaleIDs)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select onchange='selectChange(this)' id='Details_" + i + "__AcidResultNylon' name='Details[" + i + "].AcidResultNylon' >"; // ResultNylon
+            html += @"<td class=""Acid""><select onchange='selectChange(this)' class='blue' id='Details_" + i + "__AcidResultNylon' name='Details[" + i + "].AcidResultNylon' >"; // ResultNylon
             foreach (string val in Results)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select id='Details_" + i + "__AcidPolyesterScale' name='Details[" + i + "].AcidPolyesterScale'>"; // PolyesterScale
+            html += @"<td class=""Acid""><select id='Details_" + i + "__AcidPolyesterScale' name='Details[" + i + "].AcidPolyesterScale'>"; // PolyesterScale
             foreach (string val in model.ScaleIDs)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select onchange='selectChange(this)' id='Details_" + i + "__AcidResultPolyester' name='Details[" + i + "].AcidResultPolyester' >"; // ResultPolyester
+            html += @"<td class=""Acid""><select onchange='selectChange(this)' class='blue' id='Details_" + i + "__AcidResultPolyester' name='Details[" + i + "].AcidResultPolyester' >"; // ResultPolyester
             foreach (string val in Results)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select id='Details_" + i + "__AcidAcrylicScale' name='Details[" + i + "].AcidAcrylicScale'>"; // AcrylicScale
+            html += @"<td class=""Acid""><select id='Details_" + i + "__AcidAcrylicScale' name='Details[" + i + "].AcidAcrylicScale'>"; // AcrylicScale
             foreach (string val in model.ScaleIDs)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select onchange='selectChange(this)' id='Details_" + i + "__AcidResultAcrylic' name='Details[" + i + "].AcidResultAcrylic' >"; // ResultAcrylic
+            html += @"<td class=""Acid""><select onchange='selectChange(this)' class='blue' id='Details_" + i + "__AcidResultAcrylic' name='Details[" + i + "].AcidResultAcrylic' >"; // ResultAcrylic
             foreach (string val in Results)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select id='Details_" + i + "__AcidWoolScale' name='Details[" + i + "].AcidWoolScale'>"; // WoolScale
+            html += @"<td class=""Acid""><select id='Details_" + i + "__AcidWoolScale' name='Details[" + i + "].AcidWoolScale'>"; // WoolScale
             foreach (string val in model.ScaleIDs)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select onchange='selectChange(this)' id='Details_" + i + "__AcidResultWool' name='Details[" + i + "].AcidResultWool' >"; // ResultWool
+            html += @"<td class=""Acid""><select onchange='selectChange(this)' class='blue' id='Details_" + i + "__AcidResultWool' name='Details[" + i + "].AcidResultWool' >"; // ResultWool
             foreach (string val in Results)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
