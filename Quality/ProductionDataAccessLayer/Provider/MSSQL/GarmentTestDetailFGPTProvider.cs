@@ -78,11 +78,11 @@ select
 ,[LocationText]= CASE WHEN Location='B' THEN 'Bottom'
 						WHEN Location='T' THEN 'Top'
 						WHEN Location='S' THEN 'Top+Bottom'
-						ELSE ''
+						ELSE Location
 					END
 ,[Type] = IIF(t.TypeSelection_VersionID > 0, Replace(t.type, '{0}', ts.Code), t.type)
 ,[TypeOri] = t.type
-,[TestName] = PMS_FGPT_TestName.Description
+,[TestName] = ISNULL(PMS_FGPT_TestName.Description, t.TestName)
 ,[TestDetail]
 ,[Criteria]
 ,[TestResult]
@@ -95,6 +95,7 @@ select
   WHEN  t.TestUnit = 'Pass/Fail'  THEN t.[TestResult]
    ELSE ''
 END
+,t.IsOriginal
 from GarmentTest_Detail_FGPT t WITH(NOLOCK)
 left join TypeSelection ts WITH(NOLOCK) on ts.VersionID = t.TypeSelection_VersionID 
         and ts.Seq = t.TypeSelection_Seq

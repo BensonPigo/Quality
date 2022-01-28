@@ -102,7 +102,7 @@
     }
 
     .bigSize {
-        width: 3em; 
+        width: 3em;
         height: 2em;
     }
 
@@ -283,7 +283,7 @@
                                             <td>@Html.TextBoxFor(o => Model.Detail.LOtoFactory, "", "")</td>
                                             <td><h4>Non 450</h4></td>
                                             <td>
-                                                @Html.CheckBoxFor(o => o.Detail.NonSeamBreakageTest, new { @class= "bigSize" })
+                                                @Html.CheckBoxFor(o => o.Detail.NonSeamBreakageTest, new { @class = "bigSize" })
                                             </td>
                                             <td></td>
                                             <td></td>
@@ -421,7 +421,7 @@
                                         {
                                             <tr>
                                                 <td>
-                                                    @Html.TextBoxFor(o => Model.Shrinkages[i].Location, new { @readonly = "readonly", @style="width:6vw;" })
+                                                    @Html.TextBoxFor(o => Model.Shrinkages[i].Location, new { @readonly = "readonly", @style = "width:6vw;" })
                                                     @Html.HiddenFor(o => Model.Shrinkages[i].ID)
                                                     @Html.HiddenFor(o => Model.Shrinkages[i].No)
                                                 </td>
@@ -569,7 +569,7 @@
                                                 <td>
                                                     @if (showClass)
                                                     {
-                                                        <img src="~/Image/Icon/List.png" width="30" idx="@Model.Apperance[i].Seq" class="AppearanceList" style="cursor:pointer;"/>
+                                                        <img src="~/Image/Icon/List.png" width="30" idx="@Model.Apperance[i].Seq" class="AppearanceList" style="cursor:pointer;" />
                                                     }
                                                 </td>
                                                 <td>
@@ -725,12 +725,14 @@
                                         <th><h4>Test Result</h4></th>
                                         <th><h4>Test Detail</h4></th>
                                         <th><h4>Result</h4></th>
+                                        <th><h4>Action</h4></th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @for (int i = 0; i <= Model.FGPT.Count - 1; i++)
                                     {
                                         string Location = Model.FGPT[i].Location;
+                                        bool canEdit = Model.FGPT[i].IsOriginal;
                                         switch (Model.FGPT[i].Location)
                                         {
                                             case "T":
@@ -754,8 +756,9 @@
                                                 @Html.HiddenFor(o => Model.FGPT[i].Seq)
                                                 @Html.HiddenFor(o => Model.FGPT[i].TypeSelection_VersionID)
                                                 @Html.HiddenFor(o => Model.FGPT[i].TestName)
+                                                @Html.HiddenFor(o => Model.FGPT[i].Criteria)
                                                 @Html.TextBoxFor(o => Model.FGPT[i].Type, new { @readonly = "readonly", @class = "display-None txtFGPTType" })
-                                                @Html.HiddenFor(o => Model.FGPT[i].TypeSelection_Seq, new { @class = "TypeSelection_Seq" })                                                
+                                                @Html.HiddenFor(o => Model.FGPT[i].TypeSelection_Seq, new { @class = "TypeSelection_Seq" })
                                             </td>
                                             <td>
                                                 @Html.DisplayFor(o => Model.FGPT[i].TestName)
@@ -810,9 +813,21 @@
                                             <td class="@FGPTFontColor">
                                                 @FGPTVal
                                             </td>
+                                            <td>
+                                                @if (canEdit)
+                                                {
+                                                    <img src="~/Image/Icon/Delete.png" width="30" class="FgptDelete" idx="@i" style="cursor:pointer;" />
+                                                }
+                                            </td>
                                         </tr>
                                     }
 
+                                    <tr>
+                                        <td colspan="7">
+
+                                            <button id="btnNewFgptItem" class="btn btn-blue" style="text-shadow:none;">New Item</button>
+                                        </td>
+                                    </tr>
                                     @if (Model.FGPT.Count == 0)
                                     {
                                         <tr>
@@ -832,6 +847,57 @@
                 }
             </div>
         </div>
+    </div>
+</div>
+
+<!--Detail彈跳視窗-->
+<div class="detail-dialog to-edit-detail" title="New Item">
+    <div class="detail-dialog-content dialog-content-w-icon" style="height:35vh">
+        <form class="page-display-form nr-form" style="width:80%;padding:0;">
+            <div class="form-item" style="height: 100%;padding-top:8vh;">
+                <table style="border: 1px solid gray;font-size: 1vw;width: 100%;height: 10vh;text-align: center;background-color: transparent;color: white;">
+                    <tr>
+                        <td style="width:10vw;border: 1px solid gray;height: 5vh;font-size: 2vh;background-color:#696868;vertical-align: middle;">
+                            <label>Location</label>
+                        </td>
+                        <td style="border: 1px solid gray;font-size: 2vh;vertical-align: middle;">
+                            <input tpye="text" id="NewLocation"  maxlength="20" value="" />
+                        </td>
+                        <td style="width:10vw;border: 1px solid gray;font-size: 2vh;background-color:#696868;vertical-align: middle;">
+                            <label>Test Name</label>
+                        </td>
+                        <td style=" border: 1px solid gray;font-size: 2vh;vertical-align: middle;">
+                            <input tpye="text" id="NewTestName" maxlength="30" value=""  />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width:10vw;border: 1px solid gray;height: 5vh;font-size: 2vh;background-color:#696868;vertical-align: middle;">
+                            <label>Type</label>
+                        </td>
+                        <td style=" border: 1px solid gray;font-size: 2vh;vertical-align: middle;" colspan="3">
+                            <input tpye="text" id="NewType" maxlength="300" value="" style=" width: 43.3vw;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width:10vw;border: 1px solid gray;height: 5vh;font-size: 2vh;background-color:#696868;vertical-align: middle;">
+                            <label>Criteria</label>
+                        </td>
+                        <td style=" border: 1px solid gray;font-size: 2vh;vertical-align: middle;">
+
+                            <input type="number" id="NewCriteria" value="" />
+                        </td>
+
+                        <td style="width:10vw;border: 1px solid gray;height: 5vh;font-size: 2vh;background-color:#696868;vertical-align: middle;">
+                            <label>TestUnit</label>
+                        </td>
+                        <td style=" border: 1px solid gray;font-size: 2vh;vertical-align: middle;">
+                            @Html.DropDownList("NewTestUnit", Model.TestUnit_Source)
+                        </td>
+                    </tr>
+                </table>
+                <br />
+            </div>
+        </form>
     </div>
 </div>
 
@@ -859,7 +925,166 @@
         else if ('@Model.Result' == 'True') {
              msg.WithSuccess('Success');
         }
+
+        $("#btnNewFgptItem").click(function () {
+            event.preventDefault();
+
+            if (EditMode == false) {
+                AddFgptItem();
+            }
+
+        });
+
+        $(".FgptDelete").click(function () {
+
+            if (EditMode == false) {
+                DeleteFgptItem(this);
+            }
+
+        });
+
+
+        $(".detail-dialog").dialog({
+            autoOpen: false,
+            modal: true,
+            closeText: ' ',
+            width: 500,
+            minHeight: 400,
+            position: {
+                my: "center top",
+                at: "center top",
+                of: window
+            },
+            dialogClass: "site-box",
+            open: function (event, ui) {
+                $('.ui-widget-overlay').bind('click', function () {
+                    //location.reload();//強制Refresh頁面 Benson
+                    $(".ui-dialog-content").dialog('close');
+                });
+                $(this).parent().siblings().find(".ui-dialog-content").dialog('close');
+
+            },
+            close: function () {
+            },
+        });
+
     });
+
+    function AddFgptItem() {
+        $(".to-edit-detail").dialog({
+            width: "70%",
+            dialogClass: "add-contact-box",
+            buttons: {
+                "1": {
+                    text: 'Import',
+                    click: function (btn, obj) {
+
+                        if (EditMode == false) {
+                            var ID = '@Model.Detail.ID';
+                            var No = '@Model.Detail.No';
+                            var Location = $("#NewLocation").val();
+                            var Type = $("#NewType").val();
+                            var TestName = $("#NewTestName").val();
+                            var Criteria = $("#NewCriteria").val();
+                            var TestUnit = $("#NewTestUnit").val();
+
+                            $.ajax({
+                                url: "@Url.Action("ImportNewItem", "GarmentTest", new { Area = "BulkFGT" })",
+                                type: 'POST',
+                                contentType: "application/json; charset=utf-8",
+                                data: JSON.stringify({
+                                    ID: ID,
+                                    No: No,
+                                    Location: Location,
+                                    Type: Type,
+                                    TestName: TestName,
+                                    Criteria: Criteria,
+                                    TestUnit: TestUnit,
+
+                                }),
+                                async: false,
+                                success: function (data) {
+                                    if (data.SaveResult) {
+                                        msg.WithSuccesCheck("Success", function () {
+                                            location.reload();
+                                        });
+                                    }
+                                    else {
+                                        msg.WithError(data.ErrMsg);
+                                    }
+                                },
+                                error: function (xhr, ajaxOptions, thrownError) {
+                                    console.log(xhr.responseText);
+                                }
+                            });
+
+                        }
+
+                    },
+                    "class": "site-btn btn-red btn-lg",
+                    "ID": "dialogEdit"
+                },
+                "2": {
+                    text: 'Exit',
+                    click: function () {
+                        $(this).dialog("close");
+                    }
+                    , "class": "site-btn btn-gy btn-lg"
+                },
+            },
+        });
+        $(".to-edit-detail").dialog("open");
+        $(".to-edit-detail").on("dialogclose", function (event, ui) {
+            EditMode = false;
+
+            //對話窗關閉，Table的內容要清除
+            $("#moduleTable tbody").remove();
+        });
+    }
+
+
+    function DeleteFgptItem(self) {
+
+        // 取得那一列的值
+        var idx = $(self).attr('idx');
+
+
+        var ID = $(`#FGPT_${idx}__ID`).val();
+        var No = $(`#FGPT_${idx}__No`).val();
+        var Location = $(`#FGPT_${idx}__Location`).val();
+        var TestName = $(`#FGPT_${idx}__TestName`).val();
+        var Type = $(`#FGPT_${idx}__Type`).val();
+        var Seq = $(`#FGPT_${idx}__Seq`).val();
+
+        $.ajax({
+            url: "@Url.Action("DeleteOriginalItem", "GarmentTest", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({
+                ID: ID,
+                No: No,
+                Location: Location,
+                Type: Type,
+                TestName: TestName,
+                Seq: Seq,
+
+            }),
+            async: false,
+            success: function (data) {
+                if (data.SaveResult) {
+                    msg.WithSuccesCheck("Success", function () {
+                        location.reload();
+                    });
+                }
+                else {
+                    msg.WithError(data.ErrMsg);
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
 
     function IsEditModeChange() {
         EditModeButtionBind();
@@ -871,6 +1096,7 @@
 
             $('.DataTable input, .DataTable select').removeAttr("disabled");
             $('.AppearanceList, .FGPTList').removeClass('display-None');
+            $('.FgptDelete').addClass('display-None');
         }
         else {
             $("#Report").addClass("IsEditMode");
@@ -890,6 +1116,7 @@
 
             $('.DataTable input, .DataTable select').attr("disabled", "disabled");
             $('.AppearanceList, .FGPTList').addClass('display-None');
+            $('.FgptDelete').removeClass('display-None');
         }
 
         $('#Picture').addClass("IsEditMode");

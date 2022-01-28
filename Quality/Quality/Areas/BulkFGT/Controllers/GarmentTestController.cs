@@ -292,6 +292,61 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        public ActionResult ImportNewItem(GarmentTest_Detail_FGPT_ViewModel newItem)
+        {
+            switch (newItem.Location)
+            {
+                case "Top":
+                    newItem.Location = "T";
+                    break;
+                case "Bottom":
+                    newItem.Location = "B";
+                    break;
+                case "Top+Bottom":
+                    newItem.Location = "S";
+                    break;
+                default:
+                    break;
+            }
+            // 避免超出欄位限制
+            if (newItem.Location.Length > 20)
+            {
+                newItem.Location = newItem.Location.Substring(0, 20);
+            }
+
+            if (newItem.TestName.Length > 30)
+            {
+                newItem.TestName = newItem.TestName.Substring(0, 30);
+            }
+
+            if (newItem.Type.Length > 300)
+            {
+                newItem.Type = newItem.Type.Substring(0, 300);
+            }
+
+            if (newItem.TestUnit == "mm")
+            {
+                newItem.Criteria = 4;
+            }
+            if (newItem.TestUnit.ToLower() == "pass/fail")
+            {
+                newItem.Criteria = null;
+            }
+
+            GarmentTest_ViewModel Detail_Result = _GarmentTest_Service.Import_FGPT_Item(newItem);
+
+            return Json(new { Detail_Result.SaveResult, Detail_Result.ErrMsg });
+        }
+
+        public ActionResult DeleteOriginalItem(GarmentTest_Detail_FGPT_ViewModel newItem)
+        {
+            GarmentTest_ViewModel Detail_Result = _GarmentTest_Service.Delete_Original_FGPT_Item(newItem);
+
+            return Json(new { Detail_Result.SaveResult, Detail_Result.ErrMsg });
+        }
+
+
+        [HttpPost]
         public ActionResult DetailSave(GarmentTest_Detail_Result result)
         {
             result.Detail.LineDry = false;
