@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Mvc;
 
 namespace DatabaseObject.ResultModel
 {
@@ -42,6 +43,19 @@ namespace DatabaseObject.ResultModel
         public List<GarmentTest_Detail_FGWT_ViewModel> FGWT { get; set; }
 
         public List<GarmentTest_Detail_FGPT_ViewModel> FGPT { get; set; }
+        public List<SelectListItem> TestUnit_Source
+        { 
+            get 
+            {
+
+                return new List<SelectListItem>() {
+                    new SelectListItem() { Text="N",Value="N"} ,
+                    new SelectListItem() { Text="mm",Value="mm"} ,
+                    new SelectListItem() { Text="pass/fail",Value="pass/fail"} ,
+                };
+            } 
+            set { } 
+        }
 
         public bool? Result { get; set; }
 

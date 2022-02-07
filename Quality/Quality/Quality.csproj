@@ -188,6 +188,8 @@
     <Compile Include="Areas\BulkFGT\Controllers\MockupWashController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\PullingTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\SearchListController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\PerspirationFastnessController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\WaterFastnessController.cs" />
     <Compile Include="Areas\FinalInspection\Controllers\InspectionController.cs" />
     <Compile Include="Areas\FinalInspection\Controllers\QueryController.cs" />
     <Compile Include="Areas\FinalInspection\FinalInspectionAreaRegistration.cs" />
@@ -390,6 +392,10 @@
     <Content Include="Areas\StyleManagement\Views\StyleResult\_Tab1_Layout.cshtml" />
     <Content Include="Areas\SampleRFT\Views\InspectionDefectList\Index.cshtml" />
     <Content Include="Areas\StyleManagement\Views\ExceptionFD\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\WaterFastness\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\WaterFastness\Detail.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\PerspirationFastness\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\PerspirationFastness\Detail.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -889,6 +895,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="XLT\AccessoryWashTest.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\WaterFastness_ToExcel.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\PerspirationFastness_ToExcel.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

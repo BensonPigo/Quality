@@ -80,114 +80,6 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 
             return ExecuteList<Brand>(CommandType.Text, SbSql.ToString(), objParameter);
         }
-		/*建立Brand(Create) 詳細敘述如下*/
-        /// <summary>
-        /// 建立Brand
-        /// </summary>
-        /// <param name="Item">Brand成員</param>
-        /// <returns>回傳異動筆數</returns>
-		/// <info>Author: Admin; Date: 2021/08/10  </info>
-        /// <history>
-        /// xx.  YYYY/MM/DD   Ver   Author      Comments
-        /// ===  ==========  ====  ==========  ==========
-        /// 01.  2021/08/10  1.00    Admin        Create
-        /// </history>
-        public int Create(Brand Item)
-        {
-            StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append("INSERT INTO [Brand]"+ Environment.NewLine);
-            SbSql.Append("(" + Environment.NewLine);
-            SbSql.Append("         ID"+ Environment.NewLine);
-            SbSql.Append("        ,NameCH"+ Environment.NewLine);
-            SbSql.Append("        ,NameEN"+ Environment.NewLine);
-            SbSql.Append("        ,CountryID"+ Environment.NewLine);
-            SbSql.Append("        ,BuyerID"+ Environment.NewLine);
-            SbSql.Append("        ,Tel"+ Environment.NewLine);
-            SbSql.Append("        ,Fax"+ Environment.NewLine);
-            SbSql.Append("        ,Contact1"+ Environment.NewLine);
-            SbSql.Append("        ,Contact2"+ Environment.NewLine);
-            SbSql.Append("        ,AddressCH"+ Environment.NewLine);
-            SbSql.Append("        ,AddressEN"+ Environment.NewLine);
-            SbSql.Append("        ,CurrencyID"+ Environment.NewLine);
-            SbSql.Append("        ,Remark"+ Environment.NewLine);
-            SbSql.Append("        ,Customize1"+ Environment.NewLine);
-            SbSql.Append("        ,Customize2"+ Environment.NewLine);
-            SbSql.Append("        ,Customize3"+ Environment.NewLine);
-            SbSql.Append("        ,Commission"+ Environment.NewLine);
-            SbSql.Append("        ,ZipCode"+ Environment.NewLine);
-            SbSql.Append("        ,Email"+ Environment.NewLine);
-            SbSql.Append("        ,MrTeam"+ Environment.NewLine);
-            SbSql.Append("        ,BrandGroup"+ Environment.NewLine);
-            SbSql.Append("        ,ApparelXlt"+ Environment.NewLine);
-            SbSql.Append("        ,LossSampleFabric"+ Environment.NewLine);
-            SbSql.Append("        ,PayTermARIDBulk"+ Environment.NewLine);
-            SbSql.Append("        ,PayTermARIDSample"+ Environment.NewLine);
-            SbSql.Append("        ,BrandFactoryAreaCaption"+ Environment.NewLine);
-            SbSql.Append("        ,BrandFactoryCodeCaption"+ Environment.NewLine);
-            SbSql.Append("        ,BrandFactoryVendorCaption"+ Environment.NewLine);
-            SbSql.Append("        ,ShipCode"+ Environment.NewLine);
-            SbSql.Append("        ,Junk"+ Environment.NewLine);
-            SbSql.Append("        ,AddName"+ Environment.NewLine);
-            SbSql.Append("        ,AddDate"+ Environment.NewLine);
-            SbSql.Append("        ,EditName"+ Environment.NewLine);
-            SbSql.Append("        ,EditDate"+ Environment.NewLine);
-            SbSql.Append("        ,LossSampleAccessory"+ Environment.NewLine);
-            SbSql.Append("        ,ShipLeader"+ Environment.NewLine);
-            SbSql.Append("        ,ShipLeaderEditDate"+ Environment.NewLine);
-            SbSql.Append("        ,OTDExtension"+ Environment.NewLine);
-            SbSql.Append("        ,UseRatioRule"+ Environment.NewLine);
-            SbSql.Append("        ,UseRatioRule_Thick"+ Environment.NewLine);
-            SbSql.Append(")"+ Environment.NewLine);
-            SbSql.Append("VALUES"+ Environment.NewLine);
-            SbSql.Append("(" + Environment.NewLine);
-            SbSql.Append("         @ID"); objParameter.Add("@ID", DbType.String, Item.ID);
-            SbSql.Append("        ,@NameCH"); objParameter.Add("@NameCH", DbType.String, Item.NameCH);
-            SbSql.Append("        ,@NameEN"); objParameter.Add("@NameEN", DbType.String, Item.NameEN);
-            SbSql.Append("        ,@CountryID"); objParameter.Add("@CountryID", DbType.String, Item.CountryID);
-            SbSql.Append("        ,@BuyerID"); objParameter.Add("@BuyerID", DbType.String, Item.BuyerID);
-            SbSql.Append("        ,@Tel"); objParameter.Add("@Tel", DbType.String, Item.Tel);
-            SbSql.Append("        ,@Fax"); objParameter.Add("@Fax", DbType.String, Item.Fax);
-            SbSql.Append("        ,@Contact1"); objParameter.Add("@Contact1", DbType.String, Item.Contact1);
-            SbSql.Append("        ,@Contact2"); objParameter.Add("@Contact2", DbType.String, Item.Contact2);
-            SbSql.Append("        ,@AddressCH"); objParameter.Add("@AddressCH", DbType.String, Item.AddressCH);
-            SbSql.Append("        ,@AddressEN"); objParameter.Add("@AddressEN", DbType.String, Item.AddressEN);
-            SbSql.Append("        ,@CurrencyID"); objParameter.Add("@CurrencyID", DbType.String, Item.CurrencyID);
-            SbSql.Append("        ,@Remark"); objParameter.Add("@Remark", DbType.String, Item.Remark);
-            SbSql.Append("        ,@Customize1"); objParameter.Add("@Customize1", DbType.String, Item.Customize1);
-            SbSql.Append("        ,@Customize2"); objParameter.Add("@Customize2", DbType.String, Item.Customize2);
-            SbSql.Append("        ,@Customize3"); objParameter.Add("@Customize3", DbType.String, Item.Customize3);
-            SbSql.Append("        ,@Commission"); objParameter.Add("@Commission", DbType.String, Item.Commission);
-            SbSql.Append("        ,@ZipCode"); objParameter.Add("@ZipCode", DbType.String, Item.ZipCode);
-            SbSql.Append("        ,@Email"); objParameter.Add("@Email", DbType.String, Item.Email);
-            SbSql.Append("        ,@MrTeam"); objParameter.Add("@MrTeam", DbType.String, Item.MrTeam);
-            SbSql.Append("        ,@BrandGroup"); objParameter.Add("@BrandGroup", DbType.String, Item.BrandGroup);
-            SbSql.Append("        ,@ApparelXlt"); objParameter.Add("@ApparelXlt", DbType.String, Item.ApparelXlt);
-            SbSql.Append("        ,@LossSampleFabric"); objParameter.Add("@LossSampleFabric", DbType.String, Item.LossSampleFabric);
-            SbSql.Append("        ,@PayTermARIDBulk"); objParameter.Add("@PayTermARIDBulk", DbType.String, Item.PayTermARIDBulk);
-            SbSql.Append("        ,@PayTermARIDSample"); objParameter.Add("@PayTermARIDSample", DbType.String, Item.PayTermARIDSample);
-            SbSql.Append("        ,@BrandFactoryAreaCaption"); objParameter.Add("@BrandFactoryAreaCaption", DbType.String, Item.BrandFactoryAreaCaption);
-            SbSql.Append("        ,@BrandFactoryCodeCaption"); objParameter.Add("@BrandFactoryCodeCaption", DbType.String, Item.BrandFactoryCodeCaption);
-            SbSql.Append("        ,@BrandFactoryVendorCaption"); objParameter.Add("@BrandFactoryVendorCaption", DbType.String, Item.BrandFactoryVendorCaption);
-            SbSql.Append("        ,@ShipCode"); objParameter.Add("@ShipCode", DbType.String, Item.ShipCode);
-            SbSql.Append("        ,@Junk"); objParameter.Add("@Junk", DbType.String, Item.Junk);
-            SbSql.Append("        ,@AddName"); objParameter.Add("@AddName", DbType.String, Item.AddName);
-            SbSql.Append("        ,@AddDate"); objParameter.Add("@AddDate", DbType.DateTime, Item.AddDate);
-            SbSql.Append("        ,@EditName"); objParameter.Add("@EditName", DbType.String, Item.EditName);
-            SbSql.Append("        ,@EditDate"); objParameter.Add("@EditDate", DbType.DateTime, Item.EditDate);
-            SbSql.Append("        ,@LossSampleAccessory"); objParameter.Add("@LossSampleAccessory", DbType.String, Item.LossSampleAccessory);
-            SbSql.Append("        ,@ShipLeader"); objParameter.Add("@ShipLeader", DbType.String, Item.ShipLeader);
-            SbSql.Append("        ,@ShipLeaderEditDate"); objParameter.Add("@ShipLeaderEditDate", DbType.DateTime, Item.ShipLeaderEditDate);
-            SbSql.Append("        ,@OTDExtension"); objParameter.Add("@OTDExtension", DbType.Int32, Item.OTDExtension);
-            SbSql.Append("        ,@UseRatioRule"); objParameter.Add("@UseRatioRule", DbType.String, Item.UseRatioRule);
-            SbSql.Append("        ,@UseRatioRule_Thick"); objParameter.Add("@UseRatioRule_Thick", DbType.String, Item.UseRatioRule_Thick);
-            SbSql.Append(")"+ Environment.NewLine);
-
-
-
-
-            return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
-        }
 		/*更新Brand(Update) 詳細敘述如下*/
         /// <summary>
         /// 更新Brand
@@ -218,7 +110,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             if (Item.AddressCH != null) { SbSql.Append(",AddressCH=@AddressCH"+ Environment.NewLine); objParameter.Add("@AddressCH", DbType.String, Item.AddressCH);}
             if (Item.AddressEN != null) { SbSql.Append(",AddressEN=@AddressEN"+ Environment.NewLine); objParameter.Add("@AddressEN", DbType.String, Item.AddressEN);}
             if (Item.CurrencyID != null) { SbSql.Append(",CurrencyID=@CurrencyID"+ Environment.NewLine); objParameter.Add("@CurrencyID", DbType.String, Item.CurrencyID);}
-            if (Item.Remark != null) { SbSql.Append(",Remark=@Remark"+ Environment.NewLine); objParameter.Add("@Remark", DbType.String, Item.Remark);}
+            if (Item.Remark != null) { SbSql.Append(",Remark=@Remark"+ Environment.NewLine); objParameter.Add("@Remark", DbType.String, Item.Remark ?? "");}
             if (Item.Customize1 != null) { SbSql.Append(",Customize1=@Customize1"+ Environment.NewLine); objParameter.Add("@Customize1", DbType.String, Item.Customize1);}
             if (Item.Customize2 != null) { SbSql.Append(",Customize2=@Customize2"+ Environment.NewLine); objParameter.Add("@Customize2", DbType.String, Item.Customize2);}
             if (Item.Customize3 != null) { SbSql.Append(",Customize3=@Customize3"+ Environment.NewLine); objParameter.Add("@Customize3", DbType.String, Item.Customize3);}

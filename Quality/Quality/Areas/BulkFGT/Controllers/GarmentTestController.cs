@@ -25,6 +25,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         private List<string> Washs = new List<string>() { "N/A", "Accepted", "Rejected" };
         private List<string> TestResultPass = new List<string>() { "Pass", "Fail" };
         private List<string> TestResultmm = new List<string>()  { "<=4", ">4" };
+        private List<string> MetalContents = new List<string>() { "None", "Metail Printing", "Metal Thread" };
         public GarmentTestController()
         {
             _GarmentTest_Service = new GarmentTest_Service();
@@ -261,6 +262,8 @@ namespace Quality.Areas.BulkFGT.Controllers
             List<SelectListItem> WashList = new SetListItem().ItemListBinding(Washs);
             List<SelectListItem> TestResultPassList = new SetListItem().ItemListBinding(TestResultPass);
             List<SelectListItem> TestResultmmList = new SetListItem().ItemListBinding(TestResultmm);
+            List<SelectListItem> MetalContentList = new SetListItem().ItemListBinding(MetalContents);
+            
 
             GarmentTest_Detail_Result Detail_Result = _GarmentTest_Service.Get_All_Detail(ID, No);
             if (TempData["Model"] != null)
@@ -287,9 +290,65 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.ScaleList = ScaleList;
             ViewBag.TestResultPassList = TestResultPassList;
             ViewBag.TestResultmmList = TestResultmmList;
+            ViewBag.MetalContentList = MetalContentList;
             ViewBag.FactoryID = this.FactoryID;
             return View(Detail_Result);
         }
+
+        [HttpPost]
+        public ActionResult ImportNewItem(GarmentTest_Detail_FGPT_ViewModel newItem)
+        {
+            switch (newItem.Location)
+            {
+                case "Top":
+                    newItem.Location = "T";
+                    break;
+                case "Bottom":
+                    newItem.Location = "B";
+                    break;
+                case "Top+Bottom":
+                    newItem.Location = "S";
+                    break;
+                default:
+                    break;
+            }
+            // 避免超出欄位限制
+            if (newItem.Location.Length > 20)
+            {
+                newItem.Location = newItem.Location.Substring(0, 20);
+            }
+
+            if (newItem.TestName.Length > 30)
+            {
+                newItem.TestName = newItem.TestName.Substring(0, 30);
+            }
+
+            if (newItem.Type.Length > 300)
+            {
+                newItem.Type = newItem.Type.Substring(0, 300);
+            }
+
+            if (newItem.TestUnit == "mm")
+            {
+                newItem.Criteria = 4;
+            }
+            if (newItem.TestUnit.ToLower() == "pass/fail")
+            {
+                newItem.Criteria = null;
+            }
+
+            GarmentTest_ViewModel Detail_Result = _GarmentTest_Service.Import_FGPT_Item(newItem);
+
+            return Json(new { Detail_Result.SaveResult, Detail_Result.ErrMsg });
+        }
+
+        public ActionResult DeleteOriginalItem(GarmentTest_Detail_FGPT_ViewModel newItem)
+        {
+            GarmentTest_ViewModel Detail_Result = _GarmentTest_Service.Delete_Original_FGPT_Item(newItem);
+
+            return Json(new { Detail_Result.SaveResult, Detail_Result.ErrMsg });
+        }
+
 
         [HttpPost]
         public ActionResult DetailSave(GarmentTest_Detail_Result result)
@@ -340,6 +399,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             Detail_Result.ErrMsg = saveresult.ErrMsg;
 
             List<SelectListItem> TemperatureList = new SetListItem().ItemListBinding(Temperatures);
+            List<SelectListItem> MetalContentList = new SetListItem().ItemListBinding(MetalContents);
             List<SelectListItem> MachineList = new SetListItem().ItemListBinding(Machines);
             List<SelectListItem> NeckList = new SetListItem().ItemListBinding(Necks);
             List<SelectListItem> WashList = new SetListItem().ItemListBinding(Washs);
@@ -353,6 +413,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.ScaleList = ScaleList;
             ViewBag.TestResultPassList = TestResultPassList;
             ViewBag.TestResultmmList = TestResultmmList;
+            ViewBag.MetalContentList = MetalContentList;
             ViewBag.FactoryID = this.FactoryID;
 
             return View("Detail", Detail_Result);

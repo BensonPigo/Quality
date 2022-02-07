@@ -141,6 +141,8 @@
     <Compile Include="Service\BulkFGT\MockupCrockingService.cs" />
     <Compile Include="Service\BulkFGT\PullingTestService.cs" />
     <Compile Include="Service\BulkFGT\SearchListService.cs" />
+    <Compile Include="Service\BulkFGT\PerspirationFastnessService.cs" />
+    <Compile Include="Service\BulkFGT\WaterFastnessService.cs" />
     <Compile Include="Service\FinalInspection\FinalInspectionOthersService.cs" />
     <Compile Include="Service\FinalInspection\FinalInspectionMeasurementService.cs" />
     <Compile Include="Service\FinalInspection\FinalInspectionMoistureService.cs" />

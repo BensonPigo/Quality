@@ -128,6 +128,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 result.Result = r > 0;
                 _AccessoryOvenWashProvider.Update_Oven_AllResult(Req);
+                _AccessoryOvenWashProvider.UpdateInspPercent(Req.POID);
 
                 _ISQLDataTransaction.Commit();
             }
@@ -384,6 +385,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 result.Result = r > 0;
                 _AccessoryOvenWashProvider.Update_Wash_AllResult(Req);
+                _AccessoryOvenWashProvider.UpdateInspPercent(Req.POID);
 
                 _ISQLDataTransaction.Commit();
             }

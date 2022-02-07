@@ -59,72 +59,6 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 
             return ExecuteList<FIR_Laboratory_Crocking>(CommandType.Text, SbSql.ToString(), objParameter);
         }
-		/*建立Laboratory - Shade bone Inspection(Create) 詳細敘述如下*/
-        /// <summary>
-        /// 建立Laboratory - Shade bone Inspection
-        /// </summary>
-        /// <param name="Item">Laboratory - Shade bone Inspection成員</param>
-        /// <returns>回傳異動筆數</returns>
-		/// <info>Author: Admin; Date: 2021/08/25  </info>
-        /// <history>
-        /// xx.  YYYY/MM/DD   Ver   Author      Comments
-        /// ===  ==========  ====  ==========  ==========
-        /// 01.  2021/08/25  1.00    Admin        Create
-        /// </history>
-        public int Create(FIR_Laboratory_Crocking Item)
-        {
-            StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append("INSERT INTO [FIR_Laboratory_Crocking]"+ Environment.NewLine);
-            SbSql.Append("(" + Environment.NewLine);
-            SbSql.Append("         ID"+ Environment.NewLine);
-            SbSql.Append("        ,Roll"+ Environment.NewLine);
-            SbSql.Append("        ,Dyelot"+ Environment.NewLine);
-            SbSql.Append("        ,DryScale"+ Environment.NewLine);
-            SbSql.Append("        ,WetScale"+ Environment.NewLine);
-            SbSql.Append("        ,Inspdate"+ Environment.NewLine);
-            SbSql.Append("        ,Inspector"+ Environment.NewLine);
-            SbSql.Append("        ,Result"+ Environment.NewLine);
-            SbSql.Append("        ,Remark"+ Environment.NewLine);
-            SbSql.Append("        ,AddName"+ Environment.NewLine);
-            SbSql.Append("        ,AddDate"+ Environment.NewLine);
-            SbSql.Append("        ,EditName"+ Environment.NewLine);
-            SbSql.Append("        ,EditDate"+ Environment.NewLine);
-            SbSql.Append("        ,ResultDry"+ Environment.NewLine);
-            SbSql.Append("        ,ResultWet"+ Environment.NewLine);
-            SbSql.Append("        ,DryScale_Weft"+ Environment.NewLine);
-            SbSql.Append("        ,WetScale_Weft"+ Environment.NewLine);
-            SbSql.Append("        ,ResultDry_Weft"+ Environment.NewLine);
-            SbSql.Append("        ,ResultWet_Weft"+ Environment.NewLine);
-            SbSql.Append(")"+ Environment.NewLine);
-            SbSql.Append("VALUES"+ Environment.NewLine);
-            SbSql.Append("(" + Environment.NewLine);
-            SbSql.Append("         @ID"); objParameter.Add("@ID", DbType.String, Item.ID);
-            SbSql.Append("        ,@Roll"); objParameter.Add("@Roll", DbType.String, Item.Roll);
-            SbSql.Append("        ,@Dyelot"); objParameter.Add("@Dyelot", DbType.String, Item.Dyelot);
-            SbSql.Append("        ,@DryScale"); objParameter.Add("@DryScale", DbType.String, Item.DryScale);
-            SbSql.Append("        ,@WetScale"); objParameter.Add("@WetScale", DbType.String, Item.WetScale);
-            SbSql.Append("        ,@Inspdate"); objParameter.Add("@Inspdate", DbType.String, Item.Inspdate);
-            SbSql.Append("        ,@Inspector"); objParameter.Add("@Inspector", DbType.String, Item.Inspector);
-            SbSql.Append("        ,@Result"); objParameter.Add("@Result", DbType.String, Item.Result);
-            SbSql.Append("        ,@Remark"); objParameter.Add("@Remark", DbType.String, Item.Remark);
-            SbSql.Append("        ,@AddName"); objParameter.Add("@AddName", DbType.String, Item.AddName);
-            SbSql.Append("        ,@AddDate"); objParameter.Add("@AddDate", DbType.DateTime, Item.AddDate);
-            SbSql.Append("        ,@EditName"); objParameter.Add("@EditName", DbType.String, Item.EditName);
-            SbSql.Append("        ,@EditDate"); objParameter.Add("@EditDate", DbType.DateTime, Item.EditDate);
-            SbSql.Append("        ,@ResultDry"); objParameter.Add("@ResultDry", DbType.String, Item.ResultDry);
-            SbSql.Append("        ,@ResultWet"); objParameter.Add("@ResultWet", DbType.String, Item.ResultWet);
-            SbSql.Append("        ,@DryScale_Weft"); objParameter.Add("@DryScale_Weft", DbType.String, Item.DryScale_Weft);
-            SbSql.Append("        ,@WetScale_Weft"); objParameter.Add("@WetScale_Weft", DbType.String, Item.WetScale_Weft);
-            SbSql.Append("        ,@ResultDry_Weft"); objParameter.Add("@ResultDry_Weft", DbType.String, Item.ResultDry_Weft);
-            SbSql.Append("        ,@ResultWet_Weft"); objParameter.Add("@ResultWet_Weft", DbType.String, Item.ResultWet_Weft);
-            SbSql.Append(")"+ Environment.NewLine);
-
-
-
-
-            return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
-        }
 		/*更新Laboratory - Shade bone Inspection(Update) 詳細敘述如下*/
         /// <summary>
         /// 更新Laboratory - Shade bone Inspection
@@ -151,7 +85,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             if (Item.Inspdate != null) { SbSql.Append(",Inspdate=@Inspdate"+ Environment.NewLine); objParameter.Add("@Inspdate", DbType.String, Item.Inspdate);}
             if (Item.Inspector != null) { SbSql.Append(",Inspector=@Inspector"+ Environment.NewLine); objParameter.Add("@Inspector", DbType.String, Item.Inspector);}
             if (Item.Result != null) { SbSql.Append(",Result=@Result"+ Environment.NewLine); objParameter.Add("@Result", DbType.String, Item.Result);}
-            if (Item.Remark != null) { SbSql.Append(",Remark=@Remark"+ Environment.NewLine); objParameter.Add("@Remark", DbType.String, Item.Remark);}
+            if (Item.Remark != null) { SbSql.Append(",Remark=@Remark"+ Environment.NewLine); objParameter.Add("@Remark", DbType.String, Item.Remark ?? "");}
             if (Item.AddName != null) { SbSql.Append(",AddName=@AddName"+ Environment.NewLine); objParameter.Add("@AddName", DbType.String, Item.AddName);}
             if (Item.AddDate != null) { SbSql.Append(",AddDate=@AddDate"+ Environment.NewLine); objParameter.Add("@AddDate", DbType.DateTime, Item.AddDate);}
             if (Item.EditName != null) { SbSql.Append(",EditName=@EditName"+ Environment.NewLine); objParameter.Add("@EditName", DbType.String, Item.EditName);}

@@ -177,6 +177,8 @@
     <Compile Include="Provider\MSSQL\SystemProvider.cs" />
     <Compile Include="Provider\MSSQL\TPEPass1Provider.cs" />
     <Compile Include="Provider\MSSQL\TypeSelectionProvider.cs" />
+    <Compile Include="Provider\MSSQL\PerspirationFastnessProvider.cs" />
+    <Compile Include="Provider\MSSQL\WaterFastnessProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
