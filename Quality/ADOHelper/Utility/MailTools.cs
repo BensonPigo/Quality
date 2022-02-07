@@ -1,6 +1,7 @@
 ﻿using ADOHelper.Template.MSSQL;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
+using System;
 using System.Configuration;
 using System.Data;
 using System.IO;
@@ -25,6 +26,7 @@ namespace ADOHelper.Utility
                 string mailServer = "Mail.sportscity.com.tw";
                 string EmailID = "foxpro";
                 string EmailPwd = "orpxof";
+                int MailServerPort = 25;
 
                 string result = string.Empty;
                 //寄件者 & 收件者
@@ -39,6 +41,7 @@ namespace ADOHelper.Utility
                         mailServer = dt.Rows[0]["mailServer"].ToString();
                         EmailID = dt.Rows[0]["eMailID"].ToString();
                         EmailPwd = dt.Rows[0]["eMailPwd"].ToString();
+                        MailServerPort = Convert.ToInt32(dt.Rows[0]["MailServerPort"]);
                     }
                     else
                     {
@@ -85,7 +88,7 @@ namespace ADOHelper.Utility
                 }
 
                 // mail Smtp
-                SmtpClient client = new SmtpClient(mailServer);
+                SmtpClient client = new SmtpClient(mailServer, MailServerPort);
 
                 // 寄件者 帳密
                 client.Credentials = new NetworkCredential(EmailID, EmailPwd);

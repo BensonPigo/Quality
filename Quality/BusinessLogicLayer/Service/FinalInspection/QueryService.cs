@@ -205,6 +205,7 @@ NOTE: This is an automated reply from a system mailbox. Please do not reply to t
                 string mailServer = string.Empty;
                 string eMailID = string.Empty;
                 string eMailPwd = string.Empty;
+                int MailServerPort = 25;
 
                 string result = string.Empty;
                 //寄件者 & 收件者
@@ -217,6 +218,7 @@ NOTE: This is an automated reply from a system mailbox. Please do not reply to t
                     mailServer = dt.Rows[0]["mailServer"].ToString();
                     eMailID = dt.Rows[0]["eMailID"].ToString();
                     eMailPwd = dt.Rows[0]["eMailPwd"].ToString();
+                    MailServerPort = Convert.ToInt32( dt.Rows[0]["MailServerPort"]);
                 }
 
                 if (isTest)
@@ -251,7 +253,7 @@ NOTE: This is an automated reply from a system mailbox. Please do not reply to t
                 message.IsBodyHtml = true;
 
                 // mail Smtp
-                SmtpClient client = new SmtpClient(mailServer);
+                SmtpClient client = new SmtpClient(mailServer, MailServerPort);
 
                 // 寄件者 帳密
                 client.Credentials = new NetworkCredential(eMailID, eMailPwd);
