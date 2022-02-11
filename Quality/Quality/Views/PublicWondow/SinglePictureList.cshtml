@@ -1,0 +1,178 @@
+﻿@using DatabaseObject.Public
+
+@{
+    Layout = null;
+    string title = ViewData["Title"] == null ? "Picture" : ViewData["Title"].ToString();
+    string EditMode = ViewData["EditMode"] == null ? "EditMode" : ViewData["EditMode"].ToString();
+
+    string TargetID = ViewData["TargetID"] == null ? string.Empty : ViewData["TargetID"].ToString();
+
+    string ColumnName = ViewData["ColumnName"] == null ? string.Empty : ViewData["ColumnName"].ToString();
+    string ShowDelete = (ViewData["ShowDelete"] == null ? false : (bool)ViewData["ShowDelete"]) ? string.Empty : "hidden";
+}
+
+@model Window_SinglePicture
+
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+
+<link href="~/ThirdParty/SciCustom/css/style.css" rel="stylesheet" />
+<style>
+
+    ul {
+        padding: 0;
+    }
+
+    li {
+        list-style-type: none;
+        border: 1px solid black;
+        padding: 2px;
+    }
+
+    td {
+        border-style: ridge;
+    }
+
+    .leftDiv {
+        width: 45%;
+        height: 90%;
+        float: left;
+        margin-right: 2%;
+    }
+
+    .outerDiv {
+        width: 95%;
+        height: 90%;
+        float: left;
+        margin-right: 2%;
+    }
+
+    .grayDiv {
+        width: 100%;
+        height: 4vh;
+        background-color: lightgray;
+        text-align: center;
+    }
+
+    .pointer {
+        cursor: pointer;
+    }
+</style>
+<br />
+<header>
+    <h3 style="width:85%;float:left;margin:0">@title</h3>
+    <input id="btnKeep" type="button" value="Keep" />
+    <input id="btnExit" type="button" value="Exit" />
+</header>
+<br />
+<div class="outerDiv" style="margin-right:2%;">
+    <div class="grayDiv">
+        <h2 style="width:80%;float:left;padding-top:5px">Image</h2>
+        <img id="Cam" class="OpenCamera pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Camera.png" />
+        <img id="Del" class="pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Delete.png" @ShowDelete />
+
+    </div>
+    @{
+        var byteImage = Model.Image is null ? new byte[1] : Model.Image;
+        var base64 = Convert.ToBase64String(byteImage);
+        var imgSrc = String.Format("data:image/png;base64,{0}", base64);
+
+    }
+    @if (byteImage[0] != 0)
+    {
+        <img id="Pic" Type="" style="width:100%;" src="@imgSrc" />
+        <img id="OriPic" style="width:100%;display:none;" src="@imgSrc" />
+    }
+    else
+    {
+        <img id="Pic" Type="" style="width:100%;" />
+        <img id="OriPic" style="width:100%;display:none;" />
+    }
+</div>
+
+
+@{
+    Html.RenderPartial("ScreenShot");
+}
+
+<script>
+
+    var ID_List = [];
+    var Name_List = [];
+    $(function () {
+
+        // 找出父頁面的照片
+        const Current = window.opener.document.querySelector("#@ColumnName");
+
+        //如果父頁面有照片，則顯示父頁面照片，如果沒有則顯示DB的照片
+        if (Current != null && Current.value != '') {
+            var tmp = document.querySelector("#Pic");
+            tmp.src = 'data:image/png;base64,' + Current.value;
+        }
+        // Screenshot Exit
+        $('#btnScreenshotExit').on('click', function () {
+            StopScreen();
+            $('#Screenshot').addClass("display-None");
+        });
+
+
+        $("#btnKeep").click(function () {
+
+            var tmp = document.querySelector("#Pic");
+
+            var Picture = {
+                Picture: tmp.src,
+            }
+
+            window.opener.GetSinglePicture(Picture);
+            window.close();
+        });
+
+
+        $("#btnExit").click(function () {
+            window.close();
+        });
+
+        $("#Del").click(function () {
+
+            // DB的圖檔
+            const Ori = document.querySelector("#OriPic");
+
+            // User拍下的圖片
+            const Setting = document.querySelector("#Pic");
+
+
+            document.querySelector("#Pic").removeAttribute('src');
+            // 如果User沒拍，則刪除原本的
+            //if (Ori == "" || Ori == null || Ori == undefined) {
+            //    document.querySelector("#Pic").removeAttribute('src');
+            //}
+            //else {
+            //    Setting.src = Ori.src;
+            //}
+        });
+        CamInit();
+
+
+        if ('@EditMode' == 'False') {
+            $("#Del, .OpenCamera").hide();
+        }
+    });
+
+    function CamInit() {
+        $('.OpenCamera').on('click', function () {
+
+            if ('@EditMode' == 'True') {
+                var Type = $(this).attr('Type');
+                var sentID = "Pic";
+                switch (Type) {
+                    case "Befroe":
+                        sentID = "Pic";
+                        break;
+                }
+
+                $('#Screenshot').removeClass("display-None");
+                Screenshot(sentID);
+            }
+        });
+    }
+</script>
