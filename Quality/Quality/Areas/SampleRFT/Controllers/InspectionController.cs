@@ -604,14 +604,26 @@ namespace Quality.Areas.SampleRFT.Controllers
                 this.CheckSession();
             }
 
-            foreach (RFT_Inspection_Measurement item in measurement)
+            RFT_Inspection_Measurement_ViewModel rtn = new RFT_Inspection_Measurement_ViewModel();
+            if (measurement == null)
             {
-                item.FactoryID = this.FactoryID;
-                item.Line = this.Line;
+                rtn.Result = false;
+                rtn.ErrMsg = "Please input data.";
+
+            }
+            else
+            {
+                foreach (RFT_Inspection_Measurement item in measurement)
+                {
+                    item.FactoryID = this.FactoryID;
+                    item.Line = this.Line;
+                }
+                RFT_Inspection_Measurement_ViewModel viewModel = _InspectionService.SaveMeasurement(measurement);
+                rtn = viewModel;
             }
 
-            RFT_Inspection_Measurement_ViewModel viewModel =  _InspectionService.SaveMeasurement(measurement);
-            return Json(new { viewModel.Result, viewModel.ErrMsg });
+
+            return Json(new { rtn.Result, rtn.ErrMsg });
         }
 
         [HttpPost]

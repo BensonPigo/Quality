@@ -1085,7 +1085,7 @@
                         </td>
                         <td align="right" valign="middle">
                             <input id="MeasurementImage" name="MeasurementImage" type="hidden" value="" >
-                            <input id="btnMeasurementPicture" type="button" class="site-btn btn-blue font1rem" style="margin:0;border:0;padding: 7px 2em;" name="MeasurementPicture" value="Picture" />
+                            <input id="btnMeasurementPicture" type="button" class="site-btn btn-blue font1rem" style="margin:0;border:0;padding: 7px 2em;" name="MeasurementPicture" value="Photo" />
                             <input id="btnMeasurementSave" type="button" class="site-btn btn-blue font1rem" style="margin:0;border:0;padding: 7px 2em;" name="MeasurementSave" value="Save" />
                             <input id="btnMeasurementExit" type="button" class="site-btn btn-gy font1rem" style="margin:0;border:0;padding: 7px 2em;" name="MeasurementExit" value="Exit" />
                         </td>
@@ -1892,8 +1892,8 @@
 
         $('#btnMeasurementPicture').on('click', function () {
             var para = "?Title=Measurement" + "&EditMode=true";
-            para += "&" + "Table=MeasurementImage";
-            para += "&" + "TargetColumnName=TargetColumnName";
+            para += "&" + "Table=RFT_Inspection_Measurement";
+            para += "&" + "TargetColumnName=MeasurementImage";
             para += "&" + "ColumnName=Image";
             para += "&" + "ShowDelete=false";
             para += "&" + "PKey_1=ID";
@@ -3075,14 +3075,15 @@
             var tr = $(this).parent().parent();
 
             datasDetail.push({
-                 MeasurementUkey: parseInt(tr.attr('idv')),
-                 StyleUkey: parseInt(tr.attr('idx')),
-                 Code: tr.find("p[idx='Code']").html(),
-                 SizeCode: tr.attr('idi'),
-                 SizeSpec: $(this).val(),
-                 OrderID: $('#txtSP').val(),
-                 Article: $('#txtArticle').val(),
-                 Location: $('#txtProductType').val(),
+                MeasurementUkey: parseInt(tr.attr('idv')),
+                StyleUkey: parseInt(tr.attr('idx')),
+                Code: tr.find("p[idx='Code']").html(),
+                SizeCode: tr.attr('idi'),
+                SizeSpec: $(this).val(),
+                OrderID: $('#txtSP').val(),
+                Article: $('#txtArticle').val(),
+                Location: $('#txtProductType').val(),
+                Image: $('#MeasurementImage').val(),
             });
         });
 
@@ -3097,6 +3098,7 @@
                     msg.WithError(data.ErrMsg);
                 }
                 else {
+                    $('#MeasurementImage').val('');
                     msg.WithSuccesCheck("Success", function () {
                         $('#btnMeasurementExit').click();
                     });

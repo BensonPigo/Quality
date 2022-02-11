@@ -50,9 +50,9 @@
                 width: 9em;
             }
 
-            .table-striped > tbody > tr > td > input[type="text"]:disabled {
-                background-color: transparent;
-            }
+                .table-striped > tbody > tr > td > input[type="text"]:disabled {
+                    background-color: transparent;
+                }
 
     #Content {
         overflow: auto;
@@ -67,6 +67,30 @@
             #Content > table > tbody > tr > td:nth-child(3) {
                 width: 1em;
             }
+
+    #SelectItemBackground {
+        background-color: rgba(204, 204, 204, 0.5);
+        bottom: 0;
+        left: 0;
+        position: fixed;
+        right: 0;
+        top: 0;
+        z-index: 1040;
+    }
+
+    #Measurement {
+        width: 85vw;
+        height: 84vh;
+        position: absolute;
+        left: 8vw;
+        top: 10vh;
+        z-index: 1040;
+        background-color: white;
+        border: solid 1px black;
+        font-size: 1em;
+        font-weight: bold;
+        padding: 1em;
+    }
 </style>
 
 <div class="main-content">
@@ -129,7 +153,14 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td><button id="ToExcel" type="button" class="btn btn-gy" style="width: 7vw; height: 5vh; color:black; font-weight:bold;">To Excel</button></td>
+                                                <td style="padding-bottom: 1em;">
+                                                    <button id="ToExcel" type="button" class="btn btn-gy" style="width: 7vw; height: 5vh; color:black; font-weight:bold;">To Excel</button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <button id="btnPhoto" type="button" class="btn btn-gy" style="width: 7vw; height: 5vh; color:black; font-weight:bold;">Photo</button>
+                                                </td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -172,10 +203,50 @@
     </div>
 </div>
 
+<div id="SelectItemBackground" class="display-None"></div>
+
+<div id="Measurement" class="display-None">
+    <div>
+        <table style="width: 83vw;">
+            <tbody>
+                <tr>
+                    <td align="left" valign="middle" style="width: 30%;">
+                        <p style="padding-left: 1em; font-size: 1.5em; font-weight: bold;">Measurement</p>
+                    </td>
+                    <td align="right" valign="middle">
+                        <input id="btnRemove" type="button" class="site-btn btn-red font1rem" style="margin:0;border:0;padding: 7px 2em;" name="btnRemove" value="Remove" />
+                        @Html.DropDownList("ImageList", Model.Images_Source, new { @style = "width:8vw;border-color:lightblue;" })
+                        <input id="btnMeasurementExit" type="button" class="site-btn btn-gy font1rem" style="margin:0;border:0;padding: 7px 2em;" name="MeasurementExit" value="Exit" />
+                    </td>
+                </tr>
+                @foreach (var img in Model.Images)
+                {
+                    string isShow = img.Seq == 1 ? string.Empty : "display:none";
+                    <tr id="image_@img.Seq" class="measurementImages" style="@isShow;">
+                        <td style="width:50%;">
+                            @{
+                                var byteImage = img == null || img.Image is null ? new byte[1] : img.Image;
+                                var base64 = Convert.ToBase64String(byteImage);
+                                var imgSrc = String.Format("data:image/png;base64,{0}", base64);
+                            }
+                            <img id="Pic" Type="" style="width:100%;" src="@imgSrc" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
 <script type="text/javascript">
     var msg;
     $(function () {
         msg = new MessagerAlert();
+        MeasurementBindEvent();
+
+        $('#SelectItemBackground').on('click', function () {
+            $("#SelectItemBackground, .SelectItem").addClass('display-None');
+        });
 
         $('#OrderID').on('blur', function () {
             var val = $(this).val();
@@ -234,6 +305,14 @@
             });
         });
 
+        $('#btnPhoto').on('click', function () {
+            $('#SelectItemBackground, #Measurement').removeClass('display-None').unbind('click');
+        });
+
+        $("#ImageList").change(function () {
+            ImageReBind();
+        });
+
         if ($('#JsonBody').val() != "") {
             var datas = JSON.parse($('#JsonBody').val());
             if (datas.length == 0) {
@@ -257,6 +336,61 @@
         });
     });
 
+    function ImageReBind() {
+        var selectSeq = $("#ImageList option:selected").text();
+        $(".measurementImages").hide();
+        $(`#image_${selectSeq}`).show();
+    }
+
+    function MeasurementBindEvent() {
+        $('#btnMeasurementExit').on('click', function () {
+            $('#SelectItemBackground, #Measurement').addClass("display-None");
+
+            $('#SelectItemBackground').on('click', function () {
+                $("#SelectItemBackground, .SelectItem").addClass('display-None');
+            });
+
+            var tbody = "<tr><td colspan='7' style='height: 8vh; vertical-align: middle;' valign='middle' align='center'><h3>Data Loading.......</h3></td></tr>";
+            $('.MeasurementTable>tbody').html(tbody);
+        });
+
+        $('#btnRemove').on('click', function () {
+            var ImageID = $("#ImageList").val();
+            if (ImageID != '' && ImageID != null && ImageID != undefined) {
+                msg.WithConfirm("Are you sure?", function () {
+
+
+                    $.ajax({
+                        url: "@Url.Action("DeleteMeasurementImage", "Measurement", new { Area = "SampleRFT" })",
+                        type: 'POST',
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify({ ImageID: ImageID }),
+                        async: true,
+                        success: function (data) {
+                            if (data.Result) {
+
+                                // 把刪除的選項去掉
+                                $(`#ImageList option[value='${ImageID}']`).remove();
+
+                                //圖片重新整理
+                                ImageReBind();
+                                msg.WithSuccess("Success");
+                            }
+                            else {
+                                msg.WithError(data.ErrMsg);
+                            }
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            console.log(xhr.responseText);
+                        }
+                    });
+                }, null);
+
+            }
+        });
+
+
+    }
 
     function ChangeColor() {
         var unit = $('#Unit').val();
@@ -296,7 +430,11 @@
                     if (standard == null || val == null || tolh == null || toll == null) {
                         return;
                     }
-                    else {                        // 避免standard出現文字                        if (parseInt(standard.toString()) >= 0) {                            cal(unit, standard.toString(), val.toString(), tolh.toString(), toll.toString(), $(this));                        }
+                    else {
+                        // 避免standard出現文字
+                        if (parseInt(standard.toString()) >= 0) {
+                            cal(unit, standard.toString(), val.toString(), tolh.toString(), toll.toString(), $(this));
+                        }
                     }
                 }
             });
