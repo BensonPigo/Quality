@@ -217,16 +217,20 @@ declare @AddDate datetime = GetDate()
                     objParameter.Add($"@Location{rowSeq}", item.Location);
                     objParameter.Add($"@Line{rowSeq}", item.Line);
                     objParameter.Add($"@FactoryID{rowSeq}", item.FactoryID);
-                    objParameter.Add($"@Image{rowSeq}", item.Image);
+                    objParameter.Add($"@Image{rowSeq}", DbType.Binary ,item.Image);
 
                     sqlcmd += $@"
 insert into RFT_Inspection_Measurement(MeasurementUkey,StyleUkey,No,Code,SizeCode,SizeSpec,OrderID,Article,Location,Line,FactoryID,AddDate)
 values(@MeasurementUkey{rowSeq},@StyleUkey{rowSeq},@No,@Code{rowSeq},@SizeCode{rowSeq},@SizeSpec{rowSeq},@OrderID{rowSeq},@Article{rowSeq},@Location{rowSeq},@Line{rowSeq},@FactoryID{rowSeq},@AddDate)
 ";
-                    sqlcmd += $@"
-insert into ExtendServer.PMSFile.dbo.RFT_Inspection_Measurement(OrderID,Image)
+                    if (item.Image != null)
+                    {
+                        sqlcmd += $@"
+insert into PMSFile.dbo.RFT_Inspection_Measurement(OrderID,Image)
 values(@OrderID{rowSeq},@Image{rowSeq})
 ";
+                    }
+
                     rowSeq++;
                 }
             }
