@@ -424,6 +424,7 @@ SELECT  a.StyleUkey
 FROM [ManufacturingExecution].[dbo].[Measurement] a with(nolock)
 where a.junk=0 
 and a.StyleUkey = @StyleUkey 
+order by a.Code
 
 ";
 

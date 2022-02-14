@@ -69,7 +69,7 @@ LEFT JOIN MainServer.Production.dbo.Style s WITH(NOLOCK) on s.Ukey = a.StyleUkey
 where a.junk=0 
 and a.StyleUkey = @StyleUkey 
 and a.SizeCode = @SizeCode
-
+order by a.Code
 ";
 
             return ExecuteList<RFT_Inspection_Measurement_ViewModel>(CommandType.Text, sqlcmd, objParameter, 60);
