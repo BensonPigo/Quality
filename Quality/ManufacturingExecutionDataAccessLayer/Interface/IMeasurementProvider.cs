@@ -1,8 +1,10 @@
 using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
+using DatabaseObject.ResultModel;
 using System.Collections.Generic;
 using System.Data;
+using System.Web.Mvc;
 
 namespace ManufacturingExecutionDataAccessLayer.Interface
 {
@@ -21,5 +23,8 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         DataTable Get_CalculateSizeSpec(string diffValue, string Tol);
 
         IList<Measurement> GetMeasurementsByPOID(string POID, string userID);
+        IList<SelectListItem> Get_ImageSource(string OrderID);
+        IList<RFT_Inspection_Measurement_Image> Get_ImageList(string OrderID);
+        int DeleteMeasurementImgae(long ID);
     }
 }

@@ -12,6 +12,7 @@ using Sci;
 using System.IO;
 using Excel = Microsoft.Office.Interop.Excel;
 using System.Runtime.InteropServices;
+using System.Web.Mvc;
 
 namespace BusinessLogicLayer.Service.SampleRFT
 {
@@ -27,6 +28,10 @@ namespace BusinessLogicLayer.Service.SampleRFT
 
                 measurement_Result.TotalQty = _IMeasurementProvider.Get_Total_Measured_Qty();
                 measurement_Result.MeasuredQty = _IMeasurementProvider.Get_Measured_Qty(measurement);
+
+                // 取得圖片下拉選單
+                List<SelectListItem> imageSourceList = _IMeasurementProvider.Get_ImageSource(measurement.OrderID).ToList();
+                List<RFT_Inspection_Measurement_Image> imageList = _IMeasurementProvider.Get_ImageList(measurement.OrderID).ToList();
 
                 DataTable dt = _IMeasurementProvider.Get_Measured_Detail(measurement);
                 #region 處理OOT Qty
@@ -117,10 +122,11 @@ namespace BusinessLogicLayer.Service.SampleRFT
                     Articles = measurement_Request.Articles,
                     TotalQty = _IMeasurementProvider.Get_Total_Measured_Qty(),
                     MeasuredQty = _IMeasurementProvider.Get_Measured_Qty(measurement_Request),
-                    OOTQty = columnListsp.Count,
+                    Images_Source = (imageSourceList.Any() ? imageSourceList.ToList() : new List<SelectListItem>()),
+                    Images = (imageList.Any() ? imageList.ToList() : new List<RFT_Inspection_Measurement_Image>()),
+                    OOTQty = columnListsp.Count,                    
                     JsonBody = JsonConvert.SerializeObject(_IMeasurementProvider.Get_Measured_Detail(measurement_Request)),
                 };
-
             }
             catch (Exception ex)
             {
@@ -253,6 +259,26 @@ namespace BusinessLogicLayer.Service.SampleRFT
             result.FileName = fileName;
 
             return result;
+        }
+
+        public Measurement_Request DeleteMeasurementImage(long  ID)
+        {
+            _IMeasurementProvider = new MeasurementProvider(Common.ManufacturingExecutionDataAccessLayer);
+            Measurement_Request measurement_Request = new Measurement_Request() { Result = true, ErrMsg = string.Empty };
+            try
+            {
+                var r = _IMeasurementProvider.DeleteMeasurementImgae(ID);
+
+                measurement_Request.Result = true;
+                measurement_Request.ErrMsg = string.Empty;
+            }
+            catch (Exception ex)
+            {
+                measurement_Request.ErrMsg = ex.Message.ToString();
+                measurement_Request.Result = false;
+            }
+
+            return measurement_Request;
         }
     }
 }

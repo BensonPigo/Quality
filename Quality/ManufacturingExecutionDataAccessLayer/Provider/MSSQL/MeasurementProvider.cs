@@ -10,6 +10,8 @@ using System.Windows.Documents;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ProductionDB;
 using System.Linq;
+using DatabaseObject.ResultModel;
+using System.Web.Mvc;
 
 namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 {
@@ -173,6 +175,21 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
 
+        public int DeleteMeasurementImgae(long ID)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            objParameter.Add("@ID", ID);
+            SbSql.Append($@"
+SET XACT_ABORT ON
+DELETE FROM PMSFile.dbo.RFT_Inspection_Measurement
+where ID=@ID
+" );
+
+
+
+            return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
+        }
         public IList<Order_Qty> GetAtricle(string OrderID)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection
@@ -186,6 +203,38 @@ where ID = @OrderID
 ";
              return ExecuteList<Order_Qty>(CommandType.Text, sqlcmd, objParameter);
         }
+
+        public IList<SelectListItem> Get_ImageSource(string OrderID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@OrderID", DbType.String, OrderID } ,
+            };
+            string sqlcmd = @"
+select Text= Cast( ROW_NUMBER() OVER(ORDER BY ID) as varchar)
+        ,Value = Cast( ID as varchar)
+from PMSFile.dbo.RFT_Inspection_Measurement
+
+where OrderID = @OrderID
+";
+            return ExecuteList<SelectListItem>(CommandType.Text, sqlcmd, objParameter);
+        }
+        public IList<RFT_Inspection_Measurement_Image> Get_ImageList(string OrderID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@OrderID", DbType.String, OrderID } ,
+            };
+            string sqlcmd = @"
+select *
+	,Seq = ROW_NUMBER() OVER(ORDER BY ID DESC)
+from PMSFile.dbo.RFT_Inspection_Measurement
+where OrderID = @OrderID
+ORDER BY ID DESC
+";
+            return ExecuteList<RFT_Inspection_Measurement_Image>(CommandType.Text, sqlcmd, objParameter);
+        }
+
 
         public IList<Measurement_Request> Get_OrdersPara(string OrderID, string FactoryID)
         {
@@ -424,6 +473,7 @@ SELECT  a.StyleUkey
 FROM [ManufacturingExecution].[dbo].[Measurement] a with(nolock)
 where a.junk=0 
 and a.StyleUkey = @StyleUkey 
+order by a.Code
 
 ";
 

@@ -723,6 +723,72 @@ Where 1=1
             return ExecuteList<Window_Picture>(CommandType.Text, SbSql.ToString(), paras);
         }
 
+        public IList<Window_SinglePicture> Get_SinglePicture(string Table, string ColumnName, string PKey_1, string PKey_2, string PKey_3, string PKey_4, string PKey_1_Val, string PKey_2_Val, string PKey_3_Val, string PKey_4_Val)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+
+            string selectColumn = "";
+
+            if (!string.IsNullOrEmpty(PKey_1))
+            {
+                selectColumn += $@",{PKey_1}" + Environment.NewLine;
+            }
+
+            if (!string.IsNullOrEmpty(PKey_2))
+            {
+                selectColumn += $@",{PKey_2}" + Environment.NewLine;
+            }
+
+            if (!string.IsNullOrEmpty(PKey_3))
+            {
+                selectColumn += $@",{PKey_3}" + Environment.NewLine;
+            }
+
+            if (!string.IsNullOrEmpty(PKey_4))
+            {
+                selectColumn += $@",{PKey_4}" + Environment.NewLine;
+            }
+
+            //台北
+            SbSql.Append($@"
+select [Image]={ColumnName}
+{selectColumn}
+From [ExtendServer].PMSFile.dbo.{Table}  WITH(NOLOCK)
+Where 1=1
+");
+
+            if (!string.IsNullOrEmpty(PKey_1))
+            {
+                SbSql.Append($@"AND {PKey_1}  = @PKey_1  ");
+
+                paras.Add("@PKey_1 ", PKey_1_Val);
+            }
+
+            if (!string.IsNullOrEmpty(PKey_2))
+            {
+                SbSql.Append($@"AND {PKey_2}  = @PKey_2  ");
+
+                paras.Add("@PKey_2 ", DbType.String, PKey_2_Val);
+            }
+
+            if (!string.IsNullOrEmpty(PKey_3))
+            {
+                SbSql.Append($@"AND {PKey_3}  = @PKey_3  ");
+
+                paras.Add("@PKey_3 ", DbType.String, PKey_3_Val);
+            }
+
+            if (!string.IsNullOrEmpty(PKey_4))
+            {
+                SbSql.Append($@"AND {PKey_4}  = @PKey_4  ");
+
+                paras.Add("@PKey_4 ", DbType.String, PKey_4_Val);
+            }
+
+            return ExecuteList<Window_SinglePicture>(CommandType.Text, SbSql.ToString(), paras);
+        }
+
         public IList<Window_TestFailMail> Get_TestFailMail(string FactoryID, string Type, string GroupNameList)
         {
             StringBuilder SbSql = new StringBuilder();
