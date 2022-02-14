@@ -14,6 +14,7 @@ namespace BusinessLogicLayer.Interface.SampleRFT
 
         Measurement_ResultModel MeasurementGet(Measurement_Request measurement);
 
+        Measurement_Request DeleteMeasurementImage(long ID);
         Measurement_Request MeasurementToExcel(string OrderID, string FactoryID, bool test = false);
     }
 }

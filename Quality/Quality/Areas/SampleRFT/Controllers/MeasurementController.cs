@@ -32,7 +32,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         {
             ViewBag.Articles = new List<SelectListItem>();
             TempData["Model"] = null;
-            return View(new Measurement_ResultModel());
+            return View(new Measurement_ResultModel() { Images_Source = new List<SelectListItem>() , Images = new List<RFT_Inspection_Measurement_Image>()} );
         }
 
         public ActionResult IndexGet(string OrderID)
@@ -61,6 +61,14 @@ namespace Quality.Areas.SampleRFT.Controllers
         {
             Measurement_Request request = _MeasurementService.MeasurementGetPara(SP, this.FactoryID);
             return Json(request);
+        }
+
+        [HttpPost]
+        public ActionResult DeleteMeasurementImage(string ImageID)
+        {
+            long id = string.IsNullOrEmpty(ImageID) ? 0 : Convert.ToInt64(ImageID);
+            Measurement_Request result = _MeasurementService.DeleteMeasurementImage(id);
+            return Json(new { result.Result, result.ErrMsg, result.FileName });
         }
 
         public ActionResult ExcelExport()

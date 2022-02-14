@@ -1083,7 +1083,9 @@
                         <td align="left" valign="middle" style="width: 30%;">
                             <p style="padding-left: 1em; font-size: 1.5em; font-weight: bold;">Measurement</p>
                         </td>
-                        <td align="right" valign="middle">                            
+                        <td align="right" valign="middle">
+                            <input id="MeasurementImage" name="MeasurementImage" type="hidden" value="" >
+                            <input id="btnMeasurementPicture" type="button" class="site-btn btn-blue font1rem" style="margin:0;border:0;padding: 7px 2em;" name="MeasurementPicture" value="Photo" />
                             <input id="btnMeasurementSave" type="button" class="site-btn btn-blue font1rem" style="margin:0;border:0;padding: 7px 2em;" name="MeasurementSave" value="Save" />
                             <input id="btnMeasurementExit" type="button" class="site-btn btn-gy font1rem" style="margin:0;border:0;padding: 7px 2em;" name="MeasurementExit" value="Exit" />
                         </td>
@@ -1471,7 +1473,7 @@
             msg.WithConfirm("Are you sure?",
                 function () {
                     PassClick($("#txtStyle").val(), $("#txtSP").val(), $("#txtArticle").val(), $("#txtSize").val(), $("#txtProductType").val());
-                }, null);            
+                }, null);
         });
 
         $('#btnReject').on('click', function () {
@@ -1887,6 +1889,17 @@
         $('#btnMeasurementSave').on('click', function () {
             MeasurementSave();
         });
+
+        $('#btnMeasurementPicture').on('click', function () {
+            var para = "?Title=Measurement" + "&EditMode=true";
+            para += "&" + "Table=RFT_Inspection_Measurement";
+            para += "&" + "TargetColumnName=MeasurementImage";
+            para += "&" + "ColumnName=Image";
+            para += "&" + "ShowDelete=false";
+            para += "&" + "PKey_1=ID";
+            para += "&" + "PKey_1_Val=" +"111" ;
+            window.open('@Url.Action("SinglePictureList", "PublicWondow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1024,height=750');
+        });
     }
 
     function CFTCommentsBindEvent() {
@@ -2286,6 +2299,9 @@
             }
         });
     }
+    function GetSinglePicture(data) {
+        $('#MeasurementImage').val(data.Picture.replace("data:image/png;base64,", ""));
+    }
 
     function ProductTypeClick(StyleID, OrderID, Article, Size) {
         $.ajax({
@@ -2526,7 +2542,7 @@
 
                 if (rCount == 1 && datat.No == "") {
                     msg.WithErrorCheck("TimeOut", function () {
-                        location.reload(); 
+                        location.reload();
                     });
                 }
 
@@ -2547,7 +2563,7 @@
 
                 $('.ReworkCardNoInside').html(content);
                 $('.ReworkCardNoInside>input').on('click', function () {
-                    if ($(this).attr("idx") == "Rework") {                        
+                    if ($(this).attr("idx") == "Rework") {
                         return;
                     }
 
@@ -2716,7 +2732,7 @@
                         tableContent += "<h4 style='width: 25vw;padding-bottom: 1vh;'>" + value + "</h4>";
                     });
                     tableContent += "</td>";
-                    
+
                     tableContent += "<td><input id='btnReworkListPass" + value.ID + "' type='button' class='site-btn btn-green font1rem btnReworkListPass' style='margin: 0; border: 0; padding: 7px 2em; ' name='ReworkListPass' value='Pass' /></td>";
                     tableContent += "<td><input id='btnReworkListReject" + value.ID + "' type='button' class='site-btn btn-red font1rem btnReworkListReject' style='margin:0;border:0;padding: 7px 2em;' name='ReworkListReject' value='Reject' /></td>";
                     tableContent += "<td>";
@@ -3059,14 +3075,15 @@
             var tr = $(this).parent().parent();
 
             datasDetail.push({
-                 MeasurementUkey: parseInt(tr.attr('idv')),
-                 StyleUkey: parseInt(tr.attr('idx')),
-                 Code: tr.find("p[idx='Code']").html(),
-                 SizeCode: tr.attr('idi'),
-                 SizeSpec: $(this).val(),
-                 OrderID: $('#txtSP').val(),
-                 Article: $('#txtArticle').val(),
-                 Location: $('#txtProductType').val(),
+                MeasurementUkey: parseInt(tr.attr('idv')),
+                StyleUkey: parseInt(tr.attr('idx')),
+                Code: tr.find("p[idx='Code']").html(),
+                SizeCode: tr.attr('idi'),
+                SizeSpec: $(this).val(),
+                OrderID: $('#txtSP').val(),
+                Article: $('#txtArticle').val(),
+                Location: $('#txtProductType').val(),
+                Image: $('#MeasurementImage').val(),
             });
         });
 
@@ -3081,6 +3098,7 @@
                     msg.WithError(data.ErrMsg);
                 }
                 else {
+                    $('#MeasurementImage').val('');
                     msg.WithSuccesCheck("Success", function () {
                         $('#btnMeasurementExit').click();
                     });

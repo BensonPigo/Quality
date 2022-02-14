@@ -59,6 +59,6 @@ namespace DatabaseObject.ManufacturingExecutionDB
         [StringLength(8)]
         [Display(Name = "工廠")]
         public string FactoryID { get; set; }
-
+        public byte[] Image { get; set; }
     }
 }

@@ -155,6 +155,23 @@ namespace DatabaseObject.Public
         public byte[] BrforeImage { get; set; }
         public byte[] AfterImage { get; set; }
     }
+    public class Window_SinglePicture
+    {
+
+        public string PKey_1 { get; set; }
+        public string PKey_2 { get; set; }
+        public string PKey_3 { get; set; }
+
+        public string PKey_1_val { get; set; }
+        public string PKey_2_val { get; set; }
+        public string PKey_3_val { get; set; }
+
+        public string Table { get; set; }
+        public string ColumnName { get; set; }
+
+
+        public byte[] Image { get; set; }
+    }
 
     public class Window_TestFailMail
     {
