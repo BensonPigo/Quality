@@ -205,7 +205,7 @@
 
 <div id="SelectItemBackground" class="display-None"></div>
 
-<div id="Measurement" class="display-None">
+<div id="Measurement" class="display-None" style="overflow-y:scroll;">
     <div>
         <table style="width: 83vw;">
             <tbody>
@@ -219,22 +219,20 @@
                         <input id="btnMeasurementExit" type="button" class="site-btn btn-gy font1rem" style="margin:0;border:0;padding: 7px 2em;" name="MeasurementExit" value="Exit" />
                     </td>
                 </tr>
-                @foreach (var img in Model.Images)
-                {
-                    string isShow = img.Seq == 1 ? string.Empty : "display:none";
-                    <tr id="image_@img.Seq" class="measurementImages" style="@isShow;">
-                        <td style="width:50%;">
-                            @{
-                                var byteImage = img == null || img.Image is null ? new byte[1] : img.Image;
-                                var base64 = Convert.ToBase64String(byteImage);
-                                var imgSrc = String.Format("data:image/png;base64,{0}", base64);
-                            }
-                            <img id="Pic" Type="" style="width:100%;" src="@imgSrc" />
-                        </td>
-                    </tr>
-                }
             </tbody>
         </table>
+
+        @foreach (var img in Model.Images)
+        {
+            string isShow = img.Seq == 1 ? string.Empty : "display:none";
+            
+            var byteImage = img == null || img.Image is null ? new byte[1] : img.Image;
+            var base64 = Convert.ToBase64String(byteImage);
+            var imgSrc = String.Format("data:image/png;base64,{0}", base64);
+            
+            <img  id="image_@img.Seq"class="measurementImages"  Type="" style="width:100%;@isShow" src="@imgSrc"/>
+
+        }
     </div>
 </div>
 
