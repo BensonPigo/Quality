@@ -97,6 +97,10 @@ namespace Quality.Areas.SampleRFT.Controllers
         public ActionResult GetStyle(string OrderID)
         {
             this.CheckSession();
+            if (string.IsNullOrEmpty(OrderID))
+            {
+                return Content(string.Empty);
+            }
             List<string> styles = this.SelectItemData.Where(x => string.IsNullOrEmpty(OrderID) || x.OrderID.Equals(OrderID))
                                     .GroupBy(x => x.StyleID)
                                     .Select(x => x.Key).ToList();
@@ -185,6 +189,10 @@ namespace Quality.Areas.SampleRFT.Controllers
         public ActionResult GetArticle(string StyleID, string OrderID)
         {
             this.CheckSession();
+            if (string.IsNullOrEmpty(StyleID) && string.IsNullOrEmpty(OrderID))
+            {
+                return Content(string.Empty);
+            }
             List<string> articles = _InspectionService
                                     .GetSelectItemData(new Inspection_ViewModel() { StyleID = StyleID, OrderID = OrderID })
                                     .GroupBy(x => x.Article)
@@ -220,6 +228,10 @@ namespace Quality.Areas.SampleRFT.Controllers
         public ActionResult GetSize(string StyleID, string OrderID, string Article)
         {
             this.CheckSession();
+            if (string.IsNullOrEmpty(StyleID) && string.IsNullOrEmpty(OrderID) && string.IsNullOrEmpty(Article))
+            {
+                return Content(string.Empty);
+            }
             List<string> sizes = _InspectionService
                                     .GetSelectItemData(new Inspection_ViewModel() { StyleID = StyleID, OrderID = OrderID, Article = Article })
                                     .GroupBy(x => x.Size)
@@ -255,6 +267,10 @@ namespace Quality.Areas.SampleRFT.Controllers
         public ActionResult GetProductType(string StyleID, string OrderID, string Article, string Size)
         {
             this.CheckSession();
+            if (string.IsNullOrEmpty(StyleID) && string.IsNullOrEmpty(OrderID) && string.IsNullOrEmpty(Article) && string.IsNullOrEmpty(Size))
+            {
+                return Content(string.Empty);
+            }
             List<string> productTypes = _InspectionService
                                     .GetSelectItemData(new Inspection_ViewModel() { StyleID = StyleID, OrderID = OrderID, Article = Article, Size = Size })
                                     .GroupBy(x => x.ProductType)
