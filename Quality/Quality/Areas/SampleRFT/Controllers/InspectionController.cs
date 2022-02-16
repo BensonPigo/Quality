@@ -173,7 +173,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                 if (result2.Count > 0)
                 {
                     if (result2.FirstOrDefault().Inpsected) ErrMsg = "Already inpsected!";
-                    if (result2.FirstOrDefault().PulloutComplete) ErrMsg = "Already pulled out!";
+                    //if (result2.FirstOrDefault().PulloutComplete) ErrMsg = "Already pulled out!";
                 }
                 viewModel.ErrMsg = ErrMsg;
             }
