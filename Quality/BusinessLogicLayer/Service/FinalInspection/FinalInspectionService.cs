@@ -174,7 +174,7 @@ namespace BusinessLogicLayer.Service
                 sampled_inspected = drFinalInspection["SampleSize"],
                 inspection_level = drFinalInspection["InspectionLevel"],
                 inspection_method = "normal",
-                aql_minor = 1,
+                aql_minor = 4,
                 aql_major = 1,
                 aql_major_a = 0.4,
                 aql_major_b = 1.5,
