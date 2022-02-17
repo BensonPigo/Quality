@@ -97,10 +97,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         public ActionResult GetStyle(string OrderID)
         {
             this.CheckSession();
-            if (string.IsNullOrEmpty(OrderID))
-            {
-                return Content(string.Empty);
-            }
+
             List<string> styles = this.SelectItemData.Where(x => string.IsNullOrEmpty(OrderID) || x.OrderID.Equals(OrderID))
                                     .GroupBy(x => x.StyleID)
                                     .Select(x => x.Key).ToList();
