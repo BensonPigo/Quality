@@ -35,7 +35,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 				@"
 -- 塞入Location
 
-select  ID, cnt = count(1),row = ROW_NUMBER()over(order by id)into #tmpfrom MainServer.Production.dbo.Orders a WITH(NOLOCK)where PulloutComplete = 0and Category = 's'and junk = 0and brandid = @BrandIDand FtyGroup = @FtyGroupand qty > 0
+select  ID, cnt = count(1),row = ROW_NUMBER()over(order by id)into #tmpfrom MainServer.Production.dbo.Orders a WITH(NOLOCK)where 1=1--AND PulloutComplete = 0and Category = 's'and junk = 0and brandid = @BrandIDand FtyGroup = @FtyGroupand qty > 0
 and not exists (		select 1		from MainServer.Production.dbo.Order_Location b WITH(NOLOCK)		where a.ID = b.OrderId	)and    exists (			    select 1	    from MainServer.Production.dbo.Style_Location b WITH(NOLOCK)	    where a.StyleUkey = b.StyleUkey    )
 group by ID
 
@@ -75,7 +75,7 @@ outer apply (
 where r_Size.SizeBalanceQty < oq.Qty
 and o.Category = 'S'
 and o.Junk = 0
-and o.PulloutComplete = 0 " + Environment.NewLine);
+--and o.PulloutComplete = 0 " + Environment.NewLine);
 
             if (!string.IsNullOrEmpty(inspection_ViewModel.FactoryID)) { SbSql.Append("and o.FtyGroup = @FtyGroup" + Environment.NewLine); }
             if (!string.IsNullOrEmpty(inspection_ViewModel.OrderID)) { SbSql.Append("and o.ID = @ID" + Environment.NewLine); }
@@ -148,7 +148,7 @@ outer apply(
 where r_Size.SizeBalanceQty < oq.Qty
 and o.Category = 'S'
 and o.Junk = 0
-and o.PulloutComplete = 0 " + Environment.NewLine);
+--and o.PulloutComplete = 0 " + Environment.NewLine);
 
             if (!string.IsNullOrEmpty(inspection_ViewModel.FactoryID)) { SbSql.Append("and o.FtyGroup = @FtyGroup" + Environment.NewLine); }
             if (!string.IsNullOrEmpty(inspection_ViewModel.OrderID)) { SbSql.Append("and o.ID = @ID" + Environment.NewLine); }
