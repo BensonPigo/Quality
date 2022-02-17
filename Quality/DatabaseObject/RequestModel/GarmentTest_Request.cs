@@ -102,5 +102,6 @@ namespace DatabaseObject.RequestModel
 
         /// <inheritdoc/>
         public string TxtLotoFactory { get; set; }
+        public string Remark { get; set; }
     }
 }
