@@ -1340,23 +1340,9 @@ Select	f.AuditDate,
 		[DefectQty] = (select isnull(sum(Qty), 0) from FinalInspection_Detail with (nolock) where ID = f.ID),
 		[AvailableQty] = (select sum(AvailableQty) from FinalInspection_Order with (nolock) where ID = f.ID),
 		f.SampleSize,
-		[InspectionLevel] = isnull((select Replicate('M', InspectionLevels/1000)  
-									+ REPLACE(REPLACE(REPLACE(  
-									      Replicate('C', InspectionLevels%1000/100),  
-									      Replicate('C', 9), 'CM'),  
-									      Replicate('C', 5), 'D'),  
-									      Replicate('C', 4), 'CD')  
-									 + REPLACE(REPLACE(REPLACE(  
-									      Replicate('X', InspectionLevels%100 / 10),  
-									      Replicate('X', 9),'XC'),  
-									      Replicate('X', 5), 'L'),  
-									      Replicate('X', 4), 'XL')  
-									 + REPLACE(REPLACE(REPLACE(  
-									      Replicate('I', InspectionLevels%10),  
-									      Replicate('I', 9),'IX'),  
-									      Replicate('I', 5), 'V'),  
-									      Replicate('I', 4),'IV')   from [MainServer].Production.dbo.AcceptableQualityLevels WITH(NOLOCK) where Ukey = f.AcceptableQualityLevelsUkey), 'I'),
-		
+		[InspectionLevel] = case when f.AcceptableQualityLevelsUkey = -1 then '100%inspection'
+                                 when isnull(inspectionLevel.val, 'I') = 'I' then 'Regular orders (AQL 1.0, Level I)'
+                                 else 'Japan orders (AQL 1.0, Level II)' end,
 		[InspectionResultID] = iif(f.InspectionResult = 'Pass', 1, 2),
 		[InspectionStatusID] = iif(f.InspectionResult = 'Pass', 3, 7),
 		f.SubmitDate,
@@ -1378,8 +1364,25 @@ outer apply (select	[POQty] = sum(o.Qty),
                     [IsDestJP] = max(iif(o.Dest = 'JP', 1, 0))
 				from Production.dbo.Orders o with (nolock)
 				where o.CustPONo = f.CustPONO) OrderInfo
+outer apply (select [val] = Replicate('M', InspectionLevels/1000)  
+							+ REPLACE(REPLACE(REPLACE(  
+							     Replicate('C', InspectionLevels%1000/100),  
+							     Replicate('C', 9), 'CM'),  
+							     Replicate('C', 5), 'D'),  
+							     Replicate('C', 4), 'CD')  
+							+ REPLACE(REPLACE(REPLACE(  
+							     Replicate('X', InspectionLevels%100 / 10),  
+							     Replicate('X', 9),'XC'),  
+							     Replicate('X', 5), 'L'),  
+							     Replicate('X', 4), 'XL')  
+							+ REPLACE(REPLACE(REPLACE(  
+							     Replicate('I', InspectionLevels%10),  
+							     Replicate('I', 9),'IX'),  
+							     Replicate('I', 5), 'V'),  
+							     Replicate('I', 4),'IV')   
+            from [MainServer].Production.dbo.AcceptableQualityLevels WITH(NOLOCK) 
+            where Ukey = f.AcceptableQualityLevelsUkey) inspectionLevel
 where f.ID = @ID 
-
 select	distinct
 		oc.ColorID
 from  Production.dbo.Order_ColorCombo oc with (nolock)
