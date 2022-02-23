@@ -104,10 +104,10 @@
         const Current = window.opener.document.querySelector("#@ColumnName");
 
         //如果父頁面有照片，則顯示父頁面照片，如果沒有則顯示DB的照片
-        if (Current != null && Current.value != '') {
-            var tmp = document.querySelector("#Pic");
-            tmp.src = 'data:image/png;base64,' + Current.value;
-        }
+        //if (Current != null && Current.value != '') {
+        //    var tmp = document.querySelector("#Pic");
+        //    tmp.src = 'data:image/png;base64,' + Current.value;
+        //}
         // Screenshot Exit
         $('#btnScreenshotExit').on('click', function () {
             StopScreen();
@@ -123,7 +123,7 @@
                 Picture: tmp.src,
             }
 
-            window.opener.GetSinglePicture(Picture);
+            window.opener.GetInspMeasurement_PictureList(Picture);
             window.close();
         });
 
