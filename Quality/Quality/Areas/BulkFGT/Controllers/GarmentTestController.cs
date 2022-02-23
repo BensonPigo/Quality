@@ -202,7 +202,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
-            html += "<td><input class='form-control date-picker' id='garmentTest_Details_" + i + "__inspdate' name='garmentTest_Details[" + i + "].inspdate' type='text' value=''></td>";
+            html += "<td><input class='form-control' id='garmentTest_Details_" + i + "__inspdate' name='garmentTest_Details[" + i + "].inspdate' readonly type='text' value=''></td>";
             html += "<td><select id='garmentTest_Details_" + i + "__MtlTypeID' name='garmentTest_Details[" + i + "].MtlTypeID'><option value=''></option>";
             foreach (string val in MtlTypeIDs)
             {
