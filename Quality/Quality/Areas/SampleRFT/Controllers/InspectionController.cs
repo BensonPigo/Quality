@@ -100,12 +100,16 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             List<string> styles = this.SelectItemData.Where(x => string.IsNullOrEmpty(OrderID) || x.OrderID.Equals(OrderID))
                                     .GroupBy(x => x.StyleID)
-                                    .Select(x => x.Key).ToList();
-            string html = "";
-            foreach (string style in styles)
-            {
-                html += "<li><a href='#'>" + style + "</a></li>";
-            }
+                                    .Select(x => "**" + x.Key + "@@").ToList();
+
+            string html = string.Join(",", styles);
+
+            html = html.Replace(",", string.Empty).Replace("**", "<li><a href='#'>").Replace("@@", "</a></li>");
+            //string html = "";
+            //foreach (string style in styles)
+            //{
+            //    html += "<li><a href='#'>" + style + "</a></li>";
+            //}
 
             return Content(html);
         }
@@ -140,13 +144,16 @@ namespace Quality.Areas.SampleRFT.Controllers
             this.CheckSession();
             List<string> orderIDs = SelectItemData
                                     .GroupBy(x => x.OrderID)
-                                    .Select(x => x.Key).ToList();
+                                    .Select(x => "**" + x.Key + "@@").ToList();
 
-            string html = "";
-            foreach (string orderID in orderIDs)
-            {
-                html += "<li><a href='#'>" + orderID + "</a></li>";
-            }
+            string html = string.Join(",", orderIDs);
+
+            html = html.Replace(",", string.Empty).Replace("**", "<li><a href='#'>").Replace("@@", "</a></li>");
+            //string html = "";
+            //foreach (string orderID in orderIDs)
+            //{
+            //    html += "<li><a href='#'>" + orderID + "</a></li>";
+            //}
 
             return Content(html);
         }
@@ -193,12 +200,16 @@ namespace Quality.Areas.SampleRFT.Controllers
             List<string> articles = _InspectionService
                                     .GetSelectItemData(new Inspection_ViewModel() { StyleID = StyleID, OrderID = OrderID })
                                     .GroupBy(x => x.Article)
-                                    .Select(x => x.Key).ToList();
-            string html = "";
-            foreach (string article in articles)
-            {
-                html += "<li><a href='#'>" + article + "</a></li>";
-            }
+                                    .Select(x => "**" + x.Key + "@@").ToList();
+
+            string html = string.Join(",", articles);
+
+            html = html.Replace(",", string.Empty).Replace("**", "<li><a href='#'>").Replace("@@", "</a></li>");
+            //string html = "";
+            //foreach (string article in articles)
+            //{
+            //    html += "<li><a href='#'>" + article + "</a></li>";
+            //}
 
             return Content(html);
         }
@@ -232,12 +243,17 @@ namespace Quality.Areas.SampleRFT.Controllers
             List<string> sizes = _InspectionService
                                     .GetSelectItemData(new Inspection_ViewModel() { StyleID = StyleID, OrderID = OrderID, Article = Article })
                                     .GroupBy(x => x.Size)
-                                    .Select(x => x.Key).ToList();
-            string html = "";
-            foreach (string size in sizes)
-            {
-                html += "<li><a href='#'>" + size + "</a></li>";
-            }
+                                    .Select(x => "**" + x.Key + "@@").ToList();
+
+            string html = string.Join(",", sizes);
+
+            html = html.Replace(",", string.Empty).Replace("**", "<li><a href='#'>").Replace("@@", "</a></li>");
+
+            //string html = "";
+            //foreach (string size in sizes)
+            //{
+            //    html += "<li><a href='#'>" + size + "</a></li>";
+            //}
 
             return Content(html);
         }
@@ -271,12 +287,16 @@ namespace Quality.Areas.SampleRFT.Controllers
             List<string> productTypes = _InspectionService
                                     .GetSelectItemData(new Inspection_ViewModel() { StyleID = StyleID, OrderID = OrderID, Article = Article, Size = Size })
                                     .GroupBy(x => x.ProductType)
-                                    .Select(x => x.Key).ToList();
-            string html = "";
-            foreach (string productType in productTypes)
-            {
-                html += "<li><a href='#'>" + productType + "</a></li>";
-            }
+                                    .Select(x => "**" + x.Key + "@@").ToList();
+
+            string html = string.Join(",", productTypes);
+
+            html = html.Replace(",", string.Empty).Replace("**", "<li><a href='#'>").Replace("@@", "</a></li>");
+            //string html = "";
+            //foreach (string productType in productTypes)
+            //{
+            //    html += "<li><a href='#'>" + productType + "</a></li>";
+            //}
 
             return Content(html);
         }
