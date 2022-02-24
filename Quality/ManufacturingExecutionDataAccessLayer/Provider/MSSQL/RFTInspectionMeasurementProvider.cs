@@ -7,6 +7,7 @@ using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
 using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ViewModel;
+using System.Linq;
 
 namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 {
@@ -198,41 +199,56 @@ select no = isnull(max(no),0)+1 from  ManufacturingExecution.dbo.RFT_Inspection_
             }
 
             int rowSeq = 1;
+            int imgIdx = 0;
             string sqlcmd = $@"
 SET XACT_ABORT ON
 declare @AddDate datetime = GetDate()
 ";
             foreach (var item in Measurement)
             {
+                objParameter.Add($"@MeasurementUkey{rowSeq}", item.MeasurementUkey);
+                objParameter.Add($"@StyleUkey{rowSeq}", item.StyleUkey);
+                objParameter.Add($"@No", strNo);
+                objParameter.Add($"@Code{rowSeq}", item.Code);
+                objParameter.Add($"@SizeCode{rowSeq}", item.SizeCode);
+                objParameter.Add($"@SizeSpec{rowSeq}", item.SizeSpec);
+                objParameter.Add($"@OrderID{rowSeq}", item.OrderID);
+                objParameter.Add($"@Article{rowSeq}", item.Article);
+                objParameter.Add($"@Location{rowSeq}", item.Location);
+                objParameter.Add($"@Line{rowSeq}", item.Line);
+                objParameter.Add($"@FactoryID{rowSeq}", item.FactoryID);
+
+
+                // 若沒填入SizeSpec則不insert RFT_Inspection_Measurement
                 if (!string.IsNullOrEmpty(item.SizeSpec))
                 {
-                    objParameter.Add($"@MeasurementUkey{rowSeq}", item.MeasurementUkey);
-                    objParameter.Add($"@StyleUkey{rowSeq}", item.StyleUkey);
-                    objParameter.Add($"@No", strNo);
-                    objParameter.Add($"@Code{rowSeq}", item.Code);
-                    objParameter.Add($"@SizeCode{rowSeq}", item.SizeCode);
-                    objParameter.Add($"@SizeSpec{rowSeq}", item.SizeSpec);
-                    objParameter.Add($"@OrderID{rowSeq}", item.OrderID);
-                    objParameter.Add($"@Article{rowSeq}", item.Article);
-                    objParameter.Add($"@Location{rowSeq}", item.Location);
-                    objParameter.Add($"@Line{rowSeq}", item.Line);
-                    objParameter.Add($"@FactoryID{rowSeq}", item.FactoryID);
-                    objParameter.Add($"@Image{rowSeq}", DbType.Binary ,item.Image);
-
                     sqlcmd += $@"
 insert into RFT_Inspection_Measurement(MeasurementUkey,StyleUkey,No,Code,SizeCode,SizeSpec,OrderID,Article,Location,Line,FactoryID,AddDate)
 values(@MeasurementUkey{rowSeq},@StyleUkey{rowSeq},@No,@Code{rowSeq},@SizeCode{rowSeq},@SizeSpec{rowSeq},@OrderID{rowSeq},@Article{rowSeq},@Location{rowSeq},@Line{rowSeq},@FactoryID{rowSeq},@AddDate)
 ";
-                    if (item.Image != null)
+                }
+
+
+
+                // 若沒填入SizeSpec，依然可填入RFT_Inspection_Measurement
+                if (item.ImageList.Any())
+                {
+                    foreach (var img in item.ImageList)
                     {
-                        sqlcmd += $@"
+                        if (img != null)
+                        {
+                            objParameter.Add($"@Image{imgIdx}", DbType.Binary, img);
+                            sqlcmd += $@"
 insert into PMSFile.dbo.RFT_Inspection_Measurement(OrderID,Image)
-values(@OrderID{rowSeq},@Image{rowSeq})
+values(@OrderID{rowSeq},@Image{imgIdx})
 ";
+                            imgIdx++;
+                        }
                     }
+                }
 
                     rowSeq++;
-                }
+                
             }
 
             return ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter);

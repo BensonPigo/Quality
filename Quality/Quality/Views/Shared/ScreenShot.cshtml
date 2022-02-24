@@ -31,8 +31,8 @@
 
     <div class="videoScreen">
         <div>
-            <video autoplay muted playsinline style="padding:1em; width:30vw;"></video>
-            <img id="screenshot-img" style="width:30vw;">
+            <video autoplay muted playsinline style="padding:1em; width:100%;"></video>
+            @*<img id="screenshot-img" style="width:100%;">*@
         </div>
     </div>
 </div>
@@ -42,7 +42,7 @@
         const videoElement = document.querySelector('video');
         const videoSelect = document.querySelector('select#videoSource');
         const screenshotButton = document.querySelector("#screenshot-button");
-        const img = document.querySelector("#screenshot-img");
+        //const img = document.querySelector("#screenshot-img");
         const imgSet = document.querySelector("#" + ImgID);
         const canvas = document.createElement("canvas");
 
@@ -50,7 +50,7 @@
         videoSelect.onchange = getStream;
         getStream().then(getDevices).then(gotDevices);
 
-        $("#screenshot-img").width(0);
+        //$("#screenshot-img").width(0);
 
         screenshotButton.onclick = videoElement.onclick = function () {
             canvas.width = videoElement.videoWidth;
@@ -60,10 +60,10 @@
             // Other browsers will fall back to image/png
             var src = canvas.toDataURL("image/png");
             if (src.length > 6) {
-                img.src = src;
+                //img.src = src;
                 imgSet.src = src;
                 OtherSetting(ImgID, 'a' + ImgID);
-                $("#screenshot-img").width("30vw");
+                //$("#screenshot-img").width("100%");
             }
         };
 
@@ -119,7 +119,7 @@
 
     function StopScreen() {
         const videoSelect = document.querySelector('select#videoSource').innerHTML;
-        const img = document.querySelector("#screenshot-img");
+        //const img = document.querySelector("#screenshot-img");
         const videoElement = document.querySelector('video');
         if (videoSelect == "") {
             return;
@@ -128,7 +128,7 @@
         const stream = videoElement.srcObject;
         const tracks = stream.getTracks();
 
-        img.src = "";
+        //img.src = "";
 
         tracks.forEach(function (track) {
             track.stop();
