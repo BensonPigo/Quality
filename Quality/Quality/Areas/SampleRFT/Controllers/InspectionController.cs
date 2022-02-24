@@ -157,6 +157,32 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             return Content(html);
         }
+        [HttpPost]
+        public ActionResult FilterSP(string SPno)
+        {
+            this.CheckSession();
+            if (string.IsNullOrEmpty(SPno))
+            {
+                return Content(string.Empty);
+            }
+
+            List<string> orderIDs = SelectItemData
+                                    .Where(o=>o.OrderID.StartsWith(SPno))
+                                    .GroupBy(x => x.OrderID)
+                                    .Select(x => "**" + x.Key + "@@").ToList();
+
+            string html = string.Join(",", orderIDs);
+
+            html = html.Replace(",", string.Empty).Replace("**", "<li><a href='#'>").Replace("@@", "</a></li>");
+            //string html = "";
+            //foreach (string orderID in orderIDs)
+            //{
+            //    html += "<li><a href='#'>" + orderID + "</a></li>";
+            //}
+
+            return Content(html);
+        }
+
 
         [HttpPost]
         public JsonResult CheckSP(string OrderID)

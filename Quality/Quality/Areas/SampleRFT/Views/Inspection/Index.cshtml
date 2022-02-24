@@ -566,18 +566,18 @@
                             <table style="width: 40vw;" class="table table-striped">
                                 <tbody>
                                     <tr>
-                                        <td style="width:3em;">Style#</td>
-                                        <td colspan="2" align="left">
-                                            <input id="txtStyle" type="text" />
-                                            <input id="btnStyleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="StyleSelectItem" value="..." />
-                                        </td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
                                         <td>SP#</td>
                                         <td colspan="2">
                                             <input id="txtSP" type="text" />
                                             <input id="btnSPSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="SPSelectItem" value="..." />
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width:3em;">Style#</td>
+                                        <td colspan="2" align="left">
+                                            <input id="txtStyle" type="text" />
+                                            @*<input id="btnStyleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="StyleSelectItem" value="..." />*@
                                         </td>
                                         <td></td>
                                     </tr>
@@ -1372,7 +1372,7 @@
 
     function PrveLoad() {
         StyleClick($("#txtSP").val());
-        SPClick();
+        //SPClick();
     }
 
     function LeftOnBindEvent() {
@@ -3295,15 +3295,37 @@
         filter = $(".FilterInput[idx='" + idx + "']").val().toUpperCase();
         li = $(".FilterUL[idx='" + idx + "'] li");
 
-        // Loop through all list items, and hide those who don't match the search query
-        for (i = 0; i < li.length; i++) {
-            a = li[i].getElementsByTagName("a")[0];
-            txtValue = a.textContent || a.innerText;
-            if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                li[i].style.display = "";
-            } else {
-                li[i].style.display = "none";
+        if (idx == 'SP') {
+            $.ajax({
+                url: "@Url.Action("FilterSP", "Inspection", new { Area = "SampleRFT" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ SPno: filter }),
+                async: true,
+                success: function (data) {
+                    $(".FilterUL[idx='SP']").html(data);
+                    SelectItemClickBind();
+                    NonLoading();
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+
+
+        }
+        else {
+            // Loop through all list items, and hide those who don't match the search query
+            for (i = 0; i < li.length; i++) {
+                a = li[i].getElementsByTagName("a")[0];
+                txtValue = a.textContent || a.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    li[i].style.display = "";
+                } else {
+                    li[i].style.display = "none";
+                }
             }
+
         }
     }
 </script>
