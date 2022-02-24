@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -286,6 +287,7 @@ namespace BusinessLogicLayer.Service
                 string requestUri = pivotTransferRequest.RequestUri + "sintex" + finalInspectionID;
                 try
                 {
+                    #region 傳送finalinspection資料
                     postBody = JsonConvert.SerializeObject(GetPivot88Json(finalInspectionID));
 
                     WebApiBaseResult webApiBaseResult = WebApiTool.WebApiSend(pivotTransferRequest.BaseUri, requestUri, postBody, HttpMethod.Put, headers: pivotTransferRequest.Headers);
@@ -293,7 +295,7 @@ namespace BusinessLogicLayer.Service
                     switch (webApiBaseResult.webApiResponseStatus)
                     {
                         case WebApiResponseStatus.Success:
-                            _FinalInspectionProvider.UpdateIsExportToP88(finalInspectionID);
+                            isSuccess = true;
                             break;
                         case WebApiResponseStatus.WebApiReturnFail:
                             isSuccess = false;
@@ -312,6 +314,58 @@ namespace BusinessLogicLayer.Service
                             errorMsg = "????";
                             break;
                     }
+                    #endregion
+
+                    #region 傳送圖片
+                    
+
+                    if (!isSuccess)
+                    {
+                        Dictionary<string, byte[]> dicImage = _FinalInspectionProvider.GetFinalInspectionDefectImage(finalInspectionID);
+                        string requestUploadImgUri = requestUri + "/images/upload";
+                        //string requestUploadImgUri = "rest/operation/v1/inspection_reports/unique_key:sintexSPSCH22020130/images/upload";
+
+                        foreach (KeyValuePair<string, byte[]> imageInfo in dicImage)
+                        {
+                            MultipartFormDataContent contentPost = new MultipartFormDataContent();
+                            contentPost.Add(new StreamContent(new MemoryStream(imageInfo.Value)), "file", imageInfo.Key);
+                            webApiBaseResult = WebApiTool.WebApiSend(pivotTransferRequest.BaseUri, requestUploadImgUri, null, HttpMethod.Post, headers: pivotTransferRequest.Headers, httpContent: contentPost);
+
+                            switch (webApiBaseResult.webApiResponseStatus)
+                            {
+                                case WebApiResponseStatus.Success:
+                                    break;
+                                case WebApiResponseStatus.WebApiReturnFail:
+                                    isSuccess = false;
+                                    errorMsg = webApiBaseResult.responseContent;
+                                    break;
+                                case WebApiResponseStatus.OtherException:
+                                    isSuccess = false;
+                                    errorMsg = webApiBaseResult.exception.ToString();
+                                    break;
+                                case WebApiResponseStatus.ApiTimeout:
+                                    isSuccess = false;
+                                    errorMsg = "WebAPI timeout";
+                                    break;
+                                default:
+                                    isSuccess = false;
+                                    errorMsg = "????";
+                                    break;
+                            }
+
+                            if (!isSuccess)
+                            {
+                                break;
+                            }
+                        }
+                    }
+
+                    #endregion
+
+                    if (isSuccess)
+                    {
+                        _FinalInspectionProvider.UpdateIsExportToP88(finalInspectionID);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -319,7 +373,7 @@ namespace BusinessLogicLayer.Service
                     errorMsg = ex.ToString();
                 }
 
-                if (!isSuccess)
+                if (isSuccess)
                 {
                     AutomationErrMsg automationErrMsg = new AutomationErrMsg();
                     automationErrMsg.suppID = StaticPivot88.SuppID;

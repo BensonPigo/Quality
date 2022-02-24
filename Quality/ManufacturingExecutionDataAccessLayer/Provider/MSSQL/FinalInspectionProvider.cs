@@ -457,6 +457,31 @@ select  Image
             }
         }
 
+        public Dictionary<string, byte[]> GetFinalInspectionDefectImage(string FinalInspectionID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection() {
+            { "@FinalInspectionID", DbType.String, FinalInspectionID }
+            };
+
+            string sqlGetData = @"
+    select  [ImageName] =  CONCAT(fdi.ID, '_', isnull(fd.GarmentDefectCodeID, ''), '_', fdi.Ukey, '.png'), Image
+    from [ExtendServer].PMSFile.dbo.FinalInspection_DetailImage fdi with (nolock)
+    left join FinalInspection_Detail fd with (nolock) on fd.Ukey = fdi.FinalInspection_DetailUkey
+    where   fdi.ID = @FinalInspectionID
+";
+
+            DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, objParameter);
+
+            if (dtResult.Rows.Count > 0)
+            {
+                return dtResult.AsEnumerable().ToDictionary(s => s["ImageName"].ToString(), s => (byte[])s["Image"]);
+            }
+            else
+            {
+                return new Dictionary<string, byte[]>();
+            }
+        }
+
         public void UpdateFinalInspectionDetail(AddDefect addDefect, string UserID)
         {
             using (TransactionScope transaction = new TransactionScope())

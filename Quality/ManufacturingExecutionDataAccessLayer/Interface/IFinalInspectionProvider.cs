@@ -19,6 +19,8 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
 
         IList<byte[]> GetFinalInspectionDefectImage(long FinalInspection_DetailUkey);
 
+        Dictionary<string, byte[]> GetFinalInspectionDefectImage(string FinalInspectionID);
+
         void UpdateFinalInspectionDetail(AddDefect addDefect, string UserID);
 
         IList<BACriteriaItem> GetBeautifulProductAuditForInspection(string finalInspectionID);
