@@ -29,7 +29,10 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
                 { "@SizeCode", DbType.String, inspection_ViewModel.Size } ,
                 { "@Location", DbType.String, inspection_ViewModel.ProductType } ,
                 { "@BrandID", DbType.String, inspection_ViewModel.Brand } ,
-            };
+
+				//只撈三年內
+				{ "@StartDate", DbType.DateTime, Convert.ToDateTime ($"{(DateTime.Now.Year - 3)}/01/01")} ,
+			};
 
             SbSql.Append(
 				@"
@@ -73,6 +76,7 @@ outer apply (
 	and Status in ('Pass', 'Fixed')
 )r_Size
 where r_Size.SizeBalanceQty < oq.Qty
+AND  o.AddDate >= @StartDate
 and o.Category = 'S'
 and o.Junk = 0
 --and o.PulloutComplete = 0 " + Environment.NewLine);
