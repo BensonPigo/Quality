@@ -277,12 +277,14 @@
     <Content Include="Image\Icon\PDF.png" />
     <Content Include="Image\Icon\PDF_White.png" />
     <Content Include="Image\Icon\Picture.png" />
+    <Content Include="Image\Icon\Plus.png" />
     <Content Include="Image\Icon\Print.png" />
     <Content Include="Image\Icon\Print_White.png" />
     <Content Include="Image\Icon\QRCode.png" />
     <Content Include="Image\Icon\Quality.png" />
     <Content Include="Image\Icon\Query.png" />
     <Content Include="Image\Icon\Receive.png" />
+    <Content Include="Image\Icon\Reduce.png" />
     <Content Include="Image\Icon\Refresh.png" />
     <Content Include="Image\Icon\Remove.png" />
     <Content Include="Image\Icon\Save.png" />

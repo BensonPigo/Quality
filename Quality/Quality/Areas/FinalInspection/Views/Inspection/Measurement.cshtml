@@ -36,6 +36,24 @@
         font-size: 1.5vw;
         font-weight: 900;
     }
+    .iconPlus {
+        background: url('/Image/Icon/Plus.png')no-repeat center / 80% 80%;
+        height: 1.5vw;
+        width: 1.5vw;
+        vertical-align: middle;
+        cursor: pointer;
+        /*display: block;*/
+        /* Other styles here */
+    }
+    .iconReduce {
+        background: url('/Image/Icon/Reduce.png')no-repeat center / 80% 80%;
+        height: 1.5vw;
+        width: 1.5vw;
+        vertical-align: middle;
+        cursor: pointer;
+        /*display: block;*/
+        /* Other styles here */
+    }
 </style>
 
 @using (Html.BeginForm("Measurement", "Inspection", FormMethod.Post, new { @id = "MeasurementForm", onsubmit = "return checkValue(this.submitted);" }))
@@ -103,7 +121,7 @@
                             <th style="width:10vw">
                                 <p idx="SizeCode"></p>
                             </th>
-                            <th style="width:10vw">
+                            <th style="width:28vw">
                                 <p></p>
                             </th>
                             <th style="width:10vw">
@@ -288,7 +306,6 @@
 
 
         $("#Save").click(Save);
-
     });
 
 
@@ -529,6 +546,96 @@
         });
 
         ReloadData();
+
+        $(".iconPlus").click(function () {
+            var Keyidx = $(this).attr("KeyIdx");
+            var currentCol = $(`input[idx=ResultSizeSpec][KeyIdx=${Keyidx}]`);
+            var tpye = $(currentCol).attr("type");
+            var oldValue = 0;
+
+            if (tpye == "number") {
+                if ($(currentCol).val() != '') {
+                    oldValue = parseFloat($(currentCol).val());
+                }
+                var newValue = oldValue + 1;
+                $(currentCol).val(newValue).change();
+            }
+            if (tpye == "text") {
+                var newValue = 0;
+                if ($(currentCol).val() != '') {
+
+                    //有分數，例如：1 1/2，把整數位獨立出來+1
+                    if ($(currentCol).val().split(' ').length == 2) {
+                        var interg = $(currentCol).val().split(' ')[0];
+                        var float = $(currentCol).val().split(' ')[1];
+                        var tmp = parseInt(interg) + 1;
+                        newValue = tmp + ` ${float}`;
+
+                    }
+                    else {
+                        // 其餘直接轉成整數
+                        oldValue = parseFloat($(currentCol).val());
+                        newValue = oldValue + 1;
+                    }
+
+                }
+                else {
+                    newValue = oldValue + 1;
+                }
+
+                $(currentCol).val(newValue).change();
+            }
+        });
+
+        $(".iconReduce").click(function () {
+            var Keyidx = $(this).attr("KeyIdx");
+            var currentCol = $(`input[idx=ResultSizeSpec][KeyIdx=${Keyidx}]`);
+            var tpye = $(currentCol).attr("type");
+            var oldValue = 0;
+
+            if (tpye == "number") {
+
+                if ($(currentCol).val() != '') {
+                    oldValue = parseFloat($(currentCol).val());
+                }
+                var newValue = oldValue - 1;
+                $(currentCol).val(newValue).change();
+            }
+            if (tpye == "text") {
+
+                var newValue = 0;
+                if ($(currentCol).val() != '') {
+
+                    //有分數，例如：1 1/2，把整數位獨立出來-1
+                    if ($(currentCol).val().split(' ').length == 2) {
+                        var interg = $(currentCol).val().split(' ')[0];
+                        var float = $(currentCol).val().split(' ')[1];
+                        var tmp = parseInt(interg) - 1;
+
+                        // 若整數位<=1，新值直接歸0
+                        if (interg <= 1) {
+                            newValue = 0;
+                        }
+                        else {
+                            newValue = tmp + ` ${float}`;
+                        }
+
+                    }
+                    else {
+                        // 其餘直接轉成整數
+                        oldValue = parseFloat($(currentCol).val());
+                        newValue = oldValue - 1;
+                    }
+
+                }
+                else {
+                    newValue = oldValue - 1;
+                }
+
+                $(currentCol).val(newValue).change();
+
+            }
+        });
     });
 
 
@@ -554,13 +661,14 @@
             <th style="width:10vw"><p>Tol(+)</p></th>
             <th style="width:10vw"><p>Tol(-)</p></th>
             <th style="width:10vw"><p idx='SizeCode'>${dropSize.value}</p></th>
-            <th style="width:10vw"></th>
+            <th style="width:28vw"></th>
             <th style="width:10vw"><p>Diff</p></th>
             </tr>`;
         }
 
 
         var items = @Html.Raw(Json.Encode(Model.ListMeasurementItem));
+        var KeyIdx = 0;
         $.each(items, function (index, value) {
             if (value.Size == dropSize.value) {
 
@@ -581,14 +689,16 @@
 `;
 
                 if (SizeUnit == "INCH") {
-                    tbody += "<td  style ='vertical-align: middle;' class='" + bgColor + "'><input type='text' idx='ResultSizeSpec' placeholder= '__ __/__' style ='width:7vw; height:3.5vh' class='" + bgColor + "' " + readonly + "></td>";
+                    tbody += "<td  style ='vertical-align: middle;' class='" + bgColor + "'><img class='iconPlus' KeyIdx='" + KeyIdx + "' /><input type='text' KeyIdx='" + KeyIdx + "' idx='ResultSizeSpec' placeholder= '__ __/__' style ='width:64%; height:3.5vh' class='" + bgColor + "' " + readonly + "><img KeyIdx='" + KeyIdx + "' class='iconReduce' /></td>";
                 }
                 else {
-                    tbody += "<td  style ='vertical-align: middle;' class='" + bgColor + "'><input type='number' step='any' idx='ResultSizeSpec' style ='width:7vw; height:2.5vh' class='" + bgColor + "' " + readonly + "></td>";
+                    tbody += "<td  style ='vertical-align: middle;' class='" + bgColor + "'><img class='iconPlus' KeyIdx='" + KeyIdx + "' /><input type='number' KeyIdx='" + KeyIdx + "' step='any' idx='ResultSizeSpec' style ='width:64%; height:2.5vh' class='" + bgColor + "' " + readonly + "><img KeyIdx='" + KeyIdx + "' class='iconReduce' /></td>";
                 }
 
                 tbody += "<td style ='vertical-align: middle;'><p style ='padding: 0.5vh' class='Diff'></p></td>";
                 tbody += "</tr>";
+
+                KeyIdx = KeyIdx + 1;
             }
         });
 

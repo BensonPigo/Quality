@@ -494,6 +494,17 @@
                 }
             });
 
+            // CTN No Header改成文字方塊
+            $('#CartonTable thead th').each(function () {
+                var idx = $(this).index();
+                var title = $(this).text();
+
+                if (idx == 2) {
+                    $(this).html('<input id="CTNSearch" type="text" placeholder="Search ' + title + '" />');
+                }
+
+            });
+
             $("#CartonTable").DataTable({
                 "pageLength": 10,
                 "autoWidth": false,
@@ -806,6 +817,8 @@
 
             $(".to-edit-detail").dialog("open");
             ShowLoading();
+            
+
             $("#CartonTable").DataTable({
                 "pageLength": 10,
                 "autoWidth": false,
@@ -813,7 +826,6 @@
                 destroy: true, // 設定這個才能重新初始化Datatables
                 //"filter": false,
                 "paging": false,
-                "info": false,
                 "scrollY": "40vh",
                 "scrollCollapse": true,
                 "search": {
@@ -822,10 +834,30 @@
                 columnDefs: [
                     { targets: 0, width: "30%" },
                     { targets: 1, width: "30%" },
-                    { targets: 2, width: "30%" },
+                    { targets: 2, width: "30%" , orderable: false,  },
                     { targets: 3, visible: false },
-                ]
+                ],
+                initComplete: function () {
+                    this.api().columns().every(function () {
+
+                        // 只有第一個欄位要有選單
+                        if (this.data().length > 0 && this.index() == 2) {
+
+                            var that = this;
+                            $('input', this.header()).on('keyup change clear', function () {
+                                if (that.search() !== this.value) {
+                                    that
+                                        .search(this.value)
+                                        .draw();
+                                }
+                            });
+
+                        }
+                    });
+                }
             })/*.columns.adjust()*/;
+
+            $("#CTNSearch").val('');
 
             $("#CartonTable_filter").hide();
 
