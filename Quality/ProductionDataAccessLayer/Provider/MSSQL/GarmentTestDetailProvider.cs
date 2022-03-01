@@ -386,9 +386,17 @@ where ID = @ID and No = @No
                 { "@No", DbType.String, No } ,
                 { "@Status", DbType.String, Status } ,
             };
+            if (Status == "Confirmed")
+            {
+                objParameter.Add("@InspDate", DbType.DateTime, DateTime.Now);
+            }
+            else
+            {
+                objParameter.Add("@InspDate", DbType.DateTime, DBNull.Value);
+            }
 
             string sqlcmd = @"
-Update GarmentTest_Detail set Status = @Status where id = @ID and No = @No
+Update GarmentTest_Detail set Status = @Status, InspDate = @InspDate  where id = @ID and No = @No
 ";
             return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
         }

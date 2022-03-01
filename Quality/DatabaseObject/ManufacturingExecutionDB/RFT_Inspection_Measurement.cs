@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 namespace DatabaseObject.ManufacturingExecutionDB
 {
@@ -60,5 +61,6 @@ namespace DatabaseObject.ManufacturingExecutionDB
         [Display(Name = "工廠")]
         public string FactoryID { get; set; }
         public byte[] Image { get; set; }
+        public List<byte[]> ImageList { get; set; }
     }
 }

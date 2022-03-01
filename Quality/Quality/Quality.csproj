@@ -903,7 +903,7 @@
     <Content Include="XLT\PerspirationFastness_ToExcel.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Views\PublicWondow\SinglePictureList.cshtml" />
+    <Content Include="Views\PublicWondow\InspMeasurement_PictureList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

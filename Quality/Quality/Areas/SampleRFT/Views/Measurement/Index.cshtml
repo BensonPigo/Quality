@@ -3,6 +3,7 @@
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    int imgCount = Model.Images_Source == null ? 0 : Model.Images_Source.Count;
 }
 
 @model Measurement_ResultModel
@@ -313,7 +314,7 @@
 
         if ($('#JsonBody').val() != "") {
             var datas = JSON.parse($('#JsonBody').val());
-            if (datas.length == 0) {
+            if (datas.length == 0 && @imgCount == 0) {
                 msg.WithErrorCheck("No data Found", function () {
                     return false;
                 });

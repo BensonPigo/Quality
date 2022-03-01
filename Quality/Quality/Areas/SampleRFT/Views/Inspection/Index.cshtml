@@ -1898,7 +1898,7 @@
             para += "&" + "ShowDelete=false";
             para += "&" + "PKey_1=ID";
             para += "&" + "PKey_1_Val=" +"111" ;
-            window.open('@Url.Action("SinglePictureList", "PublicWondow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1024,height=750');
+            window.open('@Url.Action("InspMeasurement_PictureList", "PublicWondow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1024,height=750');
         });
     }
 
@@ -2301,8 +2301,10 @@
             }
         });
     }
-    function GetSinglePicture(data) {
-        $('#MeasurementImage').val(data.Picture.replace("data:image/png;base64,", ""));
+    function GetInspMeasurement_PictureList(data) {
+        var newPic = data.Picture.replace("data:image/png;base64,", "");
+        var oldVal = $('#MeasurementImage').val();
+        $('#MeasurementImage').val(oldVal + '###' + newPic);
     }
 
     function ProductTypeClick(StyleID, OrderID, Article, Size) {
@@ -3069,11 +3071,16 @@
 
     function MeasurementSave() {
         var datasDetail = [];
+
+        //允許寫入狀況：1. Size spec有填入 or 2. 有拍照
+
+        // 1. Size spec有填入
         $.each($('.MeasurementTable>tbody>tr>td>input'), function (index, value) {
             if ($(this).val() == "") {
                 return;
             }
 
+            var ImgList = $('#MeasurementImage').val().split('###');
             var tr = $(this).parent().parent();
 
             datasDetail.push({
@@ -3085,9 +3092,32 @@
                 OrderID: $('#txtSP').val(),
                 Article: $('#txtArticle').val(),
                 Location: $('#txtProductType').val(),
-                Image: $('#MeasurementImage').val(),
+                //Image: $('#MeasurementImage').val(),
+                ImageList: ImgList,
             });
         });
+
+        // 2. 有拍照
+        if (datasDetail.length == 0 && $('#MeasurementImage').val() != '') {
+
+            $.each($('.MeasurementTable>tbody>tr>td>input'), function (index, value) {
+
+                var ImgList = $('#MeasurementImage').val().split('###');
+                var tr = $(this).parent().parent();
+
+                datasDetail.push({
+                    MeasurementUkey: parseInt(tr.attr('idv')),
+                    StyleUkey: parseInt(tr.attr('idx')),
+                    Code: tr.find("p[idx='Code']").html(),
+                    SizeCode: tr.attr('idi'),
+                    OrderID: $('#txtSP').val(),
+                    Article: $('#txtArticle').val(),
+                    Location: $('#txtProductType').val(),
+                    ImageList: ImgList,
+                });
+                return false; // 等於break
+            });
+        }
 
         $.ajax({
             url: "@Url.Action("MeasurementSave", "Inspection", new { Area = "SampleRFT" })",
