@@ -243,10 +243,12 @@ namespace BusinessLogicLayer.Service
                 int start_row = 10;
                 foreach (var item in mockupCrocking_Detail)
                 {
+                    string fabric = string.IsNullOrEmpty(item.FabricColorName) ? item.FabricRefNo : item.FabricRefNo + " - " + item.FabricColorName;
+                    string artwork = string.IsNullOrEmpty(mockupCrocking.ArtworkTypeID) ? item.Design + " - " + item.ArtworkColorName : mockupCrocking.ArtworkTypeID + "/" + item.Design + " - " + item.ArtworkColorName;
                     string remark = item.Remark;
                     worksheet.Cells[start_row, 1] = mockupCrocking.StyleID;
-                    worksheet.Cells[start_row, 2] = string.IsNullOrEmpty(item.FabricColorName) ? item.FabricRefNo : item.FabricRefNo + " - " + item.FabricColorName;
-                    worksheet.Cells[start_row, 3] = string.IsNullOrEmpty(mockupCrocking.ArtworkTypeID) ? item.Design + " - " + item.ArtworkColorName : mockupCrocking.ArtworkTypeID + "/" + item.Design + " - " + item.ArtworkColorName;
+                    worksheet.Cells[start_row, 2] = fabric;
+                    worksheet.Cells[start_row, 3] = artwork;
                     worksheet.Cells[start_row, 5] = string.IsNullOrEmpty(item.DryScale) ? string.Empty : "GRADE" + item.DryScale;
                     worksheet.Cells[start_row, 6] = string.IsNullOrEmpty(item.WetScale) ? string.Empty : "GRADE" + item.WetScale;
                     worksheet.Cells[start_row, 7] = item.Result;
@@ -255,15 +257,9 @@ namespace BusinessLogicLayer.Service
                     worksheet.Rows[start_row].WrapText = true;
                     worksheet.Rows[start_row].HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
 
-                    // 合併儲存格無法AutoFit()因此要自己算高度
-                    if ((remark.Length / 20) > 1)
-                    {
-                        worksheet.Range[$"E{start_row}", $"E{start_row}"].RowHeight = remark.Length / 20 * 16.5;
-                    }
-                    else
-                    {
-                        worksheet.Rows[start_row].AutoFit();
-                    }
+                    int maxLength = fabric.Length > remark.Length ? fabric.Length : remark.Length;
+                    maxLength = maxLength > artwork.Length ? maxLength : artwork.Length;
+                    worksheet.Range[$"A{start_row}", $"H{start_row}"].RowHeight = ((maxLength / 20) + 1) * 16.5;
 
                     start_row++;
                 }

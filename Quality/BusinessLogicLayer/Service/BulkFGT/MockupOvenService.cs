@@ -335,18 +335,12 @@ namespace BusinessLogicLayer.Service
                     worksheet.Rows[start_row].WrapText = true;
                     worksheet.Rows[start_row].HorizontalAlignment = XlHAlign.xlHAlignCenter;
 
-                    // 合併儲存格無法AutoFit()因此要自己算高度
-                    if (fabric.Length > remark.Length || artwork.Length > remark.Length)
-                    {
-                        worksheet.Rows[start_row].AutoFit();
-                    }
-                    else
-                    {
-                        worksheet.Range[$"E{start_row}", $"E{start_row}"].RowHeight = ((remark.Length / 20) + 1) * 16.5;
-                    }
+                    int maxLength = fabric.Length > remark.Length ? fabric.Length : remark.Length;
+                    maxLength = maxLength > artwork.Length ? maxLength : artwork.Length;
+                    worksheet.Range[$"A{start_row}", $"K{start_row}"].RowHeight = ((maxLength / 20) + 1) * 16.5;
 
                     start_row++;
-                }
+                } 
                 #endregion
 
                 string fileName = $"{basefileName}{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
