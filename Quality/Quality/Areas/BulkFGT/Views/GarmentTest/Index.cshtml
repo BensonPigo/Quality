@@ -299,7 +299,7 @@
                                 <td class="@ResultFontColor">
                                     @ResultVal
                                 </td>
-                                <td><h5>Last Test Date</h5></td>
+                                <td><h5>Last Report Date</h5></td>
                                 <td>
                                     @Date
                                 </td>
@@ -339,7 +339,7 @@
                                     <th><h4>No. of Test</h4></th>
                                     <th><h4>SP#</h4></th>
                                     <th><h4>Size</h4></th>
-                                    <th><h4>Test Date</h4></th>
+                                    <th><h4>Report Date</h4></th>
                                     <th><h4>Material Type</h4></th>
                                     <th><h4>Result</h4></th>
                                     <th><h4>Non 450</h4></th>
@@ -394,7 +394,7 @@
                                     </select>
                                 </td>
                                 <td style="width:10vw;">
-                                    @Html.TextBoxFor(o => Model.garmentTest_Details[i].inspdate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
+                                    @Html.TextBoxFor(o => Model.garmentTest_Details[i].inspdate, "{0:yyyy/MM/dd HH:mm:ss}", new { @readonly="readonly" })
                                 </td>
                                 <td style="width:10vw;">
                                     <select id="Model_garmentTest_Details_@{@i}__MtlTypeID" name="Model.garmentTest_Details[@i].MtlTypeID" disabled="disabled">
