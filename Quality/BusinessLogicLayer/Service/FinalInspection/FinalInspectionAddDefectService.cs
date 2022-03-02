@@ -66,6 +66,13 @@ namespace BusinessLogicLayer.Service
             return _FinalInspectionProvider.GetFinalInspectionDefectImage(FinalInspection_DetailUkey).ToList();
 
         }
+        public List<ImageRemark> GetDetailItem(long FinalInspection_DetailUkey)
+        {
+            _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+            return _FinalInspectionProvider.GetFinalInspectionDetail(FinalInspection_DetailUkey).ToList();
+
+        }
 
         public BaseResult UpdateFinalInspectionDetail(AddDefect addDefect, string UserID)
         {

@@ -143,12 +143,14 @@
             var Ukey = Data.DetailUkey;
             var RowIndex = Data.RowIndex;
             var Picture = Data.Img.replace("data:image/png;base64,", "");
+            var Remark = Data.Remark;
 
             var data =
             {
                 Ukey: Ukey,
                 RowIndex: RowIndex,
                 TempImage: Picture,
+                TempRemark: Remark,
             };
 
             $.ajax({

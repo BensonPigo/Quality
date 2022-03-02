@@ -441,7 +441,7 @@ where   ID = @FinalInspectionID
 
             string sqlGetData = @"
 select  Image
-    from [ExtendServer].PMSFile.dbo.FinalInspection_DetailImage with (nolock)
+    from PMSFile.dbo.FinalInspection_DetailImage with (nolock)
     where   FinalInspection_DetailUkey = @FinalInspection_DetailUkey
 ";
 
@@ -455,6 +455,22 @@ select  Image
             {
                 return new List<byte[]>();
             }
+        }
+
+        public IList<ImageRemark> GetFinalInspectionDetail(long FinalInspection_DetailUkey)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection() {
+            { "@FinalInspection_DetailUkey", DbType.Int64, FinalInspection_DetailUkey }
+            };
+
+            string sqlGetData = @"
+select  a.Image, b.Remark
+from PMSFile.dbo.FinalInspection_DetailImage a with (nolock)
+inner join FinalInspection_DetailImage b on a.ID = b.ID AND a.FinalInspection_DetailUkey = b.FinalInspection_DetailUkey
+    where   a.FinalInspection_DetailUkey = @FinalInspection_DetailUkey
+";
+            return ExecuteList<ImageRemark>(CommandType.Text, sqlGetData, objParameter);
+
         }
 
         public void UpdateFinalInspectionDetail(AddDefect addDefect, string UserID)
@@ -519,19 +535,20 @@ where   ID = @FinalInspectionID
 
                     if (defectItem.Qty > 0)
                     {
-                        foreach (byte[] image in defectItem.ListFinalInspectionDefectImage)
+                        foreach (var DetailImage in defectItem.ListFinalInspectionDefectImage)
                         {
                             string sqlInsertFinalInspection_DetailImage = @"
 SET XACT_ABORT ON
-    insert into FinalInspection_DetailImage(ID, FinalInspection_DetailUkey)
-                values(@FinalInspectionID, @FinalInspection_DetailUkey) ----2022/01/10 PMSFile上線，因此去掉Image寫入原本DB的部分
-    insert into [ExtendServer].PMSFile.dbo.FinalInspection_DetailImage(ID, FinalInspection_DetailUkey, Image)
+    insert into FinalInspection_DetailImage(ID, FinalInspection_DetailUkey ,Remark)
+                values(@FinalInspectionID, @FinalInspection_DetailUkey ,@Remark) ----2022/01/10 PMSFile上線，因此去掉Image寫入原本DB的部分
+    insert into PMSFile.dbo.FinalInspection_DetailImage(ID, FinalInspection_DetailUkey, Image)
                 values(@FinalInspectionID, @FinalInspection_DetailUkey, @Image)
 ";
                             SQLParameterCollection imgParameter = new SQLParameterCollection() {
                             { "@FinalInspectionID", DbType.String, addDefect.FinalInspectionID },
                             { "@FinalInspection_DetailUkey", DbType.Int64, defectItem.Ukey },
-                            { "@Image", image == null ? System.Data.SqlTypes.SqlBinary.Null : image}
+                            { "@Image", DetailImage.Image == null ? System.Data.SqlTypes.SqlBinary.Null : DetailImage.Image},
+                            { "@Remark",DbType.String, DetailImage.Remark ?? "" },
                         };
 
                             ExecuteNonQuery(CommandType.Text, sqlInsertFinalInspection_DetailImage, imgParameter);
@@ -560,12 +577,17 @@ select  [Ukey] = isnull(fn.Ukey, -1),
         [BACriteria] = bac.ID,
         [BACriteriaDesc] = bac.Description,
         [Qty] = isnull(fn.Qty, 0),		
-		[RowIndex]=ROW_NUMBER() OVER(ORDER BY bac.ID) -1,
-		HasImage = Cast(IIF(img.Image is null,0,1) as bit)
+		[RowIndex]=ROW_NUMBER() OVER(ORDER BY bac.ID) -1
+		,HasImage = Cast(
+			IIF(EXISTS(
+				select 1 from PMSFile.dbo.FinalInspection_NonBACriteriaImage img 
+				where img.FinalInspection_NonBACriteriaUkey = fn.Ukey AND img.ID = fn.ID
+			),1,0)		
+		as bit)
     from #baseBACriteria bac with (nolock)
     left join   FinalInspection_NonBACriteria fn WITH(NOLOCK) on    fn.ID = @finalInspectionID and
                                                             fn.BACriteria = bac.ID
-	left join FinalInspection_NonBACriteriaImage img WITH(NOLOCK)  ON img.FinalInspection_NonBACriteriaUkey = fn.Ukey AND img.ID = fn.ID
+	--left join FinalInspection_NonBACriteriaImage img WITH(NOLOCK)  ON img.FinalInspection_NonBACriteriaUkey = fn.Ukey AND img.ID = fn.ID
 
 DROP TABLE #baseBACriteria
 ";
@@ -634,20 +656,21 @@ where   ID = @FinalInspectionID
                     //數量大於0才需要上傳圖片
                     if (criteriaItem.Qty > 0)
                     {
-                        foreach (byte[] image in criteriaItem.ListBACriteriaImage)
+                        foreach (var baDetail in criteriaItem.ListBACriteriaImage)
                         {
                             string sqlInsertFinalInspection_NonBACriteriaImage = @"
     SET XACT_ABORT ON
-    insert into FinalInspection_NonBACriteriaImage(ID, FinalInspection_NonBACriteriaUkey)
-                values(@FinalInspectionID, @FinalInspection_NonBACriteriaUkey) --2022/01/10 PMSFile上線，因此去掉Image寫入原本DB的部分
+    insert into FinalInspection_NonBACriteriaImage(ID, FinalInspection_NonBACriteriaUkey ,Remark)
+                values(@FinalInspectionID, @FinalInspection_NonBACriteriaUkey ,@Remark) --2022/01/10 PMSFile上線，因此去掉Image寫入原本DB的部分
 
-    insert into [ExtendServer].PMSFile.dbo.FinalInspection_NonBACriteriaImage(ID, FinalInspection_NonBACriteriaUkey, Image)
+    insert into PMSFile.dbo.FinalInspection_NonBACriteriaImage(ID, FinalInspection_NonBACriteriaUkey, Image)
                 values(@FinalInspectionID, @FinalInspection_NonBACriteriaUkey, @Image)
 ";
                             SQLParameterCollection imgParameter = new SQLParameterCollection() {
                             { "@FinalInspectionID", DbType.String, beautifulProductAudit.FinalInspectionID },
                             { "@FinalInspection_NonBACriteriaUkey", DbType.Int64, criteriaItem.Ukey },
-                            { "@Image", image}
+                            { "@Remark", DbType.String, baDetail.Remark ?? ""},
+                            { "@Image", baDetail.Image}
                         };
 
                             ExecuteNonQuery(CommandType.Text, sqlInsertFinalInspection_NonBACriteriaImage, imgParameter);
@@ -683,6 +706,24 @@ select  Image
             }
         }
 
+        public IList<ImageRemark> GetBA_DetailImage(long FinalInspection_NonBACriteriaUkey)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection() {
+            { "@FinalInspection_NonBACriteriaUkey", DbType.Int64, FinalInspection_NonBACriteriaUkey }
+            };
+
+            string sqlGetData = @"
+select  a.Image, Remark = (
+	select Remark from FinalInspection_NonBACriteriaImage b
+	where   a.Ukey=b.Ukey
+)
+from PMSFile.dbo.FinalInspection_NonBACriteriaImage a with (nolock)
+    where   a.FinalInspection_NonBACriteriaUkey = @FinalInspection_NonBACriteriaUkey
+";
+
+            return ExecuteList<ImageRemark>(CommandType.Text, sqlGetData, objParameter);
+        }
+
         public IList<CartonItem> GetMoistureListCartonItem(string finalInspectionID)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection() {
@@ -708,7 +749,7 @@ where foc.ID = @finalInspectionID
             return ExecuteList<CartonItem>(CommandType.Text, sqlGetMoistureListCartonItem, objParameter);
 
         }
-        
+
 
         public IList<ViewMoistureResult> GetViewMoistureResult(string finalInspectionID)
         {
@@ -780,7 +821,7 @@ from    EndlineMoisture with (nolock)
             objParameter.Add("@GarmentBottom", moistureResult.GarmentBottom);
             objParameter.Add("@CTNInside", moistureResult.CTNInside);
             objParameter.Add("@CTNOutside", moistureResult.CTNOutside);
-            objParameter.Add("@Result",DbType.String, moistureResult.Result);
+            objParameter.Add("@Result", DbType.String, moistureResult.Result);
             objParameter.Add("@Action", moistureResult.Action);
             objParameter.Add("@Remark", moistureResult.Remark ?? "");
             objParameter.Add("@AddName", moistureResult.AddName);
@@ -917,7 +958,7 @@ values
                 transactionScope.Complete();
             }
         }
-        
+
         public IList<MeasurementViewItem> GetMeasurementViewItem(string finalInspectionID)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();

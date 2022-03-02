@@ -59,7 +59,7 @@
     <input id="btnExit" type="button" value="Exit" />
 </header>
 <br />
-<div class="outerDiv" style="margin-right:2%;">
+<div class="outerDiv" style="margin-right:2%;overflow-y:scroll;">
 
     @using (Html.BeginForm("TakePicture", "Inspection", FormMethod.Post, new { @id = "TakePictureForm", onsubmit = "return checkValue(this.submitted)" }))
     {
@@ -68,6 +68,11 @@
             <img id="Del" class="pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Delete.png" />
 
         </div>
+        <h4>Remark</h4>
+
+        <input type="text" id="Rmk" style="width:90%;border:2px solid black;" name="name" value="" />
+        <br />
+        <br />
         <img id="ImgPic" Type="Pic" style="width:100%;" />
     }
 </div>
@@ -92,13 +97,14 @@
 
         $("#btnSave").click(function () {
 
-            //var Pic = document.querySelector("#ImgPic");
             var Pic = document.querySelectorAll("#ImgPic");
+            var Rmk = $("#Rmk").val();
 
             var Picture = {
                 DetailUkey: '@DetailUkey',
                 RowIndex : '@RowIndex',
                 Img: Pic[0].src,
+                Remark: Rmk,
             }
 
             window.opener.GetImage(Picture);
@@ -113,6 +119,7 @@
         $("#Del").click(function () {
 
             $("#ImgPic").removeAttr("src");
+            $("#Rmk").val("");
         });
 
         CamInit();

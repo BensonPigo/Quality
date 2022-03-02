@@ -18,6 +18,7 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         void UpdateFinalInspectionByStep(FinalInspection finalInspection, string currentStep, string userID);
 
         IList<byte[]> GetFinalInspectionDefectImage(long FinalInspection_DetailUkey);
+        IList<ImageRemark> GetFinalInspectionDetail(long FinalInspection_DetailUkey);
 
         void UpdateFinalInspectionDetail(AddDefect addDefect, string UserID);
 
@@ -26,6 +27,7 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         void UpdateBeautifulProductAudit(BeautifulProductAudit addDefect, string UserID);
 
         List<byte[]> GetBACriteriaImage(long FinalInspection_NonBACriteriaUkey);
+        IList<ImageRemark> GetBA_DetailImage(long FinalInspection_NonBACriteriaUkey);
 
         List<byte[]> GetOthersImage(string finalInspectionID);
 

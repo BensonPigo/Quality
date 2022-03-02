@@ -580,7 +580,8 @@ namespace Quality.Areas.FinalInspection.Controllers
             FinalInspectionAddDefectService Addsevice = new FinalInspectionAddDefectService();
 
             //取得該Detail在DB現有的圖片
-            List<byte[]> model = Addsevice.GetDefectImage(FinalInspection_DetailUkey);
+            //List<byte[]> model = Addsevice.GetDefectImage(FinalInspection_DetailUkey);
+            List<ImageRemark> model = Addsevice.GetDetailItem(FinalInspection_DetailUkey);
 
             // 把畫面上User拍的照片加進去，一起顯示
             if (TmpFinalInspectionDefectItem_List != null)
@@ -590,7 +591,12 @@ namespace Quality.Areas.FinalInspection.Controllers
                 {
                     foreach (var item in TmpFinalInspectionDefectItem_List.Where(o => o.Ukey == FinalInspection_DetailUkey))
                     {
-                        model.Add(item.TempImage);
+                        //model.Add(item.TempImage);
+                        model.Add(new ImageRemark()
+                        { 
+                            Image = item.TempImage,
+                            Remark =item.TempRemark,
+                        });
                     }
                 }
                 else
@@ -598,7 +604,12 @@ namespace Quality.Areas.FinalInspection.Controllers
                     // DB沒有的就用RowIndex
                     foreach (var item in TmpFinalInspectionDefectItem_List.Where(o => o.RowIndex == FinalInspection_RowIndex))
                     {
-                        model.Add(item.TempImage);
+                        //model.Add(item.TempImage);
+                        model.Add(new ImageRemark()
+                        {
+                            Image = item.TempImage,
+                            Remark = item.TempRemark,
+                        });
                     }
                 }
             }
@@ -657,7 +668,12 @@ namespace Quality.Areas.FinalInspection.Controllers
                         var sameUkeyImg = TmpFinalInspectionDefectItem_List.Where(o => o.Ukey == FinalInspection_DetailUkey);
                         foreach (var data in sameUkeyImg)
                         {
-                            item.ListFinalInspectionDefectImage.Add(data.TempImage);
+                            //item.ListFinalInspectionDefectImage.Add(data.TempImage);
+                            item.ListFinalInspectionDefectImage.Add(new ImageRemark()
+                            {
+                                Image = data.TempImage,
+                                Remark = data.TempRemark,
+                            });
                         }
                     }
                     else
@@ -665,7 +681,12 @@ namespace Quality.Areas.FinalInspection.Controllers
                         var sameUkeyImg = TmpFinalInspectionDefectItem_List.Where(o => o.RowIndex == RowIndex);
                         foreach (var data in sameUkeyImg)
                         {
-                            item.ListFinalInspectionDefectImage.Add(data.TempImage);
+                            //item.ListFinalInspectionDefectImage.Add(data.TempImage);
+                            item.ListFinalInspectionDefectImage.Add(new ImageRemark()
+                            {
+                                Image = data.TempImage,
+                                Remark = data.TempRemark,
+                            });
                         }
                     }
                 }
@@ -718,7 +739,8 @@ namespace Quality.Areas.FinalInspection.Controllers
 
 
             //取得該Detail在DB現有的圖片
-            List<byte[]> model = Service.GetBACriteriaImage(FinalInspection_DetailUkey);
+            //List<byte[]> model = Service.GetBACriteriaImage(FinalInspection_DetailUkey);
+            List<ImageRemark> model = Service.GetBA_DetailImage(FinalInspection_DetailUkey);
 
             // 把畫面上User拍的照片加進去，一起顯示
             if (TmpBACriteriaItem_List != null)
@@ -728,7 +750,12 @@ namespace Quality.Areas.FinalInspection.Controllers
                 {
                     foreach (var item in TmpBACriteriaItem_List.Where(o => o.Ukey == FinalInspection_DetailUkey))
                     {
-                        model.Add(item.TempImage);
+                        //model.Add(item.TempImage);
+                        model.Add(new ImageRemark()
+                        {
+                            Image = item.TempImage,
+                            Remark = item.TempRemark,
+                        });
                     }
                 }
                 else
@@ -736,7 +763,12 @@ namespace Quality.Areas.FinalInspection.Controllers
                     // DB沒有的就用RowIndex
                     foreach (var item in TmpBACriteriaItem_List.Where(o => o.RowIndex == FinalInspection_RowIndex))
                     {
-                        model.Add(item.TempImage);
+                        //model.Add(item.TempImage);
+                        model.Add(new ImageRemark()
+                        {
+                            Image = item.TempImage,
+                            Remark = item.TempRemark,
+                        });
                     }
                 }
             }
@@ -787,15 +819,26 @@ namespace Quality.Areas.FinalInspection.Controllers
                         var sameUkeyImg = TmpBACriteriaItem_List.Where(o => o.Ukey == FinalInspection_DetailUkey);
                         foreach (var data in sameUkeyImg)
                         {
-                            item.ListBACriteriaImage.Add(data.TempImage);
-                        }
+                            //item.ListBACriteriaImage.Add(data.TempImage);
+                            item.ListBACriteriaImage.Add(new ImageRemark()
+                            {
+                                Image = data.TempImage,
+                                Remark = data.TempRemark,
+                            });
+                        }                    
                     }
                     else
                     {
                         var sameUkeyImg = TmpBACriteriaItem_List.Where(o => o.RowIndex == RowIndex);
                         foreach (var data in sameUkeyImg)
                         {
-                            item.ListBACriteriaImage.Add(data.TempImage);
+                            //item.ListBACriteriaImage.Add(data.TempImage);
+                            item.ListBACriteriaImage.Add(new ImageRemark()
+                            {
+                                Image = data.TempImage,
+                                Remark = data.TempRemark,
+                            });
+
                         }
                     }
                 }

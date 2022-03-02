@@ -240,12 +240,16 @@ select  [Ukey] = isnull(fd.Ukey, -1),
         [DefectTypeDesc] = gdt.ID +'-'+gdt.Description,
         [DefectCodeDesc] = gdc.ID +'-'+gdc.Description,
         [Qty] = isnull(fd.Qty, 0),
-		[RowIndex]=ROW_NUMBER() OVER(ORDER BY gdt.id,gdc.id) -1,
-		HasImage = Cast(IIF(img.Image is null,0,1) as bit)
+		[RowIndex]=ROW_NUMBER() OVER(ORDER BY gdt.id,gdc.id) -1
+		,HasImage = Cast(
+			IIF(EXISTS(
+				select 1 from [ExtendServer].PMSFile.dbo.FinalInspection_DetailImage img 
+				where img.FinalInspection_DetailUkey = isnull(fd.Ukey, -1)
+			),1,0)		
+		as bit)
     from GarmentDefectType gdt with (nolock)
     inner join GarmentDefectCode gdc with (nolock) on gdt.id=gdc.GarmentDefectTypeID
     left join   #FinalInspection_Detail fd on fd.GarmentDefectTypeID = gdt.ID and fd.GarmentDefectCodeID = gdc.ID
-    left join [ExtendServer].PMSFile.dbo.FinalInspection_DetailImage img on img.FinalInspection_DetailUkey = isnull(fd.Ukey, -1)
     where   gdt.Junk =0 and
             gdc.Junk =0
  order by gdt.id,gdc.id
