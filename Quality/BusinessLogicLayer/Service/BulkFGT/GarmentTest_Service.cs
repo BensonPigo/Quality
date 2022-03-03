@@ -1050,11 +1050,24 @@ namespace BusinessLogicLayer.Service.BulkFGT
                             #endregion
 
                             #region 最下面 Signature
-                            if (MyUtility.Convert.GetString(all_Data.Detail.WashResult).EqualString("P"))
+
+                            bool ApperanceRejected = all_Data.Apperance.Where(x => x.Wash1.EqualString("Rejected")
+                                                        || x.Wash2.EqualString("Rejected")
+                                                        || x.Wash3.EqualString("Rejected")
+                                                        || x.Wash4.EqualString("Rejected")
+                                                        || x.Wash5.EqualString("Rejected")).ToList().Count() > 0;
+
+                            bool ApperanceAccepted = all_Data.Apperance.Where(x => x.Wash1.EqualString("Accepted")
+                                                      || x.Wash2.EqualString("Accepted")
+                                                      || x.Wash3.EqualString("Accepted")
+                                                      || x.Wash4.EqualString("Accepted")
+                                                      || x.Wash5.EqualString("Accepted")).ToList().Count() > 0;
+
+                            if ((MyUtility.Convert.GetString(all_Data.Detail.WashResult).EqualString("P") || ApperanceAccepted) && !ApperanceRejected)
                             {
                                 worksheet.Cells[76, 4] = "V";
                             }
-                            else if (MyUtility.Convert.GetString(all_Data.Detail.WashResult).EqualString("F"))
+                            else if (MyUtility.Convert.GetString(all_Data.Detail.WashResult).EqualString("F") || ApperanceRejected)
                             {
                                 worksheet.Cells[76, 6] = "V";
                             }
@@ -1779,14 +1792,28 @@ and t.GarmentTest=1
                             worksheet.get_Range("65:65", Type.Missing).Delete();
 
                             #region 最下面 Signature
-                            if (MyUtility.Convert.GetString(all_Data.Detail.WashResult).EqualString("P"))
+
+                            bool ApperanceRejected = all_Data.Apperance.Where(x => x.Wash1.EqualString("Rejected")
+                                                        || x.Wash2.EqualString("Rejected")
+                                                        || x.Wash3.EqualString("Rejected")
+                                                        || x.Wash4.EqualString("Rejected")
+                                                        || x.Wash5.EqualString("Rejected")).ToList().Count() > 0;
+
+                            bool ApperanceAccepted = all_Data.Apperance.Where(x => x.Wash1.EqualString("Accepted")
+                                                      || x.Wash2.EqualString("Accepted")
+                                                      || x.Wash3.EqualString("Accepted")
+                                                      || x.Wash4.EqualString("Accepted")
+                                                      || x.Wash5.EqualString("Accepted")).ToList().Count() > 0;
+
+
+                            if ((MyUtility.Convert.GetString(all_Data.Detail.WashResult).EqualString("P") || ApperanceAccepted) && !ApperanceRejected)
                             {
                                 worksheet.Cells[75, 4] = "V";
                             }
-                            else if (MyUtility.Convert.GetString(all_Data.Detail.WashResult).EqualString("F"))
+                            else if (MyUtility.Convert.GetString(all_Data.Detail.WashResult).EqualString("F") || ApperanceRejected)
                             {
                                 worksheet.Cells[75, 6] = "V";
-                            }
+                            } 
                             #endregion
 
                             #region 插入圖片與Technician名字
