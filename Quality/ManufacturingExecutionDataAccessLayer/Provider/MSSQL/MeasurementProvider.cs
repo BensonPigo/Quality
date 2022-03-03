@@ -437,10 +437,10 @@ declare @SizeUnit varchar(8)
 declare @StyleUkey bigint
 
 select  @StyleUkey = StyleUkey
-from    SciProduction_Orders with (nolock)
+from    [MainServer].Production.dbo.Orders with (nolock)
 where   ID IN (
     select POID
-    from SciProduction_Orders WITH(NOLOCK)
+    from [MainServer].Production.dbo.Orders WITH(NOLOCK)
     where CustPONO = @CustPONO
 )
 

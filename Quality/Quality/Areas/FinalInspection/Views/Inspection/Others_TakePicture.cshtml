@@ -58,16 +58,41 @@
     <input id="btnExit" type="button" value="Exit" />
 </header>
 <br />
-<div class="outerDiv" style="margin-right:2%;">
+<div class="outerDiv" style="margin-right: 2%; overflow-y: scroll;">
 
     @using (Html.BeginForm("TakePicture", "Inspection", FormMethod.Post, new { @id = "TakePictureForm", onsubmit = "return checkValue(this.submitted)" }))
     {
         <div class="grayDiv">
+            <input type="file" id="UploadPic" name="name" accept=".png, .jpg, .jpeg" value="UP" style="display:none;" multiple />
+            <img id="Upload" class="pointer" style="height: 90%; vertical-align: top;margin-right:5px;" src="~/Image/Icon/Upload.png" />
             <img Type="Pic" class="OpenCamera pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Camera.png" />
             <img id="Del" class="pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Delete.png" />
 
         </div>
-        <img id="ImgPic" Type="Pic" style="width:100%;" />
+        
+        /*拍照用DOM物件*/
+        <div id="CameraArea">
+
+            @*<h4>Remark</h4>
+            <input type="text" id="Rmk" style="width:90%;border:2px solid black;" name="name" value="" />
+            <br />
+            <br />
+            <img id="ImgPic" Type="Pic" style="width:100%;" />*@
+
+        </div>
+
+        /*上傳圖片用DOM物件*/
+
+        <div id="FileArea" style="display:none;">
+            @*<dix class=FileItem>
+                <h4>Remark</h4>
+                <input type="text" id="Rmk0" style="width:90%;border:2px solid black;" name="name" value="" />
+                <br />
+                <br />
+                <img id="ImgPic0" Type="Pic" style="width:100%;" />
+            </dix>*@
+
+        </div>
     }
 </div>
 
@@ -79,6 +104,7 @@
 
     var ID_List = [];
     var Name_List = [];
+    var ImgSource = '';
     $(function () {
 
 
@@ -89,17 +115,52 @@
         });
 
 
-        $("#btnSave").click(function () {
+        $("#btnSave").click(async function () {
 
-            var Pic = document.querySelector("#ImgPic");
+            // 拍照處理方式
+            if (ImgSource == 'Camera') {
+                var Pic = document.querySelector("#ImgPic");
+                var Rmk = $("#Rmk").val();
 
-            var Picture = {
-                FinalInspectionID: '@FinalInspectionID',
-                Img: Pic.src,
+                var Picture = {
+                    FinalInspectionID: '@FinalInspectionID',
+                    Img: Pic.src,
+                    Remark: Rmk,
+                }
+
+                window.opener.GetImage(Picture);
+                window.close();
             }
 
-            window.opener.GetImage(Picture);
-            window.close();
+            // 檔案上傳處理方式
+            if (ImgSource == 'File' && $('.FileItem').length > 0) {
+                var PictureList = [];
+                const fileItems = $('.FileItem');
+                var idxx = 0;
+
+                // 使用for of迴圈，可以讓每一次lool都await，完全等待完畢後才繼續後續行為
+                for (const fileItem of fileItems) {
+                    const file = document.querySelector(`#UploadPic`).files[idxx];
+                    var Rmk = $(`#Rmk${idxx}`).val();
+
+                    // blob轉成base64方式，請參考 https://ithelp.ithome.com.tw/articles/10198431
+                    // await必須包在async function裡面
+                    var base64 = await convertFile(file);
+
+
+                    var Picture = {
+                        ID: '@FinalInspectionID',
+                        TempImage: base64.replace("data:image/jpg;base64,", "").replace("data:image/jpeg;base64,", "").replace("data:image/png;base64,", ""),
+                        TempRemark: Rmk,
+                    }
+                    PictureList.push(Picture);
+
+                    idxx += 1;
+                }
+
+                window.opener.GetImage(PictureList, ImgSource);
+                window.close();
+            }
         });
 
 
@@ -112,13 +173,87 @@
             $("#ImgPic").removeAttr("src");
         });
 
+        $("#Upload").click(function () {
+
+            ImgSourceToggle('File');
+            $("#UploadPic").click();
+        });
+
+        UploadPic.onchange = evt => {
+            var length = UploadPic.files.length;
+
+            if (length > 0) {
+
+                var idx = 0;
+                $.each(UploadPic.files, function (idx) {
+                    $("#FileArea").append(`
+        <dix class=FileItem>
+            <h4>Remark</h4>
+            <input type="text" id="Rmk${idx}" style="width:90%;border:2px solid black;" name="name" value="" />
+            <br />
+            <br />
+            <img id="ImgPic${idx}" Type="Pic" style="width:100%;" />
+        </dix>
+`);
+
+                    var picFile = UploadPic.files[idx];
+                    $(`#ImgPic${idx}`).attr('src', window.URL.createObjectURL(picFile));
+                    idx += 1;
+                })
+
+            }
+        }
+
         CamInit();
 
 
     });
 
+    // 使用FileReader讀取檔案，並且回傳Base64編碼後的source
+    function convertFile(file) {
+        return new Promise((resolve, reject) => {
+            // 建立FileReader物件
+            let reader = new FileReader()
+            // 註冊onload事件，取得result則resolve (會是一個Base64字串)
+            reader.onload = () => { resolve(reader.result) }
+            // 註冊onerror事件，若發生error則reject
+            reader.onerror = () => { reject(reader.error) }
+            // 讀取檔案
+            reader.readAsDataURL(file)
+        })
+    }
+
+    function ImgSourceToggle(source) {
+        ImgSource = source;
+        switch (source) {
+            case 'Camera':
+                $("#CameraArea").show();
+                $("#FileArea").hide();
+                $("#FileArea").empty();
+                break;
+            case 'File':
+                $("#CameraArea").hide();
+                $("#FileArea").show();
+                $("#CameraArea").empty();
+                break;
+            default:
+                break;
+        }
+    }
+
     function CamInit() {
         $('.OpenCamera').on('click', function () {
+
+
+            ImgSourceToggle('Camera');
+
+            $("#CameraArea").append(`
+    <h4>Remark</h4>
+    <input type="text" id="Rmk" style="width:90%;border:2px solid black;" name="name" value="" />
+    <br />
+    <br />
+    <img id="ImgPic" Type="Pic" style="width:100%;" />
+`);
 
             var Type = $(this).attr('Type');
             var sentID = "ImgPic";

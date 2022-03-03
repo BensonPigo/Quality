@@ -465,7 +465,7 @@
         }
 
         function OpenOthersPicture() {
-            window.open('@Url.Action("OthersPicture", "Inspection")?FinalInspectionID=@Model.FinalInspection.ID', "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
+            window.open('@Url.Action("OthersPicture", "Inspection")?callFrom=Query&FinalInspectionID=@Model.FinalInspection.ID', "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
         }
 
         function ClickDownload() {

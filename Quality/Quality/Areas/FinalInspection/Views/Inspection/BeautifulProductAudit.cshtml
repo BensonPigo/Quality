@@ -137,35 +137,56 @@
             }
         }
 
-        function GetImage(Data) {
+        function GetImage(Data, ImgSource) {
             //透過AJAX暫存成Temp Data
 
-            var Ukey = Data.DetailUkey;
-            var RowIndex = Data.RowIndex;
-            var Picture = Data.Img.replace("data:image/png;base64,", "");
-            var Remark = Data.Remark;
+            //根據圖片來源決定存檔方式
+            if (ImgSource == 'Camera') {
+                var Ukey = Data.DetailUkey;
+                var RowIndex = Data.RowIndex;
+                var Picture = Data.Img.replace("data:image/png;base64,", "");
+                var Remark = Data.Remark;
 
-            var data =
-            {
-                Ukey: Ukey,
-                RowIndex: RowIndex,
-                TempImage: Picture,
-                TempRemark: Remark,
-            };
+                var data =
+                {
+                    Ukey: Ukey,
+                    RowIndex: RowIndex,
+                    TempImage: Picture,
+                    TempRemark: Remark,
+                };
 
-            $.ajax({
-                url: "@Url.Action("AddBaPicturesTempSave", "Inspection", new { Area = "FinalInspection" })",
-                type: 'POST',
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({ data: data }),
-                async: true,
-                success: function (data) {
-                    //msg.WithSuccess("Image OK!!");
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    console.log(xhr.responseText);
-                }
-            });
+                $.ajax({
+                    url: "@Url.Action("AddBaPicturesTempSave", "Inspection", new { Area = "FinalInspection" })",
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ data: data }),
+                    async: true,
+                    success: function (data) {
+                        //msg.WithSuccess("Image OK!!");
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                });
+
+            }
+
+            if (ImgSource == 'File') {
+
+                $.ajax({
+                    url: "@Url.Action("BatchAddBaPicturesTempSave", "Inspection", new { Area = "FinalInspection" })",
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ list: Data }),
+                    async: true,
+                    success: function (data) {
+                        //msg.WithSuccess("Image OK!!");
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            }
         }
     </script>
 }

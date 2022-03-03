@@ -302,6 +302,7 @@
     <Content Include="Image\Icon\Undo_White.png" />
     <Content Include="Image\Icon\Unlock.png" />
     <Content Include="Image\Icon\UnLock_White.png" />
+    <Content Include="Image\Icon\Upload.png" />
     <Content Include="Image\Icon\View.png" />
     <Content Include="Image\Icon\Washing.png" />
     <Content Include="Image\Icon\XLS.png" />

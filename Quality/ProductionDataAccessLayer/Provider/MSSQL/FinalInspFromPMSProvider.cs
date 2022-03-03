@@ -231,7 +231,7 @@ select  GarmentDefectTypeID,
         Qty,
         Ukey
 into #FinalInspection_Detail
-from [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Detail
+from ManufacturingExecution.dbo.FinalInspection_Detail
 where   ID = @finalInspectionID
 
 select  [Ukey] = isnull(fd.Ukey, -1),
@@ -243,12 +243,12 @@ select  [Ukey] = isnull(fd.Ukey, -1),
 		[RowIndex]=ROW_NUMBER() OVER(ORDER BY gdt.id,gdc.id) -1
 		,HasImage = Cast(
 			IIF(EXISTS(
-				select 1 from [ExtendServer].PMSFile.dbo.FinalInspection_DetailImage img 
+				select 1 from PMSFile.dbo.FinalInspection_DetailImage img 
 				where img.FinalInspection_DetailUkey = isnull(fd.Ukey, -1)
 			),1,0)		
 		as bit)
-    from GarmentDefectType gdt with (nolock)
-    inner join GarmentDefectCode gdc with (nolock) on gdt.id=gdc.GarmentDefectTypeID
+    from [MainServer].Production.dbo.GarmentDefectType gdt with (nolock)
+    inner join [MainServer].Production.dbo.GarmentDefectCode gdc with (nolock) on gdt.id=gdc.GarmentDefectTypeID
     left join   #FinalInspection_Detail fd on fd.GarmentDefectTypeID = gdt.ID and fd.GarmentDefectCodeID = gdc.ID
     where   gdt.Junk =0 and
             gdc.Junk =0

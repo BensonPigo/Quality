@@ -627,7 +627,23 @@ namespace Quality.Areas.FinalInspection.Controllers
         [HttpPost]
         public ActionResult AddDefectPicturesTempSave(FinalInspectionDefectItem data)
         {
-            TmpFinalInspectionDefectItem_List.Add(data);
+            if (data.TempImage != null)
+            {
+                TmpFinalInspectionDefectItem_List.Add(data);
+            }
+            return Json(true);
+        }
+
+        [HttpPost]
+        public ActionResult BatchAddDefectPicturesTempSave(List<FinalInspectionDefectItem> list)
+        {
+            if (list != null && list.Any())
+            {
+                foreach (var data in list.Where(o=>o.TempImage != null))
+                {
+                    TmpFinalInspectionDefectItem_List.Add(data);
+                }
+            }
             return Json(true);
         }
 
@@ -779,7 +795,23 @@ namespace Quality.Areas.FinalInspection.Controllers
         [HttpPost]
         public ActionResult AddBaPicturesTempSave(BACriteriaItem data)
         {
-            TmpBACriteriaItem_List.Add(data);
+            if (data.TempImage != null)
+            {
+                TmpBACriteriaItem_List.Add(data);
+            }
+            return Json(true);
+        }
+
+        [HttpPost]
+        public ActionResult BatchAddBaPicturesTempSave(List<BACriteriaItem> list)
+        {
+            if (list != null && list.Any())
+            {
+                foreach (var data in list.Where(o => o.TempImage != null))
+                {
+                    TmpBACriteriaItem_List.Add(data);
+                }
+            }
             return Json(true);
         }
 
@@ -1013,20 +1045,45 @@ namespace Quality.Areas.FinalInspection.Controllers
             return View(model);
         }
 
-        public ActionResult OthersPicture(string FinalInspectionID)
+        public ActionResult OthersPicture(string FinalInspectionID, string callFrom = "")
         {
+            if (!string.IsNullOrEmpty(callFrom))
+            {
+
+                TmpListOthersImageItem_List = new List<OtherImage>();
+            }
             FinalInspectionOthersService Service = new FinalInspectionOthersService();
 
             // 取得該DB現有的圖片
             List<OtherImage> list = Service.GetOthersImage(FinalInspectionID);
-            List<byte[]> model = list.Select(o => o.Image).ToList();
+            List<ImageRemark> model = new List<ImageRemark>();
+
+            if (list.Any())
+            {
+                foreach (var item in list)
+                {
+                    model.Add(new ImageRemark()
+                    { 
+                        Image = item.Image,
+                        Remark = item.Remark,
+                    });
+                }
+            }
+
+            //List<byte[]> model = list.Select(o => o.Image).ToList();
 
             // 把畫面上User拍的照片加進去，一起顯示
             if (TmpListOthersImageItem_List != null)
             {
                 foreach (var item in TmpListOthersImageItem_List)
                 {
-                    model.Add(item.TempImage);
+                    //model.Add(item.TempImage);
+
+                    model.Add(new ImageRemark()
+                    {
+                        Image = item.TempImage,
+                        Remark = item.TempRemark,
+                    });
                 }
             }
 
@@ -1043,7 +1100,23 @@ namespace Quality.Areas.FinalInspection.Controllers
         [HttpPost]
         public ActionResult AddthersTPicturesTempSave(OtherImage data)
         {
-            TmpListOthersImageItem_List.Add(data);
+            if (data.TempImage != null)
+            {
+                TmpListOthersImageItem_List.Add(data);
+            }
+            return Json(true);
+        }
+
+        [HttpPost]
+        public ActionResult BatchAddthersTPicturesTempSave(List<OtherImage> list)
+        {
+            if (list != null && list.Any())
+            {
+                foreach (var data in list.Where(o => o.TempImage != null))
+                {
+                    TmpListOthersImageItem_List.Add(data);
+                }
+            }
             return Json(true);
         }
 
@@ -1078,6 +1151,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                     OtherImage o = new OtherImage();
                     o.ID = model.FinalInspectionID;
                     o.Image = item.TempImage;
+                    o.Remark = item.TempRemark;
                     model.ListOthersImageItem.Add(o);
                 }
 

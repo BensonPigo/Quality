@@ -19,12 +19,12 @@ namespace BusinessLogicLayer.Service
         public IOrdersProvider _OrdersProvider { get; set; }
         public IFinalInspFromPMSProvider _FinalInspFromPMSProvider { get; set; }
 
-        public List<byte[]> GetBACriteriaImage(long FinalInspection_NonBACriteriaUkey)
-        {
-            _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+        //public List<byte[]> GetBACriteriaImage(long FinalInspection_NonBACriteriaUkey)
+        //{
+        //    _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
 
-            return _FinalInspectionProvider.GetBACriteriaImage(FinalInspection_NonBACriteriaUkey).ToList();
-        }
+        //    return _FinalInspectionProvider.GetBACriteriaImage(FinalInspection_NonBACriteriaUkey).ToList();
+        //}
         public List<ImageRemark> GetBA_DetailImage(long FinalInspection_NonBACriteriaUkey)
         {
             _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);

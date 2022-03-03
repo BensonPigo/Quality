@@ -45,7 +45,7 @@ namespace BusinessLogicLayer.Service
                     addDefect.RejectQty = finalInspection.RejectQty;
                 }
 
-                _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
+                _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ManufacturingExecutionDataAccessLayer);
 
                 addDefect.ListFinalInspectionDefectItem = _FinalInspFromPMSProvider.GetFinalInspectionDefectItems(finalInspectionID).ToList();
 
@@ -59,13 +59,13 @@ namespace BusinessLogicLayer.Service
             return addDefect;
         }
 
-        public List<byte[]> GetDefectImage(long FinalInspection_DetailUkey)
-        {
-            _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+        //public List<byte[]> GetDefectImage(long FinalInspection_DetailUkey)
+        //{
+        //    _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
 
-            return _FinalInspectionProvider.GetFinalInspectionDefectImage(FinalInspection_DetailUkey).ToList();
+        //    return _FinalInspectionProvider.GetFinalInspectionDefectImage(FinalInspection_DetailUkey).ToList();
 
-        }
+        //}
         public List<ImageRemark> GetDetailItem(long FinalInspection_DetailUkey)
         {
             _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);

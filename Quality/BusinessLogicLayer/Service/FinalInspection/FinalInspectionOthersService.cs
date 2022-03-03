@@ -93,7 +93,10 @@ namespace BusinessLogicLayer.Service
                     finalInspection.CFA = UserID;
 
                     //_FinalInspectionProvider.UpdateFinalInspectionByStep(finalInspection, "Insp-Others", UserID);
-                    _FinalInspectionProvider.UpdateFinalInspection_OtherImage(others.FinalInspectionID, others.ListOthersImageItem.Select(o=>o.Image).ToList());
+                    List<OtherImage> imgList = others.ListOthersImageItem != null && others.ListOthersImageItem.Any() ? others.ListOthersImageItem : new List<OtherImage>();
+
+                    //Others步驟按下Back不需要存入圖片
+                    //_FinalInspectionProvider.UpdateFinalInspection_OtherImage(others.FinalInspectionID, imgList);
 
                     transactionScope.Complete();
                     transactionScope.Dispose();
@@ -143,7 +146,8 @@ namespace BusinessLogicLayer.Service
                     
                     finalInspection.InspectionStep = "Submit";
                     _FinalInspectionProvider.UpdateFinalInspectionByStep(finalInspection, "Insp-Others", UserID);
-                    _FinalInspectionProvider.UpdateFinalInspection_OtherImage(others.FinalInspectionID, others.ListOthersImageItem.Select(o => o.Image).ToList());
+                    List<OtherImage> imgList = others.ListOthersImageItem != null && others.ListOthersImageItem.Any() ? others.ListOthersImageItem : new List<OtherImage>();
+                    _FinalInspectionProvider.UpdateFinalInspection_OtherImage(others.FinalInspectionID, imgList);
                     transactionScope.Complete();
                     transactionScope.Dispose();
                 }

@@ -37,7 +37,7 @@ select
     ,ins.Line
     ,ins.FixType
 from RFT_Inspection ins with(nolock) 
-left join [dbo].[SciProduction_Orders] o with(nolock) 
+left join [MainServer].Production.dbo.Orders o with(nolock) 
 on ins.OrderId=o.ID
 outer apply(
 	select code = (
