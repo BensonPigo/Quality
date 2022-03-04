@@ -1930,7 +1930,7 @@ and t.GarmentTest=1
                             this.RowHeight(worksheet, 64, strComment);
                             worksheet.Cells[64, 10] = strComment;
 
-                            worksheet.Cells[64, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(2)).Select(x => x.Type).First());
+                            worksheet.Cells[65, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(2)).Select(x => x.Type).First());
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(2)).Select(x => x.Wash1).First());
                             if (tmpAR.EqualString("Accepted"))
