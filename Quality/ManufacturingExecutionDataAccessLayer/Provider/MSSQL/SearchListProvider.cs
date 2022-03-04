@@ -303,9 +303,9 @@ WHERE 1=1
             }
             #endregion
 
-            #region Accessory Oven Test & Wash (515, 701)
+            #region Accessory Oven & Wash Test (515, 701)
             string type8 = $@"
-select DISTINCT Type = 'Accessory Oven Test & Wash (515, 701)'
+select DISTINCT Type = 'Accessory Oven & Wash Test (515, 701)'
         ,ReportNo=''
 		,OrderID = o.POID
 		,o.StyleID
@@ -400,7 +400,7 @@ where 1=1
                 case string a when a.Contains("Washing Fastness"):
                     SbSql.Append(type7);
                     break;
-                case string a when a.Contains("Accessory Oven Test & Wash"):
+                case string a when a.Contains("Accessory Oven & Wash Test"):
                     SbSql.Append(type8);
                     break;
                 case string a when a.Contains("Pulling test for Snap/Button/Rivet"):

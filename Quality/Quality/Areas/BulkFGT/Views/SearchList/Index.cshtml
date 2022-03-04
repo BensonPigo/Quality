@@ -209,7 +209,7 @@
                                                 case string a when a.Contains("Washing Fastness"):
                                                     link = Url.Action("IndexBack", "FabricColorFastness", new { POID = item.OrderID });
                                                     break;
-                                                case string a when a.Contains("Accessory Oven Test & Wash"):
+                                                case string a when a.Contains("Accessory Oven & Wash Test"):
                                                     link = Url.Action("IndexGet", "AccessoryOvenWash", new { ReqOrderID = item.OrderID , OrderID = item.OrderID });
                                                     break;
                                                 case string a when a.Contains("Pulling test"):
