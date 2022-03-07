@@ -379,6 +379,9 @@
             if ($('#Detail_ReportNo').val() != undefined && $('#Detail_ReportNo').val() != '') {
                 $("#Edit, #Delete, #Picture").addClass("IsEditMode");
             }
+            else {
+                $("#Edit, #Picture, #Delete").unbind('click').removeClass("IsEditMode");
+            }
 
             $('#btnNew').removeClass("IsEditModeQuery");
             $('#btnQuery').unbind('click').removeClass("IsEditModeQuery");
@@ -486,7 +489,7 @@
 
             $('#Picture').on('click', function () {
                 var para = "?Title=PullingTest&EditMode=" + EditMode;
-                para += "&" + "Table=ExtendServer.ManufacturingExecution.dbo.PullingTest";
+                para += "&" + "Table=PullingTest";
                 para += "&" + "TargetBeforeColumn=Detail_TestBeforePicture";
                 para += "&" + "TargetAfterColumn=Detail_TestAfterPicture";
                 para += "&" + "BeforeColumn=TestBeforePicture";
