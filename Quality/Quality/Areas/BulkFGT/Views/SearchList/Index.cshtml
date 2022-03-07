@@ -222,6 +222,18 @@
                                                         Article = item.Article,
                                                     });
                                                     break;
+                                                case string a when a.Contains("Water Fastness"):
+                                                    link = Url.Action("IndexBack", "WaterFastness", new
+                                                    {
+                                                        POID = item.OrderID,
+                                                    });
+                                                    break;
+                                                case string a when a.Contains("Perspiration Fastness"):
+                                                    link = Url.Action("IndexBack", "PerspirationFastness", new
+                                                    {
+                                                        POID = item.OrderID,
+                                                    });
+                                                    break;
                                                 default:
                                                     link = "#";
                                                     break;

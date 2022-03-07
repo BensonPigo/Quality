@@ -64,7 +64,17 @@ namespace Quality.Areas.BulkFGT.Controllers
         public ActionResult IndexBack(string POID)
         {
             WaterFastness_Result model = _WaterFastnessService.GetWaterFastness_Result(POID);
+            if (!model.Result)
+            {
+                model = new WaterFastness_Result()
+                {
+                    Main = new WaterFastness_Main(),
+                    Details = new List<WaterFastness_Detail>(),
+                    ErrorMessage = $@"msg.WithInfo(""{model.ErrorMessage}"");",
+                };
+            }
             ViewBag.POID = POID;
+            UpdateModel(model);
             return View("Index", model);
         }
         public ActionResult Detail(string POID, string TestNo, string EditMode)
