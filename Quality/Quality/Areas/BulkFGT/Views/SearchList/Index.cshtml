@@ -209,7 +209,7 @@
                                                 case string a when a.Contains("Washing Fastness"):
                                                     link = Url.Action("IndexBack", "FabricColorFastness", new { POID = item.OrderID });
                                                     break;
-                                                case string a when a.Contains("Accessory Oven Test & Wash"):
+                                                case string a when a.Contains("Accessory Oven & Wash Test"):
                                                     link = Url.Action("IndexGet", "AccessoryOvenWash", new { ReqOrderID = item.OrderID , OrderID = item.OrderID });
                                                     break;
                                                 case string a when a.Contains("Pulling test"):
@@ -220,6 +220,18 @@
                                                         SeasonID = item.SeasonID,
                                                         StyleID = item.StyleID,
                                                         Article = item.Article,
+                                                    });
+                                                    break;
+                                                case string a when a.Contains("Water Fastness"):
+                                                    link = Url.Action("IndexBack", "WaterFastness", new
+                                                    {
+                                                        POID = item.OrderID,
+                                                    });
+                                                    break;
+                                                case string a when a.Contains("Perspiration Fastness"):
+                                                    link = Url.Action("IndexBack", "PerspirationFastness", new
+                                                    {
+                                                        POID = item.OrderID,
                                                     });
                                                     break;
                                                 default:

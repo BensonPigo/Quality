@@ -303,9 +303,9 @@ WHERE 1=1
             }
             #endregion
 
-            #region Accessory Oven Test & Wash (515, 701)
+            #region Accessory Oven & Wash Test (515, 701)
             string type8 = $@"
-select DISTINCT Type = 'Accessory Oven Test & Wash (515, 701)'
+select DISTINCT Type = 'Accessory Oven & Wash Test (515, 701)'
         ,ReportNo=''
 		,OrderID = o.POID
 		,o.StyleID
@@ -376,6 +376,77 @@ where 1=1
 
             #endregion
 
+            #region Water Fastness Test(503)
+            string type11 = $@"
+select DISTINCT Type= 'Water Fastness Test(503)'
+	    , TestName=''
+        , ReportNo=''
+		,OrderID = w.POID
+		,o.StyleID
+		,o.BrandID
+		,o.SeasonID
+		,Article 
+		,Artwork = ''
+		,w.Result
+		,TestDate = w.InspDate
+
+from WaterFastness w WITH (NOLOCK) 
+inner join Orders o WITH(NOLOCK) ON o.ID = w.POID
+WHERE 1=1 
+";
+            if (!string.IsNullOrEmpty(Req.BrandID))
+            {
+                type11 += "AND BrandID = @BrandID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                type11 += "AND SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                type11 += "AND StyleID = @StyleID ";
+            }
+            if (!string.IsNullOrEmpty(Req.Article))
+            {
+                type11 += "AND Article = @Article ";
+            }
+            #endregion
+
+            #region Perspiration Fastness Test(502)
+            string type12 = $@"
+select DISTINCT Type= 'Perspiration Fastness (502)'
+	    , TestName=''
+        , ReportNo=''
+		,OrderID = w.POID
+		,o.StyleID
+		,o.BrandID
+		,o.SeasonID
+		,Article 
+		,Artwork = ''
+		,w.Result
+		,TestDate = w.InspDate
+
+from PerspirationFastness w WITH (NOLOCK)
+inner join Orders o WITH(NOLOCK) ON o.ID = w.POID
+WHERE 1=1 
+";
+            if (!string.IsNullOrEmpty(Req.BrandID))
+            {
+                type12 += "AND BrandID = @BrandID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                type12 += "AND SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                type12 += "AND StyleID = @StyleID ";
+            }
+            if (!string.IsNullOrEmpty(Req.Article))
+            {
+                type12 += "AND Article = @Article ";
+            }
+            #endregion
 
             switch (Req.Type)
             {
@@ -400,11 +471,17 @@ where 1=1
                 case string a when a.Contains("Washing Fastness"):
                     SbSql.Append(type7);
                     break;
-                case string a when a.Contains("Accessory Oven Test & Wash"):
+                case string a when a.Contains("Accessory Oven & Wash Test"):
                     SbSql.Append(type8);
                     break;
                 case string a when a.Contains("Pulling test for Snap/Button/Rivet"):
                     SbSql.Append(type9);
+                    break;
+                case string a when a.Contains("Water Fastness Test(503)"):
+                    SbSql.Append(type11);
+                    break;
+                case string a when a.Contains("Perspiration Fastness Test(502)"):
+                    SbSql.Append(type12);
                     break;
                 default:
                     SbSql.Append(
@@ -416,7 +493,9 @@ where 1=1
                         type6 + " union all " +
                         type7 + " union all " +
                         type8 + " union all " +
-                        type9);
+                        type9 + " union all " +
+                        type11 + " union all " +
+                        type12);
                     break;
             }
 
