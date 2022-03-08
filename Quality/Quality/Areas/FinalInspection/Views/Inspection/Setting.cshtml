@@ -614,26 +614,14 @@
                             var brandid = $('#BrandID').val();
                             if (currentStage != 'Final') {
 
-                                if (brandid == "ADIDAS") {
-                                    var orderID = document.getElementById("SelectedPO[" + index + "].AvailableQty").getAttribute("OrderId");
-                                    document.getElementById("SelectedPO[" + index + "].AvailableQty").value = totalQty;
+                                var orderID = document.getElementById("SelectedPO[" + index + "].AvailableQty").getAttribute("OrderId");
+                                document.getElementById("SelectedPO[" + index + "].AvailableQty").value = totalQty;
 
-                                    table.row($("#SelectPO_" + orderID).closest('tr')).data()[9] = totalQty;
-                                    Order_AvailableQty[orderID] = totalQty;
-                                    Cacu_AvailableQty();
-                                }
-                                else {
-
-                                }
+                                table.row($("#SelectPO_" + orderID).closest('tr')).data()[9] = totalQty;
+                                Order_AvailableQty[orderID] = totalQty;
+                                Cacu_AvailableQty();
                             }
-                            else {
-                                if (brandid == "ADIDAS") {
 
-                                }
-                                else {
-
-                                }
-                            }
                             /*
                             if ((currentStage != 'Final' || brandid == "ADIDAS") || brandid != "ADIDAS") {
                                 var orderID = document.getElementById("SelectedPO[" + index + "].AvailableQty").getAttribute("OrderId");
