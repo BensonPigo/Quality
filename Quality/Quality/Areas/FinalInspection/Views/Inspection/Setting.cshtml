@@ -588,6 +588,7 @@
                 },
             });
 
+            //Select Carton
             $(".to-edit-detail").dialog({
                 width: "70%",
                 dialogClass: "add-contact-box",
@@ -611,7 +612,29 @@
                             document.getElementById("SelectedPO[" + index + "].Cartons").value = checkedList.join(',');
 
                             var brandid = $('#BrandID').val();
+                            if (currentStage != 'Final') {
 
+                                if (brandid == "ADIDAS") {
+                                    var orderID = document.getElementById("SelectedPO[" + index + "].AvailableQty").getAttribute("OrderId");
+                                    document.getElementById("SelectedPO[" + index + "].AvailableQty").value = totalQty;
+
+                                    table.row($("#SelectPO_" + orderID).closest('tr')).data()[9] = totalQty;
+                                    Order_AvailableQty[orderID] = totalQty;
+                                    Cacu_AvailableQty();
+                                }
+                                else {
+
+                                }
+                            }
+                            else {
+                                if (brandid == "ADIDAS") {
+
+                                }
+                                else {
+
+                                }
+                            }
+                            /*
                             if ((currentStage != 'Final' || brandid == "ADIDAS") || brandid != "ADIDAS") {
                                 var orderID = document.getElementById("SelectedPO[" + index + "].AvailableQty").getAttribute("OrderId");
                                 document.getElementById("SelectedPO[" + index + "].AvailableQty").value = totalQty;
@@ -620,6 +643,7 @@
                                 Order_AvailableQty[orderID] = totalQty;
                                 Cacu_AvailableQty();
                             }
+                            */
                             $(this).dialog("close");
                         }
                         , "class": "button"
@@ -1020,7 +1044,11 @@
                 '<input type="text" style="width:100%" readonly="readonly" onclick="open_cartonsDetail(\'' + d[1] + ',' + d[3] + '\');" name="SelectedPO[' + d[2] + '].Cartons" id="SelectedPO[' + d[2] + '].Cartons" value="' + d[8] + '" OrderID="' + orderID +'" Col="Cartons"/>' +
                 '</td></tr>'+
                 '<tr><td>Available Qty:</td><td style=" text-align: right;" class="OpenDetail" >' +
-                '<input type="number" style="width:100%" name="SelectedPO[' + d[2] + '].AvailableQty" id="SelectedPO[' + d[2] + '].AvailableQty" value="' + d[9] + '" OrderID="' + orderID + '" oninput="value=AvailableQtyChk(' + d[7] + ',value)" max="' + d[7] + '" min="0" Col="AvailableQty"/>' +
+                '<input type="number" style="width:100%" name="SelectedPO[' + d[2] + '].AvailableQty" id="SelectedPO[' + d[2] + '].AvailableQty" value="' +
+
+                `${currentStage == 'Final' ? d[7] : d[9]}`
+
+                + '" OrderID="' + orderID + '" oninput="value=AvailableQtyChk(' + d[7] + ',value)" max="' + d[7] + '" min="0" Col="AvailableQty"/>' +
                 '</td></tr>' +
                 '</table>';
         }
