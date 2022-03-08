@@ -338,13 +338,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _WaterFastnessProvider = new WaterFastnessProvider(Common.ProductionDataAccessLayer);
                 DataTable dtResult = _WaterFastnessProvider.GetFailMailContentData(poID, TestNo);
-                string mailBody = MailTools.DataTableChangeHtml(dtResult);
+                string mailBody = MailTools.DataTableChangeHtml(dtResult, out System.Net.Mail.AlternateView plainView);
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
                     To = toAddress,
                     CC = ccAddress,
                     Subject = "Fabric Oven Test - Test Fail",
-                    Body = mailBody
+                    Body = mailBody,
+                    alternateView = plainView,
                 };
                 result = MailTools.SendMail(sendMail_Request);
 

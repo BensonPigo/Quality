@@ -556,7 +556,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
 
                 DataTable dtContent = _IGarmentTestDetailProvider.Get_Mail_Content(ID, No);
-                string strHtml = MailTools.DataTableChangeHtml(dtContent);
+                string strHtml = MailTools.DataTableChangeHtml(dtContent, out System.Net.Mail.AlternateView plainView);
 
                 SendMail_Request request = new SendMail_Request()
                 {
@@ -564,6 +564,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     CC = CCAddress,
                     Subject = "Garment Test – Test Fail",
                     Body = strHtml,
+                    alternateView = plainView,
                 };
 
                 MailTools.SendMail(request);

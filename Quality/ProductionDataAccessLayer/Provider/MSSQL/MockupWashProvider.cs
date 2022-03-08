@@ -549,7 +549,10 @@ SELECT
         ,[Result] = Result
         ,[Technician] = Concat(Technician, '-', Technician_ne.Name, ' Ext.', Technician_ne.ExtNo)
         ,[MR] = Concat(MR, '-', MR_ne.Name, ' Ext.', MR_ne.ExtNo)
+        ,mi.TestBeforePicture
+        ,mi.TestAfterPicture
 FROM MockupWash m WITH(NOLOCK)
+left join [ExtendServer].PMSFile.dbo.MockupWash mi WITH(NOLOCK) on m.ReportNo=mi.ReportNo
 outer apply (select Name, ExtNo from pass1 p WITH(NOLOCK) inner join Technician t WITH(NOLOCK) on t.ID = p.ID where t.id = m.Technician) Technician_ne
 outer apply (select Name, ExtNo from pass1 WITH(NOLOCK) where id = m.MR) MR_ne
 where ReportNo = @ReportNo

@@ -835,8 +835,11 @@ select  [SP#] = ov.POID,
         [Article] = ov.Article,
         [Result] = ov.Result,
         [Inspector] = ov.Inspector,
-        [Remark] = ov.Remark
+        [Remark] = ov.Remark,
+        pmsFile.TestBeforePicture,
+        pmsFile.TestAfterPicture
 from    PerspirationFastness ov with (nolock)
+left join ExtendServer.PMSFile.dbo.PerspirationFastness pmsFile WITH(NOLOCK) on pmsFile.ID =  ov.ID
 left join  Orders o with (nolock) on ov.POID = o.ID
 where ov.POID = @poID and ov.TestNo = @TestNo
 ";

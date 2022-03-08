@@ -78,18 +78,21 @@ exec UpdateInspPercent 'LabColorFastness', @POID
 
             string sqlcmd = @"
 select a.ID
-,b.StyleID
-,b.BrandID
-,b.SeasonID
-,c.TestNo
-,[TestDate] = Format(c.InspDate, 'yyyy/MM/dd')
-,c.Article
-,c.Result
-,c.Inspector
-,c.Remark
+    ,b.StyleID
+    ,b.BrandID
+    ,b.SeasonID
+    ,c.TestNo
+    ,[TestDate] = Format(c.InspDate, 'yyyy/MM/dd')
+    ,c.Article
+    ,c.Result
+    ,c.Inspector
+    ,c.Remark
+    ,ci.TestBeforePicture
+    ,ci.TestAfterPicture
 from po a WITH (NOLOCK) 
 left join Orders b WITH (NOLOCK) on a.ID = b.POID
 left join ColorFastness c WITH (NOLOCK) on a.ID=c.POID
+left join [ExtendServer].PMSFile.dbo.ColorFastness ci on c.ID=ci.ID
 where a.id= @POID
 and c.ID = @ID
 ";

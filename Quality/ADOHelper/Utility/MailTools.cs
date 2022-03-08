@@ -122,6 +122,11 @@ namespace ADOHelper.Utility
                     }
                 }
 
+                if (SendMail_Request.alternateView != null)
+                {
+                    message.AlternateViews.Add(SendMail_Request.alternateView);
+                }                              
+
                 client.Send(message);
 
                 sendMail_Result.result = true;
@@ -136,10 +141,14 @@ namespace ADOHelper.Utility
             return sendMail_Result;
         }
 
-        public static string DataTableChangeHtml(DataTable dt)
+        public static string DataTableChangeHtml(DataTable dt, out AlternateView plainView)
         {
+            plainView = null;
+            int dtlen = dt.AsEnumerable().Where(dr => dr.Table.Columns.Contains("TestBeforePicture")
+                                                    || dr.Table.Columns.Contains("TestAfterPicture")).Any() ? dt.Columns.Count - 2 : dt.Columns.Count;
+            int colspan = dtlen / 2;
+            
             string html = "<html> ";
-
             html += @"
 <style>
     .tg {border-collapse:collapse;border-spacing:0;}
@@ -154,6 +163,11 @@ namespace ADOHelper.Utility
             html += "<thead><tr bgcolor=\"#FFDEA1\" > ";
             for (int i = 0; i <= dt.Columns.Count - 1; i++)
             {
+                if (dt.Columns[i].ColumnName == "TestBeforePicture" || dt.Columns[i].ColumnName == "TestAfterPicture")
+                {
+                    continue;
+                }
+
                 html += "<th>" + dt.Columns[i].ColumnName + "</th> ";
             }
             html += "</tr></thead> ";
@@ -163,14 +177,82 @@ namespace ADOHelper.Utility
                 html += "<tr> ";
                 for (int j = 0; j <= dt.Columns.Count -1; j++)
                 {
+                    if (dt.Columns[j].ColumnName == "TestBeforePicture" || dt.Columns[j].ColumnName == "TestAfterPicture")
+                    {
+                        continue;
+                    }
+
                     html += "<td>" + dt.Rows[i][j].ToString() + "</td> ";
                 }
                 html += "</tr> ";
             }
+
+            if (dt.AsEnumerable().Where(dr => dr.Table.Columns.Contains("TestBeforePicture") 
+                                            || dr.Table.Columns.Contains("TestAfterPicture")).Any())
+            {
+                html += $"<tr><td colspan='{dtlen}'></td></tr> ";
+                html += "<tr> ";
+
+                if (dtlen % 2 == 0)
+                {
+                    // 對分
+                    html += $"<td colspan='{colspan}'><img src='cid:TestBeforePicture' alt='BeforePicture'></td> ";
+                    html += $"<td colspan='{colspan}'><img src='cid:TestAfterPicture' alt='AfterPicture'></td> ";
+                }
+                else
+                {
+                    // 中間切一格
+                    html += $"<td colspan='{colspan}'><img src='cid:TestBeforePicture' alt='BeforePicture'></td> ";
+                    html += $"<td></td> ";
+                    html += $"<td colspan='{colspan}'><img src='cid:TestAfterPicture' alt='AfterPicture'></td> ";
+                }
+                html += "</tr> ";
+            }
+
             html += "</tbody> ";
             html += "</table> ";
             html += "</body> ";
             html += "</html> ";
+
+
+            if (dt.AsEnumerable().Where(dr => dr.Table.Columns.Contains("TestBeforePicture")
+                                           || dr.Table.Columns.Contains("TestAfterPicture")).Any())
+            {
+                plainView = AlternateView.CreateAlternateViewFromString(html, null, System.Net.Mime.MediaTypeNames.Text.Html);
+                if (!string.IsNullOrEmpty(dt.Rows[0]["TestBeforePicture"].ToString()))
+                {
+                    byte[] picture = (byte[])dt.Rows[0]["TestBeforePicture"];
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    string imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+
+                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
+                    {
+                        imageFile.Write(picture, 0, picture.Length);
+                        imageFile.Flush();
+                    }
+
+                    LinkedResource myPhoto = new LinkedResource(imgPath);
+                    myPhoto.ContentId = "TestBeforePicture";
+                    plainView.LinkedResources.Add(myPhoto);
+                }
+                if (!string.IsNullOrEmpty(dt.Rows[0]["TestAfterPicture"].ToString()))
+                {
+                    byte[] picture = (byte[])dt.Rows[0]["TestAfterPicture"];
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    string imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+
+                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
+                    {
+                        imageFile.Write(picture, 0, picture.Length);
+                        imageFile.Flush();
+                    }
+
+                    LinkedResource myPhoto = new LinkedResource(imgPath);
+                    myPhoto.ContentId = "TestAfterPicture";
+                    plainView.LinkedResources.Add(myPhoto);
+                }
+
+            }
             return html;
         }
     }

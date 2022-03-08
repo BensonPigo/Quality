@@ -316,7 +316,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
 
                 DataTable dtContent = _IColorFastnessProvider.Get_Mail_Content(POID, ID);
-                string strHtml = MailTools.DataTableChangeHtml(dtContent);
+                string strHtml = MailTools.DataTableChangeHtml(dtContent, out System.Net.Mail.AlternateView plainView);
 
                 SendMail_Request request = new SendMail_Request()
                 {
@@ -324,6 +324,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     CC = CCAddress,
                     Subject = "Washing Fastness-Crocking Test – Test Fail",
                     Body = strHtml,
+                    alternateView = plainView,
                 };
 
                 MailTools.SendMail(request);

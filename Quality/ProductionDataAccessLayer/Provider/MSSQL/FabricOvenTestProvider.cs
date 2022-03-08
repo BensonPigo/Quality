@@ -542,9 +542,12 @@ select  [SP#] = ov.POID,
         [Article] = ov.Article,
         [Result] = ov.Result,
         [Inspector] = ov.Inspector,
-        [Remark] = ov.Remark
-from    Oven ov with (nolock)
-left join  Orders o with (nolock) on ov.POID = o.ID
+        [Remark] = ov.Remark,
+        oi.TestBeforePicture,
+        oi.TestAfterPicture
+from Oven ov with (nolock)
+left join Orders o with (nolock) on ov.POID = o.ID
+left join [ExtendServer].PMSFile.dbo.Oven oi with (nolock) on oi.ID=ov.ID
 where ov.POID = @poID and ov.TestNo = @TestNo
 ";
 

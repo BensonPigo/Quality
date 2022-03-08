@@ -16,6 +16,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Runtime.InteropServices;
 using System.Web.Mvc;
 using System.Windows;
@@ -481,15 +482,16 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public SendMail_Result FailSendMail(MockupFailMail_Request mail_Request)
+        public SendMail_Result FailSendMail(MockupFailMail_Request mail_Request )
         {
             _MockupCrockingProvider = new MockupCrockingProvider(Common.ProductionDataAccessLayer);
-            string mailBody = MailTools.DataTableChangeHtml(_MockupCrockingProvider.GetMockupCrockingFailMailContentData(mail_Request.ReportNo));
+            string mailBody = MailTools.DataTableChangeHtml(_MockupCrockingProvider.GetMockupCrockingFailMailContentData(mail_Request.ReportNo), out AlternateView plainView);            
             SendMail_Request sendMail_Request = new SendMail_Request();
             sendMail_Request.Subject = "Mockup Crocking – Test Fail";
             sendMail_Request.To = mail_Request.To;
             sendMail_Request.CC = mail_Request.CC;
             sendMail_Request.Body = mailBody;
+            sendMail_Request.alternateView = plainView;
             return MailTools.SendMail(sendMail_Request);
         }
     }
