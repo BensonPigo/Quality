@@ -217,7 +217,7 @@ namespace Quality.Controllers
         // 檢查是否登入
         public bool CheckSession()
         {
-            if (Session == null || Session.Keys.Count == 1)
+            if (Session == null || Session.Keys.Count < 10)
             {
                 if (Request.IsAjaxRequest())//是Ajax的話
                 {

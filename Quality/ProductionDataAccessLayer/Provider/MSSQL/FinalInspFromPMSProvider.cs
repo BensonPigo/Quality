@@ -91,7 +91,7 @@ select  [OrderID] = o.id,
 select  OrderID,
         AvailableQty
 into    #FinalInspection_Order
-from    [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order with (nolock)
+from    ManufacturingExecution.dbo.FinalInspection_Order with (nolock)
 where   ID  =   @finalInspectionID
 
 select  [OrderID] = o.id,
@@ -102,7 +102,7 @@ select  [OrderID] = o.id,
         [Qty] = 0,
         [AvailableQty] = fo.AvailableQty,
         [Cartons] = ''
-from  Orders o with (nolock)
+from  MainServer.Production.dbo.Orders o with (nolock)
 inner join  #FinalInspection_Order fo on fo.OrderID = o.ID
 ";
             return ExecuteList<SelectedPO>(CommandType.Text, sqlGetData, listPar);
@@ -139,12 +139,12 @@ select  [Selected] = 1,
         CTNNo,
         Seq
 into    #FinalInspection_OrderCarton
-from    [ExtendServer].ManufacturingExecution.dbo.FinalInspection_OrderCarton with (nolock)
+from    ManufacturingExecution.dbo.FinalInspection_OrderCarton with (nolock)
 where   ID  =   @finalInspectionID
 
 select  OrderID
 into    #FinalInspection_Order
-from    [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order with (nolock)
+from    ManufacturingExecution.dbo.FinalInspection_Order with (nolock)
 where   ID  =   @finalInspectionID
 
 select  [Selected] = cast(isnull(fc.Selected, 0) as bit),
@@ -152,7 +152,7 @@ select  [Selected] = cast(isnull(fc.Selected, 0) as bit),
         [PackingListID] = pld.id, 
         [CTNNo] = CTNStartNo,
         [Seq] = pld.OrderShipmodeSeq
-from PackingList_Detail pld WITH(NOLOCK)
+from MainServer.Production.dbo.PackingList_Detail pld WITH(NOLOCK)
 left join   #FinalInspection_OrderCarton fc on  fc.OrderID = pld.OrderID and 
                                                 fc.PackinglistID = pld.ID and 
                                                 fc.CTNNo = pld.CTNStartNo and
@@ -175,12 +175,12 @@ select  [Selected] = 1,
         Seq,
         ShipmodeID
 into    #FinalInspection_Order_QtyShip
-from    [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order_QtyShip with (nolock)
+from    ManufacturingExecution.dbo.FinalInspection_Order_QtyShip with (nolock)
 where   ID  =   @finalInspectionID
 
 select  OrderID
 into    #FinalInspection_Order
-from    [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order with (nolock)
+from    ManufacturingExecution.dbo.FinalInspection_Order with (nolock)
 where   ID  =   @finalInspectionID
 
 select  [Selected] = cast(isnull(foq.Selected, 0) as bit),
@@ -188,10 +188,10 @@ select  [Selected] = cast(isnull(foq.Selected, 0) as bit),
         [Seq] = oqs.Seq, 
         [ShipmodeID] = oqs.ShipmodeID,
         [Article] = (SELECT Stuff((select distinct concat( ',',Article)   
-                                    from Order_QtyShip_Detail with (nolock) 
+                                    from MainServer.Production.dbo.Order_QtyShip_Detail with (nolock) 
                                     where ID = oqs.ID and Seq = oqs.Seq FOR XML PATH('')),1,1,'') ),
         [Qty] = oqs.Qty
-from Order_QtyShip oqs with (nolock)
+from MainServer.Production.dbo.Order_QtyShip oqs with (nolock)
 left join   #FinalInspection_Order_QtyShip foq on   foq.OrderID = oqs.ID and 
                                                     foq.Seq = oqs.Seq 
 where   oqs.ID in (select OrderID from #FinalInspection_Order)
