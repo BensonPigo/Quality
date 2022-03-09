@@ -533,7 +533,7 @@ outer apply (select Name from Pass1 WITH(NOLOCK) where id = m.EditName) EditName
 
             SbSql.Append($@"
 SELECT 
-         [Report No] = ReportNo
+         [Report No] = m.ReportNo
         ,[SP#] = POID
         ,[Style] = StyleID
         ,[Brand] = BrandID
@@ -555,7 +555,7 @@ FROM MockupWash m WITH(NOLOCK)
 left join [ExtendServer].PMSFile.dbo.MockupWash mi WITH(NOLOCK) on m.ReportNo=mi.ReportNo
 outer apply (select Name, ExtNo from pass1 p WITH(NOLOCK) inner join Technician t WITH(NOLOCK) on t.ID = p.ID where t.id = m.Technician) Technician_ne
 outer apply (select Name, ExtNo from pass1 WITH(NOLOCK) where id = m.MR) MR_ne
-where ReportNo = @ReportNo
+where m.ReportNo = @ReportNo
 ");
             return ExecuteDataTableByServiceConn(CommandType.Text, SbSql.ToString(), objParameter);
         }
