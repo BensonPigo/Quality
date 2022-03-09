@@ -635,9 +635,12 @@ select	[SP#] = f.POID,
         [Arrive Qty] = f.ArriveQty,
         [Crocking Result] = fl.Crocking,
         [Crocking Last Test Date] = Format(fl.CrockingDate, 'yyyy/MM/dd'),
-        [Crocking Remark] = fl.CrockingRemark
+        [Crocking Remark] = fl.CrockingRemark,
+        [TestBeforePicture] = fli.CrockingTestBeforePicture,
+        [TestAfterPicture] = fli.CrockingTestAfterPicture
 from FIR f with (nolock)
 left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
+left join [ExtendServer].PMSFile.dbo.FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
 left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
 left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
 left join Supp s with (nolock) on s.ID = f.SuppID
@@ -1065,9 +1068,12 @@ select	[SP#] = f.POID,
         [Arrive Qty] = f.ArriveQty,
         [Heat Result] = fl.Heat,
         [Heat Last Test Date] = Format(fl.HeatDate, 'yyyy/MM/dd'),
-        [Heat Remark] = fl.HeatRemark
+        [Heat Remark] = fl.HeatRemark,
+        [TestBeforePicture] = fli.HeatTestBeforePicture,
+        [TestAfterPicture] = fli.HeatTestAfterPicture, 
 from FIR f with (nolock)
 left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
+left join [ExtendServer].PMSFile.dbo.FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
 left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
 left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
 left join Supp s with (nolock) on s.ID = f.SuppID
@@ -1494,9 +1500,12 @@ select	[SP#] = f.POID,
         [Arrive Qty] = f.ArriveQty,
         [Wash Result] = fl.Wash,
         [Wash Last Test Date] = Format(fl.WashDate, 'yyyy/MM/dd'),
-        [Wash Remark] = fl.WashRemark
+        [Wash Remark] = fl.WashRemark,
+	    [TestBeforePicture] = fli.WashTestBeforePicture,
+	    [TestAfterPicture] = fli.WashTestAfterPicture
 from FIR f with (nolock)
 left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
+left join [ExtendServer].PMSFile.dbo.FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
 left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
 left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
 left join Supp s with (nolock) on s.ID = f.SuppID

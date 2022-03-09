@@ -476,7 +476,10 @@ select    p.ReportNo
 		, [Accessory Ref#] = p.AccRefno
 		, [Snap Operator] = p.SnapOperator
 		,p.Remark
+		,pi.TestBeforePicture
+		,pi.TestAfterPicture
 from PullingTest p 
+left join [ExtendServer].PMSFile.dbo.PullingTest pi WITH(NOLOCK) on p.ReportNo = pi.ReportNo
 where p.ReportNo = @ReportNo
 ";
 

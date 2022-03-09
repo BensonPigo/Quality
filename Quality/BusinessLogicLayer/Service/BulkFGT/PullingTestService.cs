@@ -191,14 +191,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 dt.Columns.Remove("PullForce");
 
 
-                string mailBody = MailTools.DataTableChangeHtml(dt);
+                string mailBody = MailTools.DataTableChangeHtml(dt, out System.Net.Mail.AlternateView plainView);
 
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
                     To = ToAddress,
                     CC = CcAddress,
                     Subject = "Pulling Test - Test Fail",
-                    Body = mailBody
+                    Body = mailBody,
+                    alternateView = plainView,
                 };
                 result = MailTools.SendMail(sendMail_Request);
                 result.result = true;
