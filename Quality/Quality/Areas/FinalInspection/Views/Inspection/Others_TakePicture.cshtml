@@ -183,7 +183,7 @@
             var length = UploadPic.files.length;
 
             if (length > 0) {
-
+                $(".FileItem").remove();
                 var idx = 0;
                 $.each(UploadPic.files, function (idx) {
                     $("#FileArea").append(`
