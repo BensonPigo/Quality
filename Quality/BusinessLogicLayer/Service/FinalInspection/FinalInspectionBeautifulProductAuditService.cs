@@ -39,7 +39,7 @@ namespace BusinessLogicLayer.Service
             try
             {
                 _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
-
+                IFinalInspectionProvider np = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
                 DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection =
                     _FinalInspectionProvider.GetFinalInspection(finalInspectionID);
 
@@ -57,7 +57,8 @@ namespace BusinessLogicLayer.Service
                     beautifulProductAudit.SampleSize = finalInspection.SampleSize;
                 }
 
-                beautifulProductAudit.ListBACriteria = _FinalInspectionProvider.GetBeautifulProductAuditForInspection(finalInspectionID).ToList();
+                _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+                beautifulProductAudit.ListBACriteria = np.GetBeautifulProductAuditForInspection(finalInspectionID).ToList();
             }
             catch (Exception ex)
             {

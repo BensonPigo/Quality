@@ -571,7 +571,7 @@ insert into FinalInspection_DetailImage(ID, FinalInspection_DetailUkey ,Remark)
             string sqlGetData = $@"
 select ID, Description 
 into #baseBACriteria
-from  MainServer.Production.dbo.DropDownList ddl  WITH(NOLOCK)
+from  MainServer2.Production.dbo.DropDownList ddl  WITH(NOLOCK)
 where Type = 'PMS_BACriteria'
 order by Seq
 
