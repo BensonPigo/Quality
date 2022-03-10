@@ -24,7 +24,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
+                _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ManufacturingExecutionDataAccessLayer);
 
                 moisture.FinalInspectionID = finalInspectionID;
                 moisture.ListArticle = _FinalInspFromPMSProvider.GetArticleList(finalInspectionID);

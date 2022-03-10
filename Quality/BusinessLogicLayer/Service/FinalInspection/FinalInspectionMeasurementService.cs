@@ -37,7 +37,7 @@ namespace BusinessLogicLayer.Service
 
                 measurement.FinalInspectionID = finalInspectionID;
 
-                _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
+                _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ManufacturingExecutionDataAccessLayer);
                 measurement.ListArticle = _FinalInspFromPMSProvider.GetArticleList(finalInspectionID)
                             .Select(s => new SelectListItem() { 
                                 Text = s,

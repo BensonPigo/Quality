@@ -123,6 +123,7 @@ select  [Selected] = Cast(0 as bit),
  where  pld.OrderID in ({whereOrderID}) 
     --and CTNQty = 1
  group by  OrderID,ID,CTNStartNo,OrderShipmodeSeq
+ ORDER BY Cast( CTNStartNo as int)
 ";
             return ExecuteList<SelectCarton>(CommandType.Text, sqlGetData, listPar);
         }
@@ -268,11 +269,11 @@ select  [Ukey] = isnull(fd.Ukey, -1),
             string sqlGetMoistureArticleList = @"
 select  OrderID, Seq
 into #FinalInspection_Order_QtyShip
-from [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order_QtyShip with (nolock)
+from ManufacturingExecution.dbo.FinalInspection_Order_QtyShip with (nolock)
 where ID = @finalInspectionID
 
 select distinct oqd.Article 
-from Order_QtyShip_Detail oqd with (nolock)
+from MainServer.Production.dbo.Order_QtyShip_Detail oqd with (nolock)
 where exists (select 1 from #FinalInspection_Order_QtyShip where OrderID = oqd.ID and Seq = oqd.Seq )
 ";
 
@@ -297,7 +298,7 @@ where exists (select 1 from #FinalInspection_Order_QtyShip where OrderID = oqd.I
 select  [Text] = '', [Value] = ''
 union
 select  [Text] = Name, [Value] = Name 
-from DropDownList ddl WITH(NOLOCK) where
+from MainServer.Production.dbo.DropDownList ddl WITH(NOLOCK) where
 type='PMS_MoistureAction'
 
 ";
@@ -313,11 +314,11 @@ type='PMS_MoistureAction'
             string sqlGetMoistureArticleList = @"
 select  OrderID, Seq
 into #FinalInspection_Order_QtyShip
-from [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order_QtyShip with (nolock)
+from ManufacturingExecution.dbo.FinalInspection_Order_QtyShip with (nolock)
 where ID = @finalInspectionID
 
 select distinct oqd.Article, oqd.SizeCode 
-from Order_QtyShip_Detail oqd with (nolock)
+from MainServer.Production.dbo.Order_QtyShip_Detail oqd with (nolock)
 where exists (select 1 from #FinalInspection_Order_QtyShip where OrderID = oqd.ID and Seq = oqd.Seq )
 ";
 
@@ -333,19 +334,19 @@ where exists (select 1 from #FinalInspection_Order_QtyShip where OrderID = oqd.I
             string sqlGetMoistureArticleList = @"
 select  OrderID
 into #FinalInspection_Order
-from [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order with (nolock)
+from ManufacturingExecution.dbo.FinalInspection_Order with (nolock)
 where ID = @finalInspectionID
 
 ----避免沒有Order_Location資料，預先塞入
-INSERT into  Order_Location(OrderId,Location,Rate,AddName,AddDate,EditName,EditDate)
+INSERT into  MainServer.Production.dbo.Order_Location(OrderId,Location,Rate,AddName,AddDate,EditName,EditDate)
 SELECT o.id,sl.Location,sl.Rate,sl.AddName,sl.AddDate,sl.EditName,sl.EditDate
-FROM orders o WITH(NOLOCK)
-inner join Style_Location sl WITH (NOLOCK) on o.StyleUkey = sl.StyleUkey
+FROM MainServer.Production.dbo.orders o WITH(NOLOCK)
+inner join MainServer.Production.dbo.Style_Location sl WITH (NOLOCK) on o.StyleUkey = sl.StyleUkey
 WHERE o.ID IN (select OrderID from #FinalInspection_Order)
-AND  o.ID NOT IN (select OrderID from Order_Location WITH(NOLOCK))
+AND  o.ID NOT IN (select OrderID from MainServer.Production.dbo.Order_Location WITH(NOLOCK))
 
 select distinct Location 
-from Order_Location with (nolock)
+from MainServer.Production.dbo.Order_Location with (nolock)
 where OrderId in (select OrderID from #FinalInspection_Order)
 ";
 

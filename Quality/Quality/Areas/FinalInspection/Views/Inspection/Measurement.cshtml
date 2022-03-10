@@ -550,6 +550,11 @@
         $(".iconPlus").click(function () {
             var Keyidx = $(this).attr("KeyIdx");
             var currentCol = $(`input[idx=ResultSizeSpec][KeyIdx=${Keyidx}]`);
+
+            if ($(currentCol).attr("readonly") == "readonly") {
+                return;
+            }
+
             var tpye = $(currentCol).attr("type");
             var oldValue = 0;
 
@@ -590,6 +595,12 @@
         $(".iconReduce").click(function () {
             var Keyidx = $(this).attr("KeyIdx");
             var currentCol = $(`input[idx=ResultSizeSpec][KeyIdx=${Keyidx}]`);
+
+            if ($(currentCol).attr("readonly") == "readonly") {
+                return;
+            }
+
+
             var tpye = $(currentCol).attr("type");
             var oldValue = 0;
 

@@ -237,7 +237,7 @@ namespace BusinessLogicLayer.Service
                 if (setting.AcceptQty > setting.SampleSize)
                 {
                     result.Result = false;
-                    result.ErrorMessage = $"[Accepted Qty] cannot be more than [Sample Plan Qty] ";
+                    result.ErrorMessage = $"Accepted Qty cannot be more than Sample Plan Qty ";
                     return result;
                 }
 

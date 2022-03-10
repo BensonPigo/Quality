@@ -352,7 +352,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                 }
                 // 預設值
                 setting.Team = "A";
-                setting.ErrorMessage = result.ErrorMessage;
+                setting.ErrorMessage = $@"msg.WithError(""{result.ErrorMessage}"")";
 
                 return View("Setting", setting);
             }
