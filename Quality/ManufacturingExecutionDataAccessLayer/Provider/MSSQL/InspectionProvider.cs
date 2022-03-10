@@ -35,8 +35,8 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 				@"
 -- 塞入Location
 
-select  ID, cnt = count(1),row = ROW_NUMBER()over(order by id)into #tmpfrom MainServer.Production.dbo.Orders a WITH(NOLOCK)where 1=1--AND PulloutComplete = 0and Category = 's'and junk = 0and brandid = @BrandIDand FtyGroup = @FtyGroupand qty > 0
-and not exists (		select 1		from MainServer.Production.dbo.Order_Location b WITH(NOLOCK)		where a.ID = b.OrderId	)and    exists (			    select 1	    from MainServer.Production.dbo.Style_Location b WITH(NOLOCK)	    where a.StyleUkey = b.StyleUkey    )
+select  ID, cnt = count(1),row = ROW_NUMBER()over(order by id)into #tmpfrom Production.dbo.Orders a WITH(NOLOCK)where 1=1--AND PulloutComplete = 0and Category = 's'and junk = 0and brandid = @BrandIDand FtyGroup = @FtyGroupand qty > 0
+and not exists (		select 1		from Production.dbo.Order_Location b WITH(NOLOCK)		where a.ID = b.OrderId	)and    exists (			    select 1	    from Production.dbo.Style_Location b WITH(NOLOCK)	    where a.StyleUkey = b.StyleUkey    )
 group by ID
 
 
@@ -51,9 +51,9 @@ select  [OrderID] = o.ID
 	, oq.Article
 	, [Size] = oq.SizeCode
 	, [ProductType] = ol.Location
-from MainServer.[Production].[dbo].Orders o with(nolock)
-inner join MainServer.[Production].[dbo].Order_Qty oq with(nolock) on o.ID = oq.ID
-inner join MainServer.[Production].[dbo].Order_Location ol with(nolock) on o.ID = ol.OrderId
+from [Production].[dbo].Orders o with(nolock)
+inner join [Production].[dbo].Order_Qty oq with(nolock) on o.ID = oq.ID
+inner join [Production].[dbo].Order_Location ol with(nolock) on o.ID = ol.OrderId
 left join (	
 	select OrderID,Article,Size,Location, InspectionQty = count(1)
 	from RFT_Inspection r with(nolock)	
@@ -118,10 +118,10 @@ select  [OrderID] = o.ID
 	, [SizeBalanceQty] = cast(oq.Qty - r_Size.SizeBalanceQty as varchar)
 	, [OrderQty] = cast(o.qty as varchar)
 	, [OrderBalanceQty] = cast(o.qty - r_Order.OrderBalanceQty as varchar)
-from MainServer.[Production].[dbo].Orders o with(nolock)
-inner join MainServer.[Production].[dbo].Style s with(nolock) on o.StyleUkey = s.Ukey
-inner join MainServer.[Production].[dbo].Order_Qty oq with(nolock) on o.ID = oq.ID
-inner join MainServer.[Production].[dbo].Order_Location ol with(nolock) on o.ID = ol.OrderId
+from [Production].[dbo].Orders o with(nolock)
+inner join [Production].[dbo].Style s with(nolock) on o.StyleUkey = s.Ukey
+inner join [Production].[dbo].Order_Qty oq with(nolock) on o.ID = oq.ID
+inner join [Production].[dbo].Order_Location ol with(nolock) on o.ID = ol.OrderId
 outer apply (
 	select SizeBalanceQty = count(*)
 	from RFT_Inspection r with(nolock)
@@ -140,8 +140,8 @@ outer apply (
 )r_Order
 outer apply(
 	select r.Name 
-	from MainServer.[Production].[dbo].Style s with(nolock)
-	inner join MainServer.[Production].[dbo].Reason r with(nolock) on r.ID = s.ApparelType 
+	from [Production].[dbo].Style s with(nolock)
+	inner join [Production].[dbo].Reason r with(nolock) on r.ID = s.ApparelType 
         and r.ReasonTypeID = 'Style_Apparel_Type'	
 	where s.Ukey = o.StyleUkey
 )ApparelType
@@ -177,10 +177,10 @@ select distinct  [OrderID] = o.ID
 	, [Inpsected] = cast(iif(r_Size.SizeBalanceQty >= oq.Qty, 1, 0) as bit)
 	, o.PulloutComplete
 	, o.FtyGroup
-from MainServer.[Production].[dbo].Orders o with(nolock)
-inner join MainServer.[Production].[dbo].Style s with(nolock) on o.StyleUkey = s.Ukey
-inner join MainServer.[Production].[dbo].Order_Qty oq with(nolock) on o.ID = oq.ID
-inner join MainServer.[Production].[dbo].Order_Location ol with(nolock) on o.ID = ol.OrderId
+from [Production].[dbo].Orders o with(nolock)
+inner join [Production].[dbo].Style s with(nolock) on o.StyleUkey = s.Ukey
+inner join [Production].[dbo].Order_Qty oq with(nolock) on o.ID = oq.ID
+inner join [Production].[dbo].Order_Location ol with(nolock) on o.ID = ol.OrderId
 outer apply (
 	select SizeBalanceQty = count(*)
 	from RFT_Inspection r with(nolock)
@@ -199,8 +199,8 @@ outer apply (
 )r_Order
 outer apply(
 	select r.Name 
-	from MainServer.[Production].[dbo].Style s with(nolock)
-	inner join MainServer.[Production].[dbo].Reason r with(nolock) on r.ID = s.ApparelType 
+	from [Production].[dbo].Style s with(nolock)
+	inner join [Production].[dbo].Reason r with(nolock) on r.ID = s.ApparelType 
         and r.ReasonTypeID = 'Style_Apparel_Type'	
 	where s.Ukey = o.StyleUkey
 )ApparelType

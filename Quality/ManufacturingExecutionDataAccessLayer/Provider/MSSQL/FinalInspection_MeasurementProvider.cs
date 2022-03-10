@@ -43,10 +43,10 @@ SELECT
 FROM [FinalInspection_Measurement] fm WITH(NOLOCK)
 inner join FinalInspection f WITH(NOLOCK) on f.ID = fm.ID
 inner join Measurement m WITH(NOLOCK) on m.Ukey = fm.MeasurementUkey
-inner join MainServer.Production.dbo.Style s with(nolock) on s.ukey = m.StyleUkey
-left join [MainServer].Production.dbo.Orders o1 with(nolock) on o1.id = @SP
+inner join Production.dbo.Style s with(nolock) on s.ukey = m.StyleUkey
+left join Production.dbo.Orders o1 with(nolock) on o1.id = @SP
 outer apply(
-	select top 1 SizeUnit from [MainServer].Production.dbo.Orders o WITH(NOLOCK)
+	select top 1 SizeUnit from Production.dbo.Orders o WITH(NOLOCK)
 	where StyleUkey = m.StyleUkey and id = @SP
 		and LocalOrder=1 and SubconInSisterFty=1
 )o2

@@ -571,7 +571,7 @@ insert into FinalInspection_DetailImage(ID, FinalInspection_DetailUkey ,Remark)
             string sqlGetData = $@"
 select ID, Description 
 into #baseBACriteria
-from  MainServer2.Production.dbo.DropDownList ddl  WITH(NOLOCK)
+from  Production.dbo.DropDownList ddl  WITH(NOLOCK)
 where Type = 'PMS_BACriteria'
 order by Seq
 
@@ -732,7 +732,7 @@ where   a.FinalInspection_NonBACriteriaUkey = @FinalInspection_NonBACriteriaUkey
             string sqlGetMoistureListCartonItem = @"
 select distinct ID, Seq, Article
 into    #Order_QtyShip_Detail
-from    MainServer.Production.dbo.Order_QtyShip_Detail WITH(NOLOCK)  
+from    Production.dbo.Order_QtyShip_Detail WITH(NOLOCK)  
 where   ID in (select OrderID from FinalInspection_Order with (nolock) where ID = @finalInspectionID)
 
 select  [FinalInspection_OrderCartonUkey] = foc.Ukey,
@@ -998,12 +998,12 @@ where   ID = @finalInspectionID
 
 select  StyleUkey = Ukey,SizeUnit
 INTO #Style_Size
-from    MainServer.Production.dbo.Style WITH(NOLOCK)
+from    Production.dbo.Style WITH(NOLOCK)
 where   Ukey IN (
 	select StyleUkey 
-	from [MainServer].Production.dbo.Orders  WITH(NOLOCK)
+	from Production.dbo.Orders  WITH(NOLOCK)
 	where ID IN (select ID
-					from [MainServer].Production.dbo.Orders WITH(NOLOCK)
+					from Production.dbo.Orders WITH(NOLOCK)
 					where CustPONO = @CustPONO
 				) 
 )
@@ -1182,10 +1182,10 @@ declare @BrandID varchar(8)
 select  @StyleID = StyleID,
         @SeasonID = SeasonID,
         @BrandID = BrandID
-from    [MainServer].Production.dbo.Orders with (nolock)
+from    Production.dbo.Orders with (nolock)
 where   ID IN (
     select ID
-    from MainServer.Production.dbo.Orders WITH(NOLOCK)
+    from Production.dbo.Orders WITH(NOLOCK)
     where CustPONO = (select CustPONO from FinalInspection with (nolock) where ID = @FinalInspectionID )
 )
 
@@ -1222,16 +1222,16 @@ declare @BrandID varchar(8)
 declare @spQty int
 
 select @spQty = isnull(sum(Qty), 0)
-from [MainServer].Production.dbo.Orders with (nolock)
+from Production.dbo.Orders with (nolock)
 where   ID in (select OrderID from FinalInspection_Order with (nolock) where ID = @FinalInspectionID)
 
 select  @StyleID = StyleID,
         @SeasonID = SeasonID,
         @BrandID = BrandID
-from    [MainServer].Production.dbo.Orders with (nolock)
+from    Production.dbo.Orders with (nolock)
 where   ID IN (
     select ID
-    from MainServer.Production.dbo.Orders WITH(NOLOCK)
+    from Production.dbo.Orders WITH(NOLOCK)
     where CustPONO = (select CustPONO from FinalInspection with (nolock) where ID = @FinalInspectionID )
 )
 
@@ -1271,7 +1271,7 @@ where f.InspectionResult = @InspectionResult)";
             {
                 whereOrder += @" and ID IN (
 select ID
-from MainServer.Production.dbo.Orders WITH(NOLOCK)
+from Production.dbo.Orders WITH(NOLOCK)
 where CustPONO = @CustPONO
 )
 ";
@@ -1317,7 +1317,7 @@ where   1 = 1 {whereOrder}
 
 select  ID, Article
 into    #tmpOrderArticle
-from    MainServer.Production.dbo.Order_Article with (nolock)
+from    Production.dbo.Order_Article with (nolock)
 where   ID in (select ID from #tmpOrders)
 
 select  [FinalInspectionID] = f.ID,
@@ -1425,31 +1425,14 @@ outer apply (select	[POQty] = sum(o.Qty),
 					[ETD_ETA] = max(o.BuyerDelivery),
                     [CustomerPo] = max(o.CustCDID),
                     [IsDestJP] = max(iif(o.Dest = 'JP', 1, 0))
-				from MainServer.Production.dbo.Orders o with (nolock)
+				from Production.dbo.Orders o with (nolock)
 				where o.CustPONo = f.CustPONO) OrderInfo
---outer apply (select [val] = Replicate('M', InspectionLevels/1000)  
---							+ REPLACE(REPLACE(REPLACE(  
---							     Replicate('C', InspectionLevels%1000/100),  
---							     Replicate('C', 9), 'CM'),  
---							     Replicate('C', 5), 'D'),  
---							     Replicate('C', 4), 'CD')  
---							+ REPLACE(REPLACE(REPLACE(  
---							     Replicate('X', InspectionLevels%100 / 10),  
---							     Replicate('X', 9),'XC'),  
---							     Replicate('X', 5), 'L'),  
---							     Replicate('X', 4), 'XL')  
---							+ REPLACE(REPLACE(REPLACE(  
---							     Replicate('I', InspectionLevels%10),  
---							     Replicate('I', 9),'IX'),  
---							     Replicate('I', 5), 'V'),  
---							     Replicate('I', 4),'IV')   
---            from [MainServer].Production.dbo.AcceptableQualityLevels WITH(NOLOCK) 
---            where Ukey = f.AcceptableQualityLevelsUkey) inspectionLevel
+
 where f.ID = @ID 
 select	distinct
 		oc.ColorID
 from  MainServer.Production.dbo.Order_ColorCombo oc with (nolock)
-where oc.ID in (select POID from MainServer.Production.dbo.Orders with (nolock) 
+where oc.ID in (select POID from Production.dbo.Orders with (nolock) 
 				where id in (select OrderID 
 							 from FinalInspection_Order with (nolock) where ID = @ID))
 
@@ -1457,7 +1440,7 @@ select	oq.SizeCode,
 		oq.Article,
         [ShipQty] = sum(oq.Qty)
 from FinalInspection_Order_QtyShip fo with (nolock)
-inner join MainServer.Production.dbo.Order_QtyShip_Detail oq with (nolock) on fo.OrderID = oq.ID and fo.Seq = oq.Seq
+inner join Production.dbo.Order_QtyShip_Detail oq with (nolock) on fo.OrderID = oq.ID and fo.Seq = oq.Seq
 where fo.ID = @ID
 group by oq.SizeCode,
 		 oq.Article
@@ -1468,8 +1451,8 @@ select	s.StyleName,
 		s.CDCodeNew
 into #tmpStyleInfo
 from FinalInspection_Order fo with (nolock)
-inner join MainServer.Production.dbo.Orders o with (nolock) on o.ID = fo.OrderID
-inner join MainServer.Production.dbo.Style s with (nolock) on s.Ukey = o.StyleUkey
+inner join Production.dbo.Orders o with (nolock) on o.ID = fo.OrderID
+inner join Production.dbo.Style s with (nolock) on s.Ukey = o.StyleUkey
 where fo.ID = @ID
 
 declare @AdidasSAPERPCode varchar(3)
@@ -1481,7 +1464,7 @@ order by fb.CDCodeID desc
 
 SELECT	[Style] =  Stuff((select concat( ';',StyleName)   from #tmpStyleInfo FOR XML PATH('')),1,1,''),
 		[BrandAreaCode] = @AdidasSAPERPCode,
-		[BrandAreaID] = (select Name from MainServer.Production.dbo.DropDownList with (nolock) where Type = 'AdidasSAPERPCode' and ID = @AdidasSAPERPCode)
+		[BrandAreaID] = (select Name from Production.dbo.DropDownList with (nolock) where Type = 'AdidasSAPERPCode' and ID = @AdidasSAPERPCode)
 
 select	[DefectTypeDesc] = gdt.Description,
 		[DefectCodeDesc] = gdc.Description,
@@ -1511,7 +1494,7 @@ where   IsExportToP88 = 0 and
         InspectionResult in ('Pass', 'Fail') and
         submitdate is not null and
         InspectionStage = 'Final' and
-        exists (select 1 from MainServer.Production.dbo.Orders o with (nolock) where o.CustPONo = Finalinspection.CustPONO and o.BrandID in ('Adidas','Reebok'))
+        exists (select 1 from Production.dbo.Orders o with (nolock) where o.CustPONo = Finalinspection.CustPONO and o.BrandID in ('Adidas','Reebok'))
 
 ";
             if (!string.IsNullOrEmpty(finalInspectionID))
@@ -1539,7 +1522,7 @@ where   IsExportToP88 = 0 and
             string sqlGetData = @"
 select DISTINCT o.BrandID
 from FinalInspection_Order a
-inner join  [MainServer].Production.dbo.Orders o on a.OrderID=o.ID
+inner join  Production.dbo.Orders o on a.OrderID=o.ID
 where a.id = @ID
 
 ";
