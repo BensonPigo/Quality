@@ -45,11 +45,19 @@
         <table class="al-m" style="width: 48%;">
             <tr>
                 <td class="fistTD">
+                    <div><label class="checkboxlabel" for="SelectAll" style="color:red">Select All</label></div>
+                </td>
+                <td class="secTD">
+                    <input type="checkbox" ID="SelectAll"/>
+                </td>
+            </tr>
+            <tr>
+                <td class="fistTD">
                     <div><label class="checkboxlabel" for="FabricApprovalDoc">Fabric Approval</label></div>
                 </td>
                 <td class="secTD">
                     @*@Html.CheckBox("FabricApprovalDoc")*@
-                    @Html.CheckBoxFor(o => o.FabricApprovalDoc)
+                    @Html.CheckBoxFor(o => o.FabricApprovalDoc , new { @class="notSelectAll"})
                 </td>
             </tr>
             <tr>
@@ -58,7 +66,7 @@
                 </td>
                 <td class="secTD">
                     @*@Html.CheckBox("SealingSampleDoc")*@
-                    @Html.CheckBoxFor(o => o.SealingSampleDoc)
+                    @Html.CheckBoxFor(o => o.SealingSampleDoc, new { @class = "notSelectAll" })
                 </td>
             </tr>
             <tr>
@@ -67,7 +75,7 @@
                 </td>
                 <td class="secTD">
                     @*@Html.CheckBox("MetalDetectionDoc")*@
-                    @Html.CheckBoxFor(o => o.MetalDetectionDoc)
+                    @Html.CheckBoxFor(o => o.MetalDetectionDoc, new { @class = "notSelectAll" })
                 </td>
 
             </tr>
@@ -77,7 +85,7 @@
                 </td>
                 <td class="secTD">
                     @*@Html.CheckBox("GarmentWashingDoc")*@
-                    @Html.CheckBoxFor(o => o.GarmentWashingDoc)
+                    @Html.CheckBoxFor(o => o.GarmentWashingDoc, new { @class = "notSelectAll" })
                 </td>
             </tr>
         </table>
@@ -97,6 +105,27 @@
     <script>
 
         var msg = new MessagerAlert();
+
+        $(function () {
+
+            $("#SelectAll").change(function () {
+                var currentCHK = $("#SelectAll").prop('checked');
+                if (currentCHK) {
+                    $('input[type=checkbox]').prop('checked', 'checked');
+                }
+                else {
+                    $('input[type=checkbox]').prop('checked', '');
+                }
+            });
+
+            $(".notSelectAll").change(function () {
+                var currentCHK = $(this).prop('checked');
+                if (!currentCHK) {
+                    $("#SelectAll").prop('checked', '');
+                }
+
+            });
+        });
 
         function checkValue(self) {
 

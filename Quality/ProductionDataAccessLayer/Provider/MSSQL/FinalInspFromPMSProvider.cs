@@ -91,7 +91,7 @@ select  [OrderID] = o.id,
 select  OrderID,
         AvailableQty
 into    #FinalInspection_Order
-from    [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order with (nolock)
+from    ManufacturingExecution.dbo.FinalInspection_Order with (nolock)
 where   ID  =   @finalInspectionID
 
 select  [OrderID] = o.id,
@@ -102,7 +102,7 @@ select  [OrderID] = o.id,
         [Qty] = 0,
         [AvailableQty] = fo.AvailableQty,
         [Cartons] = ''
-from  Orders o with (nolock)
+from  Production.dbo.Orders o with (nolock)
 inner join  #FinalInspection_Order fo on fo.OrderID = o.ID
 ";
             return ExecuteList<SelectedPO>(CommandType.Text, sqlGetData, listPar);
@@ -123,6 +123,7 @@ select  [Selected] = Cast(0 as bit),
  where  pld.OrderID in ({whereOrderID}) 
     --and CTNQty = 1
  group by  OrderID,ID,CTNStartNo,OrderShipmodeSeq
+ ORDER BY Cast( CTNStartNo as int)
 ";
             return ExecuteList<SelectCarton>(CommandType.Text, sqlGetData, listPar);
         }
@@ -139,12 +140,12 @@ select  [Selected] = 1,
         CTNNo,
         Seq
 into    #FinalInspection_OrderCarton
-from    [ExtendServer].ManufacturingExecution.dbo.FinalInspection_OrderCarton with (nolock)
+from    ManufacturingExecution.dbo.FinalInspection_OrderCarton with (nolock)
 where   ID  =   @finalInspectionID
 
 select  OrderID
 into    #FinalInspection_Order
-from    [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order with (nolock)
+from    ManufacturingExecution.dbo.FinalInspection_Order with (nolock)
 where   ID  =   @finalInspectionID
 
 select  [Selected] = cast(isnull(fc.Selected, 0) as bit),
@@ -152,7 +153,7 @@ select  [Selected] = cast(isnull(fc.Selected, 0) as bit),
         [PackingListID] = pld.id, 
         [CTNNo] = CTNStartNo,
         [Seq] = pld.OrderShipmodeSeq
-from PackingList_Detail pld WITH(NOLOCK)
+from MainServer.Production.dbo.PackingList_Detail pld WITH(NOLOCK)
 left join   #FinalInspection_OrderCarton fc on  fc.OrderID = pld.OrderID and 
                                                 fc.PackinglistID = pld.ID and 
                                                 fc.CTNNo = pld.CTNStartNo and
@@ -175,12 +176,12 @@ select  [Selected] = 1,
         Seq,
         ShipmodeID
 into    #FinalInspection_Order_QtyShip
-from    [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order_QtyShip with (nolock)
+from    ManufacturingExecution.dbo.FinalInspection_Order_QtyShip with (nolock)
 where   ID  =   @finalInspectionID
 
 select  OrderID
 into    #FinalInspection_Order
-from    [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order with (nolock)
+from    ManufacturingExecution.dbo.FinalInspection_Order with (nolock)
 where   ID  =   @finalInspectionID
 
 select  [Selected] = cast(isnull(foq.Selected, 0) as bit),
@@ -188,10 +189,10 @@ select  [Selected] = cast(isnull(foq.Selected, 0) as bit),
         [Seq] = oqs.Seq, 
         [ShipmodeID] = oqs.ShipmodeID,
         [Article] = (SELECT Stuff((select distinct concat( ',',Article)   
-                                    from Order_QtyShip_Detail with (nolock) 
+                                    from Production.dbo.Order_QtyShip_Detail with (nolock) 
                                     where ID = oqs.ID and Seq = oqs.Seq FOR XML PATH('')),1,1,'') ),
         [Qty] = oqs.Qty
-from Order_QtyShip oqs with (nolock)
+from Production.dbo.Order_QtyShip oqs with (nolock)
 left join   #FinalInspection_Order_QtyShip foq on   foq.OrderID = oqs.ID and 
                                                     foq.Seq = oqs.Seq 
 where   oqs.ID in (select OrderID from #FinalInspection_Order)
@@ -231,7 +232,7 @@ select  GarmentDefectTypeID,
         Qty,
         Ukey
 into #FinalInspection_Detail
-from [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Detail
+from ManufacturingExecution.dbo.FinalInspection_Detail
 where   ID = @finalInspectionID
 
 select  [Ukey] = isnull(fd.Ukey, -1),
@@ -240,12 +241,16 @@ select  [Ukey] = isnull(fd.Ukey, -1),
         [DefectTypeDesc] = gdt.ID +'-'+gdt.Description,
         [DefectCodeDesc] = gdc.ID +'-'+gdc.Description,
         [Qty] = isnull(fd.Qty, 0),
-		[RowIndex]=ROW_NUMBER() OVER(ORDER BY gdt.id,gdc.id) -1,
-		HasImage = Cast(IIF(img.Image is null,0,1) as bit)
-    from GarmentDefectType gdt with (nolock)
-    inner join GarmentDefectCode gdc with (nolock) on gdt.id=gdc.GarmentDefectTypeID
+		[RowIndex]=ROW_NUMBER() OVER(ORDER BY gdt.id,gdc.id) -1
+		,HasImage = Cast(
+			IIF(EXISTS(
+				select 1 from PMSFile.dbo.FinalInspection_DetailImage img 
+				where img.FinalInspection_DetailUkey = isnull(fd.Ukey, -1)
+			),1,0)		
+		as bit)
+    from [MainServer].Production.dbo.GarmentDefectType gdt with (nolock)
+    inner join [MainServer].Production.dbo.GarmentDefectCode gdc with (nolock) on gdt.id=gdc.GarmentDefectTypeID
     left join   #FinalInspection_Detail fd on fd.GarmentDefectTypeID = gdt.ID and fd.GarmentDefectCodeID = gdc.ID
-    left join [ExtendServer].PMSFile.dbo.FinalInspection_DetailImage img on img.FinalInspection_DetailUkey = isnull(fd.Ukey, -1)
     where   gdt.Junk =0 and
             gdc.Junk =0
  order by gdt.id,gdc.id
@@ -264,11 +269,11 @@ select  [Ukey] = isnull(fd.Ukey, -1),
             string sqlGetMoistureArticleList = @"
 select  OrderID, Seq
 into #FinalInspection_Order_QtyShip
-from [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order_QtyShip with (nolock)
+from ManufacturingExecution.dbo.FinalInspection_Order_QtyShip with (nolock)
 where ID = @finalInspectionID
 
 select distinct oqd.Article 
-from Order_QtyShip_Detail oqd with (nolock)
+from Production.dbo.Order_QtyShip_Detail oqd with (nolock)
 where exists (select 1 from #FinalInspection_Order_QtyShip where OrderID = oqd.ID and Seq = oqd.Seq )
 ";
 
@@ -293,7 +298,7 @@ where exists (select 1 from #FinalInspection_Order_QtyShip where OrderID = oqd.I
 select  [Text] = '', [Value] = ''
 union
 select  [Text] = Name, [Value] = Name 
-from DropDownList ddl WITH(NOLOCK) where
+from Production.dbo.DropDownList ddl WITH(NOLOCK) where
 type='PMS_MoistureAction'
 
 ";
@@ -309,11 +314,11 @@ type='PMS_MoistureAction'
             string sqlGetMoistureArticleList = @"
 select  OrderID, Seq
 into #FinalInspection_Order_QtyShip
-from [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order_QtyShip with (nolock)
+from ManufacturingExecution.dbo.FinalInspection_Order_QtyShip with (nolock)
 where ID = @finalInspectionID
 
 select distinct oqd.Article, oqd.SizeCode 
-from Order_QtyShip_Detail oqd with (nolock)
+from Production.dbo.Order_QtyShip_Detail oqd with (nolock)
 where exists (select 1 from #FinalInspection_Order_QtyShip where OrderID = oqd.ID and Seq = oqd.Seq )
 ";
 
@@ -329,19 +334,19 @@ where exists (select 1 from #FinalInspection_Order_QtyShip where OrderID = oqd.I
             string sqlGetMoistureArticleList = @"
 select  OrderID
 into #FinalInspection_Order
-from [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order with (nolock)
+from ManufacturingExecution.dbo.FinalInspection_Order with (nolock)
 where ID = @finalInspectionID
 
 ----避免沒有Order_Location資料，預先塞入
-INSERT into  Order_Location(OrderId,Location,Rate,AddName,AddDate,EditName,EditDate)
+INSERT into  Production.dbo.Order_Location(OrderId,Location,Rate,AddName,AddDate,EditName,EditDate)
 SELECT o.id,sl.Location,sl.Rate,sl.AddName,sl.AddDate,sl.EditName,sl.EditDate
-FROM orders o WITH(NOLOCK)
-inner join Style_Location sl WITH (NOLOCK) on o.StyleUkey = sl.StyleUkey
+FROM Production.dbo.orders o WITH(NOLOCK)
+inner join Production.dbo.Style_Location sl WITH (NOLOCK) on o.StyleUkey = sl.StyleUkey
 WHERE o.ID IN (select OrderID from #FinalInspection_Order)
-AND  o.ID NOT IN (select OrderID from Order_Location WITH(NOLOCK))
+AND  o.ID NOT IN (select OrderID from Production.dbo.Order_Location WITH(NOLOCK))
 
 select distinct Location 
-from Order_Location with (nolock)
+from Production.dbo.Order_Location with (nolock)
 where OrderId in (select OrderID from #FinalInspection_Order)
 ";
 

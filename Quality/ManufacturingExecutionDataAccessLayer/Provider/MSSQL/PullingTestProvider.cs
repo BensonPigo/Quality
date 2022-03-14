@@ -270,7 +270,7 @@ VALUES(
            ,GETDATE()
            ,@AddName)
 
-INSERT INTO ExtendServer.PMSFile.dbo.PullingTest
+INSERT INTO PMSFile.dbo.PullingTest
            (ReportNo
             ,TestBeforePicture
             ,TestAfterPicture)

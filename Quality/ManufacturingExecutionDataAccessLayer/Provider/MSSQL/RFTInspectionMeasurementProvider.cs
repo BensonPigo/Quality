@@ -65,7 +65,7 @@ SELECT [MeasurementUkey] = a.ukey
 	,OrderID = '', Article = '', Location = '',Line = '',FactoryID = ''
 FROM [ManufacturingExecution].[dbo].[Measurement] a with(nolock)
 LEFT JOIN [ManufacturingExecution].[dbo].[MeasurementTranslate] b WITH(NOLOCK) ON  a.MeasurementTranslateUkey = b.UKey
-LEFT JOIN MainServer.Production.dbo.Style s WITH(NOLOCK) on s.Ukey = a.StyleUkey
+LEFT JOIN Production.dbo.Style s WITH(NOLOCK) on s.Ukey = a.StyleUkey
 --LEFT JOIN [ManufacturingExecution].[dbo].Inspection_Measurement inspm WITH(NOLOCK) on inspm.MeasurementUkey = a.Ukey
 where a.junk=0 
 and a.StyleUkey = @StyleUkey 

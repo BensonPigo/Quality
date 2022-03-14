@@ -39,7 +39,7 @@ select
 	Month = DateName(Month, DateAdd(Month, @Month, -1)),
 	Line = s.ID,
 	RFT = cast(iif(exist.Line is null, null ,iif(ttl.ct = 0, 0, round((isnull(pass.ct, 0) * 1.0 / ttl.ct) * 100, 2))) as decimal(5,2)) 
-from SciProduction_SewingLine s WITH(NOLOCK)
+from [MainServer].Production.dbo.SewingLine s WITH(NOLOCK)
 outer apply(select ct = count(1) from #tmpRft where Line = s.ID )ttl
 outer apply(select ct = count(1) from #tmpRft where Line = s.ID and Status = 'Pass')pass
 left join (
@@ -90,7 +90,7 @@ select
 	Month = DateName(Month, DateAdd(Month, @Month, -1)),
 	Line = s.ID,
 	RFT = cast(iif(exist.Line is null, null ,iif(ttl.ct = 0, 0, round((isnull(pass.ct, 0) * 1.0 / ttl.ct) * 100, 2))) as decimal(5,2))
-from SciProduction_SewingLine s WITH(NOLOCK)
+from [MainServer].Production.dbo.SewingLine s WITH(NOLOCK)
 cross join #tmpAllday d
 outer apply(select ct = count(1) from #tmpRft where Line = s.ID and Date = d.date)ttl
 outer apply(select ct = count(1) from #tmpRft where Line = s.ID and Date = d.date and Status = 'Pass')pass

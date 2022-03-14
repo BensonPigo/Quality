@@ -33,7 +33,7 @@ select   UserID = p.ID
         ,p.Pivot88UserName
 from Quality_Pass1 p WITH(NOLOCK)
 left join ManufacturingExecution.dbo.Pass1 mp1 WITH(NOLOCK) ON p.ID= mp1.ID
-left join Production.dbo.Pass1 pp1 WITH(NOLOCK) on p.ID = pp1.id
+left join MainServer.Production.dbo.Pass1 pp1 WITH(NOLOCK) on p.ID = pp1.id
 WHERE p.ID != 'SCIMIS'
 
 ");
@@ -54,7 +54,7 @@ select TOp 1 UserID = p.ID
         ,p.Pivot88UserName
 from Quality_Pass1 p WITH(NOLOCK)
 left join ManufacturingExecution.dbo.Pass1 mp1 WITH(NOLOCK) ON p.ID= mp1.ID
-left join Production.dbo.Pass1 pp1 WITH(NOLOCK) on p.ID = pp1.id
+left join MainServer.Production.dbo.Pass1 pp1 WITH(NOLOCK) on p.ID = pp1.id
 inner join Quality_Position pos WITH(NOLOCK) on pos.ID=p.Position
 where p.ID='{UserID}'
 

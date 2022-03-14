@@ -58,6 +58,8 @@ namespace BusinessLogicLayer.Service
 
                 result.SelectedSewing = _FinalInspFromPMSProvider.GetSelectedSewingLine(finalInspection.FactoryID).ToList();
                 result.SelectedSewingTeam = _FinalInspFromPMSProvider.GetSelectedSewingTeam().ToList();
+
+                _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ManufacturingExecutionDataAccessLayer);
                 result.SelectedPO = _FinalInspFromPMSProvider.GetSelectedPOForInspection(finalInspectionID).ToList();
                 result.SelectOrderShipSeq = _FinalInspFromPMSProvider.GetSelectOrderShipSeqForSetting(finalInspectionID).ToList();
                 result.SelectCarton = _FinalInspFromPMSProvider.GetSelectedCartonForSetting(finalInspectionID).ToList();
@@ -83,6 +85,7 @@ namespace BusinessLogicLayer.Service
                     selectedPOItem.Cartons = selectedCartons.Select(s => s.CTNNo).JoinToString(",");
                 }
 
+                _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
                 result.AcceptableQualityLevels = _FinalInspFromPMSProvider.GetAcceptableQualityLevelsForSetting().ToList();
             }
             catch (Exception ex)
@@ -234,7 +237,7 @@ namespace BusinessLogicLayer.Service
                 if (setting.AcceptQty > setting.SampleSize)
                 {
                     result.Result = false;
-                    result.ErrorMessage = $"[Accepted Qty] cannot be more than [Sample Plan Qty] ";
+                    result.ErrorMessage = $"Accepted Qty cannot be more than Sample Plan Qty ";
                     return result;
                 }
 

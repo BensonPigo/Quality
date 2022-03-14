@@ -17,7 +17,8 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
 
         void UpdateFinalInspectionByStep(FinalInspection finalInspection, string currentStep, string userID);
 
-        IList<byte[]> GetFinalInspectionDefectImage(long FinalInspection_DetailUkey);
+        //IList<byte[]> GetFinalInspectionDefectImage(long FinalInspection_DetailUkey);
+        IList<ImageRemark> GetFinalInspectionDetail(long FinalInspection_DetailUkey);
 
         void UpdateFinalInspectionDetail(AddDefect addDefect, string UserID);
 
@@ -25,7 +26,8 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
 
         void UpdateBeautifulProductAudit(BeautifulProductAudit addDefect, string UserID);
 
-        List<byte[]> GetBACriteriaImage(long FinalInspection_NonBACriteriaUkey);
+        //List<byte[]> GetBACriteriaImage(long FinalInspection_NonBACriteriaUkey);
+        IList<ImageRemark> GetBA_DetailImage(long FinalInspection_NonBACriteriaUkey);
 
         List<byte[]> GetOthersImage(string finalInspectionID);
 
@@ -46,8 +48,8 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         IList<MeasurementViewItem> GetMeasurementViewItem(string finalInspectionID);
         DataTable GetMeasurement(string finalInspectionID, string article, string size, string productType);
 
-        void UpdateFinalInspection_OtherImage(string finalInspectionID, List<byte[]> images);
-
+        //void UpdateFinalInspection_OtherImage(string finalInspectionID, List<byte[]> images);
+        void UpdateFinalInspection_OtherImage(string finalInspectionID, List<OtherImage> images);
         DataTable GetReportMailInfo(string finalInspectionID);
 
         IList<QueryFinalInspection> GetFinalinspectionQueryList(QueryFinalInspection_ViewModel request);
@@ -65,7 +67,8 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         DataSet GetPivot88(string ID);
 
         List<string> GetPivot88FinalInspectionID(string finalInspectionID);
-
+        
+        List<string> Get_FinalInspectionID_BrandID(string finalInspectionID);
         void UpdateIsExportToP88(string ID);
     }
 }

@@ -9,6 +9,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
     public class Moisture : BaseResult
     {
         public string FinalInspectionID { get; set; }
+        public string BrandID { get; set; }
         public decimal? FinalInspection_CTNMoistureStandard { get; set; }
         public decimal? FinalInspection_CTNMoistureStandardBM { get; set; }
         public List<string> ListArticle { get; set; }

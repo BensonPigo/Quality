@@ -1,18 +1,26 @@
-﻿
+﻿@using DatabaseObject.ViewModel.FinalInspection
 @{
     Layout = null;
 }
 
-@model List<byte[]>
+@model List<ImageRemark>
 
 
 @{ int idx = 0; }
 @foreach (var item in Model)
 {
     //var Image = item is null ? new byte[1] : item;
-    var base64 = Convert.ToBase64String(item);
+    var base64 = Convert.ToBase64String(item.Image);
     var imgSrc = String.Format("data:image/png;base64,{0}", base64);
-    <img id="Img_@idx" style="width:95vw;float:left;margin-bottom:5px;" src="@imgSrc" />
+
+    <h5>Remark</h5>
+    <input type="text" id="Rmk_@idx" name="name" value="@item.Remark" style="width: 100%; border: 2px solid black; float: left" readonly />
+    <br />
+    <br />
+    <img id="Img_@idx" style="width:100%;float:left;margin-bottom:5px;" src="@imgSrc" />
+
+    <br />
+    <hr />
 
     idx++;
 }

@@ -381,10 +381,11 @@
         // 摺疊資料需先轉成array
         var adata = [];
         var bdata = [];
+        var SelectedPOs =[];
         var index = 0;
         var index2 = 0;
         var currentStage = '';
-        var Order_AvailableQty = { };
+        var Order_AvailableQty = {};
         var table;
         @foreach (var item in Model.SelectedPO)
         {
@@ -401,7 +402,23 @@
 
             @Html.Raw(Model.ErrorMessage);
 
+            for (var i = 0; i < adata.length; i++) {
+                var obj = {
+                    OrderID: adata[i][1],
+                    Rowindex: adata[i][2],
+                    CustPONO: adata[i][3],
+                    StyleID: adata[i][4],
+                    SeasonID: adata[i][5],
+                    BrandID: adata[i][6],
+                    OrderQty: adata[i][7],
+                    Cartons: adata[i][8],
+                    AvailableQty: adata[i][9],
+                    Seq: adata[i][11],
+                    Article: adata[i][12],
 
+                };
+                SelectedPOs.push(obj);
+            }
 
             $("#SewingLineID").on('click', function () {
                 //window.open('@Url.Action("SewingLineList", "PublicWondow",new { Area=""})' + '?FactoryID=@ViewBag.FactoryID', 'SewingLineList', config = 'toolbar=no,status=no,location=no,width=400,height=650' );
@@ -494,6 +511,17 @@
                 }
             });
 
+            // CTN No Header改成文字方塊
+            $('#CartonTable thead th').each(function () {
+                var idx = $(this).index();
+                var title = $(this).text();
+
+                if (idx == 2) {
+                    $(this).html('<input id="CTNSearch" type="text" placeholder="Search ' + title + '" />');
+                }
+
+            });
+
             $("#CartonTable").DataTable({
                 "pageLength": 10,
                 "autoWidth": false,
@@ -577,6 +605,7 @@
                 },
             });
 
+            //Select Carton視窗
             $(".to-edit-detail").dialog({
                 width: "70%",
                 dialogClass: "add-contact-box",
@@ -584,9 +613,10 @@
                     "1": {
                         text: 'Next',
                         click: function () {
-
+                            //Select Carton視窗按下Next
                             var checkedList = [];
                             var totalQty = 0;
+                            $("#CTNSearch").val('').change();
                             $('[id^=Carton_Select_]').each(function () {
 
                                 if ($(this).prop('checked')) {
@@ -599,16 +629,24 @@
                             var index = $("#currnetSelectedPO").val();
                             document.getElementById("SelectedPO[" + index + "].Cartons").value = checkedList.join(',');
 
-                            var brandid = $('#BrandID').val();
+                            var orderID = document.getElementById("SelectedPO[" + index + "].AvailableQty").getAttribute("OrderId");
 
-                            if ((currentStage != 'Final' || brandid == "ADIDAS") || brandid != "ADIDAS") {
-                                var orderID = document.getElementById("SelectedPO[" + index + "].AvailableQty").getAttribute("OrderId");
+                            //Stage != 'Final'才需要從Carton帶入數量，否則帶入OrderQty
+                            if (currentStage != 'Final') {
+
                                 document.getElementById("SelectedPO[" + index + "].AvailableQty").value = totalQty;
 
                                 table.row($("#SelectPO_" + orderID).closest('tr')).data()[9] = totalQty;
                                 Order_AvailableQty[orderID] = totalQty;
-                                Cacu_AvailableQty();
                             }
+                            else {
+                                var OrderQty = document.getElementById("SelectedPO[" + index + "].AvailableQty").getAttribute("OrderQty");
+                                table.row($("#SelectPO_" + orderID).closest('tr')).data()[9] = parseInt(OrderQty);
+                                Order_AvailableQty[orderID] = OrderQty;
+                            }
+
+                            Cacu_AvailableQty();
+
                             $(this).dialog("close");
                         }
                         , "class": "button"
@@ -617,6 +655,7 @@
                 },
             });
 
+            //Select ShipmodeSeq 視窗
             $(".to-ShipmodeSeq-detail").dialog({
                 width: "70%",
                 dialogClass: "add-contact-box",
@@ -643,18 +682,6 @@
                             }
 
                             document.getElementById("SelectedPO[" + index + "].Seq").value = checkedList.join(',');
-
-                            var brandid = $('#BrandID').val();
-
-                            if (currentStage == 'Final' && brandid == "ADIDAS") {
-
-                                var orderID = document.getElementById("SelectedPO[" + index + "].AvailableQty").getAttribute("OrderId");
-                                document.getElementById("SelectedPO[" + index + "].AvailableQty").value = totalQty;
-
-                                table.row($("#SelectPO_" + orderID).closest('tr')).data()[9] = totalQty;
-                                Order_AvailableQty[orderID] = totalQty;
-                                Cacu_AvailableQty();
-                            }
 
                             $(this).dialog("close");
                         }
@@ -792,6 +819,7 @@
             $("#SewingLineID").val(sewingLineID);
         }
 
+        //開啟Carton 彈跳視窗
         function open_cartonsDetail(pkey) {
 
             var findValue = pkey.split(',');
@@ -806,6 +834,8 @@
 
             $(".to-edit-detail").dialog("open");
             ShowLoading();
+
+            // Carton的DataTable建立函式
             $("#CartonTable").DataTable({
                 "pageLength": 10,
                 "autoWidth": false,
@@ -813,7 +843,6 @@
                 destroy: true, // 設定這個才能重新初始化Datatables
                 //"filter": false,
                 "paging": false,
-                "info": false,
                 "scrollY": "40vh",
                 "scrollCollapse": true,
                 "search": {
@@ -822,13 +851,34 @@
                 columnDefs: [
                     { targets: 0, width: "30%" },
                     { targets: 1, width: "30%" },
-                    { targets: 2, width: "30%" },
+                    { targets: 2, width: "30%" , orderable: false,  },
                     { targets: 3, visible: false },
-                ]
+                ],
+                initComplete: function () {
+                    this.api().columns().every(function () {
+
+                        // 只有第一個欄位要有選單
+                        if (this.data().length > 0 && this.index() == 2) {
+
+                            var that = this;
+                            $('input', this.header()).on('keyup change clear', function () {
+                                if (that.search() !== this.value) {
+                                    that
+                                        .search(this.value)
+                                        .draw();
+                                }
+                            });
+
+                        }
+                    });
+                }
             })/*.columns.adjust()*/;
+
+            $("#CTNSearch").val('');
 
             $("#CartonTable_filter").hide();
 
+            // 先把所有勾選清掉
             $('[id^=Carton_Select_]').each(function () {
                 $(this).prop('checked', false);
             });
@@ -858,6 +908,7 @@
             NonLoading();
         }
 
+        //開啟ShipmodeSeq 彈跳視窗
         function open_ShipmodeSeq(pkey) {
             var findValue = pkey.split(',');
             var rowIndex;
@@ -890,7 +941,8 @@
 
             $("#ShipmodeSeqTable_filter").hide();
 
-            $('[id^=Carton_Select_]').each(function () {
+            // 先把所有勾選清掉
+            $('[id^=ShipmodeSeq_Select_]').each(function () {
                 $(this).prop('checked', false);
             });
 
@@ -988,7 +1040,11 @@
                 '<input type="text" style="width:100%" readonly="readonly" onclick="open_cartonsDetail(\'' + d[1] + ',' + d[3] + '\');" name="SelectedPO[' + d[2] + '].Cartons" id="SelectedPO[' + d[2] + '].Cartons" value="' + d[8] + '" OrderID="' + orderID +'" Col="Cartons"/>' +
                 '</td></tr>'+
                 '<tr><td>Available Qty:</td><td style=" text-align: right;" class="OpenDetail" >' +
-                '<input type="number" style="width:100%" name="SelectedPO[' + d[2] + '].AvailableQty" id="SelectedPO[' + d[2] + '].AvailableQty" value="' + d[9] + '" OrderID="' + orderID + '" oninput="value=AvailableQtyChk(' + d[7] + ',value)" max="' + d[7] + '" min="0" Col="AvailableQty"/>' +
+                '<input type="number" style="width:100%" name="SelectedPO[' + d[2] + '].AvailableQty" id="SelectedPO[' + d[2] + '].AvailableQty" orderQty="' + d[7]+'" value="' +
+
+                `${currentStage == 'Final' ? d[7] : d[9]}`
+
+                + '" OrderID="' + orderID + '" oninput="value=AvailableQtyChk(' + d[7] + ',value)" max="' + d[7] + '" min="0" Col="AvailableQty"/>' +
                 '</td></tr>' +
                 '</table>';
         }
@@ -1016,8 +1072,7 @@
             }
 
             //選擇Inline或Stagger時，會把[AQL Plan]變成唯讀並將內容變為空白，而[Sample Plan Qty]可編輯"
-            if (value == "Inline" || value == "Stagger")
-            {
+            if (value == "Inline" || value == "Stagger") {
                 $('#SampleSize').prop('disabled', false);
                 $('#AcceptQty').prop('disabled', false);
                 $('#RejectQty').prop('disabled', false);
@@ -1025,27 +1080,100 @@
 
             currentStage = value;
 
-            var brandid = $('#BrandID').val();
+            // Stage 改變，Selected PO要執行以下動作：
+            /*
+             * 1. 所有Shipmode Seq、Carton清空
+             * 2. 如果Stage選擇Final，Available Qty直接帶入Order Qty；反之則歸零，然後重新計算最下方的Total Available Qty、右方的AQL Plan
+             */
+
             var availableQtycheck = $('input[col=AvailableQty]');
 
-            if (brandid == 'ADIDAS') {
 
-                if (currentStage == "Final") {
+            //[Shipmode Seq]、[Carton]視窗有開啟的清空方式
+            $.each(SelectedPOs, function (idx) {
 
-                    $.each(availableQtycheck, function () {
-                        $($(this)[0]).attr("readonly", "readonly");
-                    });
+                if (document.getElementById(`SelectedPO[${idx}].Cartons`) != null) {
+                    document.getElementById(`SelectedPO[${idx}].Cartons`).value = "";
                 }
-                else {
-                    $.each(availableQtycheck, function () {
-                        $($(this)[0]).removeAttr("readonly");
-                    });
+                if (document.getElementById(`SelectedPO[${idx}].Seq`) != null) {
+                    document.getElementById(`SelectedPO[${idx}].Seq`).value = "";
                 }
+            });
+
+            // Stage改變，會影響到[Selected PO]區塊裡面每一筆SP#的Available Qty
+            if (currentStage == "Final") {
+
+                // 如果是Final，則AvailableQty自動待入該訂單的Orders.Qty
+
+                // 如果[Selected PO]區塊沒展開，透過以下方式Bind AvailableQty資料
+                $.each(SelectedPOs, function () {
+                    var obj = this;
+                    var orderID = obj.OrderID;;
+                    var orderQty = obj.OrderQty;;
+                    //index9是AvailableQty
+                    table.row($(`#SelectPO_${orderID}`).closest('tr')).data()[9] = orderQty;
+                    Order_AvailableQty[orderID] = orderQty;
+
+                    ////index 11是Shipmode seq
+                    table.row($(`#SelectPO_${orderID}`).closest('tr')).data()[11] = '';
+                    ////index 8是Cartons
+                    table.row($(`#SelectPO_${orderID}`).closest('tr')).data()[8] = '';
+                });
+
+                // 如果[Selected PO]區塊有展開，透過以下方式Bind AvailableQty資料
+                $.each(availableQtycheck, function () {
+                    var orderQty = $($(this)[0]).attr("orderQty");
+                    var orderID = $($(this)[0]).attr("orderID");
+                    $($(this)[0]).val(orderQty);
+                    $($(this)[0]).attr("readonly", "readonly");
+                    //index9是AvailableQty
+                    table.row($(`#SelectPO_${orderID}`).closest('tr')).data()[9] = orderQty;
+                    Order_AvailableQty[orderID] = orderQty;
+
+                    ////index 11是Shipmode seq
+                    table.row($(`#SelectPO_${orderID}`).closest('tr')).data()[11] = '';
+                    ////index 8是Cartons
+                    table.row($(`#SelectPO_${orderID}`).closest('tr')).data()[8] = '';
+                });
+                Cacu_AvailableQty();
             }
             else {
-                $.each(availableQtycheck, function () {
-                    $($(this)[0]).removeAttr("readonly");
+                // 如果不是Final則清空ShipModeSeq、Carton、Available Qty
+
+                // 如果[Selected PO]區塊沒展開，透過以下方式Bind AvailableQty資料
+                $.each(SelectedPOs, function () {
+                    var obj = this;
+                    var orderID = obj.OrderID;
+
+                    //index9是AvailableQty
+                    table.row($(`#SelectPO_${orderID}`).closest('tr')).data()[9] = 0;
+                    Order_AvailableQty[orderID] = 0;
+
+                    //index 11是Shipmode seq
+                    table.row($(`#SelectPO_${orderID}`).closest('tr')).data()[11] = '';
+                    //index 8是Cartons
+                    table.row($(`#SelectPO_${orderID}`).closest('tr')).data()[8] = '';
                 });
+
+                // 如果[Selected PO]區塊有展開，透過以下方式Bind AvailableQty資料
+                $.each(availableQtycheck, function () {
+                    var orderID = $($(this)[0]).attr("orderID");
+                    $($(this)[0]).removeAttr("readonly");
+                    $($(this)[0]).val(0);
+
+                    //index9是AvailableQty
+                    table.row($(`#SelectPO_${orderID}`).closest('tr')).data()[9] = 0;
+                    Order_AvailableQty[orderID] = 0;
+
+                    //index 11是Shipmode seq
+                    table.row($(`#SelectPO_${orderID}`).closest('tr')).data()[11] = '';
+                    //index 8是Cartons
+                    table.row($(`#SelectPO_${orderID}`).closest('tr')).data()[8] = '';
+
+                });
+
+
+                Cacu_AvailableQty();
             }
             /* ISP20211490 拔掉
 

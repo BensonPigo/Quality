@@ -19,6 +19,6 @@ namespace BusinessLogicLayer.Interface
 
         BaseResult UpdateBeautifulProductAudit(BeautifulProductAudit beautifulProductAudit, string UserID);
 
-        List<byte[]> GetBACriteriaImage(long FinalInspection_DetailUkey);
+        //List<byte[]> GetBACriteriaImage(long FinalInspection_DetailUkey);
     }
 }

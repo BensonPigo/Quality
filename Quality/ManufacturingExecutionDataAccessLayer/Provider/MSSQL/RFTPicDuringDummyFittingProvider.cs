@@ -210,7 +210,7 @@ SELECT oq.Article
 	,p.Front
 	,p.Side
 	,p.Back
-from SciProduction_Order_Qty oq WITH(NOLOCK) 
+from Production.dbo.Order_Qty oq WITH(NOLOCK) 
 left join PMSFile.dbo.RFT_PicDuringDummyFitting p WITH(NOLOCK) ON oq.ID = p.OrderID AND oq.Article = p.Article AND oq.SizeCode=p.Size
 WHERE 1=1
 ");
@@ -231,7 +231,7 @@ WHERE 1=1
 
             SbSql.Append($@"
 SELECT OrderID = ID, StyleID ,OrderTypeID ,SeasonID
-FROM SciProduction_Orders o WITH(NOLOCK)
+FROM Production.dbo.Orders o WITH(NOLOCK)
 where o.Junk=0
 and o.Category='S'
 --and o.OnSiteSample!=1
