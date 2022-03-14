@@ -151,14 +151,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(Common.ProductionDataAccessLayer);
                 DataTable dt = _AccessoryOvenWashProvider.GetData_OvenDataTable(Req);
-                string mailBody = MailTools.DataTableChangeHtml(dt);
+                string mailBody = MailTools.DataTableChangeHtml(dt, out System.Net.Mail.AlternateView plainView);
 
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
                     To = Req.ToAddress,
                     CC = Req.CcAddress,
                     Subject = "Accessory Oven Test - Test Fail",
-                    Body = mailBody
+                    Body = mailBody,
+                    alternateView = plainView,
                 };
                 result = MailTools.SendMail(sendMail_Request);
                 result.result = true;
@@ -411,14 +412,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(Common.ProductionDataAccessLayer);
                 DataTable dt = _AccessoryOvenWashProvider.GetData_WashDataTable(Req);
-                string mailBody = MailTools.DataTableChangeHtml(dt);
+                string mailBody = MailTools.DataTableChangeHtml(dt, out System.Net.Mail.AlternateView plainView);
 
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
                     To = Req.ToAddress,
                     CC = Req.CcAddress,
                     Subject = "Accessory Wash Test - Test Fail",
-                    Body = mailBody
+                    Body = mailBody,
+                    alternateView = plainView,
                 };
                 result = MailTools.SendMail(sendMail_Request);
                 result.result = true;

@@ -681,13 +681,14 @@ namespace BusinessLogicLayer.Service
             {
                 _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
                 DataTable dtResult = _FabricCrkShrkTestProvider.GetCrockingFailMailContentData(ID);
-                string mailBody = MailTools.DataTableChangeHtml(dtResult);
+                string mailBody = MailTools.DataTableChangeHtml(dtResult, out System.Net.Mail.AlternateView plainView);
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
                     To = toAddress,
                     CC = ccAddress,
                     Subject = "Fabric Crocking Test - Test Fail",
-                    Body = mailBody
+                    Body = mailBody,
+                    alternateView = plainView,
                 };
                 result = MailTools.SendMail(sendMail_Request);
 
@@ -1670,13 +1671,14 @@ namespace BusinessLogicLayer.Service
             {
                 _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
                 DataTable dtResult = _FabricCrkShrkTestProvider.GetHeatFailMailContentData(ID);
-                string mailBody = MailTools.DataTableChangeHtml(dtResult);
+                string mailBody = MailTools.DataTableChangeHtml(dtResult, out System.Net.Mail.AlternateView plainView);
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
                     To = toAddress,
                     CC = ccAddress,
                     Subject = "Fabric Heat Test - Test Fail",
-                    Body = mailBody
+                    Body = mailBody,
+                    alternateView = plainView,
                 };
                 result = MailTools.SendMail(sendMail_Request);
 
@@ -1697,13 +1699,14 @@ namespace BusinessLogicLayer.Service
             {
                 _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
                 DataTable dtResult = _FabricCrkShrkTestProvider.GetWashFailMailContentData(ID);
-                string mailBody = MailTools.DataTableChangeHtml(dtResult);
+                string mailBody = MailTools.DataTableChangeHtml(dtResult, out System.Net.Mail.AlternateView plainView);
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
                     To = toAddress,
                     CC = ccAddress,
                     Subject = "Fabric Wash Test - Test Fail",
-                    Body = mailBody
+                    Body = mailBody,
+                    alternateView = plainView,
                 };
                 result = MailTools.SendMail(sendMail_Request);
 

@@ -532,26 +532,30 @@ outer apply (select Name from Pass1 WITH(NOLOCK) where id = m.EditName) EditName
 
             SbSql.Append($@"
 SELECT 
-         [Report No] = ReportNo
-        ,[SP#] = POID
-        ,[Style] = StyleID
-        ,[Brand] = BrandID
-        ,[Season] = SeasonID
-        ,[Article] = Article
-        ,[Artwork] = ArtworkTypeID
-        ,[Remark] = Remark
-        ,[T1 Subcon Name] = Concat(T1Subcon, '-' + (select Abb from LocalSupp WITH(NOLOCK) where ID = T1Subcon))
-        ,[T2 Supplier Name] = Concat(T2Supplier, '-' + (select top 1 Abb from (select Abb from LocalSupp WITH(NOLOCK) where ID = m.T2Supplier and Junk = 0 union select AbbEN from Supp WITH(NOLOCK) where ID = m.T2Supplier and Junk = 0)x))
-        ,[Test Date] = format(TestDate,'yyyy/MM/dd')
-        ,[Received Date] = format(ReceivedDate,'yyyy/MM/dd')
-        ,[Released Date] = format(ReleasedDate,'yyyy/MM/dd')
-        ,[Result] = Result
-        ,[Technician] = Concat(Technician, '-', Technician_ne.Name, ' Ext.', Technician_ne.ExtNo)
-        ,[MR] = Concat(MR, '-', MR_ne.Name, ' Ext.', MR_ne.ExtNo)
+         [Report No] = m.ReportNo
+        ,[SP#] = m.POID
+        ,[Style] = m.StyleID
+        ,[Brand] = m.BrandID
+        ,[Season] = m.SeasonID
+        ,[Article] = m.Article
+        ,[Artwork] = m.ArtworkTypeID
+        ,[Remark] = m.Remark
+        ,[T1 Subcon Name] = Concat(m.T1Subcon, '-' + (select Abb from LocalSupp WITH(NOLOCK) where ID = m.T1Subcon))
+        ,[T2 Supplier Name] = Concat(m.T2Supplier, '-' + (select top 1 Abb from (select Abb from LocalSupp WITH(NOLOCK) where ID = m.T2Supplier and Junk = 0 union select AbbEN from Supp WITH(NOLOCK) where ID = m.T2Supplier and Junk = 0)x))
+        ,[Test Date] = format(m.TestDate,'yyyy/MM/dd')
+        ,[Received Date] = format(m.ReceivedDate,'yyyy/MM/dd')
+        ,[Released Date] = format(m.ReleasedDate,'yyyy/MM/dd')
+        ,[Result] = m.Result
+        ,[Technician] = Concat(m.Technician, '-', Technician_ne.Name, ' Ext.', Technician_ne.ExtNo)
+        ,[MR] = Concat(m.MR, '-', MR_ne.Name, ' Ext.', MR_ne.ExtNo)
+        ,mi.TestBeforePicture
+        ,mi.TestAfterPicture
+		,m.ReportNo
 FROM MockupOven m WITH(NOLOCK)
+left join [ExtendServer].PMSFile.dbo.MockupOven mi WITH(NOLOCK) on m.ReportNo=mi.ReportNo
 outer apply (select Name, ExtNo from pass1 p WITH(NOLOCK) inner join Technician t WITH(NOLOCK) on t.ID = p.ID where t.id = m.Technician) Technician_ne
 outer apply (select Name, ExtNo from pass1 WITH(NOLOCK) where id = m.MR) MR_ne
-where ReportNo = @ReportNo
+where m.ReportNo = @ReportNo
 ");
             return ExecuteDataTableByServiceConn(CommandType.Text, SbSql.ToString(), objParameter);
         }

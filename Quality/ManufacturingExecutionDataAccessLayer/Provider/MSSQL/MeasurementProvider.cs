@@ -198,7 +198,7 @@ where ID=@ID
             };
             string sqlcmd = @"
 Select distinct Article
-From MainServer.Production.dbo.Order_Qty WITH(NOLOCK)
+From Production.dbo.Order_Qty WITH(NOLOCK)
 where ID = @OrderID
 ";
              return ExecuteList<Order_Qty>(CommandType.Text, sqlcmd, objParameter);
@@ -247,8 +247,8 @@ ORDER BY ID DESC
 select o.OrderTypeID,[OrderID] = o.ID,o.StyleID,o.SeasonID
 ,[Unit] = IIF(isnull(o.sizeUnit,'') = '',s.SizeUnit,o.SizeUnit)
 ,[Factory] = o.FtyGroup--o.FactoryID
-from MainServer.Production.dbo.Orders o WITH(NOLOCK)
-left join MainServer.Production.dbo.Style s WITH(NOLOCK) on o.StyleUkey = s.Ukey
+from Production.dbo.Orders o WITH(NOLOCK)
+left join Production.dbo.Style s WITH(NOLOCK) on o.StyleUkey = s.Ukey
 where o.ID = @OrderID
 --and o.FactoryID = @FactoryID
 ";
@@ -321,7 +321,7 @@ select value = dbo.calculateSizeSpec(@DiffValue, @Tol,'INCH');
         public DataTable Get_Measured_Detail(Measurement_Request measurement)
         {
             string styleUkey = string.Empty;
-            DataTable dtStyle = ExecuteDataTableByServiceConn(CommandType.Text, $@"Select StyleUkey from MainServer.Production.dbo.Orders WITH(NOLOCK) where id = '{measurement.OrderID}'", new SQLParameterCollection());
+            DataTable dtStyle = ExecuteDataTableByServiceConn(CommandType.Text, $@"Select StyleUkey from Production.dbo.Orders WITH(NOLOCK) where id = '{measurement.OrderID}'", new SQLParameterCollection());
             if (dtStyle.Rows.Count > 0)
             {
                 styleUkey = dtStyle.Rows[0]["StyleUkey"].ToString();
@@ -349,7 +349,7 @@ declare @OldSizeCode nvarchar(8)=''
 declare @no nvarchar(66)
 declare @time nvarchar(5)
 declare @diffno int='1'
-declare @MDivision nvarchar(5) = (select MDivisionID from MainServer.Production.dbo.Factory WITH(NOLOCK) where id = @Factory)
+declare @MDivision nvarchar(5) = (select MDivisionID from Production.dbo.Factory WITH(NOLOCK) where id = @Factory)
 
 select *
 into #tmp_Inspection_Measurement
@@ -437,17 +437,17 @@ declare @SizeUnit varchar(8)
 declare @StyleUkey bigint
 
 select  @StyleUkey = StyleUkey
-from    SciProduction_Orders with (nolock)
+from    Production.dbo.Orders with (nolock)
 where   ID IN (
     select POID
-    from SciProduction_Orders WITH(NOLOCK)
+    from Production.dbo.Orders WITH(NOLOCK)
     where CustPONO = @CustPONO
 )
 
 exec CopyStyle_ToMeasurement @userID,@StyleUkey;
 
 select  @SizeUnit = SizeUnit
-from    MainServer.Production.dbo.Style WITH(NOLOCK)
+from    Production.dbo.Style WITH(NOLOCK)
 where   Ukey = @StyleUkey
 
 SELECT  a.StyleUkey

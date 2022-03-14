@@ -76,7 +76,7 @@ select  ID                             ,
         AddDate                        ,
         EditName                       ,
         EditDate                       ,
-        HasOtherImage = Cast(IIF(exists(select 1 from FinalInspection_OtherImage b WITH(NOLOCK) where a.id= b.id),1,0) as bit)
+        HasOtherImage = Cast(IIF(exists(select 1 from PMSFile.dbo.FinalInspection_OtherImage b WITH(NOLOCK) where a.id= b.id),1,0) as bit)
 from FinalInspection a with (nolock)
 where   ID = @ID
 ";
@@ -433,6 +433,7 @@ where   ID = @FinalInspectionID
             ExecuteNonQuery(CommandType.Text, sqlUpdCmd, objParameter);
         }
 
+        /*
         public IList<byte[]> GetFinalInspectionDefectImage(long FinalInspection_DetailUkey)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection() {
@@ -441,7 +442,7 @@ where   ID = @FinalInspectionID
 
             string sqlGetData = @"
 select  Image
-    from [ExtendServer].PMSFile.dbo.FinalInspection_DetailImage with (nolock)
+    from PMSFile.dbo.FinalInspection_DetailImage with (nolock)
     where   FinalInspection_DetailUkey = @FinalInspection_DetailUkey
 ";
 
@@ -455,6 +456,21 @@ select  Image
             {
                 return new List<byte[]>();
             }
+        }
+        */
+        public IList<ImageRemark> GetFinalInspectionDetail(long FinalInspection_DetailUkey)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection() {
+            { "@FinalInspection_DetailUkey", DbType.Int64, FinalInspection_DetailUkey }
+            };
+
+            string sqlGetData = @"
+select  Image, Remark
+from PMSFile.dbo.FinalInspection_DetailImage a with (nolock)
+where   a.FinalInspection_DetailUkey = @FinalInspection_DetailUkey
+";
+            return ExecuteList<ImageRemark>(CommandType.Text, sqlGetData, objParameter);
+
         }
 
         public void UpdateFinalInspectionDetail(AddDefect addDefect, string UserID)
@@ -519,19 +535,22 @@ where   ID = @FinalInspectionID
 
                     if (defectItem.Qty > 0)
                     {
-                        foreach (byte[] image in defectItem.ListFinalInspectionDefectImage)
+                        foreach (var DetailImage in defectItem.ListFinalInspectionDefectImage)
                         {
                             string sqlInsertFinalInspection_DetailImage = @"
 SET XACT_ABORT ON
-    insert into FinalInspection_DetailImage(ID, FinalInspection_DetailUkey)
-                values(@FinalInspectionID, @FinalInspection_DetailUkey) ----2022/01/10 PMSFile上線，因此去掉Image寫入原本DB的部分
-    insert into [ExtendServer].PMSFile.dbo.FinalInspection_DetailImage(ID, FinalInspection_DetailUkey, Image)
-                values(@FinalInspectionID, @FinalInspection_DetailUkey, @Image)
+/*
+insert into FinalInspection_DetailImage(ID, FinalInspection_DetailUkey ,Remark)
+                values(@FinalInspectionID, @FinalInspection_DetailUkey ,@Remark) ----2022/01/10 PMSFile上線，因此去掉Image寫入原本DB的部分
+*/
+    insert into PMSFile.dbo.FinalInspection_DetailImage(ID, FinalInspection_DetailUkey, Image ,Remark)
+                values(@FinalInspectionID, @FinalInspection_DetailUkey, @Image ,@Remark)
 ";
                             SQLParameterCollection imgParameter = new SQLParameterCollection() {
                             { "@FinalInspectionID", DbType.String, addDefect.FinalInspectionID },
                             { "@FinalInspection_DetailUkey", DbType.Int64, defectItem.Ukey },
-                            { "@Image", image == null ? System.Data.SqlTypes.SqlBinary.Null : image}
+                            { "@Image", DetailImage.Image == null ? System.Data.SqlTypes.SqlBinary.Null : DetailImage.Image},
+                            { "@Remark",DbType.String, DetailImage.Remark ?? "" },
                         };
 
                             ExecuteNonQuery(CommandType.Text, sqlInsertFinalInspection_DetailImage, imgParameter);
@@ -552,7 +571,7 @@ SET XACT_ABORT ON
             string sqlGetData = $@"
 select ID, Description 
 into #baseBACriteria
-from  SciProduction_DropDownList ddl  WITH(NOLOCK)
+from  Production.dbo.DropDownList ddl  WITH(NOLOCK)
 where Type = 'PMS_BACriteria'
 order by Seq
 
@@ -560,12 +579,16 @@ select  [Ukey] = isnull(fn.Ukey, -1),
         [BACriteria] = bac.ID,
         [BACriteriaDesc] = bac.Description,
         [Qty] = isnull(fn.Qty, 0),		
-		[RowIndex]=ROW_NUMBER() OVER(ORDER BY bac.ID) -1,
-		HasImage = Cast(IIF(img.Image is null,0,1) as bit)
+		[RowIndex]=ROW_NUMBER() OVER(ORDER BY bac.ID) -1
+		,HasImage = Cast(
+			IIF(EXISTS(
+				select 1 from PMSFile.dbo.FinalInspection_NonBACriteriaImage img 
+				where img.FinalInspection_NonBACriteriaUkey = fn.Ukey
+			),1,0)		
+		as bit)
     from #baseBACriteria bac with (nolock)
     left join   FinalInspection_NonBACriteria fn WITH(NOLOCK) on    fn.ID = @finalInspectionID and
                                                             fn.BACriteria = bac.ID
-	left join FinalInspection_NonBACriteriaImage img WITH(NOLOCK)  ON img.FinalInspection_NonBACriteriaUkey = fn.Ukey AND img.ID = fn.ID
 
 DROP TABLE #baseBACriteria
 ";
@@ -634,20 +657,22 @@ where   ID = @FinalInspectionID
                     //數量大於0才需要上傳圖片
                     if (criteriaItem.Qty > 0)
                     {
-                        foreach (byte[] image in criteriaItem.ListBACriteriaImage)
+                        foreach (var baDetail in criteriaItem.ListBACriteriaImage)
                         {
                             string sqlInsertFinalInspection_NonBACriteriaImage = @"
     SET XACT_ABORT ON
-    insert into FinalInspection_NonBACriteriaImage(ID, FinalInspection_NonBACriteriaUkey)
-                values(@FinalInspectionID, @FinalInspection_NonBACriteriaUkey) --2022/01/10 PMSFile上線，因此去掉Image寫入原本DB的部分
-
-    insert into [ExtendServer].PMSFile.dbo.FinalInspection_NonBACriteriaImage(ID, FinalInspection_NonBACriteriaUkey, Image)
-                values(@FinalInspectionID, @FinalInspection_NonBACriteriaUkey, @Image)
+/*  
+insert into FinalInspection_NonBACriteriaImage(ID, FinalInspection_NonBACriteriaUkey ,Remark)
+                values(@FinalInspectionID, @FinalInspection_NonBACriteriaUkey ,@Remark) --2022/01/10 PMSFile上線，因此去掉Image寫入原本DB的部分
+*/
+    insert into PMSFile.dbo.FinalInspection_NonBACriteriaImage(ID, FinalInspection_NonBACriteriaUkey, Image ,Remark)
+                values(@FinalInspectionID, @FinalInspection_NonBACriteriaUkey, @Image ,@Remark)
 ";
                             SQLParameterCollection imgParameter = new SQLParameterCollection() {
                             { "@FinalInspectionID", DbType.String, beautifulProductAudit.FinalInspectionID },
                             { "@FinalInspection_NonBACriteriaUkey", DbType.Int64, criteriaItem.Ukey },
-                            { "@Image", image}
+                            { "@Remark", DbType.String, baDetail.Remark ?? ""},
+                            { "@Image", baDetail.Image}
                         };
 
                             ExecuteNonQuery(CommandType.Text, sqlInsertFinalInspection_NonBACriteriaImage, imgParameter);
@@ -658,7 +683,7 @@ where   ID = @FinalInspectionID
                 transaction.Complete();
             }
         }
-
+        /*
         public List<byte[]> GetBACriteriaImage(long FinalInspection_NonBACriteriaUkey)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection() {
@@ -682,6 +707,21 @@ select  Image
                 return new List<byte[]>();
             }
         }
+        */
+        public IList<ImageRemark> GetBA_DetailImage(long FinalInspection_NonBACriteriaUkey)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection() {
+            { "@FinalInspection_NonBACriteriaUkey", DbType.Int64, FinalInspection_NonBACriteriaUkey }
+            };
+
+            string sqlGetData = @"
+select  Remark, Image
+from PMSFile.dbo.FinalInspection_NonBACriteriaImage a with (nolock)
+where   a.FinalInspection_NonBACriteriaUkey = @FinalInspection_NonBACriteriaUkey
+";
+
+            return ExecuteList<ImageRemark>(CommandType.Text, sqlGetData, objParameter);
+        }
 
         public IList<CartonItem> GetMoistureListCartonItem(string finalInspectionID)
         {
@@ -692,7 +732,7 @@ select  Image
             string sqlGetMoistureListCartonItem = @"
 select distinct ID, Seq, Article
 into    #Order_QtyShip_Detail
-from    Production.dbo.Order_QtyShip_Detail WITH(NOLOCK)  ----使用四節式會發生 「交易內容正由另一個工作階段所使用」 的錯誤，確認該資料表有做訂閱同步，因此直接使用備機上的Table
+from    Production.dbo.Order_QtyShip_Detail WITH(NOLOCK)  
 where   ID in (select OrderID from FinalInspection_Order with (nolock) where ID = @finalInspectionID)
 
 select  [FinalInspection_OrderCartonUkey] = foc.Ukey,
@@ -708,7 +748,7 @@ where foc.ID = @finalInspectionID
             return ExecuteList<CartonItem>(CommandType.Text, sqlGetMoistureListCartonItem, objParameter);
 
         }
-        
+
 
         public IList<ViewMoistureResult> GetViewMoistureResult(string finalInspectionID)
         {
@@ -780,7 +820,7 @@ from    EndlineMoisture with (nolock)
             objParameter.Add("@GarmentBottom", moistureResult.GarmentBottom);
             objParameter.Add("@CTNInside", moistureResult.CTNInside);
             objParameter.Add("@CTNOutside", moistureResult.CTNOutside);
-            objParameter.Add("@Result",DbType.String, moistureResult.Result);
+            objParameter.Add("@Result", DbType.String, moistureResult.Result);
             objParameter.Add("@Action", moistureResult.Action);
             objParameter.Add("@Remark", moistureResult.Remark ?? "");
             objParameter.Add("@AddName", moistureResult.AddName);
@@ -917,7 +957,7 @@ values
                 transactionScope.Complete();
             }
         }
-        
+
         public IList<MeasurementViewItem> GetMeasurementViewItem(string finalInspectionID)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();
@@ -958,12 +998,12 @@ where   ID = @finalInspectionID
 
 select  StyleUkey = Ukey,SizeUnit
 INTO #Style_Size
-from    SciProduction_Style WITH(NOLOCK)
+from    Production.dbo.Style WITH(NOLOCK)
 where   Ukey IN (
 	select StyleUkey 
-	from SciProduction_Orders  WITH(NOLOCK)
+	from Production.dbo.Orders  WITH(NOLOCK)
 	where ID IN (select ID
-					from SciProduction_Orders WITH(NOLOCK)
+					from Production.dbo.Orders WITH(NOLOCK)
 					where CustPONO = @CustPONO
 				) 
 )
@@ -1051,8 +1091,9 @@ drop table #tmp,#Style_Size,#tmp_Inspection_Measurement
 select  Ukey
     , ID
     , Image
+    , Remark
     ,[RowIndex]=ROW_NUMBER() OVER(ORDER BY Ukey) -1
-from [ExtendServer].PMSFile.dbo.FinalInspection_OtherImage with (nolock)
+from PMSFile.dbo.FinalInspection_OtherImage with (nolock)
 where   ID = @finalInspectionID
 
 ";
@@ -1083,22 +1124,44 @@ select  Image
             }
         }
 
-        public void UpdateFinalInspection_OtherImage(string finalInspectionID, List<byte[]> images)
+        //        public void UpdateFinalInspection_OtherImage(string finalInspectionID, List<byte[]> images)
+        //        {
+        //            foreach (byte[] image in images)
+        //            {
+        //                string sqlFinalInspection_OtherImage = @"
+        //SET XACT_ABORT ON
+
+        //    insert into FinalInspection_OtherImage(ID)
+        //                values(@FinalInspectionID) ----2022/01/10 PMSFile上線，因此去掉Image寫入原本DB的部分
+
+        //    insert into [ExtendServer].PMSFile.dbo.FinalInspection_OtherImage(ID, Image)
+        //                values(@FinalInspectionID, @Image)
+        //";
+        //                SQLParameterCollection imgParameter = new SQLParameterCollection() {
+        //                            { "@FinalInspectionID", DbType.String, finalInspectionID },
+        //                            { "@Image", image}
+        //                        };
+
+        //                ExecuteNonQuery(CommandType.Text, sqlFinalInspection_OtherImage, imgParameter);
+        //            }
+        //        }
+        public void UpdateFinalInspection_OtherImage(string finalInspectionID, List<OtherImage> images)
         {
-            foreach (byte[] image in images)
+            foreach (var imageObj in images)
             {
                 string sqlFinalInspection_OtherImage = @"
 SET XACT_ABORT ON
-
+/*
     insert into FinalInspection_OtherImage(ID)
                 values(@FinalInspectionID) ----2022/01/10 PMSFile上線，因此去掉Image寫入原本DB的部分
-
-    insert into [ExtendServer].PMSFile.dbo.FinalInspection_OtherImage(ID, Image)
-                values(@FinalInspectionID, @Image)
+*/
+    insert into PMSFile.dbo.FinalInspection_OtherImage(ID, Image, Remark)
+                values(@FinalInspectionID, @Image, @Remark)
 ";
                 SQLParameterCollection imgParameter = new SQLParameterCollection() {
                             { "@FinalInspectionID", DbType.String, finalInspectionID },
-                            { "@Image", image}
+                            { "@Remark", DbType.String, imageObj.Remark ?? ""},
+                            { "@Image", imageObj.Image}
                         };
 
                 ExecuteNonQuery(CommandType.Text, sqlFinalInspection_OtherImage, imgParameter);
@@ -1119,10 +1182,10 @@ declare @BrandID varchar(8)
 select  @StyleID = StyleID,
         @SeasonID = SeasonID,
         @BrandID = BrandID
-from    SciProduction_Orders with (nolock)
+from    Production.dbo.Orders with (nolock)
 where   ID IN (
     select ID
-    from MainServer.Production.dbo.Orders WITH(NOLOCK)
+    from Production.dbo.Orders WITH(NOLOCK)
     where CustPONO = (select CustPONO from FinalInspection with (nolock) where ID = @FinalInspectionID )
 )
 
@@ -1159,16 +1222,16 @@ declare @BrandID varchar(8)
 declare @spQty int
 
 select @spQty = isnull(sum(Qty), 0)
-from SciProduction_Orders with (nolock)
+from Production.dbo.Orders with (nolock)
 where   ID in (select OrderID from FinalInspection_Order with (nolock) where ID = @FinalInspectionID)
 
 select  @StyleID = StyleID,
         @SeasonID = SeasonID,
         @BrandID = BrandID
-from    SciProduction_Orders with (nolock)
+from    Production.dbo.Orders with (nolock)
 where   ID IN (
     select ID
-    from MainServer.Production.dbo.Orders WITH(NOLOCK)
+    from Production.dbo.Orders WITH(NOLOCK)
     where CustPONO = (select CustPONO from FinalInspection with (nolock) where ID = @FinalInspectionID )
 )
 
@@ -1249,7 +1312,7 @@ select  ID,
         BrandID,
         Qty
 into    #tmpOrders
-from    Production.dbo.Orders with (nolock)
+from    MainServer.Production.dbo.Orders with (nolock)
 where   1 = 1 {whereOrder}
 
 select  ID, Article
@@ -1364,28 +1427,11 @@ outer apply (select	[POQty] = sum(o.Qty),
                     [IsDestJP] = max(iif(o.Dest = 'JP', 1, 0))
 				from Production.dbo.Orders o with (nolock)
 				where o.CustPONo = f.CustPONO) OrderInfo
---outer apply (select [val] = Replicate('M', InspectionLevels/1000)  
---							+ REPLACE(REPLACE(REPLACE(  
---							     Replicate('C', InspectionLevels%1000/100),  
---							     Replicate('C', 9), 'CM'),  
---							     Replicate('C', 5), 'D'),  
---							     Replicate('C', 4), 'CD')  
---							+ REPLACE(REPLACE(REPLACE(  
---							     Replicate('X', InspectionLevels%100 / 10),  
---							     Replicate('X', 9),'XC'),  
---							     Replicate('X', 5), 'L'),  
---							     Replicate('X', 4), 'XL')  
---							+ REPLACE(REPLACE(REPLACE(  
---							     Replicate('I', InspectionLevels%10),  
---							     Replicate('I', 9),'IX'),  
---							     Replicate('I', 5), 'V'),  
---							     Replicate('I', 4),'IV')   
---            from [MainServer].Production.dbo.AcceptableQualityLevels WITH(NOLOCK) 
---            where Ukey = f.AcceptableQualityLevelsUkey) inspectionLevel
+
 where f.ID = @ID 
 select	distinct
 		oc.ColorID
-from  Production.dbo.Order_ColorCombo oc with (nolock)
+from  MainServer.Production.dbo.Order_ColorCombo oc with (nolock)
 where oc.ID in (select POID from Production.dbo.Orders with (nolock) 
 				where id in (select OrderID 
 							 from FinalInspection_Order with (nolock) where ID = @ID))
@@ -1427,8 +1473,8 @@ select	[DefectTypeDesc] = gdt.Description,
 		[CriticalQty] = iif(gdc.IsCriticalDefect = 1, fd.Qty, 0),
         [MajorQty] = iif(gdc.IsCriticalDefect = 0, fd.Qty, 0)
 from FinalInspection_Detail fd with (nolock)
-left join Production.dbo.GarmentDefectType gdt with (nolock) on gdt.ID = fd.GarmentDefectTypeID
-left join Production.dbo.GarmentDefectCode gdc with (nolock) on gdc.ID = fd.GarmentDefectCodeID
+left join MainServer.Production.dbo.GarmentDefectType gdt with (nolock) on gdt.ID = fd.GarmentDefectTypeID
+left join MainServer.Production.dbo.GarmentDefectCode gdc with (nolock) on gdc.ID = fd.GarmentDefectCodeID
 where fd.ID = @ID
 
 
@@ -1462,6 +1508,31 @@ where   IsExportToP88 = 0 and
             if (dtResult.Rows.Count > 0)
             {
                 return dtResult.AsEnumerable().Select(s => s["ID"].ToString()).ToList();
+            }
+            else
+            {
+                return new List<string>();
+            }
+
+        }
+
+        public List<string> Get_FinalInspectionID_BrandID(string finalInspectionID)
+        {
+            SQLParameterCollection parameter = new SQLParameterCollection();
+            string sqlGetData = @"
+select DISTINCT o.BrandID
+from FinalInspection_Order a
+inner join  Production.dbo.Orders o on a.OrderID=o.ID
+where a.id = @ID
+
+";
+            parameter.Add("@ID", DbType.String, finalInspectionID);
+
+            DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, parameter);
+
+            if (dtResult.Rows.Count > 0)
+            {
+                return dtResult.AsEnumerable().Select(s => s["BrandID"].ToString()).ToList();
             }
             else
             {

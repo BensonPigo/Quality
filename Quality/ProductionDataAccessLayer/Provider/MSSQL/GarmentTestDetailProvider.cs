@@ -411,23 +411,26 @@ Update GarmentTest_Detail set Status = @Status, InspDate = @InspDate  where id =
 
             string sqlcmd = @"
 select  
-g.StyleID
-,g.BrandID
-,g.SeasonID
-,g.Article
-,g.OrderID
-,[SpecialMark] = SpecialMark.Value
-,gd.No
-,gd.SizeCode
-,[TestDate] = format(gd.inspdate, 'yyyy/MM/dd')
-,[Result] = case when g.Result = 'P' then 'Pass' when g.Result = 'F' then 'Fail' else '' end
-,[450 Result] = case when gd.SeamBreakageResult = 'P' then 'Pass' when gd.SeamBreakageResult = 'F' then 'Fail' else '' end
-,[451 Result] = case when gd.OdourResult = 'P' then 'Pass' when gd.OdourResult = 'F' then 'Fail' else '' end
-,[701 Result] = case when gd.WashResult = 'P' then 'Pass' when gd.WashResult = 'F' then 'Fail' else '' end
-,gd.inspector
-,[Comments] = gd.Remark
+    g.StyleID
+    ,g.BrandID
+    ,g.SeasonID
+    ,g.Article
+    ,g.OrderID
+    ,[SpecialMark] = SpecialMark.Value
+    ,gd.No
+    ,gd.SizeCode
+    ,[TestDate] = format(gd.inspdate, 'yyyy/MM/dd')
+    ,[Result] = case when g.Result = 'P' then 'Pass' when g.Result = 'F' then 'Fail' else '' end
+    ,[450 Result] = case when gd.SeamBreakageResult = 'P' then 'Pass' when gd.SeamBreakageResult = 'F' then 'Fail' else '' end
+    ,[451 Result] = case when gd.OdourResult = 'P' then 'Pass' when gd.OdourResult = 'F' then 'Fail' else '' end
+    ,[701 Result] = case when gd.WashResult = 'P' then 'Pass' when gd.WashResult = 'F' then 'Fail' else '' end
+    ,gd.inspector
+    ,[Comments] = gd.Remark
+    ,gdi.TestBeforePicture
+    ,gdi.TestAfterPicture
 from GarmentTest g WITH(NOLOCK)
 inner join GarmentTest_Detail gd WITH(NOLOCK) on g.ID = gd.ID
+left join [ExtendServer].PMSFile.dbo.GarmentTest_Detail gdi WITH(NOLOCK) on gd.ID=gdi.ID AND gd.No = gdi.No
 outer apply(
 	select Value =  r.Name 
 	from Style s WITH(NOLOCK)

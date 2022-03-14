@@ -19,6 +19,6 @@ namespace BusinessLogicLayer.Interface
 
         BaseResult UpdateFinalInspectionDetail(AddDefect addDefect, string UserID);
 
-        List<byte[]> GetDefectImage(long FinalInspection_DetailUkey);
+        //List<byte[]> GetDefectImage(long FinalInspection_DetailUkey);
     }
 }

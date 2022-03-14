@@ -19,11 +19,17 @@ namespace BusinessLogicLayer.Service
         public IOrdersProvider _OrdersProvider { get; set; }
         public IFinalInspFromPMSProvider _FinalInspFromPMSProvider { get; set; }
 
-        public List<byte[]> GetBACriteriaImage(long FinalInspection_NonBACriteriaUkey)
+        //public List<byte[]> GetBACriteriaImage(long FinalInspection_NonBACriteriaUkey)
+        //{
+        //    _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+        //    return _FinalInspectionProvider.GetBACriteriaImage(FinalInspection_NonBACriteriaUkey).ToList();
+        //}
+        public List<ImageRemark> GetBA_DetailImage(long FinalInspection_NonBACriteriaUkey)
         {
             _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
 
-            return _FinalInspectionProvider.GetBACriteriaImage(FinalInspection_NonBACriteriaUkey).ToList();
+            return _FinalInspectionProvider.GetBA_DetailImage(FinalInspection_NonBACriteriaUkey).ToList();
         }
 
         public BeautifulProductAudit GetBeautifulProductAuditForInspection(string finalInspectionID)
@@ -33,7 +39,7 @@ namespace BusinessLogicLayer.Service
             try
             {
                 _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
-
+                IFinalInspectionProvider np = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
                 DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection =
                     _FinalInspectionProvider.GetFinalInspection(finalInspectionID);
 
@@ -51,7 +57,8 @@ namespace BusinessLogicLayer.Service
                     beautifulProductAudit.SampleSize = finalInspection.SampleSize;
                 }
 
-                beautifulProductAudit.ListBACriteria = _FinalInspectionProvider.GetBeautifulProductAuditForInspection(finalInspectionID).ToList();
+                _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+                beautifulProductAudit.ListBACriteria = np.GetBeautifulProductAuditForInspection(finalInspectionID).ToList();
             }
             catch (Exception ex)
             {

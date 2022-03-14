@@ -90,11 +90,14 @@
             for (var i = 0; i < items.length; i++) {
 
                 if (result[keyCount] == items[i].DefectTypeDesc) {
+
+                    var FinalInspection_DetailImage = items[i].ListFinalInspectionDefectImage;
                     temp.push([
                         items[i].Ukey
                         , items[i].DefectCodeDesc
                         , items[i].Qty
-                        , items[i].ListFinalInspectionDefectImage
+                        //, items[i].ListFinalInspectionDefectImage
+                        , FinalInspection_DetailImage.Image
                         , items[i].RowIndex
                         , items[i].DefectCode
                         , items[i].DefectType
@@ -242,33 +245,57 @@
                 window.open('@Url.Action("AddDefectTakePicture")?DetailUkey=' + DetailUkey, "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
             }
         }
-        function GetImage(Data) {
+        function GetImage(Data, ImgSource) {
             //透過AJAX暫存成Temp Data
 
-            var Ukey = Data.DetailUkey;
-            var RowIndex = Data.RowIndex;
-            var Picture = Data.Img.replace("data:image/png;base64,", "");
 
-            var data =
-            {
-                Ukey: Ukey,
-                RowIndex: RowIndex,
-                TempImage: Picture,
-            };
+            //根據圖片來源決定存檔方式
+            if (ImgSource == 'Camera') {
+                var Ukey = Data.DetailUkey;
+                var RowIndex = Data.RowIndex;
+                var Picture = Data.Img.replace("data:image/png;base64,", "");
+                var Remark = Data.Remark;
 
-            $.ajax({
-                url: "@Url.Action("AddDefectPicturesTempSave", "Inspection", new { Area = "FinalInspection" })",
-                type: 'POST',
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({ data: data }),
-                async: true,
-                success: function (data) {
-                    //msg.WithSuccess("Image OK!!");
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    console.log(xhr.responseText);
-                }
-            });
+                var data =
+                {
+                    Ukey: Ukey,
+                    RowIndex: RowIndex,
+                    TempImage: Picture,
+                    TempRemark: Remark,
+                };
+
+                $.ajax({
+                    url: "@Url.Action("AddDefectPicturesTempSave", "Inspection", new { Area = "FinalInspection" })",
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ data: data }),
+                    async: true,
+                    success: function (data) {
+                        //msg.WithSuccess("Image OK!!");
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                });
+
+            }
+
+            if (ImgSource == 'File') {
+
+                $.ajax({
+                    url: "@Url.Action("BatchAddDefectPicturesTempSave", "Inspection", new { Area = "FinalInspection" })",
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ list: Data }),
+                    async: true,
+                    success: function (data) {
+                        //msg.WithSuccess("Image OK!!");
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            }
         }
     </script>
 }

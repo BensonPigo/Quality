@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net.Mail;
 using System.Web;
 
 namespace DatabaseObject.RequestModel
@@ -19,5 +20,10 @@ namespace DatabaseObject.RequestModel
         /// 路徑+檔案名稱
         /// </summary>
         public List<HttpPostedFileBase> FileUploader { get; set; }
+
+        /// <summary>
+        /// 信件圖片附檔
+        /// </summary>
+        public AlternateView alternateView { get; set; }
     }
 }

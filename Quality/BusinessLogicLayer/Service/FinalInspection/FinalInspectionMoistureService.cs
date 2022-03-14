@@ -24,7 +24,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
+                _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ManufacturingExecutionDataAccessLayer);
 
                 moisture.FinalInspectionID = finalInspectionID;
                 moisture.ListArticle = _FinalInspFromPMSProvider.GetArticleList(finalInspectionID);
@@ -111,6 +111,7 @@ namespace BusinessLogicLayer.Service
             {
                 _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
                 DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection = _FinalInspectionProvider.GetFinalInspection(moistureResult.FinalInspectionID);
+                List<string> BrandIDs = _FinalInspectionProvider.Get_FinalInspectionID_BrandID(moistureResult.FinalInspectionID);
 
                 // inline或3rd Party則可以跳過Moisture檢查 所以如果Instrument或Fabrication沒輸入可以直接跳過
                 if ((finalInspection.InspectionStage == "Inline" || finalInspection.InspectionStage == "3rd Party") &&
@@ -146,7 +147,7 @@ namespace BusinessLogicLayer.Service
                     _FinalInspectionProvider.UpdateMoisture(moistureResult);
                 }
 
-                if (finalInspection.InspectionStage == "Stagger" || finalInspection.InspectionStage == "Final")
+                if ((finalInspection.InspectionStage == "Stagger" || finalInspection.InspectionStage == "Final") && BrandIDs.Where(o=>o.ToUpper() == "ADIDAS").Any())
                 {
                     isMoistureExists = _FinalInspectionProvider.CheckMoistureExists(moistureResult.FinalInspectionID, string.Empty, null);
                     if (!isMoistureExists)

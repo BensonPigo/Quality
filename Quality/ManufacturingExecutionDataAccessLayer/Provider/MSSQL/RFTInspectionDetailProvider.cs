@@ -29,7 +29,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 
             string sqlcmd = @"
 select oq.Qty,insp.cnt,* 
-from MainServer.Production.dbo.Order_Qty oq WITH(NOLOCK)
+from Production.dbo.Order_Qty oq WITH(NOLOCK)
 outer apply(
 	select cnt = count(1) 
 	from ManufacturingExecution.dbo.Rft_Inspection  i WITH(NOLOCK)
@@ -62,7 +62,7 @@ and oq.Qty - isnull(insp.cnt,0) > 0
         ,[DefectCnt] = count(*) 
     from RFT_Inspection i WITH (NOLOCK)
     inner join RFT_Inspection_Detail id  WITH (NOLOCK) on id.ID = i.ID
-    left join [dbo].[SciProduction_GarmentDefectCode] gdc with (nolock) on id.GarmentDefectCodeID = gdc.id 
+    left join [[MainServer].Production.dbo.GarmentDefectCode gdc with (nolock) on id.GarmentDefectCodeID = gdc.id 
     where 1=1
   And ((i.AddDate >= @InspectionDate and i.AddDate <= DATEADD(SECOND, -1, DATEADD(day, 1,@InspectionDate))) 
   or (i.EditDate >= @InspectionDate and i.EditDate <= DATEADD(SECOND, -1, DATEADD(day, 1,@InspectionDate)))) 

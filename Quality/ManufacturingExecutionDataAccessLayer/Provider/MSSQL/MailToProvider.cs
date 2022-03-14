@@ -58,15 +58,15 @@ ToAddress = STUFF((
 select concat(';',ToAddress)
 	from (
 		select ToAddress =  p.EMail
-		from MainServer.Production.dbo.Orders o  WITH(NOLOCK)
-		inner join MainServer.Production.dbo.TPEPass1 p WITH(NOLOCK) on o.SMR = p.ID
+		from Production.dbo.Orders o  WITH(NOLOCK)
+		inner join Production.dbo.TPEPass1 p WITH(NOLOCK) on o.SMR = p.ID
 		where o.ID=@OrderID
 
 		union all
 
 		select ToAddress = p.EMail
-		from MainServer.Production.dbo.Orders o  WITH(NOLOCK)
-		inner join MainServer.Production.dbo.TPEPass1 p WITH(NOLOCK) on o.MRHandle = p.ID
+		from Production.dbo.Orders o  WITH(NOLOCK)
+		inner join Production.dbo.TPEPass1 p WITH(NOLOCK) on o.MRHandle = p.ID
 		where o.ID=@OrderID
 
 		union all
