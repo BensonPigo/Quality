@@ -29,7 +29,6 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         //List<byte[]> GetBACriteriaImage(long FinalInspection_NonBACriteriaUkey);
         IList<ImageRemark> GetBA_DetailImage(long FinalInspection_NonBACriteriaUkey);
 
-        List<byte[]> GetOthersImage(string finalInspectionID);
 
         IList<CartonItem> GetMoistureListCartonItem(string finalInspectionID);
 
