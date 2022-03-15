@@ -61,7 +61,7 @@ namespace BusinessLogicLayer.Service.FinalInspection
                 _StyleProvider = new StyleProvider(Common.ProductionDataAccessLayer);
                 queryReport.MeasurementUnit = _StyleProvider.GetSizeUnitByCustPONO(queryReport.FinalInspection.CustPONO);
 
-                _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
+                _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ManufacturingExecutionDataAccessLayer);
                 List<FinalInspectionDefectItem> finalInspectionDefectItems = _FinalInspFromPMSProvider.GetFinalInspectionDefectItems(finalInspectionID).ToList();
                 if (finalInspectionDefectItems.Any(s => s.Qty > 0))
                 {

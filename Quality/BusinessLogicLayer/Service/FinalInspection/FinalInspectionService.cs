@@ -91,7 +91,7 @@ namespace BusinessLogicLayer.Service
         {
             try
             {
-                _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
+                _OrdersProvider = new OrdersProvider(Common.ManufacturingExecutionDataAccessLayer);
 
                 IList<PoSelect_Result> result = _OrdersProvider.GetOrderForInspection_ByModel(request);
 
