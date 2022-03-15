@@ -379,9 +379,8 @@ where 1=1
             #region Water Fastness Test(503)
             string type11 = $@"
 select DISTINCT Type= 'Water Fastness Test(503)'
-	    , TestName=''
         , ReportNo=''
-		,OrderID = w.POID
+		, w.POID
 		,o.StyleID
 		,o.BrandID
 		,o.SeasonID
@@ -415,9 +414,8 @@ WHERE 1=1
             #region Perspiration Fastness Test(502)
             string type12 = $@"
 select DISTINCT Type= 'Perspiration Fastness (502)'
-	    , TestName=''
         , ReportNo=''
-		,OrderID = w.POID
+		, w.POID
 		,o.StyleID
 		,o.BrandID
 		,o.SeasonID
