@@ -93,7 +93,7 @@ select    p.ReportNo
 		,Time_Standard = s.Time
         ,TestDateText = convert(varchar, p.TestDate, 111)
 from PullingTest p WITH(NOLOCK)
-left join [ExtendServer].PMSFile.dbo.PullingTest pi WITH(NOLOCK) on p.ReportNo = pi.ReportNo
+left join PMSFile.dbo.PullingTest pi WITH(NOLOCK) on p.ReportNo = pi.ReportNo
 left join Production.dbo.Pass1 a WITH(NOLOCK) ON a.ID=p.AddName 
 left join Production.dbo.Pass1 e WITH(NOLOCK) ON e.ID=p.EditName
 left join Production.dbo.Pass1 i WITH(NOLOCK) ON i.ID=p.Inspector
@@ -437,7 +437,7 @@ WHERE 1=1
 
             SbSql.Append($@"
 
-DELETE FROM [ExtendServer].PMSFile.dbo.PullingTest
+DELETE FROM PMSFile.dbo.PullingTest
 WHERE 1=1
 ");
             if (!string.IsNullOrEmpty(ReportNo))
@@ -479,7 +479,7 @@ select    p.ReportNo
 		,pi.TestBeforePicture
 		,pi.TestAfterPicture
 from PullingTest p 
-left join [ExtendServer].PMSFile.dbo.PullingTest pi WITH(NOLOCK) on p.ReportNo = pi.ReportNo
+left join PMSFile.dbo.PullingTest pi WITH(NOLOCK) on p.ReportNo = pi.ReportNo
 where p.ReportNo = @ReportNo
 ";
 
