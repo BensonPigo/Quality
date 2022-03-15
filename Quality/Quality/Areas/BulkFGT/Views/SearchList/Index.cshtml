@@ -124,8 +124,25 @@
                             <td>
                                 <label class="FindLab" for="TypeSP">Type</label>
                             </td>
-                            <td colspan="7">
+                            <td>
                                 @Html.DropDownListFor(o => o.Type, Model.TypeDatasource)
+                            </td>
+
+                            <td>
+                                <label>Received Date</label>
+                            </td>
+                            <td>
+                                @Html.TextBox("ReceivedDate_sText", Model.ReceivedDate_sText, new { @style = "width:5vw", @class = "date-picker mockupOnly" })
+                                <label>~</label>
+                                @Html.TextBox("ReceivedDate_eText", Model.ReceivedDate_eText, new { @style = "width:5vw", @class = "date-picker mockupOnly" })
+                            </td>
+                            <td>
+                                <label>Report Date</label>
+                            </td>
+                            <td colspan="3">
+                                @Html.TextBox("ReportDate_sText", Model.ReportDate_sText, new { @style = "width:5vw", @class = "date-picker mockupOnly" })
+                                <label>~</label>
+                                @Html.TextBox("ReportDate_eText", Model.ReportDate_eText, new { @style = "width:5vw", @class = "date-picker mockupOnly" })
                             </td>
                             <td style="padding: 0vw;">
                                 <input type="button" class="site-btn btn-gy font1rem Black" style="width: 7vw;" name="action:ToExcel" id="btnExcel" value="To Excel" />
@@ -148,6 +165,8 @@
                                 <th>Article</th>
                                 <th>Artwork</th>
                                 <th>Result</th>
+                                <th>Received Date</th>
+                                <th>Released Date</th>
                                 <th>Test Date</th>
                             </tr>
                         </thead>
@@ -157,120 +176,129 @@
                                 foreach (var item in Model.DataList)
                                 {
                                     string color = item.Result == "Pass" ? "blue" : "red";
-                                    <tr class="row-content">
-                                        <td>
-                                            @{ string link = "";}
-                                            @switch (item.Type)
+                            <tr class="row-content">
+                                <td>
+                                    @{ string link = "";}
+                                    @switch (item.Type)
+                                    {
+                                        case string a when a.Contains("Fabric Crocking & Shrinkage Test"):
+                                            link = Url.Action("IndexBack", "FabricCrkShrkTest", new { POID = item.OrderID });
+                                            break;
+                                        case string a when a.Contains("Garment Test"):
+                                            link = Url.Action("IndexBack", "GarmentTest", new
                                             {
-                                                case string a when a.Contains("Fabric Crocking & Shrinkage Test"):
-                                                    link = Url.Action("IndexBack", "FabricCrkShrkTest",new { POID = item.OrderID });
-                                                    break;
-                                                case string a when a.Contains("Garment Test"):
-                                                    link = Url.Action("IndexBack", "GarmentTest", new {
-                                                        Brand = item.BrandID,
-                                                        Season = item.SeasonID,
-                                                        Style = item.StyleID,
-                                                        Article = item.Article,
-                                                    });
-                                                    break;
-                                                case string a when a.Contains("Mockup Crocking Test"):
-                                                    link = Url.Action("IndexGet", "MockupCrocking", new
-                                                    {
-                                                        ReportNo = item.ReportNo,
-                                                        BrandID = item.BrandID,
-                                                        SeasonID = item.SeasonID,
-                                                        StyleID = item.StyleID,
-                                                        Article = item.Article,
-                                                    });
-                                                    break;
-                                                case string a when a.Contains("Mockup Oven Test"):
-                                                    link = Url.Action("IndexGet", "MockupOvenTest", new
-                                                    {
-                                                        ReportNo = item.ReportNo,
-                                                        BrandID = item.BrandID,
-                                                        SeasonID = item.SeasonID,
-                                                        StyleID = item.StyleID,
-                                                        Article = item.Article,
-                                                    });
-                                                    break;
-                                                case string a when a.Contains("Mockup Wash Test"):
-                                                    link = Url.Action("IndexGet", "MockupWash", new
-                                                    {
-                                                        ReportNo = item.ReportNo,
-                                                        BrandID = item.BrandID,
-                                                        SeasonID = item.SeasonID,
-                                                        StyleID = item.StyleID,
-                                                        Article = item.Article,
-                                                    });
-                                                    break;
-                                                case string a when a.Contains("Fabric Oven Test"):
-                                                    link = Url.Action("IndexBack", "FabricOvenTest", new { POID = item.OrderID });
-                                                    break;
-                                                case string a when a.Contains("Washing Fastness"):
-                                                    link = Url.Action("IndexBack", "FabricColorFastness", new { POID = item.OrderID });
-                                                    break;
-                                                case string a when a.Contains("Accessory Oven & Wash Test"):
-                                                    link = Url.Action("IndexGet", "AccessoryOvenWash", new { ReqOrderID = item.OrderID , OrderID = item.OrderID });
-                                                    break;
-                                                case string a when a.Contains("Pulling test"):
-                                                    link = Url.Action("IndexGet", "PullingTest", new
-                                                    {
-                                                        ReportNo = item.ReportNo,
-                                                        BrandID = item.BrandID,
-                                                        SeasonID = item.SeasonID,
-                                                        StyleID = item.StyleID,
-                                                        Article = item.Article,
-                                                    });
-                                                    break;
-                                                case string a when a.Contains("Water Fastness"):
-                                                    link = Url.Action("IndexBack", "WaterFastness", new
-                                                    {
-                                                        POID = item.OrderID,
-                                                    });
-                                                    break;
-                                                case string a when a.Contains("Perspiration Fastness"):
-                                                    link = Url.Action("IndexBack", "PerspirationFastness", new
-                                                    {
-                                                        POID = item.OrderID,
-                                                    });
-                                                    break;
-                                                default:
-                                                    link = "#";
-                                                    break;
-                                            }
+                                                Brand = item.BrandID,
+                                                Season = item.SeasonID,
+                                                Style = item.StyleID,
+                                                Article = item.Article,
+                                            });
+                                            break;
+                                        case string a when a.Contains("Mockup Crocking Test"):
+                                            link = Url.Action("IndexGet", "MockupCrocking", new
+                                            {
+                                                ReportNo = item.ReportNo,
+                                                BrandID = item.BrandID,
+                                                SeasonID = item.SeasonID,
+                                                StyleID = item.StyleID,
+                                                Article = item.Article,
+                                            });
+                                            break;
+                                        case string a when a.Contains("Mockup Oven Test"):
+                                            link = Url.Action("IndexGet", "MockupOvenTest", new
+                                            {
+                                                ReportNo = item.ReportNo,
+                                                BrandID = item.BrandID,
+                                                SeasonID = item.SeasonID,
+                                                StyleID = item.StyleID,
+                                                Article = item.Article,
+                                            });
+                                            break;
+                                        case string a when a.Contains("Mockup Wash Test"):
+                                            link = Url.Action("IndexGet", "MockupWash", new
+                                            {
+                                                ReportNo = item.ReportNo,
+                                                BrandID = item.BrandID,
+                                                SeasonID = item.SeasonID,
+                                                StyleID = item.StyleID,
+                                                Article = item.Article,
+                                            });
+                                            break;
+                                        case string a when a.Contains("Fabric Oven Test"):
+                                            link = Url.Action("IndexBack", "FabricOvenTest", new { POID = item.OrderID });
+                                            break;
+                                        case string a when a.Contains("Washing Fastness"):
+                                            link = Url.Action("IndexBack", "FabricColorFastness", new { POID = item.OrderID });
+                                            break;
+                                        case string a when a.Contains("Accessory Oven & Wash Test"):
+                                            link = Url.Action("IndexGet", "AccessoryOvenWash", new { ReqOrderID = item.OrderID, OrderID = item.OrderID });
+                                            break;
+                                        case string a when a.Contains("Pulling test"):
+                                            link = Url.Action("IndexGet", "PullingTest", new
+                                            {
+                                                ReportNo = item.ReportNo,
+                                                BrandID = item.BrandID,
+                                                SeasonID = item.SeasonID,
+                                                StyleID = item.StyleID,
+                                                Article = item.Article,
+                                            });
+                                            break;
+                                        case string a when a.Contains("Water Fastness"):
+                                            link = Url.Action("IndexBack", "WaterFastness", new
+                                            {
+                                                POID = item.OrderID,
+                                            });
+                                            break;
+                                        case string a when a.Contains("Perspiration Fastness"):
+                                            link = Url.Action("IndexBack", "PerspirationFastness", new
+                                            {
+                                                POID = item.OrderID,
+                                            });
+                                            break;
+                                        default:
+                                            link = "#";
+                                            break;
+                                    }
 
-                                            <a href="@link" target="_blank">@item.Type</a>
+                                    <a href="@link" target="_blank">@item.Type</a>
 
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.ReportNo)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.OrderID)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.StyleID)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.BrandID)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.SeasonID)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.Article)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.Artwork)
-                                        </td>
-                                        <td style="color: @color">
-                                            @Html.DisplayFor(modelItem => item.Result)
-                                        </td>
-                                        <td>
-                                            @{string TestDate = item.TestDate.HasValue ? item.TestDate.Value.ToShortDateString() : ""; }
-                                            @Html.DisplayFor(modelItem => TestDate)
-                                        </td>
-                                    </tr>
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ReportNo)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.OrderID)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.StyleID)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.BrandID)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.SeasonID)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Article)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Artwork)
+                                </td>
+                                <td style="color: @color">
+                                    @Html.DisplayFor(modelItem => item.Result)
+                                </td>
+                                <td>
+                                    @{string ReceivedDate = item.ReceivedDate.HasValue ? item.ReceivedDate.Value.ToShortDateString() : ""; }
+                                    @Html.DisplayFor(modelItem => ReceivedDate)
+                                </td>
+                                <td>
+                                    @{string ReleasedDate = item.ReleasedDate.HasValue ? item.ReleasedDate.Value.ToShortDateString() : ""; }
+                                    @Html.DisplayFor(modelItem => ReleasedDate)
+                                </td>
+                                <td>
+                                    @{string TestDate = item.TestDate.HasValue ? item.TestDate.Value.ToShortDateString() : ""; }
+                                    @Html.DisplayFor(modelItem => TestDate)
+                                </td>
+                            </tr>
                                 }
                             }
 
@@ -334,6 +362,8 @@
                 }
             });
         });
+
+        $("#Type").change();
     });
 
     function OpenWindow(WindowType) {
@@ -451,6 +481,19 @@
                     console.log(xhr.responseText);
                 }
             });
+        });
+
+        $("#Type").change(function () {
+            var currentType = $(this).val();
+
+            let result = currentType.toUpperCase().includes("MOCKUP");
+            if (!result) {
+                $(".mockupOnly").val('');
+                $(".mockupOnly").attr("disabled", "disabled");
+            }
+            else {
+                $(".mockupOnly").removeAttr("disabled");
+            }
         });
     }
 

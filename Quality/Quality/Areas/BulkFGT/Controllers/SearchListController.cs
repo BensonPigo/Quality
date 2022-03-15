@@ -59,6 +59,14 @@ namespace Quality.Areas.BulkFGT.Controllers
                 return RedirectToAction("Index");
             }
 
+            // 不是Mockup系列則清空時間條件
+            if (!string.IsNullOrEmpty(Req.Type) && !Req.Type.ToUpper().Contains("MOCKUP"))
+            {
+                Req.ReceivedDate_sText = string.Empty;
+                Req.ReceivedDate_eText = string.Empty;
+                Req.ReportDate_sText = string.Empty;
+                Req.ReportDate_eText = string.Empty;
+            }
 
             List<SelectListItem> data = _SearchListService.GetTypeDatasource(this.UserID);
 
