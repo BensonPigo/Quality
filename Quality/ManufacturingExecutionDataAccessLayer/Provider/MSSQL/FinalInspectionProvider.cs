@@ -1073,7 +1073,7 @@ set @sql = '
 exec (@sql)
 
 
-drop table #tmp,#Style_Size,#tmp_Inspection_Measurement
+drop table #tmp,#Style_Size
 
 ";
 
@@ -1271,7 +1271,7 @@ where f.InspectionResult = @InspectionResult)";
             {
                 whereOrder += @" and ID IN (
 select ID
-from Production.dbo.Orders WITH(NOLOCK)
+from MainServer.Production.dbo.Orders WITH(NOLOCK)
 where CustPONO = @CustPONO
 )
 ";
@@ -1317,7 +1317,7 @@ where   1 = 1 {whereOrder}
 
 select  ID, Article
 into    #tmpOrderArticle
-from    Production.dbo.Order_Article with (nolock)
+from    MainServer.Production.dbo.Order_Article with (nolock)
 where   ID in (select ID from #tmpOrders)
 
 select  [FinalInspectionID] = f.ID,
