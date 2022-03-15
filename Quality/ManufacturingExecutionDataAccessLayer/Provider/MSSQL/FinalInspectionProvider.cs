@@ -683,31 +683,7 @@ insert into FinalInspection_NonBACriteriaImage(ID, FinalInspection_NonBACriteria
                 transaction.Complete();
             }
         }
-        /*
-        public List<byte[]> GetBACriteriaImage(long FinalInspection_NonBACriteriaUkey)
-        {
-            SQLParameterCollection objParameter = new SQLParameterCollection() {
-            { "@FinalInspection_NonBACriteriaUkey", DbType.Int64, FinalInspection_NonBACriteriaUkey }
-            };
 
-            string sqlGetData = @"
-select  Image
-    from [ExtendServer].PMSFile.dbo.FinalInspection_NonBACriteriaImage with (nolock)
-    where   FinalInspection_NonBACriteriaUkey = @FinalInspection_NonBACriteriaUkey
-";
-
-            DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, objParameter);
-
-            if (dtResult.Rows.Count > 0)
-            {
-                return dtResult.AsEnumerable().Select(s => (byte[])s["Image"]).ToList();
-            }
-            else
-            {
-                return new List<byte[]>();
-            }
-        }
-        */
         public IList<ImageRemark> GetBA_DetailImage(long FinalInspection_NonBACriteriaUkey)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection() {
@@ -1100,51 +1076,6 @@ where   ID = @finalInspectionID
             return ExecuteList<OtherImage>(CommandType.Text, sqlGetEndlineMoisture, objParameter);
         }
 
-        public List<byte[]> GetOthersImage(string finalInspectionID)
-        {
-            SQLParameterCollection objParameter = new SQLParameterCollection() {
-            { "@finalInspectionID", DbType.String, finalInspectionID }
-            };
-
-            string sqlGetData = @"
-select  Image
-    from [ExtendServer].PMSFile.dbo.FinalInspection_OtherImage with (nolock)
-    where   ID = @finalInspectionID
-";
-
-            DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, objParameter);
-
-            if (dtResult.Rows.Count > 0)
-            {
-                return dtResult.AsEnumerable().Select(s => (byte[])s["Image"]).ToList();
-            }
-            else
-            {
-                return new List<byte[]>();
-            }
-        }
-
-        //        public void UpdateFinalInspection_OtherImage(string finalInspectionID, List<byte[]> images)
-        //        {
-        //            foreach (byte[] image in images)
-        //            {
-        //                string sqlFinalInspection_OtherImage = @"
-        //SET XACT_ABORT ON
-
-        //    insert into FinalInspection_OtherImage(ID)
-        //                values(@FinalInspectionID) ----2022/01/10 PMSFile上線，因此去掉Image寫入原本DB的部分
-
-        //    insert into [ExtendServer].PMSFile.dbo.FinalInspection_OtherImage(ID, Image)
-        //                values(@FinalInspectionID, @Image)
-        //";
-        //                SQLParameterCollection imgParameter = new SQLParameterCollection() {
-        //                            { "@FinalInspectionID", DbType.String, finalInspectionID },
-        //                            { "@Image", image}
-        //                        };
-
-        //                ExecuteNonQuery(CommandType.Text, sqlFinalInspection_OtherImage, imgParameter);
-        //            }
-        //        }
         public void UpdateFinalInspection_OtherImage(string finalInspectionID, List<OtherImage> images)
         {
             foreach (var imageObj in images)
