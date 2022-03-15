@@ -24,6 +24,8 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
             SbSql.Append(@"
+select ArtworkTypeID = '' 
+UNION 
 select distinct ArtworkTypeID
 from Style_Artwork WITH(NOLOCK)
 Where 1 = 1
