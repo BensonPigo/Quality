@@ -47,7 +47,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,Front"+ Environment.NewLine);
             SbSql.Append("        ,Side"+ Environment.NewLine);
             SbSql.Append("        ,Back"+ Environment.NewLine);
-            SbSql.Append("FROM [ExtendServer].PMSFile.dbo.[RFT_PicDuringDummyFitting]  WITH(NOLOCK)" + Environment.NewLine);
+            SbSql.Append("FROM PMSFile.dbo.[RFT_PicDuringDummyFitting]  WITH(NOLOCK)" + Environment.NewLine);
             SbSql.Append("where 1 = 1" + Environment.NewLine);
             if (!string.IsNullOrEmpty(Item.OrderID)) { SbSql.Append(" and OrderID = @OrderID" + Environment.NewLine); }
             if (!string.IsNullOrEmpty(Item.Article)) { SbSql.Append(" and Article = @Article" + Environment.NewLine); }
