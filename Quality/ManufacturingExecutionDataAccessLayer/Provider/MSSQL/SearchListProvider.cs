@@ -46,7 +46,12 @@ and p.ID='{Pass1ID}'
                 { "@SeasonID", DbType.String, Req.SeasonID },
                 { "@StyleID", DbType.String, Req.StyleID },
                 { "@Article", DbType.String, Req.Article },
-                { "@MDivisionID", DbType.String, Req.MDivisionID }
+                { "@MDivisionID", DbType.String, Req.MDivisionID },
+
+                { "@ReceivedDate_s", DbType.Date, Req.ReceivedDate_s },
+                { "@ReceivedDate_e", DbType.Date, Req.ReceivedDate_e },
+                { "@ReportDate_s", DbType.Date, Req.ReportDate_s },
+                { "@ReportDate_e", DbType.Date, Req.ReportDate_e },
             };
 
             StringBuilder SbSql = new StringBuilder();
@@ -72,6 +77,8 @@ select DISTINCT Type = 'Fabric Crocking & Shrinkage Test (504, 405)'
 			)tmp
 		)
 
+	    ,ReceivedDate =NULL
+	    ,ReportDate =NULL
 from PO p WITH(NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.ID = p.ID
 INNER JOIN FIR_Laboratory f WITH(NOLOCK) ON f.POID = p.ID
@@ -103,6 +110,8 @@ select  Type = 'Garment Test (450, 451, 701, 710)'
 		,Artwork = ''
 		,Result= IIF(gd.Result='P','Pass', IIF(gd.Result='F','Fail',''))
 		,TestDate = gd.InspDate
+	,ReceivedDate =NULL
+	,ReportDate =NULL
 from GarmentTest g WITH(NOLOCK)
 inner join GarmentTest_Detail gd WITH(NOLOCK) ON g.ID= gd.ID
 WHERE 1=1 
@@ -142,6 +151,8 @@ select DISTINCT  Type = 'Mockup Crocking Test  (504)'
 		,Artwork = ArtworkTypeID
 		,Result
 		,TestDate 
+        , ReceivedDate
+        , ReportDate = ReleasedDate
 from MockupCrocking  WITH(NOLOCK)
 WHERE 1=1 
 ";
@@ -162,6 +173,22 @@ WHERE 1=1
             {
                 type3 += "AND Article = @Article ";
             }
+            if (Req.ReceivedDate_s.HasValue)
+            {
+                type3 += "AND ReceivedDate >= @ReceivedDate_s ";
+            }
+            if (Req.ReceivedDate_e.HasValue)
+            {
+                type3 += "AND ReceivedDate <= @ReceivedDate_e ";
+            }
+            if (Req.ReportDate_s.HasValue)
+            {
+                type3 += "AND ReportDate >= @ReportDate_s ";
+            }
+            if (Req.ReportDate_e.HasValue)
+            {
+                type3 += "AND ReportDate <= @ReportDate_e ";
+            }
             #endregion
 
             #region Mockup Oven Test (514)
@@ -176,6 +203,8 @@ select DISTINCT Type = 'Mockup Oven Test (514)'
 	, [Artwork] = m.ArtworkTypeID
 	, m.Result
 	, m.TestDate
+    , ReceivedDate
+    , ReportDate = ReleasedDate
 from MockupOven m WITH(NOLOCK)
 where m.Type = 'B'
 ";
@@ -196,6 +225,22 @@ where m.Type = 'B'
             {
                 type4 += "AND Article = @Article ";
             }
+            if (Req.ReceivedDate_s.HasValue)
+            {
+                type4 += "AND ReceivedDate >= @ReceivedDate_s ";
+            }
+            if (Req.ReceivedDate_e.HasValue)
+            {
+                type4 += "AND ReceivedDate <= @ReceivedDate_e ";
+            }
+            if (Req.ReportDate_s.HasValue)
+            {
+                type4 += "AND ReportDate >= @ReportDate_s ";
+            }
+            if (Req.ReportDate_e.HasValue)
+            {
+                type4 += "AND ReportDate <= @ReportDate_e ";
+            }
             #endregion
 
             #region Mockup Wash Test (701)
@@ -210,6 +255,8 @@ select DISTINCT Type = 'Mockup Wash Test (701)'
 	, [Artwork] = m.ArtworkTypeID
 	, m.Result
 	, m.TestDate
+    , ReceivedDate
+    , ReportDate = ReleasedDate
 from MockupWash m WITH(NOLOCK)
 where m.Type = 'B' 
 ";
@@ -230,6 +277,22 @@ where m.Type = 'B'
             {
                 type5 += "AND Article = @Article ";
             }
+            if (Req.ReceivedDate_s.HasValue)
+            {
+                type5 += "AND ReceivedDate >= @ReceivedDate_s ";
+            }
+            if (Req.ReceivedDate_e.HasValue)
+            {
+                type5 += "AND ReceivedDate <= @ReceivedDate_e ";
+            }
+            if (Req.ReportDate_s.HasValue)
+            {
+                type5 += "AND ReportDate >= @ReportDate_s ";
+            }
+            if (Req.ReportDate_e.HasValue)
+            {
+                type5 += "AND ReportDate <= @ReportDate_e ";
+            }
             #endregion
 
             #region Fabric Oven Test (515) 
@@ -244,6 +307,8 @@ select DISTINCT Type= 'Fabric Oven Test (515)'
 		,Artwork = ''
 		,Result=f.Result
 		,TestDate = f.InspDate
+	    ,ReceivedDate =NULL
+	    ,ReportDate =NULL
 from PO p WITH(NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.POID = p.ID
 inner join Oven f WITH(NOLOCK) ON f.POID = p.ID
@@ -280,6 +345,8 @@ select DISTINCT Type= 'Washing Fastness (501)'
 		,Result=f.Result
 		,TestDate = f.InspDate
 
+	    ,ReceivedDate =NULL
+	    ,ReportDate =NULL
 from PO p WITH(NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.POID = p.ID
 INNER JOIN ColorFastness f WITH(NOLOCK) ON f.POID = p.ID
@@ -322,6 +389,8 @@ select DISTINCT Type = 'Accessory Oven & Wash Test (515, 701)'
 			)tmp
 		)
 
+	,ReceivedDate =NULL
+	,ReportDate =NULL
 from PO p
 inner join Orders o WITH(NOLOCK) ON o.POID = p.ID
 INNER JOIN AIR_Laboratory f WITH(NOLOCK) ON f.POID = p.ID
@@ -354,6 +423,8 @@ select DISTINCT Type = 'Pulling test for Snap/Botton/Rivet (437)'
 	, [Artwork] = ''
 	, m.Result
 	, m.TestDate
+	,ReceivedDate =NULL
+	,ReportDate =NULL
 from [ExtendServer].ManufacturingExecution.dbo.PullingTest m  WITH(NOLOCK)
 where 1=1 
 ";
@@ -389,6 +460,8 @@ select DISTINCT Type= 'Water Fastness Test(503)'
 		,w.Result
 		,TestDate = w.InspDate
 
+	    ,ReceivedDate =NULL
+	    ,ReportDate =NULL
 from WaterFastness w WITH (NOLOCK) 
 inner join Orders o WITH(NOLOCK) ON o.ID = w.POID
 WHERE 1=1 
@@ -424,6 +497,8 @@ select DISTINCT Type= 'Perspiration Fastness (502)'
 		,w.Result
 		,TestDate = w.InspDate
 
+	    ,ReceivedDate =NULL
+	    ,ReportDate =NULL
 from PerspirationFastness w WITH (NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.ID = w.POID
 WHERE 1=1 
