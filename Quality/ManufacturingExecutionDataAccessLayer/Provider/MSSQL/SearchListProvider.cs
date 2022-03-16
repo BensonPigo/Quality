@@ -183,11 +183,11 @@ WHERE 1=1
             }
             if (Req.ReportDate_s.HasValue)
             {
-                type3 += "AND ReportDate >= @ReportDate_s ";
+                type3 += "AND ReleasedDate >= @ReportDate_s ";
             }
             if (Req.ReportDate_e.HasValue)
             {
-                type3 += "AND ReportDate <= @ReportDate_e ";
+                type3 += "AND ReleasedDate <= @ReportDate_e ";
             }
             #endregion
 
@@ -235,11 +235,11 @@ where m.Type = 'B'
             }
             if (Req.ReportDate_s.HasValue)
             {
-                type4 += "AND ReportDate >= @ReportDate_s ";
+                type4 += "AND ReleasedDate >= @ReportDate_s ";
             }
             if (Req.ReportDate_e.HasValue)
             {
-                type4 += "AND ReportDate <= @ReportDate_e ";
+                type4 += "AND ReleasedDate <= @ReportDate_e ";
             }
             #endregion
 
@@ -287,11 +287,11 @@ where m.Type = 'B'
             }
             if (Req.ReportDate_s.HasValue)
             {
-                type5 += "AND ReportDate >= @ReportDate_s ";
+                type5 += "AND ReleasedDate >= @ReportDate_s ";
             }
             if (Req.ReportDate_e.HasValue)
             {
-                type5 += "AND ReportDate <= @ReportDate_e ";
+                type5 += "AND ReleasedDate <= @ReportDate_e ";
             }
             #endregion
 
