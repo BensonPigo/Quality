@@ -78,7 +78,7 @@ select DISTINCT Type = 'Fabric Crocking & Shrinkage Test (504, 405)'
 		)
 
 	    ,ReceivedDate =NULL
-	    ,ReleasedDate =NULL
+	    ,ReportDate =NULL
 from PO p WITH(NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.ID = p.ID
 INNER JOIN FIR_Laboratory f WITH(NOLOCK) ON f.POID = p.ID
@@ -111,7 +111,7 @@ select  Type = 'Garment Test (450, 451, 701, 710)'
 		,Result= IIF(gd.Result='P','Pass', IIF(gd.Result='F','Fail',''))
 		,TestDate = gd.InspDate
 	,ReceivedDate =NULL
-	,ReleasedDate =NULL
+	,ReportDate =NULL
 from GarmentTest g WITH(NOLOCK)
 inner join GarmentTest_Detail gd WITH(NOLOCK) ON g.ID= gd.ID
 WHERE 1=1 
@@ -152,7 +152,7 @@ select DISTINCT  Type = 'Mockup Crocking Test  (504)'
 		,Result
 		,TestDate 
         , ReceivedDate
-        , ReleasedDate
+        , ReportDate = ReleasedDate
 from MockupCrocking  WITH(NOLOCK)
 WHERE 1=1 
 ";
@@ -183,11 +183,11 @@ WHERE 1=1
             }
             if (Req.ReportDate_s.HasValue)
             {
-                type3 += "AND ReleasedDate >= @ReportDate_s ";
+                type3 += "AND ReportDate >= @ReportDate_s ";
             }
             if (Req.ReportDate_e.HasValue)
             {
-                type3 += "AND ReleasedDate <= @ReportDate_e ";
+                type3 += "AND ReportDate <= @ReportDate_e ";
             }
             #endregion
 
@@ -204,7 +204,7 @@ select DISTINCT Type = 'Mockup Oven Test (514)'
 	, m.Result
 	, m.TestDate
     , ReceivedDate
-    , ReleasedDate
+    , ReportDate = ReleasedDate
 from MockupOven m WITH(NOLOCK)
 where m.Type = 'B'
 ";
@@ -235,11 +235,11 @@ where m.Type = 'B'
             }
             if (Req.ReportDate_s.HasValue)
             {
-                type4 += "AND ReleasedDate >= @ReportDate_s ";
+                type4 += "AND ReportDate >= @ReportDate_s ";
             }
             if (Req.ReportDate_e.HasValue)
             {
-                type4 += "AND ReleasedDate <= @ReportDate_e ";
+                type4 += "AND ReportDate <= @ReportDate_e ";
             }
             #endregion
 
@@ -256,7 +256,7 @@ select DISTINCT Type = 'Mockup Wash Test (701)'
 	, m.Result
 	, m.TestDate
     , ReceivedDate
-    , ReleasedDate
+    , ReportDate = ReleasedDate
 from MockupWash m WITH(NOLOCK)
 where m.Type = 'B' 
 ";
@@ -287,11 +287,11 @@ where m.Type = 'B'
             }
             if (Req.ReportDate_s.HasValue)
             {
-                type5 += "AND ReleasedDate >= @ReportDate_s ";
+                type5 += "AND ReportDate >= @ReportDate_s ";
             }
             if (Req.ReportDate_e.HasValue)
             {
-                type5 += "AND ReleasedDate <= @ReportDate_e ";
+                type5 += "AND ReportDate <= @ReportDate_e ";
             }
             #endregion
 
@@ -308,7 +308,7 @@ select DISTINCT Type= 'Fabric Oven Test (515)'
 		,Result=f.Result
 		,TestDate = f.InspDate
 	    ,ReceivedDate =NULL
-	    ,ReleasedDate =NULL
+	    ,ReportDate =NULL
 from PO p WITH(NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.POID = p.ID
 inner join Oven f WITH(NOLOCK) ON f.POID = p.ID
@@ -346,7 +346,7 @@ select DISTINCT Type= 'Washing Fastness (501)'
 		,TestDate = f.InspDate
 
 	    ,ReceivedDate =NULL
-	    ,ReleasedDate =NULL
+	    ,ReportDate =NULL
 from PO p WITH(NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.POID = p.ID
 INNER JOIN ColorFastness f WITH(NOLOCK) ON f.POID = p.ID
@@ -390,7 +390,7 @@ select DISTINCT Type = 'Accessory Oven & Wash Test (515, 701)'
 		)
 
 	,ReceivedDate =NULL
-	,ReleasedDate =NULL
+	,ReportDate =NULL
 from PO p
 inner join Orders o WITH(NOLOCK) ON o.POID = p.ID
 INNER JOIN AIR_Laboratory f WITH(NOLOCK) ON f.POID = p.ID
@@ -424,7 +424,7 @@ select DISTINCT Type = 'Pulling test for Snap/Botton/Rivet (437)'
 	, m.Result
 	, m.TestDate
 	,ReceivedDate =NULL
-	,ReleasedDate =NULL
+	,ReportDate =NULL
 from [ExtendServer].ManufacturingExecution.dbo.PullingTest m  WITH(NOLOCK)
 where 1=1 
 ";
@@ -461,7 +461,7 @@ select DISTINCT Type= 'Water Fastness Test(503)'
 		,TestDate = w.InspDate
 
 	    ,ReceivedDate =NULL
-	    ,ReleasedDate =NULL
+	    ,ReportDate =NULL
 from WaterFastness w WITH (NOLOCK) 
 inner join Orders o WITH(NOLOCK) ON o.ID = w.POID
 WHERE 1=1 
@@ -498,7 +498,7 @@ select DISTINCT Type= 'Perspiration Fastness (502)'
 		,TestDate = w.InspDate
 
 	    ,ReceivedDate =NULL
-	    ,ReleasedDate =NULL
+	    ,ReportDate =NULL
 from PerspirationFastness w WITH (NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.ID = w.POID
 WHERE 1=1 

@@ -65,7 +65,9 @@
     .inner-scroll{
         padding-bottom:30px;
     }
-
+    #ui-datepicker-div {
+        width:20vw;
+    }
 </style>
 <div class="main-content">
 
@@ -166,7 +168,7 @@
                                 <th>Artwork</th>
                                 <th>Result</th>
                                 <th>Received Date</th>
-                                <th>Released Date</th>
+                                <th>Report Date</th>
                                 <th>Test Date</th>
                             </tr>
                         </thead>
@@ -291,8 +293,8 @@
                                     @Html.DisplayFor(modelItem => ReceivedDate)
                                 </td>
                                 <td>
-                                    @{string ReleasedDate = item.ReleasedDate.HasValue ? item.ReleasedDate.Value.ToShortDateString() : ""; }
-                                    @Html.DisplayFor(modelItem => ReleasedDate)
+                                    @{string ReportDate = item.ReportDate.HasValue ? item.ReportDate.Value.ToShortDateString() : ""; }
+                                    @Html.DisplayFor(modelItem => ReportDate)
                                 </td>
                                 <td>
                                     @{string TestDate = item.TestDate.HasValue ? item.TestDate.Value.ToShortDateString() : ""; }

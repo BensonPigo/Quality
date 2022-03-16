@@ -67,7 +67,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string Result { get; set; }
         public DateTime? TestDate { get; set; }
         public DateTime? ReceivedDate { get; set; }
-        public DateTime? ReleasedDate { get; set; }
+        public DateTime? ReportDate { get; set; }
 
     }
 }
