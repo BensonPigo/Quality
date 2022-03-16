@@ -405,7 +405,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     To = toAddress,
                     CC = ccAddress,
-                    Subject = "Fabric Oven Test - Test Fail",
+                    Subject = "Perspiration Fastness Test - Test Fail",
                     Body = mailBody,
                     alternateView = plainView,
                 };

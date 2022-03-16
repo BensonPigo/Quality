@@ -162,7 +162,8 @@ namespace Quality.Areas.BulkFGT.Controllers
             model = _Service.GetOvenTest(Req);
 
             // Encode成功後，OvenResult是Fail則寄信
-            if (model.OverAllResult == "Fail")
+            // ISP20220193 規則修改
+            if (model.OvenResult == "Fail")
             {
                 model.ErrorMessage = "FailMail();";
             }
@@ -296,7 +297,8 @@ namespace Quality.Areas.BulkFGT.Controllers
             model = _Service.GetWashTest(Req);
 
             // Encode成功後，WashResult是Fail則寄信
-            if (model.OverAllResult == "Fail")
+            // ISP20220193 規則修改
+            if (model.WashResult == "Fail")
             {
                 model.ErrorMessage = "FailMail();";
             }

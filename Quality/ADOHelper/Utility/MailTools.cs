@@ -190,21 +190,35 @@ namespace ADOHelper.Utility
             if (dt.AsEnumerable().Where(dr => dr.Table.Columns.Contains("TestBeforePicture") 
                                             || dr.Table.Columns.Contains("TestAfterPicture")).Any())
             {
+                bool isBefore = !string.IsNullOrEmpty(dt.Rows[0]["TestBeforePicture"].ToString());
+                bool isAfter = !string.IsNullOrEmpty(dt.Rows[0]["TestAfterPicture"].ToString());
+
                 html += $"<tr><td colspan='{dtlen}'></td></tr> ";
                 html += "<tr> ";
 
                 if (dtlen % 2 == 0)
                 {
                     // 對分
-                    html += $"<td colspan='{colspan}'><img src='cid:TestBeforePicture' alt='BeforePicture'></td> ";
-                    html += $"<td colspan='{colspan}'><img src='cid:TestAfterPicture' alt='AfterPicture'></td> ";
+                    html += $"<td colspan='{colspan}'>";
+                    html += isBefore ? "<img src='cid:TestBeforePicture' alt='BeforePicture'> " : string.Empty;
+                    html += "</td> ";
+
+                    html += $"<td colspan='{colspan}'>";
+                    html += isAfter ? "<img src='cid:TestAfterPicture' alt='AfterPicture'> " : string.Empty;
+                    html += "</td> ";
                 }
                 else
                 {
                     // 中間切一格
-                    html += $"<td colspan='{colspan}'><img src='cid:TestBeforePicture' alt='BeforePicture'></td> ";
+                    html += $"<td colspan='{colspan}'>";
+                    html += isBefore ? "<img src='cid:TestBeforePicture' alt='BeforePicture'> " : string.Empty;
+                    html += "</td> ";
+
                     html += $"<td></td> ";
-                    html += $"<td colspan='{colspan}'><img src='cid:TestAfterPicture' alt='AfterPicture'></td> ";
+
+                    html += $"<td colspan='{colspan}'>";
+                    html += isAfter ? "<img src='cid:TestAfterPicture' alt='AfterPicture'> " : string.Empty;
+                    html += "</td> ";
                 }
                 html += "</tr> ";
             }
