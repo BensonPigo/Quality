@@ -202,7 +202,7 @@ delete  FinalInspection_OrderCarton where ID = @FinalInspectionID
 
 
             objParameter.Add("@FinalInspectionID", setting.FinalInspectionID);
-            objParameter.Add("@CustPONO", setting.SelectedPO[0].CustPONO);
+            objParameter.Add("@CustPONO", setting.SelectedPO[0].CustPONO ?? string.Empty);
             objParameter.Add("@InspectionStage", setting.InspectionStage);
             objParameter.Add("@InspectionTimes", setting.InspectionTimes);
             objParameter.Add("@FactoryID", factoryID);
