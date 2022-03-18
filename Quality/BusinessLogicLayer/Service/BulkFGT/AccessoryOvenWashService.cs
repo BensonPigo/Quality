@@ -44,7 +44,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             catch (Exception ex)
             {
                 result.Result = false;
-                result.ErrorMessage = $@"msg.WithError(""{ex.Message}"");";
+                result.ErrorMessage = $@"msg.WithError('{ex.Message}');";
             }
 
             return result;
@@ -75,7 +75,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _ISQLDataTransaction.RollBack();
                 result.Result = false;
-                result.ErrorMessage = $@"msg.WithError(""{ex.Message}"");";
+                result.ErrorMessage = $@"msg.WithError('{ex.Message}');";
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
 
@@ -109,7 +109,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             catch (Exception ex)
             {
                 result.Result = false;
-                result.ErrorMessage = $@"msg.WithError(""{ex.Message}"");";
+                result.ErrorMessage = $@"msg.WithError('{ex.Message}');";
             }
 
             return result;
@@ -136,7 +136,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _ISQLDataTransaction.RollBack();
                 result.Result = false;
-                result.ErrorMessage = $@"msg.WithError(""{ex.Message}"");";
+                result.ErrorMessage = $@"msg.WithError('{ex.Message}');";
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
 
@@ -366,7 +366,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             catch (Exception ex)
             {
                 result.Result = false;
-                result.ErrorMessage = $@"msg.WithError(""{ex.Message}"");";
+                result.ErrorMessage = $@"msg.WithError('{ex.Message}');";
             }
 
             return result;
@@ -394,7 +394,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _ISQLDataTransaction.RollBack();
                 result.Result = false;
-                result.ErrorMessage = $@"msg.WithError(""{ex.Message}"");";
+                result.ErrorMessage = $@"msg.WithError('{ex.Message}');";
             }
             finally
             {
