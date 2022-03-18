@@ -291,9 +291,9 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
-        public JsonResult FailMail(string POID, string ID, string TO, string CC)
+        public JsonResult FailMail(string POID, string ID, string TestNo, string TO, string CC)
         {
-            BaseResult result = _FabricColorFastness_Service.SentMail(POID, ID, TO, CC);
+            BaseResult result = _FabricColorFastness_Service.SentMail(POID, ID, TestNo, TO, CC);
             return Json(result);
         }
 

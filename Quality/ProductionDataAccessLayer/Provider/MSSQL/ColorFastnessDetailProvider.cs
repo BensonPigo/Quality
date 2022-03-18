@@ -131,7 +131,7 @@ select cd.SubmitDate
         ,pmsFile.TestAfterPicture
 from ColorFastness_Detail cd WITH(NOLOCK)
 left join ColorFastness c WITH(NOLOCK) on c.ID =  cd.ID
-left join ExtendServer.PMSFile.dbo.ColorFastness pmsFile WITH(NOLOCK) on pmsFile.ID =  cd.ID
+left join ExtendServer.PMSFile.dbo.ColorFastness pmsFile WITH(NOLOCK) on pmsFile.ID = c.ID and pmsFile.POID = c.POID and pmsFile.TestNo = c.TestNo
 left join Orders o WITH(NOLOCK) on o.ID=c.POID
 left join PO_Supp_Detail po3 WITH(NOLOCK) on c.POID = po3.ID 
 	and cd.SEQ1 = po3.SEQ1 and cd.SEQ2 = po3.SEQ2
@@ -262,13 +262,13 @@ where id = @ID
             {
                 ID = sources.Main.ID;
                 objParameter.Add(new SqlParameter($"@ID", sources.Main.ID));
+                objParameter.Add(new SqlParameter($"@OriTestNo", sources.Main.TestNo));
                 // update 
                 sqlcmd += @"
 SET XACT_ABORT ON
 
 update ColorFastness
-set	   [POID] = @POID
-      ,[InspDate] = @InspDate
+set	  [InspDate] = @InspDate
       ,[Article] = @Article
       ,[Status] = @Status
       ,[Inspector] = @Inspector
@@ -283,12 +283,15 @@ set	   [POID] = @POID
       ,[Drying] = @Drying
       -----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
 where ID = @ID
+and POID = @POID 
+and TestNo = @OriTestNo
 
 update [ExtendServer].PMSFile.dbo.ColorFastness
 set	   [TestBeforePicture] = @TestBeforePicture
       ,[TestAfterPicture] = @TestAfterPicture
 where ID = @ID
-
+and POID = @POID 
+and TestNo = @OriTestNo
 
 exec UpdateInspPercent 'LabColorFastness', @POID
 " + Environment.NewLine;
@@ -305,8 +308,8 @@ SET XACT_ABORT ON
 insert into ColorFastness(ID,POID,TestNo,InspDate,Article,Status,Inspector,Remark,addName,addDate,Temperature,Cycle,CycleTime,Detergent,Machine,Drying)
 values(@ID ,@POID,@TestNo,GETDATE(),@Article,'New',@UserID,@Remark,@UserID,GETDATE(),@Temperature,@Cycle,@CycleTime,@Detergent,@Machine,@Drying)
 
-insert into [ExtendServer].PMSFile.dbo.ColorFastness(ID,TestBeforePicture,TestAfterPicture)
-values(@ID ,@TestBeforePicture,@TestAfterPicture)
+insert into [ExtendServer].PMSFile.dbo.ColorFastness(ID,POID,TestNo,TestBeforePicture,TestAfterPicture)
+values(@ID,@POID,@TestNo,@TestBeforePicture,@TestAfterPicture)
 
 
 ";

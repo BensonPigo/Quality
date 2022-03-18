@@ -1023,7 +1023,11 @@
             para += "&" + "BeforeColumn=TestBeforePicture";
             para += "&" + "AfterColumn=TestAfterPicture"; 
             para += "&" + "PKey_1=ID";
-            para += "&" + "PKey_1_Val=" + $('#Detail_ID').val();
+            para += "&" + "PKey_1_Val=" + $('#Main_ID').val();
+            para += "&" + "PKey_2=POID";
+            para += "&" + "PKey_2_Val=" + $('#Main_POID').val();
+            para += "&" + "PKey_3=TestNo";
+            para += "&" + "PKey_3_Val=" + $('#Main_TestNo').val();
             para += "&" + "TargetBeforeColumn=Main_TestBeforePicture";
             para += "&" + "TargetAfterColumn=Main_TestAfterPicture";
             window.open('@Url.Action("PictureList", "PublicWondow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1024,height=750');
@@ -1301,7 +1305,7 @@
             url: "@Url.Action("FailMail", "FabricColorFastness", new { Area = "BulkFGT" })",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
-            data: JSON.stringify({ POID: $('#Main_POID').val(), ID: $('#Main_ID').val(), TO: to, CC: cc }),
+            data: JSON.stringify({ POID: $('#Main_POID').val(), ID: $('#Main_ID').val(), TestNo: $('#Main_TestNo').val(), TO: to, CC: cc }),
             async: false,
             success: function (data) {
                 if (data.Result) {

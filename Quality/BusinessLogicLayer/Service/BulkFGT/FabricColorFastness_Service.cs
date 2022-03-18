@@ -302,7 +302,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public BaseResult SentMail(string POID, string ID, string ToAddress, string CCAddress)
+        public BaseResult SentMail(string POID, string ID, string TestNo, string ToAddress, string CCAddress)
         {
             BaseResult result = new BaseResult();
             _IColorFastnessProvider = new ColorFastnessProvider(Common.ProductionDataAccessLayer);
@@ -315,14 +315,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     return result;
                 }
 
-                DataTable dtContent = _IColorFastnessProvider.Get_Mail_Content(POID, ID);
+                DataTable dtContent = _IColorFastnessProvider.Get_Mail_Content(POID, ID, TestNo);
                 string strHtml = MailTools.DataTableChangeHtml(dtContent, out System.Net.Mail.AlternateView plainView);
 
                 SendMail_Request request = new SendMail_Request()
                 {
                     To = ToAddress,
                     CC = CCAddress,
-                    Subject = "Washing Fastness-Crocking Test – Test Fail",
+                    Subject = "Washing Fastness - Test Fail",
                     Body = strHtml,
                     alternateView = plainView,
                 };
