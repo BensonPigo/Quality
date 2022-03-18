@@ -32,6 +32,7 @@ namespace BusinessLogicLayer.Service
         private IOrdersProvider _OrdersProvider;
         private IOrderQtyProvider _OrderQtyProvider;
         private IScaleProvider _ScaleProvider;
+        private IInspectionTypeProvider _InspectionTypeProvider;
 
         private string IsTest = ConfigurationManager.AppSettings["IsTest"];
 
@@ -159,7 +160,6 @@ namespace BusinessLogicLayer.Service
                 return result;
             }
 
-
             try
             {
                 if (!(IsTest.ToLower() == "true"))
@@ -176,9 +176,12 @@ namespace BusinessLogicLayer.Service
                 }
 
                 _MockupOvenProvider = new MockupOvenProvider(Common.ProductionDataAccessLayer);
+                _InspectionTypeProvider = new InspectionTypeProvider(Common.ProductionDataAccessLayer);
 
-
+                List<InspectionType> InspectionTypes = _InspectionTypeProvider.Get_InspectionType("MockupOven", "Bulk", mockupOven.BrandID).ToList();
+                mockupOven.Requirements = InspectionTypes.Select(x => x.Comment).ToList();
                 var mockupOven_Detail = mockupOven.MockupOven_Detail;
+
                 bool haveHT = mockupOven.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER");
                 string basefileName = haveHT ? "MockupOven2" : "MockupOven";
                 string openfilepath;
@@ -243,7 +246,7 @@ namespace BusinessLogicLayer.Service
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
                 }
 
-                cell = worksheet.Cells[13 + haveHTrow + 3, 1];
+                cell = worksheet.Cells[13 + haveHTrow + 3, 2];
                 if (mockupOven.TestBeforePicture != null)
                 {
                     string imageName = $"{Guid.NewGuid()}.jpg";
@@ -265,15 +268,15 @@ namespace BusinessLogicLayer.Service
 
                     if (haveHT)
                     {
-                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 365, 190);
+                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 310, 180);
                     }
                     else
                     {
-                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 342, 190);
+                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 322, 180);
                     }
                 }
 
-                cell = worksheet.Cells[13 + haveHTrow + 3, 6];
+                cell = worksheet.Cells[13 + haveHTrow + 3, 8];
                 if (mockupOven.TestAfterPicture != null)
                 {
                     string imageName = $"{Guid.NewGuid()}.jpg";
@@ -294,11 +297,11 @@ namespace BusinessLogicLayer.Service
                     }
                     if (haveHT)
                     {
-                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 390, 190);
+                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 360, 180);
                     }
                     else
                     {
-                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 375, 190);
+                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 350, 180);
                     }                        
                 }
 
@@ -306,7 +309,7 @@ namespace BusinessLogicLayer.Service
                 // 插入多的row
                 if (mockupOven_Detail.Count > 0)
                 {
-                    Range rngToInsert = worksheet.get_Range($"A{10 + haveHTrow}:K{10 + haveHTrow}", Type.Missing).EntireRow;
+                    Range rngToInsert = worksheet.get_Range($"A{10 + haveHTrow}:N{10 + haveHTrow}", Type.Missing).EntireRow;
                     for (int i = 1; i < mockupOven_Detail.Count; i++)
                     {
                         rngToInsert.Insert(XlInsertShiftDirection.xlShiftDown);
@@ -314,11 +317,13 @@ namespace BusinessLogicLayer.Service
                         worksheet.get_Range(string.Format("I{0}:K{0}", (10 + haveHTrow + i - 1).ToString())).Merge(false);
                     }
 
+                    worksheet.get_Range(string.Format("L{0}:N{1}", (10 + haveHTrow).ToString(), (10 + haveHTrow + mockupOven_Detail.Count - 1).ToString())).Merge(false);
                     Marshal.ReleaseComObject(rngToInsert);
                 }
 
                 // 塞進資料
                 int start_row = 10 + haveHTrow;
+                worksheet.Cells[start_row, 12] = mockupOven.Requirements.JoinToString(Environment.NewLine);
                 foreach (var item in mockupOven_Detail)
                 {
                     string remark = item.Remark;
@@ -338,7 +343,7 @@ namespace BusinessLogicLayer.Service
 
                     int maxLength = fabric.Length > remark.Length ? fabric.Length : remark.Length;
                     maxLength = maxLength > artwork.Length ? maxLength : artwork.Length;
-                    worksheet.Range[$"A{start_row}", $"K{start_row}"].RowHeight = ((maxLength / 20) + 1) * 16.5;
+                    worksheet.Range[$"A{start_row}", $"N{start_row}"].RowHeight = ((maxLength / 20) + 1) * 16.5;
 
                     start_row++;
                 } 

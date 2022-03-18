@@ -401,10 +401,19 @@ UPDATE PullingTest
 {modifyCol}
 WHERE ReportNo=@ReportNo
 
-UPDATE [ExtendServer].PMSFile.dbo.PullingTest
-    SET ReportNo = ReportNo
-{modifyPicCol}
-WHERE ReportNo=@ReportNo
+
+if not exists (select 1 from [ExtendServer].PMSFile.dbo.PullingTest where ReportNo = @ReportNo)
+begin
+    INSERT INTO [ExtendServer].PMSFile.dbo.PullingTest (ReportNo,TestBeforePicture,TestAfterPicture)
+    VALUES (@ReportNo,@TestBeforePicture,@TestAfterPicture)
+end
+else
+begin
+    UPDATE [ExtendServer].PMSFile.dbo.PullingTest
+        SET ReportNo = ReportNo
+    {modifyPicCol}
+    WHERE ReportNo=@ReportNo
+end
 ");
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);

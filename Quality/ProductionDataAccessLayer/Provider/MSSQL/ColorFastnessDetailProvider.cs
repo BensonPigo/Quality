@@ -284,11 +284,18 @@ set	   [POID] = @POID
       -----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
 where ID = @ID
 
-update [ExtendServer].PMSFile.dbo.ColorFastness
-set	   [TestBeforePicture] = @TestBeforePicture
-      ,[TestAfterPicture] = @TestAfterPicture
-where ID = @ID
-
+if not exists (select 1 from [ExtendServer].PMSFile.dbo.ColorFastness where ID = @ID)
+begin
+    INSERT INTO [ExtendServer].PMSFile.dbo.ColorFastness (ID,TestBeforePicture,TestAfterPicture)
+    VALUES (@ID,@TestBeforePicture,@TestAfterPicture)
+end
+else
+begin
+    update [ExtendServer].PMSFile.dbo.ColorFastness
+    set	   [TestBeforePicture] = @TestBeforePicture
+          ,[TestAfterPicture] = @TestAfterPicture
+    where ID = @ID
+end
 
 exec UpdateInspPercent 'LabColorFastness', @POID
 " + Environment.NewLine;

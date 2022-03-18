@@ -169,10 +169,19 @@ UPDATE [MockupCrocking] SET
 
 WHERE ReportNo = @ReportNo
 
-UPDATE [ExtendServer].PMSFile.dbo.[MockupCrocking] SET
-    TestBeforePicture=@TestBeforePicture
-    ,TestAfterPicture=@TestAfterPicture
-WHERE ReportNo = @ReportNo
+
+if not exists (select 1 from [ExtendServer].PMSFile.dbo.MockupCrocking where ReportNo = @ReportNo)
+begin
+    INSERT INTO [ExtendServer].PMSFile.dbo.MockupCrocking (ReportNo,TestBeforePicture,TestAfterPicture)
+    VALUES (@ReportNo,@TestBeforePicture,@TestAfterPicture)
+end
+else
+begin
+    UPDATE [ExtendServer].PMSFile.dbo.[MockupCrocking] SET
+        TestBeforePicture=@TestBeforePicture
+        ,TestAfterPicture=@TestAfterPicture
+    WHERE ReportNo = @ReportNo
+end
 
 " + Environment.NewLine);
             objParameter.Add("@EditName", DbType.String, HttpUtility.HtmlDecode(Item.EditName) ?? string.Empty);

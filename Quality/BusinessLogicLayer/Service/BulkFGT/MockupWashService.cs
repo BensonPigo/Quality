@@ -31,6 +31,7 @@ namespace BusinessLogicLayer.Service
         private IDropDownListProvider _DropDownListProvider;
         private IOrdersProvider _OrdersProvider;
         private IOrderQtyProvider _OrderQtyProvider;
+        private IInspectionTypeProvider _InspectionTypeProvider;
 
         public MockupWash_ViewModel GetMockupWash(MockupWash_Request MockupWash)
         {
@@ -176,8 +177,10 @@ namespace BusinessLogicLayer.Service
                 }
 
                 _MockupWashProvider = new MockupWashProvider(Common.ProductionDataAccessLayer);
+                _InspectionTypeProvider = new InspectionTypeProvider(Common.ProductionDataAccessLayer);
 
-
+                List<InspectionType> InspectionTypes = _InspectionTypeProvider.Get_InspectionType("MockupWash", "Bulk", mockupWash.BrandID).ToList();
+                mockupWash.Requirements = InspectionTypes.Select(x => x.Comment).ToList();
                 var mockupWash_Detail = mockupWash.MockupWash_Detail;
                 bool haveHT = mockupWash.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER");
                 string basefileName = haveHT ? "MockupWash2" : "MockupWash";
@@ -307,18 +310,20 @@ namespace BusinessLogicLayer.Service
                 // 插入多的row
                 if (mockupWash_Detail.Count > 0)
                 {
-                    Range rngToInsert = worksheet.get_Range($"A{10 + haveHTrow}:G{10 + haveHTrow}", Type.Missing).EntireRow;
+                    Range rngToInsert = worksheet.get_Range($"A{10 + haveHTrow}:J{10 + haveHTrow}", Type.Missing).EntireRow;
                     for (int i = 1; i < mockupWash_Detail.Count; i++)
                     {
                         rngToInsert.Insert(XlInsertShiftDirection.xlShiftDown);
                         worksheet.get_Range(string.Format("E{0}:G{0}", (10 + haveHTrow + i - 1).ToString())).Merge(false);
                     }
 
+                    worksheet.get_Range(string.Format("H{0}:J{1}", (10 + haveHTrow).ToString(), (10 + haveHTrow + mockupWash_Detail.Count - 1).ToString())).Merge(false);
                     Marshal.ReleaseComObject(rngToInsert);
                 }
 
                 // 塞進資料
                 int start_row = 10 + haveHTrow;
+                worksheet.Cells[start_row, 8] = mockupWash.Requirements.JoinToString(Environment.NewLine);
                 foreach (var item in mockupWash_Detail)
                 {
                     string remark = item.Remark;
@@ -335,7 +340,7 @@ namespace BusinessLogicLayer.Service
 
                     int maxLength = fabric.Length > remark.Length ? fabric.Length : remark.Length;
                     maxLength = maxLength > artwork.Length ? maxLength : artwork.Length;
-                    worksheet.Range[$"A{start_row}", $"G{start_row}"].RowHeight = ((maxLength / 20) + 1) * 16.5;
+                    worksheet.Range[$"A{start_row}", $"J{start_row}"].RowHeight = ((maxLength / 20) + 1) * 16.5;
 
                     start_row++;
                 }

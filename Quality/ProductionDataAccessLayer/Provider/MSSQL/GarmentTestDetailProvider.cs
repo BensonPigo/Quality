@@ -336,10 +336,20 @@ update GarmentTest_Detail set
     EditDate = GetDate()
 where ID = @ID and No = @No
 
-update [ExtendServer].PMSFile.dbo.GarmentTest_Detail set
-    TestBeforePicture = @TestBeforePicture,
-    TestAfterPicture = @TestAfterPicture
-where ID = @ID and No = @No
+
+
+if not exists (select 1 from [ExtendServer].PMSFile.dbo.GarmentTest_Detail where ID = @ID and No = @No)
+begin
+    INSERT INTO [ExtendServer].PMSFile.dbo.GarmentTest_Detail (ID,No,TestBeforePicture,TestAfterPicture)
+    VALUES (@ID,@No,@TestBeforePicture,@TestAfterPicture)
+end
+else
+begin
+    update [ExtendServer].PMSFile.dbo.GarmentTest_Detail set
+        TestBeforePicture = @TestBeforePicture,
+        TestAfterPicture = @TestAfterPicture
+    where ID = @ID and No = @No
+end
 ";
             return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
         }
@@ -369,11 +379,18 @@ set
 where ID = @ID and No = @No
 */
 
-update [ExtendServer].PMSFile.dbo.GarmentTest_Detail 
-set
-    TestBeforePicture = @TestBeforePicture,
-    TestAfterPicture = @TestAfterPicture
-where ID = @ID and No = @No
+if not exists (select 1 from [ExtendServer].PMSFile.dbo.GarmentTest_Detail where ID = @ID and No = @No)
+begin
+    INSERT INTO [ExtendServer].PMSFile.dbo.GarmentTest_Detail (ID,No,TestBeforePicture,TestAfterPicture)
+    VALUES (@ID,@No,@TestBeforePicture,@TestAfterPicture)
+end
+else
+begin
+    update [ExtendServer].PMSFile.dbo.GarmentTest_Detail set
+        TestBeforePicture = @TestBeforePicture,
+        TestAfterPicture = @TestAfterPicture
+    where ID = @ID and No = @No
+end
 ";
             return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
         }

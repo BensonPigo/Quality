@@ -219,10 +219,20 @@ SET
 
 WHERE ReportNo = @ReportNo
 
-UPDATE [ExtendServer].PMSFile.dbo.MockupWash
-SET  TestBeforePicture=@TestBeforePicture
-    ,TestAfterPicture=@TestAfterPicture
-WHERE ReportNo = @ReportNo
+if not exists (select 1 from [ExtendServer].PMSFile.dbo.MockupWash where ReportNo = @ReportNo)
+begin
+    INSERT INTO [ExtendServer].PMSFile.dbo.MockupWash (ReportNo,TestBeforePicture,TestAfterPicture)
+    VALUES (@ReportNo,@TestBeforePicture,@TestAfterPicture)
+end
+else
+begin
+    UPDATE [ExtendServer].PMSFile.dbo.MockupWash
+    SET  TestBeforePicture=@TestBeforePicture
+        ,TestAfterPicture=@TestAfterPicture
+    WHERE ReportNo = @ReportNo
+end
+
+
 
 " + Environment.NewLine);
             objParameter.Add("@EditName", DbType.String, HttpUtility.HtmlDecode(Item.EditName));
