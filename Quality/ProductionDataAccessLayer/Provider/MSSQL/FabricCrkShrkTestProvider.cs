@@ -1070,7 +1070,7 @@ select	[SP#] = f.POID,
         [Heat Last Test Date] = Format(fl.HeatDate, 'yyyy/MM/dd'),
         [Heat Remark] = fl.HeatRemark,
         [TestBeforePicture] = fli.HeatTestBeforePicture,
-        [TestAfterPicture] = fli.HeatTestAfterPicture, 
+        [TestAfterPicture] = fli.HeatTestAfterPicture 
 from FIR f with (nolock)
 left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
 left join [ExtendServer].PMSFile.dbo.FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID

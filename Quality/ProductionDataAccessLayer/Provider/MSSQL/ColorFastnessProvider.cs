@@ -68,16 +68,18 @@ exec UpdateInspPercent 'LabColorFastness', @POID
             return ExecuteDataTableByServiceConn(CommandType.Text, SbSql.ToString(), objParameter);
         }
 
-        public DataTable Get_Mail_Content(string POID, string ID)
+        public DataTable Get_Mail_Content(string POID, string ID, string TestNo)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
                 { "@POID", DbType.String, POID } ,
                 { "@ID", DbType.String, ID } ,
+                { "@TestNo", DbType.Decimal, TestNo } ,
             };
 
             string sqlcmd = @"
-select a.ID
+
+select ID = c.POID
     ,b.StyleID
     ,b.BrandID
     ,b.SeasonID
@@ -89,12 +91,12 @@ select a.ID
     ,c.Remark
     ,ci.TestBeforePicture
     ,ci.TestAfterPicture
-from po a WITH (NOLOCK) 
-left join Orders b WITH (NOLOCK) on a.ID = b.POID
-left join ColorFastness c WITH (NOLOCK) on a.ID=c.POID
-left join [ExtendServer].PMSFile.dbo.ColorFastness ci on c.ID=ci.ID
-where a.id= @POID
+from ColorFastness c WITH (NOLOCK) 
+left join Orders b WITH (NOLOCK) on c.POID = b.ID
+left join [ExtendServer].PMSFile.dbo.ColorFastness ci on c.ID = ci.ID and c.POID = ci.POID and c.TestNo = ci.TestNo
+where c.POID = @POID
 and c.ID = @ID
+and c.TestNo = @TestNo
 ";
             return ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
         }
@@ -306,8 +308,8 @@ exec UpdateInspPercent 'LabColorFastness', @POID
             StringBuilder SbSql = new StringBuilder();
             SbSql.Append("SELECT"+ Environment.NewLine);
             SbSql.Append("         c.ID"+ Environment.NewLine);
-            SbSql.Append("        ,POID"+ Environment.NewLine);
-            SbSql.Append("        ,TestNo"+ Environment.NewLine);
+            SbSql.Append("        ,c.POID"+ Environment.NewLine);
+            SbSql.Append("        ,c.TestNo"+ Environment.NewLine);
             SbSql.Append("        ,InspDate"+ Environment.NewLine);
             SbSql.Append("        ,Article"+ Environment.NewLine);
             SbSql.Append("        ,Result"+ Environment.NewLine);
@@ -326,7 +328,7 @@ exec UpdateInspPercent 'LabColorFastness', @POID
             SbSql.Append("        ,ci.TestBeforePicture"+ Environment.NewLine);
             SbSql.Append("        ,ci.TestAfterPicture" + Environment.NewLine);
             SbSql.Append($@"FROM [ColorFastness] c
-left join [ExtendServer].PMSFile.dbo.ColorFastness ci on c.ID=ci.ID
+left join [ExtendServer].PMSFile.dbo.ColorFastness ci on c.ID=ci.ID and c.POID = ci.POID and c.TestNo = ci.TestNo
 " + Environment.NewLine);
             SbSql.Append("where c.ID = @ID" + Environment.NewLine);
 

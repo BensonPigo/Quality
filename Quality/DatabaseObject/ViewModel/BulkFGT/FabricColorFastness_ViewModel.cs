@@ -159,7 +159,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         // 第三層表頭
         public ColorFastness_Result Main { get; set; }
 
-        public List<Fabric_ColorFastness_Detail_Result> Detail { get; set; }
+        public List<Fabric_ColorFastness_Detail_Result> Details { get; set; }
     }
 
     public class Fabric_ColorFastness_Detail_Result : CompareBase

@@ -51,7 +51,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 {
                     Main = new WaterFastness_Main(),
                     Details = new List<WaterFastness_Detail>(),
-                    ErrorMessage = $@"msg.WithInfo(""{model.ErrorMessage}"");",
+                    ErrorMessage = $@"msg.WithInfo('{model.ErrorMessage}');",
                 };
             }
             ViewBag.POID = POID;

@@ -31,52 +31,54 @@ namespace MICS.DataAccessLayer.Provider.MSSQL
 
             string sqlcmd = @"
 select c.* 
-,[Name] = p.Name
-,[InspectionName] = Concat (Inspector, ' ', p.Name)
+    ,[Name] = p.Name
+    ,[InspectionName] = Concat (Inspector, ' ', p.Name)
+    ,pmsFile.TestBeforePicture
+    ,pmsFile.TestAfterPicture
 from ColorFastness c WITH(NOLOCK)
 left join pass1 p on c.Inspector = p.ID
+left join ExtendServer.PMSFile.dbo.ColorFastness pmsFile WITH(NOLOCK) on pmsFile.ID = c.ID and pmsFile.POID = c.POID and pmsFile.TestNo = c.TestNo
 where c.id = @ID
 ";
             var main = ExecuteList<ColorFastness_Result>(CommandType.Text, sqlcmd, objParameter);
 
             string sqlcmd2 = @"
 select cd.ID
-, SubmitDate
-,cd.ColorFastnessGroup
-,Seq = CONCAT(cd.SEQ1,'-',cd.SEQ2)
-,cd.Roll
-,cd.Dyelot
-,po3.Refno,po3.SCIRefno,po3.ColorID
+    , SubmitDate
+    ,cd.ColorFastnessGroup
+    ,Seq = CONCAT(cd.SEQ1,'-',cd.SEQ2)
+    ,cd.Roll
+    ,cd.Dyelot
+    ,po3.Refno,po3.SCIRefno,po3.ColorID
 
-,cd.Result  --所有檢驗過的匯總
+    ,cd.Result  --所有檢驗過的匯總
 
-,cd.changeScale
-,cd.ResultChange
-,cd.StainingScale
-,cd.ResultStain
-,cd.AcetateScale
-,cd.ResultAcetate
-,cd.CottonScale
-,cd.ResultCotton
-,cd.NylonScale
-,cd.ResultNylon
-,cd.PolyesterScale
-,cd.ResultPolyester
-,cd.AcrylicScale
-,cd.ResultAcrylic
-,cd.WoolScale
-,cd.ResultWool
+    ,cd.changeScale
+    ,cd.ResultChange
+    ,cd.StainingScale
+    ,cd.ResultStain
+    ,cd.AcetateScale
+    ,cd.ResultAcetate
+    ,cd.CottonScale
+    ,cd.ResultCotton
+    ,cd.NylonScale
+    ,cd.ResultNylon
+    ,cd.PolyesterScale
+    ,cd.ResultPolyester
+    ,cd.AcrylicScale
+    ,cd.ResultAcrylic
+    ,cd.WoolScale
+    ,cd.ResultWool
 
-,cd.ResultStain,cd.Remark
-,[LastUpdate] = case 
-    when cd.EditName !='' then CONCAT(cd.EditName,'-',pEdit.Name,pEdit.ExtNo)
-    when cd.AddName !='' then CONCAT(cd.AddName,'-',pAdd.Name,pAdd.ExtNo)
-    else '' end
-,cd.AddDate,cd.AddName,cd.EditDate,cd.EditName
+    ,cd.ResultStain,cd.Remark
+    ,[LastUpdate] = case 
+        when cd.EditName !='' then CONCAT(cd.EditName,'-',pEdit.Name,pEdit.ExtNo)
+        when cd.AddName !='' then CONCAT(cd.AddName,'-',pAdd.Name,pAdd.ExtNo)
+        else '' end
+    ,cd.AddDate,cd.AddName,cd.EditDate,cd.EditName
 from ColorFastness_Detail cd WITH(NOLOCK)
 left join ColorFastness c WITH(NOLOCK) on c.ID =  cd.ID
-left join PO_Supp_Detail po3 WITH(NOLOCK) on c.POID = po3.ID 
-	and cd.SEQ1 = po3.SEQ1 and cd.SEQ2 = po3.SEQ2
+left join PO_Supp_Detail po3 WITH(NOLOCK) on c.POID = po3.ID and cd.SEQ1 = po3.SEQ1 and cd.SEQ2 = po3.SEQ2
 left join Pass1 pEdit WITH(NOLOCK) on pEdit.ID = cd.EditName
 left join pass1 pAdd WITH(NOLOCK) on pAdd.ID = cd.AddName
 where cd.ID = @ID
@@ -87,7 +89,7 @@ order by cd.id,cd.ColorFastnessGroup
             Fabric_ColorFastness_Detail_ViewModel result = new Fabric_ColorFastness_Detail_ViewModel
             {
                 Main = main.FirstOrDefault(),
-                Detail = detail.ToList(),
+                Details = detail.ToList(),
             };
 
             return result;
@@ -131,7 +133,7 @@ select cd.SubmitDate
         ,pmsFile.TestAfterPicture
 from ColorFastness_Detail cd WITH(NOLOCK)
 left join ColorFastness c WITH(NOLOCK) on c.ID =  cd.ID
-left join ExtendServer.PMSFile.dbo.ColorFastness pmsFile WITH(NOLOCK) on pmsFile.ID =  cd.ID
+left join ExtendServer.PMSFile.dbo.ColorFastness pmsFile WITH(NOLOCK) on pmsFile.ID = c.ID and pmsFile.POID = c.POID and pmsFile.TestNo = c.TestNo
 left join Orders o WITH(NOLOCK) on o.ID=c.POID
 left join PO_Supp_Detail po3 WITH(NOLOCK) on c.POID = po3.ID 
 	and cd.SEQ1 = po3.SEQ1 and cd.SEQ2 = po3.SEQ2
@@ -262,13 +264,13 @@ where id = @ID
             {
                 ID = sources.Main.ID;
                 objParameter.Add(new SqlParameter($"@ID", sources.Main.ID));
+                objParameter.Add(new SqlParameter($"@OriTestNo", sources.Main.TestNo));
                 // update 
                 sqlcmd += @"
 SET XACT_ABORT ON
 
 update ColorFastness
-set	   [POID] = @POID
-      ,[InspDate] = @InspDate
+set	  [InspDate] = @InspDate
       ,[Article] = @Article
       ,[Status] = @Status
       ,[Inspector] = @Inspector
@@ -283,12 +285,15 @@ set	   [POID] = @POID
       ,[Drying] = @Drying
       -----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
 where ID = @ID
+and POID = @POID 
+and TestNo = @OriTestNo
 
 update [ExtendServer].PMSFile.dbo.ColorFastness
 set	   [TestBeforePicture] = @TestBeforePicture
       ,[TestAfterPicture] = @TestAfterPicture
 where ID = @ID
-
+and POID = @POID 
+and TestNo = @OriTestNo
 
 exec UpdateInspPercent 'LabColorFastness', @POID
 " + Environment.NewLine;
@@ -305,8 +310,8 @@ SET XACT_ABORT ON
 insert into ColorFastness(ID,POID,TestNo,InspDate,Article,Status,Inspector,Remark,addName,addDate,Temperature,Cycle,CycleTime,Detergent,Machine,Drying)
 values(@ID ,@POID,@TestNo,GETDATE(),@Article,'New',@UserID,@Remark,@UserID,GETDATE(),@Temperature,@Cycle,@CycleTime,@Detergent,@Machine,@Drying)
 
-insert into [ExtendServer].PMSFile.dbo.ColorFastness(ID,TestBeforePicture,TestAfterPicture)
-values(@ID ,@TestBeforePicture,@TestAfterPicture)
+insert into [ExtendServer].PMSFile.dbo.ColorFastness(ID,POID,TestNo,TestBeforePicture,TestAfterPicture)
+values(@ID,@POID,@TestNo,@TestBeforePicture,@TestAfterPicture)
 
 
 ";
@@ -314,11 +319,11 @@ values(@ID ,@TestBeforePicture,@TestAfterPicture)
             #endregion
 
             Fabric_ColorFastness_Detail_ViewModel oldData = Get_DetailBody(ID);
-            List<Fabric_ColorFastness_Detail_Result> oldDetailData = oldData.Detail;
+            List<Fabric_ColorFastness_Detail_Result> oldDetailData = oldData.Details;
 
             List<Fabric_ColorFastness_Detail_Result> needUpdateDetailList =
                 ToolKit.PublicClass.CompareListValue<Fabric_ColorFastness_Detail_Result>(
-                    sources.Detail,
+                    sources.Details,
                     oldDetailData,
                     "ID,ColorFastnessGroup,SEQ1,SEQ2",
                     "Roll,Dyelot,Remark,SubmitDate,Result,changeScale,ResultChange,AcetateScale,ResultAcetate,CottonScale,ResultCotton,NylonScale,ResultNylon,PolyesterScale,ResultPolyester,AcrylicScale,ResultAcrylic,WoolScale,ResultWool");
@@ -525,7 +530,7 @@ exec UpdateInspPercent 'LabColorFastness', @POID
         public bool Delete_ColorFastness_Detail(string ID, List<Fabric_ColorFastness_Detail_Result> source)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();
-            IList<Fabric_ColorFastness_Detail_Result> dbDetail = Get_DetailBody(ID).Detail;
+            IList<Fabric_ColorFastness_Detail_Result> dbDetail = Get_DetailBody(ID).Details;
             string sqlcmd = string.Empty;
 
             int idx = 1;
