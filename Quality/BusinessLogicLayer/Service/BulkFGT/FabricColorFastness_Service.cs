@@ -216,9 +216,9 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 // 若表身資料重複 跳訊息
                 
 
-                foreach (var item in source.Detail)
+                foreach (var item in source.Details)
                 {
-                    int repeatCnt = source.Detail.Where(s => s.ID == item.ID && s.ColorFastnessGroup == item.ColorFastnessGroup && s.Seq == item.Seq).Count();
+                    int repeatCnt = source.Details.Where(s => s.ID == item.ID && s.ColorFastnessGroup == item.ColorFastnessGroup && s.Seq == item.Seq).Count();
                     if (repeatCnt > 1)
                     {
                         baseResult.ErrorMessage = $@"＜Body: {item.ColorFastnessGroup}＞, ＜Seq1: {item.Seq}＞ is repeat cannot save.";
@@ -266,7 +266,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 // Check Detail Result
                 bool detailResult = true;
                 
-                foreach (var item in result.Detail)
+                foreach (var item in result.Details)
                 {
                     if (item.Result.ToUpper() == "FAIL")
                     {

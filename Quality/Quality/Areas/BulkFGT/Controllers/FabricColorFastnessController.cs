@@ -54,7 +54,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             if (!model.Result)
             {
                 model.ColorFastness_MainList = new List<ColorFastness_Result>();
-                model.ErrorMessage = $@"msg.WithInfo(""{model.ErrorMessage}""); ";
+                model.ErrorMessage = $@"msg.WithInfo('{model.ErrorMessage}'); ";
             }
 
             ViewBag.QueryPoID = QueryPoID;
@@ -83,7 +83,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             if (string.IsNullOrEmpty(ID))
             {
                 model.Main = new ColorFastness_Result();
-                model.Detail = new List<Fabric_ColorFastness_Detail_Result>();
+                model.Details = new List<Fabric_ColorFastness_Detail_Result>();
                 model.Main.Status = "New";
                 model.Main.POID = PoID;
             }
@@ -105,7 +105,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 model.Main.Machine = saveResult.Main.Machine;
                 model.Main.Drying = saveResult.Main.Drying;
                 model.Main.Remark = saveResult.Main.Remark;
-                model.Detail = saveResult.Detail;
+                model.Details = saveResult.Details;
                 model.Result = saveResult.Result;
                 model.ErrorMessage = $@"msg.WithInfo(""{saveResult.ErrorMessage }"");EditMode=true;";
                 EditMode = "True";
@@ -137,25 +137,25 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             int i = lastNO;
             string html = "";
-            html += "<tr>";
-            html += "<td><input id='Seq" + i + "' idx=" + i + " type ='hidden'></input><input id='Detail_" + i + "__SubmitDate' name='Detail[" + i + "].SubmitDate' class='form-control date-picker' type='text' value=''></td>"; //SubmitDate
-            html += "<td><input id='Detail_" + i + "__ColorFastnessGroup' name='Detail[" + i + "].ColorFastnessGroup' type='number' max='99' maxlength='2' min='0' step='1' oninput='value=OvenGroupCheck(value)' value='" + GroupNO + "'></td>"; // ColorFastnessGroup
-            html += "<td style='width: 11vw;'><div style='width:10vw;'><input id='Detail_" + i + "__Seq' name='Detail[" + i + "].Seq' idv='" + i.ToString() + "' class ='InputDetailSEQSelectItem' type='text'  style = 'width: 6vw'> <input id='btnDetailSEQSelectItem'  idv='" + i.ToString() + "' type='button' class='btnDetailSEQSelectItem OnlyEdit site-btn btn-blue' style='margin: 0; border: 0; ' value='...' /></div></td>"; // seq
-            html += "<td style='width: 11vw;'><div style='width:10vw;'><input id='Detail_" + i + "__Roll' name='Detail[" + i + "].Roll' idv='" + i.ToString() + "' class ='InputDetailRollSelectItem' type='text' style = 'width: 6vw'> <input id='btnDetailRollSelectItem' idv='" + i.ToString() + "' type='button' class='btnDetailRollSelectItem OnlyEdit site-btn btn-blue' style='margin: 0; border: 0; ' value='...' /></div></td>"; // roll
-            html += "<td><input id='Detail_" + i + "__Dyelot' name='Detail[" + i + "].Dyelot' type='text' readonly='readonly'></td>"; // Dyelot
-            html += "<td><input id='Detail_" + i + "__Refno' name='Detail[" + i + "].Refno' type='text' readonly='readonly'></td>"; // Refno
-            html += "<td><input id='Detail_" + i + "__SCIRefno' name='Detail[" + i + "].SCIRefno' type='text' readonly='readonly'></td>"; // SCIRefno
-            html += "<td><input id='Detail_" + i + "__ColorID' name='Detail[" + i + "].SCIRefno' type='text' readonly='readonly'></td>"; // ColorID
-            html += "<td><input id='Detail_" + i + "__Result' name='Detail[" + i + "].Result' type='text' readonly='readonly' class='blue' value='Pass'></td>"; // Result
+            html += "<tr idx=" + i + ">";
+            html += "<td><input id='Seq" + i + "' idx=" + i + " type ='hidden'></input><input id='Details_" + i + "__SubmitDate' name='Details[" + i + "].SubmitDate' class='form-control date-picker' type='text' value=''></td>"; //SubmitDate
+            html += "<td><input id='Details_" + i + "__ColorFastnessGroup' name='Details[" + i + "].ColorFastnessGroup' type='number' max='99' maxlength='2' min='0' step='1' oninput='value=OvenGroupCheck(value)' value='" + GroupNO + "'></td>"; // ColorFastnessGroup
+            html += "<td style='width: 11vw;'><div style='width:10vw;'><input id='Details_" + i + "__Seq' name='Details[" + i + "].Seq' idv='" + i.ToString() + "' class ='InputDetailSEQSelectItem' type='text'  style = 'width: 6vw'> <input id='btnDetailSEQSelectItem'  idv='" + i.ToString() + "' type='button' class='btnDetailSEQSelectItem OnlyEdit site-btn btn-blue' style='margin: 0; border: 0; ' value='...' /></div></td>"; // seq
+            html += "<td style='width: 11vw;'><div style='width:10vw;'><input id='Details_" + i + "__Roll' name='Details[" + i + "].Roll' idv='" + i.ToString() + "' class ='InputDetailRollSelectItem' type='text' style = 'width: 6vw'> <input id='btnDetailRollSelectItem' idv='" + i.ToString() + "' type='button' class='btnDetailRollSelectItem OnlyEdit site-btn btn-blue' style='margin: 0; border: 0; ' value='...' /></div></td>"; // roll
+            html += "<td><input id='Details_" + i + "__Dyelot' name='Details[" + i + "].Dyelot' type='text' readonly='readonly'></td>"; // Dyelot
+            html += "<td><input id='Details_" + i + "__Refno' name='Details[" + i + "].Refno' type='text' readonly='readonly'></td>"; // Refno
+            html += "<td><input id='Details_" + i + "__SCIRefno' name='Details[" + i + "].SCIRefno' type='text' readonly='readonly'></td>"; // SCIRefno
+            html += "<td><input id='Details_" + i + "__ColorID' name='Details[" + i + "].SCIRefno' type='text' readonly='readonly'></td>"; // ColorID
+            html += "<td><input id='Details_" + i + "__Result' name='Details[" + i + "].Result' type='text' readonly='readonly' class='blue' value='Pass'></td>"; // Result
 
-            html += "<td><select id='Detail_" + i + "__changeScale' name='Detail[" + i + "].changeScale'>"; // changeScale
+            html += "<td><select id='Details_" + i + "__changeScale' name='Details[" + i + "].changeScale'>"; // changeScale
             foreach (string val in Scales)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select id='Detail_" + i + "__ResultChange' name='Detail[" + i + "].ResultChange' class='blue' onchange='selectChange(this)'>"; // ResultChange
+            html += "<td><select id='Details_" + i + "__ResultChange' name='Details[" + i + "].ResultChange' class='blue' onchange='selectChange(this)'>"; // ResultChange
             foreach (var val in FabricColorFastnessModel.Result_Source)
             {
                 html += "<option value='" + val.Value + "'>" + val.Text + "</option>";
@@ -163,14 +163,14 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "</select></td>";
 
             //Acetate
-            html += "<td><select id='Detail_" + i + "__AcetateScale' name='Detail[" + i + "].AcetateScale'>"; // AcetateScale
+            html += "<td><select id='Details_" + i + "__AcetateScale' name='Details[" + i + "].AcetateScale'>"; // AcetateScale
             foreach (string val in Scales)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select id='Detail_" + i + "__ResultAcetate' name='Detail[" + i + "].ResultAcetate' class='blue' onchange='selectChange(this)'>"; // ResultAcetate
+            html += "<td><select id='Details_" + i + "__ResultAcetate' name='Details[" + i + "].ResultAcetate' class='blue' onchange='selectChange(this)'>"; // ResultAcetate
             foreach (var val in FabricColorFastnessModel.Result_Source)
             {
                 html += "<option value='" + val.Value + "'>" + val.Text + "</option>";
@@ -179,77 +179,77 @@ namespace Quality.Areas.BulkFGT.Controllers
 
 
             //Cotton
-            html += "<td><select id='Detail_" + i + "__CottonScale' name='Detail[" + i + "].CottonScale'>"; // CottonScale
+            html += "<td><select id='Details_" + i + "__CottonScale' name='Details[" + i + "].CottonScale'>"; // CottonScale
             foreach (string val in Scales)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select id='Detail_" + i + "__ResultCotton' name='Detail[" + i + "].ResultCotton' class='blue' onchange='selectChange(this)'>"; // ResultCotton
+            html += "<td><select id='Details_" + i + "__ResultCotton' name='Details[" + i + "].ResultCotton' class='blue' onchange='selectChange(this)'>"; // ResultCotton
             foreach (var val in FabricColorFastnessModel.Result_Source)
             {
                 html += "<option value='" + val.Value + "'>" + val.Text + "</option>";
             }
             html += "</select></td>";
             //Nylon
-            html += "<td><select id='Detail_" + i + "__NylonScale' name='Detail[" + i + "].NylonScale'>"; // NylonScale
+            html += "<td><select id='Details_" + i + "__NylonScale' name='Details[" + i + "].NylonScale'>"; // NylonScale
             foreach (string val in Scales)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select id='Detail_" + i + "__ResultNylon' name='Detail[" + i + "].ResultNylon' class='blue' onchange='selectChange(this)'>"; // ResultNylon
+            html += "<td><select id='Details_" + i + "__ResultNylon' name='Details[" + i + "].ResultNylon' class='blue' onchange='selectChange(this)'>"; // ResultNylon
             foreach (var val in FabricColorFastnessModel.Result_Source)
             {
                 html += "<option value='" + val.Value + "'>" + val.Text + "</option>";
             }
             html += "</select></td>";
             //Polyester
-            html += "<td><select id='Detail_" + i + "__PolyesterScale' name='Detail[" + i + "].PolyesterScale'>"; // PolyesterScale
+            html += "<td><select id='Details_" + i + "__PolyesterScale' name='Details[" + i + "].PolyesterScale'>"; // PolyesterScale
             foreach (string val in Scales)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select id='Detail_" + i + "__ResultPolyester' name='Detail[" + i + "].ResultPolyester' class='blue' onchange='selectChange(this)'>"; // ResultPolyester
+            html += "<td><select id='Details_" + i + "__ResultPolyester' name='Details[" + i + "].ResultPolyester' class='blue' onchange='selectChange(this)'>"; // ResultPolyester
             foreach (var val in FabricColorFastnessModel.Result_Source)
             {
                 html += "<option value='" + val.Value + "'>" + val.Text + "</option>";
             }
             html += "</select></td>";
             //Acrylic
-            html += "<td><select id='Detail_" + i + "__AcrylicScale' name='Detail[" + i + "].AcrylicScale'>"; // AcrylicScale
+            html += "<td><select id='Details_" + i + "__AcrylicScale' name='Details[" + i + "].AcrylicScale'>"; // AcrylicScale
             foreach (string val in Scales)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select id='Detail_" + i + "__ResultAcrylic' name='Detail[" + i + "].ResultAcrylic' class='blue' onchange='selectChange(this)'>"; // ResultAcrylic
+            html += "<td><select id='Details_" + i + "__ResultAcrylic' name='Details[" + i + "].ResultAcrylic' class='blue' onchange='selectChange(this)'>"; // ResultAcrylic
             foreach (var val in FabricColorFastnessModel.Result_Source)
             {
                 html += "<option value='" + val.Value + "'>" + val.Text + "</option>";
             }
             html += "</select></td>";
             //Wool
-            html += "<td><select id='Detail_" + i + "__WoolScale' name='Detail[" + i + "].WoolScale'>"; // WoolScale
+            html += "<td><select id='Details_" + i + "__WoolScale' name='Details[" + i + "].WoolScale'>"; // WoolScale
             foreach (string val in Scales)
             {
                 html += "<option value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><select id='Detail_" + i + "__ResultWool' name='Detail[" + i + "].ResultWool' class='blue' onchange='selectChange(this)'>"; // ResultWool
+            html += "<td><select id='Details_" + i + "__ResultWool' name='Details[" + i + "].ResultWool' class='blue' onchange='selectChange(this)'>"; // ResultWool
             foreach (var val in FabricColorFastnessModel.Result_Source)
             {
                 html += "<option value='" + val.Value + "'>" + val.Text + "</option>";
             }
             html += "</select></td>";
 
-            html += "<td><input id='Detail_" + i + "__Remark' name='Detail[" + i + "].Remark' type='text'></td>"; // remark
+            html += "<td><input id='Details_" + i + "__Remark' name='Details[" + i + "].Remark' type='text'></td>"; // remark
 
             html += "<td></td>"; // LastUpdate
 
@@ -262,9 +262,9 @@ namespace Quality.Areas.BulkFGT.Controllers
         [HttpPost]
         public ActionResult DetailSave(Fabric_ColorFastness_Detail_ViewModel req)
         {
-            if (req.Detail == null)
+            if (req.Details == null)
             {
-                req.Detail = new List<Fabric_ColorFastness_Detail_Result>();
+                req.Details = new List<Fabric_ColorFastness_Detail_Result>();
             }
 
             BaseResult result = _FabricColorFastness_Service.Save_ColorFastness_2ndPage(req, this.MDivisionID, this.UserID);

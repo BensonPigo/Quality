@@ -48,7 +48,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                         {
                             Main = new FabricOvenTest_Main(),
                             Details = new List<FabricOvenTest_Detail>(),
-                            ErrorMessage = $@"msg.WithInfo(""{model.ErrorMessage}"");" ,
+                            ErrorMessage = $@"msg.WithInfo('{model.ErrorMessage}');" ,
                         };
             }
             ViewBag.POID = POID;
