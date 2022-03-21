@@ -52,7 +52,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 {
                     Main = new PerspirationFastness_Main(),
                     Details = new List<PerspirationFastness_Detail>(),
-                    ErrorMessage = $@"msg.WithInfo(""{model.ErrorMessage}"");",
+                    ErrorMessage = $@"msg.WithInfo('{model.ErrorMessage}');",
                 };
             }
             ViewBag.POID = POID;

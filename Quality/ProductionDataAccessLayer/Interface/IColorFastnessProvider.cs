@@ -22,7 +22,7 @@ namespace MICS.DataAccessLayer.Interface
 
         bool Encode_ColorFastness(string ID, string Status, string Result, string UserID);
 
-        DataTable Get_Mail_Content(string POID, string ID);
+        DataTable Get_Mail_Content(string POID, string ID, string TestNo);
 
         string Get_InspectName(string Inspector);
 
