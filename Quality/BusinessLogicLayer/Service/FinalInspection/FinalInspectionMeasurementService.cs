@@ -33,7 +33,11 @@ namespace BusinessLogicLayer.Service
                 DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection =
                     _FinalInspectionProvider.GetFinalInspection(finalInspectionID);
 
-                
+                string OrderID = string.Empty;
+                if (string.IsNullOrEmpty(finalInspection.CustPONO) || finalInspection.CustPONO　== "null")
+                {
+                    OrderID = _FinalInspectionProvider.Get_FinalInspectionID_Top1_OrderID(finalInspectionID);
+                }
 
                 measurement.FinalInspectionID = finalInspectionID;
 
@@ -52,10 +56,10 @@ namespace BusinessLogicLayer.Service
                             }).ToList();
 
                 _StyleProvider = new StyleProvider(Common.ProductionDataAccessLayer);
-                measurement.SizeUnit = _StyleProvider.GetSizeUnitByCustPONO(finalInspection.CustPONO);
+                measurement.SizeUnit = _StyleProvider.GetSizeUnitByCustPONO(finalInspection.CustPONO, OrderID);
 
                 _MeasurementProvider = new MeasurementProvider(Common.ManufacturingExecutionDataAccessLayer);
-                List<DatabaseObject.ManufacturingExecutionDB.Measurement> baseMeasurementItems = _MeasurementProvider.GetMeasurementsByPOID(finalInspection.CustPONO, userID).ToList();
+                List<DatabaseObject.ManufacturingExecutionDB.Measurement> baseMeasurementItems = _MeasurementProvider.GetMeasurementsByPOID(finalInspection.CustPONO, OrderID, userID).ToList();
                 measurement.ListMeasurementItem = baseMeasurementItems.Select( s =>
                         new MeasurementItem() {
                             Description = s.Description,
