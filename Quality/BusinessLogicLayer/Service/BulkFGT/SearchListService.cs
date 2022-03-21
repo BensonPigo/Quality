@@ -81,7 +81,9 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     worksheet.Cells[i + 2, 7] = model.DataList[i].Article;
                     worksheet.Cells[i + 2, 8] = model.DataList[i].Artwork;
                     worksheet.Cells[i + 2, 9] = model.DataList[i].Result;
-                    worksheet.Cells[i + 2, 10] = model.DataList[i].TestDate.HasValue ? model.DataList[i].TestDate.Value.ToString("yyyy/MM/dd HH:mm:ss") : string.Empty;
+                    worksheet.Cells[i + 2, 10] = model.DataList[i].ReceivedDate.HasValue ? model.DataList[i].ReceivedDate.Value.ToString("yyyy/MM/dd HH:mm:ss") : string.Empty;
+                    worksheet.Cells[i + 2, 11] = model.DataList[i].ReportDate.HasValue ? model.DataList[i].ReportDate.Value.ToString("yyyy/MM/dd HH:mm:ss") : string.Empty;
+                    worksheet.Cells[i + 2, 12] = model.DataList[i].TestDate.HasValue ? model.DataList[i].TestDate.Value.ToString("yyyy/MM/dd HH:mm:ss") : string.Empty;
                 }
 
                 worksheet.Columns.AutoFit();
