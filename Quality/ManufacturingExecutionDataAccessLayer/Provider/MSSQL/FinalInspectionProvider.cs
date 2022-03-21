@@ -1472,6 +1472,28 @@ where a.id = @ID
 
         }
 
+        public string Get_FinalInspectionID_Top1_OrderID(string finalInspectionID)
+        {
+            SQLParameterCollection parameter = new SQLParameterCollection();
+            string sqlGetData = @"
+select top 1 a.OrderID
+from FinalInspection_Order a 
+where a.id = @ID
+";
+            parameter.Add("@ID", DbType.String, finalInspectionID);
+
+            DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, parameter);
+
+            if (dtResult.Rows.Count > 0)
+            {
+                return dtResult.AsEnumerable().Select(s => s["OrderID"].ToString()).FirstOrDefault();
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
+
         public void UpdateIsExportToP88(string ID)
         {
             string sqlUpdateIsExportToP88 = @"

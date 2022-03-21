@@ -68,6 +68,9 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         List<string> GetPivot88FinalInspectionID(string finalInspectionID);
         
         List<string> Get_FinalInspectionID_BrandID(string finalInspectionID);
+
+        string Get_FinalInspectionID_Top1_OrderID(string finalInspectionID);
+
         void UpdateIsExportToP88(string ID);
     }
 }
