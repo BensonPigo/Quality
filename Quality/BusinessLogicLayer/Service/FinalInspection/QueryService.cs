@@ -59,7 +59,8 @@ namespace BusinessLogicLayer.Service.FinalInspection
                 queryReport.AQLPlan = new FinalInspectionService().GetAQLPlanDesc(queryReport.FinalInspection.AcceptableQualityLevelsUkey);
 
                 _StyleProvider = new StyleProvider(Common.ProductionDataAccessLayer);
-                queryReport.MeasurementUnit = _StyleProvider.GetSizeUnitByCustPONO(queryReport.FinalInspection.CustPONO);
+                string OrderID = queryReport.SP.IndexOf(",") > 0 ? queryReport.SP.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)[0] : string.Empty;
+                queryReport.MeasurementUnit = _StyleProvider.GetSizeUnitByCustPONO(queryReport.FinalInspection.CustPONO, OrderID);
 
                 _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ManufacturingExecutionDataAccessLayer);
                 List<FinalInspectionDefectItem> finalInspectionDefectItems = _FinalInspFromPMSProvider.GetFinalInspectionDefectItems(finalInspectionID).ToList();

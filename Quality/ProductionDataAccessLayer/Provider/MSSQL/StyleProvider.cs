@@ -477,11 +477,12 @@ select StyleName from Style WITH(NOLOCK) where ID = @StyleID and SeasonID = @Sea
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
 
-        public string GetSizeUnitByCustPONO(string CustPONO)
+        public string GetSizeUnitByCustPONO(string CustPONO, string OrderID)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection()
             {
                  { "@CustPONO", DbType.String, CustPONO} ,
+                 { "@OrderID", DbType.String, OrderID} ,
             };
 
             string sqlcmd = @"
@@ -495,6 +496,20 @@ select styleUkey
     )
 )
 ";
+            if (!string.IsNullOrEmpty(OrderID) && string.IsNullOrEmpty(CustPONO))
+            {
+                sqlcmd = @"
+select TOP 1 SizeUnit 
+from Style with (nolock)
+where ukey IN (
+select styleUkey
+    from orders WITH(NOLOCK)
+    WHERE ID = @OrderID
+)
+";
+            }
+
+
 
             DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
 
