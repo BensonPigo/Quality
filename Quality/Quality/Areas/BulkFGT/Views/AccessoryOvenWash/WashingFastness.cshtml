@@ -1,0 +1,577 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    DatabaseObject.ViewModel.BulkFGT.Accessory_ViewModel PreModel = new DatabaseObject.ViewModel.BulkFGT.Accessory_ViewModel();
+}
+
+@model DatabaseObject.ViewModel.BulkFGT.Accessory_WashingFastness
+
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+<link href="~/ThirdParty/plugins/jquery-ui/jquery-ui.css" rel="stylesheet" />
+<style type="text/css">
+
+    .input-group {
+        display: flex
+    }
+
+        .input-group > input:nth-child(1) {
+            flex-grow: 2
+        }
+
+        .input-group > input:nth-child(2) {
+            flex-grow: 1
+        }
+
+    .IsEditMode {
+        color: white !important;
+        cursor: pointer;
+    }
+
+    .IsEditModeQuery {
+        color: gray !important;
+        cursor: no-drop;
+    }
+
+    #ButtonMode {
+        width: 92vw;
+    }
+
+    .DataTable {
+        width: 82vw;
+        font-size: 1rem;
+        font-weight: bold;
+        border: solid 1px black;
+        background-color: white;
+    }
+
+        .DataTable > tbody img {
+            cursor: pointer;
+        }
+
+        .DataTable > tbody > tr:nth-of-type(odd) {
+            background-color: #ffffff;
+        }
+
+        .DataTable > tbody > tr:nth-of-type(even) {
+            background-color: #F0F2F2;
+        }
+
+        .DataTable > tbody > tr > td {
+            border: solid 1px gray;
+            padding: 0.5em;
+            vertical-align: middle;
+        }
+</style>
+@using (Html.BeginForm("WashingFastness", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { id = "DetailForm" }))
+{
+    <div class="main-content">
+        <header class="page-header">
+            <h3>
+                <span>Accessory Oven & Wash Test</span>
+            </h3>
+            <div class="breadcrumb">
+                <div>Home</div>
+                <div>Accessory Oven & Wash Test</div>
+                <div class="current">Wash (501)</div>
+            </div>
+        </header>
+        <div class="main-area">
+            <div class="content-scroll" style="height: calc( 100vh - 160px );">
+                <div class="inner-scroll" style="height: calc( 100vh - 180px );">
+                    <div>
+                        @*按鈕*@
+                        <div>
+                            <table id="ButtonMode">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <h4 id="Exit" style="margin-right: 1em;">
+                                                <a href="@Url.Action("AccessoryOvenWash", ViewContext.RouteData.GetRequiredString("Controller"), new { ReqOrderID = Model.POID })">
+                                                    <img src="~/Image/Icon/Exit.png" width="30" />
+                                                    Exit
+                                                </a>
+                                            </h4>
+                                        </td>
+
+                                        <td>
+                                            <h4 id="Edit" style="margin-right: 1em;">
+                                                <img src="~/Image/Icon/Edit.png" width="30" />
+                                                Edit
+                                            </h4>
+                                        </td>
+                                        <td>
+                                            <h4 style="margin-right: 1em;">
+                                                <button id="Save" type="submit" name="Action:WashingFastnessSave" style="margin:0;min-width:0;background-color:transparent">
+                                                    <img src="~/Image/Icon/Save.png" width="30" />
+                                                    Save
+                                                </button>
+                                            </h4>
+                                        </td>
+                                        <td>
+                                            <h4 style="margin-right: 1em;">
+                                                <button id="Encode" type="submit" name="Action:WashingFastnessEncode" style="margin:0;min-width:0;background-color:transparent">
+                                                    <img src="~/Image/Icon/Lock.png" width="30" />
+                                                    Encode
+                                                </button>
+                                            </h4>
+                                        </td>
+
+                                        <td>
+                                            <h4 style="margin-right: 1em;">
+                                                <button id="Amend" type="submit" name="Action:WashingFastnessAmend" style="margin:0;min-width:0;background-color:transparent">
+                                                    <img src="~/Image/Icon/Unlock.png" width="30" />
+                                                    Amend
+                                                </button>
+                                            </h4>
+                                        </td>
+                                        <td>
+                                            <h4 id="Excel" style="margin-right: 1em;">
+                                                <img src="~/Image/Icon/XLS.png" width="30" />
+                                                Excel
+                                            </h4>
+                                        </td>
+                                        <td>
+                                            <h4 id="PDF" style="margin-right: 1em;">
+                                                <img src="~/Image/Icon/PDF.png" width="30" />
+                                                PDF
+                                            </h4>
+                                        </td>
+                                        <td>
+                                            <h4 id="Picture" style="margin-right: 1em;">
+                                                <img src="~/Image/Icon/Camera.png" width="30" />
+                                                Picture
+                                            </h4>
+                                        </td>
+                                        <td style="width: 50%;"></td>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div>
+                        @*主-明細*@
+                        <div style="margin-top: 1em;">
+                            <table class="DataTable MainTable">
+                                <tbody>
+                                    @if (Model != null)
+                                    {
+                                        @Html.HiddenFor(o => o.WashingFastnessEncode)
+                                        @Html.HiddenFor(o => o.AIR_LaboratoryID)
+                                        @Html.HiddenFor(o => o.Seq1)
+                                        @Html.HiddenFor(o => o.Seq2)
+                                        @Html.HiddenFor(o => o.POID)
+                                    }
+                                    <tr>
+                                        <td style="width: 10vw;"><h5>SP#</h5></td>
+                                        <td style="width: 20vw;">
+                                            @Html.DisplayFor(o => o.POID)
+                                        </td>
+                                        <td style="width: 10vw;"><h5>SCI Refno</h5></td>
+                                        <td style="width: 20vw;">
+                                            @Html.DisplayFor(o => o.SCIRefno)
+                                        </td>
+                                        <td style="width: 10vw;"><h5>WK#</h5></td>
+                                        <td style="width: 20vw;">
+                                            @Html.DisplayFor(o => o.WKNo)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><h5>Refno</h5></td>
+                                        <td>
+                                            @Html.DisplayFor(o => o.Refno)
+                                        </td>
+                                        <td><h5>Active Qty</h5></td>
+                                        <td>
+                                            @Html.DisplayFor(o => o.ArriveQty)
+                                        </td>
+                                        <td><h5>Supplier</h5></td>
+                                        <td>
+                                            @Html.DisplayFor(o => o.Supplier)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><h5>Unit</h5></td>
+                                        <td>
+                                            @Html.DisplayFor(o => o.Unit)
+                                        </td>
+                                        <td><h5>Color</h5></td>
+                                        <td>
+                                            @Html.DisplayFor(o => o.Color)
+                                        </td>
+                                        <td><h5>Size</h5></td>
+                                        <td>
+                                            @Html.DisplayFor(o => o.Size)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="6"></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td><h5>Scale</h5></td>
+                                        <td><h5>Result</h5></td>
+                                        <td><h5>Color Staining</h5></td>
+                                        <td><h5>Scale</h5></td>
+                                        <td><h5>Result</h5></td>
+                                    </tr>
+                                    <tr>
+                                        <td><h5>Color Change</h5></td>
+                                        <td>
+                                            @Html.DropDownListFor(o => o.ChangeScale, Model.ScaleData)
+                                        </td>
+                                        <td>
+                                            @Html.DropDownListFor(o => o.ResultChange, Model.ResultData, new { onchange = "ItemResultChange(this)" })
+                                        </td>
+                                        <td><h5>Acetate</h5></td>
+                                        <td>
+                                            @Html.DropDownListFor(o => o.AcetateScale, Model.ScaleData)
+                                        </td>
+                                        <td>
+                                            @Html.DropDownListFor(o => o.ResultAcetate, Model.ResultData, new { onchange = "ItemResultChange(this)" })
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><h5>Cross Staining</h5></td>
+                                        <td>
+                                            @Html.DropDownListFor(o => o.CrossStainingScale, Model.ScaleData)
+                                        </td>
+                                        <td>
+                                            @Html.DropDownListFor(o => o.ResultCrossStaining, Model.ResultData, new { onchange = "ItemResultChange(this)" })
+                                        </td>
+                                        <td><h5>Cotton</h5></td>
+                                        <td>
+                                            @Html.DropDownListFor(o => o.CottonScale, Model.ScaleData)
+                                        </td>
+                                        <td>
+                                            @Html.DropDownListFor(o => o.ResultCotton, Model.ResultData, new { onchange = "ItemResultChange(this)" })
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td><h5>Nylon</h5></td>
+                                        <td>
+                                            @Html.DropDownListFor(o => o.NylonScale, Model.ScaleData)
+                                        </td>
+                                        <td>
+                                            @Html.DropDownListFor(o => o.ResultNylon, Model.ResultData, new { onchange = "ItemResultChange(this)" })
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td><h5>Polyester</h5></td>
+                                        <td>
+                                            @Html.DropDownListFor(o => o.PolyesterScale, Model.ScaleData)
+                                        </td>
+                                        <td>
+                                            @Html.DropDownListFor(o => o.ResultPolyester, Model.ResultData, new { onchange = "ItemResultChange(this)" })
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td><h5>Acrylic</h5></td>
+                                        <td>
+                                            @Html.DropDownListFor(o => o.AcrylicScale, Model.ScaleData)
+                                        </td>
+                                        <td>
+                                            @Html.DropDownListFor(o => o.ResultAcrylic, Model.ResultData, new { onchange = "ItemResultChange(this)" })
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td><h5>Wool</h5></td>
+                                        <td>
+                                            @Html.DropDownListFor(o => o.WoolScale, Model.ScaleData)
+                                        </td>
+                                        <td>
+                                            @Html.DropDownListFor(o => o.ResultWool, Model.ResultData, new { onchange = "ItemResultChange(this)" })
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><h5>Received Date</h5></td>
+                                        <td>
+                                            @Html.TextBoxFor(o => o.WashingFastnessReceivedDate, "{0:yyyy/MM/dd}", new { @class = "date-picker", @style = "width:100%;" })
+                                        </td>
+                                        <td><h5>Report Date</h5></td>
+                                        <td>
+                                            @Html.TextBoxFor(o => o.WashingFastnessReportDate, "{0:yyyy/MM/dd}", new { @class = "date-picker", @style = "width:100%;" })
+                                        </td>
+                                        <td><h5>Lab Tech</h5></td>
+                                        <td>
+                                            <div class="input-group">
+                                                @Html.TextBoxFor(o => o.WashingFastnessInspector, new { @class = "inputInspectorSelectItem" })
+                                                @Html.TextBox("WashingFastnessInspectorName", Model.WashingFastnessInspectorName, new { @class = "inputInspectorSelectItem", @readonly = "readonly" })
+                                                <input id="btnDetailInspectorSelectItem" type="button" class="site-btn btn-blue btnInspectorSelectItem" style="margin:0;border:0;" value="..." />
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><h5>Remark</h5></td>
+                                        <td colspan="5">
+                                            @Html.TextBoxFor(o => o.WashingFastnessRemark, new { @style = "width:100%;" })
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @Html.HiddenFor(o => o.ToAddress)
+    @Html.HiddenFor(o => o.CcAddress)
+    @Html.HiddenFor(o => Model.WashingFastnessTestBeforePicture)
+    @Html.HiddenFor(o => Model.WashingFastnessTestAfterPicture)
+    @*@Html.HiddenFor(o => o.WashingFastnessResult)*@
+    @*@Html.Hidden("needSendMail", (Model.WashingFastnessResult == "Pass" ? "false" : "true"))*@
+}
+<script type="text/javascript">
+    var msg;
+    var EditMode;
+    var True = true;
+    var False = false;
+
+        $(function () {
+            msg = new MessagerAlert();
+
+            @Html.Raw(Model.ErrorMessage);
+
+            EditMode = false;
+            IsEditModeChange();
+            ItemResultChange();
+            $.each($('select[onchange="ItemResultChange(this)"]'), function () {
+                ItemResultChange(this);
+            });
+        });
+
+        function IsEditModeChange() {
+            EditModeButtionBind();
+            $('#Picture').addClass("IsEditMode");
+            // 按編輯為控制disabled，如果是編輯模式下不給使用者操作，請在元件身上加上readonly
+            if (EditMode) {
+
+                // Edit文字顏色變得跟其他Submit按鈕一樣
+                $("#Edit").css("color", "rgba(66,66,66,255)");
+
+                $("#Edit,#Encode,#Amend, #Excel, #PDF").removeClass("IsEditMode");
+                $("#Edit,#Encode,#Amend").attr("disabled", "disabled");
+                $('#Encode,#Amend, #Excel, #PDF').unbind('click');
+                $('#Save').addClass("IsEditMode");
+                $("#Save").removeAttr("disabled", "disabled");
+                $(".DataTable input[type='text'],.DataTable select").removeAttr("disabled", "disabled");
+
+                DetailButtonBind();
+            }
+            else {
+                $('#Save').unbind('click').removeClass("IsEditMode");
+                $("#Save").attr("disabled", "disabled");
+                $("#Edit,#Encode,#Amend").removeAttr("disabled", "disabled");
+                $(".DataTable input[type='text'],.DataTable select").attr("disabled", "disabled");
+                $('#Excel, #PDF').addClass("IsEditMode");
+
+                if ('@Model.AIR_LaboratoryID' != '') {
+                    $("#Edit").addClass("IsEditMode");
+                }
+
+                if (@Model.WashingFastnessEncode == false) {
+                    $('#Amend').unbind('click');
+                    $("#Amend").attr("disabled", "disabled");
+                    $("#Encode").addClass("IsEditMode");
+                }
+
+                if (@Model.WashingFastnessEncode == true) {
+
+                    // Edit文字顏色變得跟其他Submit按鈕一樣
+                    $("#Edit").css("color", "rgba(66,66,66,255)");
+                    $("#Edit").removeClass("IsEditMode");
+                    $('#Edit').unbind('click');
+                    $("#Edit").attr("disabled", "disabled");
+
+                    $('#Encode').unbind('click');
+                    $("#Encode").attr("disabled", "disabled");
+                    $("#Amend").addClass("IsEditMode");
+                }
+            }
+        }
+
+        function EditModeButtionBind() {
+            $('#Edit').on('click', function () {
+                if ('@Model.AIR_LaboratoryID' != '') {
+                    EditMode = true;
+                    IsEditModeChange();
+                }
+            });
+
+            $('#Save').on('click', function (e) {
+                document.getElementById("DetailForm").submit();
+            });
+
+            $('#Amend').on('click', function (e) {
+                document.getElementById("DetailForm").submit();
+            });
+
+            $('#Picture').on('click', function () {
+                var key1 = 'PKey_1=ID&PKey_1_Val=' + '@Model.AIR_LaboratoryID';
+                var key2 = 'PKey_2=POID&PKey_2_Val=' + '@Model.POID';
+                var key3 = 'PKey_3=Seq1&PKey_3_Val=' + '@Model.Seq1';
+                var key4 = 'PKey_4=Seq2&PKey_4_Val=' + '@Model.Seq2';
+
+                var para = "?EditMode=" + EditMode + "&Title=Accessory Washing Fastness Test&Table=AIR_Laboratory&BeforeColumn=WashingFastnessTestBeforePicture&AfterColumn=WashingFastnessTestAfterPicture&" + key1 + "&" + key2 + "&" + key3 + "&" + key4;
+
+                window.open('@Url.Action("PictureList","PublicWondow",new{Area=""})' + para, 'Picture', config = 'toolbar=no,status=no,location=no,width=1000,height=650');
+            });
+
+            $('#Excel').unbind('click').on('click', function () {
+                ToReport(false);
+            });
+
+            $('#PDF').unbind('click').on('click', function () {
+                ToReport(true);
+            });
+        }
+
+    function ToReport(IsToPDF) {
+        $.ajax({
+            url: "@Url.Action("WashingFastnessReport", "AccessoryOvenWash", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({
+                AIR_LaboratoryID: $("#AIR_LaboratoryID").val(),
+                POID: $("#POID").val(),
+                Seq1: $("#Seq1").val(),
+                Seq2: $("#Seq2").val(),
+                IsToPDF: IsToPDF
+            }),
+            async: false,
+            success: function (data) {
+                if (data.Result) {
+                    window.location.href = data.reportPath;
+                }
+                else {
+                    msg.WithError(data.ErrorMessage);
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function ItemResultChange(obj) {
+
+        if ($(obj).val() == 'Pass') {
+            $(obj).css("color", "Blue");
+        }
+        else {
+            $(obj).css("color", "red");
+        }
+    }
+
+    function FailMail() {
+        var para = "?Title=WashingFastness&FactoryID=@ViewBag.FactoryID&Type=BulkFGT&ExitReload=False";
+
+        window.open('@Url.Action("TestFailMailList", "PublicWondow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
+    }
+
+    function GetTestFailMailList(data) {
+        var to = "";
+        var cc = "";
+        $.each(data, function (index, value) {
+            to += value.To + ';';
+            cc += value.CC + ';';
+        });
+
+        if (to != "") {
+            var data = {
+                AIR_LaboratoryID: $("#AIR_LaboratoryID").val(),
+                POID: $("#POID").val(),
+                Seq1: $("#Seq1").val(),
+                Seq2: $("#Seq2").val(),
+                ToAddress: to,
+                CcAddress: cc,
+            };
+
+            $.ajax({
+                url: "@Url.Action("WashingFastnessFailMail")",
+                type: 'POST',
+                dataType: "json",
+                data: { Req: data},
+                async: false,
+                success: function (data) {
+                    if (data.result) {
+                        msg.WithSuccess("Success");
+                    }
+                    else {
+                        msg.WithWarning(data.resultMsg);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    msg.WithWarningCheck(xhr.responseText, function () {
+                        location.reload();
+                    });
+                }
+            });
+        }
+    }
+
+
+    function DetailButtonBind() {
+        $('.inputInspectorSelectItem').unbind('blur').on('blur', function () {
+            $('#WashingFastnessInspectorName').val('');
+            if ($('#WashingFastnessInspector').val() == "") {
+                return;
+            }
+
+            $.ajax({
+                url: "@Url.Action("Pass1List", "PublicWondow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID:$(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#WashingFastnessInspector").val('');
+                        msg.WithError('Lab Tech Not Found');
+                    }
+                    else
+                    {
+                        $("#WashingFastnessInspector").val(data[0].ID);
+                        $("#WashingFastnessInspectorName").val(data[0].Name);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $('.btnInspectorSelectItem').unbind('click').on('click', function () {
+            var para = "?Title=Lab Tech";
+            window.open('@Url.Action("Pass1List", "PublicWondow",new{Area=""})' + para, 'Lab Tech', config = 'toolbar=no,status=no,location=no,width=950,height=650');
+        });
+    }
+
+
+    function GetPass1(data, targetID) {
+        $("#WashingFastnessInspector").val(data.ID);
+        $("#WashingFastnessInspectorName").val(data.Name);
+    }
+
+    function GetPicture(data) {
+        $('#WashingFastnessTestBeforePicture').val(data.BeforePicture.replace("data:image/png;base64,", ""));
+        $('#WashingFastnessTestAfterPicture').val(data.AfterPicture.replace("data:image/png;base64,", ""));
+    }
+</script>
