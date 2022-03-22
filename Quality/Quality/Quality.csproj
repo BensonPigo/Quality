@@ -399,6 +399,7 @@
     <Content Include="Areas\BulkFGT\Views\WaterFastness\Detail.cshtml" />
     <Content Include="Areas\BulkFGT\Views\PerspirationFastness\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\PerspirationFastness\Detail.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\AccessoryOvenWash\WashingFastness.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -907,6 +908,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\PublicWondow\InspMeasurement_PictureList.cshtml" />
+    <Content Include="XLT\AccessoryWashingFastness.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

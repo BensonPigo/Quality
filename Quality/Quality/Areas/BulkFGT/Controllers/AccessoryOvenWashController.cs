@@ -358,6 +358,141 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
         #endregion
 
+        #region WashingFastness (501)頁面
+
+        public ActionResult WashingFastness(Accessory_WashingFastness Req)
+        {
+            Accessory_WashingFastness model = new Accessory_WashingFastness();
+            model = _Service.GetWashingFastness(Req);
+            ViewBag.FactoryID = this.FactoryID;
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [MultipleButton(Name = "action", Argument = "WashingFastnessSave")]
+        public ActionResult WashingFastnessSave(Accessory_WashingFastness Req)
+        {
+
+            Accessory_WashingFastness model = new Accessory_WashingFastness();
+
+            if (string.IsNullOrEmpty(Req.WashingFastnessInspector))
+            {
+                Req.WashingFastnessInspector = this.UserID;
+            }
+            Req.EditName = this.UserID;
+            Req.WashingFastnessEncode = false;
+
+            //修改
+            model = _Service.UpdateWashingFastness(Req);
+
+            if (!model.Result)
+            {
+                // 錯誤處理：新增一個Model承接ErrorMessage，並查詢原資料帶到畫面
+                Accessory_WashingFastness errorModel = new Accessory_WashingFastness();
+                errorModel = _Service.GetWashingFastness(Req);
+                errorModel.ErrorMessage = model.ErrorMessage;
+                errorModel.ScaleData = model.ScaleData;
+
+                return View("WashingFastness", errorModel);
+
+            }
+
+            // 取得更新後MODEL
+            model = _Service.GetWashingFastness(Req);
+
+            ViewBag.FactoryID = this.FactoryID;
+            return View("WashingFastness", model);
+        }
+
+        [HttpPost]
+        [MultipleButton(Name = "action", Argument = "WashingFastnessEncode")]
+        public ActionResult WashingFastnessEncode(Accessory_WashingFastness Req)
+        {
+            Accessory_WashingFastness model = new Accessory_WashingFastness();
+            Req.EditName = this.UserID;
+            Req.WashingFastnessEncode = true;
+
+            //修改
+            model = _Service.EncodeAmendWashingFastness(Req);
+            _Service.UpdateInspPercent(Req.POID);
+
+            if (!model.Result)
+            {
+                // 錯誤處理：新增一個Model承接ErrorMessage，並查詢原資料帶到畫面
+                Accessory_WashingFastness errorModel = new Accessory_WashingFastness();
+                errorModel = _Service.GetWashingFastness(Req);
+                errorModel.ErrorMessage = model.ErrorMessage;
+                errorModel.ScaleData = model.ScaleData;
+
+                return View("WashingFastness", errorModel);
+
+            }
+
+            // 取得更新後MODEL
+            model = _Service.GetWashingFastness(Req);
+
+            // Encode成功後，WashResult是Fail則寄信
+            // ISP20220193 規則修改
+            if (model.WashingFastnessResult == "Fail")
+            {
+                model.ErrorMessage = "FailMail();";
+            }
+
+            ViewBag.FactoryID = this.FactoryID;
+            return View("WashingFastness", model);
+        }
+
+        [HttpPost]
+        [MultipleButton(Name = "action", Argument = "WashingFastnessAmend")]
+        public ActionResult WashWashingFastnessAmend(Accessory_WashingFastness Req)
+        {
+            Accessory_WashingFastness model = new Accessory_WashingFastness();
+            Req.EditName = this.UserID;
+            Req.WashingFastnessEncode = false;
+
+            //修改
+            model = _Service.EncodeAmendWashingFastness(Req);
+            _Service.UpdateInspPercent(Req.POID);
+
+            if (!model.Result)
+            {
+                // 錯誤處理：新增一個Model承接ErrorMessage，並查詢原資料帶到畫面
+                Accessory_WashingFastness errorModel = new Accessory_WashingFastness();
+                errorModel = _Service.GetWashingFastness(Req);
+                errorModel.ErrorMessage = model.ErrorMessage;
+                errorModel.ScaleData = model.ScaleData;
+
+                return View("WashingFastness", errorModel);
+
+            }
+
+            // 取得更新後MODEL
+            model = _Service.GetWashingFastness(Req);
+
+            ViewBag.FactoryID = this.FactoryID;
+            return View("WashingFastness", model);
+        }
+
+        [HttpPost]
+        public JsonResult WashingFastnessFailMail(Accessory_WashingFastness Req)
+        {
+            SendMail_Result result = _Service.SendWashingFastnessMail(Req);
+            return Json(result);
+        }
+
+        [HttpPost]
+        public JsonResult WashingFastnessReport(string AIR_LaboratoryID, string POID, string Seq1, string Seq2, bool IsToPDF)
+        {
+            BaseResult result = null;
+            string FileName = string.Empty;
+
+            result = _Service.WashingFastnessExcel(AIR_LaboratoryID, POID, Seq1, Seq2, IsToPDF, out FileName);
+
+            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
+            return Json(new { result.Result, result.ErrorMessage, reportPath });
+        }
+        #endregion
 
     }
 }

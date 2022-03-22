@@ -288,8 +288,9 @@
                                 <th style="width:5vw">Wash Lab Tech</th>
                                 <th style="width:5vw">Remark</th>
                                 <th style="width:5vw">Receiving</th>
-                                <th style="width:5vw">Oven Test</th>
-                                <th style="width:5vw">Wash Test</th>
+                                <th style="width:5vw">Oven Test<br />(515)</th>
+                                <th style="width:5vw">Wash Test<br />(701)</th>
+                                <th style="width:5vw">Wash Test<br />(501)</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -425,6 +426,7 @@
 
                                     <td><a class="link" href="@Url.Action("OvenTest", @controllerName, accessory_Oven)">Oven Test</a></td>
                                     <td><a class="link" href="@Url.Action("WashTest", @controllerName, accessory_wash)">Wash Test</a></td>
+                                    <td><a class="link" href="@Url.Action("WashingFastness", @controllerName, accessory_wash)">Wash Test</a></td>
                                 </tr>
                             }
                         </tbody>

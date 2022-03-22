@@ -206,7 +206,46 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td colspan="6"></td>
+                                        <td colspan="6">Washing test method</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 10vw;"><h5>Machine wash</h5></td>
+                                        <td style="width: 20vw;">
+                                            @Html.DropDownListFor(o => o.MachineWash, Model.MachineWashData, new { })
+                                        </td>
+                                        <td style="width: 10vw;"><h5>Washing Temperature</h5></td>
+                                        <td style="width: 20vw;">
+                                            @*@Html.DropDownListFor(o => o.WashingTemperature, Model.WashingTemperatureData, new { })*@
+
+                                            <select id="WashingTemperature" name="WashingTemperature" disabled="disabled" style="width:157px;">
+                                                @foreach (var item in Model.WashingTemperatureData)
+                                                {
+                                                    string selected = item.Text.Equals(Model.WashingTemperature.ToString()) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>
+                                        </td>
+                                        <td style="width: 10vw;"><h5>Dry process</h5></td>
+                                        <td style="width: 20vw;">
+                                            @Html.DropDownListFor(o => o.DryProcess, Model.DryProcessData, new { })
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 10vw;"><h5>Machine model</h5></td>
+                                        <td style="width: 20vw;">
+                                            @Html.DropDownListFor(o => o.MachineModel, Model.MachineModelData, new { })
+                                        </td>
+                                        <td style="width: 10vw;"><h5>Washing cycle</h5></td>
+                                        <td style="width: 20vw;" col>
+                                            <select id="WashingCycle" name="WashingCycle" disabled="disabled" style="width:157px;">
+                                                @foreach (var item in Model.WashingCycleData)
+                                                {
+                                                    string selected = item.Text.Equals(Model.WashingCycle.ToString()) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>
+                                        </td>
+                                        <td style="width: 10vw;" colspan="2"></td>
                                     </tr>
                                     <tr>
                                         <td><h5>Scale</h5></td>

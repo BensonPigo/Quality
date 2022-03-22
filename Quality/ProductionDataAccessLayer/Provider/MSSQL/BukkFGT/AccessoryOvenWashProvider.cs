@@ -108,6 +108,12 @@ select
 	,al.WashInspector
 	,al.WashRemark
 	,a.ReceivingID
+
+	,al.NonWashingFastness
+	,NonWashingFastnessResult = al.WashingFastness
+	,al.WashingFastnessScale
+	,al.WashingFastnessInspector
+	,al.WashingFastnessRemark
 	-----以下為藏在背後的Key值不會秀在畫面上-----
 	,AIR_LaboratoryID = al.ID
 	,a.Seq1
@@ -153,7 +159,7 @@ WHERE ID = @ID
             {
                 sqlCmd += $@"
 UPDATE AIR_Laboratory 
-SET  NonOven = @NonOven_{idx} ,NonWash = @NonWash_{idx}
+SET  NonOven = @NonOven_{idx} ,NonWash = @NonWash_{idx} ,NonWashingFastness = @NonWashingFastness_{idx}
 ,EditDate=GETDATE() ,EditName=@EditName
 where POID = @ID
 AND Seq1 = @Seq1_{idx}
@@ -164,6 +170,7 @@ AND Seq2 = @Seq2_{idx}
                 listPar.Add($"@Seq2_{idx}", DbType.String, data.Seq2);
                 listPar.Add($"@NonOven_{idx}",DbType.Boolean, data.NonOven);
                 listPar.Add($"@NonWash_{idx}", DbType.Boolean, data.NonWash);
+                listPar.Add($"@NonWashingFastness_{idx}", DbType.Boolean, data.NonWashingFastness);
                 idx++;
             }
 
@@ -185,12 +192,18 @@ AND Seq2 = @Seq2_{idx}
             {
                 sqlCmd += $@"
 UPDATE AIR_Laboratory 
-SET  Result =   CASE    WHEN NonOven = 1 AND NonWash = 1 THEN 'Pass' --兩個都不檢驗：直接整體PPass
-	                    WHEN NonOven = 0 AND NonWash = 1 AND OvenEncode = 1 THEN Oven  --Wash不檢驗 + OvenEncode = true：  OvenResult Pass則視作整體Pass
-	                    WHEN NonOven = 1 AND NonWash = 0 AND WashEncode = 1  THEN Wash--Oven不檢驗 + WashEncode = true：  WashResult Pass則視作整體Pass
-	                    ELSE (	--兩個都要檢驗，則套用以下判斷
-			                    CASE WHEN OvenEncode != 1 OR WashEncode != 1 OR Oven='' OR Wash= '' THEN ''   --其中一個未Encode或檢驗：  檢驗未完成，最終結果為空白
-					                    WHEN Oven='Fail' OR Wash= 'Fail' THEN 'Fail'  --其中一個Fail：最終結果 Fail
+SET  Result =   CASE    WHEN NonOven = 1 AND NonWash = 1 AND NonWashingFastness = 1 THEN 'Pass' --3個都不檢驗：直接整體PPass
+	                    WHEN NonOven = 0 AND OvenEncode = 1 AND NonWash = 1 AND NonWashingFastness = 1 THEN Oven                        --只有Oven檢驗
+	                    WHEN NonWash = 0 AND WashEncode = 1 AND NonOven = 1 AND NonWashingFastness = 1 THEN Wash                        --只有Wash檢驗
+	                    WHEN NonWashingFastness = 0 AND WashingFastnessEncode = 1 AND NonOven = 1 AND NonWash = 1 THEN WashingFastness  --只有WashingFastness檢驗
+
+	                    WHEN NonOven = 0 AND OvenEncode = 1 AND NonWash = 0 AND WashEncode = 1 THEN IIF( Oven = 1 and Wash = 1 , 1 , 0 )                                    --Oven + Wash要檢驗
+	                    WHEN NonOven = 0 AND OvenEncode = 1 AND NonWashingFastness= 0 AND WashingFastnessEncode = 1 THEN IIF( Oven = 1 and WashingFastness = 1 , 1 , 0 )    --Oven + WashingFastness要檢驗
+	                    WHEN NonWash = 0 AND WashEncode = 1 AND NonWashingFastness= 0 AND WashingFastnessEncode = 1 THEN IIF( Wash = 1 and WashingFastness = 1 , 1 , 0 )    --Wash + WashingFastness要檢驗
+
+	                    ELSE (	--3個都要檢驗，則套用以下判斷
+			                    CASE WHEN OvenEncode != 1 OR WashEncode != 1 OR WashingFastnessEncode != 1 OR Oven='' OR Wash= '' OR WashingFastness = '' THEN ''   --其中一個未Encode或檢驗：  檢驗未完成，最終結果為空白
+					                 WHEN Oven='Fail' OR Wash= 'Fail' OR WashingFastness = 'Fail'  THEN 'Fail'  --其中一個Fail：最終結果 Fail
 			                    ELSE 'Pass'
 			                    END
 	                    )
@@ -204,6 +217,7 @@ AND Seq2 = @Seq2_{idx}
                 listPar.Add($"@Seq2_{idx}", DbType.String, data.Seq2);
                 listPar.Add($"@NonOven_{idx}", DbType.Boolean, data.NonOven);
                 listPar.Add($"@NonWash_{idx}", DbType.Boolean, data.NonWash);
+                listPar.Add($"@NonWashingFastness_{idx}", DbType.Boolean, data.NonWashingFastness);
                 idx++;
             }
 
@@ -574,6 +588,12 @@ select   al.POID
         ,al.Seq2
 		,ali.WashTestBeforePicture
 		,ali.WashTestAfterPicture
+        ,al.MachineWash
+        ,al.WashingTemperature
+        ,al.DryProcess
+        ,al.MachineModel
+        ,al.WashingCycle
+
 from AIR_Laboratory al WITH(NOLOCK)
 left join  [ExtendServer].PMSFile.dbo.AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
 inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
@@ -622,6 +642,7 @@ where   al.ID=@AIR_LaboratoryID
                 // WashResult 不能改回空白
                 // updateCol += $@" , Wash = '' " + Environment.NewLine;
             }
+
             if (!string.IsNullOrEmpty(Req.Remark))
             {
                 updateCol += $@" , WashRemark = @Remark" + Environment.NewLine;
@@ -631,6 +652,32 @@ where   al.ID=@AIR_LaboratoryID
             {
                 updateCol += $@" , WashInspector = @WashInspector" + Environment.NewLine;
                 listPar.Add("@WashInspector", Req.WashInspector);
+            }
+
+            if (!string.IsNullOrEmpty(Req.MachineWash))
+            {
+                updateCol += $@" , MachineWash = @MachineWash" + Environment.NewLine;
+                listPar.Add("@MachineWash", Req.MachineWash);
+            }
+            if (Req.WashingTemperature != 0)
+            {
+                updateCol += $@" , WashingTemperature = @WashingTemperature" + Environment.NewLine;
+                listPar.Add("@WashingTemperature", DbType.Int32, Req.WashingTemperature);
+            }
+            if (!string.IsNullOrEmpty(Req.DryProcess))
+            {
+                updateCol += $@" , DryProcess = @DryProcess" + Environment.NewLine;
+                listPar.Add("@DryProcess", DbType.String, Req.DryProcess);
+            }
+            if (!string.IsNullOrEmpty(Req.MachineModel))
+            {
+                updateCol += $@" , MachineModel = @MachineModel" + Environment.NewLine;
+                listPar.Add("@MachineModel", Req.MachineModel);
+            }
+            if (Req.WashingCycle != 0)
+            {
+                updateCol += $@" , WashingCycle = @WashingCycle" + Environment.NewLine;
+                listPar.Add("@WashingCycle", DbType.Int32, Req.WashingCycle);
             }
 
             if (Req.WashDate.HasValue)
@@ -847,6 +894,12 @@ select   al.POID
         ,al.Seq2
 		,ali.WashTestBeforePicture
 		,ali.WashTestAfterPicture
+        ,al.MachineWash
+        ,al.WashingTemperature
+        ,al.DryProcess
+        ,al.MachineModel
+        ,al.WashingCycle
+
 from AIR_Laboratory al WITH(NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.ID = al.POID
 left join  [ExtendServer].PMSFile.dbo.AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
@@ -873,6 +926,463 @@ where   al.ID=@AIR_LaboratoryID
         #endregion
 
 
+        #region WashingFastness
+        public Accessory_WashingFastness GetWashingFastness(Accessory_WashingFastness Req)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@AIR_LaboratoryID", Req.AIR_LaboratoryID);
+            listPar.Add("@POID", Req.POID);
+            listPar.Add("@Seq1", Req.Seq1);
+            listPar.Add("@Seq2", Req.Seq2);
+
+            string sqlCmd = @"
+select   al.POID
+        ,a.SCIRefno
+        ,WKNo = r.ExportId
+        ,a.Refno
+        ,a.ArriveQty
+        ,Supplier = Concat (a.SuppID, s.AbbEn)
+        ,Unit = psd.StockUnit
+        ,Color = psd.ColorID
+        ,Size = psd.SizeSpec
+        ,al.Seq1
+        ,al.Seq2
+
+		,al.NonWashingFastness
+		,WashingFastnessResult = al.WashingFastness
+		,al.WashingFastnessEncode
+		,al.WashingFastnessScale
+		,al.WashingFastnessInspector
+        ,WashingFastnessInspectorName = q.Name
+		,al.WashingFastnessReceivedDate
+		,al.WashingFastnessReportDate
+		,al.WashingFastnessRemark
+		,al.ChangeScale
+		,al.ResultChange		
+		,al.AcetateScale
+		,al.ResultAcetate
+		,al.CottonScale
+		,al.ResultCotton
+		,al.NylonScale
+		,al.ResultNylon
+		,al.PolyesterScale
+		,al.ResultPolyester
+		,al.AcrylicScale
+		,al.ResultAcrylic		
+		,al.WoolScale
+		,al.ResultWool
+		,al.CrossStainingScale
+		,al.ResultCrossStaining
+		,ali.WashingFastnessTestBeforePicture
+		,ali.WashingFastnessTestAfterPicture
+
+from AIR_Laboratory al WITH(NOLOCK)
+left join  [ExtendServer].PMSFile.dbo.AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
+inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
+left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
+left join Supp s WITH(NOLOCK) on a.Suppid = s.ID
+left join PO_Supp_Detail psd WITH(NOLOCK) ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
+left join Pass1 q WITH(NOLOCK) on q.ID = al.WashingFastnessInspector
+where   al.ID=@AIR_LaboratoryID
+    and al.POID=@POID
+    and al.Seq1=@Seq1
+    and al.Seq2=@Seq2
+";
+            IList<Accessory_WashingFastness> listResult = ExecuteList<Accessory_WashingFastness>(CommandType.Text, sqlCmd, listPar);
+
+            if (listResult.Count == 0)
+            {
+                throw new Exception("No data found");
+            }
+
+            return listResult.FirstOrDefault();
+        }
+
+        public Accessory_WashingFastness WashingFastness_EncodeCheck(Accessory_WashingFastness Req)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@AIR_LaboratoryID", Req.AIR_LaboratoryID);
+            listPar.Add("@POID", Req.POID);
+            listPar.Add("@Seq1", Req.Seq1);
+            listPar.Add("@Seq2", Req.Seq2);
+
+            string sqlCmd = @"
+select   1
+from AIR_Laboratory
+where   ID = @AIR_LaboratoryID
+    and POID = @POID
+    and Seq1 = @Seq1
+    and Seq2 = @Seq2
+    AND (ResultChange = '' OR ResultAcetate = '' OR ResultCotton = '' OR ResultNylon = '' OR ResultPolyester = '' OR ResultAcrylic = '' OR ResultWool= '' OR ResultCrossStaining = '')
+";
+            IList<Accessory_WashingFastness> listResult = ExecuteList<Accessory_WashingFastness>(CommandType.Text, sqlCmd, listPar);
+
+            if (listResult.Count > 0)
+            {
+                throw new Exception("Result cannot be empty.");
+            }
+
+            return listResult.FirstOrDefault();
+        }
+        public int UpdateWashingFastness(Accessory_WashingFastness Req)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@AIR_LaboratoryID", Req.AIR_LaboratoryID);
+            listPar.Add("@POID", Req.POID);
+            listPar.Add("@Seq1", Req.Seq1);
+            listPar.Add("@Seq2", Req.Seq2);
+
+            string updateCol = string.Empty;
+            string updatePicCol = string.Empty;
+            #region 需要UPDATE的欄位
+
+            updateCol += $@" , WashingFastnessEncode = @WashingFastnessEncode" + Environment.NewLine;
+            listPar.Add("@WashingFastnessEncode", Req.WashingFastnessEncode);
+
+            // 如果尚未Encode，WashingFastness Result最終結果一定會是空白
+            if (Req.WashingFastnessEncode == true)
+            {
+                updateCol += $@" , WashingFastness = @WashingFastness" + Environment.NewLine;
+                listPar.Add("@WashingFastness", Req.WashingFastnessResult);
+            }
+            else
+            {
+                updateCol += $@" , WashingFastness = ''" + Environment.NewLine;
+            }
+
+            if (!string.IsNullOrEmpty(Req.WashingFastnessScale))
+            {
+                updateCol += $@" , WashingFastnessScale = @WashingFastnessScale" + Environment.NewLine;
+                listPar.Add("@WashingFastnessScale", Req.WashingFastnessScale);
+            }
+
+            if (!string.IsNullOrEmpty(Req.WashingFastnessInspector))
+            {
+                updateCol += $@" , WashingFastnessInspector = @WashingFastnessInspector" + Environment.NewLine;
+                listPar.Add("@WashingFastnessInspector", Req.WashingFastnessInspector);
+            }
+
+            updateCol += $@" , WashingFastnessReceivedDate = @WashingFastnessReceivedDate" + Environment.NewLine;
+            listPar.Add("@WashingFastnessReceivedDate", Req.WashingFastnessReceivedDate);
+
+            updateCol += $@" , WashingFastnessReportDate = @WashingFastnessReportDate" + Environment.NewLine;
+            listPar.Add("@WashingFastnessReportDate", Req.WashingFastnessReportDate);
+
+            if (!string.IsNullOrEmpty(Req.WashingFastnessRemark))
+            {
+                updateCol += $@" , WashingFastnessRemark = @WashingFastnessRemark" + Environment.NewLine;
+                listPar.Add("@WashingFastnessRemark", Req.WashingFastnessRemark);
+            }
+
+            if (!string.IsNullOrEmpty(Req.ChangeScale))
+            {
+                updateCol += $@" , ChangeScale = @ChangeScale" + Environment.NewLine;
+                listPar.Add("@ChangeScale", DbType.String, Req.ChangeScale);
+            }
+            if (!string.IsNullOrEmpty(Req.ResultChange))
+            {
+                updateCol += $@" , ResultChange = @ResultChange" + Environment.NewLine;
+                listPar.Add("@ResultChange", DbType.String, Req.ResultChange);
+            }
+
+            if (!string.IsNullOrEmpty(Req.AcetateScale))
+            {
+                updateCol += $@" , AcetateScale = @AcetateScale" + Environment.NewLine;
+                listPar.Add("@AcetateScale", DbType.String, Req.AcetateScale);
+            }
+            if (!string.IsNullOrEmpty(Req.ResultAcetate))
+            {
+                updateCol += $@" , ResultAcetate = @ResultAcetate" + Environment.NewLine;
+                listPar.Add("@ResultAcetate", DbType.String, Req.ResultAcetate);
+            }
+
+            if (!string.IsNullOrEmpty(Req.CottonScale))
+            {
+                updateCol += $@" , CottonScale = @CottonScale" + Environment.NewLine;
+                listPar.Add("@CottonScale", DbType.String, Req.CottonScale);
+            }
+            if (!string.IsNullOrEmpty(Req.ResultCotton))
+            {
+                updateCol += $@" , ResultCotton = @ResultCotton" + Environment.NewLine;
+                listPar.Add("@ResultCotton", DbType.String, Req.ResultCotton);
+            }
+
+            if (!string.IsNullOrEmpty(Req.NylonScale))
+            {
+                updateCol += $@" , NylonScale = @NylonScale" + Environment.NewLine;
+                listPar.Add("@NylonScale", DbType.String, Req.NylonScale);
+            }
+            if (!string.IsNullOrEmpty(Req.ResultNylon))
+            {
+                updateCol += $@" , ResultNylon = @ResultNylon" + Environment.NewLine;
+                listPar.Add("@ResultNylon", Req.ResultNylon);
+            }
+
+            if (!string.IsNullOrEmpty(Req.PolyesterScale))
+            {
+                updateCol += $@" , PolyesterScale = @PolyesterScale" + Environment.NewLine;
+                listPar.Add("@PolyesterScale", DbType.String, Req.PolyesterScale);
+            }
+            if (!string.IsNullOrEmpty(Req.ResultPolyester))
+            {
+                updateCol += $@" , ResultPolyester = @ResultPolyester" + Environment.NewLine;
+                listPar.Add("@ResultPolyester", Req.ResultPolyester);
+            }
+
+            if (!string.IsNullOrEmpty(Req.AcrylicScale))
+            {
+                updateCol += $@" , AcrylicScale = @AcrylicScale" + Environment.NewLine;
+                listPar.Add("@AcrylicScale", DbType.String, Req.AcrylicScale);
+            }
+            if (!string.IsNullOrEmpty(Req.ResultAcrylic))
+            {
+                updateCol += $@" , ResultAcrylic = @ResultAcrylic" + Environment.NewLine;
+                listPar.Add("@ResultAcrylic", Req.ResultAcrylic);
+            }
+
+            if (!string.IsNullOrEmpty(Req.WoolScale))
+            {
+                updateCol += $@" , WoolScale = @WoolScale" + Environment.NewLine;
+                listPar.Add("@WoolScale", DbType.String, Req.WoolScale);
+            }
+            if (!string.IsNullOrEmpty(Req.ResultWool))
+            {
+                updateCol += $@" , ResultWool = @ResultWool" + Environment.NewLine;
+                listPar.Add("@ResultWool", Req.ResultWool);
+            }
+
+            if (!string.IsNullOrEmpty(Req.CrossStainingScale))
+            {
+                updateCol += $@" , CrossStainingScale = @CrossStainingScale" + Environment.NewLine;
+                listPar.Add("@CrossStainingScale", DbType.String, Req.CrossStainingScale);
+            }
+            if (!string.IsNullOrEmpty(Req.ResultCrossStaining))
+            {
+                updateCol += $@" , ResultCrossStaining = @ResultCrossStaining" + Environment.NewLine;
+                listPar.Add("@ResultCrossStaining", Req.ResultCrossStaining);
+            }
+
+            updatePicCol += $@"        ,WashingFastnessTestBeforePicture = @WashingFastnessTestBeforePicture " + Environment.NewLine;
+            updatePicCol += $@"        ,WashingFastnessTestAfterPicture = @WashingFastnessTestAfterPicture " + Environment.NewLine;
+            if (Req.WashingFastnessTestBeforePicture != null)
+            {
+                listPar.Add("@WashingFastnessTestBeforePicture", Req.WashingFastnessTestBeforePicture);
+            }
+            else
+            {
+                listPar.Add("@WashingFastnessTestBeforePicture", System.Data.SqlTypes.SqlBinary.Null);
+            }
+
+            if (Req.WashingFastnessTestAfterPicture != null)
+            {
+                listPar.Add("@WashingFastnessTestAfterPicture", Req.WashingFastnessTestAfterPicture);
+            }
+            else
+            {
+                listPar.Add("@WashingFastnessTestAfterPicture", System.Data.SqlTypes.SqlBinary.Null);
+            }
+            #endregion
+
+            string sqlCmd = $@"
+SET XACT_ABORT ON
+
+UPDATE AIR_Laboratory
+SET EditDate=GETDATE()
+{updateCol}
+where   ID = @AIR_LaboratoryID
+    and POID = @POID
+    and Seq1 = @Seq1
+    and Seq2 = @Seq2
+
+
+UPDATE [ExtendServer].PMSFile.dbo.AIR_Laboratory
+SET POID=POID
+{updatePicCol}
+where   ID = @AIR_LaboratoryID
+    and POID = @POID
+    and Seq1 = @Seq1
+    and Seq2 = @Seq2
+";
+            return ExecuteNonQuery(CommandType.Text, sqlCmd, listPar);
+        }
+
+        public int UpdateWashingFastness_WashEncodeAmend(Accessory_WashingFastness Req)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@AIR_LaboratoryID", Req.AIR_LaboratoryID);
+            listPar.Add("@POID", Req.POID);
+            listPar.Add("@Seq1", Req.Seq1);
+            listPar.Add("@Seq2", Req.Seq2);
+
+            string updateCol = string.Empty;
+            #region 需要UPDATE的欄位
+
+            updateCol += $@" , WashingFastnessEncode = @WashingFastnessEncode" + Environment.NewLine;
+            listPar.Add("@WashingFastnessEncode", Req.WashingFastnessEncode);
+
+            if (Req.WashingFastnessEncode)
+            {
+                updateCol += $@" , WashingFastness = IIF(
+                                                    ResultChange = 'Pass' AND ResultAcetate = 'Pass' AND ResultCotton = 'Pass' AND ResultNylon = 'Pass' AND 
+                                                    ResultPolyester = 'Pass' AND ResultAcrylic = 'Pass' AND ResultWool= 'Pass' AND ResultCrossStaining = 'Pass'
+                                                ,'Pass','Fail')" + Environment.NewLine;
+            }
+            else
+            {
+                updateCol += $@" , WashingFastness ='' " + Environment.NewLine;
+            }
+
+            if (!string.IsNullOrEmpty(Req.EditName))
+            {
+                updateCol += $@" , EditName = @EditName" + Environment.NewLine;
+                listPar.Add("@EditName", Req.EditName);
+            }
+            #endregion
+
+            string sqlCmd = $@"
+UPDATE AIR_Laboratory
+SET EditDate=GETDATE()
+{updateCol}
+where   ID = @AIR_LaboratoryID
+    and POID = @POID
+    and Seq1 = @Seq1
+    and Seq2 = @Seq2
+";
+
+
+            return ExecuteNonQuery(CommandType.Text, sqlCmd, listPar);
+        }
+
+
+        /// <summary>
+        /// 取得寄信資訊
+        /// </summary>
+        /// <param name="Req"></param>
+        /// <returns></returns>
+        public DataTable GetData_WashingFastnessDataTable(Accessory_WashingFastness Req)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            objParameter.Add("@AIR_LaboratoryID", Req.AIR_LaboratoryID);
+            objParameter.Add("@POID", Req.POID);
+            objParameter.Add("@Seq1", Req.Seq1);
+            objParameter.Add("@Seq2", Req.Seq2);
+
+            string sqlGetData = @"
+select  [SP#] = al.POID
+		,Style = o.StyleID
+		,Brand = o.BrandID
+		,Season = o.SeasonID
+		,Seq = al.Seq1 + ' ' + al.Seq2
+        ,[WK#] = r.ExportId
+		,[Arrive W/H Date]=  convert(varchar, r.WhseArrival , 111) 
+        ,a.SCIRefno
+        ,a.Refno
+        ,Color = psd.ColorID
+        ,Supplier = Concat (a.SuppID, s.AbbEn)
+        ,a.ArriveQty
+		,[Washing Fastness Result]=al.WashingFastness
+        ,[Washing Fastness Last Test Date]=  convert(varchar, al.WashingFastnessReportDate , 111)  
+		,[Washing Fastness Lab Tech	AIR_Laboratory]=al.WashingFastnessInspector
+        ,Remark = al.WashingFastnessRemark
+	    , [TestBeforePicture] = ali.WashingFastnessTestBeforePicture
+	    , [TestAfterPicture] = ali.WashingFastnessTestAfterPicture
+from AIR_Laboratory al WITH(NOLOCK)
+inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
+INNER JOIn Orders o WITH(NOLOCK) ON o.ID = a.POID
+left join [ExtendServer].PMSFile.dbo.AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
+left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
+left join Supp s WITH(NOLOCK) on a.Suppid = s.ID
+left join PO_Supp_Detail psd WITH(NOLOCK) ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
+where   al.ID=@AIR_LaboratoryID
+    and al.POID=@POID
+    and al.Seq1=@Seq1
+    and al.Seq2=@Seq2
+";
+
+            return ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, objParameter);
+        }
+
+        /// <summary>
+        /// 取得匯出報表資訊
+        /// </summary>
+        /// <param name="Req"></param>
+        /// <returns></returns>
+        public Accessory_WashingFastnessExcel GetWashingFastnessExcel(Accessory_WashingFastness Req)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@AIR_LaboratoryID", Req.AIR_LaboratoryID);
+            listPar.Add("@POID", Req.POID);
+            listPar.Add("@Seq1", Req.Seq1);
+            listPar.Add("@Seq2", Req.Seq2);
+
+            string sqlCmd = @"
+select   al.WashingFastnessReceivedDate
+        ,psd.FactoryID
+        ,al.WashingFastnessReportDate
+		,o.StyleID
+        ,Article = att.val
+        ,a.Refno
+		,o.SeasonID
+        ,Color = psd.ColorID
+        ,al.ChangeScale
+        ,al.ResultChange
+        ,al.AcetateScale
+        ,al.ResultAcetate
+        ,al.CottonScale
+        ,al.ResultCotton
+        ,al.NylonScale
+        ,al.ResultNylon
+        ,al.PolyesterScale
+        ,al.ResultPolyester
+        ,al.AcrylicScale
+        ,al.ResultAcrylic
+        ,al.WoolScale
+        ,al.ResultWool
+        ,al.CrossStainingScale
+        ,al.ResultCrossStaining
+        ,Conclusions = CASE WHEN al.ResultChange = 'Fail' OR al.ResultAcetate = 'Fail' OR al.ResultCotton = 'Fail' OR al.ResultNylon = 'Fail' OR al.ResultPolyester = 'Fail' OR
+                                 al.ResultAcrylic = 'Fail' OR al.ResultWool = 'Fail' OR al.ResultCrossStaining = 'Fail'  THEN 'REJECTED'
+                            WHEN al.ResultChange = '' OR al.ResultAcetate = '' OR al.ResultCotton = '' OR al.ResultNylon = '' OR al.ResultPolyester = '' OR
+                                 al.ResultAcrylic = '' OR al.ResultWool = '' OR al.ResultCrossStaining = ''  THEN ''
+                            ELSE 'APPROVED'
+                       END
+
+		,ali.WashingFastnessTestBeforePicture
+		,ali.WashingFastnessTestAfterPicture
+        ,Prepared = al.WashingFastnessInspector
+        ,Executive = (SELECT Name FROM Production..Pass1 Where ID ='PC6000204')
+
+from AIR_Laboratory al WITH(NOLOCK)
+inner join Orders o WITH(NOLOCK) ON o.ID = al.POID
+left join  [ExtendServer].PMSFile.dbo.AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
+inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
+left join PO_Supp_Detail psd WITH(NOLOCK) ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
+OUTER APPLY(
+    select val = stuff((
+	    select DISTINCT ',' + sa.Article
+	    from Style_Article sa
+	    where sa.StyleUkey = o.StyleUkey
+	    FOR XML PATH('')
+    ),1,1,'')
+)att
+where   al.ID=@AIR_LaboratoryID
+    and al.POID=@POID
+    and al.Seq1=@Seq1
+    and al.Seq2=@Seq2
+";
+
+            IList<Accessory_WashingFastnessExcel> listResult = ExecuteList<Accessory_WashingFastnessExcel>(CommandType.Text, sqlCmd, listPar);
+
+            if (listResult.Count == 0)
+            {
+                throw new Exception("No data found");
+            }
+
+            return listResult.FirstOrDefault();
+        }
+        #endregion
+
+
         /// <summary>
         /// 更新最終檢驗結果
         /// </summary>
@@ -888,16 +1398,22 @@ where   al.ID=@AIR_LaboratoryID
 
             string sqlCmd = $@"
 UPDATE AIR_Laboratory
-    SET Result = CASE    WHEN NonOven = 1 AND NonWash = 1 THEN 'Pass' --兩個都不檢驗：直接整體PPass
-	                        WHEN NonOven = 0 AND NonWash = 1 AND OvenEncode = 1 THEN Oven  --Wash不檢驗 + OvenEncode = true：  OvenResult Pass則視作整體Pass
-	                        WHEN NonOven = 1 AND NonWash = 0 AND WashEncode = 1  THEN Wash--Oven不檢驗 + WashEncode = true：  WashResult Pass則視作整體Pass
-	                        ELSE (	--兩個都要檢驗，則套用以下判斷
-			                        CASE WHEN OvenEncode != 1 OR WashEncode != 1 OR Oven='' OR Wash= '' THEN ''   --其中一個未Encode或檢驗：  檢驗未完成，最終結果為空白
-					                        WHEN Oven='Fail' OR Wash= 'Fail' THEN 'Fail'  --其中一個Fail：最終結果 Fail
-			                        ELSE 'Pass'
-			                        END
-	                        )
-                    END
+    SET  Result =   CASE    WHEN NonOven = 1 AND NonWash = 1 AND NonWashingFastness = 1 THEN 'Pass' --3個都不檢驗：直接整體PPass
+	                    WHEN NonOven = 0 AND OvenEncode = 1 AND NonWash = 1 AND NonWashingFastness = 1 THEN Oven                        --只有Oven檢驗
+	                    WHEN NonWash = 0 AND WashEncode = 1 AND NonOven = 1 AND NonWashingFastness = 1 THEN Wash                        --只有Wash檢驗
+	                    WHEN NonWashingFastness = 0 AND WashingFastnessEncode = 1 AND NonOven = 1 AND NonWash = 1 THEN WashingFastness  --只有WashingFastness檢驗
+
+	                    WHEN NonOven = 0 AND OvenEncode = 1 AND NonWash = 0 AND WashEncode = 1 THEN IIF( Oven = 1 and Wash = 1 , 1 , 0 )                                    --Oven + Wash要檢驗
+	                    WHEN NonOven = 0 AND OvenEncode = 1 AND NonWashingFastness= 0 AND WashingFastnessEncode = 1 THEN IIF( Oven = 1 and WashingFastness = 1 , 1 , 0 )    --Oven + WashingFastness要檢驗
+	                    WHEN NonWash = 0 AND WashEncode = 1 AND NonWashingFastness= 0 AND WashingFastnessEncode = 1 THEN IIF( Wash = 1 and WashingFastness = 1 , 1 , 0 )    --Wash + WashingFastness要檢驗
+
+	                    ELSE (	--3個都要檢驗，則套用以下判斷
+			                    CASE WHEN OvenEncode != 1 OR WashEncode != 1 OR WashingFastnessEncode != 1 OR Oven='' OR Wash= '' OR WashingFastness = '' THEN ''   --其中一個未Encode或檢驗：  檢驗未完成，最終結果為空白
+					                 WHEN Oven='Fail' OR Wash= 'Fail' OR WashingFastness = 'Fail'  THEN 'Fail'  --其中一個Fail：最終結果 Fail
+			                    ELSE 'Pass'
+			                    END
+	                    )
+                END
 where   ID = @AIR_LaboratoryID
     and POID = @POID
     and Seq1 = @Seq1
@@ -920,12 +1436,56 @@ where   ID = @AIR_LaboratoryID
 
             string sqlCmd = $@"
 UPDATE AIR_Laboratory
-    SET Result = CASE    WHEN NonOven = 1 AND NonWash = 1 THEN 'Pass' --兩個都不檢驗：直接整體PPass
-	                    WHEN NonOven = 0 AND NonWash = 1 AND OvenEncode = 1 THEN Oven  --Wash不檢驗 + OvenEncode = true：  OvenResult Pass則視作整體Pass
-	                    WHEN NonOven = 1 AND NonWash = 0 AND WashEncode = 1  THEN Wash--Oven不檢驗 + WashEncode = true：  WashResult Pass則視作整體Pass
-	                    ELSE (	--兩個都要檢驗，則套用以下判斷
-			                    CASE WHEN OvenEncode != 1 OR WashEncode != 1 OR Oven='' OR Wash= '' THEN ''   --其中一個未Encode或檢驗：  檢驗未完成，最終結果為空白
-					                    WHEN Oven='Fail' OR Wash= 'Fail' THEN 'Fail'  --其中一個Fail：最終結果 Fail
+    SET  Result =   CASE    WHEN NonOven = 1 AND NonWash = 1 AND NonWashingFastness = 1 THEN 'Pass' --3個都不檢驗：直接整體PPass
+	                    WHEN NonOven = 0 AND OvenEncode = 1 AND NonWash = 1 AND NonWashingFastness = 1 THEN Oven                        --只有Oven檢驗
+	                    WHEN NonWash = 0 AND WashEncode = 1 AND NonOven = 1 AND NonWashingFastness = 1 THEN Wash                        --只有Wash檢驗
+	                    WHEN NonWashingFastness = 0 AND WashingFastnessEncode = 1 AND NonOven = 1 AND NonWash = 1 THEN WashingFastness  --只有WashingFastness檢驗
+
+	                    WHEN NonOven = 0 AND OvenEncode = 1 AND NonWash = 0 AND WashEncode = 1 THEN IIF( Oven = 1 and Wash = 1 , 1 , 0 )                                    --Oven + Wash要檢驗
+	                    WHEN NonOven = 0 AND OvenEncode = 1 AND NonWashingFastness= 0 AND WashingFastnessEncode = 1 THEN IIF( Oven = 1 and WashingFastness = 1 , 1 , 0 )    --Oven + WashingFastness要檢驗
+	                    WHEN NonWash = 0 AND WashEncode = 1 AND NonWashingFastness= 0 AND WashingFastnessEncode = 1 THEN IIF( Wash = 1 and WashingFastness = 1 , 1 , 0 )    --Wash + WashingFastness要檢驗
+
+	                    ELSE (	--3個都要檢驗，則套用以下判斷
+			                    CASE WHEN OvenEncode != 1 OR WashEncode != 1 OR WashingFastnessEncode != 1 OR Oven='' OR Wash= '' OR WashingFastness = '' THEN ''   --其中一個未Encode或檢驗：  檢驗未完成，最終結果為空白
+					                 WHEN Oven='Fail' OR Wash= 'Fail' OR WashingFastness = 'Fail'  THEN 'Fail'  --其中一個Fail：最終結果 Fail
+			                    ELSE 'Pass'
+			                    END
+	                    )
+                END
+where   ID = @AIR_LaboratoryID
+    and POID = @POID
+    and Seq1 = @Seq1
+    and Seq2 = @Seq2
+";
+            return ExecuteNonQuery(CommandType.Text, sqlCmd, listPar);
+        }
+        /// <summary>
+        /// 更新最終檢驗結果
+        /// </summary>
+        /// <param name="Req"></param>
+        /// <returns></returns>
+        public int Update_WashingFastness_AllResult(Accessory_WashingFastness Req)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@AIR_LaboratoryID", Req.AIR_LaboratoryID);
+            listPar.Add("@POID", Req.POID);
+            listPar.Add("@Seq1", Req.Seq1);
+            listPar.Add("@Seq2", Req.Seq2);
+
+            string sqlCmd = $@"
+UPDATE AIR_Laboratory
+    SET  Result =   CASE    WHEN NonOven = 1 AND NonWash = 1 AND NonWashingFastness = 1 THEN 'Pass' --3個都不檢驗：直接整體PPass
+	                    WHEN NonOven = 0 AND OvenEncode = 1 AND NonWash = 1 AND NonWashingFastness = 1 THEN Oven                        --只有Oven檢驗
+	                    WHEN NonWash = 0 AND WashEncode = 1 AND NonOven = 1 AND NonWashingFastness = 1 THEN Wash                        --只有Wash檢驗
+	                    WHEN NonWashingFastness = 0 AND WashingFastnessEncode = 1 AND NonOven = 1 AND NonWash = 1 THEN WashingFastness  --只有WashingFastness檢驗
+
+	                    WHEN NonOven = 0 AND OvenEncode = 1 AND NonWash = 0 AND WashEncode = 1 THEN IIF( Oven = 1 and Wash = 1 , 1 , 0 )                                    --Oven + Wash要檢驗
+	                    WHEN NonOven = 0 AND OvenEncode = 1 AND NonWashingFastness= 0 AND WashingFastnessEncode = 1 THEN IIF( Oven = 1 and WashingFastness = 1 , 1 , 0 )    --Oven + WashingFastness要檢驗
+	                    WHEN NonWash = 0 AND WashEncode = 1 AND NonWashingFastness= 0 AND WashingFastnessEncode = 1 THEN IIF( Wash = 1 and WashingFastness = 1 , 1 , 0 )    --Wash + WashingFastness要檢驗
+
+	                    ELSE (	--3個都要檢驗，則套用以下判斷
+			                    CASE WHEN OvenEncode != 1 OR WashEncode != 1 OR WashingFastnessEncode != 1 OR Oven='' OR Wash= '' OR WashingFastness = '' THEN ''   --其中一個未Encode或檢驗：  檢驗未完成，最終結果為空白
+					                 WHEN Oven='Fail' OR Wash= 'Fail' OR WashingFastness = 'Fail'  THEN 'Fail'  --其中一個Fail：最終結果 Fail
 			                    ELSE 'Pass'
 			                    END
 	                    )
