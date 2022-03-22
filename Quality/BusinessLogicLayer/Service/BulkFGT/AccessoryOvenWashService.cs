@@ -745,13 +745,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
             try
             {
                 string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
-                //DataTable dtOvenDetail = _AccessoryOvenWashProvider.GetOvenTestDataTable(new Accessory_Oven() 
-                //{ 
-                //    AIR_LaboratoryID = Convert.ToInt64( AIR_LaboratoryID),
-                //    POID = POID,
-                //    Seq1 = Seq1,
-                //    Seq2 = Seq2,
-                //});
 
                 Model = _AccessoryOvenWashProvider.GetWashingFastnessExcel(new Accessory_WashingFastness()
                 {
@@ -830,6 +823,57 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     worksheet.Cells[48, 5] = "V";
                 }
+
+                #region 簽名檔圖片
+                Excel.Range cellPrepared = worksheet.Cells[51, 3];
+                if (Model.Prepared != null)
+                {
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    string imgPath;
+
+                    if (IsTest.ToLower() == "true")
+                    {
+                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                    }
+                    else
+                    {
+                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                    }
+
+                    byte[] bytes = Model.Prepared;
+                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
+                    {
+                        imageFile.Write(bytes, 0, bytes.Length);
+                        imageFile.Flush();
+                    }
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellPrepared.Left + 2, cellPrepared.Top + 2, 400, 300);
+                }
+
+
+                Excel.Range cellExecutive = worksheet.Cells[56, 3];
+                if (Model.Executive != null)
+                {
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    string imgPath;
+
+                    if (IsTest.ToLower() == "true")
+                    {
+                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                    }
+                    else
+                    {
+                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                    }
+
+                    byte[] bytes = Model.Executive;
+                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
+                    {
+                        imageFile.Write(bytes, 0, bytes.Length);
+                        imageFile.Flush();
+                    }
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellExecutive.Left + 2, cellExecutive.Top + 2, 400, 300);
+                }
+                #endregion
 
                 #region 添加圖片
                 Excel.Range cellBeforePicture = worksheet.Cells[33, 1];

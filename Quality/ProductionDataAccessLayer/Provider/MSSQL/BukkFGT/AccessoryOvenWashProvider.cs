@@ -111,7 +111,6 @@ select
 
 	,al.NonWashingFastness
 	,NonWashingFastnessResult = al.WashingFastness
-	,al.WashingFastnessScale
 	,al.WashingFastnessInspector
 	,al.WashingFastnessRemark
 	-----以下為藏在背後的Key值不會秀在畫面上-----
@@ -951,7 +950,6 @@ select   al.POID
 		,al.NonWashingFastness
 		,WashingFastnessResult = al.WashingFastness
 		,al.WashingFastnessEncode
-		,al.WashingFastnessScale
 		,al.WashingFastnessInspector
         ,WashingFastnessInspectorName = q.Name
 		,al.WashingFastnessReceivedDate
@@ -1048,12 +1046,6 @@ where   ID = @AIR_LaboratoryID
             else
             {
                 updateCol += $@" , WashingFastness = ''" + Environment.NewLine;
-            }
-
-            if (!string.IsNullOrEmpty(Req.WashingFastnessScale))
-            {
-                updateCol += $@" , WashingFastnessScale = @WashingFastnessScale" + Environment.NewLine;
-                listPar.Add("@WashingFastnessScale", Req.WashingFastnessScale);
             }
 
             if (!string.IsNullOrEmpty(Req.WashingFastnessInspector))
@@ -1349,14 +1341,15 @@ select   al.WashingFastnessReceivedDate
 
 		,ali.WashingFastnessTestBeforePicture
 		,ali.WashingFastnessTestAfterPicture
-        ,Prepared = al.WashingFastnessInspector
-        ,Executive = (SELECT Name FROM Production..Pass1 Where ID ='PC6000204')
+        ,Prepared = tc.SignaturePic
+        ,Executive = (SELECT TOP 1 SignaturePic FROM Production..Technician Where ID ='PC6000204' AND BulkAccOvenWash=1)
 
 from AIR_Laboratory al WITH(NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.ID = al.POID
 left join  [ExtendServer].PMSFile.dbo.AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
 inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
 left join PO_Supp_Detail psd WITH(NOLOCK) ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
+left join Technician tc on tc.ID = al.WashingFastnessInspector AND tc.BulkAccOvenWash=1
 OUTER APPLY(
     select val = stuff((
 	    select DISTINCT ',' + sa.Article

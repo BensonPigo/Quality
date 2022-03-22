@@ -66,7 +66,6 @@ namespace DatabaseObject.ViewModel.BulkFGT
 
         public bool NonWashingFastness { get; set; }
         public string WashingFastnessResult { get; set; }
-        public string WashingFastnessScale { get; set; }
         public string WashingFastnessInspector { get; set; }
         public string WashingFastnessRemark { get; set; }
     }
@@ -299,7 +298,6 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public bool NonWashingFastness { get; set; }
         public string WashingFastnessResult { get; set; }
         public bool WashingFastnessEncode { get; set; }
-        public string WashingFastnessScale { get; set; }
         public string WashingFastnessInspector { get; set; }
         public string WashingFastnessInspectorName { get; set; }
         public DateTime? WashingFastnessReceivedDate { get; set; }
@@ -432,7 +430,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string Conclusions { get; set; }
         public string StyleID { get; set; }
 
-        public string Prepared { get; set; }
-        public string Executive { get; set; }
+        public byte[] Prepared { get; set; }
+        public byte[] Executive { get; set; }
     }
 }
