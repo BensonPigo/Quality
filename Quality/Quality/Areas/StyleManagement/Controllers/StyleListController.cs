@@ -49,7 +49,7 @@ namespace Quality.Areas.StyleManagement.Controllers
 
             if (!model.Result)
             {
-                model.MsgScript = $@"msg.WithInfo(""{model.ErrorMessage.Replace("\r\n", "<br />")}"");";
+                model.MsgScript = $@"msg.WithInfo('{model.ErrorMessage.Replace("\r\n", "<br />")}');";
             }
             model.BrandID = Req.BrandID;
             model.SeasonID = Req.SeasonID;

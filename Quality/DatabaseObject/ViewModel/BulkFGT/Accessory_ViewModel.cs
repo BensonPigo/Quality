@@ -114,8 +114,17 @@ namespace DatabaseObject.ViewModel.BulkFGT
         }
 
         public bool Result { get; set; } = true;
-        public string ErrorMessage { get; set; }
-
+        public string ErrorMessage {
+            get
+            {
+                return _ErrorMeassage;
+            }
+            set
+            {
+                _ErrorMeassage = string.IsNullOrEmpty(value) ? string.Empty : value.Replace("\r\n", "<br />").Replace("\"", string.Empty);
+            }
+        }
+        private string _ErrorMeassage;
 
         // Result = Fail時，要收信的人
         public string ToAddress { get; set; }
@@ -159,8 +168,18 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public bool WashEncode { get; set; }
 
         public bool Result { get; set; } = true;
-        public string ErrorMessage { get; set; }
-
+        public string ErrorMessage
+        {
+            get
+            {
+                return _ErrorMeassage;
+            }
+            set
+            {
+                _ErrorMeassage = string.IsNullOrEmpty(value) ? string.Empty : value.Replace("\r\n", "<br />").Replace("\"", string.Empty);                
+            }
+        }
+        private string _ErrorMeassage;
         public Byte[] WashTestBeforePicture { get; set; }
         public Byte[] WashTestAfterPicture { get; set; }
 

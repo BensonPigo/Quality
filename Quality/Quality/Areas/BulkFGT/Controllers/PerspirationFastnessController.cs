@@ -52,7 +52,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 {
                     Main = new PerspirationFastness_Main(),
                     Details = new List<PerspirationFastness_Detail>(),
-                    ErrorMessage = $@"msg.WithInfo(""{model.ErrorMessage}"");",
+                    ErrorMessage = $@"msg.WithInfo('{model.ErrorMessage.Replace("'",string.Empty) }');",
                 };
             }
             ViewBag.POID = POID;
@@ -94,7 +94,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 model.Main.Remark = saveResult.Main.Remark;
                 model.Details = saveResult.Details;
                 model.Result = saveResult.Result;
-                model.ErrorMessage = $@"msg.WithInfo(""{saveResult.ErrorMessage.ToString() }"");EditMode=true;";
+                model.ErrorMessage = $@"msg.WithInfo('{saveResult.ErrorMessage.Replace("'",string.Empty) }');EditMode=true;";
                 EditMode = "True";
             }
 
@@ -406,7 +406,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         public JsonResult Amend_Detail(string POID, string TestNo)
         {
             BaseResult result = _PerspirationFastnessService.AmendPerspirationFastnessDetail(POID, TestNo);
-            return Json(new { result.Result, result.ErrorMessage });
+            return Json(new { result.Result, ErrorMessage = result.ErrorMessage.Replace("'", string.Empty) });
         }
 
 
