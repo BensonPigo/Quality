@@ -58,7 +58,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             }
             catch (Exception ex)
             {
-                model.ErrorMessage = $@"msg.WithInfo(""{ex.Message}"");";
+                model.ErrorMessage = $@"msg.WithInfo('{ex.Message}');";
             }
             model.SP = Req.SP;
             model.CustPONO = Req.CustPONO;
@@ -352,7 +352,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                 }
                 // 預設值
                 setting.Team = "A";
-                setting.ErrorMessage = $@"msg.WithError(""{result.ErrorMessage}"")";
+                setting.ErrorMessage = $@"msg.WithError('{result.ErrorMessage.Replace("'",string.Empty) }')";
 
                 return View("Setting", setting);
             }
@@ -1012,7 +1012,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                 }
                 else
                 {
-                    ViewData["ErrorMessage"] = $@"msg.WithInfo(""{MoistureResult.ErrorMessage}"");";
+                    ViewData["ErrorMessage"] = $@"msg.WithInfo('{MoistureResult.ErrorMessage.Replace("'",string.Empty) }');";
 
                     Moisture model = service.GetMoistureForInspection(moistureResult.FinalInspectionID);
 
@@ -1177,7 +1177,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                 }
                 else
                 {
-                    model.ErrorMessage = $@"msg.WithError(""Submit Fail, {r.ErrorMessage}"");
+                    model.ErrorMessage = $@"msg.WithError(""Submit Fail, {r.ErrorMessage.Replace("'",string.Empty) }"");
 ";
                 }
             }

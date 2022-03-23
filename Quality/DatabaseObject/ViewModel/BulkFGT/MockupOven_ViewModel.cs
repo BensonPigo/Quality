@@ -59,6 +59,8 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public MockupOven_Request Request { get; set; }
 
         public List<MockupOven_Detail_ViewModel> MockupOven_Detail { get; set; }
+
+        public List<string> Requirements { get; set; }
     }
 
     public class MockupOven_Detail_ViewModel : MockupOven_Detail

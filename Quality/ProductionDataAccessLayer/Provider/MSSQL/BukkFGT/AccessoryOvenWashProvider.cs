@@ -409,13 +409,21 @@ where   ID = @AIR_LaboratoryID
     and Seq1 = @Seq1
     and Seq2 = @Seq2
 
-UPDATE [ExtendServer].PMSFile.dbo.AIR_Laboratory
-SET POID=POID
-{updatePicCol}
-where   ID = @AIR_LaboratoryID
-    and POID = @POID
-    and Seq1 = @Seq1
-    and Seq2 = @Seq2
+if not exists (select 1 from [ExtendServer].PMSFile.dbo.AIR_Laboratory where ID = @AIR_LaboratoryID and POID = @POID and Seq1 = @Seq1 and Seq2 = @Seq2)
+begin
+    INSERT INTO [ExtendServer].PMSFile.dbo.AIR_Laboratory (ID,POID,Seq1,Seq2,OvenTestBeforePicture,OvenTestAfterPicture)
+    VALUES (@AIR_LaboratoryID,@POID,@Seq1,@Seq2,@OvenTestBeforePicture,@OvenTestAfterPicture)
+end
+else
+begin
+    UPDATE [ExtendServer].PMSFile.dbo.AIR_Laboratory
+    SET POID=POID
+    {updatePicCol}
+    where   ID = @AIR_LaboratoryID
+        and POID = @POID
+        and Seq1 = @Seq1
+        and Seq2 = @Seq2
+end
 ";
 
             return ExecuteNonQuery(CommandType.Text, sqlCmd, listPar);
@@ -680,14 +688,21 @@ where   ID = @AIR_LaboratoryID
     and Seq1 = @Seq1
     and Seq2 = @Seq2
 
-
-UPDATE [ExtendServer].PMSFile.dbo.AIR_Laboratory
-SET POID=POID
-{updatePicCol}
-where   ID = @AIR_LaboratoryID
-    and POID = @POID
-    and Seq1 = @Seq1
-    and Seq2 = @Seq2
+if not exists (select 1 from [ExtendServer].PMSFile.dbo.AIR_Laboratory where ID = @AIR_LaboratoryID and POID = @POID and Seq1 = @Seq1 and Seq2 = @Seq2)
+begin
+    INSERT INTO [ExtendServer].PMSFile.dbo.AIR_Laboratory (ID,POID,Seq1,Seq2,WashTestBeforePicture,WashTestAfterPicture)
+    VALUES (@AIR_LaboratoryID,@POID,@Seq1,@Seq2,@WashTestBeforePicture,@WashTestAfterPicture)
+end
+else
+begin
+    UPDATE [ExtendServer].PMSFile.dbo.AIR_Laboratory
+    SET POID=POID
+    {updatePicCol}
+    where   ID = @AIR_LaboratoryID
+        and POID = @POID
+        and Seq1 = @Seq1
+        and Seq2 = @Seq2
+end
 ";
             return ExecuteNonQuery(CommandType.Text, sqlCmd, listPar);
         }

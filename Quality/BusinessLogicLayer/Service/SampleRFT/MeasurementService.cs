@@ -131,7 +131,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
             catch (Exception ex)
             {
                 measurement_Result.Result = false;
-                measurement_Result.ErrMsg = ex.Message.ToString();
+                measurement_Result.ErrMsg = ex.Message.Replace("'", string.Empty);
             }
 
             return measurement_Result;
@@ -157,7 +157,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
             }
             catch (Exception ex)
             {
-                measurement_Request.ErrMsg = ex.Message.ToString();
+                measurement_Request.ErrMsg = ex.Message.Replace("'", string.Empty);
                 measurement_Request.Result = false;
             }
 
@@ -274,7 +274,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
             }
             catch (Exception ex)
             {
-                measurement_Request.ErrMsg = ex.Message.ToString();
+                measurement_Request.ErrMsg = ex.Message.Replace("'", string.Empty);
                 measurement_Request.Result = false;
             }
 

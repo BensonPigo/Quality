@@ -19,7 +19,7 @@ namespace DatabaseObject
             }
             set
             {
-                _ErrorMeassage = value.Replace("\r\n", "<br />").Replace("'", string.Empty);
+                _ErrorMeassage = string.IsNullOrEmpty(value) ? string.Empty : value.Replace("\r\n", "<br />");
             }
         }
         public Exception Exception { get; set; }

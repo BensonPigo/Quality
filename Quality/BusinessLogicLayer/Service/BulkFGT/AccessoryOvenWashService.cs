@@ -44,7 +44,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             catch (Exception ex)
             {
                 result.Result = false;
-                result.ErrorMessage = $@"msg.WithError(""{ex.Message}"");";
+                result.ErrorMessage = $@"msg.WithError('{ex.Message.Replace("'", string.Empty)}');";
             }
 
             return result;
@@ -75,7 +75,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _ISQLDataTransaction.RollBack();
                 result.Result = false;
-                result.ErrorMessage = $@"msg.WithError(""{ex.Message}"");";
+                result.ErrorMessage = $@"msg.WithError('{ex.Message.Replace("'", string.Empty)}');";
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
 
@@ -109,7 +109,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             catch (Exception ex)
             {
                 result.Result = false;
-                result.ErrorMessage = $@"msg.WithError(""{ex.Message}"");";
+                result.ErrorMessage = $@"msg.WithError('{ex.Message.Replace("'", string.Empty)}');";
             }
 
             return result;
@@ -136,7 +136,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _ISQLDataTransaction.RollBack();
                 result.Result = false;
-                result.ErrorMessage = $@"msg.WithError(""{ex.Message}"");";
+                result.ErrorMessage = $@"msg.WithError('{ex.Message.Replace("'", string.Empty)}');";
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
 
@@ -168,7 +168,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
 
                 result.result = false;
-                result.resultMsg = ex.Message.ToString();
+                result.resultMsg = ex.Message.Replace("'", string.Empty);
             }
 
 
@@ -366,7 +366,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             catch (Exception ex)
             {
                 result.Result = false;
-                result.ErrorMessage = $@"msg.WithError(""{ex.Message}"");";
+                result.ErrorMessage = $@"msg.WithError('{ex.Message.Replace("'", string.Empty)}');";
             }
 
             return result;
@@ -394,7 +394,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _ISQLDataTransaction.RollBack();
                 result.Result = false;
-                result.ErrorMessage = $@"msg.WithError(""{ex.Message}"");";
+                result.ErrorMessage = $@"msg.WithError('{ex.Message.Replace("'", string.Empty)}');";
             }
             finally
             {
@@ -429,7 +429,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
 
                 result.result = false;
-                result.resultMsg = ex.Message.ToString();
+                result.resultMsg = ex.Message.Replace("'", string.Empty);
             }
 
 

@@ -64,7 +64,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             catch (Exception ex)
             {
                 quality_MailGroup_Result.Result = false;
-                quality_MailGroup_Result.ErrMsg = ex.Message.ToString();
+                quality_MailGroup_Result.ErrMsg = ex.Message.Replace("'", string.Empty);
             }
 
             return quality_MailGroup_Result;

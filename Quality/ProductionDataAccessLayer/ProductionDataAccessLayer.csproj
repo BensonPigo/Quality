@@ -98,6 +98,7 @@
     <Compile Include="Interface\IGarmentTestDetailProvider.cs" />
     <Compile Include="Interface\IGarmentTestDetailShrinkageProvider.cs" />
     <Compile Include="Interface\IGarmentTestProvider.cs" />
+    <Compile Include="Interface\IInspectionTypeProvider.cs" />
     <Compile Include="Interface\IMockupCrockingDetailProvider.cs" />
     <Compile Include="Interface\IMockupCrockingProvider.cs" />
     <Compile Include="Interface\IMockupOvenDetailProvider.cs" />
@@ -148,6 +149,7 @@
     <Compile Include="Provider\MSSQL\GarmentTestDetailProvider.cs" />
     <Compile Include="Provider\MSSQL\GarmentTestDetailShrinkageProvider.cs" />
     <Compile Include="Provider\MSSQL\GarmentTestProvider.cs" />
+    <Compile Include="Provider\MSSQL\InspectionTypeProvider.cs" />
     <Compile Include="Provider\MSSQL\MockupCrockingDetailProvider.cs" />
     <Compile Include="Provider\MSSQL\MockupCrockingProvider.cs" />
     <Compile Include="Provider\MSSQL\MockupOvenDetailProvider.cs" />

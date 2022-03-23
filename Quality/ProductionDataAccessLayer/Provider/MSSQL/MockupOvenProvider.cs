@@ -200,11 +200,22 @@ SET
     ,HTCoolingTime=@HTCoolingTime
 WHERE ReportNo = @ReportNo
 
-UPDATE [ExtendServer].PMSFile.dbo.MockupOven
-SET
-    TestBeforePicture=@TestBeforePicture
-    ,TestAfterPicture=@TestAfterPicture
-WHERE ReportNo = @ReportNo
+
+if not exists (select 1 from [ExtendServer].PMSFile.dbo.MockupOven where ReportNo = @ReportNo)
+begin
+    INSERT INTO [ExtendServer].PMSFile.dbo.MockupOven (ReportNo,TestBeforePicture,TestAfterPicture)
+    VALUES (@ReportNo,@TestBeforePicture,@TestAfterPicture)
+end
+else
+begin
+    UPDATE [ExtendServer].PMSFile.dbo.MockupOven
+    SET
+        TestBeforePicture=@TestBeforePicture
+        ,TestAfterPicture=@TestAfterPicture
+    WHERE ReportNo = @ReportNo
+end
+
+
 " + Environment.NewLine);
             objParameter.Add("@EditName", DbType.String, HttpUtility.HtmlDecode(Item.EditName) ?? string.Empty);
             objParameter.Add("@POID", DbType.String, HttpUtility.HtmlDecode(Item.POID) ?? string.Empty);

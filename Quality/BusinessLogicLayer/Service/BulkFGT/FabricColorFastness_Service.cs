@@ -84,7 +84,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             catch (Exception ex)
             {
                 result.Result = false;
-                result.ErrorMessage = ex.Message.ToString();
+                result.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
 
             return result;
@@ -119,7 +119,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             catch (Exception ex)
             {
                 result.baseResult.Result = false;
-                result.baseResult.ErrorMessage = ex.Message.ToString();
+                result.baseResult.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
 
             return result;
@@ -197,7 +197,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _ISQLDataTransaction.RollBack();
                 baseResult.Result = false;
-                baseResult.ErrorMessage = ex.Message.ToString();
+                baseResult.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
 
@@ -248,7 +248,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _ISQLDataTransaction.RollBack();
                 baseResult.Result = false;
-                baseResult.ErrorMessage = ex.Message.ToString();
+                baseResult.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
 
@@ -333,7 +333,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             catch (Exception ex)
             {
                 result.Result = false;
-                result.ErrorMessage = ex.Message.ToString();
+                result.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
 
             return result;
@@ -704,7 +704,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _ISQLDataTransaction.RollBack();
                 baseResult.Result = false;
-                baseResult.ErrorMessage = ex.Message.ToString();
+                baseResult.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
 
