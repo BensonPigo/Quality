@@ -61,6 +61,8 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public MockupWash_Request Request { get; set; }
 
         public List<MockupWash_Detail_ViewModel> MockupWash_Detail { get; set; }
+
+        public List<string> Requirements { get; set; }
     }
 
     public class MockupWash_Detail_ViewModel : MockupWash_Detail

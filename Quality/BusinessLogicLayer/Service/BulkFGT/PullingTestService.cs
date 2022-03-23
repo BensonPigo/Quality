@@ -208,7 +208,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
 
                 result.result = false;
-                result.resultMsg = ex.Message.ToString();
+                result.resultMsg = ex.Message.Replace("'", string.Empty);
             }
 
 

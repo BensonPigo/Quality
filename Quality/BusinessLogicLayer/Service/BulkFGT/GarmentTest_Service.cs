@@ -527,7 +527,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _ISQLDataTransaction.RollBack();
                 result.SaveResult = false;
-                result.ErrMsg = ex.Message.ToString();
+                result.ErrMsg = ex.Message.Replace("'", string.Empty);
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
 
@@ -573,7 +573,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             catch (Exception ex)
             {
                 result.Result = false;
-                result.ErrMsg = ex.Message.ToString();
+                result.ErrMsg = ex.Message.Replace("'", string.Empty);
             }
 
             return result;
@@ -607,7 +607,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _ISQLDataTransaction.RollBack();
                 result.SaveResult = false;
-                result.ErrMsg = ex.Message.ToString();
+                result.ErrMsg = ex.Message.Replace("'", string.Empty);
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
 
@@ -666,7 +666,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             catch (Exception ex)
             {
                 result.Result = false;
-                result.ErrMsg = ex.Message.ToString();
+                result.ErrMsg = ex.Message.Replace("'", string.Empty);
             }
 
             return result;
@@ -2506,7 +2506,7 @@ and t.GarmentTest=1
                     }
                     catch (Exception ex)
                     {
-                        all_Data.ErrMsg = ex.Message.ToString();
+                        all_Data.ErrMsg = ex.Message.Replace("'", string.Empty);
                         all_Data.Result = false;
                     }
 

@@ -52,7 +52,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             catch (Exception ex)
             {
                 baseResult.Result = false;
-                baseResult.ErrorMessage = ex.Message.ToString();
+                baseResult.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
 
             return baseResult;
@@ -120,7 +120,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             catch (Exception ex)
             {
                 baseResult.Result = false;
-                baseResult.ErrorMessage = ex.Message.ToString();
+                baseResult.ErrorMessage = ex.Message.Replace("'", string.Empty);
                 return baseResult;
             }
         }
@@ -157,7 +157,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             catch (Exception ex)
             {
                 result.Result = false;
-                result.ErrorMessage = ex.Message.ToString();
+                result.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
 
             return result;
@@ -308,7 +308,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             catch (Exception ex)
             {
                 baseResult.Result = false;
-                baseResult.ErrorMessage = ex.Message.ToString();
+                baseResult.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
 
             return baseResult;
@@ -325,7 +325,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             catch (Exception ex)
             {
                 baseResult.Result = false;
-                baseResult.ErrorMessage = ex.Message.ToString();
+                baseResult.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
 
             return baseResult;
@@ -593,7 +593,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             catch (Exception ex)
             {
                 baseResult.Result = false;
-                baseResult.ErrorMessage = ex.Message.ToString();
+                baseResult.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
 
             return baseResult;

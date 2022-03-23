@@ -100,6 +100,7 @@
     <Compile Include="ProductionDB\ColorFastness_Detail.cs" />
     <Compile Include="ProductionDB\DropDownList.cs" />
     <Compile Include="ProductionDB\Factory.cs" />
+    <Compile Include="ProductionDB\InspectionType.cs" />
     <Compile Include="ProductionDB\FIR.cs" />
     <Compile Include="ProductionDB\FIR_Laboratory.cs" />
     <Compile Include="ProductionDB\FIR_Laboratory_Crocking.cs" />

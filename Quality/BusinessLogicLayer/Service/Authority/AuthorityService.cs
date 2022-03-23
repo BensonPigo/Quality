@@ -37,7 +37,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 result.Result = false;
-                result.ErrorMessage = ex.Message;
+                result.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
 
 
@@ -61,7 +61,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 result.Result = false;
-                result.ErrorMessage = ex.Message;
+                result.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
 
 
@@ -84,7 +84,7 @@ namespace BusinessLogicLayer.Service
             {
                 _ISQLDataTransaction.RollBack();
                 result.Result = false;
-                result.ErrorMessage = ex.Message;
+                result.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
 
@@ -107,7 +107,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 result.Result = false;
-                result.ErrorMessage = ex.Message;
+                result.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
 
 
@@ -135,7 +135,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 result.Result = false;
-                result.ErrorMessage = ex.Message;
+                result.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
 
 
@@ -158,7 +158,7 @@ namespace BusinessLogicLayer.Service
             {
                 _ISQLDataTransaction.RollBack();
                 result.Result = false;
-                result.ErrorMessage = ex.Message;
+                result.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
 
@@ -188,7 +188,7 @@ namespace BusinessLogicLayer.Service
             {
                 _ISQLDataTransaction.RollBack();
                 result.Result = false;
-                result.ErrorMessage = ex.Message;
+                result.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
 
@@ -211,7 +211,7 @@ namespace BusinessLogicLayer.Service
             {
                 _ISQLDataTransaction.RollBack();
                 result.Result = false;
-                result.ErrorMessage = ex.Message;
+                result.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
 
@@ -234,7 +234,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 result.Result = false;
-                result.ErrorMessage = ex.Message;
+                result.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
 
             return result;
@@ -256,7 +256,7 @@ namespace BusinessLogicLayer.Service
             {
                 _ISQLDataTransaction.RollBack();
                 result.Result = false;
-                result.ErrorMessage = ex.Message;
+                result.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
 
@@ -327,7 +327,7 @@ namespace BusinessLogicLayer.Service
             {
                 _ISQLDataTransaction.RollBack();
                 result.Result = false;
-                result.ErrorMessage = ex.Message;
+                result.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
             finally { _ISQLDataTransaction.CloseConnection(); }
 
