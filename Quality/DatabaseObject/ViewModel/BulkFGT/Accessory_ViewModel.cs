@@ -430,6 +430,8 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string Conclusions { get; set; }
         public string StyleID { get; set; }
 
+        public string PreparedText { get; set; }
+        public string ExecutiveText { get; set; }
         public byte[] Prepared { get; set; }
         public byte[] Executive { get; set; }
     }

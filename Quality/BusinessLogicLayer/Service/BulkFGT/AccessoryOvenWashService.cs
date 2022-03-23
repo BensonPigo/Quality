@@ -812,8 +812,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 worksheet.Cells[15, 5] = Model.ResultCrossStaining;
 
 
-                worksheet.Cells[51, 3] = Model.Prepared;
-                worksheet.Cells[56, 3] = Model.Executive;
+                worksheet.Cells[51, 5] = Model.PreparedText;
+                //worksheet.Cells[56, 5] = Model.ExecutiveText;
 
                 if (Model.Conclusions == "APPROVED")
                 {
@@ -825,7 +825,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
 
                 #region 簽名檔圖片
-                Excel.Range cellPrepared = worksheet.Cells[51, 3];
+                Excel.Range cellPrepared = worksheet.Cells[51, 5];
                 if (Model.Prepared != null)
                 {
                     string imageName = $"{Guid.NewGuid()}.jpg";
@@ -850,7 +850,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
 
 
-                Excel.Range cellExecutive = worksheet.Cells[56, 3];
+                Excel.Range cellExecutive = worksheet.Cells[56, 5];
                 if (Model.Executive != null)
                 {
                     string imageName = $"{Guid.NewGuid()}.jpg";
@@ -900,7 +900,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 400, 300);
                 }
 
-                Excel.Range cellAfterPicture = worksheet.Cells[33, 6];
+                Excel.Range cellAfterPicture = worksheet.Cells[33, 5];
                 if (Model.WashingFastnessTestAfterPicture != null)
                 {
                     string imageName = $"{Guid.NewGuid()}.jpg";
