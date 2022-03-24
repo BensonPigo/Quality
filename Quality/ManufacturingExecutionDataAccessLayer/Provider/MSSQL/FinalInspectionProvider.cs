@@ -1163,7 +1163,10 @@ from    Production.dbo.Orders with (nolock)
 where   ID IN (
     select ID
     from Production.dbo.Orders WITH(NOLOCK)
-    where CustPONO = (select CustPONO from FinalInspection with (nolock) where ID = @FinalInspectionID )
+    where CustPONO = (select CustPONO from FinalInspection with (nolock) where ID = @FinalInspectionID ) AND CustPONO != ''
+	UNION
+	select TOP 1 ID = OrderID 
+	from FinalInspection_Order with (nolock) where ID = @FinalInspectionID
 )
 
 select  [SP] = (SELECT Stuff((select concat( ',',OrderID) 
