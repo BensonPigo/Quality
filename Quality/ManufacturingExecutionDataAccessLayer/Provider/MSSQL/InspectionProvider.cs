@@ -45,7 +45,7 @@ group by ID
 
 declare @cnt int = (select count(1) from #tmp)
 declare @OrderID varchar(16)
-declare @Num int = 1;while @Num <= @cntbegin		set @OrderID = (select top 1 id from #tmp where row = @Num)	exec MainServer.Production.dbo.Ins_OrderLocation @OrderID	set @Num = @Num + 1enddrop table #tmp
+declare @Num int = 1;while @Num <= @cntbegin		set @OrderID = (select top 1 id from #tmp where row = @Num)	exec MainServer.Production.dbo.Ins_OrderLocation @OrderID, 'Quality'	set @Num = @Num + 1enddrop table #tmp
 
 
 -- 撈資料
