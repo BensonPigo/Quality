@@ -66,6 +66,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
 
         public bool NonWashingFastness { get; set; }
         public string WashingFastnessResult { get; set; }
+        public DateTime? WashingFastnessReportDate { get; set; }
         public string WashingFastnessInspector { get; set; }
         public string WashingFastnessRemark { get; set; }
     }

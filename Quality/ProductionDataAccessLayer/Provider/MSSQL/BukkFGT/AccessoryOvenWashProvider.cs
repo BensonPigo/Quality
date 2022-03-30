@@ -102,11 +102,21 @@ select
 	,al.OvenInspector
 	,al.OvenRemark
 	,al.NonWash
+
+    --701
 	,WashResult = al.Wash
 	,al.WashScale
 	,al.WashDate
 	,al.WashInspector
 	,al.WashRemark
+
+    --501
+	,al.NonWashingFastness
+	,WashingFastnessResult = al.WashingFastness
+	,al.WashingFastnessReportDate
+	,al.WashingFastnessInspector
+	,al.WashingFastnessRemark
+
 	,a.ReceivingID
 
 	,al.NonWashingFastness
@@ -196,9 +206,9 @@ SET  Result =   CASE    WHEN NonOven = 1 AND NonWash = 1 AND NonWashingFastness 
 	                    WHEN NonWash = 0 AND WashEncode = 1 AND NonOven = 1 AND NonWashingFastness = 1 THEN Wash                        --只有Wash檢驗
 	                    WHEN NonWashingFastness = 0 AND WashingFastnessEncode = 1 AND NonOven = 1 AND NonWash = 1 THEN WashingFastness  --只有WashingFastness檢驗
 
-	                    WHEN NonOven = 0 AND OvenEncode = 1 AND NonWash = 0 AND WashEncode = 1 THEN IIF( Oven = 1 and Wash = 1 , 1 , 0 )                                    --Oven + Wash要檢驗
-	                    WHEN NonOven = 0 AND OvenEncode = 1 AND NonWashingFastness= 0 AND WashingFastnessEncode = 1 THEN IIF( Oven = 1 and WashingFastness = 1 , 1 , 0 )    --Oven + WashingFastness要檢驗
-	                    WHEN NonWash = 0 AND WashEncode = 1 AND NonWashingFastness= 0 AND WashingFastnessEncode = 1 THEN IIF( Wash = 1 and WashingFastness = 1 , 1 , 0 )    --Wash + WashingFastness要檢驗
+	                    WHEN NonOven = 0 AND OvenEncode = 1 AND NonWash = 0 AND WashEncode = 1 THEN IIF( Oven = 'Pass' and Wash = 'Pass' , 'Pass' , 'Fail' )                                    --Oven + Wash要檢驗
+	                    WHEN NonOven = 0 AND OvenEncode = 1 AND NonWashingFastness= 0 AND WashingFastnessEncode = 1 THEN IIF( Oven = 'Pass' and WashingFastness = 'Pass' , 'Pass' , 'Fail' )    --Oven + WashingFastness要檢驗
+	                    WHEN NonWash = 0 AND WashEncode = 1 AND NonWashingFastness= 0 AND WashingFastnessEncode = 1 THEN IIF( Wash = 'Pass' and WashingFastness = 'Pass' , 'Pass' , 'Fail' )    --Wash + WashingFastness要檢驗
 
 	                    ELSE (	--3個都要檢驗，則套用以下判斷
 			                    CASE WHEN OvenEncode != 1 OR WashEncode != 1 OR WashingFastnessEncode != 1 OR Oven='' OR Wash= '' OR WashingFastness = '' THEN ''   --其中一個未Encode或檢驗：  檢驗未完成，最終結果為空白
@@ -1399,9 +1409,9 @@ UPDATE AIR_Laboratory
 	                    WHEN NonWash = 0 AND WashEncode = 1 AND NonOven = 1 AND NonWashingFastness = 1 THEN Wash                        --只有Wash檢驗
 	                    WHEN NonWashingFastness = 0 AND WashingFastnessEncode = 1 AND NonOven = 1 AND NonWash = 1 THEN WashingFastness  --只有WashingFastness檢驗
 
-	                    WHEN NonOven = 0 AND OvenEncode = 1 AND NonWash = 0 AND WashEncode = 1 THEN IIF( Oven = 1 and Wash = 1 , 1 , 0 )                                    --Oven + Wash要檢驗
-	                    WHEN NonOven = 0 AND OvenEncode = 1 AND NonWashingFastness= 0 AND WashingFastnessEncode = 1 THEN IIF( Oven = 1 and WashingFastness = 1 , 1 , 0 )    --Oven + WashingFastness要檢驗
-	                    WHEN NonWash = 0 AND WashEncode = 1 AND NonWashingFastness= 0 AND WashingFastnessEncode = 1 THEN IIF( Wash = 1 and WashingFastness = 1 , 1 , 0 )    --Wash + WashingFastness要檢驗
+	                    WHEN NonOven = 0 AND OvenEncode = 1 AND NonWash = 0 AND WashEncode = 1 THEN IIF( Oven = 'Pass' and Wash = 'Pass' , 'Pass' , 'Fail' )                                    --Oven + Wash要檢驗
+	                    WHEN NonOven = 0 AND OvenEncode = 1 AND NonWashingFastness= 0 AND WashingFastnessEncode = 1 THEN IIF( Oven = 'Pass' and WashingFastness = 'Pass' , 'Pass' , 'Fail' )    --Oven + WashingFastness要檢驗
+	                    WHEN NonWash = 0 AND WashEncode = 1 AND NonWashingFastness= 0 AND WashingFastnessEncode = 1 THEN IIF( Wash = 'Pass' and WashingFastness = 'Pass' , 'Pass' , 'Fail' )    --Wash + WashingFastness要檢驗
 
 	                    ELSE (	--3個都要檢驗，則套用以下判斷
 			                    CASE WHEN OvenEncode != 1 OR WashEncode != 1 OR WashingFastnessEncode != 1 OR Oven='' OR Wash= '' OR WashingFastness = '' THEN ''   --其中一個未Encode或檢驗：  檢驗未完成，最終結果為空白
