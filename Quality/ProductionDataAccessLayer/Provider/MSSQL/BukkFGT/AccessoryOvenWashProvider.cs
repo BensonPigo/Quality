@@ -364,21 +364,14 @@ where   al.ID=@AIR_LaboratoryID
                 updateCol += $@" , OvenScale = @Scale" + Environment.NewLine;
                 listPar.Add("@Scale", Req.Scale);
             }
-            if (!string.IsNullOrEmpty(Req.OvenResult))
-            {
-                updateCol += $@" , Oven = @OvenResult" + Environment.NewLine;
-                listPar.Add("@OvenResult", Req.OvenResult);
-            }
-            else
-            {
-                // OvenResult 不能改回空白
-                // updateCol += $@" , Oven = '' " + Environment.NewLine;
-            }
-            if (!string.IsNullOrEmpty(Req.Remark))
-            {
-                updateCol += $@" , OvenRemark = @Remark" + Environment.NewLine;
-                listPar.Add("@Remark", Req.Remark);
-            }
+
+
+            updateCol += $@" , Oven = @OvenResult" + Environment.NewLine;
+            listPar.Add("@OvenResult", Req.OvenResult ?? string.Empty);
+
+            updateCol += $@" , OvenRemark = @Remark" + Environment.NewLine;
+            listPar.Add("@Remark", Req.Remark ?? string.Empty);
+
             if (!string.IsNullOrEmpty(Req.OvenInspector))
             {
                 updateCol += $@" , OvenInspector = @OvenInspector" + Environment.NewLine;
@@ -641,22 +634,14 @@ where   al.ID=@AIR_LaboratoryID
                 updateCol += $@" , WashScale = @Scale" + Environment.NewLine;
                 listPar.Add("@Scale", Req.Scale);
             }
-            if (!string.IsNullOrEmpty(Req.WashResult))
-            {
-                updateCol += $@" , Wash = @WashResult" + Environment.NewLine;
-                listPar.Add("@WashResult", Req.WashResult);
-            }
-            else
-            {
-                // WashResult 不能改回空白
-                // updateCol += $@" , Wash = '' " + Environment.NewLine;
-            }
 
-            if (!string.IsNullOrEmpty(Req.Remark))
-            {
-                updateCol += $@" , WashRemark = @Remark" + Environment.NewLine;
-                listPar.Add("@Remark", Req.Remark);
-            }
+
+            updateCol += $@" , Wash = @WashResult" + Environment.NewLine;
+            listPar.Add("@WashResult", Req.WashResult ?? string.Empty);
+
+            updateCol += $@" , WashRemark = @Remark" + Environment.NewLine;
+            listPar.Add("@Remark", Req.Remark ?? string.Empty);
+
             if (!string.IsNullOrEmpty(Req.WashInspector))
             {
                 updateCol += $@" , WashInspector = @WashInspector" + Environment.NewLine;
