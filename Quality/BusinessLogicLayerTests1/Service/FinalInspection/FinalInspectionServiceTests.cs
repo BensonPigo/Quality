@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using DatabaseObject.RequestModel;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using System.IO;
+using DatabaseObject.ResultModel.FinalInspection;
 
 namespace BusinessLogicLayer.Service.Tests
 {
@@ -43,12 +44,12 @@ namespace BusinessLogicLayer.Service.Tests
                 FinalInspectionService finalInspectionService = new FinalInspectionService();
                 PivotTransferRequest pivotTransferRequest = new PivotTransferRequest()
                 {
-                    InspectionID = "ES3CH21110007",
+                    InspectionID = "SPSCH21120145",
                     BaseUri = "https://adidasstage4.pivot88.com",
                     RequestUri = "rest/operation/v1/inspection_reports/unique_key:",
                     Headers = new Dictionary<string, string>() { { "api-key", "64158338-5de2-451e-aa72-3fa470fdf4cb" } }
                 };
-                finalInspectionService.SentPivot88(pivotTransferRequest);
+                List<SentPivot88Result> sentPivot88Results = finalInspectionService.SentPivot88(pivotTransferRequest);
                 Assert.IsTrue(true);
             }
             catch (Exception ex)
