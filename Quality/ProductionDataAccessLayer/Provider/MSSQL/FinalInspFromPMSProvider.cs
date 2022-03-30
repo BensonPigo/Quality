@@ -332,18 +332,26 @@ where exists (select 1 from #FinalInspection_Order_QtyShip where OrderID = oqd.I
             listPar.Add("@finalInspectionID", finalInspectionID);
 
             string sqlGetMoistureArticleList = @"
-select  OrderID
+select OrderID
 into #FinalInspection_Order
 from ManufacturingExecution.dbo.FinalInspection_Order with (nolock)
 where ID = @finalInspectionID
 
 ----避免沒有Order_Location資料，預先塞入
-INSERT into  Production.dbo.Order_Location(OrderId,Location,Rate,AddName,AddDate,EditName,EditDate)
-SELECT o.id,sl.Location,sl.Rate,sl.AddName,sl.AddDate,sl.EditName,sl.EditDate
-FROM Production.dbo.orders o WITH(NOLOCK)
-inner join Production.dbo.Style_Location sl WITH (NOLOCK) on o.StyleUkey = sl.StyleUkey
-WHERE o.ID IN (select OrderID from #FinalInspection_Order)
-AND  o.ID NOT IN (select OrderID from Production.dbo.Order_Location WITH(NOLOCK))
+DECLARE CUR_SewingOutput_Detail CURSOR FOR 
+     Select distinct orderid from #FinalInspection_Order
+
+declare @orderid varchar(13) 
+OPEN CUR_SewingOutput_Detail   
+FETCH NEXT FROM CUR_SewingOutput_Detail INTO @orderid 
+WHILE @@FETCH_STATUS = 0 
+BEGIN
+  exec MainServer.Production.dbo.Ins_OrderLocation @orderid
+FETCH NEXT FROM CUR_SewingOutput_Detail INTO @orderid
+END
+CLOSE CUR_SewingOutput_Detail
+DEALLOCATE CUR_SewingOutput_Detail
+
 
 select distinct Location 
 from Production.dbo.Order_Location with (nolock)
