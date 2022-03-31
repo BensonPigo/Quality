@@ -143,6 +143,39 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
+        public Accessory_Oven EncodeAmendOven(Accessory_Oven Req)
+        {
+            Accessory_Oven result = new Accessory_Oven();
+
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            try
+            {
+                _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(_ISQLDataTransaction);
+
+                result.ScaleData = _AccessoryOvenWashProvider.GetScaleData();
+                var check = _AccessoryOvenWashProvider.Oven_EncodeCheck(Req);
+                int r = _AccessoryOvenWashProvider.EncodeAmendOven(Req);
+
+                result.Result = r > 0;
+                _AccessoryOvenWashProvider.Update_Oven_AllResult(Req);
+                _AccessoryOvenWashProvider.UpdateInspPercent(Req.POID);
+
+                _ISQLDataTransaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                _ISQLDataTransaction.RollBack();
+                result.Result = false;
+                result.ErrorMessage = $@"msg.WithError(""{ex.Message}"");";
+            }
+            finally
+            {
+                _ISQLDataTransaction.CloseConnection();
+            }
+
+            return result;
+        }
+
         public SendMail_Result SendOvenMail(Accessory_Oven Req)
         {
 
@@ -404,6 +437,38 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
+        public Accessory_Wash EncodeAmendWash(Accessory_Wash Req)
+        {
+            Accessory_Wash result = new Accessory_Wash();
+
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+            try
+            {
+                _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(_ISQLDataTransaction);
+
+                result.ScaleData = _AccessoryOvenWashProvider.GetScaleData();
+                var check = _AccessoryOvenWashProvider.Wash_EncodeCheck(Req);
+                int r = _AccessoryOvenWashProvider.EncodeAmendWash(Req);
+
+                result.Result = r > 0;
+                _AccessoryOvenWashProvider.Update_Wash_AllResult(Req);
+                _AccessoryOvenWashProvider.UpdateInspPercent(Req.POID);
+
+                _ISQLDataTransaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                _ISQLDataTransaction.RollBack();
+                result.Result = false;
+                result.ErrorMessage = $@"msg.WithError(""{ex.Message}"");";
+            }
+            finally
+            {
+                _ISQLDataTransaction.CloseConnection();
+            }
+
+            return result;
+        }
         public SendMail_Result SendWashMail(Accessory_Wash Req)
         {
 

@@ -139,22 +139,12 @@ namespace Quality.Areas.BulkFGT.Controllers
         [MultipleButton(Name = "action", Argument = "OvenEncode")]
         public ActionResult OvenEncode(Accessory_Oven Req)
         {
-            if (string.IsNullOrEmpty(Req.OvenResult))
-            {
-                // 錯誤處理：新增一個Model承接ErrorMessage，並查詢原資料帶到畫面
-                Accessory_Oven errorModel = new Accessory_Oven();
-                errorModel = _Service.GetOvenTest(Req);
-                errorModel.ErrorMessage = $@"msg.WithError(""Result can not be empty!!"");";
-
-                return View("OvenTest", errorModel);
-            }
-
             Accessory_Oven model = new Accessory_Oven();
             Req.EditName = this.UserID;
             Req.OvenEncode = true;
 
             //修改
-            model = _Service.UpdateOven(Req);
+            model = _Service.EncodeAmendOven(Req);
 
             _Service.UpdateInspPercent(Req.POID);
             if (!model.Result)
@@ -191,7 +181,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             Req.OvenEncode = false;
 
             //修改
-            model = _Service.UpdateOven(Req);
+            model = _Service.EncodeAmendOven(Req);
             _Service.UpdateInspPercent(Req.POID);
 
             if (!model.Result)
@@ -283,24 +273,13 @@ namespace Quality.Areas.BulkFGT.Controllers
         [MultipleButton(Name = "action", Argument = "WashEncode")]
         public ActionResult WashEncode(Accessory_Wash Req)
         {
-
-            if (string.IsNullOrEmpty(Req.WashResult))
-            {
-                // 錯誤處理：新增一個Model承接ErrorMessage，並查詢原資料帶到畫面
-                Accessory_Wash errorModel = new Accessory_Wash();
-                errorModel = _Service.GetWashTest(Req);
-                errorModel.ErrorMessage = $@"msg.WithError(""Result can not be empty!!"");";
-
-                return View("WashTest", errorModel);
-            }
-
             Accessory_Wash model = new Accessory_Wash();
             Req.EditName = this.UserID;
             Req.WashEncode = true;
 
 
             //修改
-            model = _Service.UpdateWash(Req);
+            model = _Service.EncodeAmendWash(Req);
             _Service.UpdateInspPercent(Req.POID);
 
             if (!model.Result)

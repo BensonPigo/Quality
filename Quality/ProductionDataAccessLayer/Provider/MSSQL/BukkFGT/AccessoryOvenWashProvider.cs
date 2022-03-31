@@ -119,10 +119,6 @@ select
 
 	,a.ReceivingID
 
-	,al.NonWashingFastness
-	,NonWashingFastnessResult = al.WashingFastness
-	,al.WashingFastnessInspector
-	,al.WashingFastnessRemark
 	-----以下為藏在背後的Key值不會秀在畫面上-----
 	,AIR_LaboratoryID = al.ID
 	,a.Seq1
@@ -378,14 +374,15 @@ where   al.ID=@AIR_LaboratoryID
                 listPar.Add("@OvenInspector", Req.OvenInspector);
             }
 
+            updateCol += $@" , OvenDate = @OvenDate" + Environment.NewLine;
             if (Req.OvenDate.HasValue)
             {
-                updateCol += $@" , OvenDate = @OvenDate" + Environment.NewLine;
                 listPar.Add("@OvenDate", Req.OvenDate.Value);
             }
-
-            updateCol += $@" , OvenEncode = @OvenEncode" + Environment.NewLine;
-            listPar.Add("@OvenEncode", Req.OvenEncode);
+            else
+            {
+                listPar.Add("@OvenDate", DBNull.Value);
+            }
 
             if (!string.IsNullOrEmpty(Req.EditName))
             {
@@ -437,7 +434,35 @@ where   ID = @AIR_LaboratoryID
             return ExecuteNonQuery(CommandType.Text, sqlCmd, listPar);
         }
 
-        public int UpdateOvenTest_OvenEncode(Accessory_Oven Req)
+
+        public Accessory_Oven Oven_EncodeCheck(Accessory_Oven Req)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@AIR_LaboratoryID", Req.AIR_LaboratoryID);
+            listPar.Add("@POID", Req.POID);
+            listPar.Add("@Seq1", Req.Seq1);
+            listPar.Add("@Seq2", Req.Seq2);
+
+            string sqlCmd = @"
+select   1
+from AIR_Laboratory
+where   ID = @AIR_LaboratoryID
+    and POID = @POID
+    and Seq1 = @Seq1
+    and Seq2 = @Seq2
+    AND Oven = ''
+";
+            IList<Accessory_Oven> listResult = ExecuteList<Accessory_Oven>(CommandType.Text, sqlCmd, listPar);
+
+            if (listResult.Count > 0)
+            {
+                throw new Exception("Result cannot be empty.");
+            }
+
+            return listResult.FirstOrDefault();
+        }
+
+        public int EncodeAmendOven(Accessory_Oven Req)
         {
             SQLParameterCollection listPar = new SQLParameterCollection();
             listPar.Add("@AIR_LaboratoryID", Req.AIR_LaboratoryID);
@@ -447,40 +472,7 @@ where   ID = @AIR_LaboratoryID
 
             string updateCol = string.Empty;
             #region 需要UPDATE的欄位
-            if (!string.IsNullOrEmpty(Req.Scale))
-            {
-                updateCol += $@" , OvenScale = @Scale" + Environment.NewLine;
-                listPar.Add("@Scale", Req.Scale);
-            }
-            if (!string.IsNullOrEmpty(Req.OvenResult))
-            {
-                updateCol += $@" , Oven = @OvenResult" + Environment.NewLine;
-                listPar.Add("@OvenResult", Req.OvenResult);
-            }
-            else
-            {
-                updateCol += $@" , Oven = '' " + Environment.NewLine;
-            }
-            if (!string.IsNullOrEmpty(Req.Remark))
-            {
-                updateCol += $@" , OvenRemark = @Remark" + Environment.NewLine;
-                listPar.Add("@Remark", Req.Remark);
-            }
-            if (!string.IsNullOrEmpty(Req.OvenInspector))
-            {
-                updateCol += $@" , OvenInspector = @OvenInspector" + Environment.NewLine;
-                listPar.Add("@OvenInspector", Req.OvenInspector);
-            }
 
-            if (Req.OvenDate.HasValue)
-            {
-                updateCol += $@" , OvenDate = @OvenDate" + Environment.NewLine;
-                listPar.Add("@OvenDate", Req.OvenDate.Value);
-            }
-            else
-            {
-                updateCol += $@" , OvenDate = NULL" + Environment.NewLine;
-            }
 
             updateCol += $@" , OvenEncode = @OvenEncode" + Environment.NewLine;
             listPar.Add("@OvenEncode", Req.OvenEncode);
@@ -648,40 +640,30 @@ where   al.ID=@AIR_LaboratoryID
                 listPar.Add("@WashInspector", Req.WashInspector);
             }
 
-            if (!string.IsNullOrEmpty(Req.MachineWash))
-            {
-                updateCol += $@" , MachineWash = @MachineWash" + Environment.NewLine;
-                listPar.Add("@MachineWash", Req.MachineWash);
-            }
-            if (Req.WashingTemperature != 0)
-            {
-                updateCol += $@" , WashingTemperature = @WashingTemperature" + Environment.NewLine;
-                listPar.Add("@WashingTemperature", DbType.Int32, Req.WashingTemperature);
-            }
-            if (!string.IsNullOrEmpty(Req.DryProcess))
-            {
-                updateCol += $@" , DryProcess = @DryProcess" + Environment.NewLine;
-                listPar.Add("@DryProcess", DbType.String, Req.DryProcess);
-            }
-            if (!string.IsNullOrEmpty(Req.MachineModel))
-            {
-                updateCol += $@" , MachineModel = @MachineModel" + Environment.NewLine;
-                listPar.Add("@MachineModel", Req.MachineModel);
-            }
-            if (Req.WashingCycle != 0)
-            {
-                updateCol += $@" , WashingCycle = @WashingCycle" + Environment.NewLine;
-                listPar.Add("@WashingCycle", DbType.Int32, Req.WashingCycle);
-            }
+            updateCol += $@" , MachineWash = @MachineWash" + Environment.NewLine;
+            listPar.Add("@MachineWash", Req.MachineWash ?? string.Empty);
 
+            updateCol += $@" , WashingTemperature = @WashingTemperature" + Environment.NewLine;
+            listPar.Add("@WashingTemperature", DbType.Int32, Req.WashingTemperature);
+
+            updateCol += $@" , DryProcess = @DryProcess" + Environment.NewLine;
+            listPar.Add("@DryProcess", DbType.String, Req.DryProcess ?? string.Empty);
+
+            updateCol += $@" , MachineModel = @MachineModel" + Environment.NewLine;
+            listPar.Add("@MachineModel", Req.MachineModel ?? string.Empty);
+
+            updateCol += $@" , WashingCycle = @WashingCycle" + Environment.NewLine;
+            listPar.Add("@WashingCycle", DbType.Int32, Req.WashingCycle);
+
+            updateCol += $@" , WashDate = @WashDate" + Environment.NewLine;
             if (Req.WashDate.HasValue)
             {
-                updateCol += $@" , WashDate = @WashDate" + Environment.NewLine;
                 listPar.Add("@WashDate", Req.WashDate.Value);
             }
-
-            updateCol += $@" , WashEncode = @WashEncode" + Environment.NewLine;
-            listPar.Add("@WashEncode", Req.WashEncode);
+            else
+            {
+                listPar.Add("@WashDate", DBNull.Value);
+            }
 
             if (!string.IsNullOrEmpty(Req.EditName))
             {
@@ -733,7 +715,34 @@ where   ID = @AIR_LaboratoryID
             return ExecuteNonQuery(CommandType.Text, sqlCmd, listPar);
         }
 
-        public int UpdateWashTest_WashEncode(Accessory_Wash Req)
+
+        public Accessory_Wash Wash_EncodeCheck(Accessory_Wash Req)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@AIR_LaboratoryID", Req.AIR_LaboratoryID);
+            listPar.Add("@POID", Req.POID);
+            listPar.Add("@Seq1", Req.Seq1);
+            listPar.Add("@Seq2", Req.Seq2);
+
+            string sqlCmd = @"
+select   1
+from AIR_Laboratory
+where   ID = @AIR_LaboratoryID
+    and POID = @POID
+    and Seq1 = @Seq1
+    and Seq2 = @Seq2
+    AND Wash = ''
+";
+            IList<Accessory_Wash> listResult = ExecuteList<Accessory_Wash>(CommandType.Text, sqlCmd, listPar);
+
+            if (listResult.Count > 0)
+            {
+                throw new Exception("Result cannot be empty.");
+            }
+
+            return listResult.FirstOrDefault();
+        }
+        public int EncodeAmendWash(Accessory_Wash Req)
         {
             SQLParameterCollection listPar = new SQLParameterCollection();
             listPar.Add("@AIR_LaboratoryID", Req.AIR_LaboratoryID);
@@ -743,40 +752,7 @@ where   ID = @AIR_LaboratoryID
 
             string updateCol = string.Empty;
             #region 需要UPDATE的欄位
-            if (!string.IsNullOrEmpty(Req.Scale))
-            {
-                updateCol += $@" , WashScale = @Scale" + Environment.NewLine;
-                listPar.Add("@Scale", Req.Scale);
-            }
-            if (!string.IsNullOrEmpty(Req.WashResult))
-            {
-                updateCol += $@" , Wash = @WashResult" + Environment.NewLine;
-                listPar.Add("@WashResult", Req.WashResult);
-            }
-            else
-            {
-                updateCol += $@" , Wash = '' " + Environment.NewLine;
-            }
-            if (!string.IsNullOrEmpty(Req.Remark))
-            {
-                updateCol += $@" , WashRemark = @Remark" + Environment.NewLine;
-                listPar.Add("@Remark", Req.Remark);
-            }
-            if (!string.IsNullOrEmpty(Req.WashInspector))
-            {
-                updateCol += $@" , WashInspector = @WashInspector" + Environment.NewLine;
-                listPar.Add("@WashInspector", Req.WashInspector);
-            }
 
-            if (Req.WashDate.HasValue)
-            {
-                updateCol += $@" , WashDate = @WashDate" + Environment.NewLine;
-                listPar.Add("@WashDate", Req.WashDate.Value);
-            }
-            else
-            {
-                updateCol += $@" , WashDate = NULL" + Environment.NewLine;
-            }
 
             updateCol += $@" , WashEncode = @WashEncode" + Environment.NewLine;
             listPar.Add("@WashEncode", Req.WashEncode);
@@ -1029,20 +1005,6 @@ where   ID = @AIR_LaboratoryID
             string updatePicCol = string.Empty;
             #region 需要UPDATE的欄位
 
-            updateCol += $@" , WashingFastnessEncode = @WashingFastnessEncode" + Environment.NewLine;
-            listPar.Add("@WashingFastnessEncode", Req.WashingFastnessEncode);
-
-            // 如果尚未Encode，WashingFastness Result最終結果一定會是空白
-            if (Req.WashingFastnessEncode == true)
-            {
-                updateCol += $@" , WashingFastness = @WashingFastness" + Environment.NewLine;
-                listPar.Add("@WashingFastness", Req.WashingFastnessResult);
-            }
-            else
-            {
-                updateCol += $@" , WashingFastness = ''" + Environment.NewLine;
-            }
-
             if (!string.IsNullOrEmpty(Req.WashingFastnessInspector))
             {
                 updateCol += $@" , WashingFastnessInspector = @WashingFastnessInspector" + Environment.NewLine;
@@ -1055,102 +1017,73 @@ where   ID = @AIR_LaboratoryID
             updateCol += $@" , WashingFastnessReportDate = @WashingFastnessReportDate" + Environment.NewLine;
             listPar.Add("@WashingFastnessReportDate", Req.WashingFastnessReportDate);
 
-            if (!string.IsNullOrEmpty(Req.WashingFastnessRemark))
-            {
-                updateCol += $@" , WashingFastnessRemark = @WashingFastnessRemark" + Environment.NewLine;
-                listPar.Add("@WashingFastnessRemark", Req.WashingFastnessRemark);
-            }
+            updateCol += $@" , WashingFastnessRemark = @WashingFastnessRemark" + Environment.NewLine;
+            listPar.Add("@WashingFastnessRemark", Req.WashingFastnessRemark ?? string.Empty);
 
-            if (!string.IsNullOrEmpty(Req.ChangeScale))
-            {
-                updateCol += $@" , ChangeScale = @ChangeScale" + Environment.NewLine;
-                listPar.Add("@ChangeScale", DbType.String, Req.ChangeScale);
-            }
-            if (!string.IsNullOrEmpty(Req.ResultChange))
-            {
-                updateCol += $@" , ResultChange = @ResultChange" + Environment.NewLine;
-                listPar.Add("@ResultChange", DbType.String, Req.ResultChange);
-            }
+            updateCol += $@" , ChangeScale = @ChangeScale" + Environment.NewLine;
+            listPar.Add("@ChangeScale", DbType.String, Req.ChangeScale ?? string.Empty);
 
-            if (!string.IsNullOrEmpty(Req.AcetateScale))
-            {
-                updateCol += $@" , AcetateScale = @AcetateScale" + Environment.NewLine;
-                listPar.Add("@AcetateScale", DbType.String, Req.AcetateScale);
-            }
-            if (!string.IsNullOrEmpty(Req.ResultAcetate))
-            {
-                updateCol += $@" , ResultAcetate = @ResultAcetate" + Environment.NewLine;
-                listPar.Add("@ResultAcetate", DbType.String, Req.ResultAcetate);
-            }
+            updateCol += $@" , ResultChange = @ResultChange" + Environment.NewLine;
+            listPar.Add("@ResultChange", DbType.String, Req.ResultChange ?? string.Empty);
 
-            if (!string.IsNullOrEmpty(Req.CottonScale))
-            {
-                updateCol += $@" , CottonScale = @CottonScale" + Environment.NewLine;
-                listPar.Add("@CottonScale", DbType.String, Req.CottonScale);
-            }
-            if (!string.IsNullOrEmpty(Req.ResultCotton))
-            {
-                updateCol += $@" , ResultCotton = @ResultCotton" + Environment.NewLine;
-                listPar.Add("@ResultCotton", DbType.String, Req.ResultCotton);
-            }
+            updateCol += $@" , AcetateScale = @AcetateScale" + Environment.NewLine;
+            listPar.Add("@AcetateScale", DbType.String, Req.AcetateScale ?? string.Empty);
 
-            if (!string.IsNullOrEmpty(Req.NylonScale))
-            {
-                updateCol += $@" , NylonScale = @NylonScale" + Environment.NewLine;
-                listPar.Add("@NylonScale", DbType.String, Req.NylonScale);
-            }
-            if (!string.IsNullOrEmpty(Req.ResultNylon))
-            {
-                updateCol += $@" , ResultNylon = @ResultNylon" + Environment.NewLine;
-                listPar.Add("@ResultNylon", Req.ResultNylon);
-            }
+            updateCol += $@" , ResultAcetate = @ResultAcetate" + Environment.NewLine;
+            listPar.Add("@ResultAcetate", DbType.String, Req.ResultAcetate ?? string.Empty);
 
-            if (!string.IsNullOrEmpty(Req.PolyesterScale))
-            {
-                updateCol += $@" , PolyesterScale = @PolyesterScale" + Environment.NewLine;
-                listPar.Add("@PolyesterScale", DbType.String, Req.PolyesterScale);
-            }
-            if (!string.IsNullOrEmpty(Req.ResultPolyester))
-            {
-                updateCol += $@" , ResultPolyester = @ResultPolyester" + Environment.NewLine;
-                listPar.Add("@ResultPolyester", Req.ResultPolyester);
-            }
+            updateCol += $@" , CottonScale = @CottonScale" + Environment.NewLine;
+            listPar.Add("@CottonScale", DbType.String, Req.CottonScale ?? string.Empty);
 
-            if (!string.IsNullOrEmpty(Req.AcrylicScale))
-            {
-                updateCol += $@" , AcrylicScale = @AcrylicScale" + Environment.NewLine;
-                listPar.Add("@AcrylicScale", DbType.String, Req.AcrylicScale);
-            }
-            if (!string.IsNullOrEmpty(Req.ResultAcrylic))
-            {
-                updateCol += $@" , ResultAcrylic = @ResultAcrylic" + Environment.NewLine;
-                listPar.Add("@ResultAcrylic", Req.ResultAcrylic);
-            }
+            updateCol += $@" , ResultCotton = @ResultCotton" + Environment.NewLine;
+            listPar.Add("@ResultCotton", DbType.String, Req.ResultCotton ?? string.Empty);
 
-            if (!string.IsNullOrEmpty(Req.WoolScale))
-            {
-                updateCol += $@" , WoolScale = @WoolScale" + Environment.NewLine;
-                listPar.Add("@WoolScale", DbType.String, Req.WoolScale);
-            }
-            if (!string.IsNullOrEmpty(Req.ResultWool))
-            {
-                updateCol += $@" , ResultWool = @ResultWool" + Environment.NewLine;
-                listPar.Add("@ResultWool", Req.ResultWool);
-            }
+            updateCol += $@" , NylonScale = @NylonScale" + Environment.NewLine;
+            listPar.Add("@NylonScale", DbType.String, Req.NylonScale ?? string.Empty);
 
-            if (!string.IsNullOrEmpty(Req.CrossStainingScale))
-            {
-                updateCol += $@" , CrossStainingScale = @CrossStainingScale" + Environment.NewLine;
-                listPar.Add("@CrossStainingScale", DbType.String, Req.CrossStainingScale);
-            }
-            if (!string.IsNullOrEmpty(Req.ResultCrossStaining))
-            {
-                updateCol += $@" , ResultCrossStaining = @ResultCrossStaining" + Environment.NewLine;
-                listPar.Add("@ResultCrossStaining", Req.ResultCrossStaining);
-            }
+            updateCol += $@" , ResultNylon = @ResultNylon" + Environment.NewLine;
+            listPar.Add("@ResultNylon", Req.ResultNylon ?? string.Empty);
+
+            updateCol += $@" , PolyesterScale = @PolyesterScale" + Environment.NewLine;
+            listPar.Add("@PolyesterScale", DbType.String, Req.PolyesterScale ?? string.Empty);
+
+            updateCol += $@" , ResultPolyester = @ResultPolyester" + Environment.NewLine;
+            listPar.Add("@ResultPolyester", Req.ResultPolyester ?? string.Empty);
+
+            updateCol += $@" , AcrylicScale = @AcrylicScale" + Environment.NewLine;
+            listPar.Add("@AcrylicScale", DbType.String, Req.AcrylicScale ?? string.Empty);
+
+            updateCol += $@" , ResultAcrylic = @ResultAcrylic" + Environment.NewLine;
+            listPar.Add("@ResultAcrylic", Req.ResultAcrylic ?? string.Empty);
+
+            updateCol += $@" , WoolScale = @WoolScale" + Environment.NewLine;
+            listPar.Add("@WoolScale", DbType.String, Req.WoolScale ?? string.Empty);
+
+            updateCol += $@" , ResultWool = @ResultWool" + Environment.NewLine;
+            listPar.Add("@ResultWool", Req.ResultWool ?? string.Empty);
+
+            updateCol += $@" , CrossStainingScale = @CrossStainingScale" + Environment.NewLine;
+            listPar.Add("@CrossStainingScale", DbType.String, Req.CrossStainingScale ?? string.Empty);
+
+            updateCol += $@" , ResultCrossStaining = @ResultCrossStaining" + Environment.NewLine;
+            listPar.Add("@ResultCrossStaining", Req.ResultCrossStaining ?? string.Empty);
+
+
+
+            updateCol += $@" , WashingFastness = (
+                                                    CASE WHEN   @ResultChange = 'Pass' AND @ResultAcetate = 'Pass' AND @ResultCotton = 'Pass' AND @ResultNylon = 'Pass' 
+                                                            AND @ResultPolyester = 'Pass' AND @ResultAcrylic = 'Pass' AND @ResultWool= 'Pass' AND @ResultCrossStaining = 'Pass' THEN 'Pass'
+                                                        WHEN    @ResultChange = 'Fail' OR @ResultAcetate = 'Fail' OR @ResultCotton = 'Fail' OR @ResultNylon = 'Fail' 
+                                                            OR @ResultPolyester = 'Fail' OR @ResultAcrylic = 'Fail' OR @ResultWool= 'Fail' OR @ResultCrossStaining = 'Fail' THEN 'Fail'
+                                                        ELSE ''
+                                                    END)
+
+
+" + Environment.NewLine;
 
             updatePicCol += $@"        ,WashingFastnessTestBeforePicture = @WashingFastnessTestBeforePicture " + Environment.NewLine;
             updatePicCol += $@"        ,WashingFastnessTestAfterPicture = @WashingFastnessTestAfterPicture " + Environment.NewLine;
+
             if (Req.WashingFastnessTestBeforePicture != null)
             {
                 listPar.Add("@WashingFastnessTestBeforePicture", Req.WashingFastnessTestBeforePicture);
