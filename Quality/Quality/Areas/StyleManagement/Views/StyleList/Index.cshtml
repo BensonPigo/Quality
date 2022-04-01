@@ -57,15 +57,15 @@
                         <div>
                             @Html.Hidden("StyleUkey")
                             <label class="QueryLab">Brand</label>
-                            <input type="text" name="BrandID" id="txtBrand" value="@Model.BrandID" />
+                            <input type="text" name="BrandID" id="txtBrandID" class="searchText8vw" value="@Model.BrandID" />
                             <input id="btnBrand" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
                             &nbsp;&nbsp;
                             <label class="QueryLab">Season</label>
-                            <input type="text" name="SeasonID" id="txtSeason" value="@Model.SeasonID"/>
+                            <input type="text" name="SeasonID" id="txtSeasonID" class="searchText5vw" value="@Model.SeasonID"/>
                             <input id="btnSeason" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
                             &nbsp;&nbsp;
                             <label class="QueryLab">Style</label>
-                            <input type="text" name="StyleID" id="txtStyle" value="@Model.StyleID"/>
+                            <input type="text" name="StyleID" id="txtStyleID" class="searchText12vw" value="@Model.StyleID"/>
                             <input id="btnStyle" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
                             &nbsp;&nbsp;
                             <input type="submit" name="name" id="btnQuery" value="Query" />
@@ -168,33 +168,139 @@
 
         $("#btnSeason").on('click', function () {
 
-            window.open('@Url.Action("SeasonList", "PublicWondow",new { Area=""})' + '?BrandID=' + $("#txtBrand").val(), 'Season', config = 'toolbar=no,status=no,location=no,width=400,height=650' );
+            window.open('@Url.Action("SeasonList", "PublicWondow",new { Area=""})' + '?BrandID=' + $("#txtBrandID").val(), 'Season', config = 'toolbar=no,status=no,location=no,width=400,height=650' );
         });
 
         $("#btnStyle").on('click', function () {
 
-            window.open('@Url.Action("StyleList", "PublicWondow",new { Area=""})' + '?BrandID=' + $("#txtBrand").val() + '&SeasonID=' + $("#txtSeason").val(), 'Style', config = 'toolbar=no,status=no,location=no,width=400,height=650' );
+            window.open('@Url.Action("StyleList", "PublicWondow",new { Area=""})' + '?BrandID=' + $("#txtBrandID").val() + '&SeasonID=' + $("#txtSeasonID").val(), 'Style', config = 'toolbar=no,status=no,location=no,width=400,height=650' );
         });
 
-        $("#txtBrand").change(function () {
-            txtStyleToggle();
-        });
-        $("#txtSeason").change(function () {
-            txtStyleToggle();
-        });
-
-
+        blurEvent('txt');
     });
 
     // 2. 宣告事件，命名方式：Get + 開始視窗的Action名字，以這邊為例即是 GetBrandList
     function GetBrandList(BrandID) {
-        $("#txtBrand").val(BrandID);
+        $("#txtBrandID").val(BrandID);
     }
     function GetSeasonList(SeasonID) {
-        $("#txtSeason").val(SeasonID);
+        $("#txtSeasonID").val(SeasonID);
     }
     function GetStyleList(StyleID) {
-        $("#txtStyle").val(StyleID);
+        $("#txtStyleID").val(StyleID);
+    }
+
+    function blurEvent(name) {
+
+        $("#" + name + "BrandID").blur(function () {
+            if ($(this).val() == '') {
+                if (name == '') {
+                    GetArtworkDropDown();
+                    ClearColor();
+                }
+
+                return;
+            }
+
+            $.ajax({
+                url: "@Url.Action("BrandList","PublicWondow",new{Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#" + name + "BrandID").val('');
+                        msg.WithError('Brand Not Found');
+                    }
+
+                    if (name == '') {
+                        GetArtworkDropDown();
+                        GetAccessoryRefNoList();
+                    }
+
+                    ReportNoClear(name);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $("#" + name + "SeasonID").blur(function () {
+            if ($(this).val() == '') {
+                if (name == '') {
+                    GetArtworkDropDown();
+                }
+
+                return;
+            }
+
+
+            var BrandID = $('#' + name + 'BrandID').val();
+            $.ajax({
+                url: "@Url.Action("SeasonList","PublicWondow",new{Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: BrandID, SeasonID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#" + name + "SeasonID").val('');
+                        msg.WithError('Season Not Found');
+                    }
+
+                    if (name == '') {
+                        GetArtworkDropDown();
+                        GetAccessoryRefNoList();
+                    }
+
+                    ReportNoClear(name);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $("#" + name + "StyleID").blur(function () {
+            if ($(this).val() == '') {
+
+                if (name == '') {
+                    GetArtworkDropDown();
+                }
+
+                return;
+            }
+
+
+            var BrandID = $('#' + name + 'BrandID').val();
+            var SeasonID = $('#' + name + 'SeasonID').val();
+            $.ajax({
+                url: "@Url.Action("StyleList","PublicWondow",new{Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: BrandID, SeasonID: SeasonID, StyleID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#" + name + "StyleID").val('');
+                        msg.WithError('Style Not Found');
+                    }
+
+                    if (name == '') {
+                        GetArtworkDropDown();
+                        GetAccessoryRefNoList();
+                    }
+
+                    ReportNoClear(name);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
     }
 
     function ClickLink(URL) {
