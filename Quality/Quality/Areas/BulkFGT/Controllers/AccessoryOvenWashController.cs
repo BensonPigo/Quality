@@ -317,7 +317,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             Req.WashEncode = false;
 
             //修改
-            model = _Service.UpdateWash(Req);
+            model = _Service.EncodeAmendWash(Req);
             _Service.UpdateInspPercent(Req.POID);
 
             if (!model.Result)

@@ -1140,18 +1140,6 @@ where   ID = @AIR_LaboratoryID
             updateCol += $@" , WashingFastnessEncode = @WashingFastnessEncode" + Environment.NewLine;
             listPar.Add("@WashingFastnessEncode", Req.WashingFastnessEncode);
 
-            if (Req.WashingFastnessEncode)
-            {
-                updateCol += $@" , WashingFastness = IIF(
-                                                    ResultChange = 'Pass' AND ResultAcetate = 'Pass' AND ResultCotton = 'Pass' AND ResultNylon = 'Pass' AND 
-                                                    ResultPolyester = 'Pass' AND ResultAcrylic = 'Pass' AND ResultWool= 'Pass' AND ResultCrossStaining = 'Pass'
-                                                ,'Pass','Fail')" + Environment.NewLine;
-            }
-            else
-            {
-                updateCol += $@" , WashingFastness ='' " + Environment.NewLine;
-            }
-
             if (!string.IsNullOrEmpty(Req.EditName))
             {
                 updateCol += $@" , EditName = @EditName" + Environment.NewLine;
