@@ -141,7 +141,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             if (!result.Result)
             {
-                mockupCrocking_ViewModel.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.ToString()}"");EditMode=true;";
+                mockupCrocking_ViewModel.ErrorMessage = $@"msg.WithInfo('{result.ErrorMessage.ToString()}');EditMode=true;";
             }
             else if (result.Result && mockupCrocking_ViewModel.Result == "Fail")
             {
@@ -190,7 +190,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             Req.MockupCrocking_Detail = model.MockupCrocking_Detail;
             if (!result.Result)
             {
-                Req.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.ToString()}"");EditMode=true;";
+                Req.ErrorMessage = $@"msg.WithInfo('{result.ErrorMessage.ToString()}');EditMode=true;";
             }
             else if (result.Result && model.Result == "Fail")
             {
@@ -230,7 +230,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
             if (!result.Result)
             {
-                mockupCrocking_ViewModel.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.ToString()} "");";
+                mockupCrocking_ViewModel.ErrorMessage = $@"msg.WithInfo('{result.ErrorMessage.ToString()}');";
             }
             mockupCrocking_ViewModel.Request = Req.Request;
             ViewBag.ReportNo_Source = new SetListItem().ItemListBinding(mockupCrocking_ViewModel.ReportNo_Source);

@@ -51,7 +51,7 @@ namespace BusinessLogicLayer.Service
             }
             catch (Exception ex)
             {
-                mockupCrocking_model.ErrorMessage = ex.Message.ToString();
+                mockupCrocking_model.ErrorMessage = ex.Message.Replace("'", string.Empty);
                 mockupCrocking_model.ReturnResult = false;
             }
 
@@ -306,7 +306,7 @@ namespace BusinessLogicLayer.Service
             }
             catch (Exception ex)
             {
-                result.ErrorMessage = ex.Message.ToString();
+                result.ErrorMessage = ex.Message.Replace("'", string.Empty);
                 result.Result = false;
             }
 

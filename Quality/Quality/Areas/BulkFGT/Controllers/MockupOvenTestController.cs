@@ -183,7 +183,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             if (!result.Result)
             {
-                model.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.Replace("'", string.Empty).Replace("\r\n", "<br />")}"");EditMode=true;";
+                model.ErrorMessage = $@"msg.WithInfo('{result.ErrorMessage.Replace("'", string.Empty).Replace("\r\n", "<br />")}');EditMode=true;";
             }
             else if (result.Result && model.Result == "Fail")
             {
@@ -245,7 +245,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             Req.MockupOven_Detail = model.MockupOven_Detail;
             if (!result.Result)
             {
-                Req.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.Replace("'", string.Empty).Replace("\r\n", "<br />")}"");EditMode=true;";
+                Req.ErrorMessage = $@"msg.WithInfo('{result.ErrorMessage.Replace("'", string.Empty).Replace("\r\n", "<br />")}');EditMode=true;";
             }
             else if (result.Result && model.Result == "Fail")
             {
@@ -286,7 +286,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
             if (!result.Result)
             {
-                model.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.Replace("'", string.Empty).Replace("\r\n", "<br />")}"");";
+                model.ErrorMessage = $@"msg.WithInfo('{result.ErrorMessage.Replace("'", string.Empty).Replace("\r\n", "<br />")}');";
             }
             model.Request = Req.Request;
 

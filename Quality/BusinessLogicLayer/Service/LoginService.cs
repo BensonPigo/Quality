@@ -82,7 +82,7 @@ namespace BusinessLogicLayer.Service
             catch(Exception ex)
             {
                 result.Result = false;
-                result.ErrorMessage = ex.Message.ToString();
+                result.ErrorMessage = ex.Message.Replace("'", string.Empty);
                 result.Exception = ex;
             }
 
@@ -101,7 +101,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 result.Result = false;
-                result.ErrorMessage = ex.Message.ToString();
+                result.ErrorMessage = ex.Message.Replace("'", string.Empty);
                 result.Exception = ex;
             }
 

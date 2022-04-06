@@ -47,7 +47,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 baseResult.Result = false;
-                baseResult.ErrorMessage = ex.Message.ToString();
+                baseResult.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
 
             return baseResult;
@@ -73,7 +73,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 baseResult.Result = false;
-                baseResult.ErrorMessage = ex.Message.ToString();
+                baseResult.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
 
             return baseResult;
@@ -99,7 +99,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 baseResult.Result = false;
-                baseResult.ErrorMessage = ex.Message.ToString();
+                baseResult.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
 
             return baseResult;
@@ -146,7 +146,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 baseResult.Result = false;
-                baseResult.ErrorMessage = ex.Message.ToString();
+                baseResult.ErrorMessage = ex.Message.Replace("'", string.Empty);
                 return baseResult;
             }
         }
@@ -192,7 +192,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 baseResult.Result = false;
-                baseResult.ErrorMessage = ex.Message.ToString();
+                baseResult.ErrorMessage = ex.Message.Replace("'", string.Empty);
                 return baseResult;
             }
         }
@@ -238,7 +238,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 baseResult.Result = false;
-                baseResult.ErrorMessage = ex.Message.ToString();
+                baseResult.ErrorMessage = ex.Message.Replace("'", string.Empty);
                 return baseResult;
             }
         }
@@ -267,7 +267,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 fabricCrkShrkTestCrocking_Result.Result = false;
-                fabricCrkShrkTestCrocking_Result.ErrorMessage = ex.Message.ToString();
+                fabricCrkShrkTestCrocking_Result.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
 
             return fabricCrkShrkTestCrocking_Result;
@@ -294,7 +294,7 @@ namespace BusinessLogicLayer.Service
             {
                 fabricCrkShrkTestHeat_Result.Result = false;
 
-                fabricCrkShrkTestHeat_Result.ErrorMessage = ex.Message.ToString();
+                fabricCrkShrkTestHeat_Result.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
 
             return fabricCrkShrkTestHeat_Result;
@@ -320,7 +320,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 fabricCrkShrkTestWash_Result.Result = false;
-                fabricCrkShrkTestWash_Result.ErrorMessage = ex.Message.ToString();
+                fabricCrkShrkTestWash_Result.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
 
             return fabricCrkShrkTestWash_Result;
@@ -338,7 +338,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 result.Result = false;
-                result.ErrorMessage = ex.Message.ToString();
+                result.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
 
             return result;
@@ -436,7 +436,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 baseResult.Result = false;
-                baseResult.ErrorMessage = ex.Message.ToString();
+                baseResult.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
 
             return baseResult;
@@ -533,7 +533,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 baseResult.Result = false;
-                baseResult.ErrorMessage = ex.Message.ToString();
+                baseResult.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
 
             return baseResult;
@@ -550,7 +550,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 baseResult.Result = false;
-                baseResult.ErrorMessage = ex.Message.ToString();
+                baseResult.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
 
             return baseResult;
@@ -668,7 +668,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 baseResult.Result = false;
-                baseResult.ErrorMessage = ex.Message.ToString();
+                baseResult.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
 
             return baseResult;
@@ -696,7 +696,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 result.result = false;
-                result.resultMsg = ex.Message.ToString();
+                result.resultMsg = ex.Message.Replace("'", string.Empty);
             }
 
             return result;
@@ -816,7 +816,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 result.Result = false;
-                result.ErrorMessage = ex.Message.ToString();
+                result.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
 
             return result;
@@ -961,7 +961,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 result.Result = false;
-                result.ErrorMessage = ex.Message.ToString();
+                result.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
 
             return result;
@@ -1147,7 +1147,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 result.Result = false;
-                result.ErrorMessage = ex.Message.ToString();
+                result.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
 
             return result;
@@ -1177,7 +1177,7 @@ namespace BusinessLogicLayer.Service
             {
 
                 result.Result = false;
-                result.ErrorMessage = ex.Message.ToString();
+                result.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
 
             return result;
@@ -1686,7 +1686,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 result.result = false;
-                result.resultMsg = ex.Message.ToString();
+                result.resultMsg = ex.Message.Replace("'", string.Empty);
             }
 
             return result;
@@ -1714,7 +1714,7 @@ namespace BusinessLogicLayer.Service
             catch (Exception ex)
             {
                 result.result = false;
-                result.resultMsg = ex.Message.ToString();
+                result.resultMsg = ex.Message.Replace("'", string.Empty);
             }
 
             return result;

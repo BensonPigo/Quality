@@ -288,12 +288,20 @@ where ID = @ID
 and POID = @POID 
 and TestNo = @OriTestNo
 
-update [ExtendServer].PMSFile.dbo.ColorFastness
-set	   [TestBeforePicture] = @TestBeforePicture
-      ,[TestAfterPicture] = @TestAfterPicture
-where ID = @ID
-and POID = @POID 
-and TestNo = @OriTestNo
+if not exists (select 1 from [ExtendServer].PMSFile.dbo.ColorFastness where ID = @ID and POID = @POID and TestNo = @OriTestNo)
+begin
+    INSERT INTO [ExtendServer].PMSFile.dbo.ColorFastness (ID,POID,TestNo,TestBeforePicture,TestAfterPicture)
+    VALUES (@ID,@POID,@OriTestNo,@TestBeforePicture,@TestAfterPicture)
+end
+else
+begin
+    update [ExtendServer].PMSFile.dbo.ColorFastness
+    set	   [TestBeforePicture] = @TestBeforePicture
+          ,[TestAfterPicture] = @TestAfterPicture
+    where ID = @ID
+    and POID = @POID 
+    and TestNo = @OriTestNo
+end
 
 exec UpdateInspPercent 'LabColorFastness', @POID
 " + Environment.NewLine;

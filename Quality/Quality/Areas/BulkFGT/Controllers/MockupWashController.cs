@@ -142,7 +142,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             if (!result.Result)
             {
-                model.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.ToString()}"");EditMode=true;";
+                model.ErrorMessage = $@"msg.WithInfo('{result.ErrorMessage.Replace("'",string.Empty) }');EditMode=true;";
             }
             else if (result.Result && model.Result == "Fail")
             {
@@ -200,7 +200,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             Req.TestingMethod_Source = _MockupWashService.GetTestingMethod();
             if (!result.Result)
             {
-                Req.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.ToString()}"");EditMode=true;";
+                Req.ErrorMessage = $@"msg.WithInfo('{result.ErrorMessage.Replace("'",string.Empty) }');EditMode=true;";
             }
             else if (result.Result && model.Result == "Fail")
             {
@@ -236,7 +236,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             if (!result.Result)
             {
-                model.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.ToString()}"");";
+                model.ErrorMessage = $@"msg.WithInfo('{result.ErrorMessage.Replace("'",string.Empty) }');";
             }
 
             model.Request = Req.Request;
