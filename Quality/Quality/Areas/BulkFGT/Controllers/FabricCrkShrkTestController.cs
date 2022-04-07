@@ -116,15 +116,15 @@ namespace Quality.Areas.BulkFGT.Controllers
             string html = string.Empty;
             html += $"<tr idx='{lastNO}' class='row-content' style='vertical-align:middle;text-align:center;'>";
             html += "<td><div class='input-group'>";
-            html += $"<input id='Crocking_Detail_{lastNO}__Roll' name='Crocking_Detail[{lastNO}].Roll' class='inputRollSelectItem' type='text' value=''>";
+            html += $"<input id='Crocking_Detail_{lastNO}__Roll' name='Crocking_Detail[{lastNO}].Roll' class='inputRollSelectItem width6vw' type='text' value=''>";
             html += $"<input type='button' class='site-btn btn-blue btnRollSelectItem' style='margin:0;border:0;' value='...'>";
             html += "</div></td>";
             html += "<td><div class='input-group'>";
-            html += $"<input id='Crocking_Detail_{lastNO}__Dyelot' name='Crocking_Detail[{lastNO}].Dyelot' class='inputRollSelectItem' type='text' value=''>";
+            html += $"<input id='Crocking_Detail_{lastNO}__Dyelot' name='Crocking_Detail[{lastNO}].Dyelot' class='inputRollSelectItem width8vw' type='text' value=''>";
             html += $"<input type='button' class='site-btn btn-blue btnRollSelectItem' style='margin:0;border:0;' value='...'>";
             html += "</div></td>";
             html += "<td>";
-            html += $"<input id='Crocking_Detail_{lastNO}__Result' name='Crocking_Detail[{lastNO}].Result' readonly='readonly' class='blue' type='text' value='Pass'>";
+            html += $"<input id='Crocking_Detail_{lastNO}__Result' name='Crocking_Detail[{lastNO}].Result' readonly='readonly' class='blue width6vw' type='text' value='Pass'>";
             html += "</td>";
             html += "<td>";
             html += $"<select id='Crocking_Detail_{lastNO}__DryScale' name='Crocking_Detail[{lastNO}].DryScale' style='width:157px'>";
@@ -183,7 +183,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "</select>";
             html += "</td>";
             html += "<td>";
-            html += $"<input class='date-picker' data-val='true' data-val-date='欄位 Inspdate 必須是日期。' id='Crocking_Detail_{lastNO}__Inspdate' name='Crocking_Detail[{lastNO}].Inspdate' type='text' value=''>";
+            html += $"<input class='date-picker width9vw' data-val='true' data-val-date='欄位 Inspdate 必須是日期。' id='Crocking_Detail_{lastNO}__Inspdate' name='Crocking_Detail[{lastNO}].Inspdate' type='text' value=''>";
             html += "</td>";
             html += "<td><div class='input-group'>";
             html += $"<input id='Crocking_Detail_{lastNO}__Inspector' name='Crocking_Detail[{lastNO}].Inspector' type='text' value='' class='inputInspectorSelectItem'>";
@@ -298,13 +298,13 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += $"<tr idx='{lastNO}' class='row-content' style='vertical-align: middle; text-align: center;'>";
             html += "<td>";
             html += "<div class='input-group'>";
-            html += $"<input class='inputRollSelectItem' id='Heat_Detail_{lastNO}__Roll' name='Heat_Detail[{lastNO}].Roll' type='text' value='' >";
+            html += $"<input class='inputRollSelectItem width6vw' id='Heat_Detail_{lastNO}__Roll' name='Heat_Detail[{lastNO}].Roll' type='text' value='' >";
             html += "<input type='button' class='site-btn btn-blue btnRollSelectItem' style='margin:0;border:0;' value='...' >";
             html += "</div>";
             html += "</td>";
             html += "<td>";
             html += "<div class='input-group'>";
-            html += $"<input class='inputRollSelectItem' id='Heat_Detail_{lastNO}__Dyelot' name='Heat_Detail[{lastNO}].Dyelot' type='text' value='' >";
+            html += $"<input class='inputRollSelectItem width8vw' id='Heat_Detail_{lastNO}__Dyelot' name='Heat_Detail[{lastNO}].Dyelot' type='text' value='' >";
             html += "<input type='button' class='site-btn btn-blue btnRollSelectItem' style='margin:0;border:0;' value='...' >";
             html += "</div>";
             html += "</td>";
@@ -316,7 +316,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "</td>";
 
             html += "<td>";
-            html += $"<select id='Heat_Detail_{lastNO}__Result' name='Heat_Detail[{lastNO}].Result' class='blue' onchange='changeResultColor(this)'>";
+            html += $"<select id='Heat_Detail_{lastNO}__Result' name='Heat_Detail[{lastNO}].Result' class='blue width6vw' onchange='changeResultColor(this)'>";
             html += "<option value='Pass'>Pass</option>";
             html += "<option value='Fail'>Fail</option>";
             html += "</select>";
@@ -353,7 +353,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += $"<input data-val='true' data-val-number='欄位 VerticalRate 必須是數字。' data-val-required='VerticalRate 欄位是必要項。' id='Heat_Detail_{lastNO}__VerticalRate' name='Heat_Detail[{lastNO}].VerticalRate' readonly='readonly' step='0.01' type='number' value='0' >";
             html += "</td>";
             html += "<td>";
-            html += $"<input class='date-picker' data-val='true' data-val-date='欄位 Inspdate 必須是日期。' id='Heat_Detail_{lastNO}__Inspdate' name='Heat_Detail[{lastNO}].Inspdate' type='text' value='' >";
+            html += $"<input class='date-picker width9vw' data-val='true' data-val-date='欄位 Inspdate 必須是日期。' id='Heat_Detail_{lastNO}__Inspdate' name='Heat_Detail[{lastNO}].Inspdate' type='text' value='' >";
             html += "</td>";
             html += "<td>";
             html += "<div class='input-group'>";
@@ -465,14 +465,14 @@ namespace Quality.Areas.BulkFGT.Controllers
             string html = string.Empty;
             html += $"<tr idx='{lastNO}' class='row-content' style='vertical-align: middle; text-align: center;'>";
             html += "<td>";
-            html += "<div class='input -group'>";
-            html += $"<input class='inputRollSelectItem' id='Wash_Detail_{lastNO}__Roll' name='Wash_Detail[{lastNO}].Roll' type='text' value=''>";
+            html += "<div class='input-group'>";
+            html += $"<input class='inputRollSelectItem width6vw' id='Wash_Detail_{lastNO}__Roll' name='Wash_Detail[{lastNO}].Roll' type='text' value=''>";
             html += $"<input type='button' class='site-btn btn-blue btnRollSelectItem' style='margin:0;border:0;' value='...'>";
             html += "</div>";
             html += "</td>";
             html += "<td>";
             html += "<div class='input-group'>";
-            html += $"<input class='inputRollSelectItem' id='Wash_Detail_{lastNO}__Dyelot' name='Wash_Detail[{lastNO}].Dyelot' type='text' value=''>";
+            html += $"<input class='inputRollSelectItem width8vw' id='Wash_Detail_{lastNO}__Dyelot' name='Wash_Detail[{lastNO}].Dyelot' type='text' value=''>";
             html += $"<input type='button' class='site-btn btn-blue btnRollSelectItem' style='margin:0;border:0;' value='...'>";
             html += "</div>";
             html += "</td>";
@@ -483,7 +483,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalOriginal 必須是數字。' data-val-required='VerticalOriginal 欄位是必要項。' id='Wash_Detail_{lastNO}__VerticalOriginal' name='Wash_Detail[{lastNO}].VerticalOriginal' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
-            html += $"<select id='Wash_Main_{lastNO}__Result' name='Wash_Detail[{lastNO}].Result' class='blue' onchange='changeResultColor(this)'>";
+            html += $"<select id='Wash_Main_{lastNO}__Result' name='Wash_Detail[{lastNO}].Result' class='blue width6vw' onchange='changeResultColor(this)'>";
             html += "<option value='Pass'>Pass</option>";
             html += "<option value='Fail'>Fail</option>";
             html += "</select>";
@@ -538,7 +538,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "</td>";
 
             html += "<td>";
-            html += $"<input class='date-picker' data-val='true' data-val-date='欄位 Inspdate 必須是日期。' id='Wash_Detail_{lastNO}__Inspdate' name='Wash_Detail[{lastNO}].Inspdate' type='text' value=''>";
+            html += $"<input class='date-picker width9vw' data-val='true' data-val-date='欄位 Inspdate 必須是日期。' id='Wash_Detail_{lastNO}__Inspdate' name='Wash_Detail[{lastNO}].Inspdate' type='text' value=''>";
             html += "</td>";
             html += "<td>";
             html += "<div class='input-group'>";
