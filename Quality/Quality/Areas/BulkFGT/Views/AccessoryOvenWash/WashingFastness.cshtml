@@ -5,7 +5,7 @@
     DatabaseObject.ViewModel.BulkFGT.Accessory_ViewModel PreModel = new DatabaseObject.ViewModel.BulkFGT.Accessory_ViewModel();
 }
 
-@model DatabaseObject.ViewModel.BulkFGT.Accessory_Wash
+@model DatabaseObject.ViewModel.BulkFGT.Accessory_WashingFastness
 
 <link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
 <link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
@@ -65,7 +65,7 @@
             vertical-align: middle;
         }
 </style>
-@using (Html.BeginForm("WashTest", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { id = "DetailForm" }))
+@using (Html.BeginForm("WashingFastness", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { id = "DetailForm" }))
 {
     <div class="main-content">
         <header class="page-header">
@@ -75,7 +75,7 @@
             <div class="breadcrumb">
                 <div>Home</div>
                 <div>Accessory Oven & Wash Test</div>
-                <div class="current">WashTest</div>
+                <div class="current">Wash (501)</div>
             </div>
         </header>
         <div class="main-area">
@@ -104,7 +104,7 @@
                                         </td>
                                         <td>
                                             <h4 style="margin-right: 1em;">
-                                                <button id="Save" type="submit" name="Action:WashSave" style="margin:0;min-width:0;background-color:transparent">
+                                                <button id="Save" type="submit" name="Action:WashingFastnessSave" style="margin:0;min-width:0;background-color:transparent">
                                                     <img src="~/Image/Icon/Save.png" width="30" />
                                                     Save
                                                 </button>
@@ -112,7 +112,7 @@
                                         </td>
                                         <td>
                                             <h4 style="margin-right: 1em;">
-                                                <button id="Encode" type="submit" name="Action:WashEncode" style="margin:0;min-width:0;background-color:transparent">
+                                                <button id="Encode" type="submit" name="Action:WashingFastnessEncode" style="margin:0;min-width:0;background-color:transparent">
                                                     <img src="~/Image/Icon/Lock.png" width="30" />
                                                     Encode
                                                 </button>
@@ -121,7 +121,7 @@
 
                                         <td>
                                             <h4 style="margin-right: 1em;">
-                                                <button id="Amend" type="submit" name="Action:WashAmend" style="margin:0;min-width:0;background-color:transparent">
+                                                <button id="Amend" type="submit" name="Action:WashingFastnessAmend" style="margin:0;min-width:0;background-color:transparent">
                                                     <img src="~/Image/Icon/Unlock.png" width="30" />
                                                     Amend
                                                 </button>
@@ -146,7 +146,7 @@
                                             </h4>
                                         </td>
                                         <td style="width: 50%;"></td>
-</tbody>
+                                </tbody>
                             </table>
                         </div>
                     </div>
@@ -157,7 +157,7 @@
                                 <tbody>
                                     @if (Model != null)
                                     {
-                                        @Html.HiddenFor(o => o.WashEncode)
+                                        @Html.HiddenFor(o => o.WashingFastnessEncode)
                                         @Html.HiddenFor(o => o.AIR_LaboratoryID)
                                         @Html.HiddenFor(o => o.Seq1)
                                         @Html.HiddenFor(o => o.Seq2)
@@ -206,85 +206,120 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td colspan="6">Washing test method</td>
+                                        <td colspan="6"></td>
                                     </tr>
                                     <tr>
-                                        <td style="width: 10vw;"><h5>Machine wash</h5></td>
-                                        <td style="width: 20vw;">
-                                            @Html.DropDownListFor(o => o.MachineWash, Model.MachineWashData, new { })
-                                        </td>
-                                        <td style="width: 10vw;"><h5>Washing Temperature</h5></td>
-                                        <td style="width: 20vw;">
-                                            @*@Html.DropDownListFor(o => o.WashingTemperature, Model.WashingTemperatureData, new { })*@
-
-                                            <select id="WashingTemperature" name="WashingTemperature" disabled="disabled" style="width:157px;">
-                                                @foreach (var item in Model.WashingTemperatureData)
-                                                {
-                                                    string selected = item.Text.Equals(Model.WashingTemperature.ToString()) ? "selected" : "";
-                                                    <option value="@item.Value" @selected>@item.Text</option>
-                                                }
-                                            </select>
-                                        </td>
-                                        <td style="width: 10vw;"><h5>Dry process</h5></td>
-                                        <td style="width: 20vw;">
-                                            @Html.DropDownListFor(o => o.DryProcess, Model.DryProcessData, new { })
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="width: 10vw;"><h5>Machine model</h5></td>
-                                        <td style="width: 20vw;">
-                                            @Html.DropDownListFor(o => o.MachineModel, Model.MachineModelData, new { })
-                                        </td>
-                                        <td style="width: 10vw;"><h5>Washing cycle</h5></td>
-                                        <td style="width: 20vw;" col>
-                                            <select id="WashingCycle" name="WashingCycle" disabled="disabled" style="width:157px;">
-                                                @foreach (var item in Model.WashingCycleData)
-                                                {
-                                                    string selected = item.Text.Equals(Model.WashingCycle.ToString()) ? "selected" : "";
-                                                    <option value="@item.Value" @selected>@item.Text</option>
-                                                }
-                                            </select>
-                                        </td>
-                                        <td style="width: 10vw;" colspan="2"></td>
-                                    </tr>
-                                    <tr>
+                                        <td></td>
                                         <td><h5>Scale</h5></td>
-                                        <td>
-                                            <select id="Scale" name="Scale" disabled="disabled" style="width:157px;">
-                                                @foreach (var item in Model.ScaleData)
-                                                {
-                                                    string selected = item.Text.Equals(Model.Scale) ? "selected" : "";
-                                                    <option value="@item.Value" @selected>@item.Text</option>
-                                                }
-                                            </select>
-                                        </td>
                                         <td><h5>Result</h5></td>
+                                        <td><h5>Color Staining</h5></td>
+                                        <td><h5>Scale</h5></td>
+                                        <td><h5>Result</h5></td>
+                                    </tr>
+                                    <tr>
+                                        <td><h5>Color Change</h5></td>
                                         <td>
-                                            @Html.DropDownListFor(o => o.WashResult, Model.ResultData, new { @onchange = "ResultChange()" })
+                                            @Html.DropDownListFor(o => o.ChangeScale, Model.ScaleData)
                                         </td>
-                                        <td></td>
-                                        <td></td>
+                                        <td>
+                                            @Html.DropDownListFor(o => o.ResultChange, Model.ResultData, new { onchange = "ItemResultChange(this)" })
+                                        </td>
+                                        <td><h5>Acetate</h5></td>
+                                        <td>
+                                            @Html.DropDownListFor(o => o.AcetateScale, Model.ScaleData)
+                                        </td>
+                                        <td>
+                                            @Html.DropDownListFor(o => o.ResultAcetate, Model.ResultData, new { onchange = "ItemResultChange(this)" })
+                                        </td>
                                     </tr>
                                     <tr>
-                                        <td><h5>Remark</h5></td>
-                                        <td colspan="3">
-                                            @Html.TextBoxFor(o => o.Remark, new { @style = "width:100%;" })
+                                        <td><h5>Cross Staining</h5></td>
+                                        <td>
+                                            @Html.DropDownListFor(o => o.CrossStainingScale, Model.ScaleData)
                                         </td>
-                                        <td></td>
-                                        <td></td>
+                                        <td>
+                                            @Html.DropDownListFor(o => o.ResultCrossStaining, Model.ResultData, new { onchange = "ItemResultChange(this)" })
+                                        </td>
+                                        <td><h5>Cotton</h5></td>
+                                        <td>
+                                            @Html.DropDownListFor(o => o.CottonScale, Model.ScaleData)
+                                        </td>
+                                        <td>
+                                            @Html.DropDownListFor(o => o.ResultCotton, Model.ResultData, new { onchange = "ItemResultChange(this)" })
+                                        </td>
                                     </tr>
                                     <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td><h5>Nylon</h5></td>
+                                        <td>
+                                            @Html.DropDownListFor(o => o.NylonScale, Model.ScaleData)
+                                        </td>
+                                        <td>
+                                            @Html.DropDownListFor(o => o.ResultNylon, Model.ResultData, new { onchange = "ItemResultChange(this)" })
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td><h5>Polyester</h5></td>
+                                        <td>
+                                            @Html.DropDownListFor(o => o.PolyesterScale, Model.ScaleData)
+                                        </td>
+                                        <td>
+                                            @Html.DropDownListFor(o => o.ResultPolyester, Model.ResultData, new { onchange = "ItemResultChange(this)" })
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td><h5>Acrylic</h5></td>
+                                        <td>
+                                            @Html.DropDownListFor(o => o.AcrylicScale, Model.ScaleData)
+                                        </td>
+                                        <td>
+                                            @Html.DropDownListFor(o => o.ResultAcrylic, Model.ResultData, new { onchange = "ItemResultChange(this)" })
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td><h5>Wool</h5></td>
+                                        <td>
+                                            @Html.DropDownListFor(o => o.WoolScale, Model.ScaleData)
+                                        </td>
+                                        <td>
+                                            @Html.DropDownListFor(o => o.ResultWool, Model.ResultData, new { onchange = "ItemResultChange(this)" })
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><h5>Received Date</h5></td>
+                                        <td>
+                                            @Html.TextBoxFor(o => o.WashingFastnessReceivedDate, "{0:yyyy/MM/dd}", new { @class = "date-picker", @style = "width:100%;" })
+                                        </td>
+                                        <td><h5>Report Date</h5></td>
+                                        <td>
+                                            @Html.TextBoxFor(o => o.WashingFastnessReportDate, "{0:yyyy/MM/dd}", new { @class = "date-picker", @style = "width:100%;" })
+                                        </td>
                                         <td><h5>Lab Tech</h5></td>
-                                        <td colspan="3">
+                                        <td>
                                             <div class="input-group">
-                                                @Html.TextBoxFor(o => o.WashInspector, new { @class = "inputInspectorSelectItem" })
-                                                @Html.TextBox("WashInspectorName", Model.WashInspectorName, new { @class = "inputInspectorSelectItem", @readonly = "readonly" })
+                                                @Html.TextBoxFor(o => o.WashingFastnessInspector, new { @class = "inputInspectorSelectItem" })
+                                                @Html.TextBox("WashingFastnessInspectorName", Model.WashingFastnessInspectorName, new { @class = "inputInspectorSelectItem", @readonly = "readonly" })
                                                 <input id="btnDetailInspectorSelectItem" type="button" class="site-btn btn-blue btnInspectorSelectItem" style="margin:0;border:0;" value="..." />
                                             </div>
                                         </td>
-                                        <td><h5>Inspect Date</h5></td>
-                                        <td>
-                                            @Html.TextBoxFor(o => o.WashDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
+                                    </tr>
+
+                                    <tr>
+                                        <td><h5>Remark</h5></td>
+                                        <td colspan="5">
+                                            @Html.TextBoxFor(o => o.WashingFastnessRemark, new { @style = "width:100%;" })
                                         </td>
                                     </tr>
                                 </tbody>
@@ -298,9 +333,10 @@
 
     @Html.HiddenFor(o => o.ToAddress)
     @Html.HiddenFor(o => o.CcAddress)
-    @Html.HiddenFor(o => Model.WashTestBeforePicture)
-    @Html.HiddenFor(o => Model.WashTestAfterPicture)
-    @Html.Hidden("needSendMail", (Model.WashResult == "Pass" ? "false" : "true"))
+    @Html.HiddenFor(o => Model.WashingFastnessTestBeforePicture)
+    @Html.HiddenFor(o => Model.WashingFastnessTestAfterPicture)
+    @*@Html.HiddenFor(o => o.WashingFastnessResult)*@
+    @*@Html.Hidden("needSendMail", (Model.WashingFastnessResult == "Pass" ? "false" : "true"))*@
 }
 <script type="text/javascript">
     var msg;
@@ -315,7 +351,10 @@
 
             EditMode = false;
             IsEditModeChange();
-            ResultChange();
+            ItemResultChange();
+            $.each($('select[onchange="ItemResultChange(this)"]'), function () {
+                ItemResultChange(this);
+            });
         });
 
         function IsEditModeChange() {
@@ -347,13 +386,13 @@
                     $("#Edit").addClass("IsEditMode");
                 }
 
-                if (@Model.WashEncode == false) {
+                if (@Model.WashingFastnessEncode == false) {
                     $('#Amend').unbind('click');
                     $("#Amend").attr("disabled", "disabled");
                     $("#Encode").addClass("IsEditMode");
                 }
 
-                if (@Model.WashEncode == true) {
+                if (@Model.WashingFastnessEncode == true) {
 
                     // Edit文字顏色變得跟其他Submit按鈕一樣
                     $("#Edit").css("color", "rgba(66,66,66,255)");
@@ -390,7 +429,7 @@
                 var key3 = 'PKey_3=Seq1&PKey_3_Val=' + '@Model.Seq1';
                 var key4 = 'PKey_4=Seq2&PKey_4_Val=' + '@Model.Seq2';
 
-                var para = "?EditMode=" + EditMode + "&Title=WashTest&Table=AIR_Laboratory&BeforeColumn=WashTestBeforePicture&AfterColumn=WashTestAfterPicture&" + key1 + "&" + key2 + "&" + key3 + "&" + key4;
+                var para = "?EditMode=" + EditMode + "&Title=Accessory Washing Fastness Test&Table=AIR_Laboratory&BeforeColumn=WashingFastnessTestBeforePicture&AfterColumn=WashingFastnessTestAfterPicture&" + key1 + "&" + key2 + "&" + key3 + "&" + key4;
 
                 window.open('@Url.Action("PictureList","PublicWondow",new{Area=""})' + para, 'Picture', config = 'toolbar=no,status=no,location=no,width=1000,height=650');
             });
@@ -406,7 +445,7 @@
 
     function ToReport(IsToPDF) {
         $.ajax({
-            url: "@Url.Action("WashReport", "AccessoryOvenWash", new { Area = "BulkFGT" })",
+            url: "@Url.Action("WashingFastnessReport", "AccessoryOvenWash", new { Area = "BulkFGT" })",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({
@@ -431,18 +470,18 @@
         });
     }
 
-    function ResultChange() {
+    function ItemResultChange(obj) {
 
-        if ($("#WashResult").val() == 'Pass') {
-            $("#WashResult").css("color", "Blue");
+        if ($(obj).val() == 'Pass') {
+            $(obj).css("color", "Blue");
         }
         else {
-            $("#WashResult").css("color", "red");
+            $(obj).css("color", "red");
         }
     }
 
     function FailMail() {
-        var para = "?Title=WashTest&FactoryID=@ViewBag.FactoryID&Type=BulkFGT&ExitReload=False";
+        var para = "?Title=WashingFastness&FactoryID=@ViewBag.FactoryID&Type=BulkFGT&ExitReload=False";
 
         window.open('@Url.Action("TestFailMailList", "PublicWondow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
     }
@@ -466,7 +505,7 @@
             };
 
             $.ajax({
-                url: "@Url.Action("WashFailMail")",
+                url: "@Url.Action("WashingFastnessFailMail")",
                 type: 'POST',
                 dataType: "json",
                 data: { Req: data},
@@ -491,8 +530,8 @@
 
     function DetailButtonBind() {
         $('.inputInspectorSelectItem').unbind('blur').on('blur', function () {
-            $('#WashInspectorName').val('');
-            if ($('#WashInspector').val() == "") {
+            $('#WashingFastnessInspectorName').val('');
+            if ($('#WashingFastnessInspector').val() == "") {
                 return;
             }
 
@@ -504,13 +543,13 @@
                 async: true,
                 success: function (data) {
                     if (data.length == 0) {
-                        $("#WashInspector").val('');
+                        $("#WashingFastnessInspector").val('');
                         msg.WithError('Lab Tech Not Found');
                     }
                     else
                     {
-                        $("#WashInspector").val(data[0].ID);
-                        $("#WashInspectorName").val(data[0].Name);
+                        $("#WashingFastnessInspector").val(data[0].ID);
+                        $("#WashingFastnessInspectorName").val(data[0].Name);
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
@@ -527,12 +566,12 @@
 
 
     function GetPass1(data, targetID) {
-        $("#WashInspector").val(data.ID);
-        $("#WashInspectorName").val(data.Name);
+        $("#WashingFastnessInspector").val(data.ID);
+        $("#WashingFastnessInspectorName").val(data.Name);
     }
 
     function GetPicture(data) {
-        $('#WashTestBeforePicture').val(data.BeforePicture.replace("data:image/png;base64,", ""));
-        $('#WashTestAfterPicture').val(data.AfterPicture.replace("data:image/png;base64,", ""));
+        $('#WashingFastnessTestBeforePicture').val(data.BeforePicture.replace("data:image/png;base64,", ""));
+        $('#WashingFastnessTestAfterPicture').val(data.AfterPicture.replace("data:image/png;base64,", ""));
     }
 </script>
