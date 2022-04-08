@@ -309,10 +309,10 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "</div>";
             html += "</td>";
             html += "<td>";
-            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalOriginal 必須是數字。' data-val-required='HorizontalOriginal 欄位是必要項。' id='Heat_Detail_{lastNO}__HorizontalOriginal' name='Heat_Detail[{lastNO}].HorizontalOriginal' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
+            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalOriginal 必須是數字。' data-val-required='HorizontalOriginal 欄位是必要項。' id='Heat_Detail_{lastNO}__HorizontalOriginal' name='Heat_Detail[{lastNO}].HorizontalOriginal' step='0.01' type='number' value='0' onchange='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
-            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalOriginal 必須是數字。' data-val-required='VerticalOriginal 欄位是必要項。' id='Heat_Detail_{lastNO}__VerticalOriginal' name='Heat_Detail[{lastNO}].VerticalOriginal' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
+            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalOriginal 必須是數字。' data-val-required='VerticalOriginal 欄位是必要項。' id='Heat_Detail_{lastNO}__VerticalOriginal' name='Heat_Detail[{lastNO}].VerticalOriginal' step='0.01' type='number' value='0' onchange='value=QtyCheck(value)'>";
             html += "</td>";
 
             html += "<td>";
@@ -323,13 +323,13 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "</td>";
 
             html += "<td>";
-            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalTest1 必須是數字。' data-val-required='HorizontalTest1 欄位是必要項。' id='Heat_Detail_{lastNO}__HorizontalTest1' name='Heat_Detail[{lastNO}].HorizontalTest1' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
+            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalTest1 必須是數字。' data-val-required='HorizontalTest1 欄位是必要項。' id='Heat_Detail_{lastNO}__HorizontalTest1' name='Heat_Detail[{lastNO}].HorizontalTest1' step='0.01' type='number' value='0' onchange='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
-            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalTest2 必須是數字。' data-val-required='HorizontalTest2 欄位是必要項。' id='Heat_Detail_{lastNO}__HorizontalTest2' name='Heat_Detail[{lastNO}].HorizontalTest2' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
+            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalTest2 必須是數字。' data-val-required='HorizontalTest2 欄位是必要項。' id='Heat_Detail_{lastNO}__HorizontalTest2' name='Heat_Detail[{lastNO}].HorizontalTest2' step='0.01' type='number' value='0' onchange='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
-            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalTest3 必須是數字。' data-val-required='HorizontalTest3 欄位是必要項。' id='Heat_Detail_{lastNO}__HorizontalTest3' name='Heat_Detail[{lastNO}].HorizontalTest3' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
+            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalTest3 必須是數字。' data-val-required='HorizontalTest3 欄位是必要項。' id='Heat_Detail_{lastNO}__HorizontalTest3' name='Heat_Detail[{lastNO}].HorizontalTest3' step='0.01' type='number' value='0' onchange='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
             html += $"<input data-val='true' data-val-number='欄位 HorizontalAverage 必須是數字。' data-val-required='HorizontalAverage 欄位是必要項。' id='Heat_Detail_{lastNO}__HorizontalAverage' name='Heat_Detail[{lastNO}].HorizontalAverage' readonly='readonly' step='0.01' type='number' value='0' >";
@@ -338,13 +338,13 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += $"<input data-val='true' data-val-number='欄位 HorizontalRate 必須是數字。' data-val-required='HorizontalRate 欄位是必要項。' id='Heat_Detail_{lastNO}__HorizontalRate' name='Heat_Detail[{lastNO}].HorizontalRate' readonly='readonly' step='0.01' type='number' value='0' >";
             html += "</td>";
             html += "<td>";
-            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalTest1 必須是數字。' data-val-required='VerticalTest1 欄位是必要項。' id='Heat_Detail_{lastNO}__VerticalTest1' name='Heat_Detail[{lastNO}].VerticalTest1' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
+            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalTest1 必須是數字。' data-val-required='VerticalTest1 欄位是必要項。' id='Heat_Detail_{lastNO}__VerticalTest1' name='Heat_Detail[{lastNO}].VerticalTest1' step='0.01' type='number' value='0' onchange='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
-            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalTest2 必須是數字。' data-val-required='VerticalTest2 欄位是必要項。' id='Heat_Detail_{lastNO}__VerticalTest2' name='Heat_Detail[{lastNO}].VerticalTest2' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
+            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalTest2 必須是數字。' data-val-required='VerticalTest2 欄位是必要項。' id='Heat_Detail_{lastNO}__VerticalTest2' name='Heat_Detail[{lastNO}].VerticalTest2' step='0.01' type='number' value='0' onchange='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
-            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalTest3 必須是數字。' data-val-required='VerticalTest3 欄位是必要項。' id='Heat_Detail_{lastNO}__VerticalTest3' name='Heat_Detail[{lastNO}].VerticalTest3' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
+            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalTest3 必須是數字。' data-val-required='VerticalTest3 欄位是必要項。' id='Heat_Detail_{lastNO}__VerticalTest3' name='Heat_Detail[{lastNO}].VerticalTest3' step='0.01' type='number' value='0' onchange='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
             html += $"<input data-val='true' data-val-number='欄位 VerticalAverage 必須是數字。' data-val-required='VerticalAverage 欄位是必要項。' id='Heat_Detail_{lastNO}__VerticalAverage' name='Heat_Detail[{lastNO}].VerticalAverage' readonly='readonly' step='0.01' type='number' value='0' >";
@@ -477,10 +477,10 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "</div>";
             html += "</td>";
             html += "<td>";
-            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalOriginal 必須是數字。' data-val-required='HorizontalOriginal 欄位是必要項。' id='Wash_Detail_{lastNO}__HorizontalOriginal' name='Wash_Detail[{lastNO}].HorizontalOriginal' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
+            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalOriginal 必須是數字。' data-val-required='HorizontalOriginal 欄位是必要項。' id='Wash_Detail_{lastNO}__HorizontalOriginal' name='Wash_Detail[{lastNO}].HorizontalOriginal' step='0.01' type='number' value='0' onchange='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
-            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalOriginal 必須是數字。' data-val-required='VerticalOriginal 欄位是必要項。' id='Wash_Detail_{lastNO}__VerticalOriginal' name='Wash_Detail[{lastNO}].VerticalOriginal' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
+            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalOriginal 必須是數字。' data-val-required='VerticalOriginal 欄位是必要項。' id='Wash_Detail_{lastNO}__VerticalOriginal' name='Wash_Detail[{lastNO}].VerticalOriginal' step='0.01' type='number' value='0' onchange='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
             html += $"<select id='Wash_Main_{lastNO}__Result' name='Wash_Detail[{lastNO}].Result' class='blue' onchange='changeResultColor(this)'>";
@@ -490,13 +490,13 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "</td>";
 
             html += "<td>";
-            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalTest1 必須是數字。' data-val-required='HorizontalTest1 欄位是必要項。' id='Wash_Detail_{lastNO}__HorizontalTest1' name='Wash_Detail[{lastNO}].HorizontalTest1' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
+            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalTest1 必須是數字。' data-val-required='HorizontalTest1 欄位是必要項。' id='Wash_Detail_{lastNO}__HorizontalTest1' name='Wash_Detail[{lastNO}].HorizontalTest1' step='0.01' type='number' value='0' onchange='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
-            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalTest2 必須是數字。' data-val-required='HorizontalTest2 欄位是必要項。' id='Wash_Detail_{lastNO}__HorizontalTest2' name='Wash_Detail[{lastNO}].HorizontalTest2' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
+            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalTest2 必須是數字。' data-val-required='HorizontalTest2 欄位是必要項。' id='Wash_Detail_{lastNO}__HorizontalTest2' name='Wash_Detail[{lastNO}].HorizontalTest2' step='0.01' type='number' value='0' onchange='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
-            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalTest3 必須是數字。' data-val-required='HorizontalTest3 欄位是必要項。' id='Wash_Detail_{lastNO}__HorizontalTest3' name='Wash_Detail[{lastNO}].HorizontalTest3' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
+            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalTest3 必須是數字。' data-val-required='HorizontalTest3 欄位是必要項。' id='Wash_Detail_{lastNO}__HorizontalTest3' name='Wash_Detail[{lastNO}].HorizontalTest3' step='0.01' type='number' value='0' onchange='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
             html += $"<input data-val='true' data-val-number='欄位 HorizontalAverage 必須是數字。' data-val-required='HorizontalAverage 欄位是必要項。' id='Wash_Detail_{lastNO}__HorizontalAverage' name='Wash_Detail[{lastNO}].HorizontalAverage' readonly='readonly' step='0.01' type='number' value='0'>";
@@ -506,13 +506,13 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "</td>";
 
             html += "<td>";
-            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalTest1 必須是數字。' data-val-required='VerticalTest1 欄位是必要項。' id='Wash_Detail_{lastNO}__VerticalTest1' name='Wash_Detail[{lastNO}].VerticalTest1' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
+            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalTest1 必須是數字。' data-val-required='VerticalTest1 欄位是必要項。' id='Wash_Detail_{lastNO}__VerticalTest1' name='Wash_Detail[{lastNO}].VerticalTest1' step='0.01' type='number' value='0' onchange='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
-            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalTest2 必須是數字。' data-val-required='VerticalTest2 欄位是必要項。' id='Wash_Detail_{lastNO}__VerticalTest2' name='Wash_Detail[{lastNO}].VerticalTest2' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
+            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalTest2 必須是數字。' data-val-required='VerticalTest2 欄位是必要項。' id='Wash_Detail_{lastNO}__VerticalTest2' name='Wash_Detail[{lastNO}].VerticalTest2' step='0.01' type='number' value='0' onchange='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
-            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalTest3 必須是數字。' data-val-required='VerticalTest3 欄位是必要項。' id='Wash_Detail_{lastNO}__VerticalTest3' name='Wash_Detail[{lastNO}].VerticalTest3' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
+            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalTest3 必須是數字。' data-val-required='VerticalTest3 欄位是必要項。' id='Wash_Detail_{lastNO}__VerticalTest3' name='Wash_Detail[{lastNO}].VerticalTest3' step='0.01' type='number' value='0' onchange='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
             html += $"<input data-val='true' data-val-number='欄位 VerticalAverage 必須是數字。' data-val-required='VerticalAverage 欄位是必要項。' id='Wash_Detail_{lastNO}__VerticalAverage' name='Wash_Detail[{lastNO}].VerticalAverage' readonly='readonly' step='0.01' type='number' value='0'>";
@@ -522,16 +522,16 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "</td>";
 
             html += "<td>";
-            html += $"<input class='SkewnessTest' data-val='true' data-val-number='欄位 SkewnessTest1 必須是數字。' data-val-required='SkewnessTest1 欄位是必要項。' id='Wash_Detail_{lastNO}__SkewnessTest1' name='Wash_Detail[{lastNO}].SkewnessTest1' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
+            html += $"<input class='SkewnessTest' data-val='true' data-val-number='欄位 SkewnessTest1 必須是數字。' data-val-required='SkewnessTest1 欄位是必要項。' id='Wash_Detail_{lastNO}__SkewnessTest1' name='Wash_Detail[{lastNO}].SkewnessTest1' step='0.01' type='number' value='0' onchange='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
-            html += $"<input class='SkewnessTest' data-val='true' data-val-number='欄位 SkewnessTest2 必須是數字。' data-val-required='SkewnessTest2 欄位是必要項。' id='Wash_Detail_{lastNO}__SkewnessTest2' name='Wash_Detail[{lastNO}].SkewnessTest2' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
+            html += $"<input class='SkewnessTest' data-val='true' data-val-number='欄位 SkewnessTest2 必須是數字。' data-val-required='SkewnessTest2 欄位是必要項。' id='Wash_Detail_{lastNO}__SkewnessTest2' name='Wash_Detail[{lastNO}].SkewnessTest2' step='0.01' type='number' value='0' onchange='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td style=''>";
-            html += $"<input class='SkewnessTest' data-val='true' data-val-number='欄位 SkewnessTest3 必須是數字。' data-val-required='SkewnessTest3 欄位是必要項。' id='Wash_Detail_{lastNO}__SkewnessTest3' name='Wash_Detail[{lastNO}].SkewnessTest3' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
+            html += $"<input class='SkewnessTest' data-val='true' data-val-number='欄位 SkewnessTest3 必須是數字。' data-val-required='SkewnessTest3 欄位是必要項。' id='Wash_Detail_{lastNO}__SkewnessTest3' name='Wash_Detail[{lastNO}].SkewnessTest3' step='0.01' type='number' value='0' onchange='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td style=''>";
-            html += $"<input class='SkewnessTest' data-val='true' data-val-number='欄位 SkewnessTest4 必須是數字。' data-val-required='SkewnessTest4 欄位是必要項。' id='Wash_Detail_{lastNO}__SkewnessTest4' name='Wash_Detail[{lastNO}].SkewnessTest4' step='0.01' type='number' value='0' oninput='value=QtyCheck(value)'>";
+            html += $"<input class='SkewnessTest' data-val='true' data-val-number='欄位 SkewnessTest4 必須是數字。' data-val-required='SkewnessTest4 欄位是必要項。' id='Wash_Detail_{lastNO}__SkewnessTest4' name='Wash_Detail[{lastNO}].SkewnessTest4' step='0.01' type='number' value='0' onchange='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
             html += $"<input data-val='true' data-val-number='欄位 SkewnessRate 必須是數字。' data-val-required='SkewnessRate 欄位是必要項。' id='Wash_Detail_{lastNO}__SkewnessRate' name='Wash_Detail[{lastNO}].SkewnessRate' readonly='readonly' step='0.01' type='number' value='0'>";
