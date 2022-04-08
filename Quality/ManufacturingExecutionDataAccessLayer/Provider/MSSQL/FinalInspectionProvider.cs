@@ -1371,7 +1371,7 @@ Select	f.AuditDate,
 		[InspectionResultID] = iif(f.InspectionResult = 'Pass', 1, 2),
 		[InspectionStatusID] = iif(f.InspectionResult = 'Pass', 3, 7),
 		f.SubmitDate,
-		[InspectionMinutes] = Round(DATEDIFF(SECOND, f.AddDate, f.EditDate) / 60.0, 5),
+		[InspectionMinutes] = Round(DATEDIFF(SECOND, f.AddDate, f.EditDate) / 60.0, 0),
 		[CFA] = isnull((select Pivot88UserName from quality_pass1 with (nolock) where ID = f.CFA), ''),
 		OrderInfo.POQty,
 		OrderInfo.ETD_ETA,
@@ -1474,8 +1474,8 @@ select	[DefectTypeDesc] = gdt.Description,
 		[DefectCodeDesc] = gdc.Description,
         fd.GarmentDefectCodeID,
         gdc.Pivot88DefectCodeID,
-		[CriticalQty] = iif(gdc.IsCriticalDefect = 1, fd.Qty, 0),
-        [MajorQty] = iif(gdc.IsCriticalDefect = 0, fd.Qty, 0),
+		[CriticalQty] = fd.Qty,--iif(gdc.IsCriticalDefect = 1, fd.Qty, 0),
+        [MajorQty] = fd.Qty,--iif(gdc.IsCriticalDefect = 0, fd.Qty, 0),
         fd.Ukey
 from FinalInspection_Detail fd with (nolock)
 left join Production.dbo.GarmentDefectType gdt with (nolock) on gdt.ID = fd.GarmentDefectTypeID
@@ -1485,7 +1485,7 @@ where fd.ID = @ID
 select  [title] =  CONCAT(fdi.ID, '_', isnull(fd.GarmentDefectCodeID, ''), '_', fdi.Ukey),
         [full_filename] =  CONCAT(fdi.ID, '_', isnull(fd.GarmentDefectCodeID, ''), '_', fdi.Ukey, '.png'),
         [number] = ROW_NUMBER() OVER (PARTITION BY fdi.FinalInspection_DetailUkey ORDER BY fdi.Ukey),
-        [comment] = fdi.Remark,
+        [comment] = isnull(fdi.Remark, ''),
         fdi.FinalInspection_DetailUkey
 from PMSFile.dbo.FinalInspection_DetailImage fdi with (nolock)
 inner join FinalInspection_Detail fd with (nolock) on fd.Ukey = fdi.FinalInspection_DetailUkey

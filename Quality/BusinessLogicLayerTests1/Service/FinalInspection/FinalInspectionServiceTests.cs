@@ -22,7 +22,7 @@ namespace BusinessLogicLayer.Service.Tests
             try
             {
                 FinalInspectionService finalInspectionService = new FinalInspectionService();
-                string result = JsonConvert.SerializeObject(finalInspectionService.GetPivot88Json("ES3CH21110007"));
+                string result = JsonConvert.SerializeObject(finalInspectionService.GetPivot88Json("SPSCH21120145"));
                 Assert.IsTrue(true);
             }
             catch (Exception ex)
