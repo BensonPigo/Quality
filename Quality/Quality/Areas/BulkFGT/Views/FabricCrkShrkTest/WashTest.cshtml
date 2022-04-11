@@ -975,7 +975,7 @@
                 rate = Math.abs(rate);
             }
 
-            $('#Wash_Detail_' + idx + '__HorizontalRate').val(rate);
+            $('#Wash_Detail_' + idx + '__HorizontalRate').val(rate > 100 ? 100 : rate);
         });
 
         $('.VerticalTest').unbind('blur').on('blur', function () {
@@ -1004,7 +1004,7 @@
                 rate = Math.abs(rate);
             }
 
-            $('#Wash_Detail_' + idx + '__VerticalRate').val(rate);
+            $('#Wash_Detail_' + idx + '__VerticalRate').val(rate > 100 ? 100 : rate);
         });
 
         $('.SkewnessTest').unbind('blur').on('blur', function () {
@@ -1039,7 +1039,7 @@
                 break;
         }
 
-        $('#Wash_Detail_' + idx + '__SkewnessRate').val(rate);
+        $('#Wash_Detail_' + idx + '__SkewnessRate').val(rate > 100 ? 100 : rate);
     }
 
     function GetFtyInventory(data, targetID) {

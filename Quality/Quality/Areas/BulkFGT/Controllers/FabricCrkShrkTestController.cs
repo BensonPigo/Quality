@@ -233,7 +233,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         public JsonResult Amend_Crocking(long ID)
         {
             BaseResult result = _FabricCrkShrkTest_Service.AmendFabricCrkShrkTestCrockingDetail(ID);
-            return Json(new { result.Result, ErrorMessage = result.ErrorMessage.Replace("'", string.Empty) });
+            return Json(new { result.Result, ErrorMessage = (result.ErrorMessage == null ? string.Empty : result.ErrorMessage.Replace("'", string.Empty)) });
         }
 
         [HttpPost]
@@ -408,7 +408,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         public JsonResult Amend_Heat(long ID)
         {
             BaseResult result = _FabricCrkShrkTest_Service.AmendFabricCrkShrkTestHeatDetail(ID);
-            return Json(new { result.Result, ErrorMessage = result.ErrorMessage.Replace("'", string.Empty) });
+            return Json(new { result.Result, ErrorMessage = (result.ErrorMessage == null ? string.Empty : result.ErrorMessage.Replace("'", string.Empty)) });
         }
 
         [HttpPost]
@@ -593,7 +593,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         public JsonResult Amend_Wash(long ID)
         {
             BaseResult result = _FabricCrkShrkTest_Service.AmendFabricCrkShrkTestWashDetail(ID);
-            return Json(new { result.Result, ErrorMessage = result.ErrorMessage.Replace("'", string.Empty) });
+            return Json(new { result.Result, ErrorMessage = (result.ErrorMessage == null ? string.Empty : result.ErrorMessage.Replace("'", string.Empty)) });
         }
 
         [HttpPost]
