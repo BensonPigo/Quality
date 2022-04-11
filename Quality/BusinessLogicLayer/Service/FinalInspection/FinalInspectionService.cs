@@ -497,6 +497,200 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
+        public object GetEndInlinePivot88Json(string ID, string inspectionType)
+        {
+            IFinalInspectionProvider finalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+            DataSet resultPivot88 = finalInspectionProvider.GetEndInlinePivot88(ID, inspectionType);
+
+            if (resultPivot88.Tables.Count == 0)
+            {
+                return null;
+            }
+
+            if (resultPivot88.Tables[0].Rows.Count == 0)
+            {
+                return null;
+            }
+
+            DataRow drFinalInspection = resultPivot88.Tables[0].Rows[0];
+            DataTable dtColor = resultPivot88.Tables[1];
+            DataTable dtSizeArticle = resultPivot88.Tables[2];
+            DataRow drStyleInfo = resultPivot88.Tables[3].Rows[0];
+            DataTable dtDefectsDetail = resultPivot88.Tables[4];
+            DataTable dtDefectsDetailImage = resultPivot88.Tables[5];
+
+            List<object> sections = new List<object>();
+
+            var listSku_number = dtSizeArticle.AsEnumerable().Select(s =>
+            new
+            {
+                sku_number = $"{s["Article"]}_{s["SizeCode"]}",
+                qty_to_inspect = s["ShipQty"]
+            }
+            );
+
+            object defects;
+
+            if (dtDefectsDetail.Rows.Count > 0)
+            {
+                defects = dtDefectsDetail.AsEnumerable()
+                                .GroupJoin(dtDefectsDetailImage.AsEnumerable(),
+                                            s => (long)s["Ukey"],
+                                            defectImg =>
+                                            (long)defectImg["FinalInspection_DetailUkey"],
+                                            (s, defectImg) => new
+                                            {
+                                                defect = s,
+                                                defectImg = defectImg.Select(defectImgItem => new
+                                                {
+                                                    title = defectImgItem["title"],
+                                                    full_filename = defectImgItem["full_filename"],
+                                                    number = defectImgItem["number"],
+                                                    comment = defectImgItem["comment"],
+                                                })
+                                            })
+                                .Select(s => new
+                                {
+                                    label = s.defect["DefectCodeDesc"],
+                                    subsection = s.defect["DefectTypeDesc"],
+                                    code = s.defect["Pivot88DefectCodeID"],
+                                    critical_level = s.defect["CriticalQty"],
+                                    major_level = s.defect["MajorQty"],
+                                    minor_level = 0,
+                                    comments = "No comment",
+                                    pictures = s.defectImg
+                                });
+            }
+            else
+            {
+                defects = new List<object>() {
+                    new {
+                            label = string.Empty,
+                            subsection = string.Empty,
+                            code = string.Empty,
+                            critical_level = 0,
+                            major_level = 0,
+                            minor_level = 0,
+                            comments = "No comment",
+                            pictures = new List<object>(),
+                    },
+                };
+            }
+
+            sections.Add(new
+            {
+                type = "aqlDefects",
+                title = "product",
+                section_result_id = drFinalInspection["InspectionResultID"],
+                defective_parts = drFinalInspection["DefectQty"],
+                qty_inspected = drFinalInspection["AvailableQty"],
+                sampled_inspected = drFinalInspection["SampleSize"],
+                inspection_level = drFinalInspection["InspectionLevel"],
+                inspection_method = "normal",
+                aql_minor = 4,
+                aql_major = 1,
+                aql_major_a = 0.4,
+                aql_major_b = 1.5,
+                aql_critical = 1,
+                //aql_minor = 0,
+                //aql_major = 0,
+                //aql_major_a = drFinalInspection["DefectQty"],
+                //aql_major_b = drFinalInspection["DefectQty"],
+                //aql_critical = 0,
+                max_minor_defects = 0,
+                max_major_defects = drFinalInspection["DefectQty"],
+                max_major_a_defects = drFinalInspection["DefectQty"],
+                max_major_b_defects = drFinalInspection["DefectQty"],
+                max_critical_defects = 0,
+                defects,
+            });
+
+            sections.Add(
+                new
+                {
+                    type = "pictures",
+                    title = "photos",
+                    pictures = new List<object>(),
+                }
+                );
+
+            List<object> assignment_items = listSku_number.Select(
+                sku_number => new
+                {
+                    sampled_inspected = drFinalInspection["SampleSize"],
+                    inspection_result_id = drFinalInspection["InspectionResultID"],
+                    inspection_status_id = drFinalInspection["InspectionStatusID"],
+                    qty_inspected = drFinalInspection["AvailableQty"],
+                    inspection_completed_date = drFinalInspection["InspectionCompletedDate"],
+                    total_inspection_minutes = drFinalInspection["InspectionMinutes"],
+                    sampling_size = drFinalInspection["SampleSize"],
+                    qty_to_inspect = sku_number.qty_to_inspect,
+                    aql_minor = 4,
+                    aql_major = 1,
+                    aql_major_a = 1,
+                    aql_major_b = 1,
+                    aql_critical = 1,
+                    supplier_booking_msg = DBNull.Value,
+                    conclusion_remarks = drFinalInspection["OthersRemark"],
+                    assignment = new
+                    {
+                        report_type = new { id = drFinalInspection["ReportTypeID"] },
+                        inspector = new { username = drFinalInspection["CFA"] },
+                        date_inspection = drFinalInspection["AuditDate"],
+                        inspection_level = drFinalInspection["InspectionLevel"],
+                        inspection_method = "normal",
+                    },
+                    po_line = new
+                    {
+                        qty = drFinalInspection["POQty"],
+                        etd = drFinalInspection["ETD_ETA"],
+                        eta = drFinalInspection["ETD_ETA"],
+                        color = dtColor.Rows.Count > 0 ? dtColor.AsEnumerable().Select(s => s["ColorID"].ToString()).JoinToString(";") : string.Empty,
+                        size = dtSizeArticle.Rows.Count > 0 ? dtSizeArticle.AsEnumerable().Select(s => s["SizeCode"].ToString()).Distinct().JoinToString(";") : string.Empty,
+                        style = drStyleInfo["Style"],
+                        po = new
+                        {
+                            exporter = new
+                            {
+                                id = drStyleInfo["BrandAreaID"],
+                                erp_business_id = drStyleInfo["BrandAreaCode"],
+                            },
+                            po_number = drFinalInspection["CustPONO"],
+                            customer_po = drFinalInspection["CustomerPo"],
+                            importer = new
+                            {
+                                id = 215,
+                                erp_business_id = "Adidas001",
+                            },
+                            project = new { id = 2063 }
+                        },
+                        sku = new
+                        {
+                            sku_number = sku_number.sku_number,
+                            item_name = "No Item",
+                            item_description = string.Empty,
+                        },
+                    },
+                }
+                ).ToList<object>();
+
+            #region passFails
+            List<object> passFails = new List<object>();
+            #endregion
+
+            object result = new
+            {
+                unique_key = ID,
+                status = "Submitted",
+                date_started = drFinalInspection["DateStarted"],
+                defective_parts = drFinalInspection["RejectQty"],
+                sections,
+                assignment_items,
+                passFails,
+            };
+
+            return result;
+        }
         public List<SentPivot88Result> SentPivot88(PivotTransferRequest pivotTransferRequest)
         {
             List<string> listInspectionID = new List<string>();
@@ -504,7 +698,20 @@ namespace BusinessLogicLayer.Service
 
             _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
 
-            listInspectionID = _FinalInspectionProvider.GetPivot88FinalInspectionID(pivotTransferRequest.InspectionID);
+            switch (pivotTransferRequest.InspectionType)
+            {
+                case "FinalInspection":
+                    listInspectionID = _FinalInspectionProvider.GetPivot88FinalInspectionID(pivotTransferRequest.InspectionID);
+                    break;
+                case "InlineInspection":
+                    listInspectionID = _FinalInspectionProvider.GetPivot88InlineInspectionID(pivotTransferRequest.InspectionID);
+                    break;
+                case "EndLineInspection":
+                    listInspectionID = _FinalInspectionProvider.GetPivot88InlineInspectionID(pivotTransferRequest.InspectionID);
+                    break;
+                default:
+                    break;
+            }
 
             if (listInspectionID.Count == 0)
             {

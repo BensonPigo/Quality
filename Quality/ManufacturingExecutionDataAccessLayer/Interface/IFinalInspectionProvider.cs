@@ -66,7 +66,13 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
 
         DataSet GetPivot88(string ID);
 
+        DataSet GetEndInlinePivot88(string ID, string inspectionType);
+
         List<string> GetPivot88FinalInspectionID(string finalInspectionID);
+
+        List<string> GetPivot88EndLineInspectionID(string inspectionID);
+
+        List<string> GetPivot88InlineInspectionID(string inspectionID);
 
         void UpdateIsExportToP88(string ID);
     }

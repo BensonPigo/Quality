@@ -28,6 +28,7 @@ namespace BusinessLogicLayer.Interface
         string GetAQLPlanDesc(long ukey);
 
         object GetPivot88Json(string ID);
+        object GetEndInlinePivot88Json(string ID, string inspectionType);
 
         List<SentPivot88Result> SentPivot88(PivotTransferRequest pivotTransferRequest);
     }

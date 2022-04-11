@@ -733,7 +733,7 @@ where foc.ID = @finalInspectionID
             return ExecuteList<CartonItem>(CommandType.Text, sqlGetMoistureListCartonItem, objParameter);
 
         }
-        
+
 
         public IList<ViewMoistureResult> GetViewMoistureResult(string finalInspectionID)
         {
@@ -805,7 +805,7 @@ from    EndlineMoisture with (nolock)
             objParameter.Add("@GarmentBottom", moistureResult.GarmentBottom);
             objParameter.Add("@CTNInside", moistureResult.CTNInside);
             objParameter.Add("@CTNOutside", moistureResult.CTNOutside);
-            objParameter.Add("@Result",DbType.String, moistureResult.Result);
+            objParameter.Add("@Result", DbType.String, moistureResult.Result);
             objParameter.Add("@Action", moistureResult.Action);
             objParameter.Add("@Remark", moistureResult.Remark ?? "");
             objParameter.Add("@AddName", moistureResult.AddName);
@@ -942,7 +942,7 @@ values
                 transactionScope.Complete();
             }
         }
-        
+
         public IList<MeasurementViewItem> GetMeasurementViewItem(string finalInspectionID)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();
@@ -1349,6 +1349,46 @@ where   ID = @FinalInspectionID
             return ExecuteList<DatabaseObject.ProductionDB.System>(CommandType.Text, SbSql.ToString(), objParameter);
         }
 
+        public DataSet GetEndInlinePivot88(string ID, string inspectionType)
+        {
+            SQLParameterCollection parameter = new SQLParameterCollection() {
+                            { "@InspectionID", DbType.String, ID }
+                        };
+
+            string inspectionTable = inspectionType == "InlineInspection" ? "InlineInspectionReport" : "InspectionReport";
+
+            string sqlGetData = $@"
+declare @ID varchar(13) = @InspectionID
+
+select  r.FirstInspectionDate,
+        [defective_parts] = Breakdown_Detail.Qty,
+        [qty_inspected] = Breakdown.PassQty + Breakdown.RejectQty
+from {inspectionTable} r with (nolock)
+outer apply(select  [RejectQty] = isnull(sum(RejectQty), 0),
+                    [PassQty] = isnull(sum(PassQty), 0),
+                    [FixQty] = isnull(sum(FixQty), 0)
+            from {inspectionTable}_Breakdown with (nolock) where InlineInspectionReportID = r.ID) Breakdown
+outer apply(select [Qty] = isnull(sum(Qty), 0) 
+            from {inspectionTable}_Breakdown_Detail with (nolock) where InlineInspectionReportID = r.ID) Breakdown_Detail
+where r.ID = @ID
+
+
+select  [label] = isnull(gdt.Description, ''),
+        [subsection] = isnull(gdc.Description, ''),
+        [code] = isnull(gdc.Pivot88DefectCodeID, ''),
+        [CriticalQty] = iif(isnull(gdc.IsCriticalDefect, 0) = 1, ibd.Qty, 0),
+        [MajorQty] = iif(isnull(gdc.IsCriticalDefect, 0) = 0, ibd.Qty, 0),
+from {inspectionTable}_Breakdown_Detail ibd with (nolock)
+left join SciProduction_GarmentDefectCode gdc with (nolock) on gdc.ID = ibd.GarmentDefectCodeID
+left join SciProduction_GarmentDefectType gdt with (nolock) on gdt.ID = gdc.GarmentDefectTypeID
+where ibd.InlineInspectionReportID = @ID
+
+";
+
+
+            return ExecuteDataSet(CommandType.Text, sqlGetData, parameter);
+        }
+
         public DataSet GetPivot88(string ID)
         {
             SQLParameterCollection parameter = new SQLParameterCollection() {
@@ -1515,6 +1555,73 @@ where   IsExportToP88 = 0 and
             {
                 sqlGetData += " and ID = @ID";
                 parameter.Add("@ID", finalInspectionID);
+            }
+
+            DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, parameter);
+
+            if (dtResult.Rows.Count > 0)
+            {
+                return dtResult.AsEnumerable().Select(s => s["ID"].ToString()).ToList();
+            }
+            else
+            {
+                return new List<string>();
+            }
+
+        }
+
+        public List<string> GetPivot88EndLineInspectionID(string inspectionID)
+        {
+            SQLParameterCollection parameter = new SQLParameterCollection();
+            string sqlGetData = @"
+declare @FromDateTransferToP88 date
+select @FromDateTransferToP88 = FromDateTransferToP88 from system
+
+select  ID
+from InspectionReport with (nolock)
+where   IsNeedTransferToPivot88 = 1 and
+        (AddDate >= @FromDateTransferToP88 or EditDate >= @FromDateTransferToP88) and
+        exists (select 1 from Production.dbo.Orders o with (nolock) where o.CustPONo = InspectionReport.CustPONO and o.BrandID in ('Adidas','Reebok'))
+
+";
+            if (!string.IsNullOrEmpty(inspectionID))
+            {
+                sqlGetData += " and ID = @ID";
+                parameter.Add("@ID", inspectionID);
+            }
+
+            DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, parameter);
+
+            if (dtResult.Rows.Count > 0)
+            {
+                return dtResult.AsEnumerable().Select(s => s["ID"].ToString()).ToList();
+            }
+            else
+            {
+                return new List<string>();
+            }
+
+        }
+
+        public List<string> GetPivot88InlineInspectionID(string inspectionID)
+        {
+            SQLParameterCollection parameter = new SQLParameterCollection();
+            string sqlGetData = @"
+declare @FromDateTransferToP88 date
+select @FromDateTransferToP88 = FromDateTransferToP88 from system
+
+select  ID
+from InlineInspectionReport with (nolock)
+where   IsNeedTransferToPivot88 = 1 and
+        (AddDate >= @FromDateTransferToP88 or EditDate >= @FromDateTransferToP88) and
+        exists (select 1 from Production.dbo.Orders o with (nolock) where o.CustPONo = InlineInspectionReport.CustPONO and o.BrandID in ('Adidas','Reebok'))
+
+
+";
+            if (!string.IsNullOrEmpty(inspectionID))
+            {
+                sqlGetData += " and ID = @ID";
+                parameter.Add("@ID", inspectionID);
             }
 
             DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, parameter);
