@@ -50,6 +50,7 @@
       <HintPath>..\..\..\PMSToolApplication\_DLL\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -74,10 +75,25 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ADOHelper\ADOHelper.csproj">
+      <Project>{EDDC9B9A-B751-4520-A783-40C5588A8883}</Project>
+      <Name>ADOHelper</Name>
+    </ProjectReference>
     <ProjectReference Include="..\BusinessLogicLayer\BusinessLogicLayer.csproj">
       <Project>{74A8F2A1-735F-45CC-9BCC-E93AF1BAAE87}</Project>
       <Name>BusinessLogicLayer</Name>
     </ProjectReference>
+    <ProjectReference Include="..\DatabaseObject\DatabaseObject.csproj">
+      <Project>{95d12adf-a503-4a80-b2c9-71e21f2a3aa6}</Project>
+      <Name>DatabaseObject</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ManufacturingExecutionDataAccessLayer\ManufacturingExecutionDataAccessLayer.csproj">
+      <Project>{642AEBC1-02D9-4716-BB21-61621C62A67F}</Project>
+      <Name>ManufacturingExecutionDataAccessLayer</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
