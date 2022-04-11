@@ -1474,8 +1474,8 @@ select	[DefectTypeDesc] = gdt.Description,
 		[DefectCodeDesc] = gdc.Description,
         fd.GarmentDefectCodeID,
         gdc.Pivot88DefectCodeID,
-		[CriticalQty] = fd.Qty,--iif(gdc.IsCriticalDefect = 1, fd.Qty, 0),
-        [MajorQty] = fd.Qty,--iif(gdc.IsCriticalDefect = 0, fd.Qty, 0),
+		[CriticalQty] = iif(isnull(gdc.IsCriticalDefect, 0) = 1, fd.Qty, 0),
+        [MajorQty] = iif(isnull(gdc.IsCriticalDefect, 0) = 0, fd.Qty, 0),
         fd.Ukey
 from FinalInspection_Detail fd with (nolock)
 left join Production.dbo.GarmentDefectType gdt with (nolock) on gdt.ID = fd.GarmentDefectTypeID
