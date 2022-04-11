@@ -381,10 +381,10 @@
                                         </div>
                                     </td>
                                     <td>
-                                        @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].HorizontalOriginal, new { @class = "HorizontalTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @oninput = "value=QtyCheck(value)" })
+                                        @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].HorizontalOriginal, new { @class = "HorizontalTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @onchange = "value=QtyCheck(value)" })
                                     </td>
                                     <td>
-                                        @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].VerticalOriginal, new { @class = "VerticalTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @oninput = "value=QtyCheck(value)" })
+                                        @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].VerticalOriginal, new { @class = "VerticalTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @onchange = "value=QtyCheck(value)" })
                                     </td>
                                     <td>
                                         @{
@@ -404,13 +404,13 @@
                                     </td>
 
                                     <td>
-                                        @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].HorizontalTest1, new { @class = "HorizontalTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @oninput = "value=QtyCheck(value)" })
+                                        @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].HorizontalTest1, new { @class = "HorizontalTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @onchange = "value=QtyCheck(value)" })
                                     </td>
                                     <td>
-                                        @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].HorizontalTest2, new { @class = "HorizontalTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @oninput = "value=QtyCheck(value)" })
+                                        @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].HorizontalTest2, new { @class = "HorizontalTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @onchange = "value=QtyCheck(value)" })
                                     </td>
                                     <td>
-                                        @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].HorizontalTest3, new { @class = "HorizontalTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @oninput = "value=QtyCheck(value)" })
+                                        @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].HorizontalTest3, new { @class = "HorizontalTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @onchange = "value=QtyCheck(value)" })
                                     </td>
                                     <td>
                                         @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].HorizontalAverage, new { @type = "number", @step = "0.01", @readonly = "readonly" })
@@ -420,13 +420,13 @@
                                     </td>
 
                                     <td>
-                                        @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].VerticalTest1, new { @class = "VerticalTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @oninput = "value=QtyCheck(value)" })
+                                        @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].VerticalTest1, new { @class = "VerticalTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @onchange = "value=QtyCheck(value)" })
                                     </td>
                                     <td>
-                                        @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].VerticalTest2, new { @class = "VerticalTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @oninput = "value=QtyCheck(value)" })
+                                        @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].VerticalTest2, new { @class = "VerticalTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @onchange = "value=QtyCheck(value)" })
                                     </td>
                                     <td>
-                                        @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].VerticalTest3, new { @class = "VerticalTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @oninput = "value=QtyCheck(value)" })
+                                        @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].VerticalTest3, new { @class = "VerticalTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @onchange = "value=QtyCheck(value)" })
                                     </td>
                                     <td>
                                         @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].VerticalAverage, new { @type = "number", @step = "0.01", @readonly = "readonly" })
@@ -436,16 +436,16 @@
                                     </td>
 
                                     <td>
-                                        @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].SkewnessTest1, new { @class = "SkewnessTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @oninput = "value=QtyCheck(value)" })
+                                        @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].SkewnessTest1, new { @class = "SkewnessTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @onchange = "value=QtyCheck(value)" })
                                     </td>
                                     <td>
-                                        @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].SkewnessTest2, new { @class = "SkewnessTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @oninput = "value=QtyCheck(value)" })
+                                        @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].SkewnessTest2, new { @class = "SkewnessTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @onchange = "value=QtyCheck(value)" })
                                     </td>
                                     <td>
-                                        @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].SkewnessTest3, new { @class = "SkewnessTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @oninput = "value=QtyCheck(value)" })
+                                        @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].SkewnessTest3, new { @class = "SkewnessTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @onchange = "value=QtyCheck(value)" })
                                     </td>
                                     <td>
-                                        @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].SkewnessTest4, new { @class = "SkewnessTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @oninput = "value=QtyCheck(value)" })
+                                        @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].SkewnessTest4, new { @class = "SkewnessTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @onchange = "value=QtyCheck(value)" })
                                     </td>
                                     <td>
                                         @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].SkewnessRate, new { @type = "number", @step = "0.01", @readonly = "readonly" })
@@ -975,7 +975,7 @@
                 rate = Math.abs(rate);
             }
 
-            $('#Wash_Detail_' + idx + '__HorizontalRate').val(rate);
+            $('#Wash_Detail_' + idx + '__HorizontalRate').val(rate > 100 ? 100 : rate);
         });
 
         $('.VerticalTest').unbind('blur').on('blur', function () {
@@ -1004,7 +1004,7 @@
                 rate = Math.abs(rate);
             }
 
-            $('#Wash_Detail_' + idx + '__VerticalRate').val(rate);
+            $('#Wash_Detail_' + idx + '__VerticalRate').val(rate > 100 ? 100 : rate);
         });
 
         $('.SkewnessTest').unbind('blur').on('blur', function () {
@@ -1039,7 +1039,7 @@
                 break;
         }
 
-        $('#Wash_Detail_' + idx + '__SkewnessRate').val(rate);
+        $('#Wash_Detail_' + idx + '__SkewnessRate').val(rate > 100 ? 100 : rate);
     }
 
     function GetFtyInventory(data, targetID) {
@@ -1065,6 +1065,6 @@
             return 0;
         }
 
-        return value;
+        return Number.parseFloat(value).toFixed(2);
     }
 </script>
