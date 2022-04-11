@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -123,11 +124,13 @@ namespace BusinessLogicLayer.Service
             DataTable dtSizeArticle = resultPivot88.Tables[2];
             DataRow drStyleInfo = resultPivot88.Tables[3].Rows[0];
             DataTable dtDefectsDetail = resultPivot88.Tables[4];
+            DataTable dtDefectsDetailImage = resultPivot88.Tables[5];
 
             List<object> sections = new List<object>();
 
-            var listSku_number = dtSizeArticle.AsEnumerable().Select(s => 
-            new {
+            var listSku_number = dtSizeArticle.AsEnumerable().Select(s =>
+            new
+            {
                 sku_number = $"{s["Article"]}_{s["SizeCode"]}",
                 qty_to_inspect = s["ShipQty"]
             }
@@ -138,15 +141,31 @@ namespace BusinessLogicLayer.Service
             if (dtDefectsDetail.Rows.Count > 0)
             {
                 defects = dtDefectsDetail.AsEnumerable()
+                                .GroupJoin(dtDefectsDetailImage.AsEnumerable(),
+                                            s => (long)s["Ukey"],
+                                            defectImg =>
+                                            (long)defectImg["FinalInspection_DetailUkey"],
+                                            (s, defectImg) => new
+                                            {
+                                                defect = s,
+                                                defectImg = defectImg.Select(defectImgItem => new
+                                                {
+                                                    title = defectImgItem["title"],
+                                                    full_filename = defectImgItem["full_filename"],
+                                                    number = defectImgItem["number"],
+                                                    comment = defectImgItem["comment"],
+                                                })
+                                            })
                                 .Select(s => new
                                 {
-                                    label = s["DefectCodeDesc"],
-                                    subsection = s["DefectTypeDesc"],
-                                    code = s["Pivot88DefectCodeID"],
-                                    critical_level = s["CriticalQty"],
-                                    major_level = s["MajorQty"],
+                                    label = s.defect["DefectCodeDesc"],
+                                    subsection = s.defect["DefectTypeDesc"],
+                                    code = s.defect["Pivot88DefectCodeID"],
+                                    critical_level = s.defect["CriticalQty"],
+                                    major_level = s.defect["MajorQty"],
                                     minor_level = 0,
                                     comments = "No comment",
+                                    pictures = s.defectImg
                                 });
             }
             else
@@ -160,6 +179,7 @@ namespace BusinessLogicLayer.Service
                             major_level = 0,
                             minor_level = 0,
                             comments = "No comment",
+                            pictures = new List<object>(),
                     },
                 };
             }
@@ -192,6 +212,15 @@ namespace BusinessLogicLayer.Service
                 defects,
             });
 
+            sections.Add(
+                new
+                {
+                    type = "pictures",
+                    title = "photos",
+                    pictures = new List<object>(),
+                }
+                );
+
             List<object> assignment_items = listSku_number.Select(
                 sku_number => new
                 {
@@ -208,6 +237,8 @@ namespace BusinessLogicLayer.Service
                     aql_major_a = 1,
                     aql_major_b = 1,
                     aql_critical = 1,
+                    supplier_booking_msg = DBNull.Value,
+                    conclusion_remarks = drFinalInspection["OthersRemark"],
                     assignment = new
                     {
                         report_type = new { id = drFinalInspection["ReportTypeID"] },
@@ -250,6 +281,208 @@ namespace BusinessLogicLayer.Service
                 }
                 ).ToList<object>();
 
+            #region passFails
+            List<object> passFails = new List<object>() {
+                new {
+                    title = "fabric_approval",
+                    value = drFinalInspection.Field<bool>("FabricApprovalDoc") ? "Confirm" : "N/A",
+                    type = "check-list",
+                    subsection = "validation_and_checklist",
+                    checkListSubsection = "general",
+                    status = drFinalInspection.Field<bool>("FabricApprovalDoc") ? "pass" : "na",
+                    comment = "N/A",
+                },
+                new {
+                    title = "sealing_sample",
+                    value = drFinalInspection.Field<bool>("SealingSampleDoc") ? "Confirm" : "N/A",
+                    type = "check-list",
+                    subsection = "validation_and_checklist",
+                    checkListSubsection = "general",
+                    status = drFinalInspection.Field<bool>("SealingSampleDoc") ? "pass" : "na",
+                    comment = "N/A",
+                },
+                new {
+                    title = "metal_detection",
+                    value = drFinalInspection.Field<bool>("MetalDetectionDoc") ? "Confirm" : "N/A",
+                    type = "check-list",
+                    subsection = "validation_and_checklist",
+                    checkListSubsection = "general",
+                    status = drFinalInspection.Field<bool>("MetalDetectionDoc") ? "pass" : "na",
+                    comment = "N/A",
+                },
+                new {
+                    title = "finish_goods_testing",
+                    value = "Confirm",
+                    type = "check-list",
+                    subsection = "validation_and_checklist",
+                    checkListSubsection = "general",
+                    status = drFinalInspection.Field<int>("BAQty") > 0 ? "pass" : "fail",
+                    comment = "N/A",
+                },
+                new {
+                    title = "moisture_control_garment",
+                    value = drFinalInspection.Field<string>("MoistureResult") == "na" ? "Confirm" : "N/A",
+                    type = "check-list",
+                    subsection = "validation_and_checklist",
+                    checkListSubsection = "general",
+                    status = drFinalInspection.Field<string>("MoistureResult"),
+                    comment = "N/A",
+                },
+                new {
+                    title = "color_shade",
+                    value = drFinalInspection.Field<bool>("CheckCloseShade") ? "Confirm" : "N/A",
+                    type = "check-list",
+                    subsection = "validation_and_checklist",
+                    checkListSubsection = "fabric_artwork_checklist",
+                    status = drFinalInspection.Field<bool>("CheckCloseShade") ? "pass" : "na",
+                    comment = "N/A",
+                },
+                new {
+                    title = "handfeel",
+                    value = drFinalInspection.Field<bool>("CheckHandfeel") ? "Confirm" : "N/A",
+                    type = "check-list",
+                    subsection = "validation_and_checklist",
+                    checkListSubsection = "fabric_artwork_checklist",
+                    status = drFinalInspection.Field<bool>("CheckHandfeel") ? "pass" : "na",
+                    comment = "N/A",
+                },
+                new {
+                    title = "appearance",
+                    value = drFinalInspection.Field<bool>("CheckAppearance") ? "Confirm" : "N/A",
+                    type = "check-list",
+                    subsection = "validation_and_checklist",
+                    checkListSubsection = "fabric_artwork_checklist",
+                    status = drFinalInspection.Field<bool>("CheckAppearance") ? "pass" : "na",
+                    comment = "N/A",
+                },
+                new {
+                    title = "print_emb_decorations",
+                    value = drFinalInspection.Field<bool>("CheckPrintEmbDecorations") ? "Confirm" : "N/A",
+                    type = "check-list",
+                    subsection = "validation_and_checklist",
+                    checkListSubsection = "fabric_artwork_checklist",
+                    status = drFinalInspection.Field<bool>("CheckPrintEmbDecorations") ? "pass" : "na",
+                    comment = "N/A",
+                },
+                new {
+                    title = "fiber_content",
+                    value = drFinalInspection.Field<bool>("CheckFiberContent") ? "Confirm" : "N/A",
+                    type = "check-list",
+                    subsection = "validation_and_checklist",
+                    checkListSubsection = "label",
+                    status = drFinalInspection.Field<bool>("CheckFiberContent") ? "pass" : "na",
+                    comment = "N/A",
+                },
+                new {
+                    title = "care_instructions",
+                    value = drFinalInspection.Field<bool>("CheckCareInstructions") ? "Confirm" : "N/A",
+                    type = "check-list",
+                    subsection = "validation_and_checklist",
+                    checkListSubsection = "label",
+                    status = drFinalInspection.Field<bool>("CheckCareInstructions") ? "pass" : "na",
+                    comment = "N/A",
+                },
+                new {
+                    title = "decorative_label",
+                    value = drFinalInspection.Field<bool>("CheckDecorativeLabel") ? "Confirm" : "N/A",
+                    type = "check-list",
+                    subsection = "validation_and_checklist",
+                    checkListSubsection = "label",
+                    status = drFinalInspection.Field<bool>("CheckDecorativeLabel") ? "pass" : "na",
+                    comment = "N/A",
+                },
+                new {
+                    title = "adicom_label",
+                    value = drFinalInspection.Field<bool>("CheckAdicomLabel") ? "Confirm" : "N/A",
+                    type = "check-list",
+                    subsection = "validation_and_checklist",
+                    checkListSubsection = "label",
+                    status = drFinalInspection.Field<bool>("CheckAdicomLabel") ? "pass" : "na",
+                    comment = "N/A",
+                },
+                new {
+                    title = "country_of_origin",
+                    value = drFinalInspection.Field<bool>("CheckCountryofOrigion") ? "Confirm" : "N/A",
+                    type = "check-list",
+                    subsection = "validation_and_checklist",
+                    checkListSubsection = "label",
+                    status = drFinalInspection.Field<bool>("CheckCountryofOrigion") ? "pass" : "na",
+                    comment = "N/A",
+                },
+                new {
+                    title = "size_key",
+                    value = drFinalInspection.Field<bool>("CheckSizeKey") ? "Confirm" : "N/A",
+                    type = "check-list",
+                    subsection = "validation_and_checklist",
+                    checkListSubsection = "label",
+                    status = drFinalInspection.Field<bool>("CheckSizeKey") ? "pass" : "na",
+                    comment = "N/A",
+                },
+                new {
+                    title = "8_flag_label",
+                    value = drFinalInspection.Field<bool>("Check8FlagLabel") ? "Confirm" : "N/A",
+                    type = "check-list",
+                    subsection = "validation_and_checklist",
+                    checkListSubsection = "label",
+                    status = drFinalInspection.Field<bool>("Check8FlagLabel") ? "pass" : "na",
+                    comment = "N/A",
+                },
+                new {
+                    title = "additional_label",
+                    value = drFinalInspection.Field<bool>("CheckAdditionalLabel") ? "Confirm" : "N/A",
+                    type = "check-list",
+                    subsection = "validation_and_checklist",
+                    checkListSubsection = "label",
+                    status = drFinalInspection.Field<bool>("CheckAdditionalLabel") ? "pass" : "na",
+                    comment = "N/A",
+                },
+                new {
+                    title = "shipping_mark",
+                    value = drFinalInspection.Field<bool>("CheckShippingMark") ? "Confirm" : "N/A",
+                    type = "check-list",
+                    subsection = "validation_and_checklist",
+                    checkListSubsection = "packaging",
+                    status = drFinalInspection.Field<bool>("CheckShippingMark") ? "pass" : "na",
+                    comment = "N/A",
+                },
+                new {
+                    title = "polybag",
+                    value = drFinalInspection.Field<bool>("CheckPolytagMarketing") ? "Confirm" : "N/A",
+                    type = "check-list",
+                    subsection = "validation_and_checklist",
+                    checkListSubsection = "packaging",
+                    status = drFinalInspection.Field<bool>("CheckPolytagMarketing") ? "pass" : "na",
+                    comment = "N/A",
+                },
+                new {
+                    title = "color_size_qty",
+                    value = drFinalInspection.Field<bool>("CheckColorSizeQty") ? "Confirm" : "N/A",
+                    type = "check-list",
+                    subsection = "validation_and_checklist",
+                    checkListSubsection = "packaging",
+                    status = drFinalInspection.Field<bool>("CheckColorSizeQty") ? "pass" : "na",
+                    comment = "N/A",
+                },
+                new {
+                    title = "hangtag",
+                    value = drFinalInspection.Field<bool>("CheckHangtag") ? "Confirm" : "N/A",
+                    type = "check-list",
+                    subsection = "validation_and_checklist",
+                    checkListSubsection = "packaging",
+                    status = drFinalInspection.Field<bool>("CheckHangtag") ? "pass" : "na",
+                    comment = "N/A",
+                },
+                new {
+                    title = "minimun_of_2_pcs_per_size_must_be_measured_in_line_with_adidas_inspection_SOP",
+                    value = drFinalInspection.Field<bool>("MeasurementResult") ? "Confirm" : "N/A",
+                    type = "check-list",
+                    subsection = "validation_and_checklist",
+                    checkListSubsection = "measurements",
+                    status = drFinalInspection.Field<bool>("MeasurementResult") ? "pass" : "na",
+                    comment = "N/A",
+                },
+            };
+            #endregion
 
             object result = new
             {
@@ -258,6 +491,7 @@ namespace BusinessLogicLayer.Service
                 defective_parts = drFinalInspection["RejectQty"],
                 sections,
                 assignment_items,
+                passFails,
             };
 
             return result;
@@ -284,8 +518,10 @@ namespace BusinessLogicLayer.Service
                 string errorMsg = string.Empty;
                 string postBody = string.Empty;
                 string requestUri = pivotTransferRequest.RequestUri + "sintex" + finalInspectionID;
+
                 try
                 {
+                    #region 傳送finalinspection資料
                     postBody = JsonConvert.SerializeObject(GetPivot88Json(finalInspectionID));
 
                     WebApiBaseResult webApiBaseResult = WebApiTool.WebApiSend(pivotTransferRequest.BaseUri, requestUri, postBody, HttpMethod.Put, headers: pivotTransferRequest.Headers);
@@ -293,7 +529,7 @@ namespace BusinessLogicLayer.Service
                     switch (webApiBaseResult.webApiResponseStatus)
                     {
                         case WebApiResponseStatus.Success:
-                            _FinalInspectionProvider.UpdateIsExportToP88(finalInspectionID);
+                            isSuccess = true;
                             break;
                         case WebApiResponseStatus.WebApiReturnFail:
                             isSuccess = false;
@@ -312,6 +548,58 @@ namespace BusinessLogicLayer.Service
                             errorMsg = "????";
                             break;
                     }
+                    #endregion
+
+                    #region 傳送圖片
+
+
+                    if (isSuccess)
+                    {
+                        Dictionary<string, byte[]> dicImage = _FinalInspectionProvider.GetFinalInspectionDefectImage(finalInspectionID);
+                        string requestUploadImgUri = requestUri + "/images/upload";
+                        //string requestUploadImgUri = "rest/operation/v1/inspection_reports/unique_key:sintexSPSCH22020130/images/upload";
+
+                        foreach (KeyValuePair<string, byte[]> imageInfo in dicImage)
+                        {
+                            MultipartFormDataContent contentPost = new MultipartFormDataContent();
+                            contentPost.Add(new StreamContent(new MemoryStream(imageInfo.Value)), "file", imageInfo.Key);
+                            webApiBaseResult = WebApiTool.WebApiSend(pivotTransferRequest.BaseUri, requestUploadImgUri, null, HttpMethod.Post, headers: pivotTransferRequest.Headers, httpContent: contentPost);
+
+                            switch (webApiBaseResult.webApiResponseStatus)
+                            {
+                                case WebApiResponseStatus.Success:
+                                    break;
+                                case WebApiResponseStatus.WebApiReturnFail:
+                                    isSuccess = false;
+                                    errorMsg = webApiBaseResult.responseContent;
+                                    break;
+                                case WebApiResponseStatus.OtherException:
+                                    isSuccess = false;
+                                    errorMsg = webApiBaseResult.exception.ToString();
+                                    break;
+                                case WebApiResponseStatus.ApiTimeout:
+                                    isSuccess = false;
+                                    errorMsg = "WebAPI timeout";
+                                    break;
+                                default:
+                                    isSuccess = false;
+                                    errorMsg = "????";
+                                    break;
+                            }
+
+                            if (!isSuccess)
+                            {
+                                break;
+                            }
+                        }
+                    }
+
+                    #endregion
+
+                    if (isSuccess)
+                    {
+                        _FinalInspectionProvider.UpdateIsExportToP88(finalInspectionID);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -319,7 +607,7 @@ namespace BusinessLogicLayer.Service
                     errorMsg = ex.ToString();
                 }
 
-                if (!isSuccess)
+                if (isSuccess)
                 {
                     AutomationErrMsg automationErrMsg = new AutomationErrMsg();
                     automationErrMsg.suppID = StaticPivot88.SuppID;
