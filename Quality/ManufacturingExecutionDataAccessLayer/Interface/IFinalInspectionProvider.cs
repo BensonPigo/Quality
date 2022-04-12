@@ -53,6 +53,7 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         void UpdateFinalInspection_OtherImage(string finalInspectionID, List<OtherImage> images);
         DataTable GetReportMailInfo(string finalInspectionID);
 
+        IList<QueryFinalInspection> GetFinalinspectionQueryList_Default(QueryFinalInspection_ViewModel request);
         IList<QueryFinalInspection> GetFinalinspectionQueryList(QueryFinalInspection_ViewModel request);
 
         DataTable GetQueryReportInfo(string finalInspectionID);

@@ -57,7 +57,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             ViewBag.inspectionResultList = inspectionResultList;
 
             QueryFinalInspection_ViewModel model = new QueryFinalInspection_ViewModel();
-            model.DataList = new List<QueryFinalInspection>();
+            model.DataList = Service.GetFinalinspectionQueryList_Default(model);
 
             return View(model);
         }
