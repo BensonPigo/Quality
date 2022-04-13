@@ -311,7 +311,7 @@ namespace BusinessLogicLayer.Service
                     comment = "N/A",
                 },
                 new {
-                    title = "finish_goods_testing",
+                    title = "finished_good_testing",
                     value = "Confirm",
                     type = "check-list",
                     subsection = "validation_and_checklist",
@@ -473,7 +473,7 @@ namespace BusinessLogicLayer.Service
                     comment = "N/A",
                 },
                 new {
-                    title = "minimun_of_2_pcs_per_size_must_be_measured_in_line_with_adidas_inspection_SOP",
+                    title = "minimum_of_2_pcs_per_size_must_be_measured_in_line_with_adidas_inspection_sop",
                     value = drFinalInspection.Field<bool>("MeasurementResult") ? "Confirm" : "N/A",
                     type = "check-list",
                     subsection = "validation_and_checklist",
