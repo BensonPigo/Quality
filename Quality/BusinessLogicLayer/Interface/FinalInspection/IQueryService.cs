@@ -11,6 +11,7 @@ namespace BusinessLogicLayer.Interface
     {
         BaseResult SendMail(string finalInspectionID, string WebHost, bool isTest);
 
+        List<QueryFinalInspection> GetFinalinspectionQueryList_Default(QueryFinalInspection_ViewModel request);
         List<QueryFinalInspection> GetFinalinspectionQueryList(QueryFinalInspection_ViewModel request);
 
         QueryReport GetFinalInspectionReport(string finalInspectionID);

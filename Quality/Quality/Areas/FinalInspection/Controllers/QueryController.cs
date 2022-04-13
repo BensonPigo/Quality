@@ -57,7 +57,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             ViewBag.inspectionResultList = inspectionResultList;
 
             QueryFinalInspection_ViewModel model = new QueryFinalInspection_ViewModel();
-            model.DataList = new List<QueryFinalInspection>();
+            model.DataList = Service.GetFinalinspectionQueryList_Default(model);
 
             return View(model);
         }
@@ -65,14 +65,21 @@ namespace Quality.Areas.FinalInspection.Controllers
         [HttpPost]
         public ActionResult Index(QueryFinalInspection_ViewModel model)
         {
-            model.DataList = Service.GetFinalinspectionQueryList(model);
-
             List<string> inspectionlist = new List<string>() {
                 "", "Pass","Fail","On-going"
             };
 
             List<SelectListItem> inspectionResultList = new SetListItem().ItemListBinding(inspectionlist);
             ViewBag.inspectionResultList = inspectionResultList;
+            
+            if (string.IsNullOrEmpty(model.SP) && string.IsNullOrEmpty(model.CustPONO) && string.IsNullOrEmpty(model.StyleID) && (!model.SciDeliveryStart.HasValue || !model.SciDeliveryEnd.HasValue) && string.IsNullOrEmpty(model.InspectionResult))
+            {
+                model.ErrorMessage = $@"msg.WithError('Please input fields before query.');";
+                model.DataList = Service.GetFinalinspectionQueryList_Default(model);
+                return View(model);
+            }
+
+            model.DataList = Service.GetFinalinspectionQueryList(model);
 
 
 

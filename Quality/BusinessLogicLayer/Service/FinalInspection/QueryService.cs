@@ -31,6 +31,12 @@ namespace BusinessLogicLayer.Service.FinalInspection
         private IStyleProvider _StyleProvider;
         private static readonly string CryptoKey = ConfigurationManager.AppSettings["CryptoKey"].ToString();
 
+        public List<QueryFinalInspection> GetFinalinspectionQueryList_Default(QueryFinalInspection_ViewModel request)
+        {
+            _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+            return _FinalInspectionProvider.GetFinalinspectionQueryList_Default(request).ToList();
+        }
         public List<QueryFinalInspection> GetFinalinspectionQueryList(QueryFinalInspection_ViewModel request)
         {
             _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
