@@ -138,15 +138,15 @@ namespace Quality.Areas.BulkFGT.Controllers
             int i = lastNO;
             string html = "";
             html += "<tr idx=" + i + ">";
-            html += "<td><input id='Seq" + i + "' idx=" + i + " type ='hidden'></input><input id='Details_" + i + "__SubmitDate' name='Details[" + i + "].SubmitDate' class='form-control date-picker' type='text' value=''></td>"; //SubmitDate
+            html += "<td><input id='Seq" + i + "' idx=" + i + " type ='hidden'></input><input id='Details_" + i + "__SubmitDate' name='Details[" + i + "].SubmitDate' class='form-control date-picker width9vw' type='text' value=''></td>"; //SubmitDate
             html += "<td><input id='Details_" + i + "__ColorFastnessGroup' name='Details[" + i + "].ColorFastnessGroup' type='number' max='99' maxlength='2' min='0' step='1' oninput='value=OvenGroupCheck(value)' value='" + GroupNO + "'></td>"; // ColorFastnessGroup
-            html += "<td style='width: 11vw;'><div style='width:10vw;'><input id='Details_" + i + "__Seq' name='Details[" + i + "].Seq' idv='" + i.ToString() + "' class ='InputDetailSEQSelectItem' type='text'  style = 'width: 6vw'> <input id='btnDetailSEQSelectItem'  idv='" + i.ToString() + "' type='button' class='btnDetailSEQSelectItem OnlyEdit site-btn btn-blue' style='margin: 0; border: 0; ' value='...' /></div></td>"; // seq
-            html += "<td style='width: 11vw;'><div style='width:10vw;'><input id='Details_" + i + "__Roll' name='Details[" + i + "].Roll' idv='" + i.ToString() + "' class ='InputDetailRollSelectItem' type='text' style = 'width: 6vw'> <input id='btnDetailRollSelectItem' idv='" + i.ToString() + "' type='button' class='btnDetailRollSelectItem OnlyEdit site-btn btn-blue' style='margin: 0; border: 0; ' value='...' /></div></td>"; // roll
+            html += "<td><div style='width:10vw;'><input id='Details_" + i + "__Seq' name='Details[" + i + "].Seq' idv='" + i.ToString() + "' class ='InputDetailSEQSelectItem' type='text'  style = 'width: 6vw'> <input id='btnDetailSEQSelectItem'  idv='" + i.ToString() + "' type='button' class='btnDetailSEQSelectItem OnlyEdit site-btn btn-blue' style='margin: 0; border: 0; ' value='...' /></div></td>"; // seq
+            html += "<td><div style='width:10vw;'><input id='Details_" + i + "__Roll' name='Details[" + i + "].Roll' idv='" + i.ToString() + "' class ='InputDetailRollSelectItem' type='text' style = 'width: 6vw'> <input id='btnDetailRollSelectItem' idv='" + i.ToString() + "' type='button' class='btnDetailRollSelectItem OnlyEdit site-btn btn-blue' style='margin: 0; border: 0; ' value='...' /></div></td>"; // roll
             html += "<td><input id='Details_" + i + "__Dyelot' name='Details[" + i + "].Dyelot' type='text' readonly='readonly'></td>"; // Dyelot
             html += "<td><input id='Details_" + i + "__Refno' name='Details[" + i + "].Refno' type='text' readonly='readonly'></td>"; // Refno
             html += "<td><input id='Details_" + i + "__SCIRefno' name='Details[" + i + "].SCIRefno' type='text' readonly='readonly'></td>"; // SCIRefno
             html += "<td><input id='Details_" + i + "__ColorID' name='Details[" + i + "].SCIRefno' type='text' readonly='readonly'></td>"; // ColorID
-            html += "<td><input id='Details_" + i + "__Result' name='Details[" + i + "].Result' type='text' readonly='readonly' class='blue' value='Pass'></td>"; // Result
+            html += "<td><input id='Details_" + i + "__Result' name='Details[" + i + "].Result' type='text' readonly='readonly' class='blue width6vw' value='Pass'></td>"; // Result
 
             html += "<td><select id='Details_" + i + "__changeScale' name='Details[" + i + "].changeScale'>"; // changeScale
             foreach (string val in Scales)

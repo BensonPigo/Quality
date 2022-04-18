@@ -127,6 +127,17 @@
             .ReportAction > table > tbody > tr > td > input[type=button] {
                 cursor: pointer;
             }
+    .width6vw {
+        width: 6vw;
+    }
+
+    .width8vw {
+        width: 8vw;
+    }
+
+    .width9vw {
+        width: 9vw;
+    }
 </style>
 
 
@@ -172,13 +183,13 @@
                                         </h4>
                                     </td>
                                     <td>
-                                        <h4 id="Encode" style=" margin-right: 1em; width: 7vw;">
+                                        <h4 id="Encode" style=" margin-right: 1em; width: 8vw;">
                                             <img src="~/Image/Icon/Lock.png" width="30" />
                                             Encode
                                         </h4>
                                     </td>
                                     <td>
-                                        <h4 id="Amend" style=" margin-right: 1em; width: 7vw;">
+                                        <h4 id="Amend" style=" margin-right: 1em; width: 8vw;">
                                             <img src="~/Image/Icon/Unlock.png" width="30" />
                                             Amend
                                         </h4>
@@ -190,7 +201,7 @@
                                         </h4>
                                     </td>
                                     <td>
-                                        <h4 id="PDF" style=" margin-right: 1em; width: 5vw;">
+                                        <h4 id="PDF" style=" margin-right: 1em; width: 6vw;">
                                             <img src="~/Image/Icon/PDF.png" width="30" />
                                             PDF
                                         </h4>
@@ -273,7 +284,7 @@
                     </div>
 
                     <div style="margin-top: 1em; width: 92vw; overflow:auto;">
-                        <table class="DetailTable DataTable" style='width:271vw'>
+                        <table class="DetailTable DataTable">
                             <thead>
                                 <tr>
 
@@ -292,7 +303,7 @@
                                     <th><h4>Result (Staining)</h4></th>
                                     <th><h4>Remark</h4></th>
                                     <th><h4>LastUpdate</h4></th>
-                                    <th><h4>Temperature(˚C)</h4></th>
+                                    <th><h4>Temperature<br>(˚C)</h4></th>
                                     <th><h4>Time(hrs)</h4></th>
                                     <th><h4></h4></th>
                                 </tr>
@@ -302,11 +313,11 @@
                                 @for (int i = 0; i <= Model.Details.Count - 1; i++)
                                 {
                                     <tr idx='@i'>
-                                        <td style="width:10vw;">
+                                        <td>
                                             <input id='Seq@{@i}' idx='@i' type='hidden'>
-                                            @Html.TextBoxFor(o => Model.Details[i].SubmitDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
+                                            @Html.TextBoxFor(o => Model.Details[i].SubmitDate, "{0:yyyy/MM/dd}", new { @class = "date-picker width9vw" })
                                         </td>
-                                        <td style="width:10vw;">
+                                        <td>
                                             @Html.TextBoxFor(o => Model.Details[i].OvenGroup, "", new { @maxlength = "2", @type = "number", @step = "1", @min = "0", @max = "99", @oninput = "value=OvenGroupCheck(value)" })
                                         </td>
                                         <td style="width:11vw;">
@@ -337,9 +348,9 @@
                                             @Html.TextBoxFor(o => Model.Details[i].ColorID, "", new { @readonly = "readonly" })
                                         </td>
                                         @{
-                                            string detailResultColor = Model.Details[i].Result == "Pass" ? "blue" : "red";
+                                            string detailResultColor = Model.Details[i].Result == "Pass" ? "blue width6vw" : "red width6vw";
                                         }
-                                        <td style="width:10vw;">
+                                        <td>
                                             @Html.TextBoxFor(o => Model.Details[i].Result, "", new { @class = detailResultColor, @readonly = "readonly" })
                                         </td>
                                         <td style="width:10vw;">

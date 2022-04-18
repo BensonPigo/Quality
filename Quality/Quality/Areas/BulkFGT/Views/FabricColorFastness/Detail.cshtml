@@ -88,8 +88,19 @@
             }
 
     .DataTable select {
-        width: 100%;
+        /*width: 100%;*/
         font-size: 1.2em;
+    }
+    .width6vw {
+        width: 6vw;
+    }
+
+    .width8vw {
+        width: 8vw;
+    }
+
+    .width9vw {
+        width: 9vw;
     }
 </style>
 
@@ -136,13 +147,13 @@
                                     </h4>
                                 </td>
                                 <td>
-                                    <h4 id="Encode" style=" margin-right: 1em; width: 7vw;">
+                                    <h4 id="Encode" style=" margin-right: 1em; width: 8vw;">
                                         <img src="~/Image/Icon/Lock.png" width="30" />
                                         Encode
                                     </h4>
                                 </td>
                                 <td>
-                                    <h4 id="Amend" style=" margin-right: 1em; width: 7vw;">
+                                    <h4 id="Amend" style=" margin-right: 1em; width: 8vw;">
                                         <img src="~/Image/Icon/Unlock.png" width="30" />
                                         Amend
                                     </h4>
@@ -154,7 +165,7 @@
                                     </h4>
                                 </td>
                                 <td>
-                                    <h4 id="PDF" style=" margin-right: 1em; width: 5vw;">
+                                    <h4 id="PDF" style=" margin-right: 1em; width: 6vw;">
                                         <img src="~/Image/Icon/PDF.png" width="30" />
                                         PDF
                                     </h4>
@@ -305,7 +316,7 @@
                     </table>
                 </div>
                 <div style="margin-top: 1em; width: 92vw; overflow:auto;">
-                    <table class="DetailTable DataTable" style='width:271vw'>
+                    <table class="DetailTable DataTable">
                         <thead>
                             <tr>
 
@@ -345,20 +356,20 @@
                             {
                                 int QQ = 0;
                             <tr idx='@i'>
-                                <td style="width:10vw;">
+                                <td>
                                     <input id='Seq@{@i}' idx='@i' type='hidden'>
                                     @Html.HiddenFor(o => o.Details[i].ID)
-                                    @Html.TextBoxFor(o => Model.Details[i].SubmitDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
+                                    @Html.TextBoxFor(o => Model.Details[i].SubmitDate, "{0:yyyy/MM/dd}", new { @class = "date-picker width9vw" })
                                 </td>
-                                <td style="width:10vw;">
+                                <td>
                                     @if (int.TryParse(Model.Details[i].ColorFastnessGroup, out QQ))
                                     {
-                                        @Html.TextBoxFor(o => Model.Details[i].ColorFastnessGroup, "", new { @maxlength = "2", @type = "number", @step = "1", @min = "0", @max = "99", @oninput = "value=OvenGroupCheck(value)" })
+                                        @Html.TextBoxFor(o => Model.Details[i].ColorFastnessGroup, "", new { @class= "width6vw", @maxlength = "2", @type = "number", @step = "1", @min = "0", @max = "99", @oninput = "value=OvenGroupCheck(value)" })
                                     }
                                     else
                                     {
                                         @*@Html.TextBox($"Details_{i}__ColorFastnessGroup", (Model.Details.Count + 1).ToString("00"), new { @maxlength = "2", @type = "number", @step = "1", @min = "0", @max = "99", @oninput = "value=OvenGroupCheck(value)" })*@
-                                        @Html.TextBoxFor(o => Model.Details[i].ColorFastnessGroup, "", new { @maxlength = "2", @type = "text" })
+                                        @Html.TextBoxFor(o => Model.Details[i].ColorFastnessGroup, "", new { @class = "width6vw", @maxlength = "2", @type = "text" })
                                     }
                                 </td>
                                 <td style="width:11vw;">
@@ -377,26 +388,26 @@
                                     </div>
                                 </td>
 
-                                <td style="width:10vw;">
+                                <td>
                                     @Html.TextBoxFor(o => Model.Details[i].Dyelot, "", new { @readonly = "readonly" })
                                 </td>
-                                <td style="width:10vw;">
+                                <td>
                                     @Html.TextBoxFor(o => Model.Details[i].Refno, "", new { @readonly = "readonly" })
                                 </td>
-                                <td style="width:10vw;">
+                                <td>
                                     @Html.TextBoxFor(o => Model.Details[i].SCIRefno, "", new { @readonly = "readonly" })
                                 </td>
-                                <td style="width:10vw;">
+                                <td>
                                     @Html.TextBoxFor(o => Model.Details[i].ColorID, "", new { @readonly = "readonly" })
                                 </td>
                                 @{
-                                    string detailResultColor = Model.Details[i].Result == "Pass" ? "blue" : "red";
+                                    string detailResultColor = Model.Details[i].Result == "Pass" ? "blue width6vw" : "red width6vw";
                                 }
-                                <td style="width:10vw;">
+                                <td>
                                     @Html.TextBoxFor(o => Model.Details[i].Result, "", new { @class = detailResultColor, @readonly = "readonly" })
                                 </td>
 
-                                <td style="width:10vw;">
+                                <td>
                                     <select id="Details_@{@i}__changeScale" name="Details[@i].changeScale">
                                         @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
                                         {
@@ -414,7 +425,7 @@
                                         }
                                     </select>
                                 </td>
-                                <td style="width:10vw;">
+                                <td>
                                     @{
                                         string styleColor = "red";
                                         if (Model.Details[i].ResultChange == "Pass")
@@ -441,7 +452,7 @@
 
                                 </td>
 
-                                <td style="width:10vw;">
+                                <td>
                                     <select id="Details_@{@i}__AcetateScale" name="Details[@i].AcetateScale">
                                         @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
                                         {
@@ -459,7 +470,7 @@
                                         }
                                     </select>
                                 </td>
-                                <td style="width:10vw;">
+                                <td>
                                     @{
                                         styleColor = "red";
                                         if (Model.Details[i].ResultAcetate == "Pass" || Model.Details[i].ResultAcetate == null || Model.Details[i].ResultAcetate == string.Empty)
@@ -473,7 +484,8 @@
                                             if (Model.Details[i].ResultAcetate == null || Model.Details[i].ResultAcetate == "")
                                             {
                                                 string selected = item.Text.Equals(((List<SelectListItem>)ViewBag.ResultChangeList).FirstOrDefault().Text) ? "selected" : "";
-                                                <option value="@item.Value" @selected>@item.Text</option>                                                
+                                                <option value="@item.Value" @selected>@item.Text</option>
+
                                             }
                                             else
                                             {
@@ -484,7 +496,7 @@
                                     </select>
                                 </td>
 
-                                <td style="width:10vw;">
+                                <td>
                                     <select id="Details_@{@i}__CottonScale" name="Details[@i].CottonScale">
                                         @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
                                         {
@@ -502,7 +514,7 @@
                                         }
                                     </select>
                                 </td>
-                                <td style="width:10vw;">
+                                <td>
                                     @{
                                         styleColor = "red";
 
@@ -529,7 +541,7 @@
                                     </select>
                                 </td>
 
-                                <td style="width:10vw;">
+                                <td>
                                     <select id="Details_@{@i}__NylonScale" name="Details[@i].NylonScale">
                                         @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
                                         {
@@ -547,7 +559,7 @@
                                         }
                                     </select>
                                 </td>
-                                <td style="width:10vw;">
+                                <td>
                                     @{
                                         styleColor = "red";
                                         if (Model.Details[i].ResultNylon == "Pass" || Model.Details[i].ResultNylon == null || Model.Details[i].ResultNylon == string.Empty)
@@ -573,7 +585,7 @@
                                     </select>
                                 </td>
 
-                                <td style="width:10vw;">
+                                <td>
                                     <select id="Details_@{@i}__PolyesterScale" name="Details[@i].PolyesterScale">
                                         @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
                                         {
@@ -591,7 +603,7 @@
                                         }
                                     </select>
                                 </td>
-                                <td style="width:10vw;">
+                                <td>
                                     @{
                                         styleColor = "red";
                                         if (Model.Details[i].ResultPolyester == "Pass" || Model.Details[i].ResultPolyester == null || Model.Details[i].ResultPolyester == string.Empty)
@@ -616,7 +628,7 @@
                                     </select>
                                 </td>
 
-                                <td style="width:10vw;">
+                                <td>
                                     <select id="Details_@{@i}__AcrylicScale" name="Details[@i].AcrylicScale">
                                         @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
                                         {
@@ -633,7 +645,7 @@
                                         }
                                     </select>
                                 </td>
-                                <td style="width:10vw;">
+                                <td>
                                     @{
                                         styleColor = "red";
                                         if (Model.Details[i].ResultAcrylic == "Pass" || Model.Details[i].ResultAcrylic == null || Model.Details[i].ResultPolyester == string.Empty)
@@ -658,7 +670,7 @@
                                     </select>
                                 </td>
 
-                                <td style="width:10vw;">
+                                <td>
                                     <select id="Details_@{@i}__WoolScale" name="Details[@i].WoolScale">
                                         @foreach (var item in (List<SelectListItem>)ViewBag.ChangeScaleList)
                                         {
@@ -675,7 +687,7 @@
                                         }
                                     </select>
                                 </td>
-                                <td style="width:10vw;">
+                                <td>
                                     @{
                                         styleColor = "red";
                                         if (Model.Details[i].ResultWool == "Pass" || Model.Details[i].ResultWool == null || Model.Details[i].ResultWool == string.Empty)
@@ -700,13 +712,13 @@
                                     </select>
                                 </td>
 
-                                <td style="width:10vw;">
+                                <td>
                                     @Html.TextBoxFor(o => Model.Details[i].Remark, "", "")
                                 </td>
-                                <td style="width:10vw;">
+                                <td>
                                     @Html.DisplayFor(o => Model.Details[i].LastUpdate, "", "")
                                 </td>
-                                <td style="width:10vw;">
+                                <td>
                                     <div style="width:5vw;">
                                         <img class="detailDelete" src="~/Image/Icon/Delete.png" width="30" />
                                     </div>

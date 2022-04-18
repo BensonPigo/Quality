@@ -68,6 +68,13 @@
     #ui-datepicker-div {
         width:20vw;
     }
+    .main-area{
+        height:85vh;
+    }
+    .content-scroll {
+        height: 70vh;
+        overflow-y:scroll;
+    }
 </style>
 <div class="main-content">
 
@@ -83,7 +90,7 @@
 
 
     <div class="main-area">
-        <div>
+        <div style="height:15vh;">
             @using (Html.BeginForm("Query", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { @class = "", @name = "SearchFrom", @onsubmit = "return checkvalue(this.submitted)", @id = "SearchFrom" }))
             {
                     <table style="width:100%;">
@@ -126,29 +133,32 @@
                             <td>
                                 <label class="FindLab" for="TypeSP">Type</label>
                             </td>
-                            <td>
+                            <td colspan="7">
                                 @Html.DropDownListFor(o => o.Type, Model.TypeDatasource)
                             </td>
+                            <td style="padding: 0vw;">
+                                <input type="button" class="site-btn btn-gy font1rem Black" style="width: 7vw;" name="action:ToExcel" id="btnExcel" value="To Excel" />
+                            </td>
+                        </tr>
+                        <tr>
 
                             <td>
                                 <label>Received Date</label>
                             </td>
-                            <td>
-                                @Html.TextBox("ReceivedDate_sText", Model.ReceivedDate_sText, new { @style = "width:5vw", @class = "date-picker mockupOnly" })
+                            <td colspan="3">
+                                @Html.TextBox("ReceivedDate_sText", Model.ReceivedDate_sText, new { @style = "width:9vw", @class = "date-picker mockupOnly" })
                                 <label>~</label>
-                                @Html.TextBox("ReceivedDate_eText", Model.ReceivedDate_eText, new { @style = "width:5vw", @class = "date-picker mockupOnly" })
+                                @Html.TextBox("ReceivedDate_eText", Model.ReceivedDate_eText, new { @style = "width:9vw", @class = "date-picker mockupOnly" })
                             </td>
                             <td>
                                 <label>Report Date</label>
                             </td>
                             <td colspan="3">
-                                @Html.TextBox("ReportDate_sText", Model.ReportDate_sText, new { @style = "width:5vw", @class = "date-picker mockupOnly" })
+                                @Html.TextBox("ReportDate_sText", Model.ReportDate_sText, new { @style = "width:9vw", @class = "date-picker mockupOnly" })
                                 <label>~</label>
-                                @Html.TextBox("ReportDate_eText", Model.ReportDate_eText, new { @style = "width:5vw", @class = "date-picker mockupOnly" })
+                                @Html.TextBox("ReportDate_eText", Model.ReportDate_eText, new { @style = "width:9vw", @class = "date-picker mockupOnly" })
                             </td>
-                            <td style="padding: 0vw;">
-                                <input type="button" class="site-btn btn-gy font1rem Black" style="width: 7vw;" name="action:ToExcel" id="btnExcel" value="To Excel" />
-                            </td>
+
                         </tr>
                     </table>
             }
@@ -328,11 +338,8 @@
             "pageLength": 10,
             "filter": false,
             "paging": true,
-            //lengthChange: false,
-            //"scrollY": "49vh",
-            //"scrollCollapse": true,
-            //"scrollX": true,
-            //"autoWidth": false
+            scrollY: '60vh',
+            scrollCollapse: true,
 
         });
 

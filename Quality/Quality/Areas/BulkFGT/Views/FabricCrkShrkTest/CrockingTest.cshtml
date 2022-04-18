@@ -137,6 +137,15 @@
     .WashColor {
         background-color: rgb(173, 216, 230);
     }
+    .width6vw{
+        width:6vw;
+    }
+    .width8vw {
+        width: 8vw;
+    }
+    .width9vw {
+        width: 9vw;
+    }
 </style>
 @using (Html.BeginForm("CrockingTestSave", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { id = "DetailForm" }))
 {
@@ -335,7 +344,7 @@
                     </div>
 
                     <div style="margin-top: 1em; overflow:auto">
-                        <table cellspacing="100" id="crocking_Detail" class="DataTable DetailTable table table-striped display;" style="width: 250vw">
+                        <table cellspacing="100" id="crocking_Detail" class="DataTable DetailTable table table-striped display;" >
                             <thead>
                                 <tr class="row-name" id="row-name">
                                     <th style="width:5vw">Roll#</th>
@@ -379,13 +388,13 @@
                                     <tr idx="@i" class="row-content" style="vertical-align: middle; text-align: center;">
                                         <td>
                                             <div class="input-group">
-                                                @Html.TextBoxFor(modelItem => Model.Crocking_Detail[i].Roll, new { @class = "inputRollSelectItem" })
+                                                @Html.TextBoxFor(modelItem => Model.Crocking_Detail[i].Roll, new { @class = "inputRollSelectItem width6vw" })
                                                 <input type="button" class="site-btn btn-blue btnRollSelectItem" style="margin:0;border:0;" value="..." />
                                             </div>
                                         </td>
                                         <td>
                                             <div class="input-group">
-                                                @Html.TextBoxFor(modelItem => Model.Crocking_Detail[i].Dyelot, new { @class = "inputRollSelectItem" })
+                                                @Html.TextBoxFor(modelItem => Model.Crocking_Detail[i].Dyelot, new { @class = "inputRollSelectItem width8vw" })
                                                 <input type="button" class="site-btn btn-blue btnRollSelectItem" style="margin:0;border:0;" value="..." />
                                             </div>
                                         </td>
@@ -400,7 +409,7 @@
                                                     styleColor = "red";
                                                 }
                                             }
-                                            @Html.TextBoxFor(modelItem => Model.Crocking_Detail[i].Result, new { @readonly = "readonly", @class = styleColor })
+                                            @Html.TextBoxFor(modelItem => Model.Crocking_Detail[i].Result, new { @readonly = "readonly", @class = styleColor + " width6vw" })
                                         </td>
                                         <td style="color:red">
                                             <select id="Crocking_Detail_@{@i}__DryScale" name="Crocking_Detail[@i].DryScale" disabled="disabled" style="width:157px">
@@ -515,7 +524,7 @@
                                             </select>
                                         </td>
                                         <td>
-                                            @Html.TextBoxFor(modelItem => Model.Crocking_Detail[i].Inspdate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
+                                            @Html.TextBoxFor(modelItem => Model.Crocking_Detail[i].Inspdate, "{0:yyyy/MM/dd}", new { @class = "date-picker width9vw" })
                                         </td>
                                         <td>
                                             <div class="input-group">
