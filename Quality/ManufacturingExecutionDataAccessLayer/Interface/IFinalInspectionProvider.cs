@@ -20,6 +20,8 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         //IList<byte[]> GetFinalInspectionDefectImage(long FinalInspection_DetailUkey);
         IList<ImageRemark> GetFinalInspectionDetail(long FinalInspection_DetailUkey);
 
+        Dictionary<string, byte[]> GetFinalInspectionDefectImage(string FinalInspectionID);
+
         void UpdateFinalInspectionDetail(AddDefect addDefect, string UserID);
 
         IList<BACriteriaItem> GetBeautifulProductAuditForInspection(string finalInspectionID);
@@ -51,6 +53,7 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         void UpdateFinalInspection_OtherImage(string finalInspectionID, List<OtherImage> images);
         DataTable GetReportMailInfo(string finalInspectionID);
 
+        IList<QueryFinalInspection> GetFinalinspectionQueryList_Default(QueryFinalInspection_ViewModel request);
         IList<QueryFinalInspection> GetFinalinspectionQueryList(QueryFinalInspection_ViewModel request);
 
         DataTable GetQueryReportInfo(string finalInspectionID);

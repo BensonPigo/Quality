@@ -130,6 +130,9 @@
     .WashColor {
         background-color: rgb(135, 206, 235);
     }
+    .Wash501Color {
+        background-color: #ecd2f7;
+    }
 </style>
 <div class="main-content">
     <header class="page-header">
@@ -264,32 +267,38 @@
                     <table cellspacing="100" class="DataTable DetailTable table table-striped display;" style="width:100%">
                         <thead>
                             <tr class="row-name" id="row-name">
-                                <th>Seq</th>
-                                <th>WKNo</th>
-                                <th>Arrive W/H Date</th>
-                                <th>SCI Refno</th>
-                                <th>Refno</th>
-                                <th>Supplier</th>
-                                <th>Color</th>
-                                <th>Size</th>
-                                <th>Arrive Qty</th>
-                                <th>Insp. Deadline</th>
-                                <th>Over All Result</th>
-                                <th>Oven N/A</th>
-                                <th>Oven Result</th>
-                                <th>Oven Scale</th>
-                                <th>Oven <br />Last Test Date</th>
-                                <th>Oven Lab Tech</th>
-                                <th>Remark</th>
-                                <th>Wash N/A</th>
-                                <th>Wash Result</th>
-                                <th>Wash Scale</th>
-                                <th>Wash Last Test Date</th>
-                                <th>Wash Lab Tech</th>
-                                <th>Remark</th>
-                                <th>Receiving</th>
-                                <th>Oven Test</th>
-                                <th>Wash Test</th>
+                                <th style="width:5vw">Seq</th>
+                                <th style="width:5vw">WKNo</th>
+                                <th style="width:5vw">Arrive W/H Date</th>
+                                <th style="width:5vw">SCI Refno</th>
+                                <th style="width:5vw">Refno</th>
+                                <th style="width:5vw">Supplier</th>
+                                <th style="width:5vw">Color</th>
+                                <th style="width:5vw">Size</th>
+                                <th style="width:5vw">Arrive Qty</th>
+                                <th style="width:5vw">Insp. Deadline</th>
+                                <th style="width:5vw">Over All Result</th>
+                                <th style="width:5vw">Oven N/A</th>
+                                <th style="width:5vw">Oven Result</th>
+                                <th style="width:5vw">Oven Scale</th>
+                                <th style="width:5vw">Oven Last Test Date</th>
+                                <th style="width:5vw">Oven Lab Tech</th>
+                                <th style="width:5vw">Remark</th>
+                                <th style="width:5vw">Wash N/A<br />(701)</th>
+                                <th style="width:5vw">Wash Result<br />(701)</th>
+                                <th style="width:5vw">Wash Scale<br />(701)</th>
+                                <th style="width:6vw">Wash Last Test Date(701)</th>
+                                <th style="width:6vw">Wash Lab Tech<br />(701)</th>
+                                <th style="width:5vw">Remark</th>
+                                <th style="width:5vw">Wash N/A<br />(501)</th>
+                                <th style="width:5vw">Wash Result<br />(501)</th>
+                                <th style="width:6vw">Wash Last Test Date(501)</th>
+                                <th style="width:6vw">Wash Lab Tech<br />(501)</th>
+                                <th style="width:5vw">Remark</th>
+                                <th style="width:5vw">Receiving</th>
+                                <th style="width:5vw">Oven Test<br />(515)</th>
+                                <th style="width:5vw">Wash Test<br />(701)</th>
+                                <th style="width:5vw">Wash Test<br />(501)</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -374,7 +383,7 @@
                                         @Html.DisplayFor(modelItem => Model.DataList[i].OvenRemark)
                                     </td>
                                     <td class="CheckBoxColor">
-                                        @Html.CheckBox("DataList[" + i + "].NonWash", Convert.ToBoolean(Model.DataList[i].NonWash))
+                                        @Html.CheckBox("DataList[" + i + "].NonWash", Convert.ToBoolean(Model.DataList[i].NonWash) , new { @class="WashCheck", @Washtype = "701" , @RowIdx = $@"{i}" })
                                     </td>
                                     <td class="HeatColor">
                                         @{
@@ -390,7 +399,7 @@
                                         }
                                         <font color="@styleColor">@Html.DisplayFor(modelItem => Model.DataList[i].WashResult)</font>
                                     </td>
-                                    <td class="HeatColor">
+                                    <td class="WashColor">
                                         @Html.DisplayFor(modelItem => Model.DataList[i].WashScale)
                                     </td>
                                     <td class="WashColor">
@@ -402,7 +411,36 @@
                                     <td class="WashColor">
                                         @Html.DisplayFor(modelItem => Model.DataList[i].WashRemark)
                                     </td>
-                                    <td class="WashColor">
+                                    
+                                    @*501*@
+                                    <td class="CheckBoxColor">
+                                        @Html.CheckBox("DataList[" + i + "].NonWashingFastness", Convert.ToBoolean(Model.DataList[i].NonWashingFastness), new { @class = "WashCheck", @Washtype = "501", @RowIdx = $@"{i}" })
+                                    </td>
+                                    <td class="HeatColor">
+                                        @{
+                                            if (Model.DataList[i].WashingFastnessResult == "Pass")
+
+                                            {
+                                                styleColor = "blue";
+                                            }
+                                            else
+                                            {
+                                                styleColor = "red";
+                                            }
+                                        }
+                                        <font color="@styleColor">@Html.DisplayFor(modelItem => Model.DataList[i].WashingFastnessResult)</font>
+                                    </td>
+                                    <td class="Wash501Color">
+                                        @Html.ValueFor(modelItem => Model.DataList[i].WashingFastnessReportDate, "{0:yyyy/MM/dd}")
+                                    </td>
+                                    <td class="Wash501Color">
+                                        @Html.DisplayFor(modelItem => Model.DataList[i].WashingFastnessInspector)
+                                    </td>
+                                    <td class="Wash501Color">
+                                        @Html.DisplayFor(modelItem => Model.DataList[i].WashingFastnessRemark)
+                                    </td>
+                                    @*501*@
+                                    <td>
                                         @Html.DisplayFor(modelItem => Model.DataList[i].ReceivingID)
                                     </td>
                                     @{
@@ -425,6 +463,7 @@
 
                                     <td><a class="link" href="@Url.Action("OvenTest", @controllerName, accessory_Oven)">Oven Test</a></td>
                                     <td><a class="link" href="@Url.Action("WashTest", @controllerName, accessory_wash)">Wash Test</a></td>
+                                    <td><a class="link" href="@Url.Action("WashingFastness", @controllerName, accessory_wash)">Wash Test</a></td>
                                 </tr>
                             }
                         </tbody>
@@ -443,6 +482,43 @@
 
             EditMode = false;
             IsEditModeChange();
+
+
+            // Wash檢查，一定要勾其中一個
+            $('.WashCheck').mousedown(function () {
+
+                var Washtype = $(this).attr('Washtype');
+                var rowIdx = $(this).attr('RowIdx');
+                var oldValue = $(this).prop('checked');
+                var Stop = false;
+
+                // 先判斷點選的是哪一個Wash，501 = Wash, 701 = WashingFastness
+                // oldValue== true，代表要取消勾選，這時要檢查501
+                if (Washtype == '701' && oldValue) {
+                    var anotherValue = $(`#DataList_${rowIdx}__NonWashingFastness`).prop("checked");
+
+                    // 若501沒勾，701要取消勾選 = 701不允許
+                    if (!anotherValue) {
+                        Stop = true;
+                    }
+                }
+
+                // oldValue== true，代表要取消勾選，這時要檢查701
+                if (Washtype == '501' && oldValue) {
+                    var anotherValue = $(`#DataList_${rowIdx}__NonWash`).prop("checked");
+
+                    // 若501沒勾，701要取消勾選 = 701不允許
+                    if (!anotherValue) {
+                        Stop = true;
+                    }
+                }
+
+                if (Stop) {
+                    $(this).prop('checked', true);
+                    $(this).attr('checked', true);
+                    msg.WithError('Only one of the Wash Test can be chosess.');
+                }
+            });
         });
 
         function IsEditModeChange() {
@@ -498,6 +574,7 @@
                         Seq2: $('#DataList_' + index + '__Seq2').val(),
                         NonOven: $('#DataList_' + index + '__NonOven').prop("checked"),
                         NonWash: $('#DataList_' + index + '__NonWash').prop("checked"),
+                        NonWashingFastness: $('#DataList_' + index + '__NonWashingFastness').prop("checked"),
                     });
                 });
 
@@ -535,5 +612,6 @@
                 IsEditModeChange();
                 $('#btnQuery').click();
             });
-        }
+    }
+
 </script>

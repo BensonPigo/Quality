@@ -473,6 +473,31 @@ where   a.FinalInspection_DetailUkey = @FinalInspection_DetailUkey
 
         }
 
+        public Dictionary<string, byte[]> GetFinalInspectionDefectImage(string FinalInspectionID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection() {
+            { "@FinalInspectionID", DbType.String, FinalInspectionID }
+            };
+
+            string sqlGetData = @"
+    select  [ImageName] =  CONCAT(fdi.ID, '_', isnull(fd.GarmentDefectCodeID, ''), '_', fdi.Ukey, '.png'), Image
+    from [ExtendServer].PMSFile.dbo.FinalInspection_DetailImage fdi with (nolock)
+    left join FinalInspection_Detail fd with (nolock) on fd.Ukey = fdi.FinalInspection_DetailUkey
+    where   fdi.ID = @FinalInspectionID
+";
+
+            DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, objParameter);
+
+            if (dtResult.Rows.Count > 0)
+            {
+                return dtResult.AsEnumerable().ToDictionary(s => s["ImageName"].ToString(), s => (byte[])s["Image"]);
+            }
+            else
+            {
+                return new Dictionary<string, byte[]>();
+            }
+        }
+
         public void UpdateFinalInspectionDetail(AddDefect addDefect, string UserID)
         {
             using (TransactionScope transaction = new TransactionScope())
@@ -1273,6 +1298,50 @@ where   1 = 1 {whereFinalInspection}
 
             return ExecuteList<QueryFinalInspection>(CommandType.Text, sqlGetData, parameter);
         }
+        public IList<QueryFinalInspection> GetFinalinspectionQueryList_Default(QueryFinalInspection_ViewModel request)
+        {
+            SQLParameterCollection parameter = new SQLParameterCollection();
+
+            string whereOrder = string.Empty;
+            string whereFinalInspection = string.Empty;
+
+            string sqlGetData = $@"
+--預設抓兩百
+select distinct　top 200  f.ID,fo.OrderID,f.AddDate
+into #default
+from FinalInspection f with (nolock)
+inner join  FinalInspection_Order fo with (nolock) on fo.ID = f.ID
+Order by f.AddDate desc
+
+
+select  ID, Article
+into    #tmpOrderArticle
+from    MainServer.Production.dbo.Order_Article with (nolock)
+where   ID in (select OrderID from #default)
+
+
+select top 200 [FinalInspectionID] = f.ID,
+        [SP] = fo.OrderID,
+        f.CustPONO,
+        [SPQty] = cast(o.Qty as varchar),
+        [StyleID] = o.StyleID,
+        [Season] = o.SeasonID,
+        [BrandID] = o.BrandID,
+        [Article] = (SELECT Stuff((select concat( ',',Article)   from #tmpOrderArticle where ID = fo.OrderID FOR XML PATH('')),1,1,'') ),
+        [InspectionTimes] = cast(f.InspectionTimes as varchar),
+        f.InspectionStage,
+        f.InspectionResult,
+        f.AddDate
+from FinalInspection f with (nolock)
+inner join  #default fo with (nolock) on fo.ID = f.ID
+inner join MainServer.Production.dbo.Orders o with(nolock)  on o.ID = fo.OrderID
+order by f.AddDate DESC
+
+drop table #default ,#tmpOrderArticle
+";
+
+            return ExecuteList<QueryFinalInspection>(CommandType.Text, sqlGetData, parameter);
+        }
 
         public IList<FinalInspection_OrderCarton> GetListCartonInfo(string finalInspectionID)
         {
@@ -1343,7 +1412,7 @@ Select	f.AuditDate,
 		[InspectionResultID] = iif(f.InspectionResult = 'Pass', 1, 2),
 		[InspectionStatusID] = iif(f.InspectionResult = 'Pass', 3, 7),
 		f.SubmitDate,
-		[InspectionMinutes] = Round(DATEDIFF(SECOND, f.AddDate, f.EditDate) / 60.0, 5),
+		[InspectionMinutes] = Round(DATEDIFF(SECOND, f.AddDate, f.EditDate) / 60.0, 0),
 		[CFA] = isnull((select Pivot88UserName from quality_pass1 with (nolock) where ID = f.CFA), ''),
 		OrderInfo.POQty,
 		OrderInfo.ETD_ETA,
@@ -1353,7 +1422,32 @@ Select	f.AuditDate,
                             when f.AcceptableQualityLevelsUkey  = -1 then 26
                             else 12 end,
         [DateStarted] = f.AddDate,
-        [InspectionCompletedDate] = f.EditDate
+        [InspectionCompletedDate] = f.EditDate,
+        f.OthersRemark,
+        f.FabricApprovalDoc,
+        f.SealingSampleDoc,
+        f.MetalDetectionDoc,
+        f.BAQty,
+        f.CheckCloseShade,
+        f.CheckHandfeel,
+        f.CheckAppearance,
+        f.CheckPrintEmbDecorations,
+        f.CheckFiberContent,
+        f.CheckCareInstructions,
+        f.CheckDecorativeLabel,
+        f.CheckAdicomLabel,
+        f.CheckCountryofOrigion,
+        f.CheckSizeKey,
+        f.Check8FlagLabel,
+        f.CheckAdditionalLabel,
+        f.CheckShippingMark,
+        f.CheckPolytagMarketing,
+        f.CheckColorSizeQty,
+        f.CheckHangtag,
+        [MeasurementResult] = cast(iif(exists(select 1 from FinalInspection_Measurement fm with (nolock) where f.ID = fm.ID), 1, 0) as bit),
+        [MoistureResult] = case when exists (select 1 from FinalInspection_Moisture fmo with (nolock) where f.ID = fmo.ID and fmo.Result = 'R') then 'fail'
+                                when not exists (select 1 from FinalInspection_Moisture fmo with (nolock) where f.ID = fmo.ID) then 'na'
+                                else 'pass' end
 from FinalInspection f with (nolock)
 outer apply (select	[POQty] = sum(o.Qty),
 					[ETD_ETA] = max(o.BuyerDelivery),
@@ -1404,12 +1498,22 @@ select	[DefectTypeDesc] = gdt.Description,
 		[DefectCodeDesc] = gdc.Description,
         fd.GarmentDefectCodeID,
         gdc.Pivot88DefectCodeID,
-		[CriticalQty] = iif(gdc.IsCriticalDefect = 1, fd.Qty, 0),
-        [MajorQty] = iif(gdc.IsCriticalDefect = 0, fd.Qty, 0)
+		[CriticalQty] = iif(isnull(gdc.IsCriticalDefect, 0) = 1, fd.Qty, 0),
+        [MajorQty] = iif(isnull(gdc.IsCriticalDefect, 0) = 0, fd.Qty, 0),
+        fd.Ukey
 from FinalInspection_Detail fd with (nolock)
 left join MainServer.Production.dbo.GarmentDefectType gdt with (nolock) on gdt.ID = fd.GarmentDefectTypeID
 left join MainServer.Production.dbo.GarmentDefectCode gdc with (nolock) on gdc.ID = fd.GarmentDefectCodeID
 where fd.ID = @ID
+
+select  [title] =  CONCAT(fdi.ID, '_', isnull(fd.GarmentDefectCodeID, ''), '_', fdi.Ukey),
+        [full_filename] =  CONCAT(fdi.ID, '_', isnull(fd.GarmentDefectCodeID, ''), '_', fdi.Ukey, '.png'),
+        [number] = ROW_NUMBER() OVER (PARTITION BY fdi.FinalInspection_DetailUkey ORDER BY fdi.Ukey),
+        [comment] = isnull(fdi.Remark, ''),
+        fdi.FinalInspection_DetailUkey
+from PMSFile.dbo.FinalInspection_DetailImage fdi with (nolock)
+inner join FinalInspection_Detail fd with (nolock) on fd.Ukey = fdi.FinalInspection_DetailUkey
+where   fdi.ID = @ID
 
 
 drop table #tmpStyleInfo
