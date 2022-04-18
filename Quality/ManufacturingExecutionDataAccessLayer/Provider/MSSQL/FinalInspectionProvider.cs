@@ -482,6 +482,54 @@ select  Image
             }
         }
 
+        public Dictionary<string, byte[]> GetInlineInspectionDefectImage(string InspectionID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection() {
+            { "@InspectionID", DbType.String, InspectionID }
+            };
+
+            string sqlGetData = @"
+    select  [ImageName] =  CONCAT(fdi.InlineInspectionReportID, '_', fdi.Ukey, '.png'), fdi.Image
+    from [ExtendServer].PMSFile.dbo.InlineInspection_DetailImage fdi with (nolock)
+    where   fdi.InlineInspectionReportID = @InspectionID
+";
+
+            DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, objParameter);
+
+            if (dtResult.Rows.Count > 0)
+            {
+                return dtResult.AsEnumerable().ToDictionary(s => s["ImageName"].ToString(), s => (byte[])s["Image"]);
+            }
+            else
+            {
+                return new Dictionary<string, byte[]>();
+            }
+        }
+
+        public Dictionary<string, byte[]> GetEndLineInspectionDefectImage(string InspectionID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection() {
+            { "@InspectionID", DbType.String, InspectionID }
+            };
+
+            string sqlGetData = @"
+    select  [ImageName] =  CONCAT(fdi.InspectionReportID, '_', fdi.Ukey, '.png'), fdi.Image
+    from [ExtendServer].PMSFile.dbo.Inspection_DetailImage fdi with (nolock)
+    where   fdi.InspectionReportID = @InspectionID
+";
+
+            DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, objParameter);
+
+            if (dtResult.Rows.Count > 0)
+            {
+                return dtResult.AsEnumerable().ToDictionary(s => s["ImageName"].ToString(), s => (byte[])s["Image"]);
+            }
+            else
+            {
+                return new Dictionary<string, byte[]>();
+            }
+        }
+
         public void UpdateFinalInspectionDetail(AddDefect addDefect, string UserID)
         {
             using (TransactionScope transaction = new TransactionScope())
@@ -1355,37 +1403,135 @@ where   ID = @FinalInspectionID
                             { "@InspectionID", DbType.String, ID }
                         };
 
-            string inspectionTable = inspectionType == "InlineInspection" ? "InlineInspectionReport" : "InspectionReport";
+            string inspectionReportTable = inspectionType == "InlineInspection" ? "InlineInspectionReport" : "InspectionReport";
+            string inspectionTable = inspectionType == "InlineInspection" ? "InlineInspection" : "Inspection";
+            string dynamicCol = string.Empty;
+
+            if (inspectionType == "InlineInspection")
+            {
+                dynamicCol = @"
+[SewerID] = r.Operator,
+[Station] = r.Station,
+[Line] = r.Line,
+[Operation] = r.Operation,
+[Size] = ''
+";
+            }
+            else
+            {
+                dynamicCol = @"
+[SewerID] = '',
+[Station] = '',
+[Line] = '',
+[Operation] = '',
+[Size] = (SELECT val =  Stuff((select distinct concat( ',', isb.SizeCode) 
+                from InspectionReport_Breakdown isb with (nolock)
+                where isb.InspectionReportID = r.ID FOR XML PATH('')),1,1,''))
+";
+            }
+
 
             string sqlGetData = $@"
 declare @ID varchar(13) = @InspectionID
 
 select  r.FirstInspectionDate,
-        [defective_parts] = Breakdown_Detail.Qty,
-        [qty_inspected] = Breakdown.PassQty + Breakdown.RejectQty
-from {inspectionTable} r with (nolock)
+        [DefectQty] = Breakdown_Detail.Qty,
+        Breakdown.PassQty,
+        Breakdown.RejectQty,
+        Breakdown.FixQty,
+        [username] = (select Pivot88UserName from pass1 where id = r.QC),
+        r.FirstInspectionDate,
+        r.LastinspectionDate,
+        [POQty] = orderInfo.Qty,
+        orderInfo.BuyerDelivery,
+        [Color] = Color.val,
+        r.Shift,
+        r.FactoryID,
+        [InspectionMinutes] = Round(DATEDIFF(SECOND, r.FirstInspectionDate, r.LastinspectionDate) / 60.0, 0),
+        r.CustPONO,
+        orderInfo.CustCDID,
+        {dynamicCol}
+from {inspectionReportTable} r with (nolock)
 outer apply(select  [RejectQty] = isnull(sum(RejectQty), 0),
                     [PassQty] = isnull(sum(PassQty), 0),
                     [FixQty] = isnull(sum(FixQty), 0)
-            from {inspectionTable}_Breakdown with (nolock) where InlineInspectionReportID = r.ID) Breakdown
+            from {inspectionReportTable}_Breakdown with (nolock) where {inspectionReportTable}ID = r.ID) Breakdown
 outer apply(select [Qty] = isnull(sum(Qty), 0) 
-            from {inspectionTable}_Breakdown_Detail with (nolock) where InlineInspectionReportID = r.ID) Breakdown_Detail
+            from {inspectionReportTable}_Breakdown_Detail with (nolock) where {inspectionReportTable}ID = r.ID) Breakdown_Detail
+outer apply(select  [Qty] = Sum(o.Qty),
+                    [BuyerDelivery] = max(o.BuyerDelivery),  
+                    [CustCDID] = max(o.CustCDID)
+                    from Production.dbo.Orders o with (nolock) where o.CustPONO = r.CustPONO
+            ) orderInfo
+outer apply(SELECT val =  Stuff((select distinct concat( ',', oc.ColorID) 
+                from Production.dbo.Order_ColorCombo oc 
+                where oc.ID in (select POID from Production.dbo.Orders where id in (select OrderID from {inspectionReportTable}_Breakdown where {inspectionReportTable}ID = r.ID))
+            FOR XML PATH('')),1,1,'') ) Color
 where r.ID = @ID
+
+--取得Sku資料
+if('{inspectionType}' = 'InlineInspection')
+begin
+    select  Article,
+            [SizeCode] = '',
+            [ShipQty] = sum(isnull(PassQty, 0) + isnull(RejectQty, 0))
+    from    InlineInspectionReport_Breakdown with (nolock)
+    where InlineInspectionReportID = @ID
+    group by Article
+end
+else
+begin
+    select  Article,
+            SizeCode,
+            [ShipQty] = sum(isnull(PassQty, 0) + isnull(RejectQty, 0))
+    from    InspectionReport_Breakdown with (nolock)
+    where InspectionReportID = @ID
+    group by Article, SizeCode
+end
+
+select	s.StyleName,
+		o.FactoryID,
+		o.BrandID,
+		s.CDCodeNew
+into #tmpStyleInfo
+from Production.dbo.Orders o with (nolock)
+inner join Production.dbo.Style s with (nolock) on s.Ukey = o.StyleUkey
+where   o.id in (select OrderID from {inspectionReportTable}_Breakdown where {inspectionReportTable}ID = @ID)
+
+declare @AdidasSAPERPCode varchar(3)
+
+select top 1 @AdidasSAPERPCode = SUBSTRING(BrandAreaCode, 1, 3)
+from [MainServer].Production.dbo.Factory_BrandDefinition fb with (nolock)
+where   exists (select 1 from #tmpStyleInfo where fb.ID = FactoryID and fb.BrandID = BrandID and (fb.CDCodeID = CDCodeNew or fb.CDCodeID = ''))
+order by fb.CDCodeID desc
+
+--style info
+SELECT	[Style] =  Stuff((select concat( ';',StyleName)   from #tmpStyleInfo FOR XML PATH('')),1,1,''),
+		[BrandAreaCode] = @AdidasSAPERPCode,
+		[BrandAreaID] = (select Name from Production.dbo.DropDownList with (nolock) where Type = 'AdidasSAPERPCode' and ID = @AdidasSAPERPCode)
 
 
 select  [label] = isnull(gdt.Description, ''),
         [subsection] = isnull(gdc.Description, ''),
         [code] = isnull(gdc.Pivot88DefectCodeID, ''),
-        [CriticalQty] = iif(isnull(gdc.IsCriticalDefect, 0) = 1, ibd.Qty, 0),
-        [MajorQty] = iif(isnull(gdc.IsCriticalDefect, 0) = 0, ibd.Qty, 0),
-from {inspectionTable}_Breakdown_Detail ibd with (nolock)
+        [CriticalQty] = sum(iif(isnull(gdc.IsCriticalDefect, 0) = 1, ibd.Qty, 0)),
+        [MajorQty] = sum(iif(isnull(gdc.IsCriticalDefect, 0) = 0, ibd.Qty, 0)),
+        ibd.GarmentDefectCodeID
+from {inspectionReportTable}_Breakdown_Detail ibd with (nolock)
 left join SciProduction_GarmentDefectCode gdc with (nolock) on gdc.ID = ibd.GarmentDefectCodeID
 left join SciProduction_GarmentDefectType gdt with (nolock) on gdt.ID = gdc.GarmentDefectTypeID
-where ibd.InlineInspectionReportID = @ID
+where ibd.{inspectionReportTable}ID = @ID
+group by isnull(gdt.Description, ''), isnull(gdc.Description, ''), isnull(gdc.Pivot88DefectCodeID, ''), ibd.GarmentDefectCodeID
+
+select  [title] = CONCAT(img.{inspectionReportTable}ID, '_', img.Ukey),
+        [full_filename] = CONCAT(img.{inspectionReportTable}ID, '_', img.Ukey, '.png'),
+        [number] = ROW_NUMBER() OVER (PARTITION BY insd.GarmentDefectCodeID ORDER BY img.Ukey),
+        insd.GarmentDefectCodeID
+from PMSFile.dbo.{inspectionTable}_DetailImage img with (nolock)
+inner join {inspectionTable}_Detail insd with (nolock) on img.{inspectionTable}_DetailUkey = insd.Ukey
+where img.{inspectionReportTable}ID = @ID
 
 ";
-
-
             return ExecuteDataSet(CommandType.Text, sqlGetData, parameter);
         }
 
@@ -1579,7 +1725,7 @@ select @FromDateTransferToP88 = FromDateTransferToP88 from system
 
 select  ID
 from InspectionReport with (nolock)
-where   IsNeedTransferToPivot88 = 1 and
+where   IsExportToP88 = 0 and
         (AddDate >= @FromDateTransferToP88 or EditDate >= @FromDateTransferToP88) and
         exists (select 1 from Production.dbo.Orders o with (nolock) where o.CustPONo = InspectionReport.CustPONO and o.BrandID in ('Adidas','Reebok'))
 
@@ -1612,7 +1758,7 @@ select @FromDateTransferToP88 = FromDateTransferToP88 from system
 
 select  ID
 from InlineInspectionReport with (nolock)
-where   IsNeedTransferToPivot88 = 1 and
+where   IsExportToP88 = 0 and
         (AddDate >= @FromDateTransferToP88 or EditDate >= @FromDateTransferToP88) and
         exists (select 1 from Production.dbo.Orders o with (nolock) where o.CustPONo = InlineInspectionReport.CustPONO and o.BrandID in ('Adidas','Reebok'))
 
@@ -1637,16 +1783,50 @@ where   IsNeedTransferToPivot88 = 1 and
 
         }
 
-        public void UpdateIsExportToP88(string ID)
+        public void UpdateIsExportToP88(string ID, string inspectionType)
         {
-            string sqlUpdateIsExportToP88 = @"
+            string sqlUpdateIsExportToP88 = string.Empty;
+
+            switch (inspectionType)
+            {
+                case "FinalInspection":
+                    sqlUpdateIsExportToP88 = $@"
     update FinalInspection set IsExportToP88 = 1 where ID = @ID
 ";
+                    break;
+                case "InlineInspection":
+                    sqlUpdateIsExportToP88 = $@"
+    update InlineInspectionReport set IsExportToP88 = 1, TransferTimeToPivot88 = getdate() where ID = @ID
+    update InlineInspection_DetailImage set IsExportToP88 = 1 where InlineInspectionReportID = @ID
+";
+                    break;
+                case "EndLineInspection":
+                    sqlUpdateIsExportToP88 = $@"
+    update InspectionReport set IsExportToP88 = 1, TransferTimeToPivot88 = getdate() where ID = @ID
+    update Inspection_DetailImage set IsExportToP88 = 1 where InspectionReportID = @ID
+";
+                    break;
+                default:
+                    break;
+            }
+
+            if (string.IsNullOrEmpty(sqlUpdateIsExportToP88))
+            {
+                return;
+            }
+
             SQLParameterCollection sqlPar = new SQLParameterCollection() {
                             { "@ID", DbType.String, ID }
                         };
 
             ExecuteNonQuery(CommandType.Text, sqlUpdateIsExportToP88, sqlPar);
+        }
+
+        public void ExecImp_EOLInlineInspectionReport()
+        {
+            string sqlExecImp_EOLInlineInspectionReport = "exec Imp_EOLInlineInspectionReport";
+
+            ExecuteNonQuery(CommandType.Text, sqlExecImp_EOLInlineInspectionReport);
         }
     }
 }
