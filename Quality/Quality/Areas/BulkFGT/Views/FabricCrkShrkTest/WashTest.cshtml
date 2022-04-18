@@ -122,6 +122,17 @@
             padding: 0.5em;
             vertical-align: middle;
         }
+    .width6vw {
+        width: 6vw;
+    }
+
+    .width8vw {
+        width: 8vw;
+    }
+
+    .width9vw {
+        width: 9vw;
+    }
 </style>
 @using (Html.BeginForm("WashTestSave", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { id = "DetailForm" }))
 {
@@ -370,13 +381,13 @@
                                 <tr idx="@i" class="row-content" style="vertical-align: middle; text-align: center;">
                                     <td>
                                         <div class="input-group">
-                                            @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].Roll, new { @class = "inputRollSelectItem" })
+                                            @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].Roll, new { @class = "inputRollSelectItem width6vw" })
                                             <input type="button" class="site-btn btn-blue btnRollSelectItem" style="margin:0;border:0;" value="..." />
                                         </div>
                                     </td>
                                     <td>
                                         <div class="input-group">
-                                            @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].Dyelot, new { @class = "inputRollSelectItem" })
+                                            @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].Dyelot, new { @class = "inputRollSelectItem width8vw" })
                                             <input type="button" class="site-btn btn-blue btnRollSelectItem" style="margin:0;border:0;" value="..." />
                                         </div>
                                     </td>
@@ -388,10 +399,10 @@
                                     </td>
                                     <td>
                                         @{
-                                            styleColor = "red";
+                                            styleColor = "red width6vw";
                                             if (Model.Wash_Detail[i].Result == "Pass")
                                             {
-                                                styleColor = "blue";
+                                                styleColor = "blue width6vw";
                                             }
                                         }
                                         <select id="Wash_Main_@{@i}_Result" name="Wash_Detail[@i].Result" disabled="disabled" class="@styleColor" style="width:157px;" onchange="changeResultColor(this)">
@@ -452,7 +463,7 @@
                                     </td>
 
                                     <td>
-                                        @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].Inspdate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
+                                        @Html.TextBoxFor(modelItem => Model.Wash_Detail[i].Inspdate, "{0:yyyy/MM/dd}", new { @class = "date-picker width9vw" })
                                     </td>
                                     <td>
                                         <div class="input-group">

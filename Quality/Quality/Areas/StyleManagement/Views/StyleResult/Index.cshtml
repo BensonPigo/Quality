@@ -113,7 +113,7 @@
     }
 </style>
 
-<div class="main-content">
+<div class="main-content container">
 
     <header class="page-header">
         <h3>
@@ -137,15 +137,15 @@
                         <div>
                             @Html.Hidden("StyleUkey")
                             <label class="QueryLab">Brand</label>
-                            <input type="text" name="BrandID" id="txtBrand" value="@Model.BrandID"/>
+                            <input type="text" name="BrandID" id="txtBrand" class="searchText8vw" value="@Model.BrandID"/>
                             <input id="btnBrand" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
                             &nbsp;&nbsp;
                             <label class="QueryLab">Season</label>
-                            <input type="text" name="SeasonID" id="txtSeason" value="@Model.SeasonID"/>
+                            <input type="text" name="SeasonID" id="txtSeason" class="searchText5vw" value="@Model.SeasonID"/>
                             <input id="btnSeason" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
                             &nbsp;&nbsp;
                             <label class="QueryLab">Style</label>
-                            <input type="text" name="StyleID" id="txtStyle" value="@Model.StyleID" />
+                            <input type="text" name="StyleID" id="txtStyle" class="searchText12vw" value="@Model.StyleID" />
                             <input id="btnStyle" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
                             &nbsp;&nbsp;
                             <input type="submit" name="action:Query"  id="btnQuery" value="Query" />

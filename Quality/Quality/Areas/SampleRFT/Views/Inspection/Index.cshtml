@@ -106,8 +106,9 @@
         background-position: 10px 12px; /* Position the search icon */
         background-repeat: no-repeat; /* Do not repeat the icon image */
         width: 100%; /* Full-width */
-        font-size: 1rem; /* Increase font-size */
-        padding: 12px 20px 12px 40px; /* Add some padding */
+        font-size: 1.6vh;
+        /*padding: 12px 20px 12px 40px;*/ /* Add some padding */
+        text-align: center;
         border: 1px solid #ddd; /* Add a grey border */
     }
 
@@ -144,12 +145,12 @@
         color: black !important;
     }
 
-    .font1rem {
-        font-size: 1rem;
+    .font12vw {
+        font-size: 1.2vw;
     }
 
-    .font2rem {
-        font-size: 2rem;
+    .font2vw {
+        font-size: 2vw;
     }
 
     .middBtn {
@@ -182,10 +183,10 @@
     }
 
     #Switch {
-        width: 21vw;
-        height: 25vh;
+        width: 28vw;
+        /*height: 25vh;*/
         position: absolute;
-        left: 40vw;
+        left: 33vw;
         top: 40vh;
         z-index: 1041;
         background-color: white;
@@ -711,19 +712,19 @@
                         </div>
                     </div>
                     <div style="width: 10vw; height: 92vh; float: left; background-color: rgb(87, 87, 87); padding-left: 2px;">
-                        <input id="btnPass" type="button" class="site-btn btn-green middBtn font2rem" name="Pass" value="Pass" />
-                        <input id="btnReject" type="button" class="site-btn btn-red middBtn font2rem" name="Reject" value="Reject" />
-                        <input id="btnReworkList" type="button" class="site-btn btn-yellow black middBtn font1rem" style="margin-top: 5rem;" name="ReworkList" value='Rework List' />
-                        <input id="btnMeasurement" type="button" class="site-btn btn-gy black middBtn font1rem" name="Measurement" value="Measurement" />
-                        <input id="btnCFTComments" type="button" class="site-btn btn-gy black middBtn font1rem" name="CFTComments" value="CFT Comments" />
-                        <input id="btnPictures" type="button" class="site-btn btn-gy black middBtn font1rem" name="Pictures" value="Pictures" />
+                        <input id="btnPass" type="button" class="site-btn btn-green middBtn font2vw" name="Pass" value="Pass" />
+                        <input id="btnReject" type="button" class="site-btn btn-red middBtn font2vw" name="Reject" value="Reject" />
+                        <input id="btnReworkList" type="button" class="site-btn btn-yellow black middBtn font12vw" style="margin-top: 5rem;" name="ReworkList" value='Rework List' />
+                        <input id="btnMeasurement" type="button" class="site-btn btn-gy black middBtn font12vw" name="Measurement" value="Measurement" />
+                        <input id="btnCFTComments" type="button" class="site-btn btn-gy black middBtn font12vw" name="CFTComments" value="CFT Comments" />
+                        <input id="btnPictures" type="button" class="site-btn btn-gy black middBtn font12vw" name="Pictures" value="Pictures" />
                     </div>
                     <div style="width:40vw; float:left;">
                         <div>
                             <table style="width: 40vw; margin-bottom:1em;">
                                 <tr>
                                     <td align="right">
-                                        <input id="btnAddDefect" type="button" class="site-btn btn-red font1rem" style="margin:0;border:0;padding: 1rem; font-weight:bold;" name="AddDefect" value="Add Defect" />
+                                        <input id="btnAddDefect" type="button" class="site-btn btn-red font12vw" style="margin:0;border:0;padding: 1rem; font-weight:bold;" name="AddDefect" value="Add Defect" />
                                     </td>
                                 </tr>
                             </table>
@@ -746,19 +747,19 @@
                             <table style="width: 40vw;">
                                 <tr>
                                     <td>
-                                        <input id="btnHard" type="button" class="site-btn btn-orange rightBtn font1rem" name="Hard" value="Hard" />
+                                        <input id="btnHard" type="button" class="site-btn btn-orange rightBtn font12vw" name="Hard" value="Hard" />
                                     </td>
                                     <td>
-                                        <input id="btnQuick" type="button" class="site-btn btn-darkblue rightBtn font1rem" name="Quick" value="Quick" />
+                                        <input id="btnQuick" type="button" class="site-btn btn-darkblue rightBtn font12vw" name="Quick" value="Quick" />
                                     </td>
                                     <td style="width:10vw;">
                                         <p class="FixType display-None" idx="FixType"></p>
                                     </td>
                                     <td>
-                                        <input id="btnSave" type="button" class="site-btn btn-blue rightBtn font1rem" name="Save" value="Save" />
+                                        <input id="btnSave" type="button" class="site-btn btn-blue rightBtn font12vw" name="Save" value="Save" />
                                     </td>
                                     <td>
-                                        <input id="btnCancel" type="button" class="site-btn btn-blue rightBtn font1rem" name="Cancel" value="Cancel" />
+                                        <input id="btnCancel" type="button" class="site-btn btn-blue rightBtn font12vw" name="Cancel" value="Cancel" />
                                     </td>
                                 </tr>
                             </table>
@@ -810,7 +811,7 @@
     <div id="Switch" class="display-None">
         @using (Html.BeginForm("Index", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post))
         {
-            <table class="table table-striped" style="width: 20vw; border: solid 1px black;">
+            <table class="table table-striped" style="width: 100%; border: solid 1px black;">
                 <tbody>
                     <tr>
                         <td>Factory</td>
@@ -827,7 +828,7 @@
                     <tr>
                         <td>Inspection Date</td>
                         <td>
-                            @Html.TextBoxFor(o => o.InspectionDate, "{0:yyyy/MM/dd}", new { @class = "form-control date-picker" })
+                            @Html.TextBoxFor(o => o.InspectionDate, "{0:yyyy/MM/dd}", new { @class = "form-control date-picker",@style= "text-align: center;font-size: 1.6vh;" })
                         </td>
                     </tr>
                     <tr>
@@ -982,8 +983,8 @@
             </div>
         </div>
         <div style="vertical-align:middle; text-align:center; margin-top:1em; ">
-            <input id="btnReworkCardNoSave" type="button" class="site-btn btn-blue font1rem" style="margin:0;border:0;padding: 7px 2em;" name="ReworkCardNoSave" value="Save" />
-            <input id="btnReworkCardNoExit" type="button" class="site-btn btn-gy font1rem" style="margin:0;border:0;padding: 7px 2em;" name="ReworkCardNoExit" value="Exit" />
+            <input id="btnReworkCardNoSave" type="button" class="site-btn btn-blue font12vw" style="margin:0;border:0;padding: 7px 2em;" name="ReworkCardNoSave" value="Save" />
+            <input id="btnReworkCardNoExit" type="button" class="site-btn btn-gy font12vw" style="margin:0;border:0;padding: 7px 2em;" name="ReworkCardNoExit" value="Exit" />
             <p class="ReworkCardNoSelectValue display-None"></p>
         </div>
     </div>
@@ -997,7 +998,7 @@
                             <p style="padding-left: 1em; font-size: 1.5em; font-weight: bold;">Rework List</p>
                         </td>
                         <td align="right" valign="middle">
-                            <input id="btnReworkListExit" type="button" class="site-btn btn-gy font1rem" style="margin:0;border:0;padding: 7px 2em;" name="ReworkListExit" value="Exit" />
+                            <input id="btnReworkListExit" type="button" class="site-btn btn-gy font12vw" style="margin:0;border:0;padding: 7px 2em;" name="ReworkListExit" value="Exit" />
                         </td>
                     </tr>
                 </tbody>
@@ -1048,7 +1049,7 @@
         </div>
         <div class="ReworkListButton">
             <div>
-                <input id="btnReworkListAction" type="button" class="btn-yellow font1rem" style="margin: 0; border: 0; padding: 7px 2em; " name="ReworkListAction" value="Action">
+                <input id="btnReworkListAction" type="button" class="btn-yellow font12vw" style="margin: 0; border: 0; padding: 7px 2em; " name="ReworkListAction" value="Action">
                 <div class="ReworkListButtonAction display-None">
                     <input idx="Wash" type="button" value="Send To Washing">
                     <input idx="Print" type="button" value="Printing Repair">
@@ -1057,10 +1058,10 @@
                 </div>
             </div>
             <div style="width: 15em;">
-                <input id="btnReworkListDelete" type="button" class="btn-yellow font1rem" style="margin: 0; border: 0; padding: 7px 2em; " name="ReworkListDelete" value="Delete Defect">
+                <input id="btnReworkListDelete" type="button" class="btn-yellow font12vw" style="margin: 0; border: 0; padding: 7px 2em; " name="ReworkListDelete" value="Delete Defect">
             </div>
             <div>
-                <input id="btnReworkListDispose" type="button" class="btn-yellow font1rem" style="margin: 0; border: 0; padding: 7px 2em; " name="ReworkListDispose" value="Dispose">
+                <input id="btnReworkListDispose" type="button" class="btn-yellow font12vw" style="margin: 0; border: 0; padding: 7px 2em; " name="ReworkListDispose" value="Dispose">
                 <div class="ReworkListButtonDispose display-None">
                 </div>
             </div>
@@ -1084,8 +1085,8 @@
                     </tr>
                     <tr>
                         <td colspan="2">
-                            <input id="btnReworkListValidateVerify" type="button" class="site-btn btn-orange font1rem" style="margin:0;border:0;padding: 7px 2em;" name="ReworkListValidateVerify" value="Verify" />
-                            <input id="btnReworkListValidateExit" type="button" class="site-btn btn-orange font1rem" style="margin:0;border:0;padding: 7px 2em;" name="ReworkListValidateExit" value="Exit" />
+                            <input id="btnReworkListValidateVerify" type="button" class="site-btn btn-orange font12vw" style="margin:0;border:0;padding: 7px 2em;" name="ReworkListValidateVerify" value="Verify" />
+                            <input id="btnReworkListValidateExit" type="button" class="site-btn btn-orange font12vw" style="margin:0;border:0;padding: 7px 2em;" name="ReworkListValidateExit" value="Exit" />
                         </td>
                     </tr>
                 </tbody>
@@ -1103,9 +1104,9 @@
                         </td>
                         <td align="right" valign="middle">
                             <input id="MeasurementImage" name="MeasurementImage" type="hidden" value="" >
-                            <input id="btnMeasurementPicture" type="button" class="site-btn btn-blue font1rem" style="margin:0;border:0;padding: 7px 2em;" name="MeasurementPicture" value="Photo" />
-                            <input id="btnMeasurementSave" type="button" class="site-btn btn-blue font1rem" style="margin:0;border:0;padding: 7px 2em;" name="MeasurementSave" value="Save" />
-                            <input id="btnMeasurementExit" type="button" class="site-btn btn-gy font1rem" style="margin:0;border:0;padding: 7px 2em;" name="MeasurementExit" value="Exit" />
+                            <input id="btnMeasurementPicture" type="button" class="site-btn btn-blue font12vw" style="margin:0;border:0;padding: 7px 2em;" name="MeasurementPicture" value="Photo" />
+                            <input id="btnMeasurementSave" type="button" class="site-btn btn-blue font12vw" style="margin:0;border:0;padding: 7px 2em;" name="MeasurementSave" value="Save" />
+                            <input id="btnMeasurementExit" type="button" class="site-btn btn-gy font12vw" style="margin:0;border:0;padding: 7px 2em;" name="MeasurementExit" value="Exit" />
                         </td>
                     </tr>
                 </tbody>
@@ -1168,9 +1169,9 @@
                             <p style="padding-left: 1em; font-size: 1.5em; font-weight: bold;">CFT Comment</p>
                         </td>
                         <td align="right" valign="middle">
-                            <input id="btnCFTCommentsSendMail" type="button" class="site-btn btn-gy font1rem" style="margin:0;border:0;padding: 7px 2em;" name="CFTCommentsSendMail" value="Send to MR" />
-                            <input id="btnCFTCommentsSave" type="button" class="site-btn btn-blue font1rem" style="margin:0;border:0;padding: 7px 2em;" name="CFTCommentsave" value="Save" />
-                            <input id="btnCFTCommentsExit" type="button" class="site-btn btn-gy font1rem" style="margin:0;border:0;padding: 7px 2em;" name="CFTCommentsExit" value="Exit" />
+                            <input id="btnCFTCommentsSendMail" type="button" class="site-btn btn-gy font12vw" style="margin:0;border:0;padding: 7px 2em;" name="CFTCommentsSendMail" value="Send to MR" />
+                            <input id="btnCFTCommentsSave" type="button" class="site-btn btn-blue font12vw" style="margin:0;border:0;padding: 7px 2em;" name="CFTCommentsave" value="Save" />
+                            <input id="btnCFTCommentsExit" type="button" class="site-btn btn-gy font12vw" style="margin:0;border:0;padding: 7px 2em;" name="CFTCommentsExit" value="Exit" />
                         </td>
                     </tr>
                 </tbody>
@@ -1213,8 +1214,8 @@
                             <p style="padding-left: 1em; font-size: 1.5em; font-weight: bold;">Picture During Dummy Fitting</p>
                         </td>
                         <td align="right" valign="middle">
-                            <input id="btnPictureDuringDummyFittingSave" type="button" class="site-btn btn-blue font1rem" style="margin:0;border:0;padding: 7px 2em;" name="PictureDuringDummyFittingSave" value="Save" />
-                            <input id="btnPictureDuringDummyFittingExit" type="button" class="site-btn btn-gy font1rem" style="margin:0;border:0;padding: 7px 2em;" name="PictureDuringDummyFittingExit" value="Exit" />
+                            <input id="btnPictureDuringDummyFittingSave" type="button" class="site-btn btn-blue font12vw" style="margin:0;border:0;padding: 7px 2em;" name="PictureDuringDummyFittingSave" value="Save" />
+                            <input id="btnPictureDuringDummyFittingExit" type="button" class="site-btn btn-gy font12vw" style="margin:0;border:0;padding: 7px 2em;" name="PictureDuringDummyFittingExit" value="Exit" />
                         </td>
                     </tr>
                 </tbody>
@@ -2659,7 +2660,7 @@
                 }
 
                 $.each(data, function (index, value) {
-                    content += "<input id='ReworkCardNo" + padLeft(value.No.toString(), 2) + "' idx='" + value.Status + "' type='button' class='site-btn ReworkCardNo font1rem' name='ReworkCardNo' value='" + padLeft(value.No.toString(), 2) + "' />";
+                    content += "<input id='ReworkCardNo" + padLeft(value.No.toString(), 2) + "' idx='" + value.Status + "' type='button' class='site-btn ReworkCardNo font12vw' name='ReworkCardNo' value='" + padLeft(value.No.toString(), 2) + "' />";
                 });
 
                 if (rCount > 12) {
@@ -2845,11 +2846,11 @@
                     });
                     tableContent += "</td>";
 
-                    tableContent += "<td><input id='btnReworkListPass" + value.ID + "' type='button' class='site-btn btn-green font1rem btnReworkListPass' style='margin: 0; border: 0; padding: 7px 2em; ' name='ReworkListPass' value='Pass' /></td>";
-                    tableContent += "<td><input id='btnReworkListReject" + value.ID + "' type='button' class='site-btn btn-red font1rem btnReworkListReject' style='margin:0;border:0;padding: 7px 2em;' name='ReworkListReject' value='Reject' /></td>";
+                    tableContent += "<td><input id='btnReworkListPass" + value.ID + "' type='button' class='site-btn btn-green font12vw btnReworkListPass' style='margin: 0; border: 0; padding: 7px 2em; ' name='ReworkListPass' value='Pass' /></td>";
+                    tableContent += "<td><input id='btnReworkListReject" + value.ID + "' type='button' class='site-btn btn-red font12vw btnReworkListReject' style='margin:0;border:0;padding: 7px 2em;' name='ReworkListReject' value='Reject' /></td>";
                     tableContent += "<td>";
                     if (value.FixType == "Hard") {
-                        tableContent += "<input id='btnReworkListAction" + value.ID + "' type='button' class='site-btn btn-blue font1rem btnReworkListAction' style='margin:0;border:0;padding: 7px 2em;' name='ReworkListAction' value='Action' />";
+                        tableContent += "<input id='btnReworkListAction" + value.ID + "' type='button' class='site-btn btn-blue font12vw btnReworkListAction' style='margin:0;border:0;padding: 7px 2em;' name='ReworkListAction' value='Action' />";
                         tableContent += "<div style='position: relative;'><div class='ReworkListTableAction display-None'>";
                         tableContent += "<input idx='Wash' type='button' value='Send To Washing'>";
                         tableContent += "<input idx='Print' type='button' value='Printing Repair'>";

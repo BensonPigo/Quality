@@ -1298,6 +1298,50 @@ where   1 = 1 {whereFinalInspection}
 
             return ExecuteList<QueryFinalInspection>(CommandType.Text, sqlGetData, parameter);
         }
+        public IList<QueryFinalInspection> GetFinalinspectionQueryList_Default(QueryFinalInspection_ViewModel request)
+        {
+            SQLParameterCollection parameter = new SQLParameterCollection();
+
+            string whereOrder = string.Empty;
+            string whereFinalInspection = string.Empty;
+
+            string sqlGetData = $@"
+--預設抓兩百
+select distinct　top 200  f.ID,fo.OrderID,f.AddDate
+into #default
+from FinalInspection f with (nolock)
+inner join  FinalInspection_Order fo with (nolock) on fo.ID = f.ID
+Order by f.AddDate desc
+
+
+select  ID, Article
+into    #tmpOrderArticle
+from    MainServer.Production.dbo.Order_Article with (nolock)
+where   ID in (select OrderID from #default)
+
+
+select top 200 [FinalInspectionID] = f.ID,
+        [SP] = fo.OrderID,
+        f.CustPONO,
+        [SPQty] = cast(o.Qty as varchar),
+        [StyleID] = o.StyleID,
+        [Season] = o.SeasonID,
+        [BrandID] = o.BrandID,
+        [Article] = (SELECT Stuff((select concat( ',',Article)   from #tmpOrderArticle where ID = fo.OrderID FOR XML PATH('')),1,1,'') ),
+        [InspectionTimes] = cast(f.InspectionTimes as varchar),
+        f.InspectionStage,
+        f.InspectionResult,
+        f.AddDate
+from FinalInspection f with (nolock)
+inner join  #default fo with (nolock) on fo.ID = f.ID
+inner join MainServer.Production.dbo.Orders o with(nolock)  on o.ID = fo.OrderID
+order by f.AddDate DESC
+
+drop table #default ,#tmpOrderArticle
+";
+
+            return ExecuteList<QueryFinalInspection>(CommandType.Text, sqlGetData, parameter);
+        }
 
         public IList<FinalInspection_OrderCarton> GetListCartonInfo(string finalInspectionID)
         {

@@ -221,18 +221,21 @@
             "autoWidth": false
 
         });
+
+        @Html.Raw(Model.ErrorMessage)
     });
 
 
     function checkvalue() {
-        //if ($("#SP").val() == "" || $("#POID").val() == "" || $("#StyleID").val() == "" || $("#SciDeliveryStart").val() == "" || $("#SciDeliveryEnd").val() == "")
-        //{
+        if ($("#SP").val() == "" && $("#CustPONO").val() == "" && $("#StyleID").val() == "" && $("#SciDeliveryStart").val() == "" && $("#SciDeliveryEnd").val() == "") {
 
-        //    msg.WithError('Please input ＜SP#＞，＜PO#＞，＜Style#＞ and ＜SCI Delivery＞　first!');
-        //    return false;
-        //}
+            msg.WithError('Please input fields before query.');
+            return false;
+        }
+        else {
+            return true;
+        }
 
-        return true;
     }
     $(function () {
         $("#Download").click(function () {
