@@ -1890,7 +1890,7 @@ where   IsExportToP88 = 0 and
         {
             string sqlExecImp_EOLInlineInspectionReport = "exec Imp_EOLInlineInspectionReport";
 
-            ExecuteNonQuery(CommandType.Text, sqlExecImp_EOLInlineInspectionReport);
+            ExecuteNonQuery(CommandType.Text, sqlExecImp_EOLInlineInspectionReport, 600);
         }
     }
 }

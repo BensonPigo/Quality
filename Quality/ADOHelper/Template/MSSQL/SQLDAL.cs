@@ -409,7 +409,7 @@ namespace ADOHelper.Template.MSSQL
 			return num;
 		}
 
-		public int ExecuteNonQuery(CommandType cmdType, string cmdText)
+		public int ExecuteNonQuery(CommandType cmdType, string cmdText, int timeout = 30)
 		{
 			int num;
 			try
@@ -428,6 +428,7 @@ namespace ADOHelper.Template.MSSQL
 				}
 				this.com.CommandType = cmdType;
 				this.com.CommandText = cmdText;
+				this.com.CommandTimeout = timeout;
 				int num1 = this.com.ExecuteNonQuery();
 				if (this.com.Transaction == null)
 				{
