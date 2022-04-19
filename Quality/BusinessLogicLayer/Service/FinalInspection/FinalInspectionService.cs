@@ -497,6 +497,217 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
+        public object GetEndInlinePivot88Json(string ID, string inspectionType)
+        {
+            IFinalInspectionProvider finalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+            DataSet resultPivot88 = finalInspectionProvider.GetEndInlinePivot88(ID, inspectionType);
+
+            if (resultPivot88.Tables.Count == 0)
+            {
+                return null;
+            }
+
+            if (resultPivot88.Tables[0].Rows.Count == 0)
+            {
+                return null;
+            }
+
+            DataRow drInspection = resultPivot88.Tables[0].Rows[0];
+            DataTable dtSizeArticle = resultPivot88.Tables[1];
+            DataRow drStyleInfo = resultPivot88.Tables[2].Rows[0];
+            DataTable dtDefectsDetail = resultPivot88.Tables[3];
+            DataTable dtDefectsDetailImage = resultPivot88.Tables[4];
+
+            List<object> sections = new List<object>();
+
+            var listSku_number = dtSizeArticle.AsEnumerable().Select(s =>
+            new
+            {
+                sku_number = string.IsNullOrEmpty(s["SizeCode"].ToString()) ? s["Article"] : $"{s["Article"]}_{s["SizeCode"]}",
+                qty_to_inspect = s["ShipQty"]
+            }
+            );
+
+            object defects;
+
+            if (dtDefectsDetail.Rows.Count > 0)
+            {
+                defects = dtDefectsDetail.AsEnumerable()
+                                .GroupJoin(dtDefectsDetailImage.AsEnumerable(),
+                                            s => (string)s["GarmentDefectCodeID"],
+                                            defectImg =>
+                                            (string)defectImg["GarmentDefectCodeID"],
+                                            (s, defectImg) => new
+                                            {
+                                                defect = s,
+                                                defectImg = defectImg.Select(defectImgItem => new
+                                                {
+                                                    title = defectImgItem["title"],
+                                                    full_filename = defectImgItem["full_filename"],
+                                                    number = defectImgItem["number"],
+                                                    comment = "No comment",
+                                                })
+                                            })
+                                .Select(s => new
+                                {
+                                    label = s.defect["label"],
+                                    subsection = s.defect["subsection"],
+                                    code = s.defect["code"],
+                                    critical_level = s.defect["CriticalQty"],
+                                    major_level = s.defect["MajorQty"],
+                                    minor_level = 0,
+                                    comments = "No comment",
+                                    pictures = s.defectImg
+                                });
+            }
+            else
+            {
+                defects = new List<object>() {
+                    new {
+                            label = string.Empty,
+                            subsection = string.Empty,
+                            code = string.Empty,
+                            critical_level = 0,
+                            major_level = 0,
+                            minor_level = 0,
+                            comments = "No comment",
+                            pictures = new List<object>(),
+                    },
+                };
+            }
+
+            sections.Add(new
+            {
+                type = "aqlDefects",
+                title = "product",
+                section_result_id = 5,
+                defective_parts = drInspection["DefectQty"],
+                qty_inspected = (int)drInspection["PassQty"] + (int)drInspection["RejectQty"],
+                sampled_inspected = (int)drInspection["PassQty"] + (int)drInspection["RejectQty"],
+                inspection_level = "100%inspection",
+                inspection_method = "normal",
+                aql_minor = 4,
+                aql_major = 1.5,
+                aql_major_a = 1.5,
+                aql_major_b = 1.5,
+                aql_critical = 0.01,
+                //aql_minor = 0,
+                //aql_major = 0,
+                //aql_major_a = drFinalInspection["DefectQty"],
+                //aql_major_b = drFinalInspection["DefectQty"],
+                //aql_critical = 0,
+                max_minor_defects = 15,
+                max_major_defects = 15,
+                max_major_a_defects = 0,
+                max_major_b_defects = 0,
+                max_critical_defects = 15,
+                defects,
+            });
+
+            sections.Add(
+                new
+                {
+                    type = "pictures",
+                    title = "photos",
+                    pictures = new List<object>(),
+                }
+                );
+
+            List<object> assignment_items = listSku_number.Select(
+                sku_number => new
+                {
+                    sampled_inspected = (int)drInspection["PassQty"] + (int)drInspection["RejectQty"],
+                    inspection_result_id = 1,
+                    inspection_status_id = 3,
+                    qty_inspected = (int)drInspection["PassQty"] + (int)drInspection["RejectQty"],
+                    inspection_completed_date = drInspection["LastinspectionDate"],
+                    total_inspection_minutes = drInspection["InspectionMinutes"],
+                    sampling_size = (int)drInspection["PassQty"] + (int)drInspection["RejectQty"],
+                    qty_to_inspect = sku_number.qty_to_inspect,
+                    aql_minor = 4,
+                    aql_major = 1.5,
+                    aql_major_a = 1.5,
+                    aql_major_b = 1.5,
+                    aql_critical = 0.01,
+                    supplier_booking_msg = "no comment",
+                    conclusion_remarks = "no comment",
+                    assignment = new
+                    {
+                        report_type = new { id = inspectionType == "InlineInspection" ? 55 : 56 } ,
+                        inspector = new { username = drInspection["username"] },
+                        date_inspection = drInspection["FirstInspectionDate"],
+                        inspection_level = "100%inspection",
+                        inspection_method = "normal",
+                    },
+                    po_line = new
+                    {
+                        qty = sku_number.qty_to_inspect,
+                        etd = drInspection["BuyerDelivery"],
+                        eta = drInspection["BuyerDelivery"],
+                        color = drInspection["Color"],
+                        size = drInspection["Size"],
+                        style = drStyleInfo["Style"],
+                        po = new
+                        {
+                            exporter = new
+                            {
+                                id = drStyleInfo["BrandAreaID"],
+                                erp_business_id = drStyleInfo["BrandAreaCode"],
+                            },
+                            po_number = drInspection["CustPONO"],
+                            customer_po = drInspection["CustCDID"],
+                            importer = new
+                            {
+                                id = 215,
+                                erp_business_id = "Adidas001",
+                            },
+                            project = new { id = 2063 }
+                        },
+                        sku = new
+                        {
+                            sku_number = sku_number.sku_number,
+                            item_name = "No Item",
+                            item_description = string.Empty,
+                        },
+                        fields = new
+                        {
+                            string_1 = (int)drInspection["RejectQty"] - (int)drInspection["FixQty"],
+                            string_2 = drInspection["FixQty"],
+                            string_3 = drInspection["Shift"],
+                            string_4 = "",
+                            string_5 = drInspection["SewerID"],
+                            string_6 = drInspection["Station"],
+                            string_7 = drInspection["Line"],
+                            string_8 = drInspection["Operation"],
+                            string_9 = "",
+                            string_10 = drInspection["FactoryID"],
+
+                        }
+                    },
+                }
+                ).ToList<object>();
+
+            #region passFails
+            List<object> passFails = new List<object>();
+            #endregion
+
+            object result = new
+            {
+                inspections = new List<object>() {
+                 new {
+                        unique_key = ID,
+                        status = "Submitted",
+                        date_started = drInspection["FirstInspectionDate"],
+                        defective_parts = drInspection["DefectQty"],
+                        sections,
+                        assignment_items,
+                        passFails,
+                    }
+                }
+            };
+
+            return result;
+        }
         public List<SentPivot88Result> SentPivot88(PivotTransferRequest pivotTransferRequest)
         {
             List<string> listInspectionID = new List<string>();
@@ -504,26 +715,41 @@ namespace BusinessLogicLayer.Service
 
             _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
 
-            listInspectionID = _FinalInspectionProvider.GetPivot88FinalInspectionID(pivotTransferRequest.InspectionID);
+            switch (pivotTransferRequest.InspectionType)
+            {
+                case "FinalInspection":
+                    listInspectionID = _FinalInspectionProvider.GetPivot88FinalInspectionID(pivotTransferRequest.InspectionID);
+                    break;
+                case "InlineInspection":
+                    listInspectionID = _FinalInspectionProvider.GetPivot88InlineInspectionID(pivotTransferRequest.InspectionID);
+                    break;
+                case "EndlineInspection":
+                    listInspectionID = _FinalInspectionProvider.GetPivot88EndLineInspectionID(pivotTransferRequest.InspectionID);
+                    break;
+                default:
+                    break;
+            }
 
             if (listInspectionID.Count == 0)
             {
                 return sentPivot88Results;
             }
 
-            sentPivot88Results = listInspectionID.Select(finalInspectionID =>
+            sentPivot88Results = listInspectionID.Select(inspectionID =>
             {
 
                 bool isSuccess = true;
                 string errorMsg = string.Empty;
                 string postBody = string.Empty;
-                string requestUri = pivotTransferRequest.RequestUri + "sintex" + finalInspectionID;
+                string requestUri = pivotTransferRequest.RequestUri + "sintex" + inspectionID;
 
                 try
                 {
                     #region 傳送finalinspection資料
-                    postBody = JsonConvert.SerializeObject(GetPivot88Json(finalInspectionID));
-
+                    postBody = pivotTransferRequest.InspectionType == "FinalInspection" ?
+                    JsonConvert.SerializeObject(GetPivot88Json(inspectionID)) :
+                    JsonConvert.SerializeObject(GetEndInlinePivot88Json(inspectionID, pivotTransferRequest.InspectionType));
+                    
                     WebApiBaseResult webApiBaseResult = WebApiTool.WebApiSend(pivotTransferRequest.BaseUri, requestUri, postBody, HttpMethod.Put, headers: pivotTransferRequest.Headers);
 
                     switch (webApiBaseResult.webApiResponseStatus)
@@ -555,7 +781,23 @@ namespace BusinessLogicLayer.Service
 
                     if (isSuccess)
                     {
-                        Dictionary<string, byte[]> dicImage = _FinalInspectionProvider.GetFinalInspectionDefectImage(finalInspectionID);
+                        Dictionary<string, byte[]> dicImage = new Dictionary<string, byte[]>();
+
+                        switch (pivotTransferRequest.InspectionType)
+                        {
+                            case "FinalInspection":
+                                dicImage = _FinalInspectionProvider.GetFinalInspectionDefectImage(inspectionID);
+                                break;
+                            case "InlineInspection":
+                                dicImage = _FinalInspectionProvider.GetInlineInspectionDefectImage(inspectionID);
+                                break;
+                            case "EndLineInspection":
+                                dicImage = _FinalInspectionProvider.GetEndLineInspectionDefectImage(inspectionID);
+                                break;
+                            default:
+                                break;
+                        }
+
                         string requestUploadImgUri = requestUri + "/images/upload";
                         //string requestUploadImgUri = "rest/operation/v1/inspection_reports/unique_key:sintexSPSCH22020130/images/upload";
 
@@ -598,7 +840,7 @@ namespace BusinessLogicLayer.Service
 
                     if (isSuccess)
                     {
-                        _FinalInspectionProvider.UpdateIsExportToP88(finalInspectionID);
+                        _FinalInspectionProvider.UpdateIsExportToP88(inspectionID, pivotTransferRequest.InspectionType);
                     }
                 }
                 catch (Exception ex)
@@ -623,7 +865,7 @@ namespace BusinessLogicLayer.Service
 
                 return new SentPivot88Result()
                 {
-                    InspectionID = finalInspectionID,
+                    InspectionID = inspectionID,
                     isSuccess = isSuccess,
                     errorMsg = errorMsg,
                 };
@@ -655,6 +897,13 @@ namespace BusinessLogicLayer.Service
             }
 
             return result;
+        }
+
+        public void ExecImp_EOLInlineInspectionReport()
+        {
+            _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+            _FinalInspectionProvider.ExecImp_EOLInlineInspectionReport();
         }
     }
 }

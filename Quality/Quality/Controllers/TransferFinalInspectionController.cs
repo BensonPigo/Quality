@@ -31,5 +31,20 @@ namespace Quality.Controllers
             }
         }
 
+        [Route("api/TransferFinalInspection/Imp_EOLInlineInspectionReport")]
+        [HttpPost]
+        public HttpResponseMessage Imp_EOLInlineInspectionReport()
+        {
+            try
+            {
+                FinalInspectionService finalInspectionService = new FinalInspectionService();
+                finalInspectionService.ExecImp_EOLInlineInspectionReport();
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.ExpectationFailed, new { result = ex.ToString() });
+            }
+        }
     }
 }
