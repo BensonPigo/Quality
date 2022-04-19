@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace DatabaseObject.RequestModel
 {
+
     public class PivotTransferRequest
     {
         public string InspectionType { get; set; }
