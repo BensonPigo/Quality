@@ -44,12 +44,44 @@ namespace BusinessLogicLayer.Service.Tests
                 FinalInspectionService finalInspectionService = new FinalInspectionService();
                 PivotTransferRequest pivotTransferRequest = new PivotTransferRequest()
                 {
-                    InspectionID = "SPSCH21120145",
+                    InspectionID = "MAIEQ22040457",
+                    InspectionType = "EndlineInspection",
                     BaseUri = "https://adidasstage4.pivot88.com",
                     RequestUri = "rest/operation/v1/inspection_reports/unique_key:",
                     Headers = new Dictionary<string, string>() { { "api-key", "64158338-5de2-451e-aa72-3fa470fdf4cb" } }
                 };
                 List<SentPivot88Result> sentPivot88Results = finalInspectionService.SentPivot88(pivotTransferRequest);
+                Assert.IsTrue(true);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.ToString());
+            }
+        }
+
+        [TestMethod()]
+        public void GetEndInlinePivot88JsonTest()
+        {
+            try
+            {
+                FinalInspectionService finalInspectionService = new FinalInspectionService();
+                string result = JsonConvert.SerializeObject(finalInspectionService.GetEndInlinePivot88Json("MA3IQ22040004", "InlineInspection"));
+                //string result = JsonConvert.SerializeObject(finalInspectionService.GetEndInlinePivot88Json("FACEQ22040072", "EndlineInspection"));
+                Assert.IsTrue(true);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.ToString());
+            }
+        }
+
+        [TestMethod()]
+        public void ExecImp_EOLInlineInspectionReportTest()
+        {
+            try
+            {
+                FinalInspectionService finalInspectionService = new FinalInspectionService();
+                finalInspectionService.ExecImp_EOLInlineInspectionReport();
                 Assert.IsTrue(true);
             }
             catch (Exception ex)

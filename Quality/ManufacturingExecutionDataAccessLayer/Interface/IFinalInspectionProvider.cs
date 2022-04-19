@@ -22,6 +22,10 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
 
         Dictionary<string, byte[]> GetFinalInspectionDefectImage(string FinalInspectionID);
 
+        Dictionary<string, byte[]> GetInlineInspectionDefectImage(string InspectionID);
+
+        Dictionary<string, byte[]> GetEndLineInspectionDefectImage(string InspectionID);
+
         void UpdateFinalInspectionDetail(AddDefect addDefect, string UserID);
 
         IList<BACriteriaItem> GetBeautifulProductAuditForInspection(string finalInspectionID);
@@ -68,12 +72,20 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
 
         DataSet GetPivot88(string ID);
 
+        DataSet GetEndInlinePivot88(string ID, string inspectionType);
+
         List<string> GetPivot88FinalInspectionID(string finalInspectionID);
         
         List<string> Get_FinalInspectionID_BrandID(string finalInspectionID);
 
         string Get_FinalInspectionID_Top1_OrderID(string finalInspectionID);
 
-        void UpdateIsExportToP88(string ID);
+        List<string> GetPivot88EndLineInspectionID(string inspectionID);
+
+        List<string> GetPivot88InlineInspectionID(string inspectionID);
+
+        void UpdateIsExportToP88(string ID, string inspectionType);
+
+        void ExecImp_EOLInlineInspectionReport();
     }
 }
