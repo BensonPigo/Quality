@@ -44,8 +44,8 @@ namespace BusinessLogicLayer.Service.Tests
                 FinalInspectionService finalInspectionService = new FinalInspectionService();
                 PivotTransferRequest pivotTransferRequest = new PivotTransferRequest()
                 {
-                    InspectionID = "MAIEQ22040457",
-                    InspectionType = "EndlineInspection",
+                    InspectionID = "MA3IQ22040004",
+                    InspectionType = "InlineInspection",
                     BaseUri = "https://adidasstage4.pivot88.com",
                     RequestUri = "rest/operation/v1/inspection_reports/unique_key:",
                     Headers = new Dictionary<string, string>() { { "api-key", "64158338-5de2-451e-aa72-3fa470fdf4cb" } }
@@ -65,8 +65,8 @@ namespace BusinessLogicLayer.Service.Tests
             try
             {
                 FinalInspectionService finalInspectionService = new FinalInspectionService();
-                string result = JsonConvert.SerializeObject(finalInspectionService.GetEndInlinePivot88Json("MA3IQ22040004", "InlineInspection"));
-                //string result = JsonConvert.SerializeObject(finalInspectionService.GetEndInlinePivot88Json("FACEQ22040072", "EndlineInspection"));
+                //string result = JsonConvert.SerializeObject(finalInspectionService.GetEndInlinePivot88Json("MA3IQ22040004", "InlineInspection"));
+                string result = JsonConvert.SerializeObject(finalInspectionService.GetEndInlinePivot88Json("MA3EQ22040009", "EndlineInspection"));
                 Assert.IsTrue(true);
             }
             catch (Exception ex)

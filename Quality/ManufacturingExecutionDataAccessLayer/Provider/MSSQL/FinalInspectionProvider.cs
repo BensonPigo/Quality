@@ -1861,13 +1861,13 @@ where   IsExportToP88 = 0 and
                 case "InlineInspection":
                     sqlUpdateIsExportToP88 = $@"
     update InlineInspectionReport set IsExportToP88 = 1, TransferTimeToPivot88 = getdate() where ID = @ID
-    update InlineInspection_DetailImage set IsExportToP88 = 1 where InlineInspectionReportID = @ID
+    update PMSFile.dbo.InlineInspection_DetailImage set IsExportToP88 = 1 where InlineInspectionReportID = @ID
 ";
                     break;
-                case "EndLineInspection":
+                case "EndlineInspection":
                     sqlUpdateIsExportToP88 = $@"
     update InspectionReport set IsExportToP88 = 1, TransferTimeToPivot88 = getdate() where ID = @ID
-    update Inspection_DetailImage set IsExportToP88 = 1 where InspectionReportID = @ID
+    update PMSFile.dbo.Inspection_DetailImage set IsExportToP88 = 1 where InspectionReportID = @ID
 ";
                     break;
                 default:
@@ -1890,7 +1890,7 @@ where   IsExportToP88 = 0 and
         {
             string sqlExecImp_EOLInlineInspectionReport = "exec Imp_EOLInlineInspectionReport";
 
-            ExecuteNonQuery(CommandType.Text, sqlExecImp_EOLInlineInspectionReport, 600);
+            ExecuteNonQuery(CommandType.Text, sqlExecImp_EOLInlineInspectionReport, 1200);
         }
     }
 }

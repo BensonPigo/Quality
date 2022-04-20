@@ -616,9 +616,23 @@ namespace BusinessLogicLayer.Service
             List<object> assignment_items = listSku_number.Select(
                 sku_number => new
                 {
+                    fields = new
+                    {
+                        string_1 = (int)drInspection["RejectQty"] - (int)drInspection["FixQty"],
+                        string_2 = drInspection["FixQty"],
+                        string_3 = drInspection["Shift"],
+                        string_4 = "",
+                        string_5 = drInspection["SewerID"].ToString().Length > 255 ? drInspection["SewerID"].ToString().Substring(0, 255) : drInspection["SewerID"],
+                        string_6 = drInspection["Station"].ToString().Length > 255 ? drInspection["Station"].ToString().Substring(0, 255) : drInspection["Station"],
+                        string_7 = drInspection["Line"].ToString().Length > 255 ? drInspection["Line"].ToString().Substring(0, 255) : drInspection["Line"],
+                        string_8 = drInspection["Operation"].ToString().Length > 255 ? drInspection["Operation"].ToString().Substring(0, 255) : drInspection["Operation"],
+                        string_9 = "",
+                        string_10 = drInspection["FactoryID"],
+
+                    },
                     sampled_inspected = (int)drInspection["PassQty"] + (int)drInspection["RejectQty"],
                     inspection_result_id = 1,
-                    inspection_status_id = 3,
+                    inspection_status_id = 1,
                     qty_inspected = (int)drInspection["PassQty"] + (int)drInspection["RejectQty"],
                     inspection_completed_date = drInspection["LastinspectionDate"],
                     total_inspection_minutes = drInspection["InspectionMinutes"],
@@ -633,7 +647,7 @@ namespace BusinessLogicLayer.Service
                     conclusion_remarks = "no comment",
                     assignment = new
                     {
-                        report_type = new { id = inspectionType == "InlineInspection" ? 55 : 56 } ,
+                        report_type = new { id = inspectionType == "InlineInspection" ? 42 : 43 } ,
                         inspector = new { username = drInspection["username"] },
                         date_inspection = drInspection["FirstInspectionDate"],
                         inspection_level = "100%inspection",
@@ -669,20 +683,6 @@ namespace BusinessLogicLayer.Service
                             item_name = "No Item",
                             item_description = string.Empty,
                         },
-                        fields = new
-                        {
-                            string_1 = (int)drInspection["RejectQty"] - (int)drInspection["FixQty"],
-                            string_2 = drInspection["FixQty"],
-                            string_3 = drInspection["Shift"],
-                            string_4 = "",
-                            string_5 = drInspection["SewerID"],
-                            string_6 = drInspection["Station"],
-                            string_7 = drInspection["Line"],
-                            string_8 = drInspection["Operation"],
-                            string_9 = "",
-                            string_10 = drInspection["FactoryID"],
-
-                        }
                     },
                 }
                 ).ToList<object>();
@@ -693,17 +693,12 @@ namespace BusinessLogicLayer.Service
 
             object result = new
             {
-                inspections = new List<object>() {
-                 new {
-                        unique_key = ID,
-                        status = "Submitted",
-                        date_started = drInspection["FirstInspectionDate"],
-                        defective_parts = drInspection["DefectQty"],
-                        sections,
-                        assignment_items,
-                        passFails,
-                    }
-                }
+                status = "Submitted",
+                date_started = drInspection["FirstInspectionDate"],
+                defective_parts = drInspection["DefectQty"],
+                sections,
+                assignment_items,
+                passFails,
             };
 
             return result;
@@ -791,7 +786,7 @@ namespace BusinessLogicLayer.Service
                             case "InlineInspection":
                                 dicImage = _FinalInspectionProvider.GetInlineInspectionDefectImage(inspectionID);
                                 break;
-                            case "EndLineInspection":
+                            case "EndlineInspection":
                                 dicImage = _FinalInspectionProvider.GetEndLineInspectionDefectImage(inspectionID);
                                 break;
                             default:
