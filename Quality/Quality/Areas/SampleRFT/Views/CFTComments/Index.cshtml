@@ -6,6 +6,10 @@
     string download = ViewData["tempFilePath"] == null ? "" : ViewData["tempFilePath"].ToString();
     string QueryType = Model.QueryType;
     bool isReadOnly = true;
+
+    List<string> stageList = Model.DataList.Select(o => o.SampleStage).Distinct().ToList();
+
+    List<string> categoryList = Model.DataList.Select(o => o.CommentsCategory).Distinct().ToList();
 }
 
 @model CFTComments_ViewModel
@@ -162,29 +166,32 @@
                     }
                 </div>
                 <br />
-                <div>
-
+                <div>                    
                     <table id="myTable" class="table table-striped display" style="text-align:center">
                         <thead>
                             <tr class="row-name">
-                                <th>SampleStage</th>
                                 <th>Comments Category</th>
-                                <th>Comments</th>
+                                @foreach (var stage in stageList)
+                                {
+                                    <th>@stage</th>
+                                }
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var item in Model.DataList)
+                            @foreach (var category in categoryList)
                             {
                                 <tr class="row-content">
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.SampleStage)
+                                        @Html.DisplayFor(modelItem => category)
                                     </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.CommentsCategory)
-                                    </td>
-                                    <td>
-                                        @Html.Raw(item.Comnments)
-                                    </td>
+                                    @foreach (var stage in stageList)
+                                    {
+                                        var data = Model.DataList.Where(o => o.SampleStage == stage && o.CommentsCategory == category);
+                                        string comment = data.Any() ? data.FirstOrDefault().Comnments.Replace("<br>"," ") : string.Empty;
+                                        <td>
+                                            @comment
+                                        </td>
+                                    }
                                 </tr>
                             }
                         </tbody>
