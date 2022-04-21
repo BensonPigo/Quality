@@ -1889,8 +1889,19 @@ where   IsExportToP88 = 0 and
         public void ExecImp_EOLInlineInspectionReport()
         {
             string sqlExecImp_EOLInlineInspectionReport = "exec Imp_EOLInlineInspectionReport";
-
-            ExecuteNonQuery(CommandType.Text, sqlExecImp_EOLInlineInspectionReport, 1200);
+            using (TransactionScope transaction = new TransactionScope())
+            {
+                try
+                {
+                    ExecuteNonQuery(CommandType.Text, sqlExecImp_EOLInlineInspectionReport, 1200);
+                    transaction.Complete();
+                }
+                catch (Exception ex)
+                {
+                    transaction.Dispose();
+                    throw ex;
+                }
+            }
         }
     }
 }
