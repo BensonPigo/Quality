@@ -253,7 +253,15 @@
                                 <label>Article</label>
                             </td>
                             <td style="border: 1px solid gray;vertical-align: middle;" colspan="3">
-                                <span class="detail_Head" id="width">@Model.Article</span>
+                                @if (Model.FTYDisclaimer.Where(o => o.ExpectionFormDate != null).Any() || Model.RRLR.Where(o=>!string.IsNullOrEmpty(o.ColorID)).Any())
+                                {
+                                    <span class="detail_Head" id="width" style="font-size:2rem;color:yellow;">@Model.Article</span>
+                                    <img src="~/Image/Icon/Light.png" style="width:3rem;" />
+                                }
+                                else
+                                {
+                                    <span class="detail_Head" id="width">@Model.Article</span>
+                                }
                             </td>
                         </tr>
                     </table>

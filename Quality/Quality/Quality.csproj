@@ -261,6 +261,7 @@
     <Content Include="Image\Icon\Fabric.png" />
     <Content Include="Image\Icon\Factory.png" />
     <Content Include="Image\Icon\Import.png" />
+    <Content Include="Image\Icon\Light.png" />
     <Content Include="Image\Icon\List.png" />
     <Content Include="Image\Icon\List2.png" />
     <Content Include="Image\Icon\List3.png" />
