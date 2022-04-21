@@ -1889,7 +1889,7 @@ where   IsExportToP88 = 0 and
         public void ExecImp_EOLInlineInspectionReport()
         {
             string sqlExecImp_EOLInlineInspectionReport = "exec Imp_EOLInlineInspectionReport";
-            using (TransactionScope transaction = new TransactionScope())
+            using (TransactionScope transaction = new TransactionScope(TransactionScopeOption.Required, TimeSpan.FromSeconds(1200)))
             {
                 try
                 {
