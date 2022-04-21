@@ -78,7 +78,10 @@ and o.SeasonID = @SeasonID";
 
             StringBuilder SbSql = new StringBuilder();
             SbSql.Append($@"
-select r.OrderID,o.OrderTypeID, PMS_RFTCommentsID = d.Description, r.Comnments
+select r.OrderID
+	,o.OrderTypeID
+	, PMS_RFTCommentsID =IIF(d.ID='9','Remark', d.Description)
+	, r.Comnments
 into #tmpBase
 from MainServer.[Production].[dbo].Orders o with(nolock)
 inner join RFT_OrderComments r WITH(NOLOCK) on r.OrderID = o.id
@@ -100,6 +103,9 @@ outer apply(
 		for xml path('')
 	),1,1,'')
 )c
+order by  a.OrderTypeID, a.PMS_RFTCommentsID
+
+drop table #tmpBase
 ");
             return ExecuteList<CFTComments_Result>(CommandType.Text, SbSql.ToString(), objParameter);
         }

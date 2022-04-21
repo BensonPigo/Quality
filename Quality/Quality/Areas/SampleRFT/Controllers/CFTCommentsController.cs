@@ -115,6 +115,12 @@ namespace Quality.Areas.SampleRFT.Controllers
                 model.ErrorMessage = $@"msg.WithInfo('{model.ErrorMessage.Replace("'", string.Empty)}');";
             }
             model.QueryType = Req.QueryType;
+
+            if (model.DataList == null)
+            {
+                model.DataList = new List<CFTComments_Result>();
+            }
+
             TempData["Model"] = model;
 
             return RedirectToAction("Index");
@@ -181,6 +187,12 @@ namespace Quality.Areas.SampleRFT.Controllers
                 model.ErrorMessage = $@"msg.WithInfo('{model.ErrorMessage.Replace("'",string.Empty)}');";
             }
             model.QueryType = Req.QueryType;
+
+            if (model.DataList == null)
+            {
+                model.DataList = new List<CFTComments_Result>();
+            }
+
             TempData["Model"] = model;
 
             return RedirectToAction("Index");
