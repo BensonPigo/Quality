@@ -80,7 +80,7 @@ and o.SeasonID = @SeasonID";
             SbSql.Append($@"
 select r.OrderID
 	,o.OrderTypeID
-	, PMS_RFTCommentsID =IIF(d.ID='9','Remark', d.Description)
+	, PMS_RFTCommentsID = d.Description
 	, r.Comnments
 into #tmpBase
 from MainServer.[Production].[dbo].Orders o with(nolock)
