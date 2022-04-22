@@ -10,7 +10,7 @@ using DatabaseObject.ResultModel;
 using System.Web.Mvc;
 using System.Data;
 using DatabaseObject.RequestModel;
-
+using DatabaseObject.ViewModel;
 
 namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 {
@@ -21,7 +21,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
         public BACriteriaProvider(SQLDataTransaction tra) : base(tra) { }
         #endregion
 
-        public IList<BACriteria_Result> Get_BACriteria_Result(string OrderID, string StyleID, string BrandID, string SeasonID)
+        public IList<BACriteria_Result> Get_BACriteria_Result(BACriteria_ViewModel Req)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -51,27 +51,47 @@ where o.Junk = 0
 AND o.Category = 'S'
 --AND o.OnSiteSample != 1
 ");
-            if (!string.IsNullOrEmpty(OrderID))
+            if (!string.IsNullOrEmpty(Req.OrderID))
             {
                 SbSql.Append($@" AND o.ID = @OrderID" + Environment.NewLine);
-                paras.Add("@OrderID", DbType.String, OrderID);
-            }
-            if (!string.IsNullOrEmpty(SeasonID))
-            {
-                SbSql.Append($@" AND o.SeasonID = @SeasonID" + Environment.NewLine);
-                paras.Add("@SeasonID", DbType.String, SeasonID);
-            }
-            if (!string.IsNullOrEmpty(BrandID))
-            {
-                SbSql.Append($@" AND o.BrandID = @BrandID" + Environment.NewLine);
-                paras.Add("@BrandID", DbType.String, BrandID);
-            }
-            if (!string.IsNullOrEmpty(StyleID))
-            {
-                SbSql.Append($@" AND o.StyleID = @StyleID" + Environment.NewLine);
-                paras.Add("@StyleID", DbType.String, StyleID);
+                paras.Add("@OrderID", DbType.String, Req.OrderID);
             }
 
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                SbSql.Append($@" AND o.SeasonID = @SeasonID" + Environment.NewLine);
+                paras.Add("@SeasonID", DbType.String, Req.SeasonID);
+            }
+
+            if (!string.IsNullOrEmpty(Req.BrandID))
+            {
+                SbSql.Append($@" AND o.BrandID = @BrandID" + Environment.NewLine);
+                paras.Add("@BrandID", DbType.String, Req.BrandID);
+            }
+
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                SbSql.Append($@" AND o.StyleID = @StyleID" + Environment.NewLine);
+                paras.Add("@StyleID", DbType.String, Req.StyleID);
+            }
+
+            if (!string.IsNullOrEmpty(Req.InspectionDateStart) && !string.IsNullOrEmpty(Req.InspectionDateEnd))
+            {
+                SbSql.Append($@" AND EXISTS (Select 1 from RFT_Inspection i WITH(NOLOCK) where i.OrderID = o.ID and i.InspectionDate between @sDate and @eDate)" + Environment.NewLine);
+                paras.Add("@sDate", DbType.String, Req.InspectionDateStart);
+                paras.Add("@eDate", DbType.String, Req.InspectionDateEnd);
+            }
+            else if (!string.IsNullOrEmpty(Req.InspectionDateStart))
+            {
+                SbSql.Append($@" AND EXISTS (Select 1 from RFT_Inspection i WITH(NOLOCK) where i.OrderID = o.ID and i.InspectionDate >= @sDate)" + Environment.NewLine);
+                paras.Add("@sDate", DbType.String, Req.InspectionDateStart);
+            }
+            else if (!string.IsNullOrEmpty(Req.InspectionDateStart))
+            {
+                SbSql.Append($@" AND EXISTS (Select 1 from RFT_Inspection i WITH(NOLOCK) where i.OrderID = o.ID and i.InspectionDate <= @eDate)" + Environment.NewLine);
+                paras.Add("@eDate", DbType.String, Req.InspectionDateEnd);
+            }
+            
             return ExecuteList<BACriteria_Result>(CommandType.Text, SbSql.ToString(), paras);
         }
     }

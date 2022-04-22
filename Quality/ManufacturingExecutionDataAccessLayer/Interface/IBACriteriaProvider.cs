@@ -1,4 +1,5 @@
 ﻿using DatabaseObject.ResultModel;
+using DatabaseObject.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,6 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
 {
     public interface IBACriteriaProvider
     {
-        IList<BACriteria_Result> Get_BACriteria_Result(string OrderID, string StyleID, string BrandID, string SeasonID);
+        IList<BACriteria_Result> Get_BACriteria_Result(BACriteria_ViewModel Req);
     }
 }
