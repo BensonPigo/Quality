@@ -290,7 +290,7 @@ namespace BusinessLogicLayer.Service
                     subsection = "validation_and_checklist",
                     checkListSubsection = "general",
                     status = drFinalInspection.Field<bool>("FabricApprovalDoc") ? "pass" : "na",
-                    comment = "N/A",
+                    comment = "",
                 },
                 new {
                     title = "sealing_sample",
@@ -299,7 +299,7 @@ namespace BusinessLogicLayer.Service
                     subsection = "validation_and_checklist",
                     checkListSubsection = "general",
                     status = drFinalInspection.Field<bool>("SealingSampleDoc") ? "pass" : "na",
-                    comment = "N/A",
+                    comment = "",
                 },
                 new {
                     title = "metal_detection",
@@ -308,7 +308,7 @@ namespace BusinessLogicLayer.Service
                     subsection = "validation_and_checklist",
                     checkListSubsection = "general",
                     status = drFinalInspection.Field<bool>("MetalDetectionDoc") ? "pass" : "na",
-                    comment = "N/A",
+                    comment = "",
                 },
                 new {
                     title = "finished_good_testing",
@@ -317,7 +317,7 @@ namespace BusinessLogicLayer.Service
                     subsection = "validation_and_checklist",
                     checkListSubsection = "general",
                     status = drFinalInspection.Field<int>("BAQty") > 0 ? "pass" : "fail",
-                    comment = "N/A",
+                    comment = "",
                 },
                 new {
                     title = "moisture_control_garment",
@@ -326,7 +326,7 @@ namespace BusinessLogicLayer.Service
                     subsection = "validation_and_checklist",
                     checkListSubsection = "general",
                     status = drFinalInspection.Field<string>("MoistureResult"),
-                    comment = "N/A",
+                    comment = "",
                 },
                 new {
                     title = "color_shade",
@@ -335,7 +335,7 @@ namespace BusinessLogicLayer.Service
                     subsection = "validation_and_checklist",
                     checkListSubsection = "fabric_artwork_checklist",
                     status = drFinalInspection.Field<bool>("CheckCloseShade") ? "pass" : "na",
-                    comment = "N/A",
+                    comment = "",
                 },
                 new {
                     title = "handfeel",
@@ -344,7 +344,7 @@ namespace BusinessLogicLayer.Service
                     subsection = "validation_and_checklist",
                     checkListSubsection = "fabric_artwork_checklist",
                     status = drFinalInspection.Field<bool>("CheckHandfeel") ? "pass" : "na",
-                    comment = "N/A",
+                    comment = "",
                 },
                 new {
                     title = "appearance",
@@ -353,7 +353,7 @@ namespace BusinessLogicLayer.Service
                     subsection = "validation_and_checklist",
                     checkListSubsection = "fabric_artwork_checklist",
                     status = drFinalInspection.Field<bool>("CheckAppearance") ? "pass" : "na",
-                    comment = "N/A",
+                    comment = "",
                 },
                 new {
                     title = "print_emb_decorations",
@@ -362,7 +362,7 @@ namespace BusinessLogicLayer.Service
                     subsection = "validation_and_checklist",
                     checkListSubsection = "fabric_artwork_checklist",
                     status = drFinalInspection.Field<bool>("CheckPrintEmbDecorations") ? "pass" : "na",
-                    comment = "N/A",
+                    comment = "",
                 },
                 new {
                     title = "fiber_content",
@@ -371,7 +371,7 @@ namespace BusinessLogicLayer.Service
                     subsection = "validation_and_checklist",
                     checkListSubsection = "label",
                     status = drFinalInspection.Field<bool>("CheckFiberContent") ? "pass" : "na",
-                    comment = "N/A",
+                    comment = "",
                 },
                 new {
                     title = "care_instructions",
@@ -380,7 +380,7 @@ namespace BusinessLogicLayer.Service
                     subsection = "validation_and_checklist",
                     checkListSubsection = "label",
                     status = drFinalInspection.Field<bool>("CheckCareInstructions") ? "pass" : "na",
-                    comment = "N/A",
+                    comment = "",
                 },
                 new {
                     title = "decorative_label",
@@ -389,7 +389,7 @@ namespace BusinessLogicLayer.Service
                     subsection = "validation_and_checklist",
                     checkListSubsection = "label",
                     status = drFinalInspection.Field<bool>("CheckDecorativeLabel") ? "pass" : "na",
-                    comment = "N/A",
+                    comment = "",
                 },
                 new {
                     title = "adicom_label",
@@ -398,7 +398,7 @@ namespace BusinessLogicLayer.Service
                     subsection = "validation_and_checklist",
                     checkListSubsection = "label",
                     status = drFinalInspection.Field<bool>("CheckAdicomLabel") ? "pass" : "na",
-                    comment = "N/A",
+                    comment = "",
                 },
                 new {
                     title = "country_of_origin",
@@ -407,7 +407,7 @@ namespace BusinessLogicLayer.Service
                     subsection = "validation_and_checklist",
                     checkListSubsection = "label",
                     status = drFinalInspection.Field<bool>("CheckCountryofOrigion") ? "pass" : "na",
-                    comment = "N/A",
+                    comment = "",
                 },
                 new {
                     title = "size_key",
@@ -416,7 +416,7 @@ namespace BusinessLogicLayer.Service
                     subsection = "validation_and_checklist",
                     checkListSubsection = "label",
                     status = drFinalInspection.Field<bool>("CheckSizeKey") ? "pass" : "na",
-                    comment = "N/A",
+                    comment = "",
                 },
                 new {
                     title = "8_flag_label",
@@ -425,7 +425,7 @@ namespace BusinessLogicLayer.Service
                     subsection = "validation_and_checklist",
                     checkListSubsection = "label",
                     status = drFinalInspection.Field<bool>("Check8FlagLabel") ? "pass" : "na",
-                    comment = "N/A",
+                    comment = "",
                 },
                 new {
                     title = "additional_label",
@@ -434,7 +434,7 @@ namespace BusinessLogicLayer.Service
                     subsection = "validation_and_checklist",
                     checkListSubsection = "label",
                     status = drFinalInspection.Field<bool>("CheckAdditionalLabel") ? "pass" : "na",
-                    comment = "N/A",
+                    comment = "",
                 },
                 new {
                     title = "shipping_mark",
@@ -443,7 +443,7 @@ namespace BusinessLogicLayer.Service
                     subsection = "validation_and_checklist",
                     checkListSubsection = "packaging",
                     status = drFinalInspection.Field<bool>("CheckShippingMark") ? "pass" : "na",
-                    comment = "N/A",
+                    comment = "",
                 },
                 new {
                     title = "polybag",
@@ -452,7 +452,7 @@ namespace BusinessLogicLayer.Service
                     subsection = "validation_and_checklist",
                     checkListSubsection = "packaging",
                     status = drFinalInspection.Field<bool>("CheckPolytagMarketing") ? "pass" : "na",
-                    comment = "N/A",
+                    comment = "",
                 },
                 new {
                     title = "color_size_qty",
@@ -461,7 +461,7 @@ namespace BusinessLogicLayer.Service
                     subsection = "validation_and_checklist",
                     checkListSubsection = "packaging",
                     status = drFinalInspection.Field<bool>("CheckColorSizeQty") ? "pass" : "na",
-                    comment = "N/A",
+                    comment = "",
                 },
                 new {
                     title = "hangtag",
@@ -470,7 +470,7 @@ namespace BusinessLogicLayer.Service
                     subsection = "validation_and_checklist",
                     checkListSubsection = "packaging",
                     status = drFinalInspection.Field<bool>("CheckHangtag") ? "pass" : "na",
-                    comment = "N/A",
+                    comment = "",
                 },
                 new {
                     title = "minimum_of_2_pcs_per_size_must_be_measured_in_line_with_adidas_inspection_sop",
@@ -479,7 +479,7 @@ namespace BusinessLogicLayer.Service
                     subsection = "validation_and_checklist",
                     checkListSubsection = "measurements",
                     status = drFinalInspection.Field<bool>("MeasurementResult") ? "pass" : "na",
-                    comment = "N/A",
+                    comment = "",
                 },
             };
             #endregion
