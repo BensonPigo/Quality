@@ -86,7 +86,7 @@ AND o.Category = 'S'
                 SbSql.Append($@" AND EXISTS (Select 1 from RFT_Inspection i WITH(NOLOCK) where i.OrderID = o.ID and i.InspectionDate >= @sDate)" + Environment.NewLine);
                 paras.Add("@sDate", DbType.String, Req.InspectionDateStart);
             }
-            else if (!string.IsNullOrEmpty(Req.InspectionDateStart))
+            else if (!string.IsNullOrEmpty(Req.InspectionDateEnd))
             {
                 SbSql.Append($@" AND EXISTS (Select 1 from RFT_Inspection i WITH(NOLOCK) where i.OrderID = o.ID and i.InspectionDate <= @eDate)" + Environment.NewLine);
                 paras.Add("@eDate", DbType.String, Req.InspectionDateEnd);

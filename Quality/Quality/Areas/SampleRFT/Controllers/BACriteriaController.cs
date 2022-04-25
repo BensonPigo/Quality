@@ -48,11 +48,14 @@ namespace Quality.Areas.SampleRFT.Controllers
             this.CheckSession();
 
 
-            if (Req == null || (string.IsNullOrEmpty(Req.OrderID) && string.IsNullOrEmpty(Req.StyleID)))
+            if (Req == null || 
+                (string.IsNullOrEmpty(Req.OrderID) && string.IsNullOrEmpty(Req.StyleID) &&
+                 string.IsNullOrEmpty(Req.InspectionDateStart) && string.IsNullOrEmpty(Req.InspectionDateEnd))
+               )
             {
                 BACriteria_ViewModel e = new BACriteria_ViewModel()
                 {
-                    ErrorMessage = "Style# and SP# cannot all be empty",
+                    ErrorMessage = "SP#、Style or Inspection Date Cannot be Empty",
                     DataList = new List<DatabaseObject.ResultModel.BACriteria_Result>()
                 };
                 return View("Index", e);

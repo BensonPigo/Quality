@@ -192,8 +192,8 @@
     });
 
     function checkForm(obj) {
-        if ($("#txtOrderID").val() == "" & $("#txtStyle").val() == "") {
-            msg.WithError("Style# and SP# cannot all be empty");
+        if ($("#txtOrderID").val() == "" & $("#txtStyle").val() == "" & $("#txtInspectionDateStart").val() == "" & $("#txtInspectionDateEnd").val() == "") {
+            msg.WithError("SP#、Style or Inspection Date Cannot be Empty");
             return false;
         }
     }
