@@ -26,7 +26,7 @@ namespace BusinessLogicLayer.SampleRFT.Service
             {
                 _BACriteriaProvider = new BACriteriaProvider(Common.ManufacturingExecutionDataAccessLayer);
 
-                List<BACriteria_Result> list = _BACriteriaProvider.Get_BACriteria_Result(Req.OrderID, Req.StyleID, Req.BrandID, Req.SeasonID).ToList();
+                List<BACriteria_Result> list = _BACriteriaProvider.Get_BACriteria_Result(Req).ToList();
 
                 int SumBAProduct = list.Sum(o => o.BAProduct);
                 int SumInspectedQty = list.Sum(o => o.InspectedQty);
