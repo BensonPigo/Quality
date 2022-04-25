@@ -14,7 +14,8 @@ namespace DatabaseObject.ViewModel
         public string StyleID { get; set; }
         public string BrandID { get; set; }
         public string SeasonID { get; set; }
-
+        public string InspectionDateStart { get; set; }
+        public string InspectionDateEnd { get; set; }
         public decimal SummaryBACriteria { get; set; }
     }
 }
