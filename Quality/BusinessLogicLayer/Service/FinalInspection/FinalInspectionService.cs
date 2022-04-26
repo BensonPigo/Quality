@@ -631,7 +631,7 @@ namespace BusinessLogicLayer.Service
 
                     },
                     sampled_inspected = (int)drInspection["PassQty"] + (int)drInspection["RejectQty"],
-                    inspection_result_id = 1,
+                    inspection_result_id = 5,
                     inspection_status_id = 1,
                     qty_inspected = (int)drInspection["PassQty"] + (int)drInspection["RejectQty"],
                     inspection_completed_date = drInspection["LastinspectionDate"],
