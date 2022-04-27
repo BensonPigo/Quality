@@ -321,7 +321,7 @@ namespace BusinessLogicLayer.Service
                 },
                 new {
                     title = "moisture_control_carton",
-                    value = drFinalInspection.Field<string>("MoistureResult") == "na" ? "Confirm" : "N/A",
+                    value = drFinalInspection.Field<string>("MoistureResult") == "na" ? "N/A" : "Confirm",
                     type = "check-list",
                     subsection = "validation_and_checklist",
                     checkListSubsection = "general",
@@ -330,7 +330,7 @@ namespace BusinessLogicLayer.Service
                 },
                 new {
                     title = "moisture_control_garment",
-                    value = drFinalInspection.Field<string>("MoistureResult") == "na" ? "Confirm" : "N/A",
+                    value = drFinalInspection.Field<string>("MoistureResult") == "na" ? "N/A" : "Confirm",
                     type = "check-list",
                     subsection = "validation_and_checklist",
                     checkListSubsection = "general",
