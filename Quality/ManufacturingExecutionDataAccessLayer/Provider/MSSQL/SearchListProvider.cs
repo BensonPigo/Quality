@@ -58,7 +58,7 @@ and p.ID='{Pass1ID}'
 
             #region Fabric Crocking & Shrinkage Test (504, 405)
             string type1 = $@"
-select DISTINCT Type = 'Fabric Crocking & Shrinkage Test (504, 405)'
+select Type = 'Fabric Crocking & Shrinkage Test (504, 405)'
         , ReportNo=''
 		,OrderID = o.POID
 		,o.StyleID
@@ -66,23 +66,42 @@ select DISTINCT Type = 'Fabric Crocking & Shrinkage Test (504, 405)'
 		,o.SeasonID
 		,Article = ''
 		,Artwork = ''
-		,Result=f.Result
-		,TestDate = (
-			SELECT MAX (TestDate) FROM (
-				SELECT TestDate = f.CrockingDate
-				UNION
-				SELECT TestDate = f.HeatDate
-				UNION 
-				SELECt TestDate = f.WashDate
-			)tmp
-		)
-
+		, [Result] = f_Result.Result
+		, [TestDate] = f_TestDate.TestDate
 	    ,ReceivedDate =NULL
 	    ,ReportDate =NULL
 from PO p WITH(NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.ID = p.ID
-INNER JOIN FIR_Laboratory f WITH(NOLOCK) ON f.POID = p.ID
-WHERE 1=1 
+outer apply (
+	select TestDate = MAX(f.TestDate)
+	from (
+		select TestDate = (
+				SELECT MAX(TestDate) FROM (
+					SELECT TestDate = f.CrockingDate
+					UNION
+					SELECT TestDate = f.HeatDate
+					UNION 
+					SELECt TestDate = f.WashDate
+				)tmp
+			)
+		from FIR_Laboratory f
+		where f.POID = p.ID
+	)f
+)f_TestDate
+outer apply (
+	select Result = case Max(case f.Result 
+				 when 'Fail' then 2
+				 when 'Pass' then 1
+				 else 0
+			   end)
+			when 2 then 'Fail'
+			when 1 then 'Pass'
+			else ''
+			end
+	from FIR_Laboratory f
+	where f.POID = p.ID
+)f_Result
+WHERE exists (select 1 from FIR_Laboratory f WITH(NOLOCK) WHERE f.POID = p.ID)
 ";
             if (!string.IsNullOrEmpty(Req.BrandID))
             {
@@ -372,7 +391,7 @@ WHERE 1=1
 
             #region Accessory Oven & Wash Test (515, 701)
             string type8 = $@"
-select DISTINCT Type = 'Accessory Oven & Wash Test (515, 701)'
+select Type = 'Accessory Oven & Wash Test (515, 701)'
         ,ReportNo=''
 		,OrderID = o.POID
 		,o.StyleID
@@ -380,21 +399,40 @@ select DISTINCT Type = 'Accessory Oven & Wash Test (515, 701)'
 		,o.SeasonID
 		,Article = ''
 		,[Artwork] = ''
-		,Result=f.Result
-		,TestDate = (
-			SELECT MAX (TestDate) FROM (
-				SELECT TestDate = f.WashDate
-				UNION
-				SELECT TestDate = f.OvenDate
-			)tmp
-		)
-
-	,ReceivedDate =NULL
-	,ReportDate =NULL
+		, [Result] = f_Result.Result
+		, [TestDate] = f_TestDate.TestDate
+		,ReceivedDate =NULL
+		,ReportDate =NULL
 from PO p
 inner join Orders o WITH(NOLOCK) ON o.POID = p.ID
-INNER JOIN AIR_Laboratory f WITH(NOLOCK) ON f.POID = p.ID
-WHERE 1=1 
+outer apply (
+	select TestDate = MAX(f.TestDate)
+	from (
+		select TestDate = (
+				SELECT MAX(TestDate) FROM (
+					SELECT TestDate = f.OvenDate
+					UNION 
+					SELECt TestDate = f.WashDate
+				)tmp
+			)
+		from AIR_Laboratory f
+		where f.POID = p.ID
+	)f
+)f_TestDate
+outer apply (
+	select Result = case Max(case f.Result 
+				 when 'Fail' then 2
+				 when 'Pass' then 1
+				 else 0
+			   end)
+			when 2 then 'Fail'
+			when 1 then 'Pass'
+			else ''
+			end
+	from AIR_Laboratory f
+	where f.POID = p.ID
+)f_Result
+WHERE exists (select 1 from AIR_Laboratory f WITH(NOLOCK) WHERE f.POID = p.ID)
 ";
             if (!string.IsNullOrEmpty(Req.BrandID))
             {
