@@ -320,8 +320,17 @@ namespace BusinessLogicLayer.Service
                     comment = "",
                 },
                 new {
+                    title = "moisture_control_carton",
+                    value = drFinalInspection.Field<string>("MoistureResult") == "na" ? "N/A" : "Confirm",
+                    type = "check-list",
+                    subsection = "validation_and_checklist",
+                    checkListSubsection = "general",
+                    status = drFinalInspection.Field<string>("MoistureResult"),
+                    comment = "",
+                },
+                new {
                     title = "moisture_control_garment",
-                    value = drFinalInspection.Field<string>("MoistureResult") == "na" ? "Confirm" : "N/A",
+                    value = drFinalInspection.Field<string>("MoistureResult") == "na" ? "N/A" : "Confirm",
                     type = "check-list",
                     subsection = "validation_and_checklist",
                     checkListSubsection = "general",
@@ -631,7 +640,7 @@ namespace BusinessLogicLayer.Service
 
                     },
                     sampled_inspected = (int)drInspection["PassQty"] + (int)drInspection["RejectQty"],
-                    inspection_result_id = 1,
+                    inspection_result_id = 5,
                     inspection_status_id = 1,
                     qty_inspected = (int)drInspection["PassQty"] + (int)drInspection["RejectQty"],
                     inspection_completed_date = drInspection["LastinspectionDate"],
