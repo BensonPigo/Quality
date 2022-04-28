@@ -1513,12 +1513,47 @@ where r.ID = @ID
 --取得Sku資料
 if('{inspectionType}' = 'InlineInspection')
 begin
+    select  oq.Article,
+            oq.SizeCode,
+            [Qty] = sum(oq.Qty)
+    into #tmpArticleSize
+    from    Production.dbo.Order_Qty oq with (nolock)
+    where   exists( select 1 
+                    from InlineInspectionReport_Breakdown irb with (nolock) 
+                    where   irb.InlineInspectionReportID = @ID and
+                            irb.OrderID = oq.ID and
+                            irb.Article = oq.Article)
+    group by oq.Article, oq.SizeCode    
+    
     select  Article,
-            [SizeCode] = '',
-            [ShipQty] = sum(isnull(PassQty, 0) + isnull(RejectQty, 0))
+            SizeCode,
+            [SizeRatio] = Qty * 1.0 / sum(Qty) over (partition by Article),
+            [Seq] = ROW_NUMBER() OVER (PARTITION BY Article ORDER BY Qty desc)
+    into #tmpSizeRatio
+    from    #tmpArticleSize
+
+    select  Article,
+            [Qty] = sum(isnull(PassQty, 0) + isnull(RejectQty, 0))
+    into #inlineArticle
     from    InlineInspectionReport_Breakdown with (nolock)
     where InlineInspectionReportID = @ID
     group by Article
+
+    select	Article,
+			SizeCode,
+			[ShipQty] = case when isLast = 0 then TotalQty - LAG(GrandQty, 1, 0) OVER (PARTITION BY Article ORDER BY Seq)
+						else ShipQty end
+	from (	select  ia.Article,
+			        sr.SizeCode,
+			        [ShipQty] = FLOOR(ia.Qty * sr.SizeRatio),
+					[GrandQty] = sum(FLOOR(ia.Qty * sr.SizeRatio))  OVER (PARTITION BY sr.Article ORDER BY sr.Seq),
+					sr.Seq,
+					[isLast] = LEAD(sr.SizeRatio, 1, 0) OVER (PARTITION BY sr.Article ORDER BY sr.Seq),
+					[TotalQty] = ia.Qty
+			from    #inlineArticle ia
+			inner join  #tmpSizeRatio sr on sr.Article = ia.Article) a
+    
+    drop table #tmpArticleSize, #tmpSizeRatio, #inlineArticle
 end
 else
 begin
@@ -1631,7 +1666,7 @@ Select	f.AuditDate,
         f.CheckColorSizeQty,
         f.CheckHangtag,
         [MeasurementResult] = cast(iif(exists(select 1 from FinalInspection_Measurement fm with (nolock) where f.ID = fm.ID), 1, 0) as bit),
-        [MoistureResult] = case when exists (select 1 from FinalInspection_Moisture fmo with (nolock) where f.ID = fmo.ID and fmo.Result = 'R') then 'fail'
+        [MoistureResult] = case when exists (select 1 from FinalInspection_Moisture fmo with (nolock) where f.ID = fmo.ID and fmo.Result = 'F') then 'fail'
                                 when not exists (select 1 from FinalInspection_Moisture fmo with (nolock) where f.ID = fmo.ID) then 'na'
                                 else 'pass' end
 from FinalInspection f with (nolock)
