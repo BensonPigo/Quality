@@ -1747,13 +1747,16 @@ drop table #tmpStyleInfo
         {
             SQLParameterCollection parameter = new SQLParameterCollection();
             string sqlGetData = @"
+declare @FromDateTransferToP88 date
+select @FromDateTransferToP88 = FromDateTransferToP88 from system
+
 select  ID
 from Finalinspection with (nolock)
 where   IsExportToP88 = 0 and
         InspectionResult in ('Pass', 'Fail') and
-        submitdate is not null and
+        submitdate >= @FromDateTransferToP88 and
         InspectionStage = 'Final' and
-        exists (select 1 from Production.dbo.Orders o with (nolock) where o.CustPONo = Finalinspection.CustPONO and o.BrandID in ('Adidas','Reebok'))
+        exists (select 1 from Production.dbo.Orders o with (nolock) where o.CustPONo = Finalinspection.CustPONO and o.BrandID in ('Adidas'))
 
 ";
             if (!string.IsNullOrEmpty(finalInspectionID))
@@ -1804,7 +1807,7 @@ select  ID
 from InspectionReport with (nolock)
 where   IsExportToP88 = 0 and
         (AddDate >= @FromDateTransferToP88 or EditDate >= @FromDateTransferToP88) and
-        exists (select 1 from Production.dbo.Orders o with (nolock) where o.CustPONo = InspectionReport.CustPONO and o.BrandID in ('Adidas','Reebok'))
+        exists (select 1 from Production.dbo.Orders o with (nolock) where o.CustPONo = InspectionReport.CustPONO and o.BrandID in ('Adidas'))
 
 ";
             if (!string.IsNullOrEmpty(inspectionID))
@@ -1859,7 +1862,7 @@ select  ID
 from InlineInspectionReport with (nolock)
 where   IsExportToP88 = 0 and
         (AddDate >= @FromDateTransferToP88 or EditDate >= @FromDateTransferToP88) and
-        exists (select 1 from Production.dbo.Orders o with (nolock) where o.CustPONo = InlineInspectionReport.CustPONO and o.BrandID in ('Adidas','Reebok'))
+        exists (select 1 from Production.dbo.Orders o with (nolock) where o.CustPONo = InlineInspectionReport.CustPONO and o.BrandID in ('Adidas'))
 
 
 ";
