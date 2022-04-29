@@ -121,6 +121,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
             try
             {
                 _CFTCommentsProvider = new CFTCommentsProvider(Common.ManufacturingExecutionDataAccessLayer);
+                string[] aryAlpha = new string[] { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "AA", "AB", "AC", "AD", "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL", "AM" };
 
                 // 取得Datatable
                 dt = _CFTCommentsProvider.Get_CFT_OrderComments_DataTable(Req);
@@ -141,13 +142,33 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 Excel.Worksheet worksheet = excelApp.Sheets[1];
 
                 int RowIdx = 0;
-                foreach (DataRow dr in dt.Rows)
+                List<string> sampleStages = dt.AsEnumerable().Select(x => x.Field<string>("SampleStage")).OrderBy(x => x).Distinct().ToList();
+                foreach (string sampleStage in sampleStages)
                 {
-                    worksheet.Cells[RowIdx + 2, 1] = dt.Rows[RowIdx]["SampleStage"].ToString();
-                    worksheet.Cells[RowIdx + 2, 2] = dt.Rows[RowIdx]["CommentsCategory"].ToString();
-                    worksheet.Cells[RowIdx + 2, 3] = dt.Rows[RowIdx]["Comnments"].ToString();
+                    worksheet.Cells[1, 2 + RowIdx] = sampleStage;
                     RowIdx++;
                 }
+
+                worksheet.Range["B1", $"{aryAlpha[sampleStages.Count]}1"].Interior.Color = System.Drawing.Color.FromArgb(208, 197, 227); // 底色
+
+                RowIdx = 0;
+                List<string> commentsCategorys = dt.AsEnumerable().Select(x => x.Field<string>("CommentsCategory")).Distinct().ToList();
+                foreach (string commentsCategory in commentsCategorys)
+                {
+                    worksheet.Cells[RowIdx + 2, 1] = commentsCategory;
+                    int ColumnIdx = 0;
+                    foreach (string comnments in dt.AsEnumerable().Where(x => x.Field<string>("CommentsCategory") == commentsCategory).OrderBy(x => x.Field<string>("SampleStage")).Select(x => x.Field<string>("Comnments")))
+                    {
+                        worksheet.Cells[RowIdx + 2, ColumnIdx + 2] = comnments;
+                        ColumnIdx++;
+                    }
+                    RowIdx++;
+                }
+
+                worksheet.Range["A2", $"A{commentsCategorys.Count + 1}"].Interior.Color = System.Drawing.Color.FromArgb(253, 233, 217); // 底色
+
+                worksheet.Cells.EntireColumn.AutoFit();
+                worksheet.Cells.EntireRow.AutoFit();
 
                 string fileName = $"CFT Comments{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
                 string filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
