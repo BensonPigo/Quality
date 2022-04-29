@@ -90,7 +90,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         {
             QueryReport model = Service.GetFinalInspectionReport(FinalInspectionID);
 
-            TempData["Model"] = model;
+            TempData["ModelQuery"] = model;
             return View(model);
         }
 
@@ -99,14 +99,14 @@ namespace Quality.Areas.FinalInspection.Controllers
             bool test = false;
             if (!test)
             {
-                if (TempData["Model"] == null)
+                if (TempData["ModelQuery"] == null)
                 {
                     return RedirectToAction("Index");
                 }
             }
 
-            QueryReport model = (QueryReport)TempData["Model"];
-            TempData["Model"] = model;
+            QueryReport model = (QueryReport)TempData["ModelQuery"];
+            TempData["ModelQuery"] = model;
 
             // GetForFinalInspection 取得 SeasonID
             _IOrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
@@ -373,8 +373,8 @@ namespace Quality.Areas.FinalInspection.Controllers
         {
             bool test = IsTest.ToLower() == "true";
 
-            QueryReport model = (QueryReport)TempData["Model"];
-            TempData["Model"] = model;
+            QueryReport model = (QueryReport)TempData["ModelQuery"];
+            TempData["ModelQuery"] = model;
             string WebHost = Request.Url.Scheme + @"://" + Request.Url.Authority + "/";
          
             var result = Service.SendMail(model.FinalInspection.ID, WebHost, test);

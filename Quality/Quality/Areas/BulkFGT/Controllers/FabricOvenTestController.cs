@@ -81,9 +81,9 @@ namespace Quality.Areas.BulkFGT.Controllers
                 model.Main.Status = "New";
             }
 
-            if (TempData["Model"] != null)
+            if (TempData["ModelFabricOvenTest"] != null)
             {
-                FabricOvenTest_Detail_Result saveResult = (FabricOvenTest_Detail_Result)TempData["Model"];
+                FabricOvenTest_Detail_Result saveResult = (FabricOvenTest_Detail_Result)TempData["ModelFabricOvenTest"];
                 model.Main.InspDate = saveResult.Main.InspDate;
                 model.Main.Article = saveResult.Main.Article;
                 model.Main.Inspector = saveResult.Main.Inspector;
@@ -120,7 +120,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             req.Result = result.Result;
             req.ErrorMessage = result.ErrorMessage;
-            TempData["Model"] = req;
+            TempData["ModelFabricOvenTest"] = req;
             return RedirectToAction("Detail", new { POID = req.Main.POID, TestNo = req.Main.TestNo, EditMode = false });
         }
 

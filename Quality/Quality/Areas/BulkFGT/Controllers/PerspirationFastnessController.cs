@@ -84,9 +84,9 @@ namespace Quality.Areas.BulkFGT.Controllers
                 model.Main.Status = "New";
             }
 
-            if (TempData["Model"] != null)
+            if (TempData["ModelPerspirationFastness"] != null)
             {
-                PerspirationFastness_Detail_Result saveResult = (PerspirationFastness_Detail_Result)TempData["Model"];
+                PerspirationFastness_Detail_Result saveResult = (PerspirationFastness_Detail_Result)TempData["ModelPerspirationFastness"];
                 model.Main.InspDate = saveResult.Main.InspDate;
                 model.Main.Article = saveResult.Main.Article;
                 model.Main.Inspector = saveResult.Main.Inspector;
@@ -123,7 +123,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             req.Result = result.Result;
             req.ErrorMessage = result.ErrorMessage;
-            TempData["Model"] = req;
+            TempData["ModelPerspirationFastness"] = req;
             return RedirectToAction("Detail", new { POID = req.Main.POID, TestNo = req.Main.TestNo, EditMode = false });
         }
         public JsonResult MainDetailDelete(string ID, string No)

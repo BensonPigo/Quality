@@ -35,9 +35,9 @@ namespace Quality.Areas.BulkFGT.Controllers
             {
                 TypeDatasource = data,
             };
-            if (TempData["Model"] != null)
+            if (TempData["ModelSearchList"] != null)
             {
-                model = (SearchList_ViewModel)TempData["Model"];
+                model = (SearchList_ViewModel)TempData["ModelSearchList"];
             }
 
 
@@ -55,7 +55,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             if ((Req.BrandID == "" || Req.SeasonID == "") || Req.StyleID == "")
             {
                 Req.ErrorMessage = $@"msg.WithInfo(""[Style] or [Brand, Season] can't be cmpty. "");";
-                TempData["Model"] = Req;
+                TempData["ModelSearchList"] = Req;
                 return RedirectToAction("Index");
             }
 
@@ -81,7 +81,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 Req.ErrorMessage = $@"msg.WithInfo('{Req.ErrorMessage.Replace("'", string.Empty)}');";
             }
 
-            TempData["Model"] = Req;
+            TempData["ModelSearchList"] = Req;
 
             return RedirectToAction("Index");
         }

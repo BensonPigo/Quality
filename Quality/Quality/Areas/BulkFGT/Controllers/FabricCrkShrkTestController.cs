@@ -94,9 +94,9 @@ namespace Quality.Areas.BulkFGT.Controllers
                 };
             }
 
-            if (TempData["Model"] != null)
+            if (TempData["ModelCrockingTest"] != null)
             {
-                FabricCrkShrkTestCrocking_Result saveResult = (FabricCrkShrkTestCrocking_Result)TempData["Model"];
+                FabricCrkShrkTestCrocking_Result saveResult = (FabricCrkShrkTestCrocking_Result)TempData["ModelCrockingTest"];
                 fabricCrkShrkTestCrocking_Result.Crocking_Main.CrockingRemark = saveResult.Crocking_Main.CrockingRemark;
                 fabricCrkShrkTestCrocking_Result.Crocking_Detail = saveResult.Crocking_Detail;
                 fabricCrkShrkTestCrocking_Result.Result = saveResult.Result;
@@ -218,7 +218,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
             Result.Result = saveResult.Result;
             Result.ErrorMessage = saveResult.ErrorMessage;
-            TempData["Model"] = Result;
+            TempData["ModelCrockingTest"] = Result;
             return RedirectToAction("CrockingTest", new { ID = Result.ID });
         }
 
@@ -278,9 +278,9 @@ namespace Quality.Areas.BulkFGT.Controllers
                 };
             }
 
-            if (TempData["Model"] != null)
+            if (TempData["ModelHeatTest"] != null)
             {
-                FabricCrkShrkTestHeat_Result saveResult = (FabricCrkShrkTestHeat_Result)TempData["Model"];
+                FabricCrkShrkTestHeat_Result saveResult = (FabricCrkShrkTestHeat_Result)TempData["ModelHeatTest"];
                 fabricCrkShrkTestHeat_Result.Heat_Main.HeatRemark = saveResult.Heat_Main.HeatRemark;
                 fabricCrkShrkTestHeat_Result.Heat_Detail = saveResult.Heat_Detail;
                 fabricCrkShrkTestHeat_Result.Result = saveResult.Result;
@@ -393,7 +393,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
             Result.Result = saveResult.Result;
             Result.ErrorMessage = saveResult.ErrorMessage;
-            TempData["Model"] = Result;
+            TempData["ModelHeatTest"] = Result;
             return RedirectToAction("HeatTest", new { ID = Result.ID });
         }
 
@@ -442,9 +442,9 @@ namespace Quality.Areas.BulkFGT.Controllers
                 };
             }
 
-            if (TempData["Model"] != null)
+            if (TempData["ModelWashTest"] != null)
             {
-                FabricCrkShrkTestWash_Result saveResult = (FabricCrkShrkTestWash_Result)TempData["Model"];
+                FabricCrkShrkTestWash_Result saveResult = (FabricCrkShrkTestWash_Result)TempData["ModelWashTest"];
                 fabricCrkShrkTestWash_Result.Wash_Main.SkewnessOptionID = saveResult.Wash_Main.SkewnessOptionID;
                 fabricCrkShrkTestWash_Result.Wash_Main.WashRemark = saveResult.Wash_Main.WashRemark;
                 fabricCrkShrkTestWash_Result.Wash_Detail = saveResult.Wash_Detail;
@@ -578,7 +578,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             Result.Result = saveResult.Result;
             Result.ErrorMessage = saveResult.ErrorMessage;
-            TempData["Model"] = Result;
+            TempData["ModelWashTest"] = Result;
             return RedirectToAction("WashTest", new { ID = Result.ID });
         }
 
