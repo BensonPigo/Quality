@@ -35,9 +35,9 @@ namespace Quality.Areas.StyleManagement.Controllers
                 BulkFGT = new List<StyleResult_BulkFGT>() { new StyleResult_BulkFGT() }
             };
 
-            if (TempData["Model"] != null)
+            if (TempData["ModelStyleResult"] != null)
             {
-                model = (StyleResult_ViewModel)TempData["Model"];
+                model = (StyleResult_ViewModel)TempData["ModelStyleResult"];
             }
             if (TempData["tempFilePath"] != null)
             {
@@ -148,7 +148,7 @@ namespace Quality.Areas.StyleManagement.Controllers
             // 3. 前端下載方式：請參考Index.cshtml的 「window.location.href = '@download'」;            
 
             TempData["tempFilePath"] = tempFilePath;
-            TempData["Model"] = model;
+            TempData["ModelStyleResult"] = model;
 
             return RedirectToAction("Index");
         }

@@ -28,7 +28,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             _BACriteriaService = new BACriteriaService();
             this.SelectedMenu = "Sample RFT";
             ViewBag.OnlineHelp = this.OnlineHelp + "SampleRFT.BACriteria,,";
-            TempData["Model"] = null;
+            TempData["ModelBACriteria"] = null;
         }
 
 
@@ -38,7 +38,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             this.CheckSession();
             BACriteria_ViewModel model = new BACriteria_ViewModel();
             model.DataList = new List<DatabaseObject.ResultModel.BACriteria_Result>();
-            TempData["Model"] = null;
+            TempData["ModelBACriteria"] = null;
             return View(model);
         }
 
@@ -68,20 +68,20 @@ namespace Quality.Areas.SampleRFT.Controllers
                 model.ErrorMessage = $@"msg.WithInfo('{ model.ErrorMessage.Replace("'",string.Empty) }'); ";
             }
 
-            TempData["Model"] = model;
+            TempData["ModelBACriteria"] = model;
             return View("Index", model);
         }
 
         public ActionResult ExcelExport()
         {
-            if (TempData["Model"] == null)
+            if (TempData["ModelBACriteria"] == null)
             {
                 return RedirectToAction("Index");
             }
 
-            BACriteria_ViewModel model = (BACriteria_ViewModel)TempData["Model"];
+            BACriteria_ViewModel model = (BACriteria_ViewModel)TempData["ModelBACriteria"];
             List<DatabaseObject.ResultModel.BACriteria_Result> dataList = model.DataList;
-            TempData["Model"] = model;
+            TempData["ModelBACriteria"] = model;
 
             XSSFWorkbook book;
             using (FileStream file = new FileStream(AppDomain.CurrentDomain.BaseDirectory + "XLT\\BACriteria.xlsx", FileMode.Open, FileAccess.Read))

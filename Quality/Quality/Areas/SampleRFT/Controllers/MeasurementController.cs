@@ -31,7 +31,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         public ActionResult Index()
         {
             ViewBag.Articles = new List<SelectListItem>();
-            TempData["Model"] = null;
+            TempData["ModelMeasurement"] = null;
             return View(new Measurement_ResultModel() { Images_Source = new List<SelectListItem>() , Images = new List<RFT_Inspection_Measurement_Image>()} );
         }
 
@@ -41,7 +41,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             Measurement_ResultModel measurement = _MeasurementService.MeasurementGet(measurementRequest);
             List<SelectListItem> ArticleList = new FactoryDashBoardWeb.Helper.SetListItem().ItemListBinding(measurementRequest.Articles);
             ViewBag.Articles = ArticleList;
-            TempData["Model"] = measurement.JsonBody;
+            TempData["ModelMeasurement"] = measurement.JsonBody;
             return View("Index", measurement);
         }
 
@@ -52,7 +52,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             Measurement_ResultModel measurement = _MeasurementService.MeasurementGet(measurementRequest);
             List<SelectListItem> ArticleList = new FactoryDashBoardWeb.Helper.SetListItem().ItemListBinding(measurementRequest.Articles);
             ViewBag.Articles = ArticleList;
-            TempData["Model"] = measurement.JsonBody;
+            TempData["ModelMeasurement"] = measurement.JsonBody;
             return View(measurement);
         }
 
@@ -73,12 +73,12 @@ namespace Quality.Areas.SampleRFT.Controllers
 
         public ActionResult ExcelExport()
         {
-            if (TempData["Model"] == null)
+            if (TempData["ModelMeasurement"] == null)
             {
                 return RedirectToAction("Index");
             }
 
-            DataTable dt = (DataTable)JsonConvert.DeserializeObject(TempData["Model"].ToString(), (typeof(DataTable)));
+            DataTable dt = (DataTable)JsonConvert.DeserializeObject(TempData["ModelMeasurement"].ToString(), (typeof(DataTable)));
 
             XSSFWorkbook book;
             using (FileStream file = new FileStream(AppDomain.CurrentDomain.BaseDirectory + "XLT\\Measurement.xlsx", FileMode.Open, FileAccess.Read))

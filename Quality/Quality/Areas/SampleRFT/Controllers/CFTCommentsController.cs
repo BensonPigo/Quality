@@ -26,7 +26,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             _ICFTCommentsService = new CFTCommentsService();
             this.SelectedMenu = "Sample RFT";
             ViewBag.OnlineHelp = this.OnlineHelp + "SampleRFT.CFTComments,,";
-            TempData["Model"] = null;
+            TempData["ModelCFTComments"] = null;
             TempData["tempFilePath"] = null;
         }
 
@@ -37,9 +37,9 @@ namespace Quality.Areas.SampleRFT.Controllers
             this.CheckSession();
             CFTComments_ViewModel model = new CFTComments_ViewModel() { QueryType = "Style",DataList = new List<CFTComments_Result>()};
 
-            if (TempData["Model"] != null)
+            if (TempData["ModelCFTComments"] != null)
             {
-                model =(CFTComments_ViewModel)TempData["Model"];
+                model =(CFTComments_ViewModel)TempData["ModelCFTComments"];
             }
             if (TempData["tempFilePath"] != null)
             {
@@ -121,7 +121,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                 model.DataList = new List<CFTComments_Result>();
             }
 
-            TempData["Model"] = model;
+            TempData["ModelCFTComments"] = model;
 
             return RedirectToAction("Index");
         }
@@ -193,7 +193,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                 model.DataList = new List<CFTComments_Result>();
             }
 
-            TempData["Model"] = model;
+            TempData["ModelCFTComments"] = model;
 
             return RedirectToAction("Index");
         }
@@ -390,7 +390,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                 model.QueryType = Req.QueryType;
 
                 TempData["tempFilePath"] = tempFilePath;
-                TempData["Model"] = model;
+                TempData["ModelCFTComments"] = model;
             }
             catch (Exception ex)
             {

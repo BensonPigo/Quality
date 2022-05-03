@@ -266,9 +266,9 @@ namespace Quality.Areas.BulkFGT.Controllers
             
 
             GarmentTest_Detail_Result Detail_Result = _GarmentTest_Service.Get_All_Detail(ID, No);
-            if (TempData["Model"] != null)
+            if (TempData["ModelGarmentTest"] != null)
             {
-                GarmentTest_Detail_Result saveResult = (GarmentTest_Detail_Result)TempData["Model"];
+                GarmentTest_Detail_Result saveResult = (GarmentTest_Detail_Result)TempData["ModelGarmentTest"];
                 Detail_Result.Detail = saveResult.Detail;
                 Detail_Result.Shrinkages = saveResult.Shrinkages;
                 Detail_Result.Spiralities = saveResult.Spiralities;
