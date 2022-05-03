@@ -136,6 +136,13 @@ namespace BusinessLogicLayer.Service.SampleRFT
                     System.IO.Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\TMP\\");
                 }
 
+                if (dt.Rows.Count == 0) 
+                {
+                    result.TempFileName = string.Empty;
+                    result.Result = false;
+                    return result;
+                }
+
                 // 開啟excel app
                 Excel.Application excelApp = MyUtility.Excel.ConnectExcel(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\CFT Comments.xltx");
 
