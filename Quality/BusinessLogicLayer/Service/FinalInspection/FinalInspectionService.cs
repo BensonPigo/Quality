@@ -590,7 +590,7 @@ namespace BusinessLogicLayer.Service
                 type = "aqlDefects",
                 title = "product",
                 section_result_id = 5,
-                defective_parts = drInspection["DefectQty"],
+                defective_parts = drInspection["RejectQty"],
                 qty_inspected = (int)drInspection["PassQty"] + (int)drInspection["RejectQty"],
                 sampled_inspected = (int)drInspection["PassQty"] + (int)drInspection["RejectQty"],
                 inspection_level = "100%inspection",
@@ -704,7 +704,7 @@ namespace BusinessLogicLayer.Service
             {
                 status = "Submitted",
                 date_started = drInspection["FirstInspectionDate"],
-                defective_parts = drInspection["DefectQty"],
+                defective_parts = drInspection["RejectQty"],
                 sections,
                 assignment_items,
                 passFails,
