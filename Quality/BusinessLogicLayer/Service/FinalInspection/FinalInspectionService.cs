@@ -189,7 +189,7 @@ namespace BusinessLogicLayer.Service
                 type = "aqlDefects",
                 title = "product",
                 section_result_id = drFinalInspection["InspectionResultID"],
-                defective_parts = drFinalInspection["DefectQty"],
+                defective_parts = drFinalInspection["RejectQty"],
                 qty_inspected = drFinalInspection["AvailableQty"],
                 sampled_inspected = drFinalInspection["SampleSize"],
                 inspection_level = drFinalInspection["InspectionLevel"],
