@@ -1,0 +1,157 @@
+﻿
+@using DatabaseObject.ViewModel.SampleRFT
+
+@model InspectionBySP_Others
+
+@{
+    Layout = "~/Areas/SampleRFT/Views/Shared/_ForAll_Layout.cshtml";
+    int idx = 0;
+}
+
+@section InspectionBySP_head
+    {
+    <link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+    <link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+    <link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+
+    <style type="text/css">
+        #myTable_previous, #CheckListTable_next {
+            color: black !important;
+        }
+
+        #myTable {
+            font-size: 1.4em;
+            /*width: 80%;*/
+        }
+
+            #myTable th {
+                color: black;
+                background-color: lightgray;
+            }
+
+        .dataTables_wrapper {
+            position: static;
+        }
+
+        #myTable_previous, #myTable_next {
+            color: white !important;
+        }
+
+
+        tfoot input {
+            width: 100%;
+            padding: 3px;
+            box-sizing: border-box;
+        }
+
+        td {
+            padding: 5px 5px 5px 5px;
+        }
+
+        .readonly {
+            background-color: lightgray;
+        }
+
+        .button {
+            /*width: 7vw;*/
+        }
+        h2{
+            font-size: 1vw;
+        }
+    </style>
+}
+
+
+@Html.Partial("~/Areas/SampleRFT/Views/Shared/_SampleRFTInspection_Layout.cshtml")
+<div class="DownWhiteBackgrond" style="display: inline-block;">
+
+    @using (Html.BeginForm("Others", "InspectionBySP", FormMethod.Post, new { @id = "settingForm", onsubmit = "return checkSubmitValue(this.submitted);" }))
+    {
+        @Html.HiddenFor(o=>o.ID)
+        <div style="width:100%;height:6vh;padding-top:5px;">
+            <table>
+                <tr>
+                    <td style="width: 32vw"></td>
+                    <td><h2>Inspector:</h2></td>
+                    <td><h2 style="color:blue;">@Model.Inspector</h2></td>
+                    <td>&emsp;&emsp;</td>
+                    <td><h2>Inspector Result:</h2></td>
+                    <td>
+                        @if (Model.InspectorResult == "Pass")
+                        {
+                            <h2 style="color:blue;">@Model.InspectorResult</h2>
+                        }
+                        else
+                        {
+                            <h2 style="color:red;">@Model.InspectorResult</h2>
+                        }
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <table id="myTable" class="table table-striped display" style="text-align:center">
+            <thead>
+                <tr class="row-name">
+                    <th>Comments Category</th>
+                    <th>Comments</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var data in Model.DataList)
+                {
+                    <tr class="row-content">
+                        <td>
+                            @Html.DisplayFor(modelItem => data.Description)
+                        </td>
+                        <td>
+                            @*@Html.DisplayFor(modelItem => data.Comnments)*@
+                            @Html.Hidden($"Req.DataList[{idx}].PMS_RFTCommentsID", data.PMS_RFTCommentsID)
+                            @Html.TextBox($"Req.DataList[{idx}].Comnments", data.Comnments, new { @style = "width:100%" })
+                        </td>
+                    </tr>
+                    idx++;
+                }
+            </tbody>
+        </table>
+
+
+        <div style="width:100%">
+            <input type="hidden" id="goPage" name="goPage">
+            <button id="btnBack" onclick="this.form.submitted=this.value;" type="submit" value="Back" class="button" style="right:7em;">Back</button>
+            <button d="btnSubmit" onclick="this.form.submitted=this.value;" type="submit" value="Submit" style="right: 0; padding: 12px 25px" class="button">Submit</button>
+        </div>
+
+    }
+</div>
+
+
+
+@section InspectionBySP_script
+    {
+
+    <script>
+        var msg = new MessagerAlert();
+
+        $(function () {
+
+            $('#myTable').DataTable({
+                "pageLength": 20,
+                "filter": false,
+                "paging": false,
+                "info": false,
+                "ordering": false,
+                initComplete: function () {
+                }
+            });
+        });
+
+        function checkSubmitValue(self) {
+            document.getElementById("goPage").value = self;
+
+            ShowLoading();
+
+            return true;
+        }
+    </script>
+}

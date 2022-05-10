@@ -23,5 +23,6 @@ namespace DatabaseObject.ResultModel
         public long ID { get; set; }
         public long Seq { get; set; }
         public byte[] Image { get; set; }
+        public byte[] TempImage { get; set; }
     }
 }

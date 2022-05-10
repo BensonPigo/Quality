@@ -21,6 +21,15 @@ namespace Quality.Controllers
             set { System.Web.HttpContext.Current.Session["UserID"] = value; }
         }
 
+        public string UserName
+        {
+            get
+            {
+                if (System.Web.HttpContext.Current.Session["UserName"] == null) { return ""; }
+                else { return System.Web.HttpContext.Current.Session["UserName"].ToString(); }
+            }
+            set { System.Web.HttpContext.Current.Session["UserName"] = value; }
+        }
         public string BulkFGT_Brand
         {
             get

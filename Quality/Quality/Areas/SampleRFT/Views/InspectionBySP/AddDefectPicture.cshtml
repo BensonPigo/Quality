@@ -1,0 +1,410 @@
+﻿@using DatabaseObject.ViewModel.SampleRFT
+
+@{
+    Layout = null;
+
+    //Int64 DetailUkey = ViewData["DetailUkey"] == null ? 0 : Convert.ToInt64(ViewData["DetailUkey"]);
+    //Int64 RowIndex = ViewData["RowIndex"] == null ? 0 : Convert.ToInt64(ViewData["RowIndex"]);
+
+}
+
+@model SampleRFTInspection_Summary
+
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<link href="~/ThirdParty/SciCustom/css/style.css" rel="stylesheet" />
+<style>
+
+    ul {
+        padding: 0;
+    }
+
+    li {
+        list-style-type: none;
+        border: 1px solid black;
+        padding: 2px;
+    }
+
+    td {
+        border-style: ridge;
+    }
+
+    .leftDiv {
+        width: 45%;
+        height: 90%;
+        float: left;
+        margin-right: 2%;
+    }
+
+    .outerDiv {
+        width: 95vw;
+        height: 90%;
+        float: left;
+        margin-right: 2%;
+    }
+
+    .grayDiv {
+        width: 100%;
+        height: 7vh;
+        background-color: lightgray;
+        text-align: center;
+    }
+
+    .pointer {
+        cursor: pointer;
+    }
+
+    .grayInnerDiv {
+        width: 10%;
+        float: left;
+    }
+</style>
+<br />
+<header>
+    <h3 style="width:85%;float:left;margin:0"></h3>
+    @*<input id="btnSave" type="button" value="Save" />*@
+    <input id="btnExit" type="button" value="Exit" />
+</header>
+<br />
+<div class="outerDiv" style="margin-right:2%;overflow-y:scroll;">
+
+    <div class="grayDiv">
+
+        <div class="grayInnerDiv">
+            <input type="file" id="UploadPic" name="name" accept=".png, .jpg, .jpeg" value="UP" style="display:none;" multiple />
+            <img id="Upload" class="pointer" style="height: 90%; vertical-align: top; margin-right: 5px;" src="~/Image/Icon/Upload.png" />
+
+        </div>
+        <div class="grayInnerDiv">
+            <img Type="Pic" class="OpenCamera pointer" style="height: 80%; padding-top: 5px; margin-right: 5px;" src="~/Image/Icon/Camera.png" />
+        </div>
+        <div class="grayInnerDiv" style="height:100%"></div>
+        <div class="grayInnerDiv" style="height:100%"></div>
+        <div class="grayInnerDiv" style="height:100%"></div>
+        <div class="grayInnerDiv" style="height:100%"></div>
+        <div class="grayInnerDiv" style="height:100%"></div>
+        <div class="grayInnerDiv" style="height:100%"></div>
+        <div class="grayInnerDiv">
+            @Html.DropDownList("ImageList", Model.Images_Source, new { @style = "width:8vw;border-color:lightblue;height: 90%; font-size: 1.5rem;" })
+
+        </div>
+        <div class="grayInnerDiv">
+            <img id="Del" class="pointer" style="height: 80%; padding-top: 5px; margin-right: 5px;" src="~/Image/Icon/Delete.png" />
+
+        </div>
+
+    </div>
+
+    @*拍照用DOM物件*@
+    <div id="CameraArea">
+
+        @*<h4>Remark</h4>
+            <input type="text" id="Rmk" style="width:90%;border:2px solid black;" name="name" value="" />
+            <br />
+            <br />
+            <img id="ImgPic" Type="Pic" style="width:100%;" />*@
+
+    </div>
+
+    @*上傳圖片用DOM物件*@
+
+    <div id="FileArea" style="display:none;">
+        @*<dix class=FileItem>
+                <h4>Remark</h4>
+                <input type="text" id="Rmk0" style="width:90%;border:2px solid black;" name="name" value="" />
+                <br />
+                <br />
+                <img id="ImgPic0" Type="Pic" style="width:100%;" />
+            </dix>*@
+
+    </div>
+
+    <div id="ImageArea">
+        @foreach (var img in Model.Images)
+        {
+            string isShow = img.Seq == Model.Images.FirstOrDefault().Seq ? string.Empty : "display:none";
+
+            var byteImage = img == null || img.Image is null ? new byte[1] : img.Image;
+            var base64 = Convert.ToBase64String(byteImage);
+            var imgSrc = String.Format("data:image/png;base64,{0}", base64);
+
+            <img id="image_@img.Seq" imageUkey="@img.ImageUKey" class="DefectImages" Type="" style="width:100%;@isShow" src="@imgSrc" />
+
+        }
+
+    </div>
+</div>
+
+@{
+    Html.RenderPartial("ScreenShot_ForRFTInsp_Defect");
+}
+
+<script>
+
+    var ID_List = [];
+    var Name_List = [];
+    var ImgSource = '';
+    $(function () {
+
+        // Screenshot Exit
+        $('#btnScreenshotExit').on('click', function () {
+            StopScreen();
+            $('#Screenshot').addClass("display-None");
+        });
+
+
+        $("#btnSave").click(async function () {
+
+            // 拍照處理方式
+            if (ImgSource == 'Camera') {
+                var Pic = document.querySelectorAll("#ImgPic");
+                var Rmk = $("#Rmk").val();
+
+                var Picture = {
+                    @*DetailUkey: '@DetailUkey',
+                    /RowIndex: '@RowIndex',*@
+                    Img: Pic[0].src,
+                    Remark: Rmk,
+                }
+
+                window.opener.GetImage(Picture, ImgSource);
+
+                window.close();
+            }
+
+            // 檔案上傳處理方式
+            if (ImgSource == 'File' && $('.FileItem').length > 0) {
+                var PictureList = [];
+                const fileItems = $('.FileItem');
+                var idxx = 0;
+
+                // 使用for of迴圈，可以讓每一次lool都await，完全等待完畢後才繼續後續行為
+                for (const fileItem of fileItems) {
+                    const file = document.querySelector(`#UploadPic`).files[idxx];
+                    var Rmk = $(`#Rmk${idxx}`).val();
+
+                    // blob轉成base64方式，請參考 https://ithelp.ithome.com.tw/articles/10198431
+                    // await必須包在async function裡面
+                    var base64 = await convertFile(file);
+
+
+                    var Picture = {
+                        @*Ukey: '@DetailUkey',
+                        RowIndex: '@RowIndex',*@
+                        TempImage: base64.replace("data:image/jpg;base64,", "").replace("data:image/jpeg;base64,", "").replace("data:image/png;base64,", ""),
+                        TempRemark: Rmk,
+                    }
+                    PictureList.push(Picture);
+
+                    idxx += 1;
+                }
+
+                window.opener.GetImage(PictureList, ImgSource);
+                window.close();
+            }
+        });
+
+
+        $("#btnExit").click(function () {
+            window.close();
+        });
+
+        $("#Del").click(function () {
+            // 取得要刪除的Seq
+
+            var selectedID = $("#ImageList").val()
+
+            var sel = $("#ImageList")[0];
+            var selectedText = sel.options[sel.selectedIndex].text;
+
+            var imageUkey = $(`#image_${selectedText}`).attr('imageUkey');
+
+            var data =
+            {
+                ID: selectedID,
+                Seq: selectedText,
+                ImageUKey: imageUkey
+            };
+
+            $.ajax({
+                url: "@Url.Action("DeleteDefectPic", "InspectionBySP", new { Area = "SampleRFT" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ data: data, SampleRFTInspection_DetailUKey: '@Model.UKey', ID: '@Model.ID', GarmentDefectCodeID:'@Model.GarmentDefectCodeID'  }),
+                async: true,
+                success: function (data) {
+                    debugger
+
+                    // 後端加入成功之後，前端下拉選單、對應圖片也要更新
+
+                    var dropDownList = JSON.parse(data[0]);
+                    var ImageList = JSON.parse(data[1]);
+
+                    $('#ImageList').empty();
+                    $.each(dropDownList, function (idx) {
+                        $('#ImageList').append('<option value="' + dropDownList[idx].Value + '">' + dropDownList[idx].Text + '</option>');
+                    });
+
+                    $('#ImageArea').empty();
+                    $.each(ImageList, function (idx) {
+                        if (idx == 0) {
+                            $('#ImageArea').append('<img id="image_' + ImageList[idx].Seq + '" class="DefectImages" type="" style="width:100%;"  src="data:image/png;base64,' + ImageList[idx].Image + '"/>');
+                        }
+                        else {
+                            $('#ImageArea').append('<img id="image_' + ImageList[idx].Seq + '" class="DefectImages" type="" style="width:100%;display:none;"  src="data:image/png;base64,' + ImageList[idx].Image + '"/>');
+                        }
+                    });
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+
+        });
+
+        $("#Upload").click(function () {
+
+            ImgSourceToggle('File');
+            $("#UploadPic").click();
+        });
+
+
+        $("#ImageList").change(function () {
+            ImageReBind();
+        });
+
+        $("#UploadPic").change(async function () {
+
+            var length = UploadPic.files.length;
+
+            // 上傳後要把圖片存入後端暫存、前端更新下拉選單
+            if (length > 0) {
+
+                $(".FileItem").remove();
+                var idx = 0;
+                var PictureList = [];
+
+                for (const fileItem of UploadPic.files) {
+                    $("#FileArea").append(`
+     <img id="ImgPic${idx}" Type="Pic" style="width:100%;"  class="display-None" />
+`);
+
+                    var picFile = UploadPic.files[idx];
+                    $(`#ImgPic${idx}`).attr('src', window.URL.createObjectURL(picFile));
+
+                    var base64 =await convertFile(picFile);
+                    var Picture = {
+                        TempImage: base64.replace("data:image/jpg;base64,", "").replace("data:image/jpeg;base64,", "").replace("data:image/png;base64,", ""),
+                    }
+                    PictureList.push(Picture);
+
+                    idx += 1;
+
+                }
+
+                $.ajax({
+                    url: "@Url.Action("BatchAddDefectPicTemp", "InspectionBySP", new { Area = "SampleRFT" })",
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ list: PictureList, SampleRFTInspection_DetailUKey: '@Model.UKey', ID: '@Model.ID', GarmentDefectCodeID:'@Model.GarmentDefectCodeID'  }),
+                    async: true,
+                    success: function (data) {
+                        debugger
+
+                        // 後端加入成功之後，前端下拉選單、對應圖片也要更新
+
+                        var dropDownList = JSON.parse(data[0]);
+                        var ImageList = JSON.parse(data[1]);
+
+                        $('#ImageList').empty();
+                        $.each(dropDownList, function (idx) {
+                            $('#ImageList').append('<option value="' + dropDownList[idx].Value + '">' + dropDownList[idx].Text + '</option>');
+                        });
+
+                        $('#ImageArea').empty();
+                        $.each(ImageList, function (idx) {
+                            if (idx == 0) {
+                                $('#ImageArea').append('<img id="image_' + ImageList[idx].Seq + '" class="DefectImages" type="" style="width:100%;"  src="data:image/png;base64,' + ImageList[idx].Image + '"/>');
+                            }
+                            else {
+                                $('#ImageArea').append('<img id="image_' + ImageList[idx].Seq + '" class="DefectImages" type="" style="width:100%;display:none;"  src="data:image/png;base64,' + ImageList[idx].Image + '"/>');
+                            }
+                        });
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            }
+        });
+
+        CamInit();
+
+
+    });
+
+
+    function ImageReBind() {
+        var selectSeq = $("#ImageList option:selected").text();
+        $(".DefectImages").hide();
+        $(`#image_${selectSeq}`).show();
+    }
+
+    // 使用FileReader讀取檔案，並且回傳Base64編碼後的source
+    function convertFile(file) {
+        return new Promise((resolve, reject) => {
+            // 建立FileReader物件
+            let reader = new FileReader()
+            // 註冊onload事件，取得result則resolve (會是一個Base64字串)
+            reader.onload = () => { resolve(reader.result) }
+            // 註冊onerror事件，若發生error則reject
+            reader.onerror = () => { reject(reader.error) }
+            // 讀取檔案
+            reader.readAsDataURL(file)
+        })
+    }
+
+    function ImgSourceToggle(source) {
+        ImgSource = source;
+        switch (source) {
+            case 'Camera':
+                $("#CameraArea").show();
+                $("#FileArea").hide();
+                $("#FileArea").empty();
+                break;
+            case 'File':
+                $("#CameraArea").hide();
+                $("#FileArea").show();
+                $("#CameraArea").empty();
+                break;
+            default:
+                break;
+        }
+    }
+
+    function CamInit() {
+
+        $('.OpenCamera').on('click', function () {
+
+            ImgSourceToggle('Camera');
+
+            $("#CameraArea").append(`
+
+    <img id="ImgPic" Type="Pic" class="display-None" style="width:100%;" />
+`);
+
+            var Type = $(this).attr('Type');
+            var sentID = "ImgPic";
+            switch (Type) {
+                case "Pic":
+                    sentID = "ImgPic";
+                    break;
+                default:
+                    sentID = "";
+                    break;
+            }
+
+            $('#Screenshot').removeClass("display-None");
+            Screenshot(sentID);
+        });
+    }
+</script>

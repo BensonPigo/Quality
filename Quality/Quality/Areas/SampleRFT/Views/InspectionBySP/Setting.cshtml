@@ -1,0 +1,346 @@
+﻿@model DatabaseObject.ViewModel.SampleRFT.InspectionBySP_Setting
+
+@{
+    ViewBag.Title = "Setting";
+    Layout = "~/Areas/SampleRFT/Views/Shared/_ForAll_Layout.cshtml";
+
+    bool AQLPlanDisabled = Model.AQLPlan == "100%";
+}
+
+
+@section InspectionBySP_head{
+    <link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+    <link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+    <link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+
+    <style type="text/css">
+        #SelectedPOTable_previous, #SelectedPOTable_next {
+            color: white !important;
+        }
+
+        tr.shown td.details-control {
+            background: url('/Image/Icon/ChildRowClose.png') no-repeat center center;
+        }
+
+        td.details-control {
+            background: url('/Image/Icon/ChildRowOpen.png') no-repeat center center;
+        }
+
+        .whiteBackgrond form {
+            height: 100%
+        }
+
+        .col-auto {
+            margin: 1em
+        }
+
+        .sub_title {
+            font-size: 1.5em;
+            color: #999999
+        }
+
+        .table_div > tbody > tr > td > * {
+            margin: 0.5em;
+        }
+
+        .table_div > tbody > tr > td:first-child {
+            /*text-align: right;*/
+            padding-right: 1em;
+            /*font-weight: bold;*/
+            vertical-align: middle;
+        }
+
+        .table_div > tbody > tr > td:nth-child(2) {
+            text-align: left;
+        }
+
+        #CartonTable_info {
+            color: white
+        }
+
+        #CartonTable_previous, #CartonTable_next {
+            color: white !important;
+        }
+
+        #CartonTable_wrapper, #CartonTable_wrapper > .dataTables_scrollHeadInner {
+            width: 100%
+        }
+
+        #ShipmodeSeqTable_info {
+            color: white
+        }
+
+        #ShipmodeSeqTable_previous, #ShipmodeSeqTable_next {
+            color: white !important;
+        }
+
+        #ShipmodeSeqTable_wrapper, #ShipmodeSeqTable_wrapper > .dataTables_scrollHeadInner {
+            width: 100%
+        }
+
+        #SewingLineSeqTable_info {
+            color: white
+        }
+
+        #SewingLineTable_previous, #SewingLineTable_next {
+            color: white !important;
+        }
+
+        #SewingLineTable_wrapper, #SewingLineTable_wrapper > .dataTables_scrollHeadInner {
+            width: 100%
+        }
+
+        table.dataTable.cell-border table tbody tr td:not(:first-child) {
+            text-align: center;
+        }
+
+        label {
+            font-size: 1.4em;
+            font-weight: bold;
+        }
+
+        #SelectedPOTable {
+            font-size: 1.4em;
+        }
+    </style>
+}
+
+
+<div class="whiteBackgrond" style="display:flex;flex-wrap:nowrap;height:85vh;align-items:center; vertical-align:middle">
+
+    @using (Html.BeginForm("Setting", "InspectionBySP", FormMethod.Post, new { @id = "settingForm", onsubmit = "return checkSubmitValue();" }))
+    {
+        @Html.HiddenFor(o => o.ID)
+        @Html.HiddenFor(o => o.OrderID)
+        @Html.HiddenFor(o => o.AcceptableQualityLevelsUkey)
+
+    <div style="padding:2em 3em 2em 3em">
+        <div class="col-auto"><h1 style="font-size:2em">Inspection Setting</h1></div>
+
+        @*Basic*@
+
+        <div style="width:50%;height:27vh;float:left;">
+            <div class="col-auto"><h2 class="sub_title">Basic</h2></div>
+            <table class="col-auto table_div" style="margin-left: 4em;">
+                <tr>
+                    <td><label>Choose Inspection Stage</label></td>
+                    <td>@Html.DropDownListFor(o => o.InspectionStage, Model.InspectionStageList, null, new { @class = "form-control", @style = "width:157px", @onchange = "onStageChange(this.value)" })</td>
+                    <td>@Html.DropDownListFor(o => o.InspectionTimes, Model.InspectionTimesList, null, new { @class = "form-control", @style = "width:157px", @disabled = "disabled" })</td>
+                </tr>
+                <tr>
+                    <td><label>Inspection Date</label></td>
+                    <td>@Html.TextBoxFor(o => o.InspectionDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })</td>
+                </tr>
+            </table>
+        </div>
+        <div style="width:50%;height:27vh;float:left;">
+            <div class="col-auto"><h2 class="sub_title">&emsp;</h2></div>
+            <table class="col-auto table_div" style="margin-left: 4em;">
+                <tr>
+                    <td><label>Sewing Line</label></td>
+                    <td>@Html.DropDownListFor(o => o.SewingLineID, Model.SewingLineList, null, new { @class = "form-control", @style = "width:157px" })</td>
+                </tr>
+                <tr>
+                    <td><label>QC in Charge</label></td>
+                    <td>@Html.DropDownListFor(o => o.QCInCharge, Model.QC_InChargeList, null, new { @class = "form-control", @style = "width:157px" })</td>
+                </tr>
+
+            </table>
+        </div>
+
+        @*Information*@
+
+        <div style="width:50%;height:40vh;float:left;">
+
+            <div class="col-auto"><h2 class="sub_title">Information</h2></div>
+            <table class="col-auto table_div" style="margin-left: 4em;">
+                <tr>
+                    <td><label>SP#: @Model.OrderID</label></td>
+                </tr>
+                <tr>
+                    <td><label>PO#: @Model.CustPONo</label></td>
+                </tr>
+                <tr>
+                    <td><label>Style: @Model.StyleID</label></td>
+                </tr>
+                <tr>
+                    <td><label>Season: @Model.SeasonID</label></td>
+                </tr>
+                <tr>
+                    <td><label>Brand: @Model.BrandID</label></td>
+                </tr>
+                <tr>
+                    <td><label>Article: @Model.Article</label></td>
+                </tr>
+                <tr>
+                    <td><label>Factory: @Model.FactoryID</label></td>
+                </tr>
+                <tr>
+                    <td><label>Model: @Model.Model</label></td>
+                </tr>
+                <tr>
+                    <td><label>Sample Stage: @Model.SampleStage</label></td>
+                </tr>
+                <tr>
+                    <td><label>Oqrder Qrt: @Model.OrderQty</label></td>
+                </tr>
+
+            </table>
+        </div>
+
+        @*AQL Plan*@
+
+        <div style="width:50%;height:40vh;float:left;">
+            <div class="col-auto"><h2 class="sub_title">AQL Plan</h2></div>
+            <table class="col-auto table_div" style="margin-left: 4em;">
+                <tr>
+                    <td><label>AQL Plan</label></td>
+                    <td>
+                        @if (AQLPlanDisabled || Model.AQLPlan == null)
+                        {
+                            @Html.DropDownListFor(o => o.AQLPlan, Model.AQLPlanList, null, new { @class = "form-control", @disabled = "disabled"})
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(o => o.AQLPlan, Model.AQLPlanList, null, new { @class = "form-control" })
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align:center">
+                        <label style="font-weight:normal;font-size:0.8em">(Only for GTM/GMM/Prese;;/SMS 1,2,3)</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label>Sample Plan Qty</label></td>
+                    <td>
+                        @Html.TextBoxFor(o => o.SampleSize, new { @type = "number", @min = "0", @class = "form-control center-block", @disabled = "disabled", @style = "width:49%;" })
+                    </td>
+                </tr>
+                <tr>
+                    <td><label>Accepted Qty</label></td>
+                    <td>
+                        @Html.TextBoxFor(o => o.AcceptQty, new { @type = "number", @style = "width:49%;", @min = "0", @class = "form-control center-block", @disabled = "disabled" })
+                    </td>
+                </tr>
+                <tr>
+                    <td><label>Reject Qty</label></td>
+                    <td>
+                        <input id="RejectQty" type="number" class="form-control center-block" min="0" value="@ViewData["RejectQty"]" style="width:49%;" disabled />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <button class="button" style="right:0">Next</button>
+    </div>
+    }
+</div>
+
+@section InspectionBySP_script
+{
+    <script>
+        var msg = new MessagerAlert();
+
+        // 摺疊資料需先轉成array
+        var adata = [];
+        var bdata = [];
+        var SelectedPOs =[];
+        var index = 0;
+        var index2 = 0;
+        var currentStage = '';
+        var Order_AvailableQty = {};
+        var table;
+
+        $(function () {
+
+            @Html.Raw(Model.ErrorMessage);
+
+            // AQLPlan選單變化事件
+            $("#AQLPlan").change(function () {
+                var aql = $(this).val()
+                var orderQty = parseInt( @Model.OrderQty);
+
+                // 若不是100% Inspection，則AJAX回去取資料
+                if (aql != "100%") {
+
+                    if (aql == '') {
+
+                        $("#AcceptableQualityLevelsUkey").val(0);
+                        $(this).val('');
+                        $("#SampleSize").val('');
+                        $("#AcceptQty").val('');
+                        $("#RejectQty").val('');
+                    }
+                    else {
+                        $.ajax({
+                            url: '@Url.Action("AQL_AJAX")',
+                            data: { AQLPlan: aql, OrderQty: orderQty},
+                            type: 'POST',
+                            dataType: "json",
+                            async: false,
+                            success: function (res) {
+
+                                var SamplePlanQty = res[0];
+                                var AcceptedQty = res[1];
+                                var AcceptableQualityLevelsUkey = res[3];
+                                //RejectQty一律是AcceptQty+1
+                                $("#SampleSize").val(SamplePlanQty);
+                                $("#AcceptQty").val(AcceptedQty);
+                                $("#RejectQty").val(parseInt(AcceptedQty) + 1);
+                                $("#AcceptableQualityLevelsUkey").val(AcceptableQualityLevelsUkey);
+                            }
+                        })
+                        $("#AcceptQty").removeAttr("max");
+                    }
+                }
+                else {
+                    $("#AcceptableQualityLevelsUkey").val(0);
+                    $(this).val('');
+                    $("#SampleSize").val('');
+                    $("#AcceptQty").val('');
+                    $("#RejectQty").val('');
+
+                }
+            });
+        });
+
+        function onStageChange(value) {
+            if (value == '100%') {
+                $('#AQLPlan').val('').attr('disabled');
+                $("#AcceptableQualityLevelsUkey").val(0);
+                $('#SampleSize').val('');
+                $('#AcceptQty').val('');
+                $('#RejectQty').val('');
+            }
+
+            if (value == 'AQL') {
+                $('#AQLPlan').removeAttr('disabled');
+            }
+        }
+
+        function checkSubmitValue() {
+
+            //保存前檢查[Basic]部分都有輸入，若沒有則顯示
+            if ($("#InspectionStage").val() == "" || $("#InspectionTimes").val() == "" || $("#SewingLineID").val() == "" || $("#QCInCharge").val() == "" || $("#InspectionDate").val() == "") {
+                msg.WithError("＜Basic＞ part cannot be empty.");
+                return false;
+            }
+
+            if ($("#InspectionStage").val() == "100%" && $("#AQLPlan").val() == "" ) {
+                msg.WithError("＜AQL lan＞ cannot be empty.");
+                return false;
+            }
+
+
+            ShowLoading();
+
+            var AQLPlanResult = true;
+            $("#AQLPlan").removeAttr("disabled");
+            $("#InspectionTimes").removeAttr("disabled");
+            $("#SampleSize").removeAttr("disabled");
+            $("#AcceptQty").removeAttr("disabled");
+
+        }
+    </script>
+}

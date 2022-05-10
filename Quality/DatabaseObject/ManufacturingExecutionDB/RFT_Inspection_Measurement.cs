@@ -35,6 +35,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
         [StringLength(15)]
         [Display(Name = "測量後的結果")]
         public string SizeSpec { get; set; }
+        public string ResultSizeSpec { get; set; } = string.Empty;
 
         /// <summary>訂單號碼</summary>
         [StringLength(13)]

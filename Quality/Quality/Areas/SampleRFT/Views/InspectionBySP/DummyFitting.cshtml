@@ -1,0 +1,231 @@
+﻿@model DatabaseObject.ViewModel.SampleRFT.InspectionBySP_DummyFit
+
+@{
+    Layout = "~/Areas/SampleRFT/Views/Shared/_ForAll_Layout.cshtml";
+}
+
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+
+@section InspectionBySP_head
+    {
+    <style type="text/css">
+        label {
+            font-size: 1.5rem;
+        }
+
+        select {
+            font-size: 1.2rem;
+        }
+
+        .blue {
+            color: blue;
+        }
+
+        .imgButton {
+            max-height: 95%;
+            cursor: pointer;
+        }
+    </style>
+}
+
+@Html.Partial("~/Areas/SampleRFT/Views/Shared/_SampleRFTInspection_Layout.cshtml")
+
+<div class="DownWhiteBackgrond">
+
+    @using (Html.BeginForm("DummyFitting", "InspectionBySP", FormMethod.Post, new { @id = "settingForm", onsubmit = "return checkSubmitValue(this.submitted);" }))
+    {
+        @Html.HiddenFor(o => o.ID)
+        <div style="width:100%;height:6vh;padding-top:5px;">
+            <label>&emsp;&emsp;SP No.&emsp;</label>
+            <label class="blue">@Model.OrderID&emsp;&emsp;</label>
+            <label>Style&emsp;</label>
+            <label class="blue">@Model.StyleID&emsp;&emsp;</label>
+            <label>Article&emsp;</label>
+            @Html.DropDownList("dropArticle", Model.ArticleList, null, new { @class = "form-control" })
+            <label>&emsp;Size&emsp;</label>
+            @Html.DropDownList("dropSize", Model.SizeList, null, new { @class = "form-control" })
+
+        </div>
+
+        <div style="width: 100%; height: 65vh;margin-left:5px;">
+            <div style="width:33%;height:5%;float:left;text-align:center;border-right:1px solid black;background-color:lightgray;padding-top:5px">
+                <div style="width:80%;height:100%;float:left">
+                    <label>Front</label>
+                </div>
+                <div style="width: 20%; height: 100%; float: left ">
+                    <img src='/Image/Icon/Camera.png' idx="1" class='TakePicture imgButton' />
+                    <img src='/Image/Icon/Delete.png' idx="1" class='DeletePicture imgButton' />
+                </div>
+            </div>
+            <div style="width:33%;height:5%;float:left;text-align:center;border-right:1px solid black;background-color:lightgray;padding-top:5px">
+                <div style="width:80%;height:100%;float:left">
+                    <label>Side</label>
+                </div>
+                <div style="width: 20%; height: 100%; float: left ">
+                    <img src='/Image/Icon/Camera.png' idx="1" class='TakePicture imgButton' />
+                    <img src='/Image/Icon/Delete.png' idx="1" class='DeletePicture imgButton' />
+                </div>
+
+            </div>
+            <div style="width:33%;height:5%;float:left;text-align:center;background-color:lightgray;padding-top:5px">
+                <div style="width:80%;height:100%;float:left">
+                    <label>Back</label>
+                </div>
+                <div style="width: 20%; height: 100%; float: left ">
+                    <img src='/Image/Icon/Camera.png' idx="1" class='TakePicture imgButton' />
+                    <img src='/Image/Icon/Delete.png' idx="1" class='DeletePicture imgButton' />
+                </div>
+            </div>
+
+            <div style="width: 33%; height: 90%; float: left; border-right: 1px solid black; border-bottom: 1px solid black; ">
+                @foreach (var data in Model.DetailList)
+                {
+                    var byteImage = data.Front == null || data.Front is null ? new byte[1] : data.Front;
+                    var base64 = Convert.ToBase64String(byteImage);
+                    var imgSrc = String.Format("data:image/png;base64,{0}", base64);
+
+                    <img class="image" article="@data.Article" size="@data.Size" Type="" style="max-width: 98%; max-height: 98%; display: none; " src="@imgSrc" />
+                }
+            </div>
+            <div style="width: 33%; height: 90%; float: left; border-right: 1px solid black; border-bottom: 1px solid black; ">
+
+                @foreach (var data in Model.DetailList)
+                {
+                    var byteImage = data.Side == null || data.Side is null ? new byte[1] : data.Side;
+                    var base64 = Convert.ToBase64String(byteImage);
+                    var imgSrc = String.Format("data:image/png;base64,{0}", base64);
+
+                    <img class="image" article="@data.Article" size="@data.Size" Type="" style="max-width: 98%; max-height: 98%; display: none;" src="@imgSrc" />
+                }
+            </div>
+            <div style="width: 33%; height: 90%; float: left; border-bottom: 1px solid black;">
+
+                @foreach (var data in Model.DetailList)
+                {
+                    var byteImage = data.Back == null || data.Back is null ? new byte[1] : data.Back;
+                    var base64 = Convert.ToBase64String(byteImage);
+                    var imgSrc = String.Format("data:image/png;base64,{0}", base64);
+
+                    <img class="image" article="@data.Article" size="@data.Size" Type="" style="max-width: 98%; max-height: 98%; display: none; " src="@imgSrc" />
+                }
+            </div>
+        </div>
+
+    }
+</div>
+
+@{
+    Html.RenderPartial("ScreenShot_ForRFTInsp_DF");
+}
+
+@section InspectionBySP_script
+    {
+
+    <script>
+        var msg = new MessagerAlert();
+
+        $(function () {
+
+
+            $("#dropArticle").change(function () {
+
+                var article = $(this).val();
+
+                $.ajax({
+                    url: "@Url.Action("GetNewSizeByArticle_DF", "InspectionBySP" )",
+                    data: { Article: article },
+                    type: 'POST',
+                    dataType: "json",
+                    async: false,
+                    success: function (datas) {
+
+                        var sizeOption = "";
+                        var sizeArrList = [];
+
+                        $.each(datas, function (index, obj) {
+                            sizeArrList.push(obj.Value);
+                        });
+
+
+                        $.each(sizeArrList, function (index, value) {
+                            sizeOption += "<option value=" + value + " >" + value + "</option>";
+                        });
+
+                        $("#dropSize").html(sizeOption);
+
+                        ReloadImg();
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            });
+
+            $("#dropSize").change(function () {
+                ReloadImg();
+            });
+
+            $('.TakePicture').on('click', function () {
+                var idx = $(this).attr('idx');
+
+                var article = $("#dropArticle").val();
+                var size = $("#dropSize").val();
+
+                var sentID = "PictureFront";
+                switch (idx) {
+                    case "1":
+                        sentID = "PictureFront";
+                        break;
+                    case "2":
+                        sentID = "PictureSide";
+                        break;
+                    case "3":
+                        sentID = "PictureBack";
+                        break;
+                }
+
+                $('#Screenshot').removeClass("display-None");
+                Screenshot(sentID);
+            });
+
+            $('.DeletePicture').on('click', function () {
+                var idx = $(this).attr('idx');
+                var sentID = "PictureFront";
+                switch (idx) {
+                    case "1":
+                        sentID = "PictureFront";
+                        break;
+                    case "2":
+                        sentID = "PictureSide";
+                        break;
+                    case "3":
+                        sentID = "PictureBack";
+                        break;
+                }
+
+                document.querySelector("#a" + sentID).removeAttribute('href');
+                document.querySelector("#" + sentID).removeAttribute('src');
+            });
+
+            // 拍照視窗 Exit
+            $('#btnScreenshotExit').on('click', function () {
+                StopScreen();
+                $('#Screenshot').addClass("display-None");
+            });
+
+            ReloadImg();
+        });
+
+
+        function ReloadImg() {
+            var article = $("#dropArticle").val();
+            var size = $("#dropSize").val();
+
+            $(".image").hide();
+
+            $(`.image[article=${article}][size=${size}]`).show();
+        }
+    </script>
+}
