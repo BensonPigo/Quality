@@ -259,14 +259,14 @@ namespace Quality.Areas.SampleRFT.Controllers
                 model.CheckFiberContent = data.CheckFiberContent;
                 model.CheckCareInstructions = data.CheckCareInstructions;
                 model.CheckDecorativeLabel = data.CheckDecorativeLabel;
-                model.CheckAdicomLabel = data.CheckAdicomLabel;
-                model.CheckCountryofOrigion = data.CheckCountryofOrigion;
+                model.CheckCountryofOrigin = data.CheckCountryofOrigin;
                 model.CheckSizeKey = data.CheckSizeKey;
-                model.Check8FlagLabel = data.Check8FlagLabel;
                 model.CheckAdditionalLabel = data.CheckAdditionalLabel;
-                model.CheckShippingMark = data.CheckShippingMark;
                 model.CheckPolytagMarketing = data.CheckPolytagMarketing;
-                model.CheckColorSizeQty = data.CheckColorSizeQty;
+                model.CheckCareLabel = data.CheckCareLabel;
+                model.CheckSecurityLabel = data.CheckSecurityLabel;
+                model.CheckOuterCarton = data.CheckOuterCarton;
+                model.CheckPackingMode = data.CheckPackingMode;
                 model.CheckHangtag = data.CheckHangtag;
             }
             catch (Exception ex)
@@ -554,7 +554,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                 Req.InspectionStep = "Insp-CheckList";
                 _Service.UpdateSampleRFTInspectionByStep(Req, "Insp-Measurement", this.UserID);
 
-                return RedirectToAction("Setting", new { ID = Req.ID });
+                return RedirectToAction("CheckList", new { ID = Req.ID });
             }
             else if (goPage == "Next")
             {

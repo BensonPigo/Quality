@@ -552,7 +552,10 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 _Provider.AddDefect_Delete_Image(DeleteImg);
 
                 // 開始異動表身，有些Detail可能會刪掉，但圖片所屬是看GarmentDefectCodeID，因此圖片不能跟著刪，要把Detail UKey改成其他相同GarmentDefectCodeID的Detail UKey
-                _Provider.AddDefect_Detail_Process(detail);
+                if (detail.Count > 0)
+                {
+                    _Provider.AddDefect_Detail_Process(detail);
+                }
 
                 // 新增圖片，由於前面更新過了Detail UKey，因此直接抓GarmentDefectCodeID對應的其中一個Detail Ukey，寫入PMSFile即可
                 foreach (var defectItem in addDefct.ListDefectItem)

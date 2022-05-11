@@ -66,14 +66,18 @@ namespace DatabaseObject.ViewModel.SampleRFT
         public bool CheckFiberContent { get; set; }
         public bool CheckCareInstructions { get; set; }
         public bool CheckDecorativeLabel { get; set; }
-        public bool CheckAdicomLabel { get; set; }
-        public bool CheckCountryofOrigion { get; set; }
+        //public bool CheckAdicomLabel { get; set; }
+        public bool CheckCountryofOrigin { get; set; }
         public bool CheckSizeKey { get; set; }
-        public bool Check8FlagLabel { get; set; }
+        //public bool Check8FlagLabel { get; set; }
         public bool CheckAdditionalLabel { get; set; }
-        public bool CheckShippingMark { get; set; }
+        //public bool CheckShippingMark { get; set; }
         public bool CheckPolytagMarketing { get; set; }
-        public bool CheckColorSizeQty { get; set; }
+        //public bool CheckColorSizeQty { get; set; }
+        public bool CheckCareLabel { get; set; }
+        public bool CheckSecurityLabel { get; set; }
+        public bool CheckOuterCarton { get; set; }
+        public bool CheckPackingMode { get; set; }
         public bool CheckHangtag { get; set; }
     }
 

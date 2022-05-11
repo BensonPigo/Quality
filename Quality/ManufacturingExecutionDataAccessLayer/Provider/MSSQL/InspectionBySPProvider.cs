@@ -295,14 +295,10 @@ update SampleRFTInspection
           ,CheckFiberContent = @CheckFiberContent
           ,CheckCareInstructions = @CheckCareInstructions
           ,CheckDecorativeLabel = @CheckDecorativeLabel
-          ,CheckAdicomLabel = @CheckAdicomLabel
-          ,CheckCountryofOrigion = @CheckCountryofOrigion
+          ,CheckCountryofOrigin = @CheckCountryofOrigin
           ,CheckSizeKey = @CheckSizeKey
-          ,Check8FlagLabel = @Check8FlagLabel
           ,CheckAdditionalLabel = @CheckAdditionalLabel
-          ,CheckShippingMark = @CheckShippingMark
           ,CheckPolytagMarketing = @CheckPolytagMarketing
-          ,CheckColorSizeQty = @CheckColorSizeQty
           ,CheckHangtag = @CheckHangtag
           ,InspectionStep = @InspectionStep
           ,EditName= @userID
@@ -324,14 +320,14 @@ where   ID = @ID
                     objParameter.Add("@CheckFiberContent", inspection.CheckFiberContent);
                     objParameter.Add("@CheckCareInstructions", inspection.CheckCareInstructions);
                     objParameter.Add("@CheckDecorativeLabel", inspection.CheckDecorativeLabel);
-                    objParameter.Add("@CheckAdicomLabel", inspection.CheckAdicomLabel);
-                    objParameter.Add("@CheckCountryofOrigion", inspection.CheckCountryofOrigion);
+                    objParameter.Add("@CheckCountryofOrigin", inspection.CheckCountryofOrigin);
                     objParameter.Add("@CheckSizeKey", inspection.CheckSizeKey);
-                    objParameter.Add("@Check8FlagLabel", inspection.Check8FlagLabel);
                     objParameter.Add("@CheckAdditionalLabel", inspection.CheckAdditionalLabel);
-                    objParameter.Add("@CheckShippingMark", inspection.CheckShippingMark);
                     objParameter.Add("@CheckPolytagMarketing", inspection.CheckPolytagMarketing);
-                    objParameter.Add("@CheckColorSizeQty", inspection.CheckColorSizeQty);
+                    objParameter.Add("@CheckCareLabel", inspection.CheckCareLabel);
+                    objParameter.Add("@CheckSecurityLabel", inspection.CheckSecurityLabel);
+                    objParameter.Add("@CheckOuterCarton", inspection.CheckOuterCarton);
+                    objParameter.Add("@CheckPackingMode", inspection.CheckPackingMode);
                     objParameter.Add("@CheckHangtag", inspection.CheckHangtag);
 
                     break;
@@ -528,7 +524,7 @@ select styleUkey
 declare @SizeUnit varchar(8)
 declare @StyleUkey bigint = (
     select  StyleUkey
-    from    Production.dbo.Orders with (nolock)
+    from    MainServer.Production.dbo.Orders with (nolock)
     where   ID = @OrderID
 )
 
@@ -536,7 +532,7 @@ declare @StyleUkey bigint = (
 exec CopyStyle_ToMeasurement @userID,@StyleUkey;
 
 select  @SizeUnit = SizeUnit
-from    Production.dbo.Style WITH(NOLOCK)
+from    MainServer.Production.dbo.Style WITH(NOLOCK)
 where   Ukey = @StyleUkey
 
 SELECT  a.StyleUkey
@@ -736,8 +732,8 @@ select [RowIndex]=ROW_NUMBER() OVER(ORDER BY gdt.id,gdc.id) -1
 		from #SampleRFTInspection_Detail a
 		where a.GarmentDefectTypeID=gdt.ID AND a.GarmentDefectCodeID=gdc.ID
 	)
-from Production.dbo.GarmentDefectType gdt 
-inner join Production.dbo.GarmentDefectCode gdc on gdt.id=gdc.GarmentDefectTypeID 
+from MainServer.Production.dbo.GarmentDefectType gdt 
+inner join MainServer.Production.dbo.GarmentDefectCode gdc on gdt.id=gdc.GarmentDefectTypeID 
 outer apply(
 
 	select Val = stuff((
@@ -816,8 +812,8 @@ select [RowIndex]=ROW_NUMBER() OVER(ORDER BY gdt.id,gdc.id) -1
 		where a.GarmentDefectTypeID=gdt.ID AND a.GarmentDefectCodeID=gdc.ID
 	)
 into #base
-from Production.dbo.GarmentDefectType gdt 
-inner join Production.dbo.GarmentDefectCode gdc on gdt.id=gdc.GarmentDefectTypeID 
+from MainServer.Production.dbo.GarmentDefectType gdt 
+inner join MainServer.Production.dbo.GarmentDefectCode gdc on gdt.id=gdc.GarmentDefectTypeID 
 outer apply(
 
 	select Val = stuff((
@@ -890,8 +886,8 @@ select [RowIndex]=ROW_NUMBER() OVER(ORDER BY gdt.id,gdc.id) -1
 		where a.GarmentDefectTypeID=gdt.ID AND a.GarmentDefectCodeID=gdc.ID
 	)
 into #base
-from Production.dbo.GarmentDefectType gdt 
-inner join Production.dbo.GarmentDefectCode gdc on gdt.id=gdc.GarmentDefectTypeID 
+from MainServer.Production.dbo.GarmentDefectType gdt 
+inner join MainServer.Production.dbo.GarmentDefectCode gdc on gdt.id=gdc.GarmentDefectTypeID 
 outer apply(
 
 	select Val = stuff((
@@ -1140,7 +1136,7 @@ where   ID = @ID
             string sqlGetData = $@"
 select ID, Description 
 into #baseBACriteria
-from  Production.dbo.DropDownList ddl  WITH(NOLOCK)
+from  MainServer.Production.dbo.DropDownList ddl  WITH(NOLOCK)
 where Type = 'PMS_BACriteria'
 order by Seq
 
@@ -1346,7 +1342,7 @@ select  PMS_RFTCommentsID = d.ID
 	,d.Description
 	,aa.Comnments
 	,d.Seq
-from Production.dbo.DropdownList d
+from MainServer.Production.dbo.DropdownList d
 OUTER APPLY(
 	select *
 	from RFT_OrderComments r
