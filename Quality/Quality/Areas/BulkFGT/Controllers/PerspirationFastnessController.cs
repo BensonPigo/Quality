@@ -5,6 +5,7 @@ using DatabaseObject;
 using DatabaseObject.ResultModel;
 using FactoryDashBoardWeb.Helper;
 using Quality.Controllers;
+using Quality.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -111,6 +112,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             return View(model);
         }
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult DetailSave(PerspirationFastness_Detail_Result req)
         {
             BaseResult result = _PerspirationFastnessService.SavePerspirationFastnessDetail(req, this.UserID);
@@ -133,6 +135,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Json(result);
         }
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult SaveMaster(PerspirationFastness_Main Main)
         {
             var result = _PerspirationFastnessService.SavePerspirationFastnessMain(Main);
@@ -141,6 +144,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult AddDetailRow(string POID, int lastNO, string GroupNO)
         {
             PerspirationFastness_Detail_Result model = _PerspirationFastnessService.GetPerspirationFastness_Detail_Result(POID, "");
@@ -389,6 +393,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult Encode_Detail(string POID, string TestNo)
         {
             string PerspirationFastnessResult = string.Empty;
@@ -403,6 +408,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Json(result);
         }
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult Amend_Detail(string POID, string TestNo)
         {
             BaseResult result = _PerspirationFastnessService.AmendPerspirationFastnessDetail(POID, TestNo);
@@ -411,6 +417,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult Report(string ID, string No, bool IsToPDF)
         {
             BaseResult result;

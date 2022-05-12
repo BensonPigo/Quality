@@ -4,6 +4,7 @@ using DatabaseObject;
 using DatabaseObject.ResultModel;
 using FactoryDashBoardWeb.Helper;
 using Quality.Controllers;
+using Quality.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,6 +39,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult Index(string POID)
         {
             // 21051739BB
@@ -59,6 +61,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         /// <summary>
         /// 外部導向至本頁用
         /// </summary>
+        [SessionAuthorizeAttribute]
         public ActionResult IndexBack(string POID)
         {
             FabricOvenTest_Result model = _FabricOvenTestService.GetFabricOvenTest_Result(POID);
@@ -66,6 +69,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             return View("Index", model);
         }
 
+        [SessionAuthorizeAttribute]
         public ActionResult Detail(string POID, string TestNo,string EditMode)
         {
             FabricOvenTest_Detail_Result model = _FabricOvenTestService.GetFabricOvenTest_Detail_Result(POID, TestNo);
@@ -108,6 +112,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult DetailSave(FabricOvenTest_Detail_Result req)
         {
             BaseResult result = _FabricOvenTestService.SaveFabricOvenTestDetail(req, this.UserID);
@@ -124,6 +129,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             return RedirectToAction("Detail", new { POID = req.Main.POID, TestNo = req.Main.TestNo, EditMode = false });
         }
 
+        [SessionAuthorizeAttribute]
         public JsonResult MainDetailDelete(string ID, string No)
         {
             BaseResult result = _FabricOvenTestService.DeleteOven(ID, No);
@@ -132,6 +138,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult SaveMaster(FabricOvenTest_Main Main)
         {
             var result = _FabricOvenTestService.SaveFabricOvenTestMain(Main);       
@@ -140,6 +147,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult AddDetailRow(string POID, int lastNO, string GroupNO)
         {
             FabricOvenTest_Detail_Result model = _FabricOvenTestService.GetFabricOvenTest_Detail_Result(POID, "");
@@ -219,6 +227,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult Encode_Detail(string POID, string TestNo)
         {
             string ovenTestResult = string.Empty;
@@ -227,6 +236,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult FailMail(string ID, string No, string TO, string CC)
         {
             SendMail_Result result = _FabricOvenTestService.SendFailResultMail(TO, CC, ID, No, false);
@@ -234,6 +244,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult Amend_Detail(string POID, string TestNo)
         {
             BaseResult result = _FabricOvenTestService.AmendFabricOvenTestDetail(POID, TestNo);
@@ -242,6 +253,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult Report(string ID, string No, bool IsToPDF)
         {
             BaseResult result;

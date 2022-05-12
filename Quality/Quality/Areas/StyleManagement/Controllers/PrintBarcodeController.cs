@@ -3,6 +3,7 @@ using BusinessLogicLayer.Service.StyleManagement;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.SampleRFT;
 using Quality.Controllers;
+using Quality.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,6 +33,7 @@ namespace Quality.Areas.StyleManagement
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult Query(StyleManagement_Request Req)
         {
             this.CheckSession();
@@ -72,6 +74,7 @@ namespace Quality.Areas.StyleManagement
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult PrintBarcode(List<int> DataList)
         {
             this.CheckSession();

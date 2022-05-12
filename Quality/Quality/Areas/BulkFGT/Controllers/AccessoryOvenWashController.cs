@@ -4,6 +4,7 @@ using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using FactoryDashBoardWeb.Helper;
 using Quality.Controllers;
+using Quality.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         #region AccessoryOvenWash頁面
+        [SessionAuthorizeAttribute]
         public ActionResult Index()
         {
             Accessory_ViewModel accessory_ViewModel = new Accessory_ViewModel()
@@ -36,6 +38,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         /// <summary>
         /// 外部導向至本頁用
         /// </summary>
+        [SessionAuthorizeAttribute]
         public ActionResult IndexGet(string OrderID)
         {
             Accessory_ViewModel Req = new Accessory_ViewModel() { ReqOrderID = OrderID };
@@ -48,6 +51,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             return View("Index", model);
         }
 
+        [SessionAuthorizeAttribute]
         public ActionResult AccessoryOvenWash(string ReqOrderID)
         {
             Accessory_ViewModel model = new Accessory_ViewModel();
@@ -59,6 +63,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "Query")]
+        [SessionAuthorizeAttribute]
         public ActionResult Query(Accessory_ViewModel Req)
         {
             Accessory_ViewModel model = new Accessory_ViewModel();
@@ -73,6 +78,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult AccessorySave(Accessory_ViewModel Req)
         {
             Accessory_ViewModel model = new Accessory_ViewModel();
@@ -91,6 +97,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         #region OvenTest頁面
 
+        [SessionAuthorizeAttribute]
         public ActionResult OvenTest(Accessory_Oven Req)
         {
             Accessory_Oven model = new Accessory_Oven();
@@ -102,6 +109,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "OvenSave")]
+        [SessionAuthorizeAttribute]
         public ActionResult OvenSave(Accessory_Oven Req)
         {
 
@@ -137,6 +145,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "OvenEncode")]
+        [SessionAuthorizeAttribute]
         public ActionResult OvenEncode(Accessory_Oven Req)
         {
             Accessory_Oven model = new Accessory_Oven();
@@ -174,6 +183,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "OvenAmend")]
+        [SessionAuthorizeAttribute]
         public ActionResult OvenAmend(Accessory_Oven Req)
         {
             Accessory_Oven model = new Accessory_Oven();
@@ -204,6 +214,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult OvenFailMail(Accessory_Oven Req)
         {
             SendMail_Result result = _Service.SendOvenMail(Req);
@@ -211,6 +222,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult OvenReport(string AIR_LaboratoryID, string POID, string Seq1, string Seq2, bool IsToPDF)
         {
             BaseResult result = null;
@@ -225,6 +237,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         #region WashTest頁面
 
+        [SessionAuthorizeAttribute]
         public ActionResult WashTest(Accessory_Wash Req)
         {
             Accessory_Wash model = new Accessory_Wash();
@@ -236,6 +249,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "WashSave")]
+        [SessionAuthorizeAttribute]
         public ActionResult WashSave(Accessory_Wash Req)
         {
 
@@ -271,6 +285,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "WashEncode")]
+        [SessionAuthorizeAttribute]
         public ActionResult WashEncode(Accessory_Wash Req)
         {
             Accessory_Wash model = new Accessory_Wash();
@@ -310,6 +325,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "WashAmend")]
+        [SessionAuthorizeAttribute]
         public ActionResult WashAmend(Accessory_Wash Req)
         {
             Accessory_Wash model = new Accessory_Wash();
@@ -340,6 +356,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult WashFailMail(Accessory_Wash Req)
         {
             SendMail_Result result = _Service.SendWashMail(Req);
@@ -347,6 +364,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult WashReport(string AIR_LaboratoryID, string POID, string Seq1, string Seq2, bool IsToPDF)
         {
             BaseResult result = null;
@@ -361,6 +379,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         #region WashingFastness (501)頁面
 
+        [SessionAuthorizeAttribute]
         public ActionResult WashingFastness(Accessory_WashingFastness Req)
         {
             Accessory_WashingFastness model = new Accessory_WashingFastness();
@@ -372,6 +391,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "WashingFastnessSave")]
+        [SessionAuthorizeAttribute]
         public ActionResult WashingFastnessSave(Accessory_WashingFastness Req)
         {
 
@@ -408,6 +428,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "WashingFastnessEncode")]
+        [SessionAuthorizeAttribute]
         public ActionResult WashingFastnessEncode(Accessory_WashingFastness Req)
         {
             Accessory_WashingFastness model = new Accessory_WashingFastness();
@@ -446,6 +467,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "WashingFastnessAmend")]
+        [SessionAuthorizeAttribute]
         public ActionResult WashWashingFastnessAmend(Accessory_WashingFastness Req)
         {
             Accessory_WashingFastness model = new Accessory_WashingFastness();
@@ -476,6 +498,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult WashingFastnessFailMail(Accessory_WashingFastness Req)
         {
             SendMail_Result result = _Service.SendWashingFastnessMail(Req);
@@ -483,6 +506,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult WashingFastnessReport(string AIR_LaboratoryID, string POID, string Seq1, string Seq2, bool IsToPDF)
         {
             BaseResult result = null;

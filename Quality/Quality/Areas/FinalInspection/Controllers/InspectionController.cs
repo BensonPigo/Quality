@@ -9,6 +9,7 @@ using DatabaseObject.ViewModel.FinalInspection;
 using FactoryDashBoardWeb.Helper;
 using Newtonsoft.Json;
 using Quality.Controllers;
+using Quality.Helper;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -69,6 +70,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult Setting(List<PoSelect_Result> model, string finalInspectionID)
         {
             this.CheckSession();
@@ -221,6 +223,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult AQL_AJAX(string AQLPlan, int TotalAvailableQty)
         {
             Setting setting = new Setting();
@@ -274,6 +277,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         /// <param name="setting"></param>
         /// <returns></returns>
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult GoGeneral(Setting setting)
         {
             this.CheckSession();
@@ -385,6 +389,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         /// <param name="goPage"></param>
         /// <returns></returns>
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult GoCheckList(DatabaseObject.ManufacturingExecutionDB.FinalInspection model, string goPage)
         {
             this.CheckSession();
@@ -421,6 +426,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult CheckList(DatabaseObject.ManufacturingExecutionDB.FinalInspection finalinspection, string goPage)
         {
             this.CheckSession();
@@ -466,6 +472,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult MeasurementSingleSave(Measurement model)
         {
             if (model.ListMeasurementItem != null && !model.ListMeasurementItem.Where(o => o.ResultSizeSpec != null && o.ResultSizeSpec != "").Any())
@@ -491,6 +498,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult GetNewSizeByArticle(string Article)
         {
             List<ArticleSize> ListSize = (List<ArticleSize>)TempData["AllSize"];
@@ -505,6 +513,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult OpenView(string FinalInspectionID)
         {
             FinalInspectionMeasurementService service = new FinalInspectionMeasurementService();
@@ -516,6 +525,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult Measurement(Measurement model, string goPage)
         {
             this.CheckSession();
@@ -625,6 +635,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult AddDefectPicturesTempSave(FinalInspectionDefectItem data)
         {
             if (data.TempImage != null)
@@ -635,6 +646,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult BatchAddDefectPicturesTempSave(List<FinalInspectionDefectItem> list)
         {
             if (list != null && list.Any())
@@ -648,6 +660,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult AddDefect(AddDefect addDefct, string goPage)
         {
             this.CheckSession();
@@ -793,6 +806,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult AddBaPicturesTempSave(BACriteriaItem data)
         {
             if (data.TempImage != null)
@@ -803,6 +817,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult BatchAddBaPicturesTempSave(List<BACriteriaItem> list)
         {
             if (list != null && list.Any())
@@ -816,6 +831,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult BeautifulProductAudit(BeautifulProductAudit Req, string goPage)
         {
             this.CheckSession();
@@ -931,6 +947,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult GetViewMoistureResult(string finalInspectionID)
         {
             IFinalInspectionMoistureService finalInspectionMoistureService = new FinalInspectionMoistureService();
@@ -940,6 +957,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult MoistureSingleSave(MoistureResult Req)
         {
             FinalInspectionMoistureService service = new FinalInspectionMoistureService();
@@ -970,6 +988,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult MoistureDelete(long UKey)
         {
             FinalInspectionMoistureService service = new FinalInspectionMoistureService();
@@ -979,6 +998,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult Moisture(DatabaseObject.ViewModel.FinalInspection.MoistureResult moistureResult, string goPage)
         {
             this.CheckSession();
@@ -1098,6 +1118,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult AddthersTPicturesTempSave(OtherImage data)
         {
             if (data.TempImage != null)
@@ -1108,6 +1129,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult BatchAddthersTPicturesTempSave(List<OtherImage> list)
         {
             if (list != null && list.Any())
@@ -1121,6 +1143,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult Others(Others model, string goPage)
         {
             this.CheckSession();

@@ -5,6 +5,7 @@ using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ViewModel.BulkFGT;
 using FactoryDashBoardWeb.Helper;
 using Quality.Controllers;
+using Quality.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.OnlineHelp = this.OnlineHelp + "BulkFGT.WashingFastness,,"; // ISP20211364
         }
 
+        [SessionAuthorizeAttribute]
         public ActionResult Index()
         {
             FabricColorFastness_ViewModel model = new FabricColorFastness_ViewModel()
@@ -37,6 +39,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         /// <summary>
         /// 外部導向至本頁用
         /// </summary>
+        [SessionAuthorizeAttribute]
         public ActionResult IndexBack(string PoID)
         {
             FabricColorFastness_ViewModel model = _FabricColorFastness_Service.Get_Main(PoID);
@@ -46,6 +49,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "Query")]
+        [SessionAuthorizeAttribute]
         public ActionResult Query(string QueryPoID)
         {
             // 21051739BB
@@ -62,6 +66,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult SaveMaster(FabricColorFastness_ViewModel Main)
         {
             var result = _FabricColorFastness_Service.Save_ColorFastness_1stPage(Main.PoID, Main.ColorFastnessLaboratoryRemark);
@@ -69,6 +74,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Json(result);
         }
 
+        [SessionAuthorizeAttribute]
         public JsonResult MainDetailDelete(string ID)
         {
             BaseResult result = _FabricColorFastness_Service.DeleteColorFastness(ID);
@@ -76,6 +82,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Json(result);
         }
 
+        [SessionAuthorizeAttribute]
         public ActionResult Detail(string PoID, string ID, string EditMode)
         {
             FabricColorFastness_ViewModel FabricColorFastnessModel = new FabricColorFastness_ViewModel();
@@ -129,6 +136,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult AddDetailRow(int lastNO, string GroupNO)
         {
             FabricColorFastness_ViewModel FabricColorFastnessModel = new FabricColorFastness_ViewModel();
@@ -260,6 +268,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult DetailSave(Fabric_ColorFastness_Detail_ViewModel req)
         {
             if (req.Details == null)
@@ -282,6 +291,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult Encode_Detail(string ID, FabricColorFastness_Service.DetailStatus Type)
         {
             string ColorFastnessResult = string.Empty;
@@ -291,6 +301,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult FailMail(string POID, string ID, string TestNo, string TO, string CC)
         {
             BaseResult result = _FabricColorFastness_Service.SentMail(POID, ID, TestNo, TO, CC);
@@ -298,6 +309,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult Report(string ID, bool IsToPDF)
         {
             Fabric_ColorFastness_Detail_ViewModel result;

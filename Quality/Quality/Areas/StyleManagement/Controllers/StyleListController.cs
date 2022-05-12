@@ -3,6 +3,7 @@ using BusinessLogicLayer.Service.StyleManagement;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using Quality.Controllers;
+using Quality.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +32,7 @@ namespace Quality.Areas.StyleManagement.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult Query(StyleList_Request Req)
         {
             this.CheckSession();

@@ -63,6 +63,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult Index(QueryFinalInspection_ViewModel model)
         {
             List<string> inspectionlist = new List<string>() {

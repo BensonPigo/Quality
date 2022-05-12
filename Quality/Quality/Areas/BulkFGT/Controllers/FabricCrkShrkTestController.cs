@@ -4,6 +4,7 @@ using DatabaseObject;
 using DatabaseObject.ResultModel;
 using FactoryDashBoardWeb.Helper;
 using Quality.Controllers;
+using Quality.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +26,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         // GET: BulkFGT/FabricCrkShrkTest
+        [SessionAuthorizeAttribute]
         public ActionResult Index()
         {
             FabricCrkShrkTest_Result fabricCrkShrkTest_Result = new FabricCrkShrkTest_Result()
@@ -37,6 +39,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult Index(string POID)
         {
             ViewBag.POID = POID;
@@ -56,6 +59,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult SaveIndex(FabricCrkShrkTest_Main main, List<FabricCrkShrkTest_Detail> detail)
         {
             FabricCrkShrkTest_Result result = new FabricCrkShrkTest_Result()
@@ -72,6 +76,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         /// 外部導向至本頁用
         /// </summary>
         [HttpGet]
+        [SessionAuthorizeAttribute]
         public ActionResult IndexBack(string POID)
         {
             ViewBag.POID = POID;
@@ -80,6 +85,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         #region Crocking
+        [SessionAuthorizeAttribute]
         public ActionResult CrockingTest(long ID)
         {
             FabricCrkShrkTestCrocking_Result fabricCrkShrkTestCrocking_Result = _FabricCrkShrkTest_Service.GetFabricCrkShrkTestCrocking_Result(ID);
@@ -110,6 +116,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult AddCrockingDetailRow(int lastNO)
         {
             List<string> scaleIDs = _FabricCrkShrkTest_Service.GetScaleIDs();
@@ -204,6 +211,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult CrockingTestSave(FabricCrkShrkTestCrocking_Result Result)
         {
             if (Result.Crocking_Detail == null)
@@ -223,6 +231,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult Encode_Crocking(long ID)
         {
             BaseResult result = _FabricCrkShrkTest_Service.EncodeFabricCrkShrkTestCrockingDetail(ID, this.UserID, out string testResult);
@@ -230,6 +239,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult Amend_Crocking(long ID)
         {
             BaseResult result = _FabricCrkShrkTest_Service.AmendFabricCrkShrkTestCrockingDetail(ID);
@@ -237,6 +247,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult FailMail_Crocking(long ID, string TO, string CC)
         {
             SendMail_Result result = _FabricCrkShrkTest_Service.SendCrockingFailResultMail(TO, CC, ID, false);
@@ -244,6 +255,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult Report_Crocking(long ID, bool IsToPDF)
         {
             BaseResult result;
@@ -265,6 +277,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         #endregion
 
         #region Heat
+        [SessionAuthorizeAttribute]
         public ActionResult HeatTest(long ID)
         {
             FabricCrkShrkTestHeat_Result fabricCrkShrkTestHeat_Result = _FabricCrkShrkTest_Service.GetFabricCrkShrkTestHeat_Result(ID);
@@ -292,6 +305,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             return View(fabricCrkShrkTestHeat_Result);
         }
 
+        [SessionAuthorizeAttribute]
         public ActionResult AddHeatDetailRow(int lastNO)
         {
             string html = string.Empty;
@@ -378,6 +392,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult HeatTestSave(FabricCrkShrkTestHeat_Result Result)
         {
             if (Result.Heat_Detail == null)
@@ -398,6 +413,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult Encode_Heat(long ID)
         {
             BaseResult result = _FabricCrkShrkTest_Service.EncodeFabricCrkShrkTestHeatDetail(ID, this.UserID, out string testResult);
@@ -405,6 +421,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult Amend_Heat(long ID)
         {
             BaseResult result = _FabricCrkShrkTest_Service.AmendFabricCrkShrkTestHeatDetail(ID);
@@ -412,6 +429,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult FailMail_Heat(long ID, string TO, string CC)
         {
             SendMail_Result result = _FabricCrkShrkTest_Service.SendHeatFailResultMail(TO, CC, ID, false);
@@ -419,6 +437,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult Report_Heat(long ID)
         {
             BaseResult result;
@@ -460,6 +479,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult AddWashDetailRow(int lastNO)
         {
             string html = string.Empty;
@@ -563,6 +583,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult WashTestSave(FabricCrkShrkTestWash_Result Result)
         {
             if (Result.Wash_Detail == null)
@@ -590,6 +611,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult Amend_Wash(long ID)
         {
             BaseResult result = _FabricCrkShrkTest_Service.AmendFabricCrkShrkTestWashDetail(ID);
@@ -597,6 +619,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult FailMail_Wash(long ID, string TO, string CC)
         {
             SendMail_Result result = _FabricCrkShrkTest_Service.SendWashFailResultMail(TO, CC, ID, false);
@@ -604,6 +627,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult Report_Wash(long ID)
         {
             BaseResult result;

@@ -5,6 +5,7 @@ using DatabaseObject;
 using DatabaseObject.ResultModel;
 using FactoryDashBoardWeb.Helper;
 using Quality.Controllers;
+using Quality.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,6 +42,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult Index(string POID)
         {
             // 21051739BB
@@ -118,6 +120,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             return View(model);
         }
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult DetailSave(WaterFastness_Detail_Result req)
         {
             BaseResult result = _WaterFastnessService.SaveWaterFastnessDetail(req, this.UserID);
@@ -140,6 +143,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Json(result);
         }
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult SaveMaster(WaterFastness_Main Main)
         {
             var result = _WaterFastnessService.SaveWaterFastnessMain(Main);
@@ -148,6 +152,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult AddDetailRow(string POID, int lastNO, string GroupNO)
         {
             WaterFastness_Detail_Result model = _WaterFastnessService.GetWaterFastness_Detail_Result(POID, "");
@@ -298,6 +303,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult Encode_Detail(string POID, string TestNo)
         {
             string waterFastnessResult = string.Empty;
@@ -306,12 +312,14 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult FailMail(string ID, string No, string TO, string CC)
         {
             SendMail_Result result = _WaterFastnessService.SendFailResultMail(TO, CC, ID, No, false);
             return Json(result);
         }
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult Amend_Detail(string POID, string TestNo)
         {
             BaseResult result = _WaterFastnessService.AmendWaterFastnessDetail(POID, TestNo);
@@ -320,6 +328,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult Report(string ID, string No, bool IsToPDF)
         {
             BaseResult result;
