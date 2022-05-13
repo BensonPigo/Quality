@@ -1,12 +1,12 @@
-﻿
+﻿@using DatabaseObject.ViewModel.SampleRFT
 @{
     ViewBag.Title = "PrintBarcode";
     Layout = null;
-    List<int> StyleUkeyList = new List<int>();
+    List<PrintBarcode_ViewModel> StyleUkeyList = new List<PrintBarcode_ViewModel>();
 
     if (ViewData["StyleUkeyList"] != null)
     {
-        StyleUkeyList = (List<int>)ViewData["StyleUkeyList"];
+        StyleUkeyList = (List<PrintBarcode_ViewModel>)ViewData["StyleUkeyList"];
     }
 }
 
@@ -31,11 +31,11 @@
     }
 </style>
 
-@foreach (var ukey in StyleUkeyList)
+@foreach (var item in StyleUkeyList)
 {
+    <label style="font-weight:bold;">@item.StyleID</label>
     <div class="barcodeDiv">
-        <svg class="barcode" jsbarcode-format="CODE128" jsbarcode-value="@ukey" jsbarcode-width="3"
-             jsbarcode-height="90"></svg>
+        <svg class="barcode" jsbarcode-format="CODE128" jsbarcode-value="@item.StyleUkey" jsbarcode-width="3" jsbarcode-height="60"></svg>
     </div>
 
 }

@@ -72,7 +72,7 @@ namespace Quality.Areas.StyleManagement
         }
 
         [HttpPost]
-        public ActionResult PrintBarcode(List<int> DataList)
+        public ActionResult PrintBarcode(List<PrintBarcode_ViewModel> DataList)
         {
             this.CheckSession();
 
