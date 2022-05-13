@@ -15,6 +15,7 @@ using System.Linq;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
+using Quality.Helper;
 
 namespace Quality.Areas.BulkFGT.Controllers
 {
