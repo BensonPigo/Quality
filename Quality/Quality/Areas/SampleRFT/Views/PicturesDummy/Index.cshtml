@@ -64,8 +64,9 @@
     .detail_Head {
         width: 95%;
     }
-    input[type=text]{
-        width:10vw;
+
+    input[type=text] {
+        width: 10vw;
     }
 </style>
 <div class="main-content">
@@ -118,6 +119,7 @@
                                 <th>Front View</th>
                                 <th>Side View</th>
                                 <th>Back View</th>
+                                <th>   </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -137,8 +139,8 @@
                                             var base64 = Convert.ToBase64String(item.Front);
                                             var imgSrc = String.Format("data:image/png;base64,{0}", base64);
                                             <div class="zoom-gallery">
-                                                <a href="@imgSrc" data-source=""  style="width:640px;height:480px;">
-                                                    <img width="30" src="@imgSrc"/>
+                                                <a href="@imgSrc" data-source="" style="width:640px;height:480px;">
+                                                    <img width="30" src="@imgSrc" />
                                                 </a>
                                             </div>
                                         }
@@ -149,7 +151,7 @@
                                             var base64 = Convert.ToBase64String(item.Side);
                                             var imgSrc = String.Format("data:image/png;base64,{0}", base64);
                                             <div class="zoom-gallery">
-                                                <a href="@imgSrc" data-source=""  style="width:640px;height:480px;">
+                                                <a href="@imgSrc" data-source="" style="width:640px;height:480px;">
                                                     <img width="30" src="@imgSrc" />
                                                 </a>
                                             </div>
@@ -165,6 +167,21 @@
                                                     <img width="30" src="@imgSrc" />
                                                 </a>
                                             </div>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (item.Front != null || item.Back != null || item.Back != null)
+                                        {
+                                            
+                                            <a href="@Url.Action("DownloadPictures", ViewContext.RouteData.GetRequiredString("Controller")
+                                                    , new { 
+                                                        OrderID = Model.OrderID,
+                                                        Article = item.Article,
+                                                        Size = item.Size
+
+                                                    })">
+                                                <img style="width:1vw;" src="~/Image/Icon/Download.png" />
+                                            </a>
                                         }
                                     </td>
                                 </tr>
@@ -194,6 +211,7 @@
 
         $('#myTable').DataTable({
             "pageLength": 10,
+            "ordering":false,
             initComplete: function () {
             }
         });
