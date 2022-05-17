@@ -1773,7 +1773,7 @@ namespace BusinessLogicLayer.Service
                 Excel.Worksheet currenSheet = excel.ActiveWorkbook.Worksheets[j];
                 Crocking_Excel currenData = dataList[j - 1];
                 currenSheet.Select();
-                currenSheet.Name = currenData.Article;
+                currenSheet.Name = currenData.Article + currenData.Roll + currenData.Dyelot;
 
                 currenSheet.Cells[2, 3] = currenData.SubmitDate.HasValue ? currenData.SubmitDate.Value.ToString("yyyy/MM/dd") : string.Empty;
                 currenSheet.Cells[2, 8] = DateTime.Now.ToString("yyyy/MM/dd");
