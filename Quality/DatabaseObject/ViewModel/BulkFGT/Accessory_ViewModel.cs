@@ -32,6 +32,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
     {
         //表身
         public Int64 AIR_LaboratoryID { get; set; }
+        public string ReportNo { get; set; }
         public string Seq1 { get; set; }
         public string Seq2 { get; set; }
         public string Seq { get; set; }
@@ -77,6 +78,8 @@ namespace DatabaseObject.ViewModel.BulkFGT
         //Oven
 
         public Int64 AIR_LaboratoryID { get; set; }
+        public string MDivisionID { get; set; }
+        public string ReportNo { get; set; }
         public string Seq1 { get; set; }
         public string Seq2 { get; set; }
         public string Seq { get; set; }
@@ -148,6 +151,8 @@ namespace DatabaseObject.ViewModel.BulkFGT
     public class Accessory_Wash
     {
         public Int64 AIR_LaboratoryID { get; set; }
+        public string MDivisionID { get; set; }
+        public string ReportNo { get; set; }
         public string Seq1 { get; set; }
         public string Seq2 { get; set; }
         public string Seq { get; set; }
@@ -298,6 +303,8 @@ namespace DatabaseObject.ViewModel.BulkFGT
     public class Accessory_WashingFastness
     {
         public Int64 AIR_LaboratoryID { get; set; }
+        public string MDivisionID { get; set; }
+        public string ReportNo { get; set; }
         public string Seq1 { get; set; }
         public string Seq2 { get; set; }
         public string Seq { get; set; }

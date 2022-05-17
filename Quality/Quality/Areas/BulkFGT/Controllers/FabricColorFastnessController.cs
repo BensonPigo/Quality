@@ -132,6 +132,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.ResultStainList = FabricColorFastnessModel.Result_Source;
             ViewBag.EditMode = EditMode;
             ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
             return View(model);
         }
 
@@ -287,6 +288,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             req.Result = result.Result;
             req.ErrorMessage = result.ErrorMessage;
             TempData["ModelFabricColorFastness"] = req;
+            ViewBag.UserMail = this.UserMail;
             return RedirectToAction("Detail", new { POID = req.Main.POID, ID = req.Main.ID, EditMode = true });
         }
 
@@ -325,6 +327,24 @@ namespace Quality.Areas.BulkFGT.Controllers
             string FileName = result.reportPath;
             string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
             return Json(new { result.Result, result.ErrorMessage, reportPath });
+        }
+
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public JsonResult SendMailToMR(string ID)
+        {
+            this.CheckSession();
+
+            Fabric_ColorFastness_Detail_ViewModel result = _FabricColorFastness_Service.ToPDF(ID, false);
+            string FileName = result.reportPath;
+
+            if (!result.Result)
+            {
+                result.ErrorMessage = result.ErrorMessage.ToString();
+            }
+            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
+
+            return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, reportPath = reportPath, FileName = FileName });
         }
     }
 }

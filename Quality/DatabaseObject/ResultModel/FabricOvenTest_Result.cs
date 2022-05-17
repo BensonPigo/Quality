@@ -32,6 +32,7 @@ namespace DatabaseObject.ResultModel
     public class FabricOvenTest_Detail
     {
         public string TestNo { get; set; }
+        public string ReportNo { get; set; }
         public DateTime? InspDate { get; set; }
         public string Article { get; set; }
         public string Result { get; set; }
@@ -43,6 +44,7 @@ namespace DatabaseObject.ResultModel
 
     public class FabricOvenTest_Detail_Result : BaseResult
     {
+        public string MDivisionID { get; set; }
         public List<string> ScaleIDs { get; set; }
         public FabricOvenTest_Detail_Main Main { get; set; } = new FabricOvenTest_Detail_Main();
         public List<FabricOvenTest_Detail_Detail> Details { get; set; } = new List<FabricOvenTest_Detail_Detail>();
@@ -52,6 +54,7 @@ namespace DatabaseObject.ResultModel
     {
         public string TestNo { get; set; }
         public string POID { get; set; }
+        public string ReportNo { get; set; }
         public DateTime? InspDate { get; set; }
         public string Article { get; set; }
         public string Inspector { get; set; }

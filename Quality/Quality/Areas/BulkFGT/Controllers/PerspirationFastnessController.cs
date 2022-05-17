@@ -109,12 +109,14 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.MetalContentList = MetalContentList;
             ViewBag.FactoryID = this.FactoryID;
             ViewBag.ErrorMessage = string.Empty;
+            ViewBag.UserMail = this.UserMail;
             return View(model);
         }
         [HttpPost]
         [SessionAuthorizeAttribute]
         public ActionResult DetailSave(PerspirationFastness_Detail_Result req)
         {
+            req.MDivisionID = this.MDivisionID;
             BaseResult result = _PerspirationFastnessService.SavePerspirationFastnessDetail(req, this.UserID);
             if (result.Result)
             {
@@ -126,6 +128,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             req.Result = result.Result;
             req.ErrorMessage = result.ErrorMessage;
             TempData["ModelPerspirationFastness"] = req;
+            ViewBag.UserMail = this.UserMail;
             return RedirectToAction("Detail", new { POID = req.Main.POID, TestNo = req.Main.TestNo, EditMode = false });
         }
         public JsonResult MainDetailDelete(string ID, string No)
@@ -435,6 +438,25 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
             return Json(new { result.Result, result.ErrorMessage, reportPath });
+        }
+
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public JsonResult SendMail(string ID, string No)
+        {
+            this.CheckSession();
+
+            BaseResult result = null;
+            string FileName = string.Empty;
+
+            result = _PerspirationFastnessService.ToReport(ID, out FileName, true, false);
+            if (!result.Result)
+            {
+                result.ErrorMessage = result.ErrorMessage.ToString();
+            }
+            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
+
+            return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, reportPath = reportPath, FileName = FileName });
         }
     }
 }

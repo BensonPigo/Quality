@@ -112,6 +112,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.ResultList = new SetListItem().ItemListBinding(resultType);
             ViewBag.ScaleIDsList = new SetListItem().ItemListBinding(fabricCrkShrkTestCrocking_Result.ScaleIDs);
             ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
             return View(fabricCrkShrkTestCrocking_Result);
         }
 
@@ -218,7 +219,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             {
                 Result.Crocking_Detail = new List<FabricCrkShrkTestCrocking_Detail>();
             }
-
+            Result.MDivisionID = this.MDivisionID;
             BaseResult saveResult = _FabricCrkShrkTest_Service.SaveFabricCrkShrkTestCrockingDetail(Result, this.UserID);
             if (saveResult.Result)
             {
@@ -227,6 +228,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             Result.Result = saveResult.Result;
             Result.ErrorMessage = saveResult.ErrorMessage;
             TempData["ModelCrockingTest"] = Result;
+            ViewBag.UserMail = this.UserMail;
             return RedirectToAction("CrockingTest", new { ID = Result.ID });
         }
 
@@ -274,6 +276,26 @@ namespace Quality.Areas.BulkFGT.Controllers
             string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
+
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public JsonResult CrockingSendMail(long ID)
+        {
+            this.CheckSession();
+
+            BaseResult result = null;
+            string FileName = string.Empty;
+
+            result = _FabricCrkShrkTest_Service.Crocking_ToExcel(ID, true, out FileName);
+
+            if (!result.Result)
+            {
+                result.ErrorMessage = result.ErrorMessage.ToString();
+            }
+            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
+
+            return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, reportPath = reportPath, FileName = FileName });
+        }
         #endregion
 
         #region Heat
@@ -302,6 +324,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             ViewBag.ResultList = new SetListItem().ItemListBinding(resultType);
             ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
             return View(fabricCrkShrkTestHeat_Result);
         }
 
@@ -399,7 +422,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             {
                 Result.Heat_Detail = new List<FabricCrkShrkTestHeat_Detail>();
             }
-
+            Result.MDivisionID = this.MDivisionID;
             BaseResult saveResult = _FabricCrkShrkTest_Service.SaveFabricCrkShrkTestHeatDetail(Result, this.UserID);
 
             if (saveResult.Result)
@@ -409,6 +432,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             Result.Result = saveResult.Result;
             Result.ErrorMessage = saveResult.ErrorMessage;
             TempData["ModelHeatTest"] = Result;
+            ViewBag.UserMail = this.UserMail;
             return RedirectToAction("HeatTest", new { ID = Result.ID });
         }
 
@@ -445,6 +469,26 @@ namespace Quality.Areas.BulkFGT.Controllers
             string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
+
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public JsonResult HeatSendMail(long ID)
+        {
+            this.CheckSession();
+
+            BaseResult result = null;
+            string FileName = string.Empty;
+
+            result = _FabricCrkShrkTest_Service.ToExcelFabricCrkShrkTestHeatDetail(ID, out FileName);
+
+            if (!result.Result)
+            {
+                result.ErrorMessage = result.ErrorMessage.ToString();
+            }
+            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
+
+            return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, reportPath = reportPath, FileName = FileName });
+        }
         #endregion
 
         #region Wash
@@ -475,6 +519,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.ResultList = new SetListItem().ItemListBinding(resultType);
             ViewBag.SkewnessOptionList = skewnessOptionList;
             ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
             return View(fabricCrkShrkTestWash_Result);
         }
 
@@ -590,7 +635,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             {
                 Result.Wash_Detail = new List<FabricCrkShrkTestWash_Detail>();
             }
-
+            Result.MDivisionID = this.MDivisionID;
             BaseResult saveResult = _FabricCrkShrkTest_Service.SaveFabricCrkShrkTestWashDetail(Result, this.UserID);
             if (saveResult.Result)
             {
@@ -600,6 +645,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             Result.Result = saveResult.Result;
             Result.ErrorMessage = saveResult.ErrorMessage;
             TempData["ModelWashTest"] = Result;
+            ViewBag.UserMail = this.UserMail;
             return RedirectToAction("WashTest", new { ID = Result.ID });
         }
 
@@ -634,6 +680,26 @@ namespace Quality.Areas.BulkFGT.Controllers
             result = _FabricCrkShrkTest_Service.ToExcelFabricCrkShrkTestWashDetail(ID, out string FileName);
             string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
             return Json(new { result.Result, result.ErrorMessage, reportPath });
+        }
+
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public JsonResult WashSendMail(long ID)
+        {
+            this.CheckSession();
+
+            BaseResult result = null;
+            string FileName = string.Empty;
+
+            result = _FabricCrkShrkTest_Service.ToExcelFabricCrkShrkTestWashDetail(ID, out FileName);
+
+            if (!result.Result)
+            {
+                result.ErrorMessage = result.ErrorMessage.ToString();
+            }
+            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
+
+            return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, reportPath = reportPath, FileName = FileName });
         }
         #endregion
     }

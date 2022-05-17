@@ -115,6 +115,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         [SessionAuthorizeAttribute]
         public ActionResult DetailSave(FabricOvenTest_Detail_Result req)
         {
+            req.MDivisionID = this.MDivisionID;
             BaseResult result = _FabricOvenTestService.SaveFabricOvenTestDetail(req, this.UserID);
             if (result.Result)
             {
@@ -269,6 +270,26 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
             return Json(new { result.Result, result.ErrorMessage, reportPath });
+        }
+
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public JsonResult SendMail(string ID, string No)
+        {
+            this.CheckSession();
+
+            BaseResult result = null;
+            string FileName = string.Empty;
+
+            result = _FabricOvenTestService.ToPdfFabricOvenTestDetail(ID, No, out FileName, false);
+
+            if (!result.Result)
+            {
+                result.ErrorMessage = result.ErrorMessage.ToString();
+            }
+            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
+
+            return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, reportPath = reportPath, FileName = FileName });
         }
     }
 }

@@ -103,6 +103,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             Accessory_Oven model = new Accessory_Oven();
             model = _Service.GetOvenTest(Req);
             ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
 
             return View(model);
         }
@@ -120,6 +121,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 Req.OvenInspector = this.UserID;
             }
             Req.EditName = this.UserID;
+            Req.MDivisionID = this.MDivisionID;
 
             //修改
             model = _Service.UpdateOven(Req);
@@ -139,6 +141,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             // 取得更新後MODEL
             model = _Service.GetOvenTest(Req);
 
+            ViewBag.UserMail = this.UserMail;
             ViewBag.FactoryID = this.FactoryID;
             return View("OvenTest", model);
         }
@@ -177,6 +180,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 model.ErrorMessage = "FailMail();";
             }
 
+            ViewBag.UserMail = this.UserMail;
             ViewBag.FactoryID = this.FactoryID;
             return View("OvenTest", model);
         }
@@ -209,6 +213,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             // 取得更新後MODEL
             model = _Service.GetOvenTest(Req);
 
+            ViewBag.UserMail = this.UserMail;
             ViewBag.FactoryID = this.FactoryID;
             return View("OvenTest", model);
         }
@@ -233,6 +238,25 @@ namespace Quality.Areas.BulkFGT.Controllers
             string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
+
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public JsonResult OvenSendMail(string AIR_LaboratoryID, string POID, string Seq1, string Seq2)
+        {
+            this.CheckSession();
+
+            BaseResult result = null;
+            string FileName = string.Empty;
+
+            result = _Service.OvenTestExcel(AIR_LaboratoryID, POID, Seq1, Seq2, true, out FileName);
+            if (!result.Result)
+            {
+                result.ErrorMessage = result.ErrorMessage.ToString();
+            }
+            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
+
+            return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, reportPath = reportPath, FileName = FileName });
+        }
         #endregion
 
         #region WashTest頁面
@@ -243,6 +267,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             Accessory_Wash model = new Accessory_Wash();
             model = _Service.GetWashTest(Req);
             ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
 
             return View(model);
         }
@@ -260,7 +285,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 Req.WashInspector = this.UserID;
             }
             Req.EditName = this.UserID;
-
+            Req.MDivisionID = this.MDivisionID;
             //修改
             model = _Service.UpdateWash(Req);
 
@@ -279,6 +304,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             // 取得更新後MODEL
             model = _Service.GetWashTest(Req);
 
+            ViewBag.UserMail = this.UserMail;
             ViewBag.FactoryID = this.FactoryID;
             return View("WashTest", model);
         }
@@ -319,6 +345,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 model.ErrorMessage = "FailMail();";
             }
 
+            ViewBag.UserMail = this.UserMail;
             ViewBag.FactoryID = this.FactoryID;
             return View("WashTest", model);
         }
@@ -351,6 +378,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             // 取得更新後MODEL
             model = _Service.GetWashTest(Req);
 
+            ViewBag.UserMail = this.UserMail;
             ViewBag.FactoryID = this.FactoryID;
             return View("WashTest", model);
         }
@@ -375,6 +403,26 @@ namespace Quality.Areas.BulkFGT.Controllers
             string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
+
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public JsonResult WashSendMail(string AIR_LaboratoryID, string POID, string Seq1, string Seq2)
+        {
+            this.CheckSession();
+            ViewBag.UserMail = this.UserMail;
+
+            BaseResult result = null;
+            string FileName = string.Empty;
+
+            result = _Service.WashTestExcel(AIR_LaboratoryID, POID, Seq1, Seq2, true, out FileName);
+            if (!result.Result)
+            {
+                result.ErrorMessage = result.ErrorMessage.ToString();
+            }
+            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
+
+            return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, reportPath = reportPath, FileName = FileName });
+        }
         #endregion
 
         #region WashingFastness (501)頁面
@@ -385,6 +433,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             Accessory_WashingFastness model = new Accessory_WashingFastness();
             model = _Service.GetWashingFastness(Req);
             ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
 
             return View(model);
         }
@@ -403,7 +452,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
             Req.EditName = this.UserID;
             Req.WashingFastnessEncode = false;
-
+            Req.MDivisionID = this.MDivisionID;
             //修改
             model = _Service.UpdateWashingFastness(Req);
 
@@ -423,6 +472,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             model = _Service.GetWashingFastness(Req);
 
             ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
             return View("WashingFastness", model);
         }
 
@@ -462,6 +512,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
 
             ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
             return View("WashingFastness", model);
         }
 
@@ -494,6 +545,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             model = _Service.GetWashingFastness(Req);
 
             ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
             return View("WashingFastness", model);
         }
 
@@ -516,6 +568,25 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
             return Json(new { result.Result, result.ErrorMessage, reportPath });
+        }
+
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public JsonResult WashingFastnessSendMail(string AIR_LaboratoryID, string POID, string Seq1, string Seq2)
+        {
+            this.CheckSession();
+
+            BaseResult result = null;
+            string FileName = string.Empty;
+
+            result = _Service.WashingFastnessExcel(AIR_LaboratoryID, POID, Seq1, Seq2, true, out FileName);
+            if (!result.Result)
+            {
+                result.ErrorMessage = result.ErrorMessage.ToString();
+            }
+            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
+
+            return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, reportPath = reportPath, FileName = FileName });
         }
         #endregion
 

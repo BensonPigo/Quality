@@ -12,6 +12,7 @@ namespace DatabaseObject.ViewModel
     {
         public string DrySelect { get; set; }
         public string Above50 { get; set; }
+        public string ReportNo { get; set; }
         public string NeckSelect { get; set; }
         public string GarmentTest_Detail_Inspector { get; set; }
         public string GarmentTest_Detail_AddName { get; set; }

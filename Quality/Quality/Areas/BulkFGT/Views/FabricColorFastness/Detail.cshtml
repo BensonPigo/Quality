@@ -170,6 +170,12 @@
                                         PDF
                                     </h4>
                                 </td>
+                                <td style="width:6vw;">
+                                    <h4 id="SendMail" style=" margin-right: 1em; width: 8vw;">
+                                        <img src="~/Image/Icon/SendMail.png" width="30" />
+                                        Send to MR
+                                    </h4>
+                                </td>
                                 <td>
                                     <h4 id="Picture" style=" margin-right: 1em; width: 7vw;">
                                         <img src="~/Image/Icon/Camera.png" width="30" />
@@ -192,10 +198,10 @@
                     <table class="DataTable">
                         <tbody>
                             <tr>
-                                <td style="width: 10vw;"><h5>No of Test#</h5></td>
+                                <td style="width: 10vw;"><h5>Report No</h5></td>
                                 <td style="width: 20vw;">
                                 
-                                    <label>@Model.Main.TestNo</label>
+                                    <label>@Model.Main.ID</label>
                                     @Html.HiddenFor(o => o.Main.TestNo)
                                     @Html.HiddenFor(o => o.Main.ID)
 
@@ -751,10 +757,10 @@
         EditModeButtionBind();
 
         if (EditMode) {
-            $("#Edit, #Encode, #Amend, #Excel, #PDF").removeClass("IsEditMode");
+            $("#Edit, #Encode, #Amend, #Excel, #PDF ,#SendMail").removeClass("IsEditMode");
             $('#Save, #New').addClass("IsEditMode");
             $(".DataTable input, .DataTable select").removeAttr("disabled");
-            $('#Encode, #Amend, #Excel, #PDF').unbind('click');
+            $('#Encode, #Amend, #Excel, #PDF ,#SendMail').unbind('click');
             $(".DetailTable img").removeClass('display-None');
             DetailButtonBind();
             DetailDetailButtonBind();
@@ -764,7 +770,7 @@
             $(".DetailTable img").addClass('display-None');
             $('#Save').unbind('click').removeClass("IsEditMode");
             $(".DataTable input, .DataTable select").attr("disabled", "disabled");
-            $('#Excel, #PDF').addClass("IsEditMode");
+            $('#Excel, #PDF ,#SendMail').addClass("IsEditMode");
 
             if ($('#Main_Status').val() == "New") {
                 $('#Edit, #Encode').addClass("IsEditMode");
@@ -1033,7 +1039,7 @@
             var para = "?Title=" + $('.page-header span').html() + "&EditMode=" + EditMode;
             para += "&" + "Table=ColorFastness";
             para += "&" + "BeforeColumn=TestBeforePicture";
-            para += "&" + "AfterColumn=TestAfterPicture"; 
+            para += "&" + "AfterColumn=TestAfterPicture";
             para += "&" + "PKey_1=ID";
             para += "&" + "PKey_1_Val=" + $('#Main_ID').val();
             para += "&" + "PKey_2=POID";
@@ -1167,7 +1173,7 @@
                 }
 
                 if (Result == "" || Result == undefined || ResultChange == "" || ResultChange == undefined
-                    || ResultAcetate == "" || ResultAcetate == undefined 
+                    || ResultAcetate == "" || ResultAcetate == undefined
                     || ResultCotton == "" || ResultCotton == undefined
                     || ResultNylon == "" || ResultNylon == undefined
                     || ResultPolyester == "" || ResultPolyester == undefined
@@ -1276,6 +1282,35 @@
 
         $('#PDF').unbind('click').on('click', function () {
             ToReport(1);
+        });
+
+            $('#SendMail').unbind('click').on('click', function () {
+
+                $.ajax({
+                    url: "@Url.Action("SendMailToMR", "FabricColorFastness", new { Area = "BulkFGT" })",
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({
+                        ID: $('#Main_ID').val()
+                    }),
+                    async: false,
+                    success: function (data) {
+                        if (data.Result) {
+                            var para = "?To=";
+                            para += "&CC=" + '@ViewBag.UserMail';
+                            para += "&Subject=" + "Washing Fastness Test – ReportNo:" + '@Model.Main.ID';
+                            para += "&Body=" + "Attachment is Washing Fastness Test– ReportNo:" + '@Model.Main.ID' + " detail data";
+                            para += "&file=" + data.FileName;
+                            window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=600');
+                        }
+                        else {
+                            msg.WithError(data.ErrorMessage);
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                });
         });
     }
 

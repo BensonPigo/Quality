@@ -44,6 +44,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             };
 
             ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
             return View(model);
         }
 
@@ -74,6 +75,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
 
             ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
             return View("Index", model);
         }
 
@@ -92,6 +94,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
 
             ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
             return View("Index", model);
         }
         [HttpPost]
@@ -105,6 +108,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             model.Detail = Service.GetData(model.ReportNo_Query).Detail;
 
             ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
             return View("Index", model);
         }
 
@@ -244,6 +248,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
 
             ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
             return View("Index", model);
         }
 
@@ -307,6 +312,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             model.ReportNo_Query = model.Detail.ReportNo;
 
             ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
             return View("Index", model);
 
         }
@@ -352,6 +358,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
 
             ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
             return View("Index", Result);
         }
 

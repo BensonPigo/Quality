@@ -117,12 +117,14 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.EditMode = EditMode;
             ViewBag.FactoryID = this.FactoryID;
             ViewBag.ErrorMessage = string.Empty;
+            ViewBag.UserMail = this.UserMail;
             return View(model);
         }
         [HttpPost]
         [SessionAuthorizeAttribute]
         public ActionResult DetailSave(WaterFastness_Detail_Result req)
         {
+            req.MDivisionID = this.MDivisionID;
             BaseResult result = _WaterFastnessService.SaveWaterFastnessDetail(req, this.UserID);
             if (result.Result)
             {
@@ -323,7 +325,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         public JsonResult Amend_Detail(string POID, string TestNo)
         {
             BaseResult result = _WaterFastnessService.AmendWaterFastnessDetail(POID, TestNo);
-            return Json(new { result.Result, ErrorMessage = result.ErrorMessage.Replace("'", string.Empty) });
+            return Json(new { result.Result, ErrorMessage = result.ErrorMessage == null ? "" : result.ErrorMessage.Replace("'", string.Empty) });
         }
 
 
@@ -346,6 +348,25 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
             return Json(new { result.Result, result.ErrorMessage, reportPath });
+        }
+
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public JsonResult SendMail(string ID, string No)
+        {
+            this.CheckSession();
+
+            BaseResult result = null;
+            string FileName = string.Empty;
+
+            result = _WaterFastnessService.ToReport(ID, out FileName, true, false);
+            if (!result.Result)
+            {
+                result.ErrorMessage = result.ErrorMessage.ToString();
+            }
+            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
+
+            return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, reportPath = reportPath, FileName = FileName });
         }
     }
 }

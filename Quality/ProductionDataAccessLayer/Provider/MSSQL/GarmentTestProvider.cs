@@ -453,6 +453,8 @@ where ID = @ID
                 List<GarmentTest_Detail_ViewModel> needUpdateDetailList = PublicClass.CompareListValue<GarmentTest_Detail_ViewModel>(
                     detail, oldDetailData, "ID,No", "OrderID,SizeCode,MtlTypeID,inspdate,inspector,NonSeamBreakageTest,Remark");
 
+                string NewReportNo = GetID(master.MDivisionid + "GM", "GarmentTest_Detail", DateTime.Today, 2, "ReportNo");
+
                 string sqlInsertGarmentTestDetail = $@"
 SET XACT_ABORT ON
 declare @MaxNo int = (select MaxNo = isnull(max(No),0) from GarmentTest_Detail with(nolock) where  id = '{master.ID}')
@@ -465,6 +467,7 @@ insert into GarmentTest_Detail(
     ,Remark
     ,AddName,AddDate
     ,Status
+    ,ReportNo
 )
 values(
     @ID
@@ -476,6 +479,7 @@ values(
     ,@Remark
     ,@UserID, GetDate()
     ,'New'
+    ,@ReportNo
 )
 
 insert into [ExtendServer].PMSFile.dbo.GarmentTest_Detail(ID,No)
@@ -523,6 +527,7 @@ Delete [ExtendServer].PMSFile.dbo.GarmentTest_Detail where id = @ID and NO = @No
                             objParameterDetail.Add($"@UserID", string.IsNullOrEmpty(UserID) ? string.Empty : UserID);
                             objParameterDetail.Add($"@OrderID", string.IsNullOrEmpty(detailItem.OrderID) ? string.Empty : detailItem.OrderID);
                             objParameterDetail.Add($"@inspdate", detailItem.inspdate);
+                            objParameterDetail.Add($"@ReportNo", NewReportNo);
 
                             ExecuteNonQuery(CommandType.Text, sqlInsertGarmentTestDetail, objParameterDetail);
                             break;

@@ -46,6 +46,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 select	[TestNo] = cast(o.TestNo as varchar),
         [POID] = o.POID,
         o.ID, 
+        o.ReportNo, 
 		[InspDate] = o.InspDate,
 		[Article] = o.Article,
 		[Inspector] = o.Inspector,
@@ -174,6 +175,7 @@ where p.id = @POID
 
             string sqlGetDetails = @"
 select	[TestNo] = cast(o.TestNo as varchar),
+        o.ReportNo ,
 		[InspDate] = o.InspDate,
 		[Article] = o.Article,
 		[Result] = o.Result,
@@ -229,14 +231,44 @@ select  [PerspirationFastnessID] = ID
 from    PerspirationFastness WITH(NOLOCK)
 where   POID = @POID and TestNo = @TestNo
 
-update  [ExtendServer].PMSFile.dbo.PerspirationFastness set  
-                    TestBeforePicture = @TestBeforePicture,
-                    TestAfterPicture = @TestAfterPicture
-where  ID IN (
-    select   ID
-    from    PerspirationFastness WITH(NOLOCK)
-    where   POID = @POID and TestNo = @TestNo
+----判斷ExtendServer有沒有缺資料
+IF EXISTS(
+    select 1 from PerspirationFastness a
+    where NOT  EXISTS (
+        select   ID
+        from    [ExtendServer].PMSFile.dbo.PerspirationFastness b WITH(NOLOCK)
+		where  a.ID = b.ID
+    )
+    AND   POID = @POID and TestNo = @TestNo
 )
+BEGIN
+    insert into [ExtendServer].PMSFile.dbo.PerspirationFastness(ID, TestBeforePicture, TestAfterPicture)
+    values
+    (
+            (
+                select TOP 1 ID from PerspirationFastness a  WITH(NOLOCK)
+                where NOT  EXISTS (
+                    select   ID
+                    from    [ExtendServer].PMSFile.dbo.PerspirationFastness b WITH(NOLOCK)
+		            where  a.ID = b.ID
+                )
+                AND POID = @POID and TestNo = @TestNo
+            )
+            , @TestBeforePicture, @TestAfterPicture
+    )
+END
+ELSE
+BEGIN
+    update  [ExtendServer].PMSFile.dbo.PerspirationFastness set  
+                        TestBeforePicture = @TestBeforePicture,
+                        TestAfterPicture = @TestAfterPicture
+    where  ID IN (
+        select   ID
+        from    PerspirationFastness WITH(NOLOCK)
+        where   POID = @POID and TestNo = @TestNo
+    )
+END
+
 
 ";
 
@@ -576,6 +608,9 @@ update  PerspirationFastness_Detail set Roll           =  @Roll         ,
             listPar.Add("@Temperature", DbType.Int32, PerspirationFastness_Detail_Result.Main.Temperature);
             listPar.Add("@Time", DbType.Int32, PerspirationFastness_Detail_Result.Main.Time);
 
+            string NewReportNo = GetID(PerspirationFastness_Detail_Result.MDivisionID + "PF", "PerspirationFastness", DateTime.Today, 2, "ReportNo");
+            listPar.Add("@ReportNo", NewReportNo);
+
             string sqlInsertPerspirationFastness = @"
 SET XACT_ABORT ON
 
@@ -588,9 +623,9 @@ from    PerspirationFastness  WITH(NOLOCK)
 where POID = @POID
 
 ----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
-insert into PerspirationFastness(POID, TestNo, InspDate, Article, Status, Inspector, Temperature, MetalContent, Time , Remark, addName, addDate)
+insert into PerspirationFastness(POID, TestNo, InspDate, Article, Status, Inspector, Temperature, MetalContent, Time , Remark, addName, addDate ,ReportNo)
         OUTPUT INSERTED.ID, INSERTED.TestNo into @PerspirationFastnessID
-        values(@POID, @TestNo, @InspDate, @Article, 'New', @Inspector, @Temperature, @MetalContent, @Time, @Remark, @addName, getdate())
+        values(@POID, @TestNo, @InspDate, @Article, 'New', @Inspector, @Temperature, @MetalContent, @Time, @Remark, @addName, getdate() ,@ReportNo)
 
 select  [PerspirationFastnessID] = ID, TestNo
 from @PerspirationFastnessID
