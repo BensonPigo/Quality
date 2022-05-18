@@ -1325,7 +1325,7 @@ where   ID = @ID
             string sqlcmd = $@"
 select distinct oqd.ID, oqd.Article, oqd.SizeCode 
 INTO #tmp
-from Production.dbo.Order_QtyShip_Detail oqd with (nolock)
+from MainServer.Production.dbo.Order_QtyShip_Detail oqd with (nolock)
 where oqd.ID = @OrderID
 
 select distinct oqd.Article, Size = oqd.SizeCode 
