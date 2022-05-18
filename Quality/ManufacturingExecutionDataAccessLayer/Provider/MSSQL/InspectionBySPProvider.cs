@@ -746,7 +746,7 @@ outer apply(
 outer apply(
 	select Val=COUNT(1)
 	from #SampleRFTInspection_Detail a
-	where a.GarmentDefectTypeID=gdt.ID AND a.GarmentDefectCodeID=gdc.ID
+	where a.GarmentDefectTypeID=gdt.ID AND a.GarmentDefectCodeID=gdc.ID and a.Qty > 0
 )Qty
 where 1=1 and gdt.Junk =0 and gdc.Junk =0
 order by gdt.id,gdc.id
@@ -1323,12 +1323,80 @@ where   ID = @ID
             };
 
             string sqlcmd = $@"
-select *
-from PMSFile.dbo.RFT_PicDuringDummyFitting  WITH(NOLOCK)
-where OrderID = @OrderID
+select distinct oqd.ID, oqd.Article, oqd.SizeCode 
+INTO #tmp
+from Production.dbo.Order_QtyShip_Detail oqd with (nolock)
+where oqd.ID = @OrderID
+
+select distinct oqd.Article, Size = oqd.SizeCode 
+		,d.Front
+		,d.Side
+		,d.Back
+from #tmp oqd with (nolock)
+LEFT JOIN PMSFile.dbo.RFT_PicDuringDummyFitting d  WITH(NOLOCK) ON oqd.ID =d.OrderID AND oqd.Article=d.Article AND oqd.SizeCode=d.Size
+where oqd.ID = @OrderID
 ";
 
             return ExecuteList<DummyFitImage>(CommandType.Text, sqlcmd, objParameter);
+        }
+        public int DummyFitUpdate(InspectionBySP_DummyFit Req)
+        {
+            List<DummyFitImage> details = Req.DetailList;
+            long ID = Req.ID;
+
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            objParameter.Add("@OrderID", Req.OrderID);
+
+            string FinalSql = $@"";
+            int idx = 0;
+
+            foreach (var detail in details)
+            {
+                objParameter.Add($"@Article{idx}", detail.Article);
+                objParameter.Add($"@Size{idx}", detail.Size);
+
+                objParameter.Add($"@Front{idx}", detail.Front == null ? System.Data.SqlTypes.SqlBinary.Null : detail.Front);
+                objParameter.Add($"@Side{idx}", detail.Side == null ? System.Data.SqlTypes.SqlBinary.Null : detail.Side);
+                objParameter.Add($"@Back{idx}", detail.Back == null ? System.Data.SqlTypes.SqlBinary.Null : detail.Back);
+
+                string sql = $@"
+if exists(
+    select 1 from PMSFile.dbo.RFT_PicDuringDummyFitting    
+    WHERE OrderID = @OrderID AND Article = @Article{idx} AND Size = @Size{idx}
+)
+begin
+    UPDATE PMSFile.dbo.RFT_PicDuringDummyFitting
+    SET Front = @Front{idx}
+        ,Side = @Side{idx}
+        ,Back = @Back{idx}
+    WHERE OrderID = @OrderID
+    AND Article = @Article{idx}
+    AND Size = @Size{idx}
+end
+else
+begin
+    INSERT INTO PMSFile.dbo.RFT_PicDuringDummyFitting
+               (OrderID
+               ,Article
+               ,Size
+               ,Front
+               ,Side
+               ,Back)
+     VALUES
+               (@OrderID
+               ,@Article{idx}
+               ,@Size{idx}
+               ,@Front{idx}
+               ,@Side{idx}
+               ,@Back{idx})
+end
+";
+
+                FinalSql += sql;
+                idx++;
+            }
+
+            return ExecuteNonQuery(CommandType.Text, FinalSql, objParameter);
         }
 
         public IList<CFTComments_Result> Get_CFT_OrderComments(string OrderID)
@@ -1390,7 +1458,7 @@ END
             foreach (var item in comments)
             {
                 objParameter.Add($"@PMS_RFTCommentsID{idx}", item.PMS_RFTCommentsID);
-                objParameter.Add($"@Comnments{idx}", item.Comnments);
+                objParameter.Add($"@Comnments{idx}", item.Comnments ?? string.Empty);
 
                 string sql = $@"
 IF EXISTS(

@@ -37,6 +37,9 @@
             font-size: 2vh; 
             font-weight: 900;
         }
+        h4{
+            font-size:1rem;
+        }
     </style>
 }
 <div class="DownWhiteBackgrond">
@@ -281,8 +284,8 @@
     <input type='hidden' id='addDefct.ListDefectItem[${RowIndex}].GarmentDefectCodeID' name='addDefct.ListDefectItem[${RowIndex}].GarmentDefectCodeID' value='${value[4]}'>
     <input type='hidden' id='addDefct.ListDefectItem[${RowIndex}].GarmentDefectTypeID' name='addDefct.ListDefectItem[${RowIndex}].GarmentDefectTypeID' value='${value[5]}'>
     <input type='number' id='addDefct.ListDefectItem[${RowIndex}].Qty' onchange='QtyChange("${value[5]}",${index},this)' name='addDefct.ListDefectItem[${RowIndex}].Qty'  min="0" style="width: 7vh" value='${Qty}' /></td>
-    <td> <img src="/Image/Icon/Camera.png" style="cursor: pointer;" onclick="ScreenShot(${UKey},${RowIndex},'${GarmentDefectCodeID}')" width="25vw" height="25vw" /></td>
-    @*<td> <img src="/Image/Icon/Picture.png" style="cursor: pointer;" onclick="OpenPicture(${value[0]},${RowIndex})" width="25vw" height="25vw" /></td>*@
+    <td> <img src="/Image/Icon/Camera.png" style="cursor: pointer;min-width:1.5vw;" onclick="ScreenShot(${UKey},${RowIndex},'${GarmentDefectCodeID}')"  /></td>
+    
     <td style = 'width:40%' > <input type='text' name='addDefct.ListDefectItem[${RowIndex}].AreaCodes' onchange='AreaChange("${value[5]}",${index},this)' style="width:100%;" onclick="OpenArea('addDefct.ListDefectItem[${RowIndex}]')" readonly value='${AreaCodes}' /></td>
     <td>
         <select id='addDefct.ListDefectItem[${RowIndex}].Responsibility' onchange='ResponsibilityChange("${value[5]}",${index},this)' name='addDefct.ListDefectItem[${RowIndex}].Responsibility'>

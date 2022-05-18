@@ -502,7 +502,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 _Provider = new InspectionBySPProvider(_ISQLDataTransaction);
 
                 List<SampleRFTInspection_Detail> detail = new List<SampleRFTInspection_Detail>();
-                foreach (SampleRFTInspection_Summary item in addDefct.ListDefectItem.Where(o => o.Qty > 0))
+                foreach (SampleRFTInspection_Summary item in addDefct.ListDefectItem)
                 {
                     long SampleRFTInspectionUkey = item.ID;
                     long DetailUkey = item.UKey;
@@ -510,11 +510,11 @@ namespace BusinessLogicLayer.Service.SampleRFT
                     string GarmentDefectTypeID = item.GarmentDefectTypeID;
                     string GarmentDefectCodeID = item.GarmentDefectCodeID;
                     string Responsibility = item.Responsibility;
-                    int Qty = 1;
                     List<string> AreaCodes = item.AreaCodes != null ? item.AreaCodes.Split(',').ToList() : new List<string>();
 
                     if (AreaCodes.Count != 0)
                     {
+                        int Qty = 1;
                         foreach (var area in AreaCodes)
                         {
                             SampleRFTInspection_Detail d = new SampleRFTInspection_Detail()
@@ -533,6 +533,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
                     }
                     else
                     {
+                        int Qty = 0;
                         SampleRFTInspection_Detail d = new SampleRFTInspection_Detail()
                         {
                             SampleRFTInspectionUkey = SampleRFTInspectionUkey,
@@ -723,6 +724,32 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 model.ExecuteResult = false;
                 model.ErrorMessage = ex.Message.Replace("'", string.Empty);
             }
+            return model;
+        }
+
+        public InspectionBySP_DummyFit DummyFitProcess(InspectionBySP_DummyFit req)
+        {
+            InspectionBySP_DummyFit model = new InspectionBySP_DummyFit();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ManufacturingExecutionDataAccessLayer);
+            try
+            {
+                _Provider = new InspectionBySPProvider(_ISQLDataTransaction);
+
+                List<BACriteriaItem> detail = new List<BACriteriaItem>();
+
+                _Provider.DummyFitUpdate(req);
+
+                _ISQLDataTransaction.Commit();
+                model.ExecuteResult = true;
+            }
+            catch (Exception ex)
+            {
+                _ISQLDataTransaction.RollBack();
+                model.ExecuteResult = false;
+                model.ErrorMessage = ex.Message.Replace("'", string.Empty);
+            }
+            finally { _ISQLDataTransaction.CloseConnection(); }
+
             return model;
         }
 

@@ -357,21 +357,19 @@ namespace Quality.Areas.SampleRFT.Controllers
                 {
                     ctn += 1;
                     string seq = (maxCtn + ctn).ToString();
-                    model.Images_Source.Add(new SelectListItem() { Text = seq, Value = seq });
+                    model.Images_Source.Add(new SelectListItem() { Text = seq, Value = string.Empty });
                     model.Images.Add(new RFT_Inspection_Measurement_Image() { Image = item.TempImage, Seq = Convert.ToInt32(seq) });
                 }
             }
 
             // 下拉選單排除要刪除的
             model.Images_Source = model.Images_Source.Where(o =>
-                TmpDelete_MeasurementImg.Where(x => x.Seq.ToString() == o.Text).Any() == false &&
-                TmpDelete_MeasurementImg.Where(x => x.ID.ToString() == o.Value).Any() == false
+                !TmpDelete_MeasurementImg.Any(x => x.Seq.ToString() == o.Text)
             ).ToList();
 
             // 圖片排除要刪除的
             model.Images = model.Images.Where(o =>
-                TmpDelete_MeasurementImg.Where(x => x.Seq == o.Seq).Any() == false &&
-                TmpDelete_MeasurementImg.Where(x => x.ID == o.ID).Any() == false
+                !TmpDelete_MeasurementImg.Any(x => x.Seq == o.Seq)
             ).ToList();
 
 
@@ -390,8 +388,28 @@ namespace Quality.Areas.SampleRFT.Controllers
         {
             if (data.TempImage != null)
             {
-                string seq = (TmpMeasurementImgSourceList.Count + 1).ToString();
-                data.Seq = Convert.ToInt32(seq);
+
+                Measurement_ResultModel model = _Service.GetMeasurementImageList(OrderID);
+                // 這裡要帶出所有圖片，可以參考Inspection的Measurement Photo怎麼做
+
+                model.OrderID = OrderID;
+
+                // 把畫面上User拍的照片加進去，一起顯示
+                if (TmpAdd_MeasurementImg != null)
+                {
+                    int maxCtn = model.Images_Source.Any() ? model.Images_Source.Max(o => Convert.ToInt32(o.Text)) : 0;
+                    int ctn = 0;
+                    foreach (var item in TmpAdd_MeasurementImg)
+                    {
+                        ctn += 1;
+                        string seq = (maxCtn + ctn).ToString();
+                        model.Images_Source.Add(new SelectListItem() { Text = seq, Value = string.Empty });
+                        model.Images.Add(new RFT_Inspection_Measurement_Image() { Image = item.TempImage, Seq = Convert.ToInt32(seq) });
+                    }
+                }
+
+                string newSeq = (model.Images_Source.Count + 1).ToString();
+                data.Seq = Convert.ToInt32(newSeq);
                 TmpAdd_MeasurementImg.Add(data);
             }
 
@@ -410,12 +428,31 @@ namespace Quality.Areas.SampleRFT.Controllers
         {
             if (list != null && list.Any())
             {
-                int maxCtn = TmpMeasurementImgSourceList.Count;
-                int ctn = 0;
+                Measurement_ResultModel model = _Service.GetMeasurementImageList(OrderID);
+                // 這裡要帶出所有圖片，可以參考Inspection的Measurement Photo怎麼做
+
+                model.OrderID = OrderID;
+
+                // 把畫面上User拍的照片加進去，一起顯示
+                if (TmpAdd_MeasurementImg != null)
+                {
+                    int maxCtn = model.Images_Source.Any() ? model.Images_Source.Max(o => Convert.ToInt32(o.Text)) : 0;
+                    int ctn = 0;
+                    foreach (var item in TmpAdd_MeasurementImg)
+                    {
+                        ctn += 1;
+                        string seq = (maxCtn + ctn).ToString();
+                        model.Images_Source.Add(new SelectListItem() { Text = seq, Value = string.Empty });
+                        model.Images.Add(new RFT_Inspection_Measurement_Image() { Image = item.TempImage, Seq = Convert.ToInt32(seq) });
+                    }
+                }
+
+                int newMaxCtn = model.Images_Source.Count;
+                int newCtn = 0;
                 foreach (var data in list.Where(o => o.TempImage != null))
                 {
-                    ctn += 1;
-                    string seq = (maxCtn + ctn).ToString();
+                    newCtn += 1;
+                    string seq = (newMaxCtn + newCtn).ToString();
                     data.Seq = Convert.ToInt32(seq);
                     TmpAdd_MeasurementImg.Add(data);
                 }
@@ -453,26 +490,24 @@ namespace Quality.Areas.SampleRFT.Controllers
             {
                 ctn += 1;
                 string seq = (maxCtn + ctn).ToString();
-                model.Images_Source.Add(new SelectListItem() { Text = seq, Value = seq });
+                model.Images_Source.Add(new SelectListItem() { Text = seq, Value = string.Empty });
                 model.Images.Add(new RFT_Inspection_Measurement_Image() { Image = item.TempImage, Seq = Convert.ToInt32(seq) });
             }
 
             // 下拉選單排除要刪除的
             model.Images_Source = model.Images_Source.Where(o =>
-                TmpDelete_MeasurementImg.Where(x => x.Seq.ToString() == o.Text).Any() == false &&
-                TmpDelete_MeasurementImg.Where(x => x.ID.ToString() == o.Value).Any() == false
+                !TmpDelete_MeasurementImg.Any(x => x.Seq.ToString() == o.Text)
             ).ToList();
 
             // 圖片排除要刪除的
             model.Images = model.Images.Where(o =>
-                TmpDelete_MeasurementImg.Where(x => x.Seq == o.Seq).Any() == false &&
-                TmpDelete_MeasurementImg.Where(x => x.ID == o.ID).Any() == false
+                !TmpDelete_MeasurementImg.Any(x => x.Seq == o.Seq)
             ).ToList();
 
 
             var jsonObject = new List<object>();
             jsonObject.Add(JsonConvert.SerializeObject(model.Images_Source));
-            jsonObject.Add(JsonConvert.SerializeObject(model.Images.Select(o => new { o.Seq, o.Image })));
+            jsonObject.Add(JsonConvert.SerializeObject(model.Images.Select(o => new { o.Seq, o.Image, o.ID })));
 
             return new JsonResult
             {
@@ -521,13 +556,12 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             foreach (var item in TmpAdd_MeasurementImg)
             {
-                model.Images.Add(new RFT_Inspection_Measurement_Image() { Image = item.TempImage });
+                model.Images.Add(new RFT_Inspection_Measurement_Image() { Image = item.TempImage, Seq = item.Seq });
             }
 
             // 圖片排除要刪除的
             model.Images = model.Images.Where(o =>
-                TmpDelete_MeasurementImg.Where(x => x.Seq == o.Seq).Any() == false &&
-                TmpDelete_MeasurementImg.Where(x => x.ID == o.ID).Any() == false
+                !TmpDelete_MeasurementImg.Any(x => x.Seq == o.Seq)
             ).ToList();
 
             Req.ImageList = model.Images.Select(o => o.Image).ToList();
@@ -539,6 +573,10 @@ namespace Quality.Areas.SampleRFT.Controllers
 
 
             InspectionBySP_Measurement result = _Service.InsertMeasurement(Req);
+
+            TmpMeasurementImgSourceList = new List<SelectListItem>();
+            TmpAdd_MeasurementImg = new List<RFT_Inspection_Measurement_Image>();
+            TmpDelete_MeasurementImg = new List<RFT_Inspection_Measurement_Image>();
 
             return Json(result);
         }
@@ -659,8 +697,36 @@ namespace Quality.Areas.SampleRFT.Controllers
         {
             if (data.TempImage != null)
             {
-                string seq = (TmpDefectImgSourceList.Count + 1).ToString();
-                data.Seq = Convert.ToInt32(seq);
+                SampleRFTInspection_Summary model = SampleRFTInspection_DetailUKey > 0 ? _Service.GetDefectImageList(ID, SampleRFTInspection_DetailUKey)
+                    : new SampleRFTInspection_Summary()
+                    {
+                        Images_Source = new List<SelectListItem>(),
+                        Images = new List<DefectImage>(),
+                    };
+
+                model.ID = ID;
+                model.UKey = SampleRFTInspection_DetailUKey;
+                model.GarmentDefectCodeID = GarmentDefectCodeID;
+
+                // 把畫面上User拍的照片加進去，一起顯示
+                if (TmpAdd_DefectImg != null)
+                {
+                    int maxCtn = model.Images_Source.Any() ? model.Images_Source.Max(o => Convert.ToInt32(o.Text)) : 0;
+                    int ctn = 0;
+                    foreach (var item in TmpAdd_DefectImg)
+                    {
+                        if (item.GarmentDefectCodeID != GarmentDefectCodeID)
+                        {
+                            continue;
+                        }
+                        ctn += 1;
+                        string seq = (maxCtn + ctn).ToString();
+                        model.Images_Source.Add(new SelectListItem() { Text = seq, Value = GarmentDefectCodeID });
+                    }
+                }
+
+                string newSeq = (model.Images_Source.Count + 1).ToString();
+                data.Seq = Convert.ToInt32(newSeq);
                 data.SampleRFTInspectionDetailUKey = SampleRFTInspection_DetailUKey;
                 data.GarmentDefectCodeID = GarmentDefectCodeID;
                 TmpAdd_DefectImg.Add(data);
@@ -675,8 +741,41 @@ namespace Quality.Areas.SampleRFT.Controllers
         {
             if (list != null && list.Any())
             {
-                int maxCtn = TmpDefectImgSourceList.Count;
+
+                int maxCtn = 0;
                 int ctn = 0;
+
+                SampleRFTInspection_Summary model = SampleRFTInspection_DetailUKey > 0 ? _Service.GetDefectImageList(ID, SampleRFTInspection_DetailUKey)
+                    : new SampleRFTInspection_Summary()
+                    {
+                        Images_Source = new List<SelectListItem>(),
+                        Images = new List<DefectImage>(),
+                    };
+
+                model.ID = ID;
+                model.UKey = SampleRFTInspection_DetailUKey;
+                model.GarmentDefectCodeID = GarmentDefectCodeID;
+
+                // 把畫面上User拍的照片加進去，一起顯示
+                if (TmpAdd_DefectImg != null)
+                {
+                    maxCtn = model.Images_Source.Any() ? model.Images_Source.Max(o => Convert.ToInt32(o.Text)) : 0;
+                    ctn = 0;
+                    foreach (var item in TmpAdd_DefectImg)
+                    {
+                        if (item.GarmentDefectCodeID != GarmentDefectCodeID)
+                        {
+                            continue;
+                        }
+                        ctn += 1;
+                        string seq = (maxCtn + ctn).ToString();
+                        model.Images_Source.Add(new SelectListItem() { Text = seq, Value = GarmentDefectCodeID });
+                    }
+                }
+
+
+                maxCtn = model.Images_Source.Count;
+                ctn = 0;
                 foreach (var data in list.Where(o => o.TempImage != null))
                 {
                     ctn += 1;
@@ -743,7 +842,7 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             var jsonObject = new List<object>();
             jsonObject.Add(JsonConvert.SerializeObject(model.Images_Source));
-            jsonObject.Add(JsonConvert.SerializeObject(model.Images.Select(o => new { o.Seq, o.Image })));
+            jsonObject.Add(JsonConvert.SerializeObject(model.Images.Select(o => new { o.Seq, o.Image, o.ImageUKey })));
 
             return new JsonResult
             {
@@ -782,7 +881,7 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             // Reject Qty > 0的數量代表有表身資料
             // 開始塞入圖片
-            foreach (SampleRFTInspection_Summary item in addDefct.ListDefectItem.Where(o=>o.Qty > 0))
+            foreach (SampleRFTInspection_Summary item in addDefct.ListDefectItem)
             {
                 string GarmentDefectCodeID = item.GarmentDefectCodeID;
 
@@ -915,8 +1014,36 @@ namespace Quality.Areas.SampleRFT.Controllers
         {
             if (data.TempImage != null)
             {
-                string seq = (TmpDefectImgSourceList.Count + 1).ToString();
-                data.Seq = Convert.ToInt32(seq);
+                BACriteriaItem model = BAUKey > 0 ? _Service.GetBAImageList(ID, BAUKey)
+                    : new BACriteriaItem()
+                    {
+                        Images_Source = new List<SelectListItem>(),
+                        Images = new List<BAImage>(),
+                    };
+                model.ID = ID;
+                model.Ukey = BAUKey;
+                model.BACriteria = BACriteria;
+
+                // 把畫面上User拍的照片加進去，一起顯示
+                if (TmpAdd_BAImg != null)
+                {
+                    int maxCtn = model.Images_Source.Any() ? model.Images_Source.Max(o => Convert.ToInt32(o.Text)) : 0;
+                    int ctn = 0;
+                    foreach (var item in TmpAdd_BAImg)
+                    {
+                        if (item.BACriteria != BACriteria)
+                        {
+                            continue;
+                        }
+
+                        ctn += 1;
+                        string seq = (maxCtn + ctn).ToString();
+                        model.Images_Source.Add(new SelectListItem() { Text = seq, Value = BACriteria });
+                    }
+                }
+
+                string newseq = (model.Images_Source.Count + 1).ToString();
+                data.Seq = Convert.ToInt32(newseq);
                 data.BACriteria = BACriteria;
                 data.SampleRFTInspection_NonBACriteriaUKey = BAUKey;
                 TmpAdd_BAImg.Add(data);
@@ -930,8 +1057,39 @@ namespace Quality.Areas.SampleRFT.Controllers
         {
             if (list != null && list.Any())
             {
-                int maxCtn = TmpBAImgSourceList.Count;
+                int maxCtn = 0;
                 int ctn = 0;
+
+                BACriteriaItem model = BAUKey > 0 ? _Service.GetBAImageList(ID, BAUKey)
+                    : new BACriteriaItem()
+                    {
+                        Images_Source = new List<SelectListItem>(),
+                        Images = new List<BAImage>(),
+                    };
+                model.ID = ID;
+                model.Ukey = BAUKey;
+                model.BACriteria = BACriteria;
+
+                // 把畫面上User拍的照片加進去，一起顯示
+                if (TmpAdd_BAImg != null)
+                {
+                    maxCtn = model.Images_Source.Any() ? model.Images_Source.Max(o => Convert.ToInt32(o.Text)) : 0;
+                    ctn = 0;
+                    foreach (var item in TmpAdd_BAImg)
+                    {
+                        if (item.BACriteria != BACriteria)
+                        {
+                            continue;
+                        }
+
+                        ctn += 1;
+                        string seq = (maxCtn + ctn).ToString();
+                        model.Images_Source.Add(new SelectListItem() { Text = seq, Value = BACriteria });
+                    }
+                }
+
+                maxCtn = model.Images_Source.Count;
+                ctn = 0;
                 foreach (var data in list.Where(o => o.TempImage != null))
                 {
                     ctn += 1;
@@ -1000,7 +1158,7 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             var jsonObject = new List<object>();
             jsonObject.Add(JsonConvert.SerializeObject(model.Images_Source));
-            jsonObject.Add(JsonConvert.SerializeObject(model.Images.Select(o => new { o.Seq, o.Image })));
+            jsonObject.Add(JsonConvert.SerializeObject(model.Images.Select(o => new { o.Seq, o.Image, o.ImageUKey })));
 
             return new JsonResult
             {
@@ -1114,6 +1272,45 @@ namespace Quality.Areas.SampleRFT.Controllers
             TempData["AllSize"] = ListSize;
 
             return Json(result);
+        }
+
+        [HttpPost]
+        public ActionResult DummyFitting(InspectionBySP_DummyFit Req, string goPage)
+        {
+            this.CheckSession();
+            InspectionBySP_DummyFit latestModel = new InspectionBySP_DummyFit();
+            UpdateModel(latestModel);
+
+
+            Req.ID = latestModel.ID;
+            Req.OrderID = latestModel.OrderID;
+
+            if (goPage == "Back")
+            {
+                // 進度更新
+                _Service.UpdateSampleRFTInspectionByStep(new SampleRFTInspection()
+                {
+                    ID = Req.ID,
+                    InspectionStep = "Insp-BA"
+                }, "Insp-DummyFit", this.UserID);
+                return RedirectToAction("BeautifulProductAudit", new { ID = Req.ID });
+            }
+            else
+            {
+                InspectionBySP_DummyFit model = _Service.DummyFitProcess(Req);
+
+                TempData["AllSize"] = model.ArticleSizeList;
+
+                // 進度更新
+                _Service.UpdateSampleRFTInspectionByStep(new SampleRFTInspection()
+                {
+                    ID = Req.ID,
+                    InspectionStep = "Insp-Others"
+                }, "Insp-DummyFit", this.UserID);
+                return RedirectToAction("Others", new { ID = Req.ID });
+
+            }
+
         }
         #endregion
 

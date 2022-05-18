@@ -2,6 +2,7 @@
 
 @{
     Layout = "~/Areas/SampleRFT/Views/Shared/_ForAll_Layout.cshtml";
+    int index = 0;
 }
 
 <link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
@@ -34,9 +35,10 @@
 
 <div class="DownWhiteBackgrond">
 
-    @using (Html.BeginForm("DummyFitting", "InspectionBySP", FormMethod.Post, new { @id = "settingForm", onsubmit = "return checkSubmitValue(this.submitted);" }))
+    @using (Html.BeginForm("DummyFitting", "InspectionBySP", FormMethod.Post, new { @id = "settingForm", onsubmit = "return checkValue(this.submitted);" }))
     {
         @Html.HiddenFor(o => o.ID)
+        @Html.HiddenFor(o => o.OrderID)
         <div style="width:100%;height:6vh;padding-top:5px;">
             <label>&emsp;&emsp;SP No.&emsp;</label>
             <label class="blue">@Model.OrderID&emsp;&emsp;</label>
@@ -64,8 +66,8 @@
                     <label>Side</label>
                 </div>
                 <div style="width: 20%; height: 100%; float: left ">
-                    <img src='/Image/Icon/Camera.png' idx="1" class='TakePicture imgButton' />
-                    <img src='/Image/Icon/Delete.png' idx="1" class='DeletePicture imgButton' />
+                    <img src='/Image/Icon/Camera.png' idx="2" class='TakePicture imgButton' />
+                    <img src='/Image/Icon/Delete.png' idx="2" class='DeletePicture imgButton' />
                 </div>
 
             </div>
@@ -74,45 +76,86 @@
                     <label>Back</label>
                 </div>
                 <div style="width: 20%; height: 100%; float: left ">
-                    <img src='/Image/Icon/Camera.png' idx="1" class='TakePicture imgButton' />
-                    <img src='/Image/Icon/Delete.png' idx="1" class='DeletePicture imgButton' />
+                    <img src='/Image/Icon/Camera.png' idx="3" class='TakePicture imgButton' />
+                    <img src='/Image/Icon/Delete.png' idx="3" class='DeletePicture imgButton' />
                 </div>
             </div>
 
             <div style="width: 33%; height: 90%; float: left; border-right: 1px solid black; border-bottom: 1px solid black; ">
+                <img id="tmpPictureFront" class="tmpimage" style="max-width: 98%; max-height: 98%; " />
                 @foreach (var data in Model.DetailList)
                 {
-                    var byteImage = data.Front == null || data.Front is null ? new byte[1] : data.Front;
-                    var base64 = Convert.ToBase64String(byteImage);
-                    var imgSrc = String.Format("data:image/png;base64,{0}", base64);
+                    @Html.Hidden($"Req.DetailList[{index}].Article", data.Article)
+                    @Html.Hidden($"Req.DetailList[{index}].Size", data.Size)
+                    @Html.Hidden($"Req.DetailList[{index}].Front", data.Front, new { @article = data.Article,@size = data.Size, @Piclocation = "Front" })
 
-                    <img class="image" article="@data.Article" size="@data.Size" Type="" style="max-width: 98%; max-height: 98%; display: none; " src="@imgSrc" />
+                    if (data.Front == null || data.Front is null)
+                    {
+                        <img id="Front_@index" name="Req.DetailList[@index].Front" class="image" article="@data.Article" size="@data.Size" Piclocation="Front" style="max-width: 98%; max-height: 98%; display: none; " />
+                    }
+                    else
+                    {
+                        var byteImage = data.Front;
+                        var base64 = Convert.ToBase64String(byteImage);
+                        var imgSrc = String.Format("data:image/png;base64,{0}", base64);
+
+                        <img id="Front_@index" name="Req.DetailList[@index].Front" class="image" article="@data.Article" size="@data.Size" Piclocation="Front" style="max-width: 98%; max-height: 98%; display: none; " src="@imgSrc" />
+                    }
+
+                    index++;
                 }
             </div>
             <div style="width: 33%; height: 90%; float: left; border-right: 1px solid black; border-bottom: 1px solid black; ">
+                <img id="tmpPictureSide" class="tmpimage" style="max-width: 98%; max-height: 98%; " />
 
+                @{ index = 0; }
                 @foreach (var data in Model.DetailList)
                 {
-                    var byteImage = data.Side == null || data.Side is null ? new byte[1] : data.Side;
-                    var base64 = Convert.ToBase64String(byteImage);
-                    var imgSrc = String.Format("data:image/png;base64,{0}", base64);
+                    @Html.Hidden($"Req.DetailList[{index}].Side", data.Side, new { @article = data.Article, @size = data.Size, @Piclocation = "Side" })
+                    if (data.Side == null || data.Side is null)
+                    {
+                        <img id="Side_@index" class="image" name="Req.DetailList[@index].Side" article="@data.Article" size="@data.Size" Piclocation="Side" style="max-width: 98%; max-height: 98%; display: none; " />
+                    }
+                    else
+                    {
+                        var byteImage = data.Side;
+                        var base64 = Convert.ToBase64String(byteImage);
+                        var imgSrc = String.Format("data:image/png;base64,{0}", base64);
 
-                    <img class="image" article="@data.Article" size="@data.Size" Type="" style="max-width: 98%; max-height: 98%; display: none;" src="@imgSrc" />
+                        <img id="Side_@index" class="image" name="Req.DetailList[@index].Side" article="@data.Article" size="@data.Size" Piclocation="Side" style="max-width: 98%; max-height: 98%; display: none; " src="@imgSrc" />
+                    }
+                    index++;
                 }
             </div>
             <div style="width: 33%; height: 90%; float: left; border-bottom: 1px solid black;">
+                <img id="tmpPictureBack" class="tmpimage" style="max-width: 98%; max-height: 98%; " />
 
+                @{ index = 0; }
                 @foreach (var data in Model.DetailList)
                 {
-                    var byteImage = data.Back == null || data.Back is null ? new byte[1] : data.Back;
-                    var base64 = Convert.ToBase64String(byteImage);
-                    var imgSrc = String.Format("data:image/png;base64,{0}", base64);
+                    @Html.Hidden($"Req.DetailList[{index}].Back", data.Back, new { @article = data.Article, @size = data.Size, @Piclocation = "Back" })
+                    if (data.Back == null || data.Back is null)
+                    {
+                        <img id="Back_@index" class="image" name="Req.DetailList[@index].Back" article="@data.Article" size="@data.Size" Piclocation="Back" style="max-width: 98%; max-height: 98%; display: none; " />
+                    }
+                    else
+                    {
+                        var byteImage = data.Back;
+                        var base64 = Convert.ToBase64String(byteImage);
+                        var imgSrc = String.Format("data:image/png;base64,{0}", base64);
 
-                    <img class="image" article="@data.Article" size="@data.Size" Type="" style="max-width: 98%; max-height: 98%; display: none; " src="@imgSrc" />
+                        <img id="Back_@index" class="image" name="Req.DetailList[@index].Back" article="@data.Article" size="@data.Size" Piclocation="Back" style="max-width: 98%; max-height: 98%; display: none; " src="@imgSrc" />
+                    }
+                    index++;
                 }
             </div>
         </div>
 
+        <div style="width:100%">
+            <input type="hidden" id="goPage" name="goPage">
+            <button id="btnBack" onclick="this.form.submitted=this.value;" type="submit" value="Back" class="button" style="right:7em;">Back</button>
+            <button id="btnNext" onclick="this.form.submitted=this.value;" type="submit" value="Next" style="right:0;" class="button">Next</button>
+        </div>
     }
 </div>
 
@@ -169,22 +212,24 @@
 
             $('.TakePicture').on('click', function () {
                 var idx = $(this).attr('idx');
-
                 var article = $("#dropArticle").val();
                 var size = $("#dropSize").val();
 
-                var sentID = "PictureFront";
+                var Piclocation = '';
                 switch (idx) {
                     case "1":
-                        sentID = "PictureFront";
+                        Piclocation = "Front";
                         break;
                     case "2":
-                        sentID = "PictureSide";
+                        Piclocation = "Side";
                         break;
                     case "3":
-                        sentID = "PictureBack";
+                        Piclocation = "Back";
                         break;
                 }
+
+                var sentID = $(`.image[article=${article}][size=${size}][Piclocation=${Piclocation}]`).attr('ID');
+
 
                 $('#Screenshot').removeClass("display-None");
                 Screenshot(sentID);
@@ -192,21 +237,27 @@
 
             $('.DeletePicture').on('click', function () {
                 var idx = $(this).attr('idx');
-                var sentID = "PictureFront";
+                var article = $("#dropArticle").val();
+                var size = $("#dropSize").val();
+
+                var Piclocation = '';
                 switch (idx) {
                     case "1":
-                        sentID = "PictureFront";
+                        Piclocation = "Front";
                         break;
                     case "2":
-                        sentID = "PictureSide";
+                        Piclocation = "Side";
                         break;
                     case "3":
-                        sentID = "PictureBack";
+                        Piclocation = "Back";
                         break;
                 }
 
-                document.querySelector("#a" + sentID).removeAttribute('href');
+                var sentID = $(`.image[article=${article}][size=${size}][Piclocation=${Piclocation}]`).attr('ID');
+
                 document.querySelector("#" + sentID).removeAttribute('src');
+
+                ReloadImg();
             });
 
             // 拍照視窗 Exit
@@ -226,6 +277,33 @@
             $(".image").hide();
 
             $(`.image[article=${article}][size=${size}]`).show();
+
+            var FrontImg = $(`.image[article=${article}][size=${size}][Piclocation=Front]`).attr('src');
+            if (FrontImg != undefined && FrontImg != null && FrontImg != '') {
+                FrontImg = FrontImg.replace('data:image/png;base64,', '');
+            }
+            $(`input[article=${article}][size=${size}][Piclocation=Front]`).val(FrontImg);
+
+            var SideImg = $(`.image[article=${article}][size=${size}][Piclocation=Side]`).attr('src');
+            if (SideImg != undefined && SideImg != null && SideImg != '') {
+                SideImg = SideImg.replace('data:image/png;base64,', '');
+            }
+            $(`input[article=${article}][size=${size}][Piclocation=Side]`).val(SideImg);
+
+            var BackImg = $(`.image[article=${article}][size=${size}][Piclocation=Back]`).attr('src');
+            if (BackImg != undefined && BackImg != null && BackImg != '') {
+                BackImg = BackImg.replace('data:image/png;base64,', '');
+            }
+            $(`input[article=${article}][size=${size}][Piclocation=Back]`).val(BackImg);
+        }
+
+        function checkValue(self) {
+
+            document.getElementById("goPage").value = self;
+
+            ShowLoading();
+
+            return true;
         }
     </script>
 }

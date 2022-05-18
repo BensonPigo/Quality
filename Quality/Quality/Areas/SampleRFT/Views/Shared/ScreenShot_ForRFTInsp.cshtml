@@ -150,7 +150,6 @@
 
         var data =
         {
-            OrderID: orderID,
             TempImage: Img,
         };
 
@@ -174,7 +173,12 @@
 
                 $('#ImageArea').empty();
                 $.each(ImageList, function (idx) {
-                    $('#ImageArea').append('<img id="image_' + ImageList[idx].Seq + '" class="measurementImages" type="" style="width:100%;"  src="data:image/png;base64,' + ImageList[idx].Image + '"/>');
+                    if (idx == 0) {
+                        $('#ImageArea').append('<img id="image_' + ImageList[idx].Seq + '" class="measurementImages" type="" style="width:100%;"  src="data:image/png;base64,' + ImageList[idx].Image + '"/>');
+                    }
+                    else {
+                        $('#ImageArea').append('<img id="image_' + ImageList[idx].Seq + '" class="measurementImages" type="" style="width:100%;display:none;"  src="data:image/png;base64,' + ImageList[idx].Image + '"/>');
+                    }
                 });
             },
             error: function (xhr, ajaxOptions, thrownError) {

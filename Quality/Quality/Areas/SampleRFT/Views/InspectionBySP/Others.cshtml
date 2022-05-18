@@ -53,11 +53,11 @@
             background-color: lightgray;
         }
 
-        .button {
-            /*width: 7vw;*/
-        }
         h2{
             font-size: 1vw;
+        }
+        input {
+            height: 3vh;
         }
     </style>
 }
@@ -90,7 +90,7 @@
                 </tr>
             </table>
         </div>
-        <table id="myTable" class="table table-striped display" style="text-align:center">
+        <table id="myTable" class="table table-striped display" style="text-align:center;">
             <thead>
                 <tr class="row-name">
                     <th>Comments Category</th>
@@ -105,7 +105,6 @@
                             @Html.DisplayFor(modelItem => data.Description)
                         </td>
                         <td>
-                            @*@Html.DisplayFor(modelItem => data.Comnments)*@
                             @Html.Hidden($"Req.DataList[{idx}].PMS_RFTCommentsID", data.PMS_RFTCommentsID)
                             @Html.TextBox($"Req.DataList[{idx}].Comnments", data.Comnments, new { @style = "width:100%" })
                         </td>

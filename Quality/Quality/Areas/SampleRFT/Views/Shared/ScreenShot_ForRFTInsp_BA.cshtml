@@ -150,12 +150,11 @@
 
         var data =
         {
-            OrderID: orderID,
             TempImage: Img,
         };
 
         $.ajax({
-            url: "@Url.Action("AddDefectPicTemp", "InspectionBySP", new { Area = "SampleRFT" })",
+            url: "@Url.Action("AddBAPicTemp", "InspectionBySP", new { Area = "SampleRFT" })",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({ data: data, BAUKey: '@Model.Ukey', ID: '@Model.ID', BACriteria: '@Model.BACriteria' }),
@@ -174,7 +173,12 @@
 
                 $('#ImageArea').empty();
                 $.each(ImageList, function (idx) {
-                    $('#ImageArea').append('<img id="image_' + ImageList[idx].Seq + '" class="DefectImages" type="" style="width:100%;"  src="data:image/png;base64,' + ImageList[idx].Image + '"/>');
+                    if (idx == 0) {
+                        $('#ImageArea').append('<img id="image_' + ImageList[idx].Seq + '" class="BAImages" type="" style="width:100%;"  src="data:image/png;base64,' + ImageList[idx].Image + '"/>');
+                    }
+                    else {
+                        $('#ImageArea').append('<img id="image_' + ImageList[idx].Seq + '" class="BAImages" type="" style="width:100%;display:none;"  src="data:image/png;base64,' + ImageList[idx].Image + '"/>');
+                    }
                 });
             },
             error: function (xhr, ajaxOptions, thrownError) {

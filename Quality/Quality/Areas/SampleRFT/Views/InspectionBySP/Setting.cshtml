@@ -327,8 +327,8 @@
                 return false;
             }
 
-            if ($("#InspectionStage").val() == "100%" && $("#AQLPlan").val() == "" ) {
-                msg.WithError("＜AQL lan＞ cannot be empty.");
+            if ($("#InspectionStage").val() == "AQL" && $("#AQLPlan").val() == "" ) {
+                msg.WithError("＜AQL Plan＞ cannot be empty.");
                 return false;
             }
 
