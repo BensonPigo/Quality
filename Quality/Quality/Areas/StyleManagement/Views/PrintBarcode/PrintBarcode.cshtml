@@ -33,7 +33,7 @@
 
 @foreach (var item in StyleUkeyList)
 {
-    <label style="font-weight:bold;">@item.StyleID</label>
+    <label style="font-weight:bold; font-family: monospace;">@item.StyleID</label>
     <div class="barcodeDiv">
         <svg class="barcode" jsbarcode-format="CODE128" jsbarcode-value="@item.StyleUkey" jsbarcode-width="3" jsbarcode-height="60"></svg>
     </div>
