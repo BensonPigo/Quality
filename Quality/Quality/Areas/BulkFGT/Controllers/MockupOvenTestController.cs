@@ -90,7 +90,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 {
                     MockupOven_Detail = new List<MockupOven_Detail_ViewModel>(),
                     ReportNo_Source = new List<string>(),
-                    ErrorMessage = $"msg.WithInfo('{model.ErrorMessage.Replace("'", string.Empty).Replace("\r\n", "<br />")}');",
+                    ErrorMessage = $@"msg.WithInfo(""{ (string.IsNullOrEmpty(model.ErrorMessage) ? string.Empty : model.ErrorMessage.Replace("'", string.Empty).Replace("\r\n", "<br />")) }"");",
                     ScaleID_Source = _MockupOvenService.GetScale(),
                 };
             }
@@ -133,7 +133,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 {
                     MockupOven_Detail = new List<MockupOven_Detail_ViewModel>(),
                     ReportNo_Source = new List<string>(),
-                    ErrorMessage = $"msg.WithInfo('{model.ErrorMessage.Replace("'", string.Empty).Replace("\r\n", "<br />")}');",
+                    ErrorMessage = $@"msg.WithInfo(""{ (string.IsNullOrEmpty(model.ErrorMessage) ? string.Empty : model.ErrorMessage.Replace("\r\n", "<br />")) }"");",
                     ScaleID_Source = _MockupOvenService.GetScale(),
                 };
             }
@@ -187,7 +187,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             if (!result.Result)
             {
-                model.ErrorMessage = $@"msg.WithInfo('{result.ErrorMessage.Replace("'", string.Empty).Replace("\r\n", "<br />")}');EditMode=true;";
+                model.ErrorMessage = $@"msg.WithInfo('{ (string.IsNullOrEmpty(result.ErrorMessage) ? string.Empty : result.ErrorMessage.Replace("\r\n", "<br />")) }');EditMode=true;";
             }
             else if (result.Result && model.Result == "Fail")
             {

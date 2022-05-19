@@ -131,7 +131,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
             }
             set
             {
-                _ErrorMeassage = string.IsNullOrEmpty(value) ? string.Empty : value.Replace("\r\n", "<br />").Replace("\"", string.Empty);
+                _ErrorMeassage = string.IsNullOrEmpty(value) ? string.Empty : value.Replace("\r\n", "<br />");
             }
         }
         private string _ErrorMeassage;
@@ -195,7 +195,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
             }
             set
             {
-                _ErrorMeassage = string.IsNullOrEmpty(value) ? string.Empty : value.Replace("\r\n", "<br />").Replace("\"", string.Empty);                
+                _ErrorMeassage = string.IsNullOrEmpty(value) ? string.Empty : value.Replace("\r\n", "<br />");                
             }
         }
         private string _ErrorMeassage;

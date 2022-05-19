@@ -53,7 +53,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 {
                     Main = new WaterFastness_Main(),
                     Details = new List<WaterFastness_Detail>(),
-                    ErrorMessage = $@"msg.WithInfo('{model.ErrorMessage.Replace("'",string.Empty) }');",
+                    ErrorMessage = $@"msg.WithInfo(""{(string.IsNullOrEmpty(model.ErrorMessage) ? string.Empty : model.ErrorMessage.Replace("'", string.Empty)) }"");",
                 };
             }
             ViewBag.POID = POID;
@@ -72,7 +72,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 {
                     Main = new WaterFastness_Main(),
                     Details = new List<WaterFastness_Detail>(),
-                    ErrorMessage = $@"msg.WithInfo('{model.ErrorMessage.Replace("'",string.Empty) }');",
+                    ErrorMessage = $@"msg.WithInfo(""{(string.IsNullOrEmpty(model.ErrorMessage) ? string.Empty : model.ErrorMessage.Replace("'", string.Empty)) }"");",
                 };
             }
             ViewBag.POID = POID;

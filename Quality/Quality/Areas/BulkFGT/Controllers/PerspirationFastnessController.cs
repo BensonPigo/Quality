@@ -53,8 +53,8 @@ namespace Quality.Areas.BulkFGT.Controllers
                 {
                     Main = new PerspirationFastness_Main(),
                     Details = new List<PerspirationFastness_Detail>(),
-                    ErrorMessage = $@"msg.WithInfo('{model.ErrorMessage.Replace("'",string.Empty) }');",
-                };
+                    ErrorMessage = $@"msg.WithInfo(""{ (string.IsNullOrEmpty(model.ErrorMessage) ? string.Empty : model.ErrorMessage.Replace("\r\n", "<br />"))  }"");",
+            };
             }
             ViewBag.POID = POID;
             UpdateModel(model);
@@ -95,7 +95,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 model.Main.Remark = saveResult.Main.Remark;
                 model.Details = saveResult.Details;
                 model.Result = saveResult.Result;
-                model.ErrorMessage = $@"msg.WithInfo('{saveResult.ErrorMessage.Replace("'",string.Empty) }');EditMode=true;";
+                model.ErrorMessage = $@"msg.WithInfo('{(string.IsNullOrEmpty(saveResult.ErrorMessage) ? string.Empty : saveResult.ErrorMessage.Replace("'",string.Empty)) }');EditMode=true;";
                 EditMode = "True";
             }
 
@@ -415,7 +415,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         public JsonResult Amend_Detail(string POID, string TestNo)
         {
             BaseResult result = _PerspirationFastnessService.AmendPerspirationFastnessDetail(POID, TestNo);
-            return Json(new { result.Result, ErrorMessage = result.ErrorMessage.Replace("'", string.Empty) });
+            return Json(new { result.Result, ErrorMessage = (string.IsNullOrEmpty(result.ErrorMessage) ? string.Empty : result.ErrorMessage.Replace("'", string.Empty)) });
         }
 
 

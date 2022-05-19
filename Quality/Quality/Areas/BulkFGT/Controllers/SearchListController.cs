@@ -80,7 +80,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             if (!Req.Result)
             {
-                Req.ErrorMessage = $@"msg.WithInfo('{Req.ErrorMessage.Replace("'", string.Empty)}');";
+                Req.ErrorMessage = $@"msg.WithInfo('{(string.IsNullOrEmpty(Req.ErrorMessage) ? string.Empty : Req.ErrorMessage.Replace("'", string.Empty))}');";
             }
 
             TempData["ModelSearchList"] = Req;

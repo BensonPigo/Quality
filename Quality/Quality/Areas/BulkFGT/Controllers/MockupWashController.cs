@@ -145,7 +145,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             if (!result.Result)
             {
-                model.ErrorMessage = $@"msg.WithInfo('{result.ErrorMessage.Replace("'",string.Empty) }');EditMode=true;";
+                model.ErrorMessage = $@"msg.WithInfo('{  (string.IsNullOrEmpty(result.ErrorMessage) ? string.Empty : result.ErrorMessage.Replace("\r\n", "<br />"))  }');EditMode=true;";
             }
             else if (result.Result && model.Result == "Fail")
             {
@@ -204,7 +204,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             Req.TestingMethod_Source = _MockupWashService.GetTestingMethod();
             if (!result.Result)
             {
-                Req.ErrorMessage = $@"msg.WithInfo('{result.ErrorMessage.Replace("'",string.Empty) }');EditMode=true;";
+                Req.ErrorMessage = $@"msg.WithInfo(""{ (string.IsNullOrEmpty(result.ErrorMessage) ? string.Empty : result.ErrorMessage.Replace("\r\n", "<br />"))  }"");EditMode=true;";
             }
             else if (result.Result && model.Result == "Fail")
             {
@@ -241,7 +241,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             if (!result.Result)
             {
-                model.ErrorMessage = $@"msg.WithInfo('{result.ErrorMessage.Replace("'",string.Empty) }');";
+                model.ErrorMessage = $@"msg.WithInfo(""{ (string.IsNullOrEmpty(result.ErrorMessage) ? string.Empty : result.ErrorMessage.Replace("\r\n", "<br />"))  }"");";
             }
 
             model.Request = Req.Request;

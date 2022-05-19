@@ -113,7 +113,7 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             if (!model.Result)
             {
-                model.ErrorMessage = $@"msg.WithInfo('{model.ErrorMessage.Replace("'", string.Empty)}');";
+                model.ErrorMessage = $@"msg.WithInfo('{(string.IsNullOrEmpty(model.ErrorMessage) ? string.Empty : model.ErrorMessage.Replace("'", string.Empty))}');";
             }
             model.QueryType = Req.QueryType;
 
@@ -186,7 +186,7 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             if (!model.Result)
             {
-                model.ErrorMessage = $@"msg.WithInfo('{model.ErrorMessage.Replace("'",string.Empty)}');";
+                model.ErrorMessage = $@"msg.WithInfo('{(string.IsNullOrEmpty(model.ErrorMessage) ? string.Empty : model.ErrorMessage.Replace("'", string.Empty))}');";
             }
             model.QueryType = Req.QueryType;
 
