@@ -130,31 +130,36 @@ namespace Quality.Areas.SampleRFT.Controllers
             ZipFile zip = new ZipFile();
             if (pic.Front!=null)
             {
-                MemoryStream msA = new MemoryStream(pic.Front);
-                Image imgFront = Image.FromStream(msA);
                 string frontName = $"{Req.OrderID}_{pic.Article}_{pic.Size}_Front.png";
                 string frontPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", frontName);
-                imgFront.Save(frontPath);
+                using (var imgFile = new FileStream(frontPath, FileMode.Create))
+                {
+                    imgFile.Write(pic.Front, 0, pic.Front.Length);
+                    imgFile.Flush();
+                }
                 zip.AddFile(frontPath, string.Empty);
             }
             if (pic.Side != null)
             {
-                MemoryStream msB = new MemoryStream(pic.Side);
-                Image imgSide = Image.FromStream(msB);
                 string sideName = $"{Req.OrderID}_{pic.Article}_{pic.Size}_Side.png";
                 string sidePath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", sideName);
-                imgSide.Save(sidePath);
+                using (var imgFile = new FileStream(sidePath, FileMode.Create))
+                {
+                    imgFile.Write(pic.Side, 0, pic.Side.Length);
+                    imgFile.Flush();
+                }
                 zip.AddFile(sidePath, string.Empty);
             }
             if (pic.Back != null)
             {
-                MemoryStream msC = new MemoryStream(pic.Back);
-                Image imgBack = Image.FromStream(msC);
-                string BackName = $"{Req.OrderID}_{pic.Article}_{pic.Size}_Back.png";
-                string backPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", BackName);
-                imgBack.Save(backPath);
+                string backName = $"{Req.OrderID}_{pic.Article}_{pic.Size}_Back.png";
+                string backPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", backName);
+                using (var imgFile = new FileStream(backPath, FileMode.Create))
+                {
+                    imgFile.Write(pic.Back, 0, pic.Back.Length);
+                    imgFile.Flush();
+                }
                 zip.AddFile(backPath, string.Empty);
-
             }
             Response.ContentType = "application/zip";
             Response.AddHeader("Content-Disposition", $"attachment; filename=Dummy Fitting_{DateTime.Now.ToString("yyyyMMddHHmmss")}.zip");
