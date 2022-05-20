@@ -478,7 +478,8 @@ SELECT [Type] = IIF( EXISTS(
 		'BRANDED BLANKS',
 		'SLD ON-FIELD',
 		'NHL ON ICE',
-		'SLD ON-COURT'
+		'SLD ON-COURT',
+        'critical'
 	)
 ),'710','701')
 
