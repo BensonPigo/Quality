@@ -177,7 +177,7 @@ namespace Quality.Areas.StyleManagement.Controllers
         public ActionResult DownloadRRLRFile(string FilePath,string BrandID, string SeasonID, string StyleID)
         {
 
-            string FileName = $"{BrandID}_{SeasonID}_{StyleID}.xlsx";
+            string FileName = $"{BrandID}_{StyleID}_{SeasonID}.xlsx";
             //宣告並建立WebClient物件
             WebClient wc = new WebClient();
 
