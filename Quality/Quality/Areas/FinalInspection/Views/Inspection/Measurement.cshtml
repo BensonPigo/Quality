@@ -103,25 +103,25 @@
                 </tr>
             </table>
 
-            <div style=" width: 51vw; height: 54vh; overflow-y: auto;">
+            <div style="height: 54vh; overflow-y: auto;">
                 <table class="MeasurementTable table table-striped display">
 
                     <thead style="text-align: center; font-size: 1.5vw; font-weight: 900;">
                         <tr>
 
-                            <th style="width:50vw">
+                            <th style="width:34vw">
                                 <p>Description</p>
                             </th>
-                            <th style="width:10vw">
+                            <th style="width:8vw">
                                 <p>Tol(+)</p>
                             </th>
-                            <th style="width:10vw">
+                            <th style="width:8vw">
                                 <p>Tol(-)</p>
                             </th>
                             <th style="width:10vw">
                                 <p idx="SizeCode"></p>
                             </th>
-                            <th style="width:28vw">
+                            <th style="width:30vw">
                                 <p></p>
                             </th>
                             <th style="width:10vw">
@@ -357,6 +357,7 @@
                 if (response.Result != undefined) {
                     if (response.Result) {
                         msg.WithSuccesCheck("Success!", function () {
+                            ReloadData();
                             return true;
                         });
                     }
@@ -668,11 +669,11 @@
 
         if (thead == "") {
             thead += `<tr>";
-            <th style="width:50vw"><p>Description</p></th>
-            <th style="width:10vw"><p>Tol(+)</p></th>
-            <th style="width:10vw"><p>Tol(-)</p></th>
+            <th style="width:34vw"><p>Description</p></th>
+            <th style="width:8vw"><p>Tol(+)</p></th>
+            <th style="width:8vw"><p>Tol(-)</p></th>
             <th style="width:10vw"><p idx='SizeCode'>${dropSize.value}</p></th>
-            <th style="width:28vw"></th>
+            <th style="width:30vw"></th>
             <th style="width:10vw"><p>Diff</p></th>
             </tr>`;
         }

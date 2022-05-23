@@ -75,7 +75,7 @@ namespace Quality.Areas.StyleManagement
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public ActionResult PrintBarcode(List<int> DataList)
+        public ActionResult PrintBarcode(List<PrintBarcode_ViewModel> DataList)
         {
             this.CheckSession();
 
