@@ -56,10 +56,6 @@
         background-color: white;
     }
 
-    #Barcode {
-        height: 10vh;
-    }
-
     td {
         text-align: left;
     }
@@ -110,6 +106,14 @@
     }
     .tab-inner {
         background-color: rgb(255, 255, 255);
+    }
+
+    .Barcode_Div {
+        background-color: #ffffff;
+        width: 182px;
+        text-align: center;
+        font-family: monospace;
+        font-weight: bold;
     }
 </style>
 
@@ -244,8 +248,10 @@
                                 <label>Barcode</label>
                             </td>
                             <td style=" border: 1px solid gray;vertical-align: middle;width: 25vw;">
-                                @*<span class="detail_Head" id="BarcodeText">@Model.StyleUkey</span>*@
-                                <svg id="Barcode"></svg>
+                                <div class="Barcode_Div">
+                                    <span class="detail_Head" id="StyleID" style="color: black;">@Model.StyleID</span>
+                                    <img id="Barcode">
+                                </div>
                             </td>
                         </tr>
                         <tr>
@@ -307,6 +313,7 @@
             // 參考網址https://lindell.me/JsBarcode/#download
             JsBarcode("#Barcode", '@Model.StyleUkey', {
                 height: 40,
+                margin: 0,
             });
         }
     

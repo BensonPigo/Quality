@@ -19,6 +19,7 @@ using NPOI.XSSF.UserModel;
 using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
 using Quality.Controllers;
+using Quality.Helper;
 using Sci;
 using System;
 using System.Collections.Generic;
@@ -63,6 +64,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult Index(QueryFinalInspection_ViewModel model)
         {
             List<string> inspectionlist = new List<string>() {

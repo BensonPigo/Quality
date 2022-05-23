@@ -9,6 +9,7 @@ using DatabaseObject.ViewModel;
 using FactoryDashBoardWeb.Helper;
 using Ionic.Zip;
 using Quality.Controllers;
+using Quality.Helper;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -63,13 +64,14 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             if (!model.Result)
             {
-                model.ErrorMessage = $@"msg.WithInfo('{model.ErrorMessage.Replace("\r\n", "<br />")}');";
+                model.ErrorMessage = $@"msg.WithInfo(""{(string.IsNullOrEmpty(model.ErrorMessage) ? string.Empty : model.ErrorMessage.Replace("\r\n", "<br />"))}"");";
             }
 
             return View("Index", model);
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult Query(RFT_PicDuringDummyFitting_ViewModel Req)
         {
             this.CheckSession();
@@ -89,7 +91,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             model.OrderID = Req.OrderID;
             if (!model.Result)
             {
-                model.ErrorMessage = $@"msg.WithInfo('{model.ErrorMessage.Replace("\r\n", "<br />")}');";
+                model.ErrorMessage = $@"msg.WithInfo(""{(string.IsNullOrEmpty(model.ErrorMessage) ? string.Empty : model.ErrorMessage.Replace("\r\n", "<br />"))}"");";
             }
 
             return View("Index", model);
@@ -120,7 +122,7 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             if (!model.Result)
             {
-                model.ErrorMessage = $@"msg.WithInfo('{model.ErrorMessage.Replace("\r\n", "<br />")}');";
+                model.ErrorMessage = $@"msg.WithInfo(""{(string.IsNullOrEmpty(model.ErrorMessage) ? string.Empty : model.ErrorMessage.Replace("\r\n", "<br />"))}"");";
                 return View("Index", model);
             }
 
@@ -173,6 +175,7 @@ namespace Quality.Areas.SampleRFT.Controllers
 
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult CheckOrder(string OrderID)
         {
             this.CheckSession();

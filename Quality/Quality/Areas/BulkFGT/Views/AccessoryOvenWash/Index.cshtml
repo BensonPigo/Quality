@@ -267,6 +267,7 @@
                     <table cellspacing="100" class="DataTable DetailTable table table-striped display;" style="width:100%">
                         <thead>
                             <tr class="row-name" id="row-name">
+                                <th style="width:5vw">Report No</th>
                                 <th style="width:5vw">Seq</th>
                                 <th style="width:5vw">WKNo</th>
                                 <th style="width:5vw">Arrive W/H Date</th>
@@ -306,6 +307,9 @@
                             {
                                 string styleColor = string.Empty;
                                 <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                                    <td>
+                                        @Html.DisplayFor(modelItem => Model.DataList[i].ReportNo)
+                                    </td>
                                     <td>
                                         @Html.HiddenFor(modelItem => Model.DataList[i].AIR_LaboratoryID, new { @class = "required" })
                                         @Html.HiddenFor(modelItem => Model.DataList[i].Seq1, new { @class = "required" })

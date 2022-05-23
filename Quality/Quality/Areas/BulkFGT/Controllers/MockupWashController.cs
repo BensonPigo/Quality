@@ -7,6 +7,7 @@ using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using FactoryDashBoardWeb.Helper;
 using Quality.Controllers;
+using Quality.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -83,6 +84,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         [MultipleButton(Name = "action", Argument = "Query")]
         public ActionResult Query(MockupWash_ViewModel Req)
         {
@@ -110,6 +112,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         [MultipleButton(Name = "action", Argument = "New")]
         public ActionResult NewSave(MockupWash_ViewModel Req)
         {
@@ -142,7 +145,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             if (!result.Result)
             {
-                model.ErrorMessage = $@"msg.WithInfo('{result.ErrorMessage.Replace("'",string.Empty) }');EditMode=true;";
+                model.ErrorMessage = $@"msg.WithInfo('{  (string.IsNullOrEmpty(result.ErrorMessage) ? string.Empty : result.ErrorMessage.Replace("\r\n", "<br />"))  }');EditMode=true;";
             }
             else if (result.Result && model.Result == "Fail")
             {
@@ -160,6 +163,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         [MultipleButton(Name = "action", Argument = "Edit")]
         public ActionResult EditSave(MockupWash_ViewModel Req)
         {
@@ -200,7 +204,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             Req.TestingMethod_Source = _MockupWashService.GetTestingMethod();
             if (!result.Result)
             {
-                Req.ErrorMessage = $@"msg.WithInfo('{result.ErrorMessage.Replace("'",string.Empty) }');EditMode=true;";
+                Req.ErrorMessage = $@"msg.WithInfo(""{ (string.IsNullOrEmpty(result.ErrorMessage) ? string.Empty : result.ErrorMessage.Replace("\r\n", "<br />"))  }"");EditMode=true;";
             }
             else if (result.Result && model.Result == "Fail")
             {
@@ -217,6 +221,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         [MultipleButton(Name = "action", Argument = "Delete")]
         public ActionResult DeleteReportNo(MockupWash_ViewModel Req)
         {
@@ -236,7 +241,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             if (!result.Result)
             {
-                model.ErrorMessage = $@"msg.WithInfo('{result.ErrorMessage.Replace("'",string.Empty) }');";
+                model.ErrorMessage = $@"msg.WithInfo(""{ (string.IsNullOrEmpty(result.ErrorMessage) ? string.Empty : result.ErrorMessage.Replace("\r\n", "<br />"))  }"");";
             }
 
             model.Request = Req.Request;
@@ -250,6 +255,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult ToPDF(MockupWash_Request MockupWash_Request)
         {
             this.CheckSession();
@@ -271,6 +277,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult SPBlur(string POID)
         {
             string BrandID = string.Empty;
@@ -308,6 +315,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult GetArtworkTypeID_Source(string BrandID, string SeasonID, string StyleID)
         {
             return Json(GetArtworkTypeIDList(BrandID, SeasonID, StyleID));
@@ -351,6 +359,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult AddDetailRow(int lastNO, string BrandID, string SeasonID, string StyleID)
         {
             List<SelectListItem> AccessoryRefNo_Source = new SetListItem().ItemListBinding(new List<string>());
@@ -400,6 +409,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult FailMail(string ReportNo, string TO, string CC)
         {
             MockupFailMail_Request mail = new MockupFailMail_Request()

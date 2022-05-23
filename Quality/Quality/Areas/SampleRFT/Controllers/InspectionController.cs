@@ -6,6 +6,7 @@ using DatabaseObject.RequestModel;
 using DatabaseObject.ViewModel;
 using FactoryDashBoardWeb.Helper;
 using Quality.Controllers;
+using Quality.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,6 +54,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult Index(Inspection_ViewModel request)
         {
             this.CheckSession();
@@ -74,6 +76,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult CheckBrand(string Brand)
         {
             this.CheckSession();
@@ -94,6 +97,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult GetStyle(string OrderID)
         {
             this.CheckSession();
@@ -115,6 +119,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult CheckStyle(string StyleID)
         {
             this.CheckSession();
@@ -139,6 +144,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult GetSP()
         {
             this.CheckSession();
@@ -158,6 +164,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             return Content(html);
         }
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult FilterSP(string SPno)
         {
             this.CheckSession();
@@ -185,6 +192,7 @@ namespace Quality.Areas.SampleRFT.Controllers
 
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult CheckSP(string OrderID)
         {
             this.CheckSession();
@@ -216,6 +224,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult GetArticle(string StyleID, string OrderID)
         {
             this.CheckSession();
@@ -241,6 +250,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult CheckArticle(string StyleID, string OrderID, string Article)
         {
             this.CheckSession();
@@ -259,6 +269,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult GetSize(string StyleID, string OrderID, string Article)
         {
             this.CheckSession();
@@ -285,6 +296,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult CheckSize(string StyleID, string OrderID, string Article, string Size)
         {
             this.CheckSession();
@@ -303,6 +315,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult GetProductType(string StyleID, string OrderID, string Article, string Size)
         {
             this.CheckSession();
@@ -328,6 +341,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult CheckProductType(string StyleID, string OrderID, string Article, string Size, string ProductType)
         {
             this.CheckSession();
@@ -346,6 +360,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult RefreshQty(string StyleID, string OrderID, string Article, string Size, string ProductType)
         {
             this.CheckSession();
@@ -381,6 +396,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult Pass(string StyleID, string OrderID, string Article, string Size, string ProductType)
         {
             this.CheckSession();
@@ -426,6 +442,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult ChkInspQty(string OrderID, string Size, string Article)
         {
             this.CheckSession();
@@ -455,6 +472,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult GetDefectType()
         {
             this.CheckSession();
@@ -472,6 +490,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult GetDefectCode(string DefectTypeID)
         {
             this.CheckSession();
@@ -492,6 +511,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult GetArea(string Type, string Location)
         {
             this.CheckSession();
@@ -520,6 +540,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult GetDropDownList(string Type, string defectType)
         {
             this.CheckSession();
@@ -540,6 +561,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult GetReworkCard(string fixType)
         {
             this.CheckSession();
@@ -562,6 +584,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult ReworkCardSave(InspectionSave_ViewModel saveView)
         {
             this.CheckSession();
@@ -589,6 +612,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult GetReworkList()
         {
             this.CheckSession();
@@ -602,6 +626,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult ReworkListSaveAction(List<RFT_Inspection> reworkLists, InspectionService.ReworkListType type)
         {
             this.CheckSession();
@@ -616,6 +641,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult ReworkListAddReject(RFT_Inspection_Detail detail)
         {
             this.CheckSession();
@@ -624,6 +650,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult SaveReworkListDelete(LogIn_Request logIn, List<RFT_Inspection> datas)
         {
             this.CheckSession();
@@ -632,6 +659,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult DQSReasonGet()
         {
             this.CheckSession();
@@ -646,6 +674,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult MeasurementGet(string OrderID, string SizeCode)
         {
             this.CheckSession();
@@ -654,6 +683,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult MeasurementSave(List<RFT_Inspection_Measurement> measurement)
         {
             this.CheckSession();
@@ -686,6 +716,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult CFTCommentsGet(string OrderID, string StyleID, string Season, string SampleStage)
         {
             this.CheckSession();
@@ -713,6 +744,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult CFTCommentsSave(List<RFT_OrderComments> duringDummyFitting)
         {
             this.CheckSession();
@@ -722,6 +754,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult CFTCommentsSend(string OrderID)
         {
             this.CheckSession();
@@ -730,6 +763,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult PicturesGet(string OrderID, string StyleID, string Article, string Size)
         {
             this.CheckSession();
@@ -749,6 +783,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult PicturesSave(RFT_PicDuringDummyFitting duringDummyFitting)
         {
             this.CheckSession();

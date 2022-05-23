@@ -46,6 +46,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 select	[TestNo] = cast(o.TestNo as varchar),
         [POID] = o.POID,
         o.ID, 
+        o.ReportNo,
 		[InspDate] = o.InspDate,
 		[Article] = o.Article,
 		[Inspector] = o.Inspector,
@@ -158,6 +159,7 @@ where p.id = @POID
 
             string sqlGetDetails = @"
 select	[TestNo] = cast(o.TestNo as varchar),
+		o.ReportNo,
 		[InspDate] = o.InspDate,
 		[Article] = o.Article,
 		[Result] = o.Result,
@@ -461,6 +463,10 @@ update  WaterFastness_Detail set Roll           =  @Roll         ,
             listPar.Add("@Temperature", DbType.Int32, waterFastness_Detail_Result.Main.Temperature);
             listPar.Add("@Time", DbType.Int32, waterFastness_Detail_Result.Main.Time);
 
+            string NewReportNo = GetID(waterFastness_Detail_Result.MDivisionID + "WF", "WaterFastness", DateTime.Today, 2, "ReportNo");
+            listPar.Add("@ReportNo", NewReportNo);
+
+
             string sqlInsertWaterFastness = @"
 SET XACT_ABORT ON
 
@@ -472,9 +478,9 @@ from    WaterFastness  WITH(NOLOCK)
 where POID = @POID
 
 ----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
-insert into WaterFastness(POID, TestNo, InspDate, Article, Status, Inspector, Temperature, Time , Remark, addName, addDate)
+insert into WaterFastness(POID, TestNo, InspDate, Article, Status, Inspector, Temperature, Time , Remark, addName, addDate ,ReportNo)
         OUTPUT INSERTED.ID, INSERTED.TestNo into @WaterFastnessID
-        values(@POID, @TestNo, @InspDate, @Article, 'New', @Inspector, @Temperature, @Time, @Remark, @addName, getdate())
+        values(@POID, @TestNo, @InspDate, @Article, 'New', @Inspector, @Temperature, @Time, @Remark, @addName, getdate() ,@ReportNo)
 
 select  [WaterFastnessID] = ID, TestNo
 from @WaterFastnessID

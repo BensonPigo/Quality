@@ -67,6 +67,8 @@
 <div class="outerDiv" style="margin-right:2%;">
     <div class="grayDiv">
         <h2 style="width:80%;float:left;padding-top:5px">Before</h2>
+        <input type="file" id="BeforeUpload" name="name" accept=".png, .jpg, .jpeg" value="UP" style="display:none;" />
+        <img id="BeforeUploadIcon" class="pointer uploadIcon" style="height: 90%; vertical-align: top;margin-right:5px;" src="~/Image/Icon/Upload.png" />
         <img id="BeforeCam" class="OpenCamera pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Camera.png" />
         <img id="BeforeDel" class="pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Delete.png" />
 
@@ -94,6 +96,8 @@
 <div class="outerDiv">
     <div class="grayDiv">
         <h2 style="width:80%;float:left;padding-top:5px">After</h2>
+        <input type="file" id="AfterUpload" name="name" accept=".png, .jpg, .jpeg" value="UP" style="display:none;" />
+        <img id="AfterUploadIcon" class="pointer uploadIcon" style="height: 90%; vertical-align: top;margin-right:5px;" src="~/Image/Icon/Upload.png" />
         <img id="AfterCam" Type="After" class="OpenCamera pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Camera.png" />
         <img id="AfterDel" class="pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Delete.png" />
     </div>
@@ -141,14 +145,40 @@
         });
 
 
-        $("#btnKeep").click(function () {
+        $("#btnKeep").click(async function () {
 
             var before = document.querySelector("#BeforePic");
             var after = document.querySelector("#AfterPic");
 
+            var BeforePicturePic;
+            var AfterPicturePic;
+
+            // blob:http表示為上傳圖檔
+            if (before.src.indexOf('blob:http') > -1) {
+
+                const file = document.querySelector(`#BeforeUpload`).files[0];
+                var base64 = await convertFile(file);
+                before = base64.replace("data:image/jpg;base64,", "data:image/png;base64,").replace("data:image/jpeg;base64,", "data:image/png;base64,");
+                BeforePicturePic = before;
+            }
+            else {
+                BeforePicturePic = before.src;
+            }
+
+            if (after.src.indexOf('blob:http') > -1) {
+
+                const file = document.querySelector(`#AfterUpload`).files[0];
+                var base64 = await convertFile(file);
+                after = base64.replace("data:image/jpg;base64,", "data:image/png;base64,").replace("data:image/jpeg;base64,", "data:image/png;base64,");
+                AfterPicturePic = after;
+            }
+            else {
+                AfterPicturePic = after.src;
+            }
+
             var Picture = {
-                BeforePicture: before.src,
-                AfterPicture: after.src,
+                BeforePicture: BeforePicturePic,
+                AfterPicture: AfterPicturePic,
             }
 
             window.opener.GetPicture(Picture);
@@ -159,6 +189,54 @@
         $("#btnExit").click(function () {
             window.close();
         });
+
+        $("#BeforeUploadIcon").click(function () {
+
+            $("#BeforeUpload").click();
+        });
+
+        BeforeUpload.onchange = evt => {
+            var length = BeforeUpload.files.length;
+
+            if (length > 0) {
+
+                var idx = 0;
+
+                // for of 可以解決非同步問題
+                for (const fileItem of BeforeUpload.files) {
+
+                    var picFile = BeforeUpload.files[idx];
+                    $(`#BeforePic`).attr('src', window.URL.createObjectURL(picFile));
+                    idx += 1;
+                }
+
+            }
+        }
+
+
+        $("#AfterUploadIcon").click(function () {
+
+            $("#AfterUpload").click();
+        });
+
+        AfterUpload.onchange = evt => {
+            var length = AfterUpload.files.length;
+
+            if (length > 0) {
+
+                var idx = 0;
+
+                // for of 可以解決非同步問題
+                for (const fileItem of AfterUpload.files) {
+
+                    var picFile = AfterUpload.files[idx];
+                    $(`#AfterPic`).attr('src', window.URL.createObjectURL(picFile));
+                    idx += 1;
+                }
+
+            }
+        }
+
 
         $("#BeforeDel").click(function () {
 
@@ -201,7 +279,7 @@
 
 
         if ('@EditMode' == 'False') {
-            $("#BeforeDel, #AfterDel, .OpenCamera").hide();
+            $("#BeforeDel, #AfterDel, .OpenCamera ,.uploadIcon").hide();
         }
     });
 
@@ -224,5 +302,18 @@
                 Screenshot(sentID);
             }
         });
+    }
+
+    function convertFile(file) {
+        return new Promise((resolve, reject) => {
+            // 建立FileReader物件
+            let reader = new FileReader()
+            // 註冊onload事件，取得result則resolve (會是一個Base64字串)
+            reader.onload = () => { resolve(reader.result) }
+            // 註冊onerror事件，若發生error則reject
+            reader.onerror = () => { reject(reader.error) }
+            // 讀取檔案
+            reader.readAsDataURL(file)
+        })
     }
 </script>

@@ -3,6 +3,7 @@ using DatabaseObject;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ViewModel.SampleRFT;
 using Quality.Controllers;
+using Quality.Helper;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -79,6 +80,7 @@ namespace Quality.Areas.StyleManagement.Controllers
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "Query")]
+        [SessionAuthorizeAttribute]
         public ActionResult Query(StyleResult_Request Req)
         {
             this.CheckSession();
@@ -107,6 +109,7 @@ namespace Quality.Areas.StyleManagement.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult CheckStyle(StyleResult_Request Req)
         {
             this.CheckSession();
@@ -132,6 +135,7 @@ namespace Quality.Areas.StyleManagement.Controllers
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "SampleRFTToExcel")]
+        [SessionAuthorizeAttribute]
         public ActionResult SampleRFT_ToExcel(StyleResult_Request Req)
         {
             this.CheckSession();

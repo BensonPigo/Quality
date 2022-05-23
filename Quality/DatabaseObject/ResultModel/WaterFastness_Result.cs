@@ -31,6 +31,7 @@ namespace DatabaseObject.ResultModel
 
     public class WaterFastness_Detail
     {
+        public string ReportNo { get; set; }
         public string TestNo { get; set; }
         public DateTime? InspDate { get; set; }
         public string Article { get; set; }
@@ -44,6 +45,7 @@ namespace DatabaseObject.ResultModel
 
     public class WaterFastness_Detail_Result : BaseResult
     {
+        public string MDivisionID { get; set; }
         public List<string> ScaleIDs { get; set; }
         public WaterFastness_Detail_Main Main { get; set; } = new WaterFastness_Detail_Main();
         public List<WaterFastness_Detail_Detail> Details { get; set; } = new List<WaterFastness_Detail_Detail>();
@@ -52,6 +54,7 @@ namespace DatabaseObject.ResultModel
     public class WaterFastness_Detail_Main
     {
         public long ID { get; set; }
+        public string ReportNo { get; set; }
         public string TestNo { get; set; }
         public string POID { get; set; }
         public DateTime? InspDate { get; set; }

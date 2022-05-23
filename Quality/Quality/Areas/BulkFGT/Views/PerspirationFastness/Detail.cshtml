@@ -213,6 +213,12 @@
                                         </h4>
                                     </td>
                                     <td>
+                                        <h4 id="SendMail" style=" margin-right: 1em; width: 7vw;">
+                                            <img src="~/Image/Icon/SendMail.png" width="30" />
+                                            Send to MR
+                                        </h4>
+                                    </td>
+                                    <td>
                                         <h4 id="Picture" style=" margin-right: 1em; width: 7vw;">
                                             <img src="~/Image/Icon/Camera.png" width="30" />
                                             Picture
@@ -234,9 +240,10 @@
                         <table class="DataTable">
                             <tbody>
                                 <tr>
-                                    <td style="width: 10vw;"><h5>No of Test#</h5></td>
+                                    <td style="width: 10vw;"><h5>Report No</h5></td>
                                     <td style="width: 20vw;">
-                                        @Html.DisplayFor(o => o.Main.TestNo, "", "")
+                                        @Html.DisplayFor(o => o.Main.ReportNo, "", "")
+                                        @Html.HiddenFor(o => o.Main.ReportNo)
                                         @Html.HiddenFor(o => o.Main.TestNo)
                                     </td>
                                     <td style="width: 10vw;"><h5>SP#</h5></td>
@@ -872,10 +879,10 @@
         EditModeButtionBind();
 
         if (EditMode) {
-            $("#Edit, #Encode, #Amend, #Excel, #PDF").removeClass("IsEditMode");
+            $("#Edit, #Encode, #Amend, #Excel, #PDF ,#SendMail").removeClass("IsEditMode");
             $('#Save, #New').addClass("IsEditMode");
             $(".DataTable input[type='text'], .DataTable input[type='number'], .DetailTable select, .HeaderSelect").removeAttr("disabled");
-            $('#Encode, #Amend, #Excel, #PDF').unbind('click');
+            $('#Encode, #Amend, #Excel, #PDF ,#SendMail').unbind('click');
             $(".DetailTable img").removeClass('display-None');
             DetailButtonBind();
             DetailDetailButtonBind();
@@ -885,7 +892,7 @@
             $(".DetailTable img").addClass('display-None');
             $('#Save').unbind('click').removeClass("IsEditMode");
             $(".DataTable input[type='text'], .DataTable input[type='number'], .DetailTable select, .HeaderSelect").attr("disabled", "disabled");
-            $('#Excel, #PDF').addClass("IsEditMode");
+            $('#Excel, #PDF ,#SendMail').addClass("IsEditMode");
             if ($('#Main_Status').val() == "New") {
                 $('#Edit, #Encode').addClass("IsEditMode");
                 $('#Amend').unbind('click');
@@ -1467,6 +1474,36 @@
         $('#PDF').unbind('click').on('click', function () {
             ToReport(1);
         });
+
+        $('#SendMail').unbind('click').on('click', function () {
+
+            $.ajax({
+                url: "@Url.Action("SendMail", "PerspirationFastness", new { Area = "BulkFGT" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({
+                    ID: $('#Main_ID').val(),
+                    No: $('#Main_TestNo').val()
+                }),
+                async: false,
+                success: function (data) {
+                    if (data.Result) {
+                        var para = "?To=";
+                        para += "&CC=" + '@ViewBag.UserMail';
+                        para += "&Subject=" + "Perspiration Fastness Test – ReportNo:" + '@Model.Main.ReportNo';
+                        para += "&Body=" + "Attachment is Perspiration Fastness Test– ReportNo:" + '@Model.Main.ReportNo' + " detail data";
+                        para += "&file=" + data.FileName;
+                        window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=600');
+                    }
+                    else {
+                        msg.WithError(data.ErrorMessage);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+    });
     }
 
     function ToReport(IsToPDF) {

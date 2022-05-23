@@ -153,6 +153,7 @@ where p.id = @POID
 
             string sqlGetDetails = @"
 select	[ID] = f.ID,
+		fl.ReportNo,
         [Seq] = Concat(f.Seq1, ' ', f.Seq2),
         [WKNo] = r.ExportID,
         [WhseArrival] = r.WhseArrival,
@@ -416,6 +417,7 @@ where   ID = @ID
                     "Result,DryScale,ResultDry,DryScale_Weft,ResultDry_Weft,WetScale,ResultWet,WetScale_Weft,ResultWet_Weft,Inspdate,Inspector,Remark");
 
 
+            string NewReportNo = GetID(fabricCrkShrkTestCrocking_Result.MDivisionID + "FT", "FIR_Laboratory", DateTime.Today, 2, "ReportNo");
 
             string sqlInsertDetail = @"
 insert into FIR_Laboratory_Crocking(
@@ -457,7 +459,10 @@ getDate()         ,
 @ResultDry_Weft  ,
 @ResultWet_Weft
 )
-
+;
+UPDATE FIR_Laboratory
+SET ReportNo = @ReportNo
+WHERE ReportNo = '' AND ID= @ID
 ";
 
             string sqlDeleteDetail = @"
@@ -514,6 +519,7 @@ update  FIR_Laboratory_Crocking set DryScale       = @DryScale      ,
                             listDetailPar.Add("@WetScale_Weft", detailItem.WetScale_Weft);
                             listDetailPar.Add("@ResultDry_Weft", detailItem.ResultDry_Weft);
                             listDetailPar.Add("@ResultWet_Weft", detailItem.ResultWet_Weft);
+                            listDetailPar.Add("@ReportNo", NewReportNo);
 
                             ExecuteNonQuery(CommandType.Text, sqlInsertDetail, listDetailPar);
                             break;
@@ -862,7 +868,7 @@ where   ID = @ID
                     "Roll,Dyelot",
                     "HorizontalOriginal,VerticalOriginal,Result,HorizontalTest1,HorizontalTest2,HorizontalTest3,VerticalTest1,VerticalTest2,VerticalTest3,Inspdate,Inspector,Remark");
 
-
+            string NewReportNo = GetID(fabricCrkShrkTestHeat_Result.MDivisionID + "FT", "FIR_Laboratory", DateTime.Today, 2, "ReportNo");
 
             string sqlInsertDetail = @"
 insert into FIR_Laboratory_Heat(
@@ -909,7 +915,10 @@ getDate()              ,
 @VerticalTest2        ,
 @VerticalTest3
 )
-
+;
+UPDATE FIR_Laboratory
+SET ReportNo = @ReportNo
+WHERE ReportNo = '' AND ID= @ID
 ";
 
             string sqlDeleteDetail = @"
@@ -969,6 +978,7 @@ update  FIR_Laboratory_Heat set Inspdate            = @Inspdate             ,
                             listDetailPar.Add("@VerticalTest1", detailItem.VerticalTest1);
                             listDetailPar.Add("@VerticalTest2", detailItem.VerticalTest2);
                             listDetailPar.Add("@VerticalTest3", detailItem.VerticalTest3);
+                            listDetailPar.Add("@ReportNo", NewReportNo);
 
                             ExecuteNonQuery(CommandType.Text, sqlInsertDetail, listDetailPar);
                             break;
@@ -1268,7 +1278,7 @@ where   ID = @ID
                     "Roll,Dyelot",
                     "HorizontalOriginal,VerticalOriginal,Result,HorizontalTest1,HorizontalTest2,HorizontalTest3,VerticalTest1,VerticalTest2,VerticalTest3,SkewnessTest1,SkewnessTest2,SkewnessTest3,SkewnessTest4,Inspdate,Inspector,Remark");
 
-
+            string NewReportNo = GetID(fabricCrkShrkTestWash_Result.MDivisionID + "FT", "FIR_Laboratory", DateTime.Today, 2, "ReportNo");
 
             string sqlInsertDetail = @"
 insert into FIR_Laboratory_Wash(
@@ -1324,7 +1334,10 @@ getDate()              ,
 @SkewnessTest4       ,
 @SkewnessRate
 )
-
+;
+UPDATE FIR_Laboratory
+SET ReportNo = @ReportNo
+WHERE ReportNo = '' AND ID= @ID
 ";
 
             string sqlDeleteDetail = @"
@@ -1394,6 +1407,7 @@ update  FIR_Laboratory_Wash set Inspdate            = @Inspdate             ,
                             listDetailPar.Add("@SkewnessTest3", detailItem.SkewnessTest3);
                             listDetailPar.Add("@SkewnessTest4", detailItem.SkewnessTest4);
                             listDetailPar.Add("@SkewnessRate", detailItem.SkewnessRate);
+                            listDetailPar.Add("@ReportNo", NewReportNo);
 
                             ExecuteNonQuery(CommandType.Text, sqlInsertDetail, listDetailPar);
                             break;
