@@ -85,6 +85,7 @@ order by ID
             string sqlcmd = @"
 select 
 gd.No
+,gd.ReportNo
 ,gd.ID
 ,gd.OrderID
 ,gd.SizeCode

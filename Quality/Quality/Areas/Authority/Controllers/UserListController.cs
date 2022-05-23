@@ -3,6 +3,7 @@ using BusinessLogicLayer.Service;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using Quality.Controllers;
+using Quality.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +32,7 @@ namespace Quality.Areas.Authority.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult GetDetail(string UserID)
         {
             this.CheckSession();
@@ -43,6 +45,7 @@ namespace Quality.Areas.Authority.Controllers
 
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult Get_Default_Detail(string Position)
         {
             this.CheckSession();
@@ -54,6 +57,7 @@ namespace Quality.Areas.Authority.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult GetUserList()
         {
             this.CheckSession();
@@ -65,6 +69,7 @@ namespace Quality.Areas.Authority.Controllers
 
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult UpdateDetail(UserList_Authority_Request Req)
         {
             this.CheckSession();
@@ -84,6 +89,7 @@ namespace Quality.Areas.Authority.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult ImportUsers(List<UserList_Browse> DataList)
         {
             this.CheckSession();

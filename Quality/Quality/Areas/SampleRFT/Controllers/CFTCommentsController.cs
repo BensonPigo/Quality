@@ -14,6 +14,7 @@ using NPOI.SS.UserModel;
 using BusinessLogicLayer.Interface;
 using BusinessLogicLayer.Service;
 using DatabaseObject;
+using Quality.Helper;
 
 namespace Quality.Areas.SampleRFT.Controllers
 {
@@ -112,7 +113,7 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             if (!model.Result)
             {
-                model.ErrorMessage = $@"msg.WithInfo('{model.ErrorMessage.Replace("'", string.Empty)}');";
+                model.ErrorMessage = $@"msg.WithInfo('{(string.IsNullOrEmpty(model.ErrorMessage) ? string.Empty : model.ErrorMessage.Replace("'", string.Empty))}');";
             }
             model.QueryType = Req.QueryType;
 
@@ -129,6 +130,7 @@ namespace Quality.Areas.SampleRFT.Controllers
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "Query")]
+        [SessionAuthorizeAttribute]
         public ActionResult Query(CFTComments_ViewModel Req)
         {
             this.CheckSession();
@@ -184,7 +186,7 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             if (!model.Result)
             {
-                model.ErrorMessage = $@"msg.WithInfo('{model.ErrorMessage.Replace("'",string.Empty)}');";
+                model.ErrorMessage = $@"msg.WithInfo('{(string.IsNullOrEmpty(model.ErrorMessage) ? string.Empty : model.ErrorMessage.Replace("'", string.Empty))}');";
             }
             model.QueryType = Req.QueryType;
 
@@ -199,6 +201,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult GetOrderinfo(string OrderID)
         {
             this.CheckSession();
@@ -214,6 +217,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         /// <returns></returns>
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "ToExcel_NPOI")]
+        [SessionAuthorizeAttribute]
         public ActionResult ToExcel_NPOI(CFTComments_ViewModel Req)
         {
             this.CheckSession();
@@ -325,6 +329,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         /// <returns></returns>
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "ToExcel")]
+        [SessionAuthorizeAttribute]
         public ActionResult ToExcel(CFTComments_ViewModel Req)
         {
             try

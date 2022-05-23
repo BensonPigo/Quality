@@ -10,6 +10,7 @@ using NPOI.SS.UserModel;
 using BusinessLogicLayer.Interface.BulkFGT;
 using BusinessLogicLayer.Service.BulkFGT;
 using DatabaseObject.ViewModel.BulkFGT;
+using Quality.Helper;
 
 namespace Quality.Areas.BulkFGT.Controllers
 {
@@ -47,6 +48,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "Query")]
+        [SessionAuthorizeAttribute]
         public ActionResult Query(SearchList_ViewModel Req)
         {
             this.CheckSession();
@@ -78,7 +80,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             if (!Req.Result)
             {
-                Req.ErrorMessage = $@"msg.WithInfo('{Req.ErrorMessage.Replace("'", string.Empty)}');";
+                Req.ErrorMessage = $@"msg.WithInfo('{(string.IsNullOrEmpty(Req.ErrorMessage) ? string.Empty : Req.ErrorMessage.Replace("'", string.Empty))}');";
             }
 
             TempData["ModelSearchList"] = Req;
@@ -87,6 +89,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult ToExcel(SearchList_ViewModel Req)
         {
             this.CheckSession();

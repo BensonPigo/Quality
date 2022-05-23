@@ -3,6 +3,7 @@ using BusinessLogicLayer.Service;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using Quality.Controllers;
+using Quality.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,6 +37,7 @@ namespace Quality.Areas.Authority.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult GetDetail(string Position)
         {
             this.CheckSession();
@@ -46,6 +48,7 @@ namespace Quality.Areas.Authority.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult UpdateDetail(Quality_Position_Request Req)
         {
             this.CheckSession();
@@ -66,6 +69,7 @@ namespace Quality.Areas.Authority.Controllers
 
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult CreateDetail(Quality_Position_Request Req)
         {
             this.CheckSession();
@@ -95,6 +99,7 @@ namespace Quality.Areas.Authority.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult UpdatePass2()
         {
             this.CheckSession();

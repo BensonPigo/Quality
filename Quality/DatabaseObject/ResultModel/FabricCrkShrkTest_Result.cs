@@ -34,6 +34,7 @@ namespace DatabaseObject.ResultModel
     public class FabricCrkShrkTest_Detail
     {
         public long ID { get; set; }
+        public string ReportNo { get; set; }
         public string Seq { get; set; }
         public string WKNo { get; set; }
         public DateTime? WhseArrival { get; set; }
@@ -64,6 +65,7 @@ namespace DatabaseObject.ResultModel
     {
         public long ID { get; set; }
         public int CrockingTestOption { get; set; }
+        public string MDivisionID { get; set; }
 
         public List<string> ScaleIDs { get; set; }
 
@@ -146,6 +148,7 @@ namespace DatabaseObject.ResultModel
     public class FabricCrkShrkTestHeat_Result : BaseResult
     {
         public long ID { get; set; }
+        public string MDivisionID { get; set; }
         public FabricCrkShrkTestHeat_Main Heat_Main { get; set; }
 
         public List<FabricCrkShrkTestHeat_Detail> Heat_Detail { get; set; }
@@ -202,6 +205,7 @@ namespace DatabaseObject.ResultModel
     public class FabricCrkShrkTestWash_Result : BaseResult
     {
         public long ID { get; set; }
+        public string MDivisionID { get; set; }
         public FabricCrkShrkTestWash_Main Wash_Main { get; set; }
 
         public List<FabricCrkShrkTestWash_Detail> Wash_Detail { get; set; }

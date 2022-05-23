@@ -4,6 +4,7 @@ using DatabaseObject.ViewModel;
 using FactoryDashBoardWeb.Helper;
 using Newtonsoft.Json;
 using Quality.Controllers;
+using Quality.Helper;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -50,6 +51,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult Index(string Factory,string Years,string Month)
         {
             RFTPerLine_ViewModel rftPerLine = _RFTPerLineService.GetQueryPara();

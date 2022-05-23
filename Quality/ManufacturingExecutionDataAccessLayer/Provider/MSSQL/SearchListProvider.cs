@@ -120,7 +120,7 @@ WHERE exists (select 1 from FIR_Laboratory f WITH(NOLOCK) WHERE f.POID = p.ID)
             #region Garment Test (450, 451, 701, 710)
             string type2 = $@"
 select  Type = 'Garment Test (450, 451, 701, 710)'
-        ,ReportNo = cast(gd.No as varchar(50))
+        ,gd.ReportNo
 		,gd.OrderID
 		,StyleID
 		,BrandID
@@ -214,7 +214,7 @@ WHERE 1=1
             string type4 = $@"
 select DISTINCT Type = 'Mockup Oven Test (514)'
 	, m.ReportNo
-	, m.POID
+	, OrderID = m.POID
 	, m.StyleID
 	, m.BrandID
 	, m.SeasonID
@@ -266,7 +266,7 @@ where m.Type = 'B'
             string type5 = $@"
 select DISTINCT Type = 'Mockup Wash Test (701)'
 	, m.ReportNo
-	, m.POID
+	, OrderID = m.POID
 	, m.StyleID
 	, m.BrandID
 	, m.SeasonID
@@ -317,7 +317,7 @@ where m.Type = 'B'
             #region Fabric Oven Test (515) 
             string type6 = $@"
 select DISTINCT Type= 'Fabric Oven Test (515)'
-        ,ReportNo = cast(f.TestNo as varchar(50))
+        ,f.ReportNo
 		,OrderID = o.POID
 		,o.StyleID
 		,o.BrandID
@@ -354,7 +354,7 @@ where 1=1
             #region Washing Fastness (501)
             string type7 = $@"
 select DISTINCT Type= 'Washing Fastness (501)'
-        ,ReportNo = cast(f.TestNo as varchar(50))
+        ,ReportNo  = f.ID
 		,OrderID = o.POID
 		,o.StyleID
 		,o.BrandID
@@ -453,7 +453,7 @@ WHERE exists (select 1 from AIR_Laboratory f WITH(NOLOCK) WHERE f.POID = p.ID)
             string type9 = $@"
 select DISTINCT Type = 'Pulling test for Snap/Botton/Rivet (437)'
 	, m.ReportNo
-	, m.POID
+	, OrderID = m.POID
 	, m.StyleID
 	, m.BrandID
 	, m.SeasonID
@@ -488,8 +488,8 @@ where 1=1
             #region Water Fastness Test(503)
             string type11 = $@"
 select DISTINCT Type= 'Water Fastness Test(503)'
-        , ReportNo=''
-		, w.POID
+        , w.ReportNo
+		, OrderID = w.POID
 		,o.StyleID
 		,o.BrandID
 		,o.SeasonID
@@ -525,8 +525,8 @@ WHERE 1=1
             #region Perspiration Fastness Test(502)
             string type12 = $@"
 select DISTINCT Type= 'Perspiration Fastness (502)'
-        , ReportNo=''
-		, w.POID
+        , w.ReportNo
+		, OrderID = w.POID
 		,o.StyleID
 		,o.BrandID
 		,o.SeasonID
