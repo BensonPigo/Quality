@@ -35,14 +35,6 @@ namespace BusinessLogicLayer.Service
                 others.FinalInspectionID = finalInspectionID;
                 others.CFA = finalInspection.CFA;
                 others.ProductionStatus = finalInspection.ProductionStatus;
-                //if (finalInspection.SubmitDate == null)
-                //{
-                //    others.InspectionResult = "On-going";
-                //}
-                //else
-                //{
-                //    others.InspectionResult = finalInspection.AcceptQty <= finalInspection.RejectQty ? "Fail" : "Pass";
-                //}
 
                 // ISP20211205l調整，事先帶出最後結果
                 others.InspectionResult = finalInspection.AcceptQty < finalInspection.RejectQty && finalInspection.RejectQty > 0 ? "Fail" : "Pass";
@@ -80,23 +72,10 @@ namespace BusinessLogicLayer.Service
                 {
                     _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
 
-                    DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection = new DatabaseObject.ManufacturingExecutionDB.FinalInspection();
-                    finalInspection.ID = others.FinalInspectionID;
-                    finalInspection.InspectionStep = "Insp-Moisture";
-
-                    if (others.ProductionStatus != null)
-                    {
-                        finalInspection.ProductionStatus = others.ProductionStatus;
-                    }
-
-                    finalInspection.OthersRemark = others.OthersRemark;
-                    finalInspection.CFA = UserID;
-
-                    //_FinalInspectionProvider.UpdateFinalInspectionByStep(finalInspection, "Insp-Others", UserID);
                     List<OtherImage> imgList = others.ListOthersImageItem != null && others.ListOthersImageItem.Any() ? others.ListOthersImageItem : new List<OtherImage>();
 
                     //Others步驟按下Back不需要存入圖片
-                    //_FinalInspectionProvider.UpdateFinalInspection_OtherImage(others.FinalInspectionID, imgList);
+                    _FinalInspectionProvider.UpdateFinalInspection_OtherImage(others.FinalInspectionID, imgList);
 
                     transactionScope.Complete();
                     transactionScope.Dispose();
