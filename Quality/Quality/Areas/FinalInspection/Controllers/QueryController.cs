@@ -372,12 +372,6 @@ namespace Quality.Areas.FinalInspection.Controllers
         public ActionResult DownloadTable(QueryFinalInspection_ViewModel model)
         {
             this.CheckSession();
-
-            if (model == null || string.IsNullOrEmpty(model.SP) && string.IsNullOrEmpty(model.CustPONO) && string.IsNullOrEmpty(model.StyleID) && (!model.AuditDateStart.HasValue || !model.AuditDateEnd.HasValue) && string.IsNullOrEmpty(model.InspectionResult))
-            {
-                return Json(new { Result = false, ErrorMessage = $@"msg.WithError('Please input fields before query.');" });
-            }
-
             Report_Result report_Result = Service.QueryReport(model);
             string tempFilePath = report_Result.TempFileName;
             tempFilePath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + tempFilePath;

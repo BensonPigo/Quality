@@ -305,7 +305,20 @@ NOTE: This is an automated reply from a system mailbox. Please do not reply to t
                     }
                 }
 
-                List<QueryFinalInspection> finalInspections  = GetFinalinspectionQueryList(model);
+                List<QueryFinalInspection> finalInspections = new List<QueryFinalInspection>();
+                if (string.IsNullOrEmpty(model.SP) && 
+                    string.IsNullOrEmpty(model.CustPONO) && 
+                    string.IsNullOrEmpty(model.StyleID) && 
+                    (!model.AuditDateStart.HasValue || !model.AuditDateEnd.HasValue) &&
+                    string.IsNullOrEmpty(model.InspectionResult))
+                {
+                    finalInspections = GetFinalinspectionQueryList_Default(model);
+                }
+                else
+                {
+                    finalInspections = GetFinalinspectionQueryList(model);
+                }
+
                 if (finalInspections.Count == 0)
                 {
                     result.Result = false;

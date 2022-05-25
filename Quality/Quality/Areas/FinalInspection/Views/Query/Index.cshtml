@@ -253,16 +253,6 @@
 
 
     function ClickDownload() {
-        if ($('#SP').val() == ""
-            && $('#CustPONO').val() == ""
-            && $('#StyleID').val() == ""
-            && $('#InspectionResult').val() == ""
-            && $('#AuditDateStart').val() == ""
-            && $('#AuditDateEnd').val() == "") {
-
-            return false;
-        }
-
         var model = {
             SP: $('#SP').val(),
             CustPONO: $('#CustPONO').val(),
