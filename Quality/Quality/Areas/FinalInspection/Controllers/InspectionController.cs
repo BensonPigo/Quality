@@ -1154,12 +1154,28 @@ namespace Quality.Areas.FinalInspection.Controllers
 
             if (goPage == "Back")
             {
+                // 本次新增的圖片全面加入
+                model.ListOthersImageItem = new List<OtherImage>();
+                foreach (var item in TmpListOthersImageItem_List)
+                {
+                    OtherImage o = new OtherImage();
+                    o.ID = model.FinalInspectionID;
+                    o.Image = item.TempImage;
+                    o.Remark = item.TempRemark;
+                    model.ListOthersImageItem.Add(o);
+                }
+
                 oService.UpdateOthersBack(model, this.UserID);
 
                 fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
                 {
                     ID = model.FinalInspectionID,
-                    InspectionStep = "Insp-Moisture"
+                    InspectionStep = "Insp-Moisture",
+                    InspectionResult = "On-going",
+                    CFA = string.Empty,
+                    ProductionStatus = model.ProductionStatus,
+                    ShipmentStatus = model.ShipmentStatus,
+                    OthersRemark = model.OthersRemark
                 }, "Insp-Others", this.UserID);
 
                 return RedirectToAction("Moisture", new { FinalInspectionID = model.FinalInspectionID });
