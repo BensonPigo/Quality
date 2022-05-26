@@ -6,6 +6,7 @@ namespace DatabaseObject.ProductionDB
     {
         public string ID { get; set; }
 
+        public string ReportNo { get; set; }
         public string POID { get; set; }
 
         public decimal TestNo { get; set; }

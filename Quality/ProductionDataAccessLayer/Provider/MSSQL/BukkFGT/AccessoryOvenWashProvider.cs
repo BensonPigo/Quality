@@ -85,6 +85,7 @@ where p.ID = @ID
             string sqlCmd = @"
 select 
 	 Seq = Concat (a.Seq1, ' ', a.Seq2)
+	, al.ReportNo
 	,r.ExportID
 	,r.WhseArrival
 	,a.SCIRefno
@@ -240,6 +241,7 @@ AND Seq2 = @Seq2_{idx}
 
             string sqlCmd = @"
 select   al.POID
+		,al.ReportNo
         ,a.SCIRefno
         ,WKNo = r.ExportId
         ,a.Refno
@@ -352,6 +354,9 @@ where   al.ID=@AIR_LaboratoryID
             listPar.Add("@Seq1", Req.Seq1);
             listPar.Add("@Seq2", Req.Seq2);
 
+            string NewReportNo = GetID(Req.MDivisionID + "AT", "AIR_Laboratory", DateTime.Today, 2, "ReportNo");
+            listPar.Add("@ReportNo", NewReportNo);
+
             string updateCol = string.Empty;
             string updatePicCol = string.Empty;
             #region 需要UPDATE的欄位
@@ -421,6 +426,14 @@ where   ID = @AIR_LaboratoryID
     and POID = @POID
     and Seq1 = @Seq1
     and Seq2 = @Seq2
+
+UPDATE AIR_Laboratory
+SET ReportNo = @ReportNo
+where   ID = @AIR_LaboratoryID
+    and POID = @POID
+    and Seq1 = @Seq1
+    and Seq2 = @Seq2
+    and ReportNo = ''
 
 if not exists (select 1 from [ExtendServer].PMSFile.dbo.AIR_Laboratory where ID = @AIR_LaboratoryID and POID = @POID and Seq1 = @Seq1 and Seq2 = @Seq2)
 begin
@@ -568,6 +581,7 @@ where   al.ID=@AIR_LaboratoryID
 
             string sqlCmd = @"
 select   al.POID
+		,al.ReportNo
         ,a.SCIRefno
         ,WKNo = r.ExportId
         ,a.Refno
@@ -625,6 +639,9 @@ where   al.ID=@AIR_LaboratoryID
             listPar.Add("@POID", Req.POID);
             listPar.Add("@Seq1", Req.Seq1);
             listPar.Add("@Seq2", Req.Seq2);
+
+            string NewReportNo = GetID(Req.MDivisionID + "AT", "AIR_Laboratory", DateTime.Today, 2, "ReportNo");
+            listPar.Add("@ReportNo", NewReportNo);
 
             string updateCol = string.Empty;
             string updatePicCol = string.Empty;
@@ -710,6 +727,14 @@ where   ID = @AIR_LaboratoryID
     and POID = @POID
     and Seq1 = @Seq1
     and Seq2 = @Seq2
+
+UPDATE AIR_Laboratory
+SET ReportNo = @ReportNo
+where   ID = @AIR_LaboratoryID
+    and POID = @POID
+    and Seq1 = @Seq1
+    and Seq2 = @Seq2
+    and ReportNo=''
 
 if not exists (select 1 from [ExtendServer].PMSFile.dbo.AIR_Laboratory where ID = @AIR_LaboratoryID and POID = @POID and Seq1 = @Seq1 and Seq2 = @Seq2)
 begin
@@ -922,6 +947,7 @@ where   al.ID=@AIR_LaboratoryID
 
             string sqlCmd = @"
 select   al.POID
+		,al.ReportNo
         ,a.SCIRefno
         ,WKNo = r.ExportId
         ,a.Refno
@@ -1018,6 +1044,9 @@ where   ID = @AIR_LaboratoryID
 
             string updateCol = string.Empty;
             string updatePicCol = string.Empty;
+            string NewReportNo = GetID(Req.MDivisionID + "AT", "AIR_Laboratory", DateTime.Today, 2, "ReportNo");
+            listPar.Add("@ReportNo", NewReportNo);
+
             #region 需要UPDATE的欄位
 
             if (!string.IsNullOrEmpty(Req.WashingFastnessInspector))
@@ -1129,6 +1158,13 @@ where   ID = @AIR_LaboratoryID
     and Seq1 = @Seq1
     and Seq2 = @Seq2
 
+UPDATE AIR_Laboratory
+set ReportNo = @ReportNo
+where   ID = @AIR_LaboratoryID
+    and POID = @POID
+    and Seq1 = @Seq1
+    and Seq2 = @Seq2
+    and ReportNo = ''
 
 UPDATE [ExtendServer].PMSFile.dbo.AIR_Laboratory
 SET POID=POID

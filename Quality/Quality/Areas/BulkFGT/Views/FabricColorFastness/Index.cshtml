@@ -248,7 +248,7 @@
                         <thead style="text-align: center">
                             @{
                                 <tr>
-                                    <th><h4>No. of Test</h4></th>
+                                    <th><h4>Report No</h4></th>
                                     <th><h4>Test Date</h4></th>
                                     <th><h4>Article</h4></th>
                                     <th><h4>Result</h4></th>
@@ -270,13 +270,23 @@
 
                                         @if (Model.ColorFastness_MainList[i].TestNo > 0)
                                         {
-                                            aHref = Url.Action("Detail", "FabricColorFastness", new { PoID = "" ,ID = Model.ColorFastness_MainList[i].ID });
+                                            aHref = Url.Action("Detail", "FabricColorFastness", new { PoID = "", ID = Model.ColorFastness_MainList[i].ID });
                                         }
 
-                                        <a href="@aHref" idx="@Model.ColorFastness_MainList[i].ID" idv="@Model.ColorFastness_MainList[i].TestNo">
-  
-                                          <label style="cursor: pointer;">@Model.ColorFastness_MainList[i].TestNo</label>
-                                        </a>
+                                        @if (string.IsNullOrEmpty(Model.ColorFastness_MainList[i].ID))
+                                        {
+                                            <a href="@aHref" idx="@Model.ColorFastness_MainList[i].ID" idv="@Model.ColorFastness_MainList[i].TestNo">
+                                                <img class="" src="~/Image/Icon/View.png" width="30" />
+                                            </a>
+                                        }
+                                        else
+                                        {
+
+                                            <a href="@aHref" idx="@Model.ColorFastness_MainList[i].ID" idv="@Model.ColorFastness_MainList[i].TestNo">
+
+                                                <label style="cursor: pointer;">@Model.ColorFastness_MainList[i].ID</label>
+                                            </a>
+                                        }
                                     </td>
 
                                     @{

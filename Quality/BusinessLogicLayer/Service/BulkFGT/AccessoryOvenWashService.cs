@@ -109,7 +109,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             catch (Exception ex)
             {
                 result.Result = false;
-                result.ErrorMessage = $@"msg.WithError('{ex.Message.Replace("'", string.Empty)}');";
+                result.ErrorMessage = $@"msg.WithError(""{ex.Message.Replace("'", string.Empty)}"");";
             }
 
             return result;
@@ -460,7 +460,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _ISQLDataTransaction.RollBack();
                 result.Result = false;
-                result.ErrorMessage = $@"msg.WithError(""{ex.Message}"");";
+                result.ErrorMessage = $"msg.WithError( \"{ex.Message}\" ); ";// "msg.WithError(\""+ ex.Message+"\"); ";
             }
             finally
             {

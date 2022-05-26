@@ -9,6 +9,7 @@ using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using Quality.Controllers;
+using Quality.Helper;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -43,6 +44,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult Query(BACriteria_ViewModel Req)
         {
             this.CheckSession();
@@ -65,7 +67,7 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             if (!model.Result)
             {
-                model.ErrorMessage = $@"msg.WithInfo('{ model.ErrorMessage.Replace("'",string.Empty) }'); ";
+                model.ErrorMessage = $@"msg.WithInfo('{ (string.IsNullOrEmpty(model.ErrorMessage) ? string.Empty : model.ErrorMessage.Replace("'", string.Empty)) }'); ";
             }
 
             TempData["ModelBACriteria"] = model;

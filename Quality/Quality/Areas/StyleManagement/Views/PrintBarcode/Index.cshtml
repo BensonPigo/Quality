@@ -169,7 +169,7 @@
                             {
                                 <tr class="row-content">
                                     <td>
-                                        <input type="checkbox" name="StyleUkey" value="@item.StyleUkey" />
+                                        <input type="checkbox" name="StyleUkey" value="@item.StyleUkey" idx="@item.StyleID" />
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.StyleID)
@@ -247,9 +247,14 @@
             var DataList = [];
 
             selectList.each(function (obj) {
+                var styleUkey = $(this).val();
+                var styleID = $(this).attr('idx');
+                var list = {
+                    StyleUkey: styleUkey,
+                    StyleID: styleID
+                };
 
-                var stuleUkey = $(this).val();
-                DataList.push(stuleUkey);
+                DataList.push(list);
             });
             if (DataList.length > 0) {
                 $.ajax({

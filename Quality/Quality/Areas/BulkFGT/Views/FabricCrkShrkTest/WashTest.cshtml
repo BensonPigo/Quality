@@ -197,6 +197,12 @@
                                             </h4>
                                         </td>
                                         <td>
+                                            <h4 id="SendMail" style="margin-right: 1em;">
+                                                <img src="~/Image/Icon/SendMail.png" width="30" />
+                                                Send to MR
+                                            </h4>
+                                        </td>
+                                        <td>
                                             <h4 id="Picture" style="margin-right: 1em;">
                                                 <img src="~/Image/Icon/Camera.png" width="30" />
                                                 Picture
@@ -210,7 +216,7 @@
                                                 New Item
                                             </h4>
                                         </td>
-                                </tbody>
+</tbody>
                             </table>
                         </div>
                     </div>
@@ -517,8 +523,8 @@
         // 按編輯為控制disabled，如果是編輯模式下不給使用者操作，請在元件身上加上readonly
         if (EditMode) {
 
-            $("#Edit, #Encode, #Amend, #Excel").removeClass("IsEditMode");
-            $('#Encode, #Amend, #Excel').unbind('click');
+            $("#Edit, #Encode, #Amend, #Excel ,#SendMail").removeClass("IsEditMode");
+            $('#Encode, #Amend, #Excel ,#SendMail').unbind('click');
 
             $('#Save, #New').addClass("IsEditMode");
             $(".MainEdit").removeAttr("disabled", "disabled");
@@ -531,7 +537,7 @@
             $(".MainEdit").attr("disabled", "disabled");
             $(".DetailTable input,.DetailTable select, #Wash_Main_WashRemark").attr("disabled", "disabled");
             $(".detailDelete").hide();
-            $('#Excel').addClass("IsEditMode");
+            $('#Excel ,#SendMail').addClass("IsEditMode");
 
             if (@Model.Wash_Main.WashEncode == false) {
                 $("#Edit, #Encode").addClass("IsEditMode");
@@ -641,6 +647,35 @@
 
         $('#Excel').unbind('click').on('click', function () {
             ToReport();
+        });
+
+        $('#SendMail').unbind('click').on('click', function () {
+
+            $.ajax({
+                url: "@Url.Action("WashSendMail", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({
+                    ID: $('#ID').val()
+                }),
+                async: false,
+                success: function (data) {
+                    if (data.Result) {
+                        var para = "?To=";
+                        para += "&CC=" + '@ViewBag.UserMail';
+                        para += "&Subject=" + "Fabric Wash Test – Seq:" + '@Model.Wash_Main.SEQ';
+                        para += "&Body=" + "Attachment is Fabric Wash Test– Seq:" + '@Model.Wash_Main.SEQ' + " detail data";
+                        para += "&file=" + data.FileName;
+                        window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=600');
+                    }
+                    else {
+                        msg.WithError(data.ErrorMessage);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
         });
 
         if (@Model.Wash_Main.WashEncode == false) {

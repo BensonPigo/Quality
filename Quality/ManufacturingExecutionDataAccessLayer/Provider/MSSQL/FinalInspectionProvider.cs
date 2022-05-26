@@ -632,6 +632,7 @@ insert into FinalInspection_DetailImage(ID, FinalInspection_DetailUkey ,Remark)
                 }
 
                 transaction.Complete();
+                transaction.Dispose();
             }
         }
 
@@ -1155,10 +1156,7 @@ where   ID = @finalInspectionID
             {
                 string sqlFinalInspection_OtherImage = @"
 SET XACT_ABORT ON
-/*
-    insert into FinalInspection_OtherImage(ID)
-                values(@FinalInspectionID) ----2022/01/10 PMSFile上線，因此去掉Image寫入原本DB的部分
-*/
+
     insert into PMSFile.dbo.FinalInspection_OtherImage(ID, Image, Remark)
                 values(@FinalInspectionID, @Image, @Remark)
 ";
@@ -1374,7 +1372,7 @@ Order by f.AddDate desc
 
 select  ID, Article
 into    #tmpOrderArticle
-from    MainServer.Production.dbo.Order_Article with (nolock)
+from    SciProduction_Order_Article with (nolock)
 where   ID in (select OrderID from #default)
 
 

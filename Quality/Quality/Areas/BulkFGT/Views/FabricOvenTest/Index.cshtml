@@ -248,7 +248,7 @@
                                 string trClass = Model.Details == null || Model.Details.Count == 0 ? "display-None" : "";
 
                                 <tr class="@trClass">
-                                    <th><h4>No. of Test</h4></th>
+                                    <th><h4>ReportNo</h4></th>
                                     <th><h4>Test Date</h4></th>
                                     <th><h4>Article</h4></th>
                                     <th><h4>Result</h4></th>
@@ -274,7 +274,7 @@
                                         }
 
                                         <a href="@aHref" idx="@Model.Main.POID ," idv="@Model.Details[i].TestNo" class="TestNo">
-                                            @Html.DisplayFor(o => Model.Details[i].TestNo, "", "")
+                                            @Html.DisplayFor(o => Model.Details[i].ReportNo, "", "")
                                         </a>
                                     </td>
 
@@ -304,7 +304,17 @@
                                         @Html.DisplayFor(o => Model.Details[i].LastUpdate, "", "")
                                     </td>
                                     <td style="width:10vw;">
-                                        <img class="detailEdit" style="@showPic" onclick="DetailView('@Model.Details[i].TestNo')" src="~/Image/Icon/Edit.png" width="30" />
+
+                                        @if (string.IsNullOrEmpty(Model.Details[i].ReportNo))
+                                        {
+                                            <a href="@aHref" idx="@Model.Main.POID ," idv="@Model.Details[i].TestNo" class="TestNo">
+                                                <img class="" src="~/Image/Icon/View.png" width="30" />
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <img class="detailEdit" style="@showPic" onclick="DetailView('@Model.Details[i].TestNo')" src="~/Image/Icon/Edit.png" width="30" />
+                                        }
                                     </td>
                                     <td style="width:10vw;">
                                         <img class="detailDelete"  style="@showPic" onclick="DetailDelete('@Model.Main.POID','@Model.Details[i].TestNo')" src="~/Image/Icon/Delete.png" width="30" />

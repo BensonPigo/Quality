@@ -15,6 +15,7 @@ using System.Linq;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
+using Quality.Helper;
 
 namespace Quality.Areas.BulkFGT.Controllers
 {
@@ -43,6 +44,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             };
 
             ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
             return View(model);
         }
 
@@ -73,11 +75,13 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
 
             ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
             return View("Index", model);
         }
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "Query")]
+        [SessionAuthorizeAttribute]
         public ActionResult Query(PullingTest_ViewModel Req)
         {
             PullingTest_ViewModel model = Service.GetReportNoList(Req);
@@ -90,10 +94,12 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
 
             ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
             return View("Index", model);
         }
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "DropdownQuery")]
+        [SessionAuthorizeAttribute]
         public ActionResult DropdownQuery(PullingTest_ViewModel Req)
         {
             PullingTest_ViewModel model = Service.GetReportNoList(Req);
@@ -102,10 +108,12 @@ namespace Quality.Areas.BulkFGT.Controllers
             model.Detail = Service.GetData(model.ReportNo_Query).Detail;
 
             ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
             return View("Index", model);
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult CheckSP(string POID)
         {
             PullingTest_Result o = new PullingTest_Result();
@@ -123,6 +131,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult GetPullUnit(string BrandID)
         {
             PullingTest_Result o = new PullingTest_Result();
@@ -140,6 +149,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult GetStandard(string BrandID, string TestItem, string PullForceUnit)
         {
             PullingTest_Result o = new PullingTest_Result();
@@ -157,6 +167,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult GetDetail(string ReportNo)
         {
             PullingTest_ViewModel model = new PullingTest_ViewModel();
@@ -190,6 +201,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "Edit")]
+        [SessionAuthorizeAttribute]
         public ActionResult EditSave(PullingTest_ViewModel Req)
         {
             Req.Detail.EditName = this.UserID;
@@ -236,11 +248,13 @@ namespace Quality.Areas.BulkFGT.Controllers
 
 
             ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
             return View("Index", model);
         }
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "New")]
+        [SessionAuthorizeAttribute]
         public ActionResult NewSave(PullingTest_ViewModel Req)
         {
             bool IsSendMail = Req.Detail.Result == "Fail";
@@ -298,12 +312,14 @@ namespace Quality.Areas.BulkFGT.Controllers
             model.ReportNo_Query = model.Detail.ReportNo;
 
             ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
             return View("Index", model);
 
         }
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "Delete")]
+        [SessionAuthorizeAttribute]
         public ActionResult Delete(PullingTest_ViewModel Req)
         {
             string ReportNo = Req.Detail.ReportNo;
@@ -342,10 +358,12 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
 
             ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
             return View("Index", Result);
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult FailMail(string ReportNo, string TO, string CC)
         {
             SendMail_Result result = Service.FailSendMail(ReportNo, TO, CC);

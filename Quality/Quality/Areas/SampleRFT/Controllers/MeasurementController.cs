@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using Quality.Controllers;
+using Quality.Helper;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -46,6 +47,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorize]
         public ActionResult Index(Measurement_Request request)
         {
             Measurement_Request measurementRequest = _MeasurementService.MeasurementGetPara(request.OrderID, this.FactoryID);
@@ -57,6 +59,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult SpCheck(string SP)
         {
             Measurement_Request request = _MeasurementService.MeasurementGetPara(SP, this.FactoryID);
@@ -169,6 +172,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult ToExcel(string OrderID)
         {
             Measurement_Request result = _MeasurementService.MeasurementToExcel(OrderID, this.FactoryID);

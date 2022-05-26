@@ -219,6 +219,7 @@
     </Compile>
     <Compile Include="Helper\Attribute.cs" />
     <Compile Include="Helper\CheckWorkDate.cs" />
+    <Compile Include="Helper\MyJsonValueProviderFactory.cs" />
     <Compile Include="Helper\SetListItem.cs" />
     <Compile Include="Helper\StringEncryptHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
