@@ -7,6 +7,7 @@ using BusinessLogicLayer.Service.FinalInspection;
 using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
+using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel;
 using DatabaseObject.ViewModel.FinalInspection;
 using FactoryDashBoardWeb.Helper;
@@ -74,7 +75,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             List<SelectListItem> inspectionResultList = new SetListItem().ItemListBinding(inspectionlist);
             ViewBag.inspectionResultList = inspectionResultList;
             
-            if (string.IsNullOrEmpty(model.SP) && string.IsNullOrEmpty(model.CustPONO) && string.IsNullOrEmpty(model.StyleID) && (!model.SciDeliveryStart.HasValue || !model.SciDeliveryEnd.HasValue) && string.IsNullOrEmpty(model.InspectionResult))
+            if (string.IsNullOrEmpty(model.SP) && string.IsNullOrEmpty(model.CustPONO) && string.IsNullOrEmpty(model.StyleID) && (!model.AuditDateStart.HasValue || !model.AuditDateEnd.HasValue) && string.IsNullOrEmpty(model.InspectionResult))
             {
                 model.ErrorMessage = $@"msg.WithError('Please input fields before query.');";
                 model.DataList = Service.GetFinalinspectionQueryList_Default(model);
@@ -368,6 +369,20 @@ namespace Quality.Areas.FinalInspection.Controllers
             #endregion
 
             return null;
+        }
+
+        public ActionResult DownloadTable(QueryFinalInspection_ViewModel model)
+        {
+            this.CheckSession();
+            Report_Result report_Result = Service.QueryReport(model);
+            string tempFilePath = report_Result.TempFileName;
+            tempFilePath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + tempFilePath;
+            if (!report_Result.Result)
+            {
+                report_Result.ErrorMessage = report_Result.ErrorMessage.ToString();
+            }
+
+            return Json(new { Result = report_Result.Result, ErrorMessage = report_Result.ErrorMessage, reportPath = tempFilePath, FileName = report_Result.TempFileName });
         }
 
         [HttpPost]

@@ -1291,16 +1291,16 @@ where CustPONO = @CustPONO
                 parameter.Add("@SP", request.SP);
             }
 
-            if (request.SciDeliveryStart != null)
+            if (request.AuditDateStart != null)
             {
-                whereOrder += @" and SciDelivery >= @SciDeliveryStart";
-                parameter.Add("@SciDeliveryStart", request.SciDeliveryStart);
+                whereFinalInspection += @" and AuditDate >= @AuditDateStart";
+                parameter.Add("@AuditDateStart", request.AuditDateStart);
             }
 
-            if (request.SciDeliveryEnd != null)
+            if (request.AuditDateEnd != null)
             {
-                whereOrder += @" and SciDelivery <= @SciDeliveryEnd";
-                parameter.Add("@SciDeliveryEnd", request.SciDeliveryEnd);
+                whereFinalInspection += @" and AuditDate <= @AuditDateEnd";
+                parameter.Add("@AuditDateEnd", request.AuditDateEnd);
             }
 
             if (!string.IsNullOrEmpty(request.StyleID))
@@ -1328,6 +1328,7 @@ where   ID in (select ID from #tmpOrders)
 select  [FinalInspectionID] = f.ID,
         [SP] = fo.OrderID,
         f.CustPONO,
+        [AuditDate] = format(f.AuditDate, 'yyyy/MM/dd'),
         [SPQty] = cast(o.Qty as varchar),
         [StyleID] = o.StyleID,
         [Season] = o.SeasonID,
@@ -1335,10 +1336,19 @@ select  [FinalInspectionID] = f.ID,
         [Article] = (SELECT Stuff((select concat( ',',Article)   from #tmpOrderArticle where ID = fo.OrderID FOR XML PATH('')),1,1,'') ),
         [InspectionTimes] = cast(f.InspectionTimes as varchar),
         f.InspectionStage,
-        f.InspectionResult
+        f.InspectionResult,
+		[IsTransferToPMS] = c.val,
+		[IsTransferToPivot88] = iif(f.IsExportToP88 = 1, 'Y', 'N')
 from FinalInspection f with (nolock)
-inner join  FinalInspection_Order fo with (nolock) on fo.ID = f.ID
-inner join  #tmpOrders o on fo.OrderID = o.ID
+inner join FinalInspection_Order fo with (nolock) on fo.ID = f.ID
+inner join #tmpOrders o on fo.OrderID = o.ID
+outer apply(
+	select val = iif(exists(
+		select ID 
+		from MainServer.Production.dbo.CFAInspectionRecord c with (nolock) 
+		where c.ID = f.ID
+	), 'Y', 'N')
+)c
 where   1 = 1 {whereFinalInspection}
 ";
 
@@ -1369,6 +1379,7 @@ where   ID in (select OrderID from #default)
 select top 200 [FinalInspectionID] = f.ID,
         [SP] = fo.OrderID,
         f.CustPONO,
+        [AuditDate] = format(f.AuditDate, 'yyyy/MM/dd'),
         [SPQty] = cast(o.Qty as varchar),
         [StyleID] = o.StyleID,
         [Season] = o.SeasonID,
@@ -1377,10 +1388,19 @@ select top 200 [FinalInspectionID] = f.ID,
         [InspectionTimes] = cast(f.InspectionTimes as varchar),
         f.InspectionStage,
         f.InspectionResult,
-        f.AddDate
+        f.AddDate,
+		[IsTransferToPMS] = c.val,
+		[IsTransferToPivot88] = iif(f.IsExportToP88 = 1, 'Y', 'N')
 from FinalInspection f with (nolock)
-inner join  #default fo with (nolock) on fo.ID = f.ID
-inner join  SciProduction_Orders o with(nolock)  on o.ID = fo.OrderID
+inner join #default fo with (nolock) on fo.ID = f.ID
+inner join MainServer.Production.dbo.Orders o with(nolock) on o.ID = fo.OrderID
+outer apply(
+	select val = iif(exists(
+		select ID 
+		from MainServer.Production.dbo.CFAInspectionRecord c with(nolock)
+		where c.ID = f.ID
+	), 'Y', 'N')
+)c 
 order by f.AddDate DESC
 
 drop table #default ,#tmpOrderArticle

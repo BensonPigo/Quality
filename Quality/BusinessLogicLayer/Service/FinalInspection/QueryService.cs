@@ -2,8 +2,6 @@
 using BusinessLogicLayer.Interface;
 using DatabaseObject;
 using DatabaseObject.ManufacturingExecutionDB;
-using DatabaseObject.ProductionDB;
-using DatabaseObject.RequestModel;
 using DatabaseObject.ViewModel.FinalInspection;
 using ManufacturingExecutionDataAccessLayer.Interface;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
@@ -17,9 +15,12 @@ using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Text;
-using System.Threading.Tasks;
 using BusinessLogicLayer.Helper;
 using System.Configuration;
+using DatabaseObject.ResultModel;
+using Microsoft.Office.Interop.Excel;
+using Sci;
+using System.Runtime.InteropServices;
 
 namespace BusinessLogicLayer.Service.FinalInspection
 {
@@ -30,6 +31,7 @@ namespace BusinessLogicLayer.Service.FinalInspection
         private IFinalInspFromPMSProvider _FinalInspFromPMSProvider;
         private IStyleProvider _StyleProvider;
         private static readonly string CryptoKey = ConfigurationManager.AppSettings["CryptoKey"].ToString();
+        private string IsTest = ConfigurationManager.AppSettings["IsTest"];
 
         public List<QueryFinalInspection> GetFinalinspectionQueryList_Default(QueryFinalInspection_ViewModel request)
         {
@@ -52,7 +54,7 @@ namespace BusinessLogicLayer.Service.FinalInspection
 
             try
             {
-                DataTable dtQueryReportInfo = _FinalInspectionProvider.GetQueryReportInfo(finalInspectionID);
+                System.Data.DataTable dtQueryReportInfo = _FinalInspectionProvider.GetQueryReportInfo(finalInspectionID);
 
                 queryReport.FinalInspection = _FinalInspectionProvider.GetFinalInspection(finalInspectionID);
 
@@ -106,7 +108,7 @@ namespace BusinessLogicLayer.Service.FinalInspection
                 _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
                 foreach (MeasurementViewItem measurementViewItem in queryReport.ListMeasurementViewItem)
                 {
-                    DataTable dtMeasurementData = _FinalInspectionProvider.GetMeasurement(finalInspectionID, measurementViewItem.Article, measurementViewItem.Size, measurementViewItem.ProductType);
+                    System.Data.DataTable dtMeasurementData = _FinalInspectionProvider.GetMeasurement(finalInspectionID, measurementViewItem.Article, measurementViewItem.Size, measurementViewItem.ProductType);
                     measurementViewItem.MeasurementDataByJson = JsonConvert.SerializeObject(dtMeasurementData);
                 }
             }
@@ -218,7 +220,7 @@ NOTE: This is an automated reply from a system mailbox. Please do not reply to t
                 //寄件者 & 收件者
 
                 SQLParameterCollection objParameter = new SQLParameterCollection();
-                DataTable dt = SQLDAL.ExecuteDataTable(CommandType.Text, "select * from Production.dbo.System", objParameter, ADOHelper.DBToolKit.Common.ProductionDataAccessLayer);
+                System.Data.DataTable dt = SQLDAL.ExecuteDataTable(CommandType.Text, "select * from Production.dbo.System", objParameter, ADOHelper.DBToolKit.Common.ProductionDataAccessLayer);
                 if (dt != null || dt.Rows.Count > 0)
                 {
                     mailFrom = dt.Rows[0]["Sendfrom"].ToString();
@@ -278,5 +280,109 @@ NOTE: This is an automated reply from a system mailbox. Please do not reply to t
             return baseResult;
         }
 
+        public Report_Result QueryReport(QueryFinalInspection_ViewModel model)
+        {
+            Report_Result result = new Report_Result();
+            if (model == null)
+            {
+                result.Result = false;
+                result.ErrorMessage = "Get Data Fail!";
+                return result;
+            }
+
+            try
+            {
+                if (!(IsTest.ToLower() == "true"))
+                {
+                    if (!System.IO.Directory.Exists(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\"))
+                    {
+                        System.IO.Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\");
+                    }
+
+                    if (!System.IO.Directory.Exists(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\TMP\\"))
+                    {
+                        System.IO.Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\TMP\\");
+                    }
+                }
+
+                List<QueryFinalInspection> finalInspections = new List<QueryFinalInspection>();
+                if (string.IsNullOrEmpty(model.SP) && 
+                    string.IsNullOrEmpty(model.CustPONO) && 
+                    string.IsNullOrEmpty(model.StyleID) && 
+                    (!model.AuditDateStart.HasValue || !model.AuditDateEnd.HasValue) &&
+                    string.IsNullOrEmpty(model.InspectionResult))
+                {
+                    finalInspections = GetFinalinspectionQueryList_Default(model);
+                }
+                else
+                {
+                    finalInspections = GetFinalinspectionQueryList(model);
+                }
+
+                if (finalInspections.Count == 0)
+                {
+                    result.Result = false;
+                    result.ErrorMessage = "Get Data Fail!";
+                    return result;
+                }
+
+                string basefileName = "FinalInspectionQuery";
+                string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx"; ;
+                if (IsTest.ToLower() == "true")
+                {
+                    openfilepath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "XLT", $"{basefileName}.xltx");
+                }
+
+                Application excelApp = MyUtility.Excel.ConnectExcel(openfilepath);
+                excelApp.DisplayAlerts = false;
+                Worksheet worksheet = excelApp.Sheets[1];
+
+                #region 表身資料
+                // 塞進資料
+                int start_row = 2;
+                foreach (var item in finalInspections)
+                {
+                    worksheet.Cells[start_row, 1] = item.InspectionResult;
+                    worksheet.Cells[start_row, 2] = item.SP;
+                    worksheet.Cells[start_row, 3] = item.CustPONO;
+                    worksheet.Cells[start_row, 4] = item.AuditDate;
+                    worksheet.Cells[start_row, 5] = item.SPQty;
+                    worksheet.Cells[start_row, 6] = item.StyleID;
+                    worksheet.Cells[start_row, 7] = item.Season;
+                    worksheet.Cells[start_row, 8] = item.BrandID;
+                    worksheet.Cells[start_row, 9] = item.Article;
+                    worksheet.Cells[start_row, 10] = item.InspectionTimes;
+                    worksheet.Cells[start_row, 11] = item.InspectionStage;
+                    worksheet.Cells[start_row, 12] = item.IsTransferToPMS;
+                    worksheet.Cells[start_row, 13] = item.IsTransferToPivot88;
+                    worksheet.Rows[start_row].Font.Bold = false;
+                    worksheet.Rows[start_row].WrapText = true;
+                    start_row++;
+                }
+                worksheet.Columns.AutoFit();
+                #endregion
+
+                string fileName = $"FinalInspectionQueryReport{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+                string filexlsx = fileName + ".xlsx";
+                string filepath = System.IO.Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filexlsx);
+
+                Workbook workbook = excelApp.ActiveWorkbook;
+                workbook.SaveAs(filepath);
+                workbook.Close();
+                excelApp.Quit();
+                Marshal.ReleaseComObject(worksheet);
+                Marshal.ReleaseComObject(workbook);
+                Marshal.ReleaseComObject(excelApp);
+
+                result.TempFileName = filexlsx;
+                result.Result = true;
+            }
+            catch(Exception ex)
+            {
+                result.ErrorMessage = ex.Message.Replace("'", string.Empty);
+                result.Result = false;
+            }
+            return result;
+        }
     }
 }

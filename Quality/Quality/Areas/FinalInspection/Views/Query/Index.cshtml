@@ -94,11 +94,11 @@
                 </tr>
                 <tr>
                     <td align="right">
-                        <p class="searchFont">SCI Delivery</p>
+                        <p class="searchFont">Audit Date</p>
                     </td>
                     <td colspan="3">
-                        @Html.TextBox("SciDeliveryStart", string.Empty, new { @class = "form-control date-picker inputStyle" })
-                        <label style="font-size: 2em">~</label>  @Html.TextBox("SciDeliveryEnd", string.Empty, new { @class = "form-control date-picker inputStyle" })
+                        @Html.TextBox("AuditDateStart", string.Empty, new { @class = "form-control date-picker inputStyle" })
+                        <label style="font-size: 2em">~</label>  @Html.TextBox("AuditDateEnd", string.Empty, new { @class = "form-control date-picker inputStyle" })
                     </td>
                     <td align="right">
                         <p class="searchFont">Inspection Result</p>
@@ -117,6 +117,7 @@
 <div class="DownWhiteBackgrond" style="height:74vh">
     <div style="border:0px;padding:1vw 1vw 0vw 1vw;">
         <h1 style="font-size: 3vh; font-weight: 900; color: #999999 ">&nbsp Inspection History</h1>
+        <button class="site-btn btn-blue" style="position:absolute;top:1em;right:0" onclick="ClickDownload()">Download</button>
         <div class="content-scroll" style=" height: calc( 100vh - 267px )">
             <div class="inner-scroll" style="float:left">
                 <div>
@@ -127,6 +128,7 @@
                                 <th>Inspection Result</th>
                                 <th>SP#</th>
                                 <th>PO#</th>
+                                <th>Audit Date</th>
                                 <th>SP# Qty</th>
                                 <th>Style</th>
                                 <th>Season</th>
@@ -134,6 +136,8 @@
                                 <th>Article</th>
                                 <th>Inspection <br>Times</th>
                                 <th>Inspection Stage</th>
+                                <th>Is Transfer To PMS</th>
+                                <th>Is Transfer To Pivot88</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -172,6 +176,9 @@
                                         @Html.DisplayFor(modelItem => item.CustPONO)
                                     </td>
                                     <td>
+                                        @Html.DisplayFor(modelItem => item.AuditDate)
+                                    </td>
+                                    <td>
                                         @Html.DisplayFor(modelItem => item.SPQty)
                                     </td>
                                     <td>
@@ -192,6 +199,12 @@
 
                                     <td>
                                         @Html.DisplayFor(modelItem => item.InspectionStage)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.IsTransferToPMS)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.IsTransferToPivot88)
                                     </td>
 
                                 </tr>
@@ -227,7 +240,7 @@
 
 
     function checkvalue() {
-        if ($("#SP").val() == "" && $("#CustPONO").val() == "" && $("#StyleID").val() == "" && $("#SciDeliveryStart").val() == "" && $("#SciDeliveryEnd").val() == "") {
+        if ($("#SP").val() == "" && $("#CustPONO").val() == "" && $("#StyleID").val() == "" && $("#AuditDateStart").val() == "" && $("#AuditDateEnd").val() == "") {
 
             msg.WithError('Please input fields before query.');
             return false;
@@ -237,11 +250,38 @@
         }
 
     }
-    $(function () {
-        $("#Download").click(function () {
-            location.href = '@Url.Action("DownLoad")';
+
+
+    function ClickDownload() {
+        var model = {
+            SP: $('#SP').val(),
+            CustPONO: $('#CustPONO').val(),
+            StyleID: $('#StyleID').val(),
+            InspectionResult: $('#InspectionResult').val(),
+            AuditDateStart: $('#AuditDateStart').val(),
+            AuditDateEnd: $('#AuditDateEnd').val(),
+        };
+
+        $.ajax({
+            url: "@Url.Action("DownloadTable", "Query", new { Area = "FinalInspection" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ model }),
+            async: false,
+            success: function (data) {
+                if (data.Result) {
+                    window.location.href = data.reportPath;
+                }
+                else {
+                    console.log(data.ErrorMessage);
+                    msg.WithError(data.ErrorMessage);
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
         });
-    });
+    }
 
 </script>
 

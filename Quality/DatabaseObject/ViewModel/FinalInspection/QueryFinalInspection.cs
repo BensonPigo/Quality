@@ -12,8 +12,8 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string StyleID { get; set; }
         public string InspectionResult { get; set; }
 
-        public DateTime? SciDeliveryStart { get; set; }
-        public DateTime? SciDeliveryEnd { get; set; }
+        public DateTime? AuditDateStart { get; set; }
+        public DateTime? AuditDateEnd { get; set; }
     }
 
     public class QueryFinalInspection
@@ -21,6 +21,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string FinalInspectionID { get; set; }
         public string SP { get; set; }
         public string CustPONO { get; set; }
+        public string AuditDate { get; set; }
         public string SPQty { get; set; }
         public string StyleID { get; set; }
         public string Season { get; set; }
@@ -29,5 +30,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string InspectionTimes { get; set; }
         public string InspectionStage { get; set; }
         public string InspectionResult { get; set; }
+        public string IsTransferToPMS { get; set; }
+        public string IsTransferToPivot88 { get; set; }
     }
 }
