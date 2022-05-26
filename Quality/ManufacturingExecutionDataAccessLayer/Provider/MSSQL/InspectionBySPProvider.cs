@@ -1508,5 +1508,70 @@ where   ID = @ID
 
             return ExecuteNonQuery(CommandType.Text, sqlUpdCmd, objParameter);
         }
+
+        public IList<QueryInspectionBySP> Get_QueryResults(QueryInspectionBySP_ViewModel Req)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection para = new SQLParameterCollection();
+            SbSql.Append($@"
+
+select a.ID
+	,SP=a.OrderID
+	,o.CustPONO
+	,o.StyleID
+	,o.SeasonID
+	,Article = Articles.Val
+	,a.SewingLineID
+	,a.InspectionTimes
+	,Inspector = a.AddName
+	,a.Result
+from SampleRFTInspection a
+inner join SciProduction_Orders o on a.OrderID = o.ID
+OUTER APPLY(
+	SELECT Val = STUFF((
+		select DISTINCT ',' + oq.Article
+		from SciProduction_Order_Qty oq
+		where oq.ID=o.ID
+		FOR XML PATH ('')
+		),1,1,'')
+)Articles
+where 1=1
+");
+            if (!string.IsNullOrEmpty(Req.SP))
+            {
+                SbSql.Append($@" AND a.OrderID = @OrderID ");
+                para.Add("@OrderID", Req.SP);
+            }
+
+            if (!string.IsNullOrEmpty(Req.CustPONO))
+            {
+                SbSql.Append($@" AND o.CustPONO = @CustPONO ");
+                para.Add("@CustPONO", Req.CustPONO);
+            }
+
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                SbSql.Append($@" AND o.StyleID = @StyleID  ");
+                para.Add("@StyleID", Req.StyleID);
+            }
+
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                SbSql.Append($@" AND o.SeasonID = @SeasonID  ");
+                para.Add("@SeasonID", Req.SeasonID);
+            }
+            if (Req.InspDateStart != null)
+            {
+                SbSql.Append(@" and @InspDateStart <= a.InspectionDate ");
+                para.Add("@InspDateStart", Req.InspDateStart);
+            }
+            if (Req.InspDateEnd != null)
+            {
+                SbSql.Append(@" and a.InspectionDate <= @InspDateEnd");
+                para.Add("@InspDateEnd", Req.InspDateEnd);
+            }
+
+            return ExecuteList<QueryInspectionBySP>(CommandType.Text, SbSql.ToString(), para);
+        }
     }
 }

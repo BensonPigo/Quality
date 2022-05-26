@@ -1,0 +1,250 @@
+﻿@using DatabaseObject.ViewModel.SampleRFT
+@{
+    ViewBag.Title = "Index";
+}
+
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+<link href="~/Areas/FinalInspection/CSS/FinalInspection.css" rel="stylesheet" />
+
+
+
+<style type="text/css">
+
+
+    #GirdTable > th {
+        color: black
+    }
+
+    #GirdTable_previous, #GirdTable_next {
+        color: black !important;
+    }
+
+    #row-name {
+        color: black;
+    }
+
+    .searchFont {
+        font-size: 1.5em;
+        font-weight: 900;
+        padding-right: 1vw;
+    }
+
+    .center {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .inputStyle {
+        width: 10vw
+    }
+
+    #GirdTable td {
+        height: 1vh;
+        padding: 0.4vw;
+    }
+
+    .dataTables_scroll {
+        height: 56.4vh
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        color: black !important;
+    }
+</style>
+
+@model QueryInspectionBySP_ViewModel
+
+@{
+    Layout = "~/Areas/SampleRFT/Views/Shared/_ForAll_Layout.cshtml";
+}
+
+@using (Html.BeginForm("Index", "Query", FormMethod.Post, new { onsubmit = "return checkvalue()" }))
+{
+    <div class="search-condition">
+
+        <div class="UpWhiteBackgrond" style="height:14vh">
+
+            <table class="center" style="width: 100%;  height: 3vh ">
+                <tr>
+                    <td style="width:5%" align="right">
+                        <p style=" width: 11vw" class="searchFont">SP#</p>
+                    </td>
+                    <td style="width: 7%">
+                        @Html.TextBox("SP", string.Empty, new { @class = "inputStyle" })
+                    </td>
+
+                    <td style="width:5%;padding-left:1vw" align="right">
+                        <p class="searchFont ">PO#</p>
+                    </td>
+                    <td style="width:7%">
+                        @Html.TextBox("CustPONO", string.Empty, new { @class = "inputStyle" })
+                    </td>
+
+                    <td style="width:5%;padding-left:1vw" align="right">
+                        <p class="searchFont ">Style#</p>
+                    </td>
+                    <td style="width: 7%">
+                        @Html.TextBox("StyleID", string.Empty, new { @class = "inputStyle" })
+                    </td>
+                    <td style="width:5%;padding-left:1vw" align="right">
+                        <p class="searchFont ">Season</p>
+                    </td>
+                    <td style="width: 7%">
+                        @Html.TextBox("SeasonID", string.Empty, new { @class = "inputSeason" })
+                    </td>
+                    <td rowspan="2" style="width: 8%; vertical-align: middle" align="right">
+
+                        <button type="submit" style="border: 0; background: transparent;">
+                            <img src="~/Image/Icon/Query.png" width="40" height="40" alt="submit" />
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right">
+                        <p class="searchFont">Inspection Date</p>
+                    </td>
+                    <td colspan="5">
+                        @Html.TextBox("InspDateStart", string.Empty, new { @class = "form-control date-picker inputStyle" })
+                        <label style="font-size: 2em">~</label>  @Html.TextBox("InspDateEnd", string.Empty, new { @class = "form-control date-picker inputStyle" })
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+}
+
+
+<div class="DownWhiteBackgrond" style="height:74vh">
+    <div style="border:0px;padding:1vw 1vw 0vw 1vw;">
+        <h1 style="font-size: 3vh; font-weight: 900; color: #999999 ">&nbsp Inspection History</h1>
+        <div class="content-scroll" style=" height: calc( 100vh - 267px )">
+            <div class="inner-scroll" style="float:left">
+                <div>
+                    <table cellspacing="100" id="GirdTable" class="table table-striped display">
+                        <thead>
+                            <tr class="row-name" id="row-name">
+                                <th>Inspection<br> Report</th>
+                                <th>SP#</th>
+                                <th>PO#</th>
+                                <th>Style</th>
+                                <th>Season</th>
+                                <th>Article</th>
+                                <th>Sample Stage</th>
+                                <th>Line</th>
+                                <th>1/2/3<br>Final</th>
+                                <th>Inspector</th>
+                                <th>Result</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.DataList)
+                            {
+                                string color = string.Empty;
+
+                                switch (item.Result)
+                                {
+                                    case "Fail":
+                                        color = "#E62513";
+                                        break;
+                                    case "Pass":
+                                        color = "#00CC00";
+                                        break;
+                                    case "On-Going":
+                                        color = "#0000FF";
+                                        break;
+                                }
+                                <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                                    <td>
+                                        <a href="@Url.Action("Detail",new { ID = item.ID })">
+                                            <img src="~/Image/Icon/Document.png" width="20" height="20" />
+                                        </a>
+
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SP)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.CustPONO)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.StyleID)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SeasonID)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Article)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SampleStage)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SewingLineID)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.InspectionTimes)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Inspector)
+                                    </td>
+                                    <td>
+                                        <div style="color:@color">
+                                            @Html.DisplayFor(modelItem => item.Result)
+                                        </div>
+                                    </td>
+
+                                </tr>
+                            }
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var msg = new MessagerAlert();
+
+    $(function () {
+
+        $('#GirdTable').DataTable({
+            "pageLength": 10,
+            "filter": false,
+            "paging": true,
+            "scrollY": "49vh",
+            "scrollCollapse": true,
+            "scrollX": true,
+            "autoWidth": false
+
+        });
+
+        @Html.Raw(Model.ErrorMessage)
+    });
+
+
+    function checkvalue() {
+        if ($("#SP").val() == "" && $("#CustPONO").val() == "" && $("#StyleID").val() == "" && $("#InspDateStart").val() == "" && $("#InspDateEnd").val() == "") {
+
+            msg.WithError('Please input fields before query.');
+            return false;
+        }
+        else {
+            return true;
+        }
+
+    }
+    $(function () {
+        $("#Download").click(function () {
+            location.href = '@Url.Action("DownLoad")';
+        });
+    });
+
+</script>
+
+

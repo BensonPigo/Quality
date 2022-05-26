@@ -215,6 +215,7 @@
     <Compile Include="ViewModel\RFT_PicDuringDummyFitting_ViewModel.cs" />
     <Compile Include="ViewModel\SampleRFT\InspectionBySP_ViewModel.cs" />
     <Compile Include="ViewModel\SampleRFT\InspectionDefectList_ViewModel.cs" />
+    <Compile Include="ViewModel\SampleRFT\QueryInspectionBySP_ViewModel.cs" />
     <Compile Include="ViewModel\SampleRFT\StyleResult_ViewModel.cs" />
     <Compile Include="ViewModel\SelectItem_ViewModel.cs" />
     <Compile Include="ViewModel\SampleRFT\PrintBarcode_ViewModel.cs" />

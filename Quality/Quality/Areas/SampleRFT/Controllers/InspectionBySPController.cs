@@ -20,7 +20,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         public InspectionBySPController()
         {
             this.SelectedMenu = "Sample RFT";
-            ViewBag.OnlineHelp = this.OnlineHelp + "SampleRFT.nspectionBySP,,";
+            ViewBag.OnlineHelp = this.OnlineHelp + "SampleRFT.InspectionBySP,,";
             _Service = new InspectionBySPService();
         }
 

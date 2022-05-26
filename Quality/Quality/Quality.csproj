@@ -195,6 +195,7 @@
     <Compile Include="Areas\FinalInspection\FinalInspectionAreaRegistration.cs" />
     <Compile Include="Areas\SampleRFT\Controllers\BACriteriaController.cs" />
     <Compile Include="Areas\SampleRFT\Controllers\CFTCommentsController.cs" />
+    <Compile Include="Areas\SampleRFT\Controllers\InspBySPQueryController.cs" />
     <Compile Include="Areas\SampleRFT\Controllers\InspectionBySPController.cs" />
     <Compile Include="Areas\SampleRFT\Controllers\InspectionController.cs" />
     <Compile Include="Areas\SampleRFT\Controllers\InspectionDefectListController.cs" />
@@ -420,6 +421,8 @@
     <Content Include="Areas\SampleRFT\Views\InspectionBySP\DummyFitting.cshtml" />
     <Content Include="Areas\SampleRFT\Views\Shared\ScreenShot_ForRFTInsp_DF.cshtml" />
     <Content Include="Areas\SampleRFT\Views\InspectionBySP\Others.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\InspBySPQuery\Index.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\InspBySPQuery\Detail.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
