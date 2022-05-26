@@ -377,6 +377,11 @@ namespace BusinessLogicLayer.Service
                         }
 
                     }
+                    else
+                    {
+                        inspections.Result = true;
+                        inspections.ErrMsg = string.Empty;
+                    }
                 }
                 else
                 {
