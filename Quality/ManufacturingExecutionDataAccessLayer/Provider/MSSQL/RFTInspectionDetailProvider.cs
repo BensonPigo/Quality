@@ -62,7 +62,7 @@ and oq.Qty - isnull(insp.cnt,0) > 0
         ,[DefectCnt] = count(*) 
     from RFT_Inspection i WITH (NOLOCK)
     inner join RFT_Inspection_Detail id  WITH (NOLOCK) on id.ID = i.ID
-    left join [[MainServer].Production.dbo.GarmentDefectCode gdc with (nolock) on id.GarmentDefectCodeID = gdc.id 
+    left join [MainServer].Production.dbo.GarmentDefectCode gdc with (nolock) on id.GarmentDefectCodeID = gdc.id 
     where 1=1
   And ((i.AddDate >= @InspectionDate and i.AddDate <= DATEADD(SECOND, -1, DATEADD(day, 1,@InspectionDate))) 
   or (i.EditDate >= @InspectionDate and i.EditDate <= DATEADD(SECOND, -1, DATEADD(day, 1,@InspectionDate)))) 
