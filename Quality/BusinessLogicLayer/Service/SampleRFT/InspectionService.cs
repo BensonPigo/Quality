@@ -336,37 +336,46 @@ namespace BusinessLogicLayer.Service
 
                 int createCnt = _RFTInspectionDetailProvider.Create_Master_Detail(inspections.rft_Inspection, inspections.fT_Inspection_Details);
                 _ISQLDataTransaction.Commit();
-                // 寄信
+                // Reject才寄信
                 if (createCnt > 0)
                 {
-                    _IMailToProvider = new MailToProvider(Common.ManufacturingExecutionDataAccessLayer);
-                    List<MailTo> mailToSubject = _IMailToProvider.Get(
-                       new MailTo()
-                       {
-                           ID = "200",
-                       }).ToList();
-
-                    // 取得 MR,SMR mail address
-                    List<MailTo> mailToAddress = _IMailToProvider.GetMR_SMR_MailAddress(
-                      new RFT_OrderComments()
-                      {
-                          OrderID = OrderID,
-                      }, "200").ToList();
-
-                    SendMail_Request request = new SendMail_Request()
+                    if (inspections.fT_Inspection_Details != null & inspections.fT_Inspection_Details.Count > 0)
                     {
-                        To = mailToAddress[0].ToAddress,
-                        CC = string.Empty,
-                        Subject = mailToSubject[0].Subject.ToString().Replace("{0}", OrderID),
-                        Body = mailToSubject[0].Content,
-                    };
+                        _IMailToProvider = new MailToProvider(Common.ManufacturingExecutionDataAccessLayer);
+                        List<MailTo> mailToSubject = _IMailToProvider.Get(
+                           new MailTo()
+                           {
+                               ID = "200",
+                           }).ToList();
 
-                    SendMail_Result result =  MailTools.SendMail(request);
+                        // 取得 MR,SMR mail address
+                        List<MailTo> mailToAddress = _IMailToProvider.GetMR_SMR_MailAddress(
+                          new RFT_OrderComments()
+                          {
+                              OrderID = OrderID,
+                          }, "200").ToList();
 
-                    if (!string.IsNullOrEmpty(result.resultMsg))
-                    {
-                        inspections.ErrMsg = result.resultMsg;
-                        inspections.Result = false;
+                        SendMail_Request request = new SendMail_Request()
+                        {
+                            To = mailToAddress[0].ToAddress,
+                            CC = string.Empty,
+                            Subject = mailToSubject[0].Subject.ToString().Replace("{0}", OrderID),
+                            Body = mailToSubject[0].Content,
+                        };
+
+                        SendMail_Result result = MailTools.SendMail(request);
+
+                        if (!string.IsNullOrEmpty(result.resultMsg))
+                        {
+                            inspections.ErrMsg = result.resultMsg;
+                            inspections.Result = false;
+                        }
+                        else
+                        {
+                            inspections.Result = true;
+                            inspections.ErrMsg = string.Empty;
+                        }
+
                     }
                     else
                     {

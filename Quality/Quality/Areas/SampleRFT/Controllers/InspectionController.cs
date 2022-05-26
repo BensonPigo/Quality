@@ -583,6 +583,11 @@ namespace Quality.Areas.SampleRFT.Controllers
             return Json(result);
         }
 
+        /// <summary>
+        /// Reject Save
+        /// </summary>
+        /// <param name="saveView"></param>
+        /// <returns></returns>
         [HttpPost]
         [SessionAuthorizeAttribute]
         public JsonResult ReworkCardSave(InspectionSave_ViewModel saveView)
