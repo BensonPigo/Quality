@@ -61,7 +61,7 @@
     Layout = "~/Areas/SampleRFT/Views/Shared/_ForAll_Layout.cshtml";
 }
 
-@using (Html.BeginForm("Index", "Query", FormMethod.Post, new { onsubmit = "return checkvalue()" }))
+@using (Html.BeginForm("Index", "InspBySPQuery", FormMethod.Post, new { onsubmit = "return checkvalue()" }))
 {
     <div class="search-condition">
 
@@ -95,7 +95,7 @@
                     <td style="width: 7%">
                         @Html.TextBox("SeasonID", string.Empty, new { @class = "inputSeason" })
                     </td>
-                    <td rowspan="2" style="width: 8%; vertical-align: middle" align="right">
+                    <td style="width: 8%; vertical-align: middle" align="center">
 
                         <button type="submit" style="border: 0; background: transparent;">
                             <img src="~/Image/Icon/Query.png" width="40" height="40" alt="submit" />
@@ -106,9 +106,12 @@
                     <td align="right">
                         <p class="searchFont">Inspection Date</p>
                     </td>
-                    <td colspan="5">
+                    <td colspan="7">
                         @Html.TextBox("InspDateStart", string.Empty, new { @class = "form-control date-picker inputStyle" })
                         <label style="font-size: 2em">~</label>  @Html.TextBox("InspDateEnd", string.Empty, new { @class = "form-control date-picker inputStyle" })
+                    </td>
+                    <td style="width: 8%; vertical-align: middle" align="center">
+                        <input id="btnToExcel" type="button" class="site-btn btn-blue" value="To Excel"/>
                     </td>
                 </tr>
             </table>
@@ -242,6 +245,10 @@
     $(function () {
         $("#Download").click(function () {
             location.href = '@Url.Action("DownLoad")';
+        });
+
+        $("#btnToExcel").click(function () {
+            location.href = '@Url.Action("IndexToExcel")';
         });
     });
 

@@ -5,8 +5,10 @@ using DatabaseObject.ProductionDB;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.SampleRFT;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -815,6 +817,78 @@ namespace BusinessLogicLayer.Service.SampleRFT
 
             return model;
 
+        }
+
+
+        public QueryInspectionBySP_ViewModel GetQuery(QueryInspectionBySP_ViewModel Req)
+        {
+            QueryInspectionBySP_ViewModel model = new QueryInspectionBySP_ViewModel() { DataList = new List<QueryInspectionBySP>() };
+            try
+            {
+                _Provider = new InspectionBySPProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                var details = _Provider.Get_QueryResults(Req);
+
+                model.DataList = details.Any() ? details.ToList() : new List<QueryInspectionBySP>();
+                model.Result = true;
+            }
+            catch (Exception ex)
+            {
+                model.Result = false;
+                model.ErrorMessage = ex.Message.Replace("'", string.Empty);
+            }
+
+            return model;
+
+        }
+
+        public QueryReport GetQueryDetail(long inputID, string UserID)
+        {
+            _Provider = new InspectionBySPProvider(Common.ManufacturingExecutionDataAccessLayer);
+            QueryReport model = new QueryReport();
+
+            try
+            {
+                SampleRFTInspection sampleRFTInspection = _Provider.Get_SampleRFTInspection(new InspectionBySP_ViewModel() { ID = inputID }).FirstOrDefault();
+
+                InspectionBySP_Setting setting = GetExistedSetting(new InspectionBySP_ViewModel()
+                {
+                    ID = sampleRFTInspection.ID,
+                    OrderID = sampleRFTInspection.OrderID
+                });
+                InspectionBySP_Measurement Measurement = GetMeasurement(inputID, UserID);
+                InspectionBySP_AddDefect AddDefect = GetAddDefectBody(inputID);
+                InspectionBySP_BA BA = GetBA_Body(inputID);
+                InspectionBySP_DummyFit DummyFit = GetDummyFit(inputID);
+                InspectionBySP_Others Others = Get_Others(inputID);
+
+                model.sampleRFTInspection = sampleRFTInspection;
+                model.Setting = setting;
+
+                model.ListMeasurementViewItem = _Provider.GetMeasurementViewItem(sampleRFTInspection.OrderID).ToList();
+                model.Measurement = Measurement;
+
+                foreach (MeasurementViewItem measurementViewItem in model.ListMeasurementViewItem)
+                {
+                    DataTable dtMeasurementData = _Provider.GetMeasurement(sampleRFTInspection.OrderID, measurementViewItem.Article, measurementViewItem.Size, measurementViewItem.ProductType);
+                    measurementViewItem.MeasurementDataByJson = JsonConvert.SerializeObject(dtMeasurementData);
+                }
+
+                model.AddDefect = AddDefect;
+                model.BA = BA;
+                model.DummyFit = DummyFit;
+                model.Others = Others;
+
+
+                model.ExcuteResult = true;
+            }
+            catch (Exception ex)
+            {
+                model.ExcuteResult = false;
+                model.ErrorMessage =  $@"msg.WithError(""{ex.Message}"")";
+            }
+
+            return model;
         }
     }
 }

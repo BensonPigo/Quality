@@ -1,0 +1,277 @@
+﻿@model DatabaseObject.ViewModel.FinalInspection.QueryReport
+@*<script src="~/ThirdParty/SciCustom/js/main.js"></script>*@
+
+<style>
+
+    .TitleFont {
+        font-size: 1.5em;
+        font-weight: 900;
+    }
+</style>
+<table style="width: 100%; margin-top: 2vh; ">
+    <tbody>
+        <tr>
+            <td align="right">
+                <div class="col-auto"><p class="TitleFont">Style#</p></div>
+            </td>
+            <td align="center">
+                <div class="col-auto"><select class="form-control" id="ViewListArticle" name="ViewListArticle"></select></div>
+            </td>
+
+            <td align="right"><p class="TitleFont">Size</p></td>
+            <td align="center">
+                <div class="col-auto"><select class="form-control" id="ViewListSize" name="ViewListSize"></select></div>
+            </td>
+            <td align="right" style="width:20%"><p class="TitleFont" width: 10vw;">Product Type</p></td>
+            <td align="center">
+                <div class="col-auto"><select class="form-control" id="ViewListProductType" name="ViewListProductType"></select></div>
+            </td>
+            <td align="right"><p class="TitleFont">Unit</p></td>
+            <td align="center">
+                <div class="col-auto">  @Html.TextBoxFor(o => o.MeasurementUnit, new { @style = "width:10vw", @class = "form-control", @disabled = "disabled" })</div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="8">
+                <div id="Content" style="background-color: white;">
+
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<script type="text/javascript">
+
+    var data = @Html.Raw(Json.Encode(Model.ListMeasurementViewItem));
+    var OpenViewObj;
+
+
+    $(document).ready(function () {
+
+        var articleOption = "", sizeOption = "", productTypeOption = "";
+        var articleArrList = [], sizeArrList = [], productTypeArrList = [];
+
+        $.each(data, function (index, value) {
+            articleArrList.push(value.Article);
+            sizeArrList.push(value.Article + ',' + value.Size);
+            productTypeArrList.push(value.Article + ',' + value.ProductType);
+        });
+
+        $.each($.unique(articleArrList), function (index, value) {
+            articleOption += "<option value=" + value + ">" + value + "</option>";
+        });
+
+        $.each($.unique(sizeArrList), function (index, value) {
+            sizeOption += "<option value=" + value + " >" + value.split(',')[1] + "</option>";
+        });
+
+        $.each($.unique(productTypeArrList), function (index, value) {
+            productTypeOption += "<option value=" + value + ">" + value.split(',')[1] + "</option>";
+        });
+
+        $("#ViewListArticle").html(articleOption);
+        $("#ViewListSize").html(sizeOption);
+        $("#ViewListProductType").html(productTypeOption);
+
+        reloadViewitem();
+
+        var currentArticle = $("#ViewListArticle").val();
+        var currentSize = $("#ViewListSize").val();
+        var currentProductType = $("#ViewListProductType").val();
+        
+        ReloadViewData(data, currentArticle, currentSize, currentProductType);
+
+
+        OpenViewObj = data;
+        $("#ViewListArticle").on("change", function () {
+            reloadViewitem();
+            ReloadViewData(OpenViewObj, $(this).val(), $("#ViewListSize").val(), $("#ViewListProductType").val());
+        });
+
+        $("#ViewListSize").change(function () {
+            ReloadViewData(OpenViewObj, $("#ViewListArticle").val(), $(this).val(), $("#ViewListProductType").val());
+        });
+
+        $("#ViewListProductType").change(function () {
+            ReloadViewData(OpenViewObj, $("#ViewListArticle").val(), $("#ViewListSize").val(), $(this).val());
+        });
+
+    });
+
+    function reloadViewitem() {
+        var article = $("#ViewListArticle").val();
+        var sizeOption = "", productTypeOption = "";
+
+        //切換Article時，Size和Product Type的資料會改變，因此需要新的預設值
+        var newDefaultSize = "";
+        var newDefaultProductType = "";
+
+        $("#ViewListSize > option").each(function () {
+            
+            if (this.value.split(',')[0] == article) {
+                sizeOption += "<option value=" + this.value + ">" + this.text + "</option>";
+
+                //抓第一個Size當預設值
+                if (newDefaultSize == "") {
+                    newDefaultSize = this.value;
+                }
+            }
+            else {
+                //不是這個Article的Size隱藏
+                sizeOption += "<option hidden value=" + this.value + ">" + this.text + "</option>";
+            }
+        });
+
+        $("#ViewListSize").html(sizeOption);
+        $("#ViewListSize").val(newDefaultSize);
+
+        $("#ViewListProductType > option").each(function () {
+
+            if (this.value.split(',')[0] == article) {
+                productTypeOption += "<option value=" + this.value + ">" + this.text + "</option>";
+
+                //抓第一個roductType當預設值
+                if (newDefaultProductType == "") {
+                    newDefaultProductType = this.value;
+                }
+            }
+            else {
+                //不是這個Article的ProductType隱藏
+                productTypeOption += "<option hidden value=" + this.value + ">" + this.text + "</option>";
+            }
+        });
+
+        $("#ViewListProductType").html(productTypeOption);
+        $("#ViewListProductType").val(newDefaultProductType);
+
+        return true;
+    }
+
+    // 傳入，OpenView 回傳的 Ajax 物件集合
+    function ReloadViewData(AjaxReturn, Article, Size, ProductType) {
+        
+        if (Article == "" || Size == "" || ProductType == "" || AjaxReturn.length <= 0) {
+            return;
+        }
+
+        if (Size.split(',').length > 1) {
+            Size = Size.split(',')[1];
+        }
+
+        if (ProductType.split(',').length > 1) {
+            ProductType = ProductType.split(',')[1];
+        }
+
+
+        $.each(AjaxReturn, function () {
+            var AjaxObj = this;
+
+            if (AjaxObj.Article == Article && AjaxObj.Size == Size && AjaxObj.ProductType == ProductType) {
+
+                var datas = JSON.parse(AjaxObj.MeasurementDataByJson);
+
+                if (datas.length == 0) {
+                    msg.WithErrorCheck("No data Found", function () {
+                        return false;
+                    });
+                }
+                else {
+                    $('#Content').html(generateTable(datas, "Measurement"));
+                    $('#Content').children("table").addClass("table-striped");
+                    ChangeColor();
+                }
+            }
+
+        });
+    }
+
+
+    function ChangeColor() {
+        var unit = $('#ViewSizeUnit').val();
+        $.each($('#Content > table > tbody > tr'), function () {
+            var standard;
+            var tolh;
+            var toll;
+            var val;
+            $.each($(this).children(), function () {
+                var tdName = $(this).attr('idx');
+
+                if (tdName == null) {
+                    return false;
+                }
+
+                if (tdName == "Tol(+)") {
+                    tolh = $(this).html();
+                }
+
+                if (tdName == "Tol(-)") {
+                    toll = $(this).html();
+                }
+
+                if (isDate(tdName)) {
+                    val = $(this).html();
+                    $(this).css('background-color', 'rgb(234, 234, 113);');
+                }
+
+                if (tdName.indexOf('_aa') > -1) {
+                    standard = $(this).html();
+                    $(this).css('background-color', 'rgb(211, 211, 211);');
+                }
+
+                if (tdName.indexOf('diff') > -1) {
+                    $(this).css('background-color', 'rgb(234, 234, 113);');
+
+                    if (standard == null || val == null || tolh == null || toll == null) {
+                        return;
+                    }
+                    else {
+                        // 避免standard出現文字
+                        if (parseInt(standard.toString()) >= 0) {
+                            cal(unit, standard.toString(), val.toString(), tolh.toString(), toll.toString(), $(this));
+                        }
+                    }
+                }
+            });
+        });
+    }
+
+    function cal(unit, standard, val, tolh, toll, obj) {
+        if (unit == "INCH") {
+            if (standard.indexOf('.') > -1) {
+                return;
+            }
+            var sTolh = FractionAdd(standard, tolh);
+            var sToll = FractionDiff(standard, toll);
+            var diffTolh = String(FractionDiff(sTolh.toString(), val));
+            var diffToll = String(FractionDiff(val, sToll.toString()));
+
+            if (diffTolh.indexOf('-') > -1 || diffToll.indexOf('-') > -1) {
+                obj.addClass("red");
+            }
+            else {
+                obj.removeClass("red");
+            }
+        }
+        else {
+            if (standard.indexOf('/') > -1) {
+                return;
+            }
+
+            var sTolh = parseFloat(accAdd(standard, tolh));
+            var sToll = parseFloat(accSubtr(standard, toll));
+            if (sTolh >= val && val >= sToll) {
+                obj.removeClass("red");
+            }
+            else {
+                obj.addClass("red");
+            }
+        }
+    }
+
+
+</script>
+
+
+
+

@@ -340,8 +340,14 @@ namespace Quality.Areas.SampleRFT.Controllers
         /// </summary>
         /// <param name="OrderID"></param>
         /// <returns></returns>
-        public ActionResult MeasurementPicture(string OrderID)
+        public ActionResult MeasurementPicture(string OrderID, bool Readonly = false)
         {
+            if (Readonly)
+            {
+                TmpMeasurementImgSourceList = new List<SelectListItem>();
+                TmpAdd_MeasurementImg = new List<RFT_Inspection_Measurement_Image>();
+                TmpDelete_MeasurementImg = new List<RFT_Inspection_Measurement_Image>();
+            }
 
             Measurement_ResultModel model = _Service.GetMeasurementImageList(OrderID);
             // 這裡要帶出所有圖片，可以參考Inspection的Measurement Photo怎麼做
@@ -372,7 +378,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                 !TmpDelete_MeasurementImg.Any(x => x.Seq == o.Seq)
             ).ToList();
 
-
+            ViewData["IsReadonly"] = Readonly;
             return View(model);
         }
 
@@ -641,8 +647,15 @@ namespace Quality.Areas.SampleRFT.Controllers
         /// <param name="SampleRFTInspection_DetailUKey"></param>
         /// <param name="GarmentDefectCodeID"></param>
         /// <returns></returns>
-        public ActionResult AddDefectPicture(long ID, long SampleRFTInspection_DetailUKey, string GarmentDefectCodeID)
+        public ActionResult AddDefectPicture(long ID, long SampleRFTInspection_DetailUKey, string GarmentDefectCodeID, bool Readonly = false)
         {
+            if (Readonly)
+            {
+                TmpDefectImgSourceList = new List<SelectListItem>();
+                TmpAdd_DefectImg = new List<DefectImage>();
+                TmpDelete_DefectImg = new List<DefectImage>();
+            }
+
             SampleRFTInspection_Summary model = SampleRFTInspection_DetailUKey > 0 ? _Service.GetDefectImageList(ID, SampleRFTInspection_DetailUKey)
                 : new SampleRFTInspection_Summary()
                 {
@@ -683,6 +696,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             ).ToList();
 
 
+            ViewData["IsReadonly"] = Readonly;
             return View(model);
         }
 

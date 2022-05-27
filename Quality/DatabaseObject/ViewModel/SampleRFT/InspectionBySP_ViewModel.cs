@@ -40,11 +40,15 @@ namespace DatabaseObject.ViewModel.SampleRFT
         public string FactoryID { get; set; }
         public string InspectionStage { get; set; }
         public int InspectionTimes { get; set; }
+        public string InspectionTimesText { get; set; }
         public string InspectionStep { get; set; }
         public string SewingLineID { get; set; }
         public string QCInCharge { get; set; }
+        public string AddName { get; set; }
         public int OrderQty { get; set; }
+        public int PassQty { get; set; }
         public DateTime? InspectionDate { get; set; }
+        public DateTime? SubmitDate { get; set; }
 
         #region AQL Plan
         public string AQLPlan { get; set; }
@@ -216,6 +220,13 @@ namespace DatabaseObject.ViewModel.SampleRFT
         public long MeasurementUkey { get; set; }
         public bool CanEdit { get; set; }
     }
+    public class MeasurementViewItem
+    {
+        public string Article { get; set; }
+        public string Size { get; set; }
+        public string ProductType { get; set; }
+        public string MeasurementDataByJson { get; set; }
+    }
     public class ArticleSize
     {
         public string Article { get; set; }
@@ -251,6 +262,7 @@ namespace DatabaseObject.ViewModel.SampleRFT
         public string GarmentDefectCodeID { get; set; }// = Production.dbo.GarmentDefectCode.ID
         public string DefectCode { get; set; } // = Production.dbo.GarmentDefectCode.Description
         public string DefectCodeDesc { get; set; }// = ID +"-" + Description
+        public bool HasImage { get; set; }
 
         public string AreaCodes { get; set; }
         public int Qty { get; set; }

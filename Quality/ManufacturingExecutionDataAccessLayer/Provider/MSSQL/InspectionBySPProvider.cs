@@ -27,6 +27,13 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             SQLParameterCollection para = new SQLParameterCollection();
             SbSql.Append($@"
 select a.*, b.StyleID ,b.SeasonID ,b.BrandID
+
+	,InspectionTimesText = 
+                        CASE WHEN a.InspectionTimes = 1  THEN '1/Final'
+                             WHEN a.InspectionTimes = 2  THEN '2/Final' 
+                             WHEN a.InspectionTimes = 3  THEN '3/Final' 
+                        ELSE Cast(a.InspectionTimes as varchar)
+                        END
 from SampleRFTInspection a
 INNER JOIN MainServer.Production.dbo.Orders b on a.OrderID=b.ID
 where 1=1
@@ -300,6 +307,10 @@ update SampleRFTInspection
           ,CheckAdditionalLabel = @CheckAdditionalLabel
           ,CheckPolytagMarketing = @CheckPolytagMarketing
           ,CheckHangtag = @CheckHangtag
+          ,CheckPackingMode = @CheckPackingMode
+          ,CheckCareLabel = @CheckCareLabel
+          ,CheckSecurityLabel = @CheckSecurityLabel
+          ,CheckOuterCarton = @CheckOuterCarton
           ,InspectionStep = @InspectionStep
           ,EditName= @userID
           ,EditDate= getdate()
@@ -313,6 +324,7 @@ where   ID = @ID
                     objParameter.Add("@CheckFabricApproval", inspection.CheckFabricApproval);
                     objParameter.Add("@CheckMetalDetection", inspection.CheckMetalDetection);
                     objParameter.Add("@CheckSealingSampleApproval", inspection.CheckSealingSampleApproval);
+
                     objParameter.Add("@CheckColorShade", inspection.CheckColorShade);
                     objParameter.Add("@CheckHandfeel", inspection.CheckHandfeel);
                     objParameter.Add("@CheckAppearance", inspection.CheckAppearance);
@@ -320,15 +332,16 @@ where   ID = @ID
                     objParameter.Add("@CheckFiberContent", inspection.CheckFiberContent);
                     objParameter.Add("@CheckCareInstructions", inspection.CheckCareInstructions);
                     objParameter.Add("@CheckDecorativeLabel", inspection.CheckDecorativeLabel);
+                    objParameter.Add("@CheckCareLabel", inspection.CheckCareLabel);
                     objParameter.Add("@CheckCountryofOrigin", inspection.CheckCountryofOrigin);
                     objParameter.Add("@CheckSizeKey", inspection.CheckSizeKey);
-                    objParameter.Add("@CheckAdditionalLabel", inspection.CheckAdditionalLabel);
-                    objParameter.Add("@CheckPolytagMarketing", inspection.CheckPolytagMarketing);
-                    objParameter.Add("@CheckCareLabel", inspection.CheckCareLabel);
                     objParameter.Add("@CheckSecurityLabel", inspection.CheckSecurityLabel);
+                    objParameter.Add("@CheckAdditionalLabel", inspection.CheckAdditionalLabel);
                     objParameter.Add("@CheckOuterCarton", inspection.CheckOuterCarton);
+                    objParameter.Add("@CheckPolytagMarketing", inspection.CheckPolytagMarketing);
                     objParameter.Add("@CheckPackingMode", inspection.CheckPackingMode);
                     objParameter.Add("@CheckHangtag", inspection.CheckHangtag);
+
 
                     break;
                 case "Insp-Measurement":
@@ -565,6 +578,108 @@ order by a.Code
             return ExecuteList<Measurement>(CommandType.Text, sqlcmd, objParameter, 80);
         }
 
+        public DataTable GetMeasurement(string OrderID, string article, string size, string productType)
+        {
+
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@OrderID", OrderID} ,
+                { "@article", DbType.String, article} ,
+                { "@size", DbType.String, size} ,
+                { "@productType", DbType.String, productType} ,
+            };
+
+
+            string sqlcmd = @"
+
+declare @CustPONO varchar(30)
+
+select  @CustPONO = CustPONO
+from    FinalInspection with (nolock)
+where   ID = @OrderID
+
+
+select  StyleUkey = Ukey,SizeUnit
+INTO #Style_Size
+from    Production.dbo.Style WITH(NOLOCK)
+where   Ukey IN (
+	select StyleUkey 
+	from Production.dbo.Orders  WITH(NOLOCK)
+	where ID = @OrderID
+)
+
+select  SizeSpec,        MeasurementUkey,        AddDate
+into    #tmp_Inspection_Measurement
+from    RFT_Inspection_Measurement WITH(NOLOCK)
+where   OrderID = @OrderID and
+        Article = @article and
+        SizeCode = @size and
+        Location = @productType
+
+
+select m.Ukey
+	,Description = iif(isnull(b.DescEN,'') = '', m.Description, b.DescEN)
+	,m.Tol1
+	,m.Tol2
+	,m.Code
+	,m.SizeCode 
+	,[MeasurementSizeSpec] = m.SizeSpec 
+	,[InspectionMeasurementSizeSpec] = im.SizeSpec
+	,[diff]= max(dbo.calculateSizeSpec(m.SizeSpec,im.SizeSpec, ss.SizeUnit))
+	,im.AddDate
+	,[HeadSizeCode] = FORMAT(im.AddDate,'yyyy/MM/dd HH:mm:ss')
+into #tmp 
+from Measurement m with(nolock)
+INNER JOIN #Style_Size ss WITH(NOLOCK) ON m.StyleUkey = ss.StyleUkey 
+left join #tmp_Inspection_Measurement im WITH(NOLOCK) on im.MeasurementUkey = m.Ukey 
+LEFT JOIN [ManufacturingExecution].[dbo].[MeasurementTranslate] b WITH(NOLOCK) ON  m.MeasurementTranslateUkey = b.UKey
+where  m.SizeCode = @size and m.junk = 0
+group by m.Ukey,iif(isnull(b.DescEN,'') = '',m.Description,b.DescEN),m.Tol1,m.Tol2,m.Code,m.SizeCode,m.SizeSpec,im.SizeSpec,im.AddDate
+
+drop table #tmp_Inspection_Measurement
+
+declare @HeadSizeCode as varchar(20),@mSizeCode as varchar(10),@r_id as varchar(10)
+declare @sql varchar(max) = ''
+DECLARE CURSOR_ CURSOR FOR
+Select t.HeadSizeCode, t.SizeCode, ROW_NUMBER() over( order by t.HeadSizeCode) r_id
+from #tmp t
+where t.HeadSizeCode is not null
+group by t.HeadSizeCode, t.SizeCode
+
+OPEN CURSOR_
+FETCH NEXT FROM CURSOR_ INTO @HeadSizeCode,@mSizeCode,@r_id
+While @@FETCH_STATUS = 0
+Begin
+	
+	set @sql = @sql + '
+		,Max(case when SizeCode ='''+@mSizeCode+''' then MeasurementSizeSpec end) as ['+@mSizeCode+'_aa]
+		,Max(case when HeadSizeCode ='''+@HeadSizeCode+''' and SizeCode ='''+@mSizeCode+''' then InspectionMeasurementSizeSpec end) as ['+@HeadSizeCode+']
+		,Max(case when HeadSizeCode ='''+@HeadSizeCode+''' and SizeCode ='''+@mSizeCode+''' then diff end) as diff'+@r_id+''
+FETCH NEXT FROM CURSOR_ INTO @HeadSizeCode,@mSizeCode,@r_id
+End
+CLOSE CURSOR_
+DEALLOCATE CURSOR_ 
+
+set @sql = '
+	select t.Code,t.Description
+		,[Tol(+)] = t.Tol2 
+		,[Tol(-)] = t.Tol1 
+		' + @sql + '
+	from #tmp t 
+	group by t.Description,t.Tol1,t.Tol2,t.code
+    order by t.Code
+'
+
+exec (@sql)
+
+
+drop table #tmp,#Style_Size
+
+";
+
+            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
+            return dt;
+        }
         /// <summary>
         /// Measurement圖片下拉選單資料來源
         /// </summary>
@@ -584,6 +699,23 @@ from PMSFile.dbo.RFT_Inspection_Measurement
 where OrderID = @OrderID
 ";
             return ExecuteList<SelectListItem>(CommandType.Text, sqlcmd, objParameter);
+        }
+
+        public IList<MeasurementViewItem> GetMeasurementViewItem(string OrderID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            objParameter.Add("@OrderID", OrderID);
+
+            string sqlGetEndlineMoisture = @"
+select  distinct    Article,
+                    [Size] = SizeCode,
+                    [ProductType] = Location,
+                    [MeasurementDataByJson] = ''
+from    RFT_Inspection_Measurement with (nolock)
+where   OrderID = @OrderID
+
+";
+            return ExecuteList<MeasurementViewItem>(CommandType.Text, sqlGetEndlineMoisture, objParameter);
         }
 
         public IList<RFT_Inspection_Measurement_Image> Get_MeasurementImageList(string OrderID)
@@ -732,6 +864,16 @@ select [RowIndex]=ROW_NUMBER() OVER(ORDER BY gdt.id,gdc.id) -1
 		from #SampleRFTInspection_Detail a
 		where a.GarmentDefectTypeID=gdt.ID AND a.GarmentDefectCodeID=gdc.ID
 	)
+	,HasImage =  CAST( IIF( EXISTS(
+	
+		select 1
+		from PMSFile.dbo.SampleRFTInspection_Detail
+		where SampleRFTInspectionDetailUKey IN (
+			select top 1 Ukey
+			from #SampleRFTInspection_Detail a
+			where a.GarmentDefectTypeID=gdt.ID AND a.GarmentDefectCodeID=gdc.ID
+		)
+	), 1,0) as bit )
 from MainServer.Production.dbo.GarmentDefectType gdt 
 inner join MainServer.Production.dbo.GarmentDefectCode gdc on gdt.id=gdc.GarmentDefectTypeID 
 outer apply(
@@ -1516,13 +1658,19 @@ where   ID = @ID
             SbSql.Append($@"
 
 select a.ID
-	,SP=a.OrderID
+	,SP = a.OrderID
 	,o.CustPONO
 	,o.StyleID
 	,o.SeasonID
 	,Article = Articles.Val
+    ,SampleStage = o.OrderTypeID
 	,a.SewingLineID
-	,a.InspectionTimes
+	,InspectionTimes = 
+                        CASE WHEN a.InspectionTimes = 1  THEN '1/Final'
+                             WHEN a.InspectionTimes = 2  THEN '2/Final' 
+                             WHEN a.InspectionTimes = 3  THEN '3/Final' 
+                        ELSE Cast(a.InspectionTimes as varchar)
+                        END
 	,Inspector = a.AddName
 	,a.Result
 from SampleRFTInspection a

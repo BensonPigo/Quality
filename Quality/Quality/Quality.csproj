@@ -423,6 +423,12 @@
     <Content Include="Areas\SampleRFT\Views\InspectionBySP\Others.cshtml" />
     <Content Include="Areas\SampleRFT\Views\InspBySPQuery\Index.cshtml" />
     <Content Include="Areas\SampleRFT\Views\InspBySPQuery\Detail.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\InspBySPQuery\_Tab1_Layout.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\InspBySPQuery\_Tab2_Layout.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\InspBySPQuery\_Tab3_Layout.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\InspBySPQuery\_Tab4_Layout.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\InspBySPQuery\_Tab5_Layout.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\InspBySPQuery\_Tab6_Layout.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -932,6 +938,9 @@
     </Content>
     <Content Include="Views\PublicWondow\InspMeasurement_PictureList.cshtml" />
     <Content Include="XLT\AccessoryWashingFastness.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\InspBySPQuery.xlsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

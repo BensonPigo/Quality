@@ -30,4 +30,23 @@ namespace DatabaseObject.ViewModel.SampleRFT
         public string Inspector { get; set; }
         public string Result { get; set; }
     }
+
+    public class QueryReport
+    {
+        public SampleRFTInspection sampleRFTInspection { get; set; }
+        public InspectionBySP_Setting Setting { get; set; }
+
+        public InspectionBySP_CheckList CheckList { get; set; }        
+        public InspectionBySP_Measurement Measurement { get; set; }
+        public List<MeasurementViewItem> ListMeasurementViewItem { get; set; }
+        public InspectionBySP_AddDefect AddDefect { get; set; }
+        public InspectionBySP_BA BA { get; set; }
+        public InspectionBySP_DummyFit DummyFit { get; set; }
+        public InspectionBySP_Others Others { get; set; }
+
+        public bool ExcuteResult { get; set; }
+        public string ErrorMessage { get; set; }
+
+
+    }
 }

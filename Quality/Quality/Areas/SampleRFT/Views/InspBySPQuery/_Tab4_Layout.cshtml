@@ -1,0 +1,53 @@
+﻿@model DatabaseObject.ViewModel.SampleRFT.QueryReport
+<style>
+    #myTable4_info {
+        color: white
+    }
+
+    #myTable4_previous, #myTable4_next {
+        color: white !important;
+    }
+
+    #myTable4_wrapper, #myTable4_wrapper > .dataTables_scrollHeadInner {
+        width: 100%
+    }
+</style>
+<h1>Beautiful Product Qty:@Model.BA.BAQty</h1>
+<table id="myTable4" class="table table-striped display">
+    <thead>
+        <tr class="row-name">
+            <th>Non Beautiful Product</th>
+            <th>Qty</th>
+            <th>Photo</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.BA.ListBACriteria.Where(o=>o.Qty > 0))
+        {
+            <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                <td>@item.BACriteria:@item.BACriteriaDesc</td>
+                <td>@item.Qty</td>
+                <td>
+                    @if (item.HasImage)
+                    {
+                        <img src="/Image/Icon/Picture.png" style="cursor: pointer;" onclick="OpenBAPicture(@item.Ukey,@item.RowIndex)" width="25" height="25" />
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<script>
+    $(function () {
+        $('#myTable4').DataTable({
+            "pageLength": 10,
+            "autoWidth": false,
+            "info": false,
+            "filter": false,
+            "paging": false,
+            "info": false,
+            "scrollY": "40vh",
+            "scrollCollapse": true,
+        });
+    });
+</script>
