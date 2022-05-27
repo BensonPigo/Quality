@@ -1,6 +1,7 @@
 ﻿using BusinessLogicLayer.Service.SampleRFT;
 using DatabaseObject.ViewModel.SampleRFT;
 using Quality.Controllers;
+using Quality.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,6 +37,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult Query(InspectionDefectList_ViewModel Req)
         {
             InspectionDefectList_ViewModel model = _Service.GetData(Req);

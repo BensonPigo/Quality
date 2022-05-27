@@ -46,6 +46,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DotNetZip, Version=1.16.0.0, Culture=neutral, PublicKeyToken=6583c7c814667745, processorArchitecture=MSIL">
+      <HintPath>..\packages\DotNetZip.1.16.0\lib\net40\DotNetZip.dll</HintPath>
+    </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <HintPath>..\packages\NPOI.2.1.3.1\lib\net40\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
@@ -218,6 +221,7 @@
     </Compile>
     <Compile Include="Helper\Attribute.cs" />
     <Compile Include="Helper\CheckWorkDate.cs" />
+    <Compile Include="Helper\MyJsonValueProviderFactory.cs" />
     <Compile Include="Helper\SetListItem.cs" />
     <Compile Include="Helper\StringEncryptHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -940,9 +944,10 @@
     <Content Include="XLT\AccessoryWashingFastness.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="XLT\InspBySPQuery.xlsx">
+    <Content Include="XLT\FinalInspectionQuery.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="XLT\InspBySPQuery.xlsx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

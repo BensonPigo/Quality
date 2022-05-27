@@ -7,9 +7,14 @@
     string QueryType = Model.QueryType;
     bool isReadOnly = true;
 
-    List<string> stageList = Model.DataList.Select(o => o.SampleStage).Distinct().ToList();
+    List<string> stageList = new List<string>();
+    List<string> categoryList = new List<string>();
+    if (Model.DataList != null || Model.DataList.Count > 0)
+    {
+        stageList = Model.DataList.Select(o => o.SampleStage).Distinct().ToList();
+        categoryList = Model.DataList.Select(o => o.CommentsCategory).Distinct().ToList();
+    }
 
-    List<string> categoryList = Model.DataList.Select(o => o.CommentsCategory).Distinct().ToList();
 }
 
 @model CFTComments_ViewModel

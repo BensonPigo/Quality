@@ -4,6 +4,7 @@ using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ResultModel;
 using FactoryDashBoardWeb.Helper;
 using Quality.Controllers;
+using Quality.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +26,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         // GET: BulkFGT/BulkFGTMailGroup
+        [SessionAuthorizeAttribute]
         public ActionResult Index()
         {
             List<Quality_MailGroup> quality_MailGroups = _BulkFGTMailGroup_Service.MailGroupGet(new Quality_MailGroup() { Type = "BulkFGT" }).ToList();
@@ -34,6 +36,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult GetDetail(string Factory, string GroupName)
         {
             if (string.IsNullOrEmpty(Factory) && string.IsNullOrEmpty(GroupName))
@@ -46,6 +49,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult SaveDetail(Quality_MailGroup quality_Mail, string Action)
         {
             quality_Mail.Type = "BulkFGT";

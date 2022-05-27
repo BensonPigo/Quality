@@ -186,6 +186,12 @@
                                         </h4>
                                     </td>
                                     <td>
+                                        <h4 id="SendMail" style=" margin-right: 1em; width: 7vw;">
+                                            <img src="~/Image/Icon/SendMail.png" width="30" />
+                                            Send to MR
+                                        </h4>
+                                    </td>
+                                    <td>
                                         <input id="DeleteSubmit" type="submit" name="Action:Delete" style="display:none" />
                                         <h4 id="Delete" style=" margin-right: 1em;">
                                             <img src="~/Image/Icon/Delete.png" width="30" />
@@ -199,7 +205,7 @@
                                         </h4>
                                     </td>
                                     <td style="width: 50%;"></td>
-                            </tbody>
+</tbody>
                         </table>
                     </div>
 
@@ -353,7 +359,7 @@
             $(".rowHeader input[type='button']").unbind('click').addClass("IsEditModeQuery");
             $('#btnQuery').addClass("IsEditModeQuery");
 
-            $("#Edit, #Delete").removeClass("IsEditMode");
+            $("#Edit, #Delete ,#SendMail").removeClass("IsEditMode");
             $('#Save, #Undo, #New, #Picture').addClass("IsEditMode");
 
             if (EditType == "New") {
@@ -377,10 +383,10 @@
             $(".rowHeader input[type='button']").removeClass("IsEditModeQuery");
 
             if ($('#Detail_ReportNo').val() != undefined && $('#Detail_ReportNo').val() != '') {
-                $("#Edit, #Delete, #Picture").addClass("IsEditMode");
+                $("#Edit, #Delete, #Picture ,#SendMail").addClass("IsEditMode");
             }
             else {
-                $("#Edit, #Picture, #Delete").unbind('click').removeClass("IsEditMode");
+                $("#Edit, #Picture, #Delete ,#SendMail").unbind('click').removeClass("IsEditMode");
             }
 
             $('#btnNew').removeClass("IsEditModeQuery");
@@ -496,9 +502,20 @@
                 para += "&" + "AfterColumn=TestAfterPicture";
                 para += "&" + "PKey_1=ReportNo";
                 para += "&" + "PKey_1_Val=" + $('#Detail_ReportNo').val();
-                
+
                 window.open('@Url.Action("PictureList", "PublicWondow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1024,height=750');
             });
+
+
+            $('#SendMail').unbind('click').on('click', function () {
+
+                var para = "?To=";
+                para += "&CC=" + '@ViewBag.UserMail';
+                para += "&Subject=" + "Pulling Test – ReportNo:" + '@Model.Detail.ReportNo';
+                para += "&Body=" + "Attachment is Pulling Test– ReportNo:" + '@Model.Detail.ReportNo' + " detail data";
+
+                window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=600');
+             });
         }
 
         function QueryButtonBind() {

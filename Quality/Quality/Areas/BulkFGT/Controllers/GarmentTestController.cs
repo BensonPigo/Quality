@@ -7,6 +7,7 @@ using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel;
 using FactoryDashBoardWeb.Helper;
 using Quality.Controllers;
+using Quality.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -95,6 +96,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         /// </summary>
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult Index(GarmentTest_Request Req)
         {
             Req.Factory = this.FactoryID;
@@ -123,12 +125,14 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult SaveDetail(GarmentTest_ViewModel main, List<GarmentTest_Detail_ViewModel> details)
         {
             if (details == null)
             {
                 details = new List<GarmentTest_Detail_ViewModel>();
             }
+            main.MDivisionid = this.MDivisionID;
             GarmentTest_ViewModel result = _GarmentTest_Service.Save_GarmentTest(main, details, this.UserID);
 
             GarmentTest_Result result1 = new GarmentTest_Result()
@@ -148,6 +152,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult DeleteDetail(string ID, string No)
         {
             GarmentTest_ViewModel result = _GarmentTest_Service.DeleteDetail(ID, No);
@@ -156,6 +161,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult SendMail(string ID, string No)
         {
             GarmentTest_ViewModel result = _GarmentTest_Service.SendMail(ID, No, this.UserID);
@@ -167,6 +173,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult ReceiveMail(string ID, string No)
         {
             GarmentTest_ViewModel result = _GarmentTest_Service.ReceiveMail(ID, No, this.UserID);
@@ -178,6 +185,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult AddDetailRow(string ID, int lastNO, string OrderID, string Article, string Brand, string Season, string Style)
         {
             int i = lastNO - 1;
@@ -194,7 +202,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             string html = "";
             html += "<tr idx='" + i + "'>";
-            html += "<td><a idx='" + ID + "' idv = '" + lastNO.ToString() + "'>" + lastNO.ToString() + "</a></td>";
+            html += "<td><a idx='" + ID + "' idv = '" + lastNO.ToString() + "'></a></td>";
             html += "<td><input id='garmentTest_Details_" + i + "__OrderID' name='garmentTest_Details[" + i + "].OrderID' class='Detail_OrderID' type='text'></td>";
             html += "<td><select id='garmentTest_Details_" + i + "__SizeCode' name='garmentTest_Details[" + i + "].SizeCode' class='Detail_SizeCode'><option value=''></option>";
             foreach(string val in sizecodes)
@@ -233,6 +241,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult ChangeSizeCode(string OrderID, string Brand, string Season, string Style, string Article)
         {
             bool chk = _GarmentTest_Service.CheckOrderID(OrderID, Brand, Season, Style);
@@ -266,9 +275,9 @@ namespace Quality.Areas.BulkFGT.Controllers
             
 
             GarmentTest_Detail_Result Detail_Result = _GarmentTest_Service.Get_All_Detail(ID, No);
-            if (TempData["Model"] != null)
+            if (TempData["ModelGarmentTest"] != null)
             {
-                GarmentTest_Detail_Result saveResult = (GarmentTest_Detail_Result)TempData["Model"];
+                GarmentTest_Detail_Result saveResult = (GarmentTest_Detail_Result)TempData["ModelGarmentTest"];
                 Detail_Result.Detail = saveResult.Detail;
                 Detail_Result.Shrinkages = saveResult.Shrinkages;
                 Detail_Result.Spiralities = saveResult.Spiralities;
@@ -296,6 +305,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult ImportNewItem(GarmentTest_Detail_FGPT_ViewModel newItem)
         {
             switch (newItem.Location)
@@ -351,6 +361,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult DetailSave(GarmentTest_Detail_Result result)
         {
             result.Detail.LineDry = false;
@@ -420,6 +431,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult GenerateFGWT(string ID, string No)
         {
             GarmentTest_ViewModel main = _GarmentTest_Service.Get_Main(ID);
@@ -429,6 +441,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult Encode_Detail(string ID, string No, GarmentTest_Service.DetailStatus status)
         {
             GarmentTest_Detail_Result result = _GarmentTest_Service.Encode_Detail(ID, No, status);
@@ -436,6 +449,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult FailMail(string ID, string No, string TO, string CC)
         {
             List<Quality_MailGroup> mailGroups = new List<Quality_MailGroup>() {
@@ -447,11 +461,13 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult Report(string ID, string No, GarmentTest_Service.ReportType type, bool IsToPDF)
         {
             GarmentTest_Detail_Result result = _GarmentTest_Service.ToReport(ID, No, type, IsToPDF);
             result.reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + result.reportPath;
             return Json(new { result.Result, result.ErrMsg, result.reportPath });
         }
+
     }
 }

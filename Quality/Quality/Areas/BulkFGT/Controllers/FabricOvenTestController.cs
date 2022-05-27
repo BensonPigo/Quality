@@ -4,6 +4,7 @@ using DatabaseObject;
 using DatabaseObject.ResultModel;
 using FactoryDashBoardWeb.Helper;
 using Quality.Controllers;
+using Quality.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,6 +39,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult Index(string POID)
         {
             // 21051739BB
@@ -48,7 +50,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                         {
                             Main = new FabricOvenTest_Main(),
                             Details = new List<FabricOvenTest_Detail>(),
-                            ErrorMessage = $@"msg.WithInfo('{model.ErrorMessage.Replace("'",string.Empty) }');" ,
+                            ErrorMessage = $@"msg.WithInfo('{ (string.IsNullOrEmpty(model.ErrorMessage) ? string.Empty : model.ErrorMessage.Replace("'", string.Empty))  }');" ,
                         };
             }
             ViewBag.POID = POID;
@@ -59,6 +61,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         /// <summary>
         /// 外部導向至本頁用
         /// </summary>
+        [SessionAuthorizeAttribute]
         public ActionResult IndexBack(string POID)
         {
             FabricOvenTest_Result model = _FabricOvenTestService.GetFabricOvenTest_Result(POID);
@@ -66,6 +69,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             return View("Index", model);
         }
 
+        [SessionAuthorizeAttribute]
         public ActionResult Detail(string POID, string TestNo,string EditMode)
         {
             FabricOvenTest_Detail_Result model = _FabricOvenTestService.GetFabricOvenTest_Detail_Result(POID, TestNo);
@@ -81,9 +85,9 @@ namespace Quality.Areas.BulkFGT.Controllers
                 model.Main.Status = "New";
             }
 
-            if (TempData["Model"] != null)
+            if (TempData["ModelFabricOvenTest"] != null)
             {
-                FabricOvenTest_Detail_Result saveResult = (FabricOvenTest_Detail_Result)TempData["Model"];
+                FabricOvenTest_Detail_Result saveResult = (FabricOvenTest_Detail_Result)TempData["ModelFabricOvenTest"];
                 model.Main.InspDate = saveResult.Main.InspDate;
                 model.Main.Article = saveResult.Main.Article;
                 model.Main.Inspector = saveResult.Main.Inspector;
@@ -91,7 +95,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 model.Main.Remark = saveResult.Main.Remark;
                 model.Details = saveResult.Details;
                 model.Result = saveResult.Result;
-                model.ErrorMessage = $@"msg.WithInfo('{saveResult.ErrorMessage.Replace("'",string.Empty) }');EditMode=true;";
+                model.ErrorMessage = $@"msg.WithInfo('{  (string.IsNullOrEmpty(saveResult.ErrorMessage) ? string.Empty : saveResult.ErrorMessage.Replace("'", string.Empty))  }');EditMode=true;";
                 EditMode = "True";
             }
 
@@ -108,8 +112,10 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult DetailSave(FabricOvenTest_Detail_Result req)
         {
+            req.MDivisionID = this.MDivisionID;
             BaseResult result = _FabricOvenTestService.SaveFabricOvenTestDetail(req, this.UserID);
             if (result.Result)
             {
@@ -120,10 +126,11 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             req.Result = result.Result;
             req.ErrorMessage = result.ErrorMessage;
-            TempData["Model"] = req;
+            TempData["ModelFabricOvenTest"] = req;
             return RedirectToAction("Detail", new { POID = req.Main.POID, TestNo = req.Main.TestNo, EditMode = false });
         }
 
+        [SessionAuthorizeAttribute]
         public JsonResult MainDetailDelete(string ID, string No)
         {
             BaseResult result = _FabricOvenTestService.DeleteOven(ID, No);
@@ -132,6 +139,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult SaveMaster(FabricOvenTest_Main Main)
         {
             var result = _FabricOvenTestService.SaveFabricOvenTestMain(Main);       
@@ -140,6 +148,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult AddDetailRow(string POID, int lastNO, string GroupNO)
         {
             FabricOvenTest_Detail_Result model = _FabricOvenTestService.GetFabricOvenTest_Detail_Result(POID, "");
@@ -219,6 +228,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult Encode_Detail(string POID, string TestNo)
         {
             string ovenTestResult = string.Empty;
@@ -227,6 +237,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult FailMail(string ID, string No, string TO, string CC)
         {
             SendMail_Result result = _FabricOvenTestService.SendFailResultMail(TO, CC, ID, No, false);
@@ -234,14 +245,16 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult Amend_Detail(string POID, string TestNo)
         {
             BaseResult result = _FabricOvenTestService.AmendFabricOvenTestDetail(POID, TestNo);
-            return Json(new { result.Result, ErrorMessage = result.ErrorMessage.Replace("'", string.Empty) });
+            return Json(new { result.Result, ErrorMessage = string.IsNullOrEmpty(result.ErrorMessage) ? string.Empty : result.ErrorMessage.Replace("'", string.Empty) });
         }
 
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult Report(string ID, string No, bool IsToPDF)
         {
             BaseResult result;
@@ -257,6 +270,26 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
             return Json(new { result.Result, result.ErrorMessage, reportPath });
+        }
+
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public JsonResult SendMail(string ID, string No)
+        {
+            this.CheckSession();
+
+            BaseResult result = null;
+            string FileName = string.Empty;
+
+            result = _FabricOvenTestService.ToPdfFabricOvenTestDetail(ID, No, out FileName, false);
+
+            if (!result.Result)
+            {
+                result.ErrorMessage = result.ErrorMessage.ToString();
+            }
+            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
+
+            return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, reportPath = reportPath, FileName = FileName });
         }
     }
 }

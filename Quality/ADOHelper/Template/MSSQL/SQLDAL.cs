@@ -532,7 +532,9 @@ namespace ADOHelper.Template.MSSQL
             }
 
             string TaiwanYear;
-            switch (format)
+			string bulk = "B";
+			keyWord = keyWord + bulk;
+			switch (format)
             {
                 case 1:     // A yy xxxx
                     keyWord = keyWord.ToUpper().Trim() + refDate.ToString("yy");
@@ -564,8 +566,9 @@ namespace ADOHelper.Template.MSSQL
                     throw new Exception("Parameter - formatting is incorrect or not found!");
             }
 
-            //判斷schema欄位的結構長度
-            string returnID = "";
+
+			//判斷schema欄位的結構長度
+			string returnID = "";
 
 
             string sqlCmd = string.Format("SELECT TOP 1 {0} FROM {1} WHERE {2} LIKE '{3}%' ORDER BY {4} DESC", checkColumn, tableName, checkColumn, keyWord.Trim(), checkColumn);

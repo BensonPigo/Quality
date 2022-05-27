@@ -3,6 +3,7 @@ using DatabaseObject;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ViewModel.SampleRFT;
 using Quality.Controllers;
+using Quality.Helper;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -35,9 +36,9 @@ namespace Quality.Areas.StyleManagement.Controllers
                 BulkFGT = new List<StyleResult_BulkFGT>() { new StyleResult_BulkFGT() }
             };
 
-            if (TempData["Model"] != null)
+            if (TempData["ModelStyleResult"] != null)
             {
-                model = (StyleResult_ViewModel)TempData["Model"];
+                model = (StyleResult_ViewModel)TempData["ModelStyleResult"];
             }
             if (TempData["tempFilePath"] != null)
             {
@@ -79,6 +80,7 @@ namespace Quality.Areas.StyleManagement.Controllers
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "Query")]
+        [SessionAuthorizeAttribute]
         public ActionResult Query(StyleResult_Request Req)
         {
             this.CheckSession();
@@ -107,6 +109,7 @@ namespace Quality.Areas.StyleManagement.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult CheckStyle(StyleResult_Request Req)
         {
             this.CheckSession();
@@ -132,6 +135,7 @@ namespace Quality.Areas.StyleManagement.Controllers
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "SampleRFTToExcel")]
+        [SessionAuthorizeAttribute]
         public ActionResult SampleRFT_ToExcel(StyleResult_Request Req)
         {
             this.CheckSession();
@@ -148,7 +152,7 @@ namespace Quality.Areas.StyleManagement.Controllers
             // 3. 前端下載方式：請參考Index.cshtml的 「window.location.href = '@download'」;            
 
             TempData["tempFilePath"] = tempFilePath;
-            TempData["Model"] = model;
+            TempData["ModelStyleResult"] = model;
 
             return RedirectToAction("Index");
         }
@@ -177,7 +181,7 @@ namespace Quality.Areas.StyleManagement.Controllers
         public ActionResult DownloadRRLRFile(string FilePath,string BrandID, string SeasonID, string StyleID)
         {
 
-            string FileName = $"{BrandID}_{SeasonID}_{StyleID}.xlsx";
+            string FileName = $"{BrandID}_{StyleID}_{SeasonID}.xlsx";
             //宣告並建立WebClient物件
             WebClient wc = new WebClient();
 

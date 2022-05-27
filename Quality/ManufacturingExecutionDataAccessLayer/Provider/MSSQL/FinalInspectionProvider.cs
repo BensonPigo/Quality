@@ -632,6 +632,7 @@ insert into FinalInspection_DetailImage(ID, FinalInspection_DetailUkey ,Remark)
                 }
 
                 transaction.Complete();
+                transaction.Dispose();
             }
         }
 
@@ -1155,10 +1156,7 @@ where   ID = @finalInspectionID
             {
                 string sqlFinalInspection_OtherImage = @"
 SET XACT_ABORT ON
-/*
-    insert into FinalInspection_OtherImage(ID)
-                values(@FinalInspectionID) ----2022/01/10 PMSFile上線，因此去掉Image寫入原本DB的部分
-*/
+
     insert into PMSFile.dbo.FinalInspection_OtherImage(ID, Image, Remark)
                 values(@FinalInspectionID, @Image, @Remark)
 ";
@@ -1293,16 +1291,16 @@ where CustPONO = @CustPONO
                 parameter.Add("@SP", request.SP);
             }
 
-            if (request.SciDeliveryStart != null)
+            if (request.AuditDateStart != null)
             {
-                whereOrder += @" and SciDelivery >= @SciDeliveryStart";
-                parameter.Add("@SciDeliveryStart", request.SciDeliveryStart);
+                whereFinalInspection += @" and AuditDate >= @AuditDateStart";
+                parameter.Add("@AuditDateStart", request.AuditDateStart);
             }
 
-            if (request.SciDeliveryEnd != null)
+            if (request.AuditDateEnd != null)
             {
-                whereOrder += @" and SciDelivery <= @SciDeliveryEnd";
-                parameter.Add("@SciDeliveryEnd", request.SciDeliveryEnd);
+                whereFinalInspection += @" and AuditDate <= @AuditDateEnd";
+                parameter.Add("@AuditDateEnd", request.AuditDateEnd);
             }
 
             if (!string.IsNullOrEmpty(request.StyleID))
@@ -1330,6 +1328,7 @@ where   ID in (select ID from #tmpOrders)
 select  [FinalInspectionID] = f.ID,
         [SP] = fo.OrderID,
         f.CustPONO,
+        [AuditDate] = format(f.AuditDate, 'yyyy/MM/dd'),
         [SPQty] = cast(o.Qty as varchar),
         [StyleID] = o.StyleID,
         [Season] = o.SeasonID,
@@ -1337,10 +1336,19 @@ select  [FinalInspectionID] = f.ID,
         [Article] = (SELECT Stuff((select concat( ',',Article)   from #tmpOrderArticle where ID = fo.OrderID FOR XML PATH('')),1,1,'') ),
         [InspectionTimes] = cast(f.InspectionTimes as varchar),
         f.InspectionStage,
-        f.InspectionResult
+        f.InspectionResult,
+		[IsTransferToPMS] = c.val,
+		[IsTransferToPivot88] = iif(f.IsExportToP88 = 1, 'Y', 'N')
 from FinalInspection f with (nolock)
-inner join  FinalInspection_Order fo with (nolock) on fo.ID = f.ID
-inner join  #tmpOrders o on fo.OrderID = o.ID
+inner join FinalInspection_Order fo with (nolock) on fo.ID = f.ID
+inner join #tmpOrders o on fo.OrderID = o.ID
+outer apply(
+	select val = iif(exists(
+		select ID 
+		from MainServer.Production.dbo.CFAInspectionRecord c with (nolock) 
+		where c.ID = f.ID
+	), 'Y', 'N')
+)c
 where   1 = 1 {whereFinalInspection}
 ";
 
@@ -1364,13 +1372,14 @@ Order by f.AddDate desc
 
 select  ID, Article
 into    #tmpOrderArticle
-from    MainServer.Production.dbo.Order_Article with (nolock)
+from    SciProduction_Order_Article with (nolock)
 where   ID in (select OrderID from #default)
 
 
 select top 200 [FinalInspectionID] = f.ID,
         [SP] = fo.OrderID,
         f.CustPONO,
+        [AuditDate] = format(f.AuditDate, 'yyyy/MM/dd'),
         [SPQty] = cast(o.Qty as varchar),
         [StyleID] = o.StyleID,
         [Season] = o.SeasonID,
@@ -1379,10 +1388,19 @@ select top 200 [FinalInspectionID] = f.ID,
         [InspectionTimes] = cast(f.InspectionTimes as varchar),
         f.InspectionStage,
         f.InspectionResult,
-        f.AddDate
+        f.AddDate,
+		[IsTransferToPMS] = c.val,
+		[IsTransferToPivot88] = iif(f.IsExportToP88 = 1, 'Y', 'N')
 from FinalInspection f with (nolock)
-inner join  #default fo with (nolock) on fo.ID = f.ID
-inner join MainServer.Production.dbo.Orders o with(nolock)  on o.ID = fo.OrderID
+inner join #default fo with (nolock) on fo.ID = f.ID
+inner join MainServer.Production.dbo.Orders o with(nolock) on o.ID = fo.OrderID
+outer apply(
+	select val = iif(exists(
+		select ID 
+		from MainServer.Production.dbo.CFAInspectionRecord c with(nolock)
+		where c.ID = f.ID
+	), 'Y', 'N')
+)c 
 order by f.AddDate DESC
 
 drop table #default ,#tmpOrderArticle
@@ -1513,12 +1531,47 @@ where r.ID = @ID
 --取得Sku資料
 if('{inspectionType}' = 'InlineInspection')
 begin
+    select  oq.Article,
+            oq.SizeCode,
+            [Qty] = sum(oq.Qty)
+    into #tmpArticleSize
+    from    Production.dbo.Order_Qty oq with (nolock)
+    where   exists( select 1 
+                    from InlineInspectionReport_Breakdown irb with (nolock) 
+                    where   irb.InlineInspectionReportID = @ID and
+                            irb.OrderID = oq.ID and
+                            irb.Article = oq.Article)
+    group by oq.Article, oq.SizeCode    
+    
     select  Article,
-            [SizeCode] = '',
-            [ShipQty] = sum(isnull(PassQty, 0) + isnull(RejectQty, 0))
+            SizeCode,
+            [SizeRatio] = Qty * 1.0 / sum(Qty) over (partition by Article),
+            [Seq] = ROW_NUMBER() OVER (PARTITION BY Article ORDER BY Qty desc)
+    into #tmpSizeRatio
+    from    #tmpArticleSize
+
+    select  Article,
+            [Qty] = sum(isnull(PassQty, 0) + isnull(RejectQty, 0))
+    into #inlineArticle
     from    InlineInspectionReport_Breakdown with (nolock)
     where InlineInspectionReportID = @ID
     group by Article
+
+    select	Article,
+			SizeCode,
+			[ShipQty] = case when isLast = 0 then TotalQty - LAG(GrandQty, 1, 0) OVER (PARTITION BY Article ORDER BY Seq)
+						else ShipQty end
+	from (	select  ia.Article,
+			        sr.SizeCode,
+			        [ShipQty] = FLOOR(ia.Qty * sr.SizeRatio),
+					[GrandQty] = sum(FLOOR(ia.Qty * sr.SizeRatio))  OVER (PARTITION BY sr.Article ORDER BY sr.Seq),
+					sr.Seq,
+					[isLast] = LEAD(sr.SizeRatio, 1, 0) OVER (PARTITION BY sr.Article ORDER BY sr.Seq),
+					[TotalQty] = ia.Qty
+			from    #inlineArticle ia
+			inner join  #tmpSizeRatio sr on sr.Article = ia.Article) a
+    
+    drop table #tmpArticleSize, #tmpSizeRatio, #inlineArticle
 end
 else
 begin
@@ -1631,7 +1684,7 @@ Select	f.AuditDate,
         f.CheckColorSizeQty,
         f.CheckHangtag,
         [MeasurementResult] = cast(iif(exists(select 1 from FinalInspection_Measurement fm with (nolock) where f.ID = fm.ID), 1, 0) as bit),
-        [MoistureResult] = case when exists (select 1 from FinalInspection_Moisture fmo with (nolock) where f.ID = fmo.ID and fmo.Result = 'R') then 'fail'
+        [MoistureResult] = case when exists (select 1 from FinalInspection_Moisture fmo with (nolock) where f.ID = fmo.ID and fmo.Result = 'F') then 'fail'
                                 when not exists (select 1 from FinalInspection_Moisture fmo with (nolock) where f.ID = fmo.ID) then 'na'
                                 else 'pass' end
 from FinalInspection f with (nolock)
@@ -1712,13 +1765,16 @@ drop table #tmpStyleInfo
         {
             SQLParameterCollection parameter = new SQLParameterCollection();
             string sqlGetData = @"
+declare @FromDateTransferToP88 date
+select @FromDateTransferToP88 = FromDateTransferToP88 from system
+
 select  ID
 from Finalinspection with (nolock)
 where   IsExportToP88 = 0 and
         InspectionResult in ('Pass', 'Fail') and
-        submitdate is not null and
+        submitdate >= @FromDateTransferToP88 and
         InspectionStage = 'Final' and
-        exists (select 1 from Production.dbo.Orders o with (nolock) where o.CustPONo = Finalinspection.CustPONO and o.BrandID in ('Adidas','Reebok'))
+        exists (select 1 from Production.dbo.Orders o with (nolock) where o.CustPONo = Finalinspection.CustPONO and o.BrandID in ('Adidas'))
 
 ";
             if (!string.IsNullOrEmpty(finalInspectionID))
@@ -1769,7 +1825,7 @@ select  ID
 from InspectionReport with (nolock)
 where   IsExportToP88 = 0 and
         (AddDate >= @FromDateTransferToP88 or EditDate >= @FromDateTransferToP88) and
-        exists (select 1 from Production.dbo.Orders o with (nolock) where o.CustPONo = InspectionReport.CustPONO and o.BrandID in ('Adidas','Reebok'))
+        exists (select 1 from Production.dbo.Orders o with (nolock) where o.CustPONo = InspectionReport.CustPONO and o.BrandID in ('Adidas'))
 
 ";
             if (!string.IsNullOrEmpty(inspectionID))
@@ -1824,7 +1880,7 @@ select  ID
 from InlineInspectionReport with (nolock)
 where   IsExportToP88 = 0 and
         (AddDate >= @FromDateTransferToP88 or EditDate >= @FromDateTransferToP88) and
-        exists (select 1 from Production.dbo.Orders o with (nolock) where o.CustPONo = InlineInspectionReport.CustPONO and o.BrandID in ('Adidas','Reebok'))
+        exists (select 1 from Production.dbo.Orders o with (nolock) where o.CustPONo = InlineInspectionReport.CustPONO and o.BrandID in ('Adidas'))
 
 
 ";

@@ -42,6 +42,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             string sqlGetFabricOvenTest_Detail = @"
 
 select	[TestNo] = cast(o.TestNo as varchar),
+        o.ReportNo,
         [POID] = o.POID,
 		[InspDate] = o.InspDate,
 		[Article] = o.Article,
@@ -143,6 +144,7 @@ where p.id = @POID
 
             string sqlGetDetails = @"
 select	[TestNo] = cast(o.TestNo as varchar),
+		o.ReportNo,
 		[InspDate] = o.InspDate,
 		[Article] = o.Article,
 		[Result] = o.Result,
@@ -371,6 +373,9 @@ update  Oven_Detail set Roll           =  @Roll         ,
             listPar.Add("@TestBeforePicture", fabricOvenTest_Detail_Result.Main.TestBeforePicture);
             listPar.Add("@TestAfterPicture", fabricOvenTest_Detail_Result.Main.TestAfterPicture);
 
+            string NewReportNo = GetID(fabricOvenTest_Detail_Result.MDivisionID + "FO", "Oven", DateTime.Today, 2, "ReportNo");
+            listPar.Add("@ReportNo", NewReportNo);
+
             string sqlInsertOven = @"
 SET XACT_ABORT ON
 
@@ -382,9 +387,9 @@ from    Oven  WITH(NOLOCK)
 where POID = @POID
 
 ----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
-insert into Oven(POID, TestNo, InspDate, Article, Status, Inspector, Remark, addName, addDate)
+insert into Oven(POID, TestNo, InspDate, Article, Status, Inspector, Remark, addName, addDate ,ReportNo)
         OUTPUT INSERTED.ID, INSERTED.TestNo into @OvenID
-        values(@POID, @TestNo, @InspDate, @Article, 'New', @Inspector, @Remark, @addName, getdate())
+        values(@POID, @TestNo, @InspDate, @Article, 'New', @Inspector, @Remark, @addName, getdate() ,@ReportNo)
 
 select  [OvenID] = ID, TestNo
 from @OvenID
@@ -393,7 +398,9 @@ insert into [ExtendServer].PMSFile.dbo.Oven(ID, POID, TestNo, TestBeforePicture,
         values(
 (select ID from @OvenID)
 , @POID, @TestNo, @TestBeforePicture, @TestAfterPicture)
+
 ";
+
 
             string sqlInsertOvenDetail = @"
 insert into Oven_Detail(
@@ -435,7 +442,6 @@ getdate()        ,
 @Temperature    ,
 @Time
 )
-
 ";
 
             using (TransactionScope transaction = new TransactionScope())

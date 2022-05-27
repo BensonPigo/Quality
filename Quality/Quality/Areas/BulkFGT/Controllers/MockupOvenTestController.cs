@@ -7,6 +7,7 @@ using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using FactoryDashBoardWeb.Helper;
 using Quality.Controllers;
+using Quality.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +28,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         // GET: BulkFGT/MockupOvenTest
+        [SessionAuthorizeAttribute]
         public ActionResult Index()
         {
             MockupOven_ViewModel model = new MockupOven_ViewModel()
@@ -53,6 +55,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         /// <summary>
         /// 外部導向至本頁用
         /// </summary>
+        [SessionAuthorizeAttribute]
         public ActionResult IndexGet(string ReportNo, string BrandID, string SeasonID, string StyleID, string Article)
         {
             MockupOven_ViewModel Req = new MockupOven_ViewModel()
@@ -87,7 +90,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 {
                     MockupOven_Detail = new List<MockupOven_Detail_ViewModel>(),
                     ReportNo_Source = new List<string>(),
-                    ErrorMessage = $"msg.WithInfo('{model.ErrorMessage.Replace("'", string.Empty).Replace("\r\n", "<br />")}');",
+                    ErrorMessage = $@"msg.WithInfo(""{ (string.IsNullOrEmpty(model.ErrorMessage) ? string.Empty : model.ErrorMessage.Replace("'", string.Empty).Replace("\r\n", "<br />")) }"");",
                     ScaleID_Source = _MockupOvenService.GetScale(),
                 };
             }
@@ -106,6 +109,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             return View("Index", model);
         }
 
+        [SessionAuthorizeAttribute]
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "Query")]
         public ActionResult Query(MockupOven_ViewModel Req)
@@ -129,7 +133,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 {
                     MockupOven_Detail = new List<MockupOven_Detail_ViewModel>(),
                     ReportNo_Source = new List<string>(),
-                    ErrorMessage = $"msg.WithInfo('{model.ErrorMessage.Replace("'", string.Empty).Replace("\r\n", "<br />")}');",
+                    ErrorMessage = $@"msg.WithInfo(""{ (string.IsNullOrEmpty(model.ErrorMessage) ? string.Empty : model.ErrorMessage.Replace("\r\n", "<br />")) }"");",
                     ScaleID_Source = _MockupOvenService.GetScale(),
                 };
             }
@@ -148,7 +152,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             return View("Index", model);
         }
 
-
+        [SessionAuthorizeAttribute]
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "New")]
         public ActionResult NewSave(MockupOven_ViewModel Req)
@@ -183,7 +187,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             if (!result.Result)
             {
-                model.ErrorMessage = $@"msg.WithInfo('{result.ErrorMessage.Replace("'", string.Empty).Replace("\r\n", "<br />")}');EditMode=true;";
+                model.ErrorMessage = $@"msg.WithInfo('{ (string.IsNullOrEmpty(result.ErrorMessage) ? string.Empty : result.ErrorMessage.Replace("\r\n", "<br />")) }');EditMode=true;";
             }
             else if (result.Result && model.Result == "Fail")
             {
@@ -205,6 +209,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
 
+        [SessionAuthorizeAttribute]
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "Edit")]
         public ActionResult EditSave(MockupOven_ViewModel Req)
@@ -265,6 +270,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             return View("Index", Req);
         }
 
+        [SessionAuthorizeAttribute]
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "Delete")]
         public ActionResult DeleteReportNo(MockupOven_ViewModel Req)
@@ -303,6 +309,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             return View("Index", model);
         }
 
+        [SessionAuthorizeAttribute]
         [HttpPost]
         public ActionResult ToPDF(MockupOven_Request mockupOven_Request)
         {
@@ -324,6 +331,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Json(new { Result = report_Result.Result, ErrorMessage = report_Result.ErrorMessage, reportPath = tempFilePath, FileName = report_Result.TempFileName });
         }
 
+        [SessionAuthorizeAttribute]
         [HttpPost]
         public JsonResult SPBlur(string POID)
         {
@@ -361,6 +369,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Json(new { ErrMsg = "", BrandID = BrandID, SeasonID = SeasonID, StyleID = StyleID, Article = Article });
         }
 
+        [SessionAuthorizeAttribute]
         [HttpPost]
         public JsonResult GetArtwrok_Ajax(string POID, string BrandID, string SeasonID, string StyleID)
         {
@@ -378,6 +387,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Json(datas);
         }
 
+        [SessionAuthorizeAttribute]
         private List<SelectListItem> GetArtworkTypeIDList(string BrandID, string SeasonID, string StyleID)
         {
             if (string.IsNullOrEmpty(BrandID) || string.IsNullOrEmpty(SeasonID) || string.IsNullOrEmpty(StyleID))
@@ -393,6 +403,8 @@ namespace Quality.Areas.BulkFGT.Controllers
             };
             return _MockupOvenService.GetArtworkTypeID(styleArtwork_Request);
         }
+
+        [SessionAuthorizeAttribute]
         private List<SelectListItem> GetArtworkTypeIDListByPOID(string POID)
         {
             StyleArtwork_Request styleArtwork_Request = new StyleArtwork_Request()
@@ -403,11 +415,13 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
 
+        [SessionAuthorizeAttribute]
         public ActionResult GetAccessoryRefNo_Source(string BrandID, string SeasonID, string StyleID)
         {
             return Json(GetAccessoryRefNoList(BrandID, SeasonID, StyleID));
         }
 
+        [SessionAuthorizeAttribute]
         private List<SelectListItem> GetAccessoryRefNoList(string BrandID, string SeasonID, string StyleID)
         {
             if (string.IsNullOrEmpty(BrandID) || string.IsNullOrEmpty(SeasonID) || string.IsNullOrEmpty(StyleID))
@@ -424,6 +438,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             return _MockupOvenService.GetAccessoryRefNo(AccessoryRefNo_Request);
         }
 
+        [SessionAuthorizeAttribute]
         [HttpPost]
         public ActionResult AddDetailRow(int lastNO,string BrandID, string SeasonID, string StyleID)
         {
@@ -490,6 +505,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Content(html);
         }
 
+        [SessionAuthorizeAttribute]
         [HttpPost]
         public JsonResult FailMail(string ReportNo, string TO, string CC)
         {

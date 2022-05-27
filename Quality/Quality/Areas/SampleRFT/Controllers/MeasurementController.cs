@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using Quality.Controllers;
+using Quality.Helper;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -31,7 +32,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         public ActionResult Index()
         {
             ViewBag.Articles = new List<SelectListItem>();
-            TempData["Model"] = null;
+            TempData["ModelMeasurement"] = null;
             return View(new Measurement_ResultModel() { Images_Source = new List<SelectListItem>() , Images = new List<RFT_Inspection_Measurement_Image>()} );
         }
 
@@ -41,22 +42,24 @@ namespace Quality.Areas.SampleRFT.Controllers
             Measurement_ResultModel measurement = _MeasurementService.MeasurementGet(measurementRequest);
             List<SelectListItem> ArticleList = new FactoryDashBoardWeb.Helper.SetListItem().ItemListBinding(measurementRequest.Articles);
             ViewBag.Articles = ArticleList;
-            TempData["Model"] = measurement.JsonBody;
+            TempData["ModelMeasurement"] = measurement.JsonBody;
             return View("Index", measurement);
         }
 
         [HttpPost]
+        [SessionAuthorize]
         public ActionResult Index(Measurement_Request request)
         {
             Measurement_Request measurementRequest = _MeasurementService.MeasurementGetPara(request.OrderID, this.FactoryID);
             Measurement_ResultModel measurement = _MeasurementService.MeasurementGet(measurementRequest);
             List<SelectListItem> ArticleList = new FactoryDashBoardWeb.Helper.SetListItem().ItemListBinding(measurementRequest.Articles);
             ViewBag.Articles = ArticleList;
-            TempData["Model"] = measurement.JsonBody;
+            TempData["ModelMeasurement"] = measurement.JsonBody;
             return View(measurement);
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult SpCheck(string SP)
         {
             Measurement_Request request = _MeasurementService.MeasurementGetPara(SP, this.FactoryID);
@@ -73,12 +76,12 @@ namespace Quality.Areas.SampleRFT.Controllers
 
         public ActionResult ExcelExport()
         {
-            if (TempData["Model"] == null)
+            if (TempData["ModelMeasurement"] == null)
             {
                 return RedirectToAction("Index");
             }
 
-            DataTable dt = (DataTable)JsonConvert.DeserializeObject(TempData["Model"].ToString(), (typeof(DataTable)));
+            DataTable dt = (DataTable)JsonConvert.DeserializeObject(TempData["ModelMeasurement"].ToString(), (typeof(DataTable)));
 
             XSSFWorkbook book;
             using (FileStream file = new FileStream(AppDomain.CurrentDomain.BaseDirectory + "XLT\\Measurement.xlsx", FileMode.Open, FileAccess.Read))
@@ -169,6 +172,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult ToExcel(string OrderID)
         {
             Measurement_Request result = _MeasurementService.MeasurementToExcel(OrderID, this.FactoryID);

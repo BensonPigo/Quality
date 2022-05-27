@@ -10,6 +10,7 @@ using DatabaseObject.ViewModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using FactoryDashBoardWeb.Helper;
 using Quality.Controllers;
+using Quality.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -91,6 +92,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "Query")]
+        [SessionAuthorizeAttribute]
         public ActionResult Query(MockupCrocking_ViewModel Req )
         {
             //example:ADIDAS, 19FW, F1915KYB012, ED5770
@@ -115,6 +117,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "New")]
+        [SessionAuthorizeAttribute]
         public ActionResult New(MockupCrocking_ViewModel Req)
         {
             if (Req.MockupCrocking_Detail == null)
@@ -158,6 +161,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "Edit")]
+        [SessionAuthorizeAttribute]
         public ActionResult Edit(MockupCrocking_ViewModel Req)
         {
             if (Req.MockupCrocking_Detail == null)
@@ -206,6 +210,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "Delete")]
+        [SessionAuthorizeAttribute]
         public ActionResult Delete(MockupCrocking_ViewModel Req)
         {
             Req.ReportNo = Req.Request.ReportNo;
@@ -241,6 +246,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult ToPDF(MockupCrocking_Request mockupCrocking_Request)
         {
             this.CheckSession();
@@ -261,12 +267,14 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult GetArtworkTypeID_Source(string brandID, string seasonID, string styleID)
         {
             return Json(GetArtworkTypeIDList(brandID, seasonID, styleID));
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         private List<SelectListItem> GetArtworkTypeIDList(string brandID, string seasonID, string styleID)
         {
             if (string.IsNullOrEmpty(brandID) || string.IsNullOrEmpty(seasonID) || string.IsNullOrEmpty(styleID))
@@ -285,6 +293,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult SPBlur(string POID)
         {
             string BrandID = string.Empty;
@@ -323,6 +332,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult AddDetailRow(int lastNo)
         {
             MockupCrocking_ViewModel mockupCrocking_ViewModel = new MockupCrocking_ViewModel();
@@ -396,6 +406,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult FailMail(string ReportNo, string TO, string CC)
         {
             MockupFailMail_Request mail = new MockupFailMail_Request()

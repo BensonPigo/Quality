@@ -124,7 +124,11 @@ outer apply(
 	where s.ID = g.StyleID
 	and s.BrandID = g.BrandID
 	and s.SeasonID = g.SeasonID
-	and r.Name in ('MATCH TEAMWEAR','BASEBALL ON FIELD','SOFTBALL ON FIELD','TRAINING TEAMWEAR','LACROSSE ONFIELD','AMERIC. FOOT. ON-FIELD','TIRO','BASEBALL OFF FIELD','NCAA ON ICE','ON-COURT','BBALL PERFORMANCE','BRANDED BLANKS','SLD ON-FIELD','NHL ON ICE','SLD ON-COURT')
+	and (r.Name in ('MATCH TEAMWEAR','BASEBALL ON FIELD','SOFTBALL ON FIELD', 'LACROSSE ONFIELD', 'BASEBALL OFF FIELD','NCAA ON ICE','ON-COURT','BBALL PERFORMANCE','BRANDED BLANKS','SLD ON-FIELD','NHL ON ICE','SLD ON-COURT')
+        or r.Name like '%TIRO%'
+	    or r.Name like '%Critical%'
+	    or r.Name like '%TRAINING TEAMWEAR%'
+	    or r.Name like '%AMERIC. FOOT. ON-FIELD%')
 )WashName
 where 1=1
 ";
@@ -453,6 +457,8 @@ where ID = @ID
                 List<GarmentTest_Detail_ViewModel> needUpdateDetailList = PublicClass.CompareListValue<GarmentTest_Detail_ViewModel>(
                     detail, oldDetailData, "ID,No", "OrderID,SizeCode,MtlTypeID,inspdate,inspector,NonSeamBreakageTest,Remark");
 
+                string NewReportNo = GetID(master.MDivisionid + "GM", "GarmentTest_Detail", DateTime.Today, 2, "ReportNo");
+
                 string sqlInsertGarmentTestDetail = $@"
 SET XACT_ABORT ON
 declare @MaxNo int = (select MaxNo = isnull(max(No),0) from GarmentTest_Detail with(nolock) where  id = '{master.ID}')
@@ -465,6 +471,7 @@ insert into GarmentTest_Detail(
     ,Remark
     ,AddName,AddDate
     ,Status
+    ,ReportNo
 )
 values(
     @ID
@@ -476,6 +483,7 @@ values(
     ,@Remark
     ,@UserID, GetDate()
     ,'New'
+    ,@ReportNo
 )
 
 insert into [ExtendServer].PMSFile.dbo.GarmentTest_Detail(ID,No)
@@ -523,6 +531,7 @@ Delete [ExtendServer].PMSFile.dbo.GarmentTest_Detail where id = @ID and NO = @No
                             objParameterDetail.Add($"@UserID", string.IsNullOrEmpty(UserID) ? string.Empty : UserID);
                             objParameterDetail.Add($"@OrderID", string.IsNullOrEmpty(detailItem.OrderID) ? string.Empty : detailItem.OrderID);
                             objParameterDetail.Add($"@inspdate", detailItem.inspdate);
+                            objParameterDetail.Add($"@ReportNo", NewReportNo);
 
                             ExecuteNonQuery(CommandType.Text, sqlInsertGarmentTestDetail, objParameterDetail);
                             break;

@@ -5,6 +5,7 @@ using DatabaseObject;
 using DatabaseObject.ResultModel;
 using FactoryDashBoardWeb.Helper;
 using Quality.Controllers;
+using Quality.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,8 +53,8 @@ namespace Quality.Areas.BulkFGT.Controllers
                 {
                     Main = new PerspirationFastness_Main(),
                     Details = new List<PerspirationFastness_Detail>(),
-                    ErrorMessage = $@"msg.WithInfo('{model.ErrorMessage.Replace("'",string.Empty) }');",
-                };
+                    ErrorMessage = $@"msg.WithInfo(""{ (string.IsNullOrEmpty(model.ErrorMessage) ? string.Empty : model.ErrorMessage.Replace("\r\n", "<br />"))  }"");",
+            };
             }
             ViewBag.POID = POID;
             UpdateModel(model);
@@ -84,9 +85,9 @@ namespace Quality.Areas.BulkFGT.Controllers
                 model.Main.Status = "New";
             }
 
-            if (TempData["Model"] != null)
+            if (TempData["ModelPerspirationFastness"] != null)
             {
-                PerspirationFastness_Detail_Result saveResult = (PerspirationFastness_Detail_Result)TempData["Model"];
+                PerspirationFastness_Detail_Result saveResult = (PerspirationFastness_Detail_Result)TempData["ModelPerspirationFastness"];
                 model.Main.InspDate = saveResult.Main.InspDate;
                 model.Main.Article = saveResult.Main.Article;
                 model.Main.Inspector = saveResult.Main.Inspector;
@@ -94,7 +95,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 model.Main.Remark = saveResult.Main.Remark;
                 model.Details = saveResult.Details;
                 model.Result = saveResult.Result;
-                model.ErrorMessage = $@"msg.WithInfo('{saveResult.ErrorMessage.Replace("'",string.Empty) }');EditMode=true;";
+                model.ErrorMessage = $@"msg.WithInfo('{(string.IsNullOrEmpty(saveResult.ErrorMessage) ? string.Empty : saveResult.ErrorMessage.Replace("'",string.Empty)) }');EditMode=true;";
                 EditMode = "True";
             }
 
@@ -108,11 +109,14 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.MetalContentList = MetalContentList;
             ViewBag.FactoryID = this.FactoryID;
             ViewBag.ErrorMessage = string.Empty;
+            ViewBag.UserMail = this.UserMail;
             return View(model);
         }
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult DetailSave(PerspirationFastness_Detail_Result req)
         {
+            req.MDivisionID = this.MDivisionID;
             BaseResult result = _PerspirationFastnessService.SavePerspirationFastnessDetail(req, this.UserID);
             if (result.Result)
             {
@@ -123,7 +127,8 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             req.Result = result.Result;
             req.ErrorMessage = result.ErrorMessage;
-            TempData["Model"] = req;
+            TempData["ModelPerspirationFastness"] = req;
+            ViewBag.UserMail = this.UserMail;
             return RedirectToAction("Detail", new { POID = req.Main.POID, TestNo = req.Main.TestNo, EditMode = false });
         }
         public JsonResult MainDetailDelete(string ID, string No)
@@ -133,6 +138,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Json(result);
         }
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult SaveMaster(PerspirationFastness_Main Main)
         {
             var result = _PerspirationFastnessService.SavePerspirationFastnessMain(Main);
@@ -141,6 +147,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult AddDetailRow(string POID, int lastNO, string GroupNO)
         {
             PerspirationFastness_Detail_Result model = _PerspirationFastnessService.GetPerspirationFastness_Detail_Result(POID, "");
@@ -389,6 +396,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult Encode_Detail(string POID, string TestNo)
         {
             string PerspirationFastnessResult = string.Empty;
@@ -403,14 +411,16 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Json(result);
         }
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult Amend_Detail(string POID, string TestNo)
         {
             BaseResult result = _PerspirationFastnessService.AmendPerspirationFastnessDetail(POID, TestNo);
-            return Json(new { result.Result, ErrorMessage = result.ErrorMessage.Replace("'", string.Empty) });
+            return Json(new { result.Result, ErrorMessage = (string.IsNullOrEmpty(result.ErrorMessage) ? string.Empty : result.ErrorMessage.Replace("'", string.Empty)) });
         }
 
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public JsonResult Report(string ID, string No, bool IsToPDF)
         {
             BaseResult result;
@@ -428,6 +438,25 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
             return Json(new { result.Result, result.ErrorMessage, reportPath });
+        }
+
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public JsonResult SendMail(string ID, string No)
+        {
+            this.CheckSession();
+
+            BaseResult result = null;
+            string FileName = string.Empty;
+
+            result = _PerspirationFastnessService.ToReport(ID, out FileName, true, false);
+            if (!result.Result)
+            {
+                result.ErrorMessage = result.ErrorMessage.ToString();
+            }
+            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
+
+            return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, reportPath = reportPath, FileName = FileName });
         }
     }
 }

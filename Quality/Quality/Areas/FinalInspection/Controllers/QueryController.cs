@@ -7,6 +7,7 @@ using BusinessLogicLayer.Service.FinalInspection;
 using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
+using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel;
 using DatabaseObject.ViewModel.FinalInspection;
 using FactoryDashBoardWeb.Helper;
@@ -19,6 +20,7 @@ using NPOI.XSSF.UserModel;
 using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
 using Quality.Controllers;
+using Quality.Helper;
 using Sci;
 using System;
 using System.Collections.Generic;
@@ -63,6 +65,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorizeAttribute]
         public ActionResult Index(QueryFinalInspection_ViewModel model)
         {
             List<string> inspectionlist = new List<string>() {
@@ -72,7 +75,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             List<SelectListItem> inspectionResultList = new SetListItem().ItemListBinding(inspectionlist);
             ViewBag.inspectionResultList = inspectionResultList;
             
-            if (string.IsNullOrEmpty(model.SP) && string.IsNullOrEmpty(model.CustPONO) && string.IsNullOrEmpty(model.StyleID) && (!model.SciDeliveryStart.HasValue || !model.SciDeliveryEnd.HasValue) && string.IsNullOrEmpty(model.InspectionResult))
+            if (string.IsNullOrEmpty(model.SP) && string.IsNullOrEmpty(model.CustPONO) && string.IsNullOrEmpty(model.StyleID) && (!model.AuditDateStart.HasValue || !model.AuditDateEnd.HasValue) && string.IsNullOrEmpty(model.InspectionResult))
             {
                 model.ErrorMessage = $@"msg.WithError('Please input fields before query.');";
                 model.DataList = Service.GetFinalinspectionQueryList_Default(model);
@@ -90,7 +93,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         {
             QueryReport model = Service.GetFinalInspectionReport(FinalInspectionID);
 
-            TempData["Model"] = model;
+            TempData["ModelQuery"] = model;
             return View(model);
         }
 
@@ -99,14 +102,14 @@ namespace Quality.Areas.FinalInspection.Controllers
             bool test = false;
             if (!test)
             {
-                if (TempData["Model"] == null)
+                if (TempData["ModelQuery"] == null)
                 {
                     return RedirectToAction("Index");
                 }
             }
 
-            QueryReport model = (QueryReport)TempData["Model"];
-            TempData["Model"] = model;
+            QueryReport model = (QueryReport)TempData["ModelQuery"];
+            TempData["ModelQuery"] = model;
 
             // GetForFinalInspection 取得 SeasonID
             _IOrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
@@ -368,13 +371,27 @@ namespace Quality.Areas.FinalInspection.Controllers
             return null;
         }
 
+        public ActionResult DownloadTable(QueryFinalInspection_ViewModel model)
+        {
+            this.CheckSession();
+            Report_Result report_Result = Service.QueryReport(model);
+            string tempFilePath = report_Result.TempFileName;
+            tempFilePath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + tempFilePath;
+            if (!report_Result.Result)
+            {
+                report_Result.ErrorMessage = report_Result.ErrorMessage.ToString();
+            }
+
+            return Json(new { Result = report_Result.Result, ErrorMessage = report_Result.ErrorMessage, reportPath = tempFilePath, FileName = report_Result.TempFileName });
+        }
+
         [HttpPost]
         public ActionResult SendMail()
         {
             bool test = IsTest.ToLower() == "true";
 
-            QueryReport model = (QueryReport)TempData["Model"];
-            TempData["Model"] = model;
+            QueryReport model = (QueryReport)TempData["ModelQuery"];
+            TempData["ModelQuery"] = model;
             string WebHost = Request.Url.Scheme + @"://" + Request.Url.Authority + "/";
          
             var result = Service.SendMail(model.FinalInspection.ID, WebHost, test);

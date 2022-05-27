@@ -103,26 +103,26 @@
                 </tr>
             </table>
 
-            <div style=" width: 51vw; height: 54vh; overflow-y: auto;">
+            <div style="height: 54vh; overflow-y: auto;">
                 <table class="MeasurementTable table table-striped display">
 
                     <thead style="text-align: center; font-size: 1.5vw; font-weight: 900;">
                         <tr>
 
-                            <th style="width:50vw">
+                            <th style="width:34vw">
                                 <p>Description</p>
                             </th>
-                            <th style="width:10vw">
+                            <th style="width:8vw">
                                 <p>Tol(+)</p>
                             </th>
-                            <th style="width:10vw">
+                            <th style="width:8vw">
                                 <p>Tol(-)</p>
                             </th>
                             <th style="width:10vw">
                                 <p idx="SizeCode"></p>
                             </th>
-                            <th style="width:28vw">
-                                <p></p>
+                            <th style="width:30vw">
+                                <input type="button" class="site-btn btn-blue" onclick="ReloadData();" value="Clear" style="width: 80%; border-style: none;">
                             </th>
                             <th style="width:10vw">
                                 <p>Diff</p>
@@ -668,11 +668,11 @@
 
         if (thead == "") {
             thead += `<tr>";
-            <th style="width:50vw"><p>Description</p></th>
-            <th style="width:10vw"><p>Tol(+)</p></th>
-            <th style="width:10vw"><p>Tol(-)</p></th>
+            <th style="width:34vw"><p>Description</p></th>
+            <th style="width:8vw"><p>Tol(+)</p></th>
+            <th style="width:8vw"><p>Tol(-)</p></th>
             <th style="width:10vw"><p idx='SizeCode'>${dropSize.value}</p></th>
-            <th style="width:28vw"></th>
+            <th style="width:30vw"><input type="button" class="site-btn btn-blue" onclick="ReloadData();" value="Clear" style="width: 80%;border-style:none;"></th>
             <th style="width:10vw"><p>Diff</p></th>
             </tr>`;
         }
