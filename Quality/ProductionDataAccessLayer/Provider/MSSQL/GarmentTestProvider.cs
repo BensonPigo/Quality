@@ -125,7 +125,7 @@ outer apply(
 	and s.BrandID = g.BrandID
 	and s.SeasonID = g.SeasonID
 	and (r.Name in (
-                    ,'AMERIC. FOOT. ON-FIELD'
+                     'AMERIC. FOOT. ON-FIELD'
                     ,'AMERIC. FOOT.ON-FIELD+DISNEY'
                     ,'BASEBALL OFF FIELD'
                     ,'BASEBALL ON FIELD'
