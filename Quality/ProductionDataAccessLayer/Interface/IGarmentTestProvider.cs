@@ -19,10 +19,11 @@ namespace ProductionDataAccessLayer.Interface
 
         IList<GarmentTest_ViewModel> Get(string ID);
 
-        void Save_GarmentTest(GarmentTest_ViewModel master, List<GarmentTest_Detail_ViewModel> detail, string UserID);
+        void Save_GarmentTest(GarmentTest_ViewModel master, List<GarmentTest_Detail_ViewModel> detail, string UserID, bool sameInstance);
 
         bool Update_GarmentTest_Result(string ID);
         void Save_New_FGPT_Item(GarmentTest_Detail_FGPT_ViewModel newItem);
         void Delete_Original_FGPT_Item(GarmentTest_Detail_FGPT_ViewModel newItem);
+        string CheckInstance();
     }
 }

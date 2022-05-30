@@ -183,7 +183,16 @@ namespace BusinessLogicLayer.Service.BulkFGT
             // 僅傳入 List<GarmentTest_Detail> detail
 
             GarmentTest_ViewModel result = new GarmentTest_ViewModel();
+            string mainServerName = string.Empty;
+            string extendServerName = string.Empty;
+
+            _IGarmentTestProvider = new GarmentTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+            extendServerName = _IGarmentTestProvider.CheckInstance();
             _IGarmentTestProvider = new GarmentTestProvider(Common.ProductionDataAccessLayer);
+            mainServerName = _IGarmentTestProvider.CheckInstance();
+
+            bool sameInstance = mainServerName == extendServerName ? true : false;
+
             _IGarmentTestDetailProvider = new GarmentTestDetailProvider(Common.ProductionDataAccessLayer);
             try
             {
@@ -213,7 +222,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 #endregion
 
                 // 先將表身資料存檔
-                _IGarmentTestProvider.Save_GarmentTest(garmentTest_ViewModel, detail, UserID);
+                _IGarmentTestProvider.Save_GarmentTest(garmentTest_ViewModel, detail, UserID, sameInstance);
 
                 // 再判斷Detail的Result
                 foreach (var item in detail)
@@ -287,6 +296,18 @@ namespace BusinessLogicLayer.Service.BulkFGT
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             try
             {
+
+                string mainServerName = string.Empty;
+                string extendServerName = string.Empty;
+
+                _IGarmentTestProvider = new GarmentTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+                extendServerName = _IGarmentTestProvider.CheckInstance();
+
+                _IGarmentTestProvider = new GarmentTestProvider(Common.ProductionDataAccessLayer);
+                mainServerName = _IGarmentTestProvider.CheckInstance();
+
+                bool sameInstance = mainServerName == extendServerName ? true : false;
+
                 result.Result = true;
                 string errMsg = string.Empty;
 
@@ -377,7 +398,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     return result;
                 }
 
-                if (_IGarmentTestDetailProvider.Update_GarmentTestDetail(source.Detail) == false)
+                if (_IGarmentTestDetailProvider.Update_GarmentTestDetail(source.Detail, sameInstance) == false)
                 {
                     _ISQLDataTransaction.RollBack();
                     result.Result = false;
@@ -404,6 +425,17 @@ namespace BusinessLogicLayer.Service.BulkFGT
             GarmentTest_ViewModel result = new GarmentTest_ViewModel();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             _IGarmentTestDetailProvider = new GarmentTestDetailProvider(_ISQLDataTransaction);
+
+            string mainServerName = string.Empty;
+            string extendServerName = string.Empty;
+
+            _IGarmentTestProvider = new GarmentTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+            extendServerName = _IGarmentTestProvider.CheckInstance();
+
+            _IGarmentTestProvider = new GarmentTestProvider(Common.ProductionDataAccessLayer);
+            mainServerName = _IGarmentTestProvider.CheckInstance();
+
+            bool sameInstance = mainServerName == extendServerName ? true : false;
             try
             {
                 #region 判斷是否空值
@@ -424,7 +456,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
                 #endregion
 
-                int deleteCnt = _IGarmentTestDetailProvider.Delete_GarmentTestDetail(ID, No);
+                int deleteCnt = _IGarmentTestDetailProvider.Delete_GarmentTestDetail(ID, No, sameInstance);
                 result.SaveResult = true;
                 _ISQLDataTransaction.Commit();
             }
