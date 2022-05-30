@@ -23,7 +23,7 @@ namespace ProductionDataAccessLayer.Interface
 
         bool Chk_AllResult(string ID, string No);
 
-        IList<GarmentTest_Detail_ViewModel> Get(string ID, string No);
+        IList<GarmentTest_Detail_ViewModel> Get(string ID, string No, bool sameInstance);
 
         List<string> GetScales();
 

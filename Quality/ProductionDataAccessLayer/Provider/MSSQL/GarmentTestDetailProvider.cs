@@ -596,7 +596,7 @@ drop table #tmpFGPTResult,#tmpFGWTResult
         /// ===  ==========  ====  ==========  ==========
         /// 01.  2021/08/23  1.00    Admin        Create
         /// </history>
-        public IList<GarmentTest_Detail_ViewModel> Get(string ID, string No)
+        public IList<GarmentTest_Detail_ViewModel> Get(string ID, string No, bool sameInstance)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection
@@ -643,7 +643,7 @@ drop table #tmpFGPTResult,#tmpFGWTResult
             SbSql.Append("        ,gdi.TestBeforePicture" + Environment.NewLine);
             SbSql.Append("        ,gdi.TestAfterPicture" + Environment.NewLine);
             SbSql.Append($@"FROM [GarmentTest_Detail] gd WITH(NOLOCK)
-left join [ExtendServer].PMSFile.dbo.GarmentTest_Detail gdi WITH(NOLOCK) on gd.ID=gdi.ID AND gd.No = gdi.No
+left join {(sameInstance ? string.Empty : "[ExtendServer].")}PMSFile.dbo.GarmentTest_Detail gdi WITH(NOLOCK) on gd.ID=gdi.ID AND gd.No = gdi.No
 
 " + Environment.NewLine);
             SbSql.Append("where gd.ID = @ID" + Environment.NewLine);

@@ -442,7 +442,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 string emptyMsg = string.Empty;
                 if (string.IsNullOrEmpty(ID)) { emptyMsg += "Master ID cannot be 0 or null" + Environment.NewLine; }
                 if (string.IsNullOrEmpty(No)) { emptyMsg += "No cannot be 0 or null" + Environment.NewLine; }
-                GarmentTest_Detail_ViewModel detail = _IGarmentTestDetailProvider.Get(ID, No).First();
+                GarmentTest_Detail_ViewModel detail = _IGarmentTestDetailProvider.Get(ID, No, sameInstance).First();
                 if (detail.Status.ToUpper() == "Confirmed")
                 {
                     emptyMsg += "Encode data cannot delete.";

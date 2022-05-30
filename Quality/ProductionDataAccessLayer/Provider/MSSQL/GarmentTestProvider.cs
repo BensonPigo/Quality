@@ -463,7 +463,7 @@ update SampleGarmentTest
 set EditDate = GetDate(), EditName = @UserID
 where ID = @ID
 ";
-                List<GarmentTest_Detail_ViewModel> oldDetailData = GetDetail(master.ID.ToString()).ToList();
+                List<GarmentTest_Detail_ViewModel> oldDetailData = GetDetail(master.ID.ToString(), sameInstance).ToList();
                 List<GarmentTest_Detail_ViewModel> needUpdateDetailList = PublicClass.CompareListValue<GarmentTest_Detail_ViewModel>(
                     detail, oldDetailData, "ID,No", "OrderID,SizeCode,MtlTypeID,inspdate,inspector,NonSeamBreakageTest,Remark");
 
@@ -926,7 +926,7 @@ where ID = @ID
             return ExecuteList<GarmentTest_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
         }
 
-        public IList<GarmentTest_Detail_ViewModel> GetDetail(string ID)
+        public IList<GarmentTest_Detail_ViewModel> GetDetail(string ID, bool sameInstance)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection
@@ -972,7 +972,7 @@ where ID = @ID
             SbSql.Append("        ,gdi.TestBeforePicture" + Environment.NewLine);
             SbSql.Append("        ,gdi.TestAfterPicture" + Environment.NewLine);
             SbSql.Append($@"FROM [GarmentTest_Detail] gd WITH(NOLOCK)
-left join [ExtendServer].PMSFile.dbo.GarmentTest_Detail gdi WITH(NOLOCK) on gd.ID=gdi.ID AND gd.No = gdi.No
+left join {(sameInstance ? string.Empty : "[ExtendServer].")}PMSFile.dbo.GarmentTest_Detail gdi WITH(NOLOCK) on gd.ID=gdi.ID AND gd.No = gdi.No
 " + Environment.NewLine);
             SbSql.Append("where gd.ID = @ID" + Environment.NewLine);
 
