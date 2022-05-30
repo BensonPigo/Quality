@@ -162,7 +162,7 @@ where 1=1
             }
 
             if (!string.IsNullOrEmpty(filter.Brand))
-            {   
+            {
                 sqlcmd += " and g.BrandID = @BrandID" + Environment.NewLine;
             }
 
@@ -189,7 +189,17 @@ where 1=1
             return ExecuteList<GarmentTest_ViewModel>(CommandType.Text, sqlcmd, objParameter);
         }
 
-        public void Save_GarmentTest(GarmentTest_ViewModel master, List<GarmentTest_Detail_ViewModel> detail, string UserID)
+        public string CheckInstance()
+        {
+            string serverName = string.Empty;
+
+            string sql = $"SELECT ServerName = @@SERVERNAME";
+            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sql, new SQLParameterCollection());
+            serverName = dt.Rows[0]["ServerName"].ToString();
+
+            return serverName;
+        }
+        public void Save_GarmentTest(GarmentTest_ViewModel master, List<GarmentTest_Detail_ViewModel> detail, string UserID, bool sameInstance)
         {
             bool result = true;
             using (TransactionScope transaction = new TransactionScope())
@@ -476,7 +486,7 @@ update SampleGarmentTest
 set EditDate = GetDate(), EditName = @UserID
 where ID = @ID
 ";
-                List<GarmentTest_Detail_ViewModel> oldDetailData = GetDetail(master.ID.ToString()).ToList();
+                List<GarmentTest_Detail_ViewModel> oldDetailData = GetDetail(master.ID.ToString(), sameInstance).ToList();
                 List<GarmentTest_Detail_ViewModel> needUpdateDetailList = PublicClass.CompareListValue<GarmentTest_Detail_ViewModel>(
                     detail, oldDetailData, "ID,No", "OrderID,SizeCode,MtlTypeID,inspdate,inspector,NonSeamBreakageTest,Remark");
 
@@ -509,7 +519,7 @@ values(
     ,@ReportNo
 )
 
-insert into [ExtendServer].PMSFile.dbo.GarmentTest_Detail(ID,No)
+insert into  {(sameInstance ? string.Empty : "[ExtendServer].")}PMSFile.dbo.GarmentTest_Detail(ID,No)
 values(@ID, @MaxNo +1)
 ";
                 string sqlUpdateDetail = $@"
@@ -525,7 +535,7 @@ set SizeCode = @SizeCode
 where ID = @ID
 and No = @No
 ";
-                string sqlDeleteDetail = @"
+                string sqlDeleteDetail = $@"
 SET XACT_ABORT ON
 
 Delete GarmentTest_Detail_Shrinkage  where id = @ID and NO = @No
@@ -535,7 +545,7 @@ Delete GarmentTest_Detail_FGPT where id = @ID and NO = @No
 Delete Garment_Detail_Spirality where id = @ID and NO = @No
 
 Delete GarmentTest_Detail where id = @ID and NO = @No
-Delete [ExtendServer].PMSFile.dbo.GarmentTest_Detail where id = @ID and NO = @No
+Delete {(sameInstance ? string.Empty : "[ExtendServer].")}PMSFile.dbo.GarmentTest_Detail where id = @ID and NO = @No
 ";
                 foreach (GarmentTest_Detail_ViewModel detailItem in needUpdateDetailList)
                 {
@@ -939,7 +949,7 @@ where ID = @ID
             return ExecuteList<GarmentTest_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
         }
 
-        public IList<GarmentTest_Detail_ViewModel> GetDetail(string ID)
+        public IList<GarmentTest_Detail_ViewModel> GetDetail(string ID, bool sameInstance)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection
@@ -985,7 +995,7 @@ where ID = @ID
             SbSql.Append("        ,gdi.TestBeforePicture" + Environment.NewLine);
             SbSql.Append("        ,gdi.TestAfterPicture" + Environment.NewLine);
             SbSql.Append($@"FROM [GarmentTest_Detail] gd WITH(NOLOCK)
-left join [ExtendServer].PMSFile.dbo.GarmentTest_Detail gdi WITH(NOLOCK) on gd.ID=gdi.ID AND gd.No = gdi.No
+left join {(sameInstance ? string.Empty : "[ExtendServer].")}PMSFile.dbo.GarmentTest_Detail gdi WITH(NOLOCK) on gd.ID=gdi.ID AND gd.No = gdi.No
 " + Environment.NewLine);
             SbSql.Append("where gd.ID = @ID" + Environment.NewLine);
 
