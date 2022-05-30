@@ -758,7 +758,17 @@ namespace BusinessLogicLayer.Service.BulkFGT
             _IGarmentTestDetailProvider = new GarmentTestDetailProvider(Common.ProductionDataAccessLayer);
             try
             {
-                return _IGarmentTestDetailProvider.Get(ID, No).First();
+                string mainServerName = string.Empty;
+                string extendServerName = string.Empty;
+
+                _IGarmentTestProvider = new GarmentTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+                extendServerName = _IGarmentTestProvider.CheckInstance();
+                _IGarmentTestProvider = new GarmentTestProvider(Common.ProductionDataAccessLayer);
+                mainServerName = _IGarmentTestProvider.CheckInstance();
+
+                bool sameInstance = mainServerName == extendServerName ? true : false;
+
+                return _IGarmentTestDetailProvider.Get(ID, No, sameInstance).First();
             }
             catch (Exception ex)
             {
