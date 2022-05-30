@@ -463,7 +463,17 @@ SELECT [Type] = IIF( EXISTS(
 	from Style s WITH(NOLOCK)
 	inner join Reason r WITH(NOLOCK) on s.SpecialMark = r.ID AND r.ReasonTypeID= 'Style_SpecialMark'
 	where s.ID = @StyleID AND s.BrandID = @BrandID AND s.SeasonID = @SeasonID
-	and (r.Name in ('MATCH TEAMWEAR','BASEBALL ON FIELD','SOFTBALL ON FIELD', 'LACROSSE ONFIELD', 'BASEBALL OFF FIELD','NCAA ON ICE','ON-COURT','BBALL PERFORMANCE','BRANDED BLANKS','SLD ON-FIELD','NHL ON ICE','SLD ON-COURT')
+	and (r.Name in ('MATCH TEAMWEAR','BASEBALL ON FIELD','SOFTBALL ON FIELD', 'LACROSSE ONFIELD', 'BASEBALL OFF FIELD','NCAA ON ICE','ON-COURT','BBALL PERFORMANCE','BRANDED BLANKS','SLD ON-FIELD','NHL ON ICE','SLD ON-COURT'
+                        ,'DISNEY+BBALL PER PERFORMANCE'
+                        ,'FAST TRACE+TRAINING TEAMWEAR'
+                        ,'AMERIC. FOOT.ON-FIELD+DISNEY'
+                        ,'Match Teamwear+Critical P'
+                        ,'Training Teamwear+Critical P'
+                        ,'Tiro+Critical Product'
+                        ,'Tiro+Lego+Critical P'
+                        ,'Fast Track+Critical Product'
+                        ,'Disney+Critical Product'
+                    )
         or r.Name like '%TIRO%'
 	    or r.Name like '%Critical%'
 	    or r.Name like '%TRAINING TEAMWEAR%'

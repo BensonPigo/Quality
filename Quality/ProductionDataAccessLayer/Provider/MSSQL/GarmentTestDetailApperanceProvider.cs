@@ -49,7 +49,17 @@ outer apply(
 	where s.ID = g.StyleID
 	and s.BrandID = g.BrandID
 	and s.SeasonID = g.SeasonID
-	and (r.Name in ('MATCH TEAMWEAR','BASEBALL ON FIELD','SOFTBALL ON FIELD', 'LACROSSE ONFIELD', 'BASEBALL OFF FIELD','NCAA ON ICE','ON-COURT','BBALL PERFORMANCE','BRANDED BLANKS','SLD ON-FIELD','NHL ON ICE','SLD ON-COURT')
+	and (r.Name in ('MATCH TEAMWEAR','BASEBALL ON FIELD','SOFTBALL ON FIELD', 'LACROSSE ONFIELD', 'BASEBALL OFF FIELD','NCAA ON ICE','ON-COURT','BBALL PERFORMANCE','BRANDED BLANKS','SLD ON-FIELD','NHL ON ICE','SLD ON-COURT'
+                        ,'DISNEY+BBALL PER PERFORMANCE'
+                        ,'FAST TRACE+TRAINING TEAMWEAR'
+                        ,'AMERIC. FOOT.ON-FIELD+DISNEY'
+                        ,'Match Teamwear+Critical P'
+                        ,'Training Teamwear+Critical P'
+                        ,'Tiro+Critical Product'
+                        ,'Tiro+Lego+Critical P'
+                        ,'Fast Track+Critical Product'
+                        ,'Disney+Critical Product'
+                    )
         or r.Name like '%TIRO%'
 	    or r.Name like '%Critical%'
 	    or r.Name like '%TRAINING TEAMWEAR%'
