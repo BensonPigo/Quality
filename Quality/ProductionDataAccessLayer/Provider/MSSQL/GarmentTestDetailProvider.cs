@@ -137,7 +137,7 @@ where gd.ID = @ID
             return true;
         }
 
-        public int Delete_GarmentTestDetail(string ID, string No)
+        public int Delete_GarmentTestDetail(string ID, string No, bool sameInstance)
         {  
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
@@ -145,7 +145,7 @@ where gd.ID = @ID
                 { "@No", DbType.String, No } ,
             };
 
-            string sqlcmd = @"
+            string sqlcmd = $@"
 SET XACT_ABORT ON
 
 Delete GarmentTest_Detail_Shrinkage  where id = @ID and NO = @No
@@ -155,7 +155,7 @@ Delete GarmentTest_Detail_FGPT where id = @ID and NO = @No
 Delete Garment_Detail_Spirality where id = @ID and NO = @No
 
 Delete GarmentTest_Detail where id = @ID and NO = @No
-Delete [ExtendServer].PMSFile.dbo.GarmentTest_Detail where id = @ID and NO = @No
+Delete {(sameInstance ? string.Empty : "[ExtendServer].")}PMSFile.dbo.GarmentTest_Detail where id = @ID and NO = @No
 ";
             return ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter);
         }
@@ -285,7 +285,7 @@ and ID = @ID
             return Convert.ToString(ExecuteScalar(CommandType.Text, sqlcmd, objParameter));
         }
 
-        public bool Update_GarmentTestDetail(GarmentTest_Detail_ViewModel source)
+        public bool Update_GarmentTestDetail(GarmentTest_Detail_ViewModel source, bool sameInstance)
         {
             string LOtoFactory = string.IsNullOrEmpty(source.LOtoFactory) ? string.Empty : source.LOtoFactory;
             SQLParameterCollection objParameter = new SQLParameterCollection
@@ -339,14 +339,14 @@ where ID = @ID and No = @No
 
 
 
-if not exists (select 1 from [ExtendServer].PMSFile.dbo.GarmentTest_Detail where ID = @ID and No = @No)
+if not exists (select 1 from {(sameInstance ? string.Empty : "[ExtendServer].")}PMSFile.dbo.GarmentTest_Detail where ID = @ID and No = @No)
 begin
-    INSERT INTO [ExtendServer].PMSFile.dbo.GarmentTest_Detail (ID,No,TestBeforePicture,TestAfterPicture)
+    INSERT INTO {(sameInstance ? string.Empty : "[ExtendServer].")}PMSFile.dbo.GarmentTest_Detail (ID,No,TestBeforePicture,TestAfterPicture)
     VALUES (@ID,@No,@TestBeforePicture,@TestAfterPicture)
 end
 else
 begin
-    update [ExtendServer].PMSFile.dbo.GarmentTest_Detail set
+    update {(sameInstance ? string.Empty : "[ExtendServer].")}PMSFile.dbo.GarmentTest_Detail set
         TestBeforePicture = @TestBeforePicture,
         TestAfterPicture = @TestAfterPicture
     where ID = @ID and No = @No
@@ -596,7 +596,7 @@ drop table #tmpFGPTResult,#tmpFGWTResult
         /// ===  ==========  ====  ==========  ==========
         /// 01.  2021/08/23  1.00    Admin        Create
         /// </history>
-        public IList<GarmentTest_Detail_ViewModel> Get(string ID, string No)
+        public IList<GarmentTest_Detail_ViewModel> Get(string ID, string No, bool sameInstance)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection
@@ -643,7 +643,7 @@ drop table #tmpFGPTResult,#tmpFGWTResult
             SbSql.Append("        ,gdi.TestBeforePicture" + Environment.NewLine);
             SbSql.Append("        ,gdi.TestAfterPicture" + Environment.NewLine);
             SbSql.Append($@"FROM [GarmentTest_Detail] gd WITH(NOLOCK)
-left join [ExtendServer].PMSFile.dbo.GarmentTest_Detail gdi WITH(NOLOCK) on gd.ID=gdi.ID AND gd.No = gdi.No
+left join {(sameInstance ? string.Empty : "[ExtendServer].")}PMSFile.dbo.GarmentTest_Detail gdi WITH(NOLOCK) on gd.ID=gdi.ID AND gd.No = gdi.No
 
 " + Environment.NewLine);
             SbSql.Append("where gd.ID = @ID" + Environment.NewLine);

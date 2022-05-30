@@ -1194,6 +1194,8 @@
         $('#Picture').on('click', function () {
             var para = "?Title=" + $('.page-header span').html() + "&EditMode=" + EditMode;
             para += "&" + "Table=GarmentTest_Detail";
+            para += "&" + "TargetBeforeColumn=Detail_TestBeforePicture";
+            para += "&" + "TargetAfterColumn=Detail_TestAfterPicture";
             para += "&" + "BeforeColumn=TestBeforePicture";
             para += "&" + "AfterColumn=TestAfterPicture";
             para += "&" + "PKey_1=ID";

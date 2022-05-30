@@ -13,9 +13,9 @@ namespace ProductionDataAccessLayer.Interface
 
         IList<Order_Qty> GetSizeCode(string StyleID, string SeasonID, string BrandID);
 
-        int Delete_GarmentTestDetail(string ID, string No);
+        int Delete_GarmentTestDetail(string ID, string No, bool sameInstance);
 
-        bool Update_GarmentTestDetail(GarmentTest_Detail_ViewModel source);
+        bool Update_GarmentTestDetail(GarmentTest_Detail_ViewModel source, bool sameInstance);
 
         bool Encode_GarmentTestDetail(string ID, string No, string Status);
 
@@ -23,7 +23,7 @@ namespace ProductionDataAccessLayer.Interface
 
         bool Chk_AllResult(string ID, string No);
 
-        IList<GarmentTest_Detail_ViewModel> Get(string ID, string No);
+        IList<GarmentTest_Detail_ViewModel> Get(string ID, string No, bool sameInstance);
 
         List<string> GetScales();
 
