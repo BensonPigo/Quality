@@ -2,6 +2,7 @@
 
 @{
     Layout = null;
+    bool IsReadonly = ViewData["IsReadonly"] == null ? false : (bool)ViewData["IsReadonly"];
 
 }
 
@@ -66,13 +67,18 @@
     <div class="grayDiv">
 
         <div class="grayInnerDiv">
-            <input type="file" id="UploadPic" name="name" accept=".png, .jpg, .jpeg" value="UP" style="display:none;" />
-            <img id="Upload" class="pointer" style="height: 90%; vertical-align: top; margin-right: 5px;" src="~/Image/Icon/Upload.png" />
-
+            @if (!IsReadonly)
+            {
+                <input type="file" id="UploadPic" name="name" accept=".png, .jpg, .jpeg" value="UP" style="display:none;" />
+                <img id="Upload" class="pointer" style="height: 90%; vertical-align: top; margin-right: 5px;" src="~/Image/Icon/Upload.png" />
+            }
         </div>
         <div class="grayInnerDiv">
-            <img Type="Pic" class="OpenCamera pointer" style="height: 80%; padding-top: 5px; margin-right: 5px;" src="~/Image/Icon/Camera.png" />
-        </div>
+            @if (!IsReadonly)
+            {
+                <img Type="Pic" class="OpenCamera pointer" style="height: 80%; padding-top: 5px; margin-right: 5px;" src="~/Image/Icon/Camera.png" />
+            }
+            </div>
         <div class="grayInnerDiv" style="height:100%"></div>
         <div class="grayInnerDiv" style="height:100%"></div>
         <div class="grayInnerDiv" style="height:100%"></div>
@@ -84,8 +90,10 @@
 
         </div>
         <div class="grayInnerDiv">
-            <img id="Del" class="pointer" style="height: 80%; padding-top: 5px; margin-right: 5px;" src="~/Image/Icon/Delete.png" />
-
+            @if (!IsReadonly)
+            {
+                <img id="Del" class="pointer" style="height: 80%; padding-top: 5px; margin-right: 5px;" src="~/Image/Icon/Delete.png" />
+            }
         </div>
 
     </div>

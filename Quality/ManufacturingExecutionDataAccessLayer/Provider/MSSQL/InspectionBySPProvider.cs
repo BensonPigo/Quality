@@ -1287,7 +1287,16 @@ select  [Ukey] = isnull(fn.Ukey, 0),
         [BACriteriaDesc] = bac.Description,
         [Qty] = isnull(fn.Qty, 0),		
 		[RowIndex]=ROW_NUMBER() OVER(ORDER BY bac.ID) -1
-		
+		,HasImage = Cast( 
+                        IIF( EXISTS(
+                            select 1
+                            from PMSFile.dbo.SampleRFTInspection_NonBACriteriaImage
+                            where SampleRFTInspectionUkey = fn.SampleRFTInspectionUkey
+                            AND BACriteria = fn.BACriteria
+                        )
+                    ,1,0)
+
+as bit)
 
     from #baseBACriteria bac with (nolock)
     left join   SampleRFTInspection_NonBACriteria fn WITH(NOLOCK) on    fn.SampleRFTInspectionUkey = @ID

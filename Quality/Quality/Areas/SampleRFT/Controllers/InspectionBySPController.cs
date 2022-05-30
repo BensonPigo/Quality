@@ -975,9 +975,14 @@ namespace Quality.Areas.SampleRFT.Controllers
         /// 存放刪除的圖片
         /// </summary>
         public static List<BAImage> TmpDelete_BAImg;
-        public ActionResult BAPicture(long ID, long BAUKey, string BACriteria)
+        public ActionResult BAPicture(long ID, long BAUKey, string BACriteria, bool Readonly = false)
         {
-            this.CheckSession();
+            if (Readonly)
+            {
+                TmpBAImgSourceList = new List<SelectListItem>();
+                TmpAdd_BAImg = new List<BAImage>();
+                TmpDelete_BAImg = new List<BAImage>();
+            }
 
             BACriteriaItem model = BAUKey > 0 ? _Service.GetBAImageList(ID, BAUKey)
                 : new BACriteriaItem()
@@ -1020,6 +1025,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                 !TmpDelete_BAImg.Any(x => x.Seq == o.Seq && x.BACriteria == BACriteria)
             ).ToList();
 
+            ViewData["IsReadonly"] = Readonly;
             return View(model);
         }
 

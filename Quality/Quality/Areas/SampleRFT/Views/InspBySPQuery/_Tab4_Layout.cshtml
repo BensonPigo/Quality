@@ -12,7 +12,7 @@
         width: 100%
     }
 </style>
-<h1>Beautiful Product Qty:@Model.BA.BAQty</h1>
+<h1 style="font-size:1rem;">Beautiful Product Qty:@Model.BA.BAQty</h1>
 <table id="myTable4" class="table table-striped display">
     <thead>
         <tr class="row-name">
@@ -30,7 +30,7 @@
                 <td>
                     @if (item.HasImage)
                     {
-                        <img src="/Image/Icon/Picture.png" style="cursor: pointer;" onclick="OpenBAPicture(@item.Ukey,@item.RowIndex)" width="25" height="25" />
+                        <img src="/Image/Icon/Picture.png" style="cursor: pointer;" onclick="OpenBAPicture(@item.Ukey,'@item.BACriteria')" width="25" height="25" />
                     }
                 </td>
             </tr>
@@ -50,4 +50,7 @@
             "scrollCollapse": true,
         });
     });
+    function OpenBAPicture(DetailUkey, BACriteria) {
+        window.open('@Url.Action("BAPicture", "InspectionBySP")?Readonly=true&ID=@Model.sampleRFTInspection.ID&BACriteria=' + BACriteria + '&BAUKey=' + DetailUkey, "Picture", config = 'toolbar=no,status=no,location=no,width=1500,height=1000');
+    }
 </script>
