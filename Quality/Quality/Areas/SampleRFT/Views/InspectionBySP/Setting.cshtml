@@ -4,8 +4,8 @@
     ViewBag.Title = "Setting";
     Layout = "~/Areas/SampleRFT/Views/Shared/_ForAll_Layout.cshtml";
 
-    bool AQLPlanDisabled = Model.AQLPlan == "100%";
-    bool SampleQtyDisabled = AQLPlanDisabled;
+    bool AQLPlanDisabled = Model.InspectionStage == "100%";
+    bool SampleQtyDisabled = !AQLPlanDisabled;
 }
 
 

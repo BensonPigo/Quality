@@ -78,7 +78,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                         break;
                     case "InProcess":
                         // 取得進行到一半的檢驗單後再導過去
-                        InProcess = _Service.GetSampleRFTInspections(new InspectionBySP_ViewModel() { OrderID = OrderID }).FirstOrDefault();
+                        InProcess = _Service.GetSampleRFTInspections(new InspectionBySP_ViewModel() { OrderID = OrderID }).Where(o => string.IsNullOrWhiteSpace(o.Result)).FirstOrDefault();
                         break;
                     case "Failure":
                         model = _Service.GetNewSetting(OrderID, this.FactoryID);
