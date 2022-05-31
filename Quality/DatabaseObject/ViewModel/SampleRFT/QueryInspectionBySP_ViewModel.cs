@@ -8,6 +8,7 @@ namespace DatabaseObject.ViewModel.SampleRFT
 {
     public class QueryInspectionBySP_ViewModel : ResultModelBase<QueryInspectionBySP>
     {
+        public long ID { get; set; }
         public string SP { get; set; }
         public string CustPONO { get; set; }
         public string StyleID { get; set; }

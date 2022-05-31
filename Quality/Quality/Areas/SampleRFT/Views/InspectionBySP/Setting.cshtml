@@ -5,6 +5,7 @@
     Layout = "~/Areas/SampleRFT/Views/Shared/_ForAll_Layout.cshtml";
 
     bool AQLPlanDisabled = Model.AQLPlan == "100%";
+    bool SampleQtyDisabled = AQLPlanDisabled;
 }
 
 
@@ -215,19 +216,40 @@
                 <tr>
                     <td><label>Sample Plan Qty</label></td>
                     <td>
-                        @Html.TextBoxFor(o => o.SampleSize, new { @type = "number", @min = "0", @class = "form-control center-block", @disabled = "disabled", @style = "width:49%;" })
+                        @if (SampleQtyDisabled)
+                        {
+                            @Html.TextBoxFor(o => o.SampleSize, new { @type = "number", @min = "0", @class = "form-control center-block", @disabled = "disabled", @style = "width:49%;" })
+                        }
+                        else
+                        {
+                            @Html.TextBoxFor(o => o.SampleSize, new { @type = "number", @min = "0", @class = "form-control center-block", @style = "width:49%;" })
+                        }
                     </td>
                 </tr>
                 <tr>
                     <td><label>Accepted Qty</label></td>
                     <td>
-                        @Html.TextBoxFor(o => o.AcceptQty, new { @type = "number", @style = "width:49%;", @min = "0", @class = "form-control center-block", @disabled = "disabled" })
+                        @if (SampleQtyDisabled)
+                        {
+                            @Html.TextBoxFor(o => o.AcceptQty, new { @type = "number", @style = "width:49%;", @min = "0", @class = "form-control center-block", @disabled = "disabled" })
+                        }
+                        else
+                        {
+                            @Html.TextBoxFor(o => o.AcceptQty, new { @type = "number", @style = "width:49%;", @min = "0", @class = "form-control center-block" })
+                        }
                     </td>
                 </tr>
                 <tr>
                     <td><label>Reject Qty</label></td>
                     <td>
-                        <input id="RejectQty" type="number" class="form-control center-block" min="0" value="@ViewData["RejectQty"]" style="width:49%;" disabled />
+                        @if (SampleQtyDisabled)
+                        {
+                            <input id="RejectQty" type="number" class="form-control center-block" min="0" value="@ViewData["RejectQty"]" style="width:49%;" disabled />
+                        }
+                        else
+                        {
+                            <input id="RejectQty" type="number" class="form-control center-block" min="0" value="@ViewData["RejectQty"]" style="width:49%;" />
+                        }
                     </td>
                 </tr>
             </table>
@@ -307,15 +329,26 @@
 
         function onStageChange(value) {
             if (value == '100%') {
-                $('#AQLPlan').val('').attr('disabled');
+                $('#AQLPlan').val('').attr('disabled', true);
                 $("#AcceptableQualityLevelsUkey").val(0);
                 $('#SampleSize').val('');
                 $('#AcceptQty').val('');
                 $('#RejectQty').val('');
+
+                $('#SampleSize').prop('disabled', false);
+                $('#AcceptQty').prop('disabled', false);
+                $('#RejectQty').prop('disabled', false);
             }
 
             if (value == 'AQL') {
                 $('#AQLPlan').removeAttr('disabled');
+                $('#SampleSize').val('');
+                $('#AcceptQty').val('');
+                $('#RejectQty').val('');
+
+                $('#SampleSize').prop('disabled', true);
+                $('#AcceptQty').prop('disabled', true);
+                $('#RejectQty').prop('disabled', true);
             }
         }
 

@@ -268,6 +268,8 @@ namespace Quality.Areas.SampleRFT.Controllers
                 model.CheckOuterCarton = data.CheckOuterCarton;
                 model.CheckPackingMode = data.CheckPackingMode;
                 model.CheckHangtag = data.CheckHangtag;
+                model.OrderID = data.OrderID;
+                model.ID = data.ID;
             }
             catch (Exception ex)
             {
@@ -288,7 +290,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                 Req.InspectionStep = "Insp-Setting";
                 _Service.UpdateSampleRFTInspectionByStep(Req, "Insp-CheckList", this.UserID);
 
-                return RedirectToAction("Setting", new { ID = Req.ID });
+                return RedirectToAction("Setting", new { OrderID = Req.OrderID });
             }
             else if (goPage == "Next")
             {

@@ -1,15 +1,20 @@
-﻿using ADOHelper.Utility;
+﻿using ADOHelper.Template.MSSQL;
+using ADOHelper.Utility;
 using DatabaseObject;
 using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.SampleRFT;
+using ManufacturingExecutionDataAccessLayer.Interface;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using Newtonsoft.Json;
+using ProductionDataAccessLayer.Provider.MSSQL;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -19,6 +24,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
     public class InspectionBySPService
     {
         private InspectionBySPProvider _Provider;
+        private IMailToProvider _IMailToProvider;
 
         public InspectionBySP_ViewModel Get_SearchResults(InspectionBySP_ViewModel Req)
         {
@@ -819,7 +825,6 @@ namespace BusinessLogicLayer.Service.SampleRFT
 
         }
 
-
         public QueryInspectionBySP_ViewModel GetQuery(QueryInspectionBySP_ViewModel Req)
         {
             QueryInspectionBySP_ViewModel model = new QueryInspectionBySP_ViewModel() { DataList = new List<QueryInspectionBySP>() };
@@ -890,5 +895,6 @@ namespace BusinessLogicLayer.Service.SampleRFT
 
             return model;
         }
+
     }
 }

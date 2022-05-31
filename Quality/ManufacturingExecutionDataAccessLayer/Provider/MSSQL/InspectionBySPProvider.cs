@@ -34,8 +34,18 @@ select a.*, b.StyleID ,b.SeasonID ,b.BrandID
                              WHEN a.InspectionTimes = 3  THEN '3/Final' 
                         ELSE Cast(a.InspectionTimes as varchar)
                         END
+    ,WorkNo = wk.Val
+    ,POID = b.POID
 from SampleRFTInspection a
 INNER JOIN MainServer.Production.dbo.Orders b on a.OrderID=b.ID
+Outer apply(
+	select Val = STUFF((
+		select DISTINCT ',' + ed.ID
+		from MainServer.Production.dbo.Export_Detail ed 
+		where ed.PoID = b.POID
+		FOR XML PATH('')
+	),1,1,'')
+)wk
 where 1=1
 
 ");
@@ -1694,6 +1704,12 @@ OUTER APPLY(
 )Articles
 where 1=1
 ");
+            if (Req.ID > 0)
+            {
+                SbSql.Append($@" AND a.ID = @ID ");
+                para.Add("@ID", Req.ID);
+            }
+
             if (!string.IsNullOrEmpty(Req.SP))
             {
                 SbSql.Append($@" AND a.OrderID = @OrderID ");

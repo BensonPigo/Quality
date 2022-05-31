@@ -112,7 +112,7 @@
     <div style="padding:1em">
         <div>
             <h1 style="font-size:2em;color: #999999;">Inspection Report</h1>
-            <button class="site-btn btn-blue" style="position:absolute;top:1em;right:0" onclick="ClickDownload()">Download</button>
+            @*<button class="site-btn btn-blue" style="position:absolute;top:1em;right:0" onclick="ClickDownload()">Download</button>*@
         </div>
         <div style="display:inline-block;border:1px solid gray;width:38%;height:15vh;padding-left:5px">
             <div><h1 style="font-size:1.5em">PO information</h1></div>
@@ -122,7 +122,7 @@
                         <td>SP#</td>
                         <td class="valueColor" style="width:20%">@Model.Setting.OrderID</td>
                         <td style="padding-left:10px;">PO#</td>
-                        <td class="valueColor" style="width:20%">@Model.Setting.CustPONo</td>
+                        <td colspan="3" class="valueColor" style="width:20%">@Model.Setting.CustPONo</td>
                     </tr>
                     <tr>
                         <td>Style</td>
@@ -212,7 +212,7 @@
                 @Html.Partial("~/Areas/SampleRFT/Views/InspBySPQuery/_Tab5_Layout.cshtml")c
             </div>
             <div id="tab06" class="tab-inner">
-                @*@Html.Partial("~/Areas/SampleRFT/Views/InspBySPQuery/_Tab6_Layout.cshtml")*@
+                @Html.Partial("~/Areas/SampleRFT/Views/InspBySPQuery/_Tab6_Layout.cshtml")
             </div>
         </div>
         <div>
@@ -226,17 +226,11 @@
 
                     <td style="width:7%">Inpection Result</td>
                     <td class="valueColor" style="width:10%">@Model.sampleRFTInspection.Result</td>
-                    <td style="width:7%" rowspan="2">
-                        @if (Model.sampleRFTInspection.Result == "On-going")
-                        {
-                            <button type="button" onclick="GoOnInspect()" class="site-btn btn-red">Go On Inspect</button>
-                        }
+                    <td style="width:7%">
+
                     </td>
-                    <td style="width:7%" rowspan="2">
-                        @if (Model.sampleRFTInspection.Result != "On-going")
-                        {
-                            <button type="button" onclick="SendMail()" class="site-btn btn-blue">Send Mail</button>
-                        }
+                    <td style="width:7%">
+                        <button class="site-btn btn-blue" onclick="ClickDownload()">Download</button>
                     </td>
                 </tr>
                 <tr>
@@ -252,8 +246,10 @@
                         }
                     </td>
                     <td>Reject Qty(pcs)</td>
-                    <td class="valueColor">@Model.sampleRFTInspection.RejectQty</td>
-
+                    <td colspan="4" class="valueColor">@Model.sampleRFTInspection.RejectQty</td>
+                    <td>
+                        <button type="button" onclick="SendMail()" class="site-btn btn-blue" style="margin-top:3px;">Send Mail</button>
+                    </td>
                 </tr>
             </table>
         </div>
@@ -279,6 +275,40 @@
                 $($(this).attr('link')).show().siblings('.tab-inner').hide();
                 $(this).addClass('active').siblings('.active').removeClass('active');
             });
+        }
+
+        function ClickDownload() {
+
+            window.location.href = '@Url.Action("Download")';
+
+        }
+
+        function SendMail() {
+
+            $.ajax({
+                url: "@Url.Action("SendMail", "InspBySPQuery")",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({}),
+                async: false,
+                success: function (data) {
+                    if (data.Result) {
+                        var para = "?To=";
+                        para += "&CC=";
+                        para += "&Subject=" + "Sample RFT Inspection Report - SP : @Model.sampleRFTInspection.OrderID";
+                        para += "&Body=" + "Sample RFT Inspection Report Detail";
+                        para += "&file=" + data.FileName;
+                        window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=600');
+                    }
+                    else {
+                        msg.WithError(data.ErrorMessage);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+
         }
     </script>
 }

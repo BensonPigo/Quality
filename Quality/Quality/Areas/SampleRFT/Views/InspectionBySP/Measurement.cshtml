@@ -393,7 +393,7 @@
 
     function checkValue(self) {
         document.getElementById("goPage").value = self;
-        @*
+
         var SaveResult = false;
         var bodyList = [];
 
@@ -423,7 +423,11 @@
 
         var head =
         {
-            FinalInspectionID: '@Model.ID',
+            ID: '@Model.ID',
+            OrderID: '@Model.OrderID',
+            FactoryID: '@Model.FactoryID',
+            StyleUkey: '@Model.StyleUkey',
+            SewingLineID: '@Model.SewingLineID',
             SelectedArticle: $("#dropArticle").val(),
             SelectedSize: $("#dropSize").val(),
             SelectedProductType: $("#dropProductType").val(),
@@ -431,9 +435,9 @@
         };
 
         $.ajax({
-            url: '@Url.Action("MeasurementSingleSave", "Inspection")',
+            url: '@Url.Action("MeasurementSingleSave", "InspectionBySP")',
             type: 'POST',
-            data: jQuery.param({ model: head }),
+            data: jQuery.param({ Req: head }),
             global: false,
             async: false,
             success: function (response) {
@@ -461,7 +465,7 @@
                 });
             }
         });
-        *@
+
         ShowLoading();
 
     }
