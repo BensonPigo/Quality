@@ -6,6 +6,7 @@ using DatabaseObject.ViewModel.SampleRFT;
 using FactoryDashBoardWeb.Helper;
 using Newtonsoft.Json;
 using Quality.Controllers;
+using Quality.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,6 +33,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorize]
         public ActionResult Index(InspectionBySP_ViewModel Req)
         {
             this.CheckSession();
@@ -131,6 +133,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorize]
         public ActionResult AQL_AJAX(string AQLPlan, int OrderQty)
         {
             this.CheckSession();
@@ -181,6 +184,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorize]
         public ActionResult Setting(InspectionBySP_Setting Req)
         {
             this.CheckSession();
@@ -280,6 +284,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorize]
         public ActionResult CheckList(InspectionBySP_CheckList Req, string goPage)
         {
             this.CheckSession();
@@ -392,6 +397,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         /// <param name="OrderID"></param>
         /// <returns></returns>
         [HttpPost]
+        [SessionAuthorize]
         public ActionResult AddMeasurementPicTemp(RFT_Inspection_Measurement_Image data, string OrderID)
         {
             if (data.TempImage != null)
@@ -432,6 +438,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         /// <param name="OrderID"></param>
         /// <returns></returns>
         [HttpPost]
+        [SessionAuthorize]
         public ActionResult BatchAddMeasurementPicTemp(List<RFT_Inspection_Measurement_Image> list, string OrderID)
         {
             if (list != null && list.Any())
@@ -471,6 +478,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorize]
         public ActionResult DeleteMeasurementPic(RFT_Inspection_Measurement_Image data, string OrderID)
         {
             TmpDelete_MeasurementImg.Add(data);
@@ -526,6 +534,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorize]
         public ActionResult GetNewSizeByArticle(string Article)
         {
             TmpMeasurementImgSourceList = new List<SelectListItem>();
@@ -549,6 +558,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         /// <param name="Req"></param>
         /// <returns></returns>
         [HttpPost]
+        [SessionAuthorize]
         public ActionResult MeasurementSingleSave(InspectionBySP_Measurement Req)
         {
             this.CheckSession();
@@ -590,6 +600,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorize]
         public ActionResult Measurement(InspectionBySP_Measurement Req, string goPage)
         {
             this.CheckSession();
@@ -709,6 +720,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         /// <param name="OrderID"></param>
         /// <returns></returns>
         [HttpPost]
+        [SessionAuthorize]
         public ActionResult AddDefectPicTemp(DefectImage data, long ID, long SampleRFTInspection_DetailUKey, string GarmentDefectCodeID)
         {
             if (data.TempImage != null)
@@ -753,6 +765,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorize]
         public ActionResult BatchAddDefectPicTemp(List<DefectImage> list, long ID, long SampleRFTInspection_DetailUKey, string GarmentDefectCodeID)
         {
             if (list != null && list.Any())
@@ -808,6 +821,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorize]
         public ActionResult DeleteDefectPic(DefectImage data, long ID, long SampleRFTInspection_DetailUKey, string GarmentDefectCodeID)
         {
             data.SampleRFTInspectionDetailUKey = SampleRFTInspection_DetailUKey;
@@ -869,6 +883,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorize]
         public ActionResult AddDefect(InspectionBySP_AddDefect addDefct, string goPage)
         {
             this.CheckSession();
@@ -1032,6 +1047,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorize]
         public ActionResult AddBAPicTemp(BAImage data, long ID, long BAUKey, string BACriteria)
         {
             if (data.TempImage != null)
@@ -1075,6 +1091,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             return json;
         }
         [HttpPost]
+        [SessionAuthorize]
         public ActionResult BatchAddBAPicTemp(List<BAImage> list, long ID, long BAUKey, string BACriteria)
         {
             if (list != null && list.Any())
@@ -1127,6 +1144,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             return json;
         }
         [HttpPost]
+        [SessionAuthorize]
         public ActionResult DeleteBAPic(BAImage data, long ID, long BAUkey, string BACriteria)
         {
             data.SampleRFTInspection_NonBACriteriaUKey = BAUkey;
@@ -1191,6 +1209,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorize]
         public ActionResult BeautifulProductAudit(InspectionBySP_BA Req, string goPage)
         {
             this.CheckSession();
@@ -1279,6 +1298,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorize]
         public ActionResult GetNewSizeByArticle_DF(string Article)
         {
             //TmpMeasurementImgSourceList = new List<SelectListItem>();
@@ -1297,6 +1317,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
+        [SessionAuthorize]
         public ActionResult DummyFitting(InspectionBySP_DummyFit Req, string goPage)
         {
             this.CheckSession();
@@ -1347,6 +1368,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             return View(model);
         }
         [HttpPost]
+        [SessionAuthorize]
         public ActionResult Others(InspectionBySP_Others Req, string goPage)
         {
             this.CheckSession();
