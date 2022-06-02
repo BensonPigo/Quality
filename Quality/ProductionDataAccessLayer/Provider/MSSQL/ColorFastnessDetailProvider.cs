@@ -37,7 +37,7 @@ select c.*
     ,pmsFile.TestAfterPicture
 from ColorFastness c WITH(NOLOCK)
 left join pass1 p on c.Inspector = p.ID
-left join ExtendServer.PMSFile.dbo.ColorFastness pmsFile WITH(NOLOCK) on pmsFile.ID = c.ID and pmsFile.POID = c.POID and pmsFile.TestNo = c.TestNo
+left join SciPMSFile_ColorFastness pmsFile WITH(NOLOCK) on pmsFile.ID = c.ID and pmsFile.POID = c.POID and pmsFile.TestNo = c.TestNo
 where c.id = @ID
 ";
             var main = ExecuteList<ColorFastness_Result>(CommandType.Text, sqlcmd, objParameter);
@@ -133,7 +133,7 @@ select cd.SubmitDate
         ,pmsFile.TestAfterPicture
 from ColorFastness_Detail cd WITH(NOLOCK)
 left join ColorFastness c WITH(NOLOCK) on c.ID =  cd.ID
-left join ExtendServer.PMSFile.dbo.ColorFastness pmsFile WITH(NOLOCK) on pmsFile.ID = c.ID and pmsFile.POID = c.POID and pmsFile.TestNo = c.TestNo
+left join SciPMSFile_ColorFastness pmsFile WITH(NOLOCK) on pmsFile.ID = c.ID and pmsFile.POID = c.POID and pmsFile.TestNo = c.TestNo
 left join Orders o WITH(NOLOCK) on o.ID=c.POID
 left join PO_Supp_Detail po3 WITH(NOLOCK) on c.POID = po3.ID 
 	and cd.SEQ1 = po3.SEQ1 and cd.SEQ2 = po3.SEQ2
@@ -288,14 +288,14 @@ where ID = @ID
 and POID = @POID 
 and TestNo = @OriTestNo
 
-if not exists (select 1 from [ExtendServer].PMSFile.dbo.ColorFastness where ID = @ID and POID = @POID and TestNo = @OriTestNo)
+if not exists (select 1 from SciPMSFile_ColorFastness where ID = @ID and POID = @POID and TestNo = @OriTestNo)
 begin
-    INSERT INTO [ExtendServer].PMSFile.dbo.ColorFastness (ID,POID,TestNo,TestBeforePicture,TestAfterPicture)
+    INSERT INTO SciPMSFile_ColorFastness (ID,POID,TestNo,TestBeforePicture,TestAfterPicture)
     VALUES (@ID,@POID,@OriTestNo,@TestBeforePicture,@TestAfterPicture)
 end
 else
 begin
-    update [ExtendServer].PMSFile.dbo.ColorFastness
+    update SciPMSFile_ColorFastness
     set	   [TestBeforePicture] = @TestBeforePicture
           ,[TestAfterPicture] = @TestAfterPicture
     where ID = @ID
@@ -318,7 +318,7 @@ SET XACT_ABORT ON
 insert into ColorFastness(ID,POID,TestNo,InspDate,Article,Status,Inspector,Remark,addName,addDate,Temperature,Cycle,CycleTime,Detergent,Machine,Drying)
 values(@ID ,@POID,@TestNo,GETDATE(),@Article,'New',@UserID,@Remark,@UserID,GETDATE(),@Temperature,@Cycle,@CycleTime,@Detergent,@Machine,@Drying)
 
-insert into [ExtendServer].PMSFile.dbo.ColorFastness(ID,POID,TestNo,TestBeforePicture,TestAfterPicture)
+insert into SciPMSFile_ColorFastness(ID,POID,TestNo,TestBeforePicture,TestAfterPicture)
 values(@ID,@POID,@TestNo,@TestBeforePicture,@TestAfterPicture)
 
 

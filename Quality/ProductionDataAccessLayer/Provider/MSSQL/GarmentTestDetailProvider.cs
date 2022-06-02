@@ -117,7 +117,7 @@ gd.No
 ,gd.Composition,gd.Neck,gd.Status,gd.LOtoFactory,gd.MtlTypeID,gd.Above50NaturalFibres,gd.Above50SyntheticFibres
 ,gdi.TestAfterPicture,gdi.TestBeforePicture
 from GarmentTest_Detail gd WITH(NOLOCK)
-left join [ExtendServer].PMSFile.dbo.GarmentTest_Detail gdi WITH(NOLOCK) on gd.ID = gdi.ID AND gd.No = gdi.No
+left join SciPMSFile_GarmentTest_Detail gdi WITH(NOLOCK) on gd.ID = gdi.ID AND gd.No = gdi.No
 left join Pass1 CreatBy WITH(NOLOCK) on CreatBy.ID = gd.AddName
 left join Pass1 EditBy WITH(NOLOCK) on EditBy.ID = gd.EditName
 outer apply(
@@ -380,14 +380,14 @@ set
 where ID = @ID and No = @No
 */
 
-if not exists (select 1 from [ExtendServer].PMSFile.dbo.GarmentTest_Detail where ID = @ID and No = @No)
+if not exists (select 1 from SciPMSFile_GarmentTest_Detail where ID = @ID and No = @No)
 begin
-    INSERT INTO [ExtendServer].PMSFile.dbo.GarmentTest_Detail (ID,No,TestBeforePicture,TestAfterPicture)
+    INSERT INTO SciPMSFile_GarmentTest_Detail (ID,No,TestBeforePicture,TestAfterPicture)
     VALUES (@ID,@No,@TestBeforePicture,@TestAfterPicture)
 end
 else
 begin
-    update [ExtendServer].PMSFile.dbo.GarmentTest_Detail set
+    update SciPMSFile_GarmentTest_Detail set
         TestBeforePicture = @TestBeforePicture,
         TestAfterPicture = @TestAfterPicture
     where ID = @ID and No = @No
@@ -448,7 +448,7 @@ select
     ,gdi.TestAfterPicture
 from GarmentTest g WITH(NOLOCK)
 inner join GarmentTest_Detail gd WITH(NOLOCK) on g.ID = gd.ID
-left join [ExtendServer].PMSFile.dbo.GarmentTest_Detail gdi WITH(NOLOCK) on gd.ID=gdi.ID AND gd.No = gdi.No
+left join SciPMSFile_GarmentTest_Detail gdi WITH(NOLOCK) on gd.ID=gdi.ID AND gd.No = gdi.No
 outer apply(
 	select Value =  r.Name 
 	from Style s WITH(NOLOCK)

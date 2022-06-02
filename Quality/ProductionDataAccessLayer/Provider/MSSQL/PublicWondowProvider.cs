@@ -688,7 +688,7 @@ Where 1=1
 select [BrforeImage]={BeforeColumn}
 , [AfterImage]={AfterColumn}
 {selectColumn}
-From [ExtendServer].PMSFile.dbo.{Table}  WITH(NOLOCK)
+From SciPMSFile_{Table}  WITH(NOLOCK)
 Where 1=1
 ");
 
@@ -754,7 +754,7 @@ Where 1=1
             SbSql.Append($@"
 select [Image]={ColumnName}
 {selectColumn}
-From [ExtendServer].PMSFile.dbo.{Table}  WITH(NOLOCK)
+From SciPMSFile_{Table}  WITH(NOLOCK)
 Where 1=1
 ");
 
