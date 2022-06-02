@@ -93,7 +93,7 @@ select ID = c.POID
     ,ci.TestAfterPicture
 from ColorFastness c WITH (NOLOCK) 
 left join Orders b WITH (NOLOCK) on c.POID = b.ID
-left join [ExtendServer].PMSFile.dbo.ColorFastness ci on c.ID = ci.ID and c.POID = ci.POID and c.TestNo = ci.TestNo
+left join SciPMSFile_ColorFastness ci on c.ID = ci.ID and c.POID = ci.POID and c.TestNo = ci.TestNo
 where c.POID = @POID
 and c.ID = @ID
 and c.TestNo = @TestNo
@@ -239,7 +239,7 @@ SET XACT_ABORT ON
 
 delete from ColorFastness_Detail where id = @ID
 delete from ColorFastness where id = @ID
-delete from [ExtendServer].PMSFile.dbo.ColorFastness where id = @ID
+delete from SciPMSFile_ColorFastness where id = @ID
 
 declare @POID varchar(13) = (select POID from ColorFastness where ID = @ID)
 exec UpdateInspPercent 'LabColorFastness', @POID
@@ -328,7 +328,7 @@ exec UpdateInspPercent 'LabColorFastness', @POID
             SbSql.Append("        ,ci.TestBeforePicture"+ Environment.NewLine);
             SbSql.Append("        ,ci.TestAfterPicture" + Environment.NewLine);
             SbSql.Append($@"FROM [ColorFastness] c
-left join [ExtendServer].PMSFile.dbo.ColorFastness ci on c.ID=ci.ID and c.POID = ci.POID and c.TestNo = ci.TestNo
+left join SciPMSFile_ColorFastness ci on c.ID=ci.ID and c.POID = ci.POID and c.TestNo = ci.TestNo
 " + Environment.NewLine);
             SbSql.Append("where c.ID = @ID" + Environment.NewLine);
 

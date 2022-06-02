@@ -239,7 +239,7 @@ values(@MeasurementUkey{rowSeq},@StyleUkey{rowSeq},@No,@Code{rowSeq},@SizeCode{r
                         {
                             objParameter.Add($"@Image{imgIdx}", DbType.Binary, img);
                             sqlcmd += $@"
-insert into PMSFile.dbo.RFT_Inspection_Measurement(OrderID,Image)
+insert into SciPMSFile_RFT_Inspection_Measurement(OrderID,Image)
 values(@OrderID{rowSeq},@Image{imgIdx})
 ";
                             imgIdx++;

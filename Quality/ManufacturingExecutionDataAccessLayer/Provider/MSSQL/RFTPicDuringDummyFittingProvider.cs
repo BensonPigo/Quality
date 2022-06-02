@@ -47,7 +47,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,Front"+ Environment.NewLine);
             SbSql.Append("        ,Side"+ Environment.NewLine);
             SbSql.Append("        ,Back"+ Environment.NewLine);
-            SbSql.Append("FROM PMSFile.dbo.[RFT_PicDuringDummyFitting]  WITH(NOLOCK)" + Environment.NewLine);
+            SbSql.Append("FROM SciPMSFile_RFT_PicDuringDummyFitting  WITH(NOLOCK)" + Environment.NewLine);
             SbSql.Append("where 1 = 1" + Environment.NewLine);
             if (!string.IsNullOrEmpty(Item.OrderID)) { SbSql.Append(" and OrderID = @OrderID" + Environment.NewLine); }
             if (!string.IsNullOrEmpty(Item.Article)) { SbSql.Append(" and Article = @Article" + Environment.NewLine); }
@@ -176,7 +176,7 @@ if exists(select 1 from RFT_PicDuringDummyFitting WITH(NOLOCK) where OrderID = @
 begin
     ---- 2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
 
-	UPDATE PMSFile.dbo.[RFT_PicDuringDummyFitting]
+	UPDATE SciPMSFile_RFT_PicDuringDummyFitting
 	set Front = @Front
     ,Side = @Side
     ,Back = @Back
@@ -188,7 +188,7 @@ begin
 	insert into RFT_PicDuringDummyFitting(OrderID,Article,Size)
 	values(@OrderID, @Article,@Size)
 
-	insert into PMSFile.dbo.RFT_PicDuringDummyFitting(OrderID,Article,Size,Front,Side,Back)
+	insert into SciPMSFile_RFT_PicDuringDummyFitting(OrderID,Article,Size,Front,Side,Back)
 	values(@OrderID, @Article,@Size,@Front,@Side,@Back)
 end
 ";
@@ -211,7 +211,7 @@ SELECT oq.Article
 	,p.Side
 	,p.Back
 from Production.dbo.Order_Qty oq WITH(NOLOCK) 
-left join PMSFile.dbo.RFT_PicDuringDummyFitting p WITH(NOLOCK) ON oq.ID = p.OrderID AND oq.Article = p.Article AND oq.SizeCode=p.Size
+left join SciPMSFile_RFT_PicDuringDummyFitting p WITH(NOLOCK) ON oq.ID = p.OrderID AND oq.Article = p.Article AND oq.SizeCode=p.Size
 WHERE 1=1
 ");
             if (!string.IsNullOrEmpty(Req.OrderID))

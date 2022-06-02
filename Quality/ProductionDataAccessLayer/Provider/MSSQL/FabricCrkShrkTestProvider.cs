@@ -52,7 +52,7 @@ select	[TestNo] = cast(o.TestNo as varchar),
         [TestBeforePicture] = oi.TestBeforePicture,
         [TestAfterPicture] = oi.TestAfterPicture
 from Oven o with (nolock)
-LEFT JOIN [ExtendServer].PMSFile.dbo.Oven oi with (nolock) ON o.ID = oi.ID
+LEFT JOIN SciPMSFile_Oven oi with (nolock) ON o.ID = oi.ID
 left join pass1 pass1AddName WITH(NOLOCK) on o.AddName = pass1AddName.ID
 left join pass1 pass1EditName WITH(NOLOCK) on o.EditName = pass1EditName.ID
 where o.POID = @POID and o.TestNo = @TestNo
@@ -270,7 +270,7 @@ select	[POID] = f.POID,
         [CrockingTestAfterPicture] = fli.CrockingTestAfterPicture
 from FIR f with (nolock)
 left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
-left join [ExtendServer].PMSFile.dbo.FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
+left join SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
 left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
 left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
 left join Supp s with (nolock) on s.ID = f.SuppID
@@ -353,7 +353,7 @@ select	SubmitDate = fl.CrockingDate
 from FIR f with (nolock)
 left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
 inner join FIR_Laboratory_Crocking fd WITH(NOLOCK) on fd.id = fl.id
-left join [ExtendServer].PMSFile.dbo.FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
+left join SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
 left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
 left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
 left join Orders o with (nolock) on o.ID = f.POID
@@ -401,7 +401,7 @@ SET XACT_ABORT ON
 update  FIR_Laboratory set  CrockingRemark = @CrockingRemark
 where   ID = @ID 
 
-update  [ExtendServer].PMSFile.dbo.FIR_Laboratory set  CrockingTestBeforePicture = @CrockingTestBeforePicture,
+update  SciPMSFile_FIR_Laboratory set  CrockingTestBeforePicture = @CrockingTestBeforePicture,
                             CrockingTestAfterPicture = @CrockingTestAfterPicture
 where   ID = @ID 
 ";
@@ -646,7 +646,7 @@ select	[SP#] = f.POID,
         [TestAfterPicture] = fli.CrockingTestAfterPicture
 from FIR f with (nolock)
 left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
-left join [ExtendServer].PMSFile.dbo.FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
+left join SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
 left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
 left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
 left join Supp s with (nolock) on s.ID = f.SuppID
@@ -785,7 +785,7 @@ select	[POID] = f.POID,
         [HeatTestAfterPicture] = fli.HeatTestAfterPicture
 from FIR f with (nolock)
 left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
-left join [ExtendServer].PMSFile.dbo.FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
+left join SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
 left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
 left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
 left join Supp s with (nolock) on s.ID = f.SuppID
@@ -853,7 +853,7 @@ SET XACT_ABORT ON
 update  FIR_Laboratory set  HeatRemark = @HeatRemark
 where   ID = @ID 
 ;
-update  [ExtendServer].PMSFile.dbo.FIR_Laboratory set HeatTestBeforePicture = @HeatTestBeforePicture,
+update  SciPMSFile_FIR_Laboratory set HeatTestBeforePicture = @HeatTestBeforePicture,
                             HeatTestAfterPicture = @HeatTestAfterPicture
 where   ID = @ID 
 ";
@@ -1083,7 +1083,7 @@ select	[SP#] = f.POID,
         [TestAfterPicture] = fli.HeatTestAfterPicture 
 from FIR f with (nolock)
 left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
-left join [ExtendServer].PMSFile.dbo.FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
+left join SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
 left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
 left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
 left join Supp s with (nolock) on s.ID = f.SuppID
@@ -1188,7 +1188,7 @@ select	[POID] = f.POID,
         [WashTestAfterPicture] = fli.WashTestAfterPicture
 from FIR f with (nolock)
 left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
-left join [ExtendServer].PMSFile.dbo.FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
+left join SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
 left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
 left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
 left join Supp s with (nolock) on s.ID = f.SuppID
@@ -1263,7 +1263,7 @@ update  FIR_Laboratory set  WashRemark = @WashRemark,
                             SkewnessOptionID = @SkewnessOptionID
 where   ID = @ID 
 
-update  [ExtendServer].PMSFile.dbo.FIR_Laboratory set WashTestBeforePicture = @WashTestBeforePicture, 
+update  SciPMSFile_FIR_Laboratory set WashTestBeforePicture = @WashTestBeforePicture, 
                             WashTestAfterPicture = @WashTestAfterPicture
 where   ID = @ID 
 ";
@@ -1519,7 +1519,7 @@ select	[SP#] = f.POID,
 	    [TestAfterPicture] = fli.WashTestAfterPicture
 from FIR f with (nolock)
 left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
-left join [ExtendServer].PMSFile.dbo.FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
+left join SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
 left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
 left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
 left join Supp s with (nolock) on s.ID = f.SuppID
