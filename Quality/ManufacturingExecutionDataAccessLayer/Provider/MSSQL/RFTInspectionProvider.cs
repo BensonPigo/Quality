@@ -345,7 +345,7 @@ where inp.ID = @ID{rowcnt}
 delete from RFT_Inspection_Detail
 where id = @id{rowcnt}
 
-delete from PMSFile.dbo.RFT_Inspection_Detail
+delete from SciPMSFile_RFT_Inspection_Detail
 where id = @id{rowcnt}
 
 delete from RFT_Inspection

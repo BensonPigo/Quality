@@ -171,7 +171,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append(")" + Environment.NewLine);
 
             SbSql.Append($@"
-INSERT INTO ExtendServer.PMSFile.dbo.MockupWash (ReportNo,TestBeforePicture,TestAfterPicture)
+INSERT INTO SciPMSFile_MockupWash (ReportNo,TestBeforePicture,TestAfterPicture)
 VALUES (@ReportNo,@TestBeforePicture,@TestAfterPicture)
 ");
 
@@ -219,14 +219,14 @@ SET
 
 WHERE ReportNo = @ReportNo
 
-if not exists (select 1 from [ExtendServer].PMSFile.dbo.MockupWash where ReportNo = @ReportNo)
+if not exists (select 1 from SciPMSFile_MockupWash where ReportNo = @ReportNo)
 begin
-    INSERT INTO [ExtendServer].PMSFile.dbo.MockupWash (ReportNo,TestBeforePicture,TestAfterPicture)
+    INSERT INTO SciPMSFile_MockupWash (ReportNo,TestBeforePicture,TestAfterPicture)
     VALUES (@ReportNo,@TestBeforePicture,@TestAfterPicture)
 end
 else
 begin
-    UPDATE [ExtendServer].PMSFile.dbo.MockupWash
+    UPDATE SciPMSFile_MockupWash
     SET  TestBeforePicture=@TestBeforePicture
         ,TestAfterPicture=@TestAfterPicture
     WHERE ReportNo = @ReportNo
@@ -382,7 +382,7 @@ WHERE UKey = @Ukey
             SbSql.Append("DELETE FROM [MockupWash]" + Environment.NewLine);
             SbSql.Append("WHERE ReportNo = @ReportNo" + Environment.NewLine);
 
-            SbSql.Append(@"DELETE FROM [ExtendServer].PMSFile.dbo.MockupWash" + Environment.NewLine);
+            SbSql.Append(@"DELETE FROM SciPMSFile_MockupWash" + Environment.NewLine);
             SbSql.Append("WHERE ReportNo = @ReportNo" + Environment.NewLine);
             objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
@@ -492,7 +492,7 @@ SELECT {top1}
         ,EditName
         ,Signature = (select t.Signature from Technician t where t.ID = Technician)
 FROM MockupWash m WITH(NOLOCK)
-left join [ExtendServer].PMSFile.dbo.MockupWash mi WITH(NOLOCK) on m.ReportNo=mi.ReportNo
+left join SciPMSFile_MockupWash mi WITH(NOLOCK) on m.ReportNo=mi.ReportNo
 outer apply (select Name, ExtNo from pass1 p WITH(NOLOCK) inner join Technician t WITH(NOLOCK) on t.ID = p.ID where t.id = m.Technician) Technician_ne
 outer apply (select Name, ExtNo, EMail from pass1 WITH(NOLOCK) where id = m.MR) MR_ne
 outer apply (select Name from Pass1 WITH(NOLOCK) where id = m.AddName) AddName
@@ -562,7 +562,7 @@ SELECT
         ,mi.TestBeforePicture
         ,mi.TestAfterPicture
 FROM MockupWash m WITH(NOLOCK)
-left join [ExtendServer].PMSFile.dbo.MockupWash mi WITH(NOLOCK) on m.ReportNo=mi.ReportNo
+left join SciPMSFile_MockupWash mi WITH(NOLOCK) on m.ReportNo=mi.ReportNo
 outer apply (select Name, ExtNo from pass1 p WITH(NOLOCK) inner join Technician t WITH(NOLOCK) on t.ID = p.ID where t.id = m.Technician) Technician_ne
 outer apply (select Name, ExtNo from pass1 WITH(NOLOCK) where id = m.MR) MR_ne
 where m.ReportNo = @ReportNo

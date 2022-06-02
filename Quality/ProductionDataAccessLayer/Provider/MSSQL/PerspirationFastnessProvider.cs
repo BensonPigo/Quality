@@ -60,7 +60,7 @@ select	[TestNo] = cast(o.TestNo as varchar),
         [TestBeforePicture] = oi.TestBeforePicture,
         [TestAfterPicture] = oi.TestAfterPicture
 from PerspirationFastness o with (nolock)
-LEFT JOIN [ExtendServer].PMSFile.dbo.PerspirationFastness oi with (nolock) ON o.ID = oi.ID
+LEFT JOIN SciPMSFile_PerspirationFastness oi with (nolock) ON o.ID = oi.ID
 left join pass1 pass1Inspector WITH(NOLOCK) on o.Inspector = pass1Inspector.ID
 where o.POID = @POID and o.TestNo = @TestNo
 ";
@@ -236,20 +236,20 @@ IF EXISTS(
     select 1 from PerspirationFastness a
     where NOT  EXISTS (
         select   ID
-        from    [ExtendServer].PMSFile.dbo.PerspirationFastness b WITH(NOLOCK)
+        from  SciPMSFile_PerspirationFastness b WITH(NOLOCK)
 		where  a.ID = b.ID
     )
     AND   POID = @POID and TestNo = @TestNo
 )
 BEGIN
-    insert into [ExtendServer].PMSFile.dbo.PerspirationFastness(ID, TestBeforePicture, TestAfterPicture)
+    insert into SciPMSFile_PerspirationFastness(ID, TestBeforePicture, TestAfterPicture)
     values
     (
             (
                 select TOP 1 ID from PerspirationFastness a  WITH(NOLOCK)
                 where NOT  EXISTS (
                     select   ID
-                    from    [ExtendServer].PMSFile.dbo.PerspirationFastness b WITH(NOLOCK)
+                    from    SciPMSFile_PerspirationFastness b WITH(NOLOCK)
 		            where  a.ID = b.ID
                 )
                 AND POID = @POID and TestNo = @TestNo
@@ -259,7 +259,7 @@ BEGIN
 END
 ELSE
 BEGIN
-    update  [ExtendServer].PMSFile.dbo.PerspirationFastness set  
+    update  SciPMSFile_PerspirationFastness set  
                         TestBeforePicture = @TestBeforePicture,
                         TestAfterPicture = @TestAfterPicture
     where  ID IN (
@@ -630,7 +630,7 @@ insert into PerspirationFastness(POID, TestNo, InspDate, Article, Status, Inspec
 select  [PerspirationFastnessID] = ID, TestNo
 from @PerspirationFastnessID
 
-insert into [ExtendServer].PMSFile.dbo.PerspirationFastness(ID, TestBeforePicture, TestAfterPicture)
+insert into SciPMSFile_PerspirationFastness(ID, TestBeforePicture, TestAfterPicture)
         values(
 (select ID from @PerspirationFastnessID) , @TestBeforePicture, @TestAfterPicture)
 
@@ -874,7 +874,7 @@ select  [SP#] = ov.POID,
         pmsFile.TestBeforePicture,
         pmsFile.TestAfterPicture
 from    PerspirationFastness ov with (nolock)
-left join ExtendServer.PMSFile.dbo.PerspirationFastness pmsFile WITH(NOLOCK) on pmsFile.ID =  ov.ID
+left join SciPMSFile_PerspirationFastness pmsFile WITH(NOLOCK) on pmsFile.ID =  ov.ID
 left join  Orders o with (nolock) on ov.POID = o.ID
 where ov.POID = @poID and ov.TestNo = @TestNo
 ";
@@ -891,7 +891,7 @@ where ov.POID = @poID and ov.TestNo = @TestNo
             string sqlDeletePerspirationFastness = @"
 SET XACT_ABORT ON
 delete  PerspirationFastness_Detail where ID = (select ID from PerspirationFastness where POID = @poID and TestNo = @TestNo)
-delete  [ExtendServer].PMSFile.dbo.PerspirationFastness where ID = (select ID from PerspirationFastness where POID = @poID and TestNo = @TestNo)
+delete  SciPMSFile_PerspirationFastness where ID = (select ID from PerspirationFastness where POID = @poID and TestNo = @TestNo)
 delete  PerspirationFastness where POID = @poID and TestNo = @TestNo
 exec UpdateInspPercent 'LabPerspirationFastness',@poID
 ";
@@ -957,7 +957,7 @@ select cd.SubmitDate
         ,pmsFile.TestAfterPicture
 from PerspirationFastness_Detail cd WITH(NOLOCK)
 left join PerspirationFastness c WITH(NOLOCK) on c.ID =  cd.ID
-left join ExtendServer.PMSFile.dbo.PerspirationFastness pmsFile WITH(NOLOCK) on pmsFile.ID =  cd.ID
+left join SciPMSFile_PerspirationFastness pmsFile WITH(NOLOCK) on pmsFile.ID =  cd.ID
 left join Orders o WITH(NOLOCK) on o.ID=c.POID
 left join PO_Supp_Detail po3 WITH(NOLOCK) on c.POID = po3.ID 
 	and cd.SEQ1 = po3.SEQ1 and cd.SEQ2 = po3.SEQ2

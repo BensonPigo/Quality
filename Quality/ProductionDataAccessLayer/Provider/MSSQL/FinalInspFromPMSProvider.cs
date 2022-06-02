@@ -244,7 +244,7 @@ select  [Ukey] = isnull(fd.Ukey, -1),
 		[RowIndex]=ROW_NUMBER() OVER(ORDER BY gdt.id,gdc.id) -1
 		,HasImage = Cast(
 			IIF(EXISTS(
-				select 1 from PMSFile.dbo.FinalInspection_DetailImage img 
+				select 1 from SciPMSFile_FinalInspection_DetailImage img 
 				where img.FinalInspection_DetailUkey = isnull(fd.Ukey, -1)
 			),1,0)		
 		as bit)

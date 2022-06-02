@@ -59,7 +59,7 @@ select	[TestNo] = cast(o.TestNo as varchar),
         [TestBeforePicture] = oi.TestBeforePicture,
         [TestAfterPicture] = oi.TestAfterPicture
 from WaterFastness o with (nolock)
-LEFT JOIN [ExtendServer].PMSFile.dbo.WaterFastness oi with (nolock) ON o.ID = oi.ID
+LEFT JOIN SciPMSFile_WaterFastness oi with (nolock) ON o.ID = oi.ID
 left join pass1 pass1Inspector WITH(NOLOCK) on o.Inspector = pass1Inspector.ID
 where o.POID = @POID and o.TestNo = @TestNo
 ";
@@ -213,7 +213,7 @@ select  [WaterFastnessID] = ID
 from    WaterFastness WITH(NOLOCK)
 where   POID = @POID and TestNo = @TestNo
 
-update  [ExtendServer].PMSFile.dbo.WaterFastness set  
+update  SciPMSFile_WaterFastness set  
                     TestBeforePicture = @TestBeforePicture,
                     TestAfterPicture = @TestAfterPicture
 where  ID IN (
@@ -485,7 +485,7 @@ insert into WaterFastness(POID, TestNo, InspDate, Article, Status, Inspector, Te
 select  [WaterFastnessID] = ID, TestNo
 from @WaterFastnessID
 
-insert into [ExtendServer].PMSFile.dbo.WaterFastness(ID, TestBeforePicture, TestAfterPicture)
+insert into SciPMSFile_WaterFastness(ID, TestBeforePicture, TestAfterPicture)
         values(
 (select ID from @WaterFastnessID) , @TestBeforePicture, @TestAfterPicture)
 ";
@@ -676,7 +676,7 @@ select  [SP#] = ov.POID,
         oi.TestAfterPicture
 from    WaterFastness ov with (nolock)
 left join  Orders o with (nolock) on ov.POID = o.ID
-left join [ExtendServer].PMSFile.dbo.WaterFastness oi with (nolock) on oi.ID=ov.ID
+left join SciPMSFile_WaterFastness oi with (nolock) on oi.ID=ov.ID
 where ov.POID = @poID and ov.TestNo = @TestNo
 ";
 
@@ -758,7 +758,7 @@ select  ov.ID
         ,oi.TestAfterPicture
         ,[InspectorName] = (select Name from Pass1 WITH(NOLOCK) where ID = ov.Inspector)
 from    WaterFastness ov with (nolock)
-left join [ExtendServer].PMSFile.dbo.WaterFastness oi with (nolock) on oi.ID=ov.ID
+left join SciPMSFile_WaterFastness oi with (nolock) on oi.ID=ov.ID
 where   ov.POID = @poID and ov.TestNo = @TestNo
 ";
 
@@ -774,7 +774,7 @@ where   ov.POID = @poID and ov.TestNo = @TestNo
             string sqlDeleteWaterFastness = @"
 SET XACT_ABORT ON
 delete  WaterFastness_Detail where ID = (select ID from WaterFastness where POID = @poID and TestNo = @TestNo)
-delete  [ExtendServer].PMSFile.dbo.WaterFastness where ID = (select ID from WaterFastness where POID = @poID and TestNo = @TestNo)
+delete  SciPMSFile_WaterFastness where ID = (select ID from WaterFastness where POID = @poID and TestNo = @TestNo)
 delete  WaterFastness where POID = @poID and TestNo = @TestNo
 exec UpdateInspPercent 'LabWaterFastness',@poID
 ";
@@ -823,7 +823,7 @@ select cd.SubmitDate
         ,pmsFile.TestAfterPicture
 from WaterFastness_Detail cd WITH(NOLOCK)
 left join WaterFastness c WITH(NOLOCK) on c.ID =  cd.ID
-left join ExtendServer.PMSFile.dbo.WaterFastness pmsFile WITH(NOLOCK) on pmsFile.ID =  cd.ID
+left join SciPMSFile_WaterFastness pmsFile WITH(NOLOCK) on pmsFile.ID =  cd.ID
 left join Orders o WITH(NOLOCK) on o.ID=c.POID
 left join PO_Supp_Detail po3 WITH(NOLOCK) on c.POID = po3.ID 
 	and cd.SEQ1 = po3.SEQ1 and cd.SEQ2 = po3.SEQ2
