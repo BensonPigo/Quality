@@ -771,9 +771,8 @@ declare @AddDate datetime = GetDate()
                 objParameter.Add($"@No", strNo);
                 objParameter.Add($"@Code{rowSeq}", item.Code);
                 objParameter.Add($"@SizeCode{rowSeq}", item.SizeCode);
-                objParameter.Add($"@SizeSpec{rowSeq}", item.ResultSizeSpec);
+                objParameter.Add($"@SizeSpec{rowSeq}", item.ResultSizeSpec ?? string.Empty);
                 objParameter.Add($"@OrderID{rowSeq}", measurement.OrderID);
-                objParameter.Add($"@OrderID", measurement.OrderID);
                 objParameter.Add($"@Article{rowSeq}", item.Article);
                 objParameter.Add($"@Location{rowSeq}", item.Location);
                 objParameter.Add($"@Line{rowSeq}", measurement.SewingLineID);
@@ -814,6 +813,7 @@ values(@OrderID{rowSeq},@Image{imgIdx})
 
 
             // 若沒填入SizeSpec，依然可填入RFT_Inspection_Measurement
+            objParameter.Add($"@OrderID", measurement.OrderID);
             if (measurement.ImageList != null && measurement.ImageList.Any())
             {
                 sqlcmd += $@"
@@ -1269,7 +1269,10 @@ VALUES
             string sqlUpdCmd = $@"
 update SampleRFTInspection
 set    RejectQty = @RejectQty
-      ,PassQty = SampleSize - @RejectQty
+
+      ,PassQty = IIF( AcceptableQualityLevelsUkey = 0 
+	                , OrderQty - @RejectQty    -- Stage = 100%
+	                , SampleSize - @RejectQty) -- Stage = AQL
 where   ID = @ID
 ";
             objParameter.Add("@ID", inspection.ID);
@@ -1656,12 +1659,22 @@ end
 
             string sqlUpdCmd = $@"
 update SampleRFTInspection
-set    Result = IIF( EXISTS(   
-                        select 1
-                        from SampleRFTInspection_Detail
-                        where SampleRFTInspectionUkey = @ID
-                        and Qty>0)
-                    ,'Fail' ,'Pass')
+set    Result = IIF( InspectionStage = '100%' , 
+                    (   IIF( EXISTS(   
+                                    select 1
+                                    from SampleRFTInspection_Detail
+                                    where SampleRFTInspectionUkey = @ID
+                                    and Qty>0)
+                        ,'Fail' ,'Pass')
+                    )
+                    ,(
+                        IIF(
+                            (select COUNT(1) from SampleRFTInspection_Detail WITH(NOLOCK) where Qty > 0 AND SampleRFTInspectionUkey = @ID) >= AcceptQty
+                        ,'Fail'
+                        ,'Pass'
+                        )
+                    )
+                )
     ,Status = 'Confirmed'
 where   ID = @ID
 ";

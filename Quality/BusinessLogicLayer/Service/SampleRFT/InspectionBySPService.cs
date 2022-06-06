@@ -368,6 +368,28 @@ namespace BusinessLogicLayer.Service.SampleRFT
 
         }
 
+        public List<MeasurementViewItem> GetMeasurementViewItem(string OrderID)
+        {
+            try
+            {
+                _Provider = new InspectionBySPProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                List<MeasurementViewItem> listMeasurementViewItem = _Provider.GetMeasurementViewItem(OrderID).ToList();
+                //SampleRFTInspection sampleRFTInspection = _Provider.Get_SampleRFTInspection(new InspectionBySP_ViewModel() { ID = inputID }).FirstOrDefault();
+
+                foreach (MeasurementViewItem measurementViewItem in listMeasurementViewItem)
+                {
+                    DataTable dtMeasurementData = _Provider.GetMeasurement(OrderID, measurementViewItem.Article, measurementViewItem.Size, measurementViewItem.ProductType);
+                    measurementViewItem.MeasurementDataByJson = JsonConvert.SerializeObject(dtMeasurementData);
+                }
+
+                return listMeasurementViewItem;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         public Measurement_ResultModel GetMeasurementImageList(string OrderID)
         {
             Measurement_ResultModel measurement_Result = new Measurement_ResultModel();
@@ -795,6 +817,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
 
             return model;
         }
+
 
         public InspectionBySP_Others OthersProcess(InspectionBySP_Others Req)
         {

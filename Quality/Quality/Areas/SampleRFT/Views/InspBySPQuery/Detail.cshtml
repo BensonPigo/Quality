@@ -225,12 +225,26 @@
                     <td class="valueColor" style="width:5%">@Model.sampleRFTInspection.PassQty</td>
 
                     <td style="width:7%">Inpection Result</td>
-                    <td class="valueColor" style="width:10%">@Model.sampleRFTInspection.Result</td>
+                    @{ 
+                        string resultColor = "black";
+                        if (Model.sampleRFTInspection.Result == "Pass")
+                        {
+                            resultColor = "blue";
+                        }
+                        else if (Model.sampleRFTInspection.Result == "Fail")
+                        {
+                            resultColor = "red";
+                        }
+                        }
+                    <td class="valueColor" style="width: 10%; color: @resultColor">@Model.sampleRFTInspection.Result</td>
                     <td style="width:7%">
 
                     </td>
                     <td style="width:7%">
-                        <button class="site-btn btn-blue" onclick="ClickDownload()">Download</button>
+                        @if (Model.sampleRFTInspection.SubmitDate != null && !string.IsNullOrEmpty(Model.sampleRFTInspection.Result))
+                        {
+                            <button class="site-btn btn-blue" onclick="ClickDownload()">Download</button>
+                        }
                     </td>
                 </tr>
                 <tr>
@@ -248,7 +262,10 @@
                     <td>Reject Qty(pcs)</td>
                     <td colspan="4" class="valueColor">@Model.sampleRFTInspection.RejectQty</td>
                     <td>
-                        <button type="button" onclick="SendMail()" class="site-btn btn-blue" style="margin-top:3px;">Send Mail</button>
+                        @if (Model.sampleRFTInspection.SubmitDate != null && !string.IsNullOrEmpty(Model.sampleRFTInspection.Result))
+                        {
+                            <button type="button" onclick="SendMail()" class="site-btn btn-blue" style="margin-top:3px;">Send Mail</button>
+                        }
                     </td>
                 </tr>
             </table>

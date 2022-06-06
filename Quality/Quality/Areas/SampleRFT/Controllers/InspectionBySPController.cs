@@ -339,6 +339,12 @@ namespace Quality.Areas.SampleRFT.Controllers
                 model.ErrorMessage = $@"msg.WithError(""{ex.Message}"");";
             }
 
+            if (TempData["MeasurementError"] != null)
+            {
+                string er = TempData["MeasurementError"].ToString();
+                model.ErrorMessage = $@"msg.WithError(""{er}"");";
+            }
+
             return View(model);
         }
 
@@ -389,6 +395,14 @@ namespace Quality.Areas.SampleRFT.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        [SessionAuthorize]
+        public ActionResult OpenView(string OrderID)
+        {
+            List<MeasurementViewItem> result = _Service.GetMeasurementViewItem(OrderID);
+
+            return Json(result);
+        }
 
         /// <summary>
         /// WebCam拍攝照片
@@ -563,10 +577,10 @@ namespace Quality.Areas.SampleRFT.Controllers
         {
             this.CheckSession();
 
-            if (Req.ListMeasurementItem != null && !Req.ListMeasurementItem.Where(o => o.ResultSizeSpec != null && o.ResultSizeSpec != "").Any())
-            {
-                return Json(true);
-            }
+            //if (Req.ListMeasurementItem != null && !Req.ListMeasurementItem.Where(o => o.ResultSizeSpec != null && o.ResultSizeSpec != "").Any())
+            //{
+            //    return Json(true);
+            //}
 
 
             // 取得DB現有的圖片
@@ -584,10 +598,10 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             Req.ImageList = model.Images.Select(o => o.Image).ToList();
 
-            if (Req.ListMeasurementItem != null && !Req.ListMeasurementItem.Where(o => o.ResultSizeSpec != null && o.ResultSizeSpec != "").Any() && Req.ImageList.Count == 0)
-            {
-                return Json(true);
-            }
+            //if (Req.ListMeasurementItem != null && !Req.ListMeasurementItem.Where(o => o.ResultSizeSpec != null && o.ResultSizeSpec != "").Any() && Req.ImageList.Count == 0)
+            //{
+            //    return Json(true);
+            //}
 
 
             InspectionBySP_Measurement result = _Service.InsertMeasurement(Req);
@@ -603,8 +617,6 @@ namespace Quality.Areas.SampleRFT.Controllers
         [SessionAuthorize]
         public ActionResult Measurement(InspectionBySP_Measurement Req, string goPage)
         {
-            this.CheckSession();
-
 
             if (goPage == "Back")
             {
@@ -615,6 +627,19 @@ namespace Quality.Areas.SampleRFT.Controllers
             }
             else if (goPage == "Next")
             {
+
+                List<MeasurementViewItem> result = _Service.GetMeasurementViewItem("Q");
+
+                if (!result.Any())
+                {
+                    Measurement_ResultModel model = _Service.GetMeasurementImageList(Req.OrderID);
+                    if (!model.Images.Any())
+                    {
+                        TempData["MeasurementError"] = "Measurement or Photo cannot be empty!";
+                        return RedirectToAction("Measurement", new { ID = Req.ID });
+                    }
+                }
+
                 Req.InspectionStep = "Insp-AddDefect";
                 _Service.UpdateSampleRFTInspectionByStep(Req, "Insp-Measurement", this.UserID);
 
@@ -909,6 +934,14 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             var DbImage = TmpAdd_DefectImg.Where(o => o.ImageUKey > 0).ToList();
             var NotDbImage = TmpAdd_DefectImg.Where(o => o.ImageUKey <= 0).ToList();
+
+            foreach (SampleRFTInspection_Summary item in addDefct.ListDefectItem)
+            {
+                if (item.Qty > 0 && string.IsNullOrEmpty(item.AreaCodes))
+                {
+                    item.Qty = 0;
+                }
+            }
 
             // Reject Qty > 0的數量代表有表身資料
             // 開始塞入圖片
@@ -1221,18 +1254,6 @@ namespace Quality.Areas.SampleRFT.Controllers
             Req.BAQty = latestModel.BAQty;
             Req.ID = latestModel.ID;
 
-            if (goPage == "Back")
-            {
-                // 進度更新
-                _Service.UpdateSampleRFTInspectionByStep(new SampleRFTInspection()
-                {
-                    ID = Req.ID,
-                    InspectionStep = "Insp-AddDefect"
-                }, "Insp-BA", this.UserID);
-                return RedirectToAction("AddDefect", new { ID = Req.ID });
-            }
-
-
             // 可以直接執行刪除的圖片
             var DeleteImg = TmpDelete_BAImg.Where(o => o.ImageUKey > 0).ToList();
 
@@ -1253,8 +1274,18 @@ namespace Quality.Areas.SampleRFT.Controllers
                 }
             }
 
-
             InspectionBySP_BA result = _Service.BAProcess(Req, DeleteImg);
+
+            if (goPage == "Back")
+            {
+                // 進度更新
+                _Service.UpdateSampleRFTInspectionByStep(new SampleRFTInspection()
+                {
+                    ID = Req.ID,
+                    InspectionStep = "Insp-AddDefect"
+                }, "Insp-BA", this.UserID);
+                return RedirectToAction("AddDefect", new { ID = Req.ID });
+            }
 
             if (!result.ExecuteResult)
             {

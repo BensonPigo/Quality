@@ -184,7 +184,7 @@
                     <td><label>Sample Stage: @Model.SampleStage</label></td>
                 </tr>
                 <tr>
-                    <td><label>Oqrder Qrt: @Model.OrderQty</label></td>
+                    <td><label>Order Qty: @Model.OrderQty</label></td>
                 </tr>
 
             </table>
@@ -216,39 +216,25 @@
                 <tr>
                     <td><label>Sample Plan Qty</label></td>
                     <td>
-                        @if (SampleQtyDisabled)
-                        {
-                            @Html.TextBoxFor(o => o.SampleSize, new { @type = "number", @min = "0", @class = "form-control center-block", @disabled = "disabled", @style = "width:49%;" })
-                        }
-                        else
-                        {
-                            @Html.TextBoxFor(o => o.SampleSize, new { @type = "number", @min = "0", @class = "form-control center-block", @style = "width:49%;" })
-                        }
+                        @Html.TextBoxFor(o => o.SampleSize, new { @type = "number", @min = "0", @class = "form-control center-block", @disabled = "disabled", @style = "width:49%;" })
                     </td>
                 </tr>
                 <tr>
                     <td><label>Accepted Qty</label></td>
                     <td>
-                        @if (SampleQtyDisabled)
-                        {
-                            @Html.TextBoxFor(o => o.AcceptQty, new { @type = "number", @style = "width:49%;", @min = "0", @class = "form-control center-block", @disabled = "disabled" })
-                        }
-                        else
-                        {
-                            @Html.TextBoxFor(o => o.AcceptQty, new { @type = "number", @style = "width:49%;", @min = "0", @class = "form-control center-block" })
-                        }
+                        @Html.TextBoxFor(o => o.AcceptQty, new { @type = "number", @style = "width:49%;", @min = "0", @class = "form-control center-block", @disabled = "disabled" })
                     </td>
                 </tr>
                 <tr>
-                    <td><label>Reject Qty</label></td>
+                    <td><label>Rejected Qty</label></td>
                     <td>
-                        @if (SampleQtyDisabled)
+                        @if (Model.InspectionStage != null && Model.InspectionStage == "100%")
                         {
-                            <input id="RejectQty" type="number" class="form-control center-block" min="0" value="@ViewData["RejectQty"]" style="width:49%;" disabled />
+                            <input id="RejectQty" type="number" class="form-control center-block" min="0" value="0" style="width:49%;" disabled />
                         }
                         else
                         {
-                            <input id="RejectQty" type="number" class="form-control center-block" min="0" value="@ViewData["RejectQty"]" style="width:49%;" />
+                            <input id="RejectQty" type="number" class="form-control center-block" min="0" value="@ViewData["RejectQty"]" style="width:49%;" disabled />
                         }
                     </td>
                 </tr>
@@ -335,9 +321,9 @@
                 $('#AcceptQty').val('');
                 $('#RejectQty').val('');
 
-                $('#SampleSize').prop('disabled', false);
-                $('#AcceptQty').prop('disabled', false);
-                $('#RejectQty').prop('disabled', false);
+                //$('#SampleSize').prop('disabled', true);
+                //$('#AcceptQty').prop('disabled', true);
+                //$('#RejectQty').prop('disabled', true);
             }
 
             if (value == 'AQL') {
@@ -346,9 +332,9 @@
                 $('#AcceptQty').val('');
                 $('#RejectQty').val('');
 
-                $('#SampleSize').prop('disabled', true);
-                $('#AcceptQty').prop('disabled', true);
-                $('#RejectQty').prop('disabled', true);
+                //$('#SampleSize').prop('disabled', true);
+                //$('#AcceptQty').prop('disabled', true);
+                //$('#RejectQty').prop('disabled', true);
             }
         }
 
@@ -362,6 +348,12 @@
 
             if ($("#InspectionStage").val() == "AQL" && $("#AQLPlan").val() == "" ) {
                 msg.WithError("＜AQL Plan＞ cannot be empty.");
+                return false;
+            }
+
+            var orderQty = parseInt( @Model.OrderQty);
+            if (parseInt($("#SampleSize").val()) > orderQty) {
+                msg.WithError("Sample Plan Qty cannot be greater than Order Qty.");
                 return false;
             }
 

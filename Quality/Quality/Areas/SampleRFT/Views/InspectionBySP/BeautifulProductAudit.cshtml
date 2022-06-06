@@ -85,7 +85,16 @@
 @section InspectionBySP_script
 {
     <script>
-    var msg = new MessagerAlert();
+        var msg = new MessagerAlert();
+
+        $(function () {
+
+            $("#BAQty").change(function () {
+                if ($(this).val() == '') {
+                    $(this).val(0);
+                }
+            });
+        });
 
         function QtyCheck(value, Max) {
             if (parseFloat(value) >= Max) {

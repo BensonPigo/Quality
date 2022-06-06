@@ -94,6 +94,7 @@
     <div class="DownRightWhiteBackgrond">
         <div style="border:0px;padding:2vh;">
             <h1 style="font-size: 3vh; font-weight: 900; color: #999999 ">Measurement</h1>
+            <button type="button" class="site-btn btn-blue" style="position:absolute;top:1em;right:17.2em" onclick="open_View();">View</button>
             <button type="button" class="site-btn btn-blue" style="position:absolute;top:1em;right:8.6em" onclick="OpenPhoto();">Photo</button>
             <button type="button" class="site-btn btn-blue" id="Save" style="position:absolute;top:1em;right:0">Save</button>
 
@@ -155,6 +156,7 @@
     </div>
 
     @Html.HiddenFor(o => o.ID)
+    @Html.HiddenFor(o => o.OrderID)
 }
 
 
@@ -243,9 +245,9 @@
 
     function open_View() {
         $.ajax({
-            url: "@Url.Action("OpenView", new { Area = "FinalInspection" })",
+            url: "@Url.Action("OpenView")",
             type: 'POST',
-            data: jQuery.param({ FinalInspectionID: "@Model.ID" }),
+            data: jQuery.param({ OrderID: "@Model.OrderID" }),
             async: true,
             success: function (data) {
                 var articleOption = "", sizeOption = "", productTypeOption = "";
@@ -521,6 +523,8 @@
 
 
     $(document).ready(function () {
+        @Html.Raw(Model.ErrorMessage)
+
         $("#dropSize").on("change", function () {
 
             ReloadData();
@@ -688,7 +692,7 @@
             <th style="width:10vw"><p>Tol(+)</p></th>
             <th style="width:10vw"><p>Tol(-)</p></th>
             <th style="width:10vw"><p idx='SizeCode'>${dropSize.value}</p></th>
-            <th style="width:28vw"></th>
+            <th style="width:28vw"><button type="button" class="site-btn btn-blue" style="font-size:1rem;width:70%;" onclick="InputClear();">Clear</button></th>
             <th style="width:10vw"><p>Diff</p></th>
             </tr>`;
         }
@@ -832,6 +836,14 @@
                 }
             }
 
+        });
+    }
+
+    function InputClear() {
+        var cols = $(`input[idx=ResultSizeSpec]`);
+
+        $.each(cols, function () {
+            $(this).val('').change();
         });
     }
 

@@ -66,9 +66,9 @@
 @Html.Partial("~/Areas/SampleRFT/Views/Shared/_SampleRFTInspection_Layout.cshtml")
 <div class="DownWhiteBackgrond" style="display: inline-block;">
 
-    @using (Html.BeginForm("Others", "InspectionBySP", FormMethod.Post, new { @id = "settingForm", onsubmit = "return checkSubmitValue(this.submitted);" }))
+    @using (Html.BeginForm("Others", "InspectionBySP", FormMethod.Post, new { @id = "form"}))
     {
-        @Html.HiddenFor(o=>o.ID)
+        @Html.HiddenFor(o => o.ID)
         <div style="width:100%;height:6vh;padding-top:5px;">
             <table>
                 <tr>
@@ -117,8 +117,8 @@
 
         <div style="width:100%">
             <input type="hidden" id="goPage" name="goPage">
-            <button id="btnBack" onclick="this.form.submitted=this.value;" type="submit" value="Back" class="button" style="right:7em;">Back</button>
-            <button d="btnSubmit" onclick="this.form.submitted=this.value;" type="submit" value="Submit" style="right: 0; padding: 12px 25px" class="button">Submit</button>
+            <button id="btnBack" onclick="this.form.submitted=this.value;" type="button" value="Back" class="button" style="right:7em;">Back</button>
+            <button id="btnSubmit" onclick="this.form.submitted=this.value;" type="button" value="Submit" style="right: 0; padding: 12px 25px" class="button">Submit</button>
         </div>
 
     }
@@ -143,14 +143,26 @@
                 initComplete: function () {
                 }
             });
+
+            $("#btnBack").click(function () {
+                ShowLoading();
+                document.getElementById("goPage").value = "Back";
+                $("#form").submit();
+            });
+
+            $("#btnSubmit").click(function () {
+
+                msg.WithConfirm('Sure to submit?', function () {
+                    ShowLoading();
+                    document.getElementById("goPage").value = "Submit";
+                    $("#form").submit();
+
+                }, function () {
+
+
+                });
+            });
         });
 
-        function checkSubmitValue(self) {
-            document.getElementById("goPage").value = self;
-
-            ShowLoading();
-
-            return true;
-        }
     </script>
 }

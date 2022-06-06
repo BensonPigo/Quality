@@ -181,6 +181,8 @@
 
         $(function () {
 
+            @Html.Raw(Model.ErrorMessage)
+
             table = $('#CheckListTable').DataTable({
                 data: adata,
                 autoWidth: false,
@@ -253,6 +255,13 @@
                 width: "70%",
 
             });
+
+
+            $("#RejectQty").change(function () {
+                if ($(this).val() == '') {
+                    $(this).val(0);
+                }
+            });
         });
 
         function format(d) {
@@ -283,12 +292,12 @@
     <input type='hidden' id='addDefct.ListDefectItem[${RowIndex}].RowIndex' name='addDefct.ListDefectItem[${RowIndex}].RowIndex' value='${RowIndex}'>
     <input type='hidden' id='addDefct.ListDefectItem[${RowIndex}].GarmentDefectCodeID' name='addDefct.ListDefectItem[${RowIndex}].GarmentDefectCodeID' value='${value[4]}'>
     <input type='hidden' id='addDefct.ListDefectItem[${RowIndex}].GarmentDefectTypeID' name='addDefct.ListDefectItem[${RowIndex}].GarmentDefectTypeID' value='${value[5]}'>
-    <input type='number' id='addDefct.ListDefectItem[${RowIndex}].Qty' onchange='QtyChange("${value[5]}",${RowIndex},this)' name='addDefct.ListDefectItem[${RowIndex}].Qty'  min="0" style="width: 7vh" value='${Qty}' /></td>
+    <input type='number' id='addDefct.ListDefectItem[${RowIndex}].Qty' inputCol="true" onchange='QtyChange("${value[5]}",${index},this)' name='addDefct.ListDefectItem[${RowIndex}].Qty'  min="0" style="width: 7vh" value='${Qty}' /></td>
     <td> <img src="/Image/Icon/Camera.png" style="cursor: pointer;min-width:1.5vw;" onclick="ScreenShot(${UKey},${RowIndex},'${GarmentDefectCodeID}')"  /></td>
-    
-    <td style = 'width:40%' > <input type='text' name='addDefct.ListDefectItem[${RowIndex}].AreaCodes' onchange='AreaChange("${value[5]}",${RowIndex},this)' style="width:100%;" onclick="OpenArea('addDefct.ListDefectItem[${RowIndex}]')" readonly value='${AreaCodes}' /></td>
+
+    <td style = 'width:40%' > <input type='text' name='addDefct.ListDefectItem[${RowIndex}].AreaCodes' inputCol="true" onchange='AreaChange("${value[5]}",${index},this)' style="width:100%;" onclick="OpenArea('addDefct.ListDefectItem[${RowIndex}]')" readonly value='${AreaCodes}' /></td>
     <td>
-        <select id='addDefct.ListDefectItem[${RowIndex}].Responsibility' onchange='ResponsibilityChange("${value[5]}",${RowIndex},this)' name='addDefct.ListDefectItem[${RowIndex}].Responsibility'>
+        <select id='addDefct.ListDefectItem[${RowIndex}].Responsibility' onchange='ResponsibilityChange("${value[5]}",${index},this)' name='addDefct.ListDefectItem[${RowIndex}].Responsibility'>
            <option value="MR" ${opt1Select} >MR</option>
            <option value="Sub-corn" ${opt2Select} >Sub-corn</option>
            <option value="Materials" ${opt3Select} >Materials</option>
@@ -441,6 +450,21 @@
                 }
             });
 
+            var areacodess = $(`input[name$='AreaCodes'][inputCol=true]`);
+            var detailQty = $(`input[name$='Qty'][inputCol=true]`);
+
+            var index = 0;
+
+
+            for (const element of detailQty) {
+                if ($($(`input[name$='Qty'][inputCol=true]`)[index]).val() != 0 && $($(`input[name$='AreaCodes'][inputCol=true]`)[index]).val() == '') {
+                    msg.WithError('Defect Area Cannot be empty');
+                    NonLoading();
+                    return false;
+                }
+                index++;
+            }
+
             return true;
     }
 
@@ -448,7 +472,7 @@
         function ScreenShot(DetailUkey, RowIndex, DefectCodeID) {
                 window.open('@Url.Action("AddDefectPicture")?ID=@Model.ID&GarmentDefectCodeID=' + DefectCodeID + '&SampleRFTInspection_DetailUKey=' + DetailUkey, "Picture", config = 'toolbar=no,status=no,location=no,width=1500,height=1000');
             }
-        
+
 
 
 
