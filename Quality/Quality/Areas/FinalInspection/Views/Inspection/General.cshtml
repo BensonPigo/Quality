@@ -34,6 +34,11 @@
         transform: translate(-50%, -50%);
         left: 50%;
     }
+
+    .tip {
+        font-size: 20px;
+        color: red;
+    }
 </style>
 
 @model DatabaseObject.ManufacturingExecutionDB.FinalInspection
@@ -48,8 +53,9 @@
                     <div><label class="checkboxlabel" for="SelectAll" style="color:red">Select All</label></div>
                 </td>
                 <td class="secTD">
-                    <input type="checkbox" ID="SelectAll"/>
+                    <input type="checkbox" ID="SelectAll" />
                 </td>
+                <td></td>
             </tr>
             <tr>
                 <td class="fistTD">
@@ -57,8 +63,9 @@
                 </td>
                 <td class="secTD">
                     @*@Html.CheckBox("FabricApprovalDoc")*@
-                    @Html.CheckBoxFor(o => o.FabricApprovalDoc , new { @class="notSelectAll"})
+                    @Html.CheckBoxFor(o => o.FabricApprovalDoc, new { @class = "notSelectAll" })
                 </td>
+                <td></td>
             </tr>
             <tr>
                 <td class="fistTD">
@@ -68,6 +75,7 @@
                     @*@Html.CheckBox("SealingSampleDoc")*@
                     @Html.CheckBoxFor(o => o.SealingSampleDoc, new { @class = "notSelectAll" })
                 </td>
+                <td></td>
             </tr>
             <tr>
                 <td class="fistTD">
@@ -77,15 +85,29 @@
                     @*@Html.CheckBox("MetalDetectionDoc")*@
                     @Html.CheckBoxFor(o => o.MetalDetectionDoc, new { @class = "notSelectAll" })
                 </td>
-
+                <td></td>
             </tr>
             <tr>
                 <td class="fistTD">
-                    <div><label class="checkboxlabel" for="GarmentWashingDoc">Garment Washing Test</label></div>
+                    <div><label class="checkboxlabel" for="GarmentWashingDoc">Garment Washing Test (FGWT)</label></div>
                 </td>
                 <td class="secTD">
                     @*@Html.CheckBox("GarmentWashingDoc")*@
                     @Html.CheckBoxFor(o => o.GarmentWashingDoc, new { @class = "notSelectAll" })
+                </td>
+                <td>
+                    <label class="tip">@Model.FGWT</label>
+                </td>
+            </tr>
+            <tr>
+                <td class="fistTD">
+                    <div><label class="checkboxlabel" for="CheckFGPT">FGPT</label></div>
+                </td>
+                <td class="secTD">
+                    @Html.CheckBoxFor(o => o.CheckFGPT, new { @class = "notSelectAll" })
+                </td>
+                <td>
+                    <label class="tip">@Model.FGPT</label>
                 </td>
             </tr>
         </table>
@@ -135,7 +157,7 @@
 
                 if ('@stage' == "Inline" || '@stage' == "Stagger") {
 
-                    if ($("#FabricApprovalDoc").prop("checked") == false || $("#SealingSampleDoc").prop("checked") == false || $("#GarmentWashingDoc").prop("checked") == false)
+                    if ($("#FabricApprovalDoc").prop("checked") == false || $("#SealingSampleDoc").prop("checked") == false || $("#GarmentWashingDoc").prop("checked") == false || $("#CheckFGPT").prop("checked") == false)
                     {
                         msg.WithError('These items must be selected before go to next step.');
                         return false;

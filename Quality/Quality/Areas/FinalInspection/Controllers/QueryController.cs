@@ -150,46 +150,47 @@ namespace Quality.Areas.FinalInspection.Controllers
             worksheet.Cells[13, 3] = "Sealing Sample: " + (model.FinalInspection.SealingSampleDoc ? "Y" : "N");
             worksheet.Cells[13, 5] = "Metal Detection: " + (model.FinalInspection.MetalDetectionDoc ? "Y" : "N");
             worksheet.Cells[13, 7] = "Garment Washing Test: " + (model.FinalInspection.GarmentWashingDoc ? "Y" : "N");
+            worksheet.Cells[14, 1] = "FGPT: " + (model.FinalInspection.CheckFGPT ? "Y" : "N");
             #endregion
 
             #region Check List
             // Fabric Artwork Check List
-            worksheet.Cells[16, 1] = "Close/ Shade: " + (model.FinalInspection.CheckCloseShade ? "Y" : "N");
-            worksheet.Cells[16, 3] = "Handfeel: " + (model.FinalInspection.CheckHandfeel ? "Y" : "N");
-            worksheet.Cells[16, 5] = "Appearance: " + (model.FinalInspection.CheckAppearance ? "Y" : "N");
-            worksheet.Cells[16, 7] = "Print/ Emb Decorations: " + (model.FinalInspection.CheckPrintEmbDecorations ? "Y" : "N");
+            worksheet.Cells[17, 1] = "Close/ Shade: " + (model.FinalInspection.CheckCloseShade ? "Y" : "N");
+            worksheet.Cells[17, 3] = "Handfeel: " + (model.FinalInspection.CheckHandfeel ? "Y" : "N");
+            worksheet.Cells[17, 5] = "Appearance: " + (model.FinalInspection.CheckAppearance ? "Y" : "N");
+            worksheet.Cells[17, 7] = "Print/ Emb Decorations: " + (model.FinalInspection.CheckPrintEmbDecorations ? "Y" : "N");
 
             // Label
-            worksheet.Cells[18, 1] = "Fiber Content: " + (model.FinalInspection.CheckFiberContent ? "Y" : "N");
-            worksheet.Cells[18, 3] = "Care Instructions: " + (model.FinalInspection.CheckCareInstructions ? "Y" : "N");
-            worksheet.Cells[18, 5] = "Decorative Label: " + (model.FinalInspection.CheckDecorativeLabel ? "Y" : "N");
-            worksheet.Cells[18, 7] = "Adicom Label: " + (model.FinalInspection.CheckAdicomLabel ? "Y" : "N");
-            worksheet.Cells[19, 1] = "Country of Origion: " + (model.FinalInspection.CheckCountryofOrigion ? "Y" : "N");
-            worksheet.Cells[19, 3] = "Size Key: " + (model.FinalInspection.CheckSizeKey ? "Y" : "N");
-            worksheet.Cells[19, 5] = "8-Flag Label: " + (model.FinalInspection.Check8FlagLabel ? "Y" : "N");
-            worksheet.Cells[19, 7] = "Additional Label: " + (model.FinalInspection.CheckAdditionalLabel ? "Y" : "N");
+            worksheet.Cells[19, 1] = "Fiber Content: " + (model.FinalInspection.CheckFiberContent ? "Y" : "N");
+            worksheet.Cells[19, 3] = "Care Instructions: " + (model.FinalInspection.CheckCareInstructions ? "Y" : "N");
+            worksheet.Cells[19, 5] = "Decorative Label: " + (model.FinalInspection.CheckDecorativeLabel ? "Y" : "N");
+            worksheet.Cells[19, 7] = "Adicom Label: " + (model.FinalInspection.CheckAdicomLabel ? "Y" : "N");
+            worksheet.Cells[20, 1] = "Country of Origion: " + (model.FinalInspection.CheckCountryofOrigion ? "Y" : "N");
+            worksheet.Cells[20, 3] = "Size Key: " + (model.FinalInspection.CheckSizeKey ? "Y" : "N");
+            worksheet.Cells[20, 5] = "8-Flag Label: " + (model.FinalInspection.Check8FlagLabel ? "Y" : "N");
+            worksheet.Cells[20, 7] = "Additional Label: " + (model.FinalInspection.CheckAdditionalLabel ? "Y" : "N");
 
             // Packaging
-            worksheet.Cells[21, 1] = "Shipping Mark: " + (model.FinalInspection.CheckShippingMark ? "Y" : "N");
-            worksheet.Cells[21, 3] = "Polybag/ Marketing: " + (model.FinalInspection.CheckPolytagMarketing ? "Y" : "N");
-            worksheet.Cells[21, 5] = "Color/ Size/ Qty: " + (model.FinalInspection.CheckColorSizeQty ? "Y" : "N");
-            worksheet.Cells[21, 7] = "Hangtag: " + (model.FinalInspection.CheckHangtag ? "Y" : "N");
+            worksheet.Cells[22, 1] = "Shipping Mark: " + (model.FinalInspection.CheckShippingMark ? "Y" : "N");
+            worksheet.Cells[22, 3] = "Polybag/ Marketing: " + (model.FinalInspection.CheckPolytagMarketing ? "Y" : "N");
+            worksheet.Cells[22, 5] = "Color/ Size/ Qty: " + (model.FinalInspection.CheckColorSizeQty ? "Y" : "N");
+            worksheet.Cells[22, 7] = "Hangtag: " + (model.FinalInspection.CheckHangtag ? "Y" : "N");
             #endregion
 
             #region Others
-            worksheet.Cells[44, 3] = model.FinalInspection.ProductionStatus.HasValue ? (double)model.FinalInspection.ProductionStatus * 0.01 : 0;
-            worksheet.Cells[45, 3] = model.FinalInspection.OthersRemark;
+            worksheet.Cells[45, 3] = model.FinalInspection.ProductionStatus.HasValue ? (double)model.FinalInspection.ProductionStatus * 0.01 : 0;
+            worksheet.Cells[46, 3] = model.FinalInspection.OthersRemark;
             #endregion
 
             #region Result
-            worksheet.Cells[48, 3] = model.FinalInspection.CFA;
-            worksheet.Cells[48, 7] = (double)(model.FinalInspection.PassQty.HasValue ? model.FinalInspection.PassQty : 0);
+            worksheet.Cells[49, 3] = model.FinalInspection.CFA;
+            worksheet.Cells[49, 7] = (double)(model.FinalInspection.PassQty.HasValue ? model.FinalInspection.PassQty : 0);
 
-            worksheet.Cells[49, 3] = model.FinalInspection.SubmitDate.HasValue ? ((DateTime)model.FinalInspection.SubmitDate).ToString("yyyy/MM/dd") : string.Empty;
-            worksheet.Cells[49, 7] = (double)(model.FinalInspection.RejectQty.HasValue ? model.FinalInspection.RejectQty : 0);
+            worksheet.Cells[50, 3] = model.FinalInspection.SubmitDate.HasValue ? ((DateTime)model.FinalInspection.SubmitDate).ToString("yyyy/MM/dd") : string.Empty;
+            worksheet.Cells[50, 7] = (double)(model.FinalInspection.RejectQty.HasValue ? model.FinalInspection.RejectQty : 0);
 
-            worksheet.Cells[50, 3] = model.FinalInspection.InspectionResult;
-            worksheet.Cells[51, 3] = model.FinalInspection.ShipmentStatus;
+            worksheet.Cells[51, 3] = model.FinalInspection.InspectionResult;
+            worksheet.Cells[52, 3] = model.FinalInspection.ShipmentStatus;
             #endregion
 
             #region Measurement 依資料增加
@@ -201,24 +202,24 @@ namespace Quality.Areas.FinalInspection.Controllers
             {
                 for (int i = 0; i < 4; i++)
                 {
-                    worksheet.Rows[39].Delete(XlDeleteShiftDirection.xlShiftUp);
+                    worksheet.Rows[40].Delete(XlDeleteShiftDirection.xlShiftUp);
                 }
             }
             else
             {
                 var groupList = MeasurementList.GroupBy(g => new { g.Time, g.Article, g.SizeCode, g.Location }).ToList();
                 int copyCount = groupList.Count();
-                Range rngToCopy = worksheet.get_Range("A39:A42").EntireRow; // 選取要被複製的資料
+                Range rngToCopy = worksheet.get_Range("A40:A43").EntireRow; // 選取要被複製的資料
                 for (int i = 1; i < copyCount; i++)
                 {
-                    Excel.Range rngToInsert = worksheet.get_Range("A39", Type.Missing).EntireRow; // 選擇要被貼上的位置
+                    Excel.Range rngToInsert = worksheet.get_Range("A40", Type.Missing).EntireRow; // 選擇要被貼上的位置
                     rngToInsert.Insert(Excel.XlInsertShiftDirection.xlShiftDown, rngToCopy.Copy(Type.Missing)); // 貼上
                 }
 
-                // 開始列39，預設4列
+                // 開始列40，預設4列
                 for (int i = copyCount - 1; i >= 0; i--)
                 {
-                    int row = i * 4 + 39;
+                    int row = i * 4 + 40;
                     string time = groupList[i].Select(s => s.Time).First();
                     string article = groupList[i].Select(s => s.Article).First();
                     string sizeCode = groupList[i].Select(s => s.SizeCode).First();
@@ -255,23 +256,23 @@ namespace Quality.Areas.FinalInspection.Controllers
             {
                 for (int i = 0; i < 8; i++)
                 {
-                    worksheet.Rows[30].Delete(XlDeleteShiftDirection.xlShiftUp);
+                    worksheet.Rows[31].Delete(XlDeleteShiftDirection.xlShiftUp);
                 }
             }
             else
             {
                 int copyCount = model.ListViewMoistureResult.Count();
-                Range rngToCopy = worksheet.get_Range("A30:A37").EntireRow; // 選取要被複製的資料
+                Range rngToCopy = worksheet.get_Range("A31:A38").EntireRow; // 選取要被複製的資料
                 for (int i = 1; i < copyCount; i++)
                 {
-                    Excel.Range rngToInsert = worksheet.get_Range("A30", Type.Missing).EntireRow; // 選擇要被貼上的位置
+                    Excel.Range rngToInsert = worksheet.get_Range("A31", Type.Missing).EntireRow; // 選擇要被貼上的位置
                     rngToInsert.Insert(Excel.XlInsertShiftDirection.xlShiftDown, rngToCopy.Copy(Type.Missing)); // 貼上
                 }
 
-                // 開始列 30，預設 8 列
+                // 開始列 31，預設 8 列
                 for (int i = 0; i < copyCount; i++)
                 {
-                    int row = i * 8 + 30;
+                    int row = i * 8 + 31;
                     worksheet.Cells[row, 1] = $"Article: {model.ListViewMoistureResult[i].Article}, CTN: {model.ListViewMoistureResult[i].CTNNo}";
                     worksheet.Cells[row + 1, 3] = model.ListViewMoistureResult[i].Instrument;
                     worksheet.Cells[row + 1, 6] = model.ListViewMoistureResult[i].Fabrication;
@@ -296,23 +297,23 @@ namespace Quality.Areas.FinalInspection.Controllers
             {
                 for (int i = 0; i < 3; i++)
                 {
-                    worksheet.Rows[26].Delete(XlDeleteShiftDirection.xlShiftUp);
+                    worksheet.Rows[27].Delete(XlDeleteShiftDirection.xlShiftUp);
                 }
             }
             else
             {
-                worksheet.Cells[26, 1] = $"Beautiful Product Qty: {model.FinalInspection.BAQty}";
+                worksheet.Cells[27, 1] = $"Beautiful Product Qty: {model.FinalInspection.BAQty}";
                 int copyCount = model.ListBACriteriaItem.Count;
-                Range rngToCopy = worksheet.get_Range("A28").EntireRow; // 選取要被複製的資料
+                Range rngToCopy = worksheet.get_Range("A29").EntireRow; // 選取要被複製的資料
                 for (int i = 1; i < copyCount; i++)
                 {
-                    Excel.Range rngToInsert = worksheet.get_Range("A28", Type.Missing).EntireRow; // 選擇要被貼上的位置
+                    Excel.Range rngToInsert = worksheet.get_Range("A29", Type.Missing).EntireRow; // 選擇要被貼上的位置
                     rngToInsert.Insert(Excel.XlInsertShiftDirection.xlShiftDown, rngToCopy.Copy(Type.Missing)); // 貼上
                 }
 
                 for (int i = 0; i < copyCount; i++)
                 {
-                    int row = i + 28;
+                    int row = i + 29;
                     worksheet.Cells[row, 1] = model.ListBACriteriaItem[i].BACriteria + ": " + model.ListBACriteriaItem[i].BACriteriaDesc;
                     worksheet.Cells[row, 9] = model.ListBACriteriaItem[i].Qty;
                 }
@@ -323,22 +324,22 @@ namespace Quality.Areas.FinalInspection.Controllers
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    worksheet.Rows[23].Delete(XlDeleteShiftDirection.xlShiftUp);
+                    worksheet.Rows[24].Delete(XlDeleteShiftDirection.xlShiftUp);
                 }
             }
             else
             {
                 int copyCount = model.ListDefectItem.Count;
-                Range rngToCopy = worksheet.get_Range("A24").EntireRow; // 選取要被複製的資料
+                Range rngToCopy = worksheet.get_Range("A25").EntireRow; // 選取要被複製的資料
                 for (int i = 1; i < copyCount; i++)
                 {
-                    Excel.Range rngToInsert = worksheet.get_Range("A24", Type.Missing).EntireRow; // 選擇要被貼上的位置
+                    Excel.Range rngToInsert = worksheet.get_Range("A25", Type.Missing).EntireRow; // 選擇要被貼上的位置
                     rngToInsert.Insert(Excel.XlInsertShiftDirection.xlShiftDown, rngToCopy.Copy(Type.Missing)); // 貼上
                 }
 
                 for (int i = 0; i < copyCount; i++)
                 {
-                    int row = i + 24;
+                    int row = i + 25;
                     worksheet.Cells[row, 1] = model.ListDefectItem[i].DefectType;
                     worksheet.Cells[row, 3] = model.ListDefectItem[i].DefectCode;
                     worksheet.Cells[row, 9] = model.ListDefectItem[i].Qty;
