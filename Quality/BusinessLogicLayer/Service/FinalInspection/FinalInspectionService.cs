@@ -125,6 +125,7 @@ namespace BusinessLogicLayer.Service
             DataRow drStyleInfo = resultPivot88.Tables[3].Rows[0];
             DataTable dtDefectsDetail = resultPivot88.Tables[4];
             DataTable dtDefectsDetailImage = resultPivot88.Tables[5];
+            DataTable dtOtherImage = resultPivot88.Tables[6];
 
             List<object> sections = new List<object>();
 
@@ -212,7 +213,9 @@ namespace BusinessLogicLayer.Service
                 defects,
             });
 
-            sections.Add(
+            if (dtOtherImage.Rows.Count == 0)
+            {
+                sections.Add(
                 new
                 {
                     type = "pictures",
@@ -220,6 +223,26 @@ namespace BusinessLogicLayer.Service
                     pictures = new List<object>(),
                 }
                 );
+            }
+            else
+            {
+                sections.Add(
+                    new
+                    {
+                        type = "pictures",
+                        title = "photos",
+                        pictures = dtOtherImage.AsEnumerable()
+                        .Select(s => new
+                        {
+                            title = s["title"],
+                            full_filename = s["full_filename"],
+                            number = s["number"],
+                            comment = s["comment"],
+                        }),
+                    }
+                    );
+            }
+
 
             List<object> assignment_items = listSku_number.Select(
                 sku_number => new
@@ -249,7 +272,7 @@ namespace BusinessLogicLayer.Service
                     },
                     po_line = new
                     {
-                        qty = drFinalInspection["POQty"],
+                        qty = sku_number.qty_to_inspect,
                         etd = drFinalInspection["ETD_ETA"],
                         eta = drFinalInspection["ETD_ETA"],
                         color = dtColor.Rows.Count > 0 ? dtColor.AsEnumerable().Select(s => s["ColorID"].ToString()).JoinToString(";") : string.Empty,
@@ -483,11 +506,11 @@ namespace BusinessLogicLayer.Service
                 },
                 new {
                     title = "minimum_of_2_pcs_per_size_must_be_measured_in_line_with_adidas_inspection_sop",
-                    value = drFinalInspection.Field<bool>("MeasurementResult") ? "Confirm" : "N/A",
+                    value = "Confirm",
                     type = "check-list",
                     subsection = "validation_and_checklist",
                     checkListSubsection = "measurements",
-                    status = drFinalInspection.Field<bool>("MeasurementResult") ? "pass" : "na",
+                    status = "pass",
                     comment = "",
                 },
             };
@@ -656,7 +679,7 @@ namespace BusinessLogicLayer.Service
                     conclusion_remarks = "no comment",
                     assignment = new
                     {
-                        report_type = new { id = inspectionType == "InlineInspection" ? 42 : 43 } ,
+                        report_type = new { id = inspectionType == "InlineInspection" ? 42 : 43 },
                         inspector = new { username = drInspection["username"] },
                         date_inspection = drInspection["FirstInspectionDate"],
                         inspection_level = "100%inspection",
@@ -753,7 +776,7 @@ namespace BusinessLogicLayer.Service
                     postBody = pivotTransferRequest.InspectionType == "FinalInspection" ?
                     JsonConvert.SerializeObject(GetPivot88Json(inspectionID)) :
                     JsonConvert.SerializeObject(GetEndInlinePivot88Json(inspectionID, pivotTransferRequest.InspectionType));
-                    
+
                     WebApiBaseResult webApiBaseResult = WebApiTool.WebApiSend(pivotTransferRequest.BaseUri, requestUri, postBody, HttpMethod.Put, headers: pivotTransferRequest.Headers);
 
                     switch (webApiBaseResult.webApiResponseStatus)
@@ -853,7 +876,7 @@ namespace BusinessLogicLayer.Service
                     errorMsg = ex.ToString();
                 }
 
-                if (isSuccess)
+                if (!isSuccess)
                 {
                     AutomationErrMsg automationErrMsg = new AutomationErrMsg();
                     automationErrMsg.suppID = StaticPivot88.SuppID;

@@ -484,6 +484,10 @@ where   a.FinalInspection_DetailUkey = @FinalInspection_DetailUkey
     from SciPMSFile_FinalInspection_DetailImage fdi with (nolock)
     left join FinalInspection_Detail fd with (nolock) on fd.Ukey = fdi.FinalInspection_DetailUkey
     where   fdi.ID = @FinalInspectionID
+    union all
+    select  [ImageName] =  CONCAT(fdi.ID, '_', fdi.Ukey, '.png'), Image
+    from SciPMSFile_FinalInspection_OtherImage fdi with (nolock)
+    where   fdi.ID = @FinalInspectionID
 ";
 
             DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, objParameter);
@@ -1753,6 +1757,14 @@ select  [title] =  CONCAT(fdi.ID, '_', isnull(fd.GarmentDefectCodeID, ''), '_', 
 from SciPMSFile_FinalInspection_DetailImage fdi with (nolock)
 inner join FinalInspection_Detail fd with (nolock) on fd.Ukey = fdi.FinalInspection_DetailUkey
 where   fdi.ID = @ID
+
+select  [title] =  CONCAT(fdi.ID, '_', fdi.Ukey),
+        [full_filename] =  CONCAT(fdi.ID, '_', fdi.Ukey, '.png'),
+        [number] = ROW_NUMBER() OVER (ORDER BY fdi.Ukey),
+        [comment] = isnull(fdi.Remark, '')
+from SciPMSFile_FinalInspection_OtherImage fdi with (nolock)
+where   fdi.ID = @ID
+order by fdi.Ukey
 
 
 drop table #tmpStyleInfo
