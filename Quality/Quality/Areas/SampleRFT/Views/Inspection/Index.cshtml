@@ -1519,7 +1519,12 @@
                         $('#SelectItemBackground, #AddDefect').removeClass('display-None').unbind('click');
                     }
                     else {
-                        msg.WithError(data.ErrMsg);
+                        if (data.ErrMsg != undefined) {
+                            msg.WithError(data.ErrMsg);
+                        }
+                        else {
+                            msg.WithError('Web timeout, please login again.');
+                        }
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
@@ -2177,7 +2182,13 @@
                     $('#txtPrint').val("");
                     $('#txtShade').val("");
                     $('#txtDispose').val("");
-                    msg.WithError(data.ErrMsg);
+
+                    if (data.ErrMsg != undefined) {
+                        msg.WithError(data.ErrMsg);
+                    }
+                    else {
+                        msg.WithError('Web timeout, please login again.');
+                    }
                 }
                 else {
                     $('#txtStyle').val(data.StyleID);
@@ -2514,7 +2525,12 @@
                     });
                 }
                 else {
-                    msg.WithError(data.ErrMsg);
+                    if (data.ErrMsg != undefined) {
+                        msg.WithError(data.ErrMsg);
+                    }
+                    else {
+                        msg.WithError('Web timeout, please login again.');
+                    }
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {
@@ -2801,7 +2817,12 @@
                     msg.WithSuccess("Success");
                 }
                 else {
-                    msg.WithError(data.ErrMsg);
+                    if (data.ErrMsg != undefined) {
+                        msg.WithError(data.ErrMsg);
+                    }
+                    else {
+                        msg.WithError('Web timeout, please login again.');
+                    }
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {
@@ -2943,7 +2964,12 @@
             async: true,
             success: function (data) {
                 if (!data.Result) {
-                    msg.WithError(data.ErrMsg);
+                    if (data.ErrMsg != undefined) {
+                        msg.WithError(data.ErrMsg);
+                    }
+                    else {
+                        msg.WithError('Web timeout, please login again.');
+                    }
                 }
                 else {
                     msg.WithSuccesCheck("Success", function () {
@@ -2966,7 +2992,12 @@
             async: true,
             success: function (data) {
                 if (!data.Result) {
-                    msg.WithError(data.ErrMsg);
+                    if (data.ErrMsg != undefined) {
+                        msg.WithError(data.ErrMsg);
+                    }
+                    else {
+                        msg.WithError('Web timeout, please login again.');
+                    }
                 }
                 else {
                     msg.WithSuccesCheck("Success", function () {
@@ -3001,7 +3032,12 @@
             async: true,
             success: function (data) {
                 if (!data.Result) {
-                    msg.WithError(data.ErrMsg);
+                    if (data.ErrMsg != undefined) {
+                        msg.WithError(data.ErrMsg);
+                    }
+                    else {
+                        msg.WithError('Web timeout, please login again.');
+                    }
                 }
                 else {
                     msg.WithSuccesCheck("Success", function () {
@@ -3329,7 +3365,12 @@
             async: false,
             success: function (data) {
                 if (!data.Result) {
-                    msg.WithError(data.ErrMsg);
+                    if (data.ErrMsg != undefined) {
+                        msg.WithError(data.ErrMsg);
+                    }
+                    else {
+                        msg.WithError('Web timeout, please login again.');
+                    }
                 }
                 else {
                     $('#MeasurementImage').val('');
@@ -3384,7 +3425,7 @@
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({ duringDummyFitting : datasDetail }),
             async: false,
-            success: function (data) {
+            success: function (data, textStatus, xhr) {
                 if (data.Result) {
                     if (SendMail) {
                         CFTCommentsSendMail(SP);
@@ -3395,7 +3436,12 @@
                     }
                 }
                 else {
-                    msg.WithError(data.ErrMsg);
+                    if (data.ErrMsg != undefined) {
+                        msg.WithError(data.ErrMsg);
+                    }
+                    else {
+                        msg.WithError('Web timeout, please login again.');
+                    }
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {
@@ -3416,7 +3462,12 @@
                     msg.WithSuccess("Send Mail");
                 }
                 else {
-                    msg.WithError(data.ErrMsg);
+                    if (data.ErrMsg != undefined) {
+                        msg.WithError(data.ErrMsg);
+                    }
+                    else {
+                        msg.WithError('Web timeout, please login again.');
+                    }
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {
@@ -3488,7 +3539,12 @@
                     });
                 }
                 else {
-                    msg.WithError(data.ErrMsg);
+                    if (data.ErrMsg != undefined) {
+                        msg.WithError(data.ErrMsg);
+                    }
+                    else {
+                        msg.WithError('Web timeout, please login again.');
+                    }
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {
