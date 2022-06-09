@@ -734,7 +734,6 @@ namespace BusinessLogicLayer.Service
 
         public RFT_OrderComments_ViewModel SaveRFT_OrderComments(List<RFT_OrderComments> rFT_OrderComments)
         {
-            _IRFTOrderCommentsProvider = new RFTOrderCommentsProvider(Common.ManufacturingExecutionDataAccessLayer);
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ManufacturingExecutionDataAccessLayer);
             RFT_OrderComments_ViewModel rFT_OrderComments_ViewModel = new RFT_OrderComments_ViewModel();
             try
