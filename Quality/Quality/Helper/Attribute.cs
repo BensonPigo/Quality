@@ -45,7 +45,7 @@ namespace Quality.Helper
             // Check for authorization  
             if (HttpContext.Current.Session["UserID"] == null)
             {
-                filterContext.Result = new RedirectResult("~/Home/Index");
+                filterContext.Result = new RedirectResult("~/Home/Login");
             }
         }
     }
