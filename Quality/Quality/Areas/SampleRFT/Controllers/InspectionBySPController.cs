@@ -628,7 +628,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             else if (goPage == "Next")
             {
 
-                List<MeasurementViewItem> result = _Service.GetMeasurementViewItem("Q");
+                List<MeasurementViewItem> result = _Service.GetMeasurementViewItem(Req.OrderID);
 
                 if (!result.Any())
                 {
@@ -920,18 +920,6 @@ namespace Quality.Areas.SampleRFT.Controllers
             addDefct.RejectQty = latestModel.RejectQty;
             addDefct.ID = latestModel.ID;
 
-
-            if (goPage == "Back")
-            {
-                // 進度更新
-                _Service.UpdateSampleRFTInspectionByStep(new SampleRFTInspection()
-                {
-                    ID = addDefct.ID,
-                    InspectionStep = "Insp-Measurement"
-                }, "Insp-AddDefect", this.UserID);
-                return RedirectToAction("Measurement", new { ID = addDefct.ID });
-            }
-
             var DbImage = TmpAdd_DefectImg.Where(o => o.ImageUKey > 0).ToList();
             var NotDbImage = TmpAdd_DefectImg.Where(o => o.ImageUKey <= 0).ToList();
 
@@ -983,13 +971,28 @@ namespace Quality.Areas.SampleRFT.Controllers
             }
             else
             {
-                // 進度更新
-                _Service.UpdateSampleRFTInspectionByStep(new SampleRFTInspection()
+
+                if (goPage == "Back")
                 {
-                    ID = addDefct.ID,
-                    InspectionStep = "Insp-BA"
-                }, "Insp-AddDefect", this.UserID);
-                return RedirectToAction("BeautifulProductAudit", new { ID = addDefct.ID });
+                    // 進度更新
+                    _Service.UpdateSampleRFTInspectionByStep(new SampleRFTInspection()
+                    {
+                        ID = addDefct.ID,
+                        InspectionStep = "Insp-Measurement"
+                    }, "Insp-AddDefect", this.UserID);
+                    return RedirectToAction("Measurement", new { ID = addDefct.ID });
+                }
+                else
+                {
+                    // Next 進度更新
+                    _Service.UpdateSampleRFTInspectionByStep(new SampleRFTInspection()
+                    {
+                        ID = addDefct.ID,
+                        InspectionStep = "Insp-BA"
+                    }, "Insp-AddDefect", this.UserID);
+                    return RedirectToAction("BeautifulProductAudit", new { ID = addDefct.ID });
+                }
+
             }
 
             // 只要Detail UKey底下的圖片有異動，則全部刪除，重新INSERT
@@ -1409,16 +1412,6 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             Req.ID = latestModel.ID;
 
-            if (goPage == "Back")
-            {
-                // 進度更新
-                _Service.UpdateSampleRFTInspectionByStep(new SampleRFTInspection()
-                {
-                    ID = Req.ID,
-                    InspectionStep = "Insp-DummyFit"
-                }, "Insp-Others", this.UserID);
-                return RedirectToAction("DummyFitting", new { ID = Req.ID });
-            }
 
             InspectionBySP_Others result = _Service.OthersProcess(Req);
 
@@ -1431,13 +1424,26 @@ namespace Quality.Areas.SampleRFT.Controllers
             }
             else
             {
-                // 進度更新
-                _Service.UpdateSampleRFTInspectionByStep(new SampleRFTInspection()
+                if (goPage == "Back")
                 {
-                    ID = Req.ID,
-                    InspectionStep = "Submit"
-                }, "Insp-Others", this.UserID);
-                return RedirectToAction("Index");
+                    // 進度更新
+                    _Service.UpdateSampleRFTInspectionByStep(new SampleRFTInspection()
+                    {
+                        ID = Req.ID,
+                        InspectionStep = "Insp-DummyFit"
+                    }, "Insp-Others", this.UserID);
+                    return RedirectToAction("DummyFitting", new { ID = Req.ID });
+                }
+                else
+                {
+                    // Next 進度更新
+                    _Service.UpdateSampleRFTInspectionByStep(new SampleRFTInspection()
+                    {
+                        ID = Req.ID,
+                        InspectionStep = "Submit"
+                    }, "Insp-Others", this.UserID);
+                    return RedirectToAction("Index");
+                }
             }
 
         }
