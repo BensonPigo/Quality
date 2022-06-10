@@ -1216,8 +1216,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                 }
                 else
                 {
-                    model.ErrorMessage = $@"msg.WithError(""Submit Fail, { (string.IsNullOrEmpty(r.ErrorMessage) ? string.Empty : r.ErrorMessage.Replace("'", string.Empty)) }"");
-";
+                    model.ErrorMessage = $@"msg.WithError(""Submit Fail, { (string.IsNullOrEmpty(r.ErrorMessage) ? string.Empty : r.ErrorMessage.Replace("'", string.Empty)) }"");";
                 }
             }
 
