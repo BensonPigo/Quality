@@ -382,7 +382,9 @@ where   ID = @FinalInspectionID
                     objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
                     break;
                 case "Insp-Others":
-                    sqlUpdCmd += $@"
+                    if (finalInspection.InspectionStep == "Submit")
+                    {
+                        sqlUpdCmd += $@"
 update FinalInspection
  set    ProductionStatus = @ProductionStatus  ,
         OthersRemark= @OthersRemark    ,
@@ -395,14 +397,35 @@ update FinalInspection
         EditDate= getdate()
 where   ID = @FinalInspectionID
 ";
-                    objParameter.Add("@FinalInspectionID", finalInspection.ID);
-                    objParameter.Add("@userID", userID);
-                    objParameter.Add("@InspectionResult", finalInspection.InspectionResult);
-                    objParameter.Add("@ShipmentStatus", finalInspection.ShipmentStatus);
-                    objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
-                    objParameter.Add("@ProductionStatus", finalInspection.ProductionStatus);
-                    objParameter.Add("@OthersRemark", finalInspection.OthersRemark);
-                    objParameter.Add("@CFA", finalInspection.CFA);
+                        objParameter.Add("@FinalInspectionID", finalInspection.ID);
+                        objParameter.Add("@userID", userID);
+                        objParameter.Add("@InspectionResult", finalInspection.InspectionResult);
+                        objParameter.Add("@ShipmentStatus", finalInspection.ShipmentStatus);
+                        objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
+                        objParameter.Add("@ProductionStatus", finalInspection.ProductionStatus);
+                        objParameter.Add("@OthersRemark", finalInspection.OthersRemark);
+                        objParameter.Add("@CFA", finalInspection.CFA);
+                    }
+                    else if (finalInspection.InspectionStep == "Insp-Moisture")
+                    {
+                        sqlUpdCmd += $@"
+update FinalInspection
+ set    ProductionStatus = 0  ,
+        OthersRemark= ''    ,
+        CFA= ''   ,
+        InspectionResult= 'On-going'   ,
+        InspectionStep = @InspectionStep,
+        ShipmentStatus= 'On Hold'   ,
+        SubmitDate=null,
+        EditName= @userID,
+        EditDate= getdate()
+where   ID = @FinalInspectionID
+";
+                        objParameter.Add("@FinalInspectionID", finalInspection.ID);
+                        objParameter.Add("@userID", userID);
+                        objParameter.Add("@InspectionResult", finalInspection.InspectionResult);
+                        objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
+                    }
                     break;
                 /*case "Submit": ISP20220081 不需要這個步驟，合併到case "Insp-Others"去
                     sqlUpdCmd += $@"
