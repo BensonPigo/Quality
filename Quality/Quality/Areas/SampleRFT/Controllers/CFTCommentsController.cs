@@ -201,7 +201,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
         [HttpPost]
-        [SessionAuthorizeAttribute]
+        [SessionAuthorize]
         public ActionResult GetOrderinfo(string OrderID)
         {
             this.CheckSession();
@@ -217,7 +217,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         /// <returns></returns>
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "ToExcel_NPOI")]
-        [SessionAuthorizeAttribute]
+        [SessionAuthorize]
         public ActionResult ToExcel_NPOI(CFTComments_ViewModel Req)
         {
             this.CheckSession();
@@ -329,7 +329,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         /// <returns></returns>
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "ToExcel")]
-        [SessionAuthorizeAttribute]
+        [SessionAuthorize]
         public ActionResult ToExcel(CFTComments_ViewModel Req)
         {
             try
@@ -380,8 +380,8 @@ namespace Quality.Areas.SampleRFT.Controllers
                 }
 
                 // 1. 在Service層取得資料，生成Excel檔案，放在暫存路徑，回傳檔名
-
-                CFTComments_ViewModel result = _ICFTCommentsService.GetExcel(model);
+                model.ReleasedBy = this.UserID;
+                CFTComments_ViewModel result = _ICFTCommentsService.GetExcel2(model);
                 string tempFilePath = result.TempFileName;
 
                 // 2. 取得hotst name，串成下載URL ，傳到準備前端下載

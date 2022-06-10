@@ -14,6 +14,12 @@ namespace DatabaseObject.ViewModel
         public string BrandID { get; set; }
         public string SeasonID { get; set; }
         public string SampleStage { get; set; }
+        public string ReleasedBy { get; set; }
+
+        /// <summary>
+        /// for報表用，不同Sample Stage需要區分成不同報表
+        /// </summary>
+        public List<string> SampleStageList { get; set; }
 
         public string TempFileName{ get; set; }
 
@@ -24,5 +30,12 @@ namespace DatabaseObject.ViewModel
         public string SampleStage { get; set; }
         public string CommentsCategory { get; set; }
         public string Comnments { get; set; }
+
+        public string StyleID { get; set; }
+        public string BrandID { get; set; }
+        public string SeasonID { get; set; }
+        public string Article { get; set; }
+        public string SizeCode { get; set; }
+        public string Name { get; set; }
     }
 }
