@@ -404,7 +404,7 @@ select Type = 'Accessory Oven & Wash Test (515, 701)'
 		,ReceivedDate =NULL
 		,ReportDate =NULL
 from PO p
-inner join Orders o WITH(NOLOCK) ON o.POID = p.ID
+inner join Orders o WITH(NOLOCK) ON o.ID = p.ID
 outer apply (
 	select TestDate = MAX(f.TestDate)
 	from (
