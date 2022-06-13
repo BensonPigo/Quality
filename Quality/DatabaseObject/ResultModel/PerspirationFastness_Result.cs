@@ -170,6 +170,7 @@ namespace DatabaseObject.ResultModel
 
     public class PerspirationFastness_Excel
     {
+        public string ReportNo { get; set; }
         public DateTime? SubmitDate { get; set; }
         public string SeasonID { get; set; }
         public string BrandID { get; set; }

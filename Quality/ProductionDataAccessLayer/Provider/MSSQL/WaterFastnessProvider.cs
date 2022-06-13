@@ -821,6 +821,7 @@ select cd.SubmitDate
         ,c.Inspector
         ,pmsFile.TestBeforePicture
         ,pmsFile.TestAfterPicture
+        ,c.ReportNo
 from WaterFastness_Detail cd WITH(NOLOCK)
 left join WaterFastness c WITH(NOLOCK) on c.ID =  cd.ID
 left join SciPMSFile_WaterFastness pmsFile WITH(NOLOCK) on pmsFile.ID =  cd.ID

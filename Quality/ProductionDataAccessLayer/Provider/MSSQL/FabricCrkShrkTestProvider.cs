@@ -350,6 +350,7 @@ select	SubmitDate = fl.CrockingDate
 		,fli.CrockingTestBeforePicture
         ,fli.CrockingTestAfterPicture
 		,f.ID
+        ,fl.ReportNo
 from FIR f with (nolock)
 left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
 inner join FIR_Laboratory_Crocking fd WITH(NOLOCK) on fd.id = fl.id

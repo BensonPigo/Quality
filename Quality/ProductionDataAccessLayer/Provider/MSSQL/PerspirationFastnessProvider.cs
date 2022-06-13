@@ -955,6 +955,7 @@ select cd.SubmitDate
         ,c.Inspector
         ,pmsFile.TestBeforePicture
         ,pmsFile.TestAfterPicture
+        ,c.ReportNo
 from PerspirationFastness_Detail cd WITH(NOLOCK)
 left join PerspirationFastness c WITH(NOLOCK) on c.ID =  cd.ID
 left join SciPMSFile_PerspirationFastness pmsFile WITH(NOLOCK) on pmsFile.ID =  cd.ID

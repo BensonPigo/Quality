@@ -257,6 +257,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 excel.DisplayAlerts = false;
                 Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1];
 
+                worksheet.Cells[2, 2] = Model.ReportNo;
                 worksheet.Cells[2, 6] = Model.POID;
                 worksheet.Cells[2, 10] = Model.Supplier;
 
@@ -549,6 +550,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 excel.DisplayAlerts = false;
                 Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1];
 
+                worksheet.Cells[2, 2] = Model.ReportNo;
                 worksheet.Cells[2, 6] = Model.POID;
                 worksheet.Cells[2, 10] = Model.Supplier;
 
@@ -839,6 +841,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 excel.DisplayAlerts = false;
                 Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1];
 
+                worksheet.Cells[2, 2] = Model.ReportNo;
                 worksheet.Cells[2, 6] = Model.WashingFastnessReceivedDate.HasValue ? Model.WashingFastnessReceivedDate.Value.ToString("yyyy/MM/dd") : string.Empty;
 
                 worksheet.Cells[3, 2] = Model.FactoryID;

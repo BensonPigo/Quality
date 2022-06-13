@@ -1013,6 +1013,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                             worksheet.Cells[15, 8] = "3";
                         }
 
+                        worksheet.Cells[3, 4] = MyUtility.Convert.GetString(all_Data.Detail.ReportNo);
                         if (data.DateSubmit.HasValue)
                         {
                             worksheet.Cells[4, 4] = MyUtility.Convert.GetDate(data.DateSubmit.Value).Value.Year + "/" + MyUtility.Convert.GetDate(data.DateSubmit.Value).Value.Month + "/" + MyUtility.Convert.GetDate(data.DateSubmit.Value).Value.Day;
