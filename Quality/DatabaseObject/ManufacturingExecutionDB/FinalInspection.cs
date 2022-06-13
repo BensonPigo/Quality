@@ -218,5 +218,12 @@ namespace DatabaseObject.ManufacturingExecutionDB
 
         public bool HasOtherImage { get; set; }
 
+        [Display(Name = "FGPT")]
+        public bool CheckFGPT { get; set; }
+
+        public string FGWT { get; set; }
+
+        public string FGPT { get; set; }
+
     }
 }

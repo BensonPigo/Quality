@@ -47,18 +47,23 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
                 { "@ID", DbType.String, Item.ID } ,
             };
 
-            SbSql.Append("SELECT *" + Environment.NewLine);
-            SbSql.Append("FROM [Quality_Pass1] WITH(NOLOCK)" + Environment.NewLine);
+            SbSql.Append($@"
+select a.*  , UserName = ISNULL(b.Name,c.Name)
+FROM [Quality_Pass1] a WITH(NOLOCK)
+left join Pass1 b on a.ID = b.ID
+left join MainServer.Production.dbo.Pass1 c on a.ID = c.ID
+
+" + Environment.NewLine);
 
             if (!string.IsNullOrEmpty(Item.ID))
             {
-                SbSql.Append("Where ID=@ID" + Environment.NewLine);
+                SbSql.Append("Where a.ID=@ID" + Environment.NewLine);
                 objParameter.Add("@ID", DbType.String, Item.ID);
             }
 
             if (!string.IsNullOrEmpty(Item.Position))
             {
-                SbSql.Append("Where ID=@Position" + Environment.NewLine);
+                SbSql.Append("Where a.ID=@Position" + Environment.NewLine);
                 objParameter.Add("@Position", DbType.String, Item.Position);
             }
 

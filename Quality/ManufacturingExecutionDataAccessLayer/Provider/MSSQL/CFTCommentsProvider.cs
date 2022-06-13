@@ -157,5 +157,84 @@ outer apply(
 ");
             return ExecuteDataTableByServiceConn(CommandType.Text, SbSql.ToString(), objParameter);
         }
+        
+        public IList<CFTComments_Result> Get_CFT_OrderComments2(CFTComments_ViewModel Req)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            objParameter.Add("@OrderID", DbType.String, Req.OrderID);
+            objParameter.Add("@StyleID", DbType.String, Req.StyleID);
+            objParameter.Add("@BrandID", DbType.String, Req.BrandID);
+            objParameter.Add("@SeasonID", DbType.String, Req.SeasonID);
+            objParameter.Add("@UserID", DbType.String, Req.ReleasedBy);
+            string where;
+            if (!string.IsNullOrEmpty(Req.OrderID))
+            {
+                where = @"
+and o.id = @OrderID";
+            }
+            else
+            {
+                where = @"
+and o.StyleID = @StyleID
+and o.BrandID = @BrandID
+and o.SeasonID = @SeasonID";
+            }
+
+            StringBuilder SbSql = new StringBuilder();
+            SbSql.Append($@"
+select r.OrderID,o.OrderTypeID, r.PMS_RFTCommentsID, r.Comnments
+	,o.StyleID
+	,Article = oa.Val
+	,SizeCode  = os.Val
+	,o.SeasonID
+	,Name = (select Name from SciProduction_Pass1 p where p.ID = @UserID )
+into #tmpBase
+from [Production].[dbo].Orders o with(nolock)
+inner join RFT_OrderComments r on r.OrderID = o.id
+outer apply(
+	select Val = Stuff((
+		select distinct ',' + Article 
+		from SciProduction_Order_Qty a
+		where a.ID=o.ID
+		FOR XML PATH('')
+	),1,1,'')
+)oa
+outer apply(
+	select Val = Stuff((
+		select distinct ',' + SizeCode   
+		from SciProduction_Order_Qty a
+		where a.ID=o.ID
+		FOR XML PATH('')
+	),1,1,'')
+)os
+where 1=1
+and o.junk = 0
+and o.Category = 'S'
+--and o.OnSiteSample != 1
+{where}
+
+select SampleStage = a.OrderTypeID
+	, CommentsCategory = (select Name from [Production].[dbo].DropDownList WITH(NOLOCK) where id = a.PMS_RFTCommentsID and type = 'PMS_RFTComments')
+	, c.Comnments
+	, a.StyleID
+	,a.Article
+	,a.SizeCode
+	,a.SeasonID
+	,a.Name
+from #tmpBase a--(select distinct OrderTypeID,PMS_RFTCommentsID from #tmpBase) a
+outer apply(
+	select Comnments = stuff((
+		select concat(char(10), Comnments)
+		from #tmpBase b
+		where a.OrderTypeID = b.OrderTypeID and a.PMS_RFTCommentsID = b.PMS_RFTCommentsID
+		and Comnments <> ''
+		for xml path('')
+	),1,1,'')
+)c
+
+drop table #tmpBase
+");
+            return ExecuteList<CFTComments_Result>(CommandType.Text, SbSql.ToString(), objParameter);
+        }
     }
 }

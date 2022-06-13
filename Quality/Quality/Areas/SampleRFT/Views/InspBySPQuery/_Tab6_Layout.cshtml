@@ -1,0 +1,55 @@
+﻿@model DatabaseObject.ViewModel.SampleRFT.QueryReport
+@*<script src="~/ThirdParty/SciCustom/js/main.js"></script>*@
+
+<style>
+
+    .TitleFont {
+        font-size: 1.5em;
+        font-weight: 900;
+    }
+</style>
+<table id="myTable" class="table table-striped display" style="text-align:center;">
+    <thead>
+        <tr class="row-name">
+            <th>Comments Category</th>
+            <th>Comments</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{ int idx = 0;}
+        @foreach (var data in Model.Others.DataList)
+        {
+            <tr class="row-content">
+                <td>
+                    @Html.DisplayFor(modelItem => data.Description)
+                </td>
+                <td>
+                    @Html.Hidden($"Req.DataList[{idx}].PMS_RFTCommentsID", data.PMS_RFTCommentsID)
+                    @Html.TextBox($"Req.DataList[{idx}].Comnments", data.Comnments, new { @style = "width:100%", @readonly= "@readonly" })
+                </td>
+            </tr>
+            idx++;
+        }
+    </tbody>
+</table>
+
+<script type="text/javascript">
+
+        $(function () {
+
+            $('#myTable').DataTable({
+                "pageLength": 20,
+                "filter": false,
+                "paging": false,
+                "info": false,
+                "ordering": false,
+                initComplete: function () {
+                }
+            });
+        });
+
+</script>
+
+
+
+

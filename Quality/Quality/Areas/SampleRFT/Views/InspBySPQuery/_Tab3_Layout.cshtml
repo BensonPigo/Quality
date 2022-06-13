@@ -1,0 +1,64 @@
+﻿@model DatabaseObject.ViewModel.SampleRFT.QueryReport
+<style>
+    #myTable3_info {
+        color: white
+    }
+
+    #myTable3_previous, #myTable3_next {
+        color: white !important;
+    }
+
+    #myTable3_wrapper, #myTable3_wrapper > .dataTables_scrollHeadInner {
+        width: 100%
+    }
+</style>
+<table id="myTable3" class="table table-striped display">
+    <thead>
+        <tr class="row-name">
+            <th>Defect Type</th>
+            <th>Defect Code</th>
+            <th>Defect Area</th>
+            <th>Defect Qty</th>
+            <th>Responsibility</th>
+            <th>Defect Photo</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.AddDefect.ListDefectItem.Where(o => o.Qty > 0))
+        {
+            <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                <td>@item.DefectTypeDesc</td>
+                <td>@item.DefectCodeDesc</td>
+                <td>@item.AreaCodes</td>
+                <td>@item.Qty</td>
+                <td>@item.Responsibility</td>
+                <td>
+                    @if (@item.HasImage)
+                    {
+                        <img src="/Image/Icon/Picture.png" style="cursor: pointer;" onclick="OpenDefectPicture(@item.UKey,'@item.GarmentDefectCodeID')" width="25" height="25" />
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<script>
+    $(function () {
+        $('#myTable3').DataTable({
+            "pageLength": 10,
+            "autoWidth": false,
+            "info": false,
+            "filter": false,
+            "paging": false,
+            "info": false,
+            "scrollY": "40vh",
+            "scrollCollapse": true,
+        });
+    });
+
+    function OpenDefectPicture(DetailUkey, DefectCodeID) {
+        window.open('@Url.Action("AddDefectPicture", "InspectionBySP")?Readonly=true&ID=@Model.sampleRFTInspection.ID&GarmentDefectCodeID=' + DefectCodeID + '&SampleRFTInspection_DetailUKey=' + DetailUkey, "Picture", config = 'toolbar=no,status=no,location=no,width=1500,height=1000');
+        }
+
+
+</script>

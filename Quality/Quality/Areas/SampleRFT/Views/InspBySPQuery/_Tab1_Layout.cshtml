@@ -1,0 +1,221 @@
+﻿@model DatabaseObject.ViewModel.SampleRFT.QueryReport
+
+<style type="text/css">
+    .CheckListClass .checkboxlabel {
+        font-size: 1.5em;
+    }
+
+    .checkListClass tr td {
+        vertical-align: middle;
+    }
+
+    .CheckListClass {
+        width: 100%;
+        font-size: 0.8em;
+    }
+
+        .CheckListClass table tr td {
+            text-align: left;
+        }
+
+        .checkListClass input {
+            height: 1.5vh;
+        }
+</style>
+
+<div class="CheckListClass margin-c" style="padding-left:10%">
+    <div style="display:inline-block;width:50%">
+        <table class="checkListClass">
+            <tr>
+                <td colspan="2" style="font-size: 2em;font-weight:bold"></td>
+            </tr>
+            <tr>
+                <td style="width:3vw">
+                    @Html.CheckBoxFor(o => o.sampleRFTInspection.CheckFabricApproval, new { @disabled = "disabled", @class = "checkboxInput" })
+                </td>
+                <td>
+                    <div><label class="checkboxlabel">Fabric Approval</label></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.CheckBoxFor(o => o.sampleRFTInspection.CheckMetalDetection, new { @disabled = "disabled", @class = "checkboxInput" })
+                </td>
+                <td>
+                    <div><label class="checkboxlabel">Metal Detection</label></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.CheckBoxFor(o => o.sampleRFTInspection.CheckSealingSampleApproval, new { @disabled = "disabled", @class = "checkboxInput" })
+                </td>
+                <td>
+                    <div><label class="checkboxlabel">Sealing Sample Approval</label></div>
+                </td>
+            </tr>
+
+        </table>
+    </div>
+    <div style="display:inline-block;width:40%">
+        <table class="checkListClass">
+            <tr>
+                <td colspan="2" style="font-size: 2em;font-weight:bold">Fabeic Artwork Check List</td>
+            </tr>
+            <tr>
+                <td style="width:3vw">
+                    @Html.CheckBoxFor(o => o.sampleRFTInspection.CheckColorShade, new { @disabled = "disabled", @class = "checkboxInput" })
+                </td>
+                <td>
+                    <div><label class="checkboxlabel">Color Shade</label></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.CheckBoxFor(o => o.sampleRFTInspection.CheckHandfeel, new { @disabled = "disabled", @class = "checkboxInput" })
+                </td>
+                <td>
+                    <div><label class="checkboxlabel">Handfeel</label></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.CheckBoxFor(o => o.sampleRFTInspection.CheckAppearance, new { @disabled = "disabled", @class = "checkboxInput" })
+                </td>
+                <td>
+                    <div><label class="checkboxlabel">Appearance</label></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.CheckBoxFor(o => o.sampleRFTInspection.CheckPrintEmbDecorations, new { @disabled = "disabled", @class = "checkboxInput" })
+                </td>
+                <td>
+                    <div><label class="checkboxlabel">Print/ Emb Decorations</label></div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div style="display:inline-block;width:50%">
+        <table class="checkListClass">
+            <tr>
+                <td colspan="2" style="font-size: 2em;font-weight:bold">Packaging</td>
+            </tr>
+            <tr>
+                <td style="width:3vw">
+                    @Html.CheckBoxFor(o => o.sampleRFTInspection.CheckOuterCarton, new { @disabled = "disabled", @class = "checkboxInput" })
+                </td>
+                <td>
+                    <div><label class="checkboxlabel">Outer Carton Labels</label></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.CheckBoxFor(o => o.sampleRFTInspection.CheckPolytagMarketing, new { @disabled = "disabled", @class = "checkboxInput" })
+                </td>
+                <td>
+                    <div><label class="checkboxlabel">Polybag/Marketing</label></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.CheckBoxFor(o => o.sampleRFTInspection.CheckPackingMode, new { @disabled = "disabled", @class = "checkboxInput" })
+                </td>
+                <td>
+                    <div><label class="checkboxlabel">Packing Mode</label></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.CheckBoxFor(o => o.sampleRFTInspection.CheckHangtag, new { @disabled = "disabled", @class = "checkboxInput" })
+                </td>
+                <td>
+                    <div><label class="checkboxlabel">Hangtag</label></div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div style="display:inline-block;width:40%">
+        <table class="checkListClass">
+            <tr>
+                <td colspan="2" style="font-size: 2em;font-weight:bold">Label</td>
+            </tr>
+            <tr>
+                <td style="width:3vw">
+                    @Html.CheckBoxFor(o => o.sampleRFTInspection.CheckFiberContent, new { @disabled = "disabled", @class = "checkboxInput" })
+                </td>
+                <td>
+                    <div><label class="checkboxlabel">Fiber Content</label></div>
+                </td>
+            </tr>
+
+            <tr>
+                <td style="width:3vw">
+                    @Html.CheckBoxFor(o => o.sampleRFTInspection.CheckCareInstructions, new { @disabled = "disabled", @class = "checkboxInput" })
+                </td>
+                <td>
+                    <div><label class="checkboxlabel">Care Instructions</label></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td style="width:3vw">
+                    @Html.CheckBoxFor(o => o.sampleRFTInspection.CheckDecorativeLabel, new { @disabled = "disabled", @class = "checkboxInput" })
+                </td>
+                <td>
+                    <div><label class="checkboxlabel">Decorative Label</label></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td style="width:3vw">
+                    @Html.CheckBoxFor(o => o.sampleRFTInspection.CheckCareLabel, new { @disabled = "disabled", @class = "checkboxInput" })
+                </td>
+                <td>
+                    <div><label class="checkboxlabel">Care Label</label></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td style="width:3vw">
+                    @Html.CheckBoxFor(o => o.sampleRFTInspection.CheckCountryofOrigin, new { @disabled = "disabled", @class = "checkboxInput" })
+                </td>
+                <td>
+                    <div><label class="checkboxlabel">Country of Origin</label></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td style="width:3vw">
+                    @Html.CheckBoxFor(o => o.sampleRFTInspection.CheckSizeKey, new { @disabled = "disabled", @class = "checkboxInput" })
+                </td>
+                <td>
+                    <div><label class="checkboxlabel">Size Key</label></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td style="width:3vw">
+                    @Html.CheckBoxFor(o => o.sampleRFTInspection.CheckSecurityLabel, new { @disabled = "disabled", @class = "checkboxInput" })
+                </td>
+                <td>
+                    <div><label class="checkboxlabel">Security Label ATACA</label></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td style="width:3vw">
+                    @Html.CheckBoxFor(o => o.sampleRFTInspection.CheckAdditionalLabel, new { @disabled = "disabled", @class = "checkboxInput" })
+                </td>
+                <td>
+                    <div><label class="checkboxlabel">Additional Label</label></div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

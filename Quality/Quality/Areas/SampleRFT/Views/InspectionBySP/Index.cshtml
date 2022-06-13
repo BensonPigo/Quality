@@ -1,0 +1,217 @@
+﻿@using DatabaseObject.ViewModel.SampleRFT
+
+
+
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+<link href="~/Areas/SampleRFT/CSS/InspectionBySP.css" rel="stylesheet" />
+
+
+<style type="text/css">
+
+
+    #DetailTable_info {
+        color: black
+    }
+
+    #DetailTable_previous, #DetailTable_next {
+        color: black !important;
+    }
+
+    #row-name {
+        color: black;
+    }
+
+    .searchFont {
+        font-size: 1.5em;
+        font-weight: 900;
+    }
+
+    .center {
+        margin-top: 0vh;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 1vh;
+    }
+
+    #DetailTable td {
+        height: 1vh;
+        padding: 0;
+    }
+
+
+    .dataTables_scroll {
+        height: 54vh
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        color: black !important;
+    }
+</style>
+
+
+@{
+    Layout = "~/Areas/SampleRFT/Views/Shared/_ForAll_Layout.cshtml";
+}
+
+
+@model InspectionBySP_ViewModel
+
+
+@using (Html.BeginForm("Index", "InspectionBySP", FormMethod.Post, new { onsubmit = "return checkvalue()" }))
+{
+    <div class="search-condition">
+
+        <div class="whiteBackgrond" style="display:flex;flex-wrap:nowrap;height:7vh;align-items:center; vertical-align:middle">
+
+            <table class="center" style="width: 100%;  height: 3vh ">
+                <tr>
+                    <td style="width:5%" align="right">
+                        <p class="searchFont">SP#</p>
+                    </td>
+                    <td style="width:4%" align="center">
+                        @Html.TextBoxFor(o => o.OrderID, string.Empty, new { style = "border-color:black;" })
+                    </td>
+                    <td style="width:5%" align="right">
+                        <p class="searchFont ">PO#</p>
+                    </td>
+                    <td style="width:4%" align="center">
+                        @Html.TextBoxFor(o => o.CustPONo, string.Empty, new { style = "border-color:black;" })
+                    </td>
+                    <td style="width:5%" align="right">
+                        <p class="searchFont">Style#</p>
+                    </td>
+                    <td style="width:4%" align="center">
+                        @Html.TextBoxFor(o => o.StyleID, string.Empty, new { style = "border-color:black;" })
+                    </td>
+
+
+                    <td style="width:5%" align="right">
+                        <p class="searchFont">Season</p>
+                    </td>
+                    <td style="width:4%" align="center">
+                        @Html.TextBoxFor(o => o.SeasonID, string.Empty, new { style = "border-color:black;" })
+                    </td>
+                    <td style="width: 8%; vertical-align: bottom;" align="right">
+
+                        <button type="submit" style="border: 0; background: transparent; min-width:3vh">
+                            <img src="~/Image/Icon/Query.png" width="40" height="40" alt="submit" />
+                        </button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+}
+
+
+@using (Html.BeginForm("Setting", "InspectionBySP", FormMethod.Post))
+{
+    <div class="DownWhiteBackgrond" style="height:80vh">
+        <div style="border:0px;padding:2vh;">
+            <h1 style="font-size: 3vh; font-weight: 900; color: #999999 ">&nbsp What's SP# you want to inspect?</h1>
+            <div class="content-scroll" style=" height: calc( 100vh - 280px )">
+                <div class="inner-scroll" style="float:left">
+                    <div>
+                        <table cellspacing="100" id="DetailTable" class="table table-striped display">
+                            <thead>
+                                <tr id="row-name" class="row-name">
+                                    <th>SP#</th>
+                                    <th>PO#</th>
+                                    <th>Style</th>
+                                    <th>Season</th>
+                                    <th>Brand</th>
+                                    <th>Article</th>
+                                    <th>Sample Stage</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{ int idx = 0; }
+                                @foreach (var item in Model.DataList)
+                                {
+                                    <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.OrderID)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.CustPONo)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.StyleID)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.SeasonID)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.BrandID)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Article)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.SampleStage)
+                                        </td>
+                                        <td>
+                                            <input class="btnIncpection" type="button" name="name" onclick="InspClick('@Url.Action("Setting", "InspectionBySP", new
+                                            {
+                                                OrderID = item.OrderID,
+                                            })')" value="Inspection" />
+                                        </td>
+                                    </tr>
+                                    idx++;
+                                }
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @*<button style="right:2em;" class="button" id="btnNext">Next</button>*@
+    </div>
+
+}
+
+
+<script type="text/javascript">
+
+
+    var msg = new MessagerAlert();
+
+    var table;
+    $(function () {
+
+        @Html.Raw(Model.ErrorMessage);
+
+        table = $('#DetailTable').DataTable({
+            "pageLength": 10,
+            "filter": false,
+            "paging": true,
+            "scrollY": "49vh",
+            "scrollCollapse": true,
+        });
+    });
+
+
+    function checkvalue() {
+        if ($("#OrderID").val() == "" && $("#CustPONo").val() == "" && $("#StyleID").val() == "" && $("#SeasonID").val() == "") {
+
+            msg.WithError('Search condition cannot be empty.');
+
+            return false;
+        }
+
+        return true;
+    }
+
+
+
+    function InspClick(URL) {
+        window.location.href = URL;
+    }
+
+
+</script>
