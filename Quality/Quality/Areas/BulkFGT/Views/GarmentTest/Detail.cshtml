@@ -419,6 +419,47 @@
                                     <tbody>
                                         @for (int i = 0; i <= Model.Shrinkages.Count - 1; i++)
                                         {
+                                            string KeyToFgwt = string.Empty;
+                                            if (Model.Shrinkages[i].Type.StartsWith("a)"))
+                                            {
+                                                KeyToFgwt = "a)";
+                                            }
+                                            else if (Model.Shrinkages[i].Type.StartsWith("b)"))
+                                            {
+                                                KeyToFgwt = "b)";
+                                            }
+                                            else if (Model.Shrinkages[i].Type.StartsWith("c)"))
+                                            {
+                                                KeyToFgwt = "c)";
+                                            }
+                                            else if (Model.Shrinkages[i].Type.StartsWith("d)"))
+                                            {
+                                                KeyToFgwt = "d)";
+                                            }
+                                            else if (Model.Shrinkages[i].Type.StartsWith("e)"))
+                                            {
+                                                KeyToFgwt = "e)";
+                                            }
+                                            else if (Model.Shrinkages[i].Type.StartsWith("f)"))
+                                            {
+                                                KeyToFgwt = "f)";
+                                            }
+                                            else if (Model.Shrinkages[i].Type.StartsWith("g1)"))
+                                            {
+                                                KeyToFgwt = "g1)";
+                                            }
+                                            else if (Model.Shrinkages[i].Type.StartsWith("g2)"))
+                                            {
+                                                KeyToFgwt = "g2)";
+                                            }
+                                            else if (Model.Shrinkages[i].Type.StartsWith("h)"))
+                                            {
+                                                KeyToFgwt = "h)";
+                                            }
+                                            else if (Model.Shrinkages[i].Type.StartsWith("i)"))
+                                            {
+                                                KeyToFgwt = "i)";
+                                            }
                                             <tr>
                                                 <td>
                                                     @Html.TextBoxFor(o => Model.Shrinkages[i].Location, new { @readonly = "readonly", @style = "width:6vw;" })
@@ -430,7 +471,7 @@
                                                     <input id="Shrinkages_@{@i}__BeforeWash" name="Shrinkages[@i].BeforeWash" class="BeforeWash" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].BeforeWash" style="width: 8vw;">
                                                 </td>
                                                 <td>
-                                                    <input id="Shrinkages_@{@i}__SizeSpec" name="Shrinkages[@i].SizeSpec" class="SizeSpec" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].SizeSpec" style="width: 8vw;">
+                                                    <input id="Shrinkages_@{@i}__SizeSpec" name="Shrinkages[@i].SizeSpec" KeyToFgwt="" class="SizeSpec" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].SizeSpec" style="width: 8vw;">
                                                 </td>
                                                 <td>
                                                     <input id="Shrinkages_@{@i}__AfterWash1" name="Shrinkages[@i].AfterWash1" class="AfterWash1" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].AfterWash1" style="width: 8vw;">
