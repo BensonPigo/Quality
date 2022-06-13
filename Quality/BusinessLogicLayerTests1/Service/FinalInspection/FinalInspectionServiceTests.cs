@@ -22,7 +22,7 @@ namespace BusinessLogicLayer.Service.Tests
             try
             {
                 FinalInspectionService finalInspectionService = new FinalInspectionService();
-                string result = JsonConvert.SerializeObject(finalInspectionService.GetPivot88Json("MA3CH22060004"));
+                string result = JsonConvert.SerializeObject(finalInspectionService.GetPivot88Json("MAIIQ22060020"));
                 Assert.IsTrue(true);
             }
             catch (Exception ex)
@@ -65,8 +65,8 @@ namespace BusinessLogicLayer.Service.Tests
             try
             {
                 FinalInspectionService finalInspectionService = new FinalInspectionService();
-                //string result = JsonConvert.SerializeObject(finalInspectionService.GetEndInlinePivot88Json("MA3IQ22040004", "InlineInspection"));
-                string result = JsonConvert.SerializeObject(finalInspectionService.GetEndInlinePivot88Json("MA3EQ22040009", "EndlineInspection"));
+                string result = JsonConvert.SerializeObject(finalInspectionService.GetEndInlinePivot88Json("MAIIQ22060020", "InlineInspection"));
+                //string result = JsonConvert.SerializeObject(finalInspectionService.GetEndInlinePivot88Json("MA3EQ22040009", "EndlineInspection"));
                 Assert.IsTrue(true);
             }
             catch (Exception ex)
