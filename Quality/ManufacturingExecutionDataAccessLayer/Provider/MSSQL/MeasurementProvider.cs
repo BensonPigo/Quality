@@ -182,7 +182,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             objParameter.Add("@ID", ID);
             SbSql.Append($@"
 SET XACT_ABORT ON
-DELETE FROM PMSFile.dbo.RFT_Inspection_Measurement
+DELETE FROM SciPMSFile_RFT_Inspection_Measurement
 where ID=@ID
 " );
 
@@ -213,7 +213,7 @@ where ID = @OrderID
             string sqlcmd = @"
 select Text= Cast( ROW_NUMBER() OVER(ORDER BY ID) as varchar)
         ,Value = Cast( ID as varchar)
-from PMSFile.dbo.RFT_Inspection_Measurement
+from SciPMSFile_RFT_Inspection_Measurement
 
 where OrderID = @OrderID
 ";
@@ -228,7 +228,7 @@ where OrderID = @OrderID
             string sqlcmd = @"
 select *
 	,Seq = ROW_NUMBER() OVER(ORDER BY ID DESC)
-from PMSFile.dbo.RFT_Inspection_Measurement
+from SciPMSFile_RFT_Inspection_Measurement
 where OrderID = @OrderID
 ORDER BY ID DESC
 ";

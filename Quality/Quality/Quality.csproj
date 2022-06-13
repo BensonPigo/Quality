@@ -947,8 +947,13 @@
     <Content Include="XLT\FinalInspectionQuery.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="XLT\InspBySPQuery.xlsx" />
+    <Content Include="XLT\InspBySPQuery.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="XLT\InspBySPQuery_Detail.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\CFT Comment Report.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

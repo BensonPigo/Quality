@@ -754,6 +754,11 @@
         });
 
         $('#Picture').on('click', function () {
+            var TestNo = $('#Main_TestNo').val();
+            if ($('#Main_TestNo').val() == undefined || $('#Main_TestNo').val() == '') {
+                TestNo = 0;
+            }
+
             var para = "?Title=" + $('.page-header span').html() + "&EditMode=" + EditMode;
             para += "&" + "Table=Oven";
             para += "&" + "BeforeColumn=TestBeforePicture";
@@ -761,7 +766,7 @@
             para += "&" + "PKey_1=POID";
             para += "&" + "PKey_2=TestNo";
             para += "&" + "PKey_1_Val=" + $('#Main_POID').val();
-            para += "&" + "PKey_2_Val=" + $('#Main_TestNo').val();
+            para += "&" + "PKey_2_Val=" + TestNo;
             window.open('@Url.Action("PictureList", "PublicWondow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1024,height=750');
         });
 

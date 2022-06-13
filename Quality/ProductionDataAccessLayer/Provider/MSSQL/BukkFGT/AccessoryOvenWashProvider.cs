@@ -265,7 +265,7 @@ select   al.POID
 		,ali.OvenTestBeforePicture
 		,ali.OvenTestAfterPicture
 from AIR_Laboratory al WITH(NOLOCK)
-left join  [ExtendServer].PMSFile.dbo.AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
+left join SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
 inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
 left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
 left join Supp s WITH(NOLOCK) on a.Suppid = s.ID
@@ -324,7 +324,7 @@ select   al.POID
 		,ali.OvenTestAfterPicture
 from AIR_Laboratory al WITH(NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.ID = al.POID
-left join  [ExtendServer].PMSFile.dbo.AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
+left join SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
 inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
 left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
 left join Supp s WITH(NOLOCK) on a.Suppid = s.ID
@@ -435,14 +435,14 @@ where   ID = @AIR_LaboratoryID
     and Seq2 = @Seq2
     and ReportNo = ''
 
-if not exists (select 1 from [ExtendServer].PMSFile.dbo.AIR_Laboratory where ID = @AIR_LaboratoryID and POID = @POID and Seq1 = @Seq1 and Seq2 = @Seq2)
+if not exists (select 1 from SciPMSFile_AIR_Laboratory where ID = @AIR_LaboratoryID and POID = @POID and Seq1 = @Seq1 and Seq2 = @Seq2)
 begin
-    INSERT INTO [ExtendServer].PMSFile.dbo.AIR_Laboratory (ID,POID,Seq1,Seq2,OvenTestBeforePicture,OvenTestAfterPicture)
+    INSERT INTO SciPMSFile_AIR_Laboratory (ID,POID,Seq1,Seq2,OvenTestBeforePicture,OvenTestAfterPicture)
     VALUES (@AIR_LaboratoryID,@POID,@Seq1,@Seq2,@OvenTestBeforePicture,@OvenTestAfterPicture)
 end
 else
 begin
-    UPDATE [ExtendServer].PMSFile.dbo.AIR_Laboratory
+    UPDATE SciPMSFile_AIR_Laboratory
     SET POID=POID
     {updatePicCol}
     where   ID = @AIR_LaboratoryID
@@ -555,7 +555,7 @@ select  [SP#] = al.POID
 from AIR_Laboratory al WITH(NOLOCK)
 inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
 INNER JOIn Orders o WITH(NOLOCK) ON o.ID = a.POID
-left join [ExtendServer].PMSFile.dbo.AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
+left join SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
 left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
 left join Supp s WITH(NOLOCK) on a.Suppid = s.ID
 left join PO_Supp_Detail psd WITH(NOLOCK) ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
@@ -611,7 +611,7 @@ select   al.POID
         ,al.WashingCycle
 
 from AIR_Laboratory al WITH(NOLOCK)
-left join  [ExtendServer].PMSFile.dbo.AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
+left join SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
 inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
 left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
 left join Supp s WITH(NOLOCK) on a.Suppid = s.ID
@@ -736,14 +736,14 @@ where   ID = @AIR_LaboratoryID
     and Seq2 = @Seq2
     and ReportNo=''
 
-if not exists (select 1 from [ExtendServer].PMSFile.dbo.AIR_Laboratory where ID = @AIR_LaboratoryID and POID = @POID and Seq1 = @Seq1 and Seq2 = @Seq2)
+if not exists (select 1 from SciPMSFile_AIR_Laboratory where ID = @AIR_LaboratoryID and POID = @POID and Seq1 = @Seq1 and Seq2 = @Seq2)
 begin
-    INSERT INTO [ExtendServer].PMSFile.dbo.AIR_Laboratory (ID,POID,Seq1,Seq2,WashTestBeforePicture,WashTestAfterPicture)
+    INSERT INTO SciPMSFile_AIR_Laboratory (ID,POID,Seq1,Seq2,WashTestBeforePicture,WashTestAfterPicture)
     VALUES (@AIR_LaboratoryID,@POID,@Seq1,@Seq2,@WashTestBeforePicture,@WashTestAfterPicture)
 end
 else
 begin
-    UPDATE [ExtendServer].PMSFile.dbo.AIR_Laboratory
+    UPDATE SciPMSFile_AIR_Laboratory
     SET POID=POID
     {updatePicCol}
     where   ID = @AIR_LaboratoryID
@@ -854,7 +854,7 @@ select  [SP#] = al.POID
 from AIR_Laboratory al WITH(NOLOCK)
 inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
 INNER JOIn Orders o WITH(NOLOCK) ON o.ID = a.POID
-left join [ExtendServer].PMSFile.dbo.AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
+left join SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
 left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
 left join Supp s WITH(NOLOCK) on a.Suppid = s.ID
 left join PO_Supp_Detail psd WITH(NOLOCK) ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
@@ -912,7 +912,7 @@ select   al.POID
 
 from AIR_Laboratory al WITH(NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.ID = al.POID
-left join  [ExtendServer].PMSFile.dbo.AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
+left join SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
 inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
 left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
 left join Supp s WITH(NOLOCK) on a.Suppid = s.ID
@@ -987,7 +987,7 @@ select   al.POID
 		,ali.WashingFastnessTestAfterPicture
 
 from AIR_Laboratory al WITH(NOLOCK)
-left join  [ExtendServer].PMSFile.dbo.AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
+left join SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
 inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
 left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
 left join Supp s WITH(NOLOCK) on a.Suppid = s.ID
@@ -1166,7 +1166,7 @@ where   ID = @AIR_LaboratoryID
     and Seq2 = @Seq2
     and ReportNo = ''
 
-UPDATE [ExtendServer].PMSFile.dbo.AIR_Laboratory
+UPDATE SciPMSFile_AIR_Laboratory
 SET POID=POID
 {updatePicCol}
 where   ID = @AIR_LaboratoryID
@@ -1248,7 +1248,7 @@ select  [SP#] = al.POID
 from AIR_Laboratory al WITH(NOLOCK)
 inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
 INNER JOIn Orders o WITH(NOLOCK) ON o.ID = a.POID
-left join [ExtendServer].PMSFile.dbo.AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
+left join SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
 left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
 left join Supp s WITH(NOLOCK) on a.Suppid = s.ID
 left join PO_Supp_Detail psd WITH(NOLOCK) ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
@@ -1315,7 +1315,7 @@ select   al.WashingFastnessReceivedDate
 
 from AIR_Laboratory al WITH(NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.ID = al.POID
-left join  [ExtendServer].PMSFile.dbo.AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
+left join SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
 inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
 left join PO_Supp_Detail psd WITH(NOLOCK) ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
 left join Technician tc on tc.ID = al.WashingFastnessInspector AND tc.BulkAccOvenWash=1

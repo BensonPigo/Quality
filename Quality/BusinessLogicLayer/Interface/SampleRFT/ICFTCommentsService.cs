@@ -15,5 +15,6 @@ namespace BusinessLogicLayer.Interface.SampleRFT
         //以下廢棄
         DataTable GetExcel_DataTable(CFTComments_ViewModel Req);
         CFTComments_ViewModel GetExcel(CFTComments_ViewModel Req);
+        CFTComments_ViewModel GetExcel2(CFTComments_ViewModel Req);
     }
 }

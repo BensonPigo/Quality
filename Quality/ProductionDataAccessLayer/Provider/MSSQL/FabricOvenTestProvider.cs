@@ -54,7 +54,7 @@ select	[TestNo] = cast(o.TestNo as varchar),
         [TestBeforePicture] = oi.TestBeforePicture,
         [TestAfterPicture] = oi.TestAfterPicture
 from Oven o with (nolock)
-LEFT JOIN [ExtendServer].PMSFile.dbo.Oven oi with (nolock) ON o.ID = oi.ID
+LEFT JOIN SciPMSFile_Oven oi with (nolock) ON o.ID = oi.ID
 left join pass1 pass1Inspector WITH(NOLOCK) on o.Inspector = pass1Inspector.ID
 where o.POID = @POID and o.TestNo = @TestNo
 ";
@@ -189,7 +189,7 @@ update  Oven set    InspDate = @InspDate,
                     EditDate = getdate()
 where   POID = @POID and TestNo = @TestNo
 
-update  [ExtendServer].PMSFile.dbo.Oven set  
+update  SciPMSFile_Oven set  
                     TestBeforePicture = @TestBeforePicture,
                     TestAfterPicture = @TestAfterPicture
 where   POID = @POID and TestNo = @TestNo
@@ -394,7 +394,7 @@ insert into Oven(POID, TestNo, InspDate, Article, Status, Inspector, Remark, add
 select  [OvenID] = ID, TestNo
 from @OvenID
 
-insert into [ExtendServer].PMSFile.dbo.Oven(ID, POID, TestNo, TestBeforePicture, TestAfterPicture)
+insert into SciPMSFile_Oven(ID, POID, TestNo, TestBeforePicture, TestAfterPicture)
         values(
 (select ID from @OvenID)
 , @POID, @TestNo, @TestBeforePicture, @TestAfterPicture)
@@ -553,7 +553,7 @@ select  [SP#] = ov.POID,
         oi.TestAfterPicture
 from Oven ov with (nolock)
 left join Orders o with (nolock) on ov.POID = o.ID
-left join [ExtendServer].PMSFile.dbo.Oven oi with (nolock) on oi.ID=ov.ID
+left join SciPMSFile_Oven oi with (nolock) on oi.ID=ov.ID
 where ov.POID = @poID and ov.TestNo = @TestNo
 ";
 
@@ -623,7 +623,7 @@ select  ov.ID
         ,oi.TestAfterPicture
         ,[InspectorName] = (select Name from Pass1 WITH(NOLOCK) where ID = ov.Inspector)
 from    Oven ov with (nolock)
-left join [ExtendServer].PMSFile.dbo.Oven oi with (nolock) on oi.ID=ov.ID
+left join SciPMSFile_Oven oi with (nolock) on oi.ID=ov.ID
 where   ov.POID = @poID and ov.TestNo = @TestNo
 ";
 
@@ -640,7 +640,7 @@ where   ov.POID = @poID and ov.TestNo = @TestNo
 SET XACT_ABORT ON
 delete  Oven_Detail where ID = (select ID from Oven where POID = @poID and TestNo = @TestNo)
 delete  Oven where POID = @poID and TestNo = @TestNo
-delete  [ExtendServer].PMSFile.dbo.Oven where POID = @poID and TestNo = @TestNo
+delete SciPMSFile_Oven where POID = @poID and TestNo = @TestNo
 exec UpdateInspPercent 'LabOven',@poID
 ";
             using (TransactionScope transaction = new TransactionScope())

@@ -53,7 +53,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,EditName" + Environment.NewLine);
             SbSql.Append("        ,EditName" + Environment.NewLine);
             SbSql.Append($@"FROM [MockupCrocking] m WITH(NOLOCK)
-left join [ExtendServer].PMSFile.dbo.MockupCrocking mi WITH(NOLOCK) on m.ReportNo=mi.ReportNo
+left join SciPMSFile_MockupCrocking mi WITH(NOLOCK) on m.ReportNo=mi.ReportNo
 " + Environment.NewLine);
 
             SbSql.Append("Where 1 = 1" + Environment.NewLine);
@@ -130,7 +130,7 @@ left join [ExtendServer].PMSFile.dbo.MockupCrocking mi WITH(NOLOCK) on m.ReportN
 
             SbSql.Append($@"
 
-INSERT INTO [ExtendServer].PMSFile.dbo.[MockupCrocking] (ReportNo,TestBeforePicture,TestAfterPicture)
+INSERT INTO SciPMSFile_MockupCrocking (ReportNo,TestBeforePicture,TestAfterPicture)
 VALUES(@ReportNo,@TestBeforePicture,@TestAfterPicture)
 ");
 
@@ -170,14 +170,14 @@ UPDATE [MockupCrocking] SET
 WHERE ReportNo = @ReportNo
 
 
-if not exists (select 1 from [ExtendServer].PMSFile.dbo.MockupCrocking where ReportNo = @ReportNo)
+if not exists (select 1 from SciPMSFile_MockupCrocking where ReportNo = @ReportNo)
 begin
-    INSERT INTO [ExtendServer].PMSFile.dbo.MockupCrocking (ReportNo,TestBeforePicture,TestAfterPicture)
+    INSERT INTO SciPMSFile_MockupCrocking (ReportNo,TestBeforePicture,TestAfterPicture)
     VALUES (@ReportNo,@TestBeforePicture,@TestAfterPicture)
 end
 else
 begin
-    UPDATE [ExtendServer].PMSFile.dbo.[MockupCrocking] SET
+    UPDATE SciPMSFile_MockupCrocking SET
         TestBeforePicture=@TestBeforePicture
         ,TestAfterPicture=@TestAfterPicture
     WHERE ReportNo = @ReportNo
@@ -319,7 +319,7 @@ WHERE UKey = @Ukey
             SbSql.Append("DELETE [MockupCrocking]" + Environment.NewLine);
             SbSql.Append("WHERE ReportNo = @ReportNo" + Environment.NewLine);
 
-            SbSql.Append(@"DELETE [ExtendServer].PMSFile.dbo.[MockupCrocking]" + Environment.NewLine);
+            SbSql.Append(@"DELETE SciPMSFile_MockupCrocking" + Environment.NewLine);
             SbSql.Append("WHERE ReportNo = @ReportNo" + Environment.NewLine);
 
             objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
@@ -417,7 +417,7 @@ SELECT {top1}
         ,Signature = (select t.Signature from Technician t WITH(NOLOCK) where t.ID = Technician)
 		,LastEditName = iif(EditName <> '', Concat (EditName, '-', EditName.Name, ' ', Format(EditDate,'yyyy/MM/dd HH:mm:ss')), Concat (AddName, '-', AddName.Name, ' ', Format(AddDate,'yyyy/MM/dd HH:mm:ss')))
 FROM [MockupCrocking] m WITH(NOLOCK)
-left join [ExtendServer].PMSFile.dbo.MockupCrocking mi WITH(NOLOCK) on m.ReportNo=mi.ReportNo
+left join SciPMSFile_MockupCrocking mi WITH(NOLOCK) on m.ReportNo=mi.ReportNo
 outer apply (select Name, ExtNo from pass1 p WITH(NOLOCK) inner join Technician t WITH(NOLOCK) on t.ID = p.ID where t.id = m.Technician) Technician_ne
 outer apply (select Name, ExtNo, EMail from pass1 WITH(NOLOCK) where id = m.MR) MR_ne
 outer apply (select Name from Pass1 WITH(NOLOCK) where id = m.AddName) AddName
@@ -487,7 +487,7 @@ SELECT
 		,mi.TestBeforePicture
         ,mi.TestAfterPicture
 FROM MockupCrocking m WITH(NOLOCK)
-left join [ExtendServer].PMSFile.dbo.MockupCrocking mi WITH(NOLOCK) on m.ReportNo=mi.ReportNo
+left join SciPMSFile_MockupCrocking mi WITH(NOLOCK) on m.ReportNo=mi.ReportNo
 outer apply (select Name, ExtNo from pass1 p WITH(NOLOCK) inner join Technician t WITH(NOLOCK) on t.ID = p.ID where t.id = m.Technician) Technician_ne
 outer apply (select Name, ExtNo from pass1 WITH(NOLOCK) where id = m.MR) MR_ne
 where m.ReportNo = @ReportNo

@@ -93,7 +93,7 @@ select    p.ReportNo
 		,Time_Standard = s.Time
         ,TestDateText = convert(varchar, p.TestDate, 111)
 from PullingTest p WITH(NOLOCK)
-left join PMSFile.dbo.PullingTest pi WITH(NOLOCK) on p.ReportNo = pi.ReportNo
+left join SciPMSFile_PullingTest pi WITH(NOLOCK) on p.ReportNo = pi.ReportNo
 left join Production.dbo.Pass1 a WITH(NOLOCK) ON a.ID=p.AddName 
 left join Production.dbo.Pass1 e WITH(NOLOCK) ON e.ID=p.EditName
 left join Production.dbo.Pass1 i WITH(NOLOCK) ON i.ID=p.Inspector
@@ -270,7 +270,7 @@ VALUES(
            ,GETDATE()
            ,@AddName)
 
-INSERT INTO PMSFile.dbo.PullingTest
+INSERT INTO SciPMSFile_PullingTest
            (ReportNo
             ,TestBeforePicture
             ,TestAfterPicture)
@@ -402,14 +402,14 @@ UPDATE PullingTest
 WHERE ReportNo=@ReportNo
 
 
-if not exists (select 1 from [ExtendServer].PMSFile.dbo.PullingTest where ReportNo = @ReportNo)
+if not exists (select 1 from SciPMSFile_PullingTest where ReportNo = @ReportNo)
 begin
-    INSERT INTO [ExtendServer].PMSFile.dbo.PullingTest (ReportNo,TestBeforePicture,TestAfterPicture)
+    INSERT INTO SciPMSFile_PullingTest (ReportNo,TestBeforePicture,TestAfterPicture)
     VALUES (@ReportNo,@TestBeforePicture,@TestAfterPicture)
 end
 else
 begin
-    UPDATE [ExtendServer].PMSFile.dbo.PullingTest
+    UPDATE SciPMSFile_PullingTest
         SET ReportNo = ReportNo
     {modifyPicCol}
     WHERE ReportNo=@ReportNo
@@ -446,7 +446,7 @@ WHERE 1=1
 
             SbSql.Append($@"
 
-DELETE FROM PMSFile.dbo.PullingTest
+DELETE FROM SciPMSFile_PullingTest
 WHERE 1=1
 ");
             if (!string.IsNullOrEmpty(ReportNo))
@@ -488,7 +488,7 @@ select    p.ReportNo
 		,pi.TestBeforePicture
 		,pi.TestAfterPicture
 from PullingTest p 
-left join PMSFile.dbo.PullingTest pi WITH(NOLOCK) on p.ReportNo = pi.ReportNo
+left join SciPMSFile_PullingTest pi WITH(NOLOCK) on p.ReportNo = pi.ReportNo
 where p.ReportNo = @ReportNo
 ";
 

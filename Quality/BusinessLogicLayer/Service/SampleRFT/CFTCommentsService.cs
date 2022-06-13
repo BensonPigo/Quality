@@ -34,6 +34,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
                         model.BrandID = Req.BrandID;
                         model.SeasonID = Req.SeasonID;
                         model.StyleID = Req.StyleID;
+                        model.SampleStageList = res.Select(o => o.SampleStage).Distinct().ToList();
                     }
 
                     if (Req.QueryType == "OrderID")
@@ -196,6 +197,126 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 throw ex;
                 //result.Result = false;
                 //result.ErrorMessage = ex.Message;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// 透過  Microsoft.Office.Interop.Excel 生成Excel，並下載至暫存路徑，新版本格式
+        /// </summary>
+        /// <param name="Req"></param>
+        /// <returns>暫存檔路徑</returns>
+        public CFTComments_ViewModel GetExcel2(CFTComments_ViewModel Req)
+        {
+            string TempTilePath = string.Empty;
+            CFTComments_ViewModel result = new CFTComments_ViewModel();
+            DataTable dt = new DataTable();
+            try
+            {
+                _CFTCommentsProvider = new CFTCommentsProvider(Common.ManufacturingExecutionDataAccessLayer);
+ 
+                // 取得Datatable
+                List<CFTComments_Result> datas =_CFTCommentsProvider.Get_CFT_OrderComments2(Req).ToList();
+                List<string> SampleStageList = Req.SampleStageList;
+
+                if (!System.IO.Directory.Exists(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\"))
+                {
+                    System.IO.Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\");
+                }
+
+                if (!System.IO.Directory.Exists(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\TMP\\"))
+                {
+                    System.IO.Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\TMP\\");
+                }
+
+                if (datas.Count == 0)
+                {
+                    result.TempFileName = string.Empty;
+                    result.Result = false;
+                    return result;
+                }
+
+                // 開啟excel app
+                Excel.Application excelApp = MyUtility.Excel.ConnectExcel(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\CFT Comment Report.xltx");
+                excelApp.Visible = true;
+                Excel.Worksheet worksheet;
+
+                List<string> sampleStages = datas.Select(x => x.SampleStage).Distinct().ToList();
+
+                // 複製分頁：表身幾筆，就幾個sheet
+                if (sampleStages.Count > 1)
+                {
+                    for (int j = 1; j < sampleStages.Count; j++)
+                    {
+                        worksheet = (Excel.Worksheet)excelApp.ActiveWorkbook.Worksheets[j];
+
+                        worksheet.Copy(worksheet);
+                    }
+                }
+
+                for (int i = 1; i <= sampleStages.Count; i++)
+                {
+                    worksheet = (Excel.Worksheet)excelApp.ActiveWorkbook.Worksheets[i];
+                    worksheet.Name = sampleStages[i-1];
+                }
+
+                //開始填資料
+                for (int i = 1; i <= sampleStages.Count; i++)
+                {
+                    string sampleStage = sampleStages[i-1];
+                    var sameData = datas.Where(o => o.SampleStage == sampleStage).ToList();
+
+                    Excel.Worksheet currenSheet = excelApp.ActiveWorkbook.Worksheets[i];
+
+                    currenSheet.Cells[3, 1] = sameData.FirstOrDefault().StyleID;
+                    currenSheet.Cells[4, 2] = sameData.FirstOrDefault().SampleStage;
+                    currenSheet.Cells[7, 2] = sameData.FirstOrDefault().Article;
+                    currenSheet.Cells[8, 2] = sameData.FirstOrDefault().SizeCode;
+
+                    currenSheet.Cells[1, 16] = "Season : " + sameData.FirstOrDefault().SeasonID;
+                    currenSheet.Cells[2, 16] = "Date : " + DateTime.Now.ToString("yyyy/MM/dd");
+                    currenSheet.Cells[3, 14] = "Released by: " + sameData.FirstOrDefault().Name;
+
+                    currenSheet.Cells[10, 2] = sameData.Where(o => o.CommentsCategory.ToUpper() == "SAMPLE MEASUREMENT").FirstOrDefault().Comnments;
+                    currenSheet.Cells[12, 2] = sameData.Where(o => o.CommentsCategory.ToUpper() == "SAMPLE FITTING").FirstOrDefault().Comnments;
+                    currenSheet.Cells[13, 2] = sameData.Where(o => o.CommentsCategory.ToUpper() == "MATERIAL").FirstOrDefault().Comnments;
+                    currenSheet.Cells[16, 2] = sameData.Where(o => o.CommentsCategory.ToUpper() == "ACCESSORY").FirstOrDefault().Comnments;
+                    currenSheet.Cells[18, 2] = sameData.Where(o => o.CommentsCategory.ToUpper() == "WORKMANSHIP").FirstOrDefault().Comnments;
+                    currenSheet.Cells[24, 2] = sameData.Where(o => o.CommentsCategory.ToUpper() == "ARTWORK").FirstOrDefault().Comnments;
+                    currenSheet.Cells[27, 2] = sameData.Where(o => o.CommentsCategory.ToUpper() == "HANGTAG").FirstOrDefault().Comnments;
+                    currenSheet.Cells[28, 2] = sameData.Where(o => o.CommentsCategory.ToUpper() == "LABELLING AND PACKAGING").FirstOrDefault().Comnments;
+                    currenSheet.Cells[31, 2] = sameData.Where(o => o.CommentsCategory.ToUpper() == "SAMPLE WEIGHT(SIZE SET ONLY)").FirstOrDefault().Comnments;
+                    currenSheet.Cells[32, 2] = sameData.Where(o => o.CommentsCategory.ToUpper() == "RESULT(SEALING AND SIZE SET ONLY)").FirstOrDefault().Comnments;
+                    currenSheet.Cells[33, 2] = sameData.Where(o => o.CommentsCategory.ToUpper() == "REMARK").FirstOrDefault().Comnments;
+
+                    var sizeList = sameData.FirstOrDefault().SizeCode.Split(',').OrderBy(o => o).ToList();
+
+                    int ctn = 0;
+                    foreach (var size in sizeList)
+                    {
+                        currenSheet.Cells[42, 3 + ctn] = size;
+                        ctn++;
+                    }
+                }
+
+                string fileName = $"CFT Comments{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                string filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
+
+                Excel.Workbook workbook = excelApp.ActiveWorkbook;
+                workbook.SaveAs(filepath);
+
+                workbook.Close();
+                excelApp.Quit();
+                Marshal.ReleaseComObject(workbook);
+                Marshal.ReleaseComObject(excelApp);
+
+                result.TempFileName = fileName;
+                result.Result = true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
 
             return result;

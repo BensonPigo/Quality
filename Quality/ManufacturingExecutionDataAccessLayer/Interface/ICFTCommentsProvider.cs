@@ -18,5 +18,6 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         IList<CFTComments_Result> Get_CFT_OrderComments(CFTComments_ViewModel CFTComments);
 
         DataTable Get_CFT_OrderComments_DataTable(CFTComments_ViewModel Req);
+        IList<CFTComments_Result> Get_CFT_OrderComments2(CFTComments_ViewModel Req);
     }
 }

@@ -463,11 +463,34 @@ SELECT [Type] = IIF( EXISTS(
 	from Style s WITH(NOLOCK)
 	inner join Reason r WITH(NOLOCK) on s.SpecialMark = r.ID AND r.ReasonTypeID= 'Style_SpecialMark'
 	where s.ID = @StyleID AND s.BrandID = @BrandID AND s.SeasonID = @SeasonID
-	and (r.Name in ('MATCH TEAMWEAR','BASEBALL ON FIELD','SOFTBALL ON FIELD', 'LACROSSE ONFIELD', 'BASEBALL OFF FIELD','NCAA ON ICE','ON-COURT','BBALL PERFORMANCE','BRANDED BLANKS','SLD ON-FIELD','NHL ON ICE','SLD ON-COURT')
-        or r.Name like '%TIRO%'
-	    or r.Name like '%Critical%'
-	    or r.Name like '%TRAINING TEAMWEAR%'
-	    or r.Name like '%AMERIC. FOOT. ON-FIELD%')
+	and (r.Name in (
+                     'AMERIC. FOOT. ON-FIELD'
+                    ,'AMERIC. FOOT.ON-FIELD+DISNEY'
+                    ,'BASEBALL OFF FIELD'
+                    ,'BASEBALL ON FIELD'
+                    ,'BBALL PERFORMANCE'
+                    ,'BRANDED BLANKS'
+                    ,'DISNEY+BBALL PER PERFORMANCE'
+                    ,'Disney+Critical Product'
+                    ,'FAST TRACE+TRAINING TEAMWEAR'
+                    ,'Fast Track+Critical Product'
+                    ,'LACROSSE ONFIELD'
+                    ,'MATCH TEAMWEAR'
+                    ,'Match Teamwear+Critical P'
+                    ,'NCAA ON ICE'
+                    ,'NHL ON ICE'
+                    ,'ON-COURT'
+                    ,'SLD ON-COURT'
+                    ,'SLD ON-FIELD'
+                    ,'SOFTBALL ON FIELD'
+                    ,'TIRO'
+                    ,'Tiro+Critical Product'
+                    ,'TIRO+LEGO'
+                    ,'Tiro+Lego+Critical P'
+                    ,'TRAINING TEAMWEAR'
+                    ,'Training Teamwear+Critical P'                    
+        )
+    )
 ),'710','701')
 
 

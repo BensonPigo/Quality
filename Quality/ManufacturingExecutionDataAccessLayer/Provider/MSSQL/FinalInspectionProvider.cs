@@ -76,7 +76,7 @@ select  ID                             ,
         AddDate                        ,
         EditName                       ,
         EditDate                       ,
-        HasOtherImage = Cast(IIF(exists(select 1 from PMSFile.dbo.FinalInspection_OtherImage b WITH(NOLOCK) where a.id= b.id),1,0) as bit)
+        HasOtherImage = Cast(IIF(exists(select 1 from SciPMSFile_FinalInspection_OtherImage b WITH(NOLOCK) where a.id= b.id),1,0) as bit)
 from FinalInspection a with (nolock)
 where   ID = @ID
 ";
@@ -382,7 +382,9 @@ where   ID = @FinalInspectionID
                     objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
                     break;
                 case "Insp-Others":
-                    sqlUpdCmd += $@"
+                    if (finalInspection.InspectionStep == "Submit")
+                    {
+                        sqlUpdCmd += $@"
 update FinalInspection
  set    ProductionStatus = @ProductionStatus  ,
         OthersRemark= @OthersRemark    ,
@@ -395,14 +397,35 @@ update FinalInspection
         EditDate= getdate()
 where   ID = @FinalInspectionID
 ";
-                    objParameter.Add("@FinalInspectionID", finalInspection.ID);
-                    objParameter.Add("@userID", userID);
-                    objParameter.Add("@InspectionResult", finalInspection.InspectionResult);
-                    objParameter.Add("@ShipmentStatus", finalInspection.ShipmentStatus);
-                    objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
-                    objParameter.Add("@ProductionStatus", finalInspection.ProductionStatus);
-                    objParameter.Add("@OthersRemark", finalInspection.OthersRemark);
-                    objParameter.Add("@CFA", finalInspection.CFA);
+                        objParameter.Add("@FinalInspectionID", finalInspection.ID);
+                        objParameter.Add("@userID", userID);
+                        objParameter.Add("@InspectionResult", finalInspection.InspectionResult);
+                        objParameter.Add("@ShipmentStatus", finalInspection.ShipmentStatus);
+                        objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
+                        objParameter.Add("@ProductionStatus", finalInspection.ProductionStatus);
+                        objParameter.Add("@OthersRemark", finalInspection.OthersRemark);
+                        objParameter.Add("@CFA", finalInspection.CFA);
+                    }
+                    else if (finalInspection.InspectionStep == "Insp-Moisture")
+                    {
+                        sqlUpdCmd += $@"
+update FinalInspection
+ set    ProductionStatus = 0  ,
+        OthersRemark= ''    ,
+        CFA= ''   ,
+        InspectionResult= 'On-going'   ,
+        InspectionStep = @InspectionStep,
+        ShipmentStatus= 'On Hold'   ,
+        SubmitDate=null,
+        EditName= @userID,
+        EditDate= getdate()
+where   ID = @FinalInspectionID
+";
+                        objParameter.Add("@FinalInspectionID", finalInspection.ID);
+                        objParameter.Add("@userID", userID);
+                        objParameter.Add("@InspectionResult", finalInspection.InspectionResult);
+                        objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
+                    }
                     break;
                 /*case "Submit": ISP20220081 不需要這個步驟，合併到case "Insp-Others"去
                     sqlUpdCmd += $@"
@@ -466,7 +489,7 @@ select  Image
 
             string sqlGetData = @"
 select  Image, Remark
-from PMSFile.dbo.FinalInspection_DetailImage a with (nolock)
+from SciPMSFile_FinalInspection_DetailImage a with (nolock)
 where   a.FinalInspection_DetailUkey = @FinalInspection_DetailUkey
 ";
             return ExecuteList<ImageRemark>(CommandType.Text, sqlGetData, objParameter);
@@ -481,8 +504,12 @@ where   a.FinalInspection_DetailUkey = @FinalInspection_DetailUkey
 
             string sqlGetData = @"
     select  [ImageName] =  CONCAT(fdi.ID, '_', isnull(fd.GarmentDefectCodeID, ''), '_', fdi.Ukey, '.png'), Image
-    from [ExtendServer].PMSFile.dbo.FinalInspection_DetailImage fdi with (nolock)
+    from SciPMSFile_FinalInspection_DetailImage fdi with (nolock)
     left join FinalInspection_Detail fd with (nolock) on fd.Ukey = fdi.FinalInspection_DetailUkey
+    where   fdi.ID = @FinalInspectionID
+    union all
+    select  [ImageName] =  CONCAT(fdi.ID, '_', fdi.Ukey, '.png'), Image
+    from SciPMSFile_FinalInspection_OtherImage fdi with (nolock)
     where   fdi.ID = @FinalInspectionID
 ";
 
@@ -506,7 +533,7 @@ where   a.FinalInspection_DetailUkey = @FinalInspection_DetailUkey
 
             string sqlGetData = @"
     select  [ImageName] =  CONCAT(fdi.InlineInspectionReportID, '_', fdi.Ukey, '.png'), fdi.Image
-    from [ExtendServer].PMSFile.dbo.InlineInspection_DetailImage fdi with (nolock)
+    from SciPMSFile_InlineInspection_DetailImage fdi with (nolock)
     where   fdi.InlineInspectionReportID = @InspectionID
 ";
 
@@ -530,7 +557,7 @@ where   a.FinalInspection_DetailUkey = @FinalInspection_DetailUkey
 
             string sqlGetData = @"
     select  [ImageName] =  CONCAT(fdi.InspectionReportID, '_', fdi.Ukey, '.png'), fdi.Image
-    from [ExtendServer].PMSFile.dbo.Inspection_DetailImage fdi with (nolock)
+    from SciPMSFile_Inspection_DetailImage fdi with (nolock)
     where   fdi.InspectionReportID = @InspectionID
 ";
 
@@ -616,7 +643,7 @@ SET XACT_ABORT ON
 insert into FinalInspection_DetailImage(ID, FinalInspection_DetailUkey ,Remark)
                 values(@FinalInspectionID, @FinalInspection_DetailUkey ,@Remark) ----2022/01/10 PMSFile上線，因此去掉Image寫入原本DB的部分
 */
-    insert into PMSFile.dbo.FinalInspection_DetailImage(ID, FinalInspection_DetailUkey, Image ,Remark)
+    insert into SciPMSFile_FinalInspection_DetailImage(ID, FinalInspection_DetailUkey, Image ,Remark)
                 values(@FinalInspectionID, @FinalInspection_DetailUkey, @Image ,@Remark)
 ";
                             SQLParameterCollection imgParameter = new SQLParameterCollection() {
@@ -656,7 +683,7 @@ select  [Ukey] = isnull(fn.Ukey, -1),
 		[RowIndex]=ROW_NUMBER() OVER(ORDER BY bac.ID) -1
 		,HasImage = Cast(
 			IIF(EXISTS(
-				select 1 from PMSFile.dbo.FinalInspection_NonBACriteriaImage img 
+				select 1 from SciPMSFile_FinalInspection_NonBACriteriaImage img 
 				where img.FinalInspection_NonBACriteriaUkey = fn.Ukey
 			),1,0)		
 		as bit)
@@ -739,7 +766,7 @@ where   ID = @FinalInspectionID
 insert into FinalInspection_NonBACriteriaImage(ID, FinalInspection_NonBACriteriaUkey ,Remark)
                 values(@FinalInspectionID, @FinalInspection_NonBACriteriaUkey ,@Remark) --2022/01/10 PMSFile上線，因此去掉Image寫入原本DB的部分
 */
-    insert into PMSFile.dbo.FinalInspection_NonBACriteriaImage(ID, FinalInspection_NonBACriteriaUkey, Image ,Remark)
+    insert into SciPMSFile_FinalInspection_NonBACriteriaImage(ID, FinalInspection_NonBACriteriaUkey, Image ,Remark)
                 values(@FinalInspectionID, @FinalInspection_NonBACriteriaUkey, @Image ,@Remark)
 ";
                             SQLParameterCollection imgParameter = new SQLParameterCollection() {
@@ -766,7 +793,7 @@ insert into FinalInspection_NonBACriteriaImage(ID, FinalInspection_NonBACriteria
 
             string sqlGetData = @"
 select  Remark, Image
-from PMSFile.dbo.FinalInspection_NonBACriteriaImage a with (nolock)
+from SciPMSFile_FinalInspection_NonBACriteriaImage a with (nolock)
 where   a.FinalInspection_NonBACriteriaUkey = @FinalInspection_NonBACriteriaUkey
 ";
 
@@ -1143,7 +1170,7 @@ select  Ukey
     , Image
     , Remark
     ,[RowIndex]=ROW_NUMBER() OVER(ORDER BY Ukey) -1
-from PMSFile.dbo.FinalInspection_OtherImage with (nolock)
+from SciPMSFile_FinalInspection_OtherImage with (nolock)
 where   ID = @finalInspectionID
 
 ";
@@ -1157,7 +1184,7 @@ where   ID = @finalInspectionID
                 string sqlFinalInspection_OtherImage = @"
 SET XACT_ABORT ON
 
-    insert into PMSFile.dbo.FinalInspection_OtherImage(ID, Image, Remark)
+    insert into SciPMSFile_FinalInspection_OtherImage(ID, Image, Remark)
                 values(@FinalInspectionID, @Image, @Remark)
 ";
                 SQLParameterCollection imgParameter = new SQLParameterCollection() {
@@ -1750,9 +1777,17 @@ select  [title] =  CONCAT(fdi.ID, '_', isnull(fd.GarmentDefectCodeID, ''), '_', 
         [number] = ROW_NUMBER() OVER (PARTITION BY fdi.FinalInspection_DetailUkey ORDER BY fdi.Ukey),
         [comment] = isnull(fdi.Remark, ''),
         fdi.FinalInspection_DetailUkey
-from PMSFile.dbo.FinalInspection_DetailImage fdi with (nolock)
+from SciPMSFile_FinalInspection_DetailImage fdi with (nolock)
 inner join FinalInspection_Detail fd with (nolock) on fd.Ukey = fdi.FinalInspection_DetailUkey
 where   fdi.ID = @ID
+
+select  [title] =  CONCAT(fdi.ID, '_', fdi.Ukey),
+        [full_filename] =  CONCAT(fdi.ID, '_', fdi.Ukey, '.png'),
+        [number] = ROW_NUMBER() OVER (ORDER BY fdi.Ukey),
+        [comment] = isnull(fdi.Remark, '')
+from SciPMSFile_FinalInspection_OtherImage fdi with (nolock)
+where   fdi.ID = @ID
+order by fdi.Ukey
 
 
 drop table #tmpStyleInfo
@@ -1917,13 +1952,13 @@ where   IsExportToP88 = 0 and
                 case "InlineInspection":
                     sqlUpdateIsExportToP88 = $@"
     update InlineInspectionReport set IsExportToP88 = 1, TransferTimeToPivot88 = getdate() where ID = @ID
-    update PMSFile.dbo.InlineInspection_DetailImage set IsExportToP88 = 1 where InlineInspectionReportID = @ID
+    update SciPMSFile_InlineInspection_DetailImage set IsExportToP88 = 1 where InlineInspectionReportID = @ID
 ";
                     break;
                 case "EndlineInspection":
                     sqlUpdateIsExportToP88 = $@"
     update InspectionReport set IsExportToP88 = 1, TransferTimeToPivot88 = getdate() where ID = @ID
-    update PMSFile.dbo.Inspection_DetailImage set IsExportToP88 = 1 where InspectionReportID = @ID
+    update SciPMSFile_Inspection_DetailImage set IsExportToP88 = 1 where InspectionReportID = @ID
 ";
                     break;
                 default:
