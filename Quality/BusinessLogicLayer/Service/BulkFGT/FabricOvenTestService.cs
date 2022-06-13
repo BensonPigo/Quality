@@ -554,7 +554,7 @@ namespace BusinessLogicLayer.Service
                     result.Result = false;
                     return result;
                 }
-
+                excel.Visible = true;
                 excel.DisplayAlerts = false;
 
                 // 預設頁在第5頁，前4頁是用來複製的格式，最後在刪除
@@ -1013,6 +1013,517 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
+        public BaseResult ToPdfFabricOvenTestDetail_2(string poID, string TestNo, out string pdfFileName, bool isTest)
+        {
+            _FabricOvenTestProvider = new FabricOvenTestProvider(Common.ProductionDataAccessLayer);
+            _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
+            _StyleProvider = new StyleProvider(Common.ProductionDataAccessLayer);
+
+            BaseResult result = new BaseResult();
+            pdfFileName = string.Empty;
+
+            try
+            {
+                string baseFilePath = isTest ? Directory.GetCurrentDirectory() : System.Web.HttpContext.Current.Server.MapPath("~/");
+                DataTable dtOvenDetail = _FabricOvenTestProvider.GetOvenDetailForExcel(poID, TestNo);
+                DataTable dtOven = _FabricOvenTestProvider.GetOven(poID, TestNo);
+
+                if (dtOvenDetail.Rows.Count < 1)
+                {
+                    result.ErrorMessage = "Data not found!";
+                    result.Result = false;
+                    return result;
+                }
+
+                var distOvenDetailSubmitDate = dtOvenDetail.AsEnumerable()
+                    .Select(s => s["SubmitDate"] == DBNull.Value ? string.Empty : ((DateTime)s["SubmitDate"]).ToString("yyyy/MM/dd"))
+                    .Distinct().ToList();
+
+                List<Orders> listOrders = _OrdersProvider.Get(new Orders() { ID = poID }).ToList();
+                List<Style> listStyle = _StyleProvider.Get(new Style() { Ukey = listOrders[0].StyleUkey }).ToList();
+
+                string styleUkey = string.Empty;
+                string styleID = string.Empty;
+                string seasonID = string.Empty;
+                string CustPONO = string.Empty;
+                string brandID = string.Empty;
+
+                if (listOrders.Count > 0)
+                {
+                    styleUkey = listOrders[0].StyleUkey.ToString();
+                    styleID = listOrders[0].StyleID;
+                    seasonID = listOrders[0].SeasonID;
+                    CustPONO = listOrders[0].CustPONO;
+                    brandID = listOrders[0].BrandID;
+                }
+
+                string strXltName = baseFilePath + "\\XLT\\FabricOvenTestDetailReportToPDF.xltx";
+                Excel.Application excel = MyUtility.Excel.ConnectExcel(strXltName);
+                if (excel == null)
+                {
+                    result.ErrorMessage = "Excel template not found!";
+                    result.Result = false;
+                    return result;
+                }
+                excel.Visible = true;
+                excel.DisplayAlerts = false;
+
+                // 預設頁在第5頁，前4頁是用來複製的格式，最後在刪除
+                // 依據 submitDate 複製分頁
+                int defaultSheet = 5;
+                //for (int c = 1; c < distOvenDetailSubmitDate.Count(); c++)
+                //{
+                //    Excel.Worksheet worksheetFirst = excel.ActiveWorkbook.Worksheets[defaultSheet];
+                //    Excel.Worksheet worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + c];
+                //    worksheetFirst.Copy(worksheetn);
+                //}
+
+                #region Set Picture
+                //Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[4];
+                //Excel.Range cellBefore = worksheet.Cells[3, 2];
+                string imgPath_BeforePicture = string.Empty;
+                string imgPath_AfterPicture = string.Empty;
+                if (dtOven.Rows[0]["TestBeforePicture"] != DBNull.Value)
+                {
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    if (IsTest.ToLower() == "true")
+                    {
+                        imgPath_BeforePicture = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                    }
+                    else
+                    {
+                        imgPath_BeforePicture = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                    }
+
+                    byte[] bytes = (byte[])dtOven.Rows[0]["TestBeforePicture"];
+                    using (var imageFile = new FileStream(imgPath_BeforePicture, FileMode.Create))
+                    {
+                        imageFile.Write(bytes, 0, bytes.Length);
+                        imageFile.Flush();
+                    }
+                    //worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBefore.Left + 5, cellBefore.Top + 5, 430, 295);
+                }
+
+                //Excel.Range cellAfter = worksheet.Cells[3, 10];
+                if (dtOven.Rows[0]["TestAfterPicture"] != DBNull.Value)
+                {
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    if (IsTest.ToLower() == "true")
+                    {
+                        imgPath_AfterPicture = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                    }
+                    else
+                    {
+                        imgPath_AfterPicture = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                    }
+
+                    byte[] bytes = (byte[])dtOven.Rows[0]["TestAfterPicture"];
+                    using (var imageFile = new FileStream(imgPath_AfterPicture, FileMode.Create))
+                    {
+                        imageFile.Write(bytes, 0, bytes.Length);
+                        imageFile.Flush();
+                    }
+
+                    //worksheet.Shapes.AddPicture(imgPath_AfterPicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfter.Left + 5, cellAfter.Top + 5, 430, 295);
+                }
+                #endregion
+
+                Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1];
+                // 依據 submitDate 填入表頭資訊
+                for (int i = 0; i < distOvenDetailSubmitDate.Count(); i++)
+                {
+                    worksheet = excel.ActiveWorkbook.Worksheets[i + defaultSheet];
+                    worksheet.Cells[4, 3] = distOvenDetailSubmitDate[i];
+                    worksheet.Cells[4, 6] = dtOven.Rows[0]["InspDate"] == DBNull.Value ? string.Empty : ((DateTime)dtOven.Rows[0]["InspDate"]).ToString("yyyy/MM/dd");
+                    worksheet.Cells[4, 9] = poID;
+                    worksheet.Cells[4, 14] = brandID;
+                    worksheet.Cells[6, 3] = styleID;
+                    worksheet.Cells[6, 9] = CustPONO;
+                    worksheet.Cells[6, 14] = dtOven.Rows[0]["Article"].ToString();
+                    worksheet.Cells[7, 3] = listStyle[0].StyleName;
+                    worksheet.Cells[7, 9] = seasonID;
+                }
+
+                // 細項
+                int setRow = 78; // 78 列為一頁
+                int headerRow = 9; // 表頭那頁前9列為固定
+                int signatureRow = 4; // 簽名有4列
+                int frameRow = 34; // 框 33列 + 1 列空白
+                int alladdSheet = 0;
+
+                string signature = dtOven.Rows[0]["InspectorName"].ToString();
+                Excel.Worksheet worksheetDetail = excel.ActiveWorkbook.Worksheets[1];
+                Excel.Worksheet worksheetSignature = excel.ActiveWorkbook.Worksheets[2];
+                Excel.Worksheet worksheetFrame = excel.ActiveWorkbook.Worksheets[3];
+                Excel.Worksheet worksheetPicture = excel.ActiveWorkbook.Worksheets[4];
+
+                for (int i = 0; i < distOvenDetailSubmitDate.Count; i++)
+                {
+                    DataRow[] dr = dtOvenDetail.Select(MyUtility.Check.Empty(distOvenDetailSubmitDate[i]) ? $@"submitDate is null" : $"submitDate = '{distOvenDetailSubmitDate[i]}'");
+
+                    int underHeaderRow = setRow - headerRow;
+                    if (dr.Length > underHeaderRow)
+                    {
+                        int overRow = dr.Length - underHeaderRow;
+                        int addSheets = (int)Math.Ceiling(overRow * 1.0 / setRow);
+
+                        // 有表頭那頁下方的細項格線
+                        worksheet = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
+                        for (int j = 0; j < underHeaderRow; j++)
+                        {
+                            Excel.Range paste1 = worksheet.get_Range($"A{headerRow + 1 + j}", Type.Missing);
+                            Excel.Range r = worksheetDetail.get_Range("A1").EntireRow;
+                            paste1.Insert(Excel.XlInsertShiftDirection.xlShiftDown, r.Copy(Type.Missing));
+
+                            // 細項資料
+                            this.SetDetailData(worksheet, j + headerRow + 1, dr[j]);
+                        }
+                        worksheet.Cells.EntireRow.AutoFit();
+
+                        // 額外細項分頁
+                        for (int k = 0; k < addSheets; k++)
+                        {
+                            // 新增細項分頁
+                            Excel.Worksheet worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i + k + 1];
+                            worksheetDetail.Copy(worksheetn);
+
+                            #region worksheetn 的細項格線
+                            worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i + k + 1];
+                            worksheetn.get_Range("A1").EntireRow.Delete();
+
+                            int addrow = overRow;
+                            if (overRow > setRow)
+                            {
+                                addrow = setRow;
+                                overRow -= setRow;
+                            }
+                            else
+                            {
+                                overRow = 0;
+                            }
+
+                            for (int j = 0; j < addrow; j++)
+                            {
+                                Excel.Range paste1 = worksheetn.get_Range($"A{j + 1}", Type.Missing);
+                                Excel.Range r = worksheetDetail.get_Range("A1").EntireRow;
+                                paste1.Insert(Excel.XlInsertShiftDirection.xlShiftDown, r.Copy(Type.Missing));
+
+                                // 細項資料
+                                this.SetDetailData(worksheetn, j + 1, dr[j + underHeaderRow + (k * setRow)]);
+                            }
+                            #endregion
+
+                            int afterSignatureRow = 0;
+
+                            // 簽名列
+                            if (overRow <= 0)
+                            {
+                                if (addrow < setRow - signatureRow)
+                                {
+                                    Excel.Range paste2 = worksheetn.get_Range($"A{addrow + 1}", Type.Missing);
+                                    Excel.Range r2 = worksheetSignature.get_Range("A1:A4").EntireRow;
+                                    paste2.Insert(Excel.XlInsertShiftDirection.xlShiftDown, r2.Copy(Type.Missing));
+                                    worksheetn.Cells[addrow + 3, 13] = signature;
+                                    afterSignatureRow = addrow + 1 + signatureRow;
+                                }
+                                else
+                                {
+                                    // 因簽名列塞不小，增加分頁
+                                    alladdSheet++;
+                                    worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i + k + 1];
+                                    worksheetSignature.Copy(worksheetn);
+                                    worksheetn.Cells[3, 13] = signature;
+                                    afterSignatureRow = signatureRow;
+                                }
+                            }
+
+                            #region 加入 4*10 的框
+                            worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i + k + 1];
+
+                            // 共要加入幾組 frameNum
+                            int frameNum = (int)Math.Ceiling(dr.Length * 1.0 / 2);
+
+                            // 有簽名列那頁下方還有空間放下
+                            if (afterSignatureRow <= setRow - frameRow)
+                            {
+                                Excel.Range paste2 = worksheetn.get_Range($"A{afterSignatureRow + 1}", Type.Missing);
+                                Excel.Range r2 = worksheetFrame.get_Range("A9:A42").EntireRow;
+                                paste2.Insert(Excel.XlInsertShiftDirection.xlShiftDown, r2.Copy(Type.Missing));
+                                frameNum--;
+                                afterSignatureRow += frameRow;
+
+                                if (afterSignatureRow <= setRow - frameRow)
+                                {
+                                    paste2 = worksheetn.get_Range($"A{afterSignatureRow + 1}", Type.Missing);
+                                    paste2.Insert(Excel.XlInsertShiftDirection.xlShiftDown, r2.Copy(Type.Missing));
+                                    frameNum--;
+                                }
+                            }
+
+                            bool g1 = true;
+                            for (int f = 0; f < frameNum; f++)
+                            {
+                                // 此頁第一組
+                                if (g1)
+                                {
+                                    alladdSheet++;
+                                    worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i + k + 1];
+                                    worksheetFrame.Copy(worksheetn);
+                                }
+
+                                // 此頁第2組
+                                else
+                                {
+                                    worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i + k + 1];
+                                    Excel.Range paste2 = worksheetn.get_Range($"A43", Type.Missing);
+                                    Excel.Range r2 = worksheetFrame.get_Range("A9:A42").EntireRow;
+                                    paste2.Insert(Excel.XlInsertShiftDirection.xlShiftDown, r2.Copy(Type.Missing));
+                                }
+
+                                g1 = !g1;
+                            }
+
+                            Excel.Range cell;
+                            if (frameNum == 0)
+                            {
+                                worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
+                                Excel.Range paste2 = worksheetn.get_Range($"A52", Type.Missing);
+                                Excel.Range r2 = worksheetPicture.get_Range("A1:A20").EntireRow;
+                                paste2.Insert(Excel.XlInsertShiftDirection.xlShiftToRight, r2.Copy(Type.Missing));
+
+                                if (!string.IsNullOrEmpty(imgPath_BeforePicture))
+                                {
+                                    cell = worksheetn.Cells[54, 2];
+                                    worksheetn.Shapes.AddPicture(imgPath_BeforePicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 435, 280);
+                                }
+                                if (!string.IsNullOrEmpty(imgPath_AfterPicture))
+                                {
+                                    cell = worksheetn.Cells[54, 10];
+                                    worksheetn.Shapes.AddPicture(imgPath_AfterPicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 435, 280);
+                                }
+                            }
+                            else if (!g1)
+                            {
+                                worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
+                                Excel.Range paste2 = worksheetn.get_Range($"A46", Type.Missing);
+                                Excel.Range r2 = worksheetPicture.get_Range("A1:A20").EntireRow;
+                                paste2.Insert(Excel.XlInsertShiftDirection.xlShiftToRight, r2.Copy(Type.Missing));
+
+                                if (!string.IsNullOrEmpty(imgPath_BeforePicture))
+                                {
+                                    cell = worksheetn.Cells[48, 2];
+                                    worksheetn.Shapes.AddPicture(imgPath_BeforePicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 435, 285);
+                                }
+                                if (!string.IsNullOrEmpty(imgPath_AfterPicture))
+                                {
+                                    cell = worksheetn.Cells[48, 10];
+                                    worksheetn.Shapes.AddPicture(imgPath_AfterPicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 435, 285);
+                                }
+                            }
+                            else
+                            {
+                                alladdSheet++;
+                                Excel.Worksheet worksheepic = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
+                                worksheetPicture.Copy(worksheepic);
+
+                                worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
+                                if (!string.IsNullOrEmpty(imgPath_BeforePicture))
+                                {
+                                    cell = worksheetn.Cells[3, 2];
+                                    worksheetn.Shapes.AddPicture(imgPath_BeforePicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 430, 285);
+                                }
+                                if (!string.IsNullOrEmpty(imgPath_AfterPicture))
+                                {
+                                    cell = worksheetn.Cells[3, 10];
+                                    worksheetn.Shapes.AddPicture(imgPath_AfterPicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 430, 285);
+                                }
+                            }
+                            #endregion
+                        }
+
+                        alladdSheet += addSheets;
+                    }
+                    else
+                    {
+                        // 有表頭那頁下方的細項格線
+                        worksheet = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
+                        for (int j = 0; j < dr.Length; j++)
+                        {
+                            Excel.Range paste1 = worksheet.get_Range($"A{headerRow + 1 + j}", Type.Missing);
+                            Excel.Range r = worksheetDetail.get_Range("A1").EntireRow;
+                            paste1.Insert(Excel.XlInsertShiftDirection.xlShiftDown, r.Copy(Type.Missing));
+
+                            // 細項資料
+                            this.SetDetailData(worksheet, j + headerRow + 1, dr[j]);
+                        }
+                        worksheet.Cells.EntireRow.AutoFit();
+
+                        int afterSignatureRow;
+
+                        // 簽名列
+                        if (dr.Length < underHeaderRow - signatureRow)
+                        {
+                            Excel.Range paste2 = worksheet.get_Range($"A{dr.Length + headerRow + 1}", Type.Missing);
+                            Excel.Range r2 = worksheetSignature.get_Range("A1:A4").EntireRow;
+                            paste2.Insert(Excel.XlInsertShiftDirection.xlShiftDown, r2.Copy(Type.Missing));
+                            worksheet.Cells[dr.Length + headerRow + 3, 13] = signature;
+                            afterSignatureRow = dr.Length + headerRow + signatureRow;
+                        }
+                        else
+                        {
+                            // 因簽名列塞不小，增加分頁
+                            alladdSheet++;
+                            Excel.Worksheet worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
+                            worksheetSignature.Copy(worksheetn);
+                            worksheetn.Cells[3, 13] = signature;
+                            afterSignatureRow = signatureRow;
+                        }
+
+                        #region 加入 4*10 的框
+                        worksheet = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
+
+                        // 共要加入幾組 frameNum
+                        int frameNum = (int)Math.Ceiling(dr.Length * 1.0 / 2);
+
+                        // 有簽名列那頁下方還有空間放下
+                        if (afterSignatureRow <= setRow - frameRow)
+                        {
+                            Excel.Range paste2 = worksheet.get_Range($"A{afterSignatureRow + 1}", Type.Missing);
+                            Excel.Range r2 = worksheetFrame.get_Range("A9:A42").EntireRow;
+                            paste2.Insert(Excel.XlInsertShiftDirection.xlShiftDown, r2.Copy(Type.Missing));
+                            frameNum--;
+                            afterSignatureRow += frameRow;
+
+                            if (afterSignatureRow <= setRow - frameRow)
+                            {
+                                paste2 = worksheet.get_Range($"A{afterSignatureRow + 1}", Type.Missing);
+                                paste2.Insert(Excel.XlInsertShiftDirection.xlShiftDown, r2.Copy(Type.Missing));
+                                frameNum--;
+                            }
+                        }
+
+                        bool g1 = true;
+                        for (int f = 0; f < frameNum; f++)
+                        {
+                            // 此頁第一組
+                            if (g1)
+                            {
+                                alladdSheet++;
+                                Excel.Worksheet worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
+                                worksheetFrame.Copy(worksheetn);
+                            }
+
+                            // 此頁第2組
+                            else
+                            {
+                                Excel.Worksheet worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
+                                Excel.Range paste2 = worksheetn.get_Range($"A43", Type.Missing);
+                                Excel.Range r2 = worksheetFrame.get_Range("A9:A42").EntireRow;
+                                paste2.Insert(Excel.XlInsertShiftDirection.xlShiftDown, r2.Copy(Type.Missing));
+                            }
+
+                            g1 = !g1;
+                        }
+                        #endregion
+
+                        Excel.Range cell;
+                        if (frameNum == 0)
+                        {
+                            Excel.Worksheet worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
+                            Excel.Range paste2 = worksheetn.get_Range($"A52", Type.Missing);
+                            Excel.Range r2 = worksheetPicture.get_Range("A1:A20").EntireRow;
+                            paste2.Insert(Excel.XlInsertShiftDirection.xlShiftToRight, r2.Copy(Type.Missing));
+
+                            if (!string.IsNullOrEmpty(imgPath_BeforePicture))
+                            {
+                                cell = worksheetn.Cells[54, 2];
+                                worksheetn.Shapes.AddPicture(imgPath_BeforePicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 435, 280);
+                            }
+                            if (!string.IsNullOrEmpty(imgPath_AfterPicture))
+                            {
+                                cell = worksheetn.Cells[54, 10];
+                                worksheetn.Shapes.AddPicture(imgPath_AfterPicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 435, 280);
+                            }
+                        }
+                        else if (!g1)
+                        {
+                            Excel.Worksheet worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
+                            Excel.Range paste2 = worksheetn.get_Range($"A46", Type.Missing);
+                            Excel.Range r2 = worksheetPicture.get_Range("A1:A20").EntireRow;
+                            paste2.Insert(Excel.XlInsertShiftDirection.xlShiftToRight, r2.Copy(Type.Missing));
+
+                            if (!string.IsNullOrEmpty(imgPath_BeforePicture))
+                            {
+                                cell = worksheetn.Cells[48, 2];
+                                worksheetn.Shapes.AddPicture(imgPath_BeforePicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 435, 285);
+                            }
+                            if (!string.IsNullOrEmpty(imgPath_AfterPicture))
+                            {
+                                cell = worksheetn.Cells[48, 10];
+                                worksheetn.Shapes.AddPicture(imgPath_AfterPicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 435, 285);
+                            }
+                        }
+                        else
+                        {
+                            alladdSheet++;
+                            Excel.Worksheet worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
+                            worksheetPicture.Copy(worksheetn);
+
+                            worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
+                            if (!string.IsNullOrEmpty(imgPath_BeforePicture))
+                            {
+                                cell = worksheetn.Cells[3, 2];
+                                worksheetn.Shapes.AddPicture(imgPath_BeforePicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 430, 285);
+                            }
+                            if (!string.IsNullOrEmpty(imgPath_AfterPicture))
+                            {
+                                cell = worksheetn.Cells[3, 10];
+                                worksheetn.Shapes.AddPicture(imgPath_AfterPicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 430, 285);
+                            }
+                        }
+                    }
+                }
+
+                for (int i = 0; i < 4; i++)
+                {
+                    worksheet = excel.ActiveWorkbook.Worksheets[1];
+                    worksheet.Delete();
+                }
+
+                #region Save & Show Excel
+
+                pdfFileName = $"FabricOvenTestDetailReportToPDF{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
+                string excelFileName = $"FabricOvenTestDetailReportToPDF{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+
+                string pdfPath = Path.Combine(baseFilePath, "TMP", pdfFileName);
+                string excelPath = Path.Combine(baseFilePath, "TMP", excelFileName);
+
+                excel.ActiveWorkbook.SaveAs(excelPath);
+                excel.Quit();
+
+                bool isCreatePdfOK = ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
+                if (!isCreatePdfOK)
+                {
+                    result.Result = false;
+                    result.ErrorMessage = "ConvertToPDF fail";
+                    return result;
+                }
+
+                #endregion
+                Marshal.ReleaseComObject(worksheet);
+                Marshal.ReleaseComObject(excel);
+            }
+            catch (Exception ex)
+            {
+
+                result.Result = false;
+                result.ErrorMessage = ex.ToString();
+            }
+
+
+
+            return result;
+        }
         public BaseResult DeleteOven(string poID, string TestNo)
         {
             BaseResult baseResult = new BaseResult();
