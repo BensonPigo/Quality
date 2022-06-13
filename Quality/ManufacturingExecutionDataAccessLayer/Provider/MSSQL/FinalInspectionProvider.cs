@@ -1519,10 +1519,10 @@ where   ID = @FinalInspectionID
             if (inspectionType == "InlineInspection")
             {
                 dynamicCol = @"
-[SewerID] = r.Operator,
-[Station] = r.Station,
-[Line] = r.Line,
-[Operation] = r.Operation,
+[SewerID] = SUBSTRING(r.Operator,1, 255),
+[Station] = SUBSTRING(r.Station,1, 255),
+[Line] = SUBSTRING(r.Line,1, 255),
+[Operation] = SUBSTRING(r.Operation,1, 255),
 [Size] = ''
 ";
             }
