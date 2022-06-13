@@ -17,14 +17,20 @@
     }
 
     .fistTD {
-        width: 70%;
+        width: 55%;
         text-align: right;
         vertical-align: middle;
     }
 
     .secTD {
-        width: 50%;
+        width: 20%;
         text-align: center;
+        vertical-align: middle;
+    }
+
+    .thirdTD {
+        width: 25%;
+        text-align: left;
         vertical-align: middle;
     }
 
@@ -95,7 +101,7 @@
                     @*@Html.CheckBox("GarmentWashingDoc")*@
                     @Html.CheckBoxFor(o => o.GarmentWashingDoc, new { @class = "notSelectAll" })
                 </td>
-                <td>
+                <td class="thirdTD"> 
                     <label class="tip">@Model.FGWT</label>
                 </td>
             </tr>
@@ -106,7 +112,7 @@
                 <td class="secTD">
                     @Html.CheckBoxFor(o => o.CheckFGPT, new { @class = "notSelectAll" })
                 </td>
-                <td>
+                <td class="thirdTD">
                     <label class="tip">@Model.FGPT</label>
                 </td>
             </tr>
