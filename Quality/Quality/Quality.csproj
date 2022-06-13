@@ -198,6 +198,8 @@
     <Compile Include="Areas\FinalInspection\FinalInspectionAreaRegistration.cs" />
     <Compile Include="Areas\SampleRFT\Controllers\BACriteriaController.cs" />
     <Compile Include="Areas\SampleRFT\Controllers\CFTCommentsController.cs" />
+    <Compile Include="Areas\SampleRFT\Controllers\InspBySPQueryController.cs" />
+    <Compile Include="Areas\SampleRFT\Controllers\InspectionBySPController.cs" />
     <Compile Include="Areas\SampleRFT\Controllers\InspectionController.cs" />
     <Compile Include="Areas\SampleRFT\Controllers\InspectionDefectListController.cs" />
     <Compile Include="Areas\SampleRFT\Controllers\MeasurementController.cs" />
@@ -226,6 +228,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\FinalInspection\CSS\FinalInspection.css" />
+    <Content Include="Areas\SampleRFT\CSS\InspectionBySP.css" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -405,6 +408,31 @@
     <Content Include="Areas\BulkFGT\Views\PerspirationFastness\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\PerspirationFastness\Detail.cshtml" />
     <Content Include="Areas\BulkFGT\Views\AccessoryOvenWash\WashingFastness.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\InspectionBySP\Index.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\Shared\_ForAll_Layout.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\InspectionBySP\Setting.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\InspectionBySP\CheckList.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\Shared\_SampleRFTInspection_Layout.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\InspectionBySP\Measurement.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\InspectionBySP\MeasurementPicture.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\Shared\ScreenShot_ForRFTInsp.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\InspectionBySP\AddDefect.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\InspectionBySP\AddDefectPicture.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\Shared\ScreenShot_ForRFTInsp_Defect.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\InspectionBySP\BeautifulProductAudit.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\InspectionBySP\BAPicture.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\Shared\ScreenShot_ForRFTInsp_BA.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\InspectionBySP\DummyFitting.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\Shared\ScreenShot_ForRFTInsp_DF.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\InspectionBySP\Others.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\InspBySPQuery\Index.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\InspBySPQuery\Detail.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\InspBySPQuery\_Tab1_Layout.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\InspBySPQuery\_Tab2_Layout.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\InspBySPQuery\_Tab3_Layout.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\InspBySPQuery\_Tab4_Layout.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\InspBySPQuery\_Tab5_Layout.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\InspBySPQuery\_Tab6_Layout.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -917,6 +945,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="XLT\FinalInspectionQuery.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\InspBySPQuery.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\InspBySPQuery_Detail.xlsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="XLT\CFT Comment Report.xltx">

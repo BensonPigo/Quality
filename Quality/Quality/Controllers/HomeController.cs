@@ -69,6 +69,7 @@ namespace Quality.Controllers
             if (result.Result)
             {
                 this.UserID = result.pass1.ID;
+                this.UserName = result.pass1.UserName;
                 this.BulkFGT_Brand = result.pass1.BulkFGT_Brand;
                 this.UserMail = result.UserMail;
                 this.MenuList = result.Menus;

@@ -12,6 +12,7 @@
         font-weight: bold;
         padding: 1em;
     }
+
     .display-None {
         display: none;
     }
@@ -59,6 +60,7 @@
                 img.src = src;
                 imgSet.src = src;
                 OtherSetting(ImgID, 'a' + ImgID);
+                AddToTemp(ImgID);
             }
         };
 
@@ -137,6 +139,51 @@
         const imgSet = document.querySelector("#" + ImgID);
         const aSet = document.querySelector("#" + aID);
 
-        aSet.href = imgSet.src;
+        //aSet.href = imgSet.src;
+    }
+
+    function AddToTemp(ImgID) {
+
+        const imgSet = document.querySelector("#" + ImgID);
+
+        var Img = imgSet.src.replace("data:image/png;base64,", "");
+
+        var data =
+        {
+            TempImage: Img,
+        };
+
+        $.ajax({
+            url: "@Url.Action("AddDefectPicTemp", "InspectionBySP", new { Area = "SampleRFT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ data: data, SampleRFTInspection_DetailUKey: '@Model.UKey', ID: '@Model.ID', GarmentDefectCodeID:'@Model.GarmentDefectCodeID'  }),
+            async: true,
+            success: function (data) {
+
+                // 後端加入成功之後，前端下拉選單、對應圖片也要更新
+
+                var dropDownList = JSON.parse(data[0]);
+                var ImageList = JSON.parse(data[1]);
+
+                $('#ImageList').empty();
+                $.each(dropDownList, function (idx) {
+                    $('#ImageList').append('<option value="' + dropDownList[idx].Value + '">' + dropDownList[idx].Text + '</option>');
+                });
+
+                $('#ImageArea').empty();
+                $.each(ImageList, function (idx) {
+                    if (idx == 0) {
+                        $('#ImageArea').append('<img id="image_' + ImageList[idx].Seq + '" imageUkey="' + ImageList[idx].ImageUKey + '" class="DefectImages" type="" style="width:100%;"  src="data:image/png;base64,' + ImageList[idx].Image + '"/>');
+                    }
+                    else {
+                        $('#ImageArea').append('<img id="image_' + ImageList[idx].Seq + '" imageUkey="' + ImageList[idx].ImageUKey + '" class="DefectImages" type="" style="width:100%;display:none;"  src="data:image/png;base64,' + ImageList[idx].Image + '"/>');
+                    }
+                });
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
     }
 </script>

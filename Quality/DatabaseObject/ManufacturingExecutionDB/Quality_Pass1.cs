@@ -9,6 +9,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
         [StringLength(10)]
         [Display(Name = "使用者 ID")]
         public string ID { get; set; }
+        public string UserName { get; set; }
 
         /// <summary>職位</summary>
         [Required]

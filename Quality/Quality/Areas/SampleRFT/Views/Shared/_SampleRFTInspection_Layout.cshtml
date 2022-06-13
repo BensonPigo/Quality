@@ -1,0 +1,31 @@
+﻿<div class="UpWhiteBackgrond al-c">
+    <div class="al-m" style="width:100%">
+        @*<div style='float:left;'><h1 style="font-size:1.2em">Inspection Detail</h1></div>*@
+        @{
+            Dictionary<string, string> list = new Dictionary<string, string>();
+            list.Add("CheckList", "Check List");
+            list.Add("Measurement", "Measurement");
+            list.Add("AddDefect", "Add Defect");
+            list.Add("BeautifulProductAudit", "Beautiful Product Audit");
+            list.Add("DummyFitting", "Dummy Fitting");
+            list.Add("Others", "Others");
+
+            List<string> result = new List<string>();
+            string url = Request.Url.AbsoluteUri.ToLower();
+            string test = string.Empty;
+            foreach (var item in list)
+            {
+                if (url.Contains(item.Key.ToLower()))
+                {
+                    result.Add($"<div style='color:#E62513;display:inline-block'><h1 style='font-size:1.2rem'>{item.Value}</h1></div>");
+                }
+                else
+                {
+                    result.Add($"<div style='display:inline-block'><h1 style='font-size:1.2rem'>{item.Value}</h1></div>");
+                }
+            }
+            string link = string.Join(" <img src='/Image/Icon/East.png' style='width:1.5em;vertical-align:middle' /> ", result);
+            @Html.Raw(link)
+        }
+    </div>
+</div>

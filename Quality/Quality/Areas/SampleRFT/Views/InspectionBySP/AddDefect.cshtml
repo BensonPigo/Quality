@@ -1,0 +1,490 @@
+﻿@model DatabaseObject.ViewModel.SampleRFT.InspectionBySP_AddDefect
+
+@{
+    ViewBag.Title = "AddDefect";
+    Layout = "~/Areas/SampleRFT/Views/Shared/_ForAll_Layout.cshtml";
+}
+
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+
+@Html.Partial("~/Areas/SampleRFT/Views/Shared/_SampleRFTInspection_Layout.cshtml")
+
+@section InspectionBySP_head{
+    <link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+    <link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+    <link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+
+    <style type="text/css">
+        #CheckListTable_previous, #CheckListTable_next {
+            color: white !important;
+        }
+
+        tr.shown td.details-control {
+            background: url('/Image/Icon/ChildRowClose.png') no-repeat center center;
+        }
+
+        td.details-control {
+            background: url('/Image/Icon/ChildRowOpen.png') no-repeat center center;
+        }
+
+        #CheckListTable {
+            font-size: 1.4em;
+        }
+        h1 {
+            font-size: 2vh; 
+            font-weight: 900;
+        }
+        h4{
+            font-size:1rem;
+        }
+    </style>
+}
+<div class="DownWhiteBackgrond">
+    @using (Html.BeginForm("AddDefect", "InspectionBySP", FormMethod.Post, new { @id = "AddDefectForm", onsubmit = "return checkValue(this.submitted)" }))
+    {
+
+        <div style="padding:2em 3em 2em 3em;width:80%;float:left;position: absolute;transform: translate(-50%, 0%);left: 50%">
+            <div>
+                <h1>
+                    How many reject Qty(pcs)
+                    @Html.TextBox("RejectQty", Model.RejectQty, new { @type = "number", @name= "addDefct.RejectQty", @style = "width:10vw", @Max = Model.MaxRejectQty, @class = "form-control center-block", @onchange = $"value=QtyCheck(value,{Model.MaxRejectQty})" })
+                </h1>
+            </div>
+            <table id="CheckListTable" class="cell-border" style="width:100%"></table>
+        </div>
+        <div style="width:100%">
+            <input type="hidden" id="goPage" name="goPage">
+            <button id="btnBack" onclick="this.form.submitted=this.value;" type="submit" value="Back" class="button" style="right:7em;">Back</button>
+            <button id="btnNext" onclick="this.form.submitted=this.value;" type="submit" value="Next" style="right:0;" class="button">Next</button>
+        </div>
+
+        @Html.Hidden("ID", Model.ID)
+        @Html.Hidden("MaxRejectQty", Model.MaxRejectQty)
+        @*@Html.Hidden("SampleSize", Model.SampleSize)*@
+
+    }
+
+</div>
+
+
+<div class="detail-dialog AreaCodeEdit" title="Defect Area">
+    <div class="detail-dialog-content dialog-content-w-icon" style="height: 80vh; justify-content: normal">
+
+
+
+        <div style="width:18%;height:90%;">
+            <div style="width: 100%; height: 5%; background-color: navajowhite; text-align: center; vertical-align: middle; border: 1px solid black;">
+                <h1 style="font-size: 2vh; font-weight: 900;padding-top:0.8vh; ">
+                    Area-1
+                </h1>
+            </div>
+            <div id="AreaInside" value="Inside" onclick="AreaTypeChange('Inside',this)" style="width: 100%; line-height: 12vh; background-color: #ffdbdb; border: 1px solid black; text-align: center;">
+                <h1>Inside</h1>
+            </div>
+            <div id="AreaOutside" value="Outside" onclick="AreaTypeChange('Outside',this)" style="width: 100%; line-height: 12vh; background-color: #ffdbdb; border: 1px solid black;  text-align: center;">
+                <h1>Outside</h1>
+            </div>
+            <br />
+            <h1 style="color:white">Can Chose <span id="AreaQty" style="color:yellow">0</span> Area</h1>
+            <br />
+            <h1 style="color:white"><span id="AreaSelectedQty" style="color:yellow">0</span> Areas have been selected</h1>
+            <br />
+            <br />
+            <button id="btnAreaSave" onclick="AreaSave()" style="width: 100%; height: 3vh; background-color: lightblue;color:blue">Save</button>
+        </div>
+
+        <div style="width:2%;height:90%;border:0">
+        </div>
+
+        <div style="width:80%;height:90%;background-color:#ffdbdb;">
+            <div style="width: 100%; height: 5%; background-color: navajowhite; text-align: center; vertical-align: middle; border: 1px solid black;">
+                <h1 style="font-size: 2vh; font-weight: 900; padding-top: 0.8vh; ">
+                    Area-2
+                </h1>
+            </div>
+
+            @foreach (var Area in Model.Areas)
+            {
+                <div class="AreeItem @Area.Type" value="@Area.Code" locationType="@Area.Type" chioced="false" onclick="AreaClick(this)" style="width: 20%;  line-height: 8vh; background-color: lightpink; text-align: center; vertical-align: middle; border: 1px solid black; float: left;display:none">
+                    <h4 style="font-weight: 900; ">
+                        @Area.Code
+                    </h4>
+                </div>
+            }
+        </div>
+
+    </div>
+</div>
+
+
+@section InspectionBySP_script
+{
+    <script>
+        var EditMode = false; //彈出視窗設定
+        var msg = new MessagerAlert();
+
+        // 摺疊資料需先轉成array
+        var adata = [];
+
+        var table;
+        var items = @Html.Raw(Json.Encode(Model.ListDefectItem));
+        var lookup = {};
+        var result = [];
+        var MaxRejectQty = 0;
+        var targetArea = '';
+
+
+        // 取出群組
+        for (var item, i = 0; item = items[i++];) {
+            var code = item.DefectTypeDesc;
+
+            if (!(code in lookup)) {
+                lookup[code] = 1;
+                result.push(code);
+            }
+        }
+
+        // 組摺疊用的array
+        var keyCount = 0;
+
+        while (keyCount < result.length)
+        {
+            var temp = [];
+
+            for (var i = 0; i < items.length; i++) {
+
+                if (result[keyCount] == items[i].DefectTypeDesc) {
+
+                    //var FinalInspection_DetailImage = items[i].ListFinalInspectionDefectImage;
+                    temp.push([
+                        items[i].UKey
+                        , items[i].DefectCodeDesc
+                        , items[i].Qty
+                        , items[i].RowIndex
+                        , items[i].GarmentDefectCodeID
+                        , items[i].GarmentDefectTypeID
+                        , items[i].Responsibility
+                        , items[i].AreaCodes
+                        , items[i].ID
+                        , items[i].DefectCode
+                    ]);
+                }
+            }
+
+            adata.push([null, result[keyCount], temp])
+            keyCount++
+        }
+
+
+        $(function () {
+
+            @Html.Raw(Model.ErrorMessage)
+
+            table = $('#CheckListTable').DataTable({
+                data: adata,
+                autoWidth: false,
+                destroy: true,
+                columnDefs: [
+                    { targets: 0, width: "2%", orderable: false },
+                    { targets: 1, width: "98%", orderable: false },
+                ],
+                columns: [
+                    {
+                        "className": "details-control",
+                    },
+                    {
+                        "style": "color:#E62513",
+                    },
+                ],
+                "filter": false,
+                "paging": false,
+                "info": false,
+                "ordering": false,
+                "pageLength": 10,
+                "scrollY": "50vh",
+                "scrollCollapse": true,
+                "createdRow": function (row, data, index) {
+                    $('td', row).css('background-color', '#FAA7A7');
+                    //取出DefectType 作為每一個大項的Key
+                    $('td', row).attr('ID', 'CheckListTable_' + data[1].split('-')[0]);
+                }
+            });
+
+            $("#CheckListTable tbody").on("click", "td.details-control", function () {
+                var tr = $(this).closest('tr');
+                var row = table.row(tr);
+
+                if (row.child.isShown()) {
+                    row.child.hide();
+                    tr.removeClass('shown');
+                }
+                else {
+                    row.child(format(row.data())).show();
+                    tr.addClass('shown');
+                }
+            });
+
+
+            $(".detail-dialog").dialog({
+                autoOpen: false,
+                modal: true,
+                closeText: ' ',
+                width: 1000,
+                minHeight: 700,
+                position: {
+                    my: "center top",
+                    at: "center top",
+                    of: window
+                },
+                dialogClass: "site-box",
+                open: function (event, ui) {
+                    $('.ui-widget-overlay').bind('click', function () {
+                        //location.reload();//強制Refresh頁面 Benson
+                        $(".ui-dialog-content").dialog('close');
+                    });
+                    $(this).parent().siblings().find(".ui-dialog-content").dialog('close');
+
+                },
+                close: function () {
+                },
+            });
+            $(".AreaCodeEdit").dialog({
+                width: "70%",
+
+            });
+
+
+            $("#RejectQty").change(function () {
+                if ($(this).val() == '') {
+                    $(this).val(0);
+                }
+            });
+        });
+
+        function format(d) {
+            var list = d[2];
+            var sTr = "";
+
+            $(list).each(function (index, value) {
+
+                var UKey = value[0];
+                var DefectCode = value[9];
+                var Qty = value[2];
+                var RowIndex = value[3];
+                var Responsibility = value[6];
+                var AreaCodes = value[7];
+                var ID = value[8];
+                var GarmentDefectCodeID = value[4];
+                var opt1Select = Responsibility == "MR" ? "selected" : "";
+                var opt2Select = Responsibility == "Sub-corn" ? "selected" : "";
+                var opt3Select = Responsibility == "Materials" ? "selected" : "";
+                var opt4Select = Responsibility == "Sewing Line" ? "selected" : "";
+                var opt5Select = Responsibility == "Others-CCDA Issue/Design Issue" ? "selected" : "";
+
+                sTr = sTr + "<tr><td style='width:30%'>" + value[1] + "</td>";
+                sTr = sTr + `<td style='vertical-align: middle'>
+    <input type='hidden' id='addDefct.ListDefectItem[${RowIndex}].ID' name='addDefct.ListDefectItem[${RowIndex}].ID' value='${ID}'>
+    <input type='hidden' id='addDefct.ListDefectItem[${RowIndex}].DefectCode' name='addDefct.ListDefectItem[${RowIndex}].DefectCode' value='${DefectCode}'>
+    <input type='hidden' id='addDefct.ListDefectItem[${RowIndex}].Ukey' name='addDefct.ListDefectItem[${RowIndex}].Ukey' value='${value[0]}'>
+    <input type='hidden' id='addDefct.ListDefectItem[${RowIndex}].RowIndex' name='addDefct.ListDefectItem[${RowIndex}].RowIndex' value='${RowIndex}'>
+    <input type='hidden' id='addDefct.ListDefectItem[${RowIndex}].GarmentDefectCodeID' name='addDefct.ListDefectItem[${RowIndex}].GarmentDefectCodeID' value='${value[4]}'>
+    <input type='hidden' id='addDefct.ListDefectItem[${RowIndex}].GarmentDefectTypeID' name='addDefct.ListDefectItem[${RowIndex}].GarmentDefectTypeID' value='${value[5]}'>
+    <input type='number' id='addDefct.ListDefectItem[${RowIndex}].Qty' inputCol="true" onchange='QtyChange("${value[5]}",${index},this)' name='addDefct.ListDefectItem[${RowIndex}].Qty'  min="0" style="width: 7vh" value='${Qty}' /></td>
+    <td> <img src="/Image/Icon/Camera.png" style="cursor: pointer;min-width:1.5vw;" onclick="ScreenShot(${UKey},${RowIndex},'${GarmentDefectCodeID}')"  /></td>
+
+    <td style = 'width:40%' > <input type='text' name='addDefct.ListDefectItem[${RowIndex}].AreaCodes' inputCol="true" onchange='AreaChange("${value[5]}",${index},this)' style="width:100%;" onclick="OpenArea('addDefct.ListDefectItem[${RowIndex}]')" readonly value='${AreaCodes}' /></td>
+    <td>
+        <select id='addDefct.ListDefectItem[${RowIndex}].Responsibility' onchange='ResponsibilityChange("${value[5]}",${index},this)' name='addDefct.ListDefectItem[${RowIndex}].Responsibility'>
+           <option value="MR" ${opt1Select} >MR</option>
+           <option value="Sub-corn" ${opt2Select} >Sub-corn</option>
+           <option value="Materials" ${opt3Select} >Materials</option>
+           <option value="Sewing Line" ${opt4Select} >Sewing Line</option>
+           <option value="Others-CCDA Issue/Design Issue" ${opt5Select} >Others-CCDA Issue/Design Issue</option>
+        </select>
+    </td>
+    </tr>`;
+
+            });
+            return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
+                sTr +
+                '</table>';
+        }
+
+        function OpenArea(qtyObjName) {
+            AreaRefresh();
+            targetArea = qtyObjName;
+
+            $(".AreaCodeEdit").dialog("open");
+
+            var AreaCodes = $(`input[name='${qtyObjName}.AreaCodes']`).val()
+            var areas = AreaCodes.split(',');
+
+            // 抓取同列的Qty代入
+            $("#AreaQty").text($(`input[name='${qtyObjName}.Qty']`).val());
+            MaxRejectQty = $(`input[name='${qtyObjName}.Qty']`).val();
+
+
+            // 抓取已選取的AreaCode
+            if (AreaCodes == '') {
+                $("#AreaSelectedQty").text(0);
+            }
+            else {
+                // 已選取的AreaCode數量代入左側文字
+                $("#AreaSelectedQty").text(areas.length);
+
+                $.each(areas, function () {
+                    var area = this;
+                    var type = $(`div[value='${area}']`).attr('locationtype');
+
+                    // 已選取的AreaCode上色 + 修改屬性
+                    $(`div[value='${area}']`).attr('chioced', 'true').css('background-color', '#16caa9');
+
+                    $(`#Area${type}`).click();
+                });
+            }
+        }
+
+        function AreaRefresh() {
+            $("#AreaOutside").css('background-color', '#ffdbdb');
+            $("#AreaInside").css('background-color', '#ffdbdb');
+            $(`.AreeItem`).css('background-color', 'lightpink').attr('chioced', 'false').hide();
+
+        }
+
+        function AreaTypeChange(Type, obj) {
+
+            $(`.AreeItem.${Type}`).show();
+            $(`.AreeItem`).not(`.${Type}`).hide();
+
+            $(obj).css('background-color', '#16caa9');
+            if (Type == 'Inside') {
+                $("#AreaOutside").css('background-color', '#ffdbdb');
+            }
+            else {
+                $("#AreaInside").css('background-color', '#ffdbdb');
+            }
+        }
+
+        function AreaClick(obj) {
+            var isSelected = $(obj).attr('chioced');
+            var selectDatas = $('.AreeItem[chioced="true"]');
+
+            if (isSelected == 'false') {
+                if (selectDatas.length >= MaxRejectQty) {
+                    return;
+                }
+                $("#AreaSelectedQty").text(selectDatas.length + 1);
+
+                $(obj).attr('chioced', 'true');
+                $(obj).css('background-color', '#16caa9');
+            }
+            else {
+                $("#AreaSelectedQty").text(selectDatas.length - 1);
+                $(obj).attr('chioced', 'false');
+                $(obj).css('background-color', 'lightpink');
+            }
+        }
+
+        function AreaSave() {
+            var selectDatas = $('.AreeItem[chioced="true"]');
+            var resultList = [];
+            var result = '';
+
+            $.each(selectDatas, function () {
+                resultList.push($(this).attr('value'));
+
+            });
+
+            if (resultList.length != MaxRejectQty) {
+
+                return;
+            }
+
+            result = resultList.join(',');
+            $(`input[name='${targetArea}.AreaCodes']`).val(result);
+            $(`input[name='${targetArea}.AreaCodes']`).change();
+            $(".AreaCodeEdit").dialog("close");
+        }
+
+        // Qty改變時，把值寫回DataTable的Datasource
+        function QtyChange(DefectType, index,obj) {
+
+            table.row($(`#CheckListTable_${DefectType}`).closest('tr')).data()[2][index][2] = $(obj).val();
+
+            $(`input[name='addDefct.ListDefectItem[${index}].AreaCodes']`).val('');
+            table.row($(`#CheckListTable_${DefectType}`).closest('tr')).data()[2][index][7] = '';
+        }
+
+        function AreaChange(DefectType, index, obj) {
+            table.row($(`#CheckListTable_${DefectType}`).closest('tr')).data()[2][index][7] = $(obj).val();
+        }
+
+        function ResponsibilityChange(DefectType, index, obj) {
+            table.row($(`#CheckListTable_${DefectType}`).closest('tr')).data()[2][index][6] = $(obj).val();
+        }
+
+        function checkValue(self) {
+
+            document.getElementById("goPage").value = self;
+
+            ShowLoading();
+
+            //為避免POST抓不到畫面上的控制項，因此要全部打開
+            var trlist = $("#CheckListTable tbody td.details-control");
+
+            trlist.each(function () {
+                var tr = $(this).closest('tr');
+                var row = table.row(tr);
+
+                if (row.child.isShown()) {
+                    // 打開的就不用管他
+                    //row.child.hide();
+                    //tr.removeClass('shown');
+                }
+                else {
+                    row.child(format(row.data())).show();
+                    tr.addClass('shown');
+                }
+            });
+
+            var areacodess = $(`input[name$='AreaCodes'][inputCol=true]`);
+            var detailQty = $(`input[name$='Qty'][inputCol=true]`);
+
+            var index = 0;
+
+
+            for (const element of detailQty) {
+                if ($($(`input[name$='Qty'][inputCol=true]`)[index]).val() != 0 && $($(`input[name$='AreaCodes'][inputCol=true]`)[index]).val() == '') {
+                    msg.WithError('Defect Area Cannot be empty');
+                    NonLoading();
+                    return false;
+                }
+                index++;
+            }
+
+            return true;
+    }
+
+
+        function ScreenShot(DetailUkey, RowIndex, DefectCodeID) {
+                window.open('@Url.Action("AddDefectPicture")?ID=@Model.ID&GarmentDefectCodeID=' + DefectCodeID + '&SampleRFTInspection_DetailUKey=' + DetailUkey, "Picture", config = 'toolbar=no,status=no,location=no,width=1500,height=1000');
+            }
+
+
+
+
+        function QtyCheck(value, Max) {
+            if (parseFloat(value) >= Max) {
+                return Max;
+            }
+            else if (parseInt(value) < 0) {
+                return 0;
+            }
+
+            return Number.parseInt(value);
+        }
+    </script>
+}

@@ -1,0 +1,933 @@
+﻿@model DatabaseObject.ViewModel.SampleRFT.InspectionBySP_Measurement
+
+@{
+    ViewBag.Title = "Measurement";
+    Layout = "~/Areas/SampleRFT/Views/Shared/_ForAll_Layout.cshtml";
+}
+
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+
+@Html.Partial("~/Areas/SampleRFT/Views/Shared/_SampleRFTInspection_Layout.cshtml")
+
+
+<style type="text/css">
+
+
+
+    .col-auto {
+        margin: 1em
+    }
+
+    .sub_title {
+        font-size: 1.5em;
+        color: #999999
+    }
+
+
+    .searchFont {
+        font-size: 1vw;
+        font-weight: 900;
+    }
+
+    .viewFont {
+        font-size: 1.5vw;
+        font-weight: 900;
+    }
+
+    .iconPlus {
+        background: url('/Image/Icon/Plus.png')no-repeat center / 80% 80%;
+        height: 1.5vw;
+        width: 1.5vw;
+        vertical-align: middle;
+        cursor: pointer;
+        /*display: block;*/
+        /* Other styles here */
+    }
+
+    .iconReduce {
+        background: url('/Image/Icon/Reduce.png')no-repeat center / 80% 80%;
+        height: 1.5vw;
+        width: 1.5vw;
+        vertical-align: middle;
+        cursor: pointer;
+        /*display: block;*/
+        /* Other styles here */
+    }
+</style>
+
+@using (Html.BeginForm("Measurement", "InspectionBySP", FormMethod.Post, new { @id = "MeasurementForm", onsubmit = "return checkValue(this.submitted);" }))
+{
+    <div class="DownLeftWhiteBackgrond">
+        <div style="border:0px;padding:2vh;">
+            <h1 style="font-size: 3vh; font-weight: 900; color: #999999 ">Measurement for what?</h1>
+
+        </div>
+        <table style="width: 100%; margin-top: 2vh; ">
+            <tbody>
+                <tr>
+                    <td align="right"><p class="searchFont">Article</p></td>
+                    <td align="left" style="padding-left: 1vw;">
+                        @Html.DropDownListFor(o => o.ListArticle, Model.ListArticle, null, new { @class = "form-control", id = "dropArticle" })
+                    </td>
+                </tr>
+                <tr>
+
+                    <td align="right"><p class="searchFont">Size</p></td>
+                    <td align="left" style="padding-left: 1vw;">
+                        @Html.DropDownListFor(o => o.ListSize, (List<SelectListItem>)ViewBag.ListSize, null, new { @class = "form-control", id = "dropSize" })
+                    </td>
+                </tr>
+
+                <tr>
+                    <td align="right"><p class="searchFont">Product Type</p></td>
+                    <td align="left" style="padding-left: 1vw;">
+                        @Html.DropDownListFor(o => o.ListProductType, Model.ListProductType, null, new { @class = "form-control", id = "dropProductType" })
+                    </td>
+
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+    <div class="DownRightWhiteBackgrond">
+        <div style="border:0px;padding:2vh;">
+            <h1 style="font-size: 3vh; font-weight: 900; color: #999999 ">Measurement</h1>
+            <button type="button" class="site-btn btn-blue" style="position:absolute;top:1em;right:17.2em" onclick="open_View();">View</button>
+            <button type="button" class="site-btn btn-blue" style="position:absolute;top:1em;right:8.6em" onclick="OpenPhoto();">Photo</button>
+            <button type="button" class="site-btn btn-blue" id="Save" style="position:absolute;top:1em;right:0">Save</button>
+
+            <table style="width: 20vw;">
+                <tr>
+                    <td><p class="searchFont">Unit</p></td>
+                    <td>@Html.TextBoxFor(o => o.SizeUnit, new { @class = "form-control", @disabled = "disabled", @style = "width:10vw" }) </td>
+                </tr>
+            </table>
+
+            <div style=" width: 51vw; height: 54vh; overflow-y: auto;">
+                <table class="MeasurementTable table table-striped display">
+
+                    <thead style="text-align: center; font-size: 1.5vw; font-weight: 900;">
+                        <tr>
+
+                            <th style="width:50vw">
+                                <p>Description</p>
+                            </th>
+                            <th style="width:10vw">
+                                <p>Tol(+)</p>
+                            </th>
+                            <th style="width:10vw">
+                                <p>Tol(-)</p>
+                            </th>
+                            <th style="width:10vw">
+                                <p idx="SizeCode"></p>
+                            </th>
+                            <th style="width:28vw">
+                                <p></p>
+                            </th>
+                            <th style="width:10vw">
+                                <p>Diff</p>
+                            </th>
+                        </tr>
+                        <tr><th></th></tr>
+                    </thead>
+                    <tbody style="text-align: center;">
+                        <tr>
+                            <td colspan="6" style="height: 8vh;vertical-align: middle;" valign="middle" align="center">
+                                <h3>Data Loading.......</h3>
+                            </td>
+                        </tr>
+                        <tr><td></td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+
+        </div>
+
+        <input type="hidden" id="goPage" name="goPage">
+        <div style="position:absolute;right:2em;bottom:7em;font-size:0.8em">Inline, Stagger stage can skip this step</div>
+        <button id="btnBack" onclick="this.form.submitted=this.value;" type="submit" value="Back" style="right:7em;" class="button">Back</button>
+        <button d="btnNext" onclick="this.form.submitted=this.value;" type="submit" value="Next" style="right:0;" class="button">Next</button>
+
+
+    </div>
+
+    @Html.HiddenFor(o => o.ID)
+    @Html.HiddenFor(o => o.OrderID)
+}
+
+
+<div class="detail-dialog to-edit-detail" title="View">
+    <div class="detail-dialog-content dialog-content-w-icon" style="height:40vh">
+        <table style="width: 100%; margin-top: 2vh; ">
+            <tbody>
+                <tr>
+                    <td align="right">
+                        <div class="col-auto"><p class="viewFont" style="color:white">Article</p></div>
+                    </td>
+                    <td align="center">
+                        <div class="col-auto"><select class="form-control" id="ViewListArticle" name="ViewListArticle"></select></div>
+                    </td>
+
+                    <td align="right"><p class="viewFont" style="color:white">Size</p></td>
+                    <td align="center">
+                        <div class="col-auto"><select class="form-control" id="ViewListSize" name="ViewListSize"></select></div>
+                    </td>
+                    <td width="10%" align="right"><p class="viewFont" style="color: white; width: 10vw;">Product Type</p></td>
+                    <td align="center">
+                        <div class="col-auto"><select class="form-control" id="ViewListProductType" name="ViewListProductType"></select></div>
+                    </td>
+                    <td align="right"><p class="viewFont" style="color:white">Unit</p></td>
+                    <td align="center">
+                        <div class="col-auto">
+                            @Html.TextBox("ViewSizeUnit", Model.SizeUnit, new { @style = "width:10vw", @class = "form-control", @disabled = "disabled" })
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="8">
+                        <div id="Content" style="background-color: white;">
+
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <br />
+        <div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    var msg = new MessagerAlert();
+    var OpenViewObj;
+
+    $(".detail-dialog").dialog({
+        autoOpen: false,
+        modal: true,
+        closeText: ' ',
+        width: 1000,
+        minHeight: 700,
+        position: {
+            my: "center top",
+            at: "center top",
+            of: window
+        },
+        dialogClass: "site-box",
+        open: function (event, ui) {
+            $('.ui-widget-overlay').bind('click', function () {
+                //location.reload();//強制Refresh頁面 Benson
+                $(".ui-dialog-content").dialog('close');
+            });
+            $(this).parent().siblings().find(".ui-dialog-content").dialog('close');
+
+        },
+        close: function () {
+        },
+    });
+
+    $(".to-edit-detail").dialog({
+        width: "70%",
+
+    });
+
+    $(".to-edit-detail").on("dialogclose", function (event, ui) {
+        EditMode = false;
+    });
+
+
+    function open_View() {
+        $.ajax({
+            url: "@Url.Action("OpenView")",
+            type: 'POST',
+            data: jQuery.param({ OrderID: "@Model.OrderID" }),
+            async: true,
+            success: function (data) {
+                var articleOption = "", sizeOption = "", productTypeOption = "";
+                var articleArrList = [], sizeArrList = [], productTypeArrList = [];
+
+                $.each(data, function (index, value) {
+                    articleArrList.push(value.Article);
+                    sizeArrList.push(value.Article+','+value.Size);
+                    productTypeArrList.push(value.Article + ',' +value.ProductType);
+                });
+
+                $.each(jQuery.unique(articleArrList), function (index, value) {
+                    articleOption += "<option value=" + value + ">" + value + "</option>";
+                });
+
+                $.each(jQuery.unique(sizeArrList), function (index, value) {
+                    sizeOption += "<option value=" + value + " >" + value.split(',')[1] + "</option>";
+                });
+
+                $.each(jQuery.unique(productTypeArrList), function (index, value) {
+                    productTypeOption += "<option value=" + value + ">" + value.split(',')[1] + "</option>";
+                });
+
+                $("#ViewListArticle").html(articleOption);
+                $("#ViewListSize").html(sizeOption);
+                $("#ViewListProductType").html(productTypeOption);
+
+                reloadViewitem();
+
+                var currentArticle = $("#ViewListArticle").val();
+                var currentSize = $("#ViewListSize").val();
+                var currentProductType = $("#ViewListProductType").val();
+
+                OpenViewObj = data;
+                ReloadViewData(data, currentArticle, currentSize, currentProductType);
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+
+        $(".to-edit-detail").dialog("open");
+    }
+
+
+
+    function OpenPhoto() {
+
+            window.open('@Url.Action("MeasurementPicture")?OrderID=@Model.OrderID', "Picture", config = 'toolbar=no,status=no,location=no,width=1000,height=600');
+    }
+
+    $(document).ready(function () {
+        $("#ViewListArticle").on("change", function () {
+            reloadViewitem();
+
+            ReloadViewData(OpenViewObj, $(this).val(), $("#ViewListSize").val(), $("#ViewListProductType").val());
+        });
+
+        $("#ViewListSize").change(function () {
+            ReloadViewData(OpenViewObj, $("#ViewListArticle").val(), $(this).val(), $("#ViewListProductType").val());
+        });
+
+        $("#ViewListProductType").change(function () {
+            ReloadViewData(OpenViewObj, $("#ViewListArticle").val(), $("#ViewListSize").val(), $(this).val());
+        });
+
+
+        $("#Save").click(Save);
+    });
+
+
+    function Save() {
+        var bodyList = [];
+
+        //表格筆數
+        var bodyCount = $('.MeasurementTable>tbody>tr').length;
+
+        // 逐一抓出DOM物件理的資料，組合物件
+        for (var i = 0; i < bodyCount; i++) {
+            var tr = $('.MeasurementTable>tbody>tr')[i];
+
+            var CodeDom = $(tr).find("td>p[idx=Code]")[0];
+            var ResultSizeSpecDom = $(tr).find("td>input[idx=ResultSizeSpec]")[0];
+            var MeasurementUkeyDom = $(tr).find("td>p[idx=MeasurementUkey]")[0];
+
+            var Code = $(CodeDom).text();
+            var ResultSizeSpec = $(ResultSizeSpecDom).val();
+            var MeasurementUkey = $(MeasurementUkeyDom).text();
+
+            var body =
+            {
+                MeasurementUkey: MeasurementUkey,
+                ResultSizeSpec: ResultSizeSpec,
+                Code: Code,
+            };
+            bodyList.push(body);
+        }
+
+        var head =
+        {
+            ID: '@Model.ID',
+            OrderID: '@Model.OrderID',
+            FactoryID: '@Model.FactoryID',
+            StyleUkey: '@Model.StyleUkey',
+            SewingLineID: '@Model.SewingLineID',
+            SelectedArticle: $("#dropArticle").val(),
+            SelectedSize: $("#dropSize").val(),
+            SelectedProductType: $("#dropProductType").val(),
+            ListMeasurementItem: bodyList
+        };
+
+
+        $.ajax({
+            url: '@Url.Action("MeasurementSingleSave", "InspectionBySP")',
+            type: 'POST',
+            data: jQuery.param({ Req: head }),
+            global: false,
+            async: false,
+            success: function (response) {
+
+                if (response.ExecuteResult != undefined) {
+                    if (response.ExecuteResult) {
+                        msg.WithSuccesCheck("Success!", function () {
+                            return true;
+                        });
+                    }
+                    else {
+                        msg.WithErrorCheck(response.ErrorMessage, function () {
+                            return false;
+                        });
+                    }
+                }
+                else {
+
+                    // response.Result = undefined，代表什麼都沒輸入就按下Save
+                    return true;
+                }
+            },
+            error: function (xhr, status) {
+                msg.WithError("Get View fail:" + xhr.responseText + " " + xhr.status);
+            }
+        });
+    }
+
+
+    function checkValue(self) {
+        document.getElementById("goPage").value = self;
+        @*
+        var SaveResult = false;
+        var bodyList = [];
+
+        //表格筆數
+        var bodyCount = $('.MeasurementTable>tbody>tr').length;
+
+        // 逐一抓出DOM物件理的資料，組合物件
+        for (var i = 0; i < bodyCount; i++) {
+            var tr = $('.MeasurementTable>tbody>tr')[i];
+
+            var CodeDom = $(tr).find("td>p[idx=Code]")[0];
+            var ResultSizeSpecDom = $(tr).find("td>input[idx=ResultSizeSpec]")[0];
+            var MeasurementUkeyDom = $(tr).find("td>p[idx=MeasurementUkey]")[0];
+
+            var Code = $(CodeDom).text();
+            var ResultSizeSpec = $(ResultSizeSpecDom).val();
+            var MeasurementUkey = $(MeasurementUkeyDom).text();
+
+            var body =
+            {
+                MeasurementUkey: MeasurementUkey,
+                ResultSizeSpec: ResultSizeSpec,
+                Code: Code,
+            };
+            bodyList.push(body);
+        }
+
+        var head =
+        {
+            ID: '@Model.ID',
+            OrderID: '@Model.OrderID',
+            FactoryID: '@Model.FactoryID',
+            StyleUkey: '@Model.StyleUkey',
+            SewingLineID: '@Model.SewingLineID',
+            SelectedArticle: $("#dropArticle").val(),
+            SelectedSize: $("#dropSize").val(),
+            SelectedProductType: $("#dropProductType").val(),
+            ListMeasurementItem: bodyList
+        };
+
+        $.ajax({
+            url: '@Url.Action("MeasurementSingleSave", "InspectionBySP")',
+            type: 'POST',
+            data: jQuery.param({ Req: head }),
+            global: false,
+            async: false,
+            success: function (response) {
+
+                if (response.Result != undefined) {
+                    if (response.Result) {
+                        return true;
+                    }
+                    else {
+                        msg.WithErrorCheck(response.ErrorMessage, function () {
+                            return false;
+                        });
+                    }
+                }
+                else {
+
+                    // response.Result = undefined，代表什麼都沒輸入就按下Save
+                    return true;
+                }
+            },
+            error: function (xhr, status) {
+
+                msg.WithErrorCheck("Get View fail:" + xhr.responseText + " " + xhr.status, function () {
+                    return false;
+                });
+            }
+        });
+        *@
+
+        ShowLoading();
+
+    }
+
+    function reloadViewitem() {
+        var article = $("#ViewListArticle").val();
+        var sizeOption = "", productTypeOption = "";
+
+        //切換Article時，Size和Product Type的資料會改變，因此需要新的預設值
+        var newDefaultSize = "";
+        var newDefaultProductType = "";
+
+        $("#ViewListSize > option").each(function () {
+
+            if (this.value.split(',')[0] == article) {
+                sizeOption += "<option value=" + this.value + ">" + this.text + "</option>";
+
+                //抓第一個Size當預設值
+                if (newDefaultSize == "" ) {
+                    newDefaultSize = this.value;
+                }
+            }
+            else {
+                //不是這個Article的Size隱藏
+                sizeOption += "<option hidden value=" + this.value + ">" + this.text + "</option>";
+            }
+        });
+
+        $("#ViewListSize").html(sizeOption);
+        $("#ViewListSize").val(newDefaultSize);
+
+        $("#ViewListProductType > option").each(function () {
+
+            if (this.value.split(',')[0] == article) {
+                productTypeOption += "<option value=" + this.value + ">" + this.text + "</option>";
+
+                //抓第一個roductType當預設值
+                if (newDefaultProductType == "") {
+                    newDefaultProductType = this.value;
+                }
+            }
+            else {
+                //不是這個Article的ProductType隱藏
+                productTypeOption += "<option hidden value=" + this.value + ">" + this.text + "</option>";
+            }
+        });
+
+        $("#ViewListProductType").html(productTypeOption);
+        $("#ViewListProductType").val(newDefaultProductType);
+
+        return true;
+    }
+
+
+    $(document).ready(function () {
+        @Html.Raw(Model.ErrorMessage)
+
+        $("#dropSize").on("change", function () {
+
+            ReloadData();
+
+        });
+
+        $("#dropArticle").change(function () {
+
+            var article = $(this).val();
+
+            $.ajax({
+                url: "@Url.Action("GetNewSizeByArticle", "InspectionBySP" )",
+                data: { Article: article },
+                type: 'POST',
+                dataType: "json",
+                async: false,
+                success: function (datas) {
+
+                    var sizeOption = "";
+                    var sizeArrList = [];
+
+                    $.each(datas, function (index, obj) {
+                        sizeArrList.push(obj.Value);
+                    });
+
+
+                    $.each(sizeArrList, function (index, value) {
+                        sizeOption += "<option value=" + value + " >" + value + "</option>";
+                    });
+
+                    $("#dropSize").html(sizeOption);
+
+                    ReloadData();
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        ReloadData();
+
+        $(".iconPlus").click(function () {
+            var Keyidx = $(this).attr("KeyIdx");
+            var currentCol = $(`input[idx=ResultSizeSpec][KeyIdx=${Keyidx}]`);
+
+            if ($(currentCol).attr("readonly") == "readonly") {
+                return;
+            }
+
+            var tpye = $(currentCol).attr("type");
+            var oldValue = 0;
+
+            if (tpye == "number") {
+                if ($(currentCol).val() != '') {
+                    oldValue = parseFloat($(currentCol).val());
+                }
+                var newValue = oldValue + 1;
+                $(currentCol).val(newValue).change();
+            }
+            if (tpye == "text") {
+                var newValue = 0;
+                if ($(currentCol).val() != '') {
+
+                    //有分數，例如：1 1/2，把整數位獨立出來+1
+                    if ($(currentCol).val().split(' ').length == 2) {
+                        var interg = $(currentCol).val().split(' ')[0];
+                        var float = $(currentCol).val().split(' ')[1];
+                        var tmp = parseInt(interg) + 1;
+                        newValue = tmp + ` ${float}`;
+
+                    }
+                    else {
+                        // 其餘直接轉成整數
+                        oldValue = parseFloat($(currentCol).val());
+                        newValue = oldValue + 1;
+                    }
+
+                }
+                else {
+                    newValue = oldValue + 1;
+                }
+
+                $(currentCol).val(newValue).change();
+            }
+        });
+
+        $(".iconReduce").click(function () {
+            var Keyidx = $(this).attr("KeyIdx");
+            var currentCol = $(`input[idx=ResultSizeSpec][KeyIdx=${Keyidx}]`);
+
+            if ($(currentCol).attr("readonly") == "readonly") {
+                return;
+            }
+
+
+            var tpye = $(currentCol).attr("type");
+            var oldValue = 0;
+
+            if (tpye == "number") {
+
+                if ($(currentCol).val() != '') {
+                    oldValue = parseFloat($(currentCol).val());
+                }
+                var newValue = oldValue - 1;
+                $(currentCol).val(newValue).change();
+            }
+            if (tpye == "text") {
+
+                var newValue = 0;
+                if ($(currentCol).val() != '') {
+
+                    //有分數，例如：1 1/2，把整數位獨立出來-1
+                    if ($(currentCol).val().split(' ').length == 2) {
+                        var interg = $(currentCol).val().split(' ')[0];
+                        var float = $(currentCol).val().split(' ')[1];
+                        var tmp = parseInt(interg) - 1;
+
+                        // 若整數位<=1，新值直接歸0
+                        if (interg <= 1) {
+                            newValue = 0;
+                        }
+                        else {
+                            newValue = tmp + ` ${float}`;
+                        }
+
+                    }
+                    else {
+                        // 其餘直接轉成整數
+                        oldValue = parseFloat($(currentCol).val());
+                        newValue = oldValue - 1;
+                    }
+
+                }
+                else {
+                    newValue = oldValue - 1;
+                }
+
+                $(currentCol).val(newValue).change();
+
+            }
+        });
+    });
+
+
+
+    function ReloadData() {
+
+        var dropArticle = document.getElementById("dropArticle");
+        var dropSize = document.getElementById("dropSize");
+        var dropProductType = document.getElementById("dropProductType");
+
+        if (dropArticle.value == "" || dropSize.value == "" || dropProductType.value == "") {
+            return;
+        }
+
+        var thead = "";
+        var SizeUnit = document.getElementById("SizeUnit").value ;
+        var tbody = "";
+
+
+        if (thead == "") {
+            thead += `<tr>";
+            <th style="width:50vw"><p>Description</p></th>
+            <th style="width:10vw"><p>Tol(+)</p></th>
+            <th style="width:10vw"><p>Tol(-)</p></th>
+            <th style="width:10vw"><p idx='SizeCode'>${dropSize.value}</p></th>
+            <th style="width:28vw"><button type="button" class="site-btn btn-blue" style="font-size:1rem;width:70%;" onclick="InputClear();">Clear</button></th>
+            <th style="width:10vw"><p>Diff</p></th>
+            </tr>`;
+        }
+
+
+        var items = @Html.Raw(Json.Encode(Model.ListMeasurementItem));
+        var KeyIdx = 0;
+        $.each(items, function (index, value) {
+            if (value.Size == dropSize.value) {
+
+                var readonly = "";
+                var bgColor = "white";
+                if (!value.CanEdit) {
+                    bgColor = "bg-lightgray";
+                    readonly = "readonly";
+                }
+
+                tbody +=  `<tr >
+                <td class='bg-lightblue' style ="vertical-align: middle;"><p style ='padding: 0.5vh'>${value.Description}</p></td>
+                <td class='bg-lightblue' style ="vertical-align: middle;"><p style ='padding: 0.5vh' idx='Tol+'>${value.Tol2}</p></td>
+                <td class='bg-lightblue' style ="vertical-align: middle;"><p style ='padding: 0.5vh' idx='Tol-'>${value.Tol1}</p></td>
+                <td class='bg-lightgray' style ="vertical-align: middle;"><p style ='padding: 0.5vh' idx='standard'>${value.SizeSpec}</p></td>
+                <td class='bg-lightgray' style ="display:none"><p style ='padding: 0.5vh' idx='Code'>${value.Code}</p></td>
+                <td class='bg-lightgray' style ="display:none"><p style ='padding: 0.5vh' idx='MeasurementUkey'>${value.MeasurementUkey}</p></td>
+`;
+
+                if (SizeUnit == "INCH") {
+                    tbody += "<td  style ='vertical-align: middle;' class='" + bgColor + "'><img class='iconPlus' KeyIdx='" + KeyIdx + "' /><input type='text' KeyIdx='" + KeyIdx + "' idx='ResultSizeSpec' placeholder= '__ __/__' style ='width:64%; height:3.5vh' class='" + bgColor + "' " + readonly + "><img KeyIdx='" + KeyIdx + "' class='iconReduce' /></td>";
+                }
+                else {
+                    tbody += "<td  style ='vertical-align: middle;' class='" + bgColor + "'><img class='iconPlus' KeyIdx='" + KeyIdx + "' /><input type='number' KeyIdx='" + KeyIdx + "' step='any' idx='ResultSizeSpec' style ='width:64%; height:2.5vh' class='" + bgColor + "' " + readonly + "><img KeyIdx='" + KeyIdx + "' class='iconReduce' /></td>";
+                }
+
+                tbody += "<td style ='vertical-align: middle;'><p style ='padding: 0.5vh' class='Diff'></p></td>";
+                tbody += "</tr>";
+
+                KeyIdx = KeyIdx + 1;
+            }
+        });
+
+        $('.MeasurementTable>thead').html(thead);
+        $('.MeasurementTable>tbody').html(tbody);
+
+        $(".MeasurementTable>tbody>tr>td>input[idx='ResultSizeSpec']").on('change', function () {
+            var unit = document.getElementById("SizeUnit").value;
+            const rules = /^(((([0-9]{1,3}[ ])|(^))\d{1,2}[/]\d{1,2})|([0-9]{1,3}))$/;
+            var bol = rules.test($(this).val());
+            var val = $(this).val();
+            var standard = $(this).parent().parent().children().find("p[idx='standard']").html();
+            var tolh = $(this).parent().parent().children().find("p[idx='Tol+']").html();
+            var toll = $(this).parent().parent().children().find("p[idx='Tol-']").html();
+
+            if (val == "" || val <= 0) {
+                $(this).val("");
+                $(this).parent().parent().children().find("p[class='Diff']").html('');
+                $(this).parent().parent().children().find("p[class='Diff']").parent().removeClass("bg-lightred");
+                return;
+            }
+
+            if (unit == "INCH" && !bol) {
+                msg.WithError("Format incorrect");
+                $(this).val("");
+                return;
+            }
+
+            // 計算Diff
+            if (unit.toString().toUpperCase() == "INCH") {
+                if (standard.toString().indexOf('.') > -1) {
+                    return;
+                }
+
+                var finval = FractionDiff(val.toString(), standard.toString());
+                $(this).parent().parent().children().find("p[class='Diff']").html(finval);
+
+                var sTolh = FractionAdd(standard.toString(), tolh.toString());
+                var sToll = FractionDiff(standard.toString(), toll.toString());
+
+                var diffTolh = String(FractionDiff(sTolh.toString(), val.toString()));
+                var diffToll = String(FractionDiff(val.toString(), sToll.toString()));
+                if (diffTolh.indexOf('-') > -1 || diffToll.indexOf('-') > -1) {
+                    $(this).parent().parent().children().find("p[class='Diff']").parent().addClass("bg-lightred");
+                }
+                else {
+                    $(this).parent().parent().children().find("p[class='Diff']").parent().removeClass("bg-lightred");
+                }
+            }
+            else {
+                if (standard.indexOf('/') > -1) {
+                    return;
+                }
+
+                var finval = accSubtr(val, standard);
+                $(this).parent().parent().children().find("p[class='Diff']").html(finval);
+
+                val = parseFloat(val);
+                var sTolh = parseFloat(accAdd(standard, tolh));
+                var sToll = parseFloat(accSubtr(standard, toll));
+                if (sTolh >= val && val >= sToll) {
+                    $(this).parent().parent().children().find("p[class='Diff']").parent().removeClass("bg-lightred");
+                }
+                else {
+                    $(this).parent().parent().children().find("p[class='Diff']").parent().addClass("bg-lightred");
+                }
+            }
+        });
+
+    }
+
+    // 傳入，OpenView 回傳的 Ajax 物件集合
+    function ReloadViewData(AjaxReturn, Article, Size, ProductType) {
+
+        if (Article == "" || Size == "" || ProductType == "" || AjaxReturn.length <= 0) {
+            return;
+        }
+
+        if (Size.split(',').length > 1) {
+            Size = Size.split(',')[1];
+        }
+
+        if (ProductType.split(',').length > 1) {
+            ProductType = ProductType.split(',')[1];
+        }
+
+
+        $.each(AjaxReturn, function () {
+            var AjaxObj = this;
+
+            if (AjaxObj.Article == Article && AjaxObj.Size == Size && AjaxObj.ProductType == ProductType) {
+
+                var datas = JSON.parse(AjaxObj.MeasurementDataByJson);
+
+                if (datas.length == 0) {
+                    msg.WithErrorCheck("No data Found", function () {
+                        return false;
+                    });
+                }
+                else {
+                    $('#Content').html(generateTable(datas, "Measurement"));
+                    $('#Content').children("table").addClass("table-striped");
+                    ChangeColor();
+                }
+            }
+
+        });
+    }
+
+    function InputClear() {
+        var cols = $(`input[idx=ResultSizeSpec]`);
+
+        $.each(cols, function () {
+            $(this).val('').change();
+        });
+    }
+
+
+    function ChangeColor() {
+        var unit = $('#ViewSizeUnit').val();
+        $.each($('#Content > table > tbody > tr'), function () {
+            var standard;
+            var tolh;
+            var toll;
+            var val;
+            $.each($(this).children(), function () {
+                var tdName = $(this).attr('idx');
+
+                if (tdName == null) {
+                    return false;
+                }
+
+                if (tdName == "Tol(+)") {
+                    tolh = $(this).html();
+                }
+
+                if (tdName == "Tol(-)") {
+                    toll = $(this).html();
+                }
+
+                if (isDate(tdName)) {
+                    val = $(this).html();
+                    $(this).css('background-color', 'rgb(234, 234, 113);');
+                }
+
+                if (tdName.indexOf('_aa') > -1) {
+                    standard = $(this).html();
+                    $(this).css('background-color', 'rgb(211, 211, 211);');
+                }
+
+                if (tdName.indexOf('diff') > -1) {
+                    $(this).css('background-color', 'rgb(234, 234, 113);');
+
+                    if (standard == null || val == null || tolh == null || toll == null) {
+                        return;
+                    }
+                    else {
+                        // 避免standard出現文字
+                        if (parseInt(standard.toString()) >= 0) {
+                            cal(unit, standard.toString(), val.toString(), tolh.toString(), toll.toString(), $(this));
+                        }
+                    }
+                }
+            });
+        });
+    }
+
+    function cal(unit, standard, val, tolh, toll, obj) {
+        if (unit == "INCH") {
+            if (standard.indexOf('.') > -1) {
+                return;
+            }
+            var sTolh = FractionAdd(standard, tolh);
+            var sToll = FractionDiff(standard, toll);
+            var diffTolh = String(FractionDiff(sTolh.toString(), val));
+            var diffToll = String(FractionDiff(val, sToll.toString()));
+
+            if (diffTolh.indexOf('-') > -1 || diffToll.indexOf('-') > -1) {
+                obj.addClass("red");
+            }
+            else {
+                obj.removeClass("red");
+            }
+        }
+        else {
+            if (standard.indexOf('/') > -1) {
+                return;
+            }
+
+            var sTolh = parseFloat(accAdd(standard, tolh));
+            var sToll = parseFloat(accSubtr(standard, toll));
+            if (sTolh >= val && val >= sToll) {
+                obj.removeClass("red");
+            }
+            else {
+                obj.addClass("red");
+            }
+        }
+    }
+</script>
