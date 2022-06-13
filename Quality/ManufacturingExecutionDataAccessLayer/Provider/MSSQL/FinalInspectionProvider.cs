@@ -76,9 +76,30 @@ select  ID                             ,
         AddDate                        ,
         EditName                       ,
         EditDate                       ,
-        HasOtherImage = Cast(IIF(exists(select 1 from SciPMSFile_FinalInspection_OtherImage b WITH(NOLOCK) where a.id= b.id),1,0) as bit)
+        HasOtherImage = Cast(IIF(exists(select 1 from SciPMSFile_FinalInspection_OtherImage b WITH(NOLOCK) where a.id= b.id),1,0) as bit),
+        CheckFGPT                      ,
+        [FGWT] = ISNULL(g.WashResult, 'Lacking Test'),
+        [FGPT] = fgpt.Result
 from FinalInspection a with (nolock)
-where   ID = @ID
+outer apply (
+	select [GarmentTestID] = g.ID, [WashResult] = case g.WashResult when 'F' then 'Failed Test' when 'P' then 'Completed Test' else 'Lacking Test' end
+	from FinalInspection_Order o 
+	left join [MainServer].[Production].dbo.GarmentTest g on o.OrderID = g.OrderID
+	where o.ID = a.ID
+)g
+outer apply (
+	select [Result] = case MAX(case [Result] when 'fail' then 2 when 'pass' then 1 else 0 end)  when 2 then 'Failed Test' when 1 then 'Completed Test' else 'Lacking Test' end
+	from (
+		select distinct [Result] = Lower(CASE WHEN  t.TestUnit = 'N' AND t.[TestResult] !='' THEN IIF( Cast( t.[TestResult] as float) >= cast( t.Criteria as float) ,'Pass' ,'Fail')
+					WHEN  t.TestUnit = 'mm' THEN IIF(  t.[TestResult] = '<=4' OR t.[TestResult] = '≦4','Pass' , IIF( t.[TestResult]='>4','Fail','')  )
+					WHEN  t.TestUnit = 'Pass/Fail' THEN t.[TestResult]
+			   ELSE ''
+			END)
+		from [MainServer].[Production].dbo.GarmentTest_Detail_FGPT t with(nolock)
+		where g.[GarmentTestID] = t.ID
+	)t
+)fgpt
+where a.ID = @ID
 ";
             IList<FinalInspection> listResult = ExecuteList<FinalInspection>(CommandType.Text, sqlGetData, objParameter);
 
@@ -276,6 +297,7 @@ update FinalInspection
         MetalDetectionDoc= @MetalDetectionDoc   ,
         GarmentWashingDoc= @GarmentWashingDoc   ,
         InspectionStep = @InspectionStep,
+        CheckFGPT = @CheckFGPT,
         EditName= @userID,
         EditDate= getdate()
 where   ID = @FinalInspectionID
@@ -284,6 +306,7 @@ where   ID = @FinalInspectionID
                     objParameter.Add("@userID", userID);
                     objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
                     objParameter.Add("@GarmentWashingDoc", finalInspection.GarmentWashingDoc);
+                    objParameter.Add("@CheckFGPT", finalInspection.CheckFGPT);
                     objParameter.Add("@MetalDetectionDoc", finalInspection.MetalDetectionDoc);
                     objParameter.Add("@SealingSampleDoc", finalInspection.SealingSampleDoc);
                     objParameter.Add("@FabricApprovalDoc", finalInspection.FabricApprovalDoc);
