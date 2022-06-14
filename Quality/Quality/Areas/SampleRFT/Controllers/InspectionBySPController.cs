@@ -45,6 +45,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             }
             else
             {
+                Req.FactoryID = this.FactoryID;
                 model = _Service.Get_SearchResults(Req);
 
                 if (!model.Result)

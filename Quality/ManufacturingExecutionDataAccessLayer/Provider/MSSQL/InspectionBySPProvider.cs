@@ -87,7 +87,6 @@ OUTER APPLY(
 		),1,1,'')
 )Articles
 where o.Category='S' AND o.Junk=0 
-AND o.FtyGroup ='ESP'
 AND NOT EXISTS(
 	select 1
 	from SampleRFTInspection
@@ -117,6 +116,12 @@ AND NOT EXISTS(
             {
                 SbSql.Append($@" AND o.SeasonID = @SeasonID  ");
                 para.Add("@SeasonID", Req.SeasonID);
+            }
+
+            if (!string.IsNullOrEmpty(Req.FactoryID))
+            {
+                SbSql.Append($@" AND o.FtyGroup = @FactoryID  ");
+                para.Add("@FactoryID", Req.FactoryID);
             }
 
 
