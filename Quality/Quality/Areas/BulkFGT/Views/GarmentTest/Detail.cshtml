@@ -397,6 +397,7 @@
                                         <tr>
                                             @{
                                                 bool bol710 = Model.Main.WashName == null || Model.Main.WashName.Equals("710");
+                                                bool bol701 = Model.Main.WashName == null || Model.Main.WashName.Equals("701");
                                                 string wash3 = bol710 ? "After Wash 10" : "After Wash 3";
                                                 string shrink3 = bol710 ? "Shrinkage 10(%)" : "Shrinkage 3(%)";
 
@@ -460,6 +461,7 @@
                                             {
                                                 KeyToFgwt = "i)";
                                             }
+                                            KeyToFgwt = KeyToFgwt + Model.Shrinkages[i].Location;
                                             <tr>
                                                 <td>
                                                     @Html.TextBoxFor(o => Model.Shrinkages[i].Location, new { @readonly = "readonly", @style = "width:6vw;" })
@@ -468,10 +470,10 @@
                                                 </td>
                                                 <td style="width: 18vw;">@Html.TextBoxFor(o => Model.Shrinkages[i].Type, new { @readonly = "readonly" })</td>
                                                 <td>
-                                                    <input id="Shrinkages_@{@i}__BeforeWash" name="Shrinkages[@i].BeforeWash" class="BeforeWash" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].BeforeWash" style="width: 8vw;">
+                                                    <input id="Shrinkages_@{@i}__BeforeWash" name="Shrinkages[@i].BeforeWash" KeyToFgwt="@Html.Raw("Before" + KeyToFgwt)" onchange="ShrinkagesToFGWT(this)" class="BeforeWash" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].BeforeWash" style="width: 8vw;">
                                                 </td>
                                                 <td>
-                                                    <input id="Shrinkages_@{@i}__SizeSpec" name="Shrinkages[@i].SizeSpec" KeyToFgwt="" class="SizeSpec" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].SizeSpec" style="width: 8vw;">
+                                                    <input id="Shrinkages_@{@i}__SizeSpec" name="Shrinkages[@i].SizeSpec" class="SizeSpec" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].SizeSpec" style="width: 8vw;">
                                                 </td>
                                                 <td>
                                                     <input id="Shrinkages_@{@i}__AfterWash1" name="Shrinkages[@i].AfterWash1" class="AfterWash1" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].AfterWash1" style="width: 8vw;">
@@ -480,7 +482,14 @@
                                                     <input id="Shrinkages_@{@i}__Shrinkage1" name="Shrinkages[@i].Shrinkage1" class="Shrinkage1" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].Shrinkage1" readonly="readonly" style="width: 8vw;">
                                                 </td>
                                                 <td>
-                                                    <input id="Shrinkages_@{@i}__AfterWash2" name="Shrinkages[@i].AfterWash2" class="AfterWash2" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].AfterWash2" style="width: 8vw;">
+                                                    @if (bol701)
+                                                    {
+                                                        <input id="Shrinkages_@{@i}__AfterWash2" name="Shrinkages[@i].AfterWash2" KeyToFgwt="@Html.Raw("After" + KeyToFgwt)" onchange="ShrinkagesToFGWT(this)" class="AfterWash2" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].AfterWash2" style="width: 8vw;">
+                                                    }
+                                                    else
+                                                    {
+                                                        <input id="Shrinkages_@{@i}__AfterWash2" name="Shrinkages[@i].AfterWash2" class="AfterWash2" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].AfterWash2" style="width: 8vw;">
+                                                    }
                                                 </td>
                                                 <td>
                                                     <input id="Shrinkages_@{@i}__Shrinkage2" name="Shrinkages[@i].Shrinkage2" class="Shrinkage2" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].Shrinkage2" readonly="readonly" style="width: 8vw;">
@@ -488,7 +497,7 @@
                                                 @if (bol710)
                                                 {
                                                     <td>
-                                                        <input id="Shrinkages_@{@i}__AfterWash3" name="Shrinkages[@i].AfterWash3" class="AfterWash3" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].AfterWash3" style="width: 8vw;">
+                                                        <input id="Shrinkages_@{@i}__AfterWash3" name="Shrinkages[@i].AfterWash3" KeyToFgwt="@Html.Raw("After" + KeyToFgwt)" onchange="ShrinkagesToFGWT(this)" class="AfterWash3" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].AfterWash3" style="width: 8vw;">
                                                     </td>
                                                     <td>
                                                         <input id="Shrinkages_@{@i}__Shrinkage3" name="Shrinkages[@i].Shrinkage3" class="Shrinkage3" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].Shrinkage3" readonly="readonly" style="width: 8vw;">
@@ -684,6 +693,49 @@
 
                                         bool bolWash = Model.FGWT[i].EditType.Equals("1");
                                         bool bolScale = Model.FGWT[i].EditType.Equals("2");
+
+                                        string KeyToShrinkage = string.Empty;
+                                        if ((Model.FGWT[i].SystemType.StartsWith("a)") || Model.FGWT[i].SystemType.Contains("a)")) && !Model.FGWT[i].SystemType.Contains("Method A"))
+                                        {
+                                            KeyToShrinkage = "a)";
+                                        }
+                                        else if ((Model.FGWT[i].SystemType.StartsWith("b)") || Model.FGWT[i].SystemType.Contains("b)")) && !Model.FGWT[i].SystemType.Contains("Method B"))
+                                        {
+                                            KeyToShrinkage = "b)";
+                                        }
+                                        else if (Model.FGWT[i].SystemType.StartsWith("c)") || Model.FGWT[i].SystemType.Contains("c)"))
+                                        {
+                                            KeyToShrinkage = "c)";
+                                        }
+                                        else if (Model.FGWT[i].SystemType.StartsWith("d)") || Model.FGWT[i].SystemType.Contains("d)"))
+                                        {
+                                            KeyToShrinkage = "d)";
+                                        }
+                                        else if ((Model.FGWT[i].SystemType.StartsWith("e)") || Model.FGWT[i].SystemType.Contains("e)")) && !Model.FGWT[i].SystemType.Contains("average)"))
+                                        {
+                                            KeyToShrinkage = "e)";
+                                        }
+                                        else if (Model.FGWT[i].SystemType.StartsWith("f)") || Model.FGWT[i].SystemType.Contains("f)"))
+                                        {
+                                            KeyToShrinkage = "f)";
+                                        }
+                                        else if (Model.FGWT[i].SystemType.StartsWith("g1)") || Model.FGWT[i].SystemType.Contains("g1)"))
+                                        {
+                                            KeyToShrinkage = "g1)";
+                                        }
+                                        else if (Model.FGWT[i].SystemType.StartsWith("g2)") || Model.FGWT[i].SystemType.Contains("g2)"))
+                                        {
+                                            KeyToShrinkage = "g2)";
+                                        }
+                                        else if ((Model.FGWT[i].SystemType.StartsWith("h)") || Model.FGWT[i].SystemType.Contains("h)")) && !Model.FGWT[i].SystemType.Contains("Width)"))
+                                        {
+                                            KeyToShrinkage = "h)";
+                                        }
+                                        else if (Model.FGWT[i].SystemType.StartsWith("i)") || Model.FGWT[i].SystemType.Contains("i)"))
+                                        {
+                                            KeyToShrinkage = "i)";
+                                        }
+                                        KeyToShrinkage = KeyToShrinkage + Location;
                                         <tr>
                                             <td>
                                                 @Location
@@ -699,13 +751,13 @@
                                             <td>
                                                 @if (bolWash)
                                                 {
-                                                    <input id="FGWT_@{@i}__BeforeWash" name="FGWT[@i].BeforeWash" class="BeforeWash" type="number" min="0" step="0.1" value="@Model.FGWT[i].BeforeWash">
+                                                    <input id="FGWT_@{@i}__BeforeWash" name="FGWT[@i].BeforeWash" KeyToShrinkage="@Html.Raw("Before" + KeyToShrinkage)" class="BeforeWash" type="number" min="0" step="0.1" value="@Model.FGWT[i].BeforeWash">
                                                 }
                                             </td>
                                             <td>
                                                 @if (bolWash)
                                                 {
-                                                    <input id="FGWT_@{@i}__AfterWash" name="FGWT[@i].AfterWash" class="AfterWash" type="number" min="0" step="0.1" value="@Model.FGWT[i].AfterWash">
+                                                    <input id="FGWT_@{@i}__AfterWash" name="FGWT[@i].AfterWash" KeyToShrinkage="@Html.Raw("After" + KeyToShrinkage)" class="AfterWash" type="number" min="0" step="0.1" value="@Model.FGWT[i].AfterWash">
                                                 }
                                             </td>
                                             <td>
@@ -1528,5 +1580,15 @@
     function GetPicture(data) {
         $('#Detail_TestBeforePicture').val(data.BeforePicture.replace("data:image/png;base64,", ""));
         $('#Detail_TestAfterPicture').val(data.AfterPicture.replace("data:image/png;base64,", ""));
+    }
+
+    function ShrinkagesToFGWT(obj) {
+        var fgwtValue = $(obj).val();
+        var keyToFGWT = $(obj).attr('keyToFGWT');
+        var sameKey = $(`input[KeyToShrinkage='${keyToFGWT}']`);
+
+        $.each(sameKey, function () {
+            $(this).val(fgwtValue);
+        });
     }
 </script>

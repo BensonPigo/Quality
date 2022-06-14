@@ -546,6 +546,12 @@ select s1.*,Result =
 ) a
 group by Result
 
+--Apperance
+select *
+into #tmpApperanceResult
+from GarmentTest_Detail_Apperance WITH(NOLOCK)
+where id=@ID  and no = @No
+
 update gd
 set
  SeamBreakageResult = case
@@ -560,8 +566,12 @@ set
 	when  (select count(1) from #tmpFGPTResult where TestName = 'PHX-AP0451' and Result = '') > 0 then ''
 	else ''  End
 ,WashResult = case
-	when  (select count(1) from #tmpFGWTResult where Result = 'Fail') > 0 then 'F'
-	when  (select count(1) from #tmpFGWTResult where Result = 'Pass') > 0 then 'P'
+	when  (select count(1) from #tmpFGWTResult where Result = 'Fail') > 0 OR 
+          (select count(1) from #tmpApperanceResult where Wash1='Rejected' OR Wash2='Rejected') > 0
+        then 'F'
+	when  (select count(1) from #tmpFGWTResult where Result = 'Pass') > 0 AND
+          (select count(1) from #tmpApperanceResult where Wash1='Rejected' OR Wash2='Rejected' OR Wash1='N/A' OR Wash2='N/A' OR Wash1='' OR Wash2='') = 0
+        then 'P'
 	when  (select count(1) from #tmpFGWTResult where Result = '') > 0 then ''
 	else ''  End
 from GarmentTest_Detail gd  WITH(NOLOCK)

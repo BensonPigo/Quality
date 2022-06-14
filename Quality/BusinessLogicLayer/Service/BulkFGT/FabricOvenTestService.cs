@@ -1064,11 +1064,10 @@ namespace BusinessLogicLayer.Service
                     result.Result = false;
                     return result;
                 }
-                excel.Visible = true;
+                excel.Visible = false;
                 excel.DisplayAlerts = false;
 
                 // 預設頁在第5頁，前4頁是用來複製的格式，最後在刪除
-                // 依據 submitDate 複製分頁
                 int defaultSheet = 5;
 
                 #region Set Picture
