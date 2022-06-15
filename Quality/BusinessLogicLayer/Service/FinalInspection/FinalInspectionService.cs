@@ -654,10 +654,10 @@ namespace BusinessLogicLayer.Service
                         string_2 = drInspection["FixQty"],
                         string_3 = drInspection["Shift"],
                         string_4 = drInspection["Operation"].ToString().Split(',').Take(10).JoinToString(","),
-                        string_5 = "",
+                        string_5 = drInspection["SewerID"].ToString().Split(',').Take(10).JoinToString(","),
                         string_6 = drInspection["Station"].ToString().Split(',').Take(10).JoinToString(","),
                         string_7 = drInspection["Line"].ToString(),
-                        string_8 = drInspection["SewerID"].ToString().Split(',').Take(10).JoinToString(","),
+                        string_8 = drInspection["username"],
                         string_9 = "",
                         string_10 = drInspection["FactoryID"],
 
