@@ -106,6 +106,10 @@ namespace BusinessLogicLayer.Service
             {
                 try
                 {
+                    string mainServerName = string.Empty;
+                    string extendServerName = string.Empty;
+
+                    _FinalInspectionProvider = new FinalInspectionProvider(Common.ProductionDataAccessLayer);
                     _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
 
                     DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection =
