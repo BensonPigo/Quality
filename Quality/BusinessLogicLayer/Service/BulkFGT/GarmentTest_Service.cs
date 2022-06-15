@@ -1057,44 +1057,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
                             if (all_Data.Detail.TestBeforePicture != null)
                             {
                                 Excel.Range cell = worksheet.Cells[82, 2];
-                                string imageName = $"{Guid.NewGuid()}.jpg";
-                                string imgPath;
-                                if (test)
-                                {
-                                    imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                                }
-                                else
-                                {
-                                    imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                                }
-
-                                using (var imageFile = new FileStream(imgPath, FileMode.Create))
-                                {
-                                    imageFile.Write(all_Data.Detail.TestBeforePicture, 0, all_Data.Detail.TestBeforePicture.Length);
-                                    imageFile.Flush();
-                                }
+                                string imgPath = ToolKit.PublicClass.AddImageSignWord(all_Data.Detail.TestBeforePicture, all_Data.Detail.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
                                 worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 328, 247);
                             }
 
                             if (all_Data.Detail.TestAfterPicture != null)
                             {
                                 Excel.Range cell = worksheet.Cells[82, 7];
-                                string imageName = $"{Guid.NewGuid()}.jpg";
-                                string imgPath;
-                                if (test)
-                                {
-                                    imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                                }
-                                else
-                                {
-                                    imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                                }
-
-                                using (var imageFile = new FileStream(imgPath, FileMode.Create))
-                                {
-                                    imageFile.Write(all_Data.Detail.TestAfterPicture, 0, all_Data.Detail.TestAfterPicture.Length);
-                                    imageFile.Flush();
-                                }
+                                string imgPath = ToolKit.PublicClass.AddImageSignWord(all_Data.Detail.TestAfterPicture, all_Data.Detail.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
                                 worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 300, 248);
                             }
                             #endregion
@@ -1797,44 +1767,14 @@ and t.GarmentTest=1
                             if (all_Data.Detail.TestBeforePicture != null)
                             {
                                 Excel.Range cell = worksheet.Cells[82, 2];
-                                string imageName = $"{Guid.NewGuid()}.jpg";
-                                string imgPath;
-                                if (test)
-                                {
-                                    imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                                }
-                                else
-                                {
-                                    imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                                }
-
-                                using (var imageFile = new FileStream(imgPath, FileMode.Create))
-                                {
-                                    imageFile.Write(all_Data.Detail.TestBeforePicture, 0, all_Data.Detail.TestBeforePicture.Length);
-                                    imageFile.Flush();
-                                }
+                                string imgPath = ToolKit.PublicClass.AddImageSignWord(all_Data.Detail.TestBeforePicture, all_Data.Detail.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test:test);
                                 worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 328, 247);
                             }
 
                             if (all_Data.Detail.TestAfterPicture != null)
                             {
                                 Excel.Range cell = worksheet.Cells[82, 7];
-                                string imageName = $"{Guid.NewGuid()}.jpg";
-                                string imgPath;
-                                if (test)
-                                {
-                                    imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                                }
-                                else
-                                {
-                                    imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                                }
-
-                                using (var imageFile = new FileStream(imgPath, FileMode.Create))
-                                {
-                                    imageFile.Write(all_Data.Detail.TestAfterPicture, 0, all_Data.Detail.TestAfterPicture.Length);
-                                    imageFile.Flush();
-                                }
+                                string imgPath = ToolKit.PublicClass.AddImageSignWord(all_Data.Detail.TestAfterPicture, all_Data.Detail.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
                                 worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 300, 248);
                             }
                             #endregion

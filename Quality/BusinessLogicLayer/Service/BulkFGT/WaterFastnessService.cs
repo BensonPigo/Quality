@@ -479,48 +479,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Excel.Range cellBeforePicture = currenSheet.Cells[46, 1];
                     if (currenData.TestBeforePicture != null)
                     {
-                        string imageName = $"{Guid.NewGuid()}.jpg";
-                        string imgPath;
-
-                        if (isTest)
-                        {
-                            imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                        }
-                        else
-                        {
-                            imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                        }
-
-                        byte[] bytes = currenData.TestBeforePicture;
-                        using (var imageFile = new FileStream(imgPath, FileMode.Create))
-                        {
-                            imageFile.Write(bytes, 0, bytes.Length);
-                            imageFile.Flush();
-                        }
+                        string imgPath = ToolKit.PublicClass.AddImageSignWord(currenData.TestBeforePicture, currenData.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: isTest);
                         currenSheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 380, 300);
                     }
 
                     Excel.Range cellAfterPicture = currenSheet.Cells[46, 5];
                     if (currenData.TestAfterPicture != null)
                     {
-                        string imageName = $"{Guid.NewGuid()}.jpg";
-                        string imgPath;
-
-                        if (isTest)
-                        {
-                            imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                        }
-                        else
-                        {
-                            imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                        }
-
-                        byte[] bytes = currenData.TestAfterPicture;
-                        using (var imageFile = new FileStream(imgPath, FileMode.Create))
-                        {
-                            imageFile.Write(bytes, 0, bytes.Length);
-                            imageFile.Flush();
-                        }
+                        string imgPath = ToolKit.PublicClass.AddImageSignWord(currenData.TestAfterPicture, currenData.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: isTest);
                         currenSheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 2, 380, 300);
                     }
                     #endregion

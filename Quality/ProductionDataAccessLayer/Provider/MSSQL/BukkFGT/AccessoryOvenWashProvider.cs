@@ -322,6 +322,7 @@ select   al.POID
         ,al.Seq2
 		,ali.OvenTestBeforePicture
 		,ali.OvenTestAfterPicture
+        ,al.ReportNo
 from AIR_Laboratory al WITH(NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.ID = al.POID
 left join SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
@@ -909,7 +910,7 @@ select   al.POID
         ,al.DryProcess
         ,al.MachineModel
         ,al.WashingCycle
-
+        ,al.ReportNo
 from AIR_Laboratory al WITH(NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.ID = al.POID
 left join SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
@@ -1312,7 +1313,7 @@ select   al.WashingFastnessReceivedDate
         ,PreparedText = p.Name
         ,Executive = (SELECT TOP 1 SignaturePic FROM Production..Technician Where ID ='PC6000204' AND BulkAccOvenWash=1)
         ,ExecutiveText = (SELECT TOP 1 Name FROM Production..Pass1 Where ID ='PC6000204')
-
+        ,al.ReportNo
 from AIR_Laboratory al WITH(NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.ID = al.POID
 left join SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
