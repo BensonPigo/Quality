@@ -84,7 +84,7 @@ from FinalInspection a with (nolock)
 outer apply (
 	select [GarmentTestID] = g.ID, [WashResult] = case g.WashResult when 'F' then 'Failed Test' when 'P' then 'Completed Test' else 'Lacking Test' end
 	from FinalInspection_Order o 
-	left join [MainServer].[Production].dbo.GarmentTest g on o.OrderID = g.OrderID
+	left join SciProduction_GarmentTest g on o.OrderID = g.OrderID
 	where o.ID = a.ID
 )g
 outer apply (
@@ -95,7 +95,7 @@ outer apply (
 					WHEN  t.TestUnit = 'Pass/Fail' THEN t.[TestResult]
 			   ELSE ''
 			END)
-		from [MainServer].[Production].dbo.GarmentTest_Detail_FGPT t with(nolock)
+		from SciProduction_GarmentTest_Detail_FGPT t with(nolock)
 		where g.[GarmentTestID] = t.ID
 	)t
 )fgpt
