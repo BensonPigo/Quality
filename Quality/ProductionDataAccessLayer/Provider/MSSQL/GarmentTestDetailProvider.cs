@@ -569,7 +569,7 @@ set
 	when  (select count(1) from #tmpFGWTResult where Result = 'Fail') > 0 OR 
           (select count(1) from #tmpApperanceResult where Wash1='Rejected' OR Wash2='Rejected') > 0
         then 'F'
-	when  (select count(1) from #tmpFGWTResult where Result = 'Pass') > 0 OR
+	when  (select count(1) from #tmpFGWTResult where Result = 'Pass') > 0 AND
           (select count(1) from #tmpApperanceResult where Wash1='Rejected' OR Wash2='Rejected' OR Wash1='' OR Wash2='') = 0
         then 'P'
 	when  (select count(1) from #tmpFGWTResult where Result = '') > 0 then ''

@@ -421,7 +421,11 @@
                                         @for (int i = 0; i <= Model.Shrinkages.Count - 1; i++)
                                         {
                                             string KeyToFgwt = string.Empty;
-                                            if (Model.Shrinkages[i].Type.StartsWith("a)"))
+                                            if (Model.Shrinkages[i].Type.Contains("lining"))
+                                            {
+                                                KeyToFgwt = string.Empty;
+                                            }
+                                            else if (Model.Shrinkages[i].Type.StartsWith("a)"))
                                             {
                                                 KeyToFgwt = "a)";
                                             }
@@ -461,7 +465,7 @@
                                             {
                                                 KeyToFgwt = "i)";
                                             }
-                                            KeyToFgwt = KeyToFgwt + Model.Shrinkages[i].Location;
+                                            KeyToFgwt = (KeyToFgwt + Model.Shrinkages[i].Location).ToUpper();
                                             <tr>
                                                 <td>
                                                     @Html.TextBoxFor(o => Model.Shrinkages[i].Location, new { @readonly = "readonly", @style = "width:6vw;" })
@@ -695,7 +699,11 @@
                                         bool bolScale = Model.FGWT[i].EditType.Equals("2");
 
                                         string KeyToShrinkage = string.Empty;
-                                        if ((Model.FGWT[i].SystemType.StartsWith("a)") || Model.FGWT[i].SystemType.Contains("a)")) && !Model.FGWT[i].SystemType.Contains("Method A"))
+                                        if (Model.FGWT[i].SystemType.Contains("lining"))
+                                        {
+                                            KeyToShrinkage = string.Empty;
+                                        }
+                                        else if ((Model.FGWT[i].SystemType.StartsWith("a)") || Model.FGWT[i].SystemType.Contains("a)")) && !Model.FGWT[i].SystemType.Contains("Method A"))
                                         {
                                             KeyToShrinkage = "a)";
                                         }
@@ -735,7 +743,7 @@
                                         {
                                             KeyToShrinkage = "i)";
                                         }
-                                        KeyToShrinkage = KeyToShrinkage + Location;
+                                        KeyToShrinkage = (KeyToShrinkage + Location).ToUpper();
                                         <tr>
                                             <td>
                                                 @Location
