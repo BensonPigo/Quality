@@ -566,13 +566,15 @@ set
 	when  (select count(1) from #tmpFGPTResult where TestName = 'PHX-AP0451' and Result = '') > 0 then ''
 	else ''  End
 ,WashResult = case
-	when  (select count(1) from #tmpFGWTResult where Result = 'Fail') > 0 OR 
-          (select count(1) from #tmpApperanceResult where Wash1='Rejected' OR Wash2='Rejected') > 0
+	when  ( (select count(1) from #tmpApperanceResult where Wash1='Accepted' OR Wash2='Accepted' OR Wash1='Rejected' OR Wash2='Rejected') = 0 AND (select count(1) from #tmpFGWTResult) > 0 AND (select count(1) from #tmpFGWTResult where Result = 'Fail') > 0 ) OR -- A全N/A，FGWT有一個Fail
+          (select count(1) from #tmpApperanceResult where Wash1='Rejected' OR Wash2='Rejected') > 0  --A有Reject
         then 'F'
-	when  (select count(1) from #tmpFGWTResult where Result = 'Pass') > 0 AND
-          (select count(1) from #tmpApperanceResult where Wash1='Rejected' OR Wash2='Rejected' OR Wash1='' OR Wash2='') = 0
+	when   ( (select count(1) from #tmpApperanceResult where Wash1='Accepted' OR Wash2='Accepted' OR Wash1='Rejected' OR Wash2='Rejected') = 0 AND (select count(1) from #tmpFGWTResult) > 0 AND (select count(1) from #tmpFGWTResult where Result = 'Fail') = 0 ) OR --A全N/A，FGWT沒有Fail
+           ( (select count(1) from #tmpApperanceResult where Wash1='Rejected' OR Wash2='Rejected') = 0 AND (select count(1) from #tmpApperanceResult where Wash1='Accepted' OR Wash2='Accepted') > 0 )  --A只有Accepted
         then 'P'
-	when  (select count(1) from #tmpFGWTResult where Result = '') > 0 then ''
+	when    (select count(1) from #tmpApperanceResult where Wash1='Accepted' OR Wash2='Accepted' OR Wash1='Rejected' OR Wash2='Rejected') = 0  AND -- A全N/A  
+            (select count(1) from #tmpFGWTResult) = 0   -- and FGWT沒建
+        then ''
 	else ''  End
 from GarmentTest_Detail gd  WITH(NOLOCK)
 where gd.id=@ID and No=@No
