@@ -344,6 +344,7 @@ namespace ADOHelper.Template.MSSQL
 			}
 			catch (Exception exception1)
 			{
+				this.com.Connection.Close();
 				Exception exception = exception1;
 				if (ADOHelper.Template.MSSQL.SQLDAL.IsSaveErrorLog)
 				{
@@ -399,6 +400,7 @@ namespace ADOHelper.Template.MSSQL
 			}
 			catch (Exception exception1)
 			{
+				this.com.Connection.Close();
 				Exception exception = exception1;
 				if (ADOHelper.Template.MSSQL.SQLDAL.IsSaveErrorLog)
 				{
@@ -442,6 +444,7 @@ namespace ADOHelper.Template.MSSQL
 			}
 			catch (Exception exception1)
 			{
+				this.com.Connection.Close();
 				Exception exception = exception1;
 				if (ADOHelper.Template.MSSQL.SQLDAL.IsSaveErrorLog)
 				{
@@ -496,6 +499,7 @@ namespace ADOHelper.Template.MSSQL
 			}
 			catch (Exception exception1)
 			{
+				this.com.Connection.Close();
 				Exception exception = exception1;
 				if (ADOHelper.Template.MSSQL.SQLDAL.IsSaveErrorLog)
 				{
