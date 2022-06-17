@@ -272,6 +272,13 @@ namespace ToolKit
             Font drawFont = new Font(fontname, fontsize, FontStyle.Italic, GraphicsUnit.Pixel);
             SizeF crSize = g.MeasureString(signWord, drawFont);
 
+            while (crSize.Width > img.Width)
+            {
+                fontsize -= 6;
+                drawFont = new Font(fontname, fontsize, FontStyle.Italic, GraphicsUnit.Pixel);
+                crSize = g.MeasureString(signWord, drawFont);
+            }
+
             float xpos = 0;
             float ypos = 0;
 
@@ -314,7 +321,9 @@ namespace ToolKit
                     ypos = ((float)img.Height * (float).99) - crSize.Height;
                     break;
                 case SingLocation.MiddleItalic:
-                    xpos = (float)img.Width * (float).2;
+                    // 高大於寬的圖片，在偏移0.5
+                    float diffWidth = img.Height > img.Width ? (float).5 : 1;
+                    xpos = (float)img.Width * (float).2 * diffWidth;
                     ypos = 0;
                     g.TranslateTransform(0, img.Height * (float).8);
                     g.RotateTransform(-30);
