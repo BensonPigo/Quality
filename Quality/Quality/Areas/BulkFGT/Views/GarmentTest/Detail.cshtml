@@ -397,6 +397,7 @@
                                         <tr>
                                             @{
                                                 bool bol710 = Model.Main.WashName == null || Model.Main.WashName.Equals("710");
+                                                bool bol701 = Model.Main.WashName == null || Model.Main.WashName.Equals("701");
                                                 string wash3 = bol710 ? "After Wash 10" : "After Wash 3";
                                                 string shrink3 = bol710 ? "Shrinkage 10(%)" : "Shrinkage 3(%)";
 
@@ -419,42 +420,103 @@
                                     <tbody>
                                         @for (int i = 0; i <= Model.Shrinkages.Count - 1; i++)
                                         {
-                                            <tr>
-                                                <td>
-                                                    @Html.TextBoxFor(o => Model.Shrinkages[i].Location, new { @readonly = "readonly", @style = "width:6vw;" })
-                                                    @Html.HiddenFor(o => Model.Shrinkages[i].ID)
-                                                    @Html.HiddenFor(o => Model.Shrinkages[i].No)
-                                                </td>
-                                                <td style="width: 18vw;">@Html.TextBoxFor(o => Model.Shrinkages[i].Type, new { @readonly = "readonly" })</td>
-                                                <td>
-                                                    <input id="Shrinkages_@{@i}__BeforeWash" name="Shrinkages[@i].BeforeWash" class="BeforeWash" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].BeforeWash" style="width: 8vw;">
-                                                </td>
-                                                <td>
-                                                    <input id="Shrinkages_@{@i}__SizeSpec" name="Shrinkages[@i].SizeSpec" class="SizeSpec" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].SizeSpec" style="width: 8vw;">
-                                                </td>
-                                                <td>
-                                                    <input id="Shrinkages_@{@i}__AfterWash1" name="Shrinkages[@i].AfterWash1" class="AfterWash1" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].AfterWash1" style="width: 8vw;">
-                                                </td>
-                                                <td>
-                                                    <input id="Shrinkages_@{@i}__Shrinkage1" name="Shrinkages[@i].Shrinkage1" class="Shrinkage1" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].Shrinkage1" readonly="readonly" style="width: 8vw;">
-                                                </td>
-                                                <td>
-                                                    <input id="Shrinkages_@{@i}__AfterWash2" name="Shrinkages[@i].AfterWash2" class="AfterWash2" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].AfterWash2" style="width: 8vw;">
-                                                </td>
-                                                <td>
-                                                    <input id="Shrinkages_@{@i}__Shrinkage2" name="Shrinkages[@i].Shrinkage2" class="Shrinkage2" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].Shrinkage2" readonly="readonly" style="width: 8vw;">
-                                                </td>
-                                                @if (bol710)
+                                            string KeyToFgwt = string.Empty;
+                                            if (Model.Shrinkages[i].Type.Contains("lining"))
+                                            {
+                                                KeyToFgwt = string.Empty;
+                                            }
+                                            else if (Model.Shrinkages[i].Type == "a) Front rise")
+                                            {
+                                                KeyToFgwt = "a)";
+                                            }
+                                            else if (Model.Shrinkages[i].Type == "b) Length of side seam" || Model.Shrinkages[i].Type == "b) Back rise")
+                                            {
+                                                KeyToFgwt = "b)";
+                                            }
+                                            else if (Model.Shrinkages[i].Type == "c) Length of front" || Model.Shrinkages[i].Type == "c) Inseam or crotch width (if inseam less then 3)")
+                                            {
+                                                KeyToFgwt = "c)";
+                                            }
+                                            else if (Model.Shrinkages[i].Type == "d) Length of center-back" || Model.Shrinkages[i].Type == "d) Waistband width")
+                                            {
+                                                KeyToFgwt = "d)";
+                                            }
+                                            else if (Model.Shrinkages[i].Type == "e) Length of underarm seam" || Model.Shrinkages[i].Type == "e) Leg opening")
+                                            {
+                                                KeyToFgwt = "e)";
+                                            }
+                                            else if (Model.Shrinkages[i].Type == "f) Across back width" || Model.Shrinkages[i].Type == "f) Knee width")
+                                            {
+                                                KeyToFgwt = "f)";
+                                            }
+                                            else if (Model.Shrinkages[i].Type == "g1) Chest width")
+                                            {
+                                                KeyToFgwt = "g1)";
+                                            }
+                                            else if (Model.Shrinkages[i].Type == "g2) Hem opening")
+                                            {
+                                                KeyToFgwt = "g2)";
+                                            }
+                                            else if (Model.Shrinkages[i].Type == "g) Thigh width")
+                                            {
+                                                KeyToFgwt = "g)";
+                                            }
+                                            else if (Model.Shrinkages[i].Type == "h) Sleeve width")
+                                            {
+                                                KeyToFgwt = "h)";
+                                            }
+                                            else if (Model.Shrinkages[i].Type == "i) Sleeve opening or cuff width")
+                                            {
+                                                KeyToFgwt = "i)";
+                                            }
+
+                                            if (!string.IsNullOrEmpty(KeyToFgwt))
+                                            {
+                                                KeyToFgwt = (KeyToFgwt + Model.Shrinkages[i].Location).ToUpper();
+                                            }
+                                        <tr>
+                                            <td>
+                                                @Html.TextBoxFor(o => Model.Shrinkages[i].Location, new { @readonly = "readonly", @style = "width:6vw;" })
+                                                @Html.HiddenFor(o => Model.Shrinkages[i].ID)
+                                                @Html.HiddenFor(o => Model.Shrinkages[i].No)
+                                            </td>
+                                            <td style="width: 18vw;">@Html.TextBoxFor(o => Model.Shrinkages[i].Type, new { @readonly = "readonly" })</td>
+                                            <td>
+                                                <input id="Shrinkages_@{@i}__BeforeWash" name="Shrinkages[@i].BeforeWash" KeyToFgwt="@Html.Raw("Before" + KeyToFgwt)" onchange="ShrinkagesToFGWT(this)" class="BeforeWash" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].BeforeWash" style="width: 8vw;">
+                                            </td>
+                                            <td>
+                                                <input id="Shrinkages_@{@i}__SizeSpec" name="Shrinkages[@i].SizeSpec" class="SizeSpec" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].SizeSpec" style="width: 8vw;">
+                                            </td>
+                                            <td>
+                                                <input id="Shrinkages_@{@i}__AfterWash1" name="Shrinkages[@i].AfterWash1" class="AfterWash1" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].AfterWash1" style="width: 8vw;">
+                                            </td>
+                                            <td>
+                                                <input id="Shrinkages_@{@i}__Shrinkage1" name="Shrinkages[@i].Shrinkage1" class="Shrinkage1" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].Shrinkage1" readonly="readonly" style="width: 8vw;">
+                                            </td>
+                                            <td>
+                                                @if (bol701)
                                                 {
-                                                    <td>
-                                                        <input id="Shrinkages_@{@i}__AfterWash3" name="Shrinkages[@i].AfterWash3" class="AfterWash3" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].AfterWash3" style="width: 8vw;">
-                                                    </td>
-                                                    <td>
-                                                        <input id="Shrinkages_@{@i}__Shrinkage3" name="Shrinkages[@i].Shrinkage3" class="Shrinkage3" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].Shrinkage3" readonly="readonly" style="width: 8vw;">
-                                                    </td>
+                                                    <input id="Shrinkages_@{@i}__AfterWash2" name="Shrinkages[@i].AfterWash2" KeyToFgwt="@Html.Raw("After" + KeyToFgwt)" onchange="ShrinkagesToFGWT(this)" class="AfterWash2" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].AfterWash2" style="width: 8vw;">
                                                 }
-                                            </tr>
-                                        }
+                                                else
+                                                {
+                                                    <input id="Shrinkages_@{@i}__AfterWash2" name="Shrinkages[@i].AfterWash2" class="AfterWash2" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].AfterWash2" style="width: 8vw;">
+                                                }
+                                            </td>
+                                            <td>
+                                                <input id="Shrinkages_@{@i}__Shrinkage2" name="Shrinkages[@i].Shrinkage2" class="Shrinkage2" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].Shrinkage2" readonly="readonly" style="width: 8vw;">
+                                            </td>
+                                            @if (bol710)
+                                            {
+                                                <td>
+                                                    <input id="Shrinkages_@{@i}__AfterWash3" name="Shrinkages[@i].AfterWash3" KeyToFgwt="@Html.Raw("After" + KeyToFgwt)" onchange="ShrinkagesToFGWT(this)" class="AfterWash3" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].AfterWash3" style="width: 8vw;">
+                                                </td>
+                                                <td>
+                                                    <input id="Shrinkages_@{@i}__Shrinkage3" name="Shrinkages[@i].Shrinkage3" class="Shrinkage3" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].Shrinkage3" readonly="readonly" style="width: 8vw;">
+                                                </td>
+                                            }
+                                        </tr>
+                                    }
 
                                         @if (Model.Shrinkages.Count == 0)
                                         {
@@ -643,6 +705,57 @@
 
                                         bool bolWash = Model.FGWT[i].EditType.Equals("1");
                                         bool bolScale = Model.FGWT[i].EditType.Equals("2");
+
+                                        string KeyToShrinkage = string.Empty;
+                                        if (Model.FGWT[i].SystemType.Contains("lining"))
+                                        {
+                                            KeyToShrinkage = string.Empty;
+                                        }
+                                        else if (Model.FGWT[i].SystemType == "a) length of front leg")
+                                        {
+                                            KeyToShrinkage = "a)";
+                                        }
+                                        else if (Model.FGWT[i].SystemType == "b) length armhole to bottom hem" || Model.FGWT[i].SystemType == "b) length of back leg")
+                                        {
+                                            KeyToShrinkage = "b)";
+                                        }
+                                        else if (Model.FGWT[i].SystemType == "c) length of inside leg" || Model.FGWT[i].SystemType == "c) length of front")
+                                        {
+                                            KeyToShrinkage = "c)";
+                                        }
+                                        else if (Model.FGWT[i].SystemType == "d) length of centre back" || Model.FGWT[i].SystemType == "d) width at waist")
+                                        {
+                                            KeyToShrinkage = "d)";
+                                        }
+                                        else if (Model.FGWT[i].SystemType == "e) length of underarm" || Model.FGWT[i].SystemType == "e) width at bottom of leg")
+                                        {
+                                            KeyToShrinkage = "e)";
+                                        }
+                                        else if (Model.FGWT[i].SystemType == "f) width across back" || Model.FGWT[i].SystemType == "f) width of leg halfway")
+                                        {
+                                            KeyToShrinkage = "f)";
+                                        }
+                                        else if (Model.FGWT[i].SystemType == "g1) width below centre back neck (average) (Chest Width)")
+                                        {
+                                            KeyToShrinkage = "g1)";
+                                        }
+                                        else if (Model.FGWT[i].SystemType == "g2) width below centre back neck (average) (Hem Opening)")
+                                        {
+                                            KeyToShrinkage = "g2)";
+                                        }
+                                        else if (Model.FGWT[i].SystemType == "g) width of top of leg")
+                                        {
+                                            KeyToShrinkage = "g)";
+                                        }
+                                        else if (Model.FGWT[i].SystemType == "h) width of sleeve")
+                                        {
+                                            KeyToShrinkage = "h)";
+                                        }
+                                        else if (Model.FGWT[i].SystemType == "i) width of sleeve botttom/cuff bottom")
+                                        {
+                                            KeyToShrinkage = "i)";
+                                        }
+                                        KeyToShrinkage = (KeyToShrinkage + Location).ToUpper();
                                         <tr>
                                             <td>
                                                 @Location
@@ -658,13 +771,13 @@
                                             <td>
                                                 @if (bolWash)
                                                 {
-                                                    <input id="FGWT_@{@i}__BeforeWash" name="FGWT[@i].BeforeWash" class="BeforeWash" type="number" min="0" step="0.1" value="@Model.FGWT[i].BeforeWash">
+                                                    <input id="FGWT_@{@i}__BeforeWash" name="FGWT[@i].BeforeWash" KeyToShrinkage="@Html.Raw("Before" + KeyToShrinkage)" class="BeforeWash" type="number" min="0" step="0.1" value="@Model.FGWT[i].BeforeWash">
                                                 }
                                             </td>
                                             <td>
                                                 @if (bolWash)
                                                 {
-                                                    <input id="FGWT_@{@i}__AfterWash" name="FGWT[@i].AfterWash" class="AfterWash" type="number" min="0" step="0.1" value="@Model.FGWT[i].AfterWash">
+                                                    <input id="FGWT_@{@i}__AfterWash" name="FGWT[@i].AfterWash" KeyToShrinkage="@Html.Raw("After" + KeyToShrinkage)" class="AfterWash" type="number" min="0" step="0.1" value="@Model.FGWT[i].AfterWash">
                                                 }
                                             </td>
                                             <td>
@@ -861,13 +974,13 @@
                             <label>Location</label>
                         </td>
                         <td style="border: 1px solid gray;font-size: 2vh;vertical-align: middle;">
-                            <input tpye="text" id="NewLocation"  maxlength="20" value="" />
+                            <input tpye="text" id="NewLocation" maxlength="20" value="" />
                         </td>
                         <td style="width:10vw;border: 1px solid gray;font-size: 2vh;background-color:#696868;vertical-align: middle;">
                             <label>Test Name</label>
                         </td>
                         <td style=" border: 1px solid gray;font-size: 2vh;vertical-align: middle;">
-                            <input tpye="text" id="NewTestName" maxlength="30" value=""  />
+                            <input tpye="text" id="NewTestName" maxlength="30" value="" />
                         </td>
                     </tr>
                     <tr>
@@ -1487,5 +1600,19 @@
     function GetPicture(data) {
         $('#Detail_TestBeforePicture').val(data.BeforePicture.replace("data:image/png;base64,", ""));
         $('#Detail_TestAfterPicture').val(data.AfterPicture.replace("data:image/png;base64,", ""));
+    }
+
+    function ShrinkagesToFGWT(obj) {
+        var fgwtValue = $(obj).val();
+        var keyToFGWT = $(obj).attr('keyToFGWT');
+
+        if (keyToFGWT != '' && keyToFGWT != 'Before' && keyToFGWT != 'After') {
+            var sameKey = $(`input[KeyToShrinkage='${keyToFGWT}']`);
+
+            $.each(sameKey, function () {
+                $(this).val(fgwtValue);
+                $(this).blur();
+            });
+        }
     }
 </script>
