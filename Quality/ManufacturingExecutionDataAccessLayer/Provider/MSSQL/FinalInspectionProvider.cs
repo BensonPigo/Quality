@@ -78,8 +78,8 @@ select  ID                             ,
         EditDate                       ,
         HasOtherImage = Cast(IIF(exists(select 1 from SciPMSFile_FinalInspection_OtherImage b WITH(NOLOCK) where a.id= b.id),1,0) as bit),
         CheckFGPT                      ,
-        [FGWT] = ISNULL(g.WashResult, 'Lacking Test'),
-        [FGPT] = fgpt.Result
+        [FGWT] = iif(a.InspectionStage = 'Final', ISNULL(g.WashResult, 'Lacking Test') , ''),
+        [FGPT] = iif(a.InspectionStage = 'Final', fgpt.Result, '')
 from FinalInspection a with (nolock)
 outer apply (
 	select [GarmentTestID] = g.ID, [WashResult] = case g.WashResult when 'F' then 'Failed Test' when 'P' then 'Completed Test' else 'Lacking Test' end
@@ -1523,7 +1523,8 @@ where   ID = @FinalInspectionID
 [Station] = SUBSTRING(r.Station,1, 255),
 [Line] = SUBSTRING(r.Line,1, 255),
 [Operation] = SUBSTRING(r.Operation,1, 255),
-[Size] = ''
+[Size] = '',
+[WFT]=''
 ";
             }
             else
@@ -1535,7 +1536,8 @@ where   ID = @FinalInspectionID
 [Operation] = '',
 [Size] = (SELECT val =  Stuff((select distinct concat( ',', isb.SizeCode) 
                 from InspectionReport_Breakdown isb with (nolock)
-                where isb.InspectionReportID = r.ID FOR XML PATH('')),1,1,''))
+                where isb.InspectionReportID = r.ID FOR XML PATH('')),1,1,'')),
+[WFT]= r.WFT
 ";
             }
 
