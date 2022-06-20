@@ -660,6 +660,7 @@ namespace BusinessLogicLayer.Service
                         string_8 = drInspection["username"],
                         string_9 = "",
                         string_10 = drInspection["FactoryID"],
+                        string_11 = drInspection["WFT"],
 
                     },
                     sampled_inspected = (int)drInspection["PassQty"] + (int)drInspection["RejectQty"],
