@@ -52,24 +52,38 @@ and p.ID='{Pass1ID}'
                 { "@ReceivedDate_e", DbType.Date, Req.ReceivedDate_e },
                 { "@ReportDate_s", DbType.Date, Req.ReportDate_s },
                 { "@ReportDate_e", DbType.Date, Req.ReportDate_e },
+                { "@WhseArrival_s", DbType.Date, Req.WhseArrival_s },
+                { "@WhseArrival_e", DbType.Date, Req.WhseArrival_e },
             };
 
+            string sqlWhseArrival = string.Empty;
             StringBuilder SbSql = new StringBuilder();
 
             #region Fabric Crocking & Shrinkage Test (504, 405)
+            if (Req.WhseArrival_s.HasValue || Req.WhseArrival_e.HasValue)
+            {
+                sqlWhseArrival = @" 
+outer apply (
+	select WhseArrival = MAX(e.WhseArrival)
+	from Export_Detail ed WITH(NOLOCK)
+	inner join Export e WITH(NOLOCK) on e.ID = ed.ID
+	where o.POID = ed.PoID
+)e ";
+            }
+
             string type1 = $@"
 select Type = 'Fabric Crocking & Shrinkage Test (504, 405)'
         , ReportNo=''
-		,OrderID = o.POID
-		,o.StyleID
-		,o.BrandID
-		,o.SeasonID
-		,Article = ''
-		,Artwork = ''
+		, OrderID = o.POID
+		, o.StyleID
+		, o.BrandID
+		, o.SeasonID
+		, Article = ''
+		, Artwork = ''
 		, [Result] = f_Result.Result
 		, [TestDate] = f_TestDate.TestDate
-	    ,ReceivedDate =NULL
-	    ,ReportDate =NULL
+	    , ReceivedDate = NULL
+	    , ReportDate = NULL
 from PO p WITH(NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.ID = p.ID
 outer apply (
@@ -101,6 +115,7 @@ outer apply (
 	from FIR_Laboratory f
 	where f.POID = p.ID
 )f_Result
+{sqlWhseArrival}
 WHERE exists (select 1 from FIR_Laboratory f WITH(NOLOCK) WHERE f.POID = p.ID)
 ";
             if (!string.IsNullOrEmpty(Req.BrandID))
@@ -115,24 +130,45 @@ WHERE exists (select 1 from FIR_Laboratory f WITH(NOLOCK) WHERE f.POID = p.ID)
             {
                 type1 += "AND o.StyleID = @StyleID ";
             }
+            if (Req.WhseArrival_s.HasValue)
+            {
+                type1 += " AND @WhseArrival_s <= e.WhseArrival ";
+            }
+            if (Req.WhseArrival_e.HasValue)
+            {
+                type1 += " AND @WhseArrival_e >= e.WhseArrival ";
+            }
             #endregion
 
             #region Garment Test (450, 451, 701, 710)
+            if (Req.WhseArrival_s.HasValue || Req.WhseArrival_e.HasValue)
+            {
+                sqlWhseArrival = @" 
+outer apply (
+	select WhseArrival = MAX(e.WhseArrival)
+	from Orders o WITH(NOLOCK)
+	inner join Export_Detail ed WITH(NOLOCK) on o.POID = ed.PoID
+	inner join Export e WITH(NOLOCK) on e.ID = ed.ID
+	where o.ID = g.OrderID
+)e ";
+            }
+
             string type2 = $@"
 select  Type = 'Garment Test (450, 451, 701, 710)'
-        ,gd.ReportNo
-		,gd.OrderID
-		,StyleID
-		,BrandID
-		,SeasonID
-		,Article
-		,Artwork = ''
-		,Result= IIF(gd.Result='P','Pass', IIF(gd.Result='F','Fail',''))
-		,TestDate = gd.InspDate
-	,ReceivedDate =NULL
-	,ReportDate =NULL
+        , gd.ReportNo
+		, gd.OrderID
+		, StyleID
+		, BrandID
+		, SeasonID
+		, Article
+		, Artwork = ''
+		, Result= IIF(gd.Result='P','Pass', IIF(gd.Result='F','Fail',''))
+		, TestDate = gd.InspDate
+	    , ReceivedDate = NULL
+	    , ReportDate = NULL
 from GarmentTest g WITH(NOLOCK)
 inner join GarmentTest_Detail gd WITH(NOLOCK) ON g.ID= gd.ID
+{sqlWhseArrival}
 WHERE 1=1 
 ";
 
@@ -156,23 +192,44 @@ WHERE 1=1
             {
                 type2 += "AND Article = @Article ";
             }
+            if (Req.WhseArrival_s.HasValue)
+            {
+                type2 += " AND @WhseArrival_s <= e.WhseArrival ";
+            }
+            if (Req.WhseArrival_e.HasValue)
+            {
+                type2 += " AND @WhseArrival_e >= e.WhseArrival ";
+            }
             #endregion
 
             #region Mockup Crocking Test  (504)
+            if (Req.WhseArrival_s.HasValue || Req.WhseArrival_e.HasValue)
+            {
+                sqlWhseArrival = @" 
+outer apply (
+	select WhseArrival = MAX(e.WhseArrival)
+	from Orders o WITH(NOLOCK)
+	inner join Export_Detail ed WITH(NOLOCK) on o.POID = ed.PoID
+	inner join Export e WITH(NOLOCK) on e.ID = ed.ID
+	where o.ID = m.POID
+)e ";
+            }
+
             string type3 = $@"
 select DISTINCT  Type = 'Mockup Crocking Test  (504)'
-        ,ReportNo
-		,OrderID = POID
-		,StyleID
-		,BrandID
-		,SeasonID
-		,Article
-		,Artwork = ArtworkTypeID
-		,Result
-		,TestDate 
-        , ReceivedDate
-        , ReportDate = ReleasedDate
-from MockupCrocking  WITH(NOLOCK)
+        , m.ReportNo
+		, OrderID = m.POID
+		, m.StyleID
+		, m.BrandID
+		, m.SeasonID
+		, m.Article
+		, Artwork = m.ArtworkTypeID
+		, m.Result
+		, m.TestDate 
+        , m.ReceivedDate
+        , ReportDate = m.ReleasedDate
+from MockupCrocking m WITH(NOLOCK)
+{sqlWhseArrival}
 WHERE 1=1 
 ";
 
@@ -208,9 +265,29 @@ WHERE 1=1
             {
                 type3 += "AND ReleasedDate <= @ReportDate_e ";
             }
+            if (Req.WhseArrival_s.HasValue)
+            {
+                type3 += " AND @WhseArrival_s <= e.WhseArrival ";
+            }
+            if (Req.WhseArrival_e.HasValue)
+            {
+                type3 += " AND @WhseArrival_e >= e.WhseArrival ";
+            }
             #endregion
 
             #region Mockup Oven Test (514)
+            if (Req.WhseArrival_s.HasValue || Req.WhseArrival_e.HasValue)
+            {
+                sqlWhseArrival = @" 
+outer apply (
+	select WhseArrival = MAX(e.WhseArrival)
+	from Orders o WITH(NOLOCK)
+	inner join Export_Detail ed WITH(NOLOCK) on o.POID = ed.PoID
+	inner join Export e WITH(NOLOCK) on e.ID = ed.ID
+	where o.ID = m.POID
+)e ";
+            }
+
             string type4 = $@"
 select DISTINCT Type = 'Mockup Oven Test (514)'
 	, m.ReportNo
@@ -222,10 +299,12 @@ select DISTINCT Type = 'Mockup Oven Test (514)'
 	, [Artwork] = m.ArtworkTypeID
 	, m.Result
 	, m.TestDate
-    , ReceivedDate
-    , ReportDate = ReleasedDate
+    , m.ReceivedDate
+    , ReportDate = m.ReleasedDate
 from MockupOven m WITH(NOLOCK)
+{sqlWhseArrival}
 where m.Type = 'B'
+
 ";
 
             if (!string.IsNullOrEmpty(Req.BrandID))
@@ -260,9 +339,29 @@ where m.Type = 'B'
             {
                 type4 += "AND ReleasedDate <= @ReportDate_e ";
             }
+            if (Req.WhseArrival_s.HasValue)
+            {
+                type4 += " AND @WhseArrival_s <= e.WhseArrival ";
+            }
+            if (Req.WhseArrival_e.HasValue)
+            {
+                type4 += " AND @WhseArrival_e >= e.WhseArrival ";
+            }
             #endregion
 
             #region Mockup Wash Test (701)
+            if (Req.WhseArrival_s.HasValue || Req.WhseArrival_e.HasValue)
+            {
+                sqlWhseArrival = @" 
+outer apply (
+	select WhseArrival = MAX(e.WhseArrival)
+	from Orders o WITH(NOLOCK)
+	inner join Export_Detail ed WITH(NOLOCK) on o.POID = ed.PoID
+	inner join Export e WITH(NOLOCK) on e.ID = ed.ID
+	where o.ID = m.POID
+)e ";
+            }
+
             string type5 = $@"
 select DISTINCT Type = 'Mockup Wash Test (701)'
 	, m.ReportNo
@@ -274,9 +373,10 @@ select DISTINCT Type = 'Mockup Wash Test (701)'
 	, [Artwork] = m.ArtworkTypeID
 	, m.Result
 	, m.TestDate
-    , ReceivedDate
-    , ReportDate = ReleasedDate
+    , m.ReceivedDate
+    , ReportDate = m.ReleasedDate
 from MockupWash m WITH(NOLOCK)
+{sqlWhseArrival}
 where m.Type = 'B' 
 ";
 
@@ -312,25 +412,46 @@ where m.Type = 'B'
             {
                 type5 += "AND ReleasedDate <= @ReportDate_e ";
             }
+            if (Req.WhseArrival_s.HasValue)
+            {
+                type5 += " AND @WhseArrival_s <= e.WhseArrival ";
+            }
+            if (Req.WhseArrival_e.HasValue)
+            {
+                type5 += " AND @WhseArrival_e >= e.WhseArrival ";
+            }
+
             #endregion
 
             #region Fabric Oven Test (515) 
+            if (Req.WhseArrival_s.HasValue || Req.WhseArrival_e.HasValue)
+            {
+                sqlWhseArrival = @" 
+outer apply (
+	select WhseArrival = MAX(e.WhseArrival)
+	from Export_Detail ed WITH(NOLOCK)
+	inner join Export e WITH(NOLOCK) on e.ID = ed.ID
+	where o.POID = ed.PoID
+)e ";
+            }
+
             string type6 = $@"
 select DISTINCT Type= 'Fabric Oven Test (515)'
-        ,f.ReportNo
-		,OrderID = o.POID
-		,o.StyleID
-		,o.BrandID
-		,o.SeasonID
-		,f.Article  
-		,Artwork = ''
-		,Result=f.Result
-		,TestDate = f.InspDate
-	    ,ReceivedDate =NULL
-	    ,ReportDate =NULL
+        , f.ReportNo
+		, OrderID = o.POID
+		, o.StyleID
+		, o.BrandID
+		, o.SeasonID
+		, f.Article  
+		, Artwork = ''
+		, Result = f.Result
+		, TestDate = f.InspDate
+	    , ReceivedDate = NULL
+	    , ReportDate = NULL
 from PO p WITH(NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.POID = p.ID
 inner join Oven f WITH(NOLOCK) ON f.POID = p.ID
+{sqlWhseArrival}
 where 1=1 
 ";
             if (!string.IsNullOrEmpty(Req.BrandID))
@@ -349,26 +470,45 @@ where 1=1
             {
                 type6 += "AND Article = @Article ";
             }
+            if (Req.WhseArrival_s.HasValue)
+            {
+                type6 += " AND @WhseArrival_s <= e.WhseArrival ";
+            }
+            if (Req.WhseArrival_e.HasValue)
+            {
+                type6 += " AND @WhseArrival_e >= e.WhseArrival ";
+            }
             #endregion
 
             #region Washing Fastness (501)
+            if (Req.WhseArrival_s.HasValue || Req.WhseArrival_e.HasValue)
+            {
+                sqlWhseArrival = @" 
+outer apply (
+	select WhseArrival = MAX(e.WhseArrival)
+	from Export_Detail ed WITH(NOLOCK)
+	inner join Export e WITH(NOLOCK) on e.ID = ed.ID
+	where o.POID = ed.PoID
+)e ";
+            }
+
             string type7 = $@"
 select DISTINCT Type= 'Washing Fastness (501)'
-        ,ReportNo  = f.ID
-		,OrderID = o.POID
-		,o.StyleID
-		,o.BrandID
-		,o.SeasonID
-		,f.Article 
-		,Artwork = ''
-		,Result=f.Result
-		,TestDate = f.InspDate
-
-	    ,ReceivedDate =NULL
-	    ,ReportDate =NULL
+        , ReportNo = f.ID
+		, OrderID = o.POID
+		, o.StyleID
+		, o.BrandID
+		, o.SeasonID
+		, f.Article 
+		, Artwork = ''
+		, Result = f.Result
+		, TestDate = f.InspDate
+	    , ReceivedDate = NULL
+	    , ReportDate = NULL
 from PO p WITH(NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.POID = p.ID
 INNER JOIN ColorFastness f WITH(NOLOCK) ON f.POID = p.ID
+{sqlWhseArrival}
 WHERE 1=1 
 ";
             if (!string.IsNullOrEmpty(Req.BrandID))
@@ -387,22 +527,41 @@ WHERE 1=1
             {
                 type7 += "AND Article = @Article ";
             }
+            if (Req.WhseArrival_s.HasValue)
+            {
+                type7 += " AND @WhseArrival_s <= e.WhseArrival ";
+            }
+            if (Req.WhseArrival_e.HasValue)
+            {
+                type7 += " AND @WhseArrival_e >= e.WhseArrival ";
+            }
             #endregion
 
             #region Accessory Oven & Wash Test (515, 701)
+            if (Req.WhseArrival_s.HasValue || Req.WhseArrival_e.HasValue)
+            {
+                sqlWhseArrival = @" 
+outer apply (
+	select WhseArrival = MAX(e.WhseArrival)
+	from Export_Detail ed WITH(NOLOCK) 
+	inner join Export e WITH(NOLOCK) on e.ID = ed.ID
+	where o.POID = ed.PoID
+)e ";
+            }
+
             string type8 = $@"
 select Type = 'Accessory Oven & Wash Test (515, 701)'
-        ,ReportNo=''
-		,OrderID = o.POID
-		,o.StyleID
-		,o.BrandID
-		,o.SeasonID
-		,Article = ''
-		,[Artwork] = ''
+        , ReportNo = ''
+		, OrderID = o.POID
+		, o.StyleID
+		, o.BrandID
+		, o.SeasonID
+		, Article = ''
+		, [Artwork] = ''
 		, [Result] = f_Result.Result
 		, [TestDate] = f_TestDate.TestDate
-		,ReceivedDate =NULL
-		,ReportDate =NULL
+		, ReceivedDate = NULL
+		, ReportDate = NULL
 from PO p
 inner join Orders o WITH(NOLOCK) ON o.ID = p.ID
 outer apply (
@@ -432,6 +591,7 @@ outer apply (
 	from AIR_Laboratory f
 	where f.POID = p.ID
 )f_Result
+{sqlWhseArrival}
 WHERE exists (select 1 from AIR_Laboratory f WITH(NOLOCK) WHERE f.POID = p.ID)
 ";
             if (!string.IsNullOrEmpty(Req.BrandID))
@@ -446,10 +606,30 @@ WHERE exists (select 1 from AIR_Laboratory f WITH(NOLOCK) WHERE f.POID = p.ID)
             {
                 type8 += "AND o.StyleID = @StyleID ";
             }
+            if (Req.WhseArrival_s.HasValue)
+            {
+                type8 += " AND @WhseArrival_s <= e.WhseArrival ";
+            }
+            if (Req.WhseArrival_e.HasValue)
+            {
+                type8 += " AND @WhseArrival_e >= e.WhseArrival ";
+            }
 
             #endregion
 
             #region Pulling test for Snap/Botton/Rivet (437)
+            if (Req.WhseArrival_s.HasValue || Req.WhseArrival_e.HasValue)
+            {
+                sqlWhseArrival = @" 
+outer apply (
+	select WhseArrival = MAX(e.WhseArrival)
+	from Orders o WITH(NOLOCK)
+	inner join Export_Detail ed WITH(NOLOCK) on o.POID = ed.PoID
+	inner join Export e WITH(NOLOCK) on e.ID = ed.ID
+	where o.ID = m.POID
+)e ";
+            }
+
             string type9 = $@"
 select DISTINCT Type = 'Pulling test for Snap/Botton/Rivet (437)'
 	, m.ReportNo
@@ -461,9 +641,10 @@ select DISTINCT Type = 'Pulling test for Snap/Botton/Rivet (437)'
 	, [Artwork] = ''
 	, m.Result
 	, m.TestDate
-	,ReceivedDate =NULL
-	,ReportDate =NULL
-from [ExtendServer].ManufacturingExecution.dbo.PullingTest m  WITH(NOLOCK)
+	, ReceivedDate = NULL
+	, ReportDate = NULL
+from [ExtendServer].ManufacturingExecution.dbo.PullingTest m WITH(NOLOCK)
+{sqlWhseArrival}
 where 1=1 
 ";
             if (!string.IsNullOrEmpty(Req.BrandID))
@@ -482,26 +663,44 @@ where 1=1
             {
                 type9 += "AND Article = @Article ";
             }
-
+            if (Req.WhseArrival_s.HasValue)
+            {
+                type9 += " AND @WhseArrival_s <= e.WhseArrival ";
+            }
+            if (Req.WhseArrival_e.HasValue)
+            {
+                type9 += " AND @WhseArrival_e >= e.WhseArrival ";
+            }
             #endregion
 
             #region Water Fastness Test(503)
+            if (Req.WhseArrival_s.HasValue || Req.WhseArrival_e.HasValue)
+            {
+                sqlWhseArrival = @" 
+outer apply (
+	select WhseArrival = MAX(e.WhseArrival)
+	from Export_Detail ed WITH(NOLOCK)
+	inner join Export e WITH(NOLOCK) on e.ID = ed.ID
+	where o.POID = ed.PoID
+)e ";
+            }
+
             string type11 = $@"
 select DISTINCT Type= 'Water Fastness Test(503)'
         , w.ReportNo
 		, OrderID = w.POID
-		,o.StyleID
-		,o.BrandID
-		,o.SeasonID
-		,Article 
-		,Artwork = ''
-		,w.Result
-		,TestDate = w.InspDate
-
-	    ,ReceivedDate =NULL
-	    ,ReportDate =NULL
+		, o.StyleID
+		, o.BrandID
+		, o.SeasonID
+		, Article 
+		, Artwork = ''
+		, w.Result
+		, TestDate = w.InspDate
+	    , ReceivedDate =NULL
+	    , ReportDate =NULL
 from WaterFastness w WITH (NOLOCK) 
 inner join Orders o WITH(NOLOCK) ON o.ID = w.POID
+{sqlWhseArrival}
 WHERE 1=1 
 ";
             if (!string.IsNullOrEmpty(Req.BrandID))
@@ -520,25 +719,44 @@ WHERE 1=1
             {
                 type11 += "AND Article = @Article ";
             }
+            if (Req.WhseArrival_s.HasValue)
+            {
+                type11 += " AND @WhseArrival_s <= e.WhseArrival ";
+            }
+            if (Req.WhseArrival_e.HasValue)
+            {
+                type11 += " AND @WhseArrival_e >= e.WhseArrival ";
+            }
             #endregion
 
             #region Perspiration Fastness Test(502)
+            if (Req.WhseArrival_s.HasValue || Req.WhseArrival_e.HasValue)
+            {
+                sqlWhseArrival = @" 
+outer apply (
+	select WhseArrival = MAX(e.WhseArrival)
+	from Export_Detail ed WITH(NOLOCK)
+	inner join Export e WITH(NOLOCK) on e.ID = ed.ID
+	where o.POID = ed.PoID
+)e ";
+            }
+
             string type12 = $@"
 select DISTINCT Type= 'Perspiration Fastness (502)'
         , w.ReportNo
 		, OrderID = w.POID
-		,o.StyleID
-		,o.BrandID
-		,o.SeasonID
-		,Article 
-		,Artwork = ''
-		,w.Result
-		,TestDate = w.InspDate
-
-	    ,ReceivedDate =NULL
-	    ,ReportDate =NULL
+		, o.StyleID
+		, o.BrandID
+		, o.SeasonID
+		, Article 
+		, Artwork = ''
+		, w.Result
+		, TestDate = w.InspDate
+	    , ReceivedDate = NULL
+	    , ReportDate = NULL
 from PerspirationFastness w WITH (NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.ID = w.POID
+{sqlWhseArrival}
 WHERE 1=1 
 ";
             if (!string.IsNullOrEmpty(Req.BrandID))
@@ -556,6 +774,14 @@ WHERE 1=1
             if (!string.IsNullOrEmpty(Req.Article))
             {
                 type12 += "AND Article = @Article ";
+            }
+            if (Req.WhseArrival_s.HasValue)
+            {
+                type12 += " AND @WhseArrival_s <= e.WhseArrival ";
+            }
+            if (Req.WhseArrival_e.HasValue)
+            {
+                type12 += " AND @WhseArrival_e >= e.WhseArrival ";
             }
             #endregion
 

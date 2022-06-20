@@ -176,7 +176,14 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "<td><select id='Details_" + i + "__ChangeScale' name='Details[" + i + "].ChangeScale'>"; // ChangeScale
             foreach (string val in model.ScaleIDs)
             {
-                html += "<option value='" + val + "'>" + val + "</option>";
+                if (val == "4-5")
+                {
+                    html += "<option selected value='" + val + "'>" + val + "</option>";
+                }
+                else
+                {
+                    html += "<option value='" + val + "'>" + val + "</option>";
+                }
             }
             html += "</select></td>";
 
@@ -190,7 +197,14 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "<td><select id='Details_" + i + "__StainingScale' name='Details[" + i + "].StainingScale'>"; // StainingScale
             foreach (string val in model.ScaleIDs)
             {
-                html += "<option value='" + val + "'>" + val + "</option>";
+                if (val == "4-5")
+                {
+                    html += "<option selected value='" + val + "'>" + val + "</option>";
+                }
+                else
+                {
+                    html += "<option value='" + val + "'>" + val + "</option>";
+                }
             }
             html += "</select></td>";
 
