@@ -42,12 +42,15 @@
             <div><label class="checkboxlabel">Garment Washing Test (FGWT)</label></div>
         </td>
     </tr>
-    <tr>
-        <td>
-            @Html.CheckBoxFor(o => o.FinalInspection.CheckFGPT, new { @disabled = "disabled", @class = "checkboxInput" })
-        </td>
-        <td>
-            <div><label class="checkboxlabel">FGPT</label></div>
-        </td>
-    </tr>
+    @if (Model.FinalInspection.InspectionStage == "Final")
+    {
+        <tr>
+            <td>
+                @Html.CheckBoxFor(o => o.FinalInspection.CheckFGPT, new { @disabled = "disabled", @class = "checkboxInput" })
+            </td>
+            <td>
+                <div><label class="checkboxlabel">FGPT</label></div>
+            </td>
+        </tr>
+    }
 </table>

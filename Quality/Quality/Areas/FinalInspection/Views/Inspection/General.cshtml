@@ -101,21 +101,27 @@
                     @*@Html.CheckBox("GarmentWashingDoc")*@
                     @Html.CheckBoxFor(o => o.GarmentWashingDoc, new { @class = "notSelectAll" })
                 </td>
-                <td class="thirdTD"> 
-                    <label class="tip">@Model.FGWT</label>
-                </td>
-            </tr>
-            <tr>
-                <td class="fistTD">
-                    <div><label class="checkboxlabel" for="CheckFGPT">FGPT</label></div>
-                </td>
-                <td class="secTD">
-                    @Html.CheckBoxFor(o => o.CheckFGPT, new { @class = "notSelectAll" })
-                </td>
                 <td class="thirdTD">
-                    <label class="tip">@Model.FGPT</label>
+                    @if (Model.InspectionStage == "Final")
+                    {
+                        <label class="tip">@Model.FGWT</label>
+                    }
                 </td>
             </tr>
+            @if (Model.InspectionStage == "Final")
+            {
+                <tr>
+                    <td class="fistTD">
+                        <div><label class="checkboxlabel" for="CheckFGPT">FGPT</label></div>
+                    </td>
+                    <td class="secTD">
+                        @Html.CheckBoxFor(o => o.CheckFGPT, new { @class = "notSelectAll" })
+                    </td>
+                    <td class="thirdTD">
+                        <label class="tip">@Model.FGPT</label>
+                    </td>
+                </tr>
+            }
         </table>
         <input type="hidden" id="goPage" name="goPage">
         <p style="font-size: 16px;font-weight:bolder; position: absolute; right: 1em;bottom:4.3em;">Inline, Stagger can skip Metal Detection.</p>
@@ -163,7 +169,7 @@
 
                 if ('@stage' == "Inline" || '@stage' == "Stagger") {
 
-                    if ($("#FabricApprovalDoc").prop("checked") == false || $("#SealingSampleDoc").prop("checked") == false || $("#GarmentWashingDoc").prop("checked") == false || $("#CheckFGPT").prop("checked") == false)
+                    if ($("#FabricApprovalDoc").prop("checked") == false || $("#SealingSampleDoc").prop("checked") == false || $("#GarmentWashingDoc").prop("checked") == false)
                     {
                         msg.WithError('These items must be selected before go to next step.');
                         return false;
