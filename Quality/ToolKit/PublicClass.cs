@@ -268,6 +268,13 @@ namespace ToolKit
                 imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
             }
 
+            if (string.IsNullOrEmpty(signWord))
+            {
+                img.Save(imgPath);
+                img.Dispose();
+                return imgPath;
+            }
+
             Graphics g = Graphics.FromImage(img);
             Font drawFont = new Font(fontname, fontsize, FontStyle.Italic, GraphicsUnit.Pixel);
             SizeF crSize = g.MeasureString(signWord, drawFont);
