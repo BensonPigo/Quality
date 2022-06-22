@@ -622,6 +622,7 @@ select  ov.ID
         ,oi.TestBeforePicture
         ,oi.TestAfterPicture
         ,[InspectorName] = (select Name from Pass1 WITH(NOLOCK) where ID = ov.Inspector)
+        ,ov.ReportNo
 from    Oven ov with (nolock)
 left join SciPMSFile_Oven oi with (nolock) on oi.ID=ov.ID
 where   ov.POID = @poID and ov.TestNo = @TestNo
