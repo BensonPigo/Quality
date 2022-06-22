@@ -98,7 +98,7 @@
                             <td>
                                 <label class="FindLab">Brand</label>
                             </td>
-                            <td nowrap="nowrap">
+                            <td nowrap="nowrap" colspan="2">
                                 <div>
                                     @Html.TextBoxFor(o => o.BrandID, new { @value = Model.BrandID, @style = "width:9vw" })
                                     <input id="btnBrandID" onclick="OpenWindow('BrandID')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
@@ -107,7 +107,7 @@
                             <td>
                                 <label class="FindLab">Season</label>
                             </td>
-                            <td nowrap="nowrap">
+                            <td nowrap="nowrap" colspan="2">
                                 @Html.TextBoxFor(o => o.SeasonID, new { @value = Model.SeasonID, @style = "width:9vw" })
                                 <input id="btnSeasonID" onclick="OpenWindow('SeasonID')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
                             </td>
@@ -133,7 +133,7 @@
                             <td>
                                 <label class="FindLab" for="TypeSP">Type</label>
                             </td>
-                            <td colspan="7">
+                            <td colspan="9">
                                 @Html.DropDownListFor(o => o.Type, Model.TypeDatasource)
                             </td>
                             <td style="padding: 0vw;">
@@ -141,11 +141,10 @@
                             </td>
                         </tr>
                         <tr>
-
                             <td>
                                 <label>Received Date</label>
                             </td>
-                            <td colspan="3">
+                            <td colspan="2">
                                 @Html.TextBox("ReceivedDate_sText", Model.ReceivedDate_sText, new { @style = "width:9vw", @class = "date-picker mockupOnly" })
                                 <label>~</label>
                                 @Html.TextBox("ReceivedDate_eText", Model.ReceivedDate_eText, new { @style = "width:9vw", @class = "date-picker mockupOnly" })
@@ -153,12 +152,19 @@
                             <td>
                                 <label>Report Date</label>
                             </td>
-                            <td colspan="3">
+                            <td colspan="2">
                                 @Html.TextBox("ReportDate_sText", Model.ReportDate_sText, new { @style = "width:9vw", @class = "date-picker mockupOnly" })
                                 <label>~</label>
                                 @Html.TextBox("ReportDate_eText", Model.ReportDate_eText, new { @style = "width:9vw", @class = "date-picker mockupOnly" })
                             </td>
-
+                            <td>
+                                <label>Arrived W/H Date</label>
+                            </td>
+                            <td colspan="4">
+                                @Html.TextBox("WhseArrival_sText", Model.WhseArrival_sText, new { @style = "width:9vw", @class = "date-picker" })
+                                <label>~</label>
+                                @Html.TextBox("WhseArrival_eText", Model.WhseArrival_eText, new { @style = "width:9vw", @class = "date-picker" })
+                            </td>
                         </tr>
                     </table>
             }

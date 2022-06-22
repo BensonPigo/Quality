@@ -78,13 +78,13 @@ select  ID                             ,
         EditDate                       ,
         HasOtherImage = Cast(IIF(exists(select 1 from SciPMSFile_FinalInspection_OtherImage b WITH(NOLOCK) where a.id= b.id),1,0) as bit),
         CheckFGPT                      ,
-        [FGWT] = ISNULL(g.WashResult, 'Lacking Test'),
-        [FGPT] = fgpt.Result
+        [FGWT] = iif(a.InspectionStage = 'Final', ISNULL(g.WashResult, 'Lacking Test') , ''),
+        [FGPT] = iif(a.InspectionStage = 'Final', fgpt.Result, '')
 from FinalInspection a with (nolock)
 outer apply (
 	select [GarmentTestID] = g.ID, [WashResult] = case g.WashResult when 'F' then 'Failed Test' when 'P' then 'Completed Test' else 'Lacking Test' end
 	from FinalInspection_Order o 
-	left join [MainServer].[Production].dbo.GarmentTest g on o.OrderID = g.OrderID
+	left join SciProduction_GarmentTest g on o.OrderID = g.OrderID
 	where o.ID = a.ID
 )g
 outer apply (
@@ -95,7 +95,7 @@ outer apply (
 					WHEN  t.TestUnit = 'Pass/Fail' THEN t.[TestResult]
 			   ELSE ''
 			END)
-		from [MainServer].[Production].dbo.GarmentTest_Detail_FGPT t with(nolock)
+		from SciProduction_GarmentTest_Detail_FGPT t with(nolock)
 		where g.[GarmentTestID] = t.ID
 	)t
 )fgpt
@@ -1519,11 +1519,12 @@ where   ID = @FinalInspectionID
             if (inspectionType == "InlineInspection")
             {
                 dynamicCol = @"
-[SewerID] = r.Operator,
-[Station] = r.Station,
-[Line] = r.Line,
-[Operation] = r.Operation,
-[Size] = ''
+[SewerID] = SUBSTRING(r.Operator,1, 255),
+[Station] = SUBSTRING(r.Station,1, 255),
+[Line] = SUBSTRING(r.Line,1, 255),
+[Operation] = SUBSTRING(r.Operation,1, 255),
+[Size] = '',
+[WFT]=''
 ";
             }
             else
@@ -1535,7 +1536,8 @@ where   ID = @FinalInspectionID
 [Operation] = '',
 [Size] = (SELECT val =  Stuff((select distinct concat( ',', isb.SizeCode) 
                 from InspectionReport_Breakdown isb with (nolock)
-                where isb.InspectionReportID = r.ID FOR XML PATH('')),1,1,''))
+                where isb.InspectionReportID = r.ID FOR XML PATH('')),1,1,'')),
+[WFT]= r.WFT
 ";
             }
 

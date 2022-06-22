@@ -48,6 +48,24 @@ namespace DatabaseObject.ViewModel.BulkFGT
         }
 
         public string ReportDate_eText { get; set; }
+
+        public DateTime? WhseArrival_s
+        {
+            get
+            {
+                return string.IsNullOrEmpty(WhseArrival_sText) ? (DateTime?)null : DateTime.Parse(WhseArrival_sText); ;
+            }
+        }
+        public string WhseArrival_sText { get; set; }
+        public DateTime? WhseArrival_e
+        {
+            get
+            {
+                return string.IsNullOrEmpty(WhseArrival_eText) ? (DateTime?)null : DateTime.Parse(WhseArrival_eText); ;
+            }
+        }
+        public string WhseArrival_eText { get; set; }
+
         public List<SelectListItem> TypeDatasource { get; set; }
 
         public string MDivisionID { get; set; }

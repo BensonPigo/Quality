@@ -26,5 +26,6 @@ namespace BusinessLogicLayer.Interface.BulkFGT
         BaseResult ToExcelFabricOvenTestDetail(string poID, string TestNo, out string excelFileName, bool isTest);
 
         BaseResult ToPdfFabricOvenTestDetail(string poID, string TestNo, out string pdfFileName, bool isTest);
+        BaseResult ToPdfFabricOvenTestDetail_Ori(string poID, string TestNo, out string pdfFileName, bool isTest);
     }
 }

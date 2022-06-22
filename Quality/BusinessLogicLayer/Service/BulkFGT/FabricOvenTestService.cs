@@ -458,20 +458,21 @@ namespace BusinessLogicLayer.Service
 
         private void SetDetailData(Excel.Worksheet worksheet, int setRow, DataRow dr)
         {
-            worksheet.Cells[setRow, 2] = dr["Refno"];
-            worksheet.Cells[setRow, 3] = dr["Colorid"];
-            worksheet.Cells[setRow, 4] = dr["Dyelot"];
-            worksheet.Cells[setRow, 6] = dr["Roll"];
-            worksheet.Cells[setRow, 7] = dr["Changescale"];
-            worksheet.Cells[setRow, 9] = dr["ResultChange"];
-            worksheet.Cells[setRow, 10] = dr["StainingScale"];
-            worksheet.Cells[setRow, 11] = dr["ResultStain"];
-            worksheet.Cells[setRow, 12] = MyUtility.Convert.GetString(dr["Temperature"]) + "˚C";
+            worksheet.Cells[setRow, 2] = dr["SubmitDate"] == DBNull.Value ? string.Empty : ((DateTime)dr["SubmitDate"]).ToString("yyyy/MM/dd");
+            worksheet.Cells[setRow, 3] = dr["Refno"];
+            worksheet.Cells[setRow, 4] = dr["Colorid"];
+            worksheet.Cells[setRow, 6] = dr["Dyelot"];
+            worksheet.Cells[setRow, 7] = dr["Roll"];
+            worksheet.Cells[setRow, 8] = dr["Changescale"];
+            worksheet.Cells[setRow, 10] = dr["ResultChange"];
+            worksheet.Cells[setRow, 11] = dr["StainingScale"];
+            worksheet.Cells[setRow, 12] = dr["ResultStain"];
+            worksheet.Cells[setRow, 13] = MyUtility.Convert.GetString(dr["Temperature"]) + "˚C";
             worksheet.Cells[setRow, 14] = MyUtility.Convert.GetString(dr["Time"]) + " hrs";
             worksheet.Cells[setRow, 15] = dr["Remark"];
         }
 
-        public BaseResult ToPdfFabricOvenTestDetail(string poID, string TestNo, out string pdfFileName, bool isTest)
+        public BaseResult ToPdfFabricOvenTestDetail_Ori(string poID, string TestNo, out string pdfFileName, bool isTest)
         {
             _FabricOvenTestProvider = new FabricOvenTestProvider(Common.ProductionDataAccessLayer);
             _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
@@ -523,7 +524,7 @@ namespace BusinessLogicLayer.Service
                     result.Result = false;
                     return result;
                 }
-
+                excel.Visible = true;
                 excel.DisplayAlerts = false;
 
                 // 預設頁在第5頁，前4頁是用來複製的格式，最後在刪除
@@ -951,6 +952,216 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
+        public BaseResult ToPdfFabricOvenTestDetail(string poID, string TestNo, out string pdfFileName, bool isTest)
+        {
+            _FabricOvenTestProvider = new FabricOvenTestProvider(Common.ProductionDataAccessLayer);
+            _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
+            _StyleProvider = new StyleProvider(Common.ProductionDataAccessLayer);
+
+            BaseResult result = new BaseResult();
+            pdfFileName = string.Empty;
+
+            try
+            {
+                string baseFilePath = isTest ? Directory.GetCurrentDirectory() : System.Web.HttpContext.Current.Server.MapPath("~/");
+                DataTable dtOvenDetail = _FabricOvenTestProvider.GetOvenDetailForExcel(poID, TestNo);
+                DataTable dtOven = _FabricOvenTestProvider.GetOven(poID, TestNo);
+
+                if (dtOvenDetail.Rows.Count < 1)
+                {
+                    result.ErrorMessage = "Data not found!";
+                    result.Result = false;
+                    return result;
+                }
+
+                var distOvenDetailSubmitDate = dtOvenDetail.AsEnumerable().ToList();
+
+                List<Orders> listOrders = _OrdersProvider.Get(new Orders() { ID = poID }).ToList();
+                List<Style> listStyle = _StyleProvider.Get(new Style() { Ukey = listOrders[0].StyleUkey }).ToList();
+
+                string styleUkey = string.Empty;
+                string styleID = string.Empty;
+                string seasonID = string.Empty;
+                string CustPONO = string.Empty;
+                string brandID = string.Empty;
+
+                if (listOrders.Count > 0)
+                {
+                    styleUkey = listOrders[0].StyleUkey.ToString();
+                    styleID = listOrders[0].StyleID;
+                    seasonID = listOrders[0].SeasonID;
+                    CustPONO = listOrders[0].CustPONO;
+                    brandID = listOrders[0].BrandID;
+                }
+
+                string strXltName = baseFilePath + "\\XLT\\FabricOvenTestDetailReportToPDF.xltx";
+                Excel.Application excel = MyUtility.Excel.ConnectExcel(strXltName);
+                if (excel == null)
+                {
+                    result.ErrorMessage = "Excel template not found!";
+                    result.Result = false;
+                    return result;
+                }
+                excel.Visible = false;
+                excel.DisplayAlerts = false;
+
+                // 預設頁在第5頁，前4頁是用來複製的格式，最後在刪除
+                int defaultSheet = 5;
+
+                #region Set Picture
+                string imgPath_BeforePicture = string.Empty;
+                string imgPath_AfterPicture = string.Empty;
+                if (dtOven.Rows[0]["TestBeforePicture"] != DBNull.Value)
+                {
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    if (IsTest.ToLower() == "true")
+                    {
+                        imgPath_BeforePicture = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                    }
+                    else
+                    {
+                        imgPath_BeforePicture = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                    }
+
+                    byte[] bytes = (byte[])dtOven.Rows[0]["TestBeforePicture"];
+                    using (var imageFile = new FileStream(imgPath_BeforePicture, FileMode.Create))
+                    {
+                        imageFile.Write(bytes, 0, bytes.Length);
+                        imageFile.Flush();
+                    }
+                }
+
+                //Excel.Range cellAfter = worksheet.Cells[3, 10];
+                if (dtOven.Rows[0]["TestAfterPicture"] != DBNull.Value)
+                {
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    if (IsTest.ToLower() == "true")
+                    {
+                        imgPath_AfterPicture = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                    }
+                    else
+                    {
+                        imgPath_AfterPicture = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                    }
+
+                    byte[] bytes = (byte[])dtOven.Rows[0]["TestAfterPicture"];
+                    using (var imageFile = new FileStream(imgPath_AfterPicture, FileMode.Create))
+                    {
+                        imageFile.Write(bytes, 0, bytes.Length);
+                        imageFile.Flush();
+                    }
+
+                    //worksheet.Shapes.AddPicture(imgPath_AfterPicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfter.Left + 5, cellAfter.Top + 5, 430, 295);
+                }
+                #endregion
+
+                Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1];
+                // 填入表頭資訊
+                worksheet = excel.ActiveWorkbook.Worksheets[defaultSheet];
+                worksheet.Cells[4, 3] = distOvenDetailSubmitDate[0]["ReportNo"].ToString();
+                worksheet.Cells[4, 6] = dtOven.Rows[0]["InspDate"] == DBNull.Value ? string.Empty : ((DateTime)dtOven.Rows[0]["InspDate"]).ToString("yyyy/MM/dd");
+                worksheet.Cells[4, 9] = poID;
+                worksheet.Cells[4, 14] = brandID;
+                worksheet.Cells[6, 3] = styleID;
+                worksheet.Cells[6, 9] = CustPONO;
+                worksheet.Cells[6, 14] = dtOven.Rows[0]["Article"].ToString();
+                worksheet.Cells[7, 3] = listStyle[0].StyleName;
+                worksheet.Cells[7, 9] = seasonID;
+
+                // 細項
+                int headerRow = 9; // 表頭那頁前9列為固定
+                int signatureRow = 4; // 簽名有4列
+
+                string signature = dtOven.Rows[0]["InspectorName"].ToString();
+                Excel.Worksheet worksheetDetail = excel.ActiveWorkbook.Worksheets[1];
+                Excel.Worksheet worksheetSignature = excel.ActiveWorkbook.Worksheets[2];
+                Excel.Worksheet worksheetPicture = excel.ActiveWorkbook.Worksheets[3];
+                Excel.Worksheet worksheetFrame = excel.ActiveWorkbook.Worksheets[4];
+
+                DataRow[] dr = dtOvenDetail.Select();
+                worksheet = excel.ActiveWorkbook.Worksheets[defaultSheet];
+
+                for (int j = 0; j < dr.Length; j++)
+                {
+                    Excel.Range paste = worksheet.get_Range($"A{headerRow + 1 + j}", Type.Missing);
+                    Excel.Range r = worksheetDetail.get_Range("A1").EntireRow;
+                    paste.Insert(Excel.XlInsertShiftDirection.xlShiftDown, r.Copy(Type.Missing));
+
+                    // 細項資料
+                    this.SetDetailData(worksheet, j + headerRow + 1, dr[j]);
+                }
+                worksheet.Cells.EntireRow.AutoFit();
+
+                // 簽名格子塞入後的Row Index
+                int afterSignatureRow;
+
+                Excel.Range paste1 = worksheet.get_Range($"A{dr.Length + headerRow + 1}", Type.Missing);
+                Excel.Range r1 = worksheetSignature.get_Range("A1:A4").EntireRow;
+                paste1.Insert(Excel.XlInsertShiftDirection.xlShiftDown, r1.Copy(Type.Missing));
+                worksheet.Cells[dr.Length + headerRow + 3, 13] = signature;
+                afterSignatureRow = dr.Length + headerRow + signatureRow;
+
+
+                Excel.Range paste2 = worksheet.get_Range($"A{afterSignatureRow + 1}", Type.Missing);
+                Excel.Range r2 = worksheetPicture.get_Range("A1:A20").EntireRow;
+                paste2.Insert(Excel.XlInsertShiftDirection.xlShiftDown, r2.Copy(Type.Missing));
+
+                Excel.Range cell;
+                if (!string.IsNullOrEmpty(imgPath_BeforePicture))
+                {
+                    cell = worksheet.Cells[afterSignatureRow + 3, 2];
+                    worksheet.Shapes.AddPicture(imgPath_BeforePicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 420, 280);
+                }
+                if (!string.IsNullOrEmpty(imgPath_AfterPicture))
+                {
+                    cell = worksheet.Cells[afterSignatureRow + 3, 10];
+                    worksheet.Shapes.AddPicture(imgPath_AfterPicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 420, 280);
+                }
+
+                Excel.Range paste3 = worksheet.get_Range($"A{afterSignatureRow + 3 + 20 + 1}", Type.Missing);
+                Excel.Range r3 = worksheetFrame.get_Range("A4:A42").EntireRow;
+                paste3.Insert(Excel.XlInsertShiftDirection.xlShiftDown, r3.Copy(Type.Missing));
+
+                for (int i = 0; i < 4; i++)
+                {
+                    worksheet = excel.ActiveWorkbook.Worksheets[1];
+                    worksheet.Delete();
+                }
+
+                #region Save & Show Excel
+
+                pdfFileName = $"FabricOvenTestDetailReportToPDF{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
+                string excelFileName = $"FabricOvenTestDetailReportToPDF{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+
+                string pdfPath = Path.Combine(baseFilePath, "TMP", pdfFileName);
+                string excelPath = Path.Combine(baseFilePath, "TMP", excelFileName);
+
+                excel.ActiveWorkbook.SaveAs(excelPath);
+                excel.Quit();
+
+                bool isCreatePdfOK = ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
+                if (!isCreatePdfOK)
+                {
+                    result.Result = false;
+                    result.ErrorMessage = "ConvertToPDF fail";
+                    return result;
+                }
+
+                #endregion
+                Marshal.ReleaseComObject(worksheet);
+                Marshal.ReleaseComObject(excel);
+            }
+            catch (Exception ex)
+            {
+
+                result.Result = false;
+                result.ErrorMessage = ex.ToString();
+            }
+
+
+
+            return result;
+        }
         public BaseResult DeleteOven(string poID, string TestNo)
         {
             BaseResult baseResult = new BaseResult();

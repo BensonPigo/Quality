@@ -1734,9 +1734,10 @@ namespace BusinessLogicLayer.Service
                 Excel.Worksheet currenSheet = excel.ActiveWorkbook.Worksheets[j];
                 Crocking_Excel currenData = dataList[j - 1];
                 currenSheet.Select();
-                currenSheet.Name = currenData.Article + currenData.Roll + currenData.Dyelot;
-                currenSheet.Cells[2, 3] = currenData.ReportNo;
 
+                currenSheet.Name = (currenData.Article + currenData.Roll + currenData.Dyelot).Replace(@"/", string.Empty).Replace(@"\", string.Empty);
+
+                currenSheet.Cells[2, 3] = currenData.ReportNo;
                 currenSheet.Cells[3, 3] = currenData.SubmitDate.HasValue ? currenData.SubmitDate.Value.ToString("yyyy/MM/dd") : string.Empty;
                 currenSheet.Cells[3, 8] = DateTime.Now.ToString("yyyy/MM/dd");
 

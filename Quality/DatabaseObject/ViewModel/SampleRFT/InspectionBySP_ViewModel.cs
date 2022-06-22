@@ -16,6 +16,7 @@ namespace DatabaseObject.ViewModel.SampleRFT
         public string CustPONo { get; set; }
         public string StyleID { get; set; }
         public string SeasonID { get; set; }
+        public string FactoryID { get; set; }
     }
 
     public class InspectionBySP_SearchResult

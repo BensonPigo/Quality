@@ -394,7 +394,7 @@
                                             }
                                         </td>
                                         <td style="width:10vw;">
-                                            @Html.TextBoxFor(o => Model.garmentTest_Details[i].OrderID, "", new { @class = "Detail_OrderID" })
+                                            @Html.TextBoxFor(o => Model.garmentTest_Details[i].OrderID, "", new { @class = "Detail_OrderID",@idx=i })
                                         </td>
                                         <td style="width:10vw;">
                                             <select class="Detail_SizeCode" id="Model.garmentTest_Details_@{@i}__.SizeCode" name="Model.garmentTest_Details[@i].SizeCode" disabled="disabled">
@@ -543,6 +543,8 @@
         if (!$("body").hasClass("sidebar-collapse")) {
             $(".menu-trigger").click();
         }
+
+        $(".Detail_OrderID").blur();
     });
 
     function IsEditModeChange() {
@@ -788,6 +790,8 @@
                 return;
             }
 
+            var idx = $(this).attr("idx");
+            var currentSize = $(`select[name='Model.garmentTest_Details[${idx}].SizeCode']`).val();
             var SizeCode = $(this).parent().siblings().find("select[class='Detail_SizeCode']");
             var OrderID = $(this).val();
             var Brand = $('#Brand').val();
@@ -798,7 +802,7 @@
                 url: "@Url.Action("ChangeSizeCode", "GarmentTest", new { Area = "BulkFGT" })",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({ OrderID: OrderID, Brand: Brand, Season: Season, Style: Style, Article: Article }),
+                data: JSON.stringify({ OrderID: OrderID, Brand: Brand, Season: Season, Style: Style, Article: Article, CurrentSize: currentSize }),
                 async: false,
                 success: function (data) {
                     if (data.length == 0) {

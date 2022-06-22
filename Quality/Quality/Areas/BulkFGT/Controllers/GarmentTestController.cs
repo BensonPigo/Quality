@@ -205,10 +205,10 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "<td><a idx='" + ID + "' idv = '" + lastNO.ToString() + "'></a></td>";
             html += "<td><input id='garmentTest_Details_" + i + "__OrderID' name='garmentTest_Details[" + i + "].OrderID' class='Detail_OrderID' type='text'></td>";
             html += "<td><select id='garmentTest_Details_" + i + "__SizeCode' name='garmentTest_Details[" + i + "].SizeCode' class='Detail_SizeCode'><option value=''></option>";
-            foreach(string val in sizecodes)
-            {
-                html += "<option value='" + val + "'>" + val + "</option>";
-            }
+            //foreach(string val in sizecodes)
+            //{
+            //    html += "<option value='" + val + "'>" + val + "</option>";
+            //}
             html += "</select></td>";
             html += "<td><input class='form-control' id='garmentTest_Details_" + i + "__inspdate' name='garmentTest_Details[" + i + "].inspdate' readonly type='text' value=''></td>";
             html += "<td><select id='garmentTest_Details_" + i + "__MtlTypeID' name='garmentTest_Details[" + i + "].MtlTypeID'><option value=''></option>";
@@ -242,7 +242,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public ActionResult ChangeSizeCode(string OrderID, string Brand, string Season, string Style, string Article)
+        public ActionResult ChangeSizeCode(string OrderID, string Brand, string Season, string Style, string Article, string CurrentSize)
         {
             bool chk = _GarmentTest_Service.CheckOrderID(OrderID, Brand, Season, Style);
             string html = "";
@@ -257,7 +257,14 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
             foreach (string val in sizeCodes)
             {
-                html += "<option value='" + val + "'>" + val + "</option>";
+                if (CurrentSize == val)
+                {
+                    html += "<option selected value='" + val + "'>" + val + "</option>";
+                }
+                else
+                {
+                    html += "<option value='" + val + "'>" + val + "</option>";
+                }
             }
 
             return Content(html);

@@ -1107,6 +1107,7 @@ outer apply (select PicPath from Production.dbo.system) s
 where t.ID = '{all_Data.Detail.inspector}'
 and t.GarmentTest=1
 ";
+
                                 string technicianName = string.Empty;
                                 DataTable dtTechnicianInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sql_cmd, new ADOHelper.Template.MSSQL.SQLParameterCollection(), Common.ProductionDataAccessLayer);
 
@@ -1841,8 +1842,8 @@ and t.GarmentTest=1
                                     }
 
                                     // Name
-                                    worksheet.Cells[80, 9] = technicianName;
-                                    Excel.Range cellNew = worksheet.Cells[78, 9];
+                                    worksheet.Cells[79, 9] = technicianName;
+                                    Excel.Range cellNew = worksheet.Cells[76, 9];
                                     using (MemoryStream ms = new MemoryStream(imgData))
                                     {
                                         Image img = Image.FromStream(ms);
@@ -1853,7 +1854,7 @@ and t.GarmentTest=1
                                 }
                                 else
                                 {
-                                    worksheet.Cells[78, 9] = MyUtility.Convert.GetString(all_Data.Detail.GarmentTest_Detail_Inspector);
+                                    worksheet.Cells[76, 9] = MyUtility.Convert.GetString(all_Data.Detail.GarmentTest_Detail_Inspector);
                                 }
                             }
 
