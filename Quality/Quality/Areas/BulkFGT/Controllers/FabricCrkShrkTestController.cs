@@ -262,17 +262,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             BaseResult result;
             string FileName;
-            if (IsToPDF)
-            {
-                //result = _FabricCrkShrkTest_Service.ToPdfFabricCrkShrkTestCrockingDetail(ID, out FileName, false);  ISP20220019註解
-                result = _FabricCrkShrkTest_Service.Crocking_ToExcel(ID, true, out FileName);
-            }
-            else
-            {
-                //result = _FabricCrkShrkTest_Service.ToExcelFabricCrkShrkTestCrockingDetail(ID, out FileName, false);  ISP20220019註解
-                result = _FabricCrkShrkTest_Service.Crocking_ToExcel(ID, false, out FileName);
-            }
-
+            result = _FabricCrkShrkTest_Service.Crocking_ToExcel(ID, IsToPDF, out FileName);
             string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }

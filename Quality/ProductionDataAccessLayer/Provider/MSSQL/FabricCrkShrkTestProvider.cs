@@ -350,6 +350,7 @@ select	SubmitDate = fl.CrockingDate
 		,fli.CrockingTestBeforePicture
         ,fli.CrockingTestAfterPicture
 		,f.ID
+        ,fl.ReportNo
 from FIR f with (nolock)
 left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
 inner join FIR_Laboratory_Crocking fd WITH(NOLOCK) on fd.id = fl.id
@@ -782,7 +783,8 @@ select	[POID] = f.POID,
         [HeatRemark] = fl.HeatRemark,
         [HeatEncode] = fl.HeatEncode,
         [HeatTestBeforePicture] = fli.HeatTestBeforePicture,
-        [HeatTestAfterPicture] = fli.HeatTestAfterPicture
+        [HeatTestAfterPicture] = fli.HeatTestAfterPicture,
+        [ReportNo] = fl.ReportNo
 from FIR f with (nolock)
 left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
 left join SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
@@ -1185,7 +1187,8 @@ select	[POID] = f.POID,
         [WashRemark] = fl.WashRemark,
         [WashEncode] = fl.WashEncode,
         [WashTestBeforePicture] = fli.WashTestBeforePicture,
-        [WashTestAfterPicture] = fli.WashTestAfterPicture
+        [WashTestAfterPicture] = fli.WashTestAfterPicture,
+        [ReportNo] = fl.ReportNo
 from FIR f with (nolock)
 left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
 left join SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID

@@ -654,6 +654,7 @@ drop table #tmpFGPTResult,#tmpFGWTResult
             SbSql.Append("        ,WashResult"+ Environment.NewLine);
             SbSql.Append("        ,gdi.TestBeforePicture" + Environment.NewLine);
             SbSql.Append("        ,gdi.TestAfterPicture" + Environment.NewLine);
+            SbSql.Append("        ,gd.ReportNo" + Environment.NewLine);
             SbSql.Append($@"FROM [GarmentTest_Detail] gd WITH(NOLOCK)
 left join {(sameInstance ? string.Empty : "[ExtendServer].")}PMSFile.dbo.GarmentTest_Detail gdi WITH(NOLOCK) on gd.ID=gdi.ID AND gd.No = gdi.No
 
