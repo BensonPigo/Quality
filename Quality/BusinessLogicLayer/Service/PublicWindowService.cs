@@ -107,6 +107,26 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
+        public List<Window_Article> Get_PoidArticle(string POID, Int64 StyleUkey, string StyleID, string BrandID, string SeasonID, string Article, bool IsExact)
+        {
+            List<Window_Article> result = new List<Window_Article>();
+
+            try
+            {
+                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+
+                //取得登入資訊
+                result = _Provider.Get_PoidArticle(POID, StyleUkey, StyleID, BrandID, SeasonID, Article, IsExact).ToList();
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
         public List<Window_Size> Get_Size(string OrderID, Int64? StyleUkey, string BrandID, string SeasonID, string StyleID, string Article, string Size, bool IsExact)
         {
             List<Window_Size> result = new List<Window_Size>();
