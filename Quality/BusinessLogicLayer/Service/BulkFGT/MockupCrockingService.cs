@@ -451,13 +451,19 @@ namespace BusinessLogicLayer.Service
         public SendMail_Result FailSendMail(MockupFailMail_Request mail_Request )
         {
             _MockupCrockingProvider = new MockupCrockingProvider(Common.ProductionDataAccessLayer);
-            string mailBody = MailTools.DataTableChangeHtml(_MockupCrockingProvider.GetMockupCrockingFailMailContentData(mail_Request.ReportNo), out AlternateView plainView);            
-            SendMail_Request sendMail_Request = new SendMail_Request();
-            sendMail_Request.Subject = "Mockup Crocking – Test Fail";
-            sendMail_Request.To = mail_Request.To;
-            sendMail_Request.CC = mail_Request.CC;
-            sendMail_Request.Body = mailBody;
-            sendMail_Request.alternateView = plainView;
+            string mailBody = MailTools.DataTableChangeHtml(_MockupCrockingProvider.GetMockupCrockingFailMailContentData(mail_Request.ReportNo), out AlternateView plainView);
+            MockupCrocking_ViewModel model = GetMockupCrocking(new MockupCrocking_Request { ReportNo = mail_Request.ReportNo });
+            Report_Result baseResult = GetPDF(model);
+            string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", baseResult.TempFileName) : string.Empty;
+            SendMail_Request sendMail_Request = new SendMail_Request
+            {
+                Subject = "Mockup Crocking – Test Fail",
+                To = mail_Request.To,
+                CC = mail_Request.CC,
+                Body = mailBody,
+                alternateView = plainView,
+                FileonServer = new List<string> { FileName },
+            };
             return MailTools.SendMail(sendMail_Request);
         }
     }

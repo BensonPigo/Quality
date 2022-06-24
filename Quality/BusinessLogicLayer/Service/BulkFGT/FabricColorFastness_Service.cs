@@ -317,7 +317,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 DataTable dtContent = _IColorFastnessProvider.Get_Mail_Content(POID, ID, TestNo);
                 string strHtml = MailTools.DataTableChangeHtml(dtContent, out System.Net.Mail.AlternateView plainView);
-
+                Fabric_ColorFastness_Detail_ViewModel ColorFastnessDetailView = ToPDF(ID, false);
+                string FileName = ColorFastnessDetailView.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", ColorFastnessDetailView.reportPath) : string.Empty;
                 SendMail_Request request = new SendMail_Request()
                 {
                     To = ToAddress,
@@ -325,6 +326,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Subject = "Washing Fastness - Test Fail",
                     Body = strHtml,
                     alternateView = plainView,
+                    FileonServer = new List<string> { FileName },
                 };
 
                 MailTools.SendMail(request);

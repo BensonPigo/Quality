@@ -89,11 +89,11 @@ select ID = c.POID
     ,c.Result
     ,c.Inspector
     ,c.Remark
-    ,ci.TestBeforePicture
-    ,ci.TestAfterPicture
+    -- ,ci.TestBeforePicture
+    -- ,ci.TestAfterPicture
 from ColorFastness c WITH (NOLOCK) 
 left join Orders b WITH (NOLOCK) on c.POID = b.ID
-left join SciPMSFile_ColorFastness ci on c.ID = ci.ID and c.POID = ci.POID and c.TestNo = ci.TestNo
+-- left join SciPMSFile_ColorFastness ci on c.ID = ci.ID and c.POID = ci.POID and c.TestNo = ci.TestNo
 where c.POID = @POID
 and c.ID = @ID
 and c.TestNo = @TestNo

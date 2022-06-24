@@ -672,11 +672,12 @@ select  [SP#] = ov.POID,
         [Result] = ov.Result,
         [Inspector] = ov.Inspector,
         [Remark] = ov.Remark,
-        oi.TestBeforePicture,
-        oi.TestAfterPicture
+        -- oi.TestBeforePicture,
+        -- oi.TestAfterPicture,
+        ov.ID
 from    WaterFastness ov with (nolock)
 left join  Orders o with (nolock) on ov.POID = o.ID
-left join SciPMSFile_WaterFastness oi with (nolock) on oi.ID=ov.ID
+-- left join SciPMSFile_WaterFastness oi with (nolock) on oi.ID=ov.ID
 where ov.POID = @poID and ov.TestNo = @TestNo
 ";
 
