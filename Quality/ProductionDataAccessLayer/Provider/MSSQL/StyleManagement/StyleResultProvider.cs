@@ -497,7 +497,7 @@ SELECT [Type] = IIF( EXISTS(
 --Type 450一個Style只會出現一次
 select Article='', Type='450', TestName = 'Seam Breakage'
 ,LastResult=(
-	select CASE WHEN g.SeamBreakageResult = 'P' THEN 'Pass'
+	select distinct CASE WHEN g.SeamBreakageResult = 'P' THEN 'Pass'
 				WHEN g.SeamBreakageResult = 'F' THEN 'Fail'
 				ELSE ''
 			END
@@ -516,7 +516,7 @@ select Article='', Type='450', TestName = 'Seam Breakage'
 		)
 )
 ,LastTestDate=(
-	select g.SeamBreakageLastTestDate 
+	select distinct g.SeamBreakageLastTestDate 
 	from GarmentTest g WITH(NOLOCK)
 	WHERE g.StyleID = @StyleID
 		AND g.BrandID = @BrandID
