@@ -551,12 +551,12 @@ select  [SP#] = al.POID
         ,[Oven Last Test Date]= convert(varchar, al.OvenDate , 111)  
 		,[Oven Lab Tech	AIR_Laboratory]=al.OvenInspector
         ,Remark = al.OvenRemark
-        ,[TestBeforePicture] = ali.OvenTestBeforePicture
-        ,[TestAfterPicture] = ali.OvenTestAfterPicture
+        -- ,[TestBeforePicture] = ali.OvenTestBeforePicture
+        -- ,[TestAfterPicture] = ali.OvenTestAfterPicture
 from AIR_Laboratory al WITH(NOLOCK)
 inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
 INNER JOIn Orders o WITH(NOLOCK) ON o.ID = a.POID
-left join SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
+-- left join SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
 left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
 left join Supp s WITH(NOLOCK) on a.Suppid = s.ID
 left join PO_Supp_Detail psd WITH(NOLOCK) ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
@@ -850,8 +850,8 @@ select  [SP#] = al.POID
         ,[Wash Last Test Date]=  convert(varchar, al.WashDate , 111)  
 		,[Wash Lab Tech	AIR_Laboratory]=al.WashInspector
         ,Remark = al.WashRemark
-	    , [TestBeforePicture] = ali.WashTestBeforePicture
-	    , [TestAfterPicture] = ali.WashTestAfterPicture
+	    --- , [TestBeforePicture] = ali.WashTestBeforePicture
+	    -- , [TestAfterPicture] = ali.WashTestAfterPicture
 from AIR_Laboratory al WITH(NOLOCK)
 inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
 INNER JOIn Orders o WITH(NOLOCK) ON o.ID = a.POID
@@ -1244,8 +1244,8 @@ select  [SP#] = al.POID
         ,[Washing Fastness Last Test Date]=  convert(varchar, al.WashingFastnessReportDate , 111)  
 		,[Washing Fastness Lab Tech	AIR_Laboratory]=al.WashingFastnessInspector
         ,Remark = al.WashingFastnessRemark
-	    , [TestBeforePicture] = ali.WashingFastnessTestBeforePicture
-	    , [TestAfterPicture] = ali.WashingFastnessTestAfterPicture
+	    -- , [TestBeforePicture] = ali.WashingFastnessTestBeforePicture
+	    -- , [TestAfterPicture] = ali.WashingFastnessTestAfterPicture
 from AIR_Laboratory al WITH(NOLOCK)
 inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
 INNER JOIn Orders o WITH(NOLOCK) ON o.ID = a.POID

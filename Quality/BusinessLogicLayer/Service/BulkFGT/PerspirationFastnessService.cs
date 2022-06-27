@@ -400,7 +400,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _PerspirationFastnessProvider = new PerspirationFastnessProvider(Common.ProductionDataAccessLayer);
                 DataTable dtResult = _PerspirationFastnessProvider.GetFailMailContentData(poID, TestNo);
+                string ID = dtResult.Rows[0]["ID"].ToString();
+                dtResult.Columns.Remove("ID");
                 string mailBody = MailTools.DataTableChangeHtml(dtResult, out System.Net.Mail.AlternateView plainView);
+                BaseResult baseResult = ToReport(ID, out string PDFFileName, true, isTest);
+                string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", PDFFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
                     To = toAddress,
@@ -408,6 +412,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Subject = "Perspiration Fastness Test - Test Fail",
                     Body = mailBody,
                     alternateView = plainView,
+                    FileonServer = new List<string> { FileName },
                 };
                 result = MailTools.SendMail(sendMail_Request);
 

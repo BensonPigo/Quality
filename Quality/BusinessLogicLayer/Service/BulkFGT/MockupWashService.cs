@@ -528,12 +528,18 @@ namespace BusinessLogicLayer.Service
         {
             _MockupWashProvider = new MockupWashProvider(Common.ProductionDataAccessLayer);
             string mailBody = MailTools.DataTableChangeHtml(_MockupWashProvider.GetMockupWashFailMailContentData(mail_Request.ReportNo), out AlternateView plainView);
-            SendMail_Request sendMail_Request = new SendMail_Request();
-            sendMail_Request.Subject = "Mockup Wash – Test Fail";
-            sendMail_Request.To = mail_Request.To;
-            sendMail_Request.CC = mail_Request.CC;
-            sendMail_Request.Body = mailBody;
-            sendMail_Request.alternateView = plainView;
+            MockupWash_ViewModel model = GetMockupWash(new MockupWash_Request { ReportNo = mail_Request.ReportNo });
+            Report_Result baseResult = GetPDF(model);
+            string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", baseResult.TempFileName) : string.Empty;
+            SendMail_Request sendMail_Request = new SendMail_Request
+            {
+                Subject = "Mockup Wash – Test Fail",
+                To = mail_Request.To,
+                CC = mail_Request.CC,
+                Body = mailBody,
+                alternateView = plainView,
+                FileonServer = new List<string> { FileName },
+            };
             return MailTools.SendMail(sendMail_Request);
         }
     }

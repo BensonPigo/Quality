@@ -444,11 +444,11 @@ select
     ,[701 Result] = case when gd.WashResult = 'P' then 'Pass' when gd.WashResult = 'F' then 'Fail' else '' end
     ,gd.inspector
     ,[Comments] = gd.Remark
-    ,gdi.TestBeforePicture
-    ,gdi.TestAfterPicture
+    -- ,gdi.TestBeforePicture
+    -- ,gdi.TestAfterPicture
 from GarmentTest g WITH(NOLOCK)
 inner join GarmentTest_Detail gd WITH(NOLOCK) on g.ID = gd.ID
-left join SciPMSFile_GarmentTest_Detail gdi WITH(NOLOCK) on gd.ID=gdi.ID AND gd.No = gdi.No
+-- left join SciPMSFile_GarmentTest_Detail gdi WITH(NOLOCK) on gd.ID=gdi.ID AND gd.No = gdi.No
 outer apply(
 	select Value =  r.Name 
 	from Style s WITH(NOLOCK)

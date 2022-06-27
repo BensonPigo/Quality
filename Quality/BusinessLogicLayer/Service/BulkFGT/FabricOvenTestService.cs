@@ -292,6 +292,8 @@ namespace BusinessLogicLayer.Service
                 _FabricOvenTestProvider = new FabricOvenTestProvider(Common.ProductionDataAccessLayer);
                 DataTable dtResult = _FabricOvenTestProvider.GetFailMailContentData(poID, TestNo);
                 string mailBody = MailTools.DataTableChangeHtml(dtResult, out System.Net.Mail.AlternateView plainView);
+                BaseResult baseResult = ToPdfFabricOvenTestDetail(poID, TestNo, out string pdfFileName, isTest);
+                string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", pdfFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 { 
                     To = toAddress,
@@ -299,6 +301,7 @@ namespace BusinessLogicLayer.Service
                     Subject = "Fabric Oven Test - Test Fail",
                     Body = mailBody,
                     alternateView = plainView,
+                    FileonServer = new List<string> { FileName },
                 };
                 result = MailTools.SendMail(sendMail_Request);
 

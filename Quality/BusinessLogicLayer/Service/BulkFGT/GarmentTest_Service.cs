@@ -589,7 +589,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 DataTable dtContent = _IGarmentTestDetailProvider.Get_Mail_Content(ID, No);
                 string strHtml = MailTools.DataTableChangeHtml(dtContent, out System.Net.Mail.AlternateView plainView);
-
+                GarmentTest_Detail_Result baseResult = ToReport(ID, No, ReportType.Wash_Test_2018, true);
+                string FileName = baseResult.Result.Value ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", baseResult.reportPath) : string.Empty;
                 SendMail_Request request = new SendMail_Request()
                 {
                     To = ToAddress,
@@ -597,6 +598,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Subject = "Garment Test – Test Fail",
                     Body = strHtml,
                     alternateView = plainView,
+                    FileonServer = new List<string> { FileName },
                 };
 
                 MailTools.SendMail(request);
