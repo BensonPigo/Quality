@@ -427,23 +427,26 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 //var needUpdMeasurement = measurement.ListRFTMeasurementItem.Where(s => !string.IsNullOrEmpty(s.ResultSizeSpec));
                 List<RFT_Inspection_Measurement> rft = new List<RFT_Inspection_Measurement>();
 
-                foreach (var item in measurement.ListMeasurementItem)
+                if (measurement.ListMeasurementItem != null)
                 {
-                    if (string.IsNullOrEmpty(item.ResultSizeSpec))
+                    foreach (var item in measurement.ListMeasurementItem)
                     {
-                        continue;
+                        if (string.IsNullOrEmpty(item.ResultSizeSpec))
+                        {
+                            continue;
+                        }
+                        RFT_Inspection_Measurement t = new RFT_Inspection_Measurement()
+                        {
+                            MeasurementUkey = item.MeasurementUkey,
+                            Code = item.Code,
+                            SizeCode = measurement.SelectedSize,
+                            ResultSizeSpec = item.ResultSizeSpec,
+                            Article = measurement.SelectedArticle,
+                            Location = measurement.SelectedProductType,
+                        };
+                        rft.Add(t);
                     }
-                    RFT_Inspection_Measurement t = new RFT_Inspection_Measurement()
-                    {
-                        MeasurementUkey = item.MeasurementUkey,
-                        Code = item.Code,
-                        SizeCode = measurement.SelectedSize,
-                        ResultSizeSpec = item.ResultSizeSpec,
-                        Article = measurement.SelectedArticle,
-                        Location = measurement.SelectedProductType,
-                    };
-                    rft.Add(t);
-                }
+                }              
                 measurement.ListRFTMeasurementItem = rft;
 
                 _Provider.InsertRFT_Inspection_Measurement(measurement);
