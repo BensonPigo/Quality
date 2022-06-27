@@ -819,12 +819,12 @@ values(@OrderID{rowSeq},@Image{imgIdx})
 
             // 若沒填入SizeSpec，依然可填入RFT_Inspection_Measurement
             objParameter.Add($"@OrderID", measurement.OrderID);
-            if (measurement.ImageList != null && measurement.ImageList.Any())
-            {
-                sqlcmd += $@"
+            sqlcmd += $@"
 DELETE FROM PMSFile.dbo.RFT_Inspection_Measurement
 where OrderID = @OrderID";
 
+            if (measurement.ImageList != null && measurement.ImageList.Any())
+            {
                 foreach (var img in measurement.ImageList)
                 {
                     // 圖片全部刪除後再寫入
