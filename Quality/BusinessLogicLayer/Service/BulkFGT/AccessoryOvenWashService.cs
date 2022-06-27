@@ -178,14 +178,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
         public SendMail_Result SendOvenMail(Accessory_Oven Req)
         {
-
             SendMail_Result result = new SendMail_Result();
             try
             {
                 _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(Common.ProductionDataAccessLayer);
                 DataTable dt = _AccessoryOvenWashProvider.GetData_OvenDataTable(Req);
                 string mailBody = MailTools.DataTableChangeHtml(dt, out System.Net.Mail.AlternateView plainView);
-
+                BaseResult baseResult = OvenTestExcel(Req.AIR_LaboratoryID.ToString(), Req.POID, Req.Seq1, Req.Seq2, true, out string excelFileName);
+                string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", excelFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
                     To = Req.ToAddress,
@@ -193,6 +193,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Subject = "Accessory Oven Test - Test Fail",
                     Body = mailBody,
                     alternateView = plainView,
+                    FileonServer = new List<string> { FileName },
                 };
                 result = MailTools.SendMail(sendMail_Request);
                 result.result = true;
@@ -257,6 +258,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 excel.DisplayAlerts = false;
                 Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1];
 
+                worksheet.Cells[2, 2] = Model.ReportNo;
                 worksheet.Cells[2, 6] = Model.POID;
                 worksheet.Cells[2, 10] = Model.Supplier;
 
@@ -289,48 +291,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Excel.Range cellBeforePicture = worksheet.Cells[20, 1];
                 if (Model.OvenTestBeforePicture != null)
                 {
-                    string imageName = $"{Guid.NewGuid()}.jpg";
-                    string imgPath;
-
-                    if (IsTest.ToLower() == "true")
-                    {
-                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                    }
-                    else
-                    {
-                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                    }
-
-                    byte[] bytes = Model.OvenTestBeforePicture;
-                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
-                    {
-                        imageFile.Write(bytes, 0, bytes.Length);
-                        imageFile.Flush();
-                    }
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(Model.OvenTestBeforePicture, Model.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: IsTest.ToLower() == "true");
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 400, 300);
                 }
 
                 Excel.Range cellAfterPicture = worksheet.Cells[20, 7];
                 if (Model.OvenTestAfterPicture != null)
                 {
-                    string imageName = $"{Guid.NewGuid()}.jpg";
-                    string imgPath;
-
-                    if (IsTest.ToLower() == "true")
-                    {
-                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                    }
-                    else
-                    {
-                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                    }
-
-                    byte[] bytes = Model.OvenTestAfterPicture;
-                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
-                    {
-                        imageFile.Write(bytes, 0, bytes.Length);
-                        imageFile.Flush();
-                    }
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(Model.OvenTestAfterPicture, Model.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: IsTest.ToLower() == "true");
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 2, 400, 300);
                 }
 
@@ -471,14 +439,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
         }
         public SendMail_Result SendWashMail(Accessory_Wash Req)
         {
-
             SendMail_Result result = new SendMail_Result();
             try
             {
                 _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(Common.ProductionDataAccessLayer);
                 DataTable dt = _AccessoryOvenWashProvider.GetData_WashDataTable(Req);
                 string mailBody = MailTools.DataTableChangeHtml(dt, out System.Net.Mail.AlternateView plainView);
-
+                BaseResult baseResult = WashTestExcel(Req.AIR_LaboratoryID.ToString(), Req.POID, Req.Seq1, Req.Seq2, true, out string excelFileName);
+                string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", excelFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
                     To = Req.ToAddress,
@@ -486,6 +454,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Subject = "Accessory Wash Test - Test Fail",
                     Body = mailBody,
                     alternateView = plainView,
+                    FileonServer = new List<string> { FileName },
                 };
                 result = MailTools.SendMail(sendMail_Request);
                 result.result = true;
@@ -549,6 +518,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 excel.DisplayAlerts = false;
                 Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1];
 
+                worksheet.Cells[2, 2] = Model.ReportNo;
                 worksheet.Cells[2, 6] = Model.POID;
                 worksheet.Cells[2, 10] = Model.Supplier;
 
@@ -586,48 +556,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Excel.Range cellBeforePicture = worksheet.Cells[24, 1];
                 if (Model.WashTestBeforePicture != null)
                 {
-                    string imageName = $"{Guid.NewGuid()}.jpg";
-                    string imgPath;
-
-                    if (IsTest.ToLower() == "true")
-                    {
-                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                    }
-                    else
-                    {
-                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                    }
-
-                    byte[] bytes = Model.WashTestBeforePicture;
-                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
-                    {
-                        imageFile.Write(bytes, 0, bytes.Length);
-                        imageFile.Flush();
-                    }
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(Model.WashTestBeforePicture, Model.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: IsTest.ToLower() == "true");
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 400, 300);
                 }
 
                 Excel.Range cellAfterPicture = worksheet.Cells[24, 7];
                 if (Model.WashTestAfterPicture != null)
                 {
-                    string imageName = $"{Guid.NewGuid()}.jpg";
-                    string imgPath;
-
-                    if (IsTest.ToLower() == "true")
-                    {
-                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                    }
-                    else
-                    {
-                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                    }
-
-                    byte[] bytes = Model.WashTestAfterPicture;
-                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
-                    {
-                        imageFile.Write(bytes, 0, bytes.Length);
-                        imageFile.Flush();
-                    }
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(Model.WashTestAfterPicture, Model.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: IsTest.ToLower() == "true");
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 2, 400, 300);
                 }
 
@@ -774,7 +710,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(Common.ProductionDataAccessLayer);
                 DataTable dt = _AccessoryOvenWashProvider.GetData_WashingFastnessDataTable(Req);
                 string mailBody = MailTools.DataTableChangeHtml(dt, out System.Net.Mail.AlternateView plainView);
-
+                BaseResult baseResult = WashingFastnessExcel(Req.AIR_LaboratoryID.ToString(), Req.POID, Req.Seq1, Req.Seq2, true, out string excelFileName);
+                string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", excelFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
                     To = Req.ToAddress,
@@ -782,6 +719,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Subject = "Accessory Washing Fastness Test - Test Fail",
                     Body = mailBody,
                     alternateView = plainView,
+                    FileonServer = new List<string> { FileName },
                 };
                 result = MailTools.SendMail(sendMail_Request);
                 result.result = true;
@@ -839,6 +777,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 excel.DisplayAlerts = false;
                 Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1];
 
+                worksheet.Cells[2, 2] = Model.ReportNo;
                 worksheet.Cells[2, 6] = Model.WashingFastnessReceivedDate.HasValue ? Model.WashingFastnessReceivedDate.Value.ToString("yyyy/MM/dd") : string.Empty;
 
                 worksheet.Cells[3, 2] = Model.FactoryID;
@@ -944,48 +883,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Excel.Range cellBeforePicture = worksheet.Cells[33, 1];
                 if (Model.WashingFastnessTestBeforePicture != null)
                 {
-                    string imageName = $"{Guid.NewGuid()}.jpg";
-                    string imgPath;
-
-                    if (IsTest.ToLower() == "true")
-                    {
-                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                    }
-                    else
-                    {
-                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                    }
-
-                    byte[] bytes = Model.WashingFastnessTestBeforePicture;
-                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
-                    {
-                        imageFile.Write(bytes, 0, bytes.Length);
-                        imageFile.Flush();
-                    }
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(Model.WashingFastnessTestBeforePicture, Model.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: IsTest.ToLower() == "true");
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 400, 300);
                 }
 
                 Excel.Range cellAfterPicture = worksheet.Cells[33, 5];
                 if (Model.WashingFastnessTestAfterPicture != null)
                 {
-                    string imageName = $"{Guid.NewGuid()}.jpg";
-                    string imgPath;
-
-                    if (IsTest.ToLower() == "true")
-                    {
-                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                    }
-                    else
-                    {
-                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                    }
-
-                    byte[] bytes = Model.WashingFastnessTestAfterPicture;
-                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
-                    {
-                        imageFile.Write(bytes, 0, bytes.Length);
-                        imageFile.Flush();
-                    }
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(Model.WashingFastnessTestAfterPicture, Model.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: IsTest.ToLower() == "true");
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 2, 400, 300);
                 }
 

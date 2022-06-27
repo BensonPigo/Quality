@@ -871,10 +871,11 @@ select  [SP#] = ov.POID,
         [Result] = ov.Result,
         [Inspector] = ov.Inspector,
         [Remark] = ov.Remark,
-        pmsFile.TestBeforePicture,
-        pmsFile.TestAfterPicture
+        -- pmsFile.TestBeforePicture,
+        -- pmsFile.TestAfterPicture,
+        ov.ID
 from    PerspirationFastness ov with (nolock)
-left join SciPMSFile_PerspirationFastness pmsFile WITH(NOLOCK) on pmsFile.ID =  ov.ID
+-- left join SciPMSFile_PerspirationFastness pmsFile WITH(NOLOCK) on pmsFile.ID =  ov.ID
 left join  Orders o with (nolock) on ov.POID = o.ID
 where ov.POID = @poID and ov.TestNo = @TestNo
 ";
@@ -955,6 +956,7 @@ select cd.SubmitDate
         ,c.Inspector
         ,pmsFile.TestBeforePicture
         ,pmsFile.TestAfterPicture
+        ,c.ReportNo
 from PerspirationFastness_Detail cd WITH(NOLOCK)
 left join PerspirationFastness c WITH(NOLOCK) on c.ID =  cd.ID
 left join SciPMSFile_PerspirationFastness pmsFile WITH(NOLOCK) on pmsFile.ID =  cd.ID

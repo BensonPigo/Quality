@@ -1,6 +1,8 @@
 ﻿using DatabaseObject.Public;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -196,6 +198,161 @@ namespace ToolKit
             }
 
             return resultList;
+        }
+
+        public enum SingLocation : int
+        {
+            /// <summary>
+            /// 左上
+            /// </summary>
+            TopLeft,
+
+            /// <summary>
+            /// 中上
+            /// </summary>
+            TopMiddle,
+
+            /// <summary>
+            /// 右上
+            /// </summary>
+            TopRight,
+
+            /// <summary>
+            /// 左中
+            /// </summary>
+            MiddleLeft,
+
+            /// <summary>
+            /// 正中
+            /// </summary>
+            MiddleMiddle,
+
+            /// <summary>
+            /// 右中
+            /// </summary>
+            MiddleRight,
+
+            /// <summary>
+            /// 左下
+            /// </summary>
+            LowerLeft,
+
+            /// <summary>
+            /// 中下
+            /// </summary>
+            LowerMiddle,
+
+            /// <summary>
+            /// 右下
+            /// </summary>
+            LowerRight,
+
+            /// <summary>
+            /// 正中斜體
+            /// </summary>
+            MiddleItalic,
+        }
+
+        public static string AddImageSignWord(byte[] ImageBytes, string signWord, SingLocation signLocation, int fontsize = 48, string fontname = "Arial Black", bool test = false)
+        {
+            Image img = Image.FromStream(new MemoryStream(ImageBytes));
+
+            string imageName = $"{Guid.NewGuid()}.jpg";
+            string imgPath;
+            if (test)
+            {
+                imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+            }
+            else
+            {
+                imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+            }
+
+            if (string.IsNullOrEmpty(signWord))
+            {
+                img.Save(imgPath);
+                img.Dispose();
+                return imgPath;
+            }
+
+            Graphics g = Graphics.FromImage(img);
+            Font drawFont = new Font(fontname, fontsize, FontStyle.Italic, GraphicsUnit.Pixel);
+            SizeF crSize = g.MeasureString(signWord, drawFont);
+
+            while (crSize.Width > img.Width)
+            {
+                fontsize -= 3;
+                drawFont = new Font(fontname, fontsize, FontStyle.Italic, GraphicsUnit.Pixel);
+                crSize = g.MeasureString(signWord, drawFont);
+            }
+
+            while (crSize.Width < img.Width * 0.5)
+            {
+                fontsize += 3;
+                drawFont = new Font(fontname, fontsize, FontStyle.Italic, GraphicsUnit.Pixel);
+                crSize = g.MeasureString(signWord, drawFont);
+            }
+
+            float xpos = 0;
+            float ypos = 0;
+
+            switch (signLocation)
+            {
+                case SingLocation.TopLeft:
+                    xpos = (float)img.Width * (float).01;
+                    ypos = (float)img.Height * (float).01;
+                    break;
+                case SingLocation.TopMiddle:
+                    xpos = ((float)img.Width * (float).50) - (crSize.Width / 2);
+                    ypos = (float)img.Height * (float).01;
+                    break;
+                case SingLocation.TopRight:
+                    xpos = ((float)img.Width * (float).99) - crSize.Width;
+                    ypos = (float)img.Height * (float).01;
+                    break;
+                case SingLocation.MiddleLeft:
+                    xpos = (float)img.Width * (float).01;
+                    ypos = ((float)img.Height * (float).50) - (crSize.Height / 2);
+                    break;
+                case SingLocation.MiddleMiddle:
+                    xpos = ((float)img.Width * (float).50) - (crSize.Width / 2);
+                    ypos = ((float)img.Height * (float).50) - (crSize.Height / 2);
+                    break;
+                case SingLocation.MiddleRight:
+                    xpos = ((float)img.Width * (float).99) - crSize.Width;
+                    ypos = ((float)img.Height * (float).50) - (crSize.Height / 2);
+                    break;
+                case SingLocation.LowerLeft:
+                    xpos = (float)img.Width * (float).01;
+                    ypos = ((float)img.Height * (float).99) - crSize.Height;
+                    break;
+                case SingLocation.LowerMiddle:
+                    xpos = ((float)img.Width * (float).50) - (crSize.Width / 2);
+                    ypos = ((float)img.Height * (float).99) - crSize.Height;
+                    break;
+                case SingLocation.LowerRight:
+                    xpos = ((float)img.Width * (float).99) - crSize.Width;
+                    ypos = ((float)img.Height * (float).99) - crSize.Height;
+                    break;
+                case SingLocation.MiddleItalic:
+                    // 高大於寬的圖片，在偏移0.5
+                    float diffWidth = img.Height > img.Width ? (float).5 : 1;
+                    float transHeight = img.Height > img.Width ? img.Height * (float).7 : img.Height * (float).8;
+                    float transRotate = img.Height > img.Width ? 30 : 20;
+                    xpos = (float)img.Width * (float).2 * diffWidth;
+                    ypos = 0;
+                    g.TranslateTransform(0, transHeight);
+                    g.RotateTransform(-transRotate);
+                    break;
+            }
+
+            g.DrawString(signWord, drawFont, new SolidBrush(Color.FromArgb(75, 255, 255, 255)), xpos, ypos);
+            img.Save(imgPath);
+
+            g.Dispose();
+            img.Dispose();
+
+            return imgPath;
         }
     }
 }

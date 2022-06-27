@@ -400,7 +400,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _PerspirationFastnessProvider = new PerspirationFastnessProvider(Common.ProductionDataAccessLayer);
                 DataTable dtResult = _PerspirationFastnessProvider.GetFailMailContentData(poID, TestNo);
+                string ID = dtResult.Rows[0]["ID"].ToString();
+                dtResult.Columns.Remove("ID");
                 string mailBody = MailTools.DataTableChangeHtml(dtResult, out System.Net.Mail.AlternateView plainView);
+                BaseResult baseResult = ToReport(ID, out string PDFFileName, true, isTest);
+                string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", PDFFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
                     To = toAddress,
@@ -408,6 +412,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Subject = "Perspiration Fastness Test - Test Fail",
                     Body = mailBody,
                     alternateView = plainView,
+                    FileonServer = new List<string> { FileName },
                 };
                 result = MailTools.SendMail(sendMail_Request);
 
@@ -473,108 +478,75 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     currenSheet.Name = j.ToString();
                     PerspirationFastness_Excel currenData = dataList[j - 1];
 
-                    currenSheet.Cells[2, 3] = currenData.SubmitDate.HasValue ? currenData.SubmitDate.Value.ToString("yyyy/MM/dd") : string.Empty;
-                    currenSheet.Cells[2, 8] = DateTime.Now.ToString("yyyy/MM/dd");
+                    currenSheet.Cells[2, 3] = currenData.ReportNo;
+                    currenSheet.Cells[3, 3] = currenData.SubmitDate.HasValue ? currenData.SubmitDate.Value.ToString("yyyy/MM/dd") : string.Empty;
+                    currenSheet.Cells[3, 8] = DateTime.Now.ToString("yyyy/MM/dd");
 
-                    currenSheet.Cells[3, 3] = currenData.SeasonID;
-                    currenSheet.Cells[3, 8] = currenData.BrandID;
+                    currenSheet.Cells[4, 3] = currenData.SeasonID;
+                    currenSheet.Cells[4, 8] = currenData.BrandID;
 
-                    currenSheet.Cells[4, 3] = currenData.StyleID;
-                    currenSheet.Cells[4, 8] = currenData.POID;
+                    currenSheet.Cells[5, 3] = currenData.StyleID;
+                    currenSheet.Cells[5, 8] = currenData.POID;
 
-                    currenSheet.Cells[5, 3] = currenData.Roll;
-                    currenSheet.Cells[5, 8] = currenData.Dyelot;
+                    currenSheet.Cells[6, 3] = currenData.Roll;
+                    currenSheet.Cells[6, 8] = currenData.Dyelot;
 
-                    currenSheet.Cells[6, 3] = currenData.SCIRefno_Color;
-                    currenSheet.Cells[7, 3] = currenData.MetalContent;
+                    currenSheet.Cells[7, 3] = currenData.SCIRefno_Color;
+                    currenSheet.Cells[8, 3] = currenData.MetalContent;
 
                     // Test Request
-                    currenSheet.Cells[9, 3] = currenData.Temperature;
-                    currenSheet.Cells[9, 8] = currenData.Time;
+                    currenSheet.Cells[10, 3] = currenData.Temperature;
+                    currenSheet.Cells[10, 8] = currenData.Time;
 
-                    currenSheet.Cells[13, 2] = currenData.AlkalineChangeScale;
-                    currenSheet.Cells[13, 3] = currenData.AlkalineAcetateScale;
-                    currenSheet.Cells[13, 4] = currenData.AlkalineCottonScale;
-                    currenSheet.Cells[13, 5] = currenData.AlkalineNylonScale;
-                    currenSheet.Cells[13, 6] = currenData.AlkalinePolyesterScale;
-                    currenSheet.Cells[13, 7] = currenData.AlkalineAcrylicScale;
-                    currenSheet.Cells[13, 8] = currenData.AlkalineWoolScale;
+                    currenSheet.Cells[14, 2] = currenData.AlkalineChangeScale;
+                    currenSheet.Cells[14, 3] = currenData.AlkalineAcetateScale;
+                    currenSheet.Cells[14, 4] = currenData.AlkalineCottonScale;
+                    currenSheet.Cells[14, 5] = currenData.AlkalineNylonScale;
+                    currenSheet.Cells[14, 6] = currenData.AlkalinePolyesterScale;
+                    currenSheet.Cells[14, 7] = currenData.AlkalineAcrylicScale;
+                    currenSheet.Cells[14, 8] = currenData.AlkalineWoolScale;
 
-                    currenSheet.Cells[14, 2] = currenData.AlkalineResultChange;
-                    currenSheet.Cells[14, 3] = currenData.AlkalineResultAcetate;
-                    currenSheet.Cells[14, 4] = currenData.AlkalineResultCotton;
-                    currenSheet.Cells[14, 5] = currenData.AlkalineResultNylon;
-                    currenSheet.Cells[14, 6] = currenData.AlkalineResultPolyester;
-                    currenSheet.Cells[14, 7] = currenData.AlkalineResultAcrylic;
-                    currenSheet.Cells[14, 8] = currenData.AlkalineResultWool;
+                    currenSheet.Cells[15, 2] = currenData.AlkalineResultChange;
+                    currenSheet.Cells[15, 3] = currenData.AlkalineResultAcetate;
+                    currenSheet.Cells[15, 4] = currenData.AlkalineResultCotton;
+                    currenSheet.Cells[15, 5] = currenData.AlkalineResultNylon;
+                    currenSheet.Cells[15, 6] = currenData.AlkalineResultPolyester;
+                    currenSheet.Cells[15, 7] = currenData.AlkalineResultAcrylic;
+                    currenSheet.Cells[15, 8] = currenData.AlkalineResultWool;
 
-                    currenSheet.Cells[18, 2] = currenData.AcidChangeScale;
-                    currenSheet.Cells[18, 3] = currenData.AcidAcetateScale;
-                    currenSheet.Cells[18, 4] = currenData.AcidCottonScale;
-                    currenSheet.Cells[18, 5] = currenData.AcidNylonScale;
-                    currenSheet.Cells[18, 6] = currenData.AcidPolyesterScale;
-                    currenSheet.Cells[18, 7] = currenData.AcidAcrylicScale;
-                    currenSheet.Cells[18, 8] = currenData.AcidWoolScale;
+                    currenSheet.Cells[19, 2] = currenData.AcidChangeScale;
+                    currenSheet.Cells[19, 3] = currenData.AcidAcetateScale;
+                    currenSheet.Cells[19, 4] = currenData.AcidCottonScale;
+                    currenSheet.Cells[19, 5] = currenData.AcidNylonScale;
+                    currenSheet.Cells[19, 6] = currenData.AcidPolyesterScale;
+                    currenSheet.Cells[19, 7] = currenData.AcidAcrylicScale;
+                    currenSheet.Cells[19, 8] = currenData.AcidWoolScale;
 
-                    currenSheet.Cells[19, 2] = currenData.AcidResultChange;
-                    currenSheet.Cells[19, 3] = currenData.AcidResultAcetate;
-                    currenSheet.Cells[19, 4] = currenData.AcidResultCotton;
-                    currenSheet.Cells[19, 5] = currenData.AcidResultNylon;
-                    currenSheet.Cells[19, 6] = currenData.AcidResultPolyester;
-                    currenSheet.Cells[19, 7] = currenData.AcidResultAcrylic;
-                    currenSheet.Cells[19, 8] = currenData.AcidResultWool;
+                    currenSheet.Cells[20, 2] = currenData.AcidResultChange;
+                    currenSheet.Cells[20, 3] = currenData.AcidResultAcetate;
+                    currenSheet.Cells[20, 4] = currenData.AcidResultCotton;
+                    currenSheet.Cells[20, 5] = currenData.AcidResultNylon;
+                    currenSheet.Cells[20, 6] = currenData.AcidResultPolyester;
+                    currenSheet.Cells[20, 7] = currenData.AcidResultAcrylic;
+                    currenSheet.Cells[20, 8] = currenData.AcidResultWool;
 
-                    currenSheet.Cells[20, 2] = currenData.Remark;
-                    currenSheet.Cells[76, 3] = currenData.Inspector;
-                    currenSheet.Cells[76, 7] = currenData.Inspector;
+                    currenSheet.Cells[21, 2] = currenData.Remark;
+                    currenSheet.Cells[77, 3] = currenData.Inspector;
+                    currenSheet.Cells[77, 7] = currenData.Inspector;
 
 
                     #region 添加圖片
-                    Excel.Range cellBeforePicture = currenSheet.Cells[51, 1];
+                    Excel.Range cellBeforePicture = currenSheet.Cells[52, 1];
                     if (currenData.TestBeforePicture != null)
                     {
-                        string imageName = $"{Guid.NewGuid()}.jpg";
-                        string imgPath;
-
-                        if (isTest)
-                        {
-                            imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                        }
-                        else
-                        {
-                            imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                        }
-
-                        byte[] bytes = currenData.TestBeforePicture;
-                        using (var imageFile = new FileStream(imgPath, FileMode.Create))
-                        {
-                            imageFile.Write(bytes, 0, bytes.Length);
-                            imageFile.Flush();
-                        }
+                        string imgPath = ToolKit.PublicClass.AddImageSignWord(currenData.TestBeforePicture, currenData.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test : isTest);
                         currenSheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 380, 300);
                     }
 
-                    Excel.Range cellAfterPicture = currenSheet.Cells[51, 5];
+                    Excel.Range cellAfterPicture = currenSheet.Cells[52, 5];
                     if (currenData.TestAfterPicture != null)
                     {
-                        string imageName = $"{Guid.NewGuid()}.jpg";
-                        string imgPath;
-
-                        if (isTest)
-                        {
-                            imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                        }
-                        else
-                        {
-                            imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                        }
-
-                        byte[] bytes = currenData.TestAfterPicture;
-                        using (var imageFile = new FileStream(imgPath, FileMode.Create))
-                        {
-                            imageFile.Write(bytes, 0, bytes.Length);
-                            imageFile.Flush();
-                        }
+                        string imgPath = ToolKit.PublicClass.AddImageSignWord(currenData.TestAfterPicture, currenData.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: isTest);
                         currenSheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 2, 380, 300);
                     }
                     #endregion

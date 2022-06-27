@@ -131,6 +131,7 @@ select cd.SubmitDate
         ,c.Inspector
         ,pmsFile.TestBeforePicture
         ,pmsFile.TestAfterPicture
+        ,[ReportNo] = c.ID
 from ColorFastness_Detail cd WITH(NOLOCK)
 left join ColorFastness c WITH(NOLOCK) on c.ID =  cd.ID
 left join SciPMSFile_ColorFastness pmsFile WITH(NOLOCK) on pmsFile.ID = c.ID and pmsFile.POID = c.POID and pmsFile.TestNo = c.TestNo

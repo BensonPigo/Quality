@@ -317,7 +317,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 DataTable dtContent = _IColorFastnessProvider.Get_Mail_Content(POID, ID, TestNo);
                 string strHtml = MailTools.DataTableChangeHtml(dtContent, out System.Net.Mail.AlternateView plainView);
-
+                Fabric_ColorFastness_Detail_ViewModel ColorFastnessDetailView = ToPDF(ID, false);
+                string FileName = ColorFastnessDetailView.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", ColorFastnessDetailView.reportPath) : string.Empty;
                 SendMail_Request request = new SendMail_Request()
                 {
                     To = ToAddress,
@@ -325,6 +326,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Subject = "Washing Fastness - Test Fail",
                     Body = strHtml,
                     alternateView = plainView,
+                    FileonServer = new List<string> { FileName },
                 };
 
                 MailTools.SendMail(request);
@@ -391,91 +393,58 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Excel.Worksheet currenSheet = excel.ActiveWorkbook.Worksheets[j];
                 currenSheet.Name = j.ToString();
                 ColorFastness_Excel currenData = dataList[j - 1];
+                currenSheet.Cells[2, 3] = currenData.ReportNo;
 
-                currenSheet.Cells[2, 3] = currenData.SubmitDate.HasValue ? currenData.SubmitDate.Value.ToString("yyyy/MM/dd") : string.Empty;
-                currenSheet.Cells[2, 8] = DateTime.Now.ToString("yyyy/MM/dd");
+                currenSheet.Cells[3, 3] = currenData.SubmitDate.HasValue ? currenData.SubmitDate.Value.ToString("yyyy/MM/dd") : string.Empty;
+                currenSheet.Cells[3, 8] = DateTime.Now.ToString("yyyy/MM/dd");
 
-                currenSheet.Cells[3, 3] = currenData.SeasonID;
-                currenSheet.Cells[3, 8] = currenData.BrandID;
+                currenSheet.Cells[4, 3] = currenData.SeasonID;
+                currenSheet.Cells[4, 8] = currenData.BrandID;
 
-                currenSheet.Cells[4, 3] = currenData.StyleID;
-                currenSheet.Cells[4, 8] = currenData.POID;
+                currenSheet.Cells[5, 3] = currenData.StyleID;
+                currenSheet.Cells[5, 8] = currenData.POID;
 
-                currenSheet.Cells[5, 3] = currenData.Roll;
-                currenSheet.Cells[5, 8] = currenData.Dyelot;
+                currenSheet.Cells[6, 3] = currenData.Roll;
+                currenSheet.Cells[6, 8] = currenData.Dyelot;
 
-                currenSheet.Cells[6, 3] = currenData.SCIRefno_Color;
+                currenSheet.Cells[7, 3] = currenData.SCIRefno_Color;
 
                 // Test Request
-                currenSheet.Cells[8, 3] = currenData.Temperature;
-                currenSheet.Cells[8, 8] = currenData.CycleTime;
+                currenSheet.Cells[9, 3] = currenData.Temperature;
+                currenSheet.Cells[9, 8] = currenData.CycleTime;
 
-                currenSheet.Cells[12, 2] = currenData.ChangeScale;
-                currenSheet.Cells[12, 3] = currenData.AcetateScale;
-                currenSheet.Cells[12, 4] = currenData.CottonScale;
-                currenSheet.Cells[12, 5] = currenData.NylonScale;
-                currenSheet.Cells[12, 6] = currenData.PolyesterScale;
-                currenSheet.Cells[12, 7] = currenData.AcrylicScale;
-                currenSheet.Cells[12, 8] = currenData.WoolScale;
+                currenSheet.Cells[13, 2] = currenData.ChangeScale;
+                currenSheet.Cells[13, 3] = currenData.AcetateScale;
+                currenSheet.Cells[13, 4] = currenData.CottonScale;
+                currenSheet.Cells[13, 5] = currenData.NylonScale;
+                currenSheet.Cells[13, 6] = currenData.PolyesterScale;
+                currenSheet.Cells[13, 7] = currenData.AcrylicScale;
+                currenSheet.Cells[13, 8] = currenData.WoolScale;
 
-                currenSheet.Cells[13, 2] = currenData.ResultChange;
-                currenSheet.Cells[13, 3] = currenData.ResultAcetate;
-                currenSheet.Cells[13, 4] = currenData.ResultCotton;
-                currenSheet.Cells[13, 5] = currenData.ResultNylon;
-                currenSheet.Cells[13, 6] = currenData.ResultPolyester;
-                currenSheet.Cells[13, 7] = currenData.ResultAcrylic;
-                currenSheet.Cells[13, 8] = currenData.ResultWool;
+                currenSheet.Cells[14, 2] = currenData.ResultChange;
+                currenSheet.Cells[14, 3] = currenData.ResultAcetate;
+                currenSheet.Cells[14, 4] = currenData.ResultCotton;
+                currenSheet.Cells[14, 5] = currenData.ResultNylon;
+                currenSheet.Cells[14, 6] = currenData.ResultPolyester;
+                currenSheet.Cells[14, 7] = currenData.ResultAcrylic;
+                currenSheet.Cells[14, 8] = currenData.ResultWool;
 
-                currenSheet.Cells[14, 2] = currenData.Remark;
-                currenSheet.Cells[70, 3] = currenData.Inspector;
+                currenSheet.Cells[15, 2] = currenData.Remark;
+                currenSheet.Cells[71, 3] = currenData.Inspector;
 
 
                 #region 添加圖片
-                Excel.Range cellBeforePicture = currenSheet.Cells[45, 1];
+                Excel.Range cellBeforePicture = currenSheet.Cells[46, 1];
                 if (currenData.TestBeforePicture != null)
                 {
-                    string imageName = $"{Guid.NewGuid()}.jpg";
-                    string imgPath;
-
-                    if (test)
-                    {
-                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                    }
-                    else
-                    {
-                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                    }
-
-                    byte[] bytes = currenData.TestBeforePicture;
-                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
-                    {
-                        imageFile.Write(bytes, 0, bytes.Length);
-                        imageFile.Flush();
-                    }
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(currenData.TestBeforePicture, currenData.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
                     currenSheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 380, 300);
                 }
 
-                Excel.Range cellAfterPicture = currenSheet.Cells[45, 5];
+                Excel.Range cellAfterPicture = currenSheet.Cells[46, 5];
                 if (currenData.TestAfterPicture != null)
                 {
-                    string imageName = $"{Guid.NewGuid()}.jpg";
-                    string imgPath;
-
-                    if (test)
-                    {
-                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                    }
-                    else
-                    {
-                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                    }
-
-                    byte[] bytes = currenData.TestAfterPicture;
-                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
-                    {
-                        imageFile.Write(bytes, 0, bytes.Length);
-                        imageFile.Flush();
-                    }
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(currenData.TestAfterPicture, currenData.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
                     currenSheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 2, 380, 300);
                 }
                 #endregion
@@ -569,91 +538,58 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Excel.Worksheet currenSheet = excel.ActiveWorkbook.Worksheets[j];
                 currenSheet.Name = j.ToString();
                 ColorFastness_Excel currenData = dataList[j-1];
+                currenSheet.Cells[2, 3] = currenData.ReportNo;
 
-                currenSheet.Cells[2, 3] = currenData.SubmitDate.HasValue ? currenData.SubmitDate.Value.ToString("yyyy/MM/dd") : string.Empty;
-                currenSheet.Cells[2, 8] = DateTime.Now.ToString("yyyy/MM/dd");
+                currenSheet.Cells[3, 3] = currenData.SubmitDate.HasValue ? currenData.SubmitDate.Value.ToString("yyyy/MM/dd") : string.Empty;
+                currenSheet.Cells[3, 8] = DateTime.Now.ToString("yyyy/MM/dd");
 
-                currenSheet.Cells[3, 3] = currenData.SeasonID;
-                currenSheet.Cells[3, 8] = currenData.BrandID;
+                currenSheet.Cells[4, 3] = currenData.SeasonID;
+                currenSheet.Cells[4, 8] = currenData.BrandID;
 
-                currenSheet.Cells[4, 3] = currenData.StyleID;
-                currenSheet.Cells[4, 8] = currenData.POID;
+                currenSheet.Cells[5, 3] = currenData.StyleID;
+                currenSheet.Cells[5, 8] = currenData.POID;
 
-                currenSheet.Cells[5, 3] = currenData.Roll;
-                currenSheet.Cells[5, 8] = currenData.Dyelot;
+                currenSheet.Cells[6, 3] = currenData.Roll;
+                currenSheet.Cells[6, 8] = currenData.Dyelot;
 
-                currenSheet.Cells[6, 3] = currenData.SCIRefno_Color;
+                currenSheet.Cells[7, 3] = currenData.SCIRefno_Color;
 
                 // Test Request
-                currenSheet.Cells[8, 3] = currenData.Temperature;
-                currenSheet.Cells[8, 8] = currenData.CycleTime;
+                currenSheet.Cells[9, 3] = currenData.Temperature;
+                currenSheet.Cells[9, 8] = currenData.CycleTime;
 
-                currenSheet.Cells[12, 2] = currenData.ChangeScale;
-                currenSheet.Cells[12, 3] = currenData.AcetateScale;
-                currenSheet.Cells[12, 4] = currenData.CottonScale;
-                currenSheet.Cells[12, 5] = currenData.NylonScale;
-                currenSheet.Cells[12, 6] = currenData.PolyesterScale;
-                currenSheet.Cells[12, 7] = currenData.AcrylicScale;
-                currenSheet.Cells[12, 8] = currenData.WoolScale;
+                currenSheet.Cells[13, 2] = currenData.ChangeScale;
+                currenSheet.Cells[13, 3] = currenData.AcetateScale;
+                currenSheet.Cells[13, 4] = currenData.CottonScale;
+                currenSheet.Cells[13, 5] = currenData.NylonScale;
+                currenSheet.Cells[13, 6] = currenData.PolyesterScale;
+                currenSheet.Cells[13, 7] = currenData.AcrylicScale;
+                currenSheet.Cells[13, 8] = currenData.WoolScale;
 
-                currenSheet.Cells[13, 2] = currenData.ResultChange;
-                currenSheet.Cells[13, 3] = currenData.ResultAcetate;
-                currenSheet.Cells[13, 4] = currenData.ResultCotton;
-                currenSheet.Cells[13, 5] = currenData.ResultNylon;
-                currenSheet.Cells[13, 6] = currenData.ResultPolyester;
-                currenSheet.Cells[13, 7] = currenData.ResultAcrylic;
-                currenSheet.Cells[13, 8] = currenData.ResultWool;
+                currenSheet.Cells[14, 2] = currenData.ResultChange;
+                currenSheet.Cells[14, 3] = currenData.ResultAcetate;
+                currenSheet.Cells[14, 4] = currenData.ResultCotton;
+                currenSheet.Cells[14, 5] = currenData.ResultNylon;
+                currenSheet.Cells[14, 6] = currenData.ResultPolyester;
+                currenSheet.Cells[14, 7] = currenData.ResultAcrylic;
+                currenSheet.Cells[14, 8] = currenData.ResultWool;
 
-                currenSheet.Cells[14, 2] = currenData.Remark;
-                currenSheet.Cells[70, 3] = currenData.Inspector;
+                currenSheet.Cells[15, 2] = currenData.Remark;
+                currenSheet.Cells[71, 3] = currenData.Inspector;
 
 
                 #region 添加圖片
-                Excel.Range cellBeforePicture = currenSheet.Cells[45, 1];
+                Excel.Range cellBeforePicture = currenSheet.Cells[46, 1];
                 if (currenData.TestBeforePicture != null)
                 {
-                    string imageName = $"{Guid.NewGuid()}.jpg";
-                    string imgPath;
-
-                    if (test)
-                    {
-                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                    }
-                    else
-                    {
-                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                    }
-
-                    byte[] bytes = currenData.TestBeforePicture;
-                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
-                    {
-                        imageFile.Write(bytes, 0, bytes.Length);
-                        imageFile.Flush();
-                    }
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(currenData.TestBeforePicture, currenData.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
                     currenSheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 380, 300);
                 }
 
-                Excel.Range cellAfterPicture = currenSheet.Cells[45, 5];
+                Excel.Range cellAfterPicture = currenSheet.Cells[46, 5];
                 if (currenData.TestAfterPicture != null)
                 {
-                    string imageName = $"{Guid.NewGuid()}.jpg";
-                    string imgPath;
-
-                    if (test)
-                    {
-                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                    }
-                    else
-                    {
-                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                    }
-
-                    byte[] bytes = currenData.TestAfterPicture;
-                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
-                    {
-                        imageFile.Write(bytes, 0, bytes.Length);
-                        imageFile.Flush();
-                    }
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(currenData.TestAfterPicture, currenData.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
                     currenSheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 2, 380, 300);
                 }
                 #endregion

@@ -682,6 +682,8 @@ namespace BusinessLogicLayer.Service
                 _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
                 DataTable dtResult = _FabricCrkShrkTestProvider.GetCrockingFailMailContentData(ID);
                 string mailBody = MailTools.DataTableChangeHtml(dtResult, out System.Net.Mail.AlternateView plainView);
+                BaseResult baseResult = Crocking_ToExcel(ID, true, out string excelFileName);
+                string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", excelFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
                     To = toAddress,
@@ -689,9 +691,9 @@ namespace BusinessLogicLayer.Service
                     Subject = "Fabric Crocking Test - Test Fail",
                     Body = mailBody,
                     alternateView = plainView,
+                    FileonServer = new List<string> { FileName },
                 };
                 result = MailTools.SendMail(sendMail_Request);
-
             }
             catch (Exception ex)
             {
@@ -877,21 +879,22 @@ namespace BusinessLogicLayer.Service
                 Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(excelName);
 
                 Microsoft.Office.Interop.Excel.Worksheet excelSheets = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
-                excelSheets.Cells[2, 2] = fabricCrkShrkTestHeat_Main.POID;
-                excelSheets.Cells[2, 4] = fabricCrkShrkTestHeat_Main.SEQ;
-                excelSheets.Cells[2, 6] = fabricCrkShrkTestHeat_Main.ColorID;
-                excelSheets.Cells[2, 8] = fabricCrkShrkTestHeat_Main.StyleID;
-                excelSheets.Cells[2, 10] = seasonID;
-                excelSheets.Cells[3, 2] = fabricCrkShrkTestHeat_Main.SCIRefno;
-                excelSheets.Cells[3, 4] = fabricCrkShrkTestHeat_Main.ExportID;
-                excelSheets.Cells[3, 6] = fabricCrkShrkTestHeat_Main.Heat;
-                excelSheets.Cells[3, 8] = fabricCrkShrkTestHeat_Main.HeatDate == null ? string.Empty : ((DateTime)fabricCrkShrkTestHeat_Main.HeatDate).ToString("yyyy/MM/dd");
-                excelSheets.Cells[3, 10] = fabricCrkShrkTestHeat_Main.BrandID;
-                excelSheets.Cells[4, 2] = fabricCrkShrkTestHeat_Main.Refno;
-                excelSheets.Cells[4, 4] = fabricCrkShrkTestHeat_Main.ArriveQty;
-                excelSheets.Cells[4, 6] = fabricCrkShrkTestHeat_Main.WhseArrival == null ? string.Empty : ((DateTime)fabricCrkShrkTestHeat_Main.WhseArrival).ToString("yyyy/MM/dd");
-                excelSheets.Cells[4, 8] = fabricCrkShrkTestHeat_Main.Supp;
-                excelSheets.Cells[4, 10] = fabricCrkShrkTestHeat_Main.NonHeat.ToString();
+                excelSheets.Cells[2, 2] = fabricCrkShrkTestHeat_Main.ReportNo;
+                excelSheets.Cells[3, 2] = fabricCrkShrkTestHeat_Main.POID;
+                excelSheets.Cells[3, 4] = fabricCrkShrkTestHeat_Main.SEQ;
+                excelSheets.Cells[3, 6] = fabricCrkShrkTestHeat_Main.ColorID;
+                excelSheets.Cells[3, 8] = fabricCrkShrkTestHeat_Main.StyleID;
+                excelSheets.Cells[3, 10] = seasonID;
+                excelSheets.Cells[4, 2] = fabricCrkShrkTestHeat_Main.SCIRefno;
+                excelSheets.Cells[4, 4] = fabricCrkShrkTestHeat_Main.ExportID;
+                excelSheets.Cells[4, 6] = fabricCrkShrkTestHeat_Main.Heat;
+                excelSheets.Cells[4, 8] = fabricCrkShrkTestHeat_Main.HeatDate == null ? string.Empty : ((DateTime)fabricCrkShrkTestHeat_Main.HeatDate).ToString("yyyy/MM/dd");
+                excelSheets.Cells[4, 10] = fabricCrkShrkTestHeat_Main.BrandID;
+                excelSheets.Cells[5, 2] = fabricCrkShrkTestHeat_Main.Refno;
+                excelSheets.Cells[5, 4] = fabricCrkShrkTestHeat_Main.ArriveQty;
+                excelSheets.Cells[5, 6] = fabricCrkShrkTestHeat_Main.WhseArrival == null ? string.Empty : ((DateTime)fabricCrkShrkTestHeat_Main.WhseArrival).ToString("yyyy/MM/dd");
+                excelSheets.Cells[5, 8] = fabricCrkShrkTestHeat_Main.Supp;
+                excelSheets.Cells[5, 10] = fabricCrkShrkTestHeat_Main.NonHeat.ToString();
 
                 int RowIdx = 0;
                 foreach (DataRow dr in dtHeatDetail.Rows)
@@ -899,7 +902,7 @@ namespace BusinessLogicLayer.Service
                     int colIndex = 1;
                     foreach (string col in columnNames)
                     {
-                        excel.Cells[RowIdx + 6, colIndex] = dtHeatDetail.Rows[RowIdx][col].ToString();
+                        excel.Cells[RowIdx + 7, colIndex] = dtHeatDetail.Rows[RowIdx][col].ToString();
                         colIndex++;
                     }
 
@@ -907,37 +910,17 @@ namespace BusinessLogicLayer.Service
                 }
 
                 #region 添加圖片
-                Excel.Range cellBeforePicture = excelSheets.Cells[21, 1];
+                Excel.Range cellBeforePicture = excelSheets.Cells[22, 1];
                 if (fabricCrkShrkTestHeat_Main.HeatTestBeforePicture != null)
                 {
-                    string imageName = $"{Guid.NewGuid()}.jpg";
-                    string imgPath;
-
-                    imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-
-                    byte[] bytes = fabricCrkShrkTestHeat_Main.HeatTestBeforePicture;
-                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
-                    {
-                        imageFile.Write(bytes, 0, bytes.Length);
-                        imageFile.Flush();
-                    }
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestHeat_Main.HeatTestBeforePicture, fabricCrkShrkTestHeat_Main.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
                     excelSheets.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 323, 255);
                 }
 
-                Excel.Range cellAfterPicture = excelSheets.Cells[21, 7];
+                Excel.Range cellAfterPicture = excelSheets.Cells[22, 7];
                 if (fabricCrkShrkTestHeat_Main.HeatTestAfterPicture != null)
                 {
-                    string imageName = $"{Guid.NewGuid()}.jpg";
-                    string imgPath;
-
-                    imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-
-                    byte[] bytes = fabricCrkShrkTestHeat_Main.HeatTestAfterPicture;
-                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
-                    {
-                        imageFile.Write(bytes, 0, bytes.Length);
-                        imageFile.Flush();
-                    }
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestHeat_Main.HeatTestAfterPicture, fabricCrkShrkTestHeat_Main.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
                     excelSheets.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 2, 323, 255);
                 }
                 #endregion
@@ -1027,22 +1010,22 @@ namespace BusinessLogicLayer.Service
                 Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(excelName);
 
                 Microsoft.Office.Interop.Excel.Worksheet excelSheets = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
-
-                excelSheets.Cells[2, 2] = fabricCrkShrkTestWash_Main.POID;
-                excelSheets.Cells[2, 4] = fabricCrkShrkTestWash_Main.SEQ;
-                excelSheets.Cells[2, 6] = fabricCrkShrkTestWash_Main.ColorID;
-                excelSheets.Cells[2, 8] = fabricCrkShrkTestWash_Main.StyleID;
-                excelSheets.Cells[2, 10] = seasonID;
-                excelSheets.Cells[3, 2] = fabricCrkShrkTestWash_Main.SCIRefno;
-                excelSheets.Cells[3, 4] = fabricCrkShrkTestWash_Main.ExportID;
-                excelSheets.Cells[3, 6] = fabricCrkShrkTestWash_Main.Wash;
-                excelSheets.Cells[3, 8] = fabricCrkShrkTestWash_Main.WashDate == null ? string.Empty : ((DateTime)fabricCrkShrkTestWash_Main.WashDate).ToString("yyyy/MM/dd");
-                excelSheets.Cells[3, 10] = fabricCrkShrkTestWash_Main.BrandID;
-                excelSheets.Cells[4, 2] = fabricCrkShrkTestWash_Main.Refno;
-                excelSheets.Cells[4, 4] = fabricCrkShrkTestWash_Main.ArriveQty;
-                excelSheets.Cells[4, 6] = fabricCrkShrkTestWash_Main.WhseArrival == null ? string.Empty : ((DateTime)fabricCrkShrkTestWash_Main.WhseArrival).ToString("yyyy/MM/dd");
-                excelSheets.Cells[4, 8] = fabricCrkShrkTestWash_Main.Supp;
-                excelSheets.Cells[4, 10] = fabricCrkShrkTestWash_Main.NonWash;
+                excelSheets.Cells[2, 2] = fabricCrkShrkTestWash_Main.ReportNo;
+                excelSheets.Cells[3, 2] = fabricCrkShrkTestWash_Main.POID;
+                excelSheets.Cells[3, 4] = fabricCrkShrkTestWash_Main.SEQ;
+                excelSheets.Cells[3, 6] = fabricCrkShrkTestWash_Main.ColorID;
+                excelSheets.Cells[3, 8] = fabricCrkShrkTestWash_Main.StyleID;
+                excelSheets.Cells[3, 10] = seasonID;
+                excelSheets.Cells[4, 2] = fabricCrkShrkTestWash_Main.SCIRefno;
+                excelSheets.Cells[4, 4] = fabricCrkShrkTestWash_Main.ExportID;
+                excelSheets.Cells[4, 6] = fabricCrkShrkTestWash_Main.Wash;
+                excelSheets.Cells[4, 8] = fabricCrkShrkTestWash_Main.WashDate == null ? string.Empty : ((DateTime)fabricCrkShrkTestWash_Main.WashDate).ToString("yyyy/MM/dd");
+                excelSheets.Cells[4, 10] = fabricCrkShrkTestWash_Main.BrandID;
+                excelSheets.Cells[5, 2] = fabricCrkShrkTestWash_Main.Refno;
+                excelSheets.Cells[5, 4] = fabricCrkShrkTestWash_Main.ArriveQty;
+                excelSheets.Cells[5, 6] = fabricCrkShrkTestWash_Main.WhseArrival == null ? string.Empty : ((DateTime)fabricCrkShrkTestWash_Main.WhseArrival).ToString("yyyy/MM/dd");
+                excelSheets.Cells[5, 8] = fabricCrkShrkTestWash_Main.Supp;
+                excelSheets.Cells[5, 10] = fabricCrkShrkTestWash_Main.NonWash;
 
                 int RowIdx = 0;
                 foreach (DataRow dr in dtWashDetail.Rows)
@@ -1050,7 +1033,7 @@ namespace BusinessLogicLayer.Service
                     int colIndex = 1;
                     foreach (string col in columnNames)
                     {
-                        excelSheets.Cells[RowIdx + 6, colIndex] = dtWashDetail.Rows[RowIdx][col].ToString();
+                        excelSheets.Cells[RowIdx + 7, colIndex] = dtWashDetail.Rows[RowIdx][col].ToString();
                         colIndex++;
                     }
 
@@ -1061,18 +1044,18 @@ namespace BusinessLogicLayer.Service
                 switch (skewnessOption)
                 {
                     case "1":
-                        excelSheets.Cells[5, 16] = "AC";
-                        excelSheets.Cells[5, 17] = "BD";
+                        excelSheets.Cells[6, 16] = "AC";
+                        excelSheets.Cells[6, 17] = "BD";
                         break;
                     case "2":
-                        excelSheets.Cells[5, 16] = "AA’";
-                        excelSheets.Cells[5, 17] = "DD’";
-                        excelSheets.Cells[5, 18] = "AB";
-                        excelSheets.Cells[5, 19] = "CD";
+                        excelSheets.Cells[6, 16] = "AA’";
+                        excelSheets.Cells[6, 17] = "DD’";
+                        excelSheets.Cells[6, 18] = "AB";
+                        excelSheets.Cells[6, 19] = "CD";
                         break;
                     case "3":
-                        excelSheets.Cells[5, 16] = "AA’";
-                        excelSheets.Cells[5, 17] = "AB";
+                        excelSheets.Cells[6, 16] = "AA’";
+                        excelSheets.Cells[6, 17] = "AB";
                         break;
                     default:
                         break;
@@ -1096,37 +1079,17 @@ namespace BusinessLogicLayer.Service
                 }
 
                 #region 添加圖片
-                Excel.Range cellBeforePicture = excelSheets.Cells[33, 1];
+                Excel.Range cellBeforePicture = excelSheets.Cells[34, 1];
                 if (fabricCrkShrkTestWash_Main.WashTestBeforePicture != null)
                 {
-                    string imageName = $"{Guid.NewGuid()}.jpg";
-                    string imgPath;
-
-                    imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-
-                    byte[] bytes = fabricCrkShrkTestWash_Main.WashTestBeforePicture;
-                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
-                    {
-                        imageFile.Write(bytes, 0, bytes.Length);
-                        imageFile.Flush();
-                    }
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestWash_Main.WashTestBeforePicture, fabricCrkShrkTestWash_Main.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
                     excelSheets.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 20, 323, 255);
                 }
 
-                Excel.Range cellAfterPicture = excelSheets.Cells[33, 7];
+                Excel.Range cellAfterPicture = excelSheets.Cells[34, 7];
                 if (fabricCrkShrkTestWash_Main.WashTestAfterPicture != null)
                 {
-                    string imageName = $"{Guid.NewGuid()}.jpg";
-                    string imgPath;
-
-                    imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-
-                    byte[] bytes = fabricCrkShrkTestWash_Main.WashTestAfterPicture;
-                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
-                    {
-                        imageFile.Write(bytes, 0, bytes.Length);
-                        imageFile.Flush();
-                    }
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestWash_Main.WashTestAfterPicture, fabricCrkShrkTestWash_Main.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
                     excelSheets.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 20, 323, 255);
                 }
                 #endregion
@@ -1672,6 +1635,8 @@ namespace BusinessLogicLayer.Service
                 _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
                 DataTable dtResult = _FabricCrkShrkTestProvider.GetHeatFailMailContentData(ID);
                 string mailBody = MailTools.DataTableChangeHtml(dtResult, out System.Net.Mail.AlternateView plainView);
+                BaseResult baseResult = ToExcelFabricCrkShrkTestHeatDetail(ID, out string excelFileName);
+                string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", excelFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
                     To = toAddress,
@@ -1679,6 +1644,7 @@ namespace BusinessLogicLayer.Service
                     Subject = "Fabric Heat Test - Test Fail",
                     Body = mailBody,
                     alternateView = plainView,
+                    FileonServer = new List<string> { FileName },
                 };
                 result = MailTools.SendMail(sendMail_Request);
 
@@ -1700,6 +1666,8 @@ namespace BusinessLogicLayer.Service
                 _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
                 DataTable dtResult = _FabricCrkShrkTestProvider.GetWashFailMailContentData(ID);
                 string mailBody = MailTools.DataTableChangeHtml(dtResult, out System.Net.Mail.AlternateView plainView);
+                BaseResult baseResult = ToExcelFabricCrkShrkTestWashDetail(ID, out string excelFileName);
+                string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", excelFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
                     To = toAddress,
@@ -1707,6 +1675,7 @@ namespace BusinessLogicLayer.Service
                     Subject = "Fabric Wash Test - Test Fail",
                     Body = mailBody,
                     alternateView = plainView,
+                    FileonServer = new List<string> { FileName },
                 };
                 result = MailTools.SendMail(sendMail_Request);
 
@@ -1773,73 +1742,55 @@ namespace BusinessLogicLayer.Service
                 Excel.Worksheet currenSheet = excel.ActiveWorkbook.Worksheets[j];
                 Crocking_Excel currenData = dataList[j - 1];
                 currenSheet.Select();
+
                 currenSheet.Name = (currenData.Article + currenData.Roll + currenData.Dyelot).Replace(@"/", string.Empty).Replace(@"\", string.Empty);
 
-                currenSheet.Cells[2, 3] = currenData.SubmitDate.HasValue ? currenData.SubmitDate.Value.ToString("yyyy/MM/dd") : string.Empty;
-                currenSheet.Cells[2, 8] = DateTime.Now.ToString("yyyy/MM/dd");
+                currenSheet.Cells[2, 3] = currenData.ReportNo;
+                currenSheet.Cells[3, 3] = currenData.SubmitDate.HasValue ? currenData.SubmitDate.Value.ToString("yyyy/MM/dd") : string.Empty;
+                currenSheet.Cells[3, 8] = DateTime.Now.ToString("yyyy/MM/dd");
 
-                currenSheet.Cells[3, 3] = currenData.SeasonID;
-                currenSheet.Cells[3, 8] = currenData.BrandID;
+                currenSheet.Cells[4, 3] = currenData.SeasonID;
+                currenSheet.Cells[4, 8] = currenData.BrandID;
 
-                currenSheet.Cells[4, 3] = currenData.StyleID;
-                currenSheet.Cells[4, 8] = currenData.POID;
+                currenSheet.Cells[5, 3] = currenData.StyleID;
+                currenSheet.Cells[5, 8] = currenData.POID;
 
-                currenSheet.Cells[5, 3] = currenData.Article;
+                currenSheet.Cells[6, 3] = currenData.Article;
 
-                currenSheet.Cells[6, 3] = currenData.Roll;
-                currenSheet.Cells[6, 8] = currenData.Dyelot;
+                currenSheet.Cells[7, 3] = currenData.Roll;
+                currenSheet.Cells[7, 8] = currenData.Dyelot;
 
-                currenSheet.Cells[7, 3] = currenData.SCIRefno_Color;
-                currenSheet.Cells[8, 8] = currenData.Color;
+                currenSheet.Cells[8, 3] = currenData.SCIRefno_Color;
+                currenSheet.Cells[9, 8] = currenData.Color;
 
                 // Test Request
 
-                currenSheet.Cells[13, 2] = currenData.DryScale;
-                currenSheet.Cells[13, 4] = currenData.DryScale_Weft;
-                currenSheet.Cells[13, 6] = currenData.WetScale;
-                currenSheet.Cells[13, 8] = currenData.WetScale_Weft;
+                currenSheet.Cells[14, 2] = currenData.DryScale;
+                currenSheet.Cells[14, 4] = currenData.DryScale_Weft;
+                currenSheet.Cells[14, 6] = currenData.WetScale;
+                currenSheet.Cells[14, 8] = currenData.WetScale_Weft;
 
-                currenSheet.Cells[14, 2] = currenData.ResultDry;
-                currenSheet.Cells[14, 4] = currenData.ResultDry_Weft;
-                currenSheet.Cells[14, 6] = currenData.ResultWet;
-                currenSheet.Cells[14, 8] = currenData.ResultWet_Weft;
+                currenSheet.Cells[15, 2] = currenData.ResultDry;
+                currenSheet.Cells[15, 4] = currenData.ResultDry_Weft;
+                currenSheet.Cells[15, 6] = currenData.ResultWet;
+                currenSheet.Cells[15, 8] = currenData.ResultWet_Weft;
 
-                currenSheet.Cells[16, 2] = currenData.Remark;
-                currenSheet.Cells[72, 3] = currenData.Inspector;
+                currenSheet.Cells[17, 2] = currenData.Remark;
+                currenSheet.Cells[73, 3] = currenData.Inspector;
 
 
                 #region 添加圖片
-                Excel.Range cellBeforePicture = currenSheet.Cells[46, 1];
+                Excel.Range cellBeforePicture = currenSheet.Cells[47, 1];
                 if (currenData.CrockingTestBeforePicture != null)
                 {
-                    string imageName = $"{Guid.NewGuid()}.jpg";
-                    string imgPath;
-
-                    imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-
-                    byte[] bytes = currenData.CrockingTestBeforePicture;
-                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
-                    {
-                        imageFile.Write(bytes, 0, bytes.Length);
-                        imageFile.Flush();
-                    }
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(currenData.CrockingTestBeforePicture, currenData.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
                     currenSheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 323, 255);
                 }
 
-                Excel.Range cellAfterPicture = currenSheet.Cells[46, 5];
+                Excel.Range cellAfterPicture = currenSheet.Cells[47, 5];
                 if (currenData.CrockingTestAfterPicture != null)
                 {
-                    string imageName = $"{Guid.NewGuid()}.jpg";
-                    string imgPath;
-
-                    imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-
-                    byte[] bytes = currenData.CrockingTestAfterPicture;
-                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
-                    {
-                        imageFile.Write(bytes, 0, bytes.Length);
-                        imageFile.Flush();
-                    }
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(currenData.CrockingTestAfterPicture, currenData.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
                     currenSheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 2, 323, 255);
                 }
                 #endregion

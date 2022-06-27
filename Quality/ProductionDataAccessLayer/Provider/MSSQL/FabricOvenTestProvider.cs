@@ -548,12 +548,12 @@ select  [SP#] = ov.POID,
         [Article] = ov.Article,
         [Result] = ov.Result,
         [Inspector] = ov.Inspector,
-        [Remark] = ov.Remark,
-        oi.TestBeforePicture,
-        oi.TestAfterPicture
+        [Remark] = ov.Remark
+        -- oi.TestBeforePicture,
+        -- oi.TestAfterPicture
 from Oven ov with (nolock)
 left join Orders o with (nolock) on ov.POID = o.ID
-left join SciPMSFile_Oven oi with (nolock) on oi.ID=ov.ID
+-- left join SciPMSFile_Oven oi with (nolock) on oi.ID=ov.ID
 where ov.POID = @poID and ov.TestNo = @TestNo
 ";
 
@@ -623,6 +623,7 @@ select  ov.ID
         ,oi.TestBeforePicture
         ,oi.TestAfterPicture
         ,[InspectorName] = (select Name from Pass1 WITH(NOLOCK) where ID = ov.Inspector)
+        ,ov.ReportNo
 from    Oven ov with (nolock)
 left join SciPMSFile_Oven oi with (nolock) on oi.ID=ov.ID
 where   ov.POID = @poID and ov.TestNo = @TestNo

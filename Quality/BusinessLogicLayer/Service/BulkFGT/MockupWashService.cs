@@ -243,30 +243,14 @@ namespace BusinessLogicLayer.Service
                         imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
                     }
 
-                    img.Save(imgPath);
+                    img.Save(imgPath);                    
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
                 }
 
                 Range cellBefore = worksheet.Cells[16 + haveHTrow, 1];
                 if (mockupWash.TestBeforePicture != null)
                 {
-                    string imageName = $"{Guid.NewGuid()}.jpg";
-                    string imgPath;
-                    if (test)
-                    {
-                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                    }
-                    else
-                    {
-                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                    }
-
-                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
-                    {
-                        imageFile.Write(mockupWash.TestBeforePicture, 0, mockupWash.TestBeforePicture.Length);
-                        imageFile.Flush();
-                    }
-
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(mockupWash.TestBeforePicture, mockupWash.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test : test);
                     if (haveHT)
                     {
                         worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBefore.Left + 5, cellBefore.Top + 38, 440, 340);
@@ -280,22 +264,7 @@ namespace BusinessLogicLayer.Service
                 Range cellAfter = worksheet.Cells[16 + haveHTrow, 4];
                 if (mockupWash.TestAfterPicture != null)
                 {
-                    string imageName = $"{Guid.NewGuid()}.jpg";
-                    string imgPath;
-                    if (test)
-                    {
-                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                    }
-                    else
-                    {
-                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                    }
-
-                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
-                    {
-                        imageFile.Write(mockupWash.TestAfterPicture, 0, mockupWash.TestAfterPicture.Length);
-                        imageFile.Flush();
-                    }
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(mockupWash.TestAfterPicture, mockupWash.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
                     if (haveHT)
                     {
                         worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfter.Left + 5, cellAfter.Top + 38, 445, 340);
@@ -559,12 +528,18 @@ namespace BusinessLogicLayer.Service
         {
             _MockupWashProvider = new MockupWashProvider(Common.ProductionDataAccessLayer);
             string mailBody = MailTools.DataTableChangeHtml(_MockupWashProvider.GetMockupWashFailMailContentData(mail_Request.ReportNo), out AlternateView plainView);
-            SendMail_Request sendMail_Request = new SendMail_Request();
-            sendMail_Request.Subject = "Mockup Wash – Test Fail";
-            sendMail_Request.To = mail_Request.To;
-            sendMail_Request.CC = mail_Request.CC;
-            sendMail_Request.Body = mailBody;
-            sendMail_Request.alternateView = plainView;
+            MockupWash_ViewModel model = GetMockupWash(new MockupWash_Request { ReportNo = mail_Request.ReportNo });
+            Report_Result baseResult = GetPDF(model);
+            string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", baseResult.TempFileName) : string.Empty;
+            SendMail_Request sendMail_Request = new SendMail_Request
+            {
+                Subject = "Mockup Wash – Test Fail",
+                To = mail_Request.To,
+                CC = mail_Request.CC,
+                Body = mailBody,
+                alternateView = plainView,
+                FileonServer = new List<string> { FileName },
+            };
             return MailTools.SendMail(sendMail_Request);
         }
     }

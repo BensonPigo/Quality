@@ -186,44 +186,14 @@ namespace BusinessLogicLayer.Service
                 Excel.Range cellBefore = worksheet.Cells[16, 1];
                 if (mockupCrocking.TestBeforePicture != null)
                 {
-                    string imageName = $"{Guid.NewGuid()}.jpg";
-                    string imgPath;
-                    if (test)
-                    {
-                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                    }
-                    else
-                    {
-                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                    }
-
-                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
-                    {
-                        imageFile.Write(mockupCrocking.TestBeforePicture, 0, mockupCrocking.TestBeforePicture.Length);
-                        imageFile.Flush();
-                    }
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(mockupCrocking.TestBeforePicture, mockupCrocking.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBefore.Left + 5, cellBefore.Top + 5, 288, 272);
                 }
 
                 Excel.Range cellAfter = worksheet.Cells[16, 5];
                 if (mockupCrocking.TestAfterPicture != null)
                 {
-                    string imageName = $"{Guid.NewGuid()}.jpg";
-                    string imgPath;
-                    if (test)
-                    {
-                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                    }
-                    else
-                    {
-                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                    }
-
-                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
-                    {
-                        imageFile.Write(mockupCrocking.TestAfterPicture, 0, mockupCrocking.TestAfterPicture.Length);
-                        imageFile.Flush();
-                    }
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(mockupCrocking.TestAfterPicture, mockupCrocking.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfter.Left + 5, cellAfter.Top + 5, 265, 272);              
                 }
 
@@ -481,13 +451,19 @@ namespace BusinessLogicLayer.Service
         public SendMail_Result FailSendMail(MockupFailMail_Request mail_Request )
         {
             _MockupCrockingProvider = new MockupCrockingProvider(Common.ProductionDataAccessLayer);
-            string mailBody = MailTools.DataTableChangeHtml(_MockupCrockingProvider.GetMockupCrockingFailMailContentData(mail_Request.ReportNo), out AlternateView plainView);            
-            SendMail_Request sendMail_Request = new SendMail_Request();
-            sendMail_Request.Subject = "Mockup Crocking – Test Fail";
-            sendMail_Request.To = mail_Request.To;
-            sendMail_Request.CC = mail_Request.CC;
-            sendMail_Request.Body = mailBody;
-            sendMail_Request.alternateView = plainView;
+            string mailBody = MailTools.DataTableChangeHtml(_MockupCrockingProvider.GetMockupCrockingFailMailContentData(mail_Request.ReportNo), out AlternateView plainView);
+            MockupCrocking_ViewModel model = GetMockupCrocking(new MockupCrocking_Request { ReportNo = mail_Request.ReportNo });
+            Report_Result baseResult = GetPDF(model);
+            string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", baseResult.TempFileName) : string.Empty;
+            SendMail_Request sendMail_Request = new SendMail_Request
+            {
+                Subject = "Mockup Crocking – Test Fail",
+                To = mail_Request.To,
+                CC = mail_Request.CC,
+                Body = mailBody,
+                alternateView = plainView,
+                FileonServer = new List<string> { FileName },
+            };
             return MailTools.SendMail(sendMail_Request);
         }
     }

@@ -249,23 +249,7 @@ namespace BusinessLogicLayer.Service
                 cell = worksheet.Cells[13 + haveHTrow + 3, 2];
                 if (mockupOven.TestBeforePicture != null)
                 {
-                    string imageName = $"{Guid.NewGuid()}.jpg";
-                    string imgPath;
-                    if (IsTest.ToLower() == "true")
-                    {
-                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                    }
-                    else
-                    {
-                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                    }
-
-                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
-                    {
-                        imageFile.Write(mockupOven.TestBeforePicture, 0, mockupOven.TestBeforePicture.Length);
-                        imageFile.Flush();
-                    }
-
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(mockupOven.TestBeforePicture, mockupOven.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test : IsTest.ToLower() == "true");
                     if (haveHT)
                     {
                         worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 377, 260);
@@ -279,22 +263,7 @@ namespace BusinessLogicLayer.Service
                 cell = worksheet.Cells[13 + haveHTrow + 3, 8];
                 if (mockupOven.TestAfterPicture != null)
                 {
-                    string imageName = $"{Guid.NewGuid()}.jpg";
-                    string imgPath;
-                    if (IsTest.ToLower() == "true")
-                    {
-                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                    }
-                    else
-                    {
-                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                    }
-
-                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
-                    {
-                        imageFile.Write(mockupOven.TestAfterPicture, 0, mockupOven.TestAfterPicture.Length);
-                        imageFile.Flush();
-                    }
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(mockupOven.TestAfterPicture, mockupOven.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: IsTest.ToLower() == "true");
                     if (haveHT)
                     {
                         worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 387, 260);
@@ -561,12 +530,18 @@ namespace BusinessLogicLayer.Service
         {
             _MockupOvenProvider = new MockupOvenProvider(Common.ProductionDataAccessLayer);
             string mailBody = MailTools.DataTableChangeHtml(_MockupOvenProvider.GetMockupOvenFailMailContentData(mail_Request.ReportNo), out AlternateView plainView);
-            SendMail_Request sendMail_Request = new SendMail_Request();
-            sendMail_Request.Subject = "Mockup Oven – Test Fail";
-            sendMail_Request.To = mail_Request.To;
-            sendMail_Request.CC = mail_Request.CC;
-            sendMail_Request.Body = mailBody;
-            sendMail_Request.alternateView = plainView;
+            MockupOven_ViewModel model = GetMockupOven(new MockupOven_Request { ReportNo = mail_Request.ReportNo });
+            Report_Result baseResult = GetPDF(model);
+            string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", baseResult.TempFileName) : string.Empty;
+            SendMail_Request sendMail_Request = new SendMail_Request
+            {
+                Subject = "Mockup Oven – Test Fail",
+                To = mail_Request.To,
+                CC = mail_Request.CC,
+                Body = mailBody,
+                alternateView = plainView,
+                FileonServer = new List<string> { FileName },
+            };
             return MailTools.SendMail(sendMail_Request);
         }
     }
