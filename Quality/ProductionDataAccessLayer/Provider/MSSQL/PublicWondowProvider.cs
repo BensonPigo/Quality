@@ -205,6 +205,75 @@ AND StyleUkey in (
             return ExecuteList<Window_Article>(CommandType.Text, SbSql.ToString(), paras);
         }
 
+        public IList<Window_Article> Get_PoidArticle(string POID, Int64 StyleUkey, string StyleID, string BrandID, string SeasonID, string Article, bool IsExact)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+
+            if (!string.IsNullOrEmpty(POID))
+            {
+                //有傳入 OrderID
+                SbSql.Append($@"
+select DISTINCT oq.Article 
+from orders o
+inner join order_qty oq  ON  o.id = oq.id and oq.qty > 0 
+where o.POID = @POID
+
+");
+                paras.Add("@POID", DbType.String, POID);
+            }
+            else if (string.IsNullOrEmpty(POID))
+            {
+                //沒有傳入 OrderID
+                SbSql.Append($@"
+select DISTINCT Article
+from Production.dbo.Style_Article WITH(NOLOCK)
+where 1=1
+
+");
+                if (StyleUkey > 0)
+                {
+                    SbSql.Append("AND StyleUkey = @StyleUkey ");
+                    paras.Add("@StyleUkey ", DbType.Int64, StyleUkey);
+                }
+                if (!string.IsNullOrEmpty(StyleID) && !string.IsNullOrEmpty(BrandID) && !string.IsNullOrEmpty(SeasonID))
+                {
+                    SbSql.Append($@"
+AND StyleUkey in (
+	select Ukey
+	from Production.dbo.Style WITH(NOLOCK)
+	where id= @StyleID and BrandID=@BrandID and SeasonID=@SeasonID
+)
+");
+                    paras.Add("@StyleID ", DbType.String, StyleID);
+                    paras.Add("@BrandID ", DbType.String, BrandID);
+                    paras.Add("@SeasonID ", DbType.String, SeasonID);
+                }
+            }
+            else
+            {
+                //其餘則回傳空
+                return new List<Window_Article>();
+            }
+
+
+            if (!string.IsNullOrEmpty(Article))
+            {
+                if (IsExact)
+                {
+                    SbSql.Append($@"AND Article = @Article ");
+                    paras.Add("@Article", DbType.String, Article);
+                }
+                else
+                {
+                    SbSql.Append($@"AND Article LIKE @Article ");
+                    paras.Add("@Article", DbType.String, Article + "%");
+                }
+            }
+
+            return ExecuteList<Window_Article>(CommandType.Text, SbSql.ToString(), paras);
+        }
+
         public IList<Window_Size> Get_Size(string OrderID, Int64? StyleUkey, string BrandID, string SeasonID, string StyleID, string Article, string Size, bool IsExact)
         {
             StringBuilder SbSql = new StringBuilder();

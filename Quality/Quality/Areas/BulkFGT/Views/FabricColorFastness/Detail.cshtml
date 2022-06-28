@@ -791,7 +791,7 @@
     function DetailButtonBind() {
         $('#btnDetailArticleSelectItem').on('click', function () {
             var para = "?OrderID=" + $('#Main_POID').val() + "&StyleUkey=0";
-            window.open('@Url.Action("ArticleList","PublicWondow",new{Area=""})' + para, 'Article', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+            window.open('@Url.Action("PoidArticleList", "PublicWondow",new{Area=""})' + para, 'Article', config = 'toolbar=no,status=no,location=no,width=400,height=650');
         });
 
         $('#btnDetailInspectorSelectItem').on('click', function () {
@@ -801,7 +801,7 @@
         $('#Main_Article').blur(function () {
             var OrderID = $('#Main_POID').val();
             $.ajax({
-                url: "@Url.Action("ArticleList", "PublicWondow",new { Area=""})",
+                url: "@Url.Action("PoidArticleList", "PublicWondow",new { Area=""})",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ OrderID: OrderID, StyleUkey: 0, Article: $(this).val(), ReturnType: "JSON" }),

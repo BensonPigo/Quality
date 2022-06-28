@@ -127,6 +127,37 @@ namespace Quality.Controllers
             return View(model);
         }
 
+
+        public ActionResult PoidArticleList(string OrderID, Int64 StyleUkey, string StyleID, string BrandID, string SeasonID, string TargetID)
+        {
+            var model = _PublicWindowService.Get_PoidArticle(OrderID, StyleUkey, StyleID, BrandID, SeasonID, string.Empty, false);
+            ViewData["OrderID"] = OrderID;
+            ViewData["StyleUkey"] = StyleUkey;
+            ViewData["StyleID"] = StyleID;
+            ViewData["BrandID"] = BrandID;
+            ViewData["SeasonID"] = SeasonID;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult PoidArticleList(string OrderID, Int64 StyleUkey, string StyleID, string BrandID, string SeasonID, string Article, string TargetID, string ReturnType = "")
+        {
+            bool IsExact = ReturnType.ToUpper() == "JSON";
+            var model = _PublicWindowService.Get_PoidArticle(OrderID, StyleUkey, StyleID, BrandID, SeasonID, Article, IsExact);
+            ViewData["OrderID"] = OrderID;
+            ViewData["StyleUkey"] = StyleUkey;
+            ViewData["StyleID"] = StyleID;
+            ViewData["BrandID"] = BrandID;
+            ViewData["SeasonID"] = SeasonID;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            if (ReturnType.ToUpper() == "JSON")
+            {
+                return Json(model);
+            }
+            return View(model);
+        }
+
         public ActionResult SizeList(string OrderID, Int64? StyleUkey, string BrandID, string SeasonID, string StyleID, string Article, string TargetID)
         {
             var model = _PublicWindowService.Get_Size(OrderID, StyleUkey, BrandID, SeasonID, StyleID, Article, string.Empty, false);
