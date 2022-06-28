@@ -463,7 +463,7 @@ SELECT [Type] = IIF( EXISTS(
 	from Style s WITH(NOLOCK)
 	inner join Reason r WITH(NOLOCK) on s.SpecialMark = r.ID AND r.ReasonTypeID= 'Style_SpecialMark'
 	where s.ID = @StyleID AND s.BrandID = @BrandID AND s.SeasonID = @SeasonID
-	and (r.Name in (
+	and s.Teamwear = 1 /*and (r.Name in (
                      'AMERIC. FOOT. ON-FIELD'
                     ,'AMERIC. FOOT.ON-FIELD+DISNEY'
                     ,'BASEBALL OFF FIELD'
@@ -490,7 +490,7 @@ SELECT [Type] = IIF( EXISTS(
                     ,'TRAINING TEAMWEAR'
                     ,'Training Teamwear+Critical P'                    
         )
-    )
+    )*/
 ),'710','701')
 
 
