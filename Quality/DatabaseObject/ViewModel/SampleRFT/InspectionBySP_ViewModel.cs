@@ -46,6 +46,8 @@ namespace DatabaseObject.ViewModel.SampleRFT
         public string SewingLineID { get; set; }
         public string QCInCharge { get; set; }
         public string AddName { get; set; }
+        public string AddNameText { get; set; }
+        public string MReMail { get; set; }
         public int OrderQty { get; set; }
         public int PassQty { get; set; }
         public DateTime? InspectionDate { get; set; }
@@ -376,13 +378,15 @@ namespace DatabaseObject.ViewModel.SampleRFT
         public byte[] Front { get; set; }
         public byte[] Side { get; set; }
         public byte[] Back { get; set; }
+        public byte[] Left { get; set; }
+        public byte[] Right { get; set; }
     }
 
     public class InspectionBySP_Others : SampleRFTInspection
     {
         public string Inspector { get; set; }
         public string InspectorResult { get; set; }
-        public string QueryType { get; set; }
+        public string Action { get; set; }
         //public string OrderID { get; set; }
         //public string StyleID { get; set; }
         //public string BrandID { get; set; }

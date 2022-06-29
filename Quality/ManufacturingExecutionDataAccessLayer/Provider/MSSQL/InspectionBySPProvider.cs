@@ -36,8 +36,13 @@ select a.*, b.StyleID ,b.SeasonID ,b.BrandID
                         END
     ,WorkNo = wk.Val
     ,POID = b.POID
+    ,AddNameText = p.Name
+	,MReMail = ISNULL(p2.EMail,p3.EMail)
 from SampleRFTInspection a
 INNER JOIN MainServer.Production.dbo.Orders b on a.OrderID=b.ID
+LEFT JOIN Pass1 p ON a.AddName = p.ID
+LEFT JOIN MainServer.Production.dbo.Pass1 p2 ON b.MRHandle = p2.ID
+LEFT JOIN MainServer.Production.dbo.TPEPass1 p3 ON b.MRHandle = p3.ID
 Outer apply(
 	select Val = STUFF((
 		select DISTINCT ',' + ed.ID
@@ -1499,10 +1504,12 @@ where oqd.ID = @OrderID
 
 select distinct oqd.Article, Size = oqd.SizeCode 
 		,d.Front
-		,d.Side
+		--,d.Side
 		,d.Back
+		,d.[Left]
+		,d.[Right]
 from #tmp oqd with (nolock)
-LEFT JOIN PMSFile.dbo.RFT_PicDuringDummyFitting d  WITH(NOLOCK) ON oqd.ID =d.OrderID AND oqd.Article=d.Article AND oqd.SizeCode=d.Size
+LEFT JOIN PMSFile.dbo.RFT_PicDuringDummyFitting d  WITH(NOLOCK) ON oqd.ID = d.OrderID AND oqd.Article=d.Article AND oqd.SizeCode=d.Size
 where oqd.ID = @OrderID
 ";
 
@@ -1527,6 +1534,8 @@ where oqd.ID = @OrderID
                 objParameter.Add($"@Front{idx}", detail.Front == null ? System.Data.SqlTypes.SqlBinary.Null : detail.Front);
                 objParameter.Add($"@Side{idx}", detail.Side == null ? System.Data.SqlTypes.SqlBinary.Null : detail.Side);
                 objParameter.Add($"@Back{idx}", detail.Back == null ? System.Data.SqlTypes.SqlBinary.Null : detail.Back);
+                objParameter.Add($"@Left{idx}", detail.Left == null ? System.Data.SqlTypes.SqlBinary.Null : detail.Left);
+                objParameter.Add($"@Right{idx}", detail.Right == null ? System.Data.SqlTypes.SqlBinary.Null : detail.Right);
 
                 string sql = $@"
 if exists(
@@ -1536,8 +1545,10 @@ if exists(
 begin
     UPDATE PMSFile.dbo.RFT_PicDuringDummyFitting
     SET Front = @Front{idx}
-        ,Side = @Side{idx}
+        --,Side = @Side{idx}
         ,Back = @Back{idx}
+        ,[Left] = @Left{idx}
+        ,[Right] = @Right{idx}
     WHERE OrderID = @OrderID
     AND Article = @Article{idx}
     AND Size = @Size{idx}
@@ -1549,15 +1560,19 @@ begin
                ,Article
                ,Size
                ,Front
-               ,Side
-               ,Back)
+               --,Side
+               ,Back
+               ,[Left]
+               ,[Right])
      VALUES
                (@OrderID
                ,@Article{idx}
                ,@Size{idx}
                ,@Front{idx}
-               ,@Side{idx}
-               ,@Back{idx})
+               --,@Side{idx}
+               ,@Back{idx}
+               ,@Left{idx}
+               ,@Right{idx})
 end
 ";
 

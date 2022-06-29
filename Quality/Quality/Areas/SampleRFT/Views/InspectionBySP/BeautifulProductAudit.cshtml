@@ -97,12 +97,14 @@
         });
 
         function QtyCheck(value, Max) {
-            if (parseFloat(value) >= Max) {
-                return Max;
-            }
-            else if (parseInt(value) < 0) {
-                return 0;
-            }
+
+            // ISP20220813 數量不卡條件了
+            //if (parseFloat(value) >= Max) {
+            //    return Max;
+            //}
+            //else if (parseInt(value) < 0) {
+            //    return 0;
+            //}
 
             return Number.parseInt(value);
         }
@@ -110,7 +112,12 @@
         function checkSubmitValue(self) {
             document.getElementById("goPage").value = self;
 
-            var qtyDatas = $(".qty");
+            ShowLoading();
+
+            return true;
+
+            // ISP20220813 數量不卡條件了
+            @*var qtyDatas = $(".qty");
             var total = 0;
 
             $.each(qtyDatas, function () {
@@ -124,7 +131,7 @@
                 ShowLoading();
 
                 return true;
-            }
+            }*@
 
         }
 

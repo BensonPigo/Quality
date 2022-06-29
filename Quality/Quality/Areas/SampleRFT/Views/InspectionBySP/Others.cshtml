@@ -87,6 +87,21 @@
                             <h2 style="color:red;">@Model.InspectorResult</h2>
                         }
                     </td>
+                    <td>&emsp;&emsp;</td>
+                    <td>&emsp;&emsp;</td>
+                    <td>&emsp;&emsp;</td>
+                    <td>&emsp;&emsp;</td>
+                    <td>&emsp;&emsp;</td>
+                    <td>&emsp;&emsp;</td>
+                    <td>&emsp;&emsp;</td>
+                    <td>&emsp;&emsp;</td>
+                    <td>&emsp;&emsp;</td>
+                    <td>&emsp;&emsp;</td>
+                    <td>&emsp;&emsp;</td>
+                    <td>&emsp;&emsp;</td>
+                    <td>
+                        <input id="btnSendToMR" type="button" class="site-btn btn-blue" onclick="SendMail()" value="Send To MR" />
+                    </td>
                 </tr>
             </table>
         </div>
@@ -106,7 +121,7 @@
                         </td>
                         <td>
                             @Html.Hidden($"Req.DataList[{idx}].PMS_RFTCommentsID", data.PMS_RFTCommentsID)
-                            @Html.TextBox($"Req.DataList[{idx}].Comnments", data.Comnments, new { @style = "width:100%" })
+                            @Html.TextBox($"Req.DataList[{idx}].Comnments", data.Comnments, new { @class="comment", @style = "width:100%" })
                         </td>
                     </tr>
                     idx++;
@@ -162,7 +177,44 @@
 
                 });
             });
+
+            // 定義Key down事件
+            $(".comment").keydown(function (e) {
+
+                // 若是enter按鍵
+                if (e.keyCode == 13) {
+                    // 找出下一個可用/可見的input並focus它
+                    $(':input:visible:enabled:eq(' + ($(':input:visible:enabled').index(this) + 1) + ')').focus();
+                }
+            });
         });
 
+        function SendMail() {
+
+            $.ajax({
+                url: "@Url.Action("SendMail", "InspectionBySP")",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID: @Model.ID, OrderID: '@Model.OrderID' }),
+                async: false,
+                success: function (data) {
+                    if (data.Result) {
+                        var para = "?To=";
+                        para += "&CC=";
+                        para += "&Subject=" + "Sample RFT Inspection Report - SP : @Model.OrderID";
+                        para += "&Body=" + "Sample RFT Inspection Report Detail";
+                        para += "&file=" + data.FileName;
+                        window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=600');
+                    }
+                    else {
+                        msg.WithError(data.ErrorMessage);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+
+        }
     </script>
 }

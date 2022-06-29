@@ -239,7 +239,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
 
                 // 開啟excel app
                 Excel.Application excelApp = MyUtility.Excel.ConnectExcel(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\CFT Comment Report.xltx");
-                excelApp.Visible = true;
+                excelApp.Visible = false;
                 Excel.Worksheet worksheet;
 
                 List<string> sampleStages = datas.Select(x => x.SampleStage).Distinct().ToList();

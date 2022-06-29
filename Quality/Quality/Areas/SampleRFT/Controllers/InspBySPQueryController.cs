@@ -2,8 +2,10 @@
 using DatabaseObject;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.ResultModel;
+using DatabaseObject.ViewModel;
 using DatabaseObject.ViewModel.SampleRFT;
 using FactoryDashBoardWeb.Helper;
+using Ionic.Zip;
 using Newtonsoft.Json;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
@@ -26,11 +28,13 @@ namespace Quality.Areas.SampleRFT.Controllers
     public class InspBySPQueryController : BaseController
     {
         private InspectionBySPService _Service;
+        private CFTCommentsService _CFTCommentsService;
         public InspBySPQueryController()
         {
             this.SelectedMenu = "Sample RFT";
             ViewBag.OnlineHelp = this.OnlineHelp + "SampleRFT.InspBySPQuery,,";
             _Service = new InspectionBySPService();
+            _CFTCommentsService = new CFTCommentsService();
         }
         // GET: SampleRFT/InspBySPQuery
         public ActionResult Index()
@@ -175,7 +179,27 @@ namespace Quality.Areas.SampleRFT.Controllers
 
         public ActionResult DownLoad()
         {
-            GetExcel(true);
+            string ExcelFileName = GetExcel(true);
+
+            string CFTExcelFileName = GetCFTComment(true);
+
+            ZipFile zip = new ZipFile();
+            string zipName = $@"Query Report_{DateTime.Now.ToString("yyyyMMddHHmmss")}.zip";
+            string zipPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", zipName);
+
+            zip.AddFile(ExcelFileName, string.Empty);
+            zip.AddFile(CFTExcelFileName, string.Empty);
+            zip.Save(zipPath);
+
+            MemoryStream obj_stream = new MemoryStream();
+            var tempFile = System.IO.Path.Combine(zipName);
+            obj_stream = new MemoryStream(System.IO.File.ReadAllBytes(zipPath));
+            Response.AddHeader("Content-Disposition", $"attachment; filename={zipName}");
+            Response.BinaryWrite(obj_stream.ToArray());
+            obj_stream.Close();
+            obj_stream.Dispose();
+            Response.Flush();
+            Response.End();
 
             return null;
         }
@@ -310,20 +334,40 @@ namespace Quality.Areas.SampleRFT.Controllers
             Marshal.ReleaseComObject(workbook);
             Marshal.ReleaseComObject(excelApp);
 
-            if (IsDowdload)
-            {
-                MemoryStream obj_stream = new MemoryStream();
-                var tempFile = System.IO.Path.Combine(filepath);
-                obj_stream = new MemoryStream(System.IO.File.ReadAllBytes(tempFile));
-                Response.AddHeader("Content-Disposition", $"attachment; filename={fileName}");
-                Response.BinaryWrite(obj_stream.ToArray());
-                obj_stream.Close();
-                obj_stream.Dispose();
-                Response.Flush();
-                Response.End();
-                System.IO.File.Delete(filepath);
-            }
+            //if (IsDowdload)
+            //{
+            //    MemoryStream obj_stream = new MemoryStream();
+            //    var tempFile = System.IO.Path.Combine(filepath);
+            //    obj_stream = new MemoryStream(System.IO.File.ReadAllBytes(tempFile));
+            //    Response.AddHeader("Content-Disposition", $"attachment; filename={fileName}");
+            //    Response.BinaryWrite(obj_stream.ToArray());
+            //    obj_stream.Close();
+            //    obj_stream.Dispose();
+            //    Response.Flush();
+            //    Response.End();
+            //    System.IO.File.Delete(filepath);
+            //}
             #endregion
+
+            fileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
+            return fileName;
+        }
+
+        public string GetCFTComment(bool IsDowdload)
+        {
+            string fileName = string.Empty;
+
+            QueryReport model = (QueryReport)TempData["ModelQuery"];
+            TempData["ModelQuery"] = model;
+
+            CFTComments_ViewModel qModel = new CFTComments_ViewModel();
+
+            qModel = _CFTCommentsService.Get_CFT_Orders(new CFTComments_ViewModel() { OrderID = model.sampleRFTInspection.OrderID, QueryType = "OrderID" });
+            qModel.ReleasedBy = this.UserID;
+
+            CFTComments_ViewModel result = _CFTCommentsService.GetExcel2(qModel);
+            fileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", result.TempFileName);
+
 
             return fileName;
         }
@@ -334,11 +378,22 @@ namespace Quality.Areas.SampleRFT.Controllers
         {
             BaseResult result = new BaseResult();
             string FileName = string.Empty;
+            string zipName = $@"Query Report_{DateTime.Now.ToString("yyyyMMddHHmmss")}.zip";
+            string zipPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", zipName);
             string reportPath = string.Empty;
             try
             {
-                FileName = GetExcel(false);
-                reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
+                string ExcelFileName = GetExcel(true);
+                string CFTExcelFileName = GetCFTComment(true);
+
+                ZipFile zip = new ZipFile();
+
+                zip.AddFile(ExcelFileName, string.Empty);
+                zip.AddFile(CFTExcelFileName, string.Empty);
+                zip.Save(zipPath);
+
+
+                reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + zipName;
                 result.Result = true;
                 result.ErrorMessage = string.Empty;
             }
@@ -348,7 +403,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                 result.ErrorMessage = ex.Message;
             }
 
-            return Json(new { Result = result.Result, reportPath = reportPath, FileName = FileName });
+            return Json(new { Result = result.Result, reportPath = reportPath, FileName = zipName });
         }
     }
 }

@@ -834,7 +834,10 @@ namespace BusinessLogicLayer.Service.SampleRFT
 
                 Req.OrderID = existseddata.OrderID;
                 _Provider.OthersUpdate(Req);
-                _Provider.Others_Update_Head(Req.ID);
+                if (Req.Action != "Back")
+                {
+                    _Provider.Others_Update_Head(Req.ID);
+                }
 
                 _ISQLDataTransaction.Commit();
                 model.ExecuteResult = true;
@@ -899,6 +902,8 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 model.ListMeasurementViewItem = _Provider.GetMeasurementViewItem(sampleRFTInspection.OrderID).ToList();
                 model.Measurement = Measurement;
 
+                model.GoOnInspectURL = this.GetCurrentAction(sampleRFTInspection.InspectionStep);
+
                 foreach (MeasurementViewItem measurementViewItem in model.ListMeasurementViewItem)
                 {
                     DataTable dtMeasurementData = _Provider.GetMeasurement(sampleRFTInspection.OrderID, measurementViewItem.Article, measurementViewItem.Size, measurementViewItem.ProductType);
@@ -920,6 +925,40 @@ namespace BusinessLogicLayer.Service.SampleRFT
             }
 
             return model;
+        }
+
+        private string GetCurrentAction(string InspectionStep)
+        {
+            string ActionName = string.Empty;
+
+            switch (InspectionStep)
+            {
+                case "Insp-Setting":
+                    ActionName = "Setting";
+                    break;
+                case "Insp-CheckList":
+                    ActionName = "CheckList";
+                    break;
+                case "Insp-AddDefect":
+                    ActionName = "AddDefect";
+                    break;
+                case "Insp-BA":
+                    ActionName = "BeautifulProductAudit";
+                    break;
+                case "Insp-Measurement":
+                    ActionName = "Measurement";
+                    break;
+                case "Insp-DummyFit":
+                    ActionName = "DummyFitting";
+                    break;
+                case "Submit":
+                    ActionName = "Others";
+                    break;
+                default:
+                    break;
+            }
+
+            return ActionName;
         }
 
     }
