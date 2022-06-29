@@ -40,6 +40,34 @@
         transform: translate(-50%, -50%);
         left: 50%;
     }
+
+    .remarkQuick {
+        float: left;
+        padding: 3px 12px 3px 12px;
+        border: solid 1px black;
+        margin-left: 3px;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    #RemarkQuickOption {
+        width: 20vw;
+        position: absolute;
+        left: 50vw;
+        top: 40vh;
+        background-color: white;
+        vertical-align: middle;        
+        border:solid 1px black;
+        display:none;
+    }
+        #RemarkQuickOption tbody tr td input {
+            height: unset;
+            margin-right: 7px;
+        }
+
+        #RemarkQuickOption tbody tr td label {
+            font-size : 20px;
+        }
 </style>
 
 @model DatabaseObject.ViewModel.FinalInspection.Others
@@ -71,7 +99,7 @@
                         </div>
 
                     }
-                    @Html.HiddenFor(o=>o.InspectionResult)
+                    @Html.HiddenFor(o => o.InspectionResult)
                 </td>
             </tr>
 
@@ -104,8 +132,8 @@
             <tr>
                 <td class="ColumnStype"><label class="Font">Other Photo</label></td>
                 <td>
-                    <img src="~/Image/Icon/Camera.png" width="30" height="30" style="cursor: pointer;" onclick="ScreenShot()"/>
-                    <img src="~/Image/Icon/Picture.png" width="30" height="30" style="cursor: pointer;" onclick="OpenPicture()"  />
+                    <img src="~/Image/Icon/Camera.png" width="30" height="30" style="cursor: pointer;" onclick="ScreenShot()" />
+                    <img src="~/Image/Icon/Picture.png" width="30" height="30" style="cursor: pointer;" onclick="OpenPicture()" />
                 </td>
                 <td></td>
                 <td></td>
@@ -118,11 +146,11 @@
                 <td class="ColumnStype" style="vertical-align:top;"><label class="Font">Remark</label></td>
                 <td colspan="2">
 
-                    @Html.TextAreaFor(o => o.OthersRemark, new { @style = "width:calc(100% - 80px);" })
-
+                    @Html.TextAreaFor(o => o.OthersRemark, new { @style = "width:calc(100% - 80px); float:left;" })
+                    <div class="remarkQuick">...</div>
                 </td>
-                <td></td>
-
+                <td>
+                </td>
             </tr>
 
         </table>
@@ -130,9 +158,45 @@
         <button id="btnBack" onclick="this.form.submitted=this.value;" type="submit" value="Back" style="right: 7em;" class="button">Back</button>
         <button d="btnSubmit" onclick="this.form.submitted=this.value;" type="submit" value="Submit" style="right: 0; padding: 12px 25px" class="button">Submit</button>
 
-        @Html.HiddenFor(o=>o.FinalInspectionID)
+        @Html.HiddenFor(o => o.FinalInspectionID)
     }
 </div>
+
+<table id="RemarkQuickOption">
+    <thead>
+        <tr style="background-color:gray; height:3vh;">
+            <th><h3>Comments</h3></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><input type="checkbox" id="checkbox1" value="Odor Test : Pass" /><label for="checkbox1">Odor Test : Pass</label></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" id="checkbox2" value="Odor Test : Fail" /><label for="checkbox2">Odor Test : Fail</label></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" id="checkbox3" value="Water absorbency test passed 2 sec" /><label for="checkbox3">Water absorbency test passed 2 sec</label></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" id="checkbox4" value="Water absorbency test passed 5 sec" /><label for="checkbox4">Water absorbency test passed 5 sec</label></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" id="checkbox5" value="Water absorbency test Failed 2 sec" /><label for="checkbox5">Water absorbency test Failed 2 sec</label></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" id="checkbox6" value="Water absorbency test Failed 5 sec" /><label for="checkbox6">Water absorbency test Failed 5 sec</label></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" id="checkbox7" value="Other" /><label for="checkbox7">Other</label></td>
+        </tr>
+        <tr>
+            <td align="right">
+                <input id="RemarkQuickClose" type="button" value="OK" style="cursor:pointer;"/>
+            </td>
+        </tr>
+    </tbody>
+</table>
 
 <script>
 
@@ -140,6 +204,14 @@
 
     $(function () {
         @Html.Raw(Model.ErrorMessage)
+
+        $('.remarkQuick').on('click', function () {
+            RemarkQuickOpen();
+        });
+
+        $('#RemarkQuickClose').on('click', function () {
+            RemarkQuickClose();
+        });
     });
 
     function checkValue(self) {
@@ -206,5 +278,23 @@
             });
 
         }
+    }
+
+    function RemarkQuickOpen() {
+        $('#RemarkQuickOption').show();
+    }
+
+    function RemarkQuickClose() {
+        var r = $('#OthersRemark').val();
+        var length = $("#RemarkQuickOption tbody tr td input[type='checkbox']:checked").length;
+        if (r != '' && length > 0) {
+            r = r + "\r\n";
+        }
+        $("#RemarkQuickOption tbody tr td input[type='checkbox']:checked").each(function () {
+            r = r + $(this).val() + "\r\n";
+        });
+        $('#OthersRemark').val(r);
+
+        $('#RemarkQuickOption').hide();
     }
 </script>
