@@ -358,7 +358,7 @@ namespace BusinessLogicLayer.Service
                     subsection = "validation_and_checklist",
                     checkListSubsection = "general",
                     status = drFinalInspection.Field<string>("MoistureResult"),
-                    comment = "",
+                    comment = drFinalInspection.Field<string>("MoistureComment"),
                 },
                 new {
                     title = "color_shade",
