@@ -1738,7 +1738,8 @@ Select	f.AuditDate,
         [MeasurementResult] = cast(iif(exists(select 1 from FinalInspection_Measurement fm with (nolock) where f.ID = fm.ID), 1, 0) as bit),
         [MoistureResult] = case when exists (select 1 from FinalInspection_Moisture fmo with (nolock) where f.ID = fmo.ID and fmo.Result = 'F') then 'fail'
                                 when not exists (select 1 from FinalInspection_Moisture fmo with (nolock) where f.ID = fmo.ID) then 'na'
-                                else 'pass' end
+                                else 'pass' end,
+        [MoistureComment] = SUBSTRING(MoistureComment.val, 1, 255)
 from FinalInspection f with (nolock)
 outer apply (select	[POQty] = sum(o.Qty),
 					[ETD_ETA] = max(o.BuyerDelivery),
@@ -1746,8 +1747,10 @@ outer apply (select	[POQty] = sum(o.Qty),
                     [IsDestJP] = max(iif(o.Dest = 'JP', 1, 0))
 				from Production.dbo.Orders o with (nolock)
 				where o.CustPONo = f.CustPONO) OrderInfo
-
+outer apply (SELECT [val] = Stuff((select concat( ';',Remark)   
+                from FinalInspection_Moisture fmo with (nolock) where f.ID = fmo.ID FOR XML PATH('')),1,1,'')) MoistureComment
 where f.ID = @ID 
+
 select	distinct
 		oc.ColorID
 from  MainServer.Production.dbo.Order_ColorCombo oc with (nolock)
