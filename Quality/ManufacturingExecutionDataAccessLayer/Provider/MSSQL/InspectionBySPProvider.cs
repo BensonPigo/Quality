@@ -90,7 +90,7 @@ where o.Category='S' AND o.Junk=0
 AND NOT EXISTS(
 	select 1
 	from SampleRFTInspection
-	where Status='Confirmed' AND Result='Pass' AND OrderID=o.ID
+	where Status='Confirmed' AND Result='Pass' AND SubmitDate IS NOT NULL AND OrderID=o.ID
 )
 
 ");
@@ -411,7 +411,7 @@ where   ID = @ID
                     sqlUpdCmd += $@"
 update SampleRFTInspection
  set    InspectionStep = @InspectionStep,
-        SubmitDate = GETDATE(),
+        {(inspection.InspectionStep == "Submit" ? "SubmitDate = GETDATE(),":string.Empty)}        
         EditName= @userID,
         EditDate= getdate()
 where   ID = @ID

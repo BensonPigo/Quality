@@ -84,7 +84,10 @@ namespace Quality.Areas.SampleRFT.Controllers
                     case "Failure":
                         model = _Service.GetNewSetting(OrderID, this.FactoryID);
                         break;
-
+                    case "Pass":
+                        InspectionBySP_ViewModel IndexMmodel = new InspectionBySP_ViewModel() { DataList = new List<InspectionBySP_SearchResult>() };
+                        IndexMmodel.ErrorMessage = $@"msg.WithError(""SP# {OrderID} has Inspected."");";
+                        return View("Index", IndexMmodel);
                     default:
                         break;
                 }
@@ -1413,6 +1416,7 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             Req.ID = latestModel.ID;
 
+            Req.Action = goPage;
 
             InspectionBySP_Others result = _Service.OthersProcess(Req);
 

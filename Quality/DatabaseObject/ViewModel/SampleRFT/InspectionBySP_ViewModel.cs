@@ -382,7 +382,7 @@ namespace DatabaseObject.ViewModel.SampleRFT
     {
         public string Inspector { get; set; }
         public string InspectorResult { get; set; }
-        public string QueryType { get; set; }
+        public string Action { get; set; }
         //public string OrderID { get; set; }
         //public string StyleID { get; set; }
         //public string BrandID { get; set; }

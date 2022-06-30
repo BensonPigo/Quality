@@ -57,7 +57,10 @@
         $.each(data, function (index, value) {
             articleArrList.push(value.Article);
             sizeArrList.push(value.Article + ',' + value.Size);
-            productTypeArrList.push(value.Article + ',' + value.ProductType);
+
+            if (productTypeArrList.indexOf(value.ProductType) == -1) {
+                productTypeArrList.push(value.ProductType);
+            }
         });
 
         $.each($.unique(articleArrList), function (index, value) {
@@ -69,7 +72,7 @@
         });
 
         $.each($.unique(productTypeArrList), function (index, value) {
-            productTypeOption += "<option value=" + value + ">" + value.split(',')[1] + "</option>";
+            productTypeOption += "<option value=" + value + ">" + value + "</option>";
         });
 
         $("#ViewListArticle").html(articleOption);
@@ -130,18 +133,18 @@
 
         $("#ViewListProductType > option").each(function () {
 
-            if (this.value.split(',')[0] == article) {
+            //if (this.value.split(',')[0] == article) {
                 productTypeOption += "<option value=" + this.value + ">" + this.text + "</option>";
 
                 //抓第一個roductType當預設值
                 if (newDefaultProductType == "") {
                     newDefaultProductType = this.value;
                 }
-            }
-            else {
-                //不是這個Article的ProductType隱藏
-                productTypeOption += "<option hidden value=" + this.value + ">" + this.text + "</option>";
-            }
+            //}
+            //else {
+            //    //不是這個Article的ProductType隱藏
+            //    productTypeOption += "<option hidden value=" + this.value + ">" + this.text + "</option>";
+            //}
         });
 
         $("#ViewListProductType").html(productTypeOption);
@@ -161,9 +164,9 @@
             Size = Size.split(',')[1];
         }
 
-        if (ProductType.split(',').length > 1) {
-            ProductType = ProductType.split(',')[1];
-        }
+        //if (ProductType.split(',').length > 1) {
+        //    ProductType = ProductType.split(',')[1];
+        //}
 
 
         $.each(AjaxReturn, function () {
