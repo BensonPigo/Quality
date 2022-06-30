@@ -1,5 +1,6 @@
 using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
+using DatabaseObject;
 using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ViewModel.FinalInspection;
@@ -1359,6 +1360,11 @@ where CustPONO = @CustPONO
                 parameter.Add("@StyleID", request.StyleID);
             }
 
+            if (request.ExcludeJunk)
+            {
+                whereFinalInspection += @" and f.InspectionResult <> 'Junk' ";
+            }
+
             string sqlGetData = $@"
 
 select  ID,
@@ -1411,6 +1417,11 @@ where   1 = 1 {whereFinalInspection}
             string whereOrder = string.Empty;
             string whereFinalInspection = string.Empty;
 
+            if (request.ExcludeJunk)
+            {
+                whereFinalInspection = " where f.InspectionResult <> 'Junk' ";
+            }
+
             string sqlGetData = $@"
 --預設抓兩百
 select distinct　top 200  f.ID,fo.OrderID,f.AddDate
@@ -1451,6 +1462,7 @@ outer apply(
 		where c.ID = f.ID
 	), 'Y', 'N')
 )c 
+{whereFinalInspection}
 order by f.AddDate DESC
 
 drop table #default ,#tmpOrderArticle
@@ -2021,6 +2033,23 @@ where   IsExportToP88 = 0 and
                     throw ex;
                 }
             }
+        }
+
+        public BaseResult UpdateJunk(string ID)
+        {
+            SQLParameterCollection Parameter = new SQLParameterCollection() 
+            {
+                { "@FinalInspectionID", DbType.String, ID },
+            };
+
+            string sqlCmd = "Update FinalInspection set InspectionResult = 'Junk' where ID = @FinalInspectionID and SubmitDate is null and InspectionResult = 'On-going'";
+            int r = ExecuteNonQuery(CommandType.Text, sqlCmd, Parameter);
+            if (r == 0)
+            {
+                return new BaseResult { Result = false, ErrorMessage = "Update Junk Fail" };
+            }
+
+            return new BaseResult { Result = true };
         }
     }
 }

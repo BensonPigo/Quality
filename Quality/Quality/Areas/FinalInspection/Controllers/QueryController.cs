@@ -52,13 +52,16 @@ namespace Quality.Areas.FinalInspection.Controllers
         {
 
             List<string> inspectionlist = new List<string>() {
-                "", "Pass","Fail","On-going"
+                "", "Pass","Fail","On-going","Junk"
             };
 
             List<SelectListItem> inspectionResultList = new SetListItem().ItemListBinding(inspectionlist);
             ViewBag.inspectionResultList = inspectionResultList;
 
-            QueryFinalInspection_ViewModel model = new QueryFinalInspection_ViewModel();
+            QueryFinalInspection_ViewModel model = new QueryFinalInspection_ViewModel() 
+            { 
+                ExcludeJunk = true,
+            };
             model.DataList = Service.GetFinalinspectionQueryList_Default(model);
 
             return View(model);
@@ -397,6 +400,13 @@ namespace Quality.Areas.FinalInspection.Controllers
          
             var result = Service.SendMail(model.FinalInspection.ID, WebHost, test);
 
+            return Json(result);
+        }
+
+        [HttpPost]
+        public ActionResult ClickJunk(string ID)
+        {           
+            DatabaseObject.BaseResult result = Service.ClickJunk(ID);
             return Json(result);
         }
     }

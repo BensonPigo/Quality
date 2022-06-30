@@ -384,5 +384,11 @@ NOTE: This is an automated reply from a system mailbox. Please do not reply to t
             }
             return result;
         }
+
+        public BaseResult ClickJunk(string ID)
+        {
+            _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+            return _FinalInspectionProvider.UpdateJunk(ID);
+        }
     }
 }
