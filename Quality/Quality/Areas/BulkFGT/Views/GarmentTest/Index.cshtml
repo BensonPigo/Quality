@@ -336,6 +336,11 @@
                                 string washName = "701";
                                 if (Model != null && Model.garmentTest_Details != null && Model.garmentTest_Details.Count() > 0)
                                 {
+                                    // garmentTest_Detail不為空，Model.garmentTest一定不為NULL
+                                    washName = Model.garmentTest.WashName;
+                                }
+                                else if (Model.garmentTest != null)
+                                {
                                     washName = Model.garmentTest.WashName;
                                 }
                                 <tr class="@trClass">
