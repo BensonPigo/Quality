@@ -11,7 +11,7 @@ namespace DatabaseObject.ViewModel
     {
         public string WashName { get; set; }
 
-        public string SpecialMark { get; set; }
+        public string Teamwear { get; set; }
 
         public DateTime? MinSciDelivery { get; set; }
 
