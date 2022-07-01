@@ -258,8 +258,8 @@
                             <td style="width:10vw;border: 1px solid gray;background-color:#696868;vertical-align: middle;">
                                 <label>Article</label>
                             </td>
-                            <td style="border: 1px solid gray;vertical-align: middle;" colspan="3">
-                                @if (Model.FTYDisclaimer.Where(o => o.ExpectionFormDate != null).Any() || Model.RRLR.Where(o=>!string.IsNullOrEmpty(o.ColorID)).Any())
+                            <td style="border: 1px solid gray;vertical-align: middle;">
+                                @if (Model.FTYDisclaimer.Where(o => o.ExpectionFormDate != null).Any() || Model.RRLR.Where(o => !string.IsNullOrEmpty(o.ColorID)).Any())
                                 {
                                     <span class="detail_Head" id="width" style="font-size:2rem;color:yellow;">@Model.Article</span>
                                     <img src="~/Image/Icon/Light.png" style="width:3rem;" />
@@ -268,6 +268,12 @@
                                 {
                                     <span class="detail_Head" id="width">@Model.Article</span>
                                 }
+                            </td>
+                            <td style="width:10vw;border: 1px solid gray;background-color:#696868;vertical-align: middle;">
+                                <label>BR Date</label>
+                            </td>
+                            <td style="border: 1px solid gray;vertical-align: middle;">
+                                <span class="detail_Head" id="BuyReadyDate">@Model.BuyReadyDate</span>
                             </td>
                         </tr>
                     </table>
