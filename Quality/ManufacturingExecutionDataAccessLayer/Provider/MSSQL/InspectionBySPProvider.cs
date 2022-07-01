@@ -1674,7 +1674,9 @@ set    Result = IIF( InspectionStage = '100%' ,
                     )
                     ,(
                         IIF(
-                            (select COUNT(1) from SampleRFTInspection_Detail WITH(NOLOCK) where Qty > 0 AND SampleRFTInspectionUkey = @ID) >= AcceptQty
+                            ( (select COUNT(1) from SampleRFTInspection_Detail WITH(NOLOCK) where Qty > 0 AND SampleRFTInspectionUkey = @ID) >= AcceptQty AND AcceptQty > 0 )
+                            OR
+                            ( (select COUNT(1) from SampleRFTInspection_Detail WITH(NOLOCK) where Qty > 0 AND SampleRFTInspectionUkey = @ID) > AcceptQty AND AcceptQty = 0 )
                         ,'Fail'
                         ,'Pass'
                         )
