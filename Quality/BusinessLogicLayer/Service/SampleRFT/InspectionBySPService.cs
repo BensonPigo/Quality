@@ -256,7 +256,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
                     // 已經有檢驗Pass紀錄
                     InspectionProgress = "Pass";
                 }
-                else if (list.Where(o => o.Result.ToUpper() == "FAIL").Any() && list.Where(o => !string.IsNullOrEmpty(o.Result)).Any())
+                else if (list.Where(o => o.Result.ToUpper() == "FAIL").Any() && !list.Where(o => string.IsNullOrEmpty(o.Result)).Any())
                 {
                     // 所有紀錄都已經完成檢驗，且只有Fail
                     InspectionProgress = "Failure";
