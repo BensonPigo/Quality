@@ -278,19 +278,19 @@ namespace BusinessLogicLayer.Service.SampleRFT
                     currenSheet.Cells[2, 16] = "Date : " + DateTime.Now.ToString("yyyy/MM/dd");
                     currenSheet.Cells[3, 14] = "Released by: " + sameData.FirstOrDefault().Name;
 
-                    currenSheet.Cells[10, 2] = sameData.Where(o => o.CommentsCategory.ToUpper() == "SAMPLE MEASUREMENT").FirstOrDefault().Comnments;
-                    currenSheet.Cells[12, 2] = sameData.Where(o => o.CommentsCategory.ToUpper() == "SAMPLE FITTING").FirstOrDefault().Comnments;
-                    currenSheet.Cells[13, 2] = sameData.Where(o => o.CommentsCategory.ToUpper() == "MATERIAL").FirstOrDefault().Comnments;
-                    currenSheet.Cells[16, 2] = sameData.Where(o => o.CommentsCategory.ToUpper() == "ACCESSORY").FirstOrDefault().Comnments;
-                    currenSheet.Cells[18, 2] = sameData.Where(o => o.CommentsCategory.ToUpper() == "WORKMANSHIP").FirstOrDefault().Comnments;
-                    currenSheet.Cells[24, 2] = sameData.Where(o => o.CommentsCategory.ToUpper() == "ARTWORK").FirstOrDefault().Comnments;
-                    currenSheet.Cells[27, 2] = sameData.Where(o => o.CommentsCategory.ToUpper() == "HANGTAG").FirstOrDefault().Comnments;
-                    currenSheet.Cells[28, 2] = sameData.Where(o => o.CommentsCategory.ToUpper() == "LABELLING AND PACKAGING").FirstOrDefault().Comnments;
-                    currenSheet.Cells[31, 2] = sameData.Where(o => o.CommentsCategory.ToUpper() == "SAMPLE WEIGHT(SIZE SET ONLY)").FirstOrDefault().Comnments;
-                    currenSheet.Cells[32, 2] = sameData.Where(o => o.CommentsCategory.ToUpper() == "RESULT(SEALING AND SIZE SET ONLY)").FirstOrDefault().Comnments;
-                    currenSheet.Cells[33, 2] = sameData.Where(o => o.CommentsCategory.ToUpper() == "REMARK").FirstOrDefault().Comnments;
+                    currenSheet.Cells[10, 2] = sameData.Where(o => o.CommentsCategory.ToUpper() == "SAMPLE MEASUREMENT").Any() ? sameData.Where(o => o.CommentsCategory.ToUpper() == "SAMPLE MEASUREMENT").FirstOrDefault().Comnments : string.Empty;
+                    currenSheet.Cells[12, 2] = sameData.Where(o => o.CommentsCategory.ToUpper() == "SAMPLE FITTING").Any() ? sameData.Where(o => o.CommentsCategory.ToUpper() == "SAMPLE FITTING").FirstOrDefault().Comnments : string.Empty;
+                    currenSheet.Cells[13, 2] = sameData.Where(o => o.CommentsCategory.ToUpper() == "MATERIAL").Any() ? sameData.Where(o => o.CommentsCategory.ToUpper() == "MATERIAL").FirstOrDefault().Comnments : string.Empty;
+                    currenSheet.Cells[16, 2] = sameData.Where(o => o.CommentsCategory.ToUpper() == "ACCESSORY").Any() ? sameData.Where(o => o.CommentsCategory.ToUpper() == "ACCESSORY").FirstOrDefault().Comnments : string.Empty;
+                    currenSheet.Cells[18, 2] = sameData.Where(o => o.CommentsCategory.ToUpper() == "WORKMANSHIP").Any() ? sameData.Where(o => o.CommentsCategory.ToUpper() == "WORKMANSHIP").FirstOrDefault().Comnments : string.Empty;
+                    currenSheet.Cells[24, 2] = sameData.Where(o => o.CommentsCategory.ToUpper() == "ARTWORK").Any() ? sameData.Where(o => o.CommentsCategory.ToUpper() == "ARTWORK").FirstOrDefault().Comnments : string.Empty;
+                    currenSheet.Cells[27, 2] = sameData.Where(o => o.CommentsCategory.ToUpper() == "HANGTAG").Any() ? sameData.Where(o => o.CommentsCategory.ToUpper() == "HANGTAG").FirstOrDefault().Comnments : string.Empty;
+                    currenSheet.Cells[28, 2] = sameData.Where(o => o.CommentsCategory.ToUpper() == "LABELLING AND PACKAGING").Any() ? sameData.Where(o => o.CommentsCategory.ToUpper() == "LABELLING AND PACKAGING").FirstOrDefault().Comnments : string.Empty;
+                    currenSheet.Cells[31, 2] = sameData.Where(o => o.CommentsCategory.ToUpper() == "SAMPLE WEIGHT(SIZE SET ONLY)").Any() ? sameData.Where(o => o.CommentsCategory.ToUpper() == "SAMPLE WEIGHT(SIZE SET ONLY)").FirstOrDefault().Comnments : string.Empty;
+                    currenSheet.Cells[32, 2] = sameData.Where(o => o.CommentsCategory.ToUpper() == "RESULT(SEALING AND SIZE SET ONLY)").Any() ? sameData.Where(o => o.CommentsCategory.ToUpper() == "RESULT(SEALING AND SIZE SET ONLY)").FirstOrDefault().Comnments : string.Empty;
+                    currenSheet.Cells[33, 2] = sameData.Where(o => o.CommentsCategory.ToUpper() == "REMARK").Any() ? sameData.Where(o => o.CommentsCategory.ToUpper() == "REMARK").FirstOrDefault().Comnments : string.Empty;
 
-                    var sizeList = sameData.FirstOrDefault().SizeCode.Split(',').OrderBy(o => o).ToList();
+                    var sizeList = (sameData.FirstOrDefault().SizeCode != null ? sameData.FirstOrDefault().SizeCode.Split(',').OrderBy(o => o).ToList() : new List<string>());
 
                     int ctn = 0;
                     foreach (var size in sizeList)

@@ -951,7 +951,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 case "Insp-DummyFit":
                     ActionName = "DummyFitting";
                     break;
-                case "Submit":
+                case "Insp-Others":
                     ActionName = "Others";
                     break;
                 default:

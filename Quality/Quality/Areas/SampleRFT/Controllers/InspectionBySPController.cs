@@ -1417,6 +1417,10 @@ namespace Quality.Areas.SampleRFT.Controllers
             BaseResult r = new BaseResult();
 
             ZipFile zip = new ZipFile();
+            if (!Directory.Exists(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP")))
+            {
+                Directory.CreateDirectory(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+            }
             string zipName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", $@"SampleRFT Inspection_{DateTime.Now.ToString("yyyyMMddHHmmss")}.zip"); 
             CFTComments_ViewModel model = new CFTComments_ViewModel();
 

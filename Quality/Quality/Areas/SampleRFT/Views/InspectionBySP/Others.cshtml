@@ -59,6 +59,7 @@
         input {
             height: 3vh;
         }
+
     </style>
 }
 
@@ -105,29 +106,34 @@
                 </tr>
             </table>
         </div>
-        <table id="myTable" class="table table-striped display" style="text-align:center;">
-            <thead>
-                <tr class="row-name">
-                    <th>Comments Category</th>
-                    <th>Comments</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var data in Model.DataList)
-                {
-                    <tr class="row-content">
-                        <td>
-                            @Html.DisplayFor(modelItem => data.Description)
-                        </td>
-                        <td>
-                            @Html.Hidden($"Req.DataList[{idx}].PMS_RFTCommentsID", data.PMS_RFTCommentsID)
-                            @Html.TextBox($"Req.DataList[{idx}].Comnments", data.Comnments, new { @class="comment", @style = "width:100%" })
-                        </td>
+        <div style="width: 100%; overflow: scroll; height: 60vh;">
+
+            <table id="myTable" class="table table-striped display" style="text-align:center;">
+                <thead>
+                    <tr class="row-name">
+                        <th>Comments Category</th>
+                        <th>Comments</th>
                     </tr>
-                    idx++;
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var data in Model.DataList)
+                    {
+                        <tr class="row-content">
+                            <td style="vertical-align: middle;">
+                                @Html.DisplayFor(modelItem => data.Description)
+                            </td>
+                            <td>
+                                @Html.Hidden($"Req.DataList[{idx}].PMS_RFTCommentsID", data.PMS_RFTCommentsID)
+                                @*@Html.TextBox($"Req.DataList[{idx}].Comnments", data.Comnments, new { @class="comment", @style = "width:100%" })*@
+                                @Html.TextArea($"Req.DataList[{idx}].Comnments", data.Comnments, new { @class = "TextArea", @style = "width:100%;height:7rem;" })
+
+                            </td>
+                        </tr>
+                        idx++;
+                    }
+                </tbody>
+            </table>
+        </div>
 
 
         <div style="width:100%">
@@ -178,15 +184,7 @@
                 });
             });
 
-            // 定義Key down事件
-            $(".comment").keydown(function (e) {
-
-                // 若是enter按鍵
-                if (e.keyCode == 13) {
-                    // 找出下一個可用/可見的input並focus它
-                    $(':input:visible:enabled:eq(' + ($(':input:visible:enabled').index(this) + 1) + ')').focus();
-                }
-            });
+     
         });
 
         function SendMail() {

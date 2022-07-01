@@ -36,11 +36,12 @@ select a.*, b.StyleID ,b.SeasonID ,b.BrandID
                         END
     ,WorkNo = wk.Val
     ,POID = b.POID
-    ,AddNameText = p.Name
+    ,AddNameText = ISNULL(p.Name ,p4.Name)
 	,MReMail = ISNULL(p2.EMail,p3.EMail)
 from SampleRFTInspection a
 INNER JOIN MainServer.Production.dbo.Orders b on a.OrderID=b.ID
 LEFT JOIN Pass1 p ON a.AddName = p.ID
+LEFT JOIN MainServer.Production.dbo.Pass1 p4 ON a.AddName = p4.ID
 LEFT JOIN MainServer.Production.dbo.Pass1 p2 ON b.MRHandle = p2.ID
 LEFT JOIN MainServer.Production.dbo.TPEPass1 p3 ON b.MRHandle = p3.ID
 Outer apply(
