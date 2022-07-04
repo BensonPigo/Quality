@@ -228,7 +228,7 @@
                         break;
                 }
 
-                var sentID = $(`.image[article=${article}][size=${size}][Piclocation=${Piclocation}]`).attr('ID');
+                var sentID = $(`.image[article=${article}][size="${size}"][Piclocation=${Piclocation}]`).attr('ID');
 
 
                 $('#Screenshot').removeClass("display-None");
@@ -253,7 +253,7 @@
                         break;
                 }
 
-                var sentID = $(`.image[article=${article}][size=${size}][Piclocation=${Piclocation}]`).attr('ID');
+                var sentID = $(`.image[article=${article}][size="${size}"][Piclocation=${Piclocation}]`).attr('ID');
 
                 document.querySelector("#" + sentID).removeAttribute('src');
 
@@ -276,25 +276,25 @@
 
             $(".image").hide();
 
-            $(`.image[article=${article}][size=${size}]`).show();
+            $(`.image[article=${article}][size="${size}"]`).show();
 
-            var FrontImg = $(`.image[article=${article}][size=${size}][Piclocation=Front]`).attr('src');
+            var FrontImg = $(`.image[article=${article}][size="${size}"][Piclocation=Front]`).attr('src');
             if (FrontImg != undefined && FrontImg != null && FrontImg != '') {
                 FrontImg = FrontImg.replace('data:image/png;base64,', '');
             }
-            $(`input[article=${article}][size=${size}][Piclocation=Front]`).val(FrontImg);
+            $(`input[article=${article}][size="${size}"][Piclocation=Front]`).val(FrontImg);
 
-            var SideImg = $(`.image[article=${article}][size=${size}][Piclocation=Side]`).attr('src');
+            var SideImg = $(`.image[article=${article}][size="${size}"][Piclocation=Side]`).attr('src');
             if (SideImg != undefined && SideImg != null && SideImg != '') {
                 SideImg = SideImg.replace('data:image/png;base64,', '');
             }
-            $(`input[article=${article}][size=${size}][Piclocation=Side]`).val(SideImg);
+            $(`input[article=${article}][size="${size}"][Piclocation=Side]`).val(SideImg);
 
-            var BackImg = $(`.image[article=${article}][size=${size}][Piclocation=Back]`).attr('src');
+            var BackImg = $(`.image[article=${article}][size="${size}"][Piclocation=Back]`).attr('src');
             if (BackImg != undefined && BackImg != null && BackImg != '') {
                 BackImg = BackImg.replace('data:image/png;base64,', '');
             }
-            $(`input[article=${article}][size=${size}][Piclocation=Back]`).val(BackImg);
+            $(`input[article=${article}][size="${size}"][Piclocation=Back]`).val(BackImg);
         }
 
         function checkValue(self) {
