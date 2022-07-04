@@ -488,7 +488,7 @@ input, select {
 }
 
 textarea {
-    min-height: 275px;
+    /*min-height: 275px;*/
     padding: 1vw;
     border-radius: 3px;
     resize: none;

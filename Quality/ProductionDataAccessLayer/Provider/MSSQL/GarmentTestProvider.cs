@@ -97,7 +97,7 @@ select g.ID
 				     when g.WashResult = 'F' then 'Fail' 
                      else '' end
 ,[WashName] = IIF(WashName.Value is null,'701','710')
-,[SpecialMark] = SpecialMark.Value
+,[Teamwear] =  IIF(WashName.Value is null,'','Y')
 ,g.Result, g.Date,g.Remark
 ,[GarmentTestAddName] = CONCAT(g.AddName,'-',CreatBy.Name,'',g.AddDate)
 ,[GarmentTestEditName] = CONCAT(g.EditName,'-',EditBy.Name,'',g.EditDate)
@@ -110,14 +110,7 @@ outer apply(
 	from dbo.GetSCI(g.FirstOrderID,'')
 ) GetSCI
 outer apply(
-	select Value =  r.Name 
-	from Style s WITH(NOLOCK)
-	inner join Reason r WITH(NOLOCK) on s.SpecialMark = r.ID and r.ReasonTypeID = 'Style_SpecialMark'
-	where s.ID = g.StyleID
-	and s.BrandID = g.BrandID
-	and s.SeasonID = g.SeasonID
-)SpecialMark
-outer apply(
+	--說明：BrandID IN ('ADIDAS','REEBOK')，且Season為23SS之後(包含23SS)，套用UNION下面的規則，反之則套用UNION上面的規則
 	select Value =  r.Name 
 	from Style s WITH(NOLOCK)
 	inner join Reason r WITH(NOLOCK) on s.SpecialMark = r.ID and r.ReasonTypeID = 'Style_SpecialMark'
@@ -152,6 +145,16 @@ outer apply(
                     ,'Training Teamwear+Critical P'                    
         )
     )
+	AND s.SeasonID < '22ZZ'
+	UNION 	
+	select Value = '710' 
+	from Style a
+	where a.ID = g.StyleID
+	and a.BrandID = g.BrandID
+	and a.SeasonID = g.SeasonID
+	AND a.Teamwear=1
+	AND a.SeasonID >= '23'
+	AND a.BrandID IN ('ADIDAS','REEBOK')
 )WashName
 where 1=1
 ";

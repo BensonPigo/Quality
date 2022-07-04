@@ -44,6 +44,7 @@ namespace DatabaseObject.ViewModel.SampleRFT
         public InspectionBySP_BA BA { get; set; }
         public InspectionBySP_DummyFit DummyFit { get; set; }
         public InspectionBySP_Others Others { get; set; }
+        public string GoOnInspectURL { get; set; }
 
         public bool ExcuteResult { get; set; }
         public string ErrorMessage { get; set; }

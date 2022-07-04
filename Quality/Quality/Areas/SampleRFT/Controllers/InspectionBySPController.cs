@@ -2,13 +2,17 @@
 using DatabaseObject;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.ResultModel;
+using DatabaseObject.ViewModel;
 using DatabaseObject.ViewModel.SampleRFT;
 using FactoryDashBoardWeb.Helper;
+using Ionic.Zip;
 using Newtonsoft.Json;
 using Quality.Controllers;
 using Quality.Helper;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -18,11 +22,13 @@ namespace Quality.Areas.SampleRFT.Controllers
     public class InspectionBySPController : BaseController
     {
         private InspectionBySPService _Service;
+        private CFTCommentsService _CFTCommentsService;
         public InspectionBySPController()
         {
             this.SelectedMenu = "Sample RFT";
             ViewBag.OnlineHelp = this.OnlineHelp + "SampleRFT.InspectionBySP,,";
             _Service = new InspectionBySPService();
+            _CFTCommentsService = new CFTCommentsService();
         }
 
         #region 查詢SP#
@@ -942,8 +948,8 @@ namespace Quality.Areas.SampleRFT.Controllers
                 string GarmentDefectCodeID = item.GarmentDefectCodeID;
 
                 // 相同Detail Ukey 且排除刪除的圖片
-                List<DefectImage> tempImgs =  NotDbImage.Where(o => o.GarmentDefectCodeID == GarmentDefectCodeID &&
-                                                !TmpDelete_DefectImg.Any(x => x.Seq == o.Seq && x.GarmentDefectCodeID == o.GarmentDefectCodeID)
+                List<DefectImage> tempImgs = NotDbImage.Where(o => o.GarmentDefectCodeID == GarmentDefectCodeID &&
+                                               !TmpDelete_DefectImg.Any(x => x.Seq == o.Seq && x.GarmentDefectCodeID == o.GarmentDefectCodeID)
                                             ).ToList();
                 if (tempImgs.Any())
                 {
@@ -959,7 +965,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             // 可以直接執行刪除的圖片
             var DeleteImg = TmpDelete_DefectImg.Where(o => o.ImageUKey > 0).ToList();
 
-            InspectionBySP_AddDefect result =  _Service.AddDefectProcess(addDefct, DeleteImg);
+            InspectionBySP_AddDefect result = _Service.AddDefectProcess(addDefct, DeleteImg);
 
             if (!result.ExecuteResult)
             {
@@ -1074,7 +1080,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             }
             // 下拉選單排除要刪除的
             model.Images_Source = model.Images_Source.Where(o =>
-                !TmpDelete_BAImg.Any(x => x.Seq.ToString() == o.Text && x.BACriteria ==BACriteria)
+                !TmpDelete_BAImg.Any(x => x.Seq.ToString() == o.Text && x.BACriteria == BACriteria)
             ).ToList();
 
             // 圖片排除要刪除的
@@ -1400,11 +1406,89 @@ namespace Quality.Areas.SampleRFT.Controllers
         {
             this.CheckSession();
 
-            InspectionBySP_Others model =_Service.Get_Others(ID);
+            InspectionBySP_Others model = _Service.Get_Others(ID);
             model.ID = ID;
             model.Inspector = $"{this.UserID} {this.UserName}";
             return View(model);
         }
+
+
+        [HttpPost]
+        [SessionAuthorize]
+        public ActionResult SendMail(long ID, string OrderID)
+        {
+            BaseResult r = new BaseResult();
+
+            ZipFile zip = new ZipFile();
+            if (!Directory.Exists(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP")))
+            {
+                Directory.CreateDirectory(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+            }
+            //string zipName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", $@"SampleRFT Inspection_{DateTime.Now.ToString("yyyyMMddHHmmss")}.zip");
+            string zipName = System.Web.HttpContext.Current.Server.MapPath("~/") +  "TMP/" + "SampleRFT Inspection_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".zip";
+            CFTComments_ViewModel model = new CFTComments_ViewModel();
+
+            model = _CFTCommentsService.Get_CFT_Orders(new CFTComments_ViewModel() { OrderID = OrderID, QueryType = "OrderID" });
+            model.ReleasedBy = this.UserID;
+            CFTComments_ViewModel result = _CFTCommentsService.GetExcel2(model);
+            string FileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP/", result.TempFileName);
+
+
+            zip.AddFile(FileName, string.Empty);
+            InspectionBySP_DummyFit DummyFitModel = _Service.GetDummyFit(ID);
+            string frontPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP/", "Front.png");
+            string backPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP/", "Left.png");
+            string lefPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP/", "Right.png");
+            string rightPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP/", "Back.png");
+
+            if (DummyFitModel.DetailList.Any())
+            {
+                if (DummyFitModel.DetailList.FirstOrDefault().Front != null)
+                {
+                    using (MemoryStream m = new MemoryStream(DummyFitModel.DetailList.FirstOrDefault().Front))
+                    {
+                        Bitmap b = new Bitmap(m);
+                        b.Save(frontPath);
+                        zip.AddFile(frontPath, string.Empty);
+                    }
+                }
+                if (DummyFitModel.DetailList.FirstOrDefault().Left != null)
+                {
+                    using (MemoryStream m = new MemoryStream(DummyFitModel.DetailList.FirstOrDefault().Left))
+                    {
+                        Bitmap b = new Bitmap(m);
+                        b.Save(lefPath);
+                        zip.AddFile(lefPath, string.Empty);
+                    }
+                }
+                if (DummyFitModel.DetailList.FirstOrDefault().Right != null)
+                {
+                    using (MemoryStream m = new MemoryStream(DummyFitModel.DetailList.FirstOrDefault().Right))
+                    {
+                        Bitmap b = new Bitmap(m);
+                        b.Save(rightPath);
+                        zip.AddFile(rightPath, string.Empty);
+                    }
+                }
+                if (DummyFitModel.DetailList.FirstOrDefault().Back != null)
+                {
+                    using (MemoryStream m = new MemoryStream(DummyFitModel.DetailList.FirstOrDefault().Back))
+                    {
+                        Bitmap b = new Bitmap(m);
+                        b.Save(backPath);
+                        zip.AddFile(backPath, string.Empty);
+                    }
+                }
+            }
+
+            zip.Save(zipName);
+
+            string tempFilePath = zipName;
+            tempFilePath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + zipName;
+
+            return Json(new { Result = r.Result, reportPath = tempFilePath, FileName = zipName });
+        }
+
         [HttpPost]
         [SessionAuthorize]
         public ActionResult Others(InspectionBySP_Others Req, string goPage)
