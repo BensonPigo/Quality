@@ -46,7 +46,7 @@ namespace DatabaseObject.ViewModel.SampleRFT
         public string SewingLineID { get; set; }
         public string QCInCharge { get; set; }
         public string AddName { get; set; }
-        public string AddNameText { get; set; }
+        public string CFTNameText { get; set; }
         public string MReMail { get; set; }
         public int OrderQty { get; set; }
         public int PassQty { get; set; }

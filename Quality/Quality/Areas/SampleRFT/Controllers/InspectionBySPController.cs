@@ -1421,21 +1421,22 @@ namespace Quality.Areas.SampleRFT.Controllers
             {
                 Directory.CreateDirectory(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
             }
-            string zipName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", $@"SampleRFT Inspection_{DateTime.Now.ToString("yyyyMMddHHmmss")}.zip"); 
+            //string zipName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", $@"SampleRFT Inspection_{DateTime.Now.ToString("yyyyMMddHHmmss")}.zip");
+            string zipName = System.Web.HttpContext.Current.Server.MapPath("~/") +  "TMP/" + "SampleRFT Inspection_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".zip";
             CFTComments_ViewModel model = new CFTComments_ViewModel();
 
             model = _CFTCommentsService.Get_CFT_Orders(new CFTComments_ViewModel() { OrderID = OrderID, QueryType = "OrderID" });
             model.ReleasedBy = this.UserID;
             CFTComments_ViewModel result = _CFTCommentsService.GetExcel2(model);
-            string FileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", result.TempFileName);
+            string FileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP/", result.TempFileName);
 
 
             zip.AddFile(FileName, string.Empty);
             InspectionBySP_DummyFit DummyFitModel = _Service.GetDummyFit(ID);
-            string frontPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", "Front.png");
-            string backPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", "Left.png");
-            string lefPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", "Right.png");
-            string rightPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", "Back.png");
+            string frontPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP/", "Front.png");
+            string backPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP/", "Left.png");
+            string lefPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP/", "Right.png");
+            string rightPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP/", "Back.png");
 
             if (DummyFitModel.DetailList.Any())
             {
