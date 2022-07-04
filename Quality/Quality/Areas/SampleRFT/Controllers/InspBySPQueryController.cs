@@ -220,7 +220,7 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             worksheet.Cells[6, 6] = string.Empty;
             worksheet.Cells[6, 10] = model.sampleRFTInspection.FactoryID;
-            worksheet.Cells[6, 14] = model.sampleRFTInspection.AddName;
+            worksheet.Cells[6, 14] = model.sampleRFTInspection.CFTNameText;
 
             worksheet.Cells[7, 6] = model.Setting.Model;
 
