@@ -1,5 +1,6 @@
 using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
+using DatabaseObject;
 using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ViewModel.FinalInspection;
@@ -1359,6 +1360,11 @@ where CustPONO = @CustPONO
                 parameter.Add("@StyleID", request.StyleID);
             }
 
+            if (request.ExcludeJunk)
+            {
+                whereFinalInspection += @" and f.InspectionResult <> 'Junk' ";
+            }
+
             string sqlGetData = $@"
 
 select  ID,
@@ -1411,6 +1417,11 @@ where   1 = 1 {whereFinalInspection}
             string whereOrder = string.Empty;
             string whereFinalInspection = string.Empty;
 
+            if (request.ExcludeJunk)
+            {
+                whereFinalInspection = " where f.InspectionResult <> 'Junk' ";
+            }
+
             string sqlGetData = $@"
 --預設抓兩百
 select distinct　top 200  f.ID,fo.OrderID,f.AddDate
@@ -1451,6 +1462,7 @@ outer apply(
 		where c.ID = f.ID
 	), 'Y', 'N')
 )c 
+{whereFinalInspection}
 order by f.AddDate DESC
 
 drop table #default ,#tmpOrderArticle
@@ -1738,7 +1750,8 @@ Select	f.AuditDate,
         [MeasurementResult] = cast(iif(exists(select 1 from FinalInspection_Measurement fm with (nolock) where f.ID = fm.ID), 1, 0) as bit),
         [MoistureResult] = case when exists (select 1 from FinalInspection_Moisture fmo with (nolock) where f.ID = fmo.ID and fmo.Result = 'F') then 'fail'
                                 when not exists (select 1 from FinalInspection_Moisture fmo with (nolock) where f.ID = fmo.ID) then 'na'
-                                else 'pass' end
+                                else 'pass' end,
+        [MoistureComment] = SUBSTRING(MoistureComment.val, 1, 255)
 from FinalInspection f with (nolock)
 outer apply (select	[POQty] = sum(o.Qty),
 					[ETD_ETA] = max(o.BuyerDelivery),
@@ -1746,8 +1759,10 @@ outer apply (select	[POQty] = sum(o.Qty),
                     [IsDestJP] = max(iif(o.Dest = 'JP', 1, 0))
 				from Production.dbo.Orders o with (nolock)
 				where o.CustPONo = f.CustPONO) OrderInfo
-
+outer apply (SELECT [val] = Stuff((select concat( ';',Remark)   
+                from FinalInspection_Moisture fmo with (nolock) where f.ID = fmo.ID FOR XML PATH('')),1,1,'')) MoistureComment
 where f.ID = @ID 
+
 select	distinct
 		oc.ColorID
 from  MainServer.Production.dbo.Order_ColorCombo oc with (nolock)
@@ -2018,6 +2033,23 @@ where   IsExportToP88 = 0 and
                     throw ex;
                 }
             }
+        }
+
+        public BaseResult UpdateJunk(string ID)
+        {
+            SQLParameterCollection Parameter = new SQLParameterCollection() 
+            {
+                { "@FinalInspectionID", DbType.String, ID },
+            };
+
+            string sqlCmd = "Update FinalInspection set InspectionResult = 'Junk' where ID = @FinalInspectionID and SubmitDate is null and InspectionResult = 'On-going'";
+            int r = ExecuteNonQuery(CommandType.Text, sqlCmd, Parameter);
+            if (r == 0)
+            {
+                return new BaseResult { Result = false, ErrorMessage = "Update Junk Fail" };
+            }
+
+            return new BaseResult { Result = true };
         }
     }
 }

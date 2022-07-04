@@ -87,5 +87,7 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         void UpdateIsExportToP88(string ID, string inspectionType);
 
         void ExecImp_EOLInlineInspectionReport();
+
+        BaseResult UpdateJunk(string ID);
     }
 }

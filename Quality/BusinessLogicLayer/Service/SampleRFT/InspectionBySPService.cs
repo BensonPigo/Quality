@@ -248,15 +248,23 @@ namespace BusinessLogicLayer.Service.SampleRFT
 
                 if (list.Count() == 0)
                 {
+                    // 沒有檢驗過
                     InspectionProgress = "NonInspect";
+                }
+                else if (list.Where(o => o.Result.ToUpper() == "PASS").Any())
+                {
+                    // 已經有檢驗Pass紀錄
+                    InspectionProgress = "Pass";
+                }
+                else if (list.Where(o => o.Result.ToUpper() == "FAIL").Any() && !list.Where(o => string.IsNullOrEmpty(o.Result)).Any())
+                {
+                    // 所有紀錄都已經完成檢驗，且只有Fail
+                    InspectionProgress = "Failure";
                 }
                 else if (list.Where(o => string.IsNullOrEmpty(o.Result)).Any())
                 {
+                    // 沒有Pass，且還有檢驗未完成
                     InspectionProgress = "InProcess";
-                }
-                else if (list.Where(o => o.Result == "Fail").Any())
-                {
-                    InspectionProgress = "Failure";
                 }
             }
             catch (Exception ex)

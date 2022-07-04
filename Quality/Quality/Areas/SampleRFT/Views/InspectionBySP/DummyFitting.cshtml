@@ -127,28 +127,6 @@
                     index++;
                 }
             </div>
-            @*<div style="width: 24%; height: 90%; float: left; border-right: 1px solid black; border-bottom: 1px solid black; ">
-                <img id="tmpPictureSide" class="tmpimage" style="max-width: 98%; max-height: 98%; " />
-
-                @{ index = 0; }
-                @foreach (var data in Model.DetailList)
-                {
-                    @Html.Hidden($"Req.DetailList[{index}].Side", data.Side, new { @article = data.Article, @size = data.Size, @Piclocation = "Side" })
-                    if (data.Side == null || data.Side is null)
-                    {
-                        <img id="Side_@index" class="image" name="Req.DetailList[@index].Side" article="@data.Article" size="@data.Size" Piclocation="Side" style="max-width: 98%; max-height: 98%; display: none; " />
-                    }
-                    else
-                    {
-                        var byteImage = data.Side;
-                        var base64 = Convert.ToBase64String(byteImage);
-                        var imgSrc = String.Format("data:image/png;base64,{0}", base64);
-
-                        <img id="Side_@index" class="image" name="Req.DetailList[@index].Side" article="@data.Article" size="@data.Size" Piclocation="Side" style="max-width: 98%; max-height: 98%; display: none; " src="@imgSrc" />
-                    }
-                    index++;
-                }
-            </div>*@
             <div style="width: 24%; height: 90%; float: left; border-right: 1px solid black; border-bottom: 1px solid black; ">
                 <img id="tmpPictureLeft" class="tmpimage" style="max-width: 98%; max-height: 98%; " />
 
@@ -297,7 +275,7 @@
                         break;
                 }
 
-                var sentID = $(`.image[article=${article}][size=${size}][Piclocation=${Piclocation}]`).attr('ID');
+                var sentID = $(`.image[article=${article}][size="${size}"][Piclocation=${Piclocation}]`).attr('ID');
 
 
                 $('#Screenshot').removeClass("display-None");
@@ -325,7 +303,7 @@
                         break;
                 }
 
-                var sentID = $(`.image[article=${article}][size=${size}][Piclocation=${Piclocation}]`).attr('ID');
+                var sentID = $(`.image[article=${article}][size="${size}"][Piclocation=${Piclocation}]`).attr('ID');
 
                 document.querySelector("#" + sentID).removeAttribute('src');
 
@@ -348,36 +326,32 @@
 
             $(".image").hide();
 
-            $(`.image[article=${article}][size=${size}]`).show();
+            $(`.image[article=${article}][size="${size}"]`).show();
 
-            var FrontImg = $(`.image[article=${article}][size=${size}][Piclocation=Front]`).attr('src');
+            var FrontImg = $(`.image[article=${article}][size="${size}"][Piclocation=Front]`).attr('src');
             if (FrontImg != undefined && FrontImg != null && FrontImg != '') {
                 FrontImg = FrontImg.replace('data:image/png;base64,', '');
             }
-            $(`input[article=${article}][size=${size}][Piclocation=Front]`).val(FrontImg);
+            $(`input[article=${article}][size="${size}"][Piclocation=Front]`).val(FrontImg);
 
-            //var SideImg = $(`.image[article=${article}][size=${size}][Piclocation=Side]`).attr('src');
-            //if (SideImg != undefined && SideImg != null && SideImg != '') {
-            //    SideImg = SideImg.replace('data:image/png;base64,', '');
-            //}
-            //$(`input[article=${article}][size=${size}][Piclocation=Side]`).val(SideImg);
-            var LeftImg = $(`.image[article=${article}][size=${size}][Piclocation=Left]`).attr('src');
+
+            var LeftImg = $(`.image[article=${article}][size="${size}"][Piclocation=Left]`).attr('src');
             if (LeftImg != undefined && LeftImg != null && LeftImg != '') {
                 LeftImg = LeftImg.replace('data:image/png;base64,', '');
             }
-            $(`input[article=${article}][size=${size}][Piclocation=Left]`).val(LeftImg);
+            $(`input[article=${article}][size="${size}"][Piclocation=Left]`).val(LeftImg);
 
-            var RightImg = $(`.image[article=${article}][size=${size}][Piclocation=Right]`).attr('src');
+            var RightImg = $(`.image[article=${article}][size="${size}"][Piclocation=Right]`).attr('src');
             if (RightImg != undefined && RightImg != null && RightImg != '') {
                 RightImg = RightImg.replace('data:image/png;base64,', '');
             }
-            $(`input[article=${article}][size=${size}][Piclocation=Right]`).val(RightImg);
+            $(`input[article=${article}][size="${size}"][Piclocation=Right]`).val(RightImg);
 
-            var BackImg = $(`.image[article=${article}][size=${size}][Piclocation=Back]`).attr('src');
+            var BackImg = $(`.image[article=${article}][size="${size}"][Piclocation=Back]`).attr('src');
             if (BackImg != undefined && BackImg != null && BackImg != '') {
                 BackImg = BackImg.replace('data:image/png;base64,', '');
             }
-            $(`input[article=${article}][size=${size}][Piclocation=Back]`).val(BackImg);
+            $(`input[article=${article}][size="${size}"][Piclocation=Back]`).val(BackImg);
         }
 
         function checkValue(self) {

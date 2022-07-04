@@ -62,7 +62,7 @@
 {
     <div class="search-condition">
 
-        <div class="UpWhiteBackgrond" style="height:14vh">
+        <div class="UpWhiteBackgrond" style="height:17vh">
 
             <table class="center" style="width: 100%;  height: 3vh ">
                 <tr>
@@ -108,6 +108,14 @@
 
                     </td>
                 </tr>
+                <tr>
+                    <td align="right" style="vertical-align: middle;">
+                        <p class="searchFont">Exclude Junk</p>
+                    </td>
+                    <td colspan="5">
+                        @Html.CheckBoxFor(o => o.ExcludeJunk, new { @class = "inputStyle" })                   
+                    </td>
+                </tr>
             </table>
         </div>
     </div>
@@ -138,6 +146,7 @@
                                 <th>Inspection Stage</th>
                                 <th>Is Transfer To PMS</th>
                                 <th>Is Transfer To Pivot88</th>
+                                <th>Junk</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -155,6 +164,9 @@
                                         break;
                                     case "On-Going":
                                         color = "#0000FF";
+                                        break;
+                                    case "Junk":
+                                        color = "#000000";
                                         break;
                                 }
                                 <tr class="row-content" style="vertical-align: middle; text-align: center;">
@@ -206,7 +218,12 @@
                                     <td>
                                         @Html.DisplayFor(modelItem => item.IsTransferToPivot88)
                                     </td>
-
+                                    <td idx="@item.FinalInspectionID">
+                                        @if (item.InspectionResult == "On-going")
+                                        {
+                                            <input type="checkbox" onchange="ClickJunk($(this))">
+                                        }
+                                    </td>
                                 </tr>
                             }
                         </tbody>
@@ -283,6 +300,40 @@
         });
     }
 
+    function ClickJunk(obj) {
+        var checkbox = obj;
+        var finalinspectionID = checkbox.parent().attr('idx');
+        msg.WithConfirm("Are You Sure? Have been Junk, Can't be changed!!",
+            function () {
+                $.ajax({
+                    url: "@Url.Action("ClickJunk", "Query", new { Area = "FinalInspection" })",
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ ID: finalinspectionID }),
+                    async: false,
+                    success: function (data) {
+                        if (data.Result) {
+                            msg.WithSuccesCheck("Success", function () {
+                                location.reload();
+                            });
+                        }
+                        else {
+                            msg.WithWarningCheck(data.ErrorMessage, function () {
+                                location.reload();
+                            });
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        msg.WithWarningCheck(xhr.responseText, function () {
+                            location.reload();
+                        });
+                    }
+                });
+            },
+            function () {
+                checkbox.prop("checked", false);
+            });
+    }
 </script>
 
 
