@@ -168,13 +168,9 @@ WHERE Junk=0
                                 Order by Seq FOR XML PATH('')
                             ),1,1,'') 
                     ),
-        [BuyReadyDate] = (   Stuff((
-                                Select concat(',', FORMAT(BuyReadyDate, 'yyyy/MM/dd'))
-                                From Style_Article with (nolock)
-                                Where StyleUkey = s.Ukey
-                                Group by Seq,BuyReadyDate
-                                Order by Seq FOR XML PATH('')
-                            ),1,1,'') 
+        [BuyReadyDate] = ( Select FORMAT(MIN(BuyReadyDate), 'yyyy/MM/dd')
+                           From Style_Article with (nolock)
+                           Where StyleUkey = s.Ukey
                     ),
         s.StyleName,
         [SpecialMark] = (select Name 
