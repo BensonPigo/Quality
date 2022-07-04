@@ -1729,10 +1729,17 @@ select a.ID
                              WHEN a.InspectionTimes = 3  THEN '3/Final' 
                         ELSE Cast(a.InspectionTimes as varchar)
                         END
-	,Inspector = a.AddName
+	,Inspector = IIF( p1.Name IS NOT NULL OR p2.Name IS NOT NULL ,ISNULL( p1.Name, p2.Name) , ISNULL( p3.Name, p4.Name) )
 	,a.Result
 from SampleRFTInspection a
 inner join SciProduction_Orders o on a.OrderID = o.ID
+
+LEFT JOIN Pass1 p1 ON a.EditName = p1.ID
+LEFT JOIN MainServer.Production.dbo.Pass1 p2 ON a.EditName = p2.ID
+
+LEFT JOIN Pass1 p3 ON a.AddName = p3.ID
+LEFT JOIN MainServer.Production.dbo.Pass1 p4 ON a.AddName = p4.ID
+
 OUTER APPLY(
 	SELECT Val = STUFF((
 		select DISTINCT ',' + oq.Article
