@@ -270,7 +270,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             }
 
             // 以下，Row數量要加上去
-            worksheet.Cells[36 + copyCnt, 7] = model.sampleRFTInspection.InspectionStage == "100%" ? model.sampleRFTInspection.OrderQty - model.sampleRFTInspection.BAQty : model.sampleRFTInspection.SampleSize - model.sampleRFTInspection.BAQty;
+            worksheet.Cells[36 + copyCnt, 7] = model.sampleRFTInspection.BAQty;
 
             worksheet.Cells[40 + copyCnt, 7] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C1").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C1").FirstOrDefault().Qty : 0;
             worksheet.Cells[40 + copyCnt, 8] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C2").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C2").FirstOrDefault().Qty : 0;
