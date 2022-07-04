@@ -218,8 +218,8 @@
         <div>
             <table style="width:100%">
                 <tr>
-                    <td style="width:7%">CFA</td>
-                    <td class="valueColor" style="width:10%">@Model.sampleRFTInspection.AddName</td>
+                    <td style="width:7%">CFT</td>
+                    <td class="valueColor" style="width:10%">@Model.sampleRFTInspection.CFTNameText</td>
 
                     <td style="width:7%">Pass Qty(pcs)</td>
                     <td class="valueColor" style="width:5%">@Model.sampleRFTInspection.PassQty</td>
@@ -244,6 +244,10 @@
                         @if (Model.sampleRFTInspection.SubmitDate != null && !string.IsNullOrEmpty(Model.sampleRFTInspection.Result))
                         {
                             <button class="site-btn btn-blue" onclick="ClickDownload()">Download</button>
+                        }
+                        else
+                        {
+                            <button type="button" onclick="GoOnInspect()" class="site-btn btn-red">Continue</button>
                         }
                     </td>
                 </tr>
@@ -310,7 +314,7 @@
                 async: false,
                 success: function (data) {
                     if (data.Result) {
-                        var para = "?To=";
+                        var para = "?To=@Model.sampleRFTInspection.MReMail";
                         para += "&CC=";
                         para += "&Subject=" + "Sample RFT Inspection Report - SP : @Model.sampleRFTInspection.OrderID";
                         para += "&Body=" + "Sample RFT Inspection Report Detail";
@@ -327,5 +331,11 @@
             });
 
         }
+
+        function GoOnInspect() {
+            ShowLoading();
+            window.location.href = '@Url.Action(Model.GoOnInspectURL, "InspectionBySP", new { ID = Model.sampleRFTInspection.ID, OrderID = Model.sampleRFTInspection.OrderID})';
+        }
+
     </script>
 }
