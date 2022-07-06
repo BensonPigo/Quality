@@ -117,6 +117,7 @@ outer apply (
 )f_Result
 {sqlWhseArrival}
 WHERE exists (select 1 from FIR_Laboratory f WITH(NOLOCK) WHERE f.POID = p.ID)
+and f_Result.Result <> ''
 ";
             if (!string.IsNullOrEmpty(Req.BrandID))
             {
@@ -169,7 +170,7 @@ select  Type = 'Garment Test (450, 451, 701, 710)'
 from GarmentTest g WITH(NOLOCK)
 inner join GarmentTest_Detail gd WITH(NOLOCK) ON g.ID= gd.ID
 {sqlWhseArrival}
-WHERE 1=1 
+WHERE gd.Result <> ''
 ";
 
             if (!string.IsNullOrEmpty(Req.MDivisionID))
@@ -230,7 +231,7 @@ select DISTINCT  Type = 'Mockup Crocking Test  (504)'
         , ReportDate = m.ReleasedDate
 from MockupCrocking m WITH(NOLOCK)
 {sqlWhseArrival}
-WHERE 1=1 
+WHERE m.Result <> ''
 ";
 
             if (!string.IsNullOrEmpty(Req.BrandID))
@@ -304,7 +305,7 @@ select DISTINCT Type = 'Mockup Oven Test (514)'
 from MockupOven m WITH(NOLOCK)
 {sqlWhseArrival}
 where m.Type = 'B'
-
+and m.Result <> ''
 ";
 
             if (!string.IsNullOrEmpty(Req.BrandID))
@@ -378,6 +379,7 @@ select DISTINCT Type = 'Mockup Wash Test (701)'
 from MockupWash m WITH(NOLOCK)
 {sqlWhseArrival}
 where m.Type = 'B' 
+and m.Result <> ''
 ";
 
             if (!string.IsNullOrEmpty(Req.BrandID))
@@ -452,7 +454,7 @@ from PO p WITH(NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.POID = p.ID
 inner join Oven f WITH(NOLOCK) ON f.POID = p.ID
 {sqlWhseArrival}
-where 1=1 
+where f.Result <> ''
 ";
             if (!string.IsNullOrEmpty(Req.BrandID))
             {
@@ -509,7 +511,7 @@ from PO p WITH(NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.POID = p.ID
 INNER JOIN ColorFastness f WITH(NOLOCK) ON f.POID = p.ID
 {sqlWhseArrival}
-WHERE 1=1 
+WHERE f.Result <> ''
 ";
             if (!string.IsNullOrEmpty(Req.BrandID))
             {
@@ -593,6 +595,7 @@ outer apply (
 )f_Result
 {sqlWhseArrival}
 WHERE exists (select 1 from AIR_Laboratory f WITH(NOLOCK) WHERE f.POID = p.ID)
+and f_Result.Result <> ''
 ";
             if (!string.IsNullOrEmpty(Req.BrandID))
             {
@@ -645,7 +648,7 @@ select DISTINCT Type = 'Pulling test for Snap/Botton/Rivet (437)'
 	, ReportDate = NULL
 from [ExtendServer].ManufacturingExecution.dbo.PullingTest m WITH(NOLOCK)
 {sqlWhseArrival}
-where 1=1 
+where m.Result <> ''
 ";
             if (!string.IsNullOrEmpty(Req.BrandID))
             {
@@ -701,7 +704,7 @@ select DISTINCT Type= 'Water Fastness Test(503)'
 from WaterFastness w WITH (NOLOCK) 
 inner join Orders o WITH(NOLOCK) ON o.ID = w.POID
 {sqlWhseArrival}
-WHERE 1=1 
+WHERE w.Result <> ''
 ";
             if (!string.IsNullOrEmpty(Req.BrandID))
             {
@@ -757,7 +760,7 @@ select DISTINCT Type= 'Perspiration Fastness (502)'
 from PerspirationFastness w WITH (NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.ID = w.POID
 {sqlWhseArrival}
-WHERE 1=1 
+WHERE w.Result <> ''
 ";
             if (!string.IsNullOrEmpty(Req.BrandID))
             {
