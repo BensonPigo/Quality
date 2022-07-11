@@ -138,24 +138,45 @@
                 const fileItems = $('.FileItem');
                 var idxx = 0;
 
-                // 使用for of迴圈，可以讓每一次lool都await，完全等待完畢後才繼續後續行為
-                for (const fileItem of fileItems) {
-                    const file = document.querySelector(`#UploadPic`).files[idxx];
-                    var Rmk = $(`#Rmk${idxx}`).val();
+                if (document.querySelector(`#UploadPic`).files.length > 0) {
 
-                    // blob轉成base64方式，請參考 https://ithelp.ithome.com.tw/articles/10198431
-                    // await必須包在async function裡面
-                    var base64 = await convertFile(file);
+                    // 使用for of迴圈，可以讓每一次lool都await，完全等待完畢後才繼續後續行為
+                    for (const fileItem of fileItems) {
+                        const file = document.querySelector(`#UploadPic`).files[idxx];
+                        var Rmk = $(`#Rmk${idxx}`).val();
+
+                        // blob轉成base64方式，請參考 https://ithelp.ithome.com.tw/articles/10198431
+                        // await必須包在async function裡面
+                        var base64 = await convertFile(file);
 
 
-                    var Picture = {
-                        ID: '@FinalInspectionID',
-                        TempImage: base64.replace("data:image/jpg;base64,", "").replace("data:image/jpeg;base64,", "").replace("data:image/png;base64,", ""),
-                        TempRemark: Rmk,
+                        var Picture = {
+                            ID: '@FinalInspectionID',
+                            TempImage: base64.replace("data:image/jpg;base64,", "").replace("data:image/jpeg;base64,", "").replace("data:image/png;base64,", ""),
+                            TempRemark: Rmk,
+                        }
+                        PictureList.push(Picture);
+
+                        idxx += 1;
                     }
-                    PictureList.push(Picture);
+                }
+                else {
+                    for (const fileItem of fileItems) {
+                        const blobUrl = document.querySelector(`#ImgPic${idxx}`).src;
+                        const blob = await fetch(blobUrl).then(res => res.blob());
+                        var Rmk = $(`#Rmk${idxx}`).val();
 
-                    idxx += 1;
+                        var base64 = await convertFile(blob);
+
+                        var Picture = {
+                            ID: '@FinalInspectionID',
+                            TempImage: base64.replace("data:image/jpg;base64,", "").replace("data:image/jpeg;base64,", "").replace("data:image/png;base64,", ""),
+                            TempRemark: Rmk,
+                        }
+                        PictureList.push(Picture);
+
+                        idxx += 1;
+                    }
                 }
 
                 window.opener.GetImage(PictureList, ImgSource);

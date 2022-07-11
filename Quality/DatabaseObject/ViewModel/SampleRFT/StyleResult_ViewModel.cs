@@ -25,6 +25,7 @@ namespace DatabaseObject.ViewModel.SampleRFT
         public string Handle { get; set; }
         public string RFT { get; set; }
         public string ProductType { get; set; }
+        public string BuyReadyDate { get; set; }
 
         public bool Result { get; set; }
         public string MsgScript { get; set; }

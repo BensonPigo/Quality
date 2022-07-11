@@ -56,7 +56,7 @@
                                     <td>
                                         @*@Html.TextBoxFor(model => Model.ListBACriteria[i].Qty, new { @type = "number", @style = "width:80px" })*@
 
-                                        <input type='number' style="width:80px" id='Req.ListBACriteria[@Model.ListBACriteria[i].RowIndex].Qty' name='Req.ListBACriteria[@Model.ListBACriteria[i].RowIndex].Qty' class="qty" value='@Model.ListBACriteria[i].Qty'>
+                                        <input type='number' style="width:80px" id='Req.ListBACriteria[@Model.ListBACriteria[i].RowIndex].Qty' min="0" name='Req.ListBACriteria[@Model.ListBACriteria[i].RowIndex].Qty' class="qty" value='@Model.ListBACriteria[i].Qty'>
 
                                         <input type='hidden' id='Req.ListBACriteria[@Model.ListBACriteria[i].RowIndex].Ukey' name='Req.ListBACriteria[@Model.ListBACriteria[i].RowIndex].Ukey' value='@Model.ListBACriteria[i].Ukey'>
 
@@ -97,6 +97,8 @@
         });
 
         function QtyCheck(value, Max) {
+
+           
             if (parseFloat(value) >= Max) {
                 return Max;
             }
@@ -110,7 +112,12 @@
         function checkSubmitValue(self) {
             document.getElementById("goPage").value = self;
 
-            var qtyDatas = $(".qty");
+            ShowLoading();
+
+            return true;
+
+            // ISP20220813 數量不卡條件了
+            @*var qtyDatas = $(".qty");
             var total = 0;
 
             $.each(qtyDatas, function () {
@@ -124,7 +131,7 @@
                 ShowLoading();
 
                 return true;
-            }
+            }*@
 
         }
 

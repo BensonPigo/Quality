@@ -1,5 +1,6 @@
 using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
+using DatabaseObject;
 using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ViewModel.FinalInspection;
@@ -1359,6 +1360,11 @@ where CustPONO = @CustPONO
                 parameter.Add("@StyleID", request.StyleID);
             }
 
+            if (request.ExcludeJunk)
+            {
+                whereFinalInspection += @" and f.InspectionResult <> 'Junk' ";
+            }
+
             string sqlGetData = $@"
 
 select  ID,
@@ -1411,6 +1417,11 @@ where   1 = 1 {whereFinalInspection}
             string whereOrder = string.Empty;
             string whereFinalInspection = string.Empty;
 
+            if (request.ExcludeJunk)
+            {
+                whereFinalInspection = " where f.InspectionResult <> 'Junk' ";
+            }
+
             string sqlGetData = $@"
 --預設抓兩百
 select distinct　top 200  f.ID,fo.OrderID,f.AddDate
@@ -1451,6 +1462,7 @@ outer apply(
 		where c.ID = f.ID
 	), 'Y', 'N')
 )c 
+{whereFinalInspection}
 order by f.AddDate DESC
 
 drop table #default ,#tmpOrderArticle
@@ -1828,14 +1840,14 @@ drop table #tmpStyleInfo
         {
             SQLParameterCollection parameter = new SQLParameterCollection();
             string sqlGetData = @"
-declare @FromDateTransferToP88 date
-select @FromDateTransferToP88 = FromDateTransferToP88 from system
+declare @FinalInspFromDateTransferToP88 date
+select @FinalInspFromDateTransferToP88 = FinalInspFromDateTransferToP88 from system
 
 select  ID
 from Finalinspection with (nolock)
 where   IsExportToP88 = 0 and
         InspectionResult in ('Pass', 'Fail') and
-        submitdate >= @FromDateTransferToP88 and
+        submitdate >= @FinalInspFromDateTransferToP88 and
         InspectionStage = 'Final' and
         exists (select 1 from Production.dbo.Orders o with (nolock) where o.CustPONo = Finalinspection.CustPONO and o.BrandID in ('Adidas'))
 
@@ -1881,13 +1893,13 @@ where a.id = @ID
         {
             SQLParameterCollection parameter = new SQLParameterCollection();
             string sqlGetData = @"
-declare @FromDateTransferToP88 date
-select @FromDateTransferToP88 = FromDateTransferToP88 from system
+declare @EOLInlineFromDateTransferToP88 date
+select @EOLInlineFromDateTransferToP88 = EOLInlineFromDateTransferToP88 from system
 
 select  ID
 from InspectionReport with (nolock)
 where   IsExportToP88 = 0 and
-        (AddDate >= @FromDateTransferToP88 or EditDate >= @FromDateTransferToP88) and
+        (AddDate >= @EOLInlineFromDateTransferToP88 or EditDate >= @EOLInlineFromDateTransferToP88) and
         exists (select 1 from Production.dbo.Orders o with (nolock) where o.CustPONo = InspectionReport.CustPONO and o.BrandID in ('Adidas'))
 
 ";
@@ -1936,13 +1948,13 @@ where a.id = @ID
         {
             SQLParameterCollection parameter = new SQLParameterCollection();
             string sqlGetData = @"
-declare @FromDateTransferToP88 date
-select @FromDateTransferToP88 = FromDateTransferToP88 from system
+declare @EOLInlineFromDateTransferToP88 date
+select @EOLInlineFromDateTransferToP88 = EOLInlineFromDateTransferToP88 from system
 
 select  ID
 from InlineInspectionReport with (nolock)
 where   IsExportToP88 = 0 and
-        (AddDate >= @FromDateTransferToP88 or EditDate >= @FromDateTransferToP88) and
+        (AddDate >= @EOLInlineFromDateTransferToP88 or EditDate >= @EOLInlineFromDateTransferToP88) and
         exists (select 1 from Production.dbo.Orders o with (nolock) where o.CustPONo = InlineInspectionReport.CustPONO and o.BrandID in ('Adidas'))
 
 
@@ -2021,6 +2033,23 @@ where   IsExportToP88 = 0 and
                     throw ex;
                 }
             }
+        }
+
+        public BaseResult UpdateJunk(string ID)
+        {
+            SQLParameterCollection Parameter = new SQLParameterCollection() 
+            {
+                { "@FinalInspectionID", DbType.String, ID },
+            };
+
+            string sqlCmd = "Update FinalInspection set InspectionResult = 'Junk' where ID = @FinalInspectionID and SubmitDate is null and InspectionResult = 'On-going'";
+            int r = ExecuteNonQuery(CommandType.Text, sqlCmd, Parameter);
+            if (r == 0)
+            {
+                return new BaseResult { Result = false, ErrorMessage = "Update Junk Fail" };
+            }
+
+            return new BaseResult { Result = true };
         }
     }
 }

@@ -156,10 +156,19 @@
             // blob:http表示為上傳圖檔
             if (before.src.indexOf('blob:http') > -1) {
 
-                const file = document.querySelector(`#BeforeUpload`).files[0];
-                var base64 = await convertFile(file);
-                before = base64.replace("data:image/jpg;base64,", "data:image/png;base64,").replace("data:image/jpeg;base64,", "data:image/png;base64,");
-                BeforePicturePic = before;
+                if (document.querySelector(`#BeforeUpload`).files.length > 0) {
+                    const file = document.querySelector(`#BeforeUpload`).files[0];
+                    var base64 = await convertFile(file);
+                    before = base64.replace("data:image/jpg;base64,", "data:image/png;base64,").replace("data:image/jpeg;base64,", "data:image/png;base64,");
+                    BeforePicturePic = before;
+                }
+                else {
+                    const blobUrl = document.querySelector(`#BeforePic`).src;
+                    const blob = await fetch(blobUrl).then(res => res.blob());
+                    var base64 = await convertFile(blob);
+                    before = base64.replace("data:image/jpg;base64,", "data:image/png;base64,").replace("data:image/jpeg;base64,", "data:image/png;base64,");
+                    BeforePicturePic = before;
+                }
             }
             else {
                 BeforePicturePic = before.src;
@@ -167,10 +176,19 @@
 
             if (after.src.indexOf('blob:http') > -1) {
 
-                const file = document.querySelector(`#AfterUpload`).files[0];
-                var base64 = await convertFile(file);
-                after = base64.replace("data:image/jpg;base64,", "data:image/png;base64,").replace("data:image/jpeg;base64,", "data:image/png;base64,");
-                AfterPicturePic = after;
+                if (document.querySelector(`#AfterUpload`).files.length > 0) {
+                    const file = document.querySelector(`#AfterUpload`).files[0];
+                    var base64 = await convertFile(file);
+                    after = base64.replace("data:image/jpg;base64,", "data:image/png;base64,").replace("data:image/jpeg;base64,", "data:image/png;base64,");
+                    AfterPicturePic = after;
+                }
+                else {
+                    const blobUrl = document.querySelector(`#AfterPic`).src;
+                    const blob = await fetch(blobUrl).then(res => res.blob());
+                    var base64 = await convertFile(blob);
+                    after = base64.replace("data:image/jpg;base64,", "data:image/png;base64,").replace("data:image/jpeg;base64,", "data:image/png;base64,");
+                    AfterPicturePic = after;
+                }
             }
             else {
                 AfterPicturePic = after.src;

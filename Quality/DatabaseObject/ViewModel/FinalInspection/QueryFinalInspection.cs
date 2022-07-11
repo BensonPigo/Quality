@@ -10,10 +10,10 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string SP { get; set; }
         public string CustPONO { get; set; }
         public string StyleID { get; set; }
-        public string InspectionResult { get; set; }
-
+        public string InspectionResult { get; set; }        
         public DateTime? AuditDateStart { get; set; }
         public DateTime? AuditDateEnd { get; set; }
+        public bool ExcludeJunk { get; set; }
     }
 
     public class QueryFinalInspection

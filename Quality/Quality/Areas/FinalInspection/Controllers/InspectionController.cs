@@ -582,6 +582,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             return View(addDefct);
         }
 
+        [SessionAuthorizeAttribute]
         public ActionResult DefectPicture(string DetailUkey, string RowIndex)
         {
             DetailUkey = DetailUkey == null || DetailUkey == string.Empty ? "0" : DetailUkey;
@@ -597,7 +598,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             if (TmpFinalInspectionDefectItem_List != null)
             {
                 // DB有的就用Ukey
-                if (FinalInspection_DetailUkey != 0)
+                if (FinalInspection_DetailUkey > 0)
                 {
                     foreach (var item in TmpFinalInspectionDefectItem_List.Where(o => o.Ukey == FinalInspection_DetailUkey))
                     {
@@ -627,6 +628,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             return View("FinalInspection_Picture", model);
         }
 
+        [SessionAuthorizeAttribute]
         public ActionResult AddDefectTakePicture(string DetailUkey, string RowIndex)
         {
             ViewData["DetailUkey"] = DetailUkey;
@@ -751,6 +753,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             return View(model);
         }
 
+        [SessionAuthorizeAttribute]
         public ActionResult BATakePicture(string DetailUkey, string RowIndex)
         {
             ViewData["DetailUkey"] = DetailUkey;
@@ -758,6 +761,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             return View("TakePicture");
         }
 
+        [SessionAuthorizeAttribute]
         public ActionResult BAPicture(string DetailUkey, string RowIndex)
         {
             DetailUkey = DetailUkey == null || DetailUkey == string.Empty ? "0" : DetailUkey;
@@ -775,7 +779,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             if (TmpBACriteriaItem_List != null)
             {
                 // DB有的就用Ukey
-                if (FinalInspection_DetailUkey != 0)
+                if (FinalInspection_DetailUkey > 0)
                 {
                     foreach (var item in TmpBACriteriaItem_List.Where(o => o.Ukey == FinalInspection_DetailUkey))
                     {

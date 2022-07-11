@@ -182,7 +182,8 @@ and o.SeasonID = @SeasonID";
 
             StringBuilder SbSql = new StringBuilder();
             SbSql.Append($@"
-select r.OrderID,o.OrderTypeID, r.PMS_RFTCommentsID, r.Comnments
+select r.OrderID,o.OrderTypeID, r.PMS_RFTCommentsID
+    , Comnments = replace(r.Comnments ,Char(13) ,'' )
 	,o.StyleID
 	,Article = oa.Val
 	,SizeCode  = os.Val
@@ -224,7 +225,7 @@ select SampleStage = a.OrderTypeID
 from #tmpBase a--(select distinct OrderTypeID,PMS_RFTCommentsID from #tmpBase) a
 outer apply(
 	select Comnments = stuff((
-		select concat(char(10), Comnments)
+		select ',' +  Comnments
 		from #tmpBase b
 		where a.OrderTypeID = b.OrderTypeID and a.PMS_RFTCommentsID = b.PMS_RFTCommentsID
 		and Comnments <> ''

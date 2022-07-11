@@ -40,6 +40,9 @@
         h4{
             font-size:1rem;
         }
+        .ColTitle{
+            text-align:center;
+        }
     </style>
 }
 <div class="DownWhiteBackgrond">
@@ -53,7 +56,16 @@
                     @Html.TextBox("RejectQty", Model.RejectQty, new { @type = "number", @name= "addDefct.RejectQty", @style = "width:10vw", @Max = Model.MaxRejectQty, @class = "form-control center-block", @onchange = $"value=QtyCheck(value,{Model.MaxRejectQty})" })
                 </h1>
             </div>
-            <table id="CheckListTable" class="cell-border" style="width:100%"></table>
+            <table id="CheckListTable" class="cell-border" style="width:100%">
+                <tr>
+                    <td>
+                        111
+                    </td>
+                    <td>
+                        222
+                    </td>
+                </tr>
+            </table>
         </div>
         <div style="width:100%">
             <input type="hidden" id="goPage" name="goPage">
@@ -174,7 +186,7 @@
                 }
             }
 
-            adata.push([null, result[keyCount], temp])
+            adata.push([null, result[keyCount], 'Defect Area', 'Reposibility', temp])
             keyCount++
         }
 
@@ -189,7 +201,9 @@
                 destroy: true,
                 columnDefs: [
                     { targets: 0, width: "2%", orderable: false },
-                    { targets: 1, width: "98%", orderable: false },
+                    { targets: 1, width: "38%", orderable: false },
+                    { targets: 2, width: "30%", orderable: false },
+                    { targets: 3, width: "30%", orderable: false },
                 ],
                 columns: [
                     {
@@ -197,6 +211,12 @@
                     },
                     {
                         "style": "color:#E62513",
+                    },
+                    {
+                        "className": "ColTitle",
+                    },
+                    {
+                        "className": "ColTitle",
                     },
                 ],
                 "filter": false,
@@ -208,6 +228,7 @@
                 "scrollCollapse": true,
                 "createdRow": function (row, data, index) {
                     $('td', row).css('background-color', '#FAA7A7');
+
                     //取出DefectType 作為每一個大項的Key
                     $('td', row).attr('ID', 'CheckListTable_' + data[1].split('-')[0]);
                 }
@@ -265,7 +286,7 @@
         });
 
         function format(d) {
-            var list = d[2];
+            var list = d[4];
             var sTr = "";
 
             $(list).each(function (index, value) {

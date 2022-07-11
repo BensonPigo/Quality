@@ -251,9 +251,9 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td><h5>Special Mark</h5></td>
+                                <td><h5>Teamwear</h5></td>
                                 <td>
-                                    @Html.TextBoxFor(o => o.garmentTest.SpecialMark, "", new { @readonly = "readonly" })
+                                    @Html.TextBoxFor(o => o.garmentTest.Teamwear, "", new { @readonly = "readonly" })
                                 </td>
                                 <td><h5>Earliest Offline</h5></td>
                                 <td>
@@ -335,6 +335,11 @@
                                 string trClass = Model.garmentTest_Details == null || Model.garmentTest_Details.Count == 0 ? "display-None" : "";
                                 string washName = "701";
                                 if (Model != null && Model.garmentTest_Details != null && Model.garmentTest_Details.Count() > 0)
+                                {
+                                    // garmentTest_Detail不為空，Model.garmentTest一定不為NULL
+                                    washName = Model.garmentTest.WashName;
+                                }
+                                else if (Model.garmentTest != null)
                                 {
                                     washName = Model.garmentTest.WashName;
                                 }
