@@ -1011,9 +1011,28 @@ namespace BusinessLogicLayer.Service
                 // 預設頁在第5頁，前4頁是用來複製的格式，最後在刪除
                 int defaultSheet = 5;
 
-                #region Set Picture
+                #region Set Picture              
+                string imgPath_Signature = string.Empty;
                 string imgPath_BeforePicture = string.Empty;
                 string imgPath_AfterPicture = string.Empty;
+                if (dtOven.Rows[0]["Signature"] != DBNull.Value)
+                {
+                    byte[] bytes = (byte[])dtOven.Rows[0]["Signature"];
+                    MemoryStream ms = new MemoryStream(bytes);
+                    Image img = Image.FromStream(ms);
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    if (IsTest.ToLower() == "true")
+                    {
+                        imgPath_Signature = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                    }
+                    else
+                    {
+                        imgPath_Signature = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                    }
+
+                    img.Save(imgPath_Signature);
+                }
+
                 if (dtOven.Rows[0]["TestBeforePicture"] != DBNull.Value)
                 {
                     byte[] bytes = (byte[])dtOven.Rows[0]["TestBeforePicture"];
@@ -1043,7 +1062,7 @@ namespace BusinessLogicLayer.Service
 
                 // 細項
                 int headerRow = 9; // 表頭那頁前9列為固定
-                int signatureRow = 4; // 簽名有4列
+                int signatureRow = 5; // 簽名有5列
 
                 string signature = dtOven.Rows[0]["InspectorName"].ToString();
                 Excel.Worksheet worksheetDetail = excel.ActiveWorkbook.Worksheets[1];
@@ -1063,23 +1082,28 @@ namespace BusinessLogicLayer.Service
                     // 細項資料
                     this.SetDetailData(worksheet, j + headerRow + 1, dr[j]);
                 }
+                worksheet.get_Range($"O10:O{dr.Length + 10}").WrapText = true;
                 worksheet.Cells.EntireRow.AutoFit();
 
                 // 簽名格子塞入後的Row Index
                 int afterSignatureRow;
 
+                Excel.Range cell;
                 Excel.Range paste1 = worksheet.get_Range($"A{dr.Length + headerRow + 1}", Type.Missing);
-                Excel.Range r1 = worksheetSignature.get_Range("A1:A4").EntireRow;
+                Excel.Range r1 = worksheetSignature.get_Range("A1:A5").EntireRow;
                 paste1.Insert(Excel.XlInsertShiftDirection.xlShiftDown, r1.Copy(Type.Missing));
-                worksheet.Cells[dr.Length + headerRow + 3, 13] = signature;
+                if (!string.IsNullOrEmpty(imgPath_Signature))
+                {
+                    cell = worksheet.Cells[dr.Length + headerRow + 3, 14];
+                    worksheet.Shapes.AddPicture(imgPath_Signature, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top + 4, 100, 24);
+                }
+                worksheet.Cells[dr.Length + headerRow + 4, 13] = signature;
                 afterSignatureRow = dr.Length + headerRow + signatureRow;
-
 
                 Excel.Range paste2 = worksheet.get_Range($"A{afterSignatureRow + 1}", Type.Missing);
                 Excel.Range r2 = worksheetPicture.get_Range("A1:A20").EntireRow;
                 paste2.Insert(Excel.XlInsertShiftDirection.xlShiftDown, r2.Copy(Type.Missing));
 
-                Excel.Range cell;
                 if (!string.IsNullOrEmpty(imgPath_BeforePicture))
                 {
                     cell = worksheet.Cells[afterSignatureRow + 3, 2];
