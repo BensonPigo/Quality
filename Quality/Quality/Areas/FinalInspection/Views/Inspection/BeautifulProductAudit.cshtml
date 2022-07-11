@@ -117,24 +117,11 @@
         }
 
         function OpenPicture(DetailUkey, RowIndex) {
-
-            // Ukey = -1代表還沒有這筆Detail紀錄
-            if (DetailUkey == -1) {
-                window.open('@Url.Action("BAPicture")?RowIndex=' + RowIndex, "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
-            }
-            else {
-                window.open('@Url.Action("BAPicture")?DetailUkey=' + DetailUkey, "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
-            }
+            window.open('@Url.Action("BAPicture")?RowIndex=' + RowIndex+'&DetailUkey=' + DetailUkey, "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
         }
 
         function ScreenShot(DetailUkey, RowIndex) {
-
-            if (DetailUkey == -1) {
-                window.open('@Url.Action("BATakePicture")?RowIndex=' + RowIndex, "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
-            }
-            else {
-                window.open('@Url.Action("BATakePicture")?DetailUkey=' + DetailUkey, "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
-            }
+            window.open('@Url.Action("BATakePicture")?RowIndex=' + RowIndex +'&DetailUkey=' + DetailUkey, "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
         }
 
         function GetImage(Data, ImgSource) {
