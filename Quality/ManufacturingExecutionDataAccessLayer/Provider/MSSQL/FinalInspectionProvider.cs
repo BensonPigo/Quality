@@ -1603,8 +1603,7 @@ begin
     where   exists( select 1 
                     from InlineInspectionReport_Breakdown irb with (nolock) 
                     where   irb.InlineInspectionReportID = @ID and
-                            irb.OrderID = oq.ID and
-                            irb.Article = oq.Article)
+                            irb.OrderID = oq.ID )
     group by oq.Article, oq.SizeCode    
     
     select  Article,
@@ -1614,16 +1613,17 @@ begin
     into #tmpSizeRatio
     from    #tmpArticleSize
 
-    select  Article,
-            [Qty] = sum(isnull(PassQty, 0) + isnull(RejectQty, 0))
+    select  ta.Article,
+            [Qty] = sum(isnull(irb.PassQty, 0) + isnull(irb.RejectQty, 0))
     into #inlineArticle
-    from    InlineInspectionReport_Breakdown with (nolock)
-    where InlineInspectionReportID = @ID
-    group by Article
+    from    (select distinct Article from #tmpArticleSize) ta
+    left join InlineInspectionReport_Breakdown irb with (nolock) on irb.Article = ta.Article and irb.InlineInspectionReportID = @ID
+    group by ta.Article
 
     select	Article,
 			SizeCode,
-			[ShipQty] = case when isLast = 0 then TotalQty - LAG(GrandQty, 1, 0) OVER (PARTITION BY Article ORDER BY Seq)
+			[ShipQty] = case when ShipQty = 0 then 0
+                             when isLast = 0 then TotalQty - LAG(GrandQty, 1, 0) OVER (PARTITION BY Article ORDER BY Seq)
 						else ShipQty end
 	from (	select  ia.Article,
 			        sr.SizeCode,
@@ -1639,12 +1639,16 @@ begin
 end
 else
 begin
-    select  Article,
-            SizeCode,
-            [ShipQty] = sum(isnull(PassQty, 0) + isnull(RejectQty, 0))
-    from    InspectionReport_Breakdown with (nolock)
-    where InspectionReportID = @ID
-    group by Article, SizeCode
+    select  oq.Article,
+            oq.SizeCode,
+            [ShipQty] = sum(isnull(irb.PassQty, 0) + isnull(irb.RejectQty, 0))
+    from    Production.dbo.Order_Qty oq with (nolock)
+    left join InspectionReport_Breakdown irb with (nolock) on   irb.InspectionReportID = @ID and 
+                                                                irb.OrderID = oq.ID and 
+                                                                irb.Article = oq.Article and
+                                                                irb.SizeCode = oq.SizeCode
+    where   oq.ID in (select OrderID from InspectionReport_Breakdown where InspectionReportID = @ID)
+    group by oq.Article, oq.SizeCode
 end
 
 select	s.StyleName,
