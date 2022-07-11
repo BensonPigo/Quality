@@ -140,25 +140,49 @@
                 const fileItems = $('.FileItem');
                 var idxx = 0;
 
-                // 使用for of迴圈，可以讓每一次lool都await，完全等待完畢後才繼續後續行為
-                for (const fileItem of fileItems) {
-                    const file = document.querySelector(`#UploadPic`).files[idxx];
-                    var Rmk = $(`#Rmk${idxx}`).val();
+                // 如果上傳了圖片後，有再點上傳物件Dom，會使得document.querySelector(`#UploadPic`).files被清空，因此需要判斷是否被清空，被清空的話則抓畫面上的圖片即可
+                // 其實也可以只抓畫面上的圖片，不過兩個作法不一樣，一個是透過FileReader取得Base 64，一個是從blob URL轉成Base 64，就當作筆記都留著
+                if (document.querySelector(`#UploadPic`).files.length > 0) {
 
-                    // blob轉成base64方式，請參考 https://ithelp.ithome.com.tw/articles/10198431
-                    // await必須包在async function裡面
-                    var base64 = await convertFile(file);
+                    // 使用for of迴圈，可以讓每一次lool都await，完全等待完畢後才繼續後續行為
+                    for (const fileItem of fileItems) {
+                        const file = document.querySelector(`#UploadPic`).files[idxx];
+                        var Rmk = $(`#Rmk${idxx}`).val();
+
+                        // blob轉成base64方式，請參考 https://ithelp.ithome.com.tw/articles/10198431
+                        // await必須包在async function裡面
+                        var base64 = await convertFile(file);
 
 
-                    var Picture = {
-                        Ukey: '@DetailUkey',
-                        RowIndex: '@RowIndex',
-                        TempImage: base64.replace("data:image/jpg;base64,", "").replace("data:image/jpeg;base64,", "").replace("data:image/png;base64,", ""),
-                        TempRemark: Rmk,
+                        var Picture = {
+                            Ukey: '@DetailUkey',
+                            RowIndex: '@RowIndex',
+                            TempImage: base64.replace("data:image/jpg;base64,", "").replace("data:image/jpeg;base64,", "").replace("data:image/png;base64,", ""),
+                            TempRemark: Rmk,
+                        }
+                        PictureList.push(Picture);
+
+                        idxx += 1;
                     }
-                    PictureList.push(Picture);
+                }
+                else {
+                    for (const fileItem of fileItems) {
+                        const blobUrl = document.querySelector(`#ImgPic${idxx}`).src;
+                        const blob = await fetch(blobUrl).then(res => res.blob());
+                        var Rmk = $(`#Rmk${idxx}`).val();
 
-                    idxx += 1;
+                        var base64 = await convertFile(blob);
+
+                        var Picture = {
+                            Ukey: '@DetailUkey',
+                            RowIndex: '@RowIndex',
+                            TempImage: base64.replace("data:image/jpg;base64,", "").replace("data:image/jpeg;base64,", "").replace("data:image/png;base64,", ""),
+                            TempRemark: Rmk,
+                        }
+                        PictureList.push(Picture);
+
+                        idxx += 1;
+                    }
                 }
 
                 window.opener.GetImage(PictureList, ImgSource);
