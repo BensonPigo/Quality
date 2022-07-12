@@ -234,7 +234,7 @@ from Orders o WITH(NOLOCK)
 inner join Style s WITH(NOLOCK) on s.ID = o.StyleID AND o.BrandID = s.BrandID AND o.SeasonID = s.SeasonID
 where o.Category = 'S'
 and o.OnSiteSample = 0 
-and (o.OrderTypeID <> 'SMS1' or o.OrderTypeID <> 'SMS2' or o.OrderTypeID <> 'SMS3' or o.OrderTypeID <> 'Presell')
+and (o.OrderTypeID <> 'SMS1' and o.OrderTypeID <> 'SMS2' and o.OrderTypeID <> 'SMS3' and o.OrderTypeID <> 'Presell')
 and s.BrandID = @BrandID
 and s.SeasonID = @SeasonID
 and s.ID = @StyleID
@@ -273,7 +273,7 @@ or r2.OrderID in (
  left join #tmp_Season t2 WITH (NOLOCK) on s2.BrandID = t2.BrandID and s2.SeasonID = t2.ID	 
  where t.SEQ >= t2.SEQ
  and o.OnSiteSample = 0 
- and (o.OrderTypeID <> 'SMS1' or o.OrderTypeID <> 'SMS2' or o.OrderTypeID <> 'SMS3' or o.OrderTypeID <> 'Presell')
+ and (o.OrderTypeID <> 'SMS1' and o.OrderTypeID <> 'SMS2' and o.OrderTypeID <> 'SMS3' and o.OrderTypeID <> 'Presell')
  and s.BrandID = @BrandID
  and s.SeasonID = @SeasonID
  and s.ID = @StyleID

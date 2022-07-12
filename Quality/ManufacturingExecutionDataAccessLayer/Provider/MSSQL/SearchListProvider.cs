@@ -839,7 +839,7 @@ WHERE w.Result <> ''
                     break;
             }
 
-            return ExecuteList<SearchList_Result>(CommandType.Text, SbSql.ToString(), objParameter);
+            return ExecuteList<SearchList_Result>(CommandType.Text, SbSql.ToString(), objParameter, 90);
         }
     }
 }
