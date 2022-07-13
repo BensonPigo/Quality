@@ -1536,7 +1536,8 @@ where   ID = @FinalInspectionID
 [Line] = SUBSTRING(r.Line,1, 255),
 [Operation] = SUBSTRING(r.Operation,1, 255),
 [Size] = '',
-[WFT]=''
+[WFT]='',
+[EndlineCGradeQty] = Breakdown.RejectQty - Breakdown.FixQty
 ";
             }
             else
@@ -1549,7 +1550,8 @@ where   ID = @FinalInspectionID
 [Size] = (SELECT val =  Stuff((select distinct concat( ',', isb.SizeCode) 
                 from InspectionReport_Breakdown isb with (nolock)
                 where isb.InspectionReportID = r.ID FOR XML PATH('')),1,1,'')),
-[WFT]= r.WFT
+[WFT]= r.WFT,
+r.EndlineCGradeQty
 ";
             }
 
