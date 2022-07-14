@@ -44,13 +44,13 @@ namespace BusinessLogicLayer.Service.Tests
                 FinalInspectionService finalInspectionService = new FinalInspectionService();
                 PivotTransferRequest pivotTransferRequest = new PivotTransferRequest()
                 {
-                    InspectionID = "MA3CH22052635",
-                    InspectionType = "EndlineInspection",
+                    InspectionID = "SPSCH22070270",
+                    InspectionType = "FinalInspection",
                     BaseUri = "https://adidasstage4.pivot88.com",
                     RequestUri = "rest/operation/v1/inspection_reports/unique_key:",
                     Headers = new Dictionary<string, string>() { { "api-key", "64158338-5de2-451e-aa72-3fa470fdf4cb" } }
                 };
-                List<SentPivot88Result> sentPivot88Results = finalInspectionService.SentPivot88(pivotTransferRequest);
+                List<SentPivot88Result> sentPivot88Results = finalInspectionService.SentPivot88ForKMTest(pivotTransferRequest);
                 Assert.IsTrue(true);
             }
             catch (Exception ex)
