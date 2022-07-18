@@ -208,70 +208,168 @@ where   1 = 1 {sqlWhere}
 
         public IList<StyleResult_SampleRFT> Get_StyleResult_SampleRFT(StyleResult_Request styleResult_Request)
         {
-            SQLParameterCollection listPar = new SQLParameterCollection();
-            string sqlWhere = string.Empty;
-            string sqlCol = string.Empty;
-
-            if (!string.IsNullOrEmpty(styleResult_Request.BrandID))
-            {
-                sqlWhere += " and s.BrandID = @BrandID";
-            }
-
-            if (!string.IsNullOrEmpty(styleResult_Request.SeasonID))
-            {
-                sqlWhere += " and s.SeasonID = @SeasonID";
-            }
-
-            if (!string.IsNullOrEmpty(styleResult_Request.StyleID))
-            {
-                sqlWhere += " and s.ID = @StyleID";
-            }
-
+            SQLParameterCollection listPar = new SQLParameterCollection();  
             listPar.Add(new SqlParameter("@StyleID", styleResult_Request.StyleID));
             listPar.Add(new SqlParameter("@BrandID", styleResult_Request.BrandID));
             listPar.Add(new SqlParameter("@SeasonID", styleResult_Request.SeasonID));
 
             string sqlGet_StyleResult_Browse = $@"
+select ID
+	, BrandID
+	, SEQ = ROW_NUMBER() over(order by month)
+into #tmp_Season
+from Season
+where BrandID = @BrandID
+and Len(Month) > 4
+
 select SP = o.ID
 	,SampleStage = o.OrderTypeID
 	,Factory = o.FactoryID
 	,Delivery = o.BuyerDelivery
 	,o.SCIDelivery
-	,InspectedQty = Inspected.val
-	,RFT = Cast( Cast( IIF(Inspected.val = 0 , 0 , ROUND( ( RFT.val * 1.0 / Inspected.val ) * 100 ,2) ) as numeric(5,2)) as varchar )
-	,BAProduct = BAProduct.val
-	,BAAuditCriteria  = Cast( Cast( IIF(Inspected.val = 0, 0, ROUND(BAProduct.val * 1.0 / Inspected.val * 5 ,1) )as numeric(2,1)) as varchar )
+	,StyleUkey = s.Ukey
+	,o.BrandID
+INTO #tmp
 from Orders o WITH(NOLOCK)
 inner join Style s WITH(NOLOCK) on s.ID = o.StyleID AND o.BrandID = s.BrandID AND o.SeasonID = s.SeasonID
+where o.Category = 'S'
+and o.OnSiteSample = 0 
+and (o.OrderTypeID <> 'SMS1' and o.OrderTypeID <> 'SMS2' and o.OrderTypeID <> 'SMS3' and o.OrderTypeID <> 'Presell')
+and s.BrandID = @BrandID
+and s.SeasonID = @SeasonID
+and s.ID = @StyleID
+
+select * 
+into #tmp_NonSIZESET
+from #tmp 
+where SampleStage <> 'SIZE SET'
+
+select * 
+into #tmp_SIZESET
+from #tmp 
+where SampleStage = 'SIZE SET'
+and BrandID in ('ADIDAS', 'REEBOK')
+
+select *, SEQ = 0
+into #tmpRFT_Inspection_Base_NonSIZESET
+from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection  r WITH (NOLOCK)
+where EXISTS (select SP from #tmp_NonSIZESET where SP = r.OrderID)
+
+select  r2.*
+, SEQ = case when s.SeasonID = @SeasonID then 0
+	else (select SEQ from #tmp_Season where BrandID = @BrandID and ID = @SeasonID) - t.SEQ 
+	end 
+into #tmpRFT_Inspection_Base_SIZESET
+from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection r2 WITH (NOLOCK) 
+left join Style s WITH (NOLOCK) on r2.StyleUkey = s.Ukey
+left join #tmp_Season t WITH (NOLOCK) on s.BrandID = t.BrandID and s.SeasonID = t.ID
+where exists(select 1 from #tmp_SIZESET where SP = r2.OrderID)
+or r2.OrderID in (
+ select o.ID
+ from Style s WITH (NOLOCK) 
+ left join Style s2 WITH (NOLOCK) on s2.BrandID = s.BrandID  and s2.ID = s.ID	 
+ left join Orders o WITH (NOLOCK) on s2.Ukey = o.StyleUkey
+ left join #tmp_Season t WITH (NOLOCK) on s.BrandID = t.BrandID and s.SeasonID = t.ID
+ left join #tmp_Season t2 WITH (NOLOCK) on s2.BrandID = t2.BrandID and s2.SeasonID = t2.ID	 
+ where t.SEQ >= t2.SEQ
+ and o.OnSiteSample = 0 
+ and (o.OrderTypeID <> 'SMS1' and o.OrderTypeID <> 'SMS2' and o.OrderTypeID <> 'SMS3' and o.OrderTypeID <> 'Presell')
+ and s.BrandID = @BrandID
+ and s.SeasonID = @SeasonID
+ and s.ID = @StyleID
+) 
+
+insert into #tmp(SP, SampleStage, Factory, Delivery, SciDelivery, StyleUkey, BrandID)
+select SP = o.ID
+	,SampleStage = o.OrderTypeID
+	,Factory = o.FactoryID
+	,Delivery = o.BuyerDelivery
+	,o.SCIDelivery
+	,StyleUkey = s.Ukey
+	,o.BrandID
+from Orders o WITH(NOLOCK)
+inner join Style s WITH(NOLOCK) on s.ID = o.StyleID AND o.BrandID = s.BrandID AND o.SeasonID = s.SeasonID
+where exists (select 1 from #tmpRFT_Inspection_Base_SIZESET where OrderID = o.ID)
+and not exists (select 1 from #tmp where SP = o.ID)
+
+select *
+into #tmpRFT_Inspection
+FROM (
+    select *
+    from #tmpRFT_Inspection_Base_NonSIZESET
+    union 
+    select *
+    from #tmpRFT_Inspection_Base_SIZESET
+    where (exists (select 1 from #tmpRFT_Inspection_Base_SIZESET where SEQ = 0) or SEQ = 1)
+     or (not exists (select 1 from #tmpRFT_Inspection_Base_SIZESET where SEQ = 0) and SEQ in (select SEQ = MIN(SEQ) from #tmpRFT_Inspection_Base_SIZESET r  where r.SEQ > 0))
+)a
+
+select *
+into #tmpRFT_Inspection_Detail
+from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection_Detail r WITH (NOLOCK)	
+where ID IN (select ID from #tmpRFT_Inspection)
+
+
+select  SP 
+	,SampleStage 
+	,Factory 
+	,Delivery 
+	,SCIDelivery
+	,InspectedQty = Inspected.val
+	,RFT =  LEFT( CAST( RFT.Val as varchar),5) 
+	,BAProduct = BAProduct.val
+	,BAAuditCriteria  = Cast( Cast( IIF(Inspected.val = 0, 0, ROUND(BAProduct.val * 1.0 / Inspected.val * 5 ,1) )as numeric(2,1)) as varchar )
+ from #tmp t
 outer apply(
-	select val = COUNT(r.ID)
-	from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection r WITH(NOLOCK)
-	where r.OrderID = o.ID
+	SELECT Val = COUNT(ID)
+	FROM (		
+		select r.ID
+		from #tmpRFT_Inspection r
+		where r.OrderID=t.SP
+	)tmp 
 )Inspected
-
 outer apply(
-	select val = COUNT(r.ID)
-	from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection r WITH(NOLOCK)
-	where r.OrderID = o.ID and r.Status='Pass'
+    SELECT Val = ROUND( SUM(Pass) * 1.0  / SUM(Total) * 1.0  * 100, 2)
+    FROM (
+	    select Pass = SUM(IIF(Status = 'Pass',1,0)), Total = COUNT(1)
+		from #tmpRFT_Inspection  rft
+	    WHERE rft.StyleUkey = t.StyleUkey AND rft.OrderID = t.SP
+    ) AllData
 )RFT
-
 outer apply(
 	select val = COUNT(r.ID)
-	from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection r WITH(NOLOCK)
-	where r.OrderID = o.ID 
+	from (
+		
+		select ID, OrderID
+		from #tmpRFT_Inspection 
+		where OrderID=t.SP
+
+	)r
+	where r.OrderID = t.SP
 	AND (
 		NOT EXISTS(--沒有 RFT_Inspeciton_Detail
 			select 1
-			from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection_Detail rd WITH(NOLOCK) where r.ID = rd.ID	
+			from (				
+				select  rd.ID
+				FROM #tmpRFT_Inspection_Detail rd WITH(NOLOCK)
+				where r.ID = rd.ID	
+			)tmp
 		)
 		or NOT EXISTS( --RFT_Inspection_Detail 所有資料 PMS_RFTACriterialID 皆為空
 			select 1
-			from [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection_Detail rd WITH(NOLOCK) where r.ID = rd.ID AND rd.PMS_RFTBACriteriaID != ''
+			from (
+				
+				select  rd.ID	
+				FROM #tmpRFT_Inspection_Detail rd WITH(NOLOCK)
+				where r.ID = rd.ID	AND rd.PMS_RFTBACriteriaID != ''
+			)tmp
 		)
 	)
 )BAProduct
-where o.Category = 'S'
-{sqlWhere}
+
+drop table #tmp, #tmp_NonSIZESET, #tmp_Season, #tmp_SIZESET, #tmpRFT_Inspection, #tmpRFT_Inspection_Base_NonSIZESET, #tmpRFT_Inspection_Base_SIZESET, #tmpRFT_Inspection_Detail
+
+
 ";
             return ExecuteList<StyleResult_SampleRFT>(CommandType.Text, sqlGet_StyleResult_Browse, listPar);
         }
@@ -499,111 +597,125 @@ SELECT [Type] = IIF( EXISTS(
 
 
 --Type 450一個Style只會出現一次
-select Article='', Type='450', TestName = 'Seam Breakage'
-,LastResult=(
-	select distinct CASE WHEN g.SeamBreakageResult = 'P' THEN 'Pass'
-				WHEN g.SeamBreakageResult = 'F' THEN 'Fail'
-				ELSE ''
-			END
-	from GarmentTest g WITH(NOLOCK)
-	WHERE g.StyleID = @StyleID
-		AND g.BrandID = @BrandID
-		AND g.SeasonID = @SeasonID
-		AND g.MDivisionid = @MDivisionID
-		AND g.SeamBreakageLastTestDate = (		
-			select MAX(SeamBreakageLastTestDate)
-			from GarmentTest gg WITH(NOLOCK)
-			where gg.StyleID = g.StyleID
-				AND gg.BrandID = g.BrandID
-				AND gg.SeasonID = g.SeasonID
-				AND gg.MDivisionid= g.MDivisionID
-		)
-)
-,LastTestDate=(
-	select distinct g.SeamBreakageLastTestDate 
-	from GarmentTest g WITH(NOLOCK)
-	WHERE g.StyleID = @StyleID
-		AND g.BrandID = @BrandID
-		AND g.SeasonID = @SeasonID
-		AND g.MDivisionid = @MDivisionID
-		AND g.SeamBreakageLastTestDate = (		
-			select MAX(SeamBreakageLastTestDate)
-			from GarmentTest gg WITH(NOLOCK)
-			where gg.StyleID = g.StyleID
-				AND gg.BrandID = g.BrandID
-				AND gg.SeasonID = g.SeasonID
-				AND gg.MDivisionid= g.MDivisionID
-		)
-)
-UNION
-select sa.Article, t.Type
-,TestName = CASE    WHEN t.Type = '451' THEN 'Odour'
-					WHEN  t.Type = '701' THEN 'Garment Wash'
-					WHEN  t.Type = '710' THEN 'Team Wear Wash Test'
-					ELSE ''
-			END
-,LastResult = CASE  WHEN t.Type = '451' THEN (
-	                                                SELECT CASE WHEN Type451.OdourResult = 'P' THEN 'Pass'
-				                                                WHEN Type451.OdourResult = 'F' THEN 'Fail'
-				                                                ELSE ''
-			                                                END
-                                                )
-					WHEN  t.Type = '701' OR t.Type = '710' THEN (
-	                                                                SELECT CASE WHEN Type701_710.WashResult = 'P' THEN 'Pass'
-				                                                                WHEN Type701_710.WashResult = 'F' THEN 'Fail'
-				                                                                ELSE ''
-			                                                                END
-                                                                )
-					ELSE ''
-			END
-,LastTestDate= CASE   WHEN t.Type = '451' THEN Type451.Date
-					  WHEN  t.Type = '701' OR t.Type = '710' THEN Type701_710.Date
-					  ELSE ''
-			   END
-from Style_Article sa WITH(NOLOCK)
-inner join Style s WITH(NOLOCK) ON s.Ukey = sa.StyleUkey
-OUTER APPLY(
-	select * from #Type
-)t
-OUTER APPLY(
-	select g.OdourResult ,g.Date
-	from GarmentTest g WITH(NOLOCK)
-	WHERE g.StyleID = s.ID
-		AND g.BrandID = s.BrandID
-		AND g.SeasonID = s.SeasonID
-		AND g.Article = sa.Article
-		AND g.MDivisionid = @MDivisionID
-		AND g.Date = (		
-			select MAX(Date)
-			from GarmentTest gg WITH(NOLOCK)
-			where gg.StyleID = s.ID
-				AND gg.BrandID = s.BrandID
-				AND gg.SeasonID = s.SeasonID
-				AND gg.Article = sa.Article
-				AND gg.MDivisionid = g.MDivisionID
-		)
-)Type451
-OUTER APPLY(
-	select g.WashResult ,g.Date
-	from GarmentTest g WITH(NOLOCK)
-	WHERE g.StyleID = s.ID
-		AND g.BrandID = s.BrandID
-		AND g.SeasonID = s.SeasonID
-		AND g.Article = sa.Article
-		AND g.MDivisionid = @MDivisionID
-		AND g.Date = (		
-			select MAX(Date)
-			from GarmentTest gg WITH(NOLOCK)
-			where gg.StyleID = s.ID
-				AND gg.BrandID = s.BrandID
-				AND gg.SeasonID = s.SeasonID
-				AND gg.Article = sa.Article
-				AND gg.MDivisionid = g.MDivisionID
-		)
-)Type701_710
-where s.ID = @StyleID
-AND s.BrandID = @BrandID
-AND s.SeasonID = @SeasonID
+select *
+into #tmp_final
+from
+(
+    select Article='', Type='450', TestName = 'Seam Breakage'
+    ,LastResult=(
+	    select distinct CASE WHEN g.SeamBreakageResult = 'P' THEN 'Pass'
+				    WHEN g.SeamBreakageResult = 'F' THEN 'Fail'
+				    ELSE ''
+			    END
+	    from GarmentTest g WITH(NOLOCK)
+	    WHERE g.StyleID = @StyleID
+		    AND g.BrandID = @BrandID
+		    AND g.SeasonID = @SeasonID
+		    AND g.MDivisionid = @MDivisionID
+		    AND g.SeamBreakageLastTestDate = (		
+			    select MAX(SeamBreakageLastTestDate)
+			    from GarmentTest gg WITH(NOLOCK)
+			    where gg.StyleID = g.StyleID
+				    AND gg.BrandID = g.BrandID
+				    AND gg.SeasonID = g.SeasonID
+				    AND gg.MDivisionid= g.MDivisionID
+		    )
+    )
+    ,LastTestDate=(
+	    select distinct g.SeamBreakageLastTestDate 
+	    from GarmentTest g WITH(NOLOCK)
+	    WHERE g.StyleID = @StyleID
+		    AND g.BrandID = @BrandID
+		    AND g.SeasonID = @SeasonID
+		    AND g.MDivisionid = @MDivisionID
+		    AND g.SeamBreakageLastTestDate = (		
+			    select MAX(SeamBreakageLastTestDate)
+			    from GarmentTest gg WITH(NOLOCK)
+			    where gg.StyleID = g.StyleID
+				    AND gg.BrandID = g.BrandID
+				    AND gg.SeasonID = g.SeasonID
+				    AND gg.MDivisionid= g.MDivisionID
+		    )
+    )
+    UNION
+    select sa.Article, t.Type
+    ,TestName = CASE    WHEN t.Type = '451' THEN 'Odour'
+					    WHEN  t.Type = '701' THEN 'Garment Wash'
+					    WHEN  t.Type = '710' THEN 'Team Wear Wash Test'
+					    ELSE ''
+			    END
+    ,LastResult = CASE  WHEN t.Type = '451' THEN (
+	                                                    SELECT CASE WHEN Type451.OdourResult = 'P' THEN 'Pass'
+				                                                    WHEN Type451.OdourResult = 'F' THEN 'Fail'
+				                                                    ELSE ''
+			                                                    END
+                                                    )
+					    WHEN  t.Type = '701' OR t.Type = '710' THEN (
+	                                                                    SELECT CASE WHEN Type701_710.WashResult = 'P' THEN 'Pass'
+				                                                                    WHEN Type701_710.WashResult = 'F' THEN 'Fail'
+				                                                                    ELSE ''
+			                                                                    END
+                                                                    )
+					    ELSE ''
+			    END
+    ,LastTestDate= CASE   WHEN t.Type = '451' THEN Type451.Date
+					      WHEN  t.Type = '701' OR t.Type = '710' THEN Type701_710.Date
+					      ELSE ''
+			       END
+    from Style_Article sa WITH(NOLOCK)
+    inner join Style s WITH(NOLOCK) ON s.Ukey = sa.StyleUkey
+    OUTER APPLY(
+	    select * from #Type
+    )t
+    OUTER APPLY(
+	    select g.OdourResult ,g.Date
+	    from GarmentTest g WITH(NOLOCK)
+	    WHERE g.StyleID = s.ID
+		    AND g.BrandID = s.BrandID
+		    AND g.SeasonID = s.SeasonID
+		    AND g.Article = sa.Article
+		    AND g.MDivisionid = @MDivisionID
+		    AND g.Date = (		
+			    select MAX(Date)
+			    from GarmentTest gg WITH(NOLOCK)
+			    where gg.StyleID = s.ID
+				    AND gg.BrandID = s.BrandID
+				    AND gg.SeasonID = s.SeasonID
+				    AND gg.Article = sa.Article
+				    AND gg.MDivisionid = g.MDivisionID
+		    )
+    )Type451
+    OUTER APPLY(
+	    select g.WashResult ,g.Date
+	    from GarmentTest g WITH(NOLOCK)
+	    WHERE g.StyleID = s.ID
+		    AND g.BrandID = s.BrandID
+		    AND g.SeasonID = s.SeasonID
+		    AND g.Article = sa.Article
+		    AND g.MDivisionid = @MDivisionID
+		    AND g.Date = (		
+			    select MAX(Date)
+			    from GarmentTest gg WITH(NOLOCK)
+			    where gg.StyleID = s.ID
+				    AND gg.BrandID = s.BrandID
+				    AND gg.SeasonID = s.SeasonID
+				    AND gg.Article = sa.Article
+				    AND gg.MDivisionid = g.MDivisionID
+		    )
+    )Type701_710
+    where s.ID = @StyleID
+    AND s.BrandID = @BrandID
+    AND s.SeasonID = @SeasonID
+) a
+
+select t.Article
+	, t.Type
+	, t.TestName
+	, [LastResult] = case when t.LastTestDate is not null then iif(isnull(t.LastResult, '') = '', 'N/A', t.LastResult) else t.LastResult end
+	, t.LastTestDate
+from #tmp_final t
+
+drop table #tmp_final, #Type
 ";
             return ExecuteList<StyleResult_BulkFGT>(CommandType.Text, sqlGet_StyleResult_Browse, listPar);
         }
