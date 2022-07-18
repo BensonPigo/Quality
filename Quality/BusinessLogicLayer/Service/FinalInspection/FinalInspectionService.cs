@@ -650,7 +650,7 @@ namespace BusinessLogicLayer.Service
                 {
                     fields = new
                     {
-                        string_1 = (int)drInspection["RejectQty"] - (int)drInspection["FixQty"],
+                        string_1 = drInspection["EndlineCGradeQty"],
                         string_2 = drInspection["FixQty"],
                         string_3 = drInspection["Shift"],
                         string_4 = drInspection["Operation"].ToString().Split(',').Take(10).JoinToString(","),
