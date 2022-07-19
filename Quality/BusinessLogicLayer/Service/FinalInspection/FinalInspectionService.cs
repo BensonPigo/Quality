@@ -650,7 +650,7 @@ namespace BusinessLogicLayer.Service
                 {
                     fields = new
                     {
-                        string_1 = (int)drInspection["RejectQty"] - (int)drInspection["FixQty"],
+                        string_1 = drInspection["EndlineCGradeQty"],
                         string_2 = drInspection["FixQty"],
                         string_3 = drInspection["Shift"],
                         string_4 = drInspection["Operation"].ToString().Split(',').Take(10).JoinToString(","),
@@ -736,6 +736,160 @@ namespace BusinessLogicLayer.Service
 
             return result;
         }
+
+        public List<SentPivot88Result> SentPivot88ForKMTest(PivotTransferRequest pivotTransferRequest)
+        {
+            List<string> listInspectionID = new List<string>();
+            List<SentPivot88Result> sentPivot88Results = new List<SentPivot88Result>();
+
+            _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+            listInspectionID.Add(pivotTransferRequest.InspectionID);
+
+            if (listInspectionID.Count == 0)
+            {
+                return sentPivot88Results;
+            }
+
+            sentPivot88Results = listInspectionID.Select(inspectionID =>
+            {
+
+                bool isSuccess = true;
+                string errorMsg = string.Empty;
+                string postBody = string.Empty;
+                string requestUri = pivotTransferRequest.RequestUri + "sintex" + inspectionID;
+
+                try
+                {
+                    #region 傳送finalinspection資料
+                    postBody = pivotTransferRequest.InspectionType == "FinalInspection" ?
+                    JsonConvert.SerializeObject(GetPivot88Json(inspectionID)) :
+                    JsonConvert.SerializeObject(GetEndInlinePivot88Json(inspectionID, pivotTransferRequest.InspectionType));
+
+                    WebApiBaseResult webApiBaseResult = WebApiTool.WebApiSend(pivotTransferRequest.BaseUri, requestUri, postBody, HttpMethod.Put, headers: pivotTransferRequest.Headers);
+
+                    switch (webApiBaseResult.webApiResponseStatus)
+                    {
+                        case WebApiResponseStatus.Success:
+                            isSuccess = true;
+                            break;
+                        case WebApiResponseStatus.WebApiReturnFail:
+                            isSuccess = false;
+                            errorMsg = webApiBaseResult.responseContent;
+                            break;
+                        case WebApiResponseStatus.OtherException:
+                            isSuccess = false;
+                            errorMsg = webApiBaseResult.exception.ToString();
+                            break;
+                        case WebApiResponseStatus.ApiTimeout:
+                            isSuccess = false;
+                            errorMsg = "WebAPI timeout";
+                            break;
+                        default:
+                            isSuccess = false;
+                            errorMsg = "????";
+                            break;
+                    }
+                    #endregion
+
+                    #region 傳送圖片
+
+
+                    if (isSuccess)
+                    {
+                        Dictionary<string, byte[]> dicImage = new Dictionary<string, byte[]>();
+
+                        switch (pivotTransferRequest.InspectionType)
+                        {
+                            case "FinalInspection":
+                                dicImage = _FinalInspectionProvider.GetFinalInspectionDefectImage(inspectionID);
+                                break;
+                            case "InlineInspection":
+                                dicImage = _FinalInspectionProvider.GetInlineInspectionDefectImage(inspectionID);
+                                break;
+                            case "EndlineInspection":
+                                dicImage = _FinalInspectionProvider.GetEndLineInspectionDefectImage(inspectionID);
+                                break;
+                            default:
+                                break;
+                        }
+
+                        string requestUploadImgUri = requestUri + "/images/upload";
+                        //string requestUploadImgUri = "rest/operation/v1/inspection_reports/unique_key:sintexSPSCH22020130/images/upload";
+
+                        foreach (KeyValuePair<string, byte[]> imageInfo in dicImage)
+                        {
+                            MultipartFormDataContent contentPost = new MultipartFormDataContent();
+                            contentPost.Add(new StreamContent(new MemoryStream(imageInfo.Value)), "file", imageInfo.Key);
+                            webApiBaseResult = WebApiTool.WebApiSend(pivotTransferRequest.BaseUri, requestUploadImgUri, null, HttpMethod.Post, headers: pivotTransferRequest.Headers, httpContent: contentPost);
+
+                            switch (webApiBaseResult.webApiResponseStatus)
+                            {
+                                case WebApiResponseStatus.Success:
+                                    break;
+                                case WebApiResponseStatus.WebApiReturnFail:
+                                    isSuccess = false;
+                                    errorMsg = webApiBaseResult.responseContent;
+                                    break;
+                                case WebApiResponseStatus.OtherException:
+                                    isSuccess = false;
+                                    errorMsg = webApiBaseResult.exception.ToString();
+                                    break;
+                                case WebApiResponseStatus.ApiTimeout:
+                                    isSuccess = false;
+                                    errorMsg = "WebAPI timeout";
+                                    break;
+                                default:
+                                    isSuccess = false;
+                                    errorMsg = "????";
+                                    break;
+                            }
+
+                            if (!isSuccess)
+                            {
+                                break;
+                            }
+                        }
+                    }
+
+                    #endregion
+
+                    if (isSuccess)
+                    {
+                        _FinalInspectionProvider.UpdateIsExportToP88(inspectionID, pivotTransferRequest.InspectionType);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    isSuccess = false;
+                    errorMsg = ex.ToString();
+                }
+
+                if (!isSuccess)
+                {
+                    AutomationErrMsg automationErrMsg = new AutomationErrMsg();
+                    automationErrMsg.suppID = StaticPivot88.SuppID;
+                    automationErrMsg.moduleName = StaticPivot88.ModuleNameFinalInsp;
+                    automationErrMsg.apiThread = StaticPivot88.APIThreadFinalInsp;
+                    automationErrMsg.errorMsg = errorMsg;
+                    automationErrMsg.json = postBody;
+                    automationErrMsg.addName = "SCIMIS";
+
+                    _AutomationErrMsgProvider = new AutomationErrMsgProvider(Common.ProductionDataAccessLayer);
+                    _AutomationErrMsgProvider.Insert(automationErrMsg);
+                }
+
+                return new SentPivot88Result()
+                {
+                    InspectionID = inspectionID,
+                    isSuccess = isSuccess,
+                    errorMsg = errorMsg,
+                };
+            }).ToList();
+
+            return sentPivot88Results;
+        }
+
         public List<SentPivot88Result> SentPivot88(PivotTransferRequest pivotTransferRequest)
         {
             List<string> listInspectionID = new List<string>();

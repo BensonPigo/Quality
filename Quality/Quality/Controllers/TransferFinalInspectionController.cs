@@ -31,6 +31,22 @@ namespace Quality.Controllers
             }
         }
 
+        [Route("api/TransferFinalInspection/SentPivot88ForKMTest")]
+        [HttpPost]
+        public HttpResponseMessage SentPivot88ForKMTest(PivotTransferRequest pivotTransferRequest)
+        {
+            try
+            {
+                FinalInspectionService finalInspectionService = new FinalInspectionService();
+                List<SentPivot88Result> sentPivot88Results = finalInspectionService.SentPivot88ForKMTest(pivotTransferRequest);
+                return Request.CreateResponse(HttpStatusCode.OK, sentPivot88Results);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.ExpectationFailed, new { result = ex.ToString() });
+            }
+        }
+
         [Route("api/TransferFinalInspection/Imp_EOLInlineInspectionReport")]
         [HttpPost]
         public HttpResponseMessage Imp_EOLInlineInspectionReport()
