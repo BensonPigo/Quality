@@ -218,9 +218,9 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             worksheet.Cells[4, 3] = model.sampleRFTInspection.InspectionTimesText;
 
-            worksheet.Cells[6, 6] = string.Empty;
+            worksheet.Cells[6, 6] = "Sintex";
             worksheet.Cells[6, 10] = model.sampleRFTInspection.FactoryID;
-            worksheet.Cells[6, 14] = model.sampleRFTInspection.CFTNameText;
+            worksheet.Cells[6, 15] = model.sampleRFTInspection.CFTNameText;
 
             worksheet.Cells[7, 6] = model.Setting.Model;
 
@@ -236,12 +236,12 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             worksheet.Cells[12, 6] = model.Setting.CustPONo;
 
-            worksheet.Cells[13, 6] = string.Empty;
+            worksheet.Cells[13, 6] = model.sampleRFTInspection.BrandFTYCode;
 
-            worksheet.Cells[14, 6] = model.Setting.AQLPlan;
-            worksheet.Cells[14, 10] = model.sampleRFTInspection.SampleSize;
-            worksheet.Cells[14, 14] = model.sampleRFTInspection.AcceptQty;
-            worksheet.Cells[14, 16] = model.sampleRFTInspection.RejectQty;
+            worksheet.Cells[14, 6] = model.Setting.InspectionStage == "100%" ? "100%" : model.Setting.AQLPlan;
+            worksheet.Cells[14, 10] = model.Setting.InspectionStage == "100%" ? model.Setting.OrderQty : model.sampleRFTInspection.SampleSize;
+            worksheet.Cells[14, 13] = model.sampleRFTInspection.AcceptQty;
+            worksheet.Cells[14, 17] = model.Setting.InspectionStage == "100%" ? 1 : model.sampleRFTInspection.RejectQty;
 
             worksheet.Cells[15, 6] = model.sampleRFTInspection.CheckFabricApproval ? "V" : string.Empty;
 
@@ -252,6 +252,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             worksheet.Cells[18, 6] = model.sampleRFTInspection.CheckColorShade ? "V" : string.Empty;
             worksheet.Cells[19, 6] = model.sampleRFTInspection.CheckAppearance ? "V" : string.Empty;
             worksheet.Cells[20, 6] = model.sampleRFTInspection.CheckHandfeel ? "V" : string.Empty;
+            worksheet.Cells[21, 6] = model.sampleRFTInspection.CheckHT ? "V" : string.Empty;
 
             worksheet.Cells[18, 10] = model.sampleRFTInspection.CheckFiberContent ? "V" : string.Empty;
             worksheet.Cells[19, 10] = model.sampleRFTInspection.CheckCountryofOrigin ? "V" : string.Empty;
@@ -311,6 +312,8 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             // Pass / Fail  抓到圖形，並插入文字
             worksheet.Cells[46 + copyCnt, 6] = model.Setting.QCInCharge;
+
+            worksheet.Cells[51 + copyCnt, 10] = model.sampleRFTInspection.SubmitDate.HasValue ? model.sampleRFTInspection.SubmitDate.Value.ToShortDateString() : string.Empty;
 
             if (model.sampleRFTInspection.Result == "Pass")
             {

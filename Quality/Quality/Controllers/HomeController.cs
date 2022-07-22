@@ -50,7 +50,7 @@ namespace Quality.Controllers
             List<SelectListItem> FactoryList = new FactoryDashBoardWeb.Helper.SetListItem().ItemListBinding(this.Factorys);
             ViewData["Factorys"] = FactoryList;
 
-            return View();
+            return View(new LogIn_Request());
         }
 
         [HttpPost]
@@ -106,7 +106,7 @@ namespace Quality.Controllers
                 List<SelectListItem> FactoryList = new FactoryDashBoardWeb.Helper.SetListItem().ItemListBinding(this.Factorys);
                 ViewData["Factorys"] = FactoryList;
                 ViewData["Msg"] = result.ErrorMessage;
-                return View("Login");
+                return View("Login", LoginUser);
             }
         }
 

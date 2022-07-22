@@ -21,6 +21,21 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
         public InspectionBySPProvider(SQLDataTransaction tra) : base(tra) { }
         #endregion
 
+        public string GetOrderStyleUnit(string OrderID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+
+            listPar.Add("@OrderID", OrderID);
+
+            string sql = @"
+select StyleUnit
+from Orders
+where ID = @OrderID
+";
+            
+            return  ExecuteScalar(CommandType.Text, sql, listPar).ToString();
+
+        }
         public IList<SampleRFTInspection> Get_SampleRFTInspection(InspectionBySP_ViewModel Req)
         {
             StringBuilder SbSql = new StringBuilder();
@@ -34,10 +49,12 @@ select a.*, b.StyleID ,b.SeasonID ,b.BrandID
                              WHEN a.InspectionTimes = 3  THEN '3/Final' 
                         ELSE Cast(a.InspectionTimes as varchar)
                         END
-    ,WorkNo = wk.Val
+    ,WorkNo = b.StyleID
     ,POID = b.POID
     ,CFTNameText = IIF( p1.Name IS NOT NULL OR p4.Name IS NOT NULL ,ISNULL( p1.Name, p4.Name) , ISNULL( p5.Name, p6.Name) )
-	,MReMail = ISNULL(p2.EMail,p3.EMail)
+	,MReMail = IIF(p2.EMail IS NULL OR p2.EMail = '' ,p3.EMail, p2.EMail)
+    ,b.MDivisionID
+    ,b.BrandFTYCode
 from SampleRFTInspection a
 INNER JOIN MainServer.Production.dbo.Orders b on a.OrderID=b.ID
 
@@ -49,14 +66,14 @@ LEFT JOIN MainServer.Production.dbo.Pass1 p6 ON a.AddName = p6.ID
 
 LEFT JOIN MainServer.Production.dbo.Pass1 p2 ON b.MRHandle = p2.ID
 LEFT JOIN MainServer.Production.dbo.TPEPass1 p3 ON b.MRHandle = p3.ID
-Outer apply(
+/*Outer apply(
 	select Val = STUFF((
 		select DISTINCT ',' + ed.ID
 		from MainServer.Production.dbo.Export_Detail ed 
 		where ed.PoID = b.POID
 		FOR XML PATH('')
 	),1,1,'')
-)wk
+)wk*/
 where 1=1
 
 ");
@@ -107,8 +124,8 @@ AND NOT EXISTS(
 ");
             if (!string.IsNullOrEmpty(Req.OrderID))
             {
-                SbSql.Append($@" AND o.ID = @OrderID ");
-                para.Add("@OrderID", Req.OrderID);
+                SbSql.Append($@" AND o.ID LIKE @OrderID ");
+                para.Add("@OrderID", "%" + Req.OrderID + "%");
             }
 
             if (!string.IsNullOrEmpty(Req.CustPONo))
@@ -146,6 +163,11 @@ AND NOT EXISTS(
             SbSql.Append($@"
 select o.CustPONO, o.StyleID, o.SeasonID, o.BrandID, o.Model , o.OrderTypeID ,o.Qty , FactoryID = o.FtyGroup
     ,Article = Articles.Val
+	,ComboType = ComboType.Val
+	,TopSewingLineID = TopSewingLine.SewingLineID
+	,BottomSewingLineID = BottomSewingLine.SewingLineID
+	,InnerSewingLineID = InnerSewingLine.SewingLineID
+	,OuterSewingLineID = OuterSewingLine.SewingLineID
 from SciProduction_Orders  o
 OUTER APPLY(
 	SELECT Val = STUFF((
@@ -155,6 +177,34 @@ OUTER APPLY(
 		FOR XML PATH ('')
 		),1,1,'')
 )Articles
+outer apply(
+	select Val = STUFF((
+		select DISTINCT ',' + ComboType
+		from MainServer.Production.dbo.SewingSchedule_Detail a
+		where o.ID = a.OrderID
+		FOR XML PATH('')
+	),1,1,'')
+)ComboType
+outer apply(
+	select top 1 SewingLineID
+	from MainServer.Production.dbo.SewingSchedule_Detail a
+	where o.ID = a.OrderID AND a.ComboType='T'
+)TopSewingLine
+outer apply(
+	select top 1 SewingLineID
+	from MainServer.Production.dbo.SewingSchedule_Detail a
+	where o.ID = a.OrderID AND a.ComboType='B'
+)BottomSewingLine
+outer apply(
+	select top 1 SewingLineID
+	from MainServer.Production.dbo.SewingSchedule_Detail a
+	where o.ID = a.OrderID AND a.ComboType='I'
+)InnerSewingLine
+outer apply(
+	select top 1 SewingLineID
+	from MainServer.Production.dbo.SewingSchedule_Detail a
+	where o.ID = a.OrderID AND a.ComboType='O'
+)OuterSewingLine
 where o.ID = @OrderID
 ");
 
@@ -333,6 +383,7 @@ update SampleRFTInspection
           ,CheckAdditionalLabel = @CheckAdditionalLabel
           ,CheckPolytagMarketing = @CheckPolytagMarketing
           ,CheckHangtag = @CheckHangtag
+          ,CheckHT = @CheckHT
           ,CheckPackingMode = @CheckPackingMode
           ,CheckCareLabel = @CheckCareLabel
           ,CheckSecurityLabel = @CheckSecurityLabel
@@ -367,6 +418,7 @@ where   ID = @ID
                     objParameter.Add("@CheckPolytagMarketing", inspection.CheckPolytagMarketing);
                     objParameter.Add("@CheckPackingMode", inspection.CheckPackingMode);
                     objParameter.Add("@CheckHangtag", inspection.CheckHangtag);
+                    objParameter.Add("@CheckHT", inspection.CheckHT);
 
 
                     break;
@@ -1513,7 +1565,7 @@ select distinct oqd.Article, Size = oqd.SizeCode
 		--,d.Side
 		,d.Back
 		,d.[Left]
-		,d.[Right]
+		,[Right] = ISNULL(d.Side, d.[Right])
 from #tmp oqd with (nolock)
 LEFT JOIN PMSFile.dbo.RFT_PicDuringDummyFitting d  WITH(NOLOCK) ON oqd.ID = d.OrderID AND oqd.Article=d.Article AND oqd.SizeCode=d.Size
 where oqd.ID = @OrderID
@@ -1589,6 +1641,32 @@ end
             return ExecuteNonQuery(CommandType.Text, FinalSql, objParameter);
         }
 
+        public List<string> GetSamePOIDList(long ID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+
+            listPar.Add("@ID", ID);
+
+            string sqlGetMoistureArticleList = @"
+select DISTINCT c.ID
+from SampleRFTInspection a
+inner join SciProduction_Orders b on a.OrderID = b.ID
+inner join SciProduction_Orders c on b.POID= c.POID AND a.OrderID!=c.ID
+inner join RFT_OrderComments d on c.ID=d.OrderID
+where a.ID = @ID
+";
+
+            DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetMoistureArticleList, listPar);
+
+            if (dtResult.Rows.Count == 0)
+            {
+                return new List<string>();
+            }
+            else
+            {
+                return dtResult.AsEnumerable().Select(s => s["ID"].ToString()).ToList();
+            }
+        }
         public IList<CFTComments_Result> Get_CFT_OrderComments(string OrderID)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();

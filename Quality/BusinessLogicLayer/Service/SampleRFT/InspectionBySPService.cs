@@ -77,6 +77,11 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 Result.Model = orderInfo.Model;
                 Result.SampleStage = orderInfo.OrderTypeID;
                 Result.OrderQty = orderInfo.Qty.Value;
+                Result.ComboType = orderInfo.ComboType;
+                Result.TopSewingLineID = orderInfo.TopSewingLineID;
+                Result.BottomSewingLineID = orderInfo.BottomSewingLineID;
+                Result.InnerSewingLineID = orderInfo.InnerSewingLineID;
+                Result.OuterSewingLineID = orderInfo.OuterSewingLineID;
 
                 // 確認現在要進行第幾次檢驗
                 List<SampleRFTInspection> list = _Provider.Get_SampleRFTInspection(new InspectionBySP_ViewModel() { OrderID = OrderID }).ToList();
@@ -157,6 +162,11 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 Result.Model = orderInfo.Model;
                 Result.SampleStage = orderInfo.OrderTypeID;
                 Result.OrderQty = orderInfo.Qty.Value;
+                Result.ComboType = orderInfo.ComboType;
+                Result.TopSewingLineID = orderInfo.TopSewingLineID;
+                Result.BottomSewingLineID = orderInfo.BottomSewingLineID;
+                Result.InnerSewingLineID = orderInfo.InnerSewingLineID;
+                Result.OuterSewingLineID = orderInfo.OuterSewingLineID;
 
                 // 取得現有Setting資料
                 Result.ID = existedData.ID;
@@ -277,6 +287,24 @@ namespace BusinessLogicLayer.Service.SampleRFT
             return InspectionProgress;
         }
 
+        public string CheckOrderStyleUnit(InspectionBySP_ViewModel Req)
+        {
+            string OrderStyleUnit = string.Empty;
+            try
+            {
+                _Provider = new InspectionBySPProvider(Common.ProductionDataAccessLayer);
+                OrderStyleUnit = _Provider.GetOrderStyleUnit(Req.OrderID);
+
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
+
+            return OrderStyleUnit;
+        }
         public BaseResult UpdateSampleRFTInspectionByStep(SampleRFTInspection SampleRFTInspection, string currentStep, string userID)
         {
             BaseResult result = new BaseResult();
@@ -798,7 +826,8 @@ namespace BusinessLogicLayer.Service.SampleRFT
         {
             InspectionBySP_Others model = new InspectionBySP_Others()
             {
-                DataList = new List<CFTComments_Result>()
+                DataList = new List<CFTComments_Result>(),
+                SamePOIDList = new List<SelectListItem>() { new SelectListItem() }
             };
 
             try
@@ -807,13 +836,21 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 SampleRFTInspection existedData = _Provider.Get_SampleRFTInspection(new InspectionBySP_ViewModel() { ID = ID }).FirstOrDefault();
                 model.OrderID = existedData.OrderID;
                 model.StyleID = existedData.StyleID;
+                model.MReMail = existedData.MReMail;
+                model.CCMail = existedData.MDivisionID.ToUpper() == "PM1" || existedData.MDivisionID.ToUpper() == "PM2" || existedData.MDivisionID.ToUpper() == "PM9" ? "arvin.goles@sportscity.com.ph" : string.Empty;
 
+                List<string> samePOIDList = _Provider.GetSamePOIDList(ID).ToList();
                 var RFTInspection_Result = _Provider.Get_RFTInspection_Result(ID).ToList();
                 var res = _Provider.Get_CFT_OrderComments(model.OrderID).ToList();
 
                 foreach (var item in res)
                 {
                     item.Comnments = item.Comnments == null ? string.Empty : item.Comnments.Replace("*", "<br>");
+                }
+                foreach (var item in samePOIDList)
+                {
+
+                    model.SamePOIDList.Add(new SelectListItem() { Text = item, Value = item });
                 }
 
                 model.InspectorResult = RFTInspection_Result.FirstOrDefault().InspectorResult;
@@ -829,6 +866,35 @@ namespace BusinessLogicLayer.Service.SampleRFT
             return model;
         }
 
+        public InspectionBySP_Others Get_CFT_OrderComments(string OrderID)
+        {
+            InspectionBySP_Others model = new InspectionBySP_Others()
+            {
+                DataList = new List<CFTComments_Result>(),
+                SamePOIDList = new List<SelectListItem>() { new SelectListItem() }
+            };
+
+            try
+            {
+                _Provider = new InspectionBySPProvider(Common.ManufacturingExecutionDataAccessLayer);
+                var res = _Provider.Get_CFT_OrderComments(OrderID).ToList();
+
+                foreach (var item in res)
+                {
+                    item.Comnments = item.Comnments == null ? string.Empty : item.Comnments.Replace("*", "<br>");
+                }
+
+                model.DataList = res;
+                model.ExecuteResult = true;
+            }
+            catch (Exception ex)
+            {
+                model.ExecuteResult = false;
+                model.ErrorMessage = ex.Message;
+            }
+
+            return model;
+        }
 
         public InspectionBySP_Others OthersProcess(InspectionBySP_Others Req)
         {
@@ -893,11 +959,19 @@ namespace BusinessLogicLayer.Service.SampleRFT
             {
                 SampleRFTInspection sampleRFTInspection = _Provider.Get_SampleRFTInspection(new InspectionBySP_ViewModel() { ID = inputID }).FirstOrDefault();
 
+                sampleRFTInspection.CCMail = sampleRFTInspection.MDivisionID.ToUpper() == "PM1" || sampleRFTInspection.MDivisionID.ToUpper() == "PM2" || sampleRFTInspection.MDivisionID.ToUpper() == "PM9" ? "arvin.goles@sportscity.com.ph" : string.Empty;
+
                 InspectionBySP_Setting setting = GetExistedSetting(new InspectionBySP_ViewModel()
                 {
                     ID = sampleRFTInspection.ID,
                     OrderID = sampleRFTInspection.OrderID
                 });
+
+                _Provider = new InspectionBySPProvider(Common.ProductionDataAccessLayer);
+                string orderStyleUnit = _Provider.GetOrderStyleUnit(sampleRFTInspection.OrderID);
+                _Provider = new InspectionBySPProvider(Common.ManufacturingExecutionDataAccessLayer);
+                setting.OrderStyleUnit = orderStyleUnit;
+
                 InspectionBySP_Measurement Measurement = GetMeasurement(inputID, UserID);
                 InspectionBySP_AddDefect AddDefect = GetAddDefectBody(inputID);
                 InspectionBySP_BA BA = GetBA_Body(inputID);

@@ -2,6 +2,23 @@
 @model DatabaseObject.ViewModel.SampleRFT.QueryReport
 @{
     Layout = "~/Areas/SampleRFT/Views/Shared/_ForAll_Layout.cshtml";
+
+    string firstLineText = string.Empty;
+    string secondLineText = string.Empty;
+    if (Model.Setting.OrderStyleUnit == "SETS")
+    {
+
+        if (Model.Setting.ComboType == "B,T" || Model.Setting.ComboType == "T,B")
+        {
+            firstLineText = "Top";
+            secondLineText = "Bottom";
+        }
+        else if (Model.Setting.ComboType == "I,O" || Model.Setting.ComboType == "O,I")
+        {
+            firstLineText = "Inner";
+            secondLineText = "Outer";
+        }
+    }
 }
 
 @section InspectionBySP_head{
@@ -155,18 +172,23 @@
                 <table>
                     <tr>
                         <td>Inspection Stage</td>
-                        <td colspan="7" class="valueColor" style="padding-left:10px;">@Model.sampleRFTInspection.InspectionStage     @Model.sampleRFTInspection.InspectionTimesText </td>
+                        <td colspan="2" class="valueColor" style="padding-left:10px;">@Model.sampleRFTInspection.InspectionStage     @Model.sampleRFTInspection.InspectionTimesText </td>
 
+                        
+                        <td style="padding-left:10px;">@firstLineText Sewing Line</td>
+                        <td class="valueColor">@Model.sampleRFTInspection.SewingLineID</td>
                     </tr>
                     <tr>
                         <td>Inspection Date</td>
-                        <td class="valueColor">@Convert.ToDateTime(Model.sampleRFTInspection.InspectionDate).ToString("yyyy/MM/dd")</td>
+                        <td colspan="2" class="valueColor">@Convert.ToDateTime(Model.sampleRFTInspection.InspectionDate).ToString("yyyy/MM/dd")</td>
 
-                        <td style="padding-left:10px;">Sewing Line</td>
-                        <td class="valueColor">@Model.sampleRFTInspection.SewingLineID</td>
-
-                        <td style="padding-left:10px;">QC in Charge</td>
-                        <td colspan="3" class="valueColor">@Model.sampleRFTInspection.QCInCharge</td>
+                        @if (Model.Setting.OrderStyleUnit == "SETS")
+                        {
+                            <td style="padding-left:10px;">@secondLineText Sewing Line</td>
+                            <td class="valueColor">
+                                @Model.sampleRFTInspection.SewingLine2ndID
+                            </td>
+                        }
                     </tr>
                     <tr>
                         <td>AQL Plan</td>
@@ -315,7 +337,7 @@
                 success: function (data) {
                     if (data.Result) {
                         var para = "?To=@Model.sampleRFTInspection.MReMail";
-                        para += "&CC=";
+                        para += "&CC=@Model.sampleRFTInspection.CCMail";
                         para += "&Subject=" + "Sample RFT Inspection Report - SP : @Model.sampleRFTInspection.OrderID";
                         para += "&Body=" + "Sample RFT Inspection Report Detail";
                         para += "&file=" + data.FileName;

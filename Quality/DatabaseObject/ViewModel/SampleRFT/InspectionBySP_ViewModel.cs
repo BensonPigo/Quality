@@ -44,10 +44,14 @@ namespace DatabaseObject.ViewModel.SampleRFT
         public string InspectionTimesText { get; set; }
         public string InspectionStep { get; set; }
         public string SewingLineID { get; set; }
+        public string SewingLine2ndID { get; set; }
         public string QCInCharge { get; set; }
         public string AddName { get; set; }
         public string CFTNameText { get; set; }
         public string MReMail { get; set; }
+        public string CCMail { get; set; }
+        public string MDivisionID { get; set; }
+        public string BrandFTYCode { get; set; }
         public int OrderQty { get; set; }
         public int PassQty { get; set; }
         public DateTime? InspectionDate { get; set; }
@@ -86,6 +90,7 @@ namespace DatabaseObject.ViewModel.SampleRFT
         public bool CheckOuterCarton { get; set; }
         public bool CheckPackingMode { get; set; }
         public bool CheckHangtag { get; set; }
+        public bool CheckHT { get; set; }
 
         public string WorkNo { get; set; }
         public string POID { get; set; }
@@ -94,12 +99,17 @@ namespace DatabaseObject.ViewModel.SampleRFT
 
     public class InspectionBySP_Setting
     {
-        public long ID { get; set; }
-
+        public long ID { get; set; }        
+        public string OrderStyleUnit { get; set; }
         #region Basic
         public string InspectionStage { get; set; } = string.Empty;
         public string InspectionTimes { get; set; } = string.Empty;
         public string SewingLineID { get; set; } = string.Empty;
+        public string SewingLine2ndID { get; set; } = string.Empty;
+        public string TopSewingLineID { get; set; } = string.Empty;
+        public string InnerSewingLineID { get; set; } = string.Empty;
+        public string BottomSewingLineID { get; set; } = string.Empty;
+        public string OuterSewingLineID { get; set; } = string.Empty;
         public string QCInCharge { get; set; } = string.Empty;
         public DateTime? InspectionDate { get; set; }
 
@@ -125,6 +135,8 @@ namespace DatabaseObject.ViewModel.SampleRFT
         public string SeasonID { get; set; }
         public string BrandID { get; set; }
         public string Article { get; set; }
+        public string ComboType { get; set; }
+        
         public string FactoryID { get; set; }
         public string Model { get; set; }        
         public string SampleStage { get; set; }
@@ -394,6 +406,7 @@ namespace DatabaseObject.ViewModel.SampleRFT
         public string SampleStage { get; set; }
         public List<CFTComments_Result> DataList { get; set; }
 
+        public List<SelectListItem> SamePOIDList { get; set; }
         public bool ExecuteResult { get; set; }
         public string ErrorMessage { get; set; }
     }

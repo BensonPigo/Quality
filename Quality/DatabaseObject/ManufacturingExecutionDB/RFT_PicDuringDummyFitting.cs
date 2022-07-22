@@ -28,6 +28,8 @@ namespace DatabaseObject.ManufacturingExecutionDB
         /// <summary>後</summary>
         [Display(Name = "後")]
         public Byte[] Back { get; set; }
+        public Byte[] Left { get; set; }
+        public Byte[] Right { get; set; }
 
     }
 }
