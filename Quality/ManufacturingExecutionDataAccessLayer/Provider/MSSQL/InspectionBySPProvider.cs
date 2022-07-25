@@ -957,7 +957,7 @@ inner join MainServer.Production.dbo.GarmentDefectCode gdc on gdt.id=gdc.Garment
 outer apply(
 
 	select Val = stuff((
-		select DISTINCT ',' +a.AreaCode
+		select  ',' +a.AreaCode
 		from #SampleRFTInspection_Detail a
 		where a.GarmentDefectTypeID=gdt.ID AND a.GarmentDefectCodeID=gdc.ID
 		FOR XML PATH('')
@@ -1164,10 +1164,45 @@ drop table #SampleRFTInspection_Detail,#base
                 int count = 1;
                 foreach (SampleRFTInspection_Detail data in datas)
                 {
+                    //                    string tmp = $@"
+                    //SELECT [SampleRFTInspectionUkey]={data.SampleRFTInspectionUkey}
+                    //    ,[Ukey]=IIF (EXISTS(select TOP 1 Ukey from SampleRFTInspection_Detail where SampleRFTInspectionUKey={data.SampleRFTInspectionUkey} AND GarmentDefectCodeID = '{data.GarmentDefectCodeID}'AND AreaCode='{data.AreaCode}')
+                    //				,(select TOP 1 Ukey from SampleRFTInspection_Detail where SampleRFTInspectionUKey={data.SampleRFTInspectionUkey} AND GarmentDefectCodeID = '{data.GarmentDefectCodeID}' AND AreaCode='{data.AreaCode}')
+                    //				,0)
+                    //    ,[DefectCode]='{data.DefectCode}'
+                    //    ,[AreaCode]='{data.AreaCode}'
+                    //    ,[GarmentDefectTypeID]='{data.GarmentDefectTypeID}'
+                    //    ,[GarmentDefectCodeID]='{data.GarmentDefectCodeID}'
+                    //    ,[Qty]={data.Qty}
+                    //    ,[Responsibility]='{data.Responsibility}'
+                    //    ,[AddDate]=GETDATE()
+                    //";
+
                     string tmp = $@"
 SELECT [SampleRFTInspectionUkey]={data.SampleRFTInspectionUkey}
-    ,[Ukey]=IIF (EXISTS(select TOP 1 Ukey from SampleRFTInspection_Detail where SampleRFTInspectionUKey={data.SampleRFTInspectionUkey} AND GarmentDefectCodeID = '{data.GarmentDefectCodeID}'AND AreaCode='{data.AreaCode}')
-				,(select TOP 1 Ukey from SampleRFTInspection_Detail where SampleRFTInspectionUKey={data.SampleRFTInspectionUkey} AND GarmentDefectCodeID = '{data.GarmentDefectCodeID}' AND AreaCode='{data.AreaCode}')
+    ,[Ukey]=IIF (EXISTS(
+                        select Ukey
+                        from (
+	                        select *
+	                        ,[RowNumber]=row_number() OVER(order by Ukey)
+	                        from SampleRFTInspection_Detail　
+	                        where SampleRFTInspectionUkey = {data.SampleRFTInspectionUkey}
+	                        AND GarmentDefectTypeID = '{data.GarmentDefectTypeID}'　and GarmentDefectCodeID = '{data.GarmentDefectCodeID}'
+                        ) qq
+                        WHERE RowNumber = {count}
+
+                    )
+				,(
+                        select Ukey
+                        from (
+	                        select *
+	                        ,[RowNumber]=row_number() OVER(order by Ukey)
+	                        from SampleRFTInspection_Detail　
+	                        where SampleRFTInspectionUkey = {data.SampleRFTInspectionUkey}
+	                        AND GarmentDefectTypeID = '{data.GarmentDefectTypeID}'　and GarmentDefectCodeID = '{data.GarmentDefectCodeID}'
+                        ) qq
+                        WHERE RowNumber = {count}
+                )
 				,0)
     ,[DefectCode]='{data.DefectCode}'
     ,[AreaCode]='{data.AreaCode}'
@@ -1187,7 +1222,7 @@ SELECT [SampleRFTInspectionUkey]={data.SampleRFTInspectionUkey}
 
                     if (datas.Count > count)
                     {
-                        tmpTable += "UNION" + Environment.NewLine;
+                        tmpTable += "UNION ALL" + Environment.NewLine;
                     }
 
                     count++;
@@ -1838,8 +1873,8 @@ where 1=1
 
             if (!string.IsNullOrEmpty(Req.SP))
             {
-                SbSql.Append($@" AND a.OrderID = @OrderID ");
-                para.Add("@OrderID", Req.SP);
+                SbSql.Append($@" AND a.OrderID LIKE @OrderID ");
+                para.Add("@OrderID", "%"+Req.SP+"%");
             }
 
             if (!string.IsNullOrEmpty(Req.CustPONO))

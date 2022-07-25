@@ -160,11 +160,31 @@
                     }
                     <tr>
                         <td><label>@firstLineText Sewing Line</label></td>
-                        <td>@Html.DropDownListFor(o => o.SewingLineID, Model.SewingLineList, firstLine, new { @class = "form-control", @style = "width:157px" })</td>
+                        <td>
+                            <select id="SewingLineID" name="SewingLineID" class="form-control" style="width:157px">
+                                @foreach (var line in Model.SewingLineList)
+                                {
+                                    string selected = line.Value == firstLine ? "selected" : string.Empty;
+                                    <option @selected value="@line.Value">
+                                        @line.Text
+                                    </option>
+                                }
+                            </select>
+                        </td>
                     </tr>
                     <tr>
                         <td><label>@secondLineText Sewing Line</label></td>
-                        <td>@Html.DropDownListFor(o => o.SewingLine2ndID, Model.SewingLineList, secondLine, new { @class = "form-control", @style = "width:157px" })</td>
+                        <td>
+                            <select id="SewingLine2ndID" name="SewingLine2ndID" class="form-control" style="width:157px">
+                                @foreach (var line in Model.SewingLineList)
+                                {
+                                    string selected = line.Value == secondLine ? "selected" : string.Empty;
+                                    <option @selected value="@line.Value">
+                                        @line.Text
+                                    </option>
+                                }
+                            </select>
+                        </td>
                     </tr>
                 }
                 else

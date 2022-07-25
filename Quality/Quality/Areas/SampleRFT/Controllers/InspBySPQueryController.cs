@@ -238,10 +238,14 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             worksheet.Cells[13, 6] = model.sampleRFTInspection.BrandFTYCode;
 
-            worksheet.Cells[14, 6] = model.Setting.InspectionStage == "100%" ? "100%" : model.Setting.AQLPlan;
+            if (model.Setting.InspectionStage == "100%")
+            {
+                worksheet.Cells[14, 3] = "100%";
+            }
+            worksheet.Cells[14, 6] = model.Setting.AQLPlan;
             worksheet.Cells[14, 10] = model.Setting.InspectionStage == "100%" ? model.Setting.OrderQty : model.sampleRFTInspection.SampleSize;
             worksheet.Cells[14, 13] = model.sampleRFTInspection.AcceptQty;
-            worksheet.Cells[14, 17] = model.Setting.InspectionStage == "100%" ? 1 : model.sampleRFTInspection.RejectQty;
+            worksheet.Cells[14, 17] = model.Setting.InspectionStage == "100%" ? 1 : model.sampleRFTInspection.AcceptQty + 1;
 
             worksheet.Cells[15, 6] = model.sampleRFTInspection.CheckFabricApproval ? "V" : string.Empty;
 

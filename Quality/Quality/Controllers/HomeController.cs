@@ -118,7 +118,7 @@ namespace Quality.Controllers
         {
             ClearUsersInfo();            
             ViewData["Factorys"] = new FactoryDashBoardWeb.Helper.SetListItem().ItemListBinding(this.Factorys);
-            return View("Login");
+            return View("Login", new LogIn_Request());
 
         }
 
