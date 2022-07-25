@@ -225,7 +225,7 @@
     }
 </style>
 
-@using (Html.BeginForm("Index", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post, new { @id = "DetailForm" }))
+@using (Html.BeginForm("Index", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post, new { @id = "DetailForm", onsubmit = "return checkSubmitValue(this.submitted);" }))
 {
     <div class="main-content">
         <header class="page-header">
@@ -272,7 +272,7 @@
 
                     <div style="width:100%;padding-top:2%;">
                         <div class="InfoDiv" style="border: solid 3px #c3d7f7;">
-                            <h4 class="DetailTitle" onclick="DetailTitle_Click(1)">Sample RFT : @Html.Raw(Model.Development.SampleRFT == 0 ? "N/A" : Model.Development.SampleRFT.ToString("###.##") + "%")</h4><br />
+                            <h4 class="DetailTitle" onclick="DetailTitle_Click(1)">Sample RFT : @Html.Raw(Model.Development.SampleRFT.ToString("0.00") + "%")</h4><br />
                             <h4 class="DetailTitle" onclick="DetailTitle_Click(2)">Testing Result : @Model.Development.TestResult</h4><br />
                             <h4 class="DetailTitle" onclick="DetailTitle_Click(3)">RR/LR : @Model.Development.RRLR</h4><br />
                             <h4 class="DetailTitle" onclick="DetailTitle_Click(4)">FD : @Model.Development.FD</h4>
@@ -283,11 +283,11 @@
 
                         </div>
                         <div class="InfoDiv" style="border: solid 3px #4486f3;">
-                            <h4 class="DetailTitle" onclick="DetailTitle_Click(6)">Subprocess RFT : @Html.Raw(Model.Production.SubprocessRFT == 0 ? "N/A" : (Model.Production.SubprocessRFT * 100 ).ToString("###.##") + "%")</h4><br />
+                            <h4 class="DetailTitle" onclick="DetailTitle_Click(6)">Subprocess RFT : @Html.Raw((Model.Production.SubprocessRFT * 100 ).ToString("0.00") + "%")</h4><br />
                             <h4 class="DetailTitle" onclick="DetailTitle_Click(7)">Testing Result : @Model.Production.TestResult</h4><br />
-                            <h4 class="DetailTitle" onclick="DetailTitle_Click(8)">Inline RFT : @Html.Raw(Model.Production.InlineRFT == 0 ? "N/A" : (Model.Production.InlineRFT * 100).ToString("###.##") + "%")</h4><br />
-                            <h4 class="DetailTitle" onclick="DetailTitle_Click(9)">Endline WFT : @Html.Raw(Model.Production.EndlineWFT == 0 ? "N/A" : (Model.Production.EndlineWFT * 100).ToString("###.##") + "%")</h4><br />
-                            <h4 class="DetailTitle" onclick="DetailTitle_Click(10)">MD Pass Rates : @Html.Raw(Model.Production.MDPassRate == 0 ? "N/A" : (Model.Production.MDPassRate * 100).ToString("###.##") + "%")</h4>
+                            <h4 class="DetailTitle" onclick="DetailTitle_Click(8)">Inline RFT : @Html.Raw((Model.Production.InlineRFT * 100).ToString("0.00") + "%")</h4><br />
+                            <h4 class="DetailTitle" onclick="DetailTitle_Click(9)">Endline WFT : @Html.Raw((Model.Production.EndlineWFT * 100).ToString("0.00") + "%")</h4><br />
+                            <h4 class="DetailTitle" onclick="DetailTitle_Click(10)">MD Pass Rates : @Html.Raw((Model.Production.MDPassRate * 100).ToString("0.00") + "%")</h4>
 
                         </div>
                         <div class="InfoDiv" style="margin-right: 5vw;background-color: transparent;">
@@ -342,10 +342,10 @@
 
                         </div>
                         <div class="InfoDiv" style="border: solid 3px #166af5;">
-                            <h4>Pass RFT : @Html.Raw(Model.FinalInspection.PassRate == 0 ? "N/A" : (Model.FinalInspection.PassRate * 100).ToString("###.##") + "%")</h4><br />
-                            <h4>SQR : @Html.Raw(Model.FinalInspection.SQR == 0 ? "N/A" : (Model.FinalInspection.SQR * 100).ToString("###.##") + "%")</h4><br />
-                            <h4>China Pass Rate : @Html.Raw(Model.FinalInspection.ChinaPassRate == 0 ? "N/A" : (Model.FinalInspection.ChinaPassRate * 100).ToString("###.##") + "%")</h4><br />
-                            <h4>Japan Pass Rate : @Html.Raw(Model.FinalInspection.JapanPassRate == 0 ? "N/A" : (Model.FinalInspection.JapanPassRate * 100).ToString("###.##") + "%")</h4>
+                            <h4>Pass RFT : @Html.Raw((Model.FinalInspection.PassRate * 100).ToString("0.00") + "%")</h4><br />
+                            <h4>SQR : @Html.Raw((Model.FinalInspection.SQR * 100).ToString("0.00") + "%")</h4><br />
+                            <h4>China Pass Rate : @Html.Raw((Model.FinalInspection.ChinaPassRate * 100).ToString("0.00") + "%")</h4><br />
+                            <h4>Japan Pass Rate : @Html.Raw((Model.FinalInspection.JapanPassRate * 100).ToString("0.00") + "%")</h4>
 
                         </div>
 
@@ -578,7 +578,7 @@
                             <thead>
                                 <tr class="row-name" id="row-name">
                                     <th>SubProcess</th>
-                                    <th>RejectRate</th>
+                                    <th>RFT(%)</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -589,7 +589,7 @@
                                             @item.SubProcessID
                                         </td>
                                         <td>
-                                            @Html.Raw((item.RejectRate * 100).ToString("###.##"))
+                                            @Html.Raw((item.RFT * 100).ToString("0.00"))
                                         </td>
                                     </tr>
                                 }
@@ -670,7 +670,7 @@
                                             @item.RejectQty
                                         </td>
                                         <td>
-                                            @Html.Raw((item.RFTRate).ToString("###.##"))
+                                            @Html.Raw((item.RFTRate).ToString("0.00"))
                                         </td>
                                     </tr>
                                 }
@@ -730,7 +730,7 @@
                                             @item.RejectQty
                                         </td>
                                         <td>
-                                            @Html.Raw(item.WFTRate.ToString("###.##"))
+                                            @Html.Raw(item.WFTRate.ToString("0.00"))
                                         </td>
                                     </tr>
                                 }
@@ -1040,17 +1040,17 @@
                 break;
         }
 
-        if (DetailTableID == 'Production_InlinrRFT' && @Model.Production.InlineRFT >= 0.97) {
+        @*if (DetailTableID == 'Production_InlinrRFT' && @Model.Production.InlineRFT >= 0.97) {
             // 當上層的RFT低於97%才需顯示這邊的Detail
         }
         else if (DetailTableID == 'Production_EndlineWFT' && @Model.Production.EndlineWFT <= 0.08) {
             // 當上層的WFT高於8%才需顯示這邊的Detail
         }
-        else {
+        else {*@
             $(`#${DetailTableID}`).css('display', 'block');
             $('#fade').css('display', 'block');
             blockCount += 1;
-        }
+        //}
     }
 
     function SecondDetailTitle_Click(ActType, OrderID) {
@@ -1101,5 +1101,14 @@
 
     function GetArticleList(data, targetID) {
         $('#' + targetID).val(data);
+    }
+
+    function checkSubmitValue(self) {
+
+
+        ShowLoading();
+
+
+        return true;
     }
 </script>

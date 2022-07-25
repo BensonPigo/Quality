@@ -60,7 +60,7 @@ AND SeasonID = @SeasonID
                 { "@StyleUkey", DbType.Int64, Req.StyleUkey } ,
             };
             string sqlcmd = @"
-select SampleRftRate = ROUND( ISNULL( 1.0 * SUM(IIF(Status='Pass',1,0)) / count(StyleUkey) * 100.0 ,0) ,2)
+select SampleRftRate = ROUND( ISNULL( 1.0 * SUM(IIF(Status='Pass',1,0)) / count(StyleUkey) * 100.0 ,0) ,4)
 
 from RFT_Inspection rft WITH(NOLOCK)
 where StyleUkey = @StyleUkey
@@ -564,8 +564,8 @@ and spir.BundleNo  in (
 )
 
 select SubProcessID
-    , RejectRate = ROUND( IIF(SUM(BundleQty) = 0 , 0 ,　1.0 * (SUM(BundleQty) - SUM(RejectQty)) / SUM(BundleQty)) ,2)
-    , SummaryRate = ROUND( (select RejectRate = IIF(SUM(BundleQty) = 0 , 0 ,　1.0 * (SUM(BundleQty) - SUM(RejectQty)) / SUM(BundleQty)) from #tmp_subprocess_bundle) ,2)
+    , RFT = ROUND( IIF(SUM(BundleQty) = 0 , 0 ,　1.0 * (SUM(BundleQty) - SUM(RejectQty)) / SUM(BundleQty)) ,4)
+    , SummaryRate = ROUND( (select RejectRate = IIF(SUM(BundleQty) = 0 , 0 ,　1.0 * (SUM(BundleQty) - SUM(RejectQty)) / SUM(BundleQty)) from #tmp_subprocess_bundle) ,4)
 from #tmp_subprocess_bundle
 group by SubProcessID
 
@@ -604,7 +604,14 @@ left join GarmentTest_Detail b on a.ID= b.ID
 where StyleID=@StyleID AND BrandID=@BrandID AND SeasonID=@SeasonID
 
 
-select　c.TestResult
+select TestResult = CASE WHEN c.TestUnit = 'pass/fail' THEN IIF(c.TestResult = 'Pass' OR c.TestResult = 'Fail' , c.TestResult,'')
+					  WHEN c.TestUnit = 'N' AND c.TestResult='' THEN 'N/A'
+					  WHEN c.TestUnit = 'N' THEN IIF(
+									convert(decimal,IIF(c.TestResult='','0',c.TestResult )) >   convert(decimal,IIF(c.Criteria='','0',c.Criteria ) ) 
+								  , 'Pass' 
+								  , 'Fail')
+					ELSE ''
+				END
 into #tmp2
 from GarmentTest a
 left join GarmentTest_Detail b on a.ID= b.ID
@@ -618,8 +625,8 @@ SELECT FGWTResult = (
                     END
     from #tmp
 ), FGPTResult = (
-    select FGPTResult = CASE WHEN SUM(IIF(TestResult='F',1,0) ) > 0 THEN 'Fail'
-                            WHEN SUM(IIF(TestResult='P',1,0) ) = COUNT(1) AND COUNT(1) > 0 THEN 'Pass'
+    select FGPTResult = CASE WHEN SUM(IIF(TestResult='Fail',1,0) ) > 0 THEN 'Fail'
+                            WHEN SUM(IIF(TestResult='Pass',1,0) ) = COUNT(1) AND COUNT(1) > 0 THEN 'Pass'
                             ELSE 'N/A'
                     END
     from #tmp2
@@ -656,7 +663,7 @@ drop table #tmp ,#tmp2
 select [InlineRFT] = iif(
     (isnull(SUM(PassWIP), 0) + isnull(SUM(RejectWIP), 0)) = 0
     , 0
-    , ROUND(  isnull(SUM(PassWIP), 0) * 1.0 / (isnull(SUM(PassWIP), 0) + isnull(SUM(RejectWIP), 0)) ,2)
+    , ROUND(  isnull(SUM(PassWIP), 0) * 1.0 / (isnull(SUM(PassWIP), 0) + isnull(SUM(RejectWIP), 0)) ,4)
 )
 from InlineInspection  with (nolock)
 where StyleUkey = @StyleUkey
@@ -817,7 +824,7 @@ select FirstInspDate = t.[First Inspection Date]
       ,QCName = t.AddName
       --,t.TtlQty as [Inspected Qty]
       ,RejectQty = t.RejectQty
-      ,RFTRate = ROUND( (t.PassQty *1.0) / (t.TtlQty *1.0) *100 ,2)
+      ,RFTRate = ROUND( (t.PassQty *1.0) / (t.TtlQty *1.0) *100 ,4)
 from #tmp_Summy_Final t
 Order by t.[First Inspection Date], t.Factory, t.Brand, t.[SP#],t.Article, t.Line, t.Team
 
@@ -857,7 +864,7 @@ from Inspection
 where StyleUkey=@StyleUkey
 {(string.IsNullOrEmpty(Req.Article) ? string.Empty : "and Article = @Article")}
 
-select EndlineWFT = ROUND( IIF(COUNT(1) = 0,0, 1.0 * SUM(IIF(Status <>'Pass',1,0)) / COUNT(1)) ,2)
+select EndlineWFT = ROUND( IIF(COUNT(1) = 0,0, 1.0 * SUM(IIF(Status <>'Pass',1,0)) / COUNT(1)) ,4)
 from #tmpInspection
 
 drop table #tmpInspection
@@ -909,7 +916,6 @@ into #tmp_summy_first
 from Inspection ins  
 inner join sciproduction_orders ord on ins.OrderId=ord.id
 inner join SciProduction_Factory fac on ins.FactoryID=fac.ID
-left join SciProduction_Style ps on ps.Ukey = ord.StyleUkey
 left join [dbo].[SciProduction_SewingLine] s on s.FactoryID = ins.FactoryID and s.ID = ins.Line
 left join [dbo].[SciProduction_Country] Cou on ord.Dest = Cou.ID
 Outer apply (
@@ -950,7 +956,7 @@ select
     , QCName = t.AddName 
     --, t.TtlQty
     , RejectQty = t.RejectAndFixedQty
-    , WFTRate = ROUND( iif(t.TtlQty = 0, 0, ROUND( (t.RejectAndFixedQty *1.0) / (t.TtlQty *1.0) *100,3)) ,2)
+    , WFTRate = ROUND( iif(t.TtlQty = 0, 0, ROUND( (t.RejectAndFixedQty *1.0) / (t.TtlQty *1.0) *100,4)) ,4)
 from #tmp_summy_first t
 
 drop table #tmp_summy_first
@@ -1017,7 +1023,7 @@ where ErrQty > 0
 group by pt.OrderID
 
 --計算Pass Qty
-select MDPassRate = ROUND( IIF(SUM( a.ScanQty)=0,0, 1.0* ( SUM(  a.ScanQty  - ISNULL(e.ErrQty,0))) /SUM( a.ScanQty)) ,2)
+select MDPassRate = ROUND( IIF(SUM( a.ScanQty)=0,0, 1.0* ( SUM(  a.ScanQty  - ISNULL(e.ErrQty,0))) /SUM( a.ScanQty)) ,4)
 from #AllQty a
 left join #ErrorQty e on a.OrderID=e.OrderID
 group by a.BrandID
@@ -1089,7 +1095,7 @@ group by pt.OrderID
 
 --計算Pass Qty
 select OrderID = o.ID
-    ,Article.Articles   
+    ,Article = Article.Articles   
     ,DeliveryDate=o.BuyerDelivery
     ,MDFailQty = SUM( ISNULL(e.ErrQty,0) )
 from #AllQty a
@@ -1159,13 +1165,13 @@ select PassRate = ROUND( (
         inner join SciProduction_Orders b on a.OrderID=b.ID
         where a.ID = fi.ID AND b.StyleUkey = @StyleUkey
     )
-) ,2)
+) ,4)
 , SQR = ROUND( (
     select IIF(SUM( fi.SampleSize)=0,0,1.0 * SUM( fi.RejectQty) / SUM( fi.SampleSize))
     from Finalinspection fi with (nolock)
     where 1=1
     and fi.InspectionStage ='Final'
-    and fi.InspectionResult != 'Fail'
+    and fi.InspectionResult != 'On-going'
     and fi.SubmitDate is not null
     AND exists(
         select 1 
@@ -1173,7 +1179,7 @@ select PassRate = ROUND( (
         inner join SciProduction_Orders b on a.OrderID=b.ID
         where a.ID = fi.ID AND b.StyleUkey = @StyleUkey
     )
-) ,2)
+) ,4)
 , ChinaPassRate = ROUND( (
     select ISNULL( IIF(SUM( fi.SampleSize)=0,0,1.0 * SUM( fi.PassQty) / SUM( fi.SampleSize)) ,0)
     from Finalinspection fi with (nolock)
@@ -1189,7 +1195,7 @@ select PassRate = ROUND( (
         and b.Dest = 'CN'
 
     )
-) ,2)
+) ,4)
 ,JapanPassRate = ROUND( (
     select ISNULL( IIF(SUM( fi.SampleSize)=0,0,1.0 * SUM( fi.PassQty) / SUM( fi.SampleSize)),0)
     from Finalinspection fi with (nolock)
@@ -1205,7 +1211,7 @@ select PassRate = ROUND( (
         and b.Dest = 'JP'
 
     )
-) ,2)
+) ,4)
 
 ";
 

@@ -23,7 +23,7 @@ namespace DatabaseObject.ResultModel.EtoEFlowChart
     public class Production_SubprocessRFT
     {
         public string SubProcessID { get; set; }
-        public decimal RejectRate { get; set; }
+        public decimal RFT { get; set; }
         public decimal SummaryRate { get; set; }
     }
     public class Production_TestResult
