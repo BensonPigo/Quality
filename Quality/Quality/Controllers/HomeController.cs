@@ -80,6 +80,7 @@ namespace Quality.Controllers
                 this.Line = this.Lines.FirstOrDefault();
                 this.Brands = result.Brands;
                 this.Brand = this.Brands.Where(x => x.Equals("ADIDAS")).Select(x => x).FirstOrDefault();
+                this.LoginToken = Guid.NewGuid().ToString();
 
                 if (!string.IsNullOrEmpty(this.TargetArea) && !string.IsNullOrEmpty(this.TargetController) && !string.IsNullOrEmpty(this.TargetAction) 
                     && !string.IsNullOrEmpty(this.TargetPKey_Parameter) && !string.IsNullOrEmpty(this.TargetPKey_Value))
