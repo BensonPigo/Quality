@@ -927,10 +927,17 @@ Outer apply (
 where 1=1 and ord.StyleUkey=@StyleUkey
 {(string.IsNullOrEmpty(Req.Article) ? string.Empty : "and Article = @Article")}
 
-group by ins.InspectionDate, cast(Ins.AddDate as date), ins.FactoryID, ord.BrandID, ord.styleid, ord.custpono,
-ins.OrderId, ins.Article, ins.Size, Cou.Alias, ord.CdCodeID,
-ins.Team, ins.AddName, ins.Shift, ins.Line, s.SewingCell,
-ps.CDCodeNew, sty.ProductType, sty.FabricType, sty.Lining, sty.Gender, sty.Construction
+group by ins.InspectionDate
+	,cast(Ins.AddDate as date)
+	,ins.FactoryID
+	,ord.BrandID
+	,ord.styleid
+	,ord.custpono
+	,ins.OrderId
+	,ins.Article
+	,Cou.Alias
+	,sty.ProductType
+	,ins.AddName
 
 select
     FirstInspDate = t.FirstInspectionDate

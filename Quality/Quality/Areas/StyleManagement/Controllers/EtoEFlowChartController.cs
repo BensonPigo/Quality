@@ -55,9 +55,44 @@ namespace Quality.Areas.StyleManagement.Controllers
         [HttpPost]
         public ActionResult Index(EtoEFlowChart_Request request)
         {
+            EtoEFlowChart_ViewModel model = new EtoEFlowChart_ViewModel()
+            {
+                Request = new EtoEFlowChart_Request(),
+                Warehouse = new Warehouse()
+                {
+                    PhysicalInspection_Detail = new List<Warehouse_PhysicalInspection>(),
+                },
+                Development = new Development()
+                {
+                    SampleRFT_Detail = new List<Development_SampleRFT>(),
+                    TestResult_Detail = new List<Development_TestResult>(),
+                    RRLR_Detail = new List<Development_RRLR>(),
+                    FD_Detail = new List<Development_FD>(),
+                    CFTComments = new List<Development_SampleRFT_CFTComments>()
+                },
+                Production = new Production()
+                {
+                    SubprocessRFT_Detail = new List<Production_SubprocessRFT>(),
+                    TestResult_Detail = new Production_TestResult(),
+                    InlineRFT_Detail = new List<Production_InlineRFT>(),
+                    EndlineWFT_Detail = new List<Production_EndlineWFT>(),
+                    MDPassRate_Detail = new List<Production_MDPassRate>()
+                },
+                FinalInspection = new DatabaseObject.ResultModel.EtoEFlowChart.FinalInspection(),
+            };
+
             if (string.IsNullOrEmpty(request.BrandID) || string.IsNullOrEmpty(request.SeasonID) || string.IsNullOrEmpty(request.StyleID))
             {
-                EtoEFlowChart_ViewModel m = new EtoEFlowChart_ViewModel()
+                model.ErrorMessage = $@"msg.WithInfo(""BrandID, Season, Style can't be empty."");";
+                return View(model);
+            }
+
+            model = _Service.GetDate(request);
+            model.Request = request;
+
+            if (!model.ExecuteResult)
+            {
+                model = new EtoEFlowChart_ViewModel()
                 {
                     Request = new EtoEFlowChart_Request(),
                     Warehouse = new Warehouse()
@@ -82,17 +117,7 @@ namespace Quality.Areas.StyleManagement.Controllers
                     },
                     FinalInspection = new DatabaseObject.ResultModel.EtoEFlowChart.FinalInspection(),
                 };
-
-                m.ErrorMessage = $@"msg.WithInfo(""BrandID, Season, Style can't be empty."");";
-                return View(m);
-            }
-
-            EtoEFlowChart_ViewModel model = _Service.GetDate(request);
-            model.Request = request;
-
-            if (!model.ExecuteResult)
-            {
-                model.ErrorMessage = $@"msg.WithInfo(""${ model.ErrorMessage }"");";
+                model.ErrorMessage = $@"msg.WithInfo(`${ model.ErrorMessage }`);";
             }
             return View(model);
         }
