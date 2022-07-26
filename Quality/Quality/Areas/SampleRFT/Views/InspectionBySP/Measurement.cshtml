@@ -679,6 +679,7 @@
         var dropProductType = document.getElementById("dropProductType");
 
         if (dropArticle.value == "" || dropSize.value == "" || dropProductType.value == "") {
+            $(".MeasurementTable").hide();
             return;
         }
 
