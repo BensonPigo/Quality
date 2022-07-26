@@ -1905,6 +1905,7 @@ select @EOLInlineFromDateTransferToP88 = EOLInlineFromDateTransferToP88 from sys
 select  ID
 from InspectionReport with (nolock)
 where   IsExportToP88 = 0 and
+        InspectionReport.CustPONO <> '' and
         (AddDate >= @EOLInlineFromDateTransferToP88 or EditDate >= @EOLInlineFromDateTransferToP88) and
         exists (select 1 from Production.dbo.Orders o with (nolock) where o.CustPONo = InspectionReport.CustPONO and o.BrandID in ('Adidas'))
 
@@ -1960,6 +1961,7 @@ select @EOLInlineFromDateTransferToP88 = EOLInlineFromDateTransferToP88 from sys
 select  ID
 from InlineInspectionReport with (nolock)
 where   IsExportToP88 = 0 and
+        CustPONO <> '' and
         (AddDate >= @EOLInlineFromDateTransferToP88 or EditDate >= @EOLInlineFromDateTransferToP88) and
         exists (select 1 from Production.dbo.Orders o with (nolock) where o.CustPONo = InlineInspectionReport.CustPONO and o.BrandID in ('Adidas'))
 
