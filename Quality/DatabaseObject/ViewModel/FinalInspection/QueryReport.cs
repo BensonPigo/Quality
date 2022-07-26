@@ -11,6 +11,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string SP { get; set; }
         public string StyleID { get; set; }
         public string BrandID { get; set; }
+        public string Dest { get; set; }
         public int TotalSPQty { get; set; }
         public List<FinalInspection_OrderCarton> ListCartonInfo { get; set; }
         public int AvailableQty { get; set; }

@@ -208,7 +208,8 @@ end
 SELECT oq.Article
 	,Size = oq.SizeCode
 	,p.Front
-	,p.Side
+	,p.[Left]
+	,[Right] = ISNULL(p.[Right], p.Side)
 	,p.Back
 from Production.dbo.Order_Qty oq WITH(NOLOCK) 
 left join SciPMSFile_RFT_PicDuringDummyFitting p WITH(NOLOCK) ON oq.ID = p.OrderID AND oq.Article = p.Article AND oq.SizeCode=p.Size

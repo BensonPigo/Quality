@@ -142,6 +142,7 @@
     <Compile Include="Public\CompareBase.cs" />
     <Compile Include="Public\StaticPivot88.cs" />
     <Compile Include="Public\WindowModel.cs" />
+    <Compile Include="RequestModel\EtoEFlowChart_Request.cs" />
     <Compile Include="RequestModel\MockupFailMail_Request.cs" />
     <Compile Include="RequestModel\FinalInspection_Query.cs" />
     <Compile Include="RequestModel\FinalInspection_Request.cs" />
@@ -163,6 +164,10 @@
     <Compile Include="ResultModelBase.cs" />
     <Compile Include="ResultModel\AuthoritybyPosition.cs" />
     <Compile Include="ResultModel\BACriteria_Result.cs" />
+    <Compile Include="ResultModel\EtoEFlowChart\Development.cs" />
+    <Compile Include="ResultModel\EtoEFlowChart\FinalInspection.cs" />
+    <Compile Include="ResultModel\EtoEFlowChart\Production.cs" />
+    <Compile Include="ResultModel\EtoEFlowChart\Warehouse.cs" />
     <Compile Include="ResultModel\FabricCrkShrkTest_Result.cs" />
     <Compile Include="ResultModel\FabricOvenTest_Result.cs" />
     <Compile Include="ResultModel\FinalInspection\PoSelect_Result.cs" />
@@ -219,6 +224,7 @@
     <Compile Include="ViewModel\SampleRFT\StyleResult_ViewModel.cs" />
     <Compile Include="ViewModel\SelectItem_ViewModel.cs" />
     <Compile Include="ViewModel\SampleRFT\PrintBarcode_ViewModel.cs" />
+    <Compile Include="ViewModel\StyleManagement\EtoEFlowChart_ViewModel.cs" />
     <Compile Include="ViewModel\StyleManagement\ExceptionFD_ViewModel.cs" />
   </ItemGroup>
   <ItemGroup>

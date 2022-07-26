@@ -62,6 +62,7 @@ namespace BusinessLogicLayer.Service.FinalInspection
                 queryReport.StyleID = dtQueryReportInfo.Rows[0]["StyleID"].ToString();
                 queryReport.BrandID = dtQueryReportInfo.Rows[0]["BrandID"].ToString();
                 queryReport.FinalInspection.CFA = dtQueryReportInfo.Rows[0]["CFA"].ToString();
+                queryReport.Dest = dtQueryReportInfo.Rows[0]["Dest"].ToString();
                 queryReport.TotalSPQty = (int)dtQueryReportInfo.Rows[0]["TotalSPQty"];
 
                 queryReport.AQLPlan = new FinalInspectionService().GetAQLPlanDesc(queryReport.FinalInspection.AcceptableQualityLevelsUkey);

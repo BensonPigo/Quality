@@ -1,0 +1,1114 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+<link href="~/ThirdParty/plugins/jquery-ui/jquery-ui.css" rel="stylesheet" />
+
+@model DatabaseObject.ViewModel.StyleManagement.EtoEFlowChart_ViewModel
+
+
+<style type="text/css">
+
+    label {
+        color: white
+    }
+
+    #SelectItemBackground {
+        background-color: rgba(204, 204, 204, 0.5);
+        bottom: 0;
+        left: 0;
+        position: fixed;
+        right: 0;
+        top: 0;
+        z-index: 1041;
+    }
+
+    .SelectItem {
+        width: 15vw;
+        height: 45vh;
+        position: absolute;
+        left: 42vw;
+        top: 30vh;
+        z-index: 1043;
+        overflow-y: auto;
+    }
+
+    .QueryLab {
+        font-size: 2vh;
+    }
+
+    h4 {
+        font-size: 1vw;
+    }
+
+    .DevLeft {
+        float: left;
+        width: 0;
+        height: 0;
+        border-width: 2.5vw;
+        border-style: solid;
+        border-color: #c3d7f7 transparent #c3d7f7 #c3d7f7;
+        transform: rotate(180deg); /*順時針旋轉90°*/
+        z-index: 999;
+    }
+
+    .DevMid {
+        float: left;
+        width: 0;
+        height: 0;
+        border-width: 2.5vw;
+        border-style: solid;
+        border-color: #c3d7f7;
+        z-index: 999;
+    }
+
+    .DevRight {
+        float: left;
+        width: 0;
+        height: 0;
+        border-width: 2.5vw;
+        border-style: solid;
+        border-color: transparent #c3d7f7 transparent transparent;
+        transform: rotate(180deg); /*順時針旋轉90°*/
+        z-index: 999;
+    }
+
+    .WarehouseLeft {
+        float: left;
+        width: 0;
+        height: 0;
+        border-width: 2.5vw;
+        border-style: solid;
+        border-color: #7eacf7 transparent #7eacf7 #7eacf7;
+        transform: rotate(180deg); /*順時針旋轉90°*/
+    }
+
+    .WarehouseMid {
+        float: left;
+        width: 0;
+        height: 0;
+        border-width: 2.5vw;
+        border-style: solid;
+        border-color: #7eacf7;
+    }
+
+    .WarehouseRight {
+        float: left;
+        width: 0;
+        height: 0;
+        border-width: 2.5vw;
+        border-style: solid;
+        border-color: transparent #7eacf7 transparent transparent;
+        transform: rotate(180deg); /*順時針旋轉90°*/
+    }
+
+    .ProdutLeft {
+        float: left;
+        width: 0;
+        height: 0;
+        border-width: 2.5vw;
+        border-style: solid;
+        border-color: #4486f3 transparent #4486f3 #4486f3;
+        transform: rotate(180deg); /*順時針旋轉90°*/
+    }
+
+    .ProdutMid {
+        float: left;
+        width: 0;
+        height: 0;
+        border-width: 2.5vw;
+        border-style: solid;
+        border-color: #4486f3;
+    }
+
+    .ProdutRight {
+        float: left;
+        width: 0;
+        height: 0;
+        border-width: 2.5vw;
+        border-style: solid;
+        border-color: transparent #4486f3 transparent transparent;
+        transform: rotate(180deg); /*順時針旋轉90°*/
+    }
+
+    .FinalLeft {
+        float: left;
+        width: 0;
+        height: 0;
+        border-width: 2.5vw;
+        border-style: solid;
+        border-color: #166af5 transparent #166af5 #166af5;
+        transform: rotate(180deg); /*順時針旋轉90°*/
+    }
+
+    .FinalMid {
+        float: left;
+        width: 0;
+        height: 0;
+        border-width: 2.5vw;
+        border-style: solid;
+        border-color: #166af5;
+    }
+
+    .FinalRight {
+        float: left;
+        width: 0;
+        height: 0;
+        border-width: 2.5vw;
+        border-style: solid;
+        border-color: transparent #166af5 transparent transparent;
+        transform: rotate(180deg); /*順時針旋轉90°*/
+    }
+
+    .InfoDiv {
+        width: 20%;
+        /*height: 23vh;*/
+        /*background-color: pink;*/
+        color: white;
+        margin-top: 10px;
+        margin-right: 2.9vw;
+        /*display: inline-block;*/
+        float: left;
+        border-radius: 10px;
+        padding: 5px;
+    }
+
+    .DetailTitle:hover {
+        cursor: pointer;
+        color: yellow;
+    }
+
+    .detailBox {
+        display: none;
+        position: absolute;
+        top: 10%;
+        left: 10%;
+        width: 100%;
+        height: 100%;
+        background-color: black;
+        z-index: 1002;
+        width: 80%;
+        height: 55vh;
+        overflow:scroll;
+
+    }
+
+    .thirdDetailBox {
+        display: none;
+        position: absolute;
+        top: 12%;
+        left: 12%;
+        width: 100%;
+        height: 100%;
+        background-color: darkgray;
+        z-index: 1003;
+        width: 80%;
+        height: 55vh;
+    }
+
+    .black_overlay {
+        display: none;
+        position: absolute;
+        top: 0%;
+        left: 0%;
+        width: 100%;
+        height: 100%;
+        background-color: black;
+        z-index: 1001;
+        opacity: .80;
+    }
+    ::-webkit-scrollbar {
+        display: none;
+    }
+</style>
+
+@using (Html.BeginForm("Index", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post, new { @id = "DetailForm", onsubmit = "return checkSubmitValue(this.submitted);" }))
+{
+    <div class="main-content">
+        <header class="page-header">
+            <h3>
+                <i class=""></i><span>E2E Flow Chart</span>
+            </h3>
+            <div class="breadcrumb">
+                <div>Home</div>
+                <div class="current">E2E Flow Chart</div>
+            </div>
+        </header>
+
+        <div class="main-area">
+            <div class="content-scroll">
+                <div class="inner-scroll">
+                    <div>
+                        @using (Html.BeginForm("Index", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post, new { @class = "", @name = "SearchFrom", @id = "SearchFrom" }))
+                        {
+                            <div>
+                                @Html.Hidden("StyleUkey")
+                                <label class="QueryLab">Brand</label>
+                                <input type="text" name="BrandID" id="Request_BrandID" class="searchText8vw" value="@Model.Request.BrandID" />
+                                <input id="btnBrandSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
+                                &nbsp;&nbsp;
+                                <label class="QueryLab">Season</label>
+                                <input type="text" name="SeasonID" id="Request_SeasonID" class="searchText5vw" value="@Model.Request.SeasonID" />
+                                <input id="btnSeasonSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
+                                &nbsp;&nbsp;
+                                <label class="QueryLab">Style</label>
+                                <input type="text" name="StyleID" id="Request_StyleID" class="searchText12vw" value="@Model.Request.StyleID" />
+                                <input id="btnStyleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
+                                &nbsp;&nbsp;
+                                <label class="QueryLab">Article</label>
+                                <input type="text" name="Article" id="Request_Article" class="searchText8vw" value="@Model.Request.Article" />
+                                <input id="btnArticleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
+                                &nbsp;&nbsp;
+                                <input type="submit" name="action:Query" id="btnQuery" value="Query" />
+                                &nbsp;&nbsp;
+                            </div>
+
+                            <input type="submit" class="btn-gy" name="action:SampleRFTToExcel" id="SampleRFTToExcel" value="To Excel" style="display:none" />
+                        }
+                    </div>
+
+                    <div style="width:100%;padding-top:2%;">
+                        <div class="InfoDiv" style="border: solid 3px #c3d7f7;">
+                            <h4 class="DetailTitle" onclick="DetailTitle_Click(1)">Sample RFT : @Html.Raw(Model.Development.SampleRFT.ToString("0.00") + "%")</h4><br />
+                            <h4 class="DetailTitle" onclick="DetailTitle_Click(2)">Testing Result : @Model.Development.TestResult</h4><br />
+                            <h4 class="DetailTitle" onclick="DetailTitle_Click(3)">RR/LR : @Model.Development.RRLR</h4><br />
+                            <h4 class="DetailTitle" onclick="DetailTitle_Click(4)">FD : @Model.Development.FD</h4>
+
+                        </div>
+                        <div class="InfoDiv" style=" background-color: transparent;">
+
+
+                        </div>
+                        <div class="InfoDiv" style="border: solid 3px #4486f3;">
+                            <h4 class="DetailTitle" onclick="DetailTitle_Click(6)">Subprocess RFT : @Html.Raw((Model.Production.SubprocessRFT * 100 ).ToString("0.00") + "%")</h4><br />
+                            <h4 class="DetailTitle" onclick="DetailTitle_Click(7)">Testing Result : @Model.Production.TestResult</h4><br />
+                            <h4 class="DetailTitle" onclick="DetailTitle_Click(8)">Inline RFT : @Html.Raw((Model.Production.InlineRFT * 100).ToString("0.00") + "%")</h4><br />
+                            <h4 class="DetailTitle" onclick="DetailTitle_Click(9)">Endline WFT : @Html.Raw((Model.Production.EndlineWFT * 100).ToString("0.00") + "%")</h4><br />
+                            <h4 class="DetailTitle" onclick="DetailTitle_Click(10)">MD Pass Rates : @Html.Raw((Model.Production.MDPassRate * 100).ToString("0.00") + "%")</h4>
+
+                        </div>
+                        <div class="InfoDiv" style="margin-right: 5vw;background-color: transparent;">
+
+
+                        </div>
+
+                        <div id="ChartDiv" style="width: 100%; height: 5vw; background-color: transparent; margin-top: 10px; float: left; ">
+                            <div class="DevLeft"></div>
+                            <div class="DevMid">
+                                <h4 style="position: relative; left: -2.3vw; top: -1vh; font-size: 1.3vw; ">Development</h4>
+                            </div>
+                            <div class="DevMid"></div>
+                            <div class="DevRight"></div>
+
+
+                            <div class="WarehouseLeft"></div>
+                            <div class="WarehouseMid">
+                                <h4 style="position: relative; left: -1.6vw; top: -1vh; font-size: 1.3vw; ">Warehouse</h4>
+                            </div>
+                            <div class="WarehouseMid"></div>
+                            <div class="WarehouseRight"></div>
+
+
+                            <div class="ProdutLeft"></div>
+                            <div class="ProdutMid">
+                                <h4 style="position: relative; left: -1.6vw; top: -1vh; font-size: 1.3vw; ">Production</h4>
+                            </div>
+                            <div class="ProdutMid"></div>
+                            <div class="ProdutRight"></div>
+
+                            <div class="FinalLeft"></div>
+                            <div class="FinalMid">
+                                <h4 style="position: relative; top: -2.8vh; font-size: 1.3vw; ">Final</h4>
+                                <h4 style="position: relative; left: -1.3vw; top: -2.1vh; font-size: 1.3vw; ">Inspection</h4>
+                            </div>
+                            <div class="FinalMid"></div>
+                            <div class="FinalRight"></div>
+
+                        </div>
+
+                        <div class="InfoDiv" style=" background-color: transparent;">
+
+
+                        </div>
+                        <div class="InfoDiv" style="border: solid 3px #4486f3;">
+                            <h4 class="DetailTitle" onclick="DetailTitle_Click(5)">Physical Inspection : @Model.Warehouse.PhysicalInspection</h4>
+
+                        </div>
+                        <div class="InfoDiv" style=" background-color: transparent;">
+
+
+                        </div>
+                        <div class="InfoDiv" style="border: solid 3px #166af5;">
+                            <h4>Pass RFT : @Html.Raw((Model.FinalInspection.PassRate * 100).ToString("0.00") + "%")</h4><br />
+                            <h4>SQR : @Html.Raw((Model.FinalInspection.SQR * 100).ToString("0.00") + "%")</h4><br />
+                            <h4>China Pass Rate : @Html.Raw((Model.FinalInspection.ChinaPassRate * 100).ToString("0.00") + "%")</h4><br />
+                            <h4>Japan Pass Rate : @Html.Raw((Model.FinalInspection.JapanPassRate * 100).ToString("0.00") + "%")</h4>
+
+                        </div>
+
+                    </div>
+
+                    <div id="Development_SampleRFT" class="detailBox">
+                        <table cellspacing="100" id="Table_Development_SampleRFT" class="table table-striped display">
+                            <thead>
+                                <tr class="row-name" id="row-name">
+                                    <th>SP#</th>
+                                    <th>Sample Stage</th>
+                                    <th>CFT Comments</th>
+                                    <th>Buy Ready Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Development.SampleRFT_Detail)
+                                {
+                                    <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                                        <td>
+                                            @item.OrderID
+                                        </td>
+                                        <td>
+                                            @item.SampleStage
+                                        </td>
+                                        <td>
+                                            <a onclick="SecondDetailTitle_Click(1, '@item.OrderID')">
+                                                <img src="~/Image/Icon/Document.png" width="20" height="20" />
+                                            </a>
+
+                                        </td>
+                                        <td>
+                                            @item.BuyReadyDate.ToShortDateString()
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+
+                        </table>
+                    </div>
+
+                    <div id="Development_SampleRFT_CFTComments" class="thirdDetailBox">
+                        <table cellspacing="100" id="Table_Development_SampleRFT_CFTComments" class="table table-striped display">
+                            <thead>
+                                <tr class="row-name" id="row-name">
+                                    <th>Comment Category</th>
+                                    <th>Comment</th>
+                                    <th>SP#</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Development.CFTComments)
+                                {
+                                    <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                                        <td>
+                                            @item.CommentCategory
+                                        </td>
+                                        <td>
+                                            @item.Comment
+                                        </td>
+                                        <td>
+                                            @item.OrderID
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+
+                        </table>
+                    </div>
+
+                    <div id="Development_TestResult" class="detailBox">
+                        <table cellspacing="100" id="Table_Development_TestResult" class="table table-striped display">
+                            <thead>
+                                <tr class="row-name" id="row-name">
+                                    <th>Category</th>
+                                    <th>Report No</th>
+                                    <th>Article</th>
+                                    <th>Test Date</th>
+                                    <th>Test Result</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Development.TestResult_Detail)
+                                {
+                                    <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                                        <td>
+                                            @item.Category
+                                        </td>
+                                        <td>
+                                            @item.ReportNo
+                                        </td>
+                                        <td>
+                                            @item.Article
+                                        </td>
+                                        <td>
+                                            @item.TestDate.ToShortDateString()
+                                        </td>
+                                        <td>
+                                            @item.TestResult
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+
+                        </table>
+                    </div>
+
+                    <div id="Development_RRLR" class="detailBox">
+                        <table cellspacing="100" id="Table_Development_RRLR" class="table table-striped display">
+                            <thead>
+                                <tr class="row-name" id="row-name">
+                                    <th>Refno</th>
+                                    <th>Supplier</th>
+                                    <th>Color</th>
+                                    <th>RR</th>
+                                    <th>RR Remark</th>
+                                    <th>LR</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Development.RRLR_Detail)
+                                {
+                                    <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                                        <td>
+                                            @item.Refno
+                                        </td>
+                                        <td>
+                                            @item.SuppID
+                                        </td>
+                                        <td>
+                                            @item.ColorID
+                                        </td>
+                                        <td>
+                                            @item.RR
+                                        </td>
+                                        <td>
+                                            @item.RRRemark
+                                        </td>
+                                        <td>
+                                            @item.LR
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div id="Development_FD" class="detailBox">
+                        <table cellspacing="100" id="Table_Development_FD" class="table table-striped display">
+                            <thead>
+                                <tr class="row-name" id="row-name">
+                                    <th>Style</th>
+                                    <th>Brand</th>
+                                    <th>Season</th>
+                                    <th>Article</th>
+                                    <th>FD Status</th>
+                                    <th>FD Date</th>
+                                    <th>FD Remark</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Development.FD_Detail)
+                                {
+                                    <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                                        <td>
+                                            @item.StyleID
+                                        </td>
+                                        <td>
+                                            @item.BrandID
+                                        </td>
+                                        <td>
+                                            @item.SeasonID
+                                        </td>
+                                        <td>
+                                            @item.Article
+                                        </td>
+                                        <td>
+                                            @item.ExpectionFormStatus
+                                        </td>
+                                        <td>
+                                            @item.ExpectionFormDate.ToShortDateString()
+                                        </td>
+                                        <td>
+                                            @item.ExpectionFormRemark
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div id="Warehouse_PhysicalInsp" class="detailBox">
+                        <table cellspacing="100" id="Table_Warehouse_PhysicalInsp" class="table table-striped display">
+                            <thead>
+                                <tr class="row-name" id="row-name">
+                                    <th>SP#</th>
+                                    <th>SEQ1#</th>
+                                    <th>SEQ2#</th>
+                                    <th>Ref#</th>
+                                    <th>Result</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Warehouse.PhysicalInspection_Detail)
+                                {
+                                    <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                                        <td>
+                                            @item.OrderID
+                                        </td>
+                                        <td>
+                                            @item.Seq1
+                                        </td>
+                                        <td>
+                                            @item.Seq2
+                                        </td>
+                                        <td>
+                                            @item.Refno
+                                        </td>
+                                        <td>
+                                            @item.Result
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div id="Production_SubprocessRFT" class="detailBox">
+                        <table cellspacing="100" id="Table_Production_SubprocessRFT" class="table table-striped display">
+                            <thead>
+                                <tr class="row-name" id="row-name">
+                                    <th>SubProcess</th>
+                                    <th>RFT(%)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Production.SubprocessRFT_Detail)
+                                {
+                                    <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                                        <td>
+                                            @item.SubProcessID
+                                        </td>
+                                        <td>
+                                            @Html.Raw((item.RFT * 100).ToString("0.00"))
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div id="Production_TestResult" class="detailBox">
+                        <table cellspacing="100" id="Table_Production_TestResult" class="table table-striped display">
+                            <thead>
+                                <tr class="row-name" id="row-name">
+                                    <th>FGWT Result</th>
+                                    <th>FGPT Result</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                                    <td>
+                                        @Model.Production.TestResult_Detail.FGWTResult
+                                    </td>
+                                    <td>
+                                        @Model.Production.TestResult_Detail.FGPTResult
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div id="Production_InlinrRFT" class="detailBox">
+                        <table cellspacing="100" id="Table_Production_InlinrRFT" class="table table-striped display">
+                            <thead>
+                                <tr class="row-name" id="row-name">
+                                    <th>First Insp. Date</th>
+                                    <th>Factory</th>
+                                    <th>PO#</th>
+                                    <th>SP#</th>
+                                    <th>Article</th>
+                                    <th>Desstination</th>
+                                    <th>Product Type</th>
+                                    <th>QC Name</th>
+                                    <th>Cell Insp. Qty</th>
+                                    <th>Reject Qty</th>
+                                    <th>RFT(%)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Production.InlineRFT_Detail)
+                                {
+                                    <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                                        <td>
+                                            @item.FirstInspDate.ToShortDateString()
+                                        </td>
+                                        <td>
+                                            @item.FactoryID
+                                        </td>
+                                        <td>
+                                            @item.POID
+                                        </td>
+                                        <td>
+                                            @item.OrderID
+                                        </td>
+                                        <td>
+                                            @item.Article
+                                        </td>
+                                        <td>
+                                            @item.Destination
+                                        </td>
+                                        <td>
+                                            @item.ProductType
+                                        </td>
+                                        <td>
+                                            @item.QCName
+                                        </td>
+                                        <td>
+                                            @item.CallInspectedQty
+                                        </td>
+                                        <td>
+                                            @item.RejectQty
+                                        </td>
+                                        <td>
+                                            @Html.Raw((item.RFTRate).ToString("0.00"))
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div id="Production_EndlineWFT" class="detailBox">
+                        <table cellspacing="100" id="Table_Production_EndlineWFT" class="table table-striped display">
+                            <thead>
+                                <tr class="row-name" id="row-name">
+                                    <th>First Insp. Date</th>
+                                    <th>Factory</th>
+                                    <th>PO#</th>
+                                    <th>SP#</th>
+                                    <th>Article</th>
+                                    <th>Desstination</th>
+                                    <th>Product Type</th>
+                                    <th>QC Name</th>
+                                    <th>Cell Insp. Qty</th>
+                                    <th>Reject Qty</th>
+                                    <th>WFT(%)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Production.EndlineWFT_Detail)
+                                {
+                                    <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                                        <td>
+                                            @item.FirstInspDate.ToShortDateString()
+                                        </td>
+                                        <td>
+                                            @item.FactoryID
+                                        </td>
+                                        <td>
+                                            @item.POID
+                                        </td>
+                                        <td>
+                                            @item.OrderID
+                                        </td>
+                                        <td>
+                                            @item.Article
+                                        </td>
+                                        <td>
+                                            @item.Destination
+                                        </td>
+                                        <td>
+                                            @item.ProductType
+                                        </td>
+                                        <td>
+                                            @item.QCName
+                                        </td>
+                                        <td>
+                                            @item.CallInspectedQty
+                                        </td>
+                                        <td>
+                                            @item.RejectQty
+                                        </td>
+                                        <td>
+                                            @Html.Raw(item.WFTRate.ToString("0.00"))
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div id="Production_MDPassRate" class="detailBox">
+                        <table cellspacing="100" id="Table_Production_MDPassRate" class="table table-striped display">
+                            <thead>
+                                <tr class="row-name" id="row-name">
+                                    <th>SP#</th>
+                                    <th>Article</th>
+                                    <th>Delivery</th>
+                                    <th>Fail Qty</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Production.MDPassRate_Detail)
+                                {
+                                    <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                                        <td>
+                                            @item.OrderID
+                                        </td>
+                                        <td>
+                                            @item.Article
+                                        </td>
+                                        <td>
+                                            @item.DeliveryDate.ToShortDateString()
+                                        </td>
+                                        <td>
+                                            @item.MDFailQty
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="fade" class="black_overlay"></div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+}
+
+
+<script type="text/javascript">
+    var msg = new MessagerAlert();
+
+    var blockCount = 0;
+    $(function () {
+
+        @Html.Raw(Model.ErrorMessage)
+
+        QueryButtonBind();
+
+        $(`#Table_Development_SampleRFT
+,#Table_Development_TestResult
+,#Table_Development_RRLR
+,#Table_Development_FD
+,#Table_Warehouse_PhysicalInsp
+,#Table_Production_SubprocessRFT
+,#Table_Production_TestResult
+,#Table_Production_InlinrRFT
+,#Table_Production_EndlineWFT
+,#Table_Production_MDPassRate
+`).DataTable({
+            "pageLength": 10,
+            "info": false,
+            "filter": false,
+            lengthChange: false,
+                //"scrollY": "40vh",
+                //"scrollCollapse": true,
+        });
+
+
+        //$(".DetailTitle").click(function () {
+        //    $('#fade').css('display', 'block');
+        //});
+
+        $("#fade").click(function () {
+
+            if (blockCount == 2) {
+                $('.thirdDetailBox').css('display', 'none');
+                blockCount -= 1;
+            }
+            else if (blockCount == 1) {
+                $('.detailBox').css('display', 'none');
+                $('#fade').css('display', 'none');
+                blockCount = 0;
+            }
+            else {
+                $('#fade').css('display', 'none');
+                blockCount = 0;
+            }
+        });
+    })
+
+    function QueryButtonBind() {
+        $('#btnBrandSelectItem').on('click', function () {
+            var para = "?TargetID=Request_BrandID";
+            window.open('@Url.Action("BrandList","PublicWondow",new{Area=""})' + para, 'Brand', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        });
+
+        $('#btnSeasonSelectItem').on('click', function () {
+            var para = "?TargetID=Request_SeasonID&BrandID=" + $('#Request_BrandID').val();
+            window.open('@Url.Action("SeasonList","PublicWondow",new{Area=""})' + para, 'Season', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        });
+
+        $('#btnStyleSelectItem').on('click', function () {
+            var para = "?TargetID=Request_StyleID&BrandID=" + $('#Request_BrandID').val() + "&SeasonID=" + $('#Request_SeasonID').val();
+            window.open('@Url.Action("StyleList","PublicWondow",new{Area=""})' + para, 'Style', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        });
+
+        $('#btnArticleSelectItem').on('click', function () {
+            if ($('#Request_BrandID').val() == '' || $('#Request_SeasonID').val() == '' || $('#Request_StyleID').val() == '') {
+                msg.WithError('Please input style, brand and season before choose article.');
+                return;
+            }
+
+            var para = "?TargetID=Request_Article&OrderID=&StyleUkey=0&BrandID=" + $('#Request_BrandID').val() + "&SeasonID=" + $('#Request_SeasonID').val() + "&StyleID=" + $('#Request_StyleID').val();
+            window.open('@Url.Action("ArticleList","PublicWondow",new{Area=""})' + para, 'Article', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        });
+
+        blurEvent('Request_');
+    }
+
+    function blurEvent(name) {
+
+        $("#" + name + "BrandID").blur(function () {
+            if ($(this).val() == '') {
+                if (name == '') {
+                    GetArtworkDropDown();
+                    ClearColor();
+                }
+
+                return;
+            }
+
+            $.ajax({
+                url: "@Url.Action("BrandList","PublicWondow",new{Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#" + name + "BrandID").val('');
+                        msg.WithError('Brand Not Found');
+                    }
+
+                    if (name == '') {
+                        GetArtworkDropDown();
+                        GetAccessoryRefNoList();
+                    }
+
+                    ReportNoClear(name);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $("#" + name + "SeasonID").blur(function () {
+            if ($(this).val() == '') {
+                if (name == '') {
+                    GetArtworkDropDown();
+                }
+
+                return;
+            }
+
+
+            var BrandID = $('#' + name + 'BrandID').val();
+            $.ajax({
+                url: "@Url.Action("SeasonList","PublicWondow",new{Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: BrandID, SeasonID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#" + name + "SeasonID").val('');
+                        msg.WithError('Season Not Found');
+                    }
+
+                    if (name == '') {
+                        GetArtworkDropDown();
+                        GetAccessoryRefNoList();
+                    }
+
+                    ReportNoClear(name);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $("#" + name + "StyleID").blur(function () {
+            if ($(this).val() == '') {
+
+                if (name == '') {
+                    GetArtworkDropDown();
+                }
+
+                return;
+            }
+
+
+            var BrandID = $('#' + name + 'BrandID').val();
+            var SeasonID = $('#' + name + 'SeasonID').val();
+            $.ajax({
+                url: "@Url.Action("StyleList","PublicWondow",new{Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: BrandID, SeasonID: SeasonID, StyleID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#" + name + "StyleID").val('');
+                        msg.WithError('Style Not Found');
+                    }
+
+                    if (name == '') {
+                        GetArtworkDropDown();
+                        GetAccessoryRefNoList();
+                    }
+
+                    ReportNoClear(name);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $('#' + name + 'Article').blur(function () {
+            if ($(this).val() == '') {
+                return;
+            }
+
+            var BrandID = $('#' + name + 'BrandID').val();
+            var SeasonID = $('#' + name + 'SeasonID').val();
+            var StyleID = $('#' + name + 'StyleID').val();
+
+            $.ajax({
+                url: "@Url.Action("ArticleList","PublicWondow",new{Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: BrandID, StyleUkey: 0, SeasonID: SeasonID, StyleID: StyleID, Article: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#" + name + "Article").val('');
+                        msg.WithError('Article Not Found');
+                    }
+
+                    ReportNoClear(name);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+    }
+
+    function DetailTitle_Click(ActType) {
+        var DetailTableID = '';
+        switch (ActType) {
+            case 1:
+                DetailTableID = 'Development_SampleRFT';
+                break;
+            case 2:
+                DetailTableID = 'Development_TestResult';
+                break;
+            case 3:
+                DetailTableID = 'Development_RRLR';
+                break;
+            case 4:
+                DetailTableID = 'Development_FD';
+                break;
+            case 5:
+                DetailTableID = 'Warehouse_PhysicalInsp';
+                break;
+            case 6:
+                DetailTableID = 'Production_SubprocessRFT';
+                break;
+            case 7:
+                DetailTableID = 'Production_TestResult';
+                break;
+            case 8:
+                DetailTableID = 'Production_InlinrRFT';
+                break;
+            case 9:
+                DetailTableID = 'Production_EndlineWFT';
+                break;
+            case 10:
+                DetailTableID = 'Production_MDPassRate';
+                break;
+            default:
+                break;
+        }
+
+        if (DetailTableID == 'Production_InlinrRFT' && @Model.Production.InlineRFT >= 0.97) {
+            // 當上層的RFT低於97%才需顯示這邊的Detail
+        }
+        else if (DetailTableID == 'Production_EndlineWFT' && @Model.Production.EndlineWFT <= 0.08) {
+            // 當上層的WFT高於8%才需顯示這邊的Detail
+        }
+        else {
+            $(`#${DetailTableID}`).css('display', 'block');
+            $('#fade').css('display', 'block');
+            blockCount += 1;
+        }
+    }
+
+    function SecondDetailTitle_Click(ActType, OrderID) {
+
+        var DetailTableID = '';
+        switch (ActType) {
+            case 1:
+                DetailTableID = 'Development_SampleRFT_CFTComments';
+                break;
+            default:
+                break;
+        }
+
+
+        $(`#Table_${DetailTableID}`).DataTable({
+            "pageLength": 10,
+            "info": false,
+            destroy: true, // 設定這個才能重新初始化Datatables
+            //"filter": false,
+            "search": {
+                "search": OrderID
+            },
+            "autoWidth": false,
+            lengthChange: false,
+            columnDefs: [
+                { targets: 0, width: "30%" },
+                { targets: 1, width: "50%" },
+                { targets: 2, visible: false },
+            ],
+        });
+
+
+        $(`#${DetailTableID}`).css('display', 'block');
+        blockCount += 1;
+    }
+
+    function GetBrandList(data, targetID) {
+        $('#' + targetID).val(data);
+    }
+
+    function GetSeasonList(data, targetID) {
+        $('#' + targetID).val(data);
+    }
+
+    function GetStyleList(data, targetID) {
+        $('#' + targetID).val(data);
+    }
+
+    function GetArticleList(data, targetID) {
+        $('#' + targetID).val(data);
+    }
+
+    function checkSubmitValue(self) {
+
+
+        ShowLoading();
+
+
+        return true;
+    }
+</script>

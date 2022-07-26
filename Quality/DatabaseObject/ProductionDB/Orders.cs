@@ -633,5 +633,10 @@ namespace DatabaseObject.ProductionDB
         public bool Checked { get; set; }
 
         public string Article { get; set; }
+        public string ComboType { get; set; }
+        public string TopSewingLineID { get; set; }
+        public string BottomSewingLineID { get; set; }
+        public string InnerSewingLineID { get; set; }
+        public string OuterSewingLineID { get; set; }
     }
 }
