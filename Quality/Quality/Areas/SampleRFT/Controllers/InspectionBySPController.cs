@@ -76,6 +76,7 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             try
             {
+                string StyleUnit = _Service.CheckOrderStyleUnit(new InspectionBySP_ViewModel() { OrderID = OrderID });
                 string InspectionProgress = _Service.CheckInspection(new InspectionBySP_ViewModel() { OrderID = OrderID });
 
                 switch (InspectionProgress)
@@ -126,6 +127,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                     }
                 }
 
+                model.OrderStyleUnit = StyleUnit;
                 if (!model.ExecuteResult)
                 {
                     throw new Exception(model.ErrorMessage);
@@ -282,6 +284,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                 model.CheckOuterCarton = data.CheckOuterCarton;
                 model.CheckPackingMode = data.CheckPackingMode;
                 model.CheckHangtag = data.CheckHangtag;
+                model.CheckHT = data.CheckHT;
                 model.OrderID = data.OrderID;
                 model.ID = data.ID;
             }
@@ -1440,6 +1443,16 @@ namespace Quality.Areas.SampleRFT.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        [SessionAuthorize]
+        public ActionResult GetRFTComments(string OrderID)
+        {
+            InspectionBySP_Others model = _Service.Get_CFT_OrderComments(OrderID);
+
+            List<DatabaseObject.ViewModel.SampleRFT.CFTComments_Result> result = model.DataList;
+
+            return Json(new { Result = model.ExecuteResult, ErrorMessage = model.ErrorMessage, DataList = result });
+        }
 
         [HttpPost]
         [SessionAuthorize]
