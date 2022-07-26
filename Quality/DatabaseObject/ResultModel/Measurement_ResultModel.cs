@@ -20,6 +20,7 @@ namespace DatabaseObject.ResultModel
     }
     public class RFT_Inspection_Measurement_Image
     {
+        public string LoginToken { get; set; }
         public long ID { get; set; }
         public long Seq { get; set; }
         public byte[] Image { get; set; }
