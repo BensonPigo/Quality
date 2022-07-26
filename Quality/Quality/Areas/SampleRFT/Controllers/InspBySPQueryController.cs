@@ -232,7 +232,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             worksheet.Cells[10, 6] = model.Setting.Article;
 
             worksheet.Cells[11, 6] = model.Setting.OrderQty;
-            worksheet.Cells[11, 14] = model.sampleRFTInspection.SewingLineID;
+            worksheet.Cells[11, 14] = model.sampleRFTInspection.SewingLineID + (string.IsNullOrEmpty(model.sampleRFTInspection.SewingLine2ndID) ? string.Empty : $", {model.sampleRFTInspection.SewingLine2ndID}");
 
             worksheet.Cells[12, 6] = model.Setting.CustPONo;
 

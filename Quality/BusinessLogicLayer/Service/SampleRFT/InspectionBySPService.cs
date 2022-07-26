@@ -173,6 +173,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 Result.InspectionStage = existedData.InspectionStage;
                 Result.InspectionTimes = existedData.InspectionTimes.ToString();
                 Result.SewingLineID = existedData.SewingLineID;
+                Result.SewingLine2ndID = existedData.SewingLine2ndID;
                 Result.InspectionDate = existedData.InspectionDate;
                 Result.QCInCharge = existedData.QCInCharge;
                 Result.AQLPlan = existedData.AQLPlan;

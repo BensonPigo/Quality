@@ -280,6 +280,7 @@ order by AQLType , InspectionLevels
             para.Add("@ID", Req.ID);
             para.Add("@OrderID", Req.OrderID);
             para.Add("@SewingLineID", Req.SewingLineID);
+            para.Add("@SewingLine2ndID", Req.SewingLine2ndID);
             para.Add("@InspectionDate", Req.InspectionDate);
             para.Add("@InspectionStage", Req.InspectionStage ?? string.Empty);
             para.Add("@InspectionTimes", Req.InspectionTimes ?? string.Empty);
@@ -308,13 +309,13 @@ INSERT INTO dbo.SampleRFTInspection
             ,StyleUkey           ,InspectionDate           ,OrderQty
             ,Status           ,InspectionStep           ,InspectionStage
             ,InspectionTimes           ,QCInCharge           ,AcceptableQualityLevelsUkey
-            ,SampleSize           ,AcceptQty           ,AddDate           ,AddName)
+            ,SampleSize           ,AcceptQty           ,AddDate           ,AddName    ,SewingLine2ndID   )
         VALUES
             (@OrderID           ,@SewingLineID           ,@FactoryID
             ,@StyleUkey           ,@InspectionDate           ,@OrderQty
             ,'New'           ,'Insp-Setting'           ,@InspectionStage
             ,@InspectionTimes           ,@QCInCharge           ,@AcceptableQualityLevelsUkey
-            ,@SampleSize           ,@AcceptQty           ,GETDATE()           ,@AddName)
+            ,@SampleSize           ,@AcceptQty           ,GETDATE()           ,@AddName    ,@SewingLine2ndID   )
 
 SELECT CAST( @@IDENTITY  as bigint) as ID
 
@@ -327,6 +328,7 @@ SELECT CAST( @@IDENTITY  as bigint) as ID
 UPDATE SampleRFTInspection
 SET  EditDate = GETDATE(), EditName = @EditName
     ,SewingLineID = @SewingLineID
+    ,SewingLine2ndID = @SewingLine2ndID
     ,InspectionDate=@InspectionDate
     ,InspectionStage=@InspectionStage
     ,InspectionTimes=@InspectionTimes
