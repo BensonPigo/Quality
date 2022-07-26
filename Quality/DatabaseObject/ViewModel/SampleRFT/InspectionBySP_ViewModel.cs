@@ -283,6 +283,7 @@ namespace DatabaseObject.ViewModel.SampleRFT
 
     public class DefectImage
     {
+        public string LoginToken { get; set; }
         public string GarmentDefectCodeID { get; set; }
         public long ImageUKey { get; set; }
         public long Seq { get; set; }
@@ -342,6 +343,7 @@ namespace DatabaseObject.ViewModel.SampleRFT
     }
     public class BAImage
     {
+        public string LoginToken { get; set; }
         public string BACriteria { get; set; }
         public long ImageUKey { get; set; }
         public long SampleRFTInspection_NonBACriteriaUKey { get; set; }
