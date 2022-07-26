@@ -1040,17 +1040,17 @@
                 break;
         }
 
-        @*if (DetailTableID == 'Production_InlinrRFT' && @Model.Production.InlineRFT >= 0.97) {
+        if (DetailTableID == 'Production_InlinrRFT' && @Model.Production.InlineRFT >= 0.97) {
             // 當上層的RFT低於97%才需顯示這邊的Detail
         }
         else if (DetailTableID == 'Production_EndlineWFT' && @Model.Production.EndlineWFT <= 0.08) {
             // 當上層的WFT高於8%才需顯示這邊的Detail
         }
-        else {*@
+        else {
             $(`#${DetailTableID}`).css('display', 'block');
             $('#fade').css('display', 'block');
             blockCount += 1;
-        //}
+        }
     }
 
     function SecondDetailTitle_Click(ActType, OrderID) {
