@@ -240,9 +240,7 @@ select  {sqlCol}
     ,StyleRRLRPath = (select StyleRRLRPath from System WITH(NOLOCK))
 from    Style s with (nolock)
 OUTER APPLY(
-	select Val = ROUND( SUM(IIF(Status = 'Pass',1,0)) * 1.0  / COUNT(1) *1.0  *100 , 2)
-    FROM [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection  rft WITH(NOLOCK)
-	WHERE rft.StyleUkey = s.Ukey
+	{RftOuterApply}
 )RFT
 where   1 = 1 {sqlWhere}
 ";
