@@ -240,7 +240,7 @@ select * from (
                 ,Article
                 ,TestDate 
                 ,TestResult = Result
-        from Quality.dbo.MockupOven  WITH (NOLOCK)
+        from Quality.dbo.MockupWash  WITH (NOLOCK)
         WHERE StyleID=@StyleID 
             AND BrandID=@BrandID 
             AND SeasonID=@SeasonID 
