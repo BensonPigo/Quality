@@ -338,7 +338,7 @@ select * from (
         order by TestDate desc
     )a
 )b
-where TestResult = 'Fail'
+--where TestResult = 'Fail'
 
 ";
 
