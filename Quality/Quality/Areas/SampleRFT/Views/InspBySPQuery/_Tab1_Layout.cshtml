@@ -59,7 +59,7 @@
     <div style="display:inline-block;width:40%">
         <table class="checkListClass">
             <tr>
-                <td colspan="2" style="font-size: 2em;font-weight:bold">Fabeic Artwork Check List</td>
+                <td colspan="2" style="font-size: 2em;font-weight:bold">Fabric Artwork Check List</td>
             </tr>
             <tr>
                 <td style="width:3vw">
@@ -90,7 +90,15 @@
                     @Html.CheckBoxFor(o => o.sampleRFTInspection.CheckPrintEmbDecorations, new { @disabled = "disabled", @class = "checkboxInput" })
                 </td>
                 <td>
-                    <div><label class="checkboxlabel">Print/ Emb Decorations</label></div>
+                    <div><label class="checkboxlabel">Print/Emb Decorations</label></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.CheckBoxFor(o => o.sampleRFTInspection.CheckHT, new { @disabled = "disabled", @class = "checkboxInput" })
+                </td>
+                <td>
+                    <div><label class="checkboxlabel">HT</label></div>
                 </td>
             </tr>
         </table>

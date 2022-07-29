@@ -43,6 +43,14 @@
         .ColTitle{
             text-align:center;
         }
+        .Remove-icon {
+            width: 1vh;
+            height: 1vh;
+            background-size: cover;
+            background-repeat: no-repeat;
+            display: inline-block;
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAU0lEQVR4nO3QQQ3DQADEwE1V+CnmC4v6kRkEljcAAAAAAICXuM521xGl62ynjih96oCaAXVAzYA6oGZAHVAzoA6oGVAH1L7bfnUEAAAAAAAAf/AAgJAEMzJ8aocAAAAASUVORK5CYII=');
+        }
     </style>
 }
 <div class="DownWhiteBackgrond">
@@ -87,7 +95,7 @@
 
 
 
-        <div style="width:18%;height:90%;">
+        <div id="DefectAreaLeft" style="width:18%;height:90%;">
             <div style="width: 100%; height: 5%; background-color: navajowhite; text-align: center; vertical-align: middle; border: 1px solid black;">
                 <h1 style="font-size: 2vh; font-weight: 900;padding-top:0.8vh; ">
                     Area-1
@@ -105,7 +113,9 @@
             <h1 style="color:white"><span id="AreaSelectedQty" style="color:yellow">0</span> Areas have been selected</h1>
             <br />
             <br />
-            <button id="btnAreaSave" onclick="AreaSave()" style="width: 100%; height: 3vh; background-color: lightblue;color:blue">Save</button>
+            <button id="btnAreaSave" onclick="AreaSave()" style="width: 100%; height: 3vh; background-color: lightblue;color:blue;margin:0;">Save</button>
+            <br />
+            <br />
         </div>
 
         <div style="width:2%;height:90%;border:0">
@@ -120,8 +130,19 @@
 
             @foreach (var Area in Model.Areas)
             {
-                <div class="AreeItem @Area.Type" value="@Area.Code" locationType="@Area.Type" chioced="false" onclick="AreaClick(this)" style="width: 20%;  line-height: 8vh; background-color: lightpink; text-align: center; vertical-align: middle; border: 1px solid black; float: left;display:none">
-                    <h4 style="font-weight: 900; ">
+                string divWidth = "20%";
+                string fontSize = string.Empty;
+                if (Area.Code.Length > 25)
+                {
+                    divWidth = "40%";
+                    fontSize = "font-size:0.5vw";
+                }
+                else if (Area.Code.Length > 15)
+                {
+                    divWidth = "40%";
+                }
+                <div class="AreeItem @Area.Type" value="@Area.Code" locationType="@Area.Type" chioced="false" onclick="AreaClick(this, true)" style="width: @divWidth;  line-height: 8vh; background-color: lightpink; text-align: center; vertical-align: middle; border: 1px solid black; float: left;display:none">
+                    <h4 style="font-weight: 900; @fontSize">
                         @Area.Code
                     </h4>
                 </div>
@@ -335,6 +356,7 @@
         }
 
         function OpenArea(qtyObjName) {
+            
             AreaRefresh();
             targetArea = qtyObjName;
 
@@ -345,8 +367,9 @@
 
             // 抓取同列的Qty代入
             $("#AreaQty").text($(`input[name='${qtyObjName}.Qty']`).val());
-            MaxRejectQty = $(`input[name='${qtyObjName}.Qty']`).val();
+            MaxRejectQty = parseInt($(`input[name='${qtyObjName}.Qty']`).val());
 
+            $('.AreaSelected').remove();
 
             // 抓取已選取的AreaCode
             if (AreaCodes == '') {
@@ -361,14 +384,25 @@
                     var type = $(`div[value='${area}']`).attr('locationtype');
 
                     // 已選取的AreaCode上色 + 修改屬性
-                    $(`div[value='${area}']`).attr('chioced', 'true').css('background-color', '#16caa9');
+                    //$(`div[value='${area}']`).attr('chioced', 'true').css('background-color', '#16caa9');
 
                     $(`#Area${type}`).click();
+
+                    // 左下角選列表加入
+                    $("#DefectAreaLeft").append(`
+            <div class="AreaSelected" onClick="AreaSelected_Click(this)" style="width: 100%; height: 5%; line-height: 3vh; background-color: #96f277; border: 1px solid black; text-align: center;display:flex;align-items:center;">
+                <h1>&nbsp;&nbsp;&nbsp;</h1>
+                <i class="Remove-icon"></i>
+                <h1>&nbsp;&nbsp;&nbsp;</h1>
+                <p>${area}</p>
+            </div>
+    `);
                 });
             }
         }
 
         function AreaRefresh() {
+            
             $("#AreaOutside").css('background-color', '#ffdbdb');
             $("#AreaInside").css('background-color', '#ffdbdb');
             $(`.AreeItem`).css('background-color', 'lightpink').attr('chioced', 'false').hide();
@@ -376,7 +410,7 @@
         }
 
         function AreaTypeChange(Type, obj) {
-
+            
             $(`.AreeItem.${Type}`).show();
             $(`.AreeItem`).not(`.${Type}`).hide();
 
@@ -389,10 +423,12 @@
             }
         }
 
-        function AreaClick(obj) {
-            var isSelected = $(obj).attr('chioced');
-            var selectDatas = $('.AreeItem[chioced="true"]');
-
+        function AreaClick(obj, isAdd) {
+            
+            //var isSelected = $(obj).attr('chioced');
+            var selectDatas = $('.AreaSelected');
+            var selectVal = $(obj).attr('value');
+            /*
             if (isSelected == 'false') {
                 if (selectDatas.length >= MaxRejectQty) {
                     return;
@@ -401,22 +437,70 @@
 
                 $(obj).attr('chioced', 'true');
                 $(obj).css('background-color', '#16caa9');
+
+
+                // 左下角選列表加入
+                $("#DefectAreaLeft").append(`
+            <div class="AreaSelected" onClick="AreaSelected_Click(this)" style="width: 100%; height: 5%; line-height: 3vh; background-color: #96f277; border: 1px solid black; text-align: center;display:flex;align-items:center;">
+                <h1>&nbsp;&nbsp;&nbsp;</h1>
+                <i class="Remove-icon"></i>
+                <h1>&nbsp;&nbsp;&nbsp;</h1>
+                <p>${selectVal}</p>
+            </div>
+    `);
             }
             else {
                 $("#AreaSelectedQty").text(selectDatas.length - 1);
                 $(obj).attr('chioced', 'false');
                 $(obj).css('background-color', 'lightpink');
+
+                $('.AreaSelected').find(`p:contains("${selectVal}")`).parent().remove();
+            }*/
+
+            if (isAdd) {
+
+                if (selectDatas.length >= MaxRejectQty) {
+                    return;
+                }
+                $("#AreaSelectedQty").text(selectDatas.length + 1);
+
+                $(obj).attr('chioced', 'true');
+                //$(obj).css('background-color', '#16caa9');
+
+
+                // 左下角選列表加入
+                $("#DefectAreaLeft").append(`
+                        <div class="AreaSelected" onClick="AreaSelected_Click(this)" style="width: 100%; height: 5%; line-height: 3vh; background-color: #96f277; border: 1px solid black; text-align: center;display:flex;align-items:center;">
+                            <h1>&nbsp;&nbsp;&nbsp;</h1>
+                            <i class="Remove-icon"></i>
+                            <h1>&nbsp;&nbsp;&nbsp;</h1>
+                            <p>${selectVal}</p>
+                        </div>
+                `);
+            }
+            else {
+                $("#AreaSelectedQty").text(selectDatas.length - 1);
             }
         }
 
+        function AreaSelected_Click(obj) {
+            
+            // 取得點選要移除的的Area
+            var removeVal = $(obj).find('p').text();
+            var areaDiv = $('.AreeItem').find(`h4:contains("${removeVal}")`).parent();
+            AreaClick(areaDiv, false);
+            $(obj).remove();
+        }
+
         function AreaSave() {
-            var selectDatas = $('.AreeItem[chioced="true"]');
+            //var selectDatas = $('.AreeItem[chioced="true"]');
+            var selectDatas = $('.AreaSelected');
             var resultList = [];
             var result = '';
 
             $.each(selectDatas, function () {
-                resultList.push($(this).attr('value'));
-
+                //resultList.push($(this).attr('value'));
+                resultList.push($(this).find('p').text());
             });
 
             if (resultList.length != MaxRejectQty) {

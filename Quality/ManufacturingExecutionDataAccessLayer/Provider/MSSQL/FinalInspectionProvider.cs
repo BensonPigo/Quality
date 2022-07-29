@@ -1272,17 +1272,20 @@ where   f.ID = @FinalInspectionID
 declare @StyleID varchar(15)
 declare @SeasonID varchar(10)
 declare @BrandID varchar(8)
+declare @Dest varchar(40)
 declare @spQty int
 
 select @spQty = isnull(sum(Qty), 0)
 from Production.dbo.Orders with (nolock)
 where   ID in (select OrderID from FinalInspection_Order with (nolock) where ID = @FinalInspectionID)
 
-select  @StyleID = StyleID,
-        @SeasonID = SeasonID,
-        @BrandID = BrandID
-from    Production.dbo.Orders with (nolock)
-where   ID IN (
+select  @StyleID = o.StyleID,
+        @SeasonID = o.SeasonID,
+        @BrandID = o.BrandID,
+		@Dest = IIF(o.VasShas=1,o.Dest + '-' + c.Alias, '')
+from    Production.dbo.Orders o with (nolock)
+left join Production.dbo.Country c on o.Dest=c.ID
+where   o.ID IN (
     select ID
     from Production.dbo.Orders WITH(NOLOCK)
     where CustPONO = (select CustPONO from FinalInspection with (nolock) where ID = @FinalInspectionID ) AND CustPONO != ''
@@ -1298,7 +1301,8 @@ select  [SP] = (SELECT Stuff((select concat( ',',OrderID)
         [StyleID] = @StyleID,
         [BrandID] = @BrandID,
         [CFA] = ISNULL((select name from pass1 with (nolock) where ID = f.CFA),(select name from Production..pass1 with (nolock) where ID = f.CFA)),
-        [TotalSPQty] = @spQty
+        [TotalSPQty] = @spQty,
+		Dest = @Dest
 from    FinalInspection f with (nolock)
 where ID = @FinalInspectionID
 ";
