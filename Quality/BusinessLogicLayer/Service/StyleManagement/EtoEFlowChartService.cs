@@ -39,18 +39,22 @@ namespace BusinessLogicLayer.Service.StyleManagement
                 model.Development.TestResult_Detail = PMS_Provider.Get_Development_TestResult_Detail(Req);
                 model.Development.TestResult = string.Empty;
 
+                // 只有外層顯示Fail才需要秀Detail
                 if (model.Development.TestResult_Detail.Count == 0)
                 {
+                    model.Development.TestResult_Detail = new List<Development_TestResult>();
                     model.Development.TestResult = "N/A";
                 }
                 else if (model.Development.TestResult_Detail.Where(o => o.TestResult == "Fail").Any())
                 {
                     model.Development.TestResult = "Fail";
+                    model.Development.TestResult_Detail = model.Development.TestResult_Detail.Where(o => o.TestResult == "Fail").ToList();
                 }
                 else if (model.Development.TestResult_Detail.Where(o => o.TestResult == "Pass").Count() == model.Development.TestResult_Detail.Count)
                 {
                     // 全數Pass才算Pass
                     model.Development.TestResult = "Pass";
+                    model.Development.TestResult_Detail = new List<Development_TestResult>();
                 }
 
                 model.Development.RRLR_Detail = PMS_Provider.Get_Development_RRLR_Detail(Req);
