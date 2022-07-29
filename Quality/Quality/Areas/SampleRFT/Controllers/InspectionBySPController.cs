@@ -76,6 +76,7 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             try
             {
+                string StyleUnit = _Service.CheckOrderStyleUnit(new InspectionBySP_ViewModel() { OrderID = OrderID });
                 string InspectionProgress = _Service.CheckInspection(new InspectionBySP_ViewModel() { OrderID = OrderID });
 
                 switch (InspectionProgress)
@@ -126,6 +127,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                     }
                 }
 
+                model.OrderStyleUnit = StyleUnit;
                 if (!model.ExecuteResult)
                 {
                     throw new Exception(model.ErrorMessage);
@@ -282,6 +284,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                 model.CheckOuterCarton = data.CheckOuterCarton;
                 model.CheckPackingMode = data.CheckPackingMode;
                 model.CheckHangtag = data.CheckHangtag;
+                model.CheckHT = data.CheckHT;
                 model.OrderID = data.OrderID;
                 model.ID = data.ID;
             }
@@ -384,6 +387,10 @@ namespace Quality.Areas.SampleRFT.Controllers
                 int ctn = 0;
                 foreach (var item in TmpAdd_MeasurementImg)
                 {
+                    if (item.LoginToken != this.LoginToken)
+                    {
+                        continue;
+                    }
                     ctn += 1;
                     string seq = (maxCtn + ctn).ToString();
                     model.Images_Source.Add(new SelectListItem() { Text = seq, Value = string.Empty });
@@ -393,12 +400,12 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             // 下拉選單排除要刪除的
             model.Images_Source = model.Images_Source.Where(o =>
-                !TmpDelete_MeasurementImg.Any(x => x.Seq.ToString() == o.Text)
+                !TmpDelete_MeasurementImg.Any(x => x.Seq.ToString() == o.Text && x.LoginToken == this.LoginToken)
             ).ToList();
 
             // 圖片排除要刪除的
             model.Images = model.Images.Where(o =>
-                !TmpDelete_MeasurementImg.Any(x => x.Seq == o.Seq)
+                !TmpDelete_MeasurementImg.Any(x => x.Seq == o.Seq && x.LoginToken == this.LoginToken)
             ).ToList();
 
             ViewData["IsReadonly"] = Readonly;
@@ -439,6 +446,10 @@ namespace Quality.Areas.SampleRFT.Controllers
                     int ctn = 0;
                     foreach (var item in TmpAdd_MeasurementImg)
                     {
+                        if (item.LoginToken != this.LoginToken)
+                        {
+                            continue;
+                        }
                         ctn += 1;
                         string seq = (maxCtn + ctn).ToString();
                         model.Images_Source.Add(new SelectListItem() { Text = seq, Value = string.Empty });
@@ -448,6 +459,7 @@ namespace Quality.Areas.SampleRFT.Controllers
 
                 string newSeq = (model.Images_Source.Count + 1).ToString();
                 data.Seq = Convert.ToInt32(newSeq);
+                data.LoginToken = this.LoginToken;
                 TmpAdd_MeasurementImg.Add(data);
             }
 
@@ -479,6 +491,10 @@ namespace Quality.Areas.SampleRFT.Controllers
                     int ctn = 0;
                     foreach (var item in TmpAdd_MeasurementImg)
                     {
+                        if (item.LoginToken != this.LoginToken)
+                        {
+                            continue;
+                        }
                         ctn += 1;
                         string seq = (maxCtn + ctn).ToString();
                         model.Images_Source.Add(new SelectListItem() { Text = seq, Value = string.Empty });
@@ -493,6 +509,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                     newCtn += 1;
                     string seq = (newMaxCtn + newCtn).ToString();
                     data.Seq = Convert.ToInt32(seq);
+                    data.LoginToken = this.LoginToken;
                     TmpAdd_MeasurementImg.Add(data);
                 }
             }
@@ -505,6 +522,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         [SessionAuthorize]
         public ActionResult DeleteMeasurementPic(RFT_Inspection_Measurement_Image data, string OrderID)
         {
+            data.LoginToken = this.LoginToken;
             TmpDelete_MeasurementImg.Add(data);
 
             JsonResult json = MeasurementImageRefresh(OrderID);
@@ -528,6 +546,10 @@ namespace Quality.Areas.SampleRFT.Controllers
             // 將上傳/拍攝的圖片，和DB圖片合併，同時給新的Seq
             foreach (var item in TmpAdd_MeasurementImg)
             {
+                if (item.LoginToken != this.LoginToken)
+                {
+                    continue;
+                }
                 ctn += 1;
                 string seq = (maxCtn + ctn).ToString();
                 model.Images_Source.Add(new SelectListItem() { Text = seq, Value = string.Empty });
@@ -536,12 +558,12 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             // 下拉選單排除要刪除的
             model.Images_Source = model.Images_Source.Where(o =>
-                !TmpDelete_MeasurementImg.Any(x => x.Seq.ToString() == o.Text)
+                !TmpDelete_MeasurementImg.Any(x => x.Seq.ToString() == o.Text && x.LoginToken == this.LoginToken)
             ).ToList();
 
             // 圖片排除要刪除的
             model.Images = model.Images.Where(o =>
-                !TmpDelete_MeasurementImg.Any(x => x.Seq == o.Seq)
+                !TmpDelete_MeasurementImg.Any(x => x.Seq == o.Seq && x.LoginToken == this.LoginToken)
             ).ToList();
 
 
@@ -598,12 +620,16 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             foreach (var item in TmpAdd_MeasurementImg)
             {
+                if (item.LoginToken != this.LoginToken)
+                {
+                    continue;
+                }
                 model.Images.Add(new RFT_Inspection_Measurement_Image() { Image = item.TempImage, Seq = item.Seq });
             }
 
             // 圖片排除要刪除的
             model.Images = model.Images.Where(o =>
-                !TmpDelete_MeasurementImg.Any(x => x.Seq == o.Seq)
+                !TmpDelete_MeasurementImg.Any(x => x.Seq == o.Seq && x.LoginToken == this.LoginToken)
             ).ToList();
 
             Req.ImageList = model.Images.Select(o => o.Image).ToList();
@@ -722,7 +748,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                 int ctn = 0;
                 foreach (var item in TmpAdd_DefectImg)
                 {
-                    if (item.GarmentDefectCodeID != GarmentDefectCodeID)
+                    if (item.GarmentDefectCodeID != GarmentDefectCodeID || item.LoginToken != this.LoginToken)
                     {
                         continue;
                     }
@@ -735,12 +761,12 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             // 下拉選單排除要刪除的
             model.Images_Source = model.Images_Source.Where(o =>
-                !TmpDelete_DefectImg.Any(x => x.Seq.ToString() == o.Text && x.GarmentDefectCodeID == o.Value)
+                !TmpDelete_DefectImg.Any(x => x.Seq.ToString() == o.Text && x.GarmentDefectCodeID == o.Value && x.LoginToken == this.LoginToken)
             ).ToList();
 
             // 圖片排除要刪除的
             model.Images = model.Images.Where(o =>
-                !TmpDelete_DefectImg.Any(x => x.Seq == o.Seq && x.GarmentDefectCodeID == o.GarmentDefectCodeID)
+                !TmpDelete_DefectImg.Any(x => x.Seq == o.Seq && x.GarmentDefectCodeID == o.GarmentDefectCodeID && x.LoginToken == this.LoginToken)
             ).ToList();
 
 
@@ -778,7 +804,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                     int ctn = 0;
                     foreach (var item in TmpAdd_DefectImg)
                     {
-                        if (item.GarmentDefectCodeID != GarmentDefectCodeID)
+                        if (item.GarmentDefectCodeID != GarmentDefectCodeID || item.LoginToken != this.LoginToken)
                         {
                             continue;
                         }
@@ -792,6 +818,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                 data.Seq = Convert.ToInt32(newSeq);
                 data.SampleRFTInspectionDetailUKey = SampleRFTInspection_DetailUKey;
                 data.GarmentDefectCodeID = GarmentDefectCodeID;
+                data.LoginToken = this.LoginToken;
                 TmpAdd_DefectImg.Add(data);
             }
 
@@ -827,7 +854,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                     ctn = 0;
                     foreach (var item in TmpAdd_DefectImg)
                     {
-                        if (item.GarmentDefectCodeID != GarmentDefectCodeID)
+                        if (item.GarmentDefectCodeID != GarmentDefectCodeID || item.LoginToken != this.LoginToken)
                         {
                             continue;
                         }
@@ -847,6 +874,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                     data.Seq = Convert.ToInt32(seq);
                     data.SampleRFTInspectionDetailUKey = SampleRFTInspection_DetailUKey;
                     data.GarmentDefectCodeID = GarmentDefectCodeID;
+                    data.LoginToken = this.LoginToken;
                     TmpAdd_DefectImg.Add(data);
                 }
             }
@@ -861,6 +889,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         {
             data.SampleRFTInspectionDetailUKey = SampleRFTInspection_DetailUKey;
             data.GarmentDefectCodeID = GarmentDefectCodeID;
+            data.LoginToken = this.LoginToken;
             TmpDelete_DefectImg.Add(data);
 
             JsonResult json = DefectImageRefresh(ID, SampleRFTInspection_DetailUKey, GarmentDefectCodeID);
@@ -884,7 +913,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             // 將上傳/拍攝的圖片，和DB圖片合併，同時給新的Seq
             foreach (var item in TmpAdd_DefectImg)
             {
-                if (item.GarmentDefectCodeID != GarmentDefectCodeID)
+                if (item.GarmentDefectCodeID != GarmentDefectCodeID || item.LoginToken != this.LoginToken)
                 {
                     continue;
                 }
@@ -896,12 +925,12 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             // 下拉選單排除要刪除的
             model.Images_Source = model.Images_Source.Where(o =>
-                !TmpDelete_DefectImg.Any(x => x.Seq.ToString() == o.Text && x.GarmentDefectCodeID == o.Value)
+                !TmpDelete_DefectImg.Any(x => x.Seq.ToString() == o.Text && x.GarmentDefectCodeID == o.Value && x.LoginToken == this.LoginToken)
             ).ToList();
 
             // 圖片排除要刪除的
             model.Images = model.Images.Where(o =>
-                !TmpDelete_DefectImg.Any(x => x.Seq == o.Seq && x.GarmentDefectCodeID == o.GarmentDefectCodeID)
+                !TmpDelete_DefectImg.Any(x => x.Seq == o.Seq && x.GarmentDefectCodeID == o.GarmentDefectCodeID && x.LoginToken == this.LoginToken)
             ).ToList();
 
 
@@ -930,8 +959,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             addDefct.RejectQty = latestModel.RejectQty;
             addDefct.ID = latestModel.ID;
 
-            var DbImage = TmpAdd_DefectImg.Where(o => o.ImageUKey > 0).ToList();
-            var NotDbImage = TmpAdd_DefectImg.Where(o => o.ImageUKey <= 0).ToList();
+            var NotDbImage = TmpAdd_DefectImg.Where(o => o.ImageUKey <= 0 && o.LoginToken == this.LoginToken).ToList();
 
             foreach (SampleRFTInspection_Summary item in addDefct.ListDefectItem)
             {
@@ -949,7 +977,7 @@ namespace Quality.Areas.SampleRFT.Controllers
 
                 // 相同Detail Ukey 且排除刪除的圖片
                 List<DefectImage> tempImgs = NotDbImage.Where(o => o.GarmentDefectCodeID == GarmentDefectCodeID &&
-                                               !TmpDelete_DefectImg.Any(x => x.Seq == o.Seq && x.GarmentDefectCodeID == o.GarmentDefectCodeID)
+                                               !TmpDelete_DefectImg.Any(x => x.Seq == o.Seq && x.GarmentDefectCodeID == o.GarmentDefectCodeID && x.LoginToken == this.LoginToken)
                                             ).ToList();
                 if (tempImgs.Any())
                 {
@@ -963,7 +991,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             }
 
             // 可以直接執行刪除的圖片
-            var DeleteImg = TmpDelete_DefectImg.Where(o => o.ImageUKey > 0).ToList();
+            var DeleteImg = TmpDelete_DefectImg.Where(o => o.ImageUKey > 0 && o.LoginToken == this.LoginToken).ToList();
 
             InspectionBySP_AddDefect result = _Service.AddDefectProcess(addDefct, DeleteImg);
 
@@ -1064,7 +1092,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                 int ctn = 0;
                 foreach (var item in TmpAdd_BAImg)
                 {
-                    if (item.BACriteria != BACriteria)
+                    if (item.BACriteria != BACriteria || item.LoginToken != this.LoginToken)
                     {
                         continue;
                     }
@@ -1080,12 +1108,12 @@ namespace Quality.Areas.SampleRFT.Controllers
             }
             // 下拉選單排除要刪除的
             model.Images_Source = model.Images_Source.Where(o =>
-                !TmpDelete_BAImg.Any(x => x.Seq.ToString() == o.Text && x.BACriteria == BACriteria)
+                !TmpDelete_BAImg.Any(x => x.Seq.ToString() == o.Text && x.BACriteria == BACriteria && x.LoginToken == this.LoginToken)
             ).ToList();
 
             // 圖片排除要刪除的
             model.Images = model.Images.Where(o =>
-                !TmpDelete_BAImg.Any(x => x.Seq == o.Seq && x.BACriteria == BACriteria)
+                !TmpDelete_BAImg.Any(x => x.Seq == o.Seq && x.BACriteria == BACriteria && x.LoginToken == this.LoginToken)
             ).ToList();
 
             ViewData["IsReadonly"] = Readonly;
@@ -1115,7 +1143,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                     int ctn = 0;
                     foreach (var item in TmpAdd_BAImg)
                     {
-                        if (item.BACriteria != BACriteria)
+                        if (item.BACriteria != BACriteria || item.LoginToken != this.LoginToken)
                         {
                             continue;
                         }
@@ -1130,6 +1158,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                 data.Seq = Convert.ToInt32(newseq);
                 data.BACriteria = BACriteria;
                 data.SampleRFTInspection_NonBACriteriaUKey = BAUKey;
+                data.LoginToken = this.LoginToken;
                 TmpAdd_BAImg.Add(data);
             }
 
@@ -1162,7 +1191,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                     ctn = 0;
                     foreach (var item in TmpAdd_BAImg)
                     {
-                        if (item.BACriteria != BACriteria)
+                        if (item.BACriteria != BACriteria || item.LoginToken != this.LoginToken)
                         {
                             continue;
                         }
@@ -1182,6 +1211,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                     data.Seq = Convert.ToInt32(seq);
                     data.SampleRFTInspection_NonBACriteriaUKey = BAUKey;
                     data.BACriteria = BACriteria;
+                    data.LoginToken = this.LoginToken;
                     TmpAdd_BAImg.Add(data);
                 }
             }
@@ -1195,6 +1225,7 @@ namespace Quality.Areas.SampleRFT.Controllers
         {
             data.SampleRFTInspection_NonBACriteriaUKey = BAUkey;
             data.BACriteria = BACriteria;
+            data.LoginToken = this.LoginToken;
             TmpDelete_BAImg.Add(data);
 
             JsonResult json = DefectBARefresh(ID, BAUkey, BACriteria);
@@ -1217,7 +1248,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             // 將上傳/拍攝的圖片，和DB圖片合併，同時給新的Seq
             foreach (var item in TmpAdd_BAImg)
             {
-                if (item.BACriteria != BACriteria)
+                if (item.BACriteria != BACriteria || item.LoginToken != this.LoginToken)
                 {
                     continue;
                 }
@@ -1233,12 +1264,12 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             // 下拉選單排除要刪除的
             model.Images_Source = model.Images_Source.Where(o =>
-                !TmpDelete_BAImg.Any(x => x.Seq.ToString() == o.Text && x.BACriteria == BACriteria)
+                !TmpDelete_BAImg.Any(x => x.Seq.ToString() == o.Text && x.BACriteria == BACriteria && x.LoginToken == this.LoginToken)
             ).ToList();
 
             // 圖片排除要刪除的
             model.Images = model.Images.Where(o =>
-                !TmpDelete_BAImg.Any(x => x.Seq == o.Seq && x.BACriteria == BACriteria)
+                !TmpDelete_BAImg.Any(x => x.Seq == o.Seq && x.BACriteria == BACriteria && x.LoginToken == this.LoginToken)
             ).ToList();
 
 
@@ -1268,14 +1299,14 @@ namespace Quality.Areas.SampleRFT.Controllers
             Req.ID = latestModel.ID;
 
             // 可以直接執行刪除的圖片
-            var DeleteImg = TmpDelete_BAImg.Where(o => o.ImageUKey > 0).ToList();
+            var DeleteImg = TmpDelete_BAImg.Where(o => o.ImageUKey > 0 && o.LoginToken == this.LoginToken).ToList();
 
             if (Req.ListBACriteria != null)
             {
                 foreach (BACriteriaItem item in Req.ListBACriteria)
                 {
-                    var imgs = TmpAdd_BAImg.Where(o => o.BACriteria == item.BACriteria &&
-                        !TmpDelete_BAImg.Any(x => x.Seq == o.Seq && x.BACriteria == item.BACriteria)
+                    var imgs = TmpAdd_BAImg.Where(o => o.BACriteria == item.BACriteria && o.LoginToken == this.LoginToken &&
+                        !TmpDelete_BAImg.Any(x => x.Seq == o.Seq && x.BACriteria == item.BACriteria && x.LoginToken == this.LoginToken)
                     ).ToList();
 
                     foreach (var t in imgs)
@@ -1412,6 +1443,16 @@ namespace Quality.Areas.SampleRFT.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        [SessionAuthorize]
+        public ActionResult GetRFTComments(string OrderID)
+        {
+            InspectionBySP_Others model = _Service.Get_CFT_OrderComments(OrderID);
+
+            List<DatabaseObject.ViewModel.SampleRFT.CFTComments_Result> result = model.DataList;
+
+            return Json(new { Result = model.ExecuteResult, ErrorMessage = model.ErrorMessage, DataList = result });
+        }
 
         [HttpPost]
         [SessionAuthorize]

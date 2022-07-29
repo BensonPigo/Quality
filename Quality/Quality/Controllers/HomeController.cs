@@ -50,7 +50,7 @@ namespace Quality.Controllers
             List<SelectListItem> FactoryList = new FactoryDashBoardWeb.Helper.SetListItem().ItemListBinding(this.Factorys);
             ViewData["Factorys"] = FactoryList;
 
-            return View();
+            return View(new LogIn_Request());
         }
 
         [HttpPost]
@@ -80,6 +80,7 @@ namespace Quality.Controllers
                 this.Line = this.Lines.FirstOrDefault();
                 this.Brands = result.Brands;
                 this.Brand = this.Brands.Where(x => x.Equals("ADIDAS")).Select(x => x).FirstOrDefault();
+                this.LoginToken = Guid.NewGuid().ToString();
 
                 if (!string.IsNullOrEmpty(this.TargetArea) && !string.IsNullOrEmpty(this.TargetController) && !string.IsNullOrEmpty(this.TargetAction) 
                     && !string.IsNullOrEmpty(this.TargetPKey_Parameter) && !string.IsNullOrEmpty(this.TargetPKey_Value))
@@ -106,7 +107,7 @@ namespace Quality.Controllers
                 List<SelectListItem> FactoryList = new FactoryDashBoardWeb.Helper.SetListItem().ItemListBinding(this.Factorys);
                 ViewData["Factorys"] = FactoryList;
                 ViewData["Msg"] = result.ErrorMessage;
-                return View("Login");
+                return View("Login", LoginUser);
             }
         }
 
@@ -118,7 +119,7 @@ namespace Quality.Controllers
         {
             ClearUsersInfo();            
             ViewData["Factorys"] = new FactoryDashBoardWeb.Helper.SetListItem().ItemListBinding(this.Factorys);
-            return View("Login");
+            return View("Login", new LogIn_Request());
 
         }
 

@@ -73,7 +73,7 @@
         <div style="width:100%;height:6vh;padding-top:5px;">
             <table>
                 <tr>
-                    <td style="width: 32vw"></td>
+                    <td style="width: 22vw"></td>
                     <td><h2>Inspector:</h2></td>
                     <td><h2 style="color:blue;">@Model.Inspector</h2></td>
                     <td>&emsp;&emsp;</td>
@@ -89,13 +89,10 @@
                         }
                     </td>
                     <td>&emsp;&emsp;</td>
-                    <td>&emsp;&emsp;</td>
-                    <td>&emsp;&emsp;</td>
-                    <td>&emsp;&emsp;</td>
-                    <td>&emsp;&emsp;</td>
-                    <td>&emsp;&emsp;</td>
-                    <td>&emsp;&emsp;</td>
-                    <td>&emsp;&emsp;</td>
+                    <td><h2>Import from Same PO#:</h2></td>
+                    <td>
+                        @Html.DropDownList("SamePOID", Model.SamePOIDList)
+                    </td>
                     <td>&emsp;&emsp;</td>
                     <td>&emsp;&emsp;</td>
                     <td>&emsp;&emsp;</td>
@@ -125,7 +122,7 @@
                             <td>
                                 @Html.Hidden($"Req.DataList[{idx}].PMS_RFTCommentsID", data.PMS_RFTCommentsID)
                                 @*@Html.TextBox($"Req.DataList[{idx}].Comnments", data.Comnments, new { @class="comment", @style = "width:100%" })*@
-                                @Html.TextArea($"Req.DataList[{idx}].Comnments", data.Comnments, new { @class = "TextArea", @style = "width:100%;height:7rem;" })
+                                @Html.TextArea($"Req.DataList[{idx}].Comnments", data.Comnments, new { @class = "TextArea", @RFTCommentsID= data.PMS_RFTCommentsID, @style = "width:100%;height:7rem;" })
 
                             </td>
                         </tr>
@@ -184,7 +181,34 @@
                 });
             });
 
-     
+            $("#SamePOID").change(function () {
+
+                $.ajax({
+                    url: "@Url.Action("GetRFTComments", "InspectionBySP")",
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ OrderID: $(this).val() }),
+                    async: false,
+                    success: function (data) {
+
+
+                        if (data.Result) {
+                            $.each(data.DataList, function () {
+                                var CFTComments_Result = this;
+                                var RftcommentsID = CFTComments_Result.PMS_RFTCommentsID;
+                                $(`Textarea[RFTCommentsID=${RftcommentsID}]`).text(CFTComments_Result.Comnments);
+                            });
+                        }
+                        else {
+                            msg.WithError(data.ErrorMessage);
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            });
+
         });
 
         function SendMail() {
@@ -197,8 +221,8 @@
                 async: false,
                 success: function (data) {
                     if (data.Result) {
-                        var para = "?To=";
-                        para += "&CC=";
+                        var para = "?To=@Model.MReMail";
+                        para += "&CC=@Model.CCMail";
                         para += "&Subject=" + "Sample RFT Inspection Report - SP : @Model.OrderID";
                         para += "&Body=" + "Sample RFT Inspection Report Detail";
                         para += "&file=" + data.FileName;

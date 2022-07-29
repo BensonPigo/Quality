@@ -138,14 +138,66 @@
         <div style="width:50%;height:27vh;float:left;">
             <div class="col-auto"><h2 class="sub_title">&emsp;</h2></div>
             <table class="col-auto table_div" style="margin-left: 4em;">
-                <tr>
-                    <td><label>Sewing Line</label></td>
-                    <td>@Html.DropDownListFor(o => o.SewingLineID, Model.SewingLineList, null, new { @class = "form-control", @style = "width:157px" })</td>
-                </tr>
-                <tr>
-                  @*  <td><label>QC in Charge</label></td>*@
-                   @* <td>@Html.DropDownListFor(o => o.QCInCharge, Model.QC_InChargeList, null, new { @class = "form-control", @style = "width:157px" })</td>*@
-                </tr>
+                @if (Model.OrderStyleUnit == "SETS")
+                {
+                    string firstLineText = string.Empty;
+                    string secondLineText = string.Empty;
+                    string firstLine = string.Empty;
+                    string secondLine = string.Empty;
+                    if (Model.ComboType == "B,T" || Model.ComboType == "T,B")
+                    {
+                        firstLineText = "Top";
+                        secondLineText = "Bottom";
+                        firstLine = string.IsNullOrEmpty(Model.SewingLineID) ? Model.TopSewingLineID : Model.SewingLineID;
+                        secondLine = string.IsNullOrEmpty(Model.SewingLine2ndID) ? Model.BottomSewingLineID : Model.SewingLine2ndID;
+                    }
+                    else if (Model.ComboType == "I,O" || Model.ComboType == "O,I")
+                    {
+                        firstLineText = "Inner";
+                        secondLineText = "Outer";
+                        firstLine = string.IsNullOrEmpty(Model.SewingLineID) ? Model.InnerSewingLineID : Model.SewingLineID;
+                        secondLine = string.IsNullOrEmpty(Model.SewingLine2ndID) ? Model.OuterSewingLineID : Model.SewingLine2ndID;
+                    }
+                    <tr>
+                        <td><label>@firstLineText Sewing Line</label></td>
+                        <td>
+                            <select id="SewingLineID" name="SewingLineID" class="form-control" style="width:157px">
+                                @foreach (var line in Model.SewingLineList)
+                                {
+                                    string selected = line.Value == firstLine ? "selected" : string.Empty;
+                                    <option @selected value="@line.Value">
+                                        @line.Text
+                                    </option>
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label>@secondLineText Sewing Line</label></td>
+                        <td>
+                            <select id="SewingLine2ndID" name="SewingLine2ndID" class="form-control" style="width:157px">
+                                @foreach (var line in Model.SewingLineList)
+                                {
+                                    string selected = line.Value == secondLine ? "selected" : string.Empty;
+                                    <option @selected value="@line.Value">
+                                        @line.Text
+                                    </option>
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    <tr>
+                        <td><label>Sewing Line</label></td>
+                        <td>@Html.DropDownListFor(o => o.SewingLineID, Model.SewingLineList, null, new { @class = "form-control", @style = "width:157px" })</td>
+                    </tr>
+                    <tr>
+                        @*  <td><label>QC in Charge</label></td>*@
+                        @* <td>@Html.DropDownListFor(o => o.QCInCharge, Model.QC_InChargeList, null, new { @class = "form-control", @style = "width:157px" })</td>*@
+                    </tr>
+                }
 
             </table>
         </div>

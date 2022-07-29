@@ -134,9 +134,13 @@
                     <tr>
                         <td>Factory</td>
                         <td class="valueColor">@Model.FinalInspection.FactoryID</td>
-                        <td colspan="2">Total SP# Qty</td>
+                        <td>Total SP# Qty</td>
                         <td class="valueColor">@Model.TotalSPQty</td>
-                        <td></td>
+                        @if (!string.IsNullOrEmpty(Model.Dest))
+                        {
+                            <td>Destination</td>
+                            <td class="valueColor">@Model.Dest</td>
+                        }
                     </tr>
                 </table>
             </div>

@@ -141,16 +141,27 @@ namespace Quality.Areas.SampleRFT.Controllers
                 }
                 zip.AddFile(frontPath, string.Empty);
             }
-            if (pic.Side != null)
+            if (pic.Right != null)
             {
-                string sideName = $"{Req.OrderID}_{pic.Article}_{pic.Size}_Side.png";
-                string sidePath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", sideName);
-                using (var imgFile = new FileStream(sidePath, FileMode.Create))
+                string rightName = $"{Req.OrderID}_{pic.Article}_{pic.Size}_Right.png";
+                string rightPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", rightName);
+                using (var imgFile = new FileStream(rightPath, FileMode.Create))
                 {
-                    imgFile.Write(pic.Side, 0, pic.Side.Length);
+                    imgFile.Write(pic.Right, 0, pic.Right.Length);
                     imgFile.Flush();
                 }
-                zip.AddFile(sidePath, string.Empty);
+                zip.AddFile(rightPath, string.Empty);
+            }
+            if (pic.Left != null)
+            {
+                string leftName = $"{Req.OrderID}_{pic.Article}_{pic.Size}_Left.png";
+                string leftPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", leftName);
+                using (var imgFile = new FileStream(leftPath, FileMode.Create))
+                {
+                    imgFile.Write(pic.Left, 0, pic.Left.Length);
+                    imgFile.Flush();
+                }
+                zip.AddFile(leftPath, string.Empty);
             }
             if (pic.Back != null)
             {

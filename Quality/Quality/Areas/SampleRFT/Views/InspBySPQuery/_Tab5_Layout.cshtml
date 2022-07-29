@@ -38,24 +38,30 @@
             </div>
 
             <div style="width: 100%; height: 65vh;margin-left:5px;">
-                <div style="width:33%;height:5%;float:left;text-align:center;border-right:1px solid black;background-color:lightgray;padding-top:5px">
+                <div style="width:24%;height:5%;float:left;text-align:center;border-right:1px solid black;background-color:lightgray;padding-top:5px">
                     <div>
                         <label>Front</label>
                     </div>
                 </div>
-                <div style="width:33%;height:5%;float:left;text-align:center;border-right:1px solid black;background-color:lightgray;padding-top:5px">
+                <div style="width: 24%; height: 5%; float: left; text-align: center; border-right: 1px solid black; background-color: lightgray; padding-top: 5px">
                     <div>
-                        <label>Side</label>
+                        <label>Left</label>
                     </div>
 
                 </div>
-                <div style="width:33%;height:5%;float:left;text-align:center;background-color:lightgray;padding-top:5px">
+                <div style="width: 24%; height: 5%; float: left; text-align: center; border-right: 1px solid black; background-color: lightgray; padding-top: 5px">
+                    <div>
+                        <label>Right</label>
+                    </div>
+
+                </div>
+                <div style="width: 24%; height: 5%; float: left; text-align: center; background-color: lightgray; padding-top: 5px">
                     <div>
                         <label>Back</label>
                     </div>
                 </div>
 
-                <div style="width: 33%; height: 90%; float: left; border-right: 1px solid black; border-bottom: 1px solid black; ">
+                <div style="width: 24%; height: 90%; float: left; border-right: 1px solid black; border-bottom: 1px solid black; ">
                     <img id="tmpPictureFront" class="tmpimage" style="max-width: 98%; max-height: 98%; " />
                     @{ int index = 0;}
                     @foreach (var data in Model.DummyFit.DetailList)
@@ -80,29 +86,51 @@
                         index++;
                     }
                 </div>
-                <div style="width: 33%; height: 90%; float: left; border-right: 1px solid black; border-bottom: 1px solid black; ">
-                    <img id="tmpPictureSide" class="tmpimage" style="max-width: 98%; max-height: 98%; " />
+                <div style="width: 24%; height: 90%; float: left; border-right: 1px solid black; border-bottom: 1px solid black; ">
+                    <img id="tmpPictureLeft" class="tmpimage" style="max-width: 98%; max-height: 98%; " />
 
                     @{ index = 0; }
                     @foreach (var data in Model.DummyFit.DetailList)
                     {
-                        @Html.Hidden($"Req.DetailList[{index}].Side", data.Side, new { @article = data.Article, @size = data.Size, @Piclocation = "Side" })
-                        if (data.Side == null || data.Side is null)
+                        @Html.Hidden($"Req.DetailList[{index}].Left", data.Left, new { @article = data.Article, @size = data.Size, @Piclocation = "Left" })
+                        if (data.Left == null || data.Left is null)
                         {
-                            <img id="Side_@index" class="image" name="Req.DetailList[@index].Side" article="@data.Article" size="@data.Size" Piclocation="Side" style="max-width: 98%; max-height: 98%; display: none; " />
+                            <img id="Left_@index" class="image" name="Req.DetailList[@index].Left" article="@data.Article" size="@data.Size" Piclocation="Left" style="max-width: 98%; max-height: 98%; display: none; " />
                         }
                         else
                         {
-                            var byteImage = data.Side;
+                            var byteImage = data.Left;
                             var base64 = Convert.ToBase64String(byteImage);
                             var imgSrc = String.Format("data:image/png;base64,{0}", base64);
 
-                            <img id="Side_@index" class="image" name="Req.DetailList[@index].Side" article="@data.Article" size="@data.Size" Piclocation="Side" style="max-width: 98%; max-height: 98%; display: none; " src="@imgSrc" />
+                            <img id="Left_@index" class="image" name="Req.DetailList[@index].Left" article="@data.Article" size="@data.Size" Piclocation="Left" style="max-width: 98%; max-height: 98%; display: none; " src="@imgSrc" />
                         }
                         index++;
                     }
                 </div>
-                <div style="width: 33%; height: 90%; float: left; border-bottom: 1px solid black;">
+                <div style="width: 24%; height: 90%; float: left; border-right: 1px solid black; border-bottom: 1px solid black; ">
+                    <img id="tmpPictureRight" class="tmpimage" style="max-width: 98%; max-height: 98%; " />
+
+                    @{ index = 0; }
+                    @foreach (var data in Model.DummyFit.DetailList)
+                    {
+                        @Html.Hidden($"Req.DetailList[{index}].Right", data.Right, new { @article = data.Article, @size = data.Size, @Piclocation = "Right" })
+                        if (data.Right == null || data.Right is null)
+                        {
+                            <img id="Right_@index" class="image" name="Req.DetailList[@index].Right" article="@data.Article" size="@data.Size" Piclocation="Right" style="max-width: 98%; max-height: 98%; display: none; " />
+                        }
+                        else
+                        {
+                            var byteImage = data.Right;
+                            var base64 = Convert.ToBase64String(byteImage);
+                            var imgSrc = String.Format("data:image/png;base64,{0}", base64);
+
+                            <img id="Right_@index" class="image" name="Req.DetailList[@index].Right" article="@data.Article" size="@data.Size" Piclocation="Right" style="max-width: 98%; max-height: 98%; display: none; " src="@imgSrc" />
+                        }
+                        index++;
+                    }
+                </div>
+                <div style="width: 24%; height: 90%; float: left; border-bottom: 1px solid black;">
                     <img id="tmpPictureBack" class="tmpimage" style="max-width: 98%; max-height: 98%; " />
 
                     @{ index = 0; }

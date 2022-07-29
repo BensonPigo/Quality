@@ -163,6 +163,7 @@
     <Compile Include="Service\SampleRFT\PicturesDummyService.cs" />
     <Compile Include="Service\SampleRFT\MeasurementService.cs" />
     <Compile Include="Service\SampleRFT\RFTPerLineService.cs" />
+    <Compile Include="Service\StyleManagement\EtoEFlowChartService.cs" />
     <Compile Include="Service\StyleManagement\ExceptionFDService.cs" />
     <Compile Include="Service\StyleManagement\StyleListService.cs" />
     <Compile Include="Service\StyleManagement\PrintBarcodeService.cs" />

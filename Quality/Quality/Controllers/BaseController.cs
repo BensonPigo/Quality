@@ -11,6 +11,19 @@ namespace Quality.Controllers
     public class BaseController : Controller
     {
         #region 參數屬性區
+
+        /// <summary>
+        /// 登入的唯一識別碼
+        /// </summary>
+        public string LoginToken
+        {
+            get
+            {
+                if (System.Web.HttpContext.Current.Session["LoginToken"] == null) { return ""; }
+                else { return System.Web.HttpContext.Current.Session["LoginToken"].ToString(); }
+            }
+            set { System.Web.HttpContext.Current.Session["LoginToken"] = value; }
+        }
         public string UserID
         {
             get
