@@ -35,6 +35,13 @@ namespace BusinessLogicLayer.Service.StyleManagement
 
                 styleResult_Request.CallType = StyleResult_Request.EnumCallType.StyleResult;
 
+                bool HasSampleRFTInspection = _Provider.Check_SampleRFTInspection_Count(styleResult_Request) > 0 ? true : false;
+
+                if (HasSampleRFTInspection)
+                {
+                    styleResult_Request.InspectionTableName = "SampleRFTInspection";
+                }
+
                 var styleResults = _Provider.Get_StyleInfo(styleResult_Request).ToList();
 
                 if (styleResults.Any())

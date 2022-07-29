@@ -10,6 +10,8 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
 {
     public interface IBACriteriaProvider
     {
+        int Check_SampleRFTInspection_Count(BACriteria_ViewModel Req);
         IList<BACriteria_Result> Get_BACriteria_Result(BACriteria_ViewModel Req);
+        IList<BACriteria_Result> Get_BACriteria_Result_SampleRFTInspection(BACriteria_ViewModel Req);
     }
 }

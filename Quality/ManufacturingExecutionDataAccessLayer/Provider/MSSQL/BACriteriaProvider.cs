@@ -21,6 +21,46 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
         public BACriteriaProvider(SQLDataTransaction tra) : base(tra) { }
         #endregion
 
+        public int Check_SampleRFTInspection_Count(BACriteria_ViewModel Req)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@BrandID", DbType.String, Req.BrandID } ,
+                { "@SeasonID", DbType.String, Req.SeasonID } ,
+                { "@StyleID", DbType.String, Req.StyleID } ,
+            };
+            string sqlcmd = $@"
+Select count(1)
+from SampleRFTInspection i WITH(NOLOCK) 
+where 1=1
+";
+            if (!string.IsNullOrEmpty(Req.OrderID))
+            {
+                sqlcmd += $@" AND OrderID = @OrderID " + Environment.NewLine;
+                objParameter.Add("@OrderID", DbType.String, Req.OrderID);
+            }
+
+            if (!string.IsNullOrEmpty(Req.InspectionDateStart) && !string.IsNullOrEmpty(Req.InspectionDateEnd))
+            {
+                sqlcmd += $@" AND EXISTS (Select 1 from SampleRFTInspection i WITH(NOLOCK) where i.OrderID = o.ID and i.InspectionDate between @sDate and @eDate)" + Environment.NewLine;
+                objParameter.Add("@sDate", DbType.String, Req.InspectionDateStart);
+                objParameter.Add("@eDate", DbType.String, Req.InspectionDateEnd);
+            }
+            else if (!string.IsNullOrEmpty(Req.InspectionDateStart))
+            {
+                sqlcmd += $@" AND EXISTS (Select 1 from SampleRFTInspection i WITH(NOLOCK) where i.OrderID = o.ID and i.InspectionDate >= @sDate)" + Environment.NewLine;
+                objParameter.Add("@sDate", DbType.String, Req.InspectionDateStart);
+            }
+            else if (!string.IsNullOrEmpty(Req.InspectionDateEnd))
+            {
+                sqlcmd += $@" AND EXISTS (Select 1 from SampleRFTInspection i WITH(NOLOCK) where i.OrderID = o.ID and i.InspectionDate <= @eDate)" + Environment.NewLine;
+                objParameter.Add("@eDate", DbType.String, Req.InspectionDateEnd);
+            }
+
+            var result = ExecuteScalar(CommandType.Text, sqlcmd, objParameter);
+
+            return Convert.ToInt32(result == null ? 0 : result);
+        }
         public IList<BACriteria_Result> Get_BACriteria_Result(BACriteria_ViewModel Req)
         {
             StringBuilder SbSql = new StringBuilder();

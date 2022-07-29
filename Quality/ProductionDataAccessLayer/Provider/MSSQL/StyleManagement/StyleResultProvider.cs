@@ -108,6 +108,35 @@ WHERE Junk=0
             return ExecuteList<SelectListItem>(CommandType.Text, SbSql.ToString(), listPar);
         }
 
+
+        /// <summary>
+        /// 備機執行
+        /// </summary>
+        /// <param name="Req"></param>
+        /// <returns></returns>
+        public int Check_SampleRFTInspection_Count(StyleResult_Request Req)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@BrandID", DbType.String, Req.BrandID } ,
+                { "@SeasonID", DbType.String, Req.SeasonID } ,
+                { "@StyleID", DbType.String, Req.StyleID } ,
+                { "@StyleUkey", DbType.Int64, Req.StyleUkey } ,
+            };
+            string sqlcmd = $@"
+select COUNT(1)
+from ExtendServer.ManufacturingExecution.dbo.SampleRFTInspection a WITH(NOLOCK)
+inner join Style s on a.StyleUkey = s.Ukey
+where s.BrandID = @BrandID
+    AND s.SeasonID = @SeasonID
+    AND s.ID = @StyleID
+";
+
+            var result = ExecuteScalar(CommandType.Text, sqlcmd, objParameter);
+
+            return Convert.ToInt32(result == null ? 0 : result);
+        }
+
         public IList<StyleResult_ViewModel> Get_StyleInfo(StyleResult_Request styleResult_Request)
         {
             SQLParameterCollection listPar = new SQLParameterCollection();
@@ -190,6 +219,20 @@ WHERE Junk=0
                     break;
                 default:
                     break;
+            }
+
+            string RftOuterApply = $@"
+	select Val = ROUND( SUM(IIF(Status = 'Pass',1,0)) * 1.0  / COUNT(1) *1.0  *100 , 2)
+    FROM [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection  rft WITH(NOLOCK)
+	WHERE rft.StyleUkey = s.Ukey
+";
+            if (styleResult_Request.InspectionTableName == "SampleRFTInspection")
+            {
+                RftOuterApply = $@"
+	select Val = ROUND( SUM(IIF(Result = 'Pass',1,0)) * 1.0  / COUNT(1) *1.0  *100 , 2)
+    FROM [ExtendServer].ManufacturingExecution.dbo.SampleRFTInspection  rft WITH(NOLOCK)
+	WHERE rft.StyleUkey = s.Ukey
+";
             }
 
             string sqlGet_StyleResult_Browse = $@"

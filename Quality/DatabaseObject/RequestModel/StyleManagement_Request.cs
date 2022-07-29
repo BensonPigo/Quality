@@ -18,6 +18,7 @@ namespace DatabaseObject.RequestModel
         public string BrandID { get; set; }
         public string SeasonID { get; set; }
         public string MDivisionID { get; set; }
+        public string InspectionTableName { get; set; }
         public string StyleUkey { get; set; }
 
         public EnumCallType CallType { get; set; }
