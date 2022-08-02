@@ -60,14 +60,14 @@
                             <label class="QueryLab">SP#</label>
                             <input type="text" name="OrderID" id="txtOrderID" value="@Model.OrderID" />
                             &nbsp;&nbsp;
-                            <label class="QueryLab">Style#</label>
-                            <input type="text" name="StyleID" id="txtStyleID" style="background-color:lightgray" value="@Model.StyleID" readonly />
+                            @*<label class="QueryLab">Style#</label>*@
+                            @*<input type="text" name="StyleID" id="txtStyleID" style="background-color:lightgray" value="@Model.StyleID" readonly />*@
                             &nbsp;&nbsp;
-                            <label class="QueryLab">Sample Stage</label>
-                            <input type="text" name="SampleStage" id="txtSampleStage" style="background-color:lightgray" value="@Model.SampleStage" readonly/>
+                            @*<label class="QueryLab">Sample Stage</label>*@
+                            @*<input type="text" name="SampleStage" id="txtSampleStage" style="background-color:lightgray" value="@Model.SampleStage" readonly/>*@
                             &nbsp;&nbsp;
-                            <label class="QueryLab">Season</label>
-                            <input type="text" name="SeasonID" id="txtSeasonID" style="background-color:lightgray" value="@Model.SeasonID" readonly/>
+                            @*<label class="QueryLab">Season</label>*@
+                            @*<input type="text" name="SeasonID" id="txtSeasonID" style="background-color:lightgray" value="@Model.SeasonID" readonly/>*@
                             &nbsp;&nbsp;
                             <input type="submit" name="name" id="btnQuery" value="Query" />
 
@@ -79,10 +79,12 @@
                     <table id="DetailTable" class="table table-striped display cell-border">
                         <thead>
                             <tr class="row-name">
-                                <th>Article</th>
-                                <th>Size</th>
-                                <th>Inspection Date</th>
+                                @*<th>Article</th>
+        <th>Size</th>
+        <th>Inspection Date</th>*@
                                 <th>Defect Type</th>
+                                <th>Defect Code</th>
+                                <th>Area Code</th>
                                 <th>Picture</th>
                             </tr>
                         </thead>
@@ -90,33 +92,36 @@
 
                             @foreach (var item in Model.DataList)
                             {
-                                <tr class="row-content">
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Article)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Size)
-                                    </td>
-                                    <td>
-                                        @{ string InspectionDate = item.InspectionDate.HasValue ? item.InspectionDate.Value.ToShortDateString() : string.Empty;}
-                                        @InspectionDate
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.DefectType)
-                                    </td>
-                                    <td>
-                                        @if (item.DefectPicture != null)
+                            <tr class="row-content">
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.DefectType)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.DefectCode)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.AreaCodes)
+                                </td>
+                                <td>
+                                    @if (item.DefectPicture != null)
+                                    {
+                                        var base64 = Convert.ToBase64String(item.DefectPicture);
+                                        var imgSrc = String.Format("data:image/png;base64,{0}", base64);
+                                        <div class="zoom-gallery">
+                                            <a href="@imgSrc" data-source="" style="width:640px;height:480px;">
+                                                <img width="30" src="@imgSrc" />
+                                            </a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        if (item.HasImage)
                                         {
-                                            var base64 = Convert.ToBase64String(item.DefectPicture);
-                                            var imgSrc = String.Format("data:image/png;base64,{0}", base64);
-                                            <div class="zoom-gallery">
-                                                <a href="@imgSrc" data-source="" style="width:640px;height:480px;">
-                                                    <img width="30" src="@imgSrc" />
-                                                </a>
-                                            </div>
+                                            @*<img src="/Image/Icon/Picture.png" style="cursor: pointer;" onclick="OpenDefectPicture(@item.UKey,'@item.GarmentDefectCodeID')" width="25" height="25" />*@
                                         }
-                                    </td>
-                                </tr>
+                                    }
+                                </td>
+                            </tr>
                             }
                         </tbody>
                     </table>
@@ -142,5 +147,9 @@
 
 
     });
+
+    function OpenDefectPicture(DetailUkey, DefectCodeID) {
+        @*window.open('@Url.Action("AddDefectPicture", "InspectionBySP")?Readonly=true&ID=@Model.sampleRFTInspection.ID&GarmentDefectCodeID=' + DefectCodeID + '&SampleRFTInspection_DetailUKey=' + DetailUkey, "Picture", config = 'toolbar=no,status=no,location=no,width=1500,height=1000');*@
+        }
 
 </script>

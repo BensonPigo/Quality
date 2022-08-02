@@ -10,6 +10,7 @@ namespace ProductionDataAccessLayer.Interface
 {
     public interface IStyleListProvider
     {
+        int Check_SampleRFTInspection_Count(StyleList_Request Req);
         IList<StyleList> Get_StyleInfo(StyleList_Request req);
     }
 }
