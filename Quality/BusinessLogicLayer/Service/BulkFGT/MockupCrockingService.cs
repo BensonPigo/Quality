@@ -379,7 +379,7 @@ namespace BusinessLogicLayer.Service
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             _MockupCrockingProvider = new MockupCrockingProvider(_ISQLDataTransaction);
-            _MockupCrockingDetailProvider = new MockupCrockingDetailProvider(_ISQLDataTransaction);
+
             try
             {
                 _MockupCrockingProvider.Update(MockupCrocking);

@@ -220,6 +220,10 @@ namespace Quality.Areas.BulkFGT.Controllers
                 Result.Crocking_Detail = new List<FabricCrkShrkTestCrocking_Detail>();
             }
             Result.MDivisionID = this.MDivisionID;
+
+            Result.Crocking_Main.CrockingTestBeforePicture = Result.Crocking_Main.CrockingTestBeforePicture == null ? null : ImageHelper.ImageCompress(Result.Crocking_Main.CrockingTestBeforePicture);
+            Result.Crocking_Main.CrockingTestAfterPicture = Result.Crocking_Main.CrockingTestAfterPicture == null ? null : ImageHelper.ImageCompress(Result.Crocking_Main.CrockingTestAfterPicture);
+
             BaseResult saveResult = _FabricCrkShrkTest_Service.SaveFabricCrkShrkTestCrockingDetail(Result, this.UserID);
             if (saveResult.Result)
             {
@@ -413,6 +417,10 @@ namespace Quality.Areas.BulkFGT.Controllers
                 Result.Heat_Detail = new List<FabricCrkShrkTestHeat_Detail>();
             }
             Result.MDivisionID = this.MDivisionID;
+
+            Result.Heat_Main.HeatTestBeforePicture = Result.Heat_Main.HeatTestBeforePicture == null ? null : ImageHelper.ImageCompress(Result.Heat_Main.HeatTestBeforePicture);
+            Result.Heat_Main.HeatTestAfterPicture = Result.Heat_Main.HeatTestAfterPicture == null ? null : ImageHelper.ImageCompress(Result.Heat_Main.HeatTestAfterPicture);
+
             BaseResult saveResult = _FabricCrkShrkTest_Service.SaveFabricCrkShrkTestHeatDetail(Result, this.UserID);
 
             if (saveResult.Result)
@@ -626,6 +634,10 @@ namespace Quality.Areas.BulkFGT.Controllers
                 Result.Wash_Detail = new List<FabricCrkShrkTestWash_Detail>();
             }
             Result.MDivisionID = this.MDivisionID;
+
+            Result.Wash_Main.WashTestBeforePicture = Result.Wash_Main.WashTestBeforePicture == null ? null : ImageHelper.ImageCompress(Result.Wash_Main.WashTestBeforePicture);
+            Result.Wash_Main.WashTestAfterPicture = Result.Wash_Main.WashTestAfterPicture == null ? null : ImageHelper.ImageCompress(Result.Wash_Main.WashTestAfterPicture);
+
             BaseResult saveResult = _FabricCrkShrkTest_Service.SaveFabricCrkShrkTestWashDetail(Result, this.UserID);
             if (saveResult.Result)
             {

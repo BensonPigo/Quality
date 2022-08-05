@@ -702,7 +702,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                             //item.ListFinalInspectionDefectImage.Add(data.TempImage);
                             item.ListFinalInspectionDefectImage.Add(new ImageRemark()
                             {
-                                Image = data.TempImage,
+                                Image = ImageHelper.ImageCompress(data.TempImage),
                                 Remark = data.TempRemark,
                             });
                         }
@@ -715,7 +715,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                             //item.ListFinalInspectionDefectImage.Add(data.TempImage);
                             item.ListFinalInspectionDefectImage.Add(new ImageRemark()
                             {
-                                Image = data.TempImage,
+                                Image = ImageHelper.ImageCompress(data.TempImage),
                                 Remark = data.TempRemark,
                             });
                         }
@@ -874,7 +874,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                             //item.ListBACriteriaImage.Add(data.TempImage);
                             item.ListBACriteriaImage.Add(new ImageRemark()
                             {
-                                Image = data.TempImage,
+                                Image = ImageHelper.ImageCompress(data.TempImage),
                                 Remark = data.TempRemark,
                             });
                         }                    
@@ -887,7 +887,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                             //item.ListBACriteriaImage.Add(data.TempImage);
                             item.ListBACriteriaImage.Add(new ImageRemark()
                             {
-                                Image = data.TempImage,
+                                Image = ImageHelper.ImageCompress(data.TempImage),
                                 Remark = data.TempRemark,
                             });
 
@@ -1164,7 +1164,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                 {
                     OtherImage o = new OtherImage();
                     o.ID = model.FinalInspectionID;
-                    o.Image = item.TempImage;
+                    o.Image = ImageHelper.ImageCompress(item.TempImage);
                     o.Remark = item.TempRemark;
                     model.ListOthersImageItem.Add(o);
                 }
@@ -1193,7 +1193,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                 {
                     OtherImage o = new OtherImage();
                     o.ID = model.FinalInspectionID;
-                    o.Image = item.TempImage;
+                    o.Image = ImageHelper.ImageCompress(item.TempImage);
                     o.Remark = item.TempRemark;
                     model.ListOthersImageItem.Add(o);
                 }

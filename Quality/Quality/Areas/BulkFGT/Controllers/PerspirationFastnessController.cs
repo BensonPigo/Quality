@@ -117,6 +117,10 @@ namespace Quality.Areas.BulkFGT.Controllers
         public ActionResult DetailSave(PerspirationFastness_Detail_Result req)
         {
             req.MDivisionID = this.MDivisionID;
+
+            req.Main.TestBeforePicture = req.Main.TestBeforePicture == null ? null : ImageHelper.ImageCompress(req.Main.TestBeforePicture);
+            req.Main.TestAfterPicture = req.Main.TestAfterPicture == null ? null : ImageHelper.ImageCompress(req.Main.TestAfterPicture);
+
             BaseResult result = _PerspirationFastnessService.SavePerspirationFastnessDetail(req, this.UserID);
             if (result.Result)
             {

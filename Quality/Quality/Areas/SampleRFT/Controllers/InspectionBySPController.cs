@@ -624,7 +624,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                 {
                     continue;
                 }
-                model.Images.Add(new RFT_Inspection_Measurement_Image() { Image = item.TempImage, Seq = item.Seq });
+                model.Images.Add(new RFT_Inspection_Measurement_Image() { Image = ImageHelper.ImageCompress(item.TempImage), Seq = item.Seq });
             }
 
             // 圖片排除要刪除的
@@ -982,8 +982,9 @@ namespace Quality.Areas.SampleRFT.Controllers
                 if (tempImgs.Any())
                 {
                     foreach (var t in tempImgs)
-                    {
-                        t.Image = t.TempImage;
+                    {                       
+                        // 加入的圖片都壓縮至500KB
+                        t.Image = ImageHelper.ImageCompress(t.TempImage);
                     }
 
                     item.Images = tempImgs;
@@ -1311,7 +1312,7 @@ namespace Quality.Areas.SampleRFT.Controllers
 
                     foreach (var t in imgs)
                     {
-                        t.Image = t.TempImage;
+                        t.Image = ImageHelper.ImageCompress(t.TempImage);
                     }
                     item.Images = imgs;
                     item.ID = Req.ID;
@@ -1415,6 +1416,15 @@ namespace Quality.Areas.SampleRFT.Controllers
             }
             else
             {
+                foreach (var detail in Req.DetailList)
+                {
+                    detail.Front = detail.Front != null ? ImageHelper.ImageCompress(detail.Front) : detail.Front;
+                    detail.Back = detail.Back != null ? ImageHelper.ImageCompress(detail.Back) : detail.Back;
+                    detail.Right = detail.Right != null ? ImageHelper.ImageCompress(detail.Right) : detail.Right;
+                    detail.Left = detail.Left != null ? ImageHelper.ImageCompress(detail.Left) : detail.Left;
+                    detail.Front = detail.Front != null ? ImageHelper.ImageCompress(detail.Front) : detail.Front;
+                }
+
                 InspectionBySP_DummyFit model = _Service.DummyFitProcess(Req);
 
                 TempData["AllSize"] = model.ArticleSizeList;
