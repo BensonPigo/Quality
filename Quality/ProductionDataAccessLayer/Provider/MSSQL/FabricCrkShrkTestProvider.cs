@@ -75,7 +75,7 @@ select	[SubmitDate] = od.SubmitDate,
         [Dyelot] = od.Dyelot,
         [Refno] = psd.Refno,
         [SCIRefno] = psd.SCIRefno,
-        [ColorID] = psd.ColorID,
+        [ColorID] = pc.SpecValue,
         [Result] = od.Result,
         [ChangeScale] = od.changeScale,
         [ResultChange] = od.ResultChange,
@@ -88,6 +88,7 @@ select	[SubmitDate] = od.SubmitDate,
 from Oven_Detail od with (nolock)
 inner join Oven o with (nolock) on o.ID = od.ID
 left join PO_Supp_Detail psd with (nolock) on o.POID = psd.ID and od.SEQ1 = psd.SEQ1 and od.SEQ2 = psd.SEQ2
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.POID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
 left join pass1 pass1EditName on od.EditName = pass1EditName.ID
 where   o.POID = @POID and o.TestNo = @TestNo
 ";
@@ -159,7 +160,7 @@ select	[ID] = f.ID,
         [WhseArrival] = r.WhseArrival,
         [SCIRefno] = f.SCIRefno,
         [Refno] = f.Refno,
-        [ColorID] = psd.ColorID,
+        [ColorID] = pc.SpecValue
         [Supplier] = Concat(f.SuppID, s.AbbEn),
         [ArriveQty] = f.ArriveQty,
         [ReceiveSampleDate] = fl.ReceiveSampleDate,
@@ -182,6 +183,7 @@ from FIR f with (nolock)
 left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
 left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
 left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.POID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
 left join Supp s with (nolock) on s.ID = f.SuppID
 where f.POID = @POID
 ";
@@ -250,7 +252,7 @@ where   ID = @ID
 
 select	[POID] = f.POID,
         [SEQ] = Concat(f.Seq1, ' ', f.Seq2),
-        [ColorID] = psd.ColorID,
+        [ColorID] = pc.SpecValue,
         [ArriveQty] = f.ArriveQty,
         [WhseArrival] = r.WhseArrival,
         [ExportID] = r.ExportID,
@@ -273,6 +275,7 @@ left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
 left join SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
 left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
 left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.POID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
 left join Supp s with (nolock) on s.ID = f.SuppID
 left join Orders o with (nolock) on o.ID = f.POID
 left join Fabric fab with (nolock) on fab.SCIRefno = f.SCIRefno
@@ -335,8 +338,8 @@ select	SubmitDate = fl.CrockingDate
 		,f.POID
 		,fd.Roll
 		,fd.Dyelot
-		,SCIRefno_Color = f.SCIRefno　+' '+psd.ColorID
-		,Color = psd.ColorID
+		,SCIRefno_Color = f.SCIRefno + ' ' + pc.SpecValue
+		,Color = pc.SpecValue
 		,fd.DryScale
 		,fd.DryScale_Weft
 		,fd.WetScale
@@ -357,6 +360,7 @@ inner join FIR_Laboratory_Crocking fd WITH(NOLOCK) on fd.id = fl.id
 left join SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
 left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
 left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.POID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
 left join Orders o with (nolock) on o.ID = f.POID
 left join Style_Article sa ON o.StyleUkey=sa.StyleUkey
 where f.ID = @ID
@@ -637,7 +641,7 @@ select	[SP#] = f.POID,
         [Arrive WH Date] = Format(r.WhseArrival, 'yyyy/MM/dd'),
         [SCI Refno] = f.SCIRefno,
         [Refno] = f.Refno,
-        [Color] = psd.ColorID,
+        [Color] = pc.SpecValue,
         [Supplier] = Concat(f.SuppID, s.AbbEn),
         [Arrive Qty] = f.ArriveQty,
         [Crocking Result] = fl.Crocking,
@@ -650,6 +654,7 @@ left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
 -- left join SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
 left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
 left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.POID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
 left join Supp s with (nolock) on s.ID = f.SuppID
 left join Orders o with (nolock) on o.ID = f.POID
 left join Fabric fab with (nolock) on fab.SCIRefno = f.SCIRefno
@@ -766,7 +771,7 @@ order by fd.InspDate,oc.article
 
 select	[POID] = f.POID,
         [SEQ] = Concat(f.Seq1, ' ', f.Seq2),
-        [ColorID] = psd.ColorID,
+        [ColorID] = pc.SpecValue,
         [ArriveQty] = f.ArriveQty,
         [WhseArrival] = r.WhseArrival,
         [ExportID] = r.ExportID,
@@ -790,6 +795,7 @@ left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
 left join SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
 left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
 left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.POID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
 left join Supp s with (nolock) on s.ID = f.SuppID
 left join Orders o with (nolock) on o.ID = f.POID
 left join Fabric fab with (nolock) on fab.SCIRefno = f.SCIRefno
@@ -1075,7 +1081,7 @@ select	[SP#] = f.POID,
         [Arrive WH Date] = Format(r.WhseArrival, 'yyyy/MM/dd'),
         [SCI Refno] = f.SCIRefno,
         [Refno] = f.Refno,
-        [Color] = psd.ColorID,
+        [Color] = pc.SpecValue,
         [Supplier] = Concat(f.SuppID, s.AbbEn),
         [Arrive Qty] = f.ArriveQty,
         [Heat Result] = fl.Heat,
@@ -1088,6 +1094,7 @@ left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
 -- left join SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
 left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
 left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.POID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
 left join Supp s with (nolock) on s.ID = f.SuppID
 left join Orders o with (nolock) on o.ID = f.POID
 left join Fabric fab with (nolock) on fab.SCIRefno = f.SCIRefno
@@ -1169,7 +1176,7 @@ where flc.ID = @ID
 
 select	[POID] = f.POID,
         [SEQ] = Concat(f.Seq1, ' ', f.Seq2),
-        [ColorID] = psd.ColorID,
+        [ColorID] = pc.SpecValue,
         [ArriveQty] = f.ArriveQty,
         [WhseArrival] = r.WhseArrival,
         [ExportID] = r.ExportID,
@@ -1194,6 +1201,7 @@ left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
 left join SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
 left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
 left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.POID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
 left join Supp s with (nolock) on s.ID = f.SuppID
 left join Orders o with (nolock) on o.ID = f.POID
 left join Fabric fab with (nolock) on fab.SCIRefno = f.SCIRefno
@@ -1512,7 +1520,7 @@ select	[SP#] = f.POID,
         [Arrive WH Date] = Format(r.WhseArrival, 'yyyy/MM/dd'),
         [SCI Refno] = f.SCIRefno,
         [Refno] = f.Refno,
-        [Color] = psd.ColorID,
+        [Color] = pc.SpecValue,
         [Supplier] = Concat(f.SuppID, s.AbbEn),
         [Arrive Qty] = f.ArriveQty,
         [Wash Result] = fl.Wash,
@@ -1525,6 +1533,7 @@ left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
 -- left join SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
 left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
 left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.POID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
 left join Supp s with (nolock) on s.ID = f.SuppID
 left join Orders o with (nolock) on o.ID = f.POID
 left join Fabric fab with (nolock) on fab.SCIRefno = f.SCIRefno

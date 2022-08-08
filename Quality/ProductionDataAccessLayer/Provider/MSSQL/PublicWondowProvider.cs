@@ -534,10 +534,11 @@ select psd.SEQ1
 		, psd.SEQ2
 		, psd.SCIRefno
 		, psd.Refno
-		, psd.ColorID
+		, ColorID = pc.SpecValue
 		, ps.SuppID
 from Production.dbo.PO_Supp_Detail psd WITH(NOLOCK)
 inner join Production.dbo.Po_Supp ps WITH(NOLOCK) on psd.ID = ps.ID and psd.Seq1 = ps.SEQ1
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.POID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
 Where psd.FabricType = @FabricType
 AND psd.ID = @POID
 

@@ -81,7 +81,7 @@ select	[SubmitDate] = od.SubmitDate,
         [Dyelot] = od.Dyelot,
         [Refno] = psd.Refno,
         [SCIRefno] = psd.SCIRefno,
-        [ColorID] = psd.ColorID,
+        [ColorID] = pc.SpecValue,
         [Result] = od.Result
         ,od.ChangeScale
         ,od.AcetateScale
@@ -104,6 +104,7 @@ select	[SubmitDate] = od.SubmitDate,
 from WaterFastness_Detail od with (nolock)
 inner join WaterFastness o with (nolock) on o.ID = od.ID
 left join PO_Supp_Detail psd with (nolock) on o.POID = psd.ID and od.SEQ1 = psd.SEQ1 and od.SEQ2 = psd.SEQ2
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.POID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
 left join pass1 pass1EditName on od.EditName = pass1EditName.ID
 where   o.POID = @POID and o.TestNo = @TestNo
 ";
@@ -698,7 +699,7 @@ select	[SubmitDate] = od.SubmitDate,
         [Dyelot] = od.Dyelot,
         [Refno] = psd.Refno,
         [SCIRefno] = psd.SCIRefno,
-        [ColorID] = psd.ColorID,
+        [ColorID] = pc.SpecValue,
         [Result] = od.Result,
         [ChangeScale] = od.ChangeScale,
         [ResultChange] = od.ResultChange,
@@ -724,6 +725,7 @@ select	[SubmitDate] = od.SubmitDate,
 from WaterFastness_Detail od with (nolock)
 inner join WaterFastness o with (nolock) on o.ID = od.ID
 left join PO_Supp_Detail psd with (nolock) on o.POID = psd.ID and od.SEQ1 = psd.SEQ1 and od.SEQ2 = psd.SEQ2
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.POID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
 left join PO_Supp ps WITH (NOLOCK) on psd.ID = ps.ID and psd.Seq1 = ps.Seq1
 left join supp s with (nolock) on ps.SuppID = s.ID
 left join pass1 pass1EditName WITH(NOLOCK) on od.EditName = pass1EditName.ID
@@ -801,7 +803,7 @@ select cd.SubmitDate
         ,c.POID
         ,cd.Roll
         ,cd.Dyelot
-        ,SCIRefno_Color = po3.SCIRefno + ' ' +po3.ColorID
+        ,SCIRefno_Color = psd.SCIRefno + ' ' + pc.SpecValue
         ,c.Temperature
         ,c.Time
         ,cd.ChangeScale
@@ -827,8 +829,8 @@ from WaterFastness_Detail cd WITH(NOLOCK)
 left join WaterFastness c WITH(NOLOCK) on c.ID =  cd.ID
 left join SciPMSFile_WaterFastness pmsFile WITH(NOLOCK) on pmsFile.ID =  cd.ID
 left join Orders o WITH(NOLOCK) on o.ID=c.POID
-left join PO_Supp_Detail po3 WITH(NOLOCK) on c.POID = po3.ID 
-	and cd.SEQ1 = po3.SEQ1 and cd.SEQ2 = po3.SEQ2
+left join PO_Supp_Detail psd WITH(NOLOCK) on c.POID = psd.ID and cd.SEQ1 = psd.SEQ1 and cd.SEQ2 = psd.SEQ2
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.POID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
 left join Pass1 pEdit WITH(NOLOCK) on pEdit.ID = cd.EditName
 left join pass1 pAdd WITH(NOLOCK) on pAdd.ID = cd.AddName
 where cd.ID = @ID

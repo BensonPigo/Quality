@@ -76,7 +76,7 @@ select	[SubmitDate] = od.SubmitDate,
         [Dyelot] = od.Dyelot,
         [Refno] = psd.Refno,
         [SCIRefno] = psd.SCIRefno,
-        [ColorID] = psd.ColorID,
+        [ColorID] = pc.SpecValue,
         [Result] = od.Result,
         [ChangeScale] = od.changeScale,
         [ResultChange] = od.ResultChange,
@@ -89,6 +89,7 @@ select	[SubmitDate] = od.SubmitDate,
 from Oven_Detail od with (nolock)
 inner join Oven o with (nolock) on o.ID = od.ID
 left join PO_Supp_Detail psd with (nolock) on o.POID = psd.ID and od.SEQ1 = psd.SEQ1 and od.SEQ2 = psd.SEQ2
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.POID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
 left join pass1 pass1EditName on od.EditName = pass1EditName.ID
 where   o.POID = @POID and o.TestNo = @TestNo
 ";
@@ -574,7 +575,7 @@ select	[SubmitDate] = od.SubmitDate,
         [Dyelot] = od.Dyelot,
         [Refno] = psd.Refno,
         [SCIRefno] = psd.SCIRefno,
-        [ColorID] = psd.ColorID,
+        [ColorID] = pc.SpecValue,
         [Result] = od.Result,
         [ChangeScale] = od.changeScale,
         [ResultChange] = od.ResultChange,
@@ -589,6 +590,7 @@ select	[SubmitDate] = od.SubmitDate,
 from Oven_Detail od with (nolock)
 inner join Oven o with (nolock) on o.ID = od.ID
 left join PO_Supp_Detail psd with (nolock) on o.POID = psd.ID and od.SEQ1 = psd.SEQ1 and od.SEQ2 = psd.SEQ2
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.POID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
 left join PO_Supp ps WITH (NOLOCK) on psd.ID = ps.ID and psd.Seq1 = ps.Seq1
 left join supp s with (nolock) on ps.SuppID = s.ID
 left join pass1 pass1EditName WITH(NOLOCK) on od.EditName = pass1EditName.ID
