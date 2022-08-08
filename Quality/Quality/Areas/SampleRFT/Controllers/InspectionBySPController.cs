@@ -624,7 +624,8 @@ namespace Quality.Areas.SampleRFT.Controllers
                 {
                     continue;
                 }
-                model.Images.Add(new RFT_Inspection_Measurement_Image() { Image = ImageHelper.ImageCompress(item.TempImage), Seq = item.Seq });
+                model.Images.Add(new RFT_Inspection_Measurement_Image() { Image = (item.TempImage), Seq = item.Seq });
+                //model.Images.Add(new RFT_Inspection_Measurement_Image() { Image = ImageHelper.ImageCompress(item.TempImage), Seq = item.Seq });
             }
 
             // 圖片排除要刪除的
@@ -984,7 +985,8 @@ namespace Quality.Areas.SampleRFT.Controllers
                     foreach (var t in tempImgs)
                     {                       
                         // 加入的圖片都壓縮至500KB
-                        t.Image = ImageHelper.ImageCompress(t.TempImage);
+                        //t.Image = ImageHelper.ImageCompress(t.TempImage);
+                        t.Image = (t.TempImage);
                     }
 
                     item.Images = tempImgs;
