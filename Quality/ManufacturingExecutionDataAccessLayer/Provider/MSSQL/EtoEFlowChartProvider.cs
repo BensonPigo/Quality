@@ -44,12 +44,13 @@ AND SeasonID = @SeasonID
             return Convert.ToInt64(result == null ? 0 : result);
         }
 
+
         /// <summary>
         /// 備機執行
         /// </summary>
         /// <param name="Req"></param>
         /// <returns></returns>
-        public decimal Get_Development_SampleRFT(EtoEFlowChart_Request Req)
+        public int Check_SampleRFTInspection_Count(EtoEFlowChart_Request Req)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
@@ -59,13 +60,53 @@ AND SeasonID = @SeasonID
                 { "@Article", DbType.String, Req.Article } ,
                 { "@StyleUkey", DbType.Int64, Req.StyleUkey } ,
             };
-            string sqlcmd = @"
+            string sqlcmd = $@"
+select COUNT(1)
+from SampleRFTInspection WITH(NOLOCK)
+where StyleUkey = @StyleUkey
+";
+
+            var result = ExecuteScalar(CommandType.Text, sqlcmd, objParameter);
+
+            return Convert.ToInt32(result == null ? 0 : result);
+        }
+
+        /// <summary>
+        /// 備機執行
+        /// </summary>
+        /// <param name="Req"></param>
+        /// <returns></returns>
+        public decimal Get_Development_SampleRFT(EtoEFlowChart_Request Req, string TableName = "")
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@BrandID", DbType.String, Req.BrandID } ,
+                { "@SeasonID", DbType.String, Req.SeasonID } ,
+                { "@StyleID", DbType.String, Req.StyleID } ,
+                { "@Article", DbType.String, Req.Article } ,
+                { "@StyleUkey", DbType.Int64, Req.StyleUkey } ,
+            };
+
+            string sqlcmd = string.Empty;
+
+            if (string.IsNullOrEmpty(TableName))
+            {
+                sqlcmd = $@"
 select SampleRftRate = ROUND( ISNULL( 1.0 * SUM(IIF(Status='Pass',1,0)) / count(StyleUkey) * 100.0 ,0) ,4)
 
 from RFT_Inspection rft WITH(NOLOCK)
 where StyleUkey = @StyleUkey
-
 ";
+            }
+            else if (TableName == "SampleRFTInspection")
+            {
+                sqlcmd = $@"
+select SampleRftRate = ROUND( ISNULL( 1.0 * SUM(IIF(Result='Pass',1,0)) / count(StyleUkey) * 100.0 ,0) ,4)
+
+from SampleRFTInspection rft WITH(NOLOCK)
+where StyleUkey = @StyleUkey
+";
+            }
             var result = ExecuteScalar(CommandType.Text, sqlcmd, objParameter);
 
             return Convert.ToDecimal(result == null ? 0 : result);
@@ -76,7 +117,7 @@ where StyleUkey = @StyleUkey
         /// </summary>
         /// <param name="Req"></param>
         /// <returns></returns>
-        public List<Development_SampleRFT> Get_Development_SampleRFT_Detail(EtoEFlowChart_Request Req)
+        public List<Development_SampleRFT> Get_Development_SampleRFT_Detail(EtoEFlowChart_Request Req, string TableName = "")
         {
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
@@ -86,7 +127,12 @@ where StyleUkey = @StyleUkey
                 { "@Article", DbType.String, Req.Article } ,
                 { "@StyleUkey", DbType.Int64, Req.StyleUkey } ,
             };
-            string sqlcmd = @"
+
+            string sqlcmd = string.Empty;
+
+            if (string.IsNullOrEmpty(TableName))
+            {
+                sqlcmd = $@"
 select distinct OrderID
     ,SampleStage = o.OrderTypeID
     ,s.BuyReadyDate
@@ -96,6 +142,20 @@ INNER JOIN MainServer.Production.dbo.Style_Article s ON  s.StyleUkey=rft.StyleUk
 where rft.StyleUkey = @StyleUkey
 
 ";
+            }
+            else if (TableName == "SampleRFTInspection")
+            {
+                sqlcmd = $@"
+select distinct OrderID
+    ,SampleStage = o.OrderTypeID
+    ,s.BuyReadyDate
+from SampleRFTInspection rft WITH(NOLOCK)
+INNER JOIN SciProduction_Orders o ON  rft.OrderID=o.ID
+INNER JOIN MainServer.Production.dbo.Style_Article s ON  s.StyleUkey=rft.StyleUkey
+where rft.StyleUkey = @StyleUkey
+
+";
+            }
             var result = ExecuteList<Development_SampleRFT>(CommandType.Text, sqlcmd, objParameter) ?? new List<Development_SampleRFT>();
             return result.ToList();
         }

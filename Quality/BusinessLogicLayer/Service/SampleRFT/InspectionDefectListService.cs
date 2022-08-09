@@ -11,6 +11,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
     public class InspectionDefectListService
     {
         public InspectionDefectListProvider _Provider { get; set; }
+        public InspectionDefectListProvider MES_Provider { get; set; }
 
         public InspectionDefectList_ViewModel GetData(InspectionDefectList_ViewModel Req)
         {
@@ -21,20 +22,35 @@ namespace BusinessLogicLayer.Service.SampleRFT
             };
             try
             {
+                MES_Provider = new InspectionDefectListProvider(Common.ManufacturingExecutionDataAccessLayer);
+                _Provider = new InspectionDefectListProvider(Common.ProductionDataAccessLayer);
+                bool HasSampleRFTInspection = MES_Provider.Check_SampleRFTInspection_Count(Req.OrderID) > 0 ? true : false;
+
                 _Provider = new InspectionDefectListProvider(Common.ProductionDataAccessLayer);
 
-                var list = _Provider.GetData(Req.OrderID).ToList();
-
-                if (list.Any())
+                List<InspectionDefectList_Result> OriList = new List<InspectionDefectList_Result>();
+                List<InspectionDefectList_Result> list = new List<InspectionDefectList_Result>();
+                if (HasSampleRFTInspection)
                 {
-                    result.SampleStage = list.FirstOrDefault().SampleStage;
-                    result.StyleID = list.FirstOrDefault().StyleID;
-                    result.SeasonID = list.FirstOrDefault().SeasonID;
-                    if (list.Where(o => !string.IsNullOrEmpty(o.Article)).Any())
-                    {
-                        result.DataList = list;
-                    }
+                    list = MES_Provider.GetData_SampleRFTInspection(Req.OrderID).ToList();
                 }
+                else
+                {
+                    list = _Provider.GetData(Req.OrderID).ToList();
+                    OriList = list;
+                }
+
+                result.DataList = list;
+                //if (list.Any())
+                //{
+                //    result.SampleStage = list.FirstOrDefault().SampleStage;
+                //    result.StyleID = list.FirstOrDefault().StyleID;
+                //    result.SeasonID = list.FirstOrDefault().SeasonID;
+                //    //if (list.Where(o => !string.IsNullOrEmpty(o.Article)).Any())
+                //    //{
+                //    //    result.DataList = list;
+                //    //}
+                //}
 
                 result.Result = true;
             }
