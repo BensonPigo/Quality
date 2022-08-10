@@ -35,13 +35,30 @@ namespace BusinessLogicLayer.Service.StyleManagement
 
                 styleResult_Request.CallType = StyleResult_Request.EnumCallType.StyleResult;
 
+                bool HasSampleRFTInspection = _Provider.Check_SampleRFTInspection_Count(styleResult_Request) > 0 ? true : false;
+
+                result.HasSampleRFTInspection = HasSampleRFTInspection;
+                if (HasSampleRFTInspection)
+                {
+                    styleResult_Request.InspectionTableName = "SampleRFTInspection";
+                }
+
                 var styleResults = _Provider.Get_StyleInfo(styleResult_Request).ToList();
 
                 if (styleResults.Any())
                 {
                     result = styleResults.FirstOrDefault();
                 }
-                result.SampleRFT = _Provider.Get_StyleResult_SampleRFT(styleResult_Request).ToList();
+
+                if (HasSampleRFTInspection)
+                {
+                    result.SampleRFT = _Provider.Get_StyleResult_SampleRFT_FromSampleRFTInspection(styleResult_Request).ToList();
+                }
+                else
+                {
+                    result.SampleRFT = _Provider.Get_StyleResult_SampleRFT(styleResult_Request).ToList();
+                }
+
                 result.FTYDisclaimer = _Provider.Get_StyleResult_FTYDisclaimer(styleResult_Request).ToList();
                 result.RRLR = _Provider.Get_StyleResult_RRLR(styleResult_Request).ToList();
                 result.BulkFGT = _Provider.Get_StyleResult_BulkFGT(styleResult_Request).ToList();
@@ -74,10 +91,25 @@ namespace BusinessLogicLayer.Service.StyleManagement
             {
                 _Provider = new StyleResultProvider(Common.ProductionDataAccessLayer);
 
+                bool HasSampleRFTInspection = _Provider.Check_SampleRFTInspection_Count(Req) > 0 ? true : false;
+
+                if (HasSampleRFTInspection)
+                {
+                    Req.InspectionTableName = "SampleRFTInspection";
+                }
+
                 result = this.Get_StyleResult_Browse(Req);
 
                 // 取得Datatable
-                dt = _Provider.Get_StyleResult_SampleRFT_DataTable(Req);
+                if (HasSampleRFTInspection)
+                {
+                    dt = _Provider.Get_StyleResult_SampleRFT_DataTable_FromSampleRFTInspection(Req);
+                }
+                else
+                {
+                    dt = _Provider.Get_StyleResult_SampleRFT_DataTable(Req);
+                }
+
 
                 if (!System.IO.Directory.Exists(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\"))
                 {

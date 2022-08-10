@@ -26,7 +26,18 @@ namespace BusinessLogicLayer.SampleRFT.Service
             {
                 _BACriteriaProvider = new BACriteriaProvider(Common.ManufacturingExecutionDataAccessLayer);
 
-                List<BACriteria_Result> list = _BACriteriaProvider.Get_BACriteria_Result(Req).ToList();
+                bool HasSampleRFTInspection = _BACriteriaProvider.Check_SampleRFTInspection_Count(Req) > 0 ? true : false;
+
+                List<BACriteria_Result> list = new List<BACriteria_Result>();
+
+                if (HasSampleRFTInspection)
+                {
+                    list = _BACriteriaProvider.Get_BACriteria_Result_SampleRFTInspection(Req).ToList();
+                }
+                else
+                {
+                    list = _BACriteriaProvider.Get_BACriteria_Result(Req).ToList();
+                }
 
                 int SumBAProduct = list.Sum(o => o.BAProduct);
                 int SumInspectedQty = list.Sum(o => o.InspectedQty);

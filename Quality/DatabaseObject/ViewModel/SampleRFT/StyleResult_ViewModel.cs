@@ -32,6 +32,8 @@ namespace DatabaseObject.ViewModel.SampleRFT
         public string StyleRRLRPath { get; set; }
         public string TempFileName { get; set; }
 
+        public bool HasSampleRFTInspection { get; set; }
+
         public List<StyleResult_SampleRFT> SampleRFT { get; set; }
         public List<StyleResult_FTYDisclaimer> FTYDisclaimer { get; set; }
         public List<StyleResult_RRLR> RRLR { get; set; }
