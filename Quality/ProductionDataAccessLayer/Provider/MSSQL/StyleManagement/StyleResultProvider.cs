@@ -108,6 +108,35 @@ WHERE Junk=0
             return ExecuteList<SelectListItem>(CommandType.Text, SbSql.ToString(), listPar);
         }
 
+
+        /// <summary>
+        /// 備機執行
+        /// </summary>
+        /// <param name="Req"></param>
+        /// <returns></returns>
+        public int Check_SampleRFTInspection_Count(StyleResult_Request Req)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@BrandID", DbType.String, Req.BrandID } ,
+                { "@SeasonID", DbType.String, Req.SeasonID } ,
+                { "@StyleID", DbType.String, Req.StyleID } ,
+                { "@StyleUkey", DbType.Int64, Req.StyleUkey } ,
+            };
+            string sqlcmd = $@"
+select COUNT(1)
+from ExtendServer.ManufacturingExecution.dbo.SampleRFTInspection a WITH(NOLOCK)
+inner join Style s on a.StyleUkey = s.Ukey
+where s.BrandID = @BrandID
+    AND s.SeasonID = @SeasonID
+    AND s.ID = @StyleID
+";
+
+            var result = ExecuteScalar(CommandType.Text, sqlcmd, objParameter);
+
+            return Convert.ToInt32(result == null ? 0 : result);
+        }
+
         public IList<StyleResult_ViewModel> Get_StyleInfo(StyleResult_Request styleResult_Request)
         {
             SQLParameterCollection listPar = new SQLParameterCollection();
@@ -192,14 +221,26 @@ WHERE Junk=0
                     break;
             }
 
+            string RftOuterApply = $@"
+	select Val = ROUND( SUM(IIF(Status = 'Pass',1,0)) * 1.0  / COUNT(1) *1.0  *100 , 2)
+    FROM [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection  rft WITH(NOLOCK)
+	WHERE rft.StyleUkey = s.Ukey
+";
+            if (styleResult_Request.InspectionTableName == "SampleRFTInspection")
+            {
+                RftOuterApply = $@"
+	select Val = ROUND( SUM(IIF(Result = 'Pass',1,0)) * 1.0  / COUNT(1) *1.0  *100 , 2)
+    FROM [ExtendServer].ManufacturingExecution.dbo.SampleRFTInspection  rft WITH(NOLOCK)
+	WHERE rft.StyleUkey = s.Ukey  AND rft.SubmitDate IS NOT nULL
+";
+            }
+
             string sqlGet_StyleResult_Browse = $@"
 select  {sqlCol}
     ,StyleRRLRPath = (select StyleRRLRPath from System WITH(NOLOCK))
 from    Style s with (nolock)
 OUTER APPLY(
-	select Val = ROUND( SUM(IIF(Status = 'Pass',1,0)) * 1.0  / COUNT(1) *1.0  *100 , 2)
-    FROM [ExtendServer].ManufacturingExecution.dbo.RFT_Inspection  rft WITH(NOLOCK)
-	WHERE rft.StyleUkey = s.Ukey
+	{RftOuterApply}
 )RFT
 where   1 = 1 {sqlWhere}
 ";
@@ -374,6 +415,64 @@ drop table #tmp, #tmp_NonSIZESET, #tmp_Season, #tmp_SIZESET, #tmpRFT_Inspection,
             return ExecuteList<StyleResult_SampleRFT>(CommandType.Text, sqlGet_StyleResult_Browse, listPar);
         }
 
+        public IList<StyleResult_SampleRFT> Get_StyleResult_SampleRFT_FromSampleRFTInspection(StyleResult_Request styleResult_Request)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add(new SqlParameter("@StyleID", styleResult_Request.StyleID));
+            listPar.Add(new SqlParameter("@BrandID", styleResult_Request.BrandID));
+            listPar.Add(new SqlParameter("@SeasonID", styleResult_Request.SeasonID));
+
+            string sqlGet_StyleResult_Browse = $@"
+--DECLARE @StyleID varchar(30)=N'F2206LHLU506'
+--DECLARE @BrandID varchar(30)=N'ADIDAS'
+--DECLARE @SeasonID varchar(30)=N'23SS'
+
+select　 SP = b.ID
+	,SampleStage = b.OrderTypeID
+	,Factory = b.FactoryID
+	,Delivery = b.BuyerDelivery
+	,b.SCIDelivery
+	,InspectedQty = RFT.InspectedQty
+	,RFT = LEFT( CAST( RFT.RFT as varchar),5) 
+	,BAProduct = BAProduct.Val
+	,BAAuditCriteria  = Cast( Cast( IIF(RFT.InspectedQty = 0, 0, ROUND(BAProduct.val * 1.0 / RFT.InspectedQty * 5 ,1) )as numeric(2,1)) as varchar )
+from　Orders b WITH(NOLOCK)
+outer apply(
+	select InspectedQty = count(1) 
+	,RFT = SUM(IIF(Result='Pass',1,0))  * 1.0 / count(1) * 100
+	from ExtendServer.ManufacturingExecution.dbo.SampleRFTInspection WITH(NOLOCK)
+	where OrderID = b.ID AND SubmitDate IS NOT NULL
+)RFT 
+outer apply(
+	select Val = COUNT(1)
+	from ExtendServer.ManufacturingExecution.dbo.SampleRFTInspection ss WITH(NOLOCK)
+	where ss.OrderID = b.ID AND ss.SubmitDate IS NOT NULL AND 
+	(
+		not exists(
+			select 1
+			from ExtendServer.ManufacturingExecution.dbo.SampleRFTInspection_Detail WITH(NOLOCK)
+			where SampleRFTInspectionUkey = ss.ID AND Qty > 0
+		)
+		OR
+		not exists(
+			select 1
+			from ExtendServer.ManufacturingExecution.dbo.SampleRFTInspection_NonBACriteria WITH(NOLOCK)
+			where SampleRFTInspectionUkey = ss.ID　AND BACriteria != '' AND Qty > 0
+		)
+	)
+)BAProduct
+where EXISTS(
+	select  1 
+	from  ExtendServer.ManufacturingExecution.dbo.SampleRFTInspection a WITH(NOLOCK)
+	where a.OrderID = b.ID AND SubmitDate IS NOT NULL
+)
+AND b.BrandID = @BrandID
+AND b.SeasonID = @SeasonID
+AND b.StyleID = @StyleID
+
+";
+            return ExecuteList<StyleResult_SampleRFT>(CommandType.Text, sqlGet_StyleResult_Browse, listPar);
+        }
 
         public DataTable Get_StyleResult_SampleRFT_DataTable(StyleResult_Request styleResult_Request)
         {
@@ -456,6 +555,91 @@ outer apply(
 	)
 )BAProduct
 where 1=1
+{sqlWhere}
+";
+            return ExecuteDataTableByServiceConn(CommandType.Text, SbSql.ToString(), listPar);
+        }
+        public DataTable Get_StyleResult_SampleRFT_DataTable_FromSampleRFTInspection(StyleResult_Request styleResult_Request)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            string sqlWhere = string.Empty;
+            string sqlCol = string.Empty;
+            if (!string.IsNullOrEmpty(styleResult_Request.StyleUkey))
+            {
+                sqlWhere += " and b.StyleUkey = @StyleUkey";
+
+                int Ukey = 0;
+                if (int.TryParse(styleResult_Request.StyleUkey, out Ukey))
+                {
+                    listPar.Add("@StyleUkey", DbType.Int64, Ukey);
+                }
+                else
+                {
+                    listPar.Add("@StyleUkey", DbType.Int64, 0);
+                }
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(styleResult_Request.BrandID))
+                {
+                    sqlWhere += " and b.BrandID = @BrandID";
+                }
+
+                if (!string.IsNullOrEmpty(styleResult_Request.SeasonID))
+                {
+                    sqlWhere += " and b.SeasonID = @SeasonID";
+                }
+
+                if (!string.IsNullOrEmpty(styleResult_Request.StyleID))
+                {
+                    sqlWhere += " and b.ID = @StyleID";
+                }
+
+                listPar.Add(new SqlParameter("@StyleID", styleResult_Request.StyleID));
+                listPar.Add(new SqlParameter("@BrandID", styleResult_Request.BrandID));
+                listPar.Add(new SqlParameter("@SeasonID", styleResult_Request.SeasonID));
+            }
+
+            string SbSql = $@"
+select　 SP = b.ID
+	,SampleStage = b.OrderTypeID
+	,Factory = b.FactoryID
+	,Delivery = b.BuyerDelivery
+	,b.SCIDelivery
+	,InspectedQty = RFT.InspectedQty
+	,RFT = LEFT( CAST( RFT.RFT as varchar),5) 
+	,BAProduct = BAProduct.Val
+	,BAAuditCriteria  = Cast( Cast( IIF(RFT.InspectedQty = 0, 0, ROUND(BAProduct.val * 1.0 / RFT.InspectedQty * 5 ,1) )as numeric(2,1)) as varchar )
+from　Orders b WITH(NOLOCK)
+outer apply(
+	select InspectedQty = count(1) 
+	,RFT = SUM(IIF(Result='Pass',1,0))  * 1.0 / count(1) * 100
+	from ExtendServer.ManufacturingExecution.dbo.SampleRFTInspection WITH(NOLOCK)
+	where OrderID = b.ID AND SubmitDate IS NOT NULL
+)RFT 
+outer apply(
+	select Val = COUNT(1)
+	from ExtendServer.ManufacturingExecution.dbo.SampleRFTInspection ss WITH(NOLOCK)
+	where ss.OrderID = b.ID AND ss.SubmitDate IS NOT NULL AND 
+	(
+		not exists(
+			select 1
+			from ExtendServer.ManufacturingExecution.dbo.SampleRFTInspection_Detail WITH(NOLOCK)
+			where SampleRFTInspectionUkey = ss.ID AND Qty > 0
+		)
+		OR
+		not exists(
+			select 1
+			from ExtendServer.ManufacturingExecution.dbo.SampleRFTInspection_NonBACriteria WITH(NOLOCK)
+			where SampleRFTInspectionUkey = ss.ID　AND BACriteria != '' AND Qty > 0
+		)
+	)
+)BAProduct
+where EXISTS(
+	select  1 
+	from  ExtendServer.ManufacturingExecution.dbo.SampleRFTInspection a WITH(NOLOCK)
+	where a.OrderID = b.ID AND SubmitDate IS NOT NULL
+)
 {sqlWhere}
 ";
             return ExecuteDataTableByServiceConn(CommandType.Text, SbSql.ToString(), listPar);

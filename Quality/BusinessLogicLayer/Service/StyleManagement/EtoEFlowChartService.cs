@@ -32,8 +32,10 @@ namespace BusinessLogicLayer.Service.StyleManagement
                 Req.StyleUkey = PMS_Provider.Get_StyleUkey(Req);
 
                 // Development
-                model.Development.SampleRFT = MES_Provider.Get_Development_SampleRFT(Req);
-                model.Development.SampleRFT_Detail = MES_Provider.Get_Development_SampleRFT_Detail(Req);
+                bool HasSampleRFTInspection = MES_Provider.Check_SampleRFTInspection_Count(Req) > 0 ? true : false;
+                string TableName = HasSampleRFTInspection ? "SampleRFTInspection" : string.Empty;
+                model.Development.SampleRFT = MES_Provider.Get_Development_SampleRFT(Req, TableName);
+                model.Development.SampleRFT_Detail = MES_Provider.Get_Development_SampleRFT_Detail(Req, TableName);
                 model.Development.CFTComments = MES_Provider.Get_Development_SampleRFT_Detail_CFTComments(model.Development.SampleRFT_Detail.Select(o => o.OrderID).Distinct().ToList());
 
                 model.Development.TestResult_Detail = PMS_Provider.Get_Development_TestResult_Detail(Req);

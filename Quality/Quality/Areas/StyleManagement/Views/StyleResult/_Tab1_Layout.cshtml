@@ -72,9 +72,18 @@
 
                     <td>
                         @*Inspection Defect List*@
-                        <a href="@Url.Action("IndexGet","InspectionDefectList",new {Area="SampleRFT", OrderID = item.SP })">
-                            <img src="~/Image/Icon/Document.png" width="20" height="20" />
-                        </a>
+                        @if (Model.HasSampleRFTInspection)
+                        {
+                            <a href="@Url.Action("IndexGet","SampleRFTInspectionDefectList",new {Area="SampleRFT", OrderID = item.SP })">
+                                <img src="~/Image/Icon/Document.png" width="20" height="20" />
+                            </a>
+                        }
+                        else
+                        {
+                            <a href="@Url.Action("IndexGet","InspectionDefectList",new {Area="SampleRFT", OrderID = item.SP })">
+                                <img src="~/Image/Icon/Document.png" width="20" height="20" />
+                            </a>
+                        }
                     </td>
                     <td>
                         @*Measurement*@

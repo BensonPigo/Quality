@@ -27,8 +27,12 @@ namespace DatabaseObject.ViewModel.SampleRFT
 
         public string Article { get; set; }
         public string Size { get; set; }
+        public bool HasImage { get; set; }
         public DateTime? InspectionDate { get; set; }
         public string DefectType { get; set; }
+        public string DefectCode{ get; set; }
+        public string AreaCodes { get; set; }
+        
         public byte[] DefectPicture { get; set; }
     }
 }
