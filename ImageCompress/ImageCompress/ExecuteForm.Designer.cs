@@ -32,13 +32,15 @@ namespace ImageCompress
             this.components = new System.ComponentModel.Container();
             this.panel1 = new Sci.Win.UI.Panel();
             this.panel2 = new Sci.Win.UI.Panel();
+            this.displayConnString = new Sci.Win.UI.DisplayBox();
+            this.label1 = new Sci.Win.UI.Label();
+            this.btnGetSchema = new Sci.Win.UI.Button();
             this.brnCompress = new Sci.Win.UI.Button();
             this.panel3 = new Sci.Win.UI.Panel();
             this.panel4 = new Sci.Win.UI.Panel();
             this.panel5 = new Sci.Win.UI.Panel();
             this.grid = new Sci.Win.UI.Grid();
             this.listControlBindingSource = new Sci.Win.UI.ListControlBindingSource(this.components);
-            this.btnGetSchema = new Sci.Win.UI.Button();
             this.panel2.SuspendLayout();
             this.panel5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
@@ -50,23 +52,55 @@ namespace ImageCompress
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(800, 19);
+            this.panel1.Size = new System.Drawing.Size(1159, 19);
             this.panel1.TabIndex = 0;
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.displayConnString);
+            this.panel2.Controls.Add(this.label1);
             this.panel2.Controls.Add(this.btnGetSchema);
             this.panel2.Controls.Add(this.brnCompress);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel2.Location = new System.Drawing.Point(0, 400);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(800, 50);
+            this.panel2.Size = new System.Drawing.Size(1159, 50);
             this.panel2.TabIndex = 1;
+            // 
+            // displayConnString
+            // 
+            this.displayConnString.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.displayConnString.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(183)))), ((int)(((byte)(227)))), ((int)(((byte)(255)))));
+            this.displayConnString.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
+            this.displayConnString.Location = new System.Drawing.Point(294, 15);
+            this.displayConnString.Name = "displayConnString";
+            this.displayConnString.Size = new System.Drawing.Size(633, 23);
+            this.displayConnString.TabIndex = 3;
+            // 
+            // label1
+            // 
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label1.Location = new System.Drawing.Point(159, 14);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(126, 23);
+            this.label1.TabIndex = 2;
+            this.label1.Text = "Connection string";
+            // 
+            // btnGetSchema
+            // 
+            this.btnGetSchema.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnGetSchema.Location = new System.Drawing.Point(18, 10);
+            this.btnGetSchema.Name = "btnGetSchema";
+            this.btnGetSchema.Size = new System.Drawing.Size(138, 30);
+            this.btnGetSchema.TabIndex = 1;
+            this.btnGetSchema.Text = "Get Schema";
+            this.btnGetSchema.UseVisualStyleBackColor = true;
+            this.btnGetSchema.Click += new System.EventHandler(this.btnGetSchema_Click);
             // 
             // brnCompress
             // 
             this.brnCompress.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.brnCompress.Location = new System.Drawing.Point(687, 8);
+            this.brnCompress.Location = new System.Drawing.Point(1046, 8);
             this.brnCompress.Name = "brnCompress";
             this.brnCompress.Size = new System.Drawing.Size(96, 30);
             this.brnCompress.TabIndex = 0;
@@ -85,7 +119,7 @@ namespace ImageCompress
             // panel4
             // 
             this.panel4.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel4.Location = new System.Drawing.Point(783, 19);
+            this.panel4.Location = new System.Drawing.Point(1142, 19);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(17, 381);
             this.panel4.TabIndex = 3;
@@ -96,7 +130,7 @@ namespace ImageCompress
             this.panel5.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel5.Location = new System.Drawing.Point(17, 19);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(766, 381);
+            this.panel5.Size = new System.Drawing.Size(1125, 381);
             this.panel5.TabIndex = 4;
             // 
             // grid
@@ -120,25 +154,14 @@ namespace ImageCompress
             this.grid.RowTemplate.Height = 24;
             this.grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.grid.ShowCellToolTips = false;
-            this.grid.Size = new System.Drawing.Size(766, 381);
+            this.grid.Size = new System.Drawing.Size(1125, 381);
             this.grid.TabIndex = 0;
-            // 
-            // btnGetSchema
-            // 
-            this.btnGetSchema.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnGetSchema.Location = new System.Drawing.Point(17, 8);
-            this.btnGetSchema.Name = "btnGetSchema";
-            this.btnGetSchema.Size = new System.Drawing.Size(96, 30);
-            this.btnGetSchema.TabIndex = 1;
-            this.btnGetSchema.Text = "Get DataSchema";
-            this.btnGetSchema.UseVisualStyleBackColor = true;
-            this.btnGetSchema.Click += new System.EventHandler(this.btnGetSchema_Click);
             // 
             // ExecuteForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(1159, 450);
             this.Controls.Add(this.panel5);
             this.Controls.Add(this.panel4);
             this.Controls.Add(this.panel3);
@@ -154,6 +177,7 @@ namespace ImageCompress
             this.Controls.SetChildIndex(this.panel4, 0);
             this.Controls.SetChildIndex(this.panel5, 0);
             this.panel2.ResumeLayout(false);
+            this.panel2.PerformLayout();
             this.panel5.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.grid)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.listControlBindingSource)).EndInit();
@@ -172,6 +196,8 @@ namespace ImageCompress
         private Sci.Win.UI.ListControlBindingSource listControlBindingSource;
         private Sci.Win.UI.Button brnCompress;
         private Sci.Win.UI.Button btnGetSchema;
+        private Sci.Win.UI.DisplayBox displayConnString;
+        private Sci.Win.UI.Label label1;
     }
 }
 

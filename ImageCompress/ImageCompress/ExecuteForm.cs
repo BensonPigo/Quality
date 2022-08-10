@@ -34,6 +34,7 @@ namespace ImageCompress
 
             DataTable source = this.GetDatatable();
             this.listControlBindingSource.DataSource = source;
+            this.displayConnString.Value = Sci.Env.Cfg.GetConnection("PMSFile").ConnectionString;
         }
 
 
@@ -101,6 +102,15 @@ DROP TABLE #PKey
 
         private void brnCompress_Click(object sender, EventArgs e)
         {
+
+            DialogResult confirmResult;
+            confirmResult = MyUtility.Msg.QuestionBox("請確認連線字串，是否確定壓縮該DB圖片?", caption: "Confirm", buttons: MessageBoxButtons.YesNo);
+
+            if (confirmResult == DialogResult.No)
+            {
+                return;
+            }
+
             DataTable dataTable;
             if (!MyUtility.Check.Empty(this.grid.DataSource))
             {
@@ -191,13 +201,13 @@ from {table} WITH(NOLOCK)
                             {
                                 continue;
                             }
-                            imgString.Add($@"{column}=@{column}");
+                            imgString.Add($@"[{column}]=@{column}");
                             para.Add(new SqlParameter(column, (byte[])dr[column]));
                         }
 
                         foreach (var column in pKeyColumns)
                         {
-                            pkeyString.Add($@" {column}=@{column} ");
+                            pkeyString.Add($@" [{column}]=@{column} ");
                             para.Add(new SqlParameter(column, dr[column]));
                         }
 
