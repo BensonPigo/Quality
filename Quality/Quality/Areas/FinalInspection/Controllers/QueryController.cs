@@ -356,10 +356,9 @@ namespace Quality.Areas.FinalInspection.Controllers
             Excel.Workbook workbook = excelApp.ActiveWorkbook;
             workbook.SaveAs(filepath);
             workbook.Close();
-            excelApp.Quit();
-            Marshal.ReleaseComObject(worksheet);
-            Marshal.ReleaseComObject(workbook);
-            Marshal.ReleaseComObject(excelApp);
+
+            MyUtility.Excel.KillExcelProcess(excelApp);
+
             MemoryStream obj_stream = new MemoryStream();
             var tempFile = System.IO.Path.Combine(filepath);
             obj_stream = new MemoryStream(System.IO.File.ReadAllBytes(tempFile));
@@ -371,6 +370,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             Response.End();
             System.IO.File.Delete(filepath);
             #endregion
+
 
             return null;
         }
