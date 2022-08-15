@@ -23,7 +23,10 @@ namespace AutoRemoveBackgroundProcess
             InitializeComponent();
             appPath = Application.StartupPath + @"\";
             RemoveSetting = new Setting(appPath);
-            this.ReloadSetting();
+            if (auto_run.Equals(string.Empty))
+            {
+                this.ReloadSetting();
+            }
         }
         private void btnSettingSave_Click(object sender, EventArgs e)
         {
