@@ -225,5 +225,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
 
         public string FGPT { get; set; }
 
+        public bool ISFD { get; set; }
+
     }
 }
