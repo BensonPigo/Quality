@@ -159,7 +159,7 @@ namespace BusinessLogicLayer.Service
                 result.ErrorMessage = "Get Data Fail!";
                 return result;
             }
-
+            Application excelApp = null;
             try
             {
                 if (!(IsTest.ToLower() == "true"))
@@ -194,7 +194,7 @@ namespace BusinessLogicLayer.Service
                     openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
                 }
 
-                Application excelApp = MyUtility.Excel.ConnectExcel(openfilepath);
+                excelApp = MyUtility.Excel.ConnectExcel(openfilepath);
                 excelApp.DisplayAlerts = false;
                 Worksheet worksheet = excelApp.Sheets[1];
 
@@ -334,32 +334,30 @@ namespace BusinessLogicLayer.Service
                     filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filexlsx);
                     filepathpdf = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileNamePDF);
                 }
-
+                filepath = filepathpdf;
+                Microsoft.Office.Interop.Excel.XlFixedFormatType targetType = Microsoft.Office.Interop.Excel.XlFixedFormatType.xlTypePDF;
 
                 Workbook workbook = excelApp.ActiveWorkbook;
-                workbook.SaveAs(filepath);
+
+                workbook.ExportAsFixedFormat(targetType, filepath);
+
                 workbook.Close();
-                excelApp.Quit();
                 Marshal.ReleaseComObject(worksheet);
                 Marshal.ReleaseComObject(workbook);
                 Marshal.ReleaseComObject(excelApp);
 
+                result.TempFileName = fileNamePDF;
+                result.Result = true;
 
-                if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
-                {
-                    result.TempFileName = fileNamePDF;
-                    result.Result = true;
-                }
-                else
-                {
-                    result.ErrorMessage = "Convert To PDF Fail";
-                    result.Result = false;
-                }
             }
             catch (Exception ex)
             {
                 result.ErrorMessage = ex.Message.Replace("'", string.Empty);
                 result.Result = false;
+            }
+            finally
+            {
+                excelApp = null;
             }
 
             return result;

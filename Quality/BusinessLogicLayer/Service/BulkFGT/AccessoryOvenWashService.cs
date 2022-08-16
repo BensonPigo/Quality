@@ -219,7 +219,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             Accessory_OvenExcel Model = new Accessory_OvenExcel();
 
             FileName = string.Empty;
-
+            Excel.Application excel = null;
             try
             {
                 string baseFilePath =  System.Web.HttpContext.Current.Server.MapPath("~/");
@@ -247,7 +247,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
 
                 string strXltName = baseFilePath + "\\XLT\\AccessoryOvenTest.xltx";
-                Excel.Application excel = MyUtility.Excel.ConnectExcel(strXltName);
+                excel = MyUtility.Excel.ConnectExcel(strXltName);
                 if (excel == null)
                 {
                     result.ErrorMessage = "Excel template not found!";
@@ -328,8 +328,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     }
                 }
 
-                Marshal.ReleaseComObject(worksheet);
-                Marshal.ReleaseComObject(excel);
                 #endregion
             }
             catch (Exception ex)
@@ -337,6 +335,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 result.Result = false;
                 result.ErrorMessage = ex.ToString();
+            }
+            finally
+            {
+                MyUtility.Excel.KillExcelProcess(excel);
             }
 
 
@@ -479,7 +481,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             Accessory_WashExcel Model = new Accessory_WashExcel();
 
             FileName = string.Empty;
-
+            Excel.Application excel = null;
             try
             {
                 string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
@@ -507,7 +509,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
 
                 string strXltName = baseFilePath + "\\XLT\\AccessoryWashTest.xltx";
-                Excel.Application excel = MyUtility.Excel.ConnectExcel(strXltName);
+                excel = MyUtility.Excel.ConnectExcel(strXltName);
                 if (excel == null)
                 {
                     result.ErrorMessage = "Excel template not found!";
@@ -593,8 +595,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     }
                 }
 
-                Marshal.ReleaseComObject(worksheet);
-                Marshal.ReleaseComObject(excel);
                 #endregion
             }
             catch (Exception ex)
@@ -603,7 +603,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 result.Result = false;
                 result.ErrorMessage = ex.ToString();
             }
-
+            finally
+            {
+                MyUtility.Excel.KillExcelProcess(excel);
+            }
 
 
             return result;
@@ -744,7 +747,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             Accessory_WashingFastnessExcel Model = new Accessory_WashingFastnessExcel();
 
             FileName = string.Empty;
-
+            Excel.Application excel = null;
             try
             {
                 string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
@@ -765,7 +768,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
 
                 string strXltName = baseFilePath + "\\XLT\\AccessoryWashingFastness.xltx";
-                Excel.Application excel = MyUtility.Excel.ConnectExcel(strXltName);
+                excel = MyUtility.Excel.ConnectExcel(strXltName);
                 excel.Visible = false;
                 if (excel == null)
                 {
@@ -920,15 +923,16 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     }
                 }
 
-                Marshal.ReleaseComObject(worksheet);
-                Marshal.ReleaseComObject(excel);
                 #endregion
             }
             catch (Exception ex)
             {
-
                 result.Result = false;
                 result.ErrorMessage = ex.ToString();
+            }
+            finally
+            {
+                MyUtility.Excel.KillExcelProcess(excel);
             }
 
 

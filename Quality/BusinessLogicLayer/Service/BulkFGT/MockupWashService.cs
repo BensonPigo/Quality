@@ -160,7 +160,7 @@ namespace BusinessLogicLayer.Service
                 return result;
             }
 
-
+            Application excelApp = null;
             try
             {
                 if (!test)
@@ -194,7 +194,7 @@ namespace BusinessLogicLayer.Service
                     openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
                 }
 
-                Application excelApp = MyUtility.Excel.ConnectExcel(openfilepath);
+                excelApp = MyUtility.Excel.ConnectExcel(openfilepath);
                 excelApp.DisplayAlerts = false;
                 Worksheet worksheet = excelApp.Sheets[1];
 
@@ -336,11 +336,6 @@ namespace BusinessLogicLayer.Service
                 Workbook workbook = excelApp.ActiveWorkbook;
                 workbook.SaveAs(filepath);
                 workbook.Close();
-                excelApp.Quit();
-                Marshal.ReleaseComObject(worksheet);
-                Marshal.ReleaseComObject(workbook);
-                Marshal.ReleaseComObject(excelApp);
-
 
                 if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
                 {
@@ -357,6 +352,10 @@ namespace BusinessLogicLayer.Service
             {
                 result.ErrorMessage = ex.Message.Replace("'", string.Empty);
                 result.Result = false;
+            }
+            finally
+            {
+                MyUtility.Excel.KillExcelProcess(excelApp);
             }
 
             return result;

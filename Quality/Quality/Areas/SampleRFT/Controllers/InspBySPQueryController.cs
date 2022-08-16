@@ -336,10 +336,8 @@ namespace Quality.Areas.SampleRFT.Controllers
             Excel.Workbook workbook = excelApp.ActiveWorkbook;
             workbook.SaveAs(filepath);
             workbook.Close();
-            excelApp.Quit();
-            Marshal.ReleaseComObject(worksheet);
-            Marshal.ReleaseComObject(workbook);
-            Marshal.ReleaseComObject(excelApp);
+
+            MyUtility.Excel.KillExcelProcess(excelApp);
 
             //if (IsDowdload)
             //{

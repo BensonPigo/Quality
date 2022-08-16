@@ -830,7 +830,7 @@ namespace BusinessLogicLayer.Service
             _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
             BaseResult result = new BaseResult();
             excelFileName = string.Empty;
-
+            Microsoft.Office.Interop.Excel.Application excel = null;
             try
             {
                 string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
@@ -876,7 +876,7 @@ namespace BusinessLogicLayer.Service
                     seasonID = listOrders[0].SeasonID;
                 }
 
-                Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(excelName);
+                excel = MyUtility.Excel.ConnectExcel(excelName);
 
                 Microsoft.Office.Interop.Excel.Worksheet excelSheets = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
                 excelSheets.Cells[2, 2] = fabricCrkShrkTestHeat_Main.ReportNo;
@@ -936,15 +936,16 @@ namespace BusinessLogicLayer.Service
                 workbook.SaveAs(filepath);
 
                 workbook.Close();
-                excel.Quit();
-                Marshal.ReleaseComObject(excel);
-                Marshal.ReleaseComObject(excelSheets);
                 #endregion
             }
             catch (Exception ex)
             {
                 result.Result = false;
                 result.ErrorMessage = ex.Message.Replace("'", string.Empty);
+            }
+            finally
+            {
+                MyUtility.Excel.KillExcelProcess(excel);
             }
 
             return result;
@@ -957,7 +958,7 @@ namespace BusinessLogicLayer.Service
             _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
             BaseResult result = new BaseResult();
             excelFileName = string.Empty;
-
+            Microsoft.Office.Interop.Excel.Application excel = null;
             try
             {
 
@@ -1007,7 +1008,7 @@ namespace BusinessLogicLayer.Service
                     seasonID = listOrders[0].SeasonID;
                 }
 
-                Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(excelName);
+                excel = MyUtility.Excel.ConnectExcel(excelName);
 
                 Microsoft.Office.Interop.Excel.Worksheet excelSheets = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
                 excelSheets.Cells[2, 2] = fabricCrkShrkTestWash_Main.ReportNo;
@@ -1102,15 +1103,16 @@ namespace BusinessLogicLayer.Service
                 workbook.SaveAs(filepath);
 
                 workbook.Close();
-                excel.Quit();
-                Marshal.ReleaseComObject(excel);
-                Marshal.ReleaseComObject(excelSheets);
                 #endregion
             }
             catch (Exception ex)
             {
                 result.Result = false;
                 result.ErrorMessage = ex.Message.Replace("'", string.Empty);
+            }
+            finally
+            {
+                MyUtility.Excel.KillExcelProcess(excel);
             }
 
             return result;
@@ -1401,10 +1403,12 @@ namespace BusinessLogicLayer.Service
             string excelPath = Path.Combine(baseFilePath, "TMP", excelFileName);
 
             objApp.ActiveWorkbook.SaveAs(excelPath);
-            objApp.Quit();
+
 
             bool isCreatePdfOK = ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
-            Marshal.ReleaseComObject(objApp);
+
+            MyUtility.Excel.KillExcelProcess(objApp);
+
             if (!isCreatePdfOK)
             {
                 throw new Exception("ConvertToPDF fail");
@@ -1614,10 +1618,11 @@ namespace BusinessLogicLayer.Service
             string excelPath = Path.Combine(baseFilePath, "TMP", excelFileName);
 
             objApp.ActiveWorkbook.SaveAs(excelPath);
-            objApp.Quit();
 
             bool isCreatePdfOK = ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
-            Marshal.ReleaseComObject(objApp);
+
+            MyUtility.Excel.KillExcelProcess(objApp);
+
             if (!isCreatePdfOK)
             {
                 throw new Exception("ConvertToPDF fail");
@@ -1832,11 +1837,8 @@ namespace BusinessLogicLayer.Service
             }
 
             workbook.Close();
-            excel.Quit();
-            Marshal.ReleaseComObject(worksheet);
-            Marshal.ReleaseComObject(workbook);
-            Marshal.ReleaseComObject(excel);
 
+            MyUtility.Excel.KillExcelProcess(excel);
 
             result.Result = true;
             #endregion

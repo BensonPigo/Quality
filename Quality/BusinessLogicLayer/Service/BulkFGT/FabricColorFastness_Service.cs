@@ -473,10 +473,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
             Excel.Workbook workbook = excel.ActiveWorkbook;
             workbook.SaveAs(filepath);
             workbook.Close();
-            excel.Quit();
-            Marshal.ReleaseComObject(worksheet);
-            Marshal.ReleaseComObject(workbook);
-            Marshal.ReleaseComObject(excel);
 
             if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
             {
@@ -488,6 +484,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 result.ErrorMessage = "Convert To PDF Fail";
                 result.Result = false;
             }
+
+            MyUtility.Excel.KillExcelProcess(excel);
             #endregion
 
             return result;
@@ -614,13 +612,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
             Excel.Workbook workbook = excel.ActiveWorkbook;
             workbook.SaveAs(filepath);
             workbook.Close();
-            excel.Quit();
-            Marshal.ReleaseComObject(worksheet);
-            Marshal.ReleaseComObject(workbook);
-            Marshal.ReleaseComObject(excel);
 
             result.reportPath = filexlsx;
             result.Result = true;
+
+            MyUtility.Excel.KillExcelProcess(excel);
             #endregion
 
             return result;

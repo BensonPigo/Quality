@@ -290,7 +290,7 @@ NOTE: This is an automated reply from a system mailbox. Please do not reply to t
                 result.ErrorMessage = "Get Data Fail!";
                 return result;
             }
-
+            Application excelApp = null;
             try
             {
                 if (!(IsTest.ToLower() == "true"))
@@ -334,7 +334,7 @@ NOTE: This is an automated reply from a system mailbox. Please do not reply to t
                     openfilepath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "XLT", $"{basefileName}.xltx");
                 }
 
-                Application excelApp = MyUtility.Excel.ConnectExcel(openfilepath);
+                excelApp = MyUtility.Excel.ConnectExcel(openfilepath);
                 excelApp.DisplayAlerts = false;
                 Worksheet worksheet = excelApp.Sheets[1];
 
@@ -370,10 +370,6 @@ NOTE: This is an automated reply from a system mailbox. Please do not reply to t
                 Workbook workbook = excelApp.ActiveWorkbook;
                 workbook.SaveAs(filepath);
                 workbook.Close();
-                excelApp.Quit();
-                Marshal.ReleaseComObject(worksheet);
-                Marshal.ReleaseComObject(workbook);
-                Marshal.ReleaseComObject(excelApp);
 
                 result.TempFileName = filexlsx;
                 result.Result = true;
@@ -382,6 +378,10 @@ NOTE: This is an automated reply from a system mailbox. Please do not reply to t
             {
                 result.ErrorMessage = ex.Message.Replace("'", string.Empty);
                 result.Result = false;
+            }
+            finally
+            {                
+                MyUtility.Excel.KillExcelProcess(excelApp);
             }
             return result;
         }

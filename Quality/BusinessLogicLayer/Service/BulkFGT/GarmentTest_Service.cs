@@ -915,6 +915,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             IOrdersProvider ordersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
             Orders orders = new Orders();
+            Excel.Application objApp = null;
             if (!string.IsNullOrEmpty(all_Data.Detail.OrderID))
             {
                 var query = ordersProvider.Get(new Orders() { ID = all_Data.Detail.OrderID });
@@ -965,7 +966,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                             openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName_2018}.xltx";
                         }
 
-                        Excel.Application objApp = MyUtility.Excel.ConnectExcel(openfilepath);
+                        objApp = MyUtility.Excel.ConnectExcel(openfilepath);
                         objApp.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
                         Excel.Worksheet worksheet = objApp.ActiveWorkbook.Worksheets[1]; // 取得工作表
 
@@ -2470,10 +2471,8 @@ and t.GarmentTest=1
                         Excel.Workbook workbook_2018 = objApp.ActiveWorkbook;
                         workbook_2018.SaveAs(filepath_2018);
                         workbook_2018.Close();
-                        objApp.Quit();
-                        Marshal.ReleaseComObject(worksheet);
-                        Marshal.ReleaseComObject(workbook_2018);
-                        Marshal.ReleaseComObject(objApp);
+
+
 
                         if (IsToPDF)
                         {
@@ -2500,6 +2499,10 @@ and t.GarmentTest=1
                     {
                         all_Data.ErrMsg = ex.Message.Replace("'", string.Empty);
                         all_Data.Result = false;
+                    }
+                    finally
+                    {
+                        MyUtility.Excel.KillExcelProcess(objApp);
                     }
 
                     #endregion
@@ -2683,10 +2686,6 @@ and t.GarmentTest=1
                     Excel.Workbook workbook_2020 = objApp_2020.ActiveWorkbook;
                     workbook_2020.SaveAs(filepath_2020);
                     workbook_2020.Close();
-                    objApp_2020.Quit();
-                    Marshal.ReleaseComObject(worksheet_2020);
-                    Marshal.ReleaseComObject(workbook_2020);
-                    Marshal.ReleaseComObject(objApp_2020);
 
                     if (IsToPDF)
                     {
@@ -2707,6 +2706,8 @@ and t.GarmentTest=1
                         all_Data.reportPath = filexlsx_2020;
                         all_Data.Result = true;
                     }
+
+                    MyUtility.Excel.KillExcelProcess(objApp_2020);
                     #endregion
 
                     #endregion
@@ -2933,10 +2934,6 @@ and t.GarmentTest=1
                     Excel.Workbook workbook_Physical = objApp_Physical.ActiveWorkbook;
                     workbook_Physical.SaveAs(filepath_Physical);
                     workbook_Physical.Close();
-                    objApp_Physical.Quit();
-                    Marshal.ReleaseComObject(worksheet_Physical);
-                    Marshal.ReleaseComObject(workbook_Physical);
-                    Marshal.ReleaseComObject(objApp_Physical);
 
                     if (IsToPDF)
                     {
@@ -2957,6 +2954,7 @@ and t.GarmentTest=1
                         all_Data.reportPath = filexlsx_Physical;
                         all_Data.Result = true;
                     }
+                    MyUtility.Excel.KillExcelProcess(objApp_Physical);
                     #endregion
                     #endregion
                     break;
