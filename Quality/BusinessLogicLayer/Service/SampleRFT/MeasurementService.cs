@@ -64,20 +64,11 @@ namespace BusinessLogicLayer.Service.SampleRFT
                                 continue;
                             }
 
-                            if (measurement.Unit.ToString().ToUpper() == "INCH")
+                            if (dr[item.ToString()].ToString().Contains("-"))
                             {
                                 string num;
-                                if (dr[item.ToString()].ToString().Contains("-"))
-                                {
-                                    string d = dr[item.ToString()].ToString().Replace("-", string.Empty);
-                                    num = _IMeasurementProvider.Get_CalculateSizeSpec(d, dr["Tol(-)"].ToString()).Rows[0]["value"].ToString();
-                                }
-                                else
-                                {
-                                    string d = dr[item.ToString()].ToString();
-                                    num = _IMeasurementProvider.Get_CalculateSizeSpec(d, dr["Tol(+)"].ToString()).Rows[0]["value"].ToString();
-                                }
-
+                                string d = dr[item.ToString()].ToString().Replace("-", string.Empty);
+                                num = _IMeasurementProvider.Get_CalculateSizeSpec(d, dr["Tol(-)"].ToString()).Rows[0]["value"].ToString();
                                 bolCal = num.Contains("-") && !string.IsNullOrEmpty(dr[item.ToString()].ToString());
                             }
                             else

@@ -645,8 +645,6 @@ SELECT  a.StyleUkey
 			                when  isnull(a.Tol1, '0') = '0' and isnull(a.Tol2, '0') = '0' and isnull(a.SizeSpec, '0') = '0' then convert(bit, 1)
 			                when  isnull(a.SizeCode,'') = '' then convert(bit, 1)
 			                when  a.SizeSpec like '%[a-zA-Z]%' then convert(bit, 1)
-			                when  (UPPER(@SizeUnit) = 'INCH' and  a.SizeSpec like '%.%') then convert(bit, 1)
-			                when  (UPPER(@SizeUnit) = 'CM' and  a.SizeSpec like '%/%') then convert(bit, 1)
 			                else  convert(bit, 0) end
 FROM [ManufacturingExecution].[dbo].[Measurement] a with(nolock)
 where a.junk=0 
