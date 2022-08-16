@@ -235,26 +235,63 @@ namespace Quality.Areas.FinalInspection.Controllers
             var SamplePlanQty = 0;
             var AcceptedQty = 0;
             var RejectQty = 0;
+            int? maxStart = 0;
             AcceptableQualityLevels tmp = new AcceptableQualityLevels();
             switch (AQLPlan)
             {
                 case "1.0 Level I":
-                    tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "1" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
+                    maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "1").Max(o => o.LotSize_Start);
+                    if (TotalAvailableQty > maxStart)
+                    {
+                        tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "1").OrderByDescending(o => o.LotSize_Start).FirstOrDefault();
+                    }
+                    else
+                    {
+                        tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "1" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
+                    }
+                    
                     SamplePlanQty = tmp.SampleSize.Value;
                     AcceptedQty = tmp.AcceptedQty.Value;
                     break;
                 case "1.0 Level II":
-                    tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "2" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
+                    maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "2").Max(o => o.LotSize_Start);
+                    if (TotalAvailableQty > maxStart)
+                    {
+                        tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "2").OrderByDescending(o => o.LotSize_Start).FirstOrDefault();
+                    }
+                    else
+                    {
+                        tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "2" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
+                    }
+                    
                     SamplePlanQty = tmp.SampleSize.Value;
                     AcceptedQty = tmp.AcceptedQty.Value;
                     break;
                 case "1.5 Level I":
-                    tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(1.5) && o.InspectionLevels == "1" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
+                    maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(1.5) && o.InspectionLevels == "1").Max(o => o.LotSize_Start);
+                    if (TotalAvailableQty > maxStart)
+                    {
+                        tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(1.5) && o.InspectionLevels == "1").OrderByDescending(o => o.LotSize_Start).FirstOrDefault();
+                    }
+                    else
+                    {
+                        tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(1.5) && o.InspectionLevels == "1" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
+                    }
+                    
                     SamplePlanQty = tmp.SampleSize.Value;
                     AcceptedQty = tmp.AcceptedQty.Value;
                     break;
                 case "2.5 Level I":
-                    tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(2.5) && o.InspectionLevels == "1" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
+                    maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(2.5) && o.InspectionLevels == "1").Max(o => o.LotSize_Start);
+                    if (TotalAvailableQty > maxStart)
+                    {
+                        tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(2.5) && o.InspectionLevels == "1").OrderByDescending(o => o.LotSize_Start).FirstOrDefault();
+                    }
+                    else
+                    {
+                        tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(2.5) && o.InspectionLevels == "1" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
+                    }
+                    
                     SamplePlanQty = tmp.SampleSize.Value;
                     AcceptedQty = tmp.AcceptedQty.Value;
                     break;
