@@ -119,6 +119,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
             string TempTilePath = string.Empty;
             CFTComments_ViewModel result = new CFTComments_ViewModel();
             DataTable dt = new DataTable();
+            Excel.Application excelApp = null;
             try
             {
                 _CFTCommentsProvider = new CFTCommentsProvider(Common.ManufacturingExecutionDataAccessLayer);
@@ -145,7 +146,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 }
 
                 // 開啟excel app
-                Excel.Application excelApp = MyUtility.Excel.ConnectExcel(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\CFT Comments.xltx");
+                excelApp = MyUtility.Excel.ConnectExcel(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\CFT Comments.xltx");
 
                 Excel.Worksheet worksheet = excelApp.Sheets[1];
 
@@ -185,9 +186,6 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 workbook.SaveAs(filepath);
 
                 workbook.Close();
-                excelApp.Quit();
-                Marshal.ReleaseComObject(workbook);
-                Marshal.ReleaseComObject(excelApp);
 
                 result.TempFileName = fileName;
                 result.Result = true;
@@ -197,6 +195,10 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 throw ex;
                 //result.Result = false;
                 //result.ErrorMessage = ex.Message;
+            }
+            finally
+            {
+                MyUtility.Excel.KillExcelProcess(excelApp);
             }
 
             return result;
@@ -212,6 +214,8 @@ namespace BusinessLogicLayer.Service.SampleRFT
             string TempTilePath = string.Empty;
             CFTComments_ViewModel result = new CFTComments_ViewModel();
             DataTable dt = new DataTable();
+            Excel.Application excelApp = null;
+
             try
             {
                 _CFTCommentsProvider = new CFTCommentsProvider(Common.ManufacturingExecutionDataAccessLayer);
@@ -238,7 +242,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 //}
 
                 // 開啟excel app
-                Excel.Application excelApp = MyUtility.Excel.ConnectExcel(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\CFT Comment Report.xltx");
+                excelApp = MyUtility.Excel.ConnectExcel(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\CFT Comment Report.xltx");
                 excelApp.Visible = false;
                 Excel.Worksheet worksheet;
 
@@ -307,9 +311,6 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 workbook.SaveAs(filepath);
 
                 workbook.Close();
-                excelApp.Quit();
-                Marshal.ReleaseComObject(workbook);
-                Marshal.ReleaseComObject(excelApp);
 
                 result.TempFileName = fileName;
                 result.Result = true;
@@ -317,6 +318,10 @@ namespace BusinessLogicLayer.Service.SampleRFT
             catch (Exception ex)
             {
                 throw ex;
+            }
+            finally
+            {
+                MyUtility.Excel.KillExcelProcess(excelApp);
             }
 
             return result;

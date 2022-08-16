@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sci;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -38,18 +39,10 @@ namespace Library
             }
             finally
             {
-                if (workBook != null)
-                {
-                    workBook.Close(true, missing, missing);
-                }
-
                 if (application != null)
                 {
-                    application.Quit();
+                    MyUtility.Excel.KillExcelProcess(application);
                 }
-
-                Marshal.ReleaseComObject(workBook);
-                Marshal.ReleaseComObject(application);
 
                 GC.Collect();
                 GC.WaitForPendingFinalizers();

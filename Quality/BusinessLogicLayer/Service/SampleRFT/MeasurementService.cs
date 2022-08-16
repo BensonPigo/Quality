@@ -250,10 +250,8 @@ namespace BusinessLogicLayer.Service.SampleRFT
             Excel.Workbook workbook = objApp.ActiveWorkbook;
             workbook.SaveAs(filepath);
             workbook.Close();
-            objApp.Quit();
-            Marshal.ReleaseComObject(worksheet);
-            Marshal.ReleaseComObject(workbook);
-            Marshal.ReleaseComObject(objApp);
+
+            MyUtility.Excel.KillExcelProcess(objApp);            
 
             result.Result = true;
             result.FileName = fileName;

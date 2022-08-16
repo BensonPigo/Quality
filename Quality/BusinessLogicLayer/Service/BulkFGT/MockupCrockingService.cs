@@ -114,7 +114,7 @@ namespace BusinessLogicLayer.Service
                 result.ErrorMessage = "Get Data Fail!";
                 return result;
             }
-
+            Excel.Application excelApp = null;
             try
             {
                 if (!test)
@@ -145,7 +145,7 @@ namespace BusinessLogicLayer.Service
                     openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
                 }
 
-                Excel.Application excelApp = MyUtility.Excel.ConnectExcel(openfilepath);
+                excelApp = MyUtility.Excel.ConnectExcel(openfilepath);
 
 
 
@@ -257,10 +257,7 @@ namespace BusinessLogicLayer.Service
                 Excel.Workbook workbook = excelApp.ActiveWorkbook;
                 workbook.SaveAs(filepath);
                 workbook.Close();
-                excelApp.Quit();
-                Marshal.ReleaseComObject(worksheet);
-                Marshal.ReleaseComObject(workbook);
-                Marshal.ReleaseComObject(excelApp);
+
 
 
                 if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
@@ -278,6 +275,10 @@ namespace BusinessLogicLayer.Service
             {
                 result.ErrorMessage = ex.Message.Replace("'", string.Empty);
                 result.Result = false;
+            }
+            finally
+            {
+                MyUtility.Excel.KillExcelProcess(excelApp);
             }
 
             return result;

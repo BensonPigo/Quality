@@ -321,6 +321,7 @@ namespace BusinessLogicLayer.Service
             _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
             BaseResult result = new BaseResult();
             excelFileName = string.Empty;
+            Excel.Application excel = null;
 
             try
             {
@@ -369,7 +370,7 @@ namespace BusinessLogicLayer.Service
                 }
 
                 string strXltName = baseFilePath + "\\XLT\\FabricOvenTestDetailReport.xltx";
-                Excel.Application excel = MyUtility.Excel.ConnectExcel(strXltName);
+                excel = MyUtility.Excel.ConnectExcel(strXltName);
                 if (excel == null)
                 {
                     result.ErrorMessage = "Excel template not found!";
@@ -445,15 +446,15 @@ namespace BusinessLogicLayer.Service
                 workbook.SaveAs(filepath);
 
                 workbook.Close();
-                excel.Quit();
-                Marshal.ReleaseComObject(worksheet);
-                Marshal.ReleaseComObject(workbook);
-                Marshal.ReleaseComObject(excel);
             }
             catch (Exception ex)
             {
                 result.Result = false;
                 result.ErrorMessage = ex.ToString();
+            }
+            finally
+            {
+                MyUtility.Excel.KillExcelProcess(excel);
             }
 
             return result;
@@ -483,6 +484,7 @@ namespace BusinessLogicLayer.Service
 
             BaseResult result = new BaseResult();
             pdfFileName = string.Empty;
+            Excel.Application excel = null;
 
             try
             {
@@ -520,7 +522,7 @@ namespace BusinessLogicLayer.Service
                 }
 
                 string strXltName = baseFilePath + "\\XLT\\FabricOvenTestDetailReportToPDF.xltx";
-                Excel.Application excel = MyUtility.Excel.ConnectExcel(strXltName);
+                excel = MyUtility.Excel.ConnectExcel(strXltName);
                 if (excel == null)
                 {
                     result.ErrorMessage = "Excel template not found!";
@@ -929,7 +931,7 @@ namespace BusinessLogicLayer.Service
                 string excelPath = Path.Combine(baseFilePath, "TMP", excelFileName);
 
                 excel.ActiveWorkbook.SaveAs(excelPath);
-                excel.Quit();
+
 
                 bool isCreatePdfOK = ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
                 if (!isCreatePdfOK)
@@ -940,8 +942,7 @@ namespace BusinessLogicLayer.Service
                 }
 
                 #endregion
-                Marshal.ReleaseComObject(worksheet);
-                Marshal.ReleaseComObject(excel);
+
             }
             catch (Exception ex)
             {
@@ -949,8 +950,12 @@ namespace BusinessLogicLayer.Service
                 result.Result = false;
                 result.ErrorMessage = ex.ToString();
             }
+            finally
+            {
+                MyUtility.Excel.KillExcelProcess(excel);
+            }
 
-            
+
 
             return result;
         }
@@ -963,6 +968,7 @@ namespace BusinessLogicLayer.Service
 
             BaseResult result = new BaseResult();
             pdfFileName = string.Empty;
+            Excel.Application excel = null;
 
             try
             {
@@ -998,7 +1004,7 @@ namespace BusinessLogicLayer.Service
                 }
 
                 string strXltName = baseFilePath + "\\XLT\\FabricOvenTestDetailReportToPDF.xltx";
-                Excel.Application excel = MyUtility.Excel.ConnectExcel(strXltName);
+                excel = MyUtility.Excel.ConnectExcel(strXltName);
                 if (excel == null)
                 {
                     result.ErrorMessage = "Excel template not found!";
@@ -1134,7 +1140,7 @@ namespace BusinessLogicLayer.Service
                 string excelPath = Path.Combine(baseFilePath, "TMP", excelFileName);
 
                 excel.ActiveWorkbook.SaveAs(excelPath);
-                excel.Quit();
+
 
                 bool isCreatePdfOK = ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
                 if (!isCreatePdfOK)
@@ -1145,14 +1151,17 @@ namespace BusinessLogicLayer.Service
                 }
 
                 #endregion
-                Marshal.ReleaseComObject(worksheet);
-                Marshal.ReleaseComObject(excel);
+
             }
             catch (Exception ex)
             {
 
                 result.Result = false;
                 result.ErrorMessage = ex.ToString();
+            }
+            finally
+            {
+                MyUtility.Excel.KillExcelProcess(excel);
             }
 
 

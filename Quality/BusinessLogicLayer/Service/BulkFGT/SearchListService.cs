@@ -96,13 +96,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Excel.Workbook workbook = objApp.ActiveWorkbook;
                 workbook.SaveAs(filepath);
                 workbook.Close();
-                objApp.Quit();
-                Marshal.ReleaseComObject(worksheet);
-                Marshal.ReleaseComObject(workbook);
-                Marshal.ReleaseComObject(objApp);
+
 
                 model.Result = true;
                 model.TempFileName = fileName;
+
+                MyUtility.Excel.KillExcelProcess(objApp);
             }
             else
             {
