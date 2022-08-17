@@ -119,7 +119,6 @@ namespace BusinessLogicLayer.Service.SampleRFT
             string TempTilePath = string.Empty;
             CFTComments_ViewModel result = new CFTComments_ViewModel();
             DataTable dt = new DataTable();
-            Excel.Application excelApp = null;
             try
             {
                 _CFTCommentsProvider = new CFTCommentsProvider(Common.ManufacturingExecutionDataAccessLayer);
@@ -138,7 +137,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
                     System.IO.Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\TMP\\");
                 }
 
-                if (dt.Rows.Count == 0) 
+                if (dt.Rows.Count == 0)
                 {
                     result.TempFileName = string.Empty;
                     result.Result = false;
@@ -146,7 +145,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 }
 
                 // 開啟excel app
-                excelApp = MyUtility.Excel.ConnectExcel(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\CFT Comments.xltx");
+                Excel.Application excelApp = MyUtility.Excel.ConnectExcel(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\CFT Comments.xltx");
 
                 Excel.Worksheet worksheet = excelApp.Sheets[1];
 
@@ -186,6 +185,9 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 workbook.SaveAs(filepath);
 
                 workbook.Close();
+                excelApp.Quit();
+                Marshal.ReleaseComObject(workbook);
+                Marshal.ReleaseComObject(excelApp);
 
                 result.TempFileName = fileName;
                 result.Result = true;
@@ -195,10 +197,6 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 throw ex;
                 //result.Result = false;
                 //result.ErrorMessage = ex.Message;
-            }
-            finally
-            {
-                MyUtility.Excel.KillExcelProcess(excelApp);
             }
 
             return result;
@@ -214,14 +212,12 @@ namespace BusinessLogicLayer.Service.SampleRFT
             string TempTilePath = string.Empty;
             CFTComments_ViewModel result = new CFTComments_ViewModel();
             DataTable dt = new DataTable();
-            Excel.Application excelApp = null;
-
             try
             {
                 _CFTCommentsProvider = new CFTCommentsProvider(Common.ManufacturingExecutionDataAccessLayer);
- 
+
                 // 取得Datatable
-                List<CFTComments_Result> datas =_CFTCommentsProvider.Get_CFT_OrderComments2(Req).ToList();
+                List<CFTComments_Result> datas = _CFTCommentsProvider.Get_CFT_OrderComments2(Req).ToList();
                 List<string> SampleStageList = Req.SampleStageList;
 
                 if (!System.IO.Directory.Exists(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\"))
@@ -242,7 +238,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 //}
 
                 // 開啟excel app
-                excelApp = MyUtility.Excel.ConnectExcel(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\CFT Comment Report.xltx");
+                Excel.Application excelApp = MyUtility.Excel.ConnectExcel(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\CFT Comment Report.xltx");
                 excelApp.Visible = false;
                 Excel.Worksheet worksheet;
 
@@ -262,13 +258,13 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 for (int i = 1; i <= sampleStages.Count; i++)
                 {
                     worksheet = (Excel.Worksheet)excelApp.ActiveWorkbook.Worksheets[i];
-                    worksheet.Name = sampleStages[i-1];
+                    worksheet.Name = sampleStages[i - 1];
                 }
 
                 //開始填資料
                 for (int i = 1; i <= sampleStages.Count; i++)
                 {
-                    string sampleStage = sampleStages[i-1];
+                    string sampleStage = sampleStages[i - 1];
                     var sameData = datas.Where(o => o.SampleStage == sampleStage).ToList();
 
                     Excel.Worksheet currenSheet = excelApp.ActiveWorkbook.Worksheets[i];
@@ -311,6 +307,9 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 workbook.SaveAs(filepath);
 
                 workbook.Close();
+                excelApp.Quit();
+                Marshal.ReleaseComObject(workbook);
+                Marshal.ReleaseComObject(excelApp);
 
                 result.TempFileName = fileName;
                 result.Result = true;
@@ -318,10 +317,6 @@ namespace BusinessLogicLayer.Service.SampleRFT
             catch (Exception ex)
             {
                 throw ex;
-            }
-            finally
-            {
-                MyUtility.Excel.KillExcelProcess(excelApp);
             }
 
             return result;

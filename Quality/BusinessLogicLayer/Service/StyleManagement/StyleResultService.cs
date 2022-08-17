@@ -87,8 +87,6 @@ namespace BusinessLogicLayer.Service.StyleManagement
             string TempTilePath = string.Empty;
             StyleResult_ViewModel result = new StyleResult_ViewModel();
             DataTable dt = new DataTable();
-            Excel.Application excelApp = null;
-
             try
             {
                 _Provider = new StyleResultProvider(Common.ProductionDataAccessLayer);
@@ -124,7 +122,7 @@ namespace BusinessLogicLayer.Service.StyleManagement
                 }
 
                 // 開啟excel app
-                excelApp = MyUtility.Excel.ConnectExcel(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\StyleResult_SampleRFT.xltx");
+                Excel.Application excelApp = MyUtility.Excel.ConnectExcel(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\StyleResult_SampleRFT.xltx");
 
                 Excel.Worksheet worksheet = excelApp.Sheets[1];
 
@@ -150,6 +148,9 @@ namespace BusinessLogicLayer.Service.StyleManagement
                 workbook.SaveAs(filepath);
 
                 workbook.Close();
+                excelApp.Quit();
+                Marshal.ReleaseComObject(workbook);
+                Marshal.ReleaseComObject(excelApp);
 
                 result.TempFileName = fileName;
                 result.Result = true;
@@ -158,10 +159,6 @@ namespace BusinessLogicLayer.Service.StyleManagement
             {
                 result.Result = false;
                 result.MsgScript = ex.Message;
-            }
-            finally
-            {
-                MyUtility.Excel.KillExcelProcess(excelApp);
             }
 
             return result;

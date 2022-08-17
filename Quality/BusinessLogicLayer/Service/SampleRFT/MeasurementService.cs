@@ -109,8 +109,8 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 #endregion
 
                 Measurement_Request measurement_Request = MeasurementGetPara(measurement.OrderID, measurement.Factory);
-                measurement_Result = new Measurement_ResultModel() 
-                { 
+                measurement_Result = new Measurement_ResultModel()
+                {
                     Result = true,
                     Factory = measurement_Request.Factory,
                     OrderID = measurement_Request.OrderID,
@@ -124,7 +124,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
                     MeasuredQty = _IMeasurementProvider.Get_Measured_Qty(measurement_Request),
                     Images_Source = (imageSourceList.Any() ? imageSourceList.ToList() : new List<SelectListItem>()),
                     Images = (imageList.Any() ? imageList.ToList() : new List<RFT_Inspection_Measurement_Image>()),
-                    OOTQty = columnListsp.Count,                    
+                    OOTQty = columnListsp.Count,
                     JsonBody = JsonConvert.SerializeObject(_IMeasurementProvider.Get_Measured_Detail(measurement_Request)),
                 };
             }
@@ -140,7 +140,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
         public Measurement_Request MeasurementGetPara(string OrderID, string FactoryID)
         {
             _IMeasurementProvider = new MeasurementProvider(Common.ManufacturingExecutionDataAccessLayer);
-            Measurement_Request measurement_Request = new Measurement_Request() { Result = true, ErrMsg = string.Empty};
+            Measurement_Request measurement_Request = new Measurement_Request() { Result = true, ErrMsg = string.Empty };
             try
             {
                 var query = _IMeasurementProvider.Get_OrdersPara(OrderID, FactoryID);
@@ -250,8 +250,10 @@ namespace BusinessLogicLayer.Service.SampleRFT
             Excel.Workbook workbook = objApp.ActiveWorkbook;
             workbook.SaveAs(filepath);
             workbook.Close();
-
-            MyUtility.Excel.KillExcelProcess(objApp);            
+            objApp.Quit();
+            Marshal.ReleaseComObject(worksheet);
+            Marshal.ReleaseComObject(workbook);
+            Marshal.ReleaseComObject(objApp);
 
             result.Result = true;
             result.FileName = fileName;
@@ -259,7 +261,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
             return result;
         }
 
-        public Measurement_Request DeleteMeasurementImage(long  ID)
+        public Measurement_Request DeleteMeasurementImage(long ID)
         {
             _IMeasurementProvider = new MeasurementProvider(Common.ManufacturingExecutionDataAccessLayer);
             Measurement_Request measurement_Request = new Measurement_Request() { Result = true, ErrMsg = string.Empty };
