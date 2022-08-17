@@ -58,8 +58,8 @@ namespace Quality.Areas.FinalInspection.Controllers
             List<SelectListItem> inspectionResultList = new SetListItem().ItemListBinding(inspectionlist);
             ViewBag.inspectionResultList = inspectionResultList;
 
-            QueryFinalInspection_ViewModel model = new QueryFinalInspection_ViewModel() 
-            { 
+            QueryFinalInspection_ViewModel model = new QueryFinalInspection_ViewModel()
+            {
                 ExcludeJunk = true,
             };
             model.DataList = Service.GetFinalinspectionQueryList_Default(model);
@@ -77,7 +77,7 @@ namespace Quality.Areas.FinalInspection.Controllers
 
             List<SelectListItem> inspectionResultList = new SetListItem().ItemListBinding(inspectionlist);
             ViewBag.inspectionResultList = inspectionResultList;
-            
+
             if (string.IsNullOrEmpty(model.SP) && string.IsNullOrEmpty(model.CustPONO) && string.IsNullOrEmpty(model.StyleID) && (!model.AuditDateStart.HasValue || !model.AuditDateEnd.HasValue) && string.IsNullOrEmpty(model.InspectionResult))
             {
                 model.ErrorMessage = $@"msg.WithError('Please input fields before query.');";
@@ -130,7 +130,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             worksheet.Cells[3, 7] = model.FinalInspection.InspectionStage;
 
             worksheet.Cells[4, 3] = model.FinalInspection.CustPONO;
-            worksheet.Cells[4, 7] = model.ListCartonInfo!= null && model.ListCartonInfo.Any() ?  model.ListCartonInfo.Select(o=>o.CTNNo).Distinct().JoinToString(",") : "";
+            worksheet.Cells[4, 7] = model.ListCartonInfo != null && model.ListCartonInfo.Any() ? model.ListCartonInfo.Select(o => o.CTNNo).Distinct().JoinToString(",") : "";
 
             worksheet.Cells[5, 3] = model.SP;
             worksheet.Cells[5, 7] = model.FinalInspection.AuditDate.HasValue ? ((DateTime)model.FinalInspection.AuditDate).ToString("yyyy/MM/dd") : string.Empty;
@@ -356,9 +356,10 @@ namespace Quality.Areas.FinalInspection.Controllers
             Excel.Workbook workbook = excelApp.ActiveWorkbook;
             workbook.SaveAs(filepath);
             workbook.Close();
-
-            MyUtility.Excel.KillExcelProcess(excelApp);
-
+            excelApp.Quit();
+            Marshal.ReleaseComObject(worksheet);
+            Marshal.ReleaseComObject(workbook);
+            Marshal.ReleaseComObject(excelApp);
             MemoryStream obj_stream = new MemoryStream();
             var tempFile = System.IO.Path.Combine(filepath);
             obj_stream = new MemoryStream(System.IO.File.ReadAllBytes(tempFile));
@@ -370,7 +371,6 @@ namespace Quality.Areas.FinalInspection.Controllers
             Response.End();
             System.IO.File.Delete(filepath);
             #endregion
-
 
             return null;
         }
@@ -397,7 +397,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             QueryReport model = (QueryReport)TempData["ModelQuery"];
             TempData["ModelQuery"] = model;
             string WebHost = Request.Url.Scheme + @"://" + Request.Url.Authority + "/";
-         
+
             var result = Service.SendMail(model.FinalInspection.ID, WebHost, test);
 
             return Json(result);
@@ -405,7 +405,7 @@ namespace Quality.Areas.FinalInspection.Controllers
 
         [HttpPost]
         public ActionResult ClickJunk(string ID)
-        {           
+        {
             DatabaseObject.BaseResult result = Service.ClickJunk(ID);
             return Json(result);
         }

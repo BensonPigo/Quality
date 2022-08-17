@@ -114,7 +114,7 @@ namespace BusinessLogicLayer.Service
                 result.ErrorMessage = "Get Data Fail!";
                 return result;
             }
-            Excel.Application excelApp = null;
+
             try
             {
                 if (!test)
@@ -145,7 +145,7 @@ namespace BusinessLogicLayer.Service
                     openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
                 }
 
-                excelApp = MyUtility.Excel.ConnectExcel(openfilepath);
+                Excel.Application excelApp = MyUtility.Excel.ConnectExcel(openfilepath);
 
 
 
@@ -166,7 +166,7 @@ namespace BusinessLogicLayer.Service
 
                 if (mockupCrocking.Signature != null)
                 {
-                    MemoryStream ms = new MemoryStream(mockupCrocking.Signature);                    
+                    MemoryStream ms = new MemoryStream(mockupCrocking.Signature);
                     Image img = Image.FromStream(ms);
                     string imageName = $"{Guid.NewGuid()}.jpg";
                     string imgPath;
@@ -194,7 +194,7 @@ namespace BusinessLogicLayer.Service
                 if (mockupCrocking.TestAfterPicture != null)
                 {
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(mockupCrocking.TestAfterPicture, mockupCrocking.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfter.Left + 5, cellAfter.Top + 5, 265, 272);              
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfter.Left + 5, cellAfter.Top + 5, 265, 272);
                 }
 
                 #region 表身資料
@@ -257,7 +257,10 @@ namespace BusinessLogicLayer.Service
                 Excel.Workbook workbook = excelApp.ActiveWorkbook;
                 workbook.SaveAs(filepath);
                 workbook.Close();
-
+                excelApp.Quit();
+                Marshal.ReleaseComObject(worksheet);
+                Marshal.ReleaseComObject(workbook);
+                Marshal.ReleaseComObject(excelApp);
 
 
                 if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
@@ -275,10 +278,6 @@ namespace BusinessLogicLayer.Service
             {
                 result.ErrorMessage = ex.Message.Replace("'", string.Empty);
                 result.Result = false;
-            }
-            finally
-            {
-                MyUtility.Excel.KillExcelProcess(excelApp);
             }
 
             return result;
@@ -449,7 +448,7 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public SendMail_Result FailSendMail(MockupFailMail_Request mail_Request )
+        public SendMail_Result FailSendMail(MockupFailMail_Request mail_Request)
         {
             _MockupCrockingProvider = new MockupCrockingProvider(Common.ProductionDataAccessLayer);
             string mailBody = MailTools.DataTableChangeHtml(_MockupCrockingProvider.GetMockupCrockingFailMailContentData(mail_Request.ReportNo), out AlternateView plainView);

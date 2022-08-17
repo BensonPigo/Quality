@@ -210,7 +210,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         }
 
 
-        public BaseResult OvenTestExcel(string AIR_LaboratoryID, string POID, string Seq1, string Seq2 ,bool isPDF, out string FileName)
+        public BaseResult OvenTestExcel(string AIR_LaboratoryID, string POID, string Seq1, string Seq2, bool isPDF, out string FileName)
         {
             _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(Common.ProductionDataAccessLayer);
 
@@ -219,10 +219,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
             Accessory_OvenExcel Model = new Accessory_OvenExcel();
 
             FileName = string.Empty;
-            Excel.Application excel = null;
+
             try
             {
-                string baseFilePath =  System.Web.HttpContext.Current.Server.MapPath("~/");
+                string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
                 //DataTable dtOvenDetail = _AccessoryOvenWashProvider.GetOvenTestDataTable(new Accessory_Oven() 
                 //{ 
                 //    AIR_LaboratoryID = Convert.ToInt64( AIR_LaboratoryID),
@@ -231,7 +231,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 //    Seq2 = Seq2,
                 //});
 
-                Model =  _AccessoryOvenWashProvider.GetOvenTestExcel(new Accessory_Oven()
+                Model = _AccessoryOvenWashProvider.GetOvenTestExcel(new Accessory_Oven()
                 {
                     AIR_LaboratoryID = Convert.ToInt64(AIR_LaboratoryID),
                     POID = POID,
@@ -247,7 +247,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
 
                 string strXltName = baseFilePath + "\\XLT\\AccessoryOvenTest.xltx";
-                excel = MyUtility.Excel.ConnectExcel(strXltName);
+                Excel.Application excel = MyUtility.Excel.ConnectExcel(strXltName);
                 if (excel == null)
                 {
                     result.ErrorMessage = "Excel template not found!";
@@ -272,7 +272,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 worksheet.Cells[5, 2] = Model.StyleID;
                 worksheet.Cells[5, 6] = Model.Size;
-                worksheet.Cells[5, 10] =Model.SeasonID;
+                worksheet.Cells[5, 10] = Model.SeasonID;
                 worksheet.Cells[5, 12] = Model.Seq;
 
                 worksheet.Cells[9, 2] = Model.OvenDate.HasValue ? Model.OvenDate.Value.ToString("yyyy/MM/dd") : string.Empty;
@@ -328,6 +328,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     }
                 }
 
+                Marshal.ReleaseComObject(worksheet);
+                Marshal.ReleaseComObject(excel);
                 #endregion
             }
             catch (Exception ex)
@@ -335,10 +337,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 result.Result = false;
                 result.ErrorMessage = ex.ToString();
-            }
-            finally
-            {
-                MyUtility.Excel.KillExcelProcess(excel);
             }
 
 
@@ -481,7 +479,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             Accessory_WashExcel Model = new Accessory_WashExcel();
 
             FileName = string.Empty;
-            Excel.Application excel = null;
+
             try
             {
                 string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
@@ -509,7 +507,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
 
                 string strXltName = baseFilePath + "\\XLT\\AccessoryWashTest.xltx";
-                excel = MyUtility.Excel.ConnectExcel(strXltName);
+                Excel.Application excel = MyUtility.Excel.ConnectExcel(strXltName);
                 if (excel == null)
                 {
                     result.ErrorMessage = "Excel template not found!";
@@ -595,6 +593,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     }
                 }
 
+                Marshal.ReleaseComObject(worksheet);
+                Marshal.ReleaseComObject(excel);
                 #endregion
             }
             catch (Exception ex)
@@ -603,10 +603,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 result.Result = false;
                 result.ErrorMessage = ex.ToString();
             }
-            finally
-            {
-                MyUtility.Excel.KillExcelProcess(excel);
-            }
+
 
 
             return result;
@@ -747,7 +744,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             Accessory_WashingFastnessExcel Model = new Accessory_WashingFastnessExcel();
 
             FileName = string.Empty;
-            Excel.Application excel = null;
+
             try
             {
                 string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
@@ -768,7 +765,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
 
                 string strXltName = baseFilePath + "\\XLT\\AccessoryWashingFastness.xltx";
-                excel = MyUtility.Excel.ConnectExcel(strXltName);
+                Excel.Application excel = MyUtility.Excel.ConnectExcel(strXltName);
                 excel.Visible = false;
                 if (excel == null)
                 {
@@ -899,7 +896,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 #endregion
 
-                
+
                 #region Save & Show Excel
 
                 string pdfFileName = $"Accessory Washing Fastness{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
@@ -923,16 +920,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     }
                 }
 
+                Marshal.ReleaseComObject(worksheet);
+                Marshal.ReleaseComObject(excel);
                 #endregion
             }
             catch (Exception ex)
             {
+
                 result.Result = false;
                 result.ErrorMessage = ex.ToString();
-            }
-            finally
-            {
-                MyUtility.Excel.KillExcelProcess(excel);
             }
 
 
