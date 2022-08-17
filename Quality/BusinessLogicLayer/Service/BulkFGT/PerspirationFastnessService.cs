@@ -319,7 +319,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         PerspirationFastness_Detail_Detail.AlkalineResultNylon == string.Empty ||
                         PerspirationFastness_Detail_Detail.AlkalineResultPolyester == string.Empty ||
                         PerspirationFastness_Detail_Detail.AlkalineResultAcrylic == string.Empty ||
-                        PerspirationFastness_Detail_Detail.AlkalineResultWool == string.Empty || 
+                        PerspirationFastness_Detail_Detail.AlkalineResultWool == string.Empty ||
 
                         PerspirationFastness_Detail_Detail.AcidResultChange.ToUpper() == "FAIL" ||
                         PerspirationFastness_Detail_Detail.AcidResultAcetate.ToUpper() == "FAIL" ||
@@ -434,7 +434,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             List<PerspirationFastness_Excel> dataList = new List<PerspirationFastness_Excel>();
 
             FileName = string.Empty;
-            Microsoft.Office.Interop.Excel.Application excel = null;
+
             try
             {
                 dataList = _PerspirationFastnessProvider.GetExcel(ID).ToList();
@@ -458,7 +458,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
                 }
 
-                excel = MyUtility.Excel.ConnectExcel(openfilepath);
+                Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
                 excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
                 Microsoft.Office.Interop.Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
 
@@ -539,7 +539,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Excel.Range cellBeforePicture = currenSheet.Cells[52, 1];
                     if (currenData.TestBeforePicture != null)
                     {
-                        string imgPath = ToolKit.PublicClass.AddImageSignWord(currenData.TestBeforePicture, currenData.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test : isTest);
+                        string imgPath = ToolKit.PublicClass.AddImageSignWord(currenData.TestBeforePicture, currenData.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: isTest);
                         currenSheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 380, 300);
                     }
 
@@ -575,6 +575,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Excel.Workbook workbook = excel.ActiveWorkbook;
                 workbook.SaveAs(filepath);
                 workbook.Close();
+                excel.Quit();
+                Marshal.ReleaseComObject(worksheet);
+                Marshal.ReleaseComObject(workbook);
+                Marshal.ReleaseComObject(excel);
 
                 FileName = filexlsx;
                 result.Result = true;
@@ -600,10 +604,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 result.Result = false;
                 result.ErrorMessage = ex.ToString();
-            }
-            finally
-            {
-                MyUtility.Excel.KillExcelProcess(excel);
             }
 
             return result;

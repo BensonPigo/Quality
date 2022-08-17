@@ -204,7 +204,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return baseResult;
         }
 
-        public BaseResult Save_ColorFastness_2ndPage(Fabric_ColorFastness_Detail_ViewModel source , string Mdivision, string UserID)
+        public BaseResult Save_ColorFastness_2ndPage(Fabric_ColorFastness_Detail_ViewModel source, string Mdivision, string UserID)
         {
             BaseResult baseResult = new BaseResult();
             baseResult.Result = true;
@@ -214,7 +214,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 _IColorFastnessDetailProvider = new ColorFastnessDetailProvider(_ISQLDataTransaction);
 
                 // 若表身資料重複 跳訊息
-                
+
 
                 foreach (var item in source.Details)
                 {
@@ -265,7 +265,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 _IColorFastnessProvider = new ColorFastnessProvider(_ISQLDataTransaction);
                 // Check Detail Result
                 bool detailResult = true;
-                
+
                 foreach (var item in result.Details)
                 {
                     if (item.Result.ToUpper() == "FAIL")
@@ -279,7 +279,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 switch (status)
                 {
                     case DetailStatus.Encode:
-                        result.sentMail = !detailResult;                       
+                        result.sentMail = !detailResult;
                         result.Result = _IColorFastnessProvider.Encode_ColorFastness(ID, "Confirmed", strResult, UserID);
                         break;
                     case DetailStatus.Amend:
@@ -348,7 +348,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public Fabric_ColorFastness_Detail_ViewModel ToPDF(string ID, bool test = false )
+        public Fabric_ColorFastness_Detail_ViewModel ToPDF(string ID, bool test = false)
         {
             Fabric_ColorFastness_Detail_ViewModel result = new Fabric_ColorFastness_Detail_ViewModel();
             _IColorFastnessDetailProvider = new ColorFastnessDetailProvider(Common.ProductionDataAccessLayer);
@@ -469,10 +469,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 filepathpdf = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileNamePDF);
             }
 
-       
+
             Excel.Workbook workbook = excel.ActiveWorkbook;
             workbook.SaveAs(filepath);
             workbook.Close();
+            excel.Quit();
+            Marshal.ReleaseComObject(worksheet);
+            Marshal.ReleaseComObject(workbook);
+            Marshal.ReleaseComObject(excel);
 
             if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
             {
@@ -484,8 +488,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 result.ErrorMessage = "Convert To PDF Fail";
                 result.Result = false;
             }
-
-            MyUtility.Excel.KillExcelProcess(excel);
             #endregion
 
             return result;
@@ -535,7 +537,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 Excel.Worksheet currenSheet = excel.ActiveWorkbook.Worksheets[j];
                 currenSheet.Name = j.ToString();
-                ColorFastness_Excel currenData = dataList[j-1];
+                ColorFastness_Excel currenData = dataList[j - 1];
                 currenSheet.Cells[2, 3] = currenData.ReportNo;
 
                 currenSheet.Cells[3, 3] = currenData.SubmitDate.HasValue ? currenData.SubmitDate.Value.ToString("yyyy/MM/dd") : string.Empty;
@@ -612,11 +614,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
             Excel.Workbook workbook = excel.ActiveWorkbook;
             workbook.SaveAs(filepath);
             workbook.Close();
+            excel.Quit();
+            Marshal.ReleaseComObject(worksheet);
+            Marshal.ReleaseComObject(workbook);
+            Marshal.ReleaseComObject(excel);
 
             result.reportPath = filexlsx;
             result.Result = true;
-
-            MyUtility.Excel.KillExcelProcess(excel);
             #endregion
 
             return result;

@@ -163,7 +163,7 @@ namespace BusinessLogicLayer.Service.FinalInspection
         }
 
         //寄信
-        public BaseResult SendMail(string finalInspectionID,string WebHost, bool isTest)
+        public BaseResult SendMail(string finalInspectionID, string WebHost, bool isTest)
         {
             BaseResult baseResult = new BaseResult();
             // 取得資料
@@ -228,7 +228,7 @@ NOTE: This is an automated reply from a system mailbox. Please do not reply to t
                     mailServer = dt.Rows[0]["mailServer"].ToString();
                     eMailID = dt.Rows[0]["eMailID"].ToString();
                     eMailPwd = dt.Rows[0]["eMailPwd"].ToString();
-                    MailServerPort = Convert.ToInt32( dt.Rows[0]["MailServerPort"]);
+                    MailServerPort = Convert.ToInt32(dt.Rows[0]["MailServerPort"]);
                 }
 
                 if (isTest)
@@ -290,7 +290,7 @@ NOTE: This is an automated reply from a system mailbox. Please do not reply to t
                 result.ErrorMessage = "Get Data Fail!";
                 return result;
             }
-            Application excelApp = null;
+
             try
             {
                 if (!(IsTest.ToLower() == "true"))
@@ -307,9 +307,9 @@ NOTE: This is an automated reply from a system mailbox. Please do not reply to t
                 }
 
                 List<QueryFinalInspection> finalInspections = new List<QueryFinalInspection>();
-                if (string.IsNullOrEmpty(model.SP) && 
-                    string.IsNullOrEmpty(model.CustPONO) && 
-                    string.IsNullOrEmpty(model.StyleID) && 
+                if (string.IsNullOrEmpty(model.SP) &&
+                    string.IsNullOrEmpty(model.CustPONO) &&
+                    string.IsNullOrEmpty(model.StyleID) &&
                     (!model.AuditDateStart.HasValue || !model.AuditDateEnd.HasValue) &&
                     string.IsNullOrEmpty(model.InspectionResult))
                 {
@@ -334,7 +334,7 @@ NOTE: This is an automated reply from a system mailbox. Please do not reply to t
                     openfilepath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "XLT", $"{basefileName}.xltx");
                 }
 
-                excelApp = MyUtility.Excel.ConnectExcel(openfilepath);
+                Application excelApp = MyUtility.Excel.ConnectExcel(openfilepath);
                 excelApp.DisplayAlerts = false;
                 Worksheet worksheet = excelApp.Sheets[1];
 
@@ -370,18 +370,18 @@ NOTE: This is an automated reply from a system mailbox. Please do not reply to t
                 Workbook workbook = excelApp.ActiveWorkbook;
                 workbook.SaveAs(filepath);
                 workbook.Close();
+                excelApp.Quit();
+                Marshal.ReleaseComObject(worksheet);
+                Marshal.ReleaseComObject(workbook);
+                Marshal.ReleaseComObject(excelApp);
 
                 result.TempFileName = filexlsx;
                 result.Result = true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 result.ErrorMessage = ex.Message.Replace("'", string.Empty);
                 result.Result = false;
-            }
-            finally
-            {                
-                MyUtility.Excel.KillExcelProcess(excelApp);
             }
             return result;
         }

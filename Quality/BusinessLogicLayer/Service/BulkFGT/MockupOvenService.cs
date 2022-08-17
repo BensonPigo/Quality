@@ -45,7 +45,7 @@ namespace BusinessLogicLayer.Service
             {
                 _MockupOvenProvider = new MockupOvenProvider(Common.ProductionDataAccessLayer);
                 _MockupOvenDetailProvider = new MockupOvenDetailProvider(Common.ProductionDataAccessLayer);
-                mockupOven_model = _MockupOvenProvider.GetMockupOven(MockupOven, istop1: true).ToList().FirstOrDefault();                
+                mockupOven_model = _MockupOvenProvider.GetMockupOven(MockupOven, istop1: true).ToList().FirstOrDefault();
                 if (mockupOven_model != null)
                 {
                     mockupOven_model.ScaleID_Source = GetScale();
@@ -115,9 +115,9 @@ namespace BusinessLogicLayer.Service
                     selectListItems.Add(new SelectListItem { Value = item, Text = item });
                 }
             }
-            catch(Exception)
+            catch (Exception)
             {
-                
+
             }
 
             return selectListItems;
@@ -159,7 +159,7 @@ namespace BusinessLogicLayer.Service
                 result.ErrorMessage = "Get Data Fail!";
                 return result;
             }
-            Application excelApp = null;
+
             try
             {
                 if (!(IsTest.ToLower() == "true"))
@@ -194,7 +194,7 @@ namespace BusinessLogicLayer.Service
                     openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
                 }
 
-                excelApp = MyUtility.Excel.ConnectExcel(openfilepath);
+                Application excelApp = MyUtility.Excel.ConnectExcel(openfilepath);
                 excelApp.DisplayAlerts = false;
                 Worksheet worksheet = excelApp.Sheets[1];
 
@@ -249,7 +249,7 @@ namespace BusinessLogicLayer.Service
                 cell = worksheet.Cells[13 + haveHTrow + 3, 2];
                 if (mockupOven.TestBeforePicture != null)
                 {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(mockupOven.TestBeforePicture, mockupOven.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test : IsTest.ToLower() == "true");
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(mockupOven.TestBeforePicture, mockupOven.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: IsTest.ToLower() == "true");
                     if (haveHT)
                     {
                         worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 377, 260);
@@ -271,7 +271,7 @@ namespace BusinessLogicLayer.Service
                     else
                     {
                         worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 400, 290);
-                    }                        
+                    }
                 }
 
                 #region 表身資料
@@ -315,7 +315,7 @@ namespace BusinessLogicLayer.Service
                     worksheet.Range[$"A{start_row}", $"N{start_row}"].RowHeight = ((maxLength / 20) + 1) * 16.5;
 
                     start_row++;
-                } 
+                }
                 #endregion
 
                 string fileName = $"{basefileName}{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
@@ -334,30 +334,32 @@ namespace BusinessLogicLayer.Service
                     filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filexlsx);
                     filepathpdf = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileNamePDF);
                 }
-                filepath = filepathpdf;
-                Microsoft.Office.Interop.Excel.XlFixedFormatType targetType = Microsoft.Office.Interop.Excel.XlFixedFormatType.xlTypePDF;
+
 
                 Workbook workbook = excelApp.ActiveWorkbook;
-
-                workbook.ExportAsFixedFormat(targetType, filepath);
-
+                workbook.SaveAs(filepath);
                 workbook.Close();
+                excelApp.Quit();
                 Marshal.ReleaseComObject(worksheet);
                 Marshal.ReleaseComObject(workbook);
                 Marshal.ReleaseComObject(excelApp);
 
-                result.TempFileName = fileNamePDF;
-                result.Result = true;
 
+                if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
+                {
+                    result.TempFileName = fileNamePDF;
+                    result.Result = true;
+                }
+                else
+                {
+                    result.ErrorMessage = "Convert To PDF Fail";
+                    result.Result = false;
+                }
             }
             catch (Exception ex)
             {
                 result.ErrorMessage = ex.Message.Replace("'", string.Empty);
                 result.Result = false;
-            }
-            finally
-            {
-                excelApp = null;
             }
 
             return result;

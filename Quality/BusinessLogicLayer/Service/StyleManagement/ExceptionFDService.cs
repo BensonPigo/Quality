@@ -32,7 +32,6 @@ namespace BusinessLogicLayer.Service.StyleManagement
         {
             string TempTilePath = string.Empty;
             System.Data.DataTable dt = new System.Data.DataTable();
-            Application excelApp = null;
             try
             {
                 _Provider = new ExceptionFDProvider(Common.ProductionDataAccessLayer);
@@ -51,7 +50,7 @@ namespace BusinessLogicLayer.Service.StyleManagement
                 }
 
                 // 開啟excel app
-                excelApp = MyUtility.Excel.ConnectExcel(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\ExceptionFD.xltx");
+                Application excelApp = MyUtility.Excel.ConnectExcel(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\ExceptionFD.xltx");
 
                 Worksheet worksheet = excelApp.Sheets[1];
 
@@ -75,16 +74,15 @@ namespace BusinessLogicLayer.Service.StyleManagement
                 workbook.SaveAs(filepath);
 
                 workbook.Close();
+                excelApp.Quit();
+                Marshal.ReleaseComObject(workbook);
+                Marshal.ReleaseComObject(excelApp);
 
                 TempTilePath = fileName;
             }
             catch (Exception ex)
             {
                 throw ex;
-            }
-            finally
-            {
-                MyUtility.Excel.KillExcelProcess(excelApp);
             }
 
             return TempTilePath;

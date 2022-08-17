@@ -245,7 +245,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     }
 
 
-                    if (MyUtility.Check.Empty(waterFastness_Detail_Detail.ResultChange 
+                    if (MyUtility.Check.Empty(waterFastness_Detail_Detail.ResultChange
                         + waterFastness_Detail_Detail.ResultAcetate
                         + waterFastness_Detail_Detail.ResultCotton
                         + waterFastness_Detail_Detail.ResultNylon
@@ -396,7 +396,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
             List<WaterFastness_Excel> dataList = new List<WaterFastness_Excel>();
 
             FileName = string.Empty;
-            Microsoft.Office.Interop.Excel.Application excel = null;
 
             try
             {
@@ -421,7 +420,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
                 }
 
-                excel = MyUtility.Excel.ConnectExcel(openfilepath);
+                Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
                 excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
                 Microsoft.Office.Interop.Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
 
@@ -521,6 +520,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Excel.Workbook workbook = excel.ActiveWorkbook;
                 workbook.SaveAs(filepath);
                 workbook.Close();
+                excel.Quit();
+                Marshal.ReleaseComObject(worksheet);
+                Marshal.ReleaseComObject(workbook);
+                Marshal.ReleaseComObject(excel);
 
                 FileName = filexlsx;
                 result.Result = true;
@@ -546,10 +549,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 result.Result = false;
                 result.ErrorMessage = ex.ToString();
-            }
-            finally
-            {
-                MyUtility.Excel.KillExcelProcess(excel);
             }
 
             return result;
