@@ -1,0 +1,57 @@
+﻿@using DatabaseObject.ViewModel.SampleRFT
+
+@model StyleResult_ViewModel
+
+<style>
+    #myTable5_info {
+        color: black
+    }
+
+    #myTable5_previous, #myTable5_next {
+        color: black !important;
+    }
+
+    #myTable5_wrapper, #myTable5_wrapper > .dataTables_scrollHeadInner {
+        width: 100%
+    }
+
+    #row-name {
+        color: black;
+    }
+</style>
+<table id="myTable5" class="table table-striped display">
+    <thead>
+        <tr class="row-name" id="row-name">
+            <th>Article</th>
+            <th>PO</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.PoList.Any())
+        {
+            foreach (var item in Model.PoList)
+            {
+                <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                    <td>@item.Article</td>
+                    <td style="word-wrap:break-word">
+                        <p style="width: 87vw">@item.POID</p>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<script>
+    $(function () {
+        $('#myTable5').DataTable({
+            "pageLength": 10,
+            "autoWidth": false,
+            "info": false,
+            "filter": false,
+            "paging": false,
+            "info": false,
+            "scrollY": "40vh",
+            "scrollCollapse": true,
+        });
+    });
+</script>

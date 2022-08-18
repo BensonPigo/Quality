@@ -903,5 +903,46 @@ drop table #tmp_final, #Type
 ";
             return ExecuteList<StyleResult_BulkFGT>(CommandType.Text, sqlGet_StyleResult_Browse, listPar);
         }
+        public IList<StyleResult_PoList> Get_StyleResult_PoList(StyleResult_Request styleResult_Request)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            string sqlWhere = string.Empty;
+            string sqlCol = string.Empty;
+            listPar.Add(new SqlParameter("@StyleID", styleResult_Request.StyleID));
+            listPar.Add(new SqlParameter("@BrandID", styleResult_Request.BrandID));
+            listPar.Add(new SqlParameter("@SeasonID", styleResult_Request.SeasonID));
+            listPar.Add(new SqlParameter("@MDivisionID", styleResult_Request.MDivisionID));
+
+            string sqlGet_StyleResult_Browse = $@"
+
+select DISTINCT oa.Article  ,o.CustPONo 
+into #base
+from Style s
+inner join Orders o on o.StyleUkey=s.Ukey
+inner join Order_Article oa on oa.id = o.ID
+where o.CustPONo != ''
+AND s.ID = @StyleID
+AND s.BrandID = @BrandID
+AND s.SeasonID = @SeasonID
+
+select DISTINCT a.Article ,POID = PO.Val
+from #base a
+outer apply(
+	select Val = STUFF
+	((
+		select distinct ',' + b.CustPONo
+		from #base b
+		where a.Article = b.Article
+		for xml path('')
+	),1,1,'')
+)PO
+
+
+drop table #base
+
+ 
+";
+            return ExecuteList<StyleResult_PoList>(CommandType.Text, sqlGet_StyleResult_Browse, listPar);
+        }
     }
 }

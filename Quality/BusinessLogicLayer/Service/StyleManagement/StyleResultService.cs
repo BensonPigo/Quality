@@ -27,7 +27,8 @@ namespace BusinessLogicLayer.Service.StyleManagement
                 SampleRFT = new List<StyleResult_SampleRFT>(),
                 FTYDisclaimer = new List<StyleResult_FTYDisclaimer>(),
                 RRLR = new List<StyleResult_RRLR>(),
-                BulkFGT = new List<StyleResult_BulkFGT>()
+                BulkFGT = new List<StyleResult_BulkFGT>(),
+                PoList = new List<StyleResult_PoList>()
             };
             try
             {
@@ -62,6 +63,7 @@ namespace BusinessLogicLayer.Service.StyleManagement
                 result.FTYDisclaimer = _Provider.Get_StyleResult_FTYDisclaimer(styleResult_Request).ToList();
                 result.RRLR = _Provider.Get_StyleResult_RRLR(styleResult_Request).ToList();
                 result.BulkFGT = _Provider.Get_StyleResult_BulkFGT(styleResult_Request).ToList();
+                result.PoList = _Provider.Get_StyleResult_PoList(styleResult_Request).ToList();
 
 
                 result.Result = true;
