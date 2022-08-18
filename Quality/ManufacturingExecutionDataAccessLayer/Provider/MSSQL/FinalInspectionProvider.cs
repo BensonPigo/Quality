@@ -1563,16 +1563,15 @@ r.EndlineCGradeQty
             string sqlGetData = $@"
 declare @ID varchar(13) = @InspectionID
 
-select  r.FirstInspectionDate,
+select  [FirstInspectionDate] = format(dateadd(hour, -system.UTCOffsetTimeZone, r.FirstInspectionDate), 'yyyy-MM-ddTHH:mm:ss'),
         [DefectQty] = Breakdown_Detail.Qty,
         Breakdown.PassQty,
         Breakdown.RejectQty,
         Breakdown.FixQty,
         [username] = (select Pivot88UserName from pass1 where id = r.QC),
-        r.FirstInspectionDate,
-        r.LastinspectionDate,
+        [LastinspectionDate] = format(dateadd(hour, -system.UTCOffsetTimeZone, r.LastinspectionDate), 'yyyy-MM-ddTHH:mm:ss'),
         [POQty] = orderInfo.Qty,
-        orderInfo.BuyerDelivery,
+        [BuyerDelivery] = format(orderInfo.BuyerDelivery, 'yyyy-MM-ddTHH:mm:ss'),
         [Color] = Color.val,
         r.Shift,
         r.FactoryID,
@@ -1581,6 +1580,7 @@ select  r.FirstInspectionDate,
         orderInfo.CustCDID,
         {dynamicCol}
 from {inspectionReportTable} r with (nolock)
+cross join system
 outer apply(select  [RejectQty] = isnull(sum(RejectQty), 0),
                     [PassQty] = isnull(sum(PassQty), 0),
                     [FixQty] = isnull(sum(FixQty), 0)
@@ -1713,7 +1713,7 @@ where img.{inspectionReportTable}ID = @ID
 declare @ID varchar(13) = @InspectionID
 
 
-Select	f.AuditDate,
+Select	[AuditDate] = format(f.AuditDate, 'yyyy-MM-ddTHH:mm:ss'),
 		f.RejectQty,
 		f.InspectionResult,
 		[DefectQty] = (select isnull(sum(Qty), 0) from FinalInspection_Detail with (nolock) where ID = f.ID),
@@ -1728,14 +1728,14 @@ Select	f.AuditDate,
 		[InspectionMinutes] = Round(DATEDIFF(SECOND, f.AddDate, f.EditDate) / 60.0, 0),
 		[CFA] = isnull((select Pivot88UserName from quality_pass1 with (nolock) where ID = f.CFA), ''),
 		OrderInfo.POQty,
-		OrderInfo.ETD_ETA,
+		[ETD_ETA] = format(OrderInfo.ETD_ETA, 'yyyy-MM-ddTHH:mm:ss'),
 		f.CustPONO,
         OrderInfo.CustomerPo,
         [ReportTypeID] = case when OrderInfo.IsDestJP = 1 then 25
                             when f.AcceptableQualityLevelsUkey  = -1 then 26
                             else 12 end,
-        [DateStarted] = f.AddDate,
-        [InspectionCompletedDate] = f.EditDate,
+        [DateStarted] = format(dateadd(hour, -system.UTCOffsetTimeZone, f.AddDate), 'yyyy-MM-ddTHH:mm:ss'),
+        [InspectionCompletedDate] = format(dateadd(hour, -system.UTCOffsetTimeZone, f.EditDate), 'yyyy-MM-ddTHH:mm:ss'),
         f.OthersRemark,
         f.FabricApprovalDoc,
         f.SealingSampleDoc,
@@ -1763,6 +1763,7 @@ Select	f.AuditDate,
                                 else 'pass' end,
         [MoistureComment] = SUBSTRING(MoistureComment.val, 1, 255)
 from FinalInspection f with (nolock)
+cross join system
 outer apply (select	[POQty] = sum(o.Qty),
 					[ETD_ETA] = max(o.BuyerDelivery),
                     [CustomerPo] = max(o.CustCDID),
