@@ -218,6 +218,9 @@ namespace Quality.Areas.BulkFGT.Controllers
                 TestItem_Source = new List<SelectListItem>(),
             };
 
+            Req.Detail.TestBeforePicture = Req.Detail.TestBeforePicture == null ? null : ImageHelper.ImageCompress(Req.Detail.TestBeforePicture);
+            Req.Detail.TestAfterPicture = Req.Detail.TestAfterPicture == null ? null : ImageHelper.ImageCompress(Req.Detail.TestAfterPicture);
+
             // 更新
             model = Service.Update(Req.Detail);
 
@@ -276,6 +279,9 @@ namespace Quality.Areas.BulkFGT.Controllers
                 Detail = new PullingTest_Result(),
                 TestItem_Source = new List<SelectListItem>(),
             };
+
+            Req.Detail.TestBeforePicture = Req.Detail.TestBeforePicture == null ? null : ImageHelper.ImageCompress(Req.Detail.TestBeforePicture);
+            Req.Detail.TestAfterPicture = Req.Detail.TestAfterPicture == null ? null : ImageHelper.ImageCompress(Req.Detail.TestAfterPicture);
 
             // 新增
             model = Service.Insert(Req.Detail);

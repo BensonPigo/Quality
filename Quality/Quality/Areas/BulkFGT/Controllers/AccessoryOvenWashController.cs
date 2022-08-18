@@ -123,6 +123,9 @@ namespace Quality.Areas.BulkFGT.Controllers
             Req.EditName = this.UserID;
             Req.MDivisionID = this.MDivisionID;
 
+            Req.OvenTestBeforePicture = Req.OvenTestBeforePicture == null ? null : ImageHelper.ImageCompress(Req.OvenTestBeforePicture);
+            Req.OvenTestAfterPicture = Req.OvenTestAfterPicture == null ? null : ImageHelper.ImageCompress(Req.OvenTestAfterPicture);
+
             //修改
             model = _Service.UpdateOven(Req);
 
@@ -286,6 +289,10 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
             Req.EditName = this.UserID;
             Req.MDivisionID = this.MDivisionID;
+
+            Req.WashTestBeforePicture = Req.WashTestBeforePicture == null ? null : ImageHelper.ImageCompress(Req.WashTestBeforePicture);
+            Req.WashTestAfterPicture = Req.WashTestAfterPicture == null ? null : ImageHelper.ImageCompress(Req.WashTestAfterPicture);
+
             //修改
             model = _Service.UpdateWash(Req);
 
@@ -453,6 +460,10 @@ namespace Quality.Areas.BulkFGT.Controllers
             Req.EditName = this.UserID;
             Req.WashingFastnessEncode = false;
             Req.MDivisionID = this.MDivisionID;
+
+            Req.WashingFastnessTestBeforePicture = Req.WashingFastnessTestBeforePicture == null ? null : ImageHelper.ImageCompress(Req.WashingFastnessTestBeforePicture);
+            Req.WashingFastnessTestAfterPicture = Req.WashingFastnessTestAfterPicture == null ? null : ImageHelper.ImageCompress(Req.WashingFastnessTestAfterPicture);
+
             //修改
             model = _Service.UpdateWashingFastness(Req);
 
