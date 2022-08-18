@@ -277,6 +277,9 @@ namespace Quality.Areas.BulkFGT.Controllers
                 req.Details = new List<Fabric_ColorFastness_Detail_Result>();
             }
 
+            req.Main.TestBeforePicture = req.Main.TestBeforePicture == null ? null : ImageHelper.ImageCompress(req.Main.TestBeforePicture);
+            req.Main.TestAfterPicture = req.Main.TestAfterPicture == null ? null : ImageHelper.ImageCompress(req.Main.TestAfterPicture);
+
             BaseResult result = _FabricColorFastness_Service.Save_ColorFastness_2ndPage(req, this.MDivisionID, this.UserID);
             if (result.Result)
             {
