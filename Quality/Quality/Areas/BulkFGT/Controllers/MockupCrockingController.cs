@@ -125,6 +125,9 @@ namespace Quality.Areas.BulkFGT.Controllers
                 Req.MockupCrocking_Detail = new List<MockupCrocking_Detail_ViewModel>();
             }
 
+            Req.TestBeforePicture = Req.TestBeforePicture == null ? null : ImageHelper.ImageCompress(Req.TestBeforePicture);
+            Req.TestAfterPicture = Req.TestAfterPicture == null ? null : ImageHelper.ImageCompress(Req.TestAfterPicture);
+
             BaseResult result = _MockupCrockingService.Create(Req, this.MDivisionID, this.UserID, out string ReportNo);
 
             Req.Request = new MockupCrocking_Request()
@@ -168,6 +171,9 @@ namespace Quality.Areas.BulkFGT.Controllers
             {
                 Req.MockupCrocking_Detail = new List<MockupCrocking_Detail_ViewModel>();
             }
+
+            Req.TestBeforePicture = Req.TestBeforePicture == null ? null : ImageHelper.ImageCompress(Req.TestBeforePicture);
+            Req.TestAfterPicture = Req.TestAfterPicture == null ? null : ImageHelper.ImageCompress(Req.TestAfterPicture);
 
             BaseResult result = _MockupCrockingService.Update(Req, this.UserID);
             Req.Request = new MockupCrocking_Request()

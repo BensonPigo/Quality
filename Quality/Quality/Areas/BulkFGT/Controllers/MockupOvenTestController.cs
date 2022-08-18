@@ -162,6 +162,9 @@ namespace Quality.Areas.BulkFGT.Controllers
                 Req.MockupOven_Detail = new List<MockupOven_Detail_ViewModel>();
             }
 
+            Req.TestBeforePicture = Req.TestBeforePicture == null ? null : ImageHelper.ImageCompress(Req.TestBeforePicture);
+            Req.TestAfterPicture = Req.TestAfterPicture == null ? null : ImageHelper.ImageCompress(Req.TestAfterPicture);
+
             BaseResult result = _MockupOvenService.Create(Req, this.MDivisionID, this.UserID, out string ReportNo);
 
             Req.Request = new MockupOven_Request()
@@ -218,6 +221,9 @@ namespace Quality.Areas.BulkFGT.Controllers
             {
                 Req.MockupOven_Detail = new List<MockupOven_Detail_ViewModel>();
             }
+
+            Req.TestBeforePicture = Req.TestBeforePicture == null ? null : ImageHelper.ImageCompress(Req.TestBeforePicture);
+            Req.TestAfterPicture = Req.TestAfterPicture == null ? null : ImageHelper.ImageCompress(Req.TestAfterPicture);
 
             BaseResult result = _MockupOvenService.Update(Req, this.UserID);
             Req.Request = new MockupOven_Request()
