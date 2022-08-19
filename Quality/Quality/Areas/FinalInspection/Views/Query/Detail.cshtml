@@ -126,16 +126,16 @@
                 <table>
                     <tr>
                         <td>PO#</td>
-                        <td class="valueColor" style="width:20%">@Model.FinalInspection.CustPONO</td>
+                        <td class="valueColor @IsFD" style="width:20%">@Model.FinalInspection.CustPONO</td>
                         <td style="padding-left:10px;">Style</td>
-                        <td class="valueColor @IsFD" style="width:20%">@Model.StyleID</td>
+                        <td class="valueColor" style="width:20%">@Model.StyleID</td>
                         <td>Brand</td>
                         <td class="valueColor">@Model.BrandID</td>
                     </tr>
                     <tr>
                         <td>SP#</td>
-                        <td class="valueColor @IsFD" colspan="5">
-                            <input type="text" value="@Model.SP" style="width:100%" readonly />
+                        <td class="valueColor" colspan="5">
+                            <input type="text" value="@Model.SP" style="width:100%" class="@IsFD" readonly />
                         </td>
                     </tr>
                     <tr>
