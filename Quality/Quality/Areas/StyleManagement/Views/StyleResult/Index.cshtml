@@ -141,27 +141,27 @@
                         <div>
                             @Html.Hidden("StyleUkey")
                             <label class="QueryLab">Brand</label>
-                            <input type="text" name="BrandID" id="txtBrand" class="searchText8vw" value="@Model.BrandID"/>
+                            <input type="text" name="BrandID" id="txtBrand" class="searchText8vw" value="@Model.BrandID" />
                             <input id="btnBrand" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
                             &nbsp;&nbsp;
                             <label class="QueryLab">Season</label>
-                            <input type="text" name="SeasonID" id="txtSeason" class="searchText5vw" value="@Model.SeasonID"/>
+                            <input type="text" name="SeasonID" id="txtSeason" class="searchText5vw" value="@Model.SeasonID" />
                             <input id="btnSeason" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
                             &nbsp;&nbsp;
                             <label class="QueryLab">Style</label>
                             <input type="text" name="StyleID" id="txtStyle" class="searchText12vw" value="@Model.StyleID" />
                             <input id="btnStyle" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
                             &nbsp;&nbsp;
-                            <input type="submit" name="action:Query"  id="btnQuery" value="Query" />
+                            <input type="submit" name="action:Query" id="btnQuery" value="Query" />
                             &nbsp;&nbsp;
                             <input id="btnBarcode" type="button" class="site-btn" style="margin:0;border: 2px solid transparent;" value="   " />
 
                             @*測試專用按鈕
-                                <input id="btnPicture" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />*@
+                    <input id="btnPicture" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />*@
 
                         </div>
-                        
-                        <input type="submit" class="btn-gy" name="action:SampleRFTToExcel" id="SampleRFTToExcel" value="To Excel"  style="display:none"/>
+
+                        <input type="submit" class="btn-gy" name="action:SampleRFTToExcel" id="SampleRFTToExcel" value="To Excel" style="display:none" />
                     }
                 </div>
                 <br />
@@ -285,6 +285,7 @@
                         <li link="#tab02">FTY Disclaimer</li>
                         <li link="#tab03">RR/LR</li>
                         <li link="#tab04">Bulk FGT</li>
+                        <li link="#tab05">PO List</li>
                     </ul>
                 </div>
                 <div id="tab01" class="tab-inner">
@@ -300,6 +301,9 @@
                 </div>
                 <div id="tab04" class="tab-inner">
                     @Html.Partial("~/Areas/StyleManagement/Views/StyleResult/_Tab4_Layout.cshtml")
+                </div>
+                <div id="tab05" class="tab-inner">
+                    @Html.Partial("~/Areas/StyleManagement/Views/StyleResult/_Tab5_Layout.cshtml")
                 </div>
             </div>
         </div>
