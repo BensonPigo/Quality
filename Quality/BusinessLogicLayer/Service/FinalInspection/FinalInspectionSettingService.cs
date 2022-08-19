@@ -188,11 +188,11 @@ namespace BusinessLogicLayer.Service
 
                             if (totalAvailableQty > maxStart)
                             {
-                                AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "2").OrderByDescending(o => o.LotSize_Start);
+                                AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "1").OrderByDescending(o => o.LotSize_Start);
                             }
                             else
                             {
-                                AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "2" && o.LotSize_Start <= totalAvailableQty && totalAvailableQty <= o.LotSize_End);
+                                AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "1" && o.LotSize_Start <= totalAvailableQty && totalAvailableQty <= o.LotSize_End);
                             }
                             //AQLResult = setting.AcceptableQualityLevels
                             //    .Where(s => s.AQLType == 1 &&

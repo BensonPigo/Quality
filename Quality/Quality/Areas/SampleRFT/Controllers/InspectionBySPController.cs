@@ -164,7 +164,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             AcceptableQualityLevels tmp = new AcceptableQualityLevels();
             switch (AQLPlan)
             {
-                case "1.0 Level I":
+                case "1.0 Level":
                     maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "1").Max(o => o.LotSize_Start);
                     if (OrderQty > maxStart)
                     {
@@ -177,22 +177,9 @@ namespace Quality.Areas.SampleRFT.Controllers
 
                     SamplePlanQty = tmp.SampleSize.Value;
                     AcceptedQty = tmp.AcceptedQty.Value;
+                    AcceptableQualityLevelsUkey = tmp.Ukey;
                     break;
-                case "1.0 Level II":
-                    maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "2").Max(o => o.LotSize_Start);
-                    if (OrderQty > maxStart)
-                    {
-                        tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "2").OrderByDescending(o => o.LotSize_Start).FirstOrDefault();
-                    }
-                    else
-                    {
-                        tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "2" && o.LotSize_Start <= OrderQty && OrderQty <= o.LotSize_End).FirstOrDefault();
-                    }
-
-                    SamplePlanQty = tmp.SampleSize.Value;
-                    AcceptedQty = tmp.AcceptedQty.Value;
-                    break;
-                case "1.5 Level I":
+                case "1.5 Level":
                     maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(1.5) && o.InspectionLevels == "1").Max(o => o.LotSize_Start);
                     if (OrderQty > maxStart)
                     {
@@ -205,8 +192,9 @@ namespace Quality.Areas.SampleRFT.Controllers
 
                     SamplePlanQty = tmp.SampleSize.Value;
                     AcceptedQty = tmp.AcceptedQty.Value;
+                    AcceptableQualityLevelsUkey = tmp.Ukey;
                     break;
-                case "2.5 Level I":
+                case "2.5 Level":
                     maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(2.5) && o.InspectionLevels == "1").Max(o => o.LotSize_Start);
                     if (OrderQty > maxStart)
                     {
@@ -219,6 +207,7 @@ namespace Quality.Areas.SampleRFT.Controllers
 
                     SamplePlanQty = tmp.SampleSize.Value;
                     AcceptedQty = tmp.AcceptedQty.Value;
+                    AcceptableQualityLevelsUkey = tmp.Ukey;
                     break;
                 default:
                     break;
