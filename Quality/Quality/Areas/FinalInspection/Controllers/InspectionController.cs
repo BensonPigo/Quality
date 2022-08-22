@@ -639,7 +639,10 @@ namespace Quality.Areas.FinalInspection.Controllers
                 {
                     foreach (var item in TmpFinalInspectionDefectItem_List.Where(o => o.Ukey == FinalInspection_DetailUkey))
                     {
-                        //model.Add(item.TempImage);
+                        if (item.LoginToken != this.LoginToken)
+                        {
+                            continue;
+                        }
                         model.Add(new ImageRemark()
                         { 
                             Image = item.TempImage,
@@ -652,7 +655,10 @@ namespace Quality.Areas.FinalInspection.Controllers
                     // DB沒有的就用RowIndex
                     foreach (var item in TmpFinalInspectionDefectItem_List.Where(o => o.RowIndex == FinalInspection_RowIndex))
                     {
-                        //model.Add(item.TempImage);
+                        if (item.LoginToken != this.LoginToken)
+                        {
+                            continue;
+                        }
                         model.Add(new ImageRemark()
                         {
                             Image = item.TempImage,
@@ -679,6 +685,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         {
             if (data.TempImage != null)
             {
+                data.LoginToken = this.LoginToken;
                 TmpFinalInspectionDefectItem_List.Add(data);
             }
             return Json(true);
@@ -692,6 +699,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             {
                 foreach (var data in list.Where(o=>o.TempImage != null))
                 {
+                    data.LoginToken = this.LoginToken;
                     TmpFinalInspectionDefectItem_List.Add(data);
                 }
             }
@@ -736,7 +744,10 @@ namespace Quality.Areas.FinalInspection.Controllers
                         var sameUkeyImg = TmpFinalInspectionDefectItem_List.Where(o => o.Ukey == FinalInspection_DetailUkey);
                         foreach (var data in sameUkeyImg)
                         {
-                            //item.ListFinalInspectionDefectImage.Add(data.TempImage);
+                            if (data.LoginToken != this.LoginToken)
+                            {
+                                continue;
+                            }
                             item.ListFinalInspectionDefectImage.Add(new ImageRemark()
                             {
                                 Image = ImageHelper.ImageCompress(data.TempImage),
@@ -749,7 +760,11 @@ namespace Quality.Areas.FinalInspection.Controllers
                         var sameUkeyImg = TmpFinalInspectionDefectItem_List.Where(o => o.RowIndex == RowIndex);
                         foreach (var data in sameUkeyImg)
                         {
-                            //item.ListFinalInspectionDefectImage.Add(data.TempImage);
+                            if (data.LoginToken != this.LoginToken)
+                            {
+                                continue;
+                            }
+
                             item.ListFinalInspectionDefectImage.Add(new ImageRemark()
                             {
                                 Image = ImageHelper.ImageCompress(data.TempImage),
@@ -820,7 +835,11 @@ namespace Quality.Areas.FinalInspection.Controllers
                 {
                     foreach (var item in TmpBACriteriaItem_List.Where(o => o.Ukey == FinalInspection_DetailUkey))
                     {
-                        //model.Add(item.TempImage);
+                        if (item.LoginToken != this.LoginToken)
+                        {
+                            continue;
+                        }
+
                         model.Add(new ImageRemark()
                         {
                             Image = item.TempImage,
@@ -833,7 +852,11 @@ namespace Quality.Areas.FinalInspection.Controllers
                     // DB沒有的就用RowIndex
                     foreach (var item in TmpBACriteriaItem_List.Where(o => o.RowIndex == FinalInspection_RowIndex))
                     {
-                        //model.Add(item.TempImage);
+                        if (item.LoginToken != this.LoginToken)
+                        {
+                            continue;
+                        }
+
                         model.Add(new ImageRemark()
                         {
                             Image = item.TempImage,
@@ -852,6 +875,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         {
             if (data.TempImage != null)
             {
+                data.LoginToken = this.LoginToken;
                 TmpBACriteriaItem_List.Add(data);
             }
             return Json(true);
@@ -865,6 +889,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             {
                 foreach (var data in list.Where(o => o.TempImage != null))
                 {
+                    data.LoginToken = this.LoginToken;
                     TmpBACriteriaItem_List.Add(data);
                 }
             }
@@ -908,7 +933,11 @@ namespace Quality.Areas.FinalInspection.Controllers
                         var sameUkeyImg = TmpBACriteriaItem_List.Where(o => o.Ukey == FinalInspection_DetailUkey);
                         foreach (var data in sameUkeyImg)
                         {
-                            //item.ListBACriteriaImage.Add(data.TempImage);
+                            if (data.LoginToken != this.LoginToken)
+                            {
+                                continue;
+                            }
+
                             item.ListBACriteriaImage.Add(new ImageRemark()
                             {
                                 Image = ImageHelper.ImageCompress(data.TempImage),
@@ -921,7 +950,11 @@ namespace Quality.Areas.FinalInspection.Controllers
                         var sameUkeyImg = TmpBACriteriaItem_List.Where(o => o.RowIndex == RowIndex);
                         foreach (var data in sameUkeyImg)
                         {
-                            //item.ListBACriteriaImage.Add(data.TempImage);
+                            if (data.LoginToken != this.LoginToken)
+                            {
+                                continue;
+                            }
+
                             item.ListBACriteriaImage.Add(new ImageRemark()
                             {
                                 Image = ImageHelper.ImageCompress(data.TempImage),
@@ -1138,7 +1171,10 @@ namespace Quality.Areas.FinalInspection.Controllers
             {
                 foreach (var item in TmpListOthersImageItem_List)
                 {
-                    //model.Add(item.TempImage);
+                    if (item.LoginToken != this.LoginToken)
+                    {
+                        continue;
+                    }
 
                     model.Add(new ImageRemark()
                     {
@@ -1164,6 +1200,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         {
             if (data.TempImage != null)
             {
+                data.LoginToken = this.LoginToken;
                 TmpListOthersImageItem_List.Add(data);
             }
             return Json(true);
@@ -1177,6 +1214,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             {
                 foreach (var data in list.Where(o => o.TempImage != null))
                 {
+                    data.LoginToken = this.LoginToken;
                     TmpListOthersImageItem_List.Add(data);
                 }
             }
@@ -1199,6 +1237,10 @@ namespace Quality.Areas.FinalInspection.Controllers
                 model.ListOthersImageItem = new List<OtherImage>();
                 foreach (var item in TmpListOthersImageItem_List)
                 {
+                    if (item.LoginToken != this.LoginToken)
+                    {
+                        continue;
+                    }
                     OtherImage o = new OtherImage();
                     o.ID = model.FinalInspectionID;
                     o.Image = ImageHelper.ImageCompress(item.TempImage);
@@ -1228,6 +1270,10 @@ namespace Quality.Areas.FinalInspection.Controllers
                 model.ListOthersImageItem = new List<OtherImage>();
                 foreach (var item in TmpListOthersImageItem_List)
                 {
+                    if (item.LoginToken != this.LoginToken)
+                    {
+                        continue;
+                    }
                     OtherImage o = new OtherImage();
                     o.ID = model.FinalInspectionID;
                     o.Image = ImageHelper.ImageCompress(item.TempImage);

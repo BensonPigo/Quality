@@ -37,6 +37,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public byte[] TempImage { get; set; }
         public string TempRemark { get; set; }
         public Int64 RowIndex { get; set; }
+        public string LoginToken { get; set; }
     }
     public class ImageRemark
     {
