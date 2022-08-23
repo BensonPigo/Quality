@@ -28,5 +28,6 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string TempRemark { get; set; }
         public string Remark { get; set; }
         public Int64 RowIndex { get; set; }
+        public string LoginToken { get; set; }
     }
 }
