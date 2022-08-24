@@ -351,7 +351,12 @@ namespace Quality.Areas.BulkFGT.Controllers
             List<string> scaleOption = new List<string>();
             foreach (var item in mockupCrocking_ViewModel.Scale_Source)
             {
-                scaleOption.Add($"<option value='{item.Value}'>{item.Text}</option>");
+                string selected = string.Empty;
+                if (item.Value == "4-5")
+                {
+                    selected = "selected";
+                }
+                scaleOption.Add($"<option {selected} value='{item.Value}'>{item.Text}</option>");
             }
 
             string html = string.Empty;
