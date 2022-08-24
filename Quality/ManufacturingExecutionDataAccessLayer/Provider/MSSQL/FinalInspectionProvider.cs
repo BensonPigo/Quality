@@ -80,7 +80,8 @@ select  ID                             ,
         HasOtherImage = Cast(IIF(exists(select 1 from SciPMSFile_FinalInspection_OtherImage b WITH(NOLOCK) where a.id= b.id),1,0) as bit),
         CheckFGPT                      ,
         [FGWT] = iif(a.InspectionStage = 'Final', ISNULL(g.WashResult, 'Lacking Test') , ''),
-        [FGPT] = iif(a.InspectionStage = 'Final', fgpt.Result, '')
+        [FGPT] = iif(a.InspectionStage = 'Final', fgpt.Result, ''),
+        [ISFD] = cast(I.ISFD as bit)
 from FinalInspection a with (nolock)
 outer apply (
 	select [GarmentTestID] = g.ID, [WashResult] = case g.WashResult when 'F' then 'Failed Test' when 'P' then 'Completed Test' else 'Lacking Test' end
@@ -100,6 +101,17 @@ outer apply (
 		where g.[GarmentTestID] = t.ID
 	)t
 )fgpt
+outer apply (
+	select [ISFD] = 
+			MAX(case when sr.RR = 1 or sr.LR = 1 then 1
+				when s.ExpectionFormDate >= DATEADD(Year,-2, GETDATE()) then 1
+			else 0
+			end)
+	from SciProduction_Orders o with (nolock)
+	inner join SciProduction_Style s with (nolock) on s.Ukey = o.StyleUkey
+	left join SciProduction_Style_RRLR_Report sr with (nolock) on s.Ukey = sr.StyleUkey
+	where exists (select 1 from FinalInspection_Order fo with (nolock) where fo.ID = a.ID and fo.OrderID = o.ID)
+)I
 where a.ID = @ID
 ";
             IList<FinalInspection> listResult = ExecuteList<FinalInspection>(CommandType.Text, sqlGetData, objParameter);
