@@ -260,7 +260,7 @@
                                             <select id="Scale" name="Scale" disabled="disabled" style="width:157px;">
                                                 @foreach (var item in Model.ScaleData)
                                                 {
-                                                    string selected = item.Text.Equals(Model.Scale) || item.Text.Equals("4-5") ? "selected" : "";
+                                                    string selected = item.Text.Equals(Model.Scale) || (string.IsNullOrEmpty(Model.Scale) && item.Text.Equals("4-5")) ? "selected" : "";
                                                     <option value="@item.Value" @selected>@item.Text</option>
                                                 }
                                             </select>

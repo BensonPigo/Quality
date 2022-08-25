@@ -625,6 +625,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 result = _AccessoryOvenWashProvider.GetWashingFastness(Req);
                 result.ChangeScale = string.IsNullOrEmpty(result.ChangeScale) ? "4-5" : result.ChangeScale;
+                result.CrossStainingScale = string.IsNullOrEmpty(result.CrossStainingScale) ? "4-5" : result.CrossStainingScale;
                 result.AcetateScale = string.IsNullOrEmpty(result.AcetateScale) ? "4-5" : result.AcetateScale;
                 result.CottonScale = string.IsNullOrEmpty(result.CottonScale) ? "4-5" : result.CottonScale;
                 result.NylonScale = string.IsNullOrEmpty(result.NylonScale) ? "4-5" : result.NylonScale;
