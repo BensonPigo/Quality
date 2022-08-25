@@ -157,7 +157,12 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += $"<select id='Crocking_Detail_{lastNO}__DryScale_Weft' name='Crocking_Detail[{lastNO}].DryScale_Weft' style='width:157px'>";
             foreach (string val in scaleIDs)
             {
-                html += "<option value='" + val + "'>" + val + "</option>";
+                string selected = string.Empty;
+                if (val == "4-5")
+                {
+                    selected = "selected";
+                }
+                html += $"<option {selected} value='" + val + "'>" + val + "</option>";
             }
             html += "</select>";
             html += "</td>";
@@ -190,7 +195,12 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += $"<select id='Crocking_Detail_{lastNO}__WetScale_Weft' name='Crocking_Detail[{lastNO}].WetScale_Weft' style='width:157px'>";
             foreach (string val in scaleIDs)
             {
-                html += "<option value='" + val + "'>" + val + "</option>";
+                string selected = string.Empty;
+                if (val == "4-5")
+                {
+                    selected = "selected";
+                }
+                html += $"<option {selected} value='" + val + "'>" + val + "</option>";
             }
             html += "</select>";
             html += "</td>";

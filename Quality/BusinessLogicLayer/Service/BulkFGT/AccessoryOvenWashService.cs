@@ -624,6 +624,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(Common.ProductionDataAccessLayer);
 
                 result = _AccessoryOvenWashProvider.GetWashingFastness(Req);
+                result.ChangeScale = string.IsNullOrEmpty(result.ChangeScale) ? "4-5" : result.ChangeScale;
+                result.AcetateScale = string.IsNullOrEmpty(result.AcetateScale) ? "4-5" : result.AcetateScale;
+                result.CottonScale = string.IsNullOrEmpty(result.CottonScale) ? "4-5" : result.CottonScale;
+                result.NylonScale = string.IsNullOrEmpty(result.NylonScale) ? "4-5" : result.NylonScale;
+                result.PolyesterScale = string.IsNullOrEmpty(result.PolyesterScale) ? "4-5" : result.PolyesterScale;
+                result.AcrylicScale = string.IsNullOrEmpty(result.AcrylicScale) ? "4-5" : result.AcrylicScale;
+                result.WoolScale = string.IsNullOrEmpty(result.WoolScale) ? "4-5" : result.WoolScale;
                 result.ScaleData = _AccessoryOvenWashProvider.GetScaleData();
 
                 result.Result = true;
