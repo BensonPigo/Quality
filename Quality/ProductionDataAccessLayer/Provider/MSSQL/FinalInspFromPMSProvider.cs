@@ -230,9 +230,25 @@ order by AQLType , InspectionLevels
 select  GarmentDefectTypeID,
         GarmentDefectCodeID,
         Qty,
-        Ukey
+        Ukey,
+		Operation = Operation.Operation,
+		Operator = Operation.Operator
 into #FinalInspection_Detail
-from ManufacturingExecution.dbo.FinalInspection_Detail
+from ManufacturingExecution.dbo.FinalInspection_Detail a
+outer apply(
+	select Operation= STUFF((
+			select Distinct ',' + b.InlineOperation
+			from ManufacturingExecution.dbo.FinalInspection_Detail_Operation b
+			where b.InspectionDetailUkey=a.Ukey
+			for xml path('')
+		),1,1,'')
+		,Operator= STUFF((
+			select Distinct ',' + b.InlineOperator
+			from ManufacturingExecution.dbo.FinalInspection_Detail_Operation b
+			where b.InspectionDetailUkey=a.Ukey
+			for xml path('')
+		),1,1,'')
+)Operation
 where   ID = @finalInspectionID
 
 select  [Ukey] = isnull(fd.Ukey, -1),
@@ -241,6 +257,8 @@ select  [Ukey] = isnull(fd.Ukey, -1),
         [DefectTypeDesc] = gdt.ID +'-'+gdt.Description,
         [DefectCodeDesc] = gdc.ID +'-'+gdc.Description,
         [Qty] = isnull(fd.Qty, 0),
+        Operation = ISNULL( fd.Operation ,''),
+        Operator = ISNULL( fd.Operator ,''),
 		[RowIndex]=ROW_NUMBER() OVER(ORDER BY gdt.id,gdc.id) -1
 		,HasImage = Cast(
 			IIF(EXISTS(
