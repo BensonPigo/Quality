@@ -173,7 +173,7 @@
             var sTr = "";
 
             $(list).each(function (index, value) {
-                
+
                 var RowIndex = value[4];
                 var Operation = value[7];
                 var Operator = value[8];
@@ -182,12 +182,14 @@
     <input type='hidden' id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Ukey' name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Ukey' value='${value[0]}'>
     <input type='hidden' id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].RowIndex' name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].RowIndex' value='${RowIndex}'>
     <input type='hidden' id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].DefectCode' name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].DefectCode' value='${value[5]}'>
-    <input type='hidden' id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].DefectType' name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].DefectType' value='${value[6]}'>      
+    <input type='hidden' id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].DefectType' name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].DefectType' value='${value[6]}'>
     <input type='number' id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Qty' onchange='QtyChange("${value[6]}",${index},this)' name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Qty'  min="0" style="width: 7vh" id='${value[0]} ' name='${value[0]}'  value='${value[2]}' /></td>
     <td> <img src="/Image/Icon/Camera.png" style="cursor: pointer;" onclick="ScreenShot(${value[0]},${RowIndex})" width="25vw" height="25vw" /></td>
     <td> <img src="/Image/Icon/Picture.png" style="cursor: pointer;" onclick="OpenPicture(${value[0]},${RowIndex})" width="25vw" height="25vw" /></td>
-    <td><input type='text' style='width:100%' id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Operation' readonly name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Operation' value='${Operation}'></td>
-    <td><input type='text' style='width:100%' id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Operator' readonly name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Operator' value='${Operator}'></td>
+    <td><input type='text' style='width:100%' onclick="OpenOperation('${RowIndex}')" id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Operation' readonly name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Operation' value='${Operation}'></td>
+    <td><input type='text' style='width:100%' id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].OperatorText' readonly name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].OperatorText' value='${Operator}'>
+        <input type='hidden' style='width:100%' id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Operator' readonly name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Operator' value='${Operator}'>
+    </td>
     </tr>`;
 
             });
@@ -196,6 +198,27 @@
                 '</table>';
         }
 
+        function OpenOperation(targetID) {
+            var para = `?FinalInspectionID=${$('#FinalInspectionID').val()}&TargetID=${targetID}&Title=Operation`;
+            window.open('@Url.Action("OperationList", "PublicWondow",new{Area=""})' + para, 'Operation List', config = 'toolbar=no,status=no,location=no,width=800,height=750');
+        }
+
+        function GetOperationList(OperationObjs, targetID) {
+            var strOperation = '';
+            var strOperatorText = '';
+            var strOperator = '';
+
+            $.each(OperationObjs, function () {
+                strOperation += this.Operation + ',';
+                strOperatorText += this.Text + ',';
+                strOperator += this.Value + ',';
+            });
+
+
+            $(`#addDefct.ListFinalInspectionDefectItem[${targetID}].Operation`).val(strOperation);
+            $(`#addDefct.ListFinalInspectionDefectItem[${targetID}].OperatorText`).val(strOperatorText);
+            $(`#addDefct.ListFinalInspectionDefectItem[${targetID}].Operator`).val(strOperator);
+        }
         // Qty改變時，把值寫回DataTable的Datasource
         function QtyChange(DefectType, index,obj) {
 
