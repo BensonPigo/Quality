@@ -24,10 +24,15 @@ namespace MICS.DataAccessLayer.Provider.MSSQL
         #region CRUD Base
         public Fabric_ColorFastness_Detail_ViewModel Get_DetailBody(string ID)
         {
-            SQLParameterCollection objParameter = new SQLParameterCollection
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            SqlParameter para = new SqlParameter()
             {
-                { "@ID", DbType.String, ID } ,
+                ParameterName = "@ID",
+                SqlDbType = SqlDbType.VarChar,
+                Value = ID
             };
+
+            objParameter.Add(para);
 
             string sqlcmd = @"
 select c.* 
