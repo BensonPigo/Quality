@@ -1286,6 +1286,7 @@ where   ID IN (
 select  f.CustPONO,
         f.InspectionResult,
         f.FactoryID,
+        f.InspectionStage,
         [SP] = (SELECT Stuff((select concat( ',',OrderID) 
                                 from  FinalInspection_Order fo with (nolock) 
                                 where fo.ID = f.ID

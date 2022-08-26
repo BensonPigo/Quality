@@ -54,7 +54,7 @@ select	[TestNo] = cast(o.TestNo as varchar),
         [TestBeforePicture] = oi.TestBeforePicture,
         [TestAfterPicture] = oi.TestAfterPicture
 from Oven o with (nolock)
-LEFT JOIN SciPMSFile_Oven oi with (nolock) ON o.ID = oi.ID
+INNER JOIN SciPMSFile_Oven oi with (nolock) ON o.ID = oi.ID
 left join pass1 pass1Inspector WITH(NOLOCK) on o.Inspector = pass1Inspector.ID
 where o.POID = @POID and o.TestNo = @TestNo
 ";
@@ -626,7 +626,7 @@ select  ov.ID
         ,[Signature] = (select t.Signature from Technician t where t.ID = ov.Inspector)
         ,ov.ReportNo
 from    Oven ov with (nolock)
-left join SciPMSFile_Oven oi with (nolock) on oi.ID=ov.ID
+inner join SciPMSFile_Oven oi with (nolock) on oi.ID=ov.ID
 where   ov.POID = @poID and ov.TestNo = @TestNo
 ";
 
