@@ -28,6 +28,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
 
         public string DefectCodeDesc { get; set; }
         public string Operation { get; set; }
+        public string OperatorText { get; set; }
         public string Operator { get; set; }
 
         public int Qty { get; set; }

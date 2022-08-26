@@ -108,14 +108,18 @@
                 OperationObjs.push(OperationObj);
             }
 
-            if (OperationObjs.length > 0) {
+            // 呼叫父視窗的GetTestFailMail Function，把值傳回去
+            window.opener.GetOperationList(OperationObjs, '@TargetID');
+            window.close();
+
+            @*if (OperationObjs.length > 0) {
                 // 呼叫父視窗的GetTestFailMail Function，把值傳回去
                 window.opener.GetOperationList(OperationObjs, '@TargetID');
                 window.close();
             }
             else {
                 alert("Please choose Operation.");
-            }
+            }*@
 
         });
 
