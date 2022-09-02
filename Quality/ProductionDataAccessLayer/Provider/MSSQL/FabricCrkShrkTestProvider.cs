@@ -52,7 +52,7 @@ select	[TestNo] = cast(o.TestNo as varchar),
         [TestBeforePicture] = oi.TestBeforePicture,
         [TestAfterPicture] = oi.TestAfterPicture
 from Oven o with (nolock)
-LEFT JOIN SciPMSFile_Oven oi with (nolock) ON o.ID = oi.ID
+INNER JOIN SciPMSFile_Oven oi with (nolock) ON o.ID = oi.ID
 left join pass1 pass1AddName WITH(NOLOCK) on o.AddName = pass1AddName.ID
 left join pass1 pass1EditName WITH(NOLOCK) on o.EditName = pass1EditName.ID
 where o.POID = @POID and o.TestNo = @TestNo

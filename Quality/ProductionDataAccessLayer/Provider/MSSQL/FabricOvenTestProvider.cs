@@ -51,10 +51,9 @@ select	[TestNo] = cast(o.TestNo as varchar),
         [Result] = o.Result,
 		[Remark] = o.Remark,
 		[Status] = o.Status,
-        [TestBeforePicture] = oi.TestBeforePicture,
-        [TestAfterPicture] = oi.TestAfterPicture
+        [TestBeforePicture] = (select top 1 TestBeforePicture from SciPMSFile_Oven oi with (nolock) where o.ID = oi.ID) ,
+        [TestAfterPicture] =  (select top 1 TestAfterPicture from SciPMSFile_Oven oi with (nolock) where o.ID = oi.ID) 
 from Oven o with (nolock)
-LEFT JOIN SciPMSFile_Oven oi with (nolock) ON o.ID = oi.ID
 left join pass1 pass1Inspector WITH(NOLOCK) on o.Inspector = pass1Inspector.ID
 where o.POID = @POID and o.TestNo = @TestNo
 ";
@@ -620,13 +619,12 @@ select  ov.ID
         ,ov.EditDate
         ,ov.Temperature
         ,ov.Time
-        ,oi.TestBeforePicture
-        ,oi.TestAfterPicture
+        ,[TestBeforePicture] = (select top 1 TestBeforePicture from SciPMSFile_Oven oi with (nolock) where oi.ID=ov.ID) 
+        ,[TestAfterPicture] =  (select top 1 TestAfterPicture from SciPMSFile_Oven oi with (nolock) where oi.ID=ov.ID) 
         ,[InspectorName] = (select Name from Pass1 WITH(NOLOCK) where ID = ov.Inspector)
         ,[Signature] = (select t.Signature from Technician t where t.ID = ov.Inspector)
         ,ov.ReportNo
 from    Oven ov with (nolock)
-left join SciPMSFile_Oven oi with (nolock) on oi.ID=ov.ID
 where   ov.POID = @poID and ov.TestNo = @TestNo
 ";
 
