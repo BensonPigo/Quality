@@ -120,7 +120,7 @@ select	[SubmitDate] = od.SubmitDate,
 from PerspirationFastness_Detail od with (nolock)
 inner join PerspirationFastness o with (nolock) on o.ID = od.ID
 left join PO_Supp_Detail psd with (nolock) on o.POID = psd.ID and od.SEQ1 = psd.SEQ1 and od.SEQ2 = psd.SEQ2
-left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.POID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
 left join pass1 pass1EditName on od.EditName = pass1EditName.ID
 where   o.POID = @POID and o.TestNo = @TestNo
 ";
@@ -963,7 +963,7 @@ left join PerspirationFastness c WITH(NOLOCK) on c.ID =  cd.ID
 left join SciPMSFile_PerspirationFastness pmsFile WITH(NOLOCK) on pmsFile.ID =  cd.ID
 left join Orders o WITH(NOLOCK) on o.ID=c.POID
 left join PO_Supp_Detail psd WITH(NOLOCK) on c.POID = psd.ID and cd.SEQ1 = psd.SEQ1 and cd.SEQ2 = psd.SEQ2
-left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.POID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
 left join Pass1 pEdit WITH(NOLOCK) on pEdit.ID = cd.EditName
 left join pass1 pAdd WITH(NOLOCK) on pAdd.ID = cd.AddName
 where cd.ID = @ID

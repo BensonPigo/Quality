@@ -129,8 +129,8 @@ inner join Air a WITH(NOLOCK) ON a.ID = al.ID
 left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.ID
 left join Supp s WITH(NOLOCK) ON s.ID = a.Suppid
 left join Po_Supp_Detail psd WITH(NOLOCK) on a.POID = psd.ID and a.SEQ1=psd.SEQ1  and a.SEQ2=psd.SEQ2
-left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.POID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
-left join PO_Supp_Detail_Spec ps WITH(NOLOCK) on psd.POID = ps.ID and psd.SEQ1 = ps.SEQ1 and psd.SEQ2 = ps.SEQ2 and ps.SpecColumnID = 'Size'
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
+left join PO_Supp_Detail_Spec ps WITH(NOLOCK) on psd.ID = ps.ID and psd.SEQ1 = ps.SEQ1 and psd.SEQ2 = ps.SEQ2 and ps.SpecColumnID = 'Size'
 where a.POID = @ID
 ORDER BY a.SEQ1, a.SEQ2, r.ExportID
 
@@ -272,8 +272,8 @@ inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
 left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
 left join Supp s WITH(NOLOCK) on a.Suppid = s.ID
 left join PO_Supp_Detail psd WITH(NOLOCK) ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
-left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.POID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
-left join PO_Supp_Detail_Spec ps WITH(NOLOCK) on psd.POID = ps.ID and psd.SEQ1 = ps.SEQ1 and psd.SEQ2 = ps.SEQ2 and ps.SpecColumnID = 'Size'
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
+left join PO_Supp_Detail_Spec ps WITH(NOLOCK) on psd.ID = ps.ID and psd.SEQ1 = ps.SEQ1 and psd.SEQ2 = ps.SEQ2 and ps.SpecColumnID = 'Size'
 left join Pass1 q WITH(NOLOCK) on q.ID = al.OvenInspector
 where   al.ID=@AIR_LaboratoryID
     and al.POID=@POID
@@ -334,8 +334,8 @@ inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
 left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
 left join Supp s WITH(NOLOCK) on a.Suppid = s.ID
 left join PO_Supp_Detail psd WITH(NOLOCK) ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
-left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.POID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
-left join PO_Supp_Detail_Spec ps WITH(NOLOCK) on psd.POID = ps.ID and psd.SEQ1 = ps.SEQ1 and psd.SEQ2 = ps.SEQ2 and ps.SpecColumnID = 'Size'
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
+left join PO_Supp_Detail_Spec ps WITH(NOLOCK) on psd.ID = ps.ID and psd.SEQ1 = ps.SEQ1 and psd.SEQ2 = ps.SEQ2 and ps.SpecColumnID = 'Size'
 left join Pass1 q WITH(NOLOCK) on q.ID = al.OvenInspector
 where   al.ID=@AIR_LaboratoryID
     and al.POID=@POID
@@ -566,7 +566,7 @@ INNER JOIn Orders o WITH(NOLOCK) ON o.ID = a.POID
 left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
 left join Supp s WITH(NOLOCK) on a.Suppid = s.ID
 left join PO_Supp_Detail psd WITH(NOLOCK) ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
-left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.POID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
 where   al.ID=@AIR_LaboratoryID
     and al.POID=@POID
     and al.Seq1=@Seq1
@@ -624,8 +624,8 @@ inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
 left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
 left join Supp s WITH(NOLOCK) on a.Suppid = s.ID
 left join PO_Supp_Detail psd WITH(NOLOCK) ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
-left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.POID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
-left join PO_Supp_Detail_Spec ps WITH(NOLOCK) on psd.POID = ps.ID and psd.SEQ1 = ps.SEQ1 and psd.SEQ2 = ps.SEQ2 and ps.SpecColumnID = 'Size'
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
+left join PO_Supp_Detail_Spec ps WITH(NOLOCK) on psd.ID = ps.ID and psd.SEQ1 = ps.SEQ1 and psd.SEQ2 = ps.SEQ2 and ps.SpecColumnID = 'Size'
 left join Pass1 q WITH(NOLOCK) on q.ID = al.WashInspector
 where   al.ID=@AIR_LaboratoryID
     and al.POID=@POID
@@ -868,7 +868,7 @@ left join SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND ali.POI
 left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
 left join Supp s WITH(NOLOCK) on a.Suppid = s.ID
 left join PO_Supp_Detail psd WITH(NOLOCK) ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
-left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.POID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
 where   al.ID=@AIR_LaboratoryID
     and al.POID=@POID
     and al.Seq1=@Seq1
@@ -928,8 +928,8 @@ inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
 left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
 left join Supp s WITH(NOLOCK) on a.Suppid = s.ID
 left join PO_Supp_Detail psd WITH(NOLOCK) ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
-left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.POID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
-left join PO_Supp_Detail_Spec ps WITH(NOLOCK) on psd.POID = ps.ID and psd.SEQ1 = ps.SEQ1 and psd.SEQ2 = ps.SEQ2 and ps.SpecColumnID = 'Size'
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
+left join PO_Supp_Detail_Spec ps WITH(NOLOCK) on psd.ID = ps.ID and psd.SEQ1 = ps.SEQ1 and psd.SEQ2 = ps.SEQ2 and ps.SpecColumnID = 'Size'
 left join Pass1 q WITH(NOLOCK) on q.ID = al.WashInspector
 where   al.ID=@AIR_LaboratoryID
     and al.POID=@POID
@@ -1005,8 +1005,8 @@ inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
 left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
 left join Supp s WITH(NOLOCK) on a.Suppid = s.ID
 left join PO_Supp_Detail psd WITH(NOLOCK) ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
-left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.POID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
-left join PO_Supp_Detail_Spec ps WITH(NOLOCK) on psd.POID = ps.ID and psd.SEQ1 = ps.SEQ1 and psd.SEQ2 = ps.SEQ2 and ps.SpecColumnID = 'Size'
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
+left join PO_Supp_Detail_Spec ps WITH(NOLOCK) on psd.ID = ps.ID and psd.SEQ1 = ps.SEQ1 and psd.SEQ2 = ps.SEQ2 and ps.SpecColumnID = 'Size'
 left join Pass1 q WITH(NOLOCK) on q.ID = al.WashingFastnessInspector
 where   al.ID=@AIR_LaboratoryID
     and al.POID=@POID
@@ -1267,7 +1267,7 @@ left join SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND ali.POI
 left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
 left join Supp s WITH(NOLOCK) on a.Suppid = s.ID
 left join PO_Supp_Detail psd WITH(NOLOCK) ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
-left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.POID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
 where   al.ID=@AIR_LaboratoryID
     and al.POID=@POID
     and al.Seq1=@Seq1
@@ -1334,7 +1334,7 @@ inner join Orders o WITH(NOLOCK) ON o.ID = al.POID
 left join SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
 inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
 left join PO_Supp_Detail psd WITH(NOLOCK) ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
-left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.POID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
 left join Technician tc on tc.ID = al.WashingFastnessInspector AND tc.BulkAccOvenWash=1
 left join Pass1 p on p.ID = al.WashingFastnessInspector 
 OUTER APPLY(

@@ -78,7 +78,7 @@ select cd.ID
 from ColorFastness_Detail cd WITH(NOLOCK)
 left join ColorFastness c WITH(NOLOCK) on c.ID =  cd.ID
 left join PO_Supp_Detail psd WITH(NOLOCK) on c.POID = psd.ID and cd.SEQ1 = psd.SEQ1 and cd.SEQ2 = psd.SEQ2
-left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.POID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
 left join Pass1 pEdit WITH(NOLOCK) on pEdit.ID = cd.EditName
 left join pass1 pAdd WITH(NOLOCK) on pAdd.ID = cd.AddName
 where cd.ID = @ID
@@ -137,7 +137,7 @@ left join ColorFastness c WITH(NOLOCK) on c.ID =  cd.ID
 left join SciPMSFile_ColorFastness pmsFile WITH(NOLOCK) on pmsFile.ID = c.ID and pmsFile.POID = c.POID and pmsFile.TestNo = c.TestNo
 left join Orders o WITH(NOLOCK) on o.ID=c.POID
 left join PO_Supp_Detail psd WITH(NOLOCK) on c.POID = psd.ID and cd.SEQ1 = psd.SEQ1 and cd.SEQ2 = psd.SEQ2
-left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.POID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
 left join Pass1 pEdit WITH(NOLOCK) on pEdit.ID = cd.EditName
 left join pass1 pAdd WITH(NOLOCK) on pAdd.ID = cd.AddName
 where cd.ID = @ID
@@ -165,7 +165,7 @@ select POID = psd.ID
 ,psd.Refno
 ,ColorID = pc.SpecValue
 from PO_Supp_Detail psd WITH(NOLOCK)
-left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.POID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
 where psd.ID = @POID
 and psd.FabricType = 'F'
 ";
