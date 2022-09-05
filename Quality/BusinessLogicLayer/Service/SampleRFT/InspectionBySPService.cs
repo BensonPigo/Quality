@@ -168,7 +168,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 Result.InnerSewingLineID = orderInfo.InnerSewingLineID;
                 Result.OuterSewingLineID = orderInfo.OuterSewingLineID;
                 Result.Dest = orderInfo.Dest;
-                VasShasResult.VasShas = orderInfo.VasShas;
+                Result.VasShas = orderInfo.VasShas;
 
                 // 取得現有Setting資料
                 Result.ID = existedData.ID;
