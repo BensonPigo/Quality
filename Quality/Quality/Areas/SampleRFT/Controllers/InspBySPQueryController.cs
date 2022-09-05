@@ -226,52 +226,57 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             worksheet.Cells[8, 6] = model.sampleRFTInspection.WorkNo;
 
-            worksheet.Cells[9, 6] = model.sampleRFTInspection.POID;
-            worksheet.Cells[9, 14] = model.sampleRFTInspection.OrderID;
+            // Sample Type
+            worksheet.Cells[9, 6] = model.Setting.SampleStage;
 
-            worksheet.Cells[10, 6] = model.Setting.Article;
+            worksheet.Cells[10, 6] = model.sampleRFTInspection.POID;
+            worksheet.Cells[10, 14] = model.sampleRFTInspection.OrderID;
 
-            worksheet.Cells[11, 6] = model.Setting.OrderQty;
-            worksheet.Cells[11, 14] = model.sampleRFTInspection.SewingLineID + (string.IsNullOrEmpty(model.sampleRFTInspection.SewingLine2ndID) ? string.Empty : $", {model.sampleRFTInspection.SewingLine2ndID}");
+            worksheet.Cells[11, 6] = model.Setting.Article;
 
-            worksheet.Cells[12, 6] = model.Setting.CustPONo;
+            worksheet.Cells[12, 6] = model.Setting.OrderQty;
+            worksheet.Cells[12, 14] = model.sampleRFTInspection.SewingLineID + (string.IsNullOrEmpty(model.sampleRFTInspection.SewingLine2ndID) ? string.Empty : $", {model.sampleRFTInspection.SewingLine2ndID}");
 
-            worksheet.Cells[13, 6] = model.sampleRFTInspection.BrandFTYCode;
+            worksheet.Cells[13, 6] = model.Setting.CustPONo;
+
+            worksheet.Cells[14, 6] = model.sampleRFTInspection.BrandFTYCode;
 
             if (model.Setting.InspectionStage == "100%")
             {
-                worksheet.Cells[14, 3] = "100%";
+                worksheet.Cells[15, 3] = "100%";
             }
-            worksheet.Cells[14, 6] = model.Setting.AQLPlan;
-            worksheet.Cells[14, 10] = model.Setting.InspectionStage == "100%" ? model.Setting.OrderQty : model.sampleRFTInspection.SampleSize;
-            worksheet.Cells[14, 13] = model.sampleRFTInspection.AcceptQty;
-            worksheet.Cells[14, 17] = model.Setting.InspectionStage == "100%" ? 1 : model.sampleRFTInspection.AcceptQty + 1;
+            worksheet.Cells[15, 6] = model.Setting.AQLPlan;
+            worksheet.Cells[15, 10] = model.Setting.InspectionStage == "100%" ? model.Setting.OrderQty : model.sampleRFTInspection.SampleSize;
+            worksheet.Cells[15, 13] = model.sampleRFTInspection.AcceptQty;
+            worksheet.Cells[15, 17] = model.Setting.InspectionStage == "100%" ? 1 : model.sampleRFTInspection.AcceptQty + 1;
 
-            worksheet.Cells[15, 6] = model.sampleRFTInspection.CheckFabricApproval ? "V" : string.Empty;
+            worksheet.Cells[16, 6] = model.sampleRFTInspection.CheckFabricApproval ? "V" : string.Empty;
 
-            worksheet.Cells[15, 12] = model.sampleRFTInspection.CheckSealingSampleApproval ? "V" : string.Empty;
+            worksheet.Cells[16, 12] = model.sampleRFTInspection.CheckSealingSampleApproval ? "V" : string.Empty;
 
-            worksheet.Cells[16, 6] = model.sampleRFTInspection.CheckMetalDetection ? "V" : string.Empty;
+            worksheet.Cells[17, 6] = model.sampleRFTInspection.CheckMetalDetection ? "V" : string.Empty;
 
-            worksheet.Cells[18, 6] = model.sampleRFTInspection.CheckColorShade ? "V" : string.Empty;
-            worksheet.Cells[19, 6] = model.sampleRFTInspection.CheckAppearance ? "V" : string.Empty;
-            worksheet.Cells[20, 6] = model.sampleRFTInspection.CheckHandfeel ? "V" : string.Empty;
-            worksheet.Cells[21, 6] = model.sampleRFTInspection.CheckHT ? "V" : string.Empty;
+            worksheet.Cells[19, 6] = model.sampleRFTInspection.CheckColorShade ? "V" : string.Empty;
+            worksheet.Cells[20, 6] = model.sampleRFTInspection.CheckAppearance ? "V" : string.Empty;
+            worksheet.Cells[21, 6] = model.sampleRFTInspection.CheckHandfeel ? "V" : string.Empty;
+            worksheet.Cells[22, 6] = model.sampleRFTInspection.CheckEMB ? "V" : string.Empty;
+            worksheet.Cells[23, 6] = model.sampleRFTInspection.CheckPrintEmbDecorations ? "V" : string.Empty;
+            worksheet.Cells[24, 6] = model.sampleRFTInspection.CheckHT ? "V" : string.Empty;
 
-            worksheet.Cells[18, 10] = model.sampleRFTInspection.CheckFiberContent ? "V" : string.Empty;
-            worksheet.Cells[19, 10] = model.sampleRFTInspection.CheckCountryofOrigin ? "V" : string.Empty;
-            worksheet.Cells[20, 10] = model.sampleRFTInspection.CheckCareInstructions ? "V" : string.Empty;
-            worksheet.Cells[21, 10] = model.sampleRFTInspection.CheckSizeKey ? "V" : string.Empty;
+            worksheet.Cells[19, 10] = model.sampleRFTInspection.CheckFiberContent ? "V" : string.Empty;
+            worksheet.Cells[20, 10] = model.sampleRFTInspection.CheckCountryofOrigin ? "V" : string.Empty;
+            worksheet.Cells[21, 10] = model.sampleRFTInspection.CheckCareInstructions ? "V" : string.Empty;
+            worksheet.Cells[22, 10] = model.sampleRFTInspection.CheckSizeKey ? "V" : string.Empty;
 
-            worksheet.Cells[18, 14] = model.sampleRFTInspection.CheckDecorativeLabel ? "V" : string.Empty;
-            worksheet.Cells[19, 14] = model.sampleRFTInspection.CheckCareLabel ? "V" : string.Empty;
-            worksheet.Cells[20, 14] = model.sampleRFTInspection.CheckSecurityLabel ? "V" : string.Empty;
-            worksheet.Cells[21, 14] = model.sampleRFTInspection.CheckAdditionalLabel ? "V" : string.Empty;
+            worksheet.Cells[19, 14] = model.sampleRFTInspection.CheckDecorativeLabel ? "V" : string.Empty;
+            worksheet.Cells[20, 14] = model.sampleRFTInspection.CheckCareLabel ? "V" : string.Empty;
+            worksheet.Cells[22, 14] = model.sampleRFTInspection.CheckSecurityLabel ? "V" : string.Empty;
+            worksheet.Cells[22, 14] = model.sampleRFTInspection.CheckAdditionalLabel ? "V" : string.Empty;
 
-            worksheet.Cells[18, 18] = model.sampleRFTInspection.CheckOuterCarton ? "V" : string.Empty;
-            worksheet.Cells[19, 18] = model.sampleRFTInspection.CheckPackingMode ? "V" : string.Empty;
-            worksheet.Cells[20, 18] = model.sampleRFTInspection.CheckPolytagMarketing ? "V" : string.Empty;
-            worksheet.Cells[21, 18] = model.sampleRFTInspection.CheckHangtag ? "V" : string.Empty;
+            worksheet.Cells[19, 18] = model.sampleRFTInspection.CheckOuterCarton ? "V" : string.Empty;
+            worksheet.Cells[20, 18] = model.sampleRFTInspection.CheckPackingMode ? "V" : string.Empty;
+            worksheet.Cells[21, 18] = model.sampleRFTInspection.CheckPolytagMarketing ? "V" : string.Empty;
+            worksheet.Cells[22, 18] = model.sampleRFTInspection.CheckHangtag ? "V" : string.Empty;
 
 
             int copyCnt = 0;
@@ -279,11 +284,11 @@ namespace Quality.Areas.SampleRFT.Controllers
             {
                 copyCnt = model.AddDefect.ListDefectItem.Where(o => o.Qty > 0).Count() - 8;
 
-                Excel.Range range = worksheet.get_Range($"A24:R24").EntireRow;
+                Excel.Range range = worksheet.get_Range($"A27:R27").EntireRow;
 
                 for (int i = 0; i < copyCnt; i++)
                 {
-                    Microsoft.Office.Interop.Excel.Range rgX = worksheet.get_Range($"A25", Type.Missing).EntireRow; // 選擇要被貼上的位置
+                    Microsoft.Office.Interop.Excel.Range rgX = worksheet.get_Range($"A28", Type.Missing).EntireRow; // 選擇要被貼上的位置
                     rgX.Insert(range.Copy(Type.Missing)); // 貼上
                 }
 
@@ -292,32 +297,32 @@ namespace Quality.Areas.SampleRFT.Controllers
             int idx = 0;
             foreach (var item in model.AddDefect.ListDefectItem.Where(o => o.Qty > 0))
             {
-                worksheet.Cells[24 + idx, 3] = item.GarmentDefectCodeID;
-                worksheet.Cells[24 + idx, 4] = item.DefectCode;
-                worksheet.Cells[24 + idx, 17] = item.Qty;
+                worksheet.Cells[27 + idx, 3] = item.GarmentDefectCodeID;
+                worksheet.Cells[27 + idx, 4] = item.DefectCode;
+                worksheet.Cells[27 + idx, 17] = item.Qty;
                 idx++;
             }
 
             // 以下，Row數量要加上去
-            worksheet.Cells[36 + copyCnt, 7] = model.sampleRFTInspection.BAQty;
+            worksheet.Cells[39 + copyCnt, 7] = model.sampleRFTInspection.BAQty;
 
-            worksheet.Cells[40 + copyCnt, 7] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C1").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C1").FirstOrDefault().Qty : 0;
-            worksheet.Cells[40 + copyCnt, 8] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C2").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C2").FirstOrDefault().Qty : 0;
-            worksheet.Cells[40 + copyCnt, 9] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C3").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C3").FirstOrDefault().Qty : 0;
-            worksheet.Cells[40 + copyCnt, 10] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C4").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C4").FirstOrDefault().Qty : 0;
-            worksheet.Cells[40 + copyCnt, 11] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C5").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C5").FirstOrDefault().Qty : 0;
-            worksheet.Cells[40 + copyCnt, 12] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C6").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C6").FirstOrDefault().Qty : 0;
-            worksheet.Cells[40 + copyCnt, 13] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C7").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C7").FirstOrDefault().Qty : 0;
-            worksheet.Cells[40 + copyCnt, 14] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C8").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C8").FirstOrDefault().Qty : 0;
-            worksheet.Cells[40 + copyCnt, 15] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C9").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C9").FirstOrDefault().Qty : 0;
+            worksheet.Cells[43 + copyCnt, 7] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C1").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C1").FirstOrDefault().Qty : 0;
+            worksheet.Cells[43 + copyCnt, 8] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C2").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C2").FirstOrDefault().Qty : 0;
+            worksheet.Cells[43 + copyCnt, 9] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C3").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C3").FirstOrDefault().Qty : 0;
+            worksheet.Cells[43 + copyCnt, 10] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C4").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C4").FirstOrDefault().Qty : 0;
+            worksheet.Cells[43 + copyCnt, 11] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C5").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C5").FirstOrDefault().Qty : 0;
+            worksheet.Cells[43 + copyCnt, 12] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C6").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C6").FirstOrDefault().Qty : 0;
+            worksheet.Cells[43 + copyCnt, 13] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C7").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C7").FirstOrDefault().Qty : 0;
+            worksheet.Cells[43 + copyCnt, 14] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C8").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C8").FirstOrDefault().Qty : 0;
+            worksheet.Cells[43 + copyCnt, 15] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C9").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C9").FirstOrDefault().Qty : 0;
 
 
             worksheet.Cells[46 + copyCnt, 6] = model.Setting.QCInCharge;
 
             // Pass / Fail  抓到圖形，並插入文字
-            worksheet.Cells[46 + copyCnt, 6] = model.Setting.QCInCharge;
+            worksheet.Cells[49 + copyCnt, 6] = model.Setting.QCInCharge;
 
-            worksheet.Cells[51 + copyCnt, 10] = model.sampleRFTInspection.SubmitDate.HasValue ? model.sampleRFTInspection.SubmitDate.Value.ToShortDateString() : string.Empty;
+            worksheet.Cells[54 + copyCnt, 10] = model.sampleRFTInspection.SubmitDate.HasValue ? model.sampleRFTInspection.SubmitDate.Value.ToShortDateString() : string.Empty;
 
             if (model.sampleRFTInspection.Result == "Pass")
             {

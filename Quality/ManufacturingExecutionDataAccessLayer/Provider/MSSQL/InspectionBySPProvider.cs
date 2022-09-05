@@ -390,6 +390,7 @@ update SampleRFTInspection
           ,CheckCareLabel = @CheckCareLabel
           ,CheckSecurityLabel = @CheckSecurityLabel
           ,CheckOuterCarton = @CheckOuterCarton
+          ,CheckEMB = @CheckEMB
           ,InspectionStep = @InspectionStep
           ,EditName= @userID
           ,EditDate= getdate()
@@ -421,6 +422,7 @@ where   ID = @ID
                     objParameter.Add("@CheckPackingMode", inspection.CheckPackingMode);
                     objParameter.Add("@CheckHangtag", inspection.CheckHangtag);
                     objParameter.Add("@CheckHT", inspection.CheckHT);
+                    objParameter.Add("@CheckEMB", inspection.CheckEMB);
 
 
                     break;

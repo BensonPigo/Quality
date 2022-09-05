@@ -91,6 +91,7 @@ namespace DatabaseObject.ViewModel.SampleRFT
         public bool CheckPackingMode { get; set; }
         public bool CheckHangtag { get; set; }
         public bool CheckHT { get; set; }
+        public bool CheckEMB { get; set; }
 
         public string WorkNo { get; set; }
         public string POID { get; set; }
