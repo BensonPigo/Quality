@@ -161,7 +161,7 @@ AND NOT EXISTS(
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection para = new SQLParameterCollection();
             SbSql.Append($@"
-select o.CustPONO, o.StyleID, o.SeasonID, o.BrandID, o.Model , o.OrderTypeID ,o.Qty , FactoryID = o.FtyGroup
+select o.CustPONO, o.StyleID, o.SeasonID, o.BrandID, o.Model , o.OrderTypeID ,o.Qty , FactoryID = o.FtyGroup ,o.Dest  ,o.VasShas
     ,Article = Articles.Val
 	,ComboType = ComboType.Val
 	,TopSewingLineID = TopSewingLine.SewingLineID

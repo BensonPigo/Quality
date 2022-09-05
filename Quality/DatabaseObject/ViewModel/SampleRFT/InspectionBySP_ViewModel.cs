@@ -114,6 +114,8 @@ namespace DatabaseObject.ViewModel.SampleRFT
         public string QCInCharge { get; set; } = string.Empty;
         public DateTime? InspectionDate { get; set; }
 
+        public string Dest { get; set; }
+        public bool VasShas { get; set; }
 
         public string AddName { get; set; }
         public DateTime? AddDate { get; set; }
