@@ -91,6 +91,7 @@ namespace DatabaseObject.ViewModel.SampleRFT
         public bool CheckPackingMode { get; set; }
         public bool CheckHangtag { get; set; }
         public bool CheckHT { get; set; }
+        public bool CheckEMB { get; set; }
 
         public string WorkNo { get; set; }
         public string POID { get; set; }
@@ -113,6 +114,8 @@ namespace DatabaseObject.ViewModel.SampleRFT
         public string QCInCharge { get; set; } = string.Empty;
         public DateTime? InspectionDate { get; set; }
 
+        public string Dest { get; set; }
+        public bool VasShas { get; set; }
 
         public string AddName { get; set; }
         public DateTime? AddDate { get; set; }
