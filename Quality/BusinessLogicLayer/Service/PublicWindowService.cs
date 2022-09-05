@@ -417,5 +417,24 @@ namespace BusinessLogicLayer.Service
 
             return result;
         }
+        public List<Window_Operation> Get_Operation(string FinalInspectionID, string Operation)
+        {
+            List<Window_Operation> result = new List<Window_Operation>();
+
+            try
+            {
+                _Provider = new PublicWondowProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                //取得登入資訊
+                result = _Provider.Get_Operation(FinalInspectionID, Operation).ToList();
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
     }
 }

@@ -1633,8 +1633,10 @@ and t.GarmentTest=1
 
                             #region Shrinkage
 
-                            if (all_Data.Shrinkages.Where(x => x.Location.EqualString("B")).Any())
+                            int shrinkageCount = 0;
+                            if (dtShrinkages.Select("Location = 'B'").Length > 0)
                             {
+                                shrinkageCount++;
                                 DataTable dt_B = dtShrinkages.Select("Location = 'B'").CopyToDataTable();
 
 
@@ -1668,6 +1670,7 @@ and t.GarmentTest=1
 
                             if (dtShrinkages.Select("Location = 'O'").Length > 0)
                             {
+                                shrinkageCount++;
                                 DataTable dt = dtShrinkages.Select("Location = 'O'").CopyToDataTable();
 
                                 // 超過5個測量點則新增行數
@@ -1699,6 +1702,7 @@ and t.GarmentTest=1
 
                             if (dtShrinkages.Select("Location = 'I'").Length > 0)
                             {
+                                shrinkageCount++;
                                 DataTable dt = dtShrinkages.Select("Location = 'I'").CopyToDataTable();
 
                                 // 超過5個測量點則新增行數
@@ -1730,6 +1734,7 @@ and t.GarmentTest=1
 
                             if (dtShrinkages.Select("Location = 'T'").Length > 0)
                             {
+                                shrinkageCount++;
                                 DataTable dt = dtShrinkages.Select("Location = 'T'").CopyToDataTable();
 
                                 // 超過5個測量點則新增行數
@@ -1757,6 +1762,27 @@ and t.GarmentTest=1
                                 rng.Select();
                                 rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
                                 Marshal.ReleaseComObject(rng);
+                            }
+
+                            // Shrinkage 區塊如果>2個需要把圖片往下推，避免照片被切斷
+                            switch (shrinkageCount)
+                            {
+                                case 3:
+                                    for (int i = 0; i < 16; i++)
+                                    {
+                                        Excel.Range rng = worksheet.get_Range("A71:A71", Type.Missing).EntireRow;
+                                        rng.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown);
+                                    }
+                                    break;
+                                case 4:
+                                    for (int i = 0; i < 13; i++)
+                                    {
+                                        Excel.Range rng = worksheet.get_Range("A71:A71", Type.Missing).EntireRow;
+                                        rng.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown);
+                                    }
+                                    break;
+                                default:
+                                    break;
                             }
                             #endregion
 
@@ -2319,8 +2345,10 @@ and t.GarmentTest=1
                             }
 
                             #region Shrinkage
+                            int shrinkageCount = 0;
                             if (dtShrinkages.Select("Location = 'B'").Length > 0)
                             {
+                                shrinkageCount++;
                                 DataTable dt = dtShrinkages.Select("Location = 'B'").CopyToDataTable();
 
                                 // 超過5個測量點則新增行數
@@ -2352,6 +2380,7 @@ and t.GarmentTest=1
 
                             if (dtShrinkages.Select("Location = 'O'").Length > 0)
                             {
+                                shrinkageCount++;
                                 DataTable dt = dtShrinkages.Select("Location = 'O'").CopyToDataTable();
 
                                 // 超過5個測量點則新增行數
@@ -2383,6 +2412,7 @@ and t.GarmentTest=1
 
                             if (dtShrinkages.Select("Location = 'I'").Length > 0)
                             {
+                                shrinkageCount++;
                                 DataTable dt = dtShrinkages.Select("Location = 'I'").CopyToDataTable();
 
                                 // 超過5個測量點則新增行數
@@ -2414,6 +2444,7 @@ and t.GarmentTest=1
 
                             if (dtShrinkages.Select("Location = 'T'").Length > 0)
                             {
+                                shrinkageCount++;
                                 DataTable dt = dtShrinkages.Select("Location = 'T'").CopyToDataTable();
 
                                 // 超過5個測量點則新增行數
@@ -2441,6 +2472,17 @@ and t.GarmentTest=1
                                 rng.Select();
                                 rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
                                 Marshal.ReleaseComObject(rng);
+                            }
+
+                            // Shrinkage 區塊需要把圖片往下推，避免照片被切斷
+
+                            if (shrinkageCount <=2)
+                            {
+                                for (int i = 0; i < 11; i++)
+                                {
+                                    Excel.Range rng = worksheet.get_Range("A71:A71", Type.Missing).EntireRow;
+                                    rng.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown);
+                                }
                             }
                             #endregion
                         }

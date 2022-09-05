@@ -200,6 +200,7 @@ Hi all,<br/>
 <b>[Season]:</b><font style='color: blue'>  {drReportMailInfo["SeasonID"]}</font><br/>
 <b>[Brand]:</b><font style='color: blue'>  {drReportMailInfo["BrandID"]}</font><br/>
 <b>[CFA]:</b><font style='color: blue'>  {drReportMailInfo["CFA"]}</font><br/>
+<b>[Inspection Stage]:</b><font style='color: blue'>  {drReportMailInfo["InspectionStage"]}</font><br/>
 <b>[Submit Date]:</b><font style='color: blue'>  {drReportMailInfo["SubmitDate"]}</font><br/>
 <b>[Audit Date]:</b><font style='color: blue'>  {drReportMailInfo["AuditDate"]}</font><br/>
 <a href='{WebHost}/Home/RedirectToPage?Code={code}'>

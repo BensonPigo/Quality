@@ -28,6 +28,9 @@
         #CheckListTable {
             font-size: 1.4em;
         }
+        .ColTitle {
+            text-align: center;
+        }
     </style>
 }
 @Html.Partial("~/Areas/FinalInspection/Views/Shared/_Inspection_Layout.cshtml")
@@ -35,7 +38,7 @@
     @using (Html.BeginForm("AddDefect", "Inspection", FormMethod.Post, new { @id = "AddDefectForm", onsubmit = "return checkValue(this.submitted)" }))
     {
 
-        <div style="padding:2em 3em 2em 3em;width:80%;float:left;position: absolute;transform: translate(-50%, 0%);left: 50%">
+        <div style="padding:2em 3em 2em 3em;width:95%;float:left;position: absolute;transform: translate(-50%, 0%);left: 50%">
             <div>
                 <h1 style="font-size: 2vh; font-weight: 900; ">
                     How many reject Qty(pcs)
@@ -96,16 +99,18 @@
                         items[i].Ukey
                         , items[i].DefectCodeDesc
                         , items[i].Qty
-                        //, items[i].ListFinalInspectionDefectImage
                         , FinalInspection_DetailImage.Image
                         , items[i].RowIndex
                         , items[i].DefectCode
                         , items[i].DefectType
+                        , items[i].Operation
+                        , items[i].Operator
+                        , items[i].OperatorText
                     ]);
                 }
             }
 
-            adata.push([null, result[keyCount], temp])
+            adata.push([null, result[keyCount], 'Operation', 'Operator', temp])
             keyCount++
         }
 
@@ -117,7 +122,9 @@
                 destroy: true,
                 columnDefs: [
                     { targets: 0, width: "2%", orderable: false },
-                    { targets: 1, width: "98%", orderable: false },
+                    { targets: 1, width: "38%", orderable: false },
+                    { targets: 2, width: "30%", orderable: false },
+                    { targets: 3, width: "30%", orderable: false },
                 ],
                 columns: [
                     {
@@ -125,6 +132,12 @@
                     },
                     {
                         "style": "color:#E62513",
+                    },
+                    {
+                        "className": "ColTitle",
+                    },
+                    {
+                        "className": "ColTitle",
                     },
                 ],
                 "filter": false,
@@ -157,13 +170,16 @@
         });
 
         function format(d) {
-            var list = d[2];
+            var list = d[4];
             var sTr = "";
 
             $(list).each(function (index, value) {
 
                 var RowIndex = value[4];
-                sTr = sTr + "<tr><td style='width:70%'>" + value[1] + "</td>";
+                var Operation = value[7];
+                var Operator = value[8];
+                var OperatorText = value[9];
+                sTr = sTr + "<tr><td style='width:30%'>" + value[1] + "</td>";
                 sTr = sTr + `<td style='vertical-align: middle'>
     <input type='hidden' id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Ukey' name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Ukey' value='${value[0]}'>
     <input type='hidden' id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].RowIndex' name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].RowIndex' value='${RowIndex}'>
@@ -172,6 +188,10 @@
     <input type='number' id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Qty' onchange='QtyChange("${value[6]}",${index},this)' name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Qty'  min="0" style="width: 7vh" id='${value[0]} ' name='${value[0]}'  value='${value[2]}' /></td>
     <td> <img src="/Image/Icon/Camera.png" style="cursor: pointer;" onclick="ScreenShot(${value[0]},${RowIndex})" width="25vw" height="25vw" /></td>
     <td> <img src="/Image/Icon/Picture.png" style="cursor: pointer;" onclick="OpenPicture(${value[0]},${RowIndex})" width="25vw" height="25vw" /></td>
+    <td><input type='text' style='width:100%' onclick="OpenOperation('${RowIndex}')" onchange='OperationChange("${value[6]}",${index},this)' id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Operation' readonly name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Operation' value='${Operation}'></td>
+    <td><input type='text' style='width:100%' id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].OperatorText' onchange='OperatorTextChange("${value[6]}",${index},this)'  readonly name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].OperatorText' value='${OperatorText}'>
+        <input type='hidden' style='width:100%' id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Operator' onchange='OperatorChange("${value[6]}",${index},this)'  readonly name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Operator' value='${Operator}'>
+    </td>
     </tr>`;
 
             });
@@ -180,10 +200,58 @@
                 '</table>';
         }
 
+        function OpenOperation(targetID) {
+            var para = `?FinalInspectionID=${$('#FinalInspectionID').val()}&TargetID=${targetID}&Title=Operation`;
+            window.open('@Url.Action("OperationList", "PublicWondow",new{Area=""})' + para, 'Operation List', config = 'toolbar=no,status=no,location=no,width=800,height=750');
+        }
+
+        function GetOperationList(OperationObjs, targetID) {
+            var strOperation = '';
+            var strOperatorText = '';
+            var strOperator = '';
+            var dataLength = OperationObjs.length;
+            var ctn = 0;
+            $.each(OperationObjs, function () {
+                ctn += 1;
+                var spliter = ',';
+                if (dataLength == ctn) {
+                    spliter = '';
+                }
+                strOperation += this.Operation + spliter;
+                strOperatorText += this.Text + spliter;
+                strOperator += this.Value + spliter;
+            });
+
+            $(`input[name='addDefct.ListFinalInspectionDefectItem[${targetID}].Operation']`).val(strOperation);
+            $(`input[name='addDefct.ListFinalInspectionDefectItem[${targetID}].OperatorText']`).val(strOperatorText);
+            $(`input[name='addDefct.ListFinalInspectionDefectItem[${targetID}].Operator']`).val(strOperator);
+
+            $(`input[name='addDefct.ListFinalInspectionDefectItem[${targetID}].Operation']`).change();
+            $(`input[name='addDefct.ListFinalInspectionDefectItem[${targetID}].OperatorText']`).change();
+            $(`input[name='addDefct.ListFinalInspectionDefectItem[${targetID}].Operator']`).change();
+        }
+
         // Qty改變時，把值寫回DataTable的Datasource
         function QtyChange(DefectType, index,obj) {
 
-            table.row($(`#CheckListTable_${DefectType}`).closest('tr')).data()[2][index][2] = $(obj).val();
+            table.row($(`#CheckListTable_${DefectType}`).closest('tr')).data()[4][index][2] = $(obj).val();
+        }
+
+        // Operation改變時，把值寫回DataTable的Datasource
+        function OperationChange(DefectType, index, obj) {
+
+            table.row($(`#CheckListTable_${DefectType}`).closest('tr')).data()[4][index][7] = $(obj).val();
+        }
+
+        function OperatorChange(DefectType, index, obj) {
+
+            table.row($(`#CheckListTable_${DefectType}`).closest('tr')).data()[4][index][8] = $(obj).val();
+        }
+
+
+        function OperatorTextChange(DefectType, index, obj) {
+
+            table.row($(`#CheckListTable_${DefectType}`).closest('tr')).data()[4][index][9] = $(obj).val();
         }
 
         function checkValue(self) {

@@ -3102,6 +3102,25 @@
                 var SizeUnit = "";
                 var tbody = "";
                 var KeyIdx = 0;
+
+                var relsizeUnit = "INCH";
+                $.each(data, function (index, value) {
+                    const rules = /^.*[A-Za-z]+.*$/;
+                    var bol = rules.test(value.SizeSpec);
+                    if (bol) {
+                        return;
+                    }
+
+                    if (value.SizeSpec.indexOf('/') > -1) {
+                        relsizeUnit = "INCH";
+                        return false;
+                    }
+                    else if (value.SizeSpec.indexOf('.') > -1) {
+                        relsizeUnit = "CM";
+                        return false;
+                    }
+                });
+
                 $.each(data, function (index, value) {
                     if (thead == "") {
                         thead += "<tr>";
@@ -3131,7 +3150,7 @@
                     tbody += "<td class='bg-lightblue'><p idx='Tol-'>" + value.Tol1 + "</p></td>";
                     tbody += "<td class='bg-lightgray'><p idx='standard'>" + value.SizeSpec + "</p></td>";
 
-                    if (value.SizeUnit.toUpperCase() == "INCH") {
+                    if (relsizeUnit.toUpperCase() == "INCH") {
                         tbody += "<td class='" + bgColor + `'><img class="iconPlus" onclick="MeasurementValueEvent(this,'Plus')" KeyIdx='` + KeyIdx + "' /><input type='text' KeyIdx='" + KeyIdx + "'  idx='SizeSpec' placeholder= '__ __/__' class='" + bgColor + "' " + readonly + "><img KeyIdx='" + KeyIdx + `' class="iconReduce" onclick="MeasurementValueEvent(this,'Reduce')" /></td>`;
                     }
                     else {
@@ -3163,14 +3182,8 @@
                         return;
                     }
 
-                    if (unit.toUpperCase() == "INCH" && !bol) {
-                        msg.WithError("Format incorrect");
-                        $(this).val("");
-                        return;
-                    }
-
                     // 計算Diff
-                    if (unit.toUpperCase() == "INCH") {
+                    if (standard.toString().indexOf('/') > -1 {
                         if (standard.toString().indexOf('.') > -1) {
                             return;
                         }
@@ -3191,10 +3204,6 @@
                         }
                     }
                     else {
-                        if (standard.toString().indexOf('/') > -1) {
-                            return;
-                        }
-
                         var finval = accSubtr(val, standard);
                         $(this).parent().parent().children().find("p[class='Diff']").html(finval);
 

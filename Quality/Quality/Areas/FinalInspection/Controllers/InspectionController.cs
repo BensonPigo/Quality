@@ -720,6 +720,51 @@ namespace Quality.Areas.FinalInspection.Controllers
             addDefct.RejectQty = latestModel.RejectQty;
             addDefct.SampleSize = latestModel.SampleSize;
 
+            addDefct.RejectQty = addDefct.RejectQty.HasValue ? addDefct.RejectQty : 0;
+            // 本次新增的圖片全面加入
+            foreach (var item in addDefct.ListFinalInspectionDefectItem)
+            {
+                long FinalInspection_DetailUkey = item.Ukey;
+                long RowIndex = item.RowIndex;
+
+                if (item.Ukey > 0)
+                {
+                    var sameUkeyImg = TmpFinalInspectionDefectItem_List.Where(o => o.Ukey == FinalInspection_DetailUkey);
+                    foreach (var data in sameUkeyImg)
+                    {
+                        if (data.LoginToken != this.LoginToken)
+                        {
+                            continue;
+                        }
+                        item.ListFinalInspectionDefectImage.Add(new ImageRemark()
+                        {
+                            Image = ImageHelper.ImageCompress(data.TempImage),
+                            Remark = data.TempRemark,
+                        });
+                    }
+                }
+                else
+                {
+                    var sameUkeyImg = TmpFinalInspectionDefectItem_List.Where(o => o.RowIndex == RowIndex);
+                    foreach (var data in sameUkeyImg)
+                    {
+                        if (data.LoginToken != this.LoginToken)
+                        {
+                            continue;
+                        }
+
+                        item.ListFinalInspectionDefectImage.Add(new ImageRemark()
+                        {
+                            Image = ImageHelper.ImageCompress(data.TempImage),
+                            Remark = data.TempRemark,
+                        });
+                    }
+                }
+            }
+
+            FinalInspectionAddDefectService Addsevice = new FinalInspectionAddDefectService();
+            Addsevice.UpdateFinalInspectionDetail(addDefct, this.UserID);
+
             if (goPage == "Back")
             {
                 fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
@@ -732,50 +777,6 @@ namespace Quality.Areas.FinalInspection.Controllers
             }
             else if (goPage == "Next")
             {
-                addDefct.RejectQty = addDefct.RejectQty.HasValue ? addDefct.RejectQty : 0;
-                // 本次新增的圖片全面加入
-                foreach (var item in addDefct.ListFinalInspectionDefectItem)
-                {
-                    long FinalInspection_DetailUkey = item.Ukey;
-                    long RowIndex = item.RowIndex;
-
-                    if (item.Ukey > 0)
-                    {
-                        var sameUkeyImg = TmpFinalInspectionDefectItem_List.Where(o => o.Ukey == FinalInspection_DetailUkey);
-                        foreach (var data in sameUkeyImg)
-                        {
-                            if (data.LoginToken != this.LoginToken)
-                            {
-                                continue;
-                            }
-                            item.ListFinalInspectionDefectImage.Add(new ImageRemark()
-                            {
-                                Image = ImageHelper.ImageCompress(data.TempImage),
-                                Remark = data.TempRemark,
-                            });
-                        }
-                    }
-                    else
-                    {
-                        var sameUkeyImg = TmpFinalInspectionDefectItem_List.Where(o => o.RowIndex == RowIndex);
-                        foreach (var data in sameUkeyImg)
-                        {
-                            if (data.LoginToken != this.LoginToken)
-                            {
-                                continue;
-                            }
-
-                            item.ListFinalInspectionDefectImage.Add(new ImageRemark()
-                            {
-                                Image = ImageHelper.ImageCompress(data.TempImage),
-                                Remark = data.TempRemark,
-                            });
-                        }
-                    }
-                }
-
-                FinalInspectionAddDefectService Addsevice = new FinalInspectionAddDefectService();
-                Addsevice.UpdateFinalInspectionDetail(addDefct, this.UserID);
 
                 fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
                 {

@@ -441,7 +441,7 @@
     }
 
     function cal(unit, standard, val, tolh, toll, obj) {
-        if (unit == "INCH") {
+        if (standard.toString().indexOf('/') > -1) {
             if (standard.toString().indexOf('.') > -1) {
                 return;
             }
@@ -458,10 +458,6 @@
             }
         }
         else {
-            if (standard.toString().indexOf('/') > -1) {
-                return;
-            }
-
             var sTolh = parseFloat(accAdd(standard, tolh));
             var sToll = parseFloat(accSubtr(standard, toll));
             if (sTolh >= val && val >= sToll) {
