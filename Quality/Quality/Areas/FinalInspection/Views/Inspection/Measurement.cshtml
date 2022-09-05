@@ -662,7 +662,7 @@
         }
 
         var thead = "";
-        var SizeUnit = document.getElementById("SizeUnit").value ;
+        var SizeUnit = document.getElementById("SizeUnit").value;
         var tbody = "";
 
 
@@ -680,6 +680,24 @@
 
         var items = @Html.Raw(Json.Encode(Model.ListMeasurementItem));
         var KeyIdx = 0;
+        var relsizeUnit = SizeUnit;
+        $.each(items, function (index, value) {
+            const rules = /^.*[A-Za-z]+.*$/;
+            var bol = rules.test(value.SizeSpec);
+            if (bol) {
+                return;
+            }
+
+            if (value.SizeSpec.indexOf('/') > -1) {
+                relsizeUnit = "INCH";
+                return false;
+            }
+            else if (value.SizeSpec.indexOf('.') > -1) {
+                relsizeUnit = "CM";
+                return false;
+            }
+        });
+
         $.each(items, function (index, value) {
             if (value.Size == dropSize.value) {
 
@@ -699,7 +717,7 @@
                 <td class='bg-lightgray' style ="display:none"><p style ='padding: 0.5vh' idx='MeasurementUkey'>${value.MeasurementUkey}</p></td>
 `;
 
-                if (SizeUnit == "INCH") {
+                if (relsizeUnit == "INCH") {
                     tbody += "<td  style ='vertical-align: middle;' class='" + bgColor + "'><img class='iconPlus' KeyIdx='" + KeyIdx + "' /><input type='text' KeyIdx='" + KeyIdx + "' idx='ResultSizeSpec' placeholder= '__ __/__' style ='width:64%; height:3.5vh' class='" + bgColor + "' " + readonly + "><img KeyIdx='" + KeyIdx + "' class='iconReduce' /></td>";
                 }
                 else {
@@ -732,14 +750,8 @@
                 return;
             }
 
-            if (unit == "INCH" && !bol) {
-                msg.WithError("Format incorrect");
-                $(this).val("");
-                return;
-            }
-
             // 計算Diff
-            if (unit.toString().toUpperCase() == "INCH") {
+            if (standard.indexOf('/') > -1) {
                 if (standard.toString().indexOf('.') > -1) {
                     return;
                 }
@@ -760,10 +772,6 @@
                 }
             }
             else {
-                if (standard.indexOf('/') > -1) {
-                    return;
-                }
-
                 var finval = accSubtr(val, standard);
                 $(this).parent().parent().children().find("p[class='Diff']").html(finval);
 
@@ -870,10 +878,11 @@
     }
 
     function cal(unit, standard, val, tolh, toll, obj) {
-        if (unit == "INCH") {
+        if (standard.indexOf('/') > -1) {
             if (standard.indexOf('.') > -1) {
                 return;
             }
+
             var sTolh = FractionAdd(standard, tolh);
             var sToll = FractionDiff(standard, toll);
             var diffTolh = String(FractionDiff(sTolh.toString(), val));
@@ -887,10 +896,6 @@
             }
         }
         else {
-            if (standard.indexOf('/') > -1) {
-                return;
-            }
-
             var sTolh = parseFloat(accAdd(standard, tolh));
             var sToll = parseFloat(accSubtr(standard, toll));
             if (sTolh >= val && val >= sToll) {
@@ -901,4 +906,5 @@
             }
         }
     }
+
 </script>

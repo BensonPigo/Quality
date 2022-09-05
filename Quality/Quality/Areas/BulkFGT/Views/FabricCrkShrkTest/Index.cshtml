@@ -282,15 +282,24 @@
                                 <th style="width:5vw">Sample Rcv. Date</th>
                                 <th style="width:5vw">Insp. Deadline</th>
                                 <th style="width:5vw">All Result</th>
-                                <th style="width:5vw">Crocking N/A</th>
+                                <th style="width:5vw">
+                                    Crocking N/A<br />
+                                    <input id="selectAllCrocking" type="checkbox" name="name" />
+                                </th>
                                 <th style="width:5vw">Crocking Result</th>
                                 <th style="width:5vw">Crocking Test Date</th>
                                 <th style="width:5vw">Remark</th>
-                                <th style="width:5vw">HT N/A</th>
+                                <th style="width:5vw">
+                                    HT N/A<br />
+                                    <input id="selectAllHT" type="checkbox" name="name" />
+                                </th>
                                 <th style="width:5vw">Heat Result</th>
                                 <th style="width:5vw">Heat Last Test Date</th>
                                 <th style="width:5vw">Remark</th>
-                                <th style="width:5vw">Wash N/A</th>
+                                <th style="width:5vw">
+                                    Wash N/A<br />
+                                    <input id="selectAllWash" type="checkbox" name="name" />
+                                </th>
                                 <th style="width:5vw">Wash Result</th>
                                 <th style="width:5vw">Wash Last Test Date</th>
                                 <th style="width:5vw">Remark</th>
@@ -353,7 +362,7 @@
                                         <font color="@styleColor">@Html.DisplayFor(modelItem => Model.Details[i].AllResult)</font>
                                     </td>
                                     <td class="CheckBoxColor">
-                                        @Html.CheckBox("Details[" + i + "].NonCrocking", Convert.ToBoolean(Model.Details[i].NonCrocking))
+                                        @Html.CheckBox("Details[" + i + "].NonCrocking", Convert.ToBoolean(Model.Details[i].NonCrocking), new { @class = "NonCrocking" })
                                     </td>
                                     <td class="CrockingColor">
                                         @{
@@ -376,7 +385,7 @@
                                         @Html.DisplayFor(modelItem => Model.Details[i].CrockingRemark)
                                     </td>
                                     <td class="CheckBoxColor">
-                                        @Html.CheckBox("Details[" + i + "].NonHeat", Convert.ToBoolean(Model.Details[i].NonHeat))
+                                        @Html.CheckBox("Details[" + i + "].NonHeat", Convert.ToBoolean(Model.Details[i].NonHeat), new { @class = "NonHeat" })
                                     </td>
                                     <td class="HeatColor">
                                         @{
@@ -399,7 +408,7 @@
                                         @Html.DisplayFor(modelItem => Model.Details[i].HeatRemark)
                                     </td>
                                     <td class="CheckBoxColor">
-                                        @Html.CheckBox("Details[" + i + "].NonWash", Convert.ToBoolean(Model.Details[i].NonWash))
+                                        @Html.CheckBox("Details[" + i + "].NonWash", Convert.ToBoolean(Model.Details[i].NonWash), new { @class = "NonWash" })
                                     </td>
                                     <td class="WashColor">
                                         @{
@@ -448,6 +457,31 @@
         EditMode = false;
         IsEditModeChange();
         @Html.Raw(Model.ErrorMessage)
+
+
+        $("#selectAllCrocking").mousedown(function () {
+
+            var oldValue = $(this).prop('checked');
+
+            $('.NonCrocking').prop('checked', !oldValue);
+            $('.NonCrocking').attr('checked', !oldValue);
+        });
+
+        $("#selectAllHT").mousedown(function () {
+
+            var oldValue = $(this).prop('checked');
+
+            $('.NonHeat').prop('checked', !oldValue);
+            $('.NonHeat').attr('checked', !oldValue);
+        });
+
+        $("#selectAllWash").mousedown(function () {
+
+            var oldValue = $(this).prop('checked');
+
+            $('.NonWash').prop('checked', !oldValue);
+            $('.NonWash').attr('checked', !oldValue);
+        });
 
         if (!$("body").hasClass("sidebar-collapse")) {
             $(".menu-trigger").click();

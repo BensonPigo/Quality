@@ -184,7 +184,12 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "<td><select id='Details_" + i + "__ChangeScale' name='Details[" + i + "].ChangeScale'>"; // ChangeScale
             foreach (string val in model.ScaleIDs)
             {
-                html += "<option value='" + val + "'>" + val + "</option>";
+                string selected = string.Empty;
+                if (val == "4-5")
+                {
+                    selected = "selected";
+                }
+                html += $"<option {selected} value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
@@ -198,7 +203,12 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "<td><select id='Details_" + i + "__AcetateScale' name='Details[" + i + "].AcetateScale'>"; // AcetateScale
             foreach (string val in model.ScaleIDs)
             {
-                html += "<option value='" + val + "'>" + val + "</option>";
+                string selected = string.Empty;
+                if (val == "4-5")
+                {
+                    selected = "selected";
+                }
+                html += $"<option {selected} value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
@@ -212,7 +222,12 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "<td><select id='Details_" + i + "__CottonScale' name='Details[" + i + "].CottonScale'>"; // CottonScale
             foreach (string val in model.ScaleIDs)
             {
-                html += "<option value='" + val + "'>" + val + "</option>";
+                string selected = string.Empty;
+                if (val == "4-5")
+                {
+                    selected = "selected";
+                }
+                html += $"<option {selected} value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
@@ -226,7 +241,12 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "<td><select id='Details_" + i + "__NylonScale' name='Details[" + i + "].NylonScale'>"; // NylonScale
             foreach (string val in model.ScaleIDs)
             {
-                html += "<option value='" + val + "'>" + val + "</option>";
+                string selected = string.Empty;
+                if (val == "4-5")
+                {
+                    selected = "selected";
+                }
+                html += $"<option {selected} value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
@@ -240,7 +260,12 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "<td><select id='Details_" + i + "__PolyesterScale' name='Details[" + i + "].PolyesterScale'>"; // PolyesterScale
             foreach (string val in model.ScaleIDs)
             {
-                html += "<option value='" + val + "'>" + val + "</option>";
+                string selected = string.Empty;
+                if (val == "4-5")
+                {
+                    selected = "selected";
+                }
+                html += $"<option {selected} value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
@@ -254,7 +279,12 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "<td><select id='Details_" + i + "__AcrylicScale' name='Details[" + i + "].AcrylicScale'>"; // AcrylicScale
             foreach (string val in model.ScaleIDs)
             {
-                html += "<option value='" + val + "'>" + val + "</option>";
+                string selected = string.Empty;
+                if (val == "4-5")
+                {
+                    selected = "selected";
+                }
+                html += $"<option {selected} value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
@@ -268,7 +298,12 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "<td><select id='Details_" + i + "__WoolScale' name='Details[" + i + "].WoolScale'>"; // WoolScale
             foreach (string val in model.ScaleIDs)
             {
-                html += "<option value='" + val + "'>" + val + "</option>";
+                string selected = string.Empty;
+                if (val == "4-5")
+                {
+                    selected = "selected";
+                }
+                html += $"<option {selected} value='" + val + "'>" + val + "</option>";
             }
             html += "</select></td>";
 
@@ -300,7 +335,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             //}
             //html += "</select></td>";
 
-            html += "<td><img  class='detailDelete' src='/Image/Icon/Delete.png' width='30'></td>";
+            html += "<td><div style='width:5vw;'><img  class='detailDelete' src='/Image/Icon/Delete.png' width='30'></div></td>";
             html += "</tr>";
 
             return Content(html);
