@@ -312,6 +312,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                 model.CheckOuterCarton = data.CheckOuterCarton;
                 model.CheckPackingMode = data.CheckPackingMode;
                 model.CheckHangtag = data.CheckHangtag;
+                model.CheckEMB = data.CheckEMB;
                 model.CheckHT = data.CheckHT;
                 model.OrderID = data.OrderID;
                 model.ID = data.ID;

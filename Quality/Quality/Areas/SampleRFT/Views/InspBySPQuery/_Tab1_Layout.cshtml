@@ -90,7 +90,15 @@
                     @Html.CheckBoxFor(o => o.sampleRFTInspection.CheckPrintEmbDecorations, new { @disabled = "disabled", @class = "checkboxInput" })
                 </td>
                 <td>
-                    <div><label class="checkboxlabel">Print/Emb Decorations</label></div>
+                    <div><label class="checkboxlabel">Printing/AOP</label></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.CheckBoxFor(o => o.sampleRFTInspection.CheckEMB, new { @disabled = "disabled", @class = "checkboxInput" })
+                </td>
+                <td>
+                    <div><label class="checkboxlabel">EMB </label></div>
                 </td>
             </tr>
             <tr>
