@@ -958,6 +958,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\PublicWondow\PoidArticleList.cshtml" />
+    <Content Include="Views\PublicWondow\OperationList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -637,6 +637,9 @@ where   ID = @FinalInspectionID
                             { "@Qty", DbType.Int32, defectItem.Qty }
                         };
 
+                    List<string> OperationList = string.IsNullOrEmpty(defectItem.Operation) ? new List<string>() : defectItem.Operation.Split(',').ToList();
+                    List<string> OperatorList = string.IsNullOrEmpty(defectItem.Operator) ? new List<string>() : defectItem.Operator.Split(',').ToList();
+
                     if (defectItem.Ukey == -1)
                     {
                         sqlUpdateFinalInspectionDetail = @"
@@ -664,7 +667,9 @@ where   ID = @FinalInspectionID
     begin
         delete  FinalInspection_Detail where   Ukey = @Ukey
     end
-    
+    ;
+
+        delete  FinalInspection_Detail_Operation where   InspectionDetailUkey = @Ukey
 ";
                         ExecuteNonQuery(CommandType.Text, sqlUpdateFinalInspectionDetail, detailParameter);
                     }
@@ -690,6 +695,30 @@ insert into FinalInspection_DetailImage(ID, FinalInspection_DetailUkey ,Remark)
                         };
 
                             ExecuteNonQuery(CommandType.Text, sqlInsertFinalInspection_DetailImage, imgParameter);
+                        }
+
+                        int i = 0;
+                        foreach (var strOperation in OperationList)
+                        {
+                            string strOperator = OperatorList[i];
+                            string sqlInsertFinalInspection_DetailImage = @"
+INSERT INTO FinalInspection_Detail_Operation
+           (InspectionDetailUkey
+           ,InlineOperation
+           ,InlineOperator)
+     VALUES
+           (@FinalInspection_DetailUkey
+           ,@Operation
+           ,@Operator)
+";
+                            SQLParameterCollection imgParameter = new SQLParameterCollection() {
+                            { "@FinalInspection_DetailUkey", DbType.Int64, defectItem.Ukey },
+                            { "@Operation",DbType.String, strOperation},
+                            { "@Operator",DbType.String, strOperator},
+                        };
+
+                            ExecuteNonQuery(CommandType.Text, sqlInsertFinalInspection_DetailImage, imgParameter);
+                            i++;
                         }
                     }
                 }
@@ -1257,6 +1286,7 @@ where   ID IN (
 select  f.CustPONO,
         f.InspectionResult,
         f.FactoryID,
+        f.InspectionStage,
         [SP] = (SELECT Stuff((select concat( ',',OrderID) 
                                 from  FinalInspection_Order fo with (nolock) 
                                 where fo.ID = f.ID

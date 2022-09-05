@@ -185,5 +185,12 @@ namespace DatabaseObject.Public
         public string CcAddress { get; set; }
     }
 
+    public class Window_Operation
+    {
+        public string Operation { get; set; }
+
+        public string EmployeeID { get; set; }
+        public string Name { get; set; }
+    }
 
 }
