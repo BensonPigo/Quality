@@ -876,6 +876,20 @@ VALUES
             };
 
             string sqlcmd = @"
+--先重新判斷一次表身已Encode
+UPDATE g
+SET  Result =   CASE	WHEN NonSeamBreakageTest=1 AND OdourResult = 'P' AND WashResult='P'
+						    THEN 'P'
+						WHEN NonSeamBreakageTest=0 AND SeamBreakageResult='' 
+						    THEN ''  
+						WHEN NonSeamBreakageTest=0 AND SeamBreakageResult!=''  AND (SeamBreakageResult='F' OR OdourResult = 'F' OR WashResult='F') 
+						    THEN 'F'  
+					ELSE Result
+                END
+    ,gd.EditDAte = GETDATE()
+from GarmentTest g 
+where id=@ID AND Status='Confirmed' ----已Encode = Confirmed
+
 update g 
 set g.SeamBreakageResult = ISNULL(SResult.SeamBreakageResult, '')
 	,g.SeamBreakageLastTestDate = SResult.inspdate
