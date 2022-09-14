@@ -568,7 +568,8 @@ set
 ,WashResult = case
 	when  ( (select count(1) from #tmpApperanceResult where Wash1='Rejected' OR Wash2='Rejected' OR Wash3='Rejected') > 0 OR (select count(1) from #tmpFGWTResult where Result = 'Fail') > 0 )  -- Apperance有一個Rejected 或 FGWT有一個Fail
         then 'F'
-	when   ( (select count(1) from #tmpApperanceResult where Wash1='Accepted' OR Wash2='Accepted' OR Wash3='Accepted' OR Wash1='Rejected' OR Wash2='Rejected' OR Wash3='Rejected') = 0 AND (select count(1) from #tmpFGWTResult) > 0 AND (select count(1) from #tmpFGWTResult where Result = 'Fail') = 0 ) AND --Apperance全N/A，FGWT沒有Fail
+	when   ( (select count(1) from #tmpApperanceResult where Wash1='Accepted' OR Wash2='Accepted' OR Wash3='Accepted' OR Wash1='Rejected' OR Wash2='Rejected' OR Wash3='Rejected') = 0 AND (select count(1) from #tmpFGWTResult) > 0 AND (select count(1) from #tmpFGWTResult where Result = 'Fail') = 0 ) OR --Apperance全N/A，FGWT不為空，FGWT沒有Fail
+           ( (select count(1) from #tmpApperanceResult where Wash1='Rejected' OR Wash2='Rejected' OR Wash3='Rejected') = 0 AND (select count(1) from #tmpFGWTResult) > 0 AND (select count(1) from #tmpFGWTResult where Result = 'Fail') = 0 ) OR --Apperance沒有Rejected，FGWT不為空，FGWT沒有Fail
            ( (select count(1) from #tmpApperanceResult where Wash1='Rejected' OR Wash2='Rejected' OR Wash3='Rejected') = 0 AND (select count(1) from #tmpApperanceResult where Wash1='Accepted' OR Wash2='Accepted' OR Wash3='Accepted') > 0 )  --Apperance只有Accepted
         then 'P'
 	when    (select count(1) from #tmpApperanceResult where Wash1='Accepted' OR Wash2='Accepted' OR Wash3='Accepted' OR Wash1='Rejected' OR Wash2='Rejected' OR Wash3='Rejected') = 0  AND -- Apperance全N/A  
