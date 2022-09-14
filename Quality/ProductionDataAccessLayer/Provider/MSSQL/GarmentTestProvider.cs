@@ -886,8 +886,8 @@ SET  Result =   CASE	WHEN NonSeamBreakageTest=1 AND OdourResult = 'P' AND WashRe
 						    THEN 'F'  
 					ELSE Result
                 END
-    ,gd.EditDAte = GETDATE()
-from GarmentTest g 
+    ,EditDAte = GETDATE()
+from GarmentTest_Detail g 
 where id=@ID AND Status='Confirmed' ----已Encode = Confirmed
 
 update g 
