@@ -183,12 +183,18 @@ namespace Quality.Areas.SampleRFT.Controllers
 
             string CFTExcelFileName = GetCFTComment(true);
 
+            List<string> dummyFitPicList = GetDummtPic(true);
+
             ZipFile zip = new ZipFile();
             string zipName = $@"Query Report_{DateTime.Now.ToString("yyyyMMddHHmmss")}.zip";
             string zipPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", zipName);
 
             zip.AddFile(ExcelFileName, string.Empty);
             zip.AddFile(CFTExcelFileName, string.Empty);
+            foreach (var dummyFileName in dummyFitPicList)
+            {
+                zip.AddFile(dummyFileName, string.Empty);
+            }
             zip.Save(zipPath);
 
             MemoryStream obj_stream = new MemoryStream();
@@ -384,6 +390,63 @@ namespace Quality.Areas.SampleRFT.Controllers
             return fileName;
         }
 
+        public List<string> GetDummtPic(bool IsDowdload)
+        {
+            List<string> resultPathList = new List<string>();
+            QueryReport model = (QueryReport)TempData["ModelQuery"];
+            TempData["ModelQuery"] = model;
+
+            var detailList = model.DummyFit.DetailList;
+
+            foreach (var detail in detailList)
+            {
+                string frontImgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", detail.FrontImageName);
+                string backImgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", detail.BackImageName);
+                string leftImgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", detail.LeftImageName);
+                string rightImgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", detail.RightImageName);
+
+                if (detail.Front != null && detail.Front.Length > 0)
+                {
+                    using (var imageFile = new FileStream(frontImgPath, FileMode.Create))
+                    {
+                        imageFile.Write(detail.Front, 0, detail.Front.Length);
+                        imageFile.Flush();
+                    }
+                    resultPathList.Add(frontImgPath);
+                }
+                if (detail.Back != null && detail.Back.Length > 0)
+                {
+                    using (var imageFile = new FileStream(backImgPath, FileMode.Create))
+                    {
+                        imageFile.Write(detail.Back, 0, detail.Back.Length);
+                        imageFile.Flush();
+                    }
+                    resultPathList.Add(backImgPath);
+                }
+                if (detail.Left != null && detail.Left.Length > 0)
+                {
+                    using (var imageFile = new FileStream(leftImgPath, FileMode.Create))
+                    {
+                        imageFile.Write(detail.Left, 0, detail.Left.Length);
+                        imageFile.Flush();
+                    }
+                    resultPathList.Add(leftImgPath);
+                }
+                if (detail.Right != null && detail.Right.Length > 0)
+                {
+                    using (var imageFile = new FileStream(rightImgPath, FileMode.Create))
+                    {
+                        imageFile.Write(detail.Right, 0, detail.Right.Length);
+                        imageFile.Flush();
+                    }
+                    resultPathList.Add(rightImgPath);
+                }
+            }
+
+
+            return resultPathList;
+        }
+
         [HttpPost]
         [SessionAuthorize]
         public ActionResult SendMail()
@@ -397,11 +460,16 @@ namespace Quality.Areas.SampleRFT.Controllers
             {
                 string ExcelFileName = GetExcel(true);
                 string CFTExcelFileName = GetCFTComment(true);
+                List<string> dummyFitPicList = GetDummtPic(true);
 
                 ZipFile zip = new ZipFile();
 
                 zip.AddFile(ExcelFileName, string.Empty);
                 zip.AddFile(CFTExcelFileName, string.Empty);
+                foreach (var dummyFileName in dummyFitPicList)
+                {
+                    zip.AddFile(dummyFileName, string.Empty);
+                }
                 zip.Save(zipPath);
 
 
