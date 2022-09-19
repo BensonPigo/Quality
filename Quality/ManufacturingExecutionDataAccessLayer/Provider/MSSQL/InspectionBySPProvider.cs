@@ -1597,7 +1597,7 @@ INTO #tmp
 from MainServer.Production.dbo.Order_QtyShip_Detail oqd with (nolock)
 where oqd.ID = @OrderID
 
-select distinct oqd.Article, Size = oqd.SizeCode 
+select distinct OrderID=oqd.ID ,oqd.Article, Size = oqd.SizeCode 
 		,d.Front
 		--,d.Side
 		,d.Back
