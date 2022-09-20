@@ -32,10 +32,13 @@ namespace DatabaseObject.ViewModel.SampleRFT
         public string StyleRRLRPath { get; set; }
         public string TempFileName { get; set; }
 
+        public bool HasSampleRFTInspection { get; set; }
+
         public List<StyleResult_SampleRFT> SampleRFT { get; set; }
         public List<StyleResult_FTYDisclaimer> FTYDisclaimer { get; set; }
         public List<StyleResult_RRLR> RRLR { get; set; }
         public List<StyleResult_BulkFGT> BulkFGT { get; set; }
+        public List<StyleResult_PoList> PoList { get; set; }
     }
 
     public class StyleResult_SampleRFT
@@ -79,5 +82,10 @@ namespace DatabaseObject.ViewModel.SampleRFT
         public string TestName { get; set; }
         public string LastResult { get; set; }
         public DateTime? LastTestDate { get; set; }
+    }
+    public class StyleResult_PoList
+    {
+        public string Article { get; set; }
+        public string POID { get; set; }
     }
 }

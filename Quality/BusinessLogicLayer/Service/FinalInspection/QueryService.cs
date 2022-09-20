@@ -163,7 +163,7 @@ namespace BusinessLogicLayer.Service.FinalInspection
         }
 
         //寄信
-        public BaseResult SendMail(string finalInspectionID,string WebHost, bool isTest)
+        public BaseResult SendMail(string finalInspectionID, string WebHost, bool isTest)
         {
             BaseResult baseResult = new BaseResult();
             // 取得資料
@@ -200,6 +200,7 @@ Hi all,<br/>
 <b>[Season]:</b><font style='color: blue'>  {drReportMailInfo["SeasonID"]}</font><br/>
 <b>[Brand]:</b><font style='color: blue'>  {drReportMailInfo["BrandID"]}</font><br/>
 <b>[CFA]:</b><font style='color: blue'>  {drReportMailInfo["CFA"]}</font><br/>
+<b>[Inspection Stage]:</b><font style='color: blue'>  {drReportMailInfo["InspectionStage"]}</font><br/>
 <b>[Submit Date]:</b><font style='color: blue'>  {drReportMailInfo["SubmitDate"]}</font><br/>
 <b>[Audit Date]:</b><font style='color: blue'>  {drReportMailInfo["AuditDate"]}</font><br/>
 <a href='{WebHost}/Home/RedirectToPage?Code={code}'>
@@ -228,7 +229,7 @@ NOTE: This is an automated reply from a system mailbox. Please do not reply to t
                     mailServer = dt.Rows[0]["mailServer"].ToString();
                     eMailID = dt.Rows[0]["eMailID"].ToString();
                     eMailPwd = dt.Rows[0]["eMailPwd"].ToString();
-                    MailServerPort = Convert.ToInt32( dt.Rows[0]["MailServerPort"]);
+                    MailServerPort = Convert.ToInt32(dt.Rows[0]["MailServerPort"]);
                 }
 
                 if (isTest)
@@ -307,9 +308,9 @@ NOTE: This is an automated reply from a system mailbox. Please do not reply to t
                 }
 
                 List<QueryFinalInspection> finalInspections = new List<QueryFinalInspection>();
-                if (string.IsNullOrEmpty(model.SP) && 
-                    string.IsNullOrEmpty(model.CustPONO) && 
-                    string.IsNullOrEmpty(model.StyleID) && 
+                if (string.IsNullOrEmpty(model.SP) &&
+                    string.IsNullOrEmpty(model.CustPONO) &&
+                    string.IsNullOrEmpty(model.StyleID) &&
                     (!model.AuditDateStart.HasValue || !model.AuditDateEnd.HasValue) &&
                     string.IsNullOrEmpty(model.InspectionResult))
                 {
@@ -378,7 +379,7 @@ NOTE: This is an automated reply from a system mailbox. Please do not reply to t
                 result.TempFileName = filexlsx;
                 result.Result = true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 result.ErrorMessage = ex.Message.Replace("'", string.Empty);
                 result.Result = false;

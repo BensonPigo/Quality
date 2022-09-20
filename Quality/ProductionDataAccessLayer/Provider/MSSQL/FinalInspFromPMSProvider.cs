@@ -230,9 +230,33 @@ order by AQLType , InspectionLevels
 select  GarmentDefectTypeID,
         GarmentDefectCodeID,
         Qty,
-        Ukey
+        Ukey,
+		Operation = Operation.Operation,
+		Operator = Operation.Operator,
+		OperatorText = Operation.OperatorText
 into #FinalInspection_Detail
-from ManufacturingExecution.dbo.FinalInspection_Detail
+from ManufacturingExecution.dbo.FinalInspection_Detail a
+outer apply(
+	select Operation= STUFF((
+			select ',' + b.InlineOperation
+			from ManufacturingExecution.dbo.FinalInspection_Detail_Operation b
+			where b.InspectionDetailUkey=a.Ukey
+			for xml path('')
+		),1,1,'')
+		,Operator= STUFF((
+			select ',' + b.InlineOperator
+			from ManufacturingExecution.dbo.FinalInspection_Detail_Operation b
+			where b.InspectionDetailUkey=a.Ukey
+			for xml path('')
+		),1,1,'')
+		,OperatorText= STUFF((
+			select ',' + c.FirstName+' '+c.LastName
+			from FinalInspection_Detail_Operation b
+			inner join InlineEmployee c on c.EmployeeID = b.InlineOperator
+			where b.InspectionDetailUkey=a.Ukey
+			for xml path('')
+		),1,1,'')
+)Operation
 where   ID = @finalInspectionID
 
 select  [Ukey] = isnull(fd.Ukey, -1),
@@ -241,6 +265,9 @@ select  [Ukey] = isnull(fd.Ukey, -1),
         [DefectTypeDesc] = gdt.ID +'-'+gdt.Description,
         [DefectCodeDesc] = gdc.ID +'-'+gdc.Description,
         [Qty] = isnull(fd.Qty, 0),
+        Operation = ISNULL( fd.Operation ,''),
+        Operator = ISNULL( fd.Operator ,''),
+        OperatorText = ISNULL( fd.OperatorText ,''),
 		[RowIndex]=ROW_NUMBER() OVER(ORDER BY gdt.id,gdc.id) -1
 		,HasImage = Cast(
 			IIF(EXISTS(
@@ -255,7 +282,7 @@ select  [Ukey] = isnull(fd.Ukey, -1),
             gdc.Junk =0
  order by gdt.id,gdc.id
 
-
+ drop table #FinalInspection_Detail
 ";
             return ExecuteList<FinalInspectionDefectItem>(CommandType.Text, sqlGetData, listPar);
         }

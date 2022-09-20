@@ -319,7 +319,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         PerspirationFastness_Detail_Detail.AlkalineResultNylon == string.Empty ||
                         PerspirationFastness_Detail_Detail.AlkalineResultPolyester == string.Empty ||
                         PerspirationFastness_Detail_Detail.AlkalineResultAcrylic == string.Empty ||
-                        PerspirationFastness_Detail_Detail.AlkalineResultWool == string.Empty || 
+                        PerspirationFastness_Detail_Detail.AlkalineResultWool == string.Empty ||
 
                         PerspirationFastness_Detail_Detail.AcidResultChange.ToUpper() == "FAIL" ||
                         PerspirationFastness_Detail_Detail.AcidResultAcetate.ToUpper() == "FAIL" ||
@@ -539,7 +539,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Excel.Range cellBeforePicture = currenSheet.Cells[52, 1];
                     if (currenData.TestBeforePicture != null)
                     {
-                        string imgPath = ToolKit.PublicClass.AddImageSignWord(currenData.TestBeforePicture, currenData.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test : isTest);
+                        string imgPath = ToolKit.PublicClass.AddImageSignWord(currenData.TestBeforePicture, currenData.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: isTest);
                         currenSheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 380, 300);
                     }
 

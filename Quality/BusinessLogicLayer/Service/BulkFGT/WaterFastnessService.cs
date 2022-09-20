@@ -245,7 +245,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     }
 
 
-                    if (MyUtility.Check.Empty(waterFastness_Detail_Detail.ResultChange 
+                    if (MyUtility.Check.Empty(waterFastness_Detail_Detail.ResultChange
                         + waterFastness_Detail_Detail.ResultAcetate
                         + waterFastness_Detail_Detail.ResultCotton
                         + waterFastness_Detail_Detail.ResultNylon

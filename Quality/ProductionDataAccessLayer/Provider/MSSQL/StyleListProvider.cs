@@ -21,6 +21,25 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         #endregion
 
 
+        public int Check_SampleRFTInspection_Count(StyleList_Request Req)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@BrandID", DbType.String, Req.BrandID } ,
+                { "@SeasonID", DbType.String, Req.SeasonID } ,
+                { "@StyleID", DbType.String, Req.StyleID } ,
+            };
+            string sqlcmd = $@"
+select COUNT(1)
+from SampleRFTInspection a WITH(NOLOCK)
+inner join SciProduction_Style b on a.StyleUkey = b.Ukey
+where b.ID = @StyleID AND b.SeasonID = @SeasonID AND b.BrandID = @BrandID
+";
+
+            var result = ExecuteScalar(CommandType.Text, sqlcmd, objParameter);
+
+            return Convert.ToInt32(result == null ? 0 : result);
+        }
         public IList<StyleList> Get_StyleInfo(StyleList_Request req)
         {
             SQLParameterCollection listPar = new SQLParameterCollection();
@@ -28,6 +47,22 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 
             string RFT_cmd = string.Empty;
 
+            if (req.InspectionTableName== "RFT_Inspection")
+            {
+                RFT_cmd = $@"
+	select Val = ROUND( SUM(IIF(Status = 'Pass',1,0)) * 1.0  / COUNT(1) *1.0  *100 , 2)
+    FROM ExtendServer.ManufacturingExecution.dbo.RFT_Inspection  rft WITH(NOLOCK)
+	WHERE rft.StyleUkey = s.Ukey
+";
+            }
+            else if (req.InspectionTableName == "SampleRFTInspection")
+            {
+                RFT_cmd = $@"
+	select Val = ROUND( SUM(IIF(Result = 'Pass',1,0)) * 1.0  / COUNT(1) *1.0  *100 , 2)
+    FROM ExtendServer.ManufacturingExecution.dbo.SampleRFTInspection  rft WITH(NOLOCK)
+	WHERE rft.StyleUkey = s.Ukey AND SubmitDate IS NOT NULL
+";
+            }
 
             sqlCmd = $@"
 
@@ -61,9 +96,7 @@ OUTER APPLY(
 	WHERE p.ID = s.SampleMRHandle AND s.Phase = 'Sample'
 )Handle
 OUTER APPLY(
-	select Val = ROUND( SUM(IIF(Status = 'Pass',1,0)) * 1.0  / COUNT(1) *1.0  *100 , 2)
-    FROM ExtendServer.ManufacturingExecution.dbo.RFT_Inspection  rft WITH(NOLOCK)
-	WHERE rft.StyleUkey = s.Ukey
+	{RFT_cmd}
 )RFT
 WHERE 1=1
 ";

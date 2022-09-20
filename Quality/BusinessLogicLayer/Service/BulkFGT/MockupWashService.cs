@@ -109,7 +109,7 @@ namespace BusinessLogicLayer.Service
             return selectListItems;
         }
 
-        public List<SelectListItem> GetTestingMethod() 
+        public List<SelectListItem> GetTestingMethod()
         {
             List<SelectListItem> selectListItems = new List<SelectListItem>();
             _DropDownListProvider = new DropDownListProvider(Common.ProductionDataAccessLayer);
@@ -243,14 +243,14 @@ namespace BusinessLogicLayer.Service
                         imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
                     }
 
-                    img.Save(imgPath);                    
+                    img.Save(imgPath);
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
                 }
 
                 Range cellBefore = worksheet.Cells[16 + haveHTrow, 1];
                 if (mockupWash.TestBeforePicture != null)
                 {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(mockupWash.TestBeforePicture, mockupWash.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test : test);
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(mockupWash.TestBeforePicture, mockupWash.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
                     if (haveHT)
                     {
                         worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBefore.Left + 5, cellBefore.Top + 38, 440, 340);
@@ -272,7 +272,7 @@ namespace BusinessLogicLayer.Service
                     else
                     {
                         worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfter.Left + 5, cellAfter.Top + 38, 440, 340);
-                    }                        
+                    }
                 }
 
                 #region 表身資料

@@ -137,7 +137,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
                     System.IO.Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\TMP\\");
                 }
 
-                if (dt.Rows.Count == 0) 
+                if (dt.Rows.Count == 0)
                 {
                     result.TempFileName = string.Empty;
                     result.Result = false;
@@ -215,9 +215,9 @@ namespace BusinessLogicLayer.Service.SampleRFT
             try
             {
                 _CFTCommentsProvider = new CFTCommentsProvider(Common.ManufacturingExecutionDataAccessLayer);
- 
+
                 // 取得Datatable
-                List<CFTComments_Result> datas =_CFTCommentsProvider.Get_CFT_OrderComments2(Req).ToList();
+                List<CFTComments_Result> datas = _CFTCommentsProvider.Get_CFT_OrderComments2(Req).ToList();
                 List<string> SampleStageList = Req.SampleStageList;
 
                 if (!System.IO.Directory.Exists(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\"))
@@ -258,13 +258,13 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 for (int i = 1; i <= sampleStages.Count; i++)
                 {
                     worksheet = (Excel.Worksheet)excelApp.ActiveWorkbook.Worksheets[i];
-                    worksheet.Name = sampleStages[i-1];
+                    worksheet.Name = sampleStages[i - 1];
                 }
 
                 //開始填資料
                 for (int i = 1; i <= sampleStages.Count; i++)
                 {
-                    string sampleStage = sampleStages[i-1];
+                    string sampleStage = sampleStages[i - 1];
                     var sameData = datas.Where(o => o.SampleStage == sampleStage).ToList();
 
                     Excel.Worksheet currenSheet = excelApp.ActiveWorkbook.Worksheets[i];

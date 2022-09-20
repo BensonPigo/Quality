@@ -26,14 +26,43 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 
             StringBuilder SbSql = new StringBuilder();
             SbSql.Append(@"
-select
-	 rft.Line,
-	 rft.Status
+
+select top 1 Line,Status
 into #tmpRft
-from RFT_Inspection rft WITH(NOLOCK)
-where rft.FactoryID = @FactoryID
-and Year(rft.InspectionDate) = @Year
-and Month(rft.InspectionDate) = @Month
+from RFT_Inspection WITH(NOLOCK)
+
+DELETE from #tmpRft
+
+-----如果SampleRFTInspection，就用SampleRFTInspection
+IF EXISTS(
+	select 1
+	from SampleRFTInspection
+	where FactoryID = @FactoryID
+	and Year(InspectionDate) = @Year
+	and Month(InspectionDate) = @Month
+)
+BEGIN
+	INSERT INTO #tmpRft (Line,Status)
+	select
+		 Line = rft.SewingLineID,
+		 Status = rft.Result
+	from SampleRFTInspection rft WITH(NOLOCK)
+	where rft.FactoryID = @FactoryID
+	and Year(rft.InspectionDate) = @Year
+	and Month(rft.InspectionDate) = @Month
+	AND SubmitDate IS NOT NULL
+END
+ELSE
+BEGIN
+	INSERT INTO #tmpRft (Line,Status)
+	select
+		 rft.Line,
+		 rft.Status
+	from RFT_Inspection rft WITH(NOLOCK)
+	where rft.FactoryID = @FactoryID
+	and Year(rft.InspectionDate) = @Year
+	and Month(rft.InspectionDate) = @Month
+END
 
 select
 	Month = DateName(Month, DateAdd(Month, @Month, -1)),
@@ -75,15 +104,46 @@ SELECT [date]
 into #tmpAllday
 FROM cte
 
-select
-	 rft.Line,
-	 Date = DAY(rft.InspectionDate),
-	 rft.Status
+select top 1 Line,Date = DAY(InspectionDate),Status
 into #tmpRft
-from RFT_Inspection rft WITH(NOLOCK)
-where rft.FactoryID = @FactoryID
-and Year(rft.InspectionDate) = @Year
-and Month(rft.InspectionDate) = @Month
+from RFT_Inspection WITH(NOLOCK)
+
+DELETE from #tmpRft
+
+-----如果SampleRFTInspection，就用SampleRFTInspection
+IF EXISTS(
+	select 1
+	from SampleRFTInspection
+	where FactoryID = @FactoryID
+	and Year(InspectionDate) = @Year
+	and Month(InspectionDate) = @Month
+)
+BEGIN
+	INSERT INTO #tmpRft (Line,Date,Status)
+	select
+		 Line = rft.SewingLineID,
+		 Date = DAY(rft.InspectionDate),
+		 Status = rft.Result
+	from SampleRFTInspection rft WITH(NOLOCK)
+	where rft.FactoryID = @FactoryID
+	and Year(rft.InspectionDate) = @Year
+	and Month(rft.InspectionDate) = @Month
+	AND SubmitDate IS NOT NULL
+END
+ELSE
+BEGIN
+	INSERT INTO #tmpRft (Line,Date,Status)
+	select
+		 rft.Line,
+		 Date = DAY(rft.InspectionDate),
+		 rft.Status
+	from RFT_Inspection rft WITH(NOLOCK)
+	where rft.FactoryID = @FactoryID
+	and Year(rft.InspectionDate) = @Year
+	and Month(rft.InspectionDate) = @Month
+END
+
+
 
 select
 	Date = d.date,

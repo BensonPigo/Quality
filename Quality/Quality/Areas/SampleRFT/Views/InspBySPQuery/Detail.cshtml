@@ -139,15 +139,17 @@
                         <td>SP#</td>
                         <td class="valueColor" style="width:20%">@Model.Setting.OrderID</td>
                         <td style="padding-left:10px;">PO#</td>
-                        <td colspan="3" class="valueColor" style="width:20%">@Model.Setting.CustPONo</td>
+                        <td colspan="5" class="valueColor" >@Model.Setting.CustPONo</td>
                     </tr>
                     <tr>
                         <td>Style</td>
                         <td class="valueColor">@Model.Setting.StyleID</td>
                         <td style="padding-left:10px;">Brand</td>
-                        <td class="valueColor" style="width:20%">@Model.Setting.BrandID</td>
+                        <td class="valueColor" style="width:15%">@Model.Setting.BrandID</td>
                         <td style="padding-left:10px;">Season</td>
-                        <td class="valueColor" style="width:20%">@Model.Setting.SeasonID</td>
+                        <td class="valueColor" style="width: 10%; padding-left: 5px;">@Model.Setting.SeasonID</td>
+                        <td style="padding-left:10px;">Order Qty</td>
+                        <td class="valueColor" style="width: 10%; padding-left: 5px; ">@Model.Setting.OrderQty</td>
                     </tr>
                     <tr>
                         <td>Article</td>
@@ -159,9 +161,13 @@
                         <td style="padding-right:10px;">Factory</td>
                         <td class="valueColor">@Model.Setting.FactoryID</td>
                         <td style="padding-left:10px;">Sample Stage</td>
-                        <td class="valueColor" style="width:20%">@Model.Setting.SampleStage</td>
-                        <td style="padding-left:10px;">Order Qty</td>
-                        <td class="valueColor" style="width:20%">@Model.Setting.OrderQty</td>
+                        <td class="valueColor" style="padding-left: 5px;">@Model.Setting.SampleStage</td>
+                        <td style="padding-left:10px;">Dest.</td>
+                        <td class="valueColor">@Model.Setting.Dest</td>
+                        <td style="padding-left:10px;">VasShas</td>
+                        <td class="valueColor">
+                            @Html.CheckBoxFor(o => o.Setting.VasShas, new { @disabled = "disabled", @class = "checkboxInput" ,@style="height:1em" })
+                        </td>
                     </tr>
                 </table>
             </div>

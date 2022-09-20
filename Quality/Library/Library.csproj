@@ -37,6 +37,9 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
       <HintPath>..\..\_Dll\Microsoft.Office.Interop.Excel.dll</HintPath>
     </Reference>
+    <Reference Include="Sci.Proj">
+      <HintPath>..\..\_Dll\Sci.Proj.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />

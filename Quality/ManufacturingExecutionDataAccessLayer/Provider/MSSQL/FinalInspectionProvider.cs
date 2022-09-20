@@ -80,7 +80,8 @@ select  ID                             ,
         HasOtherImage = Cast(IIF(exists(select 1 from SciPMSFile_FinalInspection_OtherImage b WITH(NOLOCK) where a.id= b.id),1,0) as bit),
         CheckFGPT                      ,
         [FGWT] = iif(a.InspectionStage = 'Final', ISNULL(g.WashResult, 'Lacking Test') , ''),
-        [FGPT] = iif(a.InspectionStage = 'Final', fgpt.Result, '')
+        [FGPT] = iif(a.InspectionStage = 'Final', fgpt.Result, ''),
+        [ISFD] = cast(I.ISFD as bit)
 from FinalInspection a with (nolock)
 outer apply (
 	select [GarmentTestID] = g.ID, [WashResult] = case g.WashResult when 'F' then 'Failed Test' when 'P' then 'Completed Test' else 'Lacking Test' end
@@ -100,6 +101,17 @@ outer apply (
 		where g.[GarmentTestID] = t.ID
 	)t
 )fgpt
+outer apply (
+	select [ISFD] = 
+			MAX(case when sr.RR = 1 or sr.LR = 1 then 1
+				when s.ExpectionFormDate >= DATEADD(Year,-2, GETDATE()) then 1
+			else 0
+			end)
+	from SciProduction_Orders o with (nolock)
+	inner join SciProduction_Style s with (nolock) on s.Ukey = o.StyleUkey
+	left join SciProduction_Style_RRLR_Report sr with (nolock) on s.Ukey = sr.StyleUkey
+	where exists (select 1 from FinalInspection_Order fo with (nolock) where fo.ID = a.ID and fo.OrderID = o.ID)
+)I
 where a.ID = @ID
 ";
             IList<FinalInspection> listResult = ExecuteList<FinalInspection>(CommandType.Text, sqlGetData, objParameter);
@@ -625,6 +637,9 @@ where   ID = @FinalInspectionID
                             { "@Qty", DbType.Int32, defectItem.Qty }
                         };
 
+                    List<string> OperationList = string.IsNullOrEmpty(defectItem.Operation) ? new List<string>() : defectItem.Operation.Split(',').ToList();
+                    List<string> OperatorList = string.IsNullOrEmpty(defectItem.Operator) ? new List<string>() : defectItem.Operator.Split(',').ToList();
+
                     if (defectItem.Ukey == -1)
                     {
                         sqlUpdateFinalInspectionDetail = @"
@@ -652,7 +667,9 @@ where   ID = @FinalInspectionID
     begin
         delete  FinalInspection_Detail where   Ukey = @Ukey
     end
-    
+    ;
+
+        delete  FinalInspection_Detail_Operation where   InspectionDetailUkey = @Ukey
 ";
                         ExecuteNonQuery(CommandType.Text, sqlUpdateFinalInspectionDetail, detailParameter);
                     }
@@ -678,6 +695,30 @@ insert into FinalInspection_DetailImage(ID, FinalInspection_DetailUkey ,Remark)
                         };
 
                             ExecuteNonQuery(CommandType.Text, sqlInsertFinalInspection_DetailImage, imgParameter);
+                        }
+
+                        int i = 0;
+                        foreach (var strOperation in OperationList)
+                        {
+                            string strOperator = OperatorList[i];
+                            string sqlInsertFinalInspection_DetailImage = @"
+INSERT INTO FinalInspection_Detail_Operation
+           (InspectionDetailUkey
+           ,InlineOperation
+           ,InlineOperator)
+     VALUES
+           (@FinalInspection_DetailUkey
+           ,@Operation
+           ,@Operator)
+";
+                            SQLParameterCollection imgParameter = new SQLParameterCollection() {
+                            { "@FinalInspection_DetailUkey", DbType.Int64, defectItem.Ukey },
+                            { "@Operation",DbType.String, strOperation},
+                            { "@Operator",DbType.String, strOperator},
+                        };
+
+                            ExecuteNonQuery(CommandType.Text, sqlInsertFinalInspection_DetailImage, imgParameter);
+                            i++;
                         }
                     }
                 }
@@ -1245,6 +1286,7 @@ where   ID IN (
 select  f.CustPONO,
         f.InspectionResult,
         f.FactoryID,
+        f.InspectionStage,
         [SP] = (SELECT Stuff((select concat( ',',OrderID) 
                                 from  FinalInspection_Order fo with (nolock) 
                                 where fo.ID = f.ID
@@ -1563,16 +1605,15 @@ r.EndlineCGradeQty
             string sqlGetData = $@"
 declare @ID varchar(13) = @InspectionID
 
-select  r.FirstInspectionDate,
+select  [FirstInspectionDate] = format(dateadd(hour, -system.UTCOffsetTimeZone, r.FirstInspectionDate), 'yyyy-MM-ddTHH:mm:ss'),
         [DefectQty] = Breakdown_Detail.Qty,
         Breakdown.PassQty,
         Breakdown.RejectQty,
         Breakdown.FixQty,
         [username] = (select Pivot88UserName from pass1 where id = r.QC),
-        r.FirstInspectionDate,
-        r.LastinspectionDate,
+        [LastinspectionDate] = format(dateadd(hour, -system.UTCOffsetTimeZone, r.LastinspectionDate), 'yyyy-MM-ddTHH:mm:ss'),
         [POQty] = orderInfo.Qty,
-        orderInfo.BuyerDelivery,
+        [BuyerDelivery] = format(orderInfo.BuyerDelivery, 'yyyy-MM-ddTHH:mm:ss'),
         [Color] = Color.val,
         r.Shift,
         r.FactoryID,
@@ -1581,6 +1622,7 @@ select  r.FirstInspectionDate,
         orderInfo.CustCDID,
         {dynamicCol}
 from {inspectionReportTable} r with (nolock)
+cross join system
 outer apply(select  [RejectQty] = isnull(sum(RejectQty), 0),
                     [PassQty] = isnull(sum(PassQty), 0),
                     [FixQty] = isnull(sum(FixQty), 0)
@@ -1713,7 +1755,7 @@ where img.{inspectionReportTable}ID = @ID
 declare @ID varchar(13) = @InspectionID
 
 
-Select	f.AuditDate,
+Select	[AuditDate] = format(f.AuditDate, 'yyyy-MM-ddTHH:mm:ss'),
 		f.RejectQty,
 		f.InspectionResult,
 		[DefectQty] = (select isnull(sum(Qty), 0) from FinalInspection_Detail with (nolock) where ID = f.ID),
@@ -1728,14 +1770,14 @@ Select	f.AuditDate,
 		[InspectionMinutes] = Round(DATEDIFF(SECOND, f.AddDate, f.EditDate) / 60.0, 0),
 		[CFA] = isnull((select Pivot88UserName from quality_pass1 with (nolock) where ID = f.CFA), ''),
 		OrderInfo.POQty,
-		OrderInfo.ETD_ETA,
+		[ETD_ETA] = format(OrderInfo.ETD_ETA, 'yyyy-MM-ddTHH:mm:ss'),
 		f.CustPONO,
         OrderInfo.CustomerPo,
         [ReportTypeID] = case when OrderInfo.IsDestJP = 1 then 25
                             when f.AcceptableQualityLevelsUkey  = -1 then 26
                             else 12 end,
-        [DateStarted] = f.AddDate,
-        [InspectionCompletedDate] = f.EditDate,
+        [DateStarted] = format(dateadd(hour, -system.UTCOffsetTimeZone, f.AddDate), 'yyyy-MM-ddTHH:mm:ss'),
+        [InspectionCompletedDate] = format(dateadd(hour, -system.UTCOffsetTimeZone, f.EditDate), 'yyyy-MM-ddTHH:mm:ss'),
         f.OthersRemark,
         f.FabricApprovalDoc,
         f.SealingSampleDoc,
@@ -1763,6 +1805,7 @@ Select	f.AuditDate,
                                 else 'pass' end,
         [MoistureComment] = SUBSTRING(MoistureComment.val, 1, 255)
 from FinalInspection f with (nolock)
+cross join system
 outer apply (select	[POQty] = sum(o.Qty),
 					[ETD_ETA] = max(o.BuyerDelivery),
                     [CustomerPo] = max(o.CustCDID),

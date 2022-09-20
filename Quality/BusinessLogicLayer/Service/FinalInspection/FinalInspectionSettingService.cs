@@ -161,6 +161,7 @@ namespace BusinessLogicLayer.Service
                     int totalAvailableQty = setting.SelectedPO.Sum(s => s.AvailableQty);
                     setting.AcceptableQualityLevels = _FinalInspFromPMSProvider.GetAcceptableQualityLevelsForSetting().ToList();
                     var AQLResult = setting.AcceptableQualityLevels.AsEnumerable();
+                    int? maxStart = 0;
 
                     switch (setting.AQLPlan)
                     {
@@ -183,28 +184,65 @@ namespace BusinessLogicLayer.Service
                             };
                             break;
                         case "1.0 Level I":
-                            AQLResult = setting.AcceptableQualityLevels
-                                .Where(s => s.AQLType == 1 &&
-                                       s.InspectionLevels == "1" &&
-                                       totalAvailableQty >= s.LotSize_Start && totalAvailableQty <= s.LotSize_End);
+                            maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "1").Max(o => o.LotSize_Start);
+
+                            if (totalAvailableQty > maxStart)
+                            {
+                                AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "1").OrderByDescending(o => o.LotSize_Start);
+                            }
+                            else
+                            {
+                                AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "1" && o.LotSize_Start <= totalAvailableQty && totalAvailableQty <= o.LotSize_End);
+                            }
+                            //AQLResult = setting.AcceptableQualityLevels
+                            //    .Where(s => s.AQLType == 1 &&
+                            //           s.InspectionLevels == "1" &&
+                            //           totalAvailableQty >= s.LotSize_Start && totalAvailableQty <= s.LotSize_End);
                             break;
                         case "1.0 Level II":
-                            AQLResult = setting.AcceptableQualityLevels
-                                .Where(s => s.AQLType == 1 &&
-                                       s.InspectionLevels == "2" &&
-                                       totalAvailableQty >= s.LotSize_Start && totalAvailableQty <= s.LotSize_End);
+                            maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "2").Max(o => o.LotSize_Start);
+                            if (totalAvailableQty > maxStart)
+                            {
+                                AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "2").OrderByDescending(o => o.LotSize_Start);
+                            }
+                            else
+                            {
+                                AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "2" && o.LotSize_Start <= totalAvailableQty && totalAvailableQty <= o.LotSize_End);
+                            }
+                            //AQLResult = setting.AcceptableQualityLevels
+                            //    .Where(s => s.AQLType == 1 &&
+                            //           s.InspectionLevels == "2" &&
+                            //           totalAvailableQty >= s.LotSize_Start && totalAvailableQty <= s.LotSize_End);
                             break;
                         case "1.5 Level I":
-                            AQLResult = setting.AcceptableQualityLevels
-                                .Where(s => s.AQLType == (decimal)1.5 &&
-                                       s.InspectionLevels == "1" &&
-                                       totalAvailableQty >= s.LotSize_Start && totalAvailableQty <= s.LotSize_End);
+                            maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)1.5 && o.InspectionLevels == "1").Max(o => o.LotSize_Start);
+                            if (totalAvailableQty > maxStart)
+                            {
+                                AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)1.5 && o.InspectionLevels == "1").OrderByDescending(o => o.LotSize_Start);
+                            }
+                            else
+                            {
+                                AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)1.5 && o.InspectionLevels == "1" && o.LotSize_Start <= totalAvailableQty && totalAvailableQty <= o.LotSize_End);
+                            }
+                            //AQLResult = setting.AcceptableQualityLevels
+                            //    .Where(s => s.AQLType == (decimal)1.5 &&
+                            //           s.InspectionLevels == "1" &&
+                            //           totalAvailableQty >= s.LotSize_Start && totalAvailableQty <= s.LotSize_End);
                             break;
                         case "2.5 Level I":
-                            AQLResult = setting.AcceptableQualityLevels
-                                .Where(s => s.AQLType == (decimal)2.5 &&
-                                       s.InspectionLevels == "1" &&
-                                       totalAvailableQty >= s.LotSize_Start && totalAvailableQty <= s.LotSize_End);
+                            maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)2.5 && o.InspectionLevels == "1").Max(o => o.LotSize_Start);
+                            if (totalAvailableQty > maxStart)
+                            {
+                                AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)2.5 && o.InspectionLevels == "1").OrderByDescending(o => o.LotSize_Start);
+                            }
+                            else
+                            {
+                                AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)2.5 && o.InspectionLevels == "1" && o.LotSize_Start <= totalAvailableQty && totalAvailableQty <= o.LotSize_End);
+                            }
+                            //AQLResult = setting.AcceptableQualityLevels
+                            //    .Where(s => s.AQLType == (decimal)2.5 &&
+                            //           s.InspectionLevels == "1" &&
+                            //           totalAvailableQty >= s.LotSize_Start && totalAvailableQty <= s.LotSize_End);
                             break;
                         case "100% Inspection":
                             AQLResult = new List<AcceptableQualityLevels>() {

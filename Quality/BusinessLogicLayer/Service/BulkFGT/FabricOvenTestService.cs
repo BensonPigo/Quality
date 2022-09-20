@@ -95,10 +95,10 @@ namespace BusinessLogicLayer.Service
                     return baseResult;
                 }
 
-                if (fabricOvenTest_Detail_Result.Details.Any(s => 
+                if (fabricOvenTest_Detail_Result.Details.Any(s =>
                     string.IsNullOrEmpty(s.ChangeScale) ||
                     string.IsNullOrEmpty(s.StainingScale) ||
-                    string.IsNullOrEmpty(s.Result) 
+                    string.IsNullOrEmpty(s.Result)
                 ))
                 {
                     baseResult.Result = false;
@@ -131,7 +131,7 @@ namespace BusinessLogicLayer.Service
                 fabricOvenTest_Detail_Result = _FabricOvenTestProvider.GetFabricOvenTest_Detail(poID, TestNo);
 
                 fabricOvenTest_Detail_Result.ScaleIDs = _ScaleProvider.Get().Select(s => s.ID).ToList();
-                
+
                 return fabricOvenTest_Detail_Result;
             }
             catch (Exception ex)
@@ -223,7 +223,7 @@ namespace BusinessLogicLayer.Service
                     }
 
                     if (fabricOvenTest_Detail_Detail.ResultChange.ToUpper() == "FAIL" ||
-                        fabricOvenTest_Detail_Detail.ResultStain.ToUpper() == "FAIL"  ||
+                        fabricOvenTest_Detail_Detail.ResultStain.ToUpper() == "FAIL" ||
                         fabricOvenTest_Detail_Detail.ResultChange == string.Empty ||
                         fabricOvenTest_Detail_Detail.ResultStain == string.Empty
                         )
@@ -256,7 +256,7 @@ namespace BusinessLogicLayer.Service
                     _FabricOvenTestProvider.EditFabricOvenTestDetail(fabricOvenTest_Detail_Result, userID);
                 }
 
-                
+
             }
             catch (Exception ex)
             {
@@ -295,7 +295,7 @@ namespace BusinessLogicLayer.Service
                 BaseResult baseResult = ToPdfFabricOvenTestDetail(poID, TestNo, out string pdfFileName, isTest);
                 string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", pdfFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
-                { 
+                {
                     To = toAddress,
                     CC = ccAddress,
                     Subject = "Fabric Oven Test - Test Fail",
@@ -547,7 +547,7 @@ namespace BusinessLogicLayer.Service
                 string imgPath_AfterPicture = string.Empty;
                 if (dtOven.Rows[0]["TestBeforePicture"] != DBNull.Value)
                 {
-                    byte[] bytes = (byte[])dtOven.Rows[0]["TestBeforePicture"]; 
+                    byte[] bytes = (byte[])dtOven.Rows[0]["TestBeforePicture"];
                     imgPath_BeforePicture = ToolKit.PublicClass.AddImageSignWord(bytes, dtOven.Rows[0]["ReportNo"].ToString(), ToolKit.PublicClass.SingLocation.MiddleItalic, test: IsTest.ToLower() == "true");
                 }
 
@@ -865,7 +865,7 @@ namespace BusinessLogicLayer.Service
                             Excel.Range r2 = worksheetPicture.get_Range("A1:A20").EntireRow;
                             paste2.Insert(Excel.XlInsertShiftDirection.xlShiftToRight, r2.Copy(Type.Missing));
 
-                            if(!string.IsNullOrEmpty(imgPath_BeforePicture))
+                            if (!string.IsNullOrEmpty(imgPath_BeforePicture))
                             {
                                 cell = worksheetn.Cells[54, 2];
                                 worksheetn.Shapes.AddPicture(imgPath_BeforePicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 435, 280);
@@ -876,7 +876,8 @@ namespace BusinessLogicLayer.Service
                                 worksheetn.Shapes.AddPicture(imgPath_AfterPicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 435, 280);
                             }
                         }
-                        else if (!g1) {
+                        else if (!g1)
+                        {
                             Excel.Worksheet worksheetn = excel.ActiveWorkbook.Worksheets[defaultSheet + alladdSheet + i];
                             Excel.Range paste2 = worksheetn.get_Range($"A46", Type.Missing);
                             Excel.Range r2 = worksheetPicture.get_Range("A1:A20").EntireRow;
@@ -950,7 +951,7 @@ namespace BusinessLogicLayer.Service
                 result.ErrorMessage = ex.ToString();
             }
 
-            
+
 
             return result;
         }

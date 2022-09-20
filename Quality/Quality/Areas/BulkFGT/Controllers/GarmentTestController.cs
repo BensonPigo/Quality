@@ -404,6 +404,8 @@ namespace Quality.Areas.BulkFGT.Controllers
             {
                 item.Location = string.Empty;
             }
+            result.Detail.TestBeforePicture = result.Detail.TestBeforePicture == null ? null : ImageHelper.ImageCompress(result.Detail.TestBeforePicture);
+            result.Detail.TestAfterPicture = result.Detail.TestAfterPicture == null ? null : ImageHelper.ImageCompress(result.Detail.TestAfterPicture);
 
             GarmentTest_Detail_Result saveresult = _GarmentTest_Service.Save_GarmentTestDetail(result);
             if (saveresult.Result.Value)

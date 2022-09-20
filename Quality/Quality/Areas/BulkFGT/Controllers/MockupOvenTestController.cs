@@ -162,6 +162,9 @@ namespace Quality.Areas.BulkFGT.Controllers
                 Req.MockupOven_Detail = new List<MockupOven_Detail_ViewModel>();
             }
 
+            Req.TestBeforePicture = Req.TestBeforePicture == null ? null : ImageHelper.ImageCompress(Req.TestBeforePicture);
+            Req.TestAfterPicture = Req.TestAfterPicture == null ? null : ImageHelper.ImageCompress(Req.TestAfterPicture);
+
             BaseResult result = _MockupOvenService.Create(Req, this.MDivisionID, this.UserID, out string ReportNo);
 
             Req.Request = new MockupOven_Request()
@@ -218,6 +221,9 @@ namespace Quality.Areas.BulkFGT.Controllers
             {
                 Req.MockupOven_Detail = new List<MockupOven_Detail_ViewModel>();
             }
+
+            Req.TestBeforePicture = Req.TestBeforePicture == null ? null : ImageHelper.ImageCompress(Req.TestBeforePicture);
+            Req.TestAfterPicture = Req.TestAfterPicture == null ? null : ImageHelper.ImageCompress(Req.TestAfterPicture);
 
             BaseResult result = _MockupOvenService.Update(Req, this.UserID);
             Req.Request = new MockupOven_Request()
@@ -471,7 +477,12 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += $"<td><select id='MockupOven_Detail_{lastNO}__ChangeScale' name='MockupOven_Detail[{lastNO}].ChangeScale'>"; // ChangeScale
             foreach (var val in Scales)
             {
-                html += "<option value='" + val.Value + "'>" + val.Text + "</option>";
+                string selected = string.Empty;
+                if (val.Value == "4-5")
+                {
+                    selected = "selected";
+                }
+                html += $"<option {selected} value='" + val.Value + "'>" + val.Text + "</option>";
             }
             html += "</select></td>";
 
@@ -485,7 +496,12 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += $"<td><select id='MockupOven_Detail_{lastNO}__StainingScale' name='MockupOven_Detail[{lastNO}].StainingScale'>"; // StainingScale
             foreach (var val in Scales)
             {
-                html += "<option value='" + val.Value + "'>" + val.Text + "</option>";
+                string selected = string.Empty;
+                if (val.Value == "4-5")
+                {
+                    selected = "selected";
+                }
+                html += $"<option {selected} value='" + val.Value + "'>" + val.Text + "</option>";
             }
             html += "</select></td>";
 

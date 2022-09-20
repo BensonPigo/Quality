@@ -469,5 +469,23 @@ namespace Quality.Controllers
             ViewBag.ExitReload = ExitReload ? "window.opener.document.location.reload();" : string.Empty;
             return View(model);
         }
+        public ActionResult OperationList(string Title, string FinalInspectionID, string TargetID)
+        {
+            var model = _PublicWindowService.Get_Operation(FinalInspectionID, string.Empty);
+
+            ViewData["Title"] = Title;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult OperationList(string Title, string FinalInspectionID, string Operation, string TargetID)
+        {
+            var model = _PublicWindowService.Get_Operation(FinalInspectionID, Operation);
+
+            ViewData["Title"] = Title;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            return View(model);
+        }
     }
 }

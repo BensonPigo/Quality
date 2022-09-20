@@ -160,23 +160,51 @@ namespace Quality.Areas.SampleRFT.Controllers
             var AcceptedQty = 0;
             var RejectQty = 0;
             long AcceptableQualityLevelsUkey = 0;
+            int? maxStart = 0;
             AcceptableQualityLevels tmp = new AcceptableQualityLevels();
             switch (AQLPlan)
             {
                 case "1.0 Level":
-                    tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "1" && o.LotSize_Start <= OrderQty && OrderQty <= o.LotSize_End).FirstOrDefault();
+                    maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "1").Max(o => o.LotSize_Start);
+                    if (OrderQty > maxStart)
+                    {
+                        tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "1").OrderByDescending(o => o.LotSize_Start).FirstOrDefault();
+                    }
+                    else
+                    {
+                        tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "1" && o.LotSize_Start <= OrderQty && OrderQty <= o.LotSize_End).FirstOrDefault();
+                    }
+
                     SamplePlanQty = tmp.SampleSize.Value;
                     AcceptedQty = tmp.AcceptedQty.Value;
                     AcceptableQualityLevelsUkey = tmp.Ukey;
                     break;
                 case "1.5 Level":
-                    tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(1.5) && o.InspectionLevels == "1" && o.LotSize_Start <= OrderQty && OrderQty <= o.LotSize_End).FirstOrDefault();
+                    maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(1.5) && o.InspectionLevels == "1").Max(o => o.LotSize_Start);
+                    if (OrderQty > maxStart)
+                    {
+                        tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(1.5) && o.InspectionLevels == "1").OrderByDescending(o => o.LotSize_Start).FirstOrDefault();
+                    }
+                    else
+                    {
+                        tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(1.5) && o.InspectionLevels == "1" && o.LotSize_Start <= OrderQty && OrderQty <= o.LotSize_End).FirstOrDefault();
+                    }
+
                     SamplePlanQty = tmp.SampleSize.Value;
                     AcceptedQty = tmp.AcceptedQty.Value;
                     AcceptableQualityLevelsUkey = tmp.Ukey;
                     break;
                 case "2.5 Level":
-                    tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(2.5) && o.InspectionLevels == "1" && o.LotSize_Start <= OrderQty && OrderQty <= o.LotSize_End).FirstOrDefault();
+                    maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(2.5) && o.InspectionLevels == "1").Max(o => o.LotSize_Start);
+                    if (OrderQty > maxStart)
+                    {
+                        tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(2.5) && o.InspectionLevels == "1").OrderByDescending(o => o.LotSize_Start).FirstOrDefault();
+                    }
+                    else
+                    {
+                        tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(2.5) && o.InspectionLevels == "1" && o.LotSize_Start <= OrderQty && OrderQty <= o.LotSize_End).FirstOrDefault();
+                    }
+
                     SamplePlanQty = tmp.SampleSize.Value;
                     AcceptedQty = tmp.AcceptedQty.Value;
                     AcceptableQualityLevelsUkey = tmp.Ukey;
@@ -284,6 +312,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                 model.CheckOuterCarton = data.CheckOuterCarton;
                 model.CheckPackingMode = data.CheckPackingMode;
                 model.CheckHangtag = data.CheckHangtag;
+                model.CheckEMB = data.CheckEMB;
                 model.CheckHT = data.CheckHT;
                 model.OrderID = data.OrderID;
                 model.ID = data.ID;
@@ -624,7 +653,8 @@ namespace Quality.Areas.SampleRFT.Controllers
                 {
                     continue;
                 }
-                model.Images.Add(new RFT_Inspection_Measurement_Image() { Image = item.TempImage, Seq = item.Seq });
+                model.Images.Add(new RFT_Inspection_Measurement_Image() { Image = (item.TempImage), Seq = item.Seq });
+                //model.Images.Add(new RFT_Inspection_Measurement_Image() { Image = ImageHelper.ImageCompress(item.TempImage), Seq = item.Seq });
             }
 
             // 圖片排除要刪除的
@@ -982,8 +1012,10 @@ namespace Quality.Areas.SampleRFT.Controllers
                 if (tempImgs.Any())
                 {
                     foreach (var t in tempImgs)
-                    {
-                        t.Image = t.TempImage;
+                    {                       
+                        // 加入的圖片都壓縮至500KB
+                        //t.Image = ImageHelper.ImageCompress(t.TempImage);
+                        t.Image = (t.TempImage);
                     }
 
                     item.Images = tempImgs;
@@ -1311,7 +1343,7 @@ namespace Quality.Areas.SampleRFT.Controllers
 
                     foreach (var t in imgs)
                     {
-                        t.Image = t.TempImage;
+                        t.Image = ImageHelper.ImageCompress(t.TempImage);
                     }
                     item.Images = imgs;
                     item.ID = Req.ID;
@@ -1415,6 +1447,15 @@ namespace Quality.Areas.SampleRFT.Controllers
             }
             else
             {
+                foreach (var detail in Req.DetailList)
+                {
+                    detail.Front = detail.Front != null ? ImageHelper.ImageCompress(detail.Front) : detail.Front;
+                    detail.Back = detail.Back != null ? ImageHelper.ImageCompress(detail.Back) : detail.Back;
+                    detail.Right = detail.Right != null ? ImageHelper.ImageCompress(detail.Right) : detail.Right;
+                    detail.Left = detail.Left != null ? ImageHelper.ImageCompress(detail.Left) : detail.Left;
+                    detail.Front = detail.Front != null ? ImageHelper.ImageCompress(detail.Front) : detail.Front;
+                }
+
                 InspectionBySP_DummyFit model = _Service.DummyFitProcess(Req);
 
                 TempData["AllSize"] = model.ArticleSizeList;

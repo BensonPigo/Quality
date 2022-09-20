@@ -70,7 +70,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 objApp.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
                 Microsoft.Office.Interop.Excel.Worksheet worksheet = objApp.ActiveWorkbook.Worksheets[1]; // 取得工作表
 
-                for (int i = 0; i<= model.DataList.Count -1; i++)
+                for (int i = 0; i <= model.DataList.Count - 1; i++)
                 {
                     worksheet.Cells[i + 2, 1] = model.DataList[i].Type;
                     worksheet.Cells[i + 2, 2] = model.DataList[i].ReportNo;

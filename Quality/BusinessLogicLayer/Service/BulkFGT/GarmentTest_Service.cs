@@ -147,7 +147,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             return result;
         }
-       
+
 
         #region Save & Update & Encode & Delete
         public GarmentTest_Result Generate_FGWT(GarmentTest_ViewModel Main, GarmentTest_Detail_ViewModel Detail)
@@ -446,7 +446,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 if (detail.Status.ToUpper() == "Confirmed")
                 {
                     emptyMsg += "Encode data cannot delete.";
-                } 
+                }
 
                 if (!string.IsNullOrEmpty(emptyMsg))
                 {
@@ -485,7 +485,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         _IGarmentTestDetailProvider = new GarmentTestDetailProvider(_ISQLDataTransaction);
                         _IGarmentTestProvider = new GarmentTestProvider(_ISQLDataTransaction);
 
-                    
+
                         // 重新判斷Result
                         if (_IGarmentTestDetailProvider.Encode_GarmentTestDetail(ID, No, "Confirmed") == false ||
                             _IGarmentTestDetailProvider.Update_GarmentTestDetail_Result(ID, No) == false ||
@@ -526,7 +526,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             return result;
         }
-       
+
         #endregion
 
         // Sent Mail 
@@ -1117,7 +1117,7 @@ and t.GarmentTest=1
                                 {
                                     technicianName = dtTechnicianInfo.Rows[0]["name"].ToString();
                                     byte[] imgData = (byte[])dtTechnicianInfo.Rows[0]["SignaturePic"];
-                                  
+
                                     string imageName = $"{Guid.NewGuid()}.jpg";
                                     string imgPath;
 
@@ -1633,7 +1633,7 @@ and t.GarmentTest=1
 
                             #region Shrinkage
 
-                            if (all_Data.Shrinkages.Where(x => x.Location.EqualString("B")).Any())
+                            if (dtShrinkages.Select("Location = 'B'").Length > 0)
                             {
                                 DataTable dt_B = dtShrinkages.Select("Location = 'B'").CopyToDataTable();
 
@@ -1685,7 +1685,7 @@ and t.GarmentTest=1
                                 {
                                     for (int c = 3; c < dt.Columns.Count; c++)
                                     {
-                                        worksheet.Cells[35+ r, c] = this.AddShrinkageUnit_18(dt, r, c);
+                                        worksheet.Cells[35 + r, c] = this.AddShrinkageUnit_18(dt, r, c);
                                     }
                                 }
                             }
@@ -1758,6 +1758,7 @@ and t.GarmentTest=1
                                 rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
                                 Marshal.ReleaseComObject(rng);
                             }
+
                             #endregion
 
                         }
@@ -1770,7 +1771,7 @@ and t.GarmentTest=1
                             if (all_Data.Detail.TestBeforePicture != null)
                             {
                                 Excel.Range cell = worksheet.Cells[82, 2];
-                                string imgPath = ToolKit.PublicClass.AddImageSignWord(all_Data.Detail.TestBeforePicture, all_Data.Detail.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test:test);
+                                string imgPath = ToolKit.PublicClass.AddImageSignWord(all_Data.Detail.TestBeforePicture, all_Data.Detail.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
                                 worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 328, 247);
                             }
 
@@ -1806,7 +1807,7 @@ and t.GarmentTest=1
                             else if (MyUtility.Convert.GetString(all_Data.Detail.WashResult).EqualString("F") || ApperanceRejected)
                             {
                                 worksheet.Cells[76, 6] = "V";
-                            } 
+                            }
                             #endregion
 
                             #region 插入圖片與Technician名字
@@ -1822,7 +1823,7 @@ where t.ID = '{all_Data.Detail.inspector}'
 and t.GarmentTest=1
 ";
                                 string technicianName = string.Empty;
-                               
+
                                 Excel.Range cell = worksheet.Cells[12, 2];
 
                                 DataTable dtTechnicianInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sql_cmd, new ADOHelper.Template.MSSQL.SQLParameterCollection(), Common.ProductionDataAccessLayer);
@@ -1851,7 +1852,7 @@ and t.GarmentTest=1
                                         Image img = Image.FromStream(ms);
                                         img.Save(imgPath);
                                     }
-                                    
+
                                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellNew.Left, cellNew.Top, 100, 24);
                                 }
                                 else
@@ -2442,6 +2443,7 @@ and t.GarmentTest=1
                                 rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
                                 Marshal.ReleaseComObject(rng);
                             }
+
                             #endregion
                         }
                         #endregion
@@ -2593,7 +2595,7 @@ and t.GarmentTest=1
                     worksheet_2020.Cells[5, 4] = "adidas Model No.: " + StyleName;
 
                     worksheet_2020.Cells[6, 1] = "T1 Supplier Ref.: " + orders.FactoryID;
-                    worksheet_2020.Cells[6, 3] = "T1 Factory Name: " +  orders.BrandAreaCode;
+                    worksheet_2020.Cells[6, 3] = "T1 Factory Name: " + orders.BrandAreaCode;
                     worksheet_2020.Cells[6, 4] = "LO to Factory: " + data.TxtLotoFactory;
 
                     if (data.DateSubmit.HasValue)
@@ -2660,7 +2662,7 @@ and t.GarmentTest=1
                     #region Save & Show Excel
 
 
-                 
+
                     string fileName_2020 = $"{basefileName_2020}_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
                     string filexlsx_2020 = fileName_2020 + ".xlsx";
                     string fileNamePDF_2020 = fileName_2020 + ".pdf";

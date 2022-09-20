@@ -34,3 +34,7 @@ Quality/QualityTests/obj/Debug/
 /Quality/packages
 Quality/Quality/Properties/PublishProfiles/FolderProfile.pubxml.user
 Quality/Quality/TMP/
+/AutoRemoveBackgroundProcess/AutoRemoveBackgroundProcess/obj
+/AutoRemoveBackgroundProcess/AutoRemoveBackgroundProcess/bin
+/ImageCompress/ImageCompress/bin
+/ImageCompress/ImageCompress/obj

@@ -45,7 +45,7 @@ namespace BusinessLogicLayer.Service
             {
                 _MockupOvenProvider = new MockupOvenProvider(Common.ProductionDataAccessLayer);
                 _MockupOvenDetailProvider = new MockupOvenDetailProvider(Common.ProductionDataAccessLayer);
-                mockupOven_model = _MockupOvenProvider.GetMockupOven(MockupOven, istop1: true).ToList().FirstOrDefault();                
+                mockupOven_model = _MockupOvenProvider.GetMockupOven(MockupOven, istop1: true).ToList().FirstOrDefault();
                 if (mockupOven_model != null)
                 {
                     mockupOven_model.ScaleID_Source = GetScale();
@@ -115,9 +115,9 @@ namespace BusinessLogicLayer.Service
                     selectListItems.Add(new SelectListItem { Value = item, Text = item });
                 }
             }
-            catch(Exception)
+            catch (Exception)
             {
-                
+
             }
 
             return selectListItems;
@@ -249,7 +249,7 @@ namespace BusinessLogicLayer.Service
                 cell = worksheet.Cells[13 + haveHTrow + 3, 2];
                 if (mockupOven.TestBeforePicture != null)
                 {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(mockupOven.TestBeforePicture, mockupOven.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test : IsTest.ToLower() == "true");
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(mockupOven.TestBeforePicture, mockupOven.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: IsTest.ToLower() == "true");
                     if (haveHT)
                     {
                         worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 377, 260);
@@ -271,7 +271,7 @@ namespace BusinessLogicLayer.Service
                     else
                     {
                         worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 400, 290);
-                    }                        
+                    }
                 }
 
                 #region 表身資料
@@ -315,7 +315,7 @@ namespace BusinessLogicLayer.Service
                     worksheet.Range[$"A{start_row}", $"N{start_row}"].RowHeight = ((maxLength / 20) + 1) * 16.5;
 
                     start_row++;
-                } 
+                }
                 #endregion
 
                 string fileName = $"{basefileName}{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";

@@ -166,7 +166,7 @@ namespace BusinessLogicLayer.Service
 
                 if (mockupCrocking.Signature != null)
                 {
-                    MemoryStream ms = new MemoryStream(mockupCrocking.Signature);                    
+                    MemoryStream ms = new MemoryStream(mockupCrocking.Signature);
                     Image img = Image.FromStream(ms);
                     string imageName = $"{Guid.NewGuid()}.jpg";
                     string imgPath;
@@ -194,7 +194,7 @@ namespace BusinessLogicLayer.Service
                 if (mockupCrocking.TestAfterPicture != null)
                 {
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(mockupCrocking.TestAfterPicture, mockupCrocking.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfter.Left + 5, cellAfter.Top + 5, 265, 272);              
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfter.Left + 5, cellAfter.Top + 5, 265, 272);
                 }
 
                 #region 表身資料
@@ -379,7 +379,7 @@ namespace BusinessLogicLayer.Service
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             _MockupCrockingProvider = new MockupCrockingProvider(_ISQLDataTransaction);
-            _MockupCrockingDetailProvider = new MockupCrockingDetailProvider(_ISQLDataTransaction);
+
             try
             {
                 _MockupCrockingProvider.Update(MockupCrocking);
@@ -448,7 +448,7 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public SendMail_Result FailSendMail(MockupFailMail_Request mail_Request )
+        public SendMail_Result FailSendMail(MockupFailMail_Request mail_Request)
         {
             _MockupCrockingProvider = new MockupCrockingProvider(Common.ProductionDataAccessLayer);
             string mailBody = MailTools.DataTableChangeHtml(_MockupCrockingProvider.GetMockupCrockingFailMailContentData(mail_Request.ReportNo), out AlternateView plainView);

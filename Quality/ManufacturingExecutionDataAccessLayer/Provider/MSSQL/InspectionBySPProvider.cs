@@ -161,7 +161,7 @@ AND NOT EXISTS(
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection para = new SQLParameterCollection();
             SbSql.Append($@"
-select o.CustPONO, o.StyleID, o.SeasonID, o.BrandID, o.Model , o.OrderTypeID ,o.Qty , FactoryID = o.FtyGroup
+select o.CustPONO, o.StyleID, o.SeasonID, o.BrandID, o.Model , o.OrderTypeID ,o.Qty , FactoryID = o.FtyGroup ,o.Dest  ,o.VasShas
     ,Article = Articles.Val
 	,ComboType = ComboType.Val
 	,TopSewingLineID = TopSewingLine.SewingLineID
@@ -390,6 +390,7 @@ update SampleRFTInspection
           ,CheckCareLabel = @CheckCareLabel
           ,CheckSecurityLabel = @CheckSecurityLabel
           ,CheckOuterCarton = @CheckOuterCarton
+          ,CheckEMB = @CheckEMB
           ,InspectionStep = @InspectionStep
           ,EditName= @userID
           ,EditDate= getdate()
@@ -421,6 +422,7 @@ where   ID = @ID
                     objParameter.Add("@CheckPackingMode", inspection.CheckPackingMode);
                     objParameter.Add("@CheckHangtag", inspection.CheckHangtag);
                     objParameter.Add("@CheckHT", inspection.CheckHT);
+                    objParameter.Add("@CheckEMB", inspection.CheckEMB);
 
 
                     break;
@@ -645,8 +647,6 @@ SELECT  a.StyleUkey
 			                when  isnull(a.Tol1, '0') = '0' and isnull(a.Tol2, '0') = '0' and isnull(a.SizeSpec, '0') = '0' then convert(bit, 1)
 			                when  isnull(a.SizeCode,'') = '' then convert(bit, 1)
 			                when  a.SizeSpec like '%[a-zA-Z]%' then convert(bit, 1)
-			                when  (UPPER(@SizeUnit) = 'INCH' and  a.SizeSpec like '%.%') then convert(bit, 1)
-			                when  (UPPER(@SizeUnit) = 'CM' and  a.SizeSpec like '%/%') then convert(bit, 1)
 			                else  convert(bit, 0) end
 FROM [ManufacturingExecution].[dbo].[Measurement] a with(nolock)
 where a.junk=0 

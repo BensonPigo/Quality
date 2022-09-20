@@ -900,5 +900,50 @@ Where 1=1
 
             return ExecuteList<Window_TestFailMail>(CommandType.Text, SbSql.ToString(), paras);
         }
+        public IList<Window_Operation> Get_Operation(string FinalInspectionID, string Operation)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+
+            string where = string.IsNullOrEmpty(Operation)? string.Empty :  $@" AND a.Operation LIKE @Operation";
+
+            paras.Add("@FinalInspectionID ", DbType.String, FinalInspectionID);
+            paras.Add("@Operation", DbType.String, Operation + "%");
+
+            //台北
+            SbSql.Append($@"
+select distinct Operation 
+INTO #base
+from InlineInspection a
+where EXISTS(
+	select 1
+	from FinalInspection_Order b
+	where b.ID = @FinalInspectionID AND a.OrderID=b.OrderID
+)
+
+select Operation
+	,Operator.EmployeeID --存這個
+	,Operator.Name       --UI顯示這個
+from #base a
+outer apply(
+	select  top 1 EmployeeID ,Name = FirstName+' '+LastName
+	from  InlineInspection i
+	inner join InlineEmployee emp on emp.EmployeeID = i.SewerID
+	where EXISTS(
+		select 1
+		from FinalInspection_Order f
+		where f.ID = @FinalInspectionID AND f.OrderID=i.OrderID
+	)
+    AND a.Operation=i.Operation
+	order by InspectionDate desc
+)Operator
+where 1=1 
+{where}
+
+drop table #base
+");
+
+            return ExecuteList<Window_Operation>(CommandType.Text, SbSql.ToString(), paras);
+        }
     }
 }

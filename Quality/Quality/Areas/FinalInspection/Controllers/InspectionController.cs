@@ -235,26 +235,63 @@ namespace Quality.Areas.FinalInspection.Controllers
             var SamplePlanQty = 0;
             var AcceptedQty = 0;
             var RejectQty = 0;
+            int? maxStart = 0;
             AcceptableQualityLevels tmp = new AcceptableQualityLevels();
             switch (AQLPlan)
             {
                 case "1.0 Level I":
-                    tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "1" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
+                    maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "1").Max(o => o.LotSize_Start);
+                    if (TotalAvailableQty > maxStart)
+                    {
+                        tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "1").OrderByDescending(o => o.LotSize_Start).FirstOrDefault();
+                    }
+                    else
+                    {
+                        tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "1" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
+                    }
+                    
                     SamplePlanQty = tmp.SampleSize.Value;
                     AcceptedQty = tmp.AcceptedQty.Value;
                     break;
                 case "1.0 Level II":
-                    tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "2" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
+                    maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "2").Max(o => o.LotSize_Start);
+                    if (TotalAvailableQty > maxStart)
+                    {
+                        tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "2").OrderByDescending(o => o.LotSize_Start).FirstOrDefault();
+                    }
+                    else
+                    {
+                        tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "2" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
+                    }
+                    
                     SamplePlanQty = tmp.SampleSize.Value;
                     AcceptedQty = tmp.AcceptedQty.Value;
                     break;
                 case "1.5 Level I":
-                    tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(1.5) && o.InspectionLevels == "1" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
+                    maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(1.5) && o.InspectionLevels == "1").Max(o => o.LotSize_Start);
+                    if (TotalAvailableQty > maxStart)
+                    {
+                        tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(1.5) && o.InspectionLevels == "1").OrderByDescending(o => o.LotSize_Start).FirstOrDefault();
+                    }
+                    else
+                    {
+                        tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(1.5) && o.InspectionLevels == "1" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
+                    }
+                    
                     SamplePlanQty = tmp.SampleSize.Value;
                     AcceptedQty = tmp.AcceptedQty.Value;
                     break;
                 case "2.5 Level I":
-                    tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(2.5) && o.InspectionLevels == "1" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
+                    maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(2.5) && o.InspectionLevels == "1").Max(o => o.LotSize_Start);
+                    if (TotalAvailableQty > maxStart)
+                    {
+                        tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(2.5) && o.InspectionLevels == "1").OrderByDescending(o => o.LotSize_Start).FirstOrDefault();
+                    }
+                    else
+                    {
+                        tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(2.5) && o.InspectionLevels == "1" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
+                    }
+                    
                     SamplePlanQty = tmp.SampleSize.Value;
                     AcceptedQty = tmp.AcceptedQty.Value;
                     break;
@@ -602,7 +639,10 @@ namespace Quality.Areas.FinalInspection.Controllers
                 {
                     foreach (var item in TmpFinalInspectionDefectItem_List.Where(o => o.Ukey == FinalInspection_DetailUkey))
                     {
-                        //model.Add(item.TempImage);
+                        if (item.LoginToken != this.LoginToken)
+                        {
+                            continue;
+                        }
                         model.Add(new ImageRemark()
                         { 
                             Image = item.TempImage,
@@ -615,7 +655,10 @@ namespace Quality.Areas.FinalInspection.Controllers
                     // DB沒有的就用RowIndex
                     foreach (var item in TmpFinalInspectionDefectItem_List.Where(o => o.RowIndex == FinalInspection_RowIndex))
                     {
-                        //model.Add(item.TempImage);
+                        if (item.LoginToken != this.LoginToken)
+                        {
+                            continue;
+                        }
                         model.Add(new ImageRemark()
                         {
                             Image = item.TempImage,
@@ -642,6 +685,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         {
             if (data.TempImage != null)
             {
+                data.LoginToken = this.LoginToken;
                 TmpFinalInspectionDefectItem_List.Add(data);
             }
             return Json(true);
@@ -655,6 +699,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             {
                 foreach (var data in list.Where(o=>o.TempImage != null))
                 {
+                    data.LoginToken = this.LoginToken;
                     TmpFinalInspectionDefectItem_List.Add(data);
                 }
             }
@@ -675,6 +720,51 @@ namespace Quality.Areas.FinalInspection.Controllers
             addDefct.RejectQty = latestModel.RejectQty;
             addDefct.SampleSize = latestModel.SampleSize;
 
+            addDefct.RejectQty = addDefct.RejectQty.HasValue ? addDefct.RejectQty : 0;
+            // 本次新增的圖片全面加入
+            foreach (var item in addDefct.ListFinalInspectionDefectItem)
+            {
+                long FinalInspection_DetailUkey = item.Ukey;
+                long RowIndex = item.RowIndex;
+
+                if (item.Ukey > 0)
+                {
+                    var sameUkeyImg = TmpFinalInspectionDefectItem_List.Where(o => o.Ukey == FinalInspection_DetailUkey);
+                    foreach (var data in sameUkeyImg)
+                    {
+                        if (data.LoginToken != this.LoginToken)
+                        {
+                            continue;
+                        }
+                        item.ListFinalInspectionDefectImage.Add(new ImageRemark()
+                        {
+                            Image = ImageHelper.ImageCompress(data.TempImage),
+                            Remark = data.TempRemark,
+                        });
+                    }
+                }
+                else
+                {
+                    var sameUkeyImg = TmpFinalInspectionDefectItem_List.Where(o => o.RowIndex == RowIndex);
+                    foreach (var data in sameUkeyImg)
+                    {
+                        if (data.LoginToken != this.LoginToken)
+                        {
+                            continue;
+                        }
+
+                        item.ListFinalInspectionDefectImage.Add(new ImageRemark()
+                        {
+                            Image = ImageHelper.ImageCompress(data.TempImage),
+                            Remark = data.TempRemark,
+                        });
+                    }
+                }
+            }
+
+            FinalInspectionAddDefectService Addsevice = new FinalInspectionAddDefectService();
+            Addsevice.UpdateFinalInspectionDetail(addDefct, this.UserID);
+
             if (goPage == "Back")
             {
                 fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
@@ -687,43 +777,6 @@ namespace Quality.Areas.FinalInspection.Controllers
             }
             else if (goPage == "Next")
             {
-                addDefct.RejectQty = addDefct.RejectQty.HasValue ? addDefct.RejectQty : 0;
-                // 本次新增的圖片全面加入
-                foreach (var item in addDefct.ListFinalInspectionDefectItem)
-                {
-                    long FinalInspection_DetailUkey = item.Ukey;
-                    long RowIndex = item.RowIndex;
-
-                    if (item.Ukey > 0)
-                    {
-                        var sameUkeyImg = TmpFinalInspectionDefectItem_List.Where(o => o.Ukey == FinalInspection_DetailUkey);
-                        foreach (var data in sameUkeyImg)
-                        {
-                            //item.ListFinalInspectionDefectImage.Add(data.TempImage);
-                            item.ListFinalInspectionDefectImage.Add(new ImageRemark()
-                            {
-                                Image = data.TempImage,
-                                Remark = data.TempRemark,
-                            });
-                        }
-                    }
-                    else
-                    {
-                        var sameUkeyImg = TmpFinalInspectionDefectItem_List.Where(o => o.RowIndex == RowIndex);
-                        foreach (var data in sameUkeyImg)
-                        {
-                            //item.ListFinalInspectionDefectImage.Add(data.TempImage);
-                            item.ListFinalInspectionDefectImage.Add(new ImageRemark()
-                            {
-                                Image = data.TempImage,
-                                Remark = data.TempRemark,
-                            });
-                        }
-                    }
-                }
-
-                FinalInspectionAddDefectService Addsevice = new FinalInspectionAddDefectService();
-                Addsevice.UpdateFinalInspectionDetail(addDefct, this.UserID);
 
                 fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
                 {
@@ -783,7 +836,11 @@ namespace Quality.Areas.FinalInspection.Controllers
                 {
                     foreach (var item in TmpBACriteriaItem_List.Where(o => o.Ukey == FinalInspection_DetailUkey))
                     {
-                        //model.Add(item.TempImage);
+                        if (item.LoginToken != this.LoginToken)
+                        {
+                            continue;
+                        }
+
                         model.Add(new ImageRemark()
                         {
                             Image = item.TempImage,
@@ -796,7 +853,11 @@ namespace Quality.Areas.FinalInspection.Controllers
                     // DB沒有的就用RowIndex
                     foreach (var item in TmpBACriteriaItem_List.Where(o => o.RowIndex == FinalInspection_RowIndex))
                     {
-                        //model.Add(item.TempImage);
+                        if (item.LoginToken != this.LoginToken)
+                        {
+                            continue;
+                        }
+
                         model.Add(new ImageRemark()
                         {
                             Image = item.TempImage,
@@ -815,6 +876,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         {
             if (data.TempImage != null)
             {
+                data.LoginToken = this.LoginToken;
                 TmpBACriteriaItem_List.Add(data);
             }
             return Json(true);
@@ -828,6 +890,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             {
                 foreach (var data in list.Where(o => o.TempImage != null))
                 {
+                    data.LoginToken = this.LoginToken;
                     TmpBACriteriaItem_List.Add(data);
                 }
             }
@@ -871,10 +934,14 @@ namespace Quality.Areas.FinalInspection.Controllers
                         var sameUkeyImg = TmpBACriteriaItem_List.Where(o => o.Ukey == FinalInspection_DetailUkey);
                         foreach (var data in sameUkeyImg)
                         {
-                            //item.ListBACriteriaImage.Add(data.TempImage);
+                            if (data.LoginToken != this.LoginToken)
+                            {
+                                continue;
+                            }
+
                             item.ListBACriteriaImage.Add(new ImageRemark()
                             {
-                                Image = data.TempImage,
+                                Image = ImageHelper.ImageCompress(data.TempImage),
                                 Remark = data.TempRemark,
                             });
                         }                    
@@ -884,10 +951,14 @@ namespace Quality.Areas.FinalInspection.Controllers
                         var sameUkeyImg = TmpBACriteriaItem_List.Where(o => o.RowIndex == RowIndex);
                         foreach (var data in sameUkeyImg)
                         {
-                            //item.ListBACriteriaImage.Add(data.TempImage);
+                            if (data.LoginToken != this.LoginToken)
+                            {
+                                continue;
+                            }
+
                             item.ListBACriteriaImage.Add(new ImageRemark()
                             {
-                                Image = data.TempImage,
+                                Image = ImageHelper.ImageCompress(data.TempImage),
                                 Remark = data.TempRemark,
                             });
 
@@ -1101,7 +1172,10 @@ namespace Quality.Areas.FinalInspection.Controllers
             {
                 foreach (var item in TmpListOthersImageItem_List)
                 {
-                    //model.Add(item.TempImage);
+                    if (item.LoginToken != this.LoginToken)
+                    {
+                        continue;
+                    }
 
                     model.Add(new ImageRemark()
                     {
@@ -1127,6 +1201,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         {
             if (data.TempImage != null)
             {
+                data.LoginToken = this.LoginToken;
                 TmpListOthersImageItem_List.Add(data);
             }
             return Json(true);
@@ -1140,6 +1215,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             {
                 foreach (var data in list.Where(o => o.TempImage != null))
                 {
+                    data.LoginToken = this.LoginToken;
                     TmpListOthersImageItem_List.Add(data);
                 }
             }
@@ -1162,9 +1238,13 @@ namespace Quality.Areas.FinalInspection.Controllers
                 model.ListOthersImageItem = new List<OtherImage>();
                 foreach (var item in TmpListOthersImageItem_List)
                 {
+                    if (item.LoginToken != this.LoginToken)
+                    {
+                        continue;
+                    }
                     OtherImage o = new OtherImage();
                     o.ID = model.FinalInspectionID;
-                    o.Image = item.TempImage;
+                    o.Image = ImageHelper.ImageCompress(item.TempImage);
                     o.Remark = item.TempRemark;
                     model.ListOthersImageItem.Add(o);
                 }
@@ -1191,9 +1271,13 @@ namespace Quality.Areas.FinalInspection.Controllers
                 model.ListOthersImageItem = new List<OtherImage>();
                 foreach (var item in TmpListOthersImageItem_List)
                 {
+                    if (item.LoginToken != this.LoginToken)
+                    {
+                        continue;
+                    }
                     OtherImage o = new OtherImage();
                     o.ID = model.FinalInspectionID;
-                    o.Image = item.TempImage;
+                    o.Image = ImageHelper.ImageCompress(item.TempImage);
                     o.Remark = item.TempRemark;
                     model.ListOthersImageItem.Add(o);
                 }

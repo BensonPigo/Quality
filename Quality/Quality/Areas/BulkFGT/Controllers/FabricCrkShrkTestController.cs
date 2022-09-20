@@ -138,7 +138,12 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += $"<select id='Crocking_Detail_{lastNO}__DryScale' name='Crocking_Detail[{lastNO}].DryScale' style='width:157px'>";
             foreach (string val in scaleIDs)
             {
-                html += "<option value='" + val + "'>" + val + "</option>";
+                string selected = string.Empty;
+                if (val == "4-5")
+                {
+                    selected = "selected";
+                }
+                html += $"<option {selected} value='" + val + "'>" + val + "</option>";
             }
             html += "</select>";
             html += "</td>";
@@ -152,7 +157,12 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += $"<select id='Crocking_Detail_{lastNO}__DryScale_Weft' name='Crocking_Detail[{lastNO}].DryScale_Weft' style='width:157px'>";
             foreach (string val in scaleIDs)
             {
-                html += "<option value='" + val + "'>" + val + "</option>";
+                string selected = string.Empty;
+                if (val == "4-5")
+                {
+                    selected = "selected";
+                }
+                html += $"<option {selected} value='" + val + "'>" + val + "</option>";
             }
             html += "</select>";
             html += "</td>";
@@ -166,7 +176,12 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += $"<select id='Crocking_Detail_{lastNO}__WetScale' name='Crocking_Detail[{lastNO}].WetScale' style='width:157px'>";
             foreach (string val in scaleIDs)
             {
-                html += "<option value='" + val + "'>" + val + "</option>";
+                string selected = string.Empty;
+                if (val == "4-5")
+                {
+                    selected = "selected";
+                }
+                html += $"<option {selected} value='" + val + "'>" + val + "</option>";
             }
             html += "</select>";
             html += "</td>";
@@ -180,7 +195,12 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += $"<select id='Crocking_Detail_{lastNO}__WetScale_Weft' name='Crocking_Detail[{lastNO}].WetScale_Weft' style='width:157px'>";
             foreach (string val in scaleIDs)
             {
-                html += "<option value='" + val + "'>" + val + "</option>";
+                string selected = string.Empty;
+                if (val == "4-5")
+                {
+                    selected = "selected";
+                }
+                html += $"<option {selected} value='" + val + "'>" + val + "</option>";
             }
             html += "</select>";
             html += "</td>";
@@ -220,6 +240,10 @@ namespace Quality.Areas.BulkFGT.Controllers
                 Result.Crocking_Detail = new List<FabricCrkShrkTestCrocking_Detail>();
             }
             Result.MDivisionID = this.MDivisionID;
+
+            Result.Crocking_Main.CrockingTestBeforePicture = Result.Crocking_Main.CrockingTestBeforePicture == null ? null : ImageHelper.ImageCompress(Result.Crocking_Main.CrockingTestBeforePicture);
+            Result.Crocking_Main.CrockingTestAfterPicture = Result.Crocking_Main.CrockingTestAfterPicture == null ? null : ImageHelper.ImageCompress(Result.Crocking_Main.CrockingTestAfterPicture);
+
             BaseResult saveResult = _FabricCrkShrkTest_Service.SaveFabricCrkShrkTestCrockingDetail(Result, this.UserID);
             if (saveResult.Result)
             {
@@ -413,6 +437,10 @@ namespace Quality.Areas.BulkFGT.Controllers
                 Result.Heat_Detail = new List<FabricCrkShrkTestHeat_Detail>();
             }
             Result.MDivisionID = this.MDivisionID;
+
+            Result.Heat_Main.HeatTestBeforePicture = Result.Heat_Main.HeatTestBeforePicture == null ? null : ImageHelper.ImageCompress(Result.Heat_Main.HeatTestBeforePicture);
+            Result.Heat_Main.HeatTestAfterPicture = Result.Heat_Main.HeatTestAfterPicture == null ? null : ImageHelper.ImageCompress(Result.Heat_Main.HeatTestAfterPicture);
+
             BaseResult saveResult = _FabricCrkShrkTest_Service.SaveFabricCrkShrkTestHeatDetail(Result, this.UserID);
 
             if (saveResult.Result)
@@ -626,6 +654,10 @@ namespace Quality.Areas.BulkFGT.Controllers
                 Result.Wash_Detail = new List<FabricCrkShrkTestWash_Detail>();
             }
             Result.MDivisionID = this.MDivisionID;
+
+            Result.Wash_Main.WashTestBeforePicture = Result.Wash_Main.WashTestBeforePicture == null ? null : ImageHelper.ImageCompress(Result.Wash_Main.WashTestBeforePicture);
+            Result.Wash_Main.WashTestAfterPicture = Result.Wash_Main.WashTestAfterPicture == null ? null : ImageHelper.ImageCompress(Result.Wash_Main.WashTestAfterPicture);
+
             BaseResult saveResult = _FabricCrkShrkTest_Service.SaveFabricCrkShrkTestWashDetail(Result, this.UserID);
             if (saveResult.Result)
             {

@@ -27,6 +27,9 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string DefectTypeDesc { get; set; }
 
         public string DefectCodeDesc { get; set; }
+        public string Operation { get; set; }
+        public string OperatorText { get; set; }
+        public string Operator { get; set; }
 
         public int Qty { get; set; }
         public bool HasImage { get; set; }
@@ -37,6 +40,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public byte[] TempImage { get; set; }
         public string TempRemark { get; set; }
         public Int64 RowIndex { get; set; }
+        public string LoginToken { get; set; }
     }
     public class ImageRemark
     {

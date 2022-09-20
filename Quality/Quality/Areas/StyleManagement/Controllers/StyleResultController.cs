@@ -33,7 +33,8 @@ namespace Quality.Areas.StyleManagement.Controllers
                 SampleRFT = new List<StyleResult_SampleRFT>(),
                 FTYDisclaimer = new List<StyleResult_FTYDisclaimer>() { new StyleResult_FTYDisclaimer() },
                 RRLR = new List<StyleResult_RRLR>() { new StyleResult_RRLR() },
-                BulkFGT = new List<StyleResult_BulkFGT>() { new StyleResult_BulkFGT() }
+                BulkFGT = new List<StyleResult_BulkFGT>() { new StyleResult_BulkFGT() },
+                PoList = new List<StyleResult_PoList>() { new StyleResult_PoList() },
             };
 
             if (TempData["ModelStyleResult"] != null)
@@ -90,6 +91,7 @@ namespace Quality.Areas.StyleManagement.Controllers
                 FTYDisclaimer = new List<StyleResult_FTYDisclaimer>(),
                 RRLR = new List<StyleResult_RRLR>(),
                 BulkFGT = new List<StyleResult_BulkFGT>(),
+                PoList = new List<StyleResult_PoList>(),
             };
             if (Req == null || string.IsNullOrEmpty(Req.StyleID) || string.IsNullOrEmpty(Req.BrandID) || string.IsNullOrEmpty(Req.SeasonID))
             {
@@ -104,6 +106,7 @@ namespace Quality.Areas.StyleManagement.Controllers
             model.FTYDisclaimer = model.FTYDisclaimer == null ? new List<StyleResult_FTYDisclaimer>() : model.FTYDisclaimer;
             model.RRLR = model.RRLR == null ? new List<StyleResult_RRLR>() : model.RRLR;
             model.BulkFGT = model.BulkFGT == null ? new List<StyleResult_BulkFGT>() : model.BulkFGT;
+            model.PoList = model.PoList == null ? new List<StyleResult_PoList>() : model.PoList;
 
             return View("Index", model);
         }

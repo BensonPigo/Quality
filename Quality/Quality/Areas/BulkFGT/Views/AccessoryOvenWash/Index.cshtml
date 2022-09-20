@@ -279,19 +279,28 @@
                                 <th style="width:5vw">Arrive Qty</th>
                                 <th style="width:5vw">Insp. Deadline</th>
                                 <th style="width:5vw">Over All Result</th>
-                                <th style="width:5vw">Oven N/A</th>
+                                <th style="width:5vw">
+                                    Oven N/A<br />
+                                    <input id="selectAllOven" type="checkbox" name="name" />
+                                </th>
                                 <th style="width:5vw">Oven Result</th>
                                 <th style="width:5vw">Oven Scale</th>
                                 <th style="width:5vw">Oven Last Test Date</th>
                                 <th style="width:5vw">Oven Lab Tech</th>
                                 <th style="width:5vw">Remark</th>
-                                <th style="width:5vw">Wash N/A<br />(701)</th>
+                                <th style="width:5vw">
+                                    Wash N/A<br />(701)<br />
+                                            <input id="selectAll701" type="checkbox" name="name" />
+                                </th>
                                 <th style="width:5vw">Wash Result<br />(701)</th>
                                 <th style="width:5vw">Wash Scale<br />(701)</th>
                                 <th style="width:6vw">Wash Last Test Date(701)</th>
                                 <th style="width:6vw">Wash Lab Tech<br />(701)</th>
                                 <th style="width:5vw">Remark</th>
-                                <th style="width:5vw">Wash N/A<br />(501)</th>
+                                <th style="width:5vw">
+                                    Wash N/A<br />(501)<br />
+                                    <input id="selectAll501" type="checkbox" name="name" />
+                                </th>
                                 <th style="width:5vw">Wash Result<br />(501)</th>
                                 <th style="width:6vw">Wash Last Test Date(501)</th>
                                 <th style="width:6vw">Wash Lab Tech<br />(501)</th>
@@ -358,7 +367,7 @@
                                         <font color="@styleColor">@Html.DisplayFor(modelItem => Model.DataList[i].OverAllResult)</font>
                                     </td>
                                     <td class="CheckBoxColor">
-                                        @Html.CheckBox("DataList[" + i + "].NonOven", Convert.ToBoolean(Model.DataList[i].NonOven))
+                                        @Html.CheckBox("DataList[" + i + "].NonOven", Convert.ToBoolean(Model.DataList[i].NonOven), new { @class= "NonOven" })
                                     </td>
                                     <td class="CrockingColor">
                                         @{
@@ -387,7 +396,7 @@
                                         @Html.DisplayFor(modelItem => Model.DataList[i].OvenRemark)
                                     </td>
                                     <td class="CheckBoxColor">
-                                        @Html.CheckBox("DataList[" + i + "].NonWash", Convert.ToBoolean(Model.DataList[i].NonWash) , new { @class="WashCheck", @Washtype = "701" , @RowIdx = $@"{i}" })
+                                        @Html.CheckBox("DataList[" + i + "].NonWash", Convert.ToBoolean(Model.DataList[i].NonWash) , new { @class= "WashCheck NonWash", @Washtype = "701" , @RowIdx = $@"{i}" })
                                     </td>
                                     <td class="HeatColor">
                                         @{
@@ -418,7 +427,7 @@
                                     
                                     @*501*@
                                     <td class="CheckBoxColor">
-                                        @Html.CheckBox("DataList[" + i + "].NonWashingFastness", Convert.ToBoolean(Model.DataList[i].NonWashingFastness), new { @class = "WashCheck", @Washtype = "501", @RowIdx = $@"{i}" })
+                                        @Html.CheckBox("DataList[" + i + "].NonWashingFastness", Convert.ToBoolean(Model.DataList[i].NonWashingFastness), new { @class = "WashCheck NonWashingFastness", @Washtype = "501", @RowIdx = $@"{i}" })
                                     </td>
                                     <td class="HeatColor">
                                         @{
@@ -523,6 +532,82 @@
                     msg.WithError('Only one of the Wash Test can be chosess.');
                 }
             });
+
+            $("#selectAllOven").mousedown(function () {
+
+                var oldValue = $(this).prop('checked');
+
+                $('.NonOven').prop('checked', !oldValue);
+                $('.NonOven').attr('checked', !oldValue);
+            });
+            
+            $("#selectAll701").mousedown(function () {
+
+                var oldValue = $(this).prop('checked');
+
+                var NonWash = $('.NonWash');
+                $.each(NonWash, function () {
+
+                    var Washtype = $(this).attr('Washtype');
+                    var rowIdx = $(this).attr('RowIdx');
+                    //var oldValue = $(this).prop('checked');
+                    var Stop = false;
+
+                    if (oldValue) {
+                        var anotherValue = $(`#DataList_${rowIdx}__NonWashingFastness`).prop("checked");
+
+                        // 若501沒勾，701要取消勾選 = 701不允許
+                        if (!anotherValue) {
+                            Stop = true;
+                        }
+                    }
+                    if (Stop) {
+                        $(this).prop('checked', true);
+                        $(this).attr('checked', true);
+                        $("#selectAll701").prop('checked', !oldValue);
+                        msg.WithError('Only one of the Wash Test can be chosess.');
+                    }
+                    else {
+                        $(this).prop('checked', !oldValue);
+                        $(this).attr('checked', !oldValue);
+                    }
+                });
+
+            });
+
+            $("#selectAll501").mousedown(function () {
+
+                var oldValue = $(this).prop('checked');
+
+                var NonWashingFastness = $('.NonWashingFastness');
+                $.each(NonWashingFastness, function () {
+
+                    var Washtype = $(this).attr('Washtype');
+                    var rowIdx = $(this).attr('RowIdx');
+                    //var oldValue = $(this).prop('checked');
+                    var Stop = false;
+
+                    if (oldValue) {
+                        var anotherValue = $(`#DataList_${rowIdx}__NonWash`).prop("checked");
+
+                        // 若501沒勾，701要取消勾選 = 701不允許
+                        if (!anotherValue) {
+                            Stop = true;
+                        }
+                    }
+                    if (Stop) {
+                        $(this).prop('checked', true);
+                        $(this).attr('checked', true);
+                        $("#selectAll501").prop('checked', !oldValue);
+                        msg.WithError('Only one of the Wash Test can be chosess.');
+                    }
+                    else {
+                        $(this).prop('checked', !oldValue);
+                        $(this).attr('checked', !oldValue);
+                    }
+                });
+            });
+
         });
 
         function IsEditModeChange() {

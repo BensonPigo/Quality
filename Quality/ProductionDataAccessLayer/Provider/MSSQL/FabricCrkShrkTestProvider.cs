@@ -49,10 +49,9 @@ select	[TestNo] = cast(o.TestNo as varchar),
         [Result] = o.Result,
 		[Remark] = o.Remark,
 		[Status] = o.Status,
-        [TestBeforePicture] = oi.TestBeforePicture,
-        [TestAfterPicture] = oi.TestAfterPicture
+        [TestBeforePicture] = (select top 1 TestBeforePicture from SciPMSFile_Oven oi with (nolock) where o.ID = oi.ID) ,
+        [TestAfterPicture] =  (select top 1 TestAfterPicture from SciPMSFile_Oven oi with (nolock) where o.ID = oi.ID) 
 from Oven o with (nolock)
-LEFT JOIN SciPMSFile_Oven oi with (nolock) ON o.ID = oi.ID
 left join pass1 pass1AddName WITH(NOLOCK) on o.AddName = pass1AddName.ID
 left join pass1 pass1EditName WITH(NOLOCK) on o.EditName = pass1EditName.ID
 where o.POID = @POID and o.TestNo = @TestNo

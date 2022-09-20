@@ -125,6 +125,9 @@ namespace Quality.Areas.BulkFGT.Controllers
                 Req.MockupCrocking_Detail = new List<MockupCrocking_Detail_ViewModel>();
             }
 
+            Req.TestBeforePicture = Req.TestBeforePicture == null ? null : ImageHelper.ImageCompress(Req.TestBeforePicture);
+            Req.TestAfterPicture = Req.TestAfterPicture == null ? null : ImageHelper.ImageCompress(Req.TestAfterPicture);
+
             BaseResult result = _MockupCrockingService.Create(Req, this.MDivisionID, this.UserID, out string ReportNo);
 
             Req.Request = new MockupCrocking_Request()
@@ -168,6 +171,9 @@ namespace Quality.Areas.BulkFGT.Controllers
             {
                 Req.MockupCrocking_Detail = new List<MockupCrocking_Detail_ViewModel>();
             }
+
+            Req.TestBeforePicture = Req.TestBeforePicture == null ? null : ImageHelper.ImageCompress(Req.TestBeforePicture);
+            Req.TestAfterPicture = Req.TestAfterPicture == null ? null : ImageHelper.ImageCompress(Req.TestAfterPicture);
 
             BaseResult result = _MockupCrockingService.Update(Req, this.UserID);
             Req.Request = new MockupCrocking_Request()
@@ -345,7 +351,12 @@ namespace Quality.Areas.BulkFGT.Controllers
             List<string> scaleOption = new List<string>();
             foreach (var item in mockupCrocking_ViewModel.Scale_Source)
             {
-                scaleOption.Add($"<option value='{item.Value}'>{item.Text}</option>");
+                string selected = string.Empty;
+                if (item.Value == "4-5")
+                {
+                    selected = "selected";
+                }
+                scaleOption.Add($"<option {selected} value='{item.Value}'>{item.Text}</option>");
             }
 
             string html = string.Empty;

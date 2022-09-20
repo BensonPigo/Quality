@@ -210,7 +210,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         }
 
 
-        public BaseResult OvenTestExcel(string AIR_LaboratoryID, string POID, string Seq1, string Seq2 ,bool isPDF, out string FileName)
+        public BaseResult OvenTestExcel(string AIR_LaboratoryID, string POID, string Seq1, string Seq2, bool isPDF, out string FileName)
         {
             _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(Common.ProductionDataAccessLayer);
 
@@ -222,7 +222,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             try
             {
-                string baseFilePath =  System.Web.HttpContext.Current.Server.MapPath("~/");
+                string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
                 //DataTable dtOvenDetail = _AccessoryOvenWashProvider.GetOvenTestDataTable(new Accessory_Oven() 
                 //{ 
                 //    AIR_LaboratoryID = Convert.ToInt64( AIR_LaboratoryID),
@@ -231,7 +231,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 //    Seq2 = Seq2,
                 //});
 
-                Model =  _AccessoryOvenWashProvider.GetOvenTestExcel(new Accessory_Oven()
+                Model = _AccessoryOvenWashProvider.GetOvenTestExcel(new Accessory_Oven()
                 {
                     AIR_LaboratoryID = Convert.ToInt64(AIR_LaboratoryID),
                     POID = POID,
@@ -272,7 +272,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 worksheet.Cells[5, 2] = Model.StyleID;
                 worksheet.Cells[5, 6] = Model.Size;
-                worksheet.Cells[5, 10] =Model.SeasonID;
+                worksheet.Cells[5, 10] = Model.SeasonID;
                 worksheet.Cells[5, 12] = Model.Seq;
 
                 worksheet.Cells[9, 2] = Model.OvenDate.HasValue ? Model.OvenDate.Value.ToString("yyyy/MM/dd") : string.Empty;
@@ -624,6 +624,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(Common.ProductionDataAccessLayer);
 
                 result = _AccessoryOvenWashProvider.GetWashingFastness(Req);
+                result.ChangeScale = string.IsNullOrEmpty(result.ChangeScale) ? "4-5" : result.ChangeScale;
+                result.CrossStainingScale = string.IsNullOrEmpty(result.CrossStainingScale) ? "4-5" : result.CrossStainingScale;
+                result.AcetateScale = string.IsNullOrEmpty(result.AcetateScale) ? "4-5" : result.AcetateScale;
+                result.CottonScale = string.IsNullOrEmpty(result.CottonScale) ? "4-5" : result.CottonScale;
+                result.NylonScale = string.IsNullOrEmpty(result.NylonScale) ? "4-5" : result.NylonScale;
+                result.PolyesterScale = string.IsNullOrEmpty(result.PolyesterScale) ? "4-5" : result.PolyesterScale;
+                result.AcrylicScale = string.IsNullOrEmpty(result.AcrylicScale) ? "4-5" : result.AcrylicScale;
+                result.WoolScale = string.IsNullOrEmpty(result.WoolScale) ? "4-5" : result.WoolScale;
                 result.ScaleData = _AccessoryOvenWashProvider.GetScaleData();
 
                 result.Result = true;
@@ -896,7 +904,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 #endregion
 
-                
+
                 #region Save & Show Excel
 
                 string pdfFileName = $"Accessory Washing Fastness{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";

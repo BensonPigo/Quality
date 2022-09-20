@@ -247,7 +247,7 @@ namespace BusinessLogicLayer.Service
         {
             FabricCrkShrkTestCrocking_Result fabricCrkShrkTestCrocking_Result = new FabricCrkShrkTestCrocking_Result();
             try
-            {                
+            {
                 _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
 
                 _ScaleProvider = new ScaleProvider(Common.ProductionDataAccessLayer);
@@ -650,7 +650,7 @@ namespace BusinessLogicLayer.Service
                         fabricCrkShrkTestWash_Detail.SkewnessRate = MyUtility.Check.Empty(fabricCrkShrkTestWash_Detail.SkewnessTest2) ? 0 :
                         (fabricCrkShrkTestWash_Detail.SkewnessTest1 / fabricCrkShrkTestWash_Detail.SkewnessTest2) * 100;
                     }
-                    
+
                 }
 
                 if (fabricCrkShrkTestWash_Result.Wash_Main.WashTestBeforePicture == null)
@@ -1809,7 +1809,7 @@ namespace BusinessLogicLayer.Service
 
             string filepathpdf = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileNamePDF);
             string filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filexlsx);
-            
+
 
             Excel.Workbook workbook = excel.ActiveWorkbook;
             workbook.SaveAs(filepath);

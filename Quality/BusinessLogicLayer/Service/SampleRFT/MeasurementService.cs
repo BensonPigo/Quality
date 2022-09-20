@@ -64,20 +64,11 @@ namespace BusinessLogicLayer.Service.SampleRFT
                                 continue;
                             }
 
-                            if (measurement.Unit.ToString().ToUpper() == "INCH")
+                            if (dr[item.ToString()].ToString().Contains("-"))
                             {
                                 string num;
-                                if (dr[item.ToString()].ToString().Contains("-"))
-                                {
-                                    string d = dr[item.ToString()].ToString().Replace("-", string.Empty);
-                                    num = _IMeasurementProvider.Get_CalculateSizeSpec(d, dr["Tol(-)"].ToString()).Rows[0]["value"].ToString();
-                                }
-                                else
-                                {
-                                    string d = dr[item.ToString()].ToString();
-                                    num = _IMeasurementProvider.Get_CalculateSizeSpec(d, dr["Tol(+)"].ToString()).Rows[0]["value"].ToString();
-                                }
-
+                                string d = dr[item.ToString()].ToString().Replace("-", string.Empty);
+                                num = _IMeasurementProvider.Get_CalculateSizeSpec(d, dr["Tol(-)"].ToString()).Rows[0]["value"].ToString();
                                 bolCal = num.Contains("-") && !string.IsNullOrEmpty(dr[item.ToString()].ToString());
                             }
                             else
@@ -109,8 +100,8 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 #endregion
 
                 Measurement_Request measurement_Request = MeasurementGetPara(measurement.OrderID, measurement.Factory);
-                measurement_Result = new Measurement_ResultModel() 
-                { 
+                measurement_Result = new Measurement_ResultModel()
+                {
                     Result = true,
                     Factory = measurement_Request.Factory,
                     OrderID = measurement_Request.OrderID,
@@ -124,7 +115,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
                     MeasuredQty = _IMeasurementProvider.Get_Measured_Qty(measurement_Request),
                     Images_Source = (imageSourceList.Any() ? imageSourceList.ToList() : new List<SelectListItem>()),
                     Images = (imageList.Any() ? imageList.ToList() : new List<RFT_Inspection_Measurement_Image>()),
-                    OOTQty = columnListsp.Count,                    
+                    OOTQty = columnListsp.Count,
                     JsonBody = JsonConvert.SerializeObject(_IMeasurementProvider.Get_Measured_Detail(measurement_Request)),
                 };
             }
@@ -140,7 +131,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
         public Measurement_Request MeasurementGetPara(string OrderID, string FactoryID)
         {
             _IMeasurementProvider = new MeasurementProvider(Common.ManufacturingExecutionDataAccessLayer);
-            Measurement_Request measurement_Request = new Measurement_Request() { Result = true, ErrMsg = string.Empty};
+            Measurement_Request measurement_Request = new Measurement_Request() { Result = true, ErrMsg = string.Empty };
             try
             {
                 var query = _IMeasurementProvider.Get_OrdersPara(OrderID, FactoryID);
@@ -261,7 +252,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
             return result;
         }
 
-        public Measurement_Request DeleteMeasurementImage(long  ID)
+        public Measurement_Request DeleteMeasurementImage(long ID)
         {
             _IMeasurementProvider = new MeasurementProvider(Common.ManufacturingExecutionDataAccessLayer);
             Measurement_Request measurement_Request = new Measurement_Request() { Result = true, ErrMsg = string.Empty };
