@@ -392,6 +392,34 @@ namespace DatabaseObject.ViewModel.SampleRFT
         public string OrderID { get; set; }
         public string Article { get; set; }
         public string Size { get; set; }
+        public string FrontImageName 
+        { 
+            get 
+            {
+                return $"{this.OrderID}_{this.Article}_{this.Size}_Front.png";
+            } 
+        }
+        public string LeftImageName
+        {
+            get
+            {
+                return $"{this.OrderID}_{this.Article}_{this.Size}_Left.png";
+            }
+        }
+        public string RightImageName
+        {
+            get
+            {
+                return $"{this.OrderID}_{this.Article}_{this.Size}_Right.png";
+            }
+        }
+        public string BackImageName
+        {
+            get
+            {
+                return $"{this.OrderID}_{this.Article}_{this.Size}_Back.png";
+            }
+        }
         public byte[] Front { get; set; }
         public byte[] Side { get; set; }
         public byte[] Back { get; set; }
