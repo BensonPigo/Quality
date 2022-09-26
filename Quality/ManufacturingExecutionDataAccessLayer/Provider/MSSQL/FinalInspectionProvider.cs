@@ -1373,7 +1373,7 @@ where f.InspectionResult = @InspectionResult)";
             {
                 whereOrder += @" and ID IN (
 select ID
-from Production.dbo.Orders WITH(NOLOCK)
+from MainServer.Production.dbo.Orders WITH(NOLOCK)
 where CustPONO = @CustPONO
 )
 ";
@@ -1419,12 +1419,12 @@ select  ID,
         BrandID,
         Qty
 into    #tmpOrders
-from    Production.dbo.Orders with (nolock)
+from    MainServer.Production.dbo.Orders with (nolock)
 where   1 = 1 {whereOrder}
 
 select  ID, Article
 into    #tmpOrderArticle
-from    Production.dbo.Order_Article with (nolock)
+from    MainServer.Production.dbo.Order_Article with (nolock)
 where   ID in (select ID from #tmpOrders)
 
 select  [FinalInspectionID] = f.ID,
