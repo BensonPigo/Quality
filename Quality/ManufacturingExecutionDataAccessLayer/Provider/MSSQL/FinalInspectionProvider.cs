@@ -1447,7 +1447,7 @@ inner join #tmpOrders o on fo.OrderID = o.ID
 outer apply(
 	select val = iif(exists(
 		select ID 
-		from MainServer.Production.dbo.CFAInspectionRecord c with (nolock) 
+		from Production.dbo.CFAInspectionRecord c with (nolock) 
 		where c.ID = f.ID
 	), 'Y', 'N')
 )c
@@ -1500,11 +1500,11 @@ select top 200 [FinalInspectionID] = f.ID,
 		[IsTransferToPivot88] = iif(f.IsExportToP88 = 1, 'Y', 'N')
 from FinalInspection f with (nolock)
 inner join #default fo with (nolock) on fo.ID = f.ID
-inner join MainServer.Production.dbo.Orders o with(nolock) on o.ID = fo.OrderID
+inner join Production.dbo.Orders o with(nolock) on o.ID = fo.OrderID
 outer apply(
 	select val = iif(exists(
 		select ID 
-		from MainServer.Production.dbo.CFAInspectionRecord c with(nolock)
+		from Production.dbo.CFAInspectionRecord c with(nolock)
 		where c.ID = f.ID
 	), 'Y', 'N')
 )c 
@@ -1818,7 +1818,7 @@ where f.ID = @ID
 
 select	distinct
 		oc.ColorID
-from  MainServer.Production.dbo.Order_ColorCombo oc with (nolock)
+from  Production.dbo.Order_ColorCombo oc with (nolock)
 where oc.ID in (select POID from Production.dbo.Orders with (nolock) 
 				where id in (select OrderID 
 							 from FinalInspection_Order with (nolock) where ID = @ID))
@@ -1861,8 +1861,8 @@ select	[DefectTypeDesc] = gdt.Description,
         [MajorQty] = iif(isnull(gdc.IsCriticalDefect, 0) = 0, fd.Qty, 0),
         fd.Ukey
 from FinalInspection_Detail fd with (nolock)
-left join MainServer.Production.dbo.GarmentDefectType gdt with (nolock) on gdt.ID = fd.GarmentDefectTypeID
-left join MainServer.Production.dbo.GarmentDefectCode gdc with (nolock) on gdc.ID = fd.GarmentDefectCodeID
+left join Production.dbo.GarmentDefectType gdt with (nolock) on gdt.ID = fd.GarmentDefectTypeID
+left join Production.dbo.GarmentDefectCode gdc with (nolock) on gdc.ID = fd.GarmentDefectCodeID
 where fd.ID = @ID
 
 select  [title] =  CONCAT(fdi.ID, '_', isnull(fd.GarmentDefectCodeID, ''), '_', fdi.Ukey),
