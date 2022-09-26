@@ -54,6 +54,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string Seq { get; set; }
         public string Article { get; set; }
         public int Qty { get; set; }
+        public int MetalContaminateQty { get; set; }
         public string Cartons { get; set; }
         public int AvailableQty { get; set; }
     }
