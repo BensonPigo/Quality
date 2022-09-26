@@ -75,8 +75,19 @@ select  [OrderID] = o.id,
         [AvailableQty] = 0,
         [Cartons] = '',
         [Seq] = '',
-        [Article] = (SELECT Stuff((select concat( ',',Article)   from Order_Article WITH(NOLOCK) where ID = o.ID FOR XML PATH('')),1,1,'') )
+        [Article] = (SELECT Stuff((select concat( ',',Article)   from Order_Article WITH(NOLOCK) where ID = o.ID FOR XML PATH('')),1,1,'') ),
+		MetalContaminateQty = ISNULL(firstMD.ErrQty,0) + ISNULL(secondMD.ErrQty,0)
   from  Orders o with (nolock)
+outer apply(
+	 select ErrQty = SUM(ErrQty)
+	 from Production.dbo.PackErrTransfer pe 
+	 where pe.OrderID = o.ID 
+)firstMD
+outer apply(
+	 select ErrQty = SUM(ErrQty)
+	 from Production.dbo.ClogPackingError  cp 
+	 where cp.OrderID = o.ID 
+)secondMD
  where  o.id in ({whereOrderID})
 ";
             return ExecuteList<SelectedPO>(CommandType.Text, sqlGetData, listPar);
@@ -101,9 +112,22 @@ select  [OrderID] = o.id,
         o.BrandID,
         [Qty] = 0,
         [AvailableQty] = fo.AvailableQty,
+		MetalContaminateQty = ISNULL(firstMD.ErrQty,0) + ISNULL(secondMD.ErrQty,0),
         [Cartons] = ''
 from  Production.dbo.Orders o with (nolock)
 inner join  #FinalInspection_Order fo on fo.OrderID = o.ID
+outer apply(
+	 select ErrQty = SUM(ErrQty)
+	 from Production.dbo.PackErrTransfer pe 
+	 where pe.OrderID = fo.OrderID 
+)firstMD
+outer apply(
+	 select ErrQty = SUM(ErrQty)
+	 from Production.dbo.ClogPackingError  cp 
+	 where cp.OrderID = fo.OrderID 
+)secondMD
+
+drop table #FinalInspection_Order
 ";
             return ExecuteList<SelectedPO>(CommandType.Text, sqlGetData, listPar);
         }

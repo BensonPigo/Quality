@@ -389,7 +389,7 @@
         var table;
         @foreach (var item in Model.SelectedPO)
         {
-            @:adata.push([null, '@item.OrderID', index, '@item.CustPONO', '@item.StyleID', '@item.SeasonID', '@item.BrandID', @item.Qty, '@item.Cartons',@item.AvailableQty, '@item.SeasonID', '@item.Seq', '@item.Article']);
+            @:adata.push([null, '@item.OrderID', index, '@item.CustPONO', '@item.StyleID', '@item.SeasonID', '@item.BrandID', @item.Qty, '@item.Cartons',@item.AvailableQty, '@item.SeasonID', '@item.Seq', '@item.Article',@item.MetalContaminateQty]);
             @:index = index + 1;
         }
         @foreach (var item in Model.SelectedSewing)
@@ -415,6 +415,7 @@
                     AvailableQty: adata[i][9],
                     Seq: adata[i][11],
                     Article: adata[i][12],
+                    MetalContaminateQty: adata[i][13],
 
                 };
                 SelectedPOs.push(obj);
@@ -1020,6 +1021,8 @@
         }
 
         function format(d, orderID) {
+
+            var metalContaminateQty = d[13];
             return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
                 '<tr><td style="width:70%">PO#:</td><td style=" text-align: right;" style="width:30%">' +
                 '<input type="hidden" name="SelectedPO[' + d[2] + '].ORDERID" id="SelectedPO[' + d[2] + '].ORDERID" value="' + d[1] + '" \/>' +
@@ -1046,6 +1049,7 @@
 
                 + '" OrderID="' + orderID + '" oninput="value=AvailableQtyChk(' + d[7] + ',value)" max="' + d[7] + '" min="0" Col="AvailableQty"/>' +
                 '</td></tr>' +
+                '<tr><td>Metal Contaminate:</td><td style=" text-align: right;">' + metalContaminateQty + '</td></tr>'+
                 '</table>';
         }
         function AvailableQtyChk(max, value) {
