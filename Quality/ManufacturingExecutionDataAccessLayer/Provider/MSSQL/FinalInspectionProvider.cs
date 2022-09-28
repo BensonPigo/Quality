@@ -1447,7 +1447,7 @@ inner join #tmpOrders o on fo.OrderID = o.ID
 outer apply(
 	select val = iif(exists(
 		select ID 
-		from Production.dbo.CFAInspectionRecord c with (nolock) 
+		from MainServer.Production.dbo.CFAInspectionRecord c with (nolock) 
 		where c.ID = f.ID
 	), 'Y', 'N')
 )c
