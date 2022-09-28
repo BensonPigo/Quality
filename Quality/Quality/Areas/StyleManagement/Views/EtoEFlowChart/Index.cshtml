@@ -344,8 +344,8 @@
                         <div class="InfoDiv" style="border: solid 3px #166af5;">
                             <h4>Pass RFT : @Html.Raw((Model.FinalInspection.PassRate * 100).ToString("0.00") + "%")</h4><br />
                             <h4>SQR : @Html.Raw((Model.FinalInspection.SQR * 100).ToString("0.00") + "%")</h4><br />
-                            <h4>China Pass Rate : @Html.Raw((Model.FinalInspection.ChinaPassRate * 100).ToString("0.00") + "%")</h4><br />
-                            <h4>Japan Pass Rate : @Html.Raw((Model.FinalInspection.JapanPassRate * 100).ToString("0.00") + "%")</h4>
+                            <h4>China Pass Rate : @Html.Raw(Model.FinalInspection.IsAllCnOrder ? (Model.FinalInspection.ChinaPassRate * 100).ToString("0.00") + "%" : "N/A")</h4><br />
+                            <h4>Japan Pass Rate : @Html.Raw(Model.FinalInspection.IsAllJpOrder ? (Model.FinalInspection.JapanPassRate * 100).ToString("0.00") + "%" : "N/A")</h4>
 
                         </div>
 

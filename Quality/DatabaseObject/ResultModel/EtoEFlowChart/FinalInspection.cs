@@ -12,5 +12,7 @@ namespace DatabaseObject.ResultModel.EtoEFlowChart
         public decimal SQR { get; set; }
         public decimal ChinaPassRate { get; set; }
         public decimal JapanPassRate { get; set; }
+        public bool IsAllCnOrder{ get; set; }
+        public bool IsAllJpOrder { get; set; }
     }
 }
