@@ -1504,7 +1504,7 @@ inner join Production.dbo.Orders o with(nolock) on o.ID = fo.OrderID
 outer apply(
 	select val = iif(exists(
 		select ID 
-		from Production.dbo.CFAInspectionRecord c with(nolock)
+		from MainServer.Production.dbo.CFAInspectionRecord c with(nolock)
 		where c.ID = f.ID
 	), 'Y', 'N')
 )c 
