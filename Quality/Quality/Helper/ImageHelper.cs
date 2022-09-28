@@ -38,16 +38,17 @@ namespace Quality.Helper
 
             }
 
-            MemoryStream oMemoryStream = new MemoryStream(InputImageBytes);
-            Image oImage = System.Drawing.Image.FromStream(oMemoryStream);
-            Bitmap oBitmap = bitmap == null ? new Bitmap(oImage) : bitmap; 
-
             if (resultBytes.Length <= 524288)
             {
                 return resultBytes;
             }
             else
             {
+
+                MemoryStream oMemoryStream = new MemoryStream(InputImageBytes);
+                Image oImage = System.Drawing.Image.FromStream(oMemoryStream);
+                Bitmap oBitmap = bitmap == null ? new Bitmap(oImage) : bitmap;
+
                 // 每次超過500kb就將照片縮20%
                 return ImageCompress(InputImageBytes, ResizeBitmap(oBitmap, 0.8));
             }
