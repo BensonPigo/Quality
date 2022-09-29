@@ -118,12 +118,12 @@ from  Production.dbo.Orders o with (nolock)
 inner join  #FinalInspection_Order fo on fo.OrderID = o.ID
 outer apply(
 	 select ErrQty = SUM(ErrQty)
-	 from Production.dbo.PackErrTransfer pe 
+	 from MainServer.Production.dbo.PackErrTransfer pe 
 	 where pe.OrderID = fo.OrderID 
 )firstMD
 outer apply(
 	 select ErrQty = SUM(ErrQty)
-	 from Production.dbo.ClogPackingError  cp 
+	 from MainServer.Production.dbo.ClogPackingError cp 
 	 where cp.OrderID = fo.OrderID 
 )secondMD
 
