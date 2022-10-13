@@ -666,7 +666,7 @@ namespace BusinessLogicLayer.Service
                     sampled_inspected = (int)drInspection["PassQty"] + (int)drInspection["RejectQty"],
                     inspection_result_id = 5,
                     inspection_status_id = 1,
-                    qty_inspected = (int)drInspection["PassQty"] + (int)drInspection["RejectQty"],
+                    qty_inspected = sku_number.qty_to_inspect,
                     inspection_completed_date = drInspection["LastinspectionDate"],
                     total_inspection_minutes = drInspection["InspectionMinutes"],
                     sampling_size = (int)drInspection["PassQty"] + (int)drInspection["RejectQty"],

@@ -103,7 +103,7 @@ namespace ADOHelper.Template.MSSQL
 			return this.ExecuteList<T>(CommandType.Text, cmdText, cmdParameter);
 		}
 
-        public DataTable ExecuteDataTableByServiceConn(CommandType cmdType, string cmdText, SQLParameterCollection cmdParameter, int commTimeout = 30)
+        public DataTable ExecuteDataTableByServiceConn(CommandType cmdType, string cmdText, SQLParameterCollection cmdParameter, int commTimeout = 60)
         {
             DataTable dataTable = new DataTable();
             try
@@ -122,10 +122,7 @@ namespace ADOHelper.Template.MSSQL
                 }
                 this.adapter.SelectCommand.CommandText = cmdText;
                 this.adapter.SelectCommand.CommandType = cmdType;
-                if (commTimeout > 30)
-                {
-                    this.adapter.SelectCommand.CommandTimeout = commTimeout;
-                }
+                this.adapter.SelectCommand.CommandTimeout = commTimeout;
                 this.adapter.Fill(dataTable);
                 if (ADOHelper.Template.MSSQL.SQLDAL.IsSaveSqlLog)
                 {
@@ -144,7 +141,7 @@ namespace ADOHelper.Template.MSSQL
             return dataTable;
         }
 
-        public DataSet ExecuteDataSet(CommandType cmdType, string cmdText, SQLParameterCollection cmdParameter, int commTimeout = 30)
+        public DataSet ExecuteDataSet(CommandType cmdType, string cmdText, SQLParameterCollection cmdParameter, int commTimeout = 60)
 		{
 			DataSet dataSet;
 			try
@@ -165,11 +162,8 @@ namespace ADOHelper.Template.MSSQL
 				}
 				this.adapter.SelectCommand.CommandText = cmdText;
 				this.adapter.SelectCommand.CommandType = cmdType;
-				if (commTimeout > 30)
-				{
-					this.adapter.SelectCommand.CommandTimeout = commTimeout;
-				}
-				this.adapter.Fill(dataSet1);
+                this.adapter.SelectCommand.CommandTimeout = commTimeout;
+                this.adapter.Fill(dataSet1);
 				if (ADOHelper.Template.MSSQL.SQLDAL.IsSaveSqlLog)
 				{
 					//LogHelpe.WriteSQL(cmdText);
@@ -290,7 +284,7 @@ namespace ADOHelper.Template.MSSQL
 		//	return str;
 		//}
 
-		public IList<T> ExecuteList<T>(CommandType cmdType, string cmdText, SQLParameterCollection cmdParameter, int commTimeout = 30)
+		public IList<T> ExecuteList<T>(CommandType cmdType, string cmdText, SQLParameterCollection cmdParameter, int commTimeout = 60)
 		where T : new()
 		{
 			IList<T> ts;
@@ -324,10 +318,7 @@ namespace ADOHelper.Template.MSSQL
 				}
 				this.com.CommandType = cmdType;
 				this.com.CommandText = cmdText;
-                if (commTimeout > 30)
-                {
-                    this.com.CommandTimeout = commTimeout;
-                } 
+                this.com.CommandTimeout = commTimeout;
                 using (SqlDataReader sqlDataReader = this.com.ExecuteReader())
 				{
 					list = DataAccessHelper.DataReaderToList<T>(sqlDataReader);
@@ -411,7 +402,7 @@ namespace ADOHelper.Template.MSSQL
 			return num;
 		}
 
-		public int ExecuteNonQuery(CommandType cmdType, string cmdText, int timeout = 30)
+		public int ExecuteNonQuery(CommandType cmdType, string cmdText, int timeout = 60)
 		{
 			int num;
 			try
