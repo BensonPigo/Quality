@@ -912,6 +912,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             IStyleProvider styleProvider = new StyleProvider(Common.ProductionDataAccessLayer);
             string StyleName = styleProvider.GetStyleName(all_Data.Main.StyleID, all_Data.Main.SeasonID, all_Data.Main.BrandID);
+            string CriticalName = styleProvider.GetStyleCritical(all_Data.Main.StyleID, all_Data.Main.SeasonID, all_Data.Main.BrandID);
 
             IOrdersProvider ordersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
             Orders orders = new Orders();
@@ -1032,6 +1033,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         worksheet.Cells[7, 8] = orders.CustPONO;
                         worksheet.Cells[7, 4] = MyUtility.Convert.GetString(all_Data.Main.Article);
                         worksheet.Cells[6, 8] = StyleName;
+                        worksheet.Cells[6, 11] = string.IsNullOrEmpty(CriticalName) ? string.Empty : "Y";
                         worksheet.Cells[8, 8] = MyUtility.Convert.GetDecimal(data.NumArriveQty.Value);
 
                         string sendDate = Convert.ToDateTime(orders.BuyerDelivery).ToShortDateString();

@@ -13,5 +13,6 @@ namespace ProductionDataAccessLayer.Interface
         string GetSizeUnitByCustPONO(string CustPONO, string OrderID);
 
         string GetStyleName(string StyleID, string Season, string Brand);
+        string GetStyleCritical(string StyleID, string Season, string Brand);
     }
 }
