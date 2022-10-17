@@ -6,6 +6,7 @@ using ProductionDataAccessLayer.Interface;
 using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
 using DatabaseObject.ProductionDB;
+using Sci;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
@@ -56,6 +57,27 @@ select StyleName from Style WITH(NOLOCK) where ID = @StyleID and SeasonID = @Sea
 
             return dt.Rows[0]["StyleName"].ToString();
         }
+        public string GetStyleCritical(string StyleID, string Season, string Brand)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection()
+            {
+                 { "@StyleID", DbType.String, StyleID } ,
+                 { "@SeasonID", DbType.String, Season } ,
+                 { "@BrandID", DbType.String, Brand } ,
+            };
+
+            string sqlcmd = @"
+select r.Name 
+from Style s WITH(NOLOCK) 
+inner join Reason r WITH(NOLOCK)  on s.SpecialMark  = r.ID and r.ReasonTypeID = 'Style_SpecialMark'
+where s.ID = @StyleID and s.SeasonID = @SeasonID and s.BrandID = @BrandID
+and name LIKE '%Critical%'
+";
+            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
+
+            return (dt.Rows == null || dt.Rows.Count == 0 ? string.Empty : dt.Rows[0]["Name"].ToString());
+        }
+
 
 
         /*回傳款式資料基本檔(Get) 詳細敘述如下*/
