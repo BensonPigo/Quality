@@ -661,7 +661,7 @@ select　b.WashResult
 into #tmp
 from GarmentTest a
 left join GarmentTest_Detail b on a.ID= b.ID
-where StyleID=@StyleID AND BrandID=@BrandID AND SeasonID=@SeasonID
+where StyleID=@StyleID AND BrandID=@BrandID AND SeasonID=@SeasonID and a.Article = @Article
 
 
 select TestResult = CASE WHEN c.TestUnit = 'pass/fail' THEN IIF(c.TestResult = 'Pass' OR c.TestResult = 'Fail' , c.TestResult,'')
@@ -676,7 +676,7 @@ into #tmp2
 from GarmentTest a
 left join GarmentTest_Detail b on a.ID= b.ID
 left join GarmentTest_Detail_FGPT c on b.ID=c.ID
-where StyleID=@StyleID AND BrandID=@BrandID AND SeasonID=@SeasonID
+where StyleID=@StyleID AND BrandID=@BrandID AND SeasonID=@SeasonID and a.Article = @Article
 
 SELECT FGWTResult = (
     select FGWTResult = CASE WHEN SUM(IIF(WashResult='F',1,0) ) > 0 THEN 'Fail'
@@ -1272,6 +1272,18 @@ select PassRate = ROUND( (
 
     )
 ) ,4)
+,IsAllCnOrder = (
+	select CAST(IIF(COUNT(1) = 0, 1, 0) as bit )
+	from SciProduction_Orders
+	where StyleUkey = @StyleUkey
+	AND Dest != 'CN'
+)
+,IsAllJpOrder = (
+	select CAST(IIF(COUNT(1) = 0, 1, 0) as bit )
+	from SciProduction_Orders
+	where StyleUkey = @StyleUkey
+	AND Dest != 'JP'
+)
 
 ";
 
