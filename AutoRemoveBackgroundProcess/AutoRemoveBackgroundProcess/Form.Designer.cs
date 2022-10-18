@@ -46,7 +46,7 @@ namespace AutoRemoveBackgroundProcess
             this.ChkExcel.Font = new System.Drawing.Font("新細明體", 12F);
             this.ChkExcel.Location = new System.Drawing.Point(26, 75);
             this.ChkExcel.Name = "ChkExcel";
-            this.ChkExcel.Size = new System.Drawing.Size(88, 20);
+            this.ChkExcel.Size = new System.Drawing.Size(87, 20);
             this.ChkExcel.TabIndex = 0;
             this.ChkExcel.Text = "Excel.exe";
             this.ChkExcel.UseVisualStyleBackColor = true;
@@ -55,7 +55,7 @@ namespace AutoRemoveBackgroundProcess
             // 
             this.numExcel.Location = new System.Drawing.Point(188, 73);
             this.numExcel.Minimum = new decimal(new int[] {
-            10,
+            0,
             0,
             0,
             0});

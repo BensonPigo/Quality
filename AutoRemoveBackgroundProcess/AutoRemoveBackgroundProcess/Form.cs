@@ -101,7 +101,7 @@ namespace AutoRemoveBackgroundProcess
                     DateTime startTime = proc.StartTime;
                     TimeSpan sp = DateTime.Now - startTime;
 
-                    if (sp.Minutes >= idleTime && idleTime > 10)
+                    if (sp.Minutes >= idleTime)
                     {
                         proc.Kill();
                     }
