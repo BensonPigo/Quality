@@ -229,7 +229,7 @@ where 1=1
 select sl.Location
 into #Location1
 from GarmentTest gt with(nolock)
-inner join style s with(nolock) on s.id = gt.StyleID
+inner join style s with(nolock) on s.id = gt.StyleID and s.BrandID = gt.BrandID and s.SeasonID = gt.SeasonID
 inner join Style_Location sl with(nolock) on sl.styleukey = s.ukey
 where gt.id = @ID and sl.Location !='B'
 group by sl.Location
@@ -245,7 +245,7 @@ insert into #type1 values('Hem Opening',5)
 select distinct sl.Location
 into #Location2
 from GarmentTest gt with(nolock)
-inner join style s with(nolock) on s.id = gt.StyleID
+inner join style s with(nolock) on s.id = gt.StyleID and s.BrandID = gt.BrandID and s.SeasonID = gt.SeasonID
 inner join Style_Location sl with(nolock) on sl.styleukey = s.ukey
 where gt.id = @ID and sl.Location ='B'
 
@@ -259,7 +259,7 @@ insert into #type2 values('Leg Opening',5)
 select sl.Location,s.BrandID
 into #Location_S
 from GarmentTest gt with(nolock)
-inner join style s with(nolock) on s.id = gt.StyleID
+inner join style s with(nolock) on s.id = gt.StyleID and s.BrandID = gt.BrandID and s.SeasonID = gt.SeasonID
 inner join Style_Location sl with(nolock) on sl.styleukey = s.ukey
 where gt.id = @ID
 group by sl.Location,s.BrandID
