@@ -1400,6 +1400,18 @@ where CustPONO = @CustPONO
                 parameter.Add("@AuditDateEnd", request.AuditDateEnd);
             }
 
+            if (request.SubmitDateStart != null)
+            {
+                whereFinalInspection += @" and SubmitDate >= @SubmitDateStart";
+                parameter.Add("@SubmitDateStart", request.SubmitDateStart);
+            }
+
+            if (request.SubmitDateEnd != null)
+            {
+                whereFinalInspection += @" and SubmitDate <= @SubmitDateEnd";
+                parameter.Add("@SubmitDateEnd", request.SubmitDateEnd);
+            }
+
             if (!string.IsNullOrEmpty(request.StyleID))
             {
                 whereOrder += @" and StyleID = @StyleID";
@@ -1440,7 +1452,9 @@ select  [FinalInspectionID] = f.ID,
         f.InspectionStage,
         f.InspectionResult,
 		[IsTransferToPMS] = c.val,
-		[IsTransferToPivot88] = iif(f.IsExportToP88 = 1, 'Y', 'N')
+		[IsTransferToPivot88] = iif(f.IsExportToP88 = 1, 'Y', 'N'),
+        [SampleSize] = cast(f.SampleSize as varchar),
+        [SubmitDate] = format(f.SubmitDate, 'yyyy/MM/dd')   
 from FinalInspection f with (nolock)
 inner join FinalInspection_Order fo with (nolock) on fo.ID = f.ID
 inner join #tmpOrders o on fo.OrderID = o.ID
@@ -1497,7 +1511,9 @@ select top 200 [FinalInspectionID] = f.ID,
         f.InspectionResult,
         f.AddDate,
 		[IsTransferToPMS] = c.val,
-		[IsTransferToPivot88] = iif(f.IsExportToP88 = 1, 'Y', 'N')
+		[IsTransferToPivot88] = iif(f.IsExportToP88 = 1, 'Y', 'N'),
+        [SampleSize] = cast(f.SampleSize as varchar),
+        [SubmitDate] = format(f.SubmitDate, 'yyyy/MM/dd')  
 from FinalInspection f with (nolock)
 inner join #default fo with (nolock) on fo.ID = f.ID
 inner join Production.dbo.Orders o with(nolock) on o.ID = fo.OrderID
