@@ -186,6 +186,7 @@
     <Compile Include="Areas\BulkFGT\Controllers\FabricCrkShrkTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\FabricOvenTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\GarmentTestController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\HeatTransferWashController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\MockupCrockingController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\MockupOvenTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\MockupWashController.cs" />
@@ -437,6 +438,7 @@
     <Content Include="Areas\SampleRFT\Views\InspBySPQuery\_Tab6_Layout.cshtml" />
     <Content Include="Areas\StyleManagement\Views\EtoEFlowChart\Index.cshtml" />
     <Content Include="Areas\StyleManagement\Views\StyleResult\_Tab5_Layout.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\HeatTransferWash\Index.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />

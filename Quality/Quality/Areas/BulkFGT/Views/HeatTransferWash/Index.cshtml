@@ -1,0 +1,320 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+<link href="~/ThirdParty/plugins/jquery-ui/jquery-ui.css" rel="stylesheet" />
+
+@model DatabaseObject.ViewModel.BulkFGT.HeatTransferWash_ViewModel
+
+<style type="text/css">
+    .input-group {
+        display: flex
+    }
+
+        .input-group > input:nth-child(1) {
+            flex-grow: 3
+        }
+
+        .input-group > input:nth-child(2) {
+            flex-grow: 2
+        }
+
+        .input-group > input:nth-child(3) {
+            flex-grow: 1
+        }
+
+    .DetailTable > tbody > tr > td > input[type="text"] {
+        width: 100%;
+    }
+
+    .row {
+        --bs-gutter-x: 1.5rem;
+        --bs-gutter-y: 0;
+        display: flex;
+        flex-wrap: wrap;
+        width: 95vw;
+        margin-top: calc(var(--bs-gutter-y) * -1);
+        margin-right: calc(var(--bs-gutter-x)/ -2);
+        margin-left: calc(var(--bs-gutter-x)/ -2);
+    }
+
+    .button {
+        background-color: #E00000; /* Red */
+        border: none;
+        color: white;
+        padding: 6px 16px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+    }
+
+    .row > * {
+        flex-shrink: 0;
+        width: 100%;
+        max-width: 100%;
+        padding-left: calc(var(--bs-gutter-x)/ 2);
+    }
+
+    .rowHeader {
+        font-size: 1.1vw;
+        font-weight: bold;
+    }
+
+    .queryHeader select {
+        width: 10vw;
+    }
+
+    .rowHeader input[type="text"] {
+        width: 10vw;
+    }
+
+    .col-auto {
+        width: auto;
+    }
+
+        .col-auto > p {
+            padding: 0
+        }
+
+    .White {
+        color: white !important;
+    }
+
+    .Black {
+        color: black !important;
+    }
+
+    .IsEditMode {
+        color: white !important;
+        cursor: pointer;
+    }
+
+    .IsEditModeQuery {
+        color: gray !important;
+        cursor: no-drop;
+    }
+
+    #ButtonMode {
+        width: 92vw;
+    }
+
+    .DataTable {
+        width: 92vw;
+        font-size: 1rem;
+        font-weight: bold;
+        border: solid 1px black;
+        background-color: white;
+    }
+
+        .DataTable > tbody img {
+            cursor: pointer;
+        }
+
+        .DataTable > tbody > tr:nth-of-type(odd) {
+            background-color: #ffffff;
+        }
+
+        .DataTable > tbody > tr:nth-of-type(even) {
+            background-color: #F0F2F2;
+        }
+
+        .DataTable > tbody > tr > td {
+            border: solid 1px gray;
+            padding: 0.5em;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        .DataTable input[type='text'], .DataTable input[type='number'] {
+            width: 70%;
+        }
+</style>
+
+@using (Html.BeginForm("Index", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post, new { @id = "DetailForm" }))
+{
+
+    <div class="main-content">
+        <header class="page-header">
+            <div style="float:left">
+                <h3>
+                    <span>Heat Transfer Wash Test</span>
+                </h3>
+                <div class="breadcrumb">
+                    <div>Home</div>
+                    <div class="current">Heat Transfer Wash Test</div>
+                </div>
+            </div>
+            <div class="breadcrumb queryHeader" style="justify-content: flex-end;">
+                <h4 style="margin-right: 1em;color:white">Report No</h4>
+
+                @Html.DropDownListFor(o => Model.Request.ReportNo, Model.ReportNo_Source, new
+                {
+                    @value = Model.Request.ReportNo,
+                    @onchange = "ReportNoChange(this.value)"
+                })
+                <input id="btnNew" type="button" class="button" style="margin-left:1em;border:0;cursor:pointer;" name="New" value="New">
+            </div>
+        </header>
+
+        <div class="main-area">
+            <div class="content-scroll">
+                <div class="inner-scroll">
+                    @*查詢列*@
+                    <div class="row rowHeader">
+                        <div class="col-auto">
+                            <p class="InfoTitle White">Brand</p>
+                        </div>
+                        <div class="col-auto">
+                            <input id="Request_BrandID" name="Request.BrandID" type="text" value="@Model.Request.BrandID">
+                            <input id="btnBrandSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                        </div>
+                        <div class="col-auto"><p class="InfoTitle White">Season</p></div>
+                        <div class="col-auto">
+                            <input id="Request_SeasonID" name="Request.SeasonID" type="text" value="@Model.Request.SeasonID">
+                            <input id="btnSeasonSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                        </div>
+                        <div class="col-auto"><p class="InfoTitle White">Style</p></div>
+                        <div class="col-auto">
+                            <input id="Request_StyleID" name="Request.StyleID" type="text" value="@Model.Request.StyleID">
+                            <input id="btnStyleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                        </div>
+                        <div class="col-auto"><p class="InfoTitle White">Article</p></div>
+                        <div class="col-auto">
+                            <input id="Request_Article" name="Request.Article" type="text" value="@Model.Request.Article">
+                            <input id="btnArticleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                        </div>
+
+                        <div class="col-auto">
+                            <button id="btnQuery" type="submit" name="Action:Query" class="site-btn btn-gy font1rem Black" style="padding: 0.4em;">Query</button>
+                        </div>
+                    </div>
+                    @*按鈕列*@
+
+                    <div style="margin-top: 1em;">
+                        <table id="ButtonMode">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <h4 id="Edit" style="margin-right: 1em;">
+                                            <img src="~/Image/Icon/Edit.png" width="30" />
+                                            Edit
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 style="margin-right: 1em;">
+                                            <button id="Save" type="submit" style="margin:0;min-width:0;background-color:transparent">
+                                                <img src="~/Image/Icon/Save.png" width="30" />
+                                                Save
+                                            </button>
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 id="Undo" style="margin-right: 1em;">
+                                            <img src="~/Image/Icon/Undo.png" width="30" />
+                                            Undo
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <input id="DeleteSubmit" type="submit" name="action:Delete" style="display:none" />
+                                        <h4 id="Delete" style=" margin-right: 1em;">
+                                            <img src="~/Image/Icon/Delete.png" width="30" />
+                                            Delete
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 id="Encode" style=" margin-right: 1em; width: 8vw;">
+                                            <img src="~/Image/Icon/Lock.png" width="30" />
+                                            Encode
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 id="Excel" style=" margin-right: 1em; width: 6vw;">
+                                            <img src="~/Image/Icon/XLS.png" width="30" />
+                                            Excel
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 id="PDF" style="margin-right: 1em;">
+                                            <img src="~/Image/Icon/PDF.png" width="30" />
+                                            PDF
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 id="SendMail" style="margin-right: 1em;">
+                                            <img src="~/Image/Icon/SendMail.png" width="30" />
+                                            Send to MR
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <h4 id="Picture" style=" margin-right: 1em;">
+                                            <img src="~/Image/Icon/Camera.png" width="30" />
+                                            Picture
+                                        </h4>
+                                    </td>
+                                    <td style="width: 30%;">
+                                    </td>
+                                    <td align="right">
+                                        <h4 id="New">
+                                            <img src="~/Image/Icon/New.png" width="30" />
+                                            New Item
+                                        </h4>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+
+
+<script type="text/javascript">
+    var msg;
+    var EditMode;
+    var EditType;
+
+    function ReportNoChange(value) {
+        $('#btnQuery').unbind('click').click();
+    }
+
+    function GetBrandList(data, targetID) {
+        $('#' + targetID).val(data);
+        GetArtworkDropDown();
+        GetAccessoryRefNoList();
+        ClearColor();
+        ReportNoClear(targetID);
+    }
+
+    function GetSeasonList(data, targetID) {
+        $('#' + targetID).val(data);
+        GetArtworkDropDown();
+        GetAccessoryRefNoList();
+        ReportNoClear(targetID);
+    }
+
+    function GetStyleList(data, targetID) {
+        $('#' + targetID).val(data);
+        GetArtworkDropDown();
+        GetAccessoryRefNoList();
+        ReportNoClear(targetID);
+    }
+
+    function GetArticleList(data, targetID) {
+        $('#' + targetID).val(data);
+        ReportNoClear(targetID);
+    }
+
+    function ReportNoClear(targetID) {
+        if (targetID.indexOf('Request_') > -1) {
+            $('#Request_ReportNo').html('');
+        }
+    }
+</script>
