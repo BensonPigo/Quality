@@ -14,6 +14,8 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public DateTime? AuditDateStart { get; set; }
         public DateTime? AuditDateEnd { get; set; }
         public bool ExcludeJunk { get; set; }
+        public DateTime? SubmitDateStart { get; set; }
+        public DateTime? SubmitDateEnd { get; set; }
     }
 
     public class QueryFinalInspection
@@ -32,5 +34,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string InspectionResult { get; set; }
         public string IsTransferToPMS { get; set; }
         public string IsTransferToPivot88 { get; set; }
+        public string SampleSize { get; set; }
+        public string SubmitDate { get; set; }
     }
 }

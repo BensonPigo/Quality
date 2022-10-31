@@ -62,7 +62,7 @@
 {
     <div class="search-condition">
 
-        <div class="UpWhiteBackgrond" style="height:17vh">
+        <div class="UpWhiteBackgrond" style="height:17.8vh">
 
             <table class="center" style="width: 100%;  height: 3vh ">
                 <tr>
@@ -112,8 +112,15 @@
                     <td align="right" style="vertical-align: middle;">
                         <p class="searchFont">Exclude Junk</p>
                     </td>
-                    <td colspan="5">
-                        @Html.CheckBoxFor(o => o.ExcludeJunk, new { @class = "inputStyle" })                   
+                    <td colspan="3">
+                        @Html.CheckBoxFor(o => o.ExcludeJunk, new { @class = "inputStyle" })
+                    </td>
+                    <td align="right">
+                        <p class="searchFont">Submit Date</p>
+                    </td>
+                    <td colspan="2">
+                        @Html.TextBox("SubmitDateStart", string.Empty, new { @class = "form-control date-picker inputStyle" })
+                        <label style="font-size: 2em">~</label>  @Html.TextBox("SubmitDateEnd", string.Empty, new { @class = "form-control date-picker inputStyle" })
                     </td>
                 </tr>
             </table>
@@ -138,6 +145,8 @@
                                 <th>PO#</th>
                                 <th>Audit Date</th>
                                 <th>SP# Qty</th>
+                                <th>Sample lot Qty</th>
+                                <th>Submit Date</th>
                                 <th>Style</th>
                                 <th>Season</th>
                                 <th>Brand</th>
@@ -192,6 +201,12 @@
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.SPQty)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SampleSize)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SubmitDate)
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.StyleID)
