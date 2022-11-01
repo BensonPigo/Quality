@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DatabaseObject.RequestModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,38 @@ namespace DatabaseObject.ViewModel.BulkFGT
 {
     public class HeatTransferWash_ViewModel : BaseResult
     {
+        public HeatTransferWash_Request Request { get; set; }
         public List<SelectListItem> ReportNo_Source { get; set; }
+        public List<SelectListItem> Cycles_Source
+        {
+            get
+            {
+                return new List<SelectListItem>()
+                {
+                    new SelectListItem(){ Text="0",Value="0"},
+                    new SelectListItem(){ Text="1",Value="1"},
+                    new SelectListItem(){ Text="3",Value="3"},
+                    new SelectListItem(){ Text="5",Value="5"},
+                    new SelectListItem(){ Text="10",Value="10"},
+                    new SelectListItem(){ Text="15",Value="15"},
+                    new SelectListItem(){ Text="25",Value="25"},
+                };
+            }
+        }
+        public List<SelectListItem> TemperatureUnit_Source
+        {
+            get
+            {
+                return new List<SelectListItem>()
+                {
+                    new SelectListItem(){ Text="0",Value="0"},
+                    new SelectListItem(){ Text="30",Value="30"},
+                    new SelectListItem(){ Text="40",Value="40"},
+                    new SelectListItem(){ Text="50",Value="50"},
+                    new SelectListItem(){ Text="60",Value="60"},
+                };
+            }
+        }
         public HeatTransferWash_Result Main { get; set; }
         public List<HeatTransferWash_Detail_Result> Details { get; set; }
     }

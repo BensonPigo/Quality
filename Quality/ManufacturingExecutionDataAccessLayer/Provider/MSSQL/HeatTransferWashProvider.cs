@@ -54,26 +54,71 @@ WHERE 1=1
             return ExecuteList<SelectListItem>(CommandType.Text, SbSql, objParameter).ToList();
         }
 
-        public HeatTransferWash_Result GetData(string ReportNo)
+        public HeatTransferWash_Result GetMainData(HeatTransferWash_Request Req)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+
+            string SbSql = $@"
+select h.*
+    ,pmsfile.TestBeforePicture
+    ,pmsfile.TestAfterPicture
+from HeatTransferWash h
+inner join SciPMSFile_HeatTransferWash pmsfile on h.ReportNo=pmsfile.ReportNo
+from HeatTransferWash h WITH(NOLOCK)
+where 1 = 1 
+";
+            if (!string.IsNullOrEmpty(Req.ReportNo))
+            {
+                SbSql += "and h.ReportNo=@ReportNo" + Environment.NewLine;
+                objParameter.Add("@ReportNo", DbType.String, Req.ReportNo);
+            }
+            if (!string.IsNullOrEmpty(Req.BrandID))
+            {
+                SbSql += "and h.BrandID=@BrandID" + Environment.NewLine;
+                objParameter.Add("@BrandID", DbType.String, Req.BrandID);
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                SbSql += "and h.SeasonID=@SeasonID" + Environment.NewLine;
+                objParameter.Add("@SeasonID", DbType.String, Req.SeasonID);
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                SbSql += "and h.StyleID=@StyleID" + Environment.NewLine;
+                objParameter.Add("@StyleID", DbType.String, Req.StyleID);
+            }
+            if (!string.IsNullOrEmpty(Req.Article))
+            {
+                SbSql += "and h.Article=@Article" + Environment.NewLine;
+                objParameter.Add("@Article", DbType.String, Req.Article);
+            }
+
+
+
+
+            List<HeatTransferWash_Result> res = ExecuteList<HeatTransferWash_Result>(CommandType.Text, SbSql, objParameter).ToList();
+
+            return res.Any() ? res.FirstOrDefault() : new HeatTransferWash_Result();
+        }
+        public IList<HeatTransferWash_Detail_Result> GetDetailData(string ReportNo)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();
 
             string SbSql = $@"
 select    h.*
-from HeatTransferWash h WITH(NOLOCK)
+from HeatTransferWash_Detail h WITH(NOLOCK)
 where h.ReportNo = @ReportNo
 ";
 
-
             objParameter.Add("ReportNo", DbType.String, ReportNo);
-            List<HeatTransferWash_Result> res = ExecuteList<HeatTransferWash_Result>(CommandType.Text, SbSql, objParameter).ToList();
+            IList<HeatTransferWash_Detail_Result> res = ExecuteList<HeatTransferWash_Detail_Result>(CommandType.Text, SbSql, objParameter);
 
-            return res.Any() ? res.FirstOrDefault() : new HeatTransferWash_Result();
+            return res.Any() ? res.ToList() : new List<HeatTransferWash_Detail_Result>();
         }
 
         public int Insert_HeatTransferWash(HeatTransferWash_Result Req, string MDivision, string UserID, out string NewReportNo)
         {
-            NewReportNo = GetID(MDivision + "HW", "HeatTransferWash_Detail", DateTime.Today, 2, "ReportNo");
+            NewReportNo = GetID(MDivision + "HW", "HeatTransferWash", DateTime.Today, 2, "ReportNo");
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection()
             {
