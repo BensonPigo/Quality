@@ -30,7 +30,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 
             SbSql.Append($@"
 SELECT
-	Time = format(fm.AddDate,'HH:mm'),
+	Time = format(fm.AddDate,'HH:mm:ss'),
 	fm.[Article],
 	fm.[SizeCode],
 	fm.[Location],
