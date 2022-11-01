@@ -258,7 +258,14 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 for (int i = 1; i <= sampleStages.Count; i++)
                 {
                     worksheet = (Excel.Worksheet)excelApp.ActiveWorkbook.Worksheets[i];
-                    worksheet.Name = sampleStages[i - 1];
+                    worksheet.Name = sampleStages[i - 1]
+                    .Replace(":", "-")
+                    .Replace("/", "_")
+                    .Replace("\\", "_")
+                    .Replace("?", "~")
+                    .Replace("*", "~")
+                    .Replace("[", "(")
+                    .Replace("]", ")"); ;
                 }
 
                 //開始填資料
