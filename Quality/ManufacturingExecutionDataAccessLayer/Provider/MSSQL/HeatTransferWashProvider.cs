@@ -1,5 +1,6 @@
 ﻿using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
+using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using System;
@@ -9,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using ToolKit;
 
 namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 {
@@ -59,12 +61,37 @@ WHERE 1=1
             SQLParameterCollection objParameter = new SQLParameterCollection();
 
             string SbSql = $@"
-select h.*
-    ,pmsfile.TestBeforePicture
-    ,pmsfile.TestAfterPicture
+select h.ReportNo
+      ,h.POID
+      ,h.BrandID
+      ,h.SeasonID
+      ,h.StyleID
+      ,h.Article
+      ,h.Line
+      ,h.Machine
+      ,IsTeamwear = CAST(h.IsTeamwear as bit)
+      ,h.ReportDate
+      ,h.Result
+      ,h.Remark
+      ,h.Status
+      ,h.Temperature
+      ,h.Time
+      ,h.Pressure
+      ,h.PeelOff
+      ,h.Cycles
+      ,h.TemperatureUnit
+      ,h.AddName
+      ,h.AddDate
+      ,h.EditName
+      ,h.EditDate
+      ,pmsfile.TestBeforePicture
+      ,pmsfile.TestAfterPicture
+      ,MRHandleEmail = ISNULL(p.Email, p2.Email)
 from HeatTransferWash h
 inner join SciPMSFile_HeatTransferWash pmsfile on h.ReportNo=pmsfile.ReportNo
-from HeatTransferWash h WITH(NOLOCK)
+inner join SciProduction_Orders o on h.POID = o.ID
+left join SciProduction_Pass1 p on o.MRHandle = p.ID
+left join Pass1 p2 on o.MRHandle = p2.ID
 where 1 = 1 
 ";
             if (!string.IsNullOrEmpty(Req.ReportNo))
@@ -166,8 +193,8 @@ SET XACT_ABORT ON
 INSERT INTO HeatTransferWash
            (ReportNo
            ,POID
-           ,SeasonID
            ,BrandID
+           ,SeasonID
            ,StyleID
            ,Article
            ,Line
@@ -187,14 +214,13 @@ INSERT INTO HeatTransferWash
 VALUES  (     
             @ReportNo
            ,@POID
-           ,@StyleID
-           ,@SeasonID
            ,@BrandID
+           ,@SeasonID
+           ,@StyleID
            ,@Article
            ,@Line
            ,@Machine
            ,@IsTeamwear
-           ,@ReportDate
            ,@Remark
            ,'New'
            ,@Temperature
@@ -230,27 +256,217 @@ VALUES(
                 { "@HTRefNo", DbType.String, Req.HTRefNo  ?? ""} ,
                 { "@Result", DbType.String, Req.Result ?? "" } ,
                 { "@Remark", DbType.String, Req.Remark ?? "" } ,
+                { "@EditName", DbType.String, Req.EditName ?? "" } ,
             };
 
             SbSql.Append($@"
 INSERT INTO dbo.HeatTransferWash_Detail
-           (NewReportNo
+           (ReportNo
            ,FabricRefNo
            ,HTRefNo
            ,Result
            ,Remark
            ,EditName
            ,EditDate)
-VALUES      (ReportNo
-           ,FabricRefNo
-           ,HTRefNo
-           ,Result
-           ,Remark
-           ,EditName
-           ,EditDate)
+VALUES      (@ReportNo
+           ,@FabricRefNo
+           ,@HTRefNo
+           ,@Result
+           ,@Remark
+           ,@EditName
+           ,GETDATE())
 ");
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
+        }
+
+        public int Update_HeatTransferWash(HeatTransferWash_ViewModel Req)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            objParameter.Add("@Line", DbType.String, Req.Main.Line ?? string.Empty);
+            objParameter.Add("@Machine", DbType.String, Req.Main.Machine ?? string.Empty);
+            objParameter.Add("@Result", DbType.String, Req.Main.Result ?? string.Empty);
+            objParameter.Add("@Remark", DbType.String, Req.Main.Remark ?? string.Empty);
+            objParameter.Add("@IsTeamwear", DbType.Boolean, Req.Main.IsTeamwear);
+            objParameter.Add("@Temperature", DbType.Int32, Req.Main.Temperature);
+            objParameter.Add("@Time", DbType.Int32, Req.Main.Time);
+            objParameter.Add("@Pressure", DbType.Decimal, Req.Main.Pressure);
+            objParameter.Add("@PeelOff", DbType.String, Req.Main.PeelOff ?? string.Empty);
+            objParameter.Add("@Cycles", DbType.Int32, Req.Main.Cycles);
+            objParameter.Add("@TemperatureUnit", DbType.Int32, Req.Main.TemperatureUnit);
+            objParameter.Add("@Editname", DbType.String, Req.Main.EditName ?? string.Empty);
+            objParameter.Add("@ReportNo", DbType.String, Req.Main.ReportNo ?? string.Empty);
+
+
+            if (Req.Main.TestBeforePicture != null) { objParameter.Add("@TestBeforePicture", Req.Main.TestBeforePicture); }
+            else { objParameter.Add("@TestBeforePicture", System.Data.SqlTypes.SqlBinary.Null); }
+            if (Req.Main.TestAfterPicture != null) { objParameter.Add("@TestAfterPicture", Req.Main.TestAfterPicture); }
+            else { objParameter.Add("@TestAfterPicture", System.Data.SqlTypes.SqlBinary.Null); }
+
+            string head = $@"
+SET XACT_ABORT ON
+
+Update HeatTransferWash
+Set Line = @Line
+    ,Machine = @Machine
+    ,Result = @Result
+    ,Remark = @Remark
+    ,IsTeamwear = @IsTeamwear
+    ,Temperature = @Temperature
+    ,Time = @Time
+    ,Pressure = @Pressure
+    ,PeelOff = @PeelOff
+    ,Cycles = @Cycles 
+    ,TemperatureUnit = @TemperatureUnit
+    ,EditDate =GETDATE()
+    ,Editname = @Editname
+where ReportNo = @ReportNo
+
+
+if not exists (select 1 from SciPMSFile_HeatTransferWash where ReportNo = @ReportNo)
+begin
+    INSERT INTO SciPMSFile_HeatTransferWash (ReportNo,TestBeforePicture,TestAfterPicture)
+    VALUES (@ReportNo,@TestBeforePicture,@TestAfterPicture)
+end
+else
+begin
+    UPDATE SciPMSFile_HeatTransferWash
+    SET
+        TestBeforePicture=@TestBeforePicture
+        ,TestAfterPicture=@TestAfterPicture
+    WHERE ReportNo = @ReportNo
+end
+
+";
+
+
+            return ExecuteNonQuery(CommandType.Text, head, objParameter);
+        }
+        public int Delete_HeatTransferWash(string ReportNo)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            objParameter.Add("@ReportNo", DbType.String, ReportNo ?? string.Empty);
+
+            string head = $@"
+SET XACT_ABORT ON
+
+DELETE FROM  HeatTransferWash
+where ReportNo = @ReportNo
+
+DELETE FROM  HeatTransferWash_Detail
+where ReportNo = @ReportNo
+
+DELETE FROM  SciPMSFile_HeatTransferWash
+where ReportNo = @ReportNo
+";
+
+            return ExecuteNonQuery(CommandType.Text, head, objParameter);
+        }
+        public int Confirm_HeatTransferWash(HeatTransferWash_ViewModel Req)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            objParameter.Add("@Editname", DbType.String, Req.Main.EditName ?? string.Empty);
+            objParameter.Add("@ReportNo", DbType.String, Req.Main.ReportNo ?? string.Empty);
+            objParameter.Add("@Status", DbType.String, Req.Main.Status ?? string.Empty);
+
+            if (Req.Main.Status.ToUpper() == "NEW")
+            {
+                objParameter.Add("@ReportDate", DbType.DateTime, DBNull.Value);
+            }
+            if (Req.Main.Status.ToLower() == "confirmed")
+            {
+                objParameter.Add("@ReportDate", DbType.DateTime,DateTime.Now);
+            }
+
+            string head = $@"
+
+Update HeatTransferWash
+Set  ReportDate = @ReportDate
+    ,Status = @Status
+    ,EditDate = GETDATE()
+    ,Editname = @Editname
+where ReportNo = @ReportNo
+
+";
+
+            return ExecuteNonQuery(CommandType.Text, head, objParameter);
+        }
+        public void Update_HeatTransferWash_Detail(HeatTransferWash_ViewModel Req)
+        {
+            List<HeatTransferWash_Detail_Result> oldData = this.GetDetailData(Req.Main.ReportNo).ToList();
+
+            List<HeatTransferWash_Detail_Result> needUpdateDetailList =
+                PublicClass.CompareListValue<HeatTransferWash_Detail_Result>(
+                    Req.Details,
+                    oldData,
+                    "Ukey",
+                    "FabricRefNo,HTRefNo,Result,Remark");
+
+            string insert = $@"
+INSERT INTO dbo.HeatTransferWash_Detail
+           (ReportNo
+           ,FabricRefNo
+           ,HTRefNo
+           ,Result
+           ,Remark
+           ,EditName
+           ,EditDate)
+     VALUES(
+            @ReportNo
+           ,@FabricRefNo
+           ,@HTRefNo
+           ,@Result
+           ,@Remark
+           ,@EditName
+           ,GETDATE())
+
+";
+            string update = $@"
+UPDATE dbo.HeatTransferWash_Detail
+SET  FabricRefNo=@FabricRefNo
+    ,HTRefNo = @HTRefNo
+    ,Result = @Result
+    ,Remark = @Remark
+    ,EditName = @EditName
+    ,EditDate = GETDATE()
+WHERE UKey = @Ukey
+
+";
+            string delete = @"
+delete HeatTransferWash_Detail where Ukey = @Ukey
+";
+
+            foreach (var detailItem in needUpdateDetailList)
+            {
+                SQLParameterCollection listDetailPar = new SQLParameterCollection();
+                listDetailPar.Add("@FabricRefNo", DbType.String, detailItem.FabricRefNo ?? string.Empty);
+                listDetailPar.Add("@HTRefNo", DbType.String, detailItem.HTRefNo ?? string.Empty);
+                listDetailPar.Add("@Result", DbType.String, detailItem.Result);
+                listDetailPar.Add("@Remark", DbType.String, detailItem.Remark ?? string.Empty);
+                listDetailPar.Add("@EditName", DbType.String, detailItem.EditName ?? string.Empty);
+                switch (detailItem.StateType)
+                {
+                    case DatabaseObject.Public.CompareStateType.Add:
+                        listDetailPar.Add("@ReportNo", DbType.String, detailItem.ReportNo);
+                        ExecuteNonQuery(CommandType.Text, insert, listDetailPar);
+                        break;
+                    case DatabaseObject.Public.CompareStateType.Edit:
+                        listDetailPar.Add("@Ukey", DbType.Int64, detailItem.Ukey);
+                        ExecuteNonQuery(CommandType.Text, update, listDetailPar);
+                        break;
+                    case DatabaseObject.Public.CompareStateType.Delete:
+                        listDetailPar.Add("@Ukey", detailItem.Ukey);
+                        ExecuteNonQuery(CommandType.Text, delete, listDetailPar);
+                        break;
+                    case DatabaseObject.Public.CompareStateType.None:
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
     }
 }

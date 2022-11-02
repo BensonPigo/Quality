@@ -961,6 +961,10 @@
     </Content>
     <Content Include="Views\PublicWondow\PoidArticleList.cshtml" />
     <Content Include="Views\PublicWondow\OperationList.cshtml" />
+    <Content Include="Views\PublicWondow\Po_Supp_Detail_RefnoList.cshtml" />
+    <Content Include="XLT\HeatTransferWash.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

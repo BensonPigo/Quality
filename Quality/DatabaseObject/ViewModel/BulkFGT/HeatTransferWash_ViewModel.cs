@@ -1,4 +1,5 @@
-﻿using DatabaseObject.RequestModel;
+﻿using DatabaseObject.Public;
+using DatabaseObject.RequestModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,6 +43,17 @@ namespace DatabaseObject.ViewModel.BulkFGT
                 };
             }
         }
+        public List<SelectListItem> PassFail_Source
+        {
+            get
+            {
+                return new List<SelectListItem>()
+                {
+                    new SelectListItem(){ Text="Pass",Value="Pass"},
+                    new SelectListItem(){ Text="Fail",Value="Fail"},
+                };
+            }
+        }
         public HeatTransferWash_Result Main { get; set; }
         public List<HeatTransferWash_Detail_Result> Details { get; set; }
     }
@@ -60,6 +72,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public DateTime? ReportDate { get; set; }
         public string Result { get; set; }
         public string Remark { get; set; }
+        public string Status { get; set; }
         public int Temperature { get; set; }
         public int Time { get; set; }
         public decimal Pressure { get; set; }
@@ -87,12 +100,13 @@ namespace DatabaseObject.ViewModel.BulkFGT
         {
             get
             {
-                return this.EditDate.HasValue ? $"{this.EditDate.Value.ToString("yyyy-MM-dd")}-{this.EditNameText}" : string.Empty;
+                return this.EditDate.HasValue ? $"{this.EditDate.Value.ToString("yyyy-MM-dd")}-{this.EditName}" : string.Empty;
             }
         }
 
+        public string MRHandleEmail{ get; set; }
     }
-    public class HeatTransferWash_Detail_Result
+    public class HeatTransferWash_Detail_Result : CompareBase
     {
         public string ReportNo { get; set; }
         public long Ukey { get; set; }
@@ -107,7 +121,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         {
             get
             {
-                return this.EditDate.HasValue ? $"{this.EditDate.Value.ToString("yyyy-MM-dd")}-{this.EditNameText}" : string.Empty;
+                return this.EditDate.HasValue ? $"{this.EditDate.Value.ToString("yyyy-MM-dd")}-{this.EditName}" : string.Empty;
             }
         }
 

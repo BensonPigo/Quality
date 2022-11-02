@@ -556,6 +556,37 @@ AND psd.ID = @POID
             return ExecuteList<Window_Po_Supp_Detail>(CommandType.Text, SbSql.ToString(), paras);
         }
 
+        public IList<Window_Po_Supp_Detail> Get_Po_Supp_Detail_Refno(string OrderID, string MtlTypeID, string Refno)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+            SbSql.Append($@"
+select DISTINCT psd.Refno
+from PO_Supp_Detail psd WITH(NOLOCK)
+inner join Fabric f WITH(NOLOCK) on psd.SCIRefno = f.SCIRefno
+inner join Orders o WITH(NOLOCK) on o.POID=psd.ID
+Where o.ID = @OrderID
+");
+            paras.Add("@OrderID", DbType.String, OrderID);
+
+            if (!string.IsNullOrEmpty(MtlTypeID))
+            {
+                SbSql.Append($@" AND f.MtlTypeID = @MtlTypeID ");
+                paras.Add("@MtlTypeID", DbType.String, MtlTypeID);
+            }
+            else
+            {
+                SbSql.Append($@" AND f.Type = 'F' ");
+            }
+
+            if (!string.IsNullOrEmpty(Refno))
+            {
+                SbSql.Append($@" AND psd.Refno = @Refno ");
+                paras.Add("@Refno", DbType.String, Refno);
+            }
+            return ExecuteList<Window_Po_Supp_Detail>(CommandType.Text, SbSql.ToString(), paras);
+        }
+
         public IList<Window_FtyInventory> Get_FtyInventory(string POID, string Seq1, string Seq2, string Roll, bool IsExact)
         {
             StringBuilder SbSql = new StringBuilder();
