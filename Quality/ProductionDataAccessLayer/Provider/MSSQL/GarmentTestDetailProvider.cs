@@ -419,6 +419,29 @@ Update GarmentTest_Detail set Status = @Status, InspDate = @InspDate  where id =
             return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;
         }
 
+        public bool Encode_GarmentTestDetail_OrderIDCheck(string ID, string No)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.String, ID } ,
+                { "@No", DbType.String, No } ,
+            };
+            string sqlcmd = @"
+select 1
+from GarmentTest_Detail 
+where id = @ID and No = @No and OrderID <> ''
+";
+            DataTable dt = ExecuteDataTable(CommandType.Text, sqlcmd, objParameter);
+
+            if (dt.Rows != null && dt.Rows.Count > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
         public DataTable Get_Mail_Content(string ID, string No)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection
