@@ -268,20 +268,21 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [SessionAuthorizeAttribute]
         [HttpPost]
-        public JsonResult SPBlur(string POID)
+        public JsonResult SPBlur(string OrderID)
         {
             string BrandID = string.Empty;
             string SeasonID = string.Empty;
             string StyleID = string.Empty;
             string Article = string.Empty;
+            bool Teamwear = false;
 
             Orders order = new Orders();
-            order.ID = POID;
+            order.ID = OrderID;
             List<Orders> orderResult = _Service.GetOrders(order);
 
             if (orderResult.Count == 0)
             {
-                return Json(new { ErrMsg = $"Cannot found SP# {POID}." });
+                return Json(new { ErrMsg = $"Cannot found SP# {OrderID}." });
             }
 
             if (orderResult.Count == 1)
@@ -289,9 +290,10 @@ namespace Quality.Areas.BulkFGT.Controllers
                 BrandID = orderResult.FirstOrDefault().BrandID;
                 SeasonID = orderResult.FirstOrDefault().SeasonID;
                 StyleID = orderResult.FirstOrDefault().StyleID;
+                Teamwear = orderResult.FirstOrDefault().Teamwear;
 
                 Order_Qty order_qty = new Order_Qty();
-                order_qty.ID = POID;
+                order_qty.ID = OrderID;
                 List<Order_Qty> order_qtyResult = _Service.GetDistinctArticle(order_qty);
 
                 if (order_qtyResult.Any())
@@ -301,7 +303,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             }
 
-            return Json(new { ErrMsg = "", BrandID = BrandID, SeasonID = SeasonID, StyleID = StyleID, Article = Article });
+            return Json(new { ErrMsg = "", BrandID = BrandID, SeasonID = SeasonID, StyleID = StyleID, Article = Article , Teamwear = Teamwear });
         }
 
         [SessionAuthorizeAttribute]

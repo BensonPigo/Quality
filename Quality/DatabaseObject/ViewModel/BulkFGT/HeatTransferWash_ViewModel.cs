@@ -61,7 +61,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
     public class HeatTransferWash_Result
     {
         public string ReportNo { get; set; }
-        public string POID { get; set; }
+        public string OrderID { get; set; }
         public string BrandID { get; set; }
         public string SeasonID { get; set; }
         public string StyleID { get; set; }

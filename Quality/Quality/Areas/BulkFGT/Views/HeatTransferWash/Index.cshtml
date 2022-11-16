@@ -146,7 +146,7 @@
         <header class="page-header">
             <div style="float:left">
                 <h3>
-                    <span>Heat Transfer Wash Test</span>
+                    <span>Daily HT Wash Test</span>
                 </h3>
                 <div class="breadcrumb">
                     <div>Home</div>
@@ -302,7 +302,7 @@
                                     </td>
                                     <td style="width: 10vw;"><h5>SP#</h5></td>
                                     <td style="width: 20vw;">
-                                        @Html.TextBoxFor(o => o.Main.POID)
+                                        @Html.TextBoxFor(o => o.Main.OrderID)
                                     </td>
                                     <td style="width: 10vw;"><h5>Brand</h5></td>
                                     <td style="width: 20vw;">
@@ -344,7 +344,7 @@
                                     <td><h5>Teamwear</h5></td>
                                     <td>
                                         <div class="input-group">
-                                            @Html.CheckBoxFor(o => o.Main.IsTeamwear, new { @class = "bigSize OnlyEdit", @style = "flex-grow: 0;" })
+                                            @Html.CheckBoxFor(o => o.Main.IsTeamwear, new { @class = "bigSize Readonly", @style = "flex-grow: 0;"  })
                                             <label for="Main_IsTeamwear" style="padding: 5px;">Teamwear</label>
                                         </div>
                                     </td>
@@ -627,7 +627,7 @@
 
     function blurEvent(name) {
 
-        $("#Main_POID").unbind('blur').blur(function () {
+        $("#Main_OrderID").unbind('blur').blur(function () {
             if ($(this).val() == '') {
                 return;
             }
@@ -636,11 +636,11 @@
                 url: "@Url.Action("SPBlur", new{Area= "BulkFGT" })",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({ POID: $(this).val(), ReturnType: "JSON" }),
+                data: JSON.stringify({ OrderID: $(this).val(), ReturnType: "JSON" }),
                 async: true,
                 success: function (data) {
                     if (data.ErrMsg != "") {
-                        $("#Main_POID").val('');
+                        $("#Main_OrderID").val('');
                         msg.WithError(data.ErrMsg);
                     }
                     else {
@@ -656,11 +656,16 @@
                             $('#Main_StyleID').val(data.StyleID);
                         }
 
-
                         if (data.Article != "") {
                             $('#Main_Article').val(data.Article);
                         }
-
+                        
+                        if (data.Teamwear == true) {
+                            $('#Main_IsTeamwear').attr('checked', 'checked');
+                        }
+                        else {
+                            $('#Main_IsTeamwear').removeAttr('checked');
+                        }
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
@@ -841,7 +846,7 @@
             var detail = [];
             var ErrMsg = "";
 
-            if ($('#Main_POID').val() == '' || $('#Main_POID').val() == undefined) {
+            if ($('#Main_OrderID').val() == '' || $('#Main_OrderID').val() == undefined) {
                 ErrMsg += "SP# cannot be empty<br/>";
             }
 
@@ -1061,7 +1066,7 @@
 
         $('.btnRefnoSelectItem').on('click', function () {
             var targetID = $(this).attr("targetID");
-            var OrderID = $("#Main_POID").val();
+            var OrderID = $("#Main_OrderID").val();
             if (OrderID == '') {
                 msg.WithError('Please input SP#.');
                 return;
@@ -1072,7 +1077,7 @@
 
         $('.FabricRefNoTxt').unbind('blur').blur(function () {
             var targetID = $(this).attr("ID");
-            var orderID = $('#Main_POID').val();
+            var orderID = $('#Main_OrderID').val();
             var refno = $(this).val();
             if (refno == '') {
                 return;
@@ -1104,7 +1109,7 @@
 
         $('.btnRefnoSelectItem').on('click', function () {
             var targetID = $(this).attr("targetID");
-            var OrderID = $("#Main_POID").val();
+            var OrderID = $("#Main_OrderID").val();
             if (OrderID == '') {
                 msg.WithError('Please input SP#.');
                 return;
@@ -1115,7 +1120,7 @@
 
         $('.HTRefNoTxt').unbind('blur').blur(function () {
             var targetID = $(this).attr("ID");
-            var orderID = $('#Main_POID').val();
+            var orderID = $('#Main_OrderID').val();
             var refno = $(this).val();
             if (refno == '') {
                 return;
@@ -1147,7 +1152,7 @@
 
         $('.btnHTRefNoSelectItem').on('click', function () {
             var targetID = $(this).attr("targetID");
-            var OrderID = $("#Main_POID").val();
+            var OrderID = $("#Main_OrderID").val();
             if (OrderID == '') {
                 msg.WithError('Please input SP#.');
                 return;

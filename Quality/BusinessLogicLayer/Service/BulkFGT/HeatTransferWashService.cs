@@ -265,7 +265,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 // 表頭填入
 
                 worksheet.Cells[2, 4] = head.ReportDate.HasValue ? head.ReportDate.Value.ToString("yyyy-MM-dd") : string.Empty;
-                worksheet.Cells[3, 2] = head.POID;
+                worksheet.Cells[3, 2] = head.OrderID;
                 worksheet.Cells[3, 4] = head.IsTeamwear ? "V" : string.Empty;
                 worksheet.Cells[4, 2] = head.SeasonID;
                 worksheet.Cells[4, 4] = head.StyleID;

@@ -62,7 +62,7 @@ WHERE 1=1
 
             string SbSql = $@"
 select h.ReportNo
-      ,h.POID
+      ,h.OrderID
       ,h.BrandID
       ,h.SeasonID
       ,h.StyleID
@@ -89,7 +89,7 @@ select h.ReportNo
       ,MRHandleEmail = ISNULL(p.Email, p2.Email)
 from HeatTransferWash h
 inner join SciPMSFile_HeatTransferWash pmsfile on h.ReportNo=pmsfile.ReportNo
-inner join SciProduction_Orders o on h.POID = o.ID
+inner join SciProduction_Orders o on h.OrderID = o.ID
 left join SciProduction_Pass1 p on o.MRHandle = p.ID
 left join Pass1 p2 on o.MRHandle = p2.ID
 where 1 = 1 
@@ -150,7 +150,7 @@ where h.ReportNo = @ReportNo
             SQLParameterCollection objParameter = new SQLParameterCollection()
             {
                 { "@ReportNo", DbType.String, NewReportNo } ,
-                { "@POID", DbType.String, Req.POID ?? ""} ,
+                { "@OrderID", DbType.String, Req.OrderID ?? ""} ,
                 { "@BrandID", DbType.String, Req.BrandID } ,
                 { "@SeasonID", DbType.String, Req.SeasonID } ,
                 { "@StyleID", DbType.String, Req.StyleID } ,
@@ -192,7 +192,7 @@ SET XACT_ABORT ON
 
 INSERT INTO HeatTransferWash
            (ReportNo
-           ,POID
+           ,OrderID
            ,BrandID
            ,SeasonID
            ,StyleID
@@ -213,7 +213,7 @@ INSERT INTO HeatTransferWash
            ,AddDate)
 VALUES  (     
             @ReportNo
-           ,@POID
+           ,@OrderID
            ,@BrandID
            ,@SeasonID
            ,@StyleID
