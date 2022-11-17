@@ -78,16 +78,15 @@ namespace Quality.Areas.FinalInspection.Controllers
             List<SelectListItem> inspectionResultList = new SetListItem().ItemListBinding(inspectionlist);
             ViewBag.inspectionResultList = inspectionResultList;
 
-            if (string.IsNullOrEmpty(model.SP) && string.IsNullOrEmpty(model.CustPONO) && string.IsNullOrEmpty(model.StyleID) && (!model.AuditDateStart.HasValue || !model.AuditDateEnd.HasValue) && string.IsNullOrEmpty(model.InspectionResult))
+            if (string.IsNullOrEmpty(model.SP) && string.IsNullOrEmpty(model.CustPONO) && string.IsNullOrEmpty(model.StyleID) && (!model.AuditDateStart.HasValue || !model.AuditDateEnd.HasValue)
+                && (!model.SubmitDateStart.HasValue || !model.SubmitDateEnd.HasValue))
             {
-                model.ErrorMessage = $@"msg.WithError('Please input fields before query.');";
+                model.ErrorMessage = $@"msg.WithError('SP# ,PO# ,Style# , Audit Date, Submit Date can not be empty.');";
                 model.DataList = Service.GetFinalinspectionQueryList_Default(model);
                 return View(model);
             }
 
             model.DataList = Service.GetFinalinspectionQueryList(model);
-
-
 
             return View(model);
         }

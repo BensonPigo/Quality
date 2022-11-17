@@ -45,10 +45,10 @@
         height: 1vh;
         padding: 0.4vw;
     }
-
+/*
     .dataTables_scroll {
         height: 56.4vh
-    }
+    }*/
 
     .dataTables_wrapper .dataTables_paginate .paginate_button {
         color: black !important;
@@ -258,9 +258,10 @@
 
         $('#GirdTable').DataTable({
             "pageLength": 10,
+            "lengthChange": false,
             "filter": false,
             "paging": true,
-            "scrollY": "49vh",
+            "scrollY": "44%",
             "scrollCollapse": true,
             "scrollX": true,
             "autoWidth": false
@@ -272,9 +273,10 @@
 
 
     function checkvalue() {
-        if ($("#SP").val() == "" && $("#CustPONO").val() == "" && $("#StyleID").val() == "" && $("#AuditDateStart").val() == "" && $("#AuditDateEnd").val() == "") {
+        if ($("#SP").val() == "" && $("#CustPONO").val() == "" && $("#StyleID").val() == "" && $("#AuditDateStart").val() == "" && $("#AuditDateEnd").val() == ""
+            && $("#SubmitDateStart").val() == "" && $("#SubmitDateEnd").val() == "") {
 
-            msg.WithError('Please input fields before query.');
+            msg.WithError('SP# ,PO# ,Style# , Audit Date, Submit Date can not br empty.');
             return false;
         }
         else {
