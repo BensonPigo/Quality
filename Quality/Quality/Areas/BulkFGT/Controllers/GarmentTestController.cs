@@ -253,7 +253,8 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
             else
             {
-                sizeCodes = _GarmentTest_Service.Get_SizeCode(Style, Season, Brand); 
+                return Content(html);
+                //sizeCodes = _GarmentTest_Service.Get_SizeCode(Style, Season, Brand); 
             }
             foreach (string val in sizeCodes)
             {

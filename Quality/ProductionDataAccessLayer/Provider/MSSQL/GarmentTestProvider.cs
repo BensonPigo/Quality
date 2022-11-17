@@ -306,22 +306,28 @@ begin
 	where t1.BrandID = ''
 end
 
-INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
-values (@ID,@NO,'Printing / Heat Transfer',1)
-INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
-values (@ID,@NO,'Label',2)
-INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
-values (@ID,@NO,'Zipper / Snap Button / Button / Tie Cord',3)
-INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
-values (@ID,@NO,'Discoloration (colour change )',4)
-INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
-values (@ID,@NO,'Colour Staining',5)
-INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
-values (@ID,@NO,'Pilling',6)
-INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
-values (@ID,@NO,'Shrinkage & Twisting',7)
-INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
-values (@ID,@NO,'Appearance of garment after wash',8)
+IF NOT EXISTS (
+    SELECT  1 FROM GarmentTest_Detail_Apperance
+    where ID=@ID and No = @No
+)
+begin
+    INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
+    values (@ID,@NO,'Printing / Heat Transfer',1)
+    INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
+    values (@ID,@NO,'Label',2)
+    INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
+    values (@ID,@NO,'Zipper / Snap Button / Button / Tie Cord',3)
+    INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
+    values (@ID,@NO,'Discoloration (colour change )',4)
+    INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
+    values (@ID,@NO,'Colour Staining',5)
+    INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
+    values (@ID,@NO,'Pilling',6)
+    INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
+    values (@ID,@NO,'Shrinkage & Twisting',7)
+    INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
+    values (@ID,@NO,'Appearance of garment after wash',8)
+end
 ";
                         ExecuteDataTableByServiceConn(CommandType.Text, insertShrinkage, objParameter1);
                         #endregion

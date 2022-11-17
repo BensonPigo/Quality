@@ -38,5 +38,6 @@ namespace ProductionDataAccessLayer.Interface
         bool Update_GarmentTestDetail_Result(string ID, string No);
 
         bool Update_GarmentTestDetail_Result_Amend(string ID, string No);
+        bool Encode_GarmentTestDetail_OrderIDCheck(string ID, string No);
     }
 }

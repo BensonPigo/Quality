@@ -811,7 +811,7 @@
                 async: false,
                 success: function (data) {
                     if (data.length == 0) {
-                        $(this).val('');
+                        $(`#garmentTest_Details_${idx}__OrderID`).val('');
                         msg.WithError("SP not Found");
                     }
                     else {
