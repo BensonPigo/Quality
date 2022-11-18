@@ -268,6 +268,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             worksheet.Cells[22, 6] = model.sampleRFTInspection.CheckEMB ? "V" : string.Empty;
             worksheet.Cells[23, 6] = model.sampleRFTInspection.CheckPrintEmbDecorations ? "V" : string.Empty;
             worksheet.Cells[24, 6] = model.sampleRFTInspection.CheckHT ? "V" : string.Empty;
+            worksheet.Cells[25, 6] = model.sampleRFTInspection.CheckBadge ? "V" : string.Empty;
 
             worksheet.Cells[19, 10] = model.sampleRFTInspection.CheckFiberContent ? "V" : string.Empty;
             worksheet.Cells[20, 10] = model.sampleRFTInspection.CheckCountryofOrigin ? "V" : string.Empty;
@@ -290,11 +291,11 @@ namespace Quality.Areas.SampleRFT.Controllers
             {
                 copyCnt = model.AddDefect.ListDefectItem.Where(o => o.Qty > 0).Count() - 8;
 
-                Excel.Range range = worksheet.get_Range($"A27:R27").EntireRow;
+                Excel.Range range = worksheet.get_Range($"A28:R28").EntireRow;
 
                 for (int i = 0; i < copyCnt; i++)
                 {
-                    Microsoft.Office.Interop.Excel.Range rgX = worksheet.get_Range($"A28", Type.Missing).EntireRow; // 選擇要被貼上的位置
+                    Microsoft.Office.Interop.Excel.Range rgX = worksheet.get_Range($"A29", Type.Missing).EntireRow; // 選擇要被貼上的位置
                     rgX.Insert(range.Copy(Type.Missing)); // 貼上
                 }
 
@@ -303,32 +304,32 @@ namespace Quality.Areas.SampleRFT.Controllers
             int idx = 0;
             foreach (var item in model.AddDefect.ListDefectItem.Where(o => o.Qty > 0))
             {
-                worksheet.Cells[27 + idx, 3] = item.GarmentDefectCodeID;
-                worksheet.Cells[27 + idx, 4] = item.DefectCode;
-                worksheet.Cells[27 + idx, 17] = item.Qty;
+                worksheet.Cells[28 + idx, 3] = item.GarmentDefectCodeID;
+                worksheet.Cells[28 + idx, 4] = item.DefectCode;
+                worksheet.Cells[28 + idx, 17] = item.Qty;
                 idx++;
             }
 
             // 以下，Row數量要加上去
-            worksheet.Cells[39 + copyCnt, 7] = model.sampleRFTInspection.BAQty;
+            worksheet.Cells[40 + copyCnt, 7] = model.sampleRFTInspection.BAQty;
 
-            worksheet.Cells[43 + copyCnt, 7] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C1").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C1").FirstOrDefault().Qty : 0;
-            worksheet.Cells[43 + copyCnt, 8] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C2").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C2").FirstOrDefault().Qty : 0;
-            worksheet.Cells[43 + copyCnt, 9] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C3").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C3").FirstOrDefault().Qty : 0;
-            worksheet.Cells[43 + copyCnt, 10] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C4").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C4").FirstOrDefault().Qty : 0;
-            worksheet.Cells[43 + copyCnt, 11] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C5").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C5").FirstOrDefault().Qty : 0;
-            worksheet.Cells[43 + copyCnt, 12] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C6").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C6").FirstOrDefault().Qty : 0;
-            worksheet.Cells[43 + copyCnt, 13] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C7").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C7").FirstOrDefault().Qty : 0;
-            worksheet.Cells[43 + copyCnt, 14] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C8").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C8").FirstOrDefault().Qty : 0;
-            worksheet.Cells[43 + copyCnt, 15] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C9").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C9").FirstOrDefault().Qty : 0;
+            worksheet.Cells[44 + copyCnt, 7] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C1").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C1").FirstOrDefault().Qty : 0;
+            worksheet.Cells[44 + copyCnt, 8] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C2").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C2").FirstOrDefault().Qty : 0;
+            worksheet.Cells[44 + copyCnt, 9] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C3").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C3").FirstOrDefault().Qty : 0;
+            worksheet.Cells[44 + copyCnt, 10] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C4").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C4").FirstOrDefault().Qty : 0;
+            worksheet.Cells[44 + copyCnt, 11] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C5").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C5").FirstOrDefault().Qty : 0;
+            worksheet.Cells[44 + copyCnt, 12] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C6").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C6").FirstOrDefault().Qty : 0;
+            worksheet.Cells[44 + copyCnt, 13] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C7").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C7").FirstOrDefault().Qty : 0;
+            worksheet.Cells[44 + copyCnt, 14] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C8").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C8").FirstOrDefault().Qty : 0;
+            worksheet.Cells[44 + copyCnt, 15] = model.BA.ListBACriteria.Where(o => o.BACriteria == "C9").Any() ? model.BA.ListBACriteria.Where(o => o.BACriteria == "C9").FirstOrDefault().Qty : 0;
 
 
-            worksheet.Cells[46 + copyCnt, 6] = model.Setting.QCInCharge;
+            worksheet.Cells[47 + copyCnt, 6] = model.Setting.QCInCharge;
 
             // Pass / Fail  抓到圖形，並插入文字
-            worksheet.Cells[49 + copyCnt, 6] = model.Setting.QCInCharge;
+            worksheet.Cells[50 + copyCnt, 6] = model.Setting.QCInCharge;
 
-            worksheet.Cells[54 + copyCnt, 10] = model.sampleRFTInspection.SubmitDate.HasValue ? model.sampleRFTInspection.SubmitDate.Value.ToShortDateString() : string.Empty;
+            worksheet.Cells[55 + copyCnt, 10] = model.sampleRFTInspection.SubmitDate.HasValue ? model.sampleRFTInspection.SubmitDate.Value.ToShortDateString() : string.Empty;
 
             if (model.sampleRFTInspection.Result == "Pass")
             {

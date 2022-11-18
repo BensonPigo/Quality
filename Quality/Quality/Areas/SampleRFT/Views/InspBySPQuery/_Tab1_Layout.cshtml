@@ -109,6 +109,14 @@
                     <div><label class="checkboxlabel">HT</label></div>
                 </td>
             </tr>
+            <tr>
+                <td>
+                    @Html.CheckBoxFor(o => o.sampleRFTInspection.CheckBadge, new { @disabled = "disabled", @class = "checkboxInput" })
+                </td>
+                <td>
+                    <div><label class="checkboxlabel">Badge</label></div>
+                </td>
+            </tr>
         </table>
     </div>
     <div style="display:inline-block;width:50%">

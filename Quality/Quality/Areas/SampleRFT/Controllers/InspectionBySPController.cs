@@ -314,6 +314,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                 model.CheckHangtag = data.CheckHangtag;
                 model.CheckEMB = data.CheckEMB;
                 model.CheckHT = data.CheckHT;
+                model.CheckBadge = data.CheckBadge;
                 model.OrderID = data.OrderID;
                 model.ID = data.ID;
             }

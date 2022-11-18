@@ -92,6 +92,7 @@ namespace DatabaseObject.ViewModel.SampleRFT
         public bool CheckHangtag { get; set; }
         public bool CheckHT { get; set; }
         public bool CheckEMB { get; set; }
+        public bool CheckBadge { get; set; }
 
         public string WorkNo { get; set; }
         public string POID { get; set; }
