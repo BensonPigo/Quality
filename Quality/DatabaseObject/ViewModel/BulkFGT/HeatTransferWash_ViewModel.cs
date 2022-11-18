@@ -100,7 +100,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         {
             get
             {
-                return this.EditDate.HasValue ? $"{this.EditDate.Value.ToString("yyyy-MM-dd")}-{this.EditName}" : string.Empty;
+                return this.EditDate.HasValue ? $"{this.EditDate.Value.ToString("yyyy-MM-dd HH:mm:ss")}-{this.EditName}" : string.Empty;
             }
         }
 

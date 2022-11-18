@@ -150,7 +150,7 @@
                 </h3>
                 <div class="breadcrumb">
                     <div>Home</div>
-                    <div class="current">Heat Transfer Wash Test</div>
+                    <div class="current">Daily HT Wash Test</div>
                 </div>
             </div>
             <div class="breadcrumb queryHeader" style="justify-content: flex-end;">
@@ -897,7 +897,7 @@
         });
 
         $('#Delete').on('click', function (e) {
-            if (EditMode == false && $('#Main_ReportNo').val() != null && $('#Main_ReportNo').val() != "") {
+            if (EditMode == false && $('#ReportNo').val() != null && $('#ReportNo').val() != "") {
                 e.preventDefault();
                 msg.WithConfirm('Do you want to delete the data ?',
                     function () {
@@ -939,7 +939,7 @@
         });
 
         $('#PDF').on('click', function () {
-            if ($('#Main_ReportNo').val() == "") {
+            if ($('#ReportNo').val() == "") {
                 return false;
             }
 
@@ -947,7 +947,7 @@
         });
 
         $('#Excel').on('click', function () {
-            if ($('#Main_ReportNo').val() == "") {
+            if ($('#ReportNo').val() == "") {
                 return false;
             }
 
@@ -960,13 +960,13 @@
                 url: "@Url.Action("SendMail", new { Area = "BulkFGT" })",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({ ReportNo: $('#Main_ReportNo').val() }),
+                data: JSON.stringify({ ReportNo: $('#ReportNo').val() }),
                 async: false,
                 success: function (data) {
                     if (data.Result) {
                         var para = "?To=" + $('#Main_MRHandleEmail').val();
                         para += "&CC=";
-                        para += "&Subject=" + "Daily HT Wash Test – ReportNo:" + $('#Main_ReportNo').val();
+                        para += "&Subject=" + "Daily HT Wash Test – ReportNo:" + $('#ReportNo').val();
                         para += "&Body=" + "Attachment Is Daily HT Wash Test - ReportNo:" + $('#ReportNo').val() + " detail data";
                         para += "&file=" + data.FileName;
                         window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=600');
@@ -1335,7 +1335,7 @@
             url: "@Url.Action("Report", new { Area = "BulkFGT" })",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
-            data: JSON.stringify({ ReportNo: $('#Main_ReportNo').val(), IsToPDF: IsToPDF }),
+            data: JSON.stringify({ ReportNo: $('#ReportNo').val(), IsToPDF: IsToPDF }),
             async: false,
             success: function (data) {
                 if (data.Result) {

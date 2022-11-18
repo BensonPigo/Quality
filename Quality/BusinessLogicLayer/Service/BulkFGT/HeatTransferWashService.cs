@@ -39,14 +39,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 model.Details = model.Details == null ? new List<HeatTransferWash_Detail_Result>() : model.Details;
 
-                if (model.Details.Any(a => a.Result.ToUpper() == "Fail".ToUpper()))
-                {
-                    model.Main.Result = "Fail";
-                }
-                else
-                {
-                    model.Main.Result = "Pass";
-                }
+                //if (model.Details.Any(a => a.Result.ToUpper() == "Fail".ToUpper()))
+                //{
+                //    model.Main.Result = "Fail";
+                //}
+                //else
+                //{
+                //    model.Main.Result = "Pass";
+                //}
 
                 ctn = _Provider.Insert_HeatTransferWash(model.Main, MDivision, userid, out NewReportNo);
 
@@ -100,14 +100,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 model.Details = model.Details == null ? new List<HeatTransferWash_Detail_Result>() : model.Details;
 
-                if (model.Details.Any(a => a.Result.ToUpper() == "Fail".ToUpper()))
-                {
-                    model.Main.Result = "Fail";
-                }
-                else
-                {
-                    model.Main.Result = "Pass";
-                }
+                //if (model.Details.Any(a => a.Result.ToUpper() == "Fail".ToUpper()))
+                //{
+                //    model.Main.Result = "Fail";
+                //}
+                //else
+                //{
+                //    model.Main.Result = "Pass";
+                //}
 
                 model.Main.EditName = userid;
                 ctn = _Provider.Update_HeatTransferWash(model);
@@ -178,6 +178,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
             try
             {
                 _Provider = new HeatTransferWashProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+
                 _Provider.Confirm_HeatTransferWash(model);
 
                 result.Result = true;

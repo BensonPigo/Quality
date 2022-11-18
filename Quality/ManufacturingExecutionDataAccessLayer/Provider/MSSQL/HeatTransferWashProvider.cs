@@ -383,11 +383,16 @@ where ReportNo = @ReportNo
 
             string head = $@"
 
-Update HeatTransferWash
+Update b
 Set  ReportDate = @ReportDate
     ,Status = @Status
+    ,Result = IIF(@Status ='New' 
+                        ,''
+                        , IIF( (select COUNT(1) from HeatTransferWash_Detail a where a.ReportNo=b.ReportNo and a.Result='Fail') > 0 , 'Fail' ,'Pass')
+                    )
     ,EditDate = GETDATE()
     ,Editname = @Editname
+from HeatTransferWash b
 where ReportNo = @ReportNo
 
 ";
