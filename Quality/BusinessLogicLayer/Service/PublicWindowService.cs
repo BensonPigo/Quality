@@ -247,6 +247,26 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
+        public List<Window_Po_Supp_Detail> Get_Po_Supp_Detail_Refno(string OrderID, string MtlTypeID, string Refno)
+        {
+            List<Window_Po_Supp_Detail> result = new List<Window_Po_Supp_Detail>();
+
+            try
+            {
+                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+
+                //取得登入資訊
+                result = _Provider.Get_Po_Supp_Detail_Refno(OrderID, MtlTypeID, Refno).ToList();
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
         public List<Window_FtyInventory> Get_FtyInventory(string POID, string Seq1, string Seq2, string Roll, bool IsExact)
         {
             List<Window_FtyInventory> result = new List<Window_FtyInventory>();

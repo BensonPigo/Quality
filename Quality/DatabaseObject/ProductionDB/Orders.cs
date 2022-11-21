@@ -631,7 +631,7 @@ namespace DatabaseObject.ProductionDB
         public string SizeUnitWeight { get; set; }
 
         public bool Checked { get; set; }
-
+        public bool Teamwear { get; set; }
         public string Article { get; set; }
         public string ComboType { get; set; }
         public string TopSewingLineID { get; set; }

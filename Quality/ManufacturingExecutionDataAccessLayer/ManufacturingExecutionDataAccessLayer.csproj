@@ -104,6 +104,7 @@
     <Compile Include="Provider\MSSQL\AuthorityProvider.cs" />
     <Compile Include="Provider\MSSQL\BACriteriaProvider.cs" />
     <Compile Include="Provider\MSSQL\DQSReasonProvider.cs" />
+    <Compile Include="Provider\MSSQL\HeatTransferWashProvider.cs" />
     <Compile Include="Provider\MSSQL\InspectionBySPProvider.cs" />
     <Compile Include="Provider\MSSQL\InspectionDefectListProvider.cs" />
     <Compile Include="Provider\MSSQL\InspectionProvider.cs" />

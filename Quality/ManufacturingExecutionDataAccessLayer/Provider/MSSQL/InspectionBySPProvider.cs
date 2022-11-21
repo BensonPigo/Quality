@@ -391,6 +391,7 @@ update SampleRFTInspection
           ,CheckSecurityLabel = @CheckSecurityLabel
           ,CheckOuterCarton = @CheckOuterCarton
           ,CheckEMB = @CheckEMB
+          ,CheckBadge = @CheckBadge
           ,InspectionStep = @InspectionStep
           ,EditName= @userID
           ,EditDate= getdate()
@@ -423,6 +424,7 @@ where   ID = @ID
                     objParameter.Add("@CheckHangtag", inspection.CheckHangtag);
                     objParameter.Add("@CheckHT", inspection.CheckHT);
                     objParameter.Add("@CheckEMB", inspection.CheckEMB);
+                    objParameter.Add("@CheckBadge", inspection.CheckBadge);
 
 
                     break;

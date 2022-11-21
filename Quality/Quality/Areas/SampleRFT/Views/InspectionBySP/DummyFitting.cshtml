@@ -53,10 +53,12 @@
 
         <div style="width: 100%; height: 65vh;margin-left:5px;">
             <div style="width:24%;height:5%;float:left;text-align:center;border-right:1px solid black;background-color:lightgray;padding-top:5px">
-                <div style="width:80%;height:100%;float:left">
+                <div style="width:79%;height:100%;float:left">
                     <label>Front</label>
                 </div>
-                <div style="width: 20%; height: 100%; float: left ">
+                <div style="width: 21%; height: 100%; float: left ">
+                    <input type="file" id="UploadFront" class="UploadPic" idx="1" name="name" accept=".png, .jpg, .jpeg" value="UP" style="display:none;" />
+                    <img src='/Image/Icon/Upload.png' idx="1" class='Upload imgButton' />
                     <img src='/Image/Icon/Camera.png' idx="1" class='TakePicture imgButton' />
                     <img src='/Image/Icon/Delete.png' idx="1" class='DeletePicture imgButton' />
                 </div>
@@ -73,10 +75,12 @@
         </div>*@
 
             <div style="width: 24%; height: 5%; float: left; text-align: center; border-right: 1px solid black; background-color: lightgray; padding-top: 5px">
-                <div style="width:80%;height:100%;float:left">
+                <div style="width: 79%; height: 100%; float: left">
                     <label>Left</label>
                 </div>
-                <div style="width: 20%; height: 100%; float: left ">
+                <div style="width: 21%; height: 100%; float: left ">
+                    <input type="file" id="UploadLeft" class="UploadPic" idx="2" name="name" accept=".png, .jpg, .jpeg" value="UP" style="display:none;" />
+                    <img src='/Image/Icon/Upload.png' idx="2" class='Upload imgButton' />
                     <img src='/Image/Icon/Camera.png' idx="2" class='TakePicture imgButton' />
                     <img src='/Image/Icon/Delete.png' idx="2" class='DeletePicture imgButton' />
                 </div>
@@ -84,20 +88,24 @@
             </div>
 
             <div style="width: 24%; height: 5%; float: left; text-align: center; border-right: 1px solid black; background-color: lightgray; padding-top: 5px">
-                <div style="width:80%;height:100%;float:left">
+                <div style="width: 79%; height: 100%; float: left">
                     <label>Right</label>
                 </div>
-                <div style="width: 20%; height: 100%; float: left ">
+                <div style="width: 21%; height: 100%; float: left ">
+                    <input type="file" id="UploadRight" class="UploadPic" idx="3" name="name" accept=".png, .jpg, .jpeg" value="UP" style="display:none;" />
+                    <img src='/Image/Icon/Upload.png' idx="3" class='Upload imgButton' />
                     <img src='/Image/Icon/Camera.png' idx="3" class='TakePicture imgButton' />
                     <img src='/Image/Icon/Delete.png' idx="3" class='DeletePicture imgButton' />
                 </div>
 
             </div>
             <div style="width: 24%; height: 5%; float: left; text-align: center; background-color: lightgray; padding-top: 5px">
-                <div style="width:80%;height:100%;float:left">
+                <div style="width: 79%; height: 100%; float: left">
                     <label>Back</label>
                 </div>
-                <div style="width: 20%; height: 100%; float: left ">
+                <div style="width: 21%; height: 100%; float: left ">
+                    <input type="file" id="UploadBack" class="UploadPic" idx="4" name="name" accept=".png, .jpg, .jpeg" value="UP" style="display:none;" />
+                    <img src='/Image/Icon/Upload.png' idx="4" class='Upload imgButton' />
                     <img src='/Image/Icon/Camera.png' idx="4" class='TakePicture imgButton' />
                     <img src='/Image/Icon/Delete.png' idx="4" class='DeletePicture imgButton' />
                 </div>
@@ -282,6 +290,58 @@
                 Screenshot(sentID);
             });
 
+
+            $('.Upload').on('click', function () {
+                var idx = $(this).attr('idx');
+
+                $(`input[type=file][idx=${idx}]`).click();
+            });
+
+            $(".UploadPic").change(async function () {
+
+                var idx = $(this).attr('idx');
+                var article = $("#dropArticle").val();
+                var size = $("#dropSize").val();
+
+                var Piclocation = '';
+                switch (idx) {
+                    case "1":
+                        Piclocation = "Front";
+                        break;
+                    case "2":
+                        Piclocation = "Left";
+                        break;
+                    case "3":
+                        Piclocation = "Right";
+                        break;
+                    case "4":
+                        Piclocation = "Back";
+                        break;
+                }
+
+                var targetID = $(`.image[article=${article}][size="${size}"][Piclocation=${Piclocation}]`).attr('ID');
+
+                var length = this.files.length;
+                if (length > 0) {
+
+                    var PicCountIdx = 0;
+                    var PictureList = [];
+
+                    for (const fileItem of this.files) {
+
+                        var picFile = this.files[PicCountIdx]; 
+
+                        var base64 = await convertFile(picFile);
+
+                        $(`#${targetID}`).attr('src', base64);
+                        $(`input[article=${article}][size="${size}"][Piclocation=${Piclocation}]`).val(base64);
+                        PicCountIdx += 1;
+                    }
+                }
+
+                ReloadImg();
+            });
+
             $('.DeletePicture').on('click', function () {
                 var idx = $(this).attr('idx');
                 var article = $("#dropArticle").val();
@@ -330,26 +390,26 @@
 
             var FrontImg = $(`.image[article=${article}][size="${size}"][Piclocation=Front]`).attr('src');
             if (FrontImg != undefined && FrontImg != null && FrontImg != '') {
-                FrontImg = FrontImg.replace('data:image/png;base64,', '');
+                FrontImg = FrontImg.replace('data:image/png;base64,', '').replace('data:image/jpeg;base64,', '').replace('data:image/jpg;base64,', '');
             }
             $(`input[article=${article}][size="${size}"][Piclocation=Front]`).val(FrontImg);
 
 
             var LeftImg = $(`.image[article=${article}][size="${size}"][Piclocation=Left]`).attr('src');
             if (LeftImg != undefined && LeftImg != null && LeftImg != '') {
-                LeftImg = LeftImg.replace('data:image/png;base64,', '');
+                LeftImg = LeftImg.replace('data:image/png;base64,', '').replace('data:image/jpeg;base64,', '').replace('data:image/jpg;base64,', '');
             }
             $(`input[article=${article}][size="${size}"][Piclocation=Left]`).val(LeftImg);
 
             var RightImg = $(`.image[article=${article}][size="${size}"][Piclocation=Right]`).attr('src');
             if (RightImg != undefined && RightImg != null && RightImg != '') {
-                RightImg = RightImg.replace('data:image/png;base64,', '');
+                RightImg = RightImg.replace('data:image/png;base64,', '').replace('data:image/jpeg;base64,', '').replace('data:image/jpg;base64,', '');
             }
             $(`input[article=${article}][size="${size}"][Piclocation=Right]`).val(RightImg);
 
             var BackImg = $(`.image[article=${article}][size="${size}"][Piclocation=Back]`).attr('src');
             if (BackImg != undefined && BackImg != null && BackImg != '') {
-                BackImg = BackImg.replace('data:image/png;base64,', '');
+                BackImg = BackImg.replace('data:image/png;base64,', '').replace('data:image/jpeg;base64,', '').replace('data:image/jpg;base64,', '');
             }
             $(`input[article=${article}][size="${size}"][Piclocation=Back]`).val(BackImg);
         }
@@ -361,6 +421,19 @@
             ShowLoading();
 
             return true;
+        }
+
+        function convertFile(file) {
+            return new Promise((resolve, reject) => {
+                // 建立FileReader物件
+                let reader = new FileReader()
+                // 註冊onload事件，取得result則resolve (會是一個Base64字串)
+                reader.onload = () => { resolve(reader.result) }
+                // 註冊onerror事件，若發生error則reject
+                reader.onerror = () => { reject(reader.error) }
+                // 讀取檔案
+                reader.readAsDataURL(file)
+            })
         }
     </script>
 }
