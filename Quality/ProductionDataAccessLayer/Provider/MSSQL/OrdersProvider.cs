@@ -427,7 +427,8 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,HangerPack" + Environment.NewLine);
             SbSql.Append("        ,CDCodeNew" + Environment.NewLine);
             SbSql.Append("        ,SizeUnitWeight" + Environment.NewLine);
-            SbSql.Append("FROM [Orders] WITH(NOLOCK)" + Environment.NewLine);
+            SbSql.Append("        ,Teamwear = (select top 1 Teamwear from Style s where s.Ukey = o.StyleUkey)" + Environment.NewLine);
+            SbSql.Append("FROM [Orders] o WITH(NOLOCK)" + Environment.NewLine);
             SbSql.Append("Where ID = @ID" + Environment.NewLine);
             if (!string.IsNullOrEmpty(Item.Category)) { SbSql.Append("And Category = @Category" + Environment.NewLine); objParameter.Add("@Category", DbType.String, Item.Category); }
 

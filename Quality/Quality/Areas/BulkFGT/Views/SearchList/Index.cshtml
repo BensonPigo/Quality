@@ -272,6 +272,16 @@
                                                 POID = item.OrderID,
                                             });
                                             break;
+                                        case string a when a.Contains("Daily HT Wash"):
+                                            link = Url.Action("IndexGet", "HeatTransferWash", new
+                                            {
+                                                ReportNo = item.ReportNo,
+                                                BrandID = item.BrandID,
+                                                SeasonID = item.SeasonID,
+                                                StyleID = item.StyleID,
+                                                Article = item.Article,
+                                            });
+                                            break;
                                         default:
                                             link = "#";
                                             break;

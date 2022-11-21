@@ -283,6 +283,28 @@ namespace Quality.Controllers
             return View(model);
         }
 
+        public ActionResult Po_Supp_Detail_RefnoList(string OrderID,string MtlTypeID, string TargetID)
+        {
+            var model = _PublicWindowService.Get_Po_Supp_Detail_Refno(OrderID, MtlTypeID, string.Empty);
+            ViewData["OrderID"] = OrderID;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult Po_Supp_Detail_RefnoList(string OrderID, string MtlTypeID, string Refno, string TargetID, string ReturnType = "")
+        {
+            bool IsExact = ReturnType.ToUpper() == "JSON";
+            var model = _PublicWindowService.Get_Po_Supp_Detail_Refno(OrderID, MtlTypeID, Refno);
+            ViewData["OrderID"] = OrderID;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            if (ReturnType.ToUpper() == "JSON")
+            {
+                return Json(model);
+            }
+            return View(model);
+        }
+
         public ActionResult FtyInventoryList(string Title, string POID, string Seq1, string Seq2, string TargetID)
         {
             var model = _PublicWindowService.Get_FtyInventory(POID, Seq1, Seq2, string.Empty, false);

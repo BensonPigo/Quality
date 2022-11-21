@@ -92,6 +92,7 @@ namespace Quality.Areas.StyleManagement.Controllers
 
             if (!model.ExecuteResult)
             {
+                string ErrorMessage = $@"msg.WithInfo(`{model.ErrorMessage}`);";
                 model = new EtoEFlowChart_ViewModel()
                 {
                     Request = new EtoEFlowChart_Request(),
@@ -117,7 +118,7 @@ namespace Quality.Areas.StyleManagement.Controllers
                     },
                     FinalInspection = new DatabaseObject.ResultModel.EtoEFlowChart.FinalInspection(),
                 };
-                model.ErrorMessage = $@"msg.WithInfo(`${ model.ErrorMessage }`);";
+                model.ErrorMessage = ErrorMessage;
             }
             return View(model);
         }
