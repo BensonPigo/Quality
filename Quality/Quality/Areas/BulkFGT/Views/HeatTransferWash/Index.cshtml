@@ -560,10 +560,10 @@
 
             if ($('#Main_Status').val() == "New") {
                 $('#Encode').bind('click').addClass("IsEditMode");
-                $('#Amend,#Excel ,#PDF').unbind('click').removeClass("IsEditMode");
+                $('#Amend').unbind('click').removeClass("IsEditMode");
             }
             if ($('#Main_Status').val() == "Confirmed") {
-                $('#Amend,#Excel ,#PDF').bind('click').addClass("IsEditMode");
+                $('#Amend').bind('click').addClass("IsEditMode");
                 $('#Encode ,#Edit ,#Delete').unbind('click').removeClass("IsEditMode");
             }
 

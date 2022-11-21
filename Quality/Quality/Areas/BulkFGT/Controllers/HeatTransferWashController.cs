@@ -42,6 +42,44 @@ namespace Quality.Areas.BulkFGT.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// 外部導向至本頁用
+        /// </summary>
+        public ActionResult IndexGet(string ReportNo, string BrandID, string SeasonID, string StyleID, string Article)
+        {
+            HeatTransferWash_Request Req = new HeatTransferWash_Request()
+            {
+                ReportNo = ReportNo,
+                BrandID = BrandID,
+                SeasonID = SeasonID,
+                StyleID = StyleID,
+                Article = Article,
+            };
+            HeatTransferWash_ViewModel model = new HeatTransferWash_ViewModel()
+            {
+                Request = Req,
+                Main = new HeatTransferWash_Result(),
+                Details = new List<HeatTransferWash_Detail_Result>(),
+                ReportNo_Source = new List<SelectListItem>(),
+            };
+
+            model = _Service.GetHeatTransferWash(Req);
+
+
+            if (model.Result && !model.ReportNo_Source.Any())
+            {
+                model.ErrorMessage = "Data not found.";
+            }
+            else if (!model.Result)
+            {
+                string ErrorMessage = model.ErrorMessage;
+                model.ErrorMessage = $@"msg.WithInfo(""{ErrorMessage}"")";
+                model.ReportNo_Source = new List<SelectListItem>();
+            }
+
+            return View("Index", model);
+        }
+
         [SessionAuthorizeAttribute]
         [HttpPost]
         [MultipleButton(Name = "action", Argument = "Query")]
