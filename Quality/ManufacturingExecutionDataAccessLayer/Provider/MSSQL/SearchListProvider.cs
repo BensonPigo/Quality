@@ -844,6 +844,62 @@ WHERE h.Result <> ''
             }
             #endregion
 
+            #region Daily Bulk Moistur Test
+            if (Req.WhseArrival_s.HasValue || Req.WhseArrival_e.HasValue)
+            {
+                sqlWhseArrival = @" 
+outer apply (
+	select WhseArrival = MAX(e.WhseArrival)
+	from Export_Detail ed WITH(NOLOCK)
+	inner join Export e WITH(NOLOCK) on e.ID = ed.ID
+	where o.POID = ed.PoID
+)e ";
+            }
+
+            string type14 = $@"
+select DISTINCT Type= 'Daily Bulk Moisture Test'
+        , h.ReportNo
+		, h. OrderID
+		, o.StyleID
+		, o.BrandID
+		, o.SeasonID
+		, h.Article 
+		, Artwork = ''
+		, h.Result
+		, TestDate = h.ReportDate
+	    , ReceivedDate = NULL
+	    , ReportDate = NULL
+from [ExtendServer].ManufacturingExecution.dbo.BulkMoistureTest h WITH (NOLOCK)
+inner join Orders o WITH(NOLOCK) ON o.ID = h.OrderID
+{sqlWhseArrival}
+WHERE h.Result <> ''
+";
+            if (!string.IsNullOrEmpty(Req.BrandID))
+            {
+                type14 += "AND h.BrandID = @BrandID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                type14 += "AND h.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                type14 += "AND h.StyleID = @StyleID ";
+            }
+            if (!string.IsNullOrEmpty(Req.Article))
+            {
+                type14 += "AND h.Article = @Article ";
+            }
+            if (Req.WhseArrival_s.HasValue)
+            {
+                type14 += " AND @WhseArrival_s <= e.WhseArrival ";
+            }
+            if (Req.WhseArrival_e.HasValue)
+            {
+                type14 += " AND @WhseArrival_e >= e.WhseArrival ";
+            }
+            #endregion
+
             switch (Req.Type)
             {
                 case string a when a.Contains("Fabric Crocking & Shrinkage Test"):
@@ -882,6 +938,9 @@ WHERE h.Result <> ''
                 case string a when a.Contains("Daily HT Wash"):
                     SbSql.Append(type13);
                     break;
+                case string a when a.Contains("Daily Moisture"):
+                    SbSql.Append(type14);
+                    break;
                 default:
                     SbSql.Append(
                         type1 + " union all " + 
@@ -895,7 +954,8 @@ WHERE h.Result <> ''
                         type9 + " union all " +
                         type11 + " union all " +
                         type12 + " union all " +
-                        type13);
+                        type13 + " union all " +
+                        type14);
                     break;
             }
 

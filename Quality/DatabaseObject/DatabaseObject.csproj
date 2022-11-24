@@ -142,6 +142,7 @@
     <Compile Include="Public\CompareBase.cs" />
     <Compile Include="Public\StaticPivot88.cs" />
     <Compile Include="Public\WindowModel.cs" />
+    <Compile Include="RequestModel\DailyMoisture_Request.cs" />
     <Compile Include="RequestModel\EtoEFlowChart_Request.cs" />
     <Compile Include="RequestModel\HeatTransferWashRequest.cs" />
     <Compile Include="RequestModel\MockupFailMail_Request.cs" />
@@ -195,6 +196,7 @@
     <Compile Include="ViewModel\BulkFGT\GarmentTest_Detail_FGWT_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\GarmentTest_Detail_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\GarmentTest_ViewModel.cs" />
+    <Compile Include="ViewModel\BulkFGT\DailyMoisture _ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\HeatTransferWash_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\MockupOven_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\MockupWash_ViewModel.cs" />
