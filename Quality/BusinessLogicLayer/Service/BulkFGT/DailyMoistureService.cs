@@ -43,6 +43,18 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 if (!string.IsNullOrEmpty(Req.ReportNo))
                 {
                     model.Main = _Provider.GetMainData(Req);
+                    if (model.Main.ReportNo == null)
+                    {
+                        model.Main = _Provider.GetMainData(new DailyMoisture_Request()
+                        {
+                            ReportNo = ReportNoList.FirstOrDefault().Value
+                        });
+                        //Req.ReportNo = model.Main.ReportNo;
+                        //Req.BrandID = model.Main.BrandID;
+                        //Req.SeasonID = model.Main.SeasonID;
+                        //Req.StyleID = model.Main.StyleID;
+                        //Req.OrderID = model.Main.OrderID;
+                    }
                     model.Details = _Provider.GetDetailData(Req.ReportNo).ToList();
                 }
                 else if (string.IsNullOrEmpty(Req.ReportNo) && ReportNoList.Any())

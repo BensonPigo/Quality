@@ -288,12 +288,12 @@
                                             Send to MR
                                         </h4>
                                     </td>
-                                    <td>
+                                    @*<td>
                                         <h4 id="Picture" style=" margin-right: 1em;">
                                             <img src="~/Image/Icon/Camera.png" width="30" />
                                             Picture
                                         </h4>
-                                    </td>
+                                    </td>*@
                                     <td style="width: 30%;">
                                     </td>
                                     <td align="right">
@@ -314,7 +314,7 @@
                                 <tr>
                                     <td style="width: 10vw;"><h5>Report No</h5></td>
                                     <td style="width: 20vw;">
-                                        <input id="ReportNo" name="Main.ReportNo" readonly="readonly" type="text" value="@Model.Main.ReportNo">
+                                        <input id="ReportNo" name="ReportNo" readonly="readonly" type="text" value="@Model.Main.ReportNo">
 
                                         @Html.HiddenFor(o => o.Main.ReportNo)
                                         @Html.HiddenFor(o => o.Main.Status)
@@ -679,7 +679,7 @@
                 $("#Edit, #Picture, #Delete ,#Excel ,#PDF, #SendMail").unbind('click').removeClass("IsEditMode");
             }
 
-            if ($('#Main_Status').val() == "New") {
+            if ($('#Main_Status').val() == "New" || $('#Main_Status').val() == "") {
                 $('#Encode').bind('click').addClass("IsEditMode");
                 $('#Amend').unbind('click').removeClass("IsEditMode");
             }
@@ -1034,7 +1034,7 @@
         });
 
         $('#Encode').on('click', function (e) {
-            if (EditMode == false && $('#Main_ReportNo').val() != null && $('#Main_ReportNo').val() != "") {
+            if (EditMode == false && $('#ReportNo').val() != null && $('#ReportNo').val() != "") {
                 e.preventDefault();
                 msg.WithConfirm('Do you want to Encode the data ?',
                     function () {
@@ -1044,7 +1044,7 @@
         });
 
         $('#Amend').on('click', function (e) {
-            if (EditMode == false && $('#Main_ReportNo').val() != null && $('#Main_ReportNo').val() != "") {
+            if (EditMode == false && $('#ReportNo').val() != null && $('#ReportNo').val() != "") {
                 e.preventDefault();
                 msg.WithConfirm('Do you want to Amend the data ?',
                     function () {
