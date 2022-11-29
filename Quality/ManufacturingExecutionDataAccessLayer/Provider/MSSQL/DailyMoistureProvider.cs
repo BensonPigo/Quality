@@ -71,7 +71,7 @@ select b.ReportNo
 
       ,b.Instrument
       ,b.Fabrication
-	  ,Standard = CAST( ISNULL(e.Standard,0) as decimal)
+	  ,Standard = CAST( ISNULL(e.Standard,0) as decimal(6,2))
       ,b.Action
       ,b.Result
       ,b.Remark

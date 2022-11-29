@@ -415,6 +415,8 @@
 
                                 @for (int i = 0; i <= Model.Details.Count - 1; i++)
                                 {
+                                    string resultColor = Model.Details[i].Result == "Pass" ? "blue" : "red";
+                                    string r = Model.Details[i].Result;
                                     <tr>
                                         <td>
                                             <input idx='@i' type='hidden' />
@@ -457,8 +459,8 @@
                                             </select>
                                         </td>
                                         <td>
-                                            @{ string resultColor = Model.Details[i].Result == "Pass" ? "blue" : "red";}
-                                            @Html.TextBoxFor(o => Model.Details[i].Result, new { @class = $"readonly {resultColor}" })
+                                            @*@Html.TextBoxFor(o => Model.Details[i].Result, new { @class = $"{resultColor}", @readonly = "readonly" })*@
+                                            @Html.TextBox($@"Details_{i}__Result",r, new { @class = $"{resultColor}" , @readonly = "readonly" })
                                         </td>
                                         <td>
                                             @Html.DisplayFor(o => Model.Details[i].LastEditName, new { @class = "OnlyEdit" })
