@@ -40,7 +40,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 _Provider = new DailyMoistureProvider(Common.ManufacturingExecutionDataAccessLayer);
                 List<SelectListItem> ReportNoList = _Provider.GetReportNo_Source(Req);
 
-                if (!string.IsNullOrEmpty(Req.ReportNo))
+                if (!string.IsNullOrEmpty(Req.ReportNo) & ReportNoList.Any())
                 {
                     model.Main = _Provider.GetMainData(Req);
                     if (model.Main.ReportNo == null)
