@@ -42,18 +42,18 @@ where 1=1
 
             if (!string.IsNullOrEmpty(Req.InspectionDateStart) && !string.IsNullOrEmpty(Req.InspectionDateEnd))
             {
-                sqlcmd += $@" AND EXISTS (Select 1 from SampleRFTInspection i WITH(NOLOCK) where i.OrderID = o.ID and i.InspectionDate between @sDate and @eDate)" + Environment.NewLine;
+                sqlcmd += $@" AND i.InspectionDate between @sDate and @eDate" + Environment.NewLine;
                 objParameter.Add("@sDate", DbType.String, Req.InspectionDateStart);
                 objParameter.Add("@eDate", DbType.String, Req.InspectionDateEnd);
             }
             else if (!string.IsNullOrEmpty(Req.InspectionDateStart))
             {
-                sqlcmd += $@" AND EXISTS (Select 1 from SampleRFTInspection i WITH(NOLOCK) where i.OrderID = o.ID and i.InspectionDate >= @sDate)" + Environment.NewLine;
+                sqlcmd += $@" AND i.InspectionDate >= @sDate" + Environment.NewLine;
                 objParameter.Add("@sDate", DbType.String, Req.InspectionDateStart);
             }
             else if (!string.IsNullOrEmpty(Req.InspectionDateEnd))
             {
-                sqlcmd += $@" AND EXISTS (Select 1 from SampleRFTInspection i WITH(NOLOCK) where i.OrderID = o.ID and i.InspectionDate <= @eDate)" + Environment.NewLine;
+                sqlcmd += $@" AND i.InspectionDate <= @eDate" + Environment.NewLine;
                 objParameter.Add("@eDate", DbType.String, Req.InspectionDateEnd);
             }
 
@@ -144,11 +144,8 @@ select OrderID=o.ID
 	,o.OrderTypeID
 	,o.Qty
 	,InspectedQty =  Inspected.Qty
-	,BAProduct = ISNULL(Inspected.Qty, 0) - ISNULL(BAProduct.Qty, 0)
-	,BACriteria = ROUND( IIF( ISNULL(Inspected.Qty, 0) = 0 
-					, 0 ,
-					(ISNULL(Inspected.Qty, 0) - ISNULL(BAProduct.Qty, 0) ) *1.0 / ISNULL(Inspected.Qty, 0)*1.0 * 5) 
-				,1)
+	,BAProduct = BAProduct.BAQty
+	,BACriteria = ROUND(IIF(ISNULL(Inspected.Qty, 0) = 0, 0 ,(BAProduct.BAQty) *1.0 / ISNULL(Inspected.Qty, 0)*1.0 * 5), 1)
 from Production.dbo.Orders o WITH(NOLOCK)
 OUTER APPLY(
 	SELECT Qty = SUM(InspectedQty) FROM (
@@ -161,11 +158,9 @@ OUTER APPLY(
 	)zz
 )Inspected
 OUTER APPLY(
-	select Qty =  SUM(sn.Qty)
+	select BAQty =  SUM(s.BAQty)
 	from SampleRFTInspection s WITH(NOLOCK)
-	inner join SampleRFTInspection_NonBACriteria sn WITH(NOLOCK) on s.ID =  sn.SampleRFTInspectionUkey and Qty > 0
-	WHERE sn.BACriteria BETWEEN 'C2' AND 'C9'
-	AND s.OrderID = o.ID
+	WHERE s.OrderID = o.ID
 )BAProduct
 
 where o.Junk = 0
