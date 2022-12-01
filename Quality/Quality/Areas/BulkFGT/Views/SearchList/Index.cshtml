@@ -282,6 +282,16 @@
                                                 Article = item.Article,
                                             });
                                             break;
+                                        case string a when a.Contains("Bulk Moisture"):
+                                            link = Url.Action("IndexGet", "DailyMoisture", new
+                                            {
+                                                ReportNo = item.ReportNo,
+                                                BrandID = item.BrandID,
+                                                SeasonID = item.SeasonID,
+                                                StyleID = item.StyleID,
+                                                OrderID = item.OrderID,
+                                            });
+                                            break;
                                         default:
                                             link = "#";
                                             break;

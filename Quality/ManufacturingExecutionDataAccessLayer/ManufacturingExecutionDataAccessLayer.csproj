@@ -97,6 +97,7 @@
     <Compile Include="Interface\IRFTPicDuringDummyFittingProvider.cs" />
     <Compile Include="Interface\ISearchListProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Provider\MSSQL\DailyMoistureProvider.cs" />
     <Compile Include="Provider\MSSQL\EtoEFlowChartProvider.cs" />
     <Compile Include="Provider\MSSQL\FinalInspection_MeasurementProvider.cs" />
     <Compile Include="Provider\MSSQL\FinalInspectionProvider.cs" />

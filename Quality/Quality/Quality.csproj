@@ -182,6 +182,7 @@
     <Compile Include="Areas\BulkFGT\BulkFGTAreaRegistration.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\AccessoryOvenWashController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\BulkFGTMailGroupController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\DailyMoistureController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\FabricColorFastnessController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\FabricCrkShrkTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\FabricOvenTestController.cs" />
@@ -439,6 +440,7 @@
     <Content Include="Areas\StyleManagement\Views\EtoEFlowChart\Index.cshtml" />
     <Content Include="Areas\StyleManagement\Views\StyleResult\_Tab5_Layout.cshtml" />
     <Content Include="Areas\BulkFGT\Views\HeatTransferWash\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\DailyMoisture\Index.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -963,6 +965,9 @@
     <Content Include="Views\PublicWondow\OperationList.cshtml" />
     <Content Include="Views\PublicWondow\Po_Supp_Detail_RefnoList.cshtml" />
     <Content Include="XLT\HeatTransferWash.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\DailyMoisture.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
