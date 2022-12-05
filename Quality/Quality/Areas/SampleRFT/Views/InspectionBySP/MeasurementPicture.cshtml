@@ -61,6 +61,7 @@
 <header>
     <h3 style="width:85%;float:left;margin:0"></h3>
     <input id="btnExit" type="button" value="Exit" />
+    <h3 id="picStatus" style="width: 35%;float: right;margin: 0;">Upload Status : Loading</h3>
 </header>
 <br />
 <div class="outerDiv" style="margin-right:2%;overflow-y:scroll;">
@@ -136,6 +137,7 @@
     var ID_List = [];
     var Name_List = [];
     $(function () {
+        $('#picStatus').hide();
 
         // Screenshot Exit
         $('#btnScreenshotExit').on('click', function () {
@@ -148,8 +150,9 @@
         });
 
         $("#Del").click(function () {
-            // 取得要刪除的Seq
+            $('#picStatus').html('Upload Status : Loading').fadeIn();
 
+            // 取得要刪除的Seq
             var selectedID = $("#ImageList").val()
 
             var sel = $("#ImageList")[0];
@@ -168,7 +171,7 @@
                 data: JSON.stringify({ data: data, OrderID : '@Model.OrderID' }),
                 async: true,
                 success: function (data) {
-                    
+                    $('#picStatus').html('Upload Status : Pass').delay(3000).fadeOut();
 
                     // 後端加入成功之後，前端下拉選單、對應圖片也要更新
 
@@ -191,6 +194,7 @@
                     });
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
+                    $('#picStatus').html('Upload Status : Fail').delay(3000).fadeOut();
                     console.log(xhr.responseText);
                 }
             });
@@ -208,6 +212,7 @@
         });
 
         $("#UploadPic").change(async function () {
+            $('#picStatus').html('Upload Status : Loading').fadeIn();
 
             var length = UploadPic.files.length;
 
@@ -243,7 +248,7 @@
                     data: JSON.stringify({ list: PictureList, OrderID : '@Model.OrderID' }),
                     async: true,
                     success: function (data) {                        
-
+                        $('#picStatus').html('Upload Status : Pass').delay(3000).fadeOut();
                         // 後端加入成功之後，前端下拉選單、對應圖片也要更新
 
                         var dropDownList = JSON.parse(data[0]);
@@ -265,6 +270,7 @@
                         });
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
+                        $('#picStatus').html('Upload Status : Fail').delay(3000).fadeOut();
                         console.log(xhr.responseText);
                     }
                 });

@@ -143,7 +143,7 @@
     }
 
     function AddToTemp(ImgID) {
-
+        $('#picStatus').html('Upload Status : Loading').fadeIn();
         const imgSet = document.querySelector("#" + ImgID);
 
         var Img = imgSet.src.replace("data:image/png;base64,", "");
@@ -160,9 +160,9 @@
             data: JSON.stringify({ data: data, SampleRFTInspection_DetailUKey: '@Model.UKey', ID: '@Model.ID', GarmentDefectCodeID:'@Model.GarmentDefectCodeID'  }),
             async: true,
             success: function (data) {
+                $('#picStatus').html('Upload Status : Pass').delay(3000).fadeOut();
 
                 // 後端加入成功之後，前端下拉選單、對應圖片也要更新
-
                 var dropDownList = JSON.parse(data[0]);
                 var ImageList = JSON.parse(data[1]);
 
@@ -182,6 +182,7 @@
                 });
             },
             error: function (xhr, ajaxOptions, thrownError) {
+                $('#picStatus').html('Upload Status : Fail').delay(3000).fadeOut();
                 console.log(xhr.responseText);
             }
         });
