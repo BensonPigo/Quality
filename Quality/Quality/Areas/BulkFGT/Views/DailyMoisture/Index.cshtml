@@ -979,6 +979,10 @@
                 ErrMsg += "SP# cannot be empty<br/>";
             }
 
+            if ($('#Main_Instrument').val() == '' || $('#Main_Instrument').val() == undefined) {
+                ErrMsg += "Detection Instrument cannot be empty<br/>";
+            }
+
             if (ErrMsg != "") {
                 msg.WithError(ErrMsg);
                 return false;
