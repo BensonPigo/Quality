@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Services.Description;
 using static Quality.Helper.Attribute;
 
 namespace Quality.Areas.BulkFGT.Controllers
@@ -37,6 +38,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 Request = new HeatTransferWash_Request(),
                 Details = new List<HeatTransferWash_Detail_Result>(),
                 ReportNo_Source = new List<SelectListItem>(),
+                ArtworkType_Source = new List<SelectListItem>(),
             };
 
             return View(model);
@@ -77,6 +79,15 @@ namespace Quality.Areas.BulkFGT.Controllers
                 model.ReportNo_Source = new List<SelectListItem>();
             }
 
+            var tmpArtworkType_Source = _Service.GetArtworkTypeList(new Orders()
+            {
+                BrandID = BrandID,
+                SeasonID = SeasonID,
+                StyleID = StyleID,
+            });
+
+            model.ArtworkType_Source = tmpArtworkType_Source.Any() ? tmpArtworkType_Source : new List<SelectListItem>();
+
             return View("Index", model);
         }
 
@@ -106,6 +117,14 @@ namespace Quality.Areas.BulkFGT.Controllers
                 model.ReportNo_Source = new List<SelectListItem>();
             }
 
+            var tmpArtworkType_Source = _Service.GetArtworkTypeList(new Orders()
+            {
+                BrandID = Req.Request.BrandID,
+                SeasonID = Req.Request.SeasonID,
+                StyleID = Req.Request.StyleID,
+            });
+
+            model.ArtworkType_Source = tmpArtworkType_Source.Any() ? tmpArtworkType_Source : new List<SelectListItem>();
             return View("Index", model);
         }
 
@@ -151,6 +170,14 @@ namespace Quality.Areas.BulkFGT.Controllers
                     Article = Req.Main.Article,
                 });
             }
+            var tmpArtworkType_Source = _Service.GetArtworkTypeList(new Orders()
+            {
+                BrandID = Req.Request.BrandID,
+                SeasonID = Req.Request.SeasonID,
+                StyleID = Req.Request.StyleID,
+            });
+
+            model.ArtworkType_Source = tmpArtworkType_Source.Any() ? tmpArtworkType_Source : new List<SelectListItem>();
 
             return View("Index", model);
         }
@@ -198,6 +225,14 @@ namespace Quality.Areas.BulkFGT.Controllers
                 });
             }
 
+            var tmpArtworkType_Source = _Service.GetArtworkTypeList(new Orders()
+            {
+                BrandID = Req.Request.BrandID,
+                SeasonID = Req.Request.SeasonID,
+                StyleID = Req.Request.StyleID,
+            });
+
+            model.ArtworkType_Source = tmpArtworkType_Source.Any() ? tmpArtworkType_Source : new List<SelectListItem>();
             return View("Index", model);
         }
 
@@ -233,6 +268,14 @@ namespace Quality.Areas.BulkFGT.Controllers
                 });
             }
 
+            var tmpArtworkType_Source = _Service.GetArtworkTypeList(new Orders()
+            {
+                BrandID = Req.Request.BrandID,
+                SeasonID = Req.Request.SeasonID,
+                StyleID = Req.Request.StyleID,
+            });
+
+            model.ArtworkType_Source = tmpArtworkType_Source.Any() ? tmpArtworkType_Source : new List<SelectListItem>();
             return View("Index", model);
         }
 
@@ -267,6 +310,14 @@ namespace Quality.Areas.BulkFGT.Controllers
                 });
             }
 
+            var tmpArtworkType_Source = _Service.GetArtworkTypeList(new Orders()
+            {
+                BrandID = Req.Request.BrandID,
+                SeasonID = Req.Request.SeasonID,
+                StyleID = Req.Request.StyleID,
+            });
+
+            model.ArtworkType_Source = tmpArtworkType_Source.Any() ? tmpArtworkType_Source : new List<SelectListItem>();
             return View("Index", model);
         }
 
@@ -301,6 +352,14 @@ namespace Quality.Areas.BulkFGT.Controllers
                 });
             }
 
+            var tmpArtworkType_Source = _Service.GetArtworkTypeList(new Orders()
+            {
+                BrandID = Req.Request.BrandID,
+                SeasonID = Req.Request.SeasonID,
+                StyleID = Req.Request.StyleID,
+            });
+
+            model.ArtworkType_Source = tmpArtworkType_Source.Any() ? tmpArtworkType_Source : new List<SelectListItem>();
             return View("Index", model);
         }
 
@@ -317,7 +376,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             Orders order = new Orders();
             order.ID = OrderID;
             List<Orders> orderResult = _Service.GetOrders(order);
-
+            List<SelectListItem> ArtworkTypeList = new List<SelectListItem>();
             if (orderResult.Count == 0)
             {
                 return Json(new { ErrMsg = $"Cannot found SP# {OrderID}." });
@@ -333,6 +392,12 @@ namespace Quality.Areas.BulkFGT.Controllers
                 Order_Qty order_qty = new Order_Qty();
                 order_qty.ID = OrderID;
                 List<Order_Qty> order_qtyResult = _Service.GetDistinctArticle(order_qty);
+                ArtworkTypeList = _Service.GetArtworkTypeList(new Orders()
+                {
+                    BrandID = BrandID,
+                    SeasonID = SeasonID,
+                    StyleID = StyleID,
+                });
 
                 if (order_qtyResult.Any())
                 {
@@ -341,7 +406,28 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             }
 
-            return Json(new { ErrMsg = "", BrandID = BrandID, SeasonID = SeasonID, StyleID = StyleID, Article = Article , Teamwear = Teamwear });
+            return Json(new { ErrMsg = "", BrandID = BrandID, SeasonID = SeasonID, StyleID = StyleID, Article = Article, Teamwear = Teamwear, ArtworkTypeList = ArtworkTypeList });
+        }
+
+        [SessionAuthorizeAttribute]
+        [HttpPost]
+        public JsonResult GetLastDetailData(string HTRefNo)
+        {
+            string errorMsg = string.Empty;
+
+            HeatTransferWash_Detail_Result detail = new HeatTransferWash_Detail_Result();
+            try
+            {
+                detail = _Service.GetLastDetailData(HTRefNo);
+            }
+            catch (Exception ex)
+            {
+                errorMsg = ex.Message;
+            }
+
+
+
+            return Json(new { ErrMsg = errorMsg, DetailData = detail});
         }
 
         [SessionAuthorizeAttribute]
@@ -355,20 +441,41 @@ namespace Quality.Areas.BulkFGT.Controllers
             };
 
 
-            MockupOven_ViewModel model = new MockupOven_ViewModel();
+            HeatTransferWash_ViewModel model = new HeatTransferWash_ViewModel();
 
             string html = "";
             html += $"<tr idx='{lastNO}'>";
 
             html += $"<td> <input id='Seq{lastNO}' idx='{lastNO}' type ='hidden'> ";
-            html += $"<input id='Details_{lastNO}__FabricRefNo' name='Details[{lastNO}].FabricRefNo' class='OnlyEdit FabricRefNoTxt' type='text' value=''  style='width:85%;'>";
+            html += $"<input id='Details_{lastNO}__FabricRefNo' name='Details[{lastNO}].FabricRefNo' class='OnlyEdit FabricRefNoTxt' type='text' value=''  style='width:80%;'>";
             html += $"<input targetID='Details_{lastNO}__FabricRefNo' type='button' class='btnRefnoSelectItem site-btn btn-blue' style='margin:0;border:0;' value='...' />";
             html += $"</td>";
 
 
-            html += $"<td> <input id='Details_{lastNO}__HTRefNo' name='Details[{lastNO}].HTRefNo' class='OnlyEdit HTRefNoTxt' type='text' value=''  style='width:85%;'>";
+            html += $"<td> <input id='Details_{lastNO}__HTRefNo' name='Details[{lastNO}].HTRefNo' class='OnlyEdit HTRefNoTxt' type='text' value=''  style='width:80%;'>";
             html += $"     <input targetID='Details_{lastNO}__HTRefNo' type='button' class='btnHTRefNoSelectItem site-btn btn-blue' style='margin:0;border:0;' value='...' />";
             html += $"</td>";
+
+            html += $"<td><input id='Details_{lastNO}__Temperature' name='Details[{lastNO}].Temperature' type='number' style='width:100%;' class='OnlyEdit'></td>";
+            html += $"<td><input id='Details_{lastNO}__Time' name='Details[{lastNO}].Time' type='number' style='width:100%;' class='OnlyEdit'></td>";
+            html += $"<td><input id='Details_{lastNO}__Pressure' name='Details[{lastNO}].Pressure' type='number' step='0.1' max='100' onchange = 'value=PressureCheck(value)' style='width:100%;' class='OnlyEdit'></td>";
+            html += $"<td><input id='Details_{lastNO}__PeelOff' name='Details[{lastNO}].PeelOff' type='text' maxlength='5' style='width:100%;' class='OnlyEdit'></td>";
+
+            html += $"<td><select id='Details_{lastNO}__Cycles' name='Details[{lastNO}].Cycles'  class='OnlyEdit' >";
+            foreach (var item in model.Cycles_Source)
+            {
+                html += "<option value='" + item.Value + "'>" + item.Text + "</option>";
+            }
+            html += "</select></td>";
+
+            html += $"<td><select id='Details_{lastNO}__TemperatureUnit' name='Details[{lastNO}].TemperatureUnit'  class='OnlyEdit' >";
+            foreach (var item in model.TemperatureUnit_Source)
+            {
+                html += "<option value='" + item.Value + "'>" + item.Text + "</option>";
+            }
+            html += "</select></td>";
+
+
             html += $"<td><select id='Details_{lastNO}__Result' name='Details[{lastNO}].Result'  class='OnlyEdit' >";
             foreach (var val in resultSelect)
             {

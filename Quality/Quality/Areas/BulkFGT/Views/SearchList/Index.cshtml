@@ -521,14 +521,16 @@
         $("#Type").change(function () {
             var currentType = $(this).val();
 
-            let result = currentType.toUpperCase().includes("MOCKUP");
-            if (!result) {
+            let includes_MOCKUP = currentType.toUpperCase().includes("MOCKUP");
+            let includes_HTWash = currentType.toUpperCase().includes("HT WASH");
+            if (!includes_MOCKUP && !includes_HTWash) {
                 $(".mockupOnly").val('');
                 $(".mockupOnly").attr("disabled", "disabled");
             }
             else {
                 $(".mockupOnly").removeAttr("disabled");
             }
+
         });
     }
 
