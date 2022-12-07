@@ -74,24 +74,34 @@ select h.ReportNo
       ,h.Result
       ,h.Remark
       ,h.Status
-      ,h.Temperature
-      ,h.Time
-      ,h.Pressure
-      ,h.PeelOff
-      ,h.Cycles
-      ,h.TemperatureUnit
+      ,h.ArtworkTypeID
       ,h.AddName
       ,h.AddDate
       ,h.EditName
       ,h.EditDate
       ,pmsfile.TestBeforePicture
       ,pmsfile.TestAfterPicture
+	  ,LastEditText = ISNULL(LastEdit2.Name, LastEdit1.Name)
       ,MRHandleEmail = ISNULL(p.Email, p2.Email)
+      ,Signature = Technician.Signature
+      ,ArtworkTypeID_FullName = SubProcessInfo.ID
 from HeatTransferWash h
-inner join SciPMSFile_HeatTransferWash pmsfile on h.ReportNo=pmsfile.ReportNo
+left join SciPMSFile_HeatTransferWash pmsfile on h.ReportNo=pmsfile.ReportNo
 inner join SciProduction_Orders o on h.OrderID = o.ID
 left join SciProduction_Pass1 p on o.MRHandle = p.ID
 left join Pass1 p2 on o.MRHandle = p2.ID
+left join SciProduction_Pass1 LastEdit1 on LastEdit1.ID = h.EditName
+left join Pass1 LastEdit2 on  LastEdit2.ID = h.EditName
+outer apply (
+    select top 1 Signature 
+    from MainServer.Production.dbo.Technician t
+    where Junk = 0 and ISNULL(p.ID, p2.ID) = t.ID
+)Technician
+outer apply (
+    select top 1 ID 
+    from MainServer.Production.dbo.SubProcess t
+    where Junk = 0 and t.ArtworkTypeID = h.ArtworkTypeID
+)SubProcessInfo
 where 1 = 1 
 ";
             if (!string.IsNullOrEmpty(Req.ReportNo))
@@ -137,10 +147,27 @@ from HeatTransferWash_Detail h WITH(NOLOCK)
 where h.ReportNo = @ReportNo
 ";
 
-            objParameter.Add("ReportNo", DbType.String, ReportNo);
+            objParameter.Add("@ReportNo", DbType.String, ReportNo);
             IList<HeatTransferWash_Detail_Result> res = ExecuteList<HeatTransferWash_Detail_Result>(CommandType.Text, SbSql, objParameter);
 
             return res.Any() ? res.ToList() : new List<HeatTransferWash_Detail_Result>();
+        }
+
+        public HeatTransferWash_Detail_Result GetLastDetailData(string HTRefNo)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+
+            string SbSql = $@"
+select top 1 *
+from HeatTransferWash_Detail
+where HTRefNo = @HTRefNo
+order by EditDate desc 
+";
+
+            objParameter.Add("@HTRefNo", DbType.String, HTRefNo);
+            IList<HeatTransferWash_Detail_Result> res = ExecuteList<HeatTransferWash_Detail_Result>(CommandType.Text, SbSql, objParameter);
+
+            return res.Any() ? res.ToList().FirstOrDefault() : new HeatTransferWash_Detail_Result();
         }
 
         public int Insert_HeatTransferWash(HeatTransferWash_Result Req, string MDivision, string UserID, out string NewReportNo)
@@ -160,12 +187,13 @@ where h.ReportNo = @ReportNo
                 { "@Machine", DbType.String,  Req.Machine ?? "" } ,
                 { "@IsTeamwear", DbType.Boolean, Req.IsTeamwear } ,
                 { "@Remark", DbType.String, Req.Remark ?? "" } ,
-                { "@Temperature", DbType.Int32, Req.Temperature } ,
-                { "@Time", DbType.Int32, Req.Time } ,
-                { "@Pressure", DbType.Decimal, Req.Pressure } ,
-                { "@PeelOff", DbType.String, Req.PeelOff ?? "" } ,
-                { "@Cycles", DbType.Int32, Req.Cycles } ,
-                { "@TemperatureUnit", DbType.Int32, Req.TemperatureUnit } ,
+                { "@ArtworkTypeID", DbType.String, Req.ArtworkTypeID ?? "" } ,
+                //{ "@Temperature", DbType.Int32, Req.Temperature } ,
+                //{ "@Time", DbType.Int32, Req.Time } ,
+                //{ "@Pressure", DbType.Decimal, Req.Pressure } ,
+                //{ "@PeelOff", DbType.String, Req.PeelOff ?? "" } ,
+                //{ "@Cycles", DbType.Int32, Req.Cycles } ,
+                //{ "@TemperatureUnit", DbType.Int32, Req.TemperatureUnit } ,
                 { "@AddName", DbType.String, UserID ?? "" } ,
             };
 
@@ -201,14 +229,9 @@ INSERT INTO HeatTransferWash
            ,Machine
            ,IsTeamwear
            ,Remark
+           ,ArtworkTypeID
            ,Status
-           ,Temperature
-           ,Time
            ,Result
-           ,Pressure
-           ,PeelOff
-           ,Cycles
-           ,TemperatureUnit
            ,AddName
            ,AddDate)
 VALUES  (     
@@ -222,14 +245,9 @@ VALUES  (
            ,@Machine
            ,@IsTeamwear
            ,@Remark
+           ,@ArtworkTypeID
            ,'New'
-           ,@Temperature
-           ,@Time
            ,@Result
-           ,@Pressure
-           ,@PeelOff
-           ,@Cycles
-           ,@TemperatureUnit
            ,@AddName
            ,GETDATE() )
 
@@ -257,6 +275,12 @@ VALUES(
                 { "@Result", DbType.String, Req.Result ?? "" } ,
                 { "@Remark", DbType.String, Req.Remark ?? "" } ,
                 { "@EditName", DbType.String, Req.EditName ?? "" } ,
+                { "@Temperature", DbType.Int32, Req.Temperature } ,
+                { "@Time", DbType.Int32, Req.Time } ,
+                { "@Pressure", DbType.Decimal, Req.Pressure } ,
+                { "@PeelOff", DbType.String, Req.PeelOff ?? "" } ,
+                { "@Cycles", DbType.Int32, Req.Cycles } ,
+                { "@TemperatureUnit", DbType.Int32, Req.TemperatureUnit } ,
             };
 
             SbSql.Append($@"
@@ -267,14 +291,26 @@ INSERT INTO dbo.HeatTransferWash_Detail
            ,Result
            ,Remark
            ,EditName
-           ,EditDate)
+           ,EditDate
+           ,Temperature
+           ,Time
+           ,Pressure
+           ,PeelOff
+           ,Cycles
+           ,TemperatureUnit)
 VALUES      (@ReportNo
            ,@FabricRefNo
            ,@HTRefNo
            ,@Result
            ,@Remark
            ,@EditName
-           ,GETDATE())
+           ,GETDATE()
+           ,@Temperature
+           ,@Time
+           ,@Pressure
+           ,@PeelOff
+           ,@Cycles
+           ,@TemperatureUnit)
 ");
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
@@ -288,13 +324,14 @@ VALUES      (@ReportNo
             objParameter.Add("@Machine", DbType.String, Req.Main.Machine ?? string.Empty);
             objParameter.Add("@Result", DbType.String, Req.Main.Result ?? string.Empty);
             objParameter.Add("@Remark", DbType.String, Req.Main.Remark ?? string.Empty);
+            objParameter.Add("@ArtworkTypeID", DbType.String, Req.Main.ArtworkTypeID ?? string.Empty);
             objParameter.Add("@IsTeamwear", DbType.Boolean, Req.Main.IsTeamwear);
-            objParameter.Add("@Temperature", DbType.Int32, Req.Main.Temperature);
-            objParameter.Add("@Time", DbType.Int32, Req.Main.Time);
-            objParameter.Add("@Pressure", DbType.Decimal, Req.Main.Pressure);
-            objParameter.Add("@PeelOff", DbType.String, Req.Main.PeelOff ?? string.Empty);
-            objParameter.Add("@Cycles", DbType.Int32, Req.Main.Cycles);
-            objParameter.Add("@TemperatureUnit", DbType.Int32, Req.Main.TemperatureUnit);
+            //objParameter.Add("@Temperature", DbType.Int32, Req.Main.Temperature);
+            //objParameter.Add("@Time", DbType.Int32, Req.Main.Time);
+            //objParameter.Add("@Pressure", DbType.Decimal, Req.Main.Pressure);
+            //objParameter.Add("@PeelOff", DbType.String, Req.Main.PeelOff ?? string.Empty);
+            //objParameter.Add("@Cycles", DbType.Int32, Req.Main.Cycles);
+            //objParameter.Add("@TemperatureUnit", DbType.Int32, Req.Main.TemperatureUnit);
             objParameter.Add("@Editname", DbType.String, Req.Main.EditName ?? string.Empty);
             objParameter.Add("@ReportNo", DbType.String, Req.Main.ReportNo ?? string.Empty);
 
@@ -313,12 +350,7 @@ Set Line = @Line
     ,Result = @Result
     ,Remark = @Remark
     ,IsTeamwear = @IsTeamwear
-    ,Temperature = @Temperature
-    ,Time = @Time
-    ,Pressure = @Pressure
-    ,PeelOff = @PeelOff
-    ,Cycles = @Cycles 
-    ,TemperatureUnit = @TemperatureUnit
+    ,ArtworkTypeID = @ArtworkTypeID
     ,EditDate =GETDATE()
     ,Editname = @Editname
 where ReportNo = @ReportNo
@@ -408,7 +440,7 @@ where ReportNo = @ReportNo
                     Req.Details,
                     oldData,
                     "Ukey",
-                    "FabricRefNo,HTRefNo,Result,Remark");
+                    "FabricRefNo,HTRefNo,Result,Remark,Temperature,Time,Pressure,PeelOff,Cycles,TemperatureUnit");
 
             string insert = $@"
 INSERT INTO dbo.HeatTransferWash_Detail
@@ -418,7 +450,13 @@ INSERT INTO dbo.HeatTransferWash_Detail
            ,Result
            ,Remark
            ,EditName
-           ,EditDate)
+           ,EditDate
+           ,Temperature
+           ,Time
+           ,Pressure
+           ,PeelOff
+           ,Cycles
+           ,TemperatureUnit)
      VALUES(
             @ReportNo
            ,@FabricRefNo
@@ -426,7 +464,13 @@ INSERT INTO dbo.HeatTransferWash_Detail
            ,@Result
            ,@Remark
            ,@EditName
-           ,GETDATE())
+           ,GETDATE()
+           ,@Temperature
+           ,@Time
+           ,@Pressure
+           ,@PeelOff
+           ,@Cycles
+           ,@TemperatureUnit)
 
 ";
             string update = $@"
@@ -437,6 +481,12 @@ SET  FabricRefNo=@FabricRefNo
     ,Remark = @Remark
     ,EditName = @EditName
     ,EditDate = GETDATE()
+    ,Temperature = @Temperature
+    ,Time = @Time
+    ,Pressure = @Pressure
+    ,PeelOff = @PeelOff
+    ,Cycles = @Cycles
+    ,TemperatureUnit = @TemperatureUnit
 WHERE UKey = @Ukey
 
 ";
@@ -452,6 +502,12 @@ delete HeatTransferWash_Detail where Ukey = @Ukey
                 listDetailPar.Add("@Result", DbType.String, detailItem.Result);
                 listDetailPar.Add("@Remark", DbType.String, detailItem.Remark ?? string.Empty);
                 listDetailPar.Add("@EditName", DbType.String, detailItem.EditName ?? string.Empty);
+                listDetailPar.Add("@Temperature", DbType.Int32, detailItem.Temperature);
+                listDetailPar.Add("@Time", DbType.Int32, detailItem.Time);
+                listDetailPar.Add("@Pressure", DbType.Decimal, detailItem.Pressure);
+                listDetailPar.Add("@PeelOff", DbType.String, detailItem.PeelOff ?? "");
+                listDetailPar.Add("@Cycles", DbType.Int32, detailItem.Cycles);
+                listDetailPar.Add("@TemperatureUnit", DbType.Int32, detailItem.TemperatureUnit);
                 switch (detailItem.StateType)
                 {
                     case DatabaseObject.Public.CompareStateType.Add:
@@ -460,6 +516,7 @@ delete HeatTransferWash_Detail where Ukey = @Ukey
                         break;
                     case DatabaseObject.Public.CompareStateType.Edit:
                         listDetailPar.Add("@Ukey", DbType.Int64, detailItem.Ukey);
+
                         ExecuteNonQuery(CommandType.Text, update, listDetailPar);
                         break;
                     case DatabaseObject.Public.CompareStateType.Delete:
@@ -472,6 +529,25 @@ delete HeatTransferWash_Detail where Ukey = @Ukey
                         break;
                 }
             }
+        }
+
+        public IList<SelectListItem> GetArtworkTypeList(Orders orders)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+
+            string SbSql = $@"
+select distinct Text = a.ArtworkTypeID ,Value = a.ArtworkTypeID
+from Style_Artwork a
+inner join Style s ON a.StyleUkey = s.Ukey
+where s.BrandID = @BrandID and s.SeasonID = @SeasonID  and s.ID = @StyleID
+";
+
+            objParameter.Add("@BrandID", DbType.String, orders.BrandID);
+            objParameter.Add("@SeasonID", DbType.String, orders.SeasonID);
+            objParameter.Add("@StyleID", DbType.String, orders.StyleID);
+            IList<SelectListItem> res = ExecuteList<SelectListItem>(CommandType.Text, SbSql, objParameter);
+
+            return res.Any() ? res.ToList() : new List<SelectListItem>();
         }
     }
 }

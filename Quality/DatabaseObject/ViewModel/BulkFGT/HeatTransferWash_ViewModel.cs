@@ -13,6 +13,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
     {
         public HeatTransferWash_Request Request { get; set; }
         public List<SelectListItem> ReportNo_Source { get; set; }
+        public List<SelectListItem> ArtworkType_Source { get; set; }
         public List<SelectListItem> Cycles_Source
         {
             get
@@ -73,12 +74,14 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string Result { get; set; }
         public string Remark { get; set; }
         public string Status { get; set; }
-        public int Temperature { get; set; }
-        public int Time { get; set; }
-        public decimal Pressure { get; set; }
-        public string PeelOff { get; set; }
-        public int Cycles { get; set; }
-        public int TemperatureUnit { get; set; }
+        public string ArtworkTypeID { get; set; }
+        public string ArtworkTypeID_FullName { get; set; }
+        //public int Temperature { get; set; }
+        //public int Time { get; set; }
+        //public decimal Pressure { get; set; }
+        //public string PeelOff { get; set; }
+        //public int Cycles { get; set; }
+        //public int TemperatureUnit { get; set; }
 
         public string TestBeforePicture_Base64 { get; set; }
         public string TestAfterPicture_Base64 { get; set; }
@@ -89,12 +92,14 @@ namespace DatabaseObject.ViewModel.BulkFGT
         /// <summary>測試後的照片</summary>
         public byte[] TestAfterPicture { get; set; }
 
+        public byte[] Signature { get; set; }
         public string AddNameText { get; set; }
         public string AddName { get; set; }
         public DateTime? AddDate { get; set; }
 
         public string EditNameText { get; set; }
         public string EditName { get; set; }
+        public string LastEditText { get; set; }
         public DateTime? EditDate { get; set; }
         public string LastEditName
         {
@@ -112,6 +117,14 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public long Ukey { get; set; }
         public string FabricRefNo { get; set; }
         public string HTRefNo { get; set; }
+
+        public int Temperature { get; set; }
+        public int Time { get; set; }
+        public decimal Pressure { get; set; }
+        public string PeelOff { get; set; }
+        public int Cycles { get; set; }
+        public int TemperatureUnit { get; set; }
+
         public string Result { get; set; }
         public string Remark { get; set; }
         public string EditNameText { get; set; }

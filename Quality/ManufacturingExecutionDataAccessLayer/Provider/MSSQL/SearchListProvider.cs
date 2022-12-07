@@ -789,24 +789,13 @@ WHERE w.Result <> ''
             #endregion
 
             #region Daily HT Wash Test
-            if (Req.WhseArrival_s.HasValue || Req.WhseArrival_e.HasValue)
-            {
-                sqlWhseArrival = @" 
-outer apply (
-	select WhseArrival = MAX(e.WhseArrival)
-	from Export_Detail ed WITH(NOLOCK)
-	inner join Export e WITH(NOLOCK) on e.ID = ed.ID
-	where o.POID = ed.PoID
-)e ";
-            }
-
             string type13 = $@"
 select DISTINCT Type= 'Daily HT Wash Test'
         , h.ReportNo
 		, h. OrderID
-		, o.StyleID
-		, o.BrandID
-		, o.SeasonID
+		, h.StyleID
+		, h.BrandID
+		, h.SeasonID
 		, h.Article 
 		, Artwork = ''
 		, h.Result
@@ -814,8 +803,6 @@ select DISTINCT Type= 'Daily HT Wash Test'
 	    , ReceivedDate = NULL
 	    , ReportDate = NULL
 from [ExtendServer].ManufacturingExecution.dbo.HeatTransferWash h WITH (NOLOCK)
-inner join Orders o WITH(NOLOCK) ON o.ID = h.OrderID
-{sqlWhseArrival}
 WHERE h.Result <> ''
 ";
             if (!string.IsNullOrEmpty(Req.BrandID))
@@ -834,13 +821,13 @@ WHERE h.Result <> ''
             {
                 type13 += "AND h.Article = @Article ";
             }
-            if (Req.WhseArrival_s.HasValue)
+            if (Req.ReportDate_s.HasValue)
             {
-                type13 += " AND @WhseArrival_s <= e.WhseArrival ";
+                type13 += " AND @ReportDate_s <= h.ReportDate ";
             }
-            if (Req.WhseArrival_e.HasValue)
+            if (Req.ReportDate_e.HasValue)
             {
-                type13 += " AND @WhseArrival_e >= e.WhseArrival ";
+                type13 += " AND h.ReportDate <= @ReportDate_e ";
             }
             #endregion
 
