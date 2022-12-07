@@ -207,9 +207,23 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 if (!string.IsNullOrEmpty(Req.ReportNo))
                 {
-                    model.Main = _Provider.GetMainData(Req);
-                    //model.Request = Req;
-                    model.Details = _Provider.GetDetailData(Req.ReportNo).ToList();
+                    if (ReportNoList.Where(o => o.Value == Req.ReportNo).Any())
+                    {
+                        model.Main = _Provider.GetMainData(Req);
+                        //model.Request = Req;
+                        model.Details = _Provider.GetDetailData(Req.ReportNo).ToList();
+                    }
+                    else
+                    {
+                        if (ReportNoList.Any())
+                        {
+                            model.Main = _Provider.GetMainData(new HeatTransferWash_Request()
+                            {
+                                ReportNo = ReportNoList.FirstOrDefault().Value,
+                            });
+                            model.Details = _Provider.GetDetailData(ReportNoList.FirstOrDefault().Value).ToList();
+                        }
+                    }
                 }
                 else if (string.IsNullOrEmpty(Req.ReportNo) && ReportNoList.Any())
                 {
@@ -294,7 +308,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     worksheet.Cells[11, 2] = "V";
                 }
-                else
+                else if (head.Result == "Fail")
                 {
                     worksheet.Cells[11, 6] = "V";
                 }
@@ -323,6 +337,9 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     imgPath_Signture = ToolKit.PublicClass.AddImageSignWord(SignturePic, head.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
                     Excel.Range cell = worksheet.Cells[28, 6];
                     worksheet.Shapes.AddPicture(imgPath_Signture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
+                }
+                {
+                    worksheet.Cells[28, 6] = head.LastEditText;
                 }
 
 

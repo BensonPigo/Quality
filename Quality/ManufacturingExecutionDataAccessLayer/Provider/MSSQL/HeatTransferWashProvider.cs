@@ -81,6 +81,7 @@ select h.ReportNo
       ,h.EditDate
       ,pmsfile.TestBeforePicture
       ,pmsfile.TestAfterPicture
+	  ,LastEditText = ISNULL(LastEdit2.Name, LastEdit1.Name)
       ,MRHandleEmail = ISNULL(p.Email, p2.Email)
       ,Signature = Technician.Signature
       ,ArtworkTypeID_FullName = SubProcessInfo.ID
@@ -89,6 +90,8 @@ left join SciPMSFile_HeatTransferWash pmsfile on h.ReportNo=pmsfile.ReportNo
 inner join SciProduction_Orders o on h.OrderID = o.ID
 left join SciProduction_Pass1 p on o.MRHandle = p.ID
 left join Pass1 p2 on o.MRHandle = p2.ID
+left join SciProduction_Pass1 LastEdit1 on LastEdit1.ID = h.EditName
+left join Pass1 LastEdit2 on  LastEdit2.ID = h.EditName
 outer apply (
     select top 1 Signature 
     from MainServer.Production.dbo.Technician t

@@ -99,6 +99,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
 
         public string EditNameText { get; set; }
         public string EditName { get; set; }
+        public string LastEditText { get; set; }
         public DateTime? EditDate { get; set; }
         public string LastEditName
         {
