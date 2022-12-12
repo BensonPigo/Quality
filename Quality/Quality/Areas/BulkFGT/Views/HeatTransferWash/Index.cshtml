@@ -336,8 +336,9 @@
                                     <td>
                                         @Html.TextBoxFor(o => o.Main.Machine, new { @maxlength = "15", @class = "OnlyEdit" })
                                     </td>
-                                    <td><h5></h5></td>
+                                    <td><h5>Artwork</h5></td>
                                     <td>
+                                        @Html.DropDownListFor(o=>o.Main.ArtworkTypeID, Model.ArtworkType_Source, new { @class = "OnlyEdit" ,@onchange= "ArtworkTypeListChange(this)" })
                                     </td>
                                 </tr>
                                 <tr>
@@ -367,66 +368,7 @@
                                         @Html.TextBoxFor(o => o.Main.LastEditName, new { @class = "Readonly" })
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td colspan="6">
-                                        <h5>HT Machine Parameter</h5>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2">
-                                        <h5>Tempereture(°C)</h5>
-                                    </td>
-                                    <td>
-                                        @Html.TextBoxFor(o => o.Main.Temperature, new { @type = "number", @class = "OnlyEdit" })
-                                    </td>
-                                    <td colspan="2">
-                                        <h5>Time(hrs)</h5>
-                                    </td>
-                                    <td>
-                                        @Html.TextBoxFor(o => o.Main.Time, new { @class = "OnlyEdit" })
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2">
-                                        <h5>Pressure(kg/cm2)</h5>
-                                    </td>
-                                    <td>
-                                        @Html.TextBoxFor(o => o.Main.Pressure, new { @type = "number", @max = 100, @step = "0.1", @class = "OnlyEdit" })
-                                    </td>
-                                    <td colspan="2">
-                                        <h5>Peel Off(Hot & Cold)</h5>
-                                    </td>
-                                    <td>
-                                        @Html.TextBoxFor(o => o.Main.PeelOff, new { @type = "text", @class = "OnlyEdit" })
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="6">
-                                        <h5>Washing Condition</h5>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2">
-                                        <h5>Cycles</h5>
-                                    </td>
-                                    <td>
-                                        @Html.DropDownListFor(o => Model.Main.Cycles, (List<SelectListItem>)Model.Cycles_Source, new
-                                        {
-                                            @value = Model.Main.Cycles,
-                                            @class = "OnlyEdit",
-                                        })
-                                    </td>
-                                    <td colspan="2">
-                                        <h5>°C</h5>
-                                    </td>
-                                    <td>
-                                        @Html.DropDownListFor(o => Model.Main.TemperatureUnit, (List<SelectListItem>)Model.TemperatureUnit_Source, new
-                                        {
-                                            @value = Model.Main.TemperatureUnit,
-                                            @class = "OnlyEdit",
-                                        })
-                                    </td>
-                                </tr>
+                                
                             </tbody>
                         </table>
                     </div>
@@ -437,8 +379,14 @@
                             <thead>
                                 <tr>
 
-                                    <th style="width: 10vw;"><h4>Fabric Ref No.</h4></th>
-                                    <th style="width: 10vw;"><h4>HT Ref No.</h4></th>
+                                    <th style="width: 13vw;"><h4>Fabric Ref No.</h4></th>
+                                    <th style="width: 13vw; "><h4>HT Ref No.</h4></th>
+                                    <th style="width: 5vw;"><h4>HT-Tempereture</h4></th>
+                                    <th style="width: 6vw;"><h4>HT-Time(Sec)</h4></th>
+                                    <th style="width: 6vw; "><h4>HT-Pressure</h4></th>
+                                    <th style="width: 5vw;"><h4>Peel Off</h4></th>
+                                    <th style="width: 5vw;"><h4>Washing Cycles</h4></th>
+                                    <th style="width: 5vw;"><h4>Washing ℃</h4></th>
                                     <th style="width: 3vw;"><h4>Result</h4></th>
                                     <th style="width: 20vw;"><h4>Remark</h4></th>
                                     <th style="width: 10vw;"><h4>Last Update</h4></th>
@@ -455,12 +403,44 @@
                                             <input idx='@i' type='hidden' />
                                             @Html.HiddenFor(o => Model.Details[i].ReportNo)
                                             @Html.HiddenFor(o => Model.Details[i].Ukey)
-                                            @Html.TextBoxFor(o => Model.Details[i].FabricRefNo, "", new { @class = "OnlyEdit FabricRefNoTxt", @style = "width:85%;" })
+                                            @Html.TextBoxFor(o => Model.Details[i].FabricRefNo, "", new { @class = "OnlyEdit FabricRefNoTxt", @style = "width:80%;" })
                                             <input targetID='Details_@{@i}__FabricRefNo' type='button' class='btnRefnoSelectItem site-btn btn-blue' style='margin:0;border:0;' value='...' />
                                         </td>
                                         <td>
-                                            @Html.TextBoxFor(o => Model.Details[i].HTRefNo, "", new { @class = "OnlyEdit HTRefNoTxt", @style = "width:85%;" })
+                                            @Html.TextBoxFor(o => Model.Details[i].HTRefNo, "", new { @class = "OnlyEdit HTRefNoTxt", @style = "width:80%;" })
                                             <input targetID='Details_@{@i}__HTRefNo' type='button' class='btnHTRefNoSelectItem site-btn btn-blue' style='margin:0;border:0;' value='...' />
+                                        </td>
+
+                                        <td>
+                                            @Html.TextBoxFor(o => Model.Details[i].Temperature, new { @class = "OnlyEdit" ,@type="number"})
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(o => Model.Details[i].Time, new { @class = "OnlyEdit", @type = "number" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(o => Model.Details[i].Pressure, new { @class = "OnlyEdit", @type = "number", @onchange = "value=PressureCheck(value)" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(o => Model.Details[i].PeelOff, new { @class = "OnlyEdit" ,@maxlength="5" })
+                                        </td>
+                                        <td>
+                                            <select id="Details_@{@i}__Cycles" name="Details[@{@i}].Cycles">
+                                                @foreach (var item in (List<SelectListItem>)Model.Cycles_Source)
+                                                {
+                                                    string selected = item.Text.Equals(Model.Details[i].Cycles.ToString()) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>
+
+                                        </td>
+                                        <td>
+                                            <select id="Details_@{@i}__TemperatureUnit" name="Details[@{@i}].TemperatureUnit">
+                                                @foreach (var item in (List<SelectListItem>)Model.TemperatureUnit_Source)
+                                                {
+                                                    string selected = item.Text.Equals(Model.Details[i].TemperatureUnit.ToString()) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>
                                         </td>
                                         <td>
                                             <select id="Details_@{@i}__Result" name="Details[@{@i}].Result">
@@ -644,6 +624,8 @@
                         msg.WithError(data.ErrMsg);
                     }
                     else {
+
+                        $('.DetailTable > tbody').empty();
                         if (data.BrandID != "") {
                             $('#Main_BrandID').val(data.BrandID);
                         }
@@ -659,13 +641,25 @@
                         if (data.Article != "") {
                             $('#Main_Article').val(data.Article);
                         }
-                        
+
                         if (data.Teamwear == true) {
                             $('#Main_IsTeamwear').attr('checked', 'checked');
                         }
                         else {
                             $('#Main_IsTeamwear').removeAttr('checked');
                         }
+
+                        $('#Main_ArtworkTypeID').empty();
+                        if (data.ArtworkTypeList != null) {
+
+                            $.each(data.ArtworkTypeList, function () {
+                                var obj = this;
+                                var dom = `<option value='${obj.Value}'>${obj.Text}</ option>`;
+                                $('#Main_ArtworkTypeID').append(dom);
+                            });
+                        }
+                        $('#Main_ArtworkTypeID').change();
+
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
@@ -699,7 +693,7 @@
                         GetAccessoryRefNoList();
                     }
 
-                    ReportNoClear(name);
+                    //ReportNoClear(name);
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     console.log(xhr.responseText);
@@ -733,7 +727,7 @@
                         GetAccessoryRefNoList();
                     }
 
-                    ReportNoClear(name);
+                    //ReportNoClear(name);
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     console.log(xhr.responseText);
@@ -753,11 +747,12 @@
 
             var BrandID = $('#' + name + 'BrandID').val();
             var SeasonID = $('#' + name + 'SeasonID').val();
+            var targetID = $(this).attr("ID");
             $.ajax({
                 url: "@Url.Action("StyleList","PublicWondow",new{Area=""})",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({ BrandID: BrandID, SeasonID: SeasonID, StyleID: $(this).val(), ReturnType: "JSON" }),
+                data: JSON.stringify({ BrandID: BrandID, SeasonID: SeasonID, StyleID: $(this).val(), TargetID: targetID, ReturnType: "JSON" }),
                 async: true,
                 success: function (data) {
                     if (data.length == 0) {
@@ -769,7 +764,7 @@
                         GetAccessoryRefNoList();
                     }
 
-                    ReportNoClear(name);
+                    //ReportNoClear(name);
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     console.log(xhr.responseText);
@@ -798,7 +793,7 @@
                         msg.WithError('Article Not Found');
                     }
 
-                    ReportNoClear(name);
+                    //ReportNoClear(name);
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     console.log(xhr.responseText);
@@ -1125,6 +1120,9 @@
             if (refno == '') {
                 return;
             }
+
+            HTRefNoAutoChange();
+
             if (orderID == '') {
                 $(this).val('');
                 msg.WithError('Please input SP#.');
@@ -1142,6 +1140,7 @@
                         msg.WithError('Refno Not Found');
                     }
                     else {
+                        GetDetailByHTRefNo($(`#${targetID}`).val(), targetID.replace('HTRefNo', ''));
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
@@ -1161,6 +1160,33 @@
             window.open('@Url.Action("Po_Supp_Detail_RefnoList", "PublicWondow",new{Area=""})' + para, 'Style', config = 'toolbar=no,status=no,location=no,width=400,height=650');
         });
 
+    }
+
+    function GetDetailByHTRefNo(HTRefNo, domIdHead) {
+
+            $.ajax({
+                url: "@Url.Action("GetLastDetailData", new{Area= "BulkFGT" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ HTRefNo: HTRefNo }),
+                async: true,
+                success: function (data) {
+                    if (data.ErrMsg != "") {
+                        msg.WithError(data.ErrMsg);
+                    }
+                    else {
+                        $(`#${domIdHead}Temperature`).val(data.DetailData.Temperature);
+                        $(`#${domIdHead}Time`).val(data.DetailData.Time);
+                        $(`#${domIdHead}Pressure`).val(data.DetailData.Pressure);
+                        $(`#${domIdHead}PeelOff`).val(data.DetailData.PeelOff);
+                        $(`#${domIdHead}Cycles`).val(data.DetailData.Cycles);
+                        $(`#${domIdHead}TemperatureUnit`).val(data.DetailData.TemperatureUnit);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
     }
 
     function GetBrandList(data, targetID) {
@@ -1191,7 +1217,9 @@
     }
 
     function GetPo_Supp_Detail_Refno(data, targetID) {
-        $('#' + targetID).val(data );
+        $('#' + targetID).val(data);
+
+        GetDetailByHTRefNo(data, targetID.replace('HTRefNo', ''));
     }
 
     function ReportNoClear(targetID) {
@@ -1282,6 +1310,7 @@
             success: function (data) {
                 $('.DetailTable > tbody').append(data);
                 DetailDetailButtonBind();
+                HTRefNoAutoChange();
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 console.log(xhr.responseText);
@@ -1330,6 +1359,7 @@
         });
     }
 
+    var isHeatTransfer = false;
     function ToReport(IsToPDF) {
         $.ajax({
             url: "@Url.Action("Report", new { Area = "BulkFGT" })",
@@ -1349,5 +1379,41 @@
                 console.log(xhr.responseText);
             }
         });
+    }
+
+    function ArtworkTypeListChange(obj) {
+        if ($(obj).val() == 'HEAT TRANSFER') {
+            isHeatTransfer = true;
+        }
+        else {
+            isHeatTransfer = false;
+        }
+        HTRefNoAutoChange();
+    }
+
+    function HTRefNoAutoChange() {
+
+        isHeatTransfer = $("#Main_ArtworkTypeID").val() == 'HEAT TRANSFER';
+
+        if (!isHeatTransfer) {
+            $('.HTRefNoTxt').val('').attr("readonly", "readonly");
+            $('.btnHTRefNoSelectItem').attr("disabled", "disabled");
+        }
+        else {
+            $('.HTRefNoTxt').removeAttr("readonly");
+            $('.btnHTRefNoSelectItem').removeAttr("disabled");
+        }
+
+    }
+
+    function PressureCheck(value) {
+        if (parseFloat(value) >= 100) {
+            return 100;
+        }
+        else if (parseFloat(value) < 0) {
+            return 0;
+        }
+
+        return Number.parseFloat(value).toFixed(2);
     }
 </script>

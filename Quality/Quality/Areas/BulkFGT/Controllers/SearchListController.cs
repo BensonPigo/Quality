@@ -62,7 +62,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
 
             // 不是Mockup系列則清空時間條件
-            if (!string.IsNullOrEmpty(Req.Type) && !Req.Type.ToUpper().Contains("MOCKUP"))
+            if (!string.IsNullOrEmpty(Req.Type) && !Req.Type.ToUpper().Contains("MOCKUP") && !Req.Type.ToUpper().Contains("HT WASH"))
             {
                 Req.ReceivedDate_sText = string.Empty;
                 Req.ReceivedDate_eText = string.Empty;

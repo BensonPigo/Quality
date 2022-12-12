@@ -207,8 +207,23 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 if (!string.IsNullOrEmpty(Req.ReportNo))
                 {
-                    model.Main = _Provider.GetMainData(Req);
-                    model.Details = _Provider.GetDetailData(Req.ReportNo).ToList();
+                    if (ReportNoList.Where(o => o.Value == Req.ReportNo).Any())
+                    {
+                        model.Main = _Provider.GetMainData(Req);
+                        //model.Request = Req;
+                        model.Details = _Provider.GetDetailData(Req.ReportNo).ToList();
+                    }
+                    else
+                    {
+                        if (ReportNoList.Any())
+                        {
+                            model.Main = _Provider.GetMainData(new HeatTransferWash_Request()
+                            {
+                                ReportNo = ReportNoList.FirstOrDefault().Value,
+                            });
+                            model.Details = _Provider.GetDetailData(ReportNoList.FirstOrDefault().Value).ToList();
+                        }
+                    }
                 }
                 else if (string.IsNullOrEmpty(Req.ReportNo) && ReportNoList.Any())
                 {
@@ -266,54 +281,73 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 // 表頭填入
 
-                worksheet.Cells[2, 4] = head.ReportDate.HasValue ? head.ReportDate.Value.ToString("yyyy-MM-dd") : string.Empty;
-                worksheet.Cells[3, 2] = head.OrderID;
-                worksheet.Cells[3, 4] = head.IsTeamwear ? "V" : string.Empty;
-                worksheet.Cells[4, 2] = head.SeasonID;
-                worksheet.Cells[4, 4] = head.StyleID;
-                worksheet.Cells[5, 2] = head.Article;
-                worksheet.Cells[5, 4] = head.Line;
-                worksheet.Cells[6, 2] = head.BrandID;
-                worksheet.Cells[6, 4] = head.Machine;
-                worksheet.Cells[9, 3] = head.Temperature;
-                worksheet.Cells[10, 3] = head.Time;
-                worksheet.Cells[11, 3] = head.Pressure;
-                worksheet.Cells[12, 3] = head.PeelOff;
-                worksheet.Cells[14, 1] = head.Cycles;
-                worksheet.Cells[14, 3] = head.TemperatureUnit;
+                worksheet.Cells[1, 1] = head.ArtworkTypeID_FullName + " - Daily wash test report";
+
+                worksheet.Cells[2, 2] = head.OrderID;
+                worksheet.Cells[2, 6] = head.ReportDate.HasValue ? head.ReportDate.Value.ToString("yyyy-MM-dd") : string.Empty;
+
+                worksheet.Cells[3, 2] = head.SeasonID;
+                worksheet.Cells[3, 6] = head.IsTeamwear ? "V" : string.Empty;
+
+                worksheet.Cells[4, 2] = head.Article;
+                worksheet.Cells[4, 6] = head.StyleID;
+
+                worksheet.Cells[5, 2] = head.BrandID;
+                worksheet.Cells[5, 6] = head.Line;
+
+                worksheet.Cells[6, 2] = head.ArtworkTypeID;
+                worksheet.Cells[6, 6] = head.Machine;
+                //worksheet.Cells[9, 3] = head.Temperature;
+                //worksheet.Cells[10, 3] = head.Time;
+                //worksheet.Cells[11, 3] = head.Pressure;
+                //worksheet.Cells[12, 3] = head.PeelOff;
+                //worksheet.Cells[14, 1] = head.Cycles;
+                //worksheet.Cells[14, 3] = head.TemperatureUnit;
 
                 if (head.Result == "Pass")
                 {
-                    worksheet.Cells[17, 1] = "V";
+                    worksheet.Cells[11, 2] = "V";
                 }
-                else
+                else if (head.Result == "Fail")
                 {
-                    worksheet.Cells[17, 3] = "V";
+                    worksheet.Cells[11, 6] = "V";
                 }
-                worksheet.Cells[19, 1] = head.Remark;
+                worksheet.Cells[13, 1] = head.Remark;
 
                 string imgPath_BeforePicture = string.Empty;
                 string imgPath_AfterPicture = string.Empty;
+                string imgPath_Signture = string.Empty;
                 if (head.TestBeforePicture != null )
                 {
                     byte[] beforePic = head.TestBeforePicture;
                     imgPath_BeforePicture = ToolKit.PublicClass.AddImageSignWord(beforePic, head.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    Excel.Range cell = worksheet.Cells[22, 1];
+                    Excel.Range cell = worksheet.Cells[16, 1];
                     worksheet.Shapes.AddPicture(imgPath_BeforePicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 2, cell.Top + 2, 220, 130);
                 }
                 if (head.TestBeforePicture != null)
                 {
                     byte[] beforePic = head.TestAfterPicture;
                     imgPath_AfterPicture = ToolKit.PublicClass.AddImageSignWord(beforePic, head.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    Excel.Range cell = worksheet.Cells[22, 3];
+                    Excel.Range cell = worksheet.Cells[16, 5];
                     worksheet.Shapes.AddPicture(imgPath_AfterPicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 2, cell.Top + 2, 220, 130);
                 }
+                if (head.Signature != null)
+                {
+                    byte[] SignturePic = head.Signature;
+                    imgPath_Signture = ToolKit.PublicClass.AddImageSignWord(SignturePic, head.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
+                    Excel.Range cell = worksheet.Cells[28, 6];
+                    worksheet.Shapes.AddPicture(imgPath_Signture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
+                }
+                {
+                    worksheet.Cells[28, 6] = head.LastEditText;
+                }
+
 
 
                 // 表身筆數處理
                 if (!body.Any())
                 {
-                    worksheet.get_Range("A7").EntireRow.Delete();
+                    worksheet.get_Range("A9").EntireRow.Delete();
                 }
                 else
                 {
@@ -321,19 +355,25 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                     for (int i = 0; i < copyCount; i++)
                     {
-                        Excel.Range paste1 = worksheet.get_Range($"A{i + 7}", Type.Missing);
-                        Excel.Range copyRow = worksheet.get_Range("A7").EntireRow;
+                        Excel.Range paste1 = worksheet.get_Range($"A{i + 9}", Type.Missing);
+                        Excel.Range copyRow = worksheet.get_Range("A9").EntireRow;
                         paste1.Insert(Excel.XlInsertShiftDirection.xlShiftDown, copyRow.Copy(Type.Missing));
                     }
                 }
 
 
                 // 表身填入
-                int bodyStart = 7;
+                int bodyStart = 9;
                 foreach (var item in body)
                 {
-                    worksheet.Cells[bodyStart, 2] = item.FabricRefNo;
-                    worksheet.Cells[bodyStart, 4] = item.HTRefNo;
+                    worksheet.Cells[bodyStart, 1] = item.FabricRefNo;
+                    worksheet.Cells[bodyStart, 2] = item.HTRefNo;
+                    worksheet.Cells[bodyStart, 3] = item.Temperature;
+                    worksheet.Cells[bodyStart, 4] = item.Time;
+                    worksheet.Cells[bodyStart, 5] = item.Pressure;
+                    worksheet.Cells[bodyStart, 6] = item.PeelOff;
+                    worksheet.Cells[bodyStart, 7] = item.Cycles;
+                    worksheet.Cells[bodyStart, 8] = item.TemperatureUnit;
                     bodyStart++;
                 }
 
@@ -397,6 +437,34 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 return null;
             }
+        }
+        public List<SelectListItem> GetArtworkTypeList(Orders orders)
+        {
+            _Provider = new HeatTransferWashProvider(Common.ProductionDataAccessLayer);
+            try
+            {
+                return _Provider.GetArtworkTypeList(orders).ToList();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public HeatTransferWash_Detail_Result GetLastDetailData(string HTRefNo)
+        {
+            HeatTransferWash_Detail_Result result = new HeatTransferWash_Detail_Result();
+            try
+            {
+                _Provider = new HeatTransferWashProvider(Common.ManufacturingExecutionDataAccessLayer);
+                result =  _Provider.GetLastDetailData(HTRefNo);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
         }
     }
 }
