@@ -2782,8 +2782,8 @@ and t.GarmentTest=1
                             }
 
                             // Name
-                            worksheet_Physical.Cells[159, 7] = technicianName;
-                            Excel.Range cellNew = worksheet_Physical.Cells[157, 7];
+                            worksheet_Physical.Cells[119, 8] = technicianName;
+                            Excel.Range cellNew = worksheet_Physical.Cells[117, 8];
 
                             using (MemoryStream ms = new MemoryStream(imgData))
                             {
@@ -2794,13 +2794,13 @@ and t.GarmentTest=1
                         }
                         else
                         {
-                            worksheet_Physical.Cells[159, 7] = MyUtility.Convert.GetString(all_Data.Detail.GarmentTest_Detail_Inspector);
+                            worksheet_Physical.Cells[119, 8] = MyUtility.Convert.GetString(all_Data.Detail.GarmentTest_Detail_Inspector);
                         }
                     }
 
                     if (!IsToPDF)
                     {
-                        worksheet_Physical.Cells[156, 6] = string.Empty;
+                        worksheet_Physical.Cells[116, 7] = string.Empty;
                     }
                     #endregion
 
@@ -2820,86 +2820,48 @@ and t.GarmentTest=1
                         worksheet_Physical.Cells[8, 1] = "Date: " + data.DateSubmit.Value.ToString("yyyy/MM/dd");
                     }
 
-                    var testName_1 = all_Data.FGPT.AsEnumerable().Where(o => MyUtility.Convert.GetString(o.TestName) == "PHX-AP0413");
-                    var testName_2 = all_Data.FGPT.AsEnumerable().Where(o => MyUtility.Convert.GetString(o.TestName) == "PHX-AP0450 Seam Breakage");
-                    var testName_3 = all_Data.FGPT.AsEnumerable().Where(o => MyUtility.Convert.GetString(o.TestName) == "PHX-AP0451");
+                    var testName_1 = all_Data.FGPT.AsEnumerable().Where(o => MyUtility.Convert.GetString(o.TestName).Contains("PHX-AP0413"));
+                    var testName_2 = all_Data.FGPT.AsEnumerable().Where(o => MyUtility.Convert.GetString(o.TestName).Contains("PHX-AP0450"));
+                    var testName_3 = all_Data.FGPT.AsEnumerable().Where(o => MyUtility.Convert.GetString(o.TestName).Contains("PHX-AP0451"));
 
-                    #region 儲存格處理
 
-                    // 因為PHX-AP0451在最下面，且只會有一筆，因此先複製這個，不然要重算Row index
 
                     // PHX-AP0451
 
                     // Requirement
-                    worksheet_Physical.Cells[150, 3] = MyUtility.Convert.GetString(testName_3.FirstOrDefault().Type);
+                    worksheet_Physical.Cells[110, 3] = MyUtility.Convert.GetString(testName_3.FirstOrDefault().Type);
 
                     // Test Results
-                    worksheet_Physical.Cells[150, 4] = MyUtility.Convert.GetString(testName_3.FirstOrDefault().TestResult);
+                    worksheet_Physical.Cells[110, 4] = MyUtility.Convert.GetString(testName_3.FirstOrDefault().TestResult);
 
                     // Test Details
-                    worksheet_Physical.Cells[150, 5] = MyUtility.Convert.GetString(testName_3.FirstOrDefault().TestDetail) == "Range%" ? "%" : MyUtility.Convert.GetString(testName_3.FirstOrDefault().TestDetail);
+                    worksheet_Physical.Cells[110, 5] = MyUtility.Convert.GetString(testName_3.FirstOrDefault().TestDetail) == "Range%" ? "%" : MyUtility.Convert.GetString(testName_3.FirstOrDefault().TestDetail);
 
                     // adidas pass
-                    worksheet_Physical.Cells[150, 6] = MyUtility.Convert.GetString(testName_3.FirstOrDefault().Result);
+                    worksheet_Physical.Cells[110, 8] = MyUtility.Convert.GetString(testName_3.FirstOrDefault().Result);
 
-                    // PHX-AP0450
+                    // PHX-AP0450 複製空格
                     int copyCount_2 = testName_2.Count() - 2;
 
-                    for (int i = 0; i <= copyCount_2 - 1; i++)
+                    // 第三筆開始才需要插入新的Row
+                    if (copyCount_2 > 0)
                     {
-                        // 複製儲存格
-                        Excel.Range rgCopy = worksheet_Physical.get_Range("A149:A149").EntireRow;
+                        for (int i = 0; i <= copyCount_2 - 1; i++)
+                        {
+                            // 複製儲存格
+                            Excel.Range rgCopy = worksheet_Physical.get_Range("A109:A109").EntireRow;
 
-                        // 選擇要被貼上的位置
-                        Excel.Range rgPaste = worksheet_Physical.get_Range("A149:A149", Type.Missing);
+                            // 選擇要被貼上的位置
+                            Excel.Range rgPaste = worksheet_Physical.get_Range("A109:A109", Type.Missing);
 
-                        // 貼上
-                        rgPaste.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown, rgCopy.Copy(Type.Missing));
-                    }
-
-                    worksheet_Physical.get_Range($"B148", $"B{copyCount_2 + 149}").Merge(false);
-
-                    // PHX - AP0413
-                    int copyCount_1 = testName_1.Count() - 2;
-
-                    for (int i = 0; i <= copyCount_1 - 1; i++)
-                    {
-                        // 複製儲存格
-                        Excel.Range rgCopy = worksheet_Physical.get_Range("A135:A135").EntireRow;
-
-                        // 選擇要被貼上的位置
-                        Excel.Range rgPaste = worksheet_Physical.get_Range("A135:A135", Type.Missing);
-
-                        // 貼上
-                        rgPaste.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown, rgCopy.Copy(Type.Missing));
-                    }
-
-                    worksheet_Physical.get_Range($"B134", $"B{copyCount_1 + 135}").Merge(false);
-
-                    #endregion
-
-                    // 開始填入表身，先填PHX - AP0413
-                    int startRowIndex_Pyhsical = 134;
-                    foreach (var dr in testName_1)
-                    {
-                        // Requirement
-                        worksheet_Physical.Cells[startRowIndex_Pyhsical, 3] = MyUtility.Convert.GetString(dr.Type);
-
-                        // Test Results
-                        worksheet_Physical.Cells[startRowIndex_Pyhsical, 4] = MyUtility.Convert.GetString(dr.TestResult);
-
-                        // Test Details
-                        worksheet_Physical.Cells[startRowIndex_Pyhsical, 5] = MyUtility.Convert.GetString(dr.TestDetail) == "Range%" ? "%" : MyUtility.Convert.GetString(dr.TestDetail);
-
-                        // adidas pass
-                        worksheet_Physical.Cells[startRowIndex_Pyhsical, 6] = MyUtility.Convert.GetString(dr.Result);
-
-                        startRowIndex_Pyhsical++;
+                            // 貼上
+                            rgPaste.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown, rgCopy.Copy(Type.Missing));
+                        }
+                        worksheet_Physical.get_Range($"B108", $"B{copyCount_2 + 108}").Merge(false);
                     }
 
                     // 開始填入表身，填PHX - AP0450
-                    startRowIndex_Pyhsical = testName_1.Count() + 133 + 12 + 1;
-                    /*說明PHX - AP0413 這個Test Name最後的Index 為copyCount_1 + 133,與PHX-AP0450起點Index中間差了12 Row*/
+                    int startRowIndex_Pyhsical = 108;
 
                     foreach (var dr in testName_2)
                     {
@@ -2912,8 +2874,52 @@ and t.GarmentTest=1
                         // Test Details
                         worksheet_Physical.Cells[startRowIndex_Pyhsical, 5] = MyUtility.Convert.GetString(dr.TestDetail) == "Range%" ? "%" : MyUtility.Convert.GetString(dr.TestDetail);
 
+                        worksheet_Physical.Cells[startRowIndex_Pyhsical, 6] = MyUtility.Convert.GetString(dr.StandardRemark);
+
                         // adidas pass
-                        worksheet_Physical.Cells[startRowIndex_Pyhsical, 6] = MyUtility.Convert.GetString(dr.Result);
+                        worksheet_Physical.Cells[startRowIndex_Pyhsical, 7] = MyUtility.Convert.GetString(dr.Result);
+
+                        startRowIndex_Pyhsical++;
+                    }
+
+                    // PHX - AP0413 複製空格
+                    int copyCount_1 = testName_1.Count() - 2;
+
+                    // 第三筆開始才需要插入新的Row
+                    if (copyCount_1 > 0)
+                    {
+                        for (int i = 0; i <= copyCount_1 - 1; i++)
+                        {
+                            // 複製儲存格
+                            Excel.Range rgCopy = worksheet_Physical.get_Range("A97:A97").EntireRow;
+
+                            // 選擇要被貼上的位置
+                            Excel.Range rgPaste = worksheet_Physical.get_Range("A97:A97", Type.Missing);
+
+                            // 貼上
+                            rgPaste.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown, rgCopy.Copy(Type.Missing));
+                        }
+
+                        worksheet_Physical.get_Range($"B96", $"B{copyCount_1 + 96}").Merge(false);
+                    }
+
+                    // 開始填入表身，先填PHX - AP0413
+                    startRowIndex_Pyhsical = 96;
+                    foreach (var dr in testName_1)
+                    {
+                        // Requirement
+                        worksheet_Physical.Cells[startRowIndex_Pyhsical, 3] = MyUtility.Convert.GetString(dr.Type);
+
+                        // Test Results
+                        worksheet_Physical.Cells[startRowIndex_Pyhsical, 4] = MyUtility.Convert.GetString(dr.TestResult);
+
+                        // Test Details
+                        worksheet_Physical.Cells[startRowIndex_Pyhsical, 5] = MyUtility.Convert.GetString(dr.TestDetail) == "Range%" ? "%" : MyUtility.Convert.GetString(dr.TestDetail);
+
+                        worksheet_Physical.Cells[startRowIndex_Pyhsical, 6] = MyUtility.Convert.GetString(dr.StandardRemark);
+
+                        // adidas pass
+                        worksheet_Physical.Cells[startRowIndex_Pyhsical, 7] = MyUtility.Convert.GetString(dr.Result);
 
                         startRowIndex_Pyhsical++;
                     }

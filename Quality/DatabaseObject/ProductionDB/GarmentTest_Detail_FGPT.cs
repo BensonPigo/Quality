@@ -49,9 +49,10 @@ namespace DatabaseObject.ProductionDB
         /// <summary></summary>
         
         public string TestUnit { get; set; }
+        public string StandardRemark { get; set; }
 
         /// <summary></summary>
-        
+
         public int? Seq { get; set; }
 
         /// <summary></summary>

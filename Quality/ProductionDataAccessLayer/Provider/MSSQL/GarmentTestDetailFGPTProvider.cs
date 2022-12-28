@@ -86,6 +86,7 @@ select
 ,[TestDetail]
 ,[Criteria]
 ,[TestResult]
+,StandardRemark
 ,[TestUnit]
 ,t.[Seq]
 ,[TypeSelection_VersionID]
