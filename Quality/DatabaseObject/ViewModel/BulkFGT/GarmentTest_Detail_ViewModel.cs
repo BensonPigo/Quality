@@ -47,6 +47,7 @@ namespace DatabaseObject.ViewModel
         public bool? Neck { get; set; }
         public string Status { get; set; }
         public string LOtoFactory { get; set; } = "";
+        public string FabricationType { get; set; }        
         public bool? Above50NaturalFibres { get; set; }
         public bool? Above50SyntheticFibres { get; set; }
         public string SeamBreakageResult { get; set; }

@@ -245,6 +245,7 @@
                                                 @Html.HiddenFor(o => Model.Detail.Status)
                                                 @Html.HiddenFor(o => Model.Detail.ID)
                                                 @Html.HiddenFor(o => Model.Detail.No)
+                                                @Html.HiddenFor(o => Model.Detail.MtlTypeID)
                                                 @Html.HiddenFor(o => Model.Detail.TestBeforePicture)
                                                 @Html.HiddenFor(o => Model.Detail.TestAfterPicture)
                                             </td>
@@ -298,21 +299,22 @@
                                                     string chkLineDry = Model.Detail.LineDry.HasValue ? Model.Detail.LineDry.Value ? "checked" : string.Empty : string.Empty;
                                                     string chkTumbleDry = Model.Detail.TumbleDry.HasValue ? Model.Detail.TumbleDry.Value ? "checked" : string.Empty : string.Empty;
                                                     string chkHandWash = Model.Detail.HandWash.HasValue ? Model.Detail.HandWash.Value ? "checked" : string.Empty : string.Empty;
+                                                    string MaterialType = Model.Detail.MtlTypeID;
 
                                                     if (string.IsNullOrEmpty(chkLineDry) && string.IsNullOrEmpty(chkTumbleDry) && string.IsNullOrEmpty(chkHandWash))
                                                     {
                                                         chkLineDry = "checked";
                                                     }
                                                 }
-                                                <input class="bigSize" id="Detail_DrySelect" name="Detail.DrySelect" type="radio" value="LineDry" @chkLineDry>
+                                                <input class="bigSize DetailDrySelect" id="Detail_DrySelect" name="Detail.DrySelect" type="radio" value="LineDry" @chkLineDry>
                                             </td>
                                             <td><h4>Tumble Dry</h4></td>
                                             <td>
-                                                <input class="bigSize" id="Detail_DrySelect" name="Detail.DrySelect" type="radio" value="TumbleDry" @chkTumbleDry>
+                                                <input class="bigSize DetailDrySelect" id="Detail_DrySelect" name="Detail.DrySelect" type="radio" value="TumbleDry" @chkTumbleDry>
                                             </td>
                                             <td><h4>Hand Wash</h4></td>
                                             <td>
-                                                <input class="bigSize" id="Detail_DrySelect" name="Detail.DrySelect" type="radio" value="HandWash" @chkHandWash>
+                                                <input class="bigSize DetailDrySelect" id="Detail_DrySelect" name="Detail.DrySelect" type="radio" value="HandWash" @chkHandWash>
                                             </td>
                                         </tr>
                                         <tr>
@@ -330,7 +332,48 @@
                                             <td colspan="3">@Html.TextBoxFor(o => Model.Detail.Composition, "", new { @style = "width:100%;" })</td>
                                         </tr>
                                         <tr>
-                                            <td colspan="3"></td>
+                                            <td><h4>Fabrication Type</h4></td>
+                                            <td colspan="2">
+
+                                                <select id="Detail_FabricationType" name="Detail.FabricationType">
+                                                    @foreach (var item in Model.FabricationType_Source)
+                                                    {
+                                                        /*             
+                                                        (1) 是KINT的時候，才可以選Rib
+                                                        (2) 是KINT且LineDry的時候，才可以選Wool
+                                                        (3) 是WOVEN的時候，才可以選Elastane
+                                                         */
+                                                        string selected = item.Text.Equals(Model.Detail.FabricationType) ? "selected" : "";
+                                                        // 只有是WOVEN的時候，才可以選Elastane
+                                                        bool enabled1 = MaterialType == "KNIT";
+                                                        bool enabled2 = MaterialType == "KNIT" && chkLineDry == "checked";
+                                                        bool enabled3 = MaterialType == "WOVEN";
+                                                        string strEnabled1 = enabled1 ? "" : "disabled";
+                                                        string strEnabled2 = enabled2 ? "" : "disabled";
+                                                        string strEnabled3 = enabled3 ? "" : "disabled";
+
+                                                        if (item.Text.ToUpper() == "RIB")
+                                                        {
+                                                            <option @strEnabled1 MtlTypeID="@MaterialType" value="@item.Value" @selected>@item.Text</option>
+                                                        }
+
+                                                        if (item.Text.ToUpper() == "WOOL")
+                                                        {
+                                                            <option @strEnabled2 MtlTypeID="@MaterialType" value="@item.Value" @selected>@item.Text</option>
+                                                        }
+
+                                                        if (item.Text.ToLower() == "elastane")
+                                                        {
+                                                            <option @strEnabled3 MtlTypeID="@MaterialType" value="@item.Value" @selected>@item.Text</option>
+                                                        }
+
+                                                        if (item.Text.ToLower() == "non")
+                                                        {
+                                                            <option MtlTypeID="@MaterialType" value="@item.Value" @selected>@item.Text</option>
+                                                        }
+                                                    }
+                                                </select>
+                                            </td>
                                             <td colspan="3" rowspan="2">
                                                 <div>
                                                     @{
@@ -474,49 +517,49 @@
                                             {
                                                 KeyToFgwt = (KeyToFgwt + Model.Shrinkages[i].Location).ToUpper();
                                             }
-                                        <tr>
-                                            <td>
-                                                @Html.TextBoxFor(o => Model.Shrinkages[i].Location, new { @readonly = "readonly", @style = "width:6vw;" })
-                                                @Html.HiddenFor(o => Model.Shrinkages[i].ID)
-                                                @Html.HiddenFor(o => Model.Shrinkages[i].No)
-                                            </td>
-                                            <td style="width: 18vw;">@Html.TextBoxFor(o => Model.Shrinkages[i].Type, new { @readonly = "readonly" })</td>
-                                            <td>
-                                                <input id="Shrinkages_@{@i}__BeforeWash" name="Shrinkages[@i].BeforeWash" KeyToFgwt="@Html.Raw("Before" + KeyToFgwt)" onchange="ShrinkagesToFGWT(this)" class="BeforeWash" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].BeforeWash" style="width: 8vw;">
-                                            </td>
-                                            <td>
-                                                <input id="Shrinkages_@{@i}__SizeSpec" name="Shrinkages[@i].SizeSpec" class="SizeSpec" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].SizeSpec" style="width: 8vw;">
-                                            </td>
-                                            <td>
-                                                <input id="Shrinkages_@{@i}__AfterWash1" name="Shrinkages[@i].AfterWash1" class="AfterWash1" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].AfterWash1" style="width: 8vw;">
-                                            </td>
-                                            <td>
-                                                <input id="Shrinkages_@{@i}__Shrinkage1" name="Shrinkages[@i].Shrinkage1" class="Shrinkage1" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].Shrinkage1" readonly="readonly" style="width: 8vw;">
-                                            </td>
-                                            <td>
-                                                @if (bol701)
-                                                {
-                                                    <input id="Shrinkages_@{@i}__AfterWash2" name="Shrinkages[@i].AfterWash2" KeyToFgwt="@Html.Raw("After" + KeyToFgwt)" onchange="ShrinkagesToFGWT(this)" class="AfterWash2" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].AfterWash2" style="width: 8vw;">
-                                                }
-                                                else
-                                                {
-                                                    <input id="Shrinkages_@{@i}__AfterWash2" name="Shrinkages[@i].AfterWash2" class="AfterWash2" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].AfterWash2" style="width: 8vw;">
-                                                }
-                                            </td>
-                                            <td>
-                                                <input id="Shrinkages_@{@i}__Shrinkage2" name="Shrinkages[@i].Shrinkage2" class="Shrinkage2" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].Shrinkage2" readonly="readonly" style="width: 8vw;">
-                                            </td>
-                                            @if (bol710)
-                                            {
+                                            <tr>
                                                 <td>
-                                                    <input id="Shrinkages_@{@i}__AfterWash3" name="Shrinkages[@i].AfterWash3" KeyToFgwt="@Html.Raw("After" + KeyToFgwt)" onchange="ShrinkagesToFGWT(this)" class="AfterWash3" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].AfterWash3" style="width: 8vw;">
+                                                    @Html.TextBoxFor(o => Model.Shrinkages[i].Location, new { @readonly = "readonly", @style = "width:6vw;" })
+                                                    @Html.HiddenFor(o => Model.Shrinkages[i].ID)
+                                                    @Html.HiddenFor(o => Model.Shrinkages[i].No)
+                                                </td>
+                                                <td style="width: 18vw;">@Html.TextBoxFor(o => Model.Shrinkages[i].Type, new { @readonly = "readonly" })</td>
+                                                <td>
+                                                    <input id="Shrinkages_@{@i}__BeforeWash" name="Shrinkages[@i].BeforeWash" KeyToFgwt="@Html.Raw("Before" + KeyToFgwt)" onchange="ShrinkagesToFGWT(this)" class="BeforeWash" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].BeforeWash" style="width: 8vw;">
                                                 </td>
                                                 <td>
-                                                    <input id="Shrinkages_@{@i}__Shrinkage3" name="Shrinkages[@i].Shrinkage3" class="Shrinkage3" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].Shrinkage3" readonly="readonly" style="width: 8vw;">
+                                                    <input id="Shrinkages_@{@i}__SizeSpec" name="Shrinkages[@i].SizeSpec" class="SizeSpec" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].SizeSpec" style="width: 8vw;">
                                                 </td>
-                                            }
-                                        </tr>
-                                    }
+                                                <td>
+                                                    <input id="Shrinkages_@{@i}__AfterWash1" name="Shrinkages[@i].AfterWash1" class="AfterWash1" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].AfterWash1" style="width: 8vw;">
+                                                </td>
+                                                <td>
+                                                    <input id="Shrinkages_@{@i}__Shrinkage1" name="Shrinkages[@i].Shrinkage1" class="Shrinkage1" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].Shrinkage1" readonly="readonly" style="width: 8vw;">
+                                                </td>
+                                                <td>
+                                                    @if (bol701)
+                                                    {
+                                                        <input id="Shrinkages_@{@i}__AfterWash2" name="Shrinkages[@i].AfterWash2" KeyToFgwt="@Html.Raw("After" + KeyToFgwt)" onchange="ShrinkagesToFGWT(this)" class="AfterWash2" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].AfterWash2" style="width: 8vw;">
+                                                    }
+                                                    else
+                                                    {
+                                                        <input id="Shrinkages_@{@i}__AfterWash2" name="Shrinkages[@i].AfterWash2" class="AfterWash2" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].AfterWash2" style="width: 8vw;">
+                                                    }
+                                                </td>
+                                                <td>
+                                                    <input id="Shrinkages_@{@i}__Shrinkage2" name="Shrinkages[@i].Shrinkage2" class="Shrinkage2" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].Shrinkage2" readonly="readonly" style="width: 8vw;">
+                                                </td>
+                                                @if (bol710)
+                                                {
+                                                    <td>
+                                                        <input id="Shrinkages_@{@i}__AfterWash3" name="Shrinkages[@i].AfterWash3" KeyToFgwt="@Html.Raw("After" + KeyToFgwt)" onchange="ShrinkagesToFGWT(this)" class="AfterWash3" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].AfterWash3" style="width: 8vw;">
+                                                    </td>
+                                                    <td>
+                                                        <input id="Shrinkages_@{@i}__Shrinkage3" name="Shrinkages[@i].Shrinkage3" class="Shrinkage3" type="number" min="0" step="0.1" value="@Model.Shrinkages[i].Shrinkage3" readonly="readonly" style="width: 8vw;">
+                                                    </td>
+                                                }
+                                            </tr>
+                                        }
 
                                         @if (Model.Shrinkages.Count == 0)
                                         {
@@ -1056,6 +1099,26 @@
 
         });
 
+        $('.DetailDrySelect').click(function () {
+            /*             
+            (1) 是KINT的時候，才可以選Rib
+            (2) 是KINT且LineDry的時候，才可以選Wool
+            (3) 是WOVEN的時候，才可以選Elastane
+             */ 
+            var selectedDry = $("#Detail_DrySelect:checked").val();
+            var mtlType = $("#Detail_MtlTypeID").val();
+            if (mtlType == 'KNIT' && selectedDry == 'LineDry') {
+                $('option[MtlTypeID="KNIT"][Value="Wool"]').removeAttr("disabled");
+            }
+            else {
+                // 因為disabled之後無法讀取值，所以要先判斷是否需要清空再disabled
+                if ($("#Detail_FabricationType").val() == 'Wool') {
+                    $("#Detail_FabricationType").val('Non');
+                }
+
+                $('option[MtlTypeID="KNIT"][Value="Wool"]').prop("disabled", "disabled");
+            }
+        });
 
         $(".detail-dialog").dialog({
             autoOpen: false,
