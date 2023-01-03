@@ -57,6 +57,20 @@ namespace DatabaseObject.ResultModel
             set { } 
         }
 
+        public List<SelectListItem> FabricationType_Source
+        {
+            get
+            {
+                return new List<SelectListItem>() {
+                    new SelectListItem() { Text="Non",Value="Non"} ,
+                    new SelectListItem() { Text="Wool",Value="Wool"} ,
+                    new SelectListItem() { Text="Elastane",Value="Elastane"} ,
+                    new SelectListItem() { Text="Rib",Value="Rib"} ,
+                };
+            }
+            set { }
+        }
+
         public bool? Result { get; set; }
 
         public string ErrMsg { get; set; }

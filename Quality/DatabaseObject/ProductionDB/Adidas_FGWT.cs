@@ -35,6 +35,7 @@ namespace DatabaseObject.ProductionDB
         [Required]
         [StringLength(30)]
         public string FabricComposition { get; set; }
+        public string StandardRemark { get; set; }
 
         [Required]
         [StringLength(30)]

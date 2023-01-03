@@ -48,6 +48,7 @@ select
 ,[Scale]
 ,[Criteria]
 ,[Criteria2]
+,StandardRemark
 ,[SystemType]
 ,[EditType] = case 
 	when (Criteria is not null  or Criteria2 is not null) and IsInPercentage.value !=1 then '1'
@@ -167,21 +168,21 @@ SELECT locations = STUFF(
             // 若為Hand只寫入第88項
             if (washType == "Hand" && source.MtlTypeID != "WOVEN")
             {
-                fGWTs = GetDefaultFGWT(false, false, false, source.MtlTypeID, washType, fibresType);
+                fGWTs = GetDefaultFGWT(false, false, false, source.MtlTypeID, washType, source.FabricationType, fibresType);
             }
             else
             {
                 if (containsT && containsB)
                 {
-                    fGWTs = GetDefaultFGWT(false, false, true, source.MtlTypeID, washType, fibresType);
+                    fGWTs = GetDefaultFGWT(false, false, true, source.MtlTypeID, washType, source.FabricationType, fibresType);
                 }
                 else if (containsT)
                 {
-                    fGWTs = GetDefaultFGWT(containsT, false, false, source.MtlTypeID, washType, fibresType);
+                    fGWTs = GetDefaultFGWT(containsT, false, false, source.MtlTypeID, washType, source.FabricationType, fibresType);
                 }
                 else
                 {
-                    fGWTs = GetDefaultFGWT(false, containsB, false, source.MtlTypeID, washType, fibresType);
+                    fGWTs = GetDefaultFGWT(false, containsB, false, source.MtlTypeID, washType, source.FabricationType, fibresType);
                 }
             }
 
@@ -219,7 +220,7 @@ SELECT locations = STUFF(
                         insertCmd.Append($@"
 
 INSERT INTO GarmentTest_Detail_FGWT
-           (ID, No, Location, Type ,TestDetail ,Criteria, SystemType, Seq)
+           (ID, No, Location, Type ,TestDetail ,Criteria, SystemType, Seq ,StandardRemark)
      VALUES
            ( {garmentTest_Detail_ID}
            , {garmentTest_Detail_No}
@@ -228,7 +229,8 @@ INSERT INTO GarmentTest_Detail_FGWT
            , @TestDetail{idx}
            , @Criteria{idx}
            , @SystemType{idx}
-           , @Seq{idx})
+           , @Seq{idx}
+           , @StandardRemark{idx})
 
 ");
                     }
@@ -239,7 +241,7 @@ INSERT INTO GarmentTest_Detail_FGWT
                             insertCmd.Append($@"
 
 INSERT INTO GarmentTest_Detail_FGWT
-           (ID, No, Location, Type ,TestDetail, SystemType, Seq )
+           (ID, No, Location, Type ,TestDetail, SystemType, Seq ,StandardRemark )
      VALUES
            ( {garmentTest_Detail_ID}
            , {garmentTest_Detail_No}
@@ -247,7 +249,8 @@ INSERT INTO GarmentTest_Detail_FGWT
            , @Type{idx}
            , @TestDetail{idx} 
            , @SystemType{idx}
-           , @Seq{idx})
+           , @Seq{idx}
+           , @StandardRemark{idx})
 
 ");
                         }
@@ -256,7 +259,7 @@ INSERT INTO GarmentTest_Detail_FGWT
                             insertCmd.Append($@"
 
 INSERT INTO GarmentTest_Detail_FGWT
-           (ID, No, Location, Type ,TestDetail ,Criteria ,Criteria2, SystemType, Seq )
+           (ID, No, Location, Type ,TestDetail ,Criteria ,Criteria2, SystemType, Seq ,StandardRemark )
      VALUES
            ( {garmentTest_Detail_ID}
            , {garmentTest_Detail_No}
@@ -266,7 +269,8 @@ INSERT INTO GarmentTest_Detail_FGWT
            , @Criteria{idx} 
            , @Criteria2_{idx}
            , @SystemType{idx}
-           , @Seq{idx})
+           , @Seq{idx}
+           , @StandardRemark{idx})
 
 ");
                         }
@@ -277,7 +281,7 @@ INSERT INTO GarmentTest_Detail_FGWT
                     insertCmd.Append($@"
 
 INSERT INTO GarmentTest_Detail_FGWT
-           (ID, No, Location, Type ,Scale,TestDetail, SystemType, Seq)
+           (ID, No, Location, Type ,Scale,TestDetail, SystemType, Seq ,StandardRemark)
      VALUES
            ( {garmentTest_Detail_ID}
            , {garmentTest_Detail_No}
@@ -286,7 +290,8 @@ INSERT INTO GarmentTest_Detail_FGWT
            , ''
            , @TestDetail{idx}
            , @SystemType{idx}
-           , @Seq{idx})
+           , @Seq{idx}
+           , @StandardRemark{idx})
 
 ");
                 }
@@ -298,6 +303,7 @@ INSERT INTO GarmentTest_Detail_FGWT
                 parameters.Add(new SqlParameter($"@Criteria2_{idx}", fGWT.Criteria2));
                 parameters.Add(new SqlParameter($"@SystemType{idx}", fGWT.SystemType));
                 parameters.Add(new SqlParameter($"@Seq{idx}", fGWT.Seq));
+                parameters.Add(new SqlParameter($"@StandardRemark{idx}", fGWT.StandardRemark));
                 idx++;
             }
 
@@ -459,13 +465,13 @@ update GarmentTest_Detail_FGWT set Shrinkage = {dr["MethodB"]} where id = {dr["I
         /// <param name="fibresType">fibresType</param>
         /// <param name="isAll">>是否All</param>
         /// <returns>預設清單</returns>
-        public List<GarmentTest_Detail_FGWT> GetDefaultFGWT(bool isTop, bool isBottom, bool isTop_Bottom, string mtlTypeID, string washType, string fibresType, bool isAll = true)
+        public List<GarmentTest_Detail_FGWT> GetDefaultFGWT(bool isTop, bool isBottom, bool isTop_Bottom, string mtlTypeID, string washType, string FabricationType, string fibresType, bool isAll = true)
         {
             string sqlWhere = string.Empty;
 
             if (!string.IsNullOrEmpty(mtlTypeID))
             {
-                sqlWhere += $" and MtlTypeID = '{mtlTypeID}' ";
+                sqlWhere += $" and a.MtlTypeID = '{mtlTypeID}' ";
             }
 
             if (mtlTypeID == "KNIT")
@@ -489,7 +495,7 @@ update GarmentTest_Detail_FGWT set Shrinkage = {dr["MethodB"]} where id = {dr["I
                             break;
                     }
 
-                    sqlWhere += $" and Washing = '{washing}' ";
+                    sqlWhere += $" and a.Washing = '{washing}' ";
                 }
 
                 if (!string.IsNullOrEmpty(fibresType))
@@ -508,7 +514,7 @@ update GarmentTest_Detail_FGWT set Shrinkage = {dr["MethodB"]} where id = {dr["I
                             break;
                     }
 
-                    sqlWhere += $" and FabricComposition = '{fabricComposition}' ";
+                    sqlWhere += $" and a.FabricComposition = '{fabricComposition}' ";
                 }
             }
 
@@ -536,24 +542,54 @@ update GarmentTest_Detail_FGWT set Shrinkage = {dr["MethodB"]} where id = {dr["I
                     listLocation.Add("'S'");
                 }
 
-                sqlWhere += $" and Location in ({listLocation.JoinToString(",")}) ";
+                sqlWhere += $" and a.Location in ({listLocation.JoinToString(",")}) ";
             }
 
-            string sqlGetDefaultFGWT = $@"
-select  Seq,
-        [Location] = case when Location = 'T' then 'Top'
-                          when Location = 'B' then 'Bottom'
-                          when Location = 'S' then 'Top+Bottom'
-                          else '' end,
-        ReportType,
-        SystemType,
-        Scale ,
-        TestDetail,
-        Criteria = ISNULL(Criteria,0),
-        Criteria2 = ISNULL(Criteria2,0)
-from    Adidas_FGWT with (nolock)
+
+            string sqlGetDefaultFGWT = $@"";
+
+            if (FabricationType != "Non")
+            {
+                sqlWhere += $" and (b.FabricationType ='{FabricationType}' or b.FabricationType is null) ";
+                sqlGetDefaultFGWT = $@"
+select distinct a.Seq
+		,[Location] = case when a.Location = 'T' then 'Top'
+                          when a.Location = 'B' then 'Bottom'
+                          when a.Location = 'S' then 'Top+Bottom'
+                          else '' end
+		,a.ReportType
+        ,a.SystemType
+        ,a.Scale 
+        ,a.TestDetail
+        ,a.StandardRemark
+		,Criteria = ISNULL(ISNULL(b.Criteria,a.Criteria),0)
+		,Criteria2 = ISNULL(ISNULL(b.Criteria2,a.Criteria2),0)
+from    Adidas_FGWT a with (nolock)
+left join Adidas_FGWT_Fabrication b with (nolock) on a.Location=b.Location and a.ReportType=b.ReportType and a.MtlTypeID=b.MtlTypeID and a.Washing=b.Washing
+where 1 = 1 
+{sqlWhere}
+";
+            }
+            else
+            {
+                sqlGetDefaultFGWT = $@"
+select distinct a.Seq
+		,[Location] = case when a.Location = 'T' then 'Top'
+                          when a.Location = 'B' then 'Bottom'
+                          when a.Location = 'S' then 'Top+Bottom'
+                          else '' end
+		,a.ReportType
+        ,a.SystemType
+        ,a.Scale 
+        ,a.TestDetail
+        ,a.StandardRemark
+		,Criteria = ISNULL(a.Criteria,0)
+		,Criteria2 = ISNULL(a.Criteria2,0)
+from    Adidas_FGWT a with (nolock)
 where 1 = 1 {sqlWhere}
 ";
+            }
+
 
             DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetDefaultFGWT, new SQLParameterCollection());
 
@@ -565,6 +601,7 @@ where 1 = 1 {sqlWhere}
                 SystemType = s["SystemType"].ToString(),
                 Scale = s["Scale"].ToString(),
                 TestDetail = s["TestDetail"].ToString(),
+                StandardRemark = s["StandardRemark"].ToString(),
                 Criteria = Convert.ToDecimal(s["Criteria"]),
                 Criteria2 = Convert.ToDecimal(s["Criteria2"]),
             }).ToList();
@@ -574,3 +611,4 @@ where 1 = 1 {sqlWhere}
 	#endregion
     }
 }
+

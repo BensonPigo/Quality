@@ -514,6 +514,7 @@ insert into GarmentTest_Detail(
     ,AddName,AddDate
     ,Status
     ,ReportNo
+    ,FabricationType
 )
 values(
     @ID
@@ -526,6 +527,7 @@ values(
     ,@UserID, GetDate()
     ,'New'
     ,@ReportNo
+    ,'Non'
 )
 
 insert into  {(sameInstance ? string.Empty : "[ExtendServer].")}PMSFile.dbo.GarmentTest_Detail(ID,No)

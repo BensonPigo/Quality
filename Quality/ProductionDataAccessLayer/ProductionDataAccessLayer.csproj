@@ -75,7 +75,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Interface\IAdidasFGWTProvider.cs" />
     <Compile Include="Interface\IAutomationErrMsgProvider.cs" />
     <Compile Include="Interface\IBrandProvider.cs" />
     <Compile Include="Interface\IColorFastnessDetailProvider.cs" />
@@ -125,7 +124,6 @@
     <Compile Include="Interface\ITPEPass1Provider.cs" />
     <Compile Include="Interface\ITypeSelectionProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Provider\MSSQL\AdidasFGWTProvider.cs" />
     <Compile Include="Provider\MSSQL\AutomationErrMsgProvider.cs" />
     <Compile Include="Provider\MSSQL\BrandProvider.cs" />
     <Compile Include="Provider\MSSQL\BukkFGT\AccessoryOvenWashProvider.cs" />

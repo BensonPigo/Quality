@@ -2572,8 +2572,8 @@ and t.GarmentTest=1
                             }
 
                             // Name
-                            worksheet_2020.Cells[31, 7] = technicianName;
-                            Excel.Range cellNew = worksheet_2020.Cells[29, 7];
+                            worksheet_2020.Cells[31, 8] = technicianName;
+                            Excel.Range cellNew = worksheet_2020.Cells[29, 8];
 
                             using (MemoryStream ms = new MemoryStream(imgData))
                             {
@@ -2585,13 +2585,13 @@ and t.GarmentTest=1
                         }
                         else
                         {
-                            worksheet_2020.Cells[31, 7] = MyUtility.Convert.GetString(all_Data.Detail.GarmentTest_Detail_Inspector);
+                            worksheet_2020.Cells[31, 8] = MyUtility.Convert.GetString(all_Data.Detail.GarmentTest_Detail_Inspector);
                         }
                     }
 
                     if (!IsToPDF)
                     {
-                        worksheet_2020.Cells[27, 6] = string.Empty;
+                        worksheet_2020.Cells[27, 7] = string.Empty;
                     }
 
                     #endregion
@@ -2662,8 +2662,9 @@ and t.GarmentTest=1
                         // Test Details
                         worksheet_2020.Cells[startRowIndex, 5] = MyUtility.Convert.GetString(dr.TestDetail) == "Range%" ? "%" : MyUtility.Convert.GetString(dr.TestDetail);
 
+                        worksheet_2020.Cells[startRowIndex, 6] = MyUtility.Convert.GetString(dr.StandardRemark);
                         // adidas pass
-                        worksheet_2020.Cells[startRowIndex, 6] = MyUtility.Convert.GetString(dr.Result);
+                        worksheet_2020.Cells[startRowIndex, 7] = MyUtility.Convert.GetString(dr.Result);
 
                         startRowIndex++;
                     }
