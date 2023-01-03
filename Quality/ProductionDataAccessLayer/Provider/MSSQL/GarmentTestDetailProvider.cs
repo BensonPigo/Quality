@@ -299,6 +299,7 @@ and ID = @ID
                 { "@LineDry", DbType.Boolean, source.LineDry } ,
                 { "@Temperature", source.Temperature } ,
                 { "@TumbleDry", DbType.Boolean, source.TumbleDry } ,
+                { "@FabricationType", source.FabricationType ?? "Non"} ,
                 { "@Machine", source.Machine } ,
                 { "@HandWash",DbType.Boolean, source.HandWash } ,
                 { "@Composition", source.Composition } ,
@@ -327,6 +328,7 @@ update GarmentTest_Detail set
     Temperature =  @Temperature,
     TumbleDry =  @TumbleDry,
     Machine =  @Machine,
+    FabricationType = @FabricationType,
     HandWash =  @HandWash,
     Composition =  @Composition,
     Neck = @Neck ,
@@ -668,6 +670,7 @@ drop table #tmpFGPTResult,#tmpFGWTResult
             SbSql.Append("        ,SizeCode"+ Environment.NewLine);
             SbSql.Append("        ,LOtoFactory"+ Environment.NewLine);
             SbSql.Append("        ,MtlTypeID"+ Environment.NewLine);
+            SbSql.Append("        ,FabricationType" + Environment.NewLine);
             SbSql.Append("        ,Above50NaturalFibres"+ Environment.NewLine);
             SbSql.Append("        ,Above50SyntheticFibres"+ Environment.NewLine);
             SbSql.Append("        ,OrderID"+ Environment.NewLine);

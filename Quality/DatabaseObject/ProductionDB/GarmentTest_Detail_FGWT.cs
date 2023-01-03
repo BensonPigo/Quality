@@ -53,6 +53,8 @@ namespace DatabaseObject.ProductionDB
         /// <summary></summary>
         [Display(Name = "")]
         public string SystemType { get; set; }
+
+        public string StandardRemark { get; set; }
         /// <summary></summary>
         [Display(Name = "")]
         public int? Seq { get; set; }
