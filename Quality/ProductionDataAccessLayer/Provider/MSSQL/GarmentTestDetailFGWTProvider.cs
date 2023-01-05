@@ -550,7 +550,8 @@ update GarmentTest_Detail_FGWT set Shrinkage = {dr["MethodB"]} where id = {dr["I
 
             if (FabricationType != "Non")
             {
-                sqlWhere += $" and (b.FabricationType ='{FabricationType}' or b.FabricationType is null) ";
+                string sqlWhere2 = sqlWhere;
+                sqlWhere2 += $" and b.FabricationType ='{FabricationType}'  ";
                 sqlGetDefaultFGWT = $@"
 select distinct a.Seq
 		,[Location] = case when a.Location = 'T' then 'Top'
@@ -561,13 +562,53 @@ select distinct a.Seq
         ,a.SystemType
         ,a.Scale 
         ,a.TestDetail
-        ,a.StandardRemark
+		,OriLocation = a.Location
+		,a.MtlTypeID
+		,a.Washing
+		,a.FabricComposition
+        ,b.StandardRemark
 		,Criteria = ISNULL(ISNULL(b.Criteria,a.Criteria),0)
 		,Criteria2 = ISNULL(ISNULL(b.Criteria2,a.Criteria2),0)
+into #CriteriaByFabricationType
 from    Adidas_FGWT a with (nolock)
-left join Adidas_FGWT_Fabrication b with (nolock) on a.Location=b.Location and a.ReportType=b.ReportType and a.MtlTypeID=b.MtlTypeID and a.Washing=b.Washing
+inner join Adidas_FGWT_Fabrication b with (nolock) on a.Location=b.Location and a.ReportType=b.ReportType and a.MtlTypeID=b.MtlTypeID and a.Washing=b.Washing
 where 1 = 1 
-{sqlWhere}
+{sqlWhere2}
+
+select Seq
+		,Location
+		,ReportType
+        ,SystemType
+        ,Scale 
+        ,TestDetail
+        ,StandardRemark
+		,Criteria
+		,Criteria2 
+from #CriteriaByFabricationType
+UNION
+select distinct a.Seq
+		,[Location] = case when a.Location = 'T' then 'Top'
+                          when a.Location = 'B' then 'Bottom'
+                          when a.Location = 'S' then 'Top+Bottom'
+                          else '' end
+		,a.ReportType
+        ,a.SystemType
+        ,a.Scale 
+        ,a.TestDetail
+        ,a.StandardRemark
+		,Criteria = ISNULL(a.Criteria,0)
+		,Criteria2 = ISNULL(a.Criteria2,0)
+from    Adidas_FGWT a with (nolock)
+where 1 = 1 
+ {sqlWhere}
+ and not exists(
+	select 1 
+	from #CriteriaByFabricationType b
+	where  a.Location=b.OriLocation and a.ReportType=b.ReportType and a.MtlTypeID=b.MtlTypeID and a.Washing=b.Washing and a.FabricComposition=b.FabricComposition  
+ )
+
+
+drop table #CriteriaByFabricationType
 ";
             }
             else
