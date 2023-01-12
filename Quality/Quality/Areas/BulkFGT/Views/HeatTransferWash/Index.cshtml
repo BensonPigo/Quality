@@ -345,23 +345,27 @@
                                     <td><h5>Teamwear</h5></td>
                                     <td>
                                         <div class="input-group">
-                                            @Html.CheckBoxFor(o => o.Main.IsTeamwear, new { @class = "bigSize Readonly", @style = "flex-grow: 0;"  })
+                                            @Html.CheckBoxFor(o => o.Main.IsTeamwear, new { @class = "bigSize Readonly", @style = "flex-grow: 0;" })
                                             <label for="Main_IsTeamwear" style="padding: 5px;">Teamwear</label>
                                         </div>
+                                    </td>
+                                    <td><h5>Received Date</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.Main.ReceivedDate, "{0:yyyy/MM/dd}", new { @class = "date-picker OnlyEdit" })
                                     </td>
                                     <td><h5>Report Date</h5></td>
                                     <td>
                                         @Html.TextBoxFor(o => o.Main.ReportDate, "{0:yyyy/MM/dd}", new { @class = "date-picker Readonly" })
                                     </td>
-                                    <td><h5>Result</h5></td>
-                                    <td>
-                                        @Html.TextBoxFor(o => o.Main.Result, new { @class = "Readonly" })
-                                    </td>
                                 </tr>
                                 <tr>
                                     <td><h5>Remark</h5></td>
-                                    <td colspan="3">
+                                    <td>
                                         @Html.TextBoxFor(o => o.Main.Remark, new { @style = "width:100%;", @maxlength = "300", @class = "OnlyEdit" })
+                                    </td>
+                                    <td><h5>Result</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.Main.Result, new { @class = "Readonly" })
                                     </td>
                                     <td><h5>Last Edit Name</h5></td>
                                     <td>

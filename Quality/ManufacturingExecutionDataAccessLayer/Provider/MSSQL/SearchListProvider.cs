@@ -800,8 +800,8 @@ select DISTINCT Type= 'Daily HT Wash Test'
 		, Artwork = ''
 		, h.Result
 		, TestDate = h.ReportDate
-	    , ReceivedDate = NULL
-	    , ReportDate = NULL
+	    , ReceivedDate = h.ReceivedDate
+	    , ReportDate = h.ReportDate
 from [ExtendServer].ManufacturingExecution.dbo.HeatTransferWash h WITH (NOLOCK)
 WHERE h.Result <> ''
 ";

@@ -85,6 +85,7 @@ select h.ReportNo
       ,MRHandleEmail = ISNULL(p.Email, p2.Email)
       ,Signature = Technician.Signature
       ,ArtworkTypeID_FullName = SubProcessInfo.ID
+      ,h.ReceivedDate
 from HeatTransferWash h
 left join SciPMSFile_HeatTransferWash pmsfile on h.ReportNo=pmsfile.ReportNo
 inner join SciProduction_Orders o on h.OrderID = o.ID
@@ -326,6 +327,7 @@ VALUES      (@ReportNo
             objParameter.Add("@Remark", DbType.String, Req.Main.Remark ?? string.Empty);
             objParameter.Add("@ArtworkTypeID", DbType.String, Req.Main.ArtworkTypeID ?? string.Empty);
             objParameter.Add("@IsTeamwear", DbType.Boolean, Req.Main.IsTeamwear);
+            objParameter.Add("@ReceivedDate", DbType.Date, Req.Main.ReceivedDate);
             //objParameter.Add("@Temperature", DbType.Int32, Req.Main.Temperature);
             //objParameter.Add("@Time", DbType.Int32, Req.Main.Time);
             //objParameter.Add("@Pressure", DbType.Decimal, Req.Main.Pressure);
@@ -351,8 +353,9 @@ Set Line = @Line
     ,Remark = @Remark
     ,IsTeamwear = @IsTeamwear
     ,ArtworkTypeID = @ArtworkTypeID
-    ,EditDate =GETDATE()
+    ,EditDate = GETDATE()
     ,Editname = @Editname
+    ,ReceivedDate = @ReceivedDate
 where ReportNo = @ReportNo
 
 

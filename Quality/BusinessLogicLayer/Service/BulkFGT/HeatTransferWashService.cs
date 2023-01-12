@@ -286,17 +286,20 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 worksheet.Cells[2, 2] = head.OrderID;
                 worksheet.Cells[2, 6] = head.ReportDate.HasValue ? head.ReportDate.Value.ToString("yyyy-MM-dd") : string.Empty;
 
-                worksheet.Cells[3, 2] = head.SeasonID;
-                worksheet.Cells[3, 6] = head.IsTeamwear ? "V" : string.Empty;
+                worksheet.Cells[3, 2] = head.ReceivedDate.HasValue ? head.ReceivedDate.Value.ToString("yyyy-MM-dd") : string.Empty;
+                worksheet.Cells[3, 6] = head.AddDate.HasValue ? head.AddDate.Value.ToString("yyyy-MM-dd") : string.Empty;
 
-                worksheet.Cells[4, 2] = head.Article;
-                worksheet.Cells[4, 6] = head.StyleID;
+                worksheet.Cells[4, 2] = head.SeasonID;
+                worksheet.Cells[4, 6] = head.IsTeamwear ? "V" : string.Empty;
 
-                worksheet.Cells[5, 2] = head.BrandID;
-                worksheet.Cells[5, 6] = head.Line;
+                worksheet.Cells[5, 2] = head.Article;
+                worksheet.Cells[5, 6] = head.StyleID;
 
-                worksheet.Cells[6, 2] = head.ArtworkTypeID;
-                worksheet.Cells[6, 6] = head.Machine;
+                worksheet.Cells[6, 2] = head.BrandID;
+                worksheet.Cells[6, 6] = head.Line;
+
+                worksheet.Cells[7, 2] = head.ArtworkTypeID;
+                worksheet.Cells[7, 6] = head.Machine;
                 //worksheet.Cells[9, 3] = head.Temperature;
                 //worksheet.Cells[10, 3] = head.Time;
                 //worksheet.Cells[11, 3] = head.Pressure;
@@ -306,13 +309,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 if (head.Result == "Pass")
                 {
-                    worksheet.Cells[11, 2] = "V";
+                    worksheet.Cells[12, 2] = "V";
                 }
                 else if (head.Result == "Fail")
                 {
-                    worksheet.Cells[11, 6] = "V";
+                    worksheet.Cells[12, 6] = "V";
                 }
-                worksheet.Cells[13, 1] = head.Remark;
+                worksheet.Cells[14, 1] = head.Remark;
 
                 string imgPath_BeforePicture = string.Empty;
                 string imgPath_AfterPicture = string.Empty;
@@ -321,33 +324,32 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     byte[] beforePic = head.TestBeforePicture;
                     imgPath_BeforePicture = ToolKit.PublicClass.AddImageSignWord(beforePic, head.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    Excel.Range cell = worksheet.Cells[16, 1];
+                    Excel.Range cell = worksheet.Cells[17, 1];
                     worksheet.Shapes.AddPicture(imgPath_BeforePicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 2, cell.Top + 2, 220, 130);
                 }
                 if (head.TestBeforePicture != null)
                 {
                     byte[] beforePic = head.TestAfterPicture;
                     imgPath_AfterPicture = ToolKit.PublicClass.AddImageSignWord(beforePic, head.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    Excel.Range cell = worksheet.Cells[16, 5];
+                    Excel.Range cell = worksheet.Cells[17, 5];
                     worksheet.Shapes.AddPicture(imgPath_AfterPicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 2, cell.Top + 2, 220, 130);
                 }
                 if (head.Signature != null)
                 {
                     byte[] SignturePic = head.Signature;
                     imgPath_Signture = ToolKit.PublicClass.AddImageSignWord(SignturePic, head.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    Excel.Range cell = worksheet.Cells[28, 6];
+                    Excel.Range cell = worksheet.Cells[29, 6];
                     worksheet.Shapes.AddPicture(imgPath_Signture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
                 }
-                {
-                    worksheet.Cells[28, 6] = head.LastEditText;
-                }
+
+                worksheet.Cells[29, 6] = head.LastEditText;
 
 
 
                 // 表身筆數處理
                 if (!body.Any())
                 {
-                    worksheet.get_Range("A9").EntireRow.Delete();
+                    worksheet.get_Range("A10").EntireRow.Delete();
                 }
                 else
                 {
@@ -355,15 +357,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                     for (int i = 0; i < copyCount; i++)
                     {
-                        Excel.Range paste1 = worksheet.get_Range($"A{i + 9}", Type.Missing);
-                        Excel.Range copyRow = worksheet.get_Range("A9").EntireRow;
+                        Excel.Range paste1 = worksheet.get_Range($"A{i + 10}", Type.Missing);
+                        Excel.Range copyRow = worksheet.get_Range("A10").EntireRow;
                         paste1.Insert(Excel.XlInsertShiftDirection.xlShiftDown, copyRow.Copy(Type.Missing));
                     }
                 }
 
 
                 // 表身填入
-                int bodyStart = 9;
+                int bodyStart = 10;
                 foreach (var item in body)
                 {
                     worksheet.Cells[bodyStart, 1] = item.FabricRefNo;

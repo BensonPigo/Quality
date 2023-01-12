@@ -70,6 +70,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string Line { get; set; }
         public string Machine { get; set; }
         public bool IsTeamwear { get; set; }
+        public DateTime? ReceivedDate { get; set; }
         public DateTime? ReportDate { get; set; }
         public string Result { get; set; }
         public string Remark { get; set; }
