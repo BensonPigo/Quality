@@ -284,22 +284,22 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 worksheet.Cells[1, 1] = head.ArtworkTypeID_FullName + " - Daily wash test report";
 
                 worksheet.Cells[2, 2] = head.OrderID;
-                worksheet.Cells[2, 6] = head.ReportDate.HasValue ? head.ReportDate.Value.ToString("yyyy-MM-dd") : string.Empty;
+                worksheet.Cells[2, 7] = head.ReportDate.HasValue ? head.ReportDate.Value.ToString("yyyy-MM-dd") : string.Empty;
 
                 worksheet.Cells[3, 2] = head.ReceivedDate.HasValue ? head.ReceivedDate.Value.ToString("yyyy-MM-dd") : string.Empty;
-                worksheet.Cells[3, 6] = head.AddDate.HasValue ? head.AddDate.Value.ToString("yyyy-MM-dd") : string.Empty;
+                worksheet.Cells[3, 7] = head.AddDate.HasValue ? head.AddDate.Value.ToString("yyyy-MM-dd") : string.Empty;
 
                 worksheet.Cells[4, 2] = head.SeasonID;
-                worksheet.Cells[4, 6] = head.IsTeamwear ? "V" : string.Empty;
+                worksheet.Cells[4, 7] = head.Teamwear ? "V" : string.Empty;
 
                 worksheet.Cells[5, 2] = head.Article;
-                worksheet.Cells[5, 6] = head.StyleID;
+                worksheet.Cells[5, 7] = head.StyleID;
 
                 worksheet.Cells[6, 2] = head.BrandID;
-                worksheet.Cells[6, 6] = head.Line;
+                worksheet.Cells[6, 7] = head.Line;
 
                 worksheet.Cells[7, 2] = head.ArtworkTypeID;
-                worksheet.Cells[7, 6] = head.Machine;
+                worksheet.Cells[7, 7] = head.Machine;
                 //worksheet.Cells[9, 3] = head.Temperature;
                 //worksheet.Cells[10, 3] = head.Time;
                 //worksheet.Cells[11, 3] = head.Pressure;
@@ -313,7 +313,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
                 else if (head.Result == "Fail")
                 {
-                    worksheet.Cells[12, 6] = "V";
+                    worksheet.Cells[12, 7] = "V";
                 }
                 worksheet.Cells[14, 1] = head.Remark;
 
@@ -331,18 +331,21 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     byte[] beforePic = head.TestAfterPicture;
                     imgPath_AfterPicture = ToolKit.PublicClass.AddImageSignWord(beforePic, head.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    Excel.Range cell = worksheet.Cells[17, 5];
+                    Excel.Range cell = worksheet.Cells[17, 6];
                     worksheet.Shapes.AddPicture(imgPath_AfterPicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 2, cell.Top + 2, 220, 130);
                 }
                 if (head.Signature != null)
                 {
                     byte[] SignturePic = head.Signature;
                     imgPath_Signture = ToolKit.PublicClass.AddImageSignWord(SignturePic, head.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    Excel.Range cell = worksheet.Cells[29, 6];
+                    Excel.Range cell = worksheet.Cells[29, 7];
                     worksheet.Shapes.AddPicture(imgPath_Signture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
                 }
-
-                worksheet.Cells[29, 6] = head.LastEditText;
+                else
+                {
+                    worksheet.Cells[29, 7] = head.LastEditText;
+                }
+                
 
 
 
@@ -372,10 +375,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     worksheet.Cells[bodyStart, 2] = item.HTRefNo;
                     worksheet.Cells[bodyStart, 3] = item.Temperature;
                     worksheet.Cells[bodyStart, 4] = item.Time;
-                    worksheet.Cells[bodyStart, 5] = item.Pressure;
-                    worksheet.Cells[bodyStart, 6] = item.PeelOff;
-                    worksheet.Cells[bodyStart, 7] = item.Cycles;
-                    worksheet.Cells[bodyStart, 8] = item.TemperatureUnit;
+                    worksheet.Cells[bodyStart, 5] = item.SecondTime;
+                    worksheet.Cells[bodyStart, 6] = item.Pressure;
+                    worksheet.Cells[bodyStart, 7] = item.PeelOff;
+                    worksheet.Cells[bodyStart, 8] = item.Cycles;
+                    worksheet.Cells[bodyStart, 9] = item.TemperatureUnit;
+                    worksheet.Cells[bodyStart, 10] = item.Remark;
                     bodyStart++;
                 }
 
