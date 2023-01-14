@@ -11,6 +11,27 @@ namespace ToolKit
 {
     public static class PublicClass
     {
+        ///<summary>
+        ///字串轉半形
+        ///</summary>
+        ///<paramname="input">任一字元串</param>
+        ///<returns>半形字元串</returns>
+        public static string ToNarrow(this string input)
+        {
+            char[] c = input.ToCharArray();
+            for (int i = 0; i < c.Length; i++)
+            {
+                if (c[i] == 12288)
+                {
+                    c[i] = (char)32;
+                    continue;
+                }
+                if (c[i] > 65280 && c[i] < 65375)
+                    c[i] = (char)(c[i] - 65248);
+            }
+            return new string(c);
+        }
+
         /// <summary>
         /// 取得字串右邊字數
         /// </summary>
