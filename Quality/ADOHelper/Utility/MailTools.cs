@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
+using ToolKit;
 
 namespace ADOHelper.Utility
 {
@@ -56,22 +57,22 @@ namespace ADOHelper.Utility
 
                 if (SendMail_Request.To != null && SendMail_Request.To != string.Empty)
                 {
-                    foreach (var to in SendMail_Request.To.Replace("\r", "").Replace("\n", "").Split(';'))
+                    foreach (var to in SendMail_Request.To.ToNarrow().Replace("\r", "").Replace("\n", "").Split(';'))
                     {
                         if (!string.IsNullOrEmpty(to))
                         {
-                            message.To.Add(to);
+                            message.To.Add(to.ToNarrow());
                         }
                     }
                 }
 
                 if (SendMail_Request.CC != null && SendMail_Request.CC != string.Empty)
                 {
-                    foreach (var cc in SendMail_Request.CC.Replace("\r", "").Replace("\n", "").Split(';'))
+                    foreach (var cc in SendMail_Request.CC.ToNarrow().Replace("\r", "").Replace("\n", "").Split(';'))
                     {
                         if (!string.IsNullOrEmpty(cc))
                         {
-                            message.CC.Add(cc);
+                            message.CC.Add(cc.ToNarrow());
                         }
                     }
                 }
@@ -106,7 +107,6 @@ namespace ADOHelper.Utility
                         }
                     }
                 }
-
 
                 // 夾檔(在server上的檔案)
                 if (SendMail_Request.FileonServer != null && SendMail_Request.FileonServer.Count > 0)
