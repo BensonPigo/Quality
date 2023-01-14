@@ -58,6 +58,10 @@
       <Project>{95d12adf-a503-4a80-b2c9-71e21f2a3aa6}</Project>
       <Name>DatabaseObject</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ToolKit\ToolKit.csproj">
+      <Project>{f75434e9-6588-4aa4-87f9-7e419dbcc57f}</Project>
+      <Name>ToolKit</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\.editorconfig">

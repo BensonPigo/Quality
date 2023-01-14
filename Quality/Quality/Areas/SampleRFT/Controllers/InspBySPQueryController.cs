@@ -177,13 +177,14 @@ namespace Quality.Areas.SampleRFT.Controllers
         }
 
 
-        public ActionResult DownLoad()
+        public ActionResult DownLoad(long ID)
         {
-            string ExcelFileName = GetExcel(true);
+            QueryReport model = _Service.GetQueryDetail(ID, this.UserID);
+            string ExcelFileName = GetExcel(true, model);
 
-            string CFTExcelFileName = GetCFTComment(true);
+            string CFTExcelFileName = GetCFTComment(true, model);
 
-            List<string> dummyFitPicList = GetDummtPic(true);
+            List<string> dummyFitPicList = GetDummtPic(true, model);
 
             ZipFile zip = new ZipFile();
             string zipName = $@"Query Report_{DateTime.Now.ToString("yyyyMMddHHmmss")}.zip";
@@ -210,11 +211,9 @@ namespace Quality.Areas.SampleRFT.Controllers
             return null;
         }
 
-        public string GetExcel(bool IsDowdload)
+        public string GetExcel(bool IsDowdload, QueryReport model)
         {
             string fileName = string.Empty;
-
-            QueryReport model = (QueryReport)TempData["ModelQuery"];
             TempData["ModelQuery"] = model;
 
             Excel.Application excelApp = MyUtility.Excel.ConnectExcel(AppDomain.CurrentDomain.BaseDirectory + "XLT\\InspBySPQuery_Detail.xlsx");
@@ -372,11 +371,9 @@ namespace Quality.Areas.SampleRFT.Controllers
             return fileName;
         }
 
-        public string GetCFTComment(bool IsDowdload)
+        public string GetCFTComment(bool IsDowdload, QueryReport model)
         {
             string fileName = string.Empty;
-
-            QueryReport model = (QueryReport)TempData["ModelQuery"];
             TempData["ModelQuery"] = model;
 
             CFTComments_ViewModel qModel = new CFTComments_ViewModel();
@@ -391,10 +388,9 @@ namespace Quality.Areas.SampleRFT.Controllers
             return fileName;
         }
 
-        public List<string> GetDummtPic(bool IsDowdload)
+        public List<string> GetDummtPic(bool IsDowdload, QueryReport model)
         {
             List<string> resultPathList = new List<string>();
-            QueryReport model = (QueryReport)TempData["ModelQuery"];
             TempData["ModelQuery"] = model;
 
             var detailList = model.DummyFit.DetailList;
@@ -450,18 +446,19 @@ namespace Quality.Areas.SampleRFT.Controllers
 
         [HttpPost]
         [SessionAuthorize]
-        public ActionResult SendMail()
+        public ActionResult SendMail(long ID)
         {
-            BaseResult result = new BaseResult();
+            BaseResult result = new BaseResult();            
             string FileName = string.Empty;
             string zipName = $@"Query Report_{DateTime.Now.ToString("yyyyMMddHHmmss")}.zip";
             string zipPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", zipName);
             string reportPath = string.Empty;
             try
             {
-                string ExcelFileName = GetExcel(true);
-                string CFTExcelFileName = GetCFTComment(true);
-                List<string> dummyFitPicList = GetDummtPic(true);
+                QueryReport model = _Service.GetQueryDetail(ID, this.UserID);
+                string ExcelFileName = GetExcel(true, model);
+                string CFTExcelFileName = GetCFTComment(true, model);
+                List<string> dummyFitPicList = GetDummtPic(true, model);
 
                 ZipFile zip = new ZipFile();
 

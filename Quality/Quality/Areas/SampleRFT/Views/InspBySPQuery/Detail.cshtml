@@ -328,7 +328,7 @@
 
         function ClickDownload() {
 
-            window.location.href = '@Url.Action("Download")';
+            window.location.href = '@Url.Action("Download", new { ID = @Model.sampleRFTInspection.ID })';
 
         }
 
@@ -338,7 +338,7 @@
                 url: "@Url.Action("SendMail", "InspBySPQuery")",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({}),
+                data: JSON.stringify({ID : @Model.sampleRFTInspection.ID }),
                 async: false,
                 success: function (data) {
                     if (data.Result) {
