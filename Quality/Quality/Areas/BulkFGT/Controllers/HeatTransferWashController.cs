@@ -497,8 +497,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         [SessionAuthorizeAttribute]
         public JsonResult Report(string ReportNo, bool IsToPDF)
         {
-            string FileName;
-            BaseResult result = _Service.ToReport(ReportNo, IsToPDF, out FileName);
+            BaseResult result = _Service.ToReport(ReportNo, IsToPDF, out string FileName);
             string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
