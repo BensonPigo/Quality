@@ -458,6 +458,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             html += $"<td><input id='Details_{lastNO}__Temperature' name='Details[{lastNO}].Temperature' type='number' style='width:100%;' class='OnlyEdit'></td>";
             html += $"<td><input id='Details_{lastNO}__Time' name='Details[{lastNO}].Time' type='number' style='width:100%;' class='OnlyEdit'></td>";
+            html += $"<td><input id='Details_{lastNO}__SecondTime' name='Details[{lastNO}].SecondTime' type='number' style='width:100%;' class='OnlyEdit'></td>";
             html += $"<td><input id='Details_{lastNO}__Pressure' name='Details[{lastNO}].Pressure' type='number' step='0.1' max='100' onchange = 'value=PressureCheck(value)' style='width:100%;' class='OnlyEdit'></td>";
             html += $"<td><input id='Details_{lastNO}__PeelOff' name='Details[{lastNO}].PeelOff' type='text' maxlength='5' style='width:100%;' class='OnlyEdit'></td>";
 
@@ -496,17 +497,8 @@ namespace Quality.Areas.BulkFGT.Controllers
         [SessionAuthorizeAttribute]
         public JsonResult Report(string ReportNo, bool IsToPDF)
         {
-            BaseResult result;
             string FileName;
-            if (IsToPDF)
-            {
-                result = _Service.ToReport(ReportNo, IsToPDF, out FileName);
-            }
-            else
-            {
-                result = _Service.ToReport(ReportNo, IsToPDF, out FileName);
-            }
-
+            BaseResult result = _Service.ToReport(ReportNo, IsToPDF, out FileName);
             string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }

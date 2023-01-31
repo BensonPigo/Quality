@@ -69,7 +69,8 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string Article { get; set; }
         public string Line { get; set; }
         public string Machine { get; set; }
-        public bool IsTeamwear { get; set; }
+        public bool Teamwear { get; set; }
+        public DateTime? ReceivedDate { get; set; }
         public DateTime? ReportDate { get; set; }
         public string Result { get; set; }
         public string Remark { get; set; }
@@ -120,6 +121,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
 
         public int Temperature { get; set; }
         public int Time { get; set; }
+        public int SecondTime { get; set; }
         public decimal Pressure { get; set; }
         public string PeelOff { get; set; }
         public int Cycles { get; set; }

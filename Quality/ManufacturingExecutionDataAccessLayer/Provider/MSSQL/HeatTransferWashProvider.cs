@@ -69,7 +69,7 @@ select h.ReportNo
       ,h.Article
       ,h.Line
       ,h.Machine
-      ,IsTeamwear = CAST(h.IsTeamwear as bit)
+      ,s.Teamwear
       ,h.ReportDate
       ,h.Result
       ,h.Remark
@@ -85,9 +85,11 @@ select h.ReportNo
       ,MRHandleEmail = ISNULL(p.Email, p2.Email)
       ,Signature = Technician.Signature
       ,ArtworkTypeID_FullName = SubProcessInfo.ID
+      ,h.ReceivedDate
 from HeatTransferWash h
 left join SciPMSFile_HeatTransferWash pmsfile on h.ReportNo=pmsfile.ReportNo
 inner join SciProduction_Orders o on h.OrderID = o.ID
+left join SciProduction_Style s on o.StyleUkey = s.Ukey
 left join SciProduction_Pass1 p on o.MRHandle = p.ID
 left join Pass1 p2 on o.MRHandle = p2.ID
 left join SciProduction_Pass1 LastEdit1 on LastEdit1.ID = h.EditName
@@ -185,7 +187,6 @@ order by EditDate desc
                 { "@Line", DbType.String,  Req.Line ?? "" } ,
                 { "@Result", DbType.String,  Req.Result ?? "" } ,
                 { "@Machine", DbType.String,  Req.Machine ?? "" } ,
-                { "@IsTeamwear", DbType.Boolean, Req.IsTeamwear } ,
                 { "@Remark", DbType.String, Req.Remark ?? "" } ,
                 { "@ArtworkTypeID", DbType.String, Req.ArtworkTypeID ?? "" } ,
                 //{ "@Temperature", DbType.Int32, Req.Temperature } ,
@@ -227,7 +228,6 @@ INSERT INTO HeatTransferWash
            ,Article
            ,Line
            ,Machine
-           ,IsTeamwear
            ,Remark
            ,ArtworkTypeID
            ,Status
@@ -243,7 +243,6 @@ VALUES  (
            ,@Article
            ,@Line
            ,@Machine
-           ,@IsTeamwear
            ,@Remark
            ,@ArtworkTypeID
            ,'New'
@@ -281,6 +280,7 @@ VALUES(
                 { "@PeelOff", DbType.String, Req.PeelOff ?? "" } ,
                 { "@Cycles", DbType.Int32, Req.Cycles } ,
                 { "@TemperatureUnit", DbType.Int32, Req.TemperatureUnit } ,
+                { "@SecondTime", DbType.Int32, Req.SecondTime } ,
             };
 
             SbSql.Append($@"
@@ -297,7 +297,8 @@ INSERT INTO dbo.HeatTransferWash_Detail
            ,Pressure
            ,PeelOff
            ,Cycles
-           ,TemperatureUnit)
+           ,TemperatureUnit
+           ,SecondTime)
 VALUES      (@ReportNo
            ,@FabricRefNo
            ,@HTRefNo
@@ -310,7 +311,8 @@ VALUES      (@ReportNo
            ,@Pressure
            ,@PeelOff
            ,@Cycles
-           ,@TemperatureUnit)
+           ,@TemperatureUnit
+           ,@SecondTime)
 ");
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
@@ -325,7 +327,7 @@ VALUES      (@ReportNo
             objParameter.Add("@Result", DbType.String, Req.Main.Result ?? string.Empty);
             objParameter.Add("@Remark", DbType.String, Req.Main.Remark ?? string.Empty);
             objParameter.Add("@ArtworkTypeID", DbType.String, Req.Main.ArtworkTypeID ?? string.Empty);
-            objParameter.Add("@IsTeamwear", DbType.Boolean, Req.Main.IsTeamwear);
+            objParameter.Add("@ReceivedDate", DbType.Date, Req.Main.ReceivedDate);
             //objParameter.Add("@Temperature", DbType.Int32, Req.Main.Temperature);
             //objParameter.Add("@Time", DbType.Int32, Req.Main.Time);
             //objParameter.Add("@Pressure", DbType.Decimal, Req.Main.Pressure);
@@ -349,10 +351,10 @@ Set Line = @Line
     ,Machine = @Machine
     ,Result = @Result
     ,Remark = @Remark
-    ,IsTeamwear = @IsTeamwear
     ,ArtworkTypeID = @ArtworkTypeID
-    ,EditDate =GETDATE()
+    ,EditDate = GETDATE()
     ,Editname = @Editname
+    ,ReceivedDate = @ReceivedDate
 where ReportNo = @ReportNo
 
 
@@ -440,7 +442,7 @@ where ReportNo = @ReportNo
                     Req.Details,
                     oldData,
                     "Ukey",
-                    "FabricRefNo,HTRefNo,Result,Remark,Temperature,Time,Pressure,PeelOff,Cycles,TemperatureUnit");
+                    "FabricRefNo,HTRefNo,Result,Remark,Temperature,Time,Pressure,PeelOff,Cycles,TemperatureUnit,SecondTime");
 
             string insert = $@"
 INSERT INTO dbo.HeatTransferWash_Detail
@@ -456,7 +458,8 @@ INSERT INTO dbo.HeatTransferWash_Detail
            ,Pressure
            ,PeelOff
            ,Cycles
-           ,TemperatureUnit)
+           ,TemperatureUnit
+           ,SecondTime)
      VALUES(
             @ReportNo
            ,@FabricRefNo
@@ -470,7 +473,8 @@ INSERT INTO dbo.HeatTransferWash_Detail
            ,@Pressure
            ,@PeelOff
            ,@Cycles
-           ,@TemperatureUnit)
+           ,@TemperatureUnit
+           ,@SecondTime)
 
 ";
             string update = $@"
@@ -487,6 +491,7 @@ SET  FabricRefNo=@FabricRefNo
     ,PeelOff = @PeelOff
     ,Cycles = @Cycles
     ,TemperatureUnit = @TemperatureUnit
+    ,SecondTime = @SecondTime
 WHERE UKey = @Ukey
 
 ";
@@ -508,6 +513,7 @@ delete HeatTransferWash_Detail where Ukey = @Ukey
                 listDetailPar.Add("@PeelOff", DbType.String, detailItem.PeelOff ?? "");
                 listDetailPar.Add("@Cycles", DbType.Int32, detailItem.Cycles);
                 listDetailPar.Add("@TemperatureUnit", DbType.Int32, detailItem.TemperatureUnit);
+                listDetailPar.Add("@SecondTime", DbType.Int32, detailItem.SecondTime);
                 switch (detailItem.StateType)
                 {
                     case DatabaseObject.Public.CompareStateType.Add:
