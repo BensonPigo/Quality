@@ -90,8 +90,8 @@ from HeatTransferWash h
 left join SciPMSFile_HeatTransferWash pmsfile on h.ReportNo=pmsfile.ReportNo
 inner join SciProduction_Orders o on h.OrderID = o.ID
 left join SciProduction_Style s on o.StyleUkey = s.Ukey
-left join SciProduction_Pass1 p on o.MRHandle = p.ID
-left join Pass1 p2 on o.MRHandle = p2.ID
+left join SciProduction_Pass1 p on h.EditName = p.ID
+left join Pass1 p2 on h.EditName = p2.ID
 left join SciProduction_Pass1 LastEdit1 on LastEdit1.ID = h.EditName
 left join Pass1 LastEdit2 on  LastEdit2.ID = h.EditName
 outer apply (

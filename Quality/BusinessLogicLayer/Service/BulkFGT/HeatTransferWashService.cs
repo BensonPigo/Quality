@@ -338,16 +338,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     byte[] SignturePic = head.Signature;
                     imgPath_Signture = ToolKit.PublicClass.AddImageSignWord(SignturePic, head.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    Excel.Range cell = worksheet.Cells[29, 7];
-                    worksheet.Shapes.AddPicture(imgPath_Signture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
+                    Excel.Range cell = worksheet.Cells[30, 7];
+                    worksheet.Shapes.AddPicture(imgPath_Signture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 40, 20);
                 }
-                else
-                {
-                    worksheet.Cells[29, 7] = head.LastEditText;
-                }
-                
 
-
+                // ISP20230055 簽名、名字一起顯示
+                worksheet.Cells[29, 7] = head.LastEditText;
 
                 // 表身筆數處理
                 if (!body.Any())
