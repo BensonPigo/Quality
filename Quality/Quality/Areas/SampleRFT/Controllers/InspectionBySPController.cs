@@ -1574,6 +1574,7 @@ namespace Quality.Areas.SampleRFT.Controllers
 
         [HttpPost]
         [SessionAuthorize]
+        [ValidateInput(false)]
         public ActionResult Others(InspectionBySP_Others Req, string goPage)
         {
             this.CheckSession();
