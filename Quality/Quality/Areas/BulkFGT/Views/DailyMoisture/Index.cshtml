@@ -35,7 +35,6 @@
         --bs-gutter-y: 0;
         display: flex;
         flex-wrap: wrap;
-        width: 95vw;
         margin-top: calc(var(--bs-gutter-y) * -1);
         margin-right: calc(var(--bs-gutter-x)/ -2);
         margin-left: calc(var(--bs-gutter-x)/ -2);
@@ -375,7 +374,7 @@
                                     </td>
                                     <td><h5>Action</h5></td>
                                     <td>
-                                        <select id="Main_Action" name="Main.Action" class="OnlyEdit">
+                                        <select id="Main_Action" name="Main.Action" class="OnlyEdit" style="width: 18vw;">
                                             @foreach (var item in (List<SelectListItem>)Model.Action_Source)
                                             {
                                                 string selected = item.Text.Equals(Model.Main.Action) ? "selected" : "";
@@ -394,7 +393,7 @@
 
                     @*表身*@
                     <div style="margin-top: 1em; width: 92vw; overflow:auto;">
-                        <table cellspacing="100" class="DetailTable DataTable table table-striped display;" style="width: 100vw">
+                        <table cellspacing="100" class="DetailTable DataTable table table-striped display;" style="width: 140vw">
                             <thead>
                                 <tr>
 
