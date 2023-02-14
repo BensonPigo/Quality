@@ -416,7 +416,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += $"<input id='Details_{lastNO}__Point5' name='Details[{lastNO}].Point5' class='OnlyEdit' type='number' step='0.01' type='number' value='0' onchange='value=QtyCheck(value)' style='width:85%;'>";
             html += $"</td>";
 
-            html += $"<td><select id='Details_{lastNO}__Area' name='Details[{lastNO}].Area'  class='OnlyEdit' >";
+            html += $"<td><select id='Details_{lastNO}__Area' name='Details[{lastNO}].Area'  class='OnlyEdit' style='width:90%' >";
             foreach (var val in areaSelect)
             {
                 html += "<option value='" + val.Value + "'>" + val.Text + "</option>";

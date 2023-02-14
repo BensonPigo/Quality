@@ -102,7 +102,7 @@
     }
 
     .DataTable {
-        width: 92vw;
+        width: 100%;
         font-size: 1rem;
         font-weight: bold;
         border: solid 1px black;
@@ -311,20 +311,20 @@
                         <table class="DataTable">
                             <tbody>
                                 <tr>
-                                    <td style="width: 10vw;"><h5>Report No</h5></td>
-                                    <td style="width: 20vw;">
+                                    <td><h5>Report No</h5></td>
+                                    <td>
                                         <input id="ReportNo" name="ReportNo" readonly="readonly" type="text" value="@Model.Main.ReportNo">
 
                                         @Html.HiddenFor(o => o.Main.ReportNo)
                                         @Html.HiddenFor(o => o.Main.Status)
                                         @Html.HiddenFor(o => o.Main.MRHandleEmail)
                                     </td>
-                                    <td style="width: 10vw;"><h5>SP#</h5></td>
-                                    <td style="width: 20vw;">
+                                    <td><h5>SP#</h5></td>
+                                    <td>
                                         @Html.TextBoxFor(o => o.Main.OrderID)
                                     </td>
-                                    <td style="width: 10vw;"><h5>Brand</h5></td>
-                                    <td style="width: 20vw;">
+                                    <td><h5>Brand</h5></td>
+                                    <td>
                                         @Html.TextBoxFor(o => o.Main.BrandID, new { @class = "Readonly" })
                                     </td>
                                 </tr>
@@ -392,21 +392,21 @@
                     </div>
 
                     @*表身*@
-                    <div style="margin-top: 1em; width: 92vw; overflow:auto;">
-                        <table cellspacing="100" class="DetailTable DataTable table table-striped display;" style="width: 140vw">
+                    <div style="margin-top: 1em; overflow:auto;">
+                        <table cellspacing="100" class="DetailTable DataTable table table-striped display;" style="width: 200vw">
                             <thead>
                                 <tr>
 
-                                    <th style="width: 7vw;"><h4>Point 1</h4></th>
-                                    <th style="width: 7vw;"><h4>Point 2</h4></th>
-                                    <th style="width: 7vw;"><h4>Point 3</h4></th>
-                                    <th style="width: 7vw;"><h4>Point 4</h4></th>
-                                    <th style="width: 7vw;"><h4>Point 5</h4></th>
-                                    <th style="width: 10vw;"><h4>Area</h4></th>
-                                    <th style="width: 7vw;"><h4>Fabric</h4></th>
-                                    <th style="width: 10vw;"><h4>Result</h4></th>
-                                    <th style="width: 10vw;"><h4>Last Update</h4></th>
-                                    <th style="width: 3vw;"><h4></h4></th>
+                                    <th><h4>Point 1</h4></th>
+                                    <th><h4>Point 2</h4></th>
+                                    <th><h4>Point 3</h4></th>
+                                    <th><h4>Point 4</h4></th>
+                                    <th><h4>Point 5</h4></th>
+                                    <th><h4>Area</h4></th>
+                                    <th><h4>Fabric</h4></th>
+                                    <th><h4>Result</h4></th>
+                                    <th><h4>Last Update</h4></th>
+                                    <th style="width:5vw;"><h4></h4></th>
                                 </tr>
 
                             </thead>
@@ -449,7 +449,7 @@
                                         </td>
 
                                         <td>
-                                            <select id="Details_@{@i}__Fabric" name="Details[@{@i}].Fabric">
+                                            <select id="Details_@{@i}__Fabric" name="Details[@{@i}].Fabric" style="width:90%">
                                                 @foreach (var item in (List<SelectListItem>)Model.Fabric_Source)
                                                 {
                                                     string selected = item.Text.Equals(Model.Details[i].Fabric) ? "selected" : "";
