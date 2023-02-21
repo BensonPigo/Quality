@@ -293,11 +293,11 @@
                                     <td style="width: 20vw;">
                                         <input id="ReportNo" name="Main.ReportNo" readonly="readonly" type="text" value="@Model.Main.ReportNo">
 
-                                        @Html.HiddenFor(o => o.Main.ReportNo)
-                                        @Html.HiddenFor(o => o.Main.Status)
-                                        @Html.HiddenFor(o => o.Main.TestBeforePicture)
-                                        @Html.HiddenFor(o => o.Main.TestAfterPicture)
-                                        @Html.HiddenFor(o => o.Main.MRHandleEmail)
+                                        <input type="hidden" id="Main_ReportNo" name="Main.ReportNo" value="@Model.Main.ReportNo">
+                                        <input type="hidden" id="Main_Status" name="Main.Status" value="@Model.Main.Status">
+                                        <input type="hidden" id="Main_TestBeforePicture" name="Main.TestBeforePicture" value="@Model.Main.TestBeforePicture">
+                                        <input type="hidden" id="Main_TestAfterPicture" name="Main.TestAfterPicture" value="@Model.Main.TestAfterPicture">
+                                        <input type="hidden" id="Main_MRHandleEmail" name="Main.MRHandleEmail" value="@Model.Main.MRHandleEmail">
                                     </td>
                                     <td style="width: 10vw;"><h5>SP#</h5></td>
                                     <td style="width: 20vw;">

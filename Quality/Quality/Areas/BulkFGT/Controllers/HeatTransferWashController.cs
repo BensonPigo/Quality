@@ -172,9 +172,9 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
             var tmpArtworkType_Source = _Service.GetArtworkTypeList(new Orders()
             {
-                BrandID = Req.Request.BrandID,
-                SeasonID = Req.Request.SeasonID,
-                StyleID = Req.Request.StyleID,
+                BrandID = Req.Main.BrandID,
+                SeasonID = Req.Main.SeasonID,
+                StyleID = Req.Main.StyleID,
             });
 
             model.ArtworkType_Source = tmpArtworkType_Source.Any() ? tmpArtworkType_Source : new List<SelectListItem>();
