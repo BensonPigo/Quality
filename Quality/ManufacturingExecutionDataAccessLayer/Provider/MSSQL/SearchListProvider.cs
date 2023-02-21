@@ -877,6 +877,14 @@ WHERE h.Result <> ''
             {
                 type14 += "AND h.Article = @Article ";
             }
+            if (Req.ReportDate_s.HasValue)
+            {
+                type14 += " AND @ReportDate_s <= h.ReportDate ";
+            }
+            if (Req.ReportDate_e.HasValue)
+            {
+                type14 += " AND h.ReportDate <= @ReportDate_e ";
+            }
             if (Req.WhseArrival_s.HasValue)
             {
                 type14 += " AND @WhseArrival_s <= e.WhseArrival ";
@@ -916,10 +924,10 @@ WHERE h.Result <> ''
                 case string a when a.Contains("Pulling test for Snap/Button/Rivet"):
                     SbSql.Append(type9);
                     break;
-                case string a when a.Contains("Water Fastness Test(503)"):
+                case string a when a.Contains("Water Fastness Test"):
                     SbSql.Append(type11);
                     break;
-                case string a when a.Contains("Perspiration Fastness Test(502)"):
+                case string a when a.Contains("Perspiration Fastness Test"):
                     SbSql.Append(type12);
                     break;
                 case string a when a.Contains("Daily HT Wash"):

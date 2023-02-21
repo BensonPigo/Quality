@@ -523,7 +523,8 @@
 
             let includes_MOCKUP = currentType.toUpperCase().includes("MOCKUP");
             let includes_HTWash = currentType.toUpperCase().includes("HT WASH");
-            if (!includes_MOCKUP && !includes_HTWash) {
+            let includes_Moistureh = currentType.toUpperCase().includes("MOISTURE");
+            if (!includes_MOCKUP && !includes_HTWash && !includes_Moistureh) {
                 $(".mockupOnly").val('');
                 $(".mockupOnly").attr("disabled", "disabled");
             }
