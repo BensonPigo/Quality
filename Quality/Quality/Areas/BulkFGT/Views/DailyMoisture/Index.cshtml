@@ -315,9 +315,9 @@
                                     <td>
                                         <input id="ReportNo" name="ReportNo" readonly="readonly" type="text" value="@Model.Main.ReportNo">
 
-                                        @Html.HiddenFor(o => o.Main.ReportNo)
-                                        @Html.HiddenFor(o => o.Main.Status)
-                                        @Html.HiddenFor(o => o.Main.MRHandleEmail)
+                                        <input type="hidden" id="Main_ReportNo" name="Main.ReportNo" value="@Model.Main.ReportNo">
+                                        <input type="hidden" id="Main_Status" name="Main.Status" value="@Model.Main.Status">
+                                        <input type="hidden" id="Main_MRHandleEmail" name="Main.MRHandleEmail" value="@Model.Main.MRHandleEmail">
                                     </td>
                                     <td><h5>SP#</h5></td>
                                     <td>
